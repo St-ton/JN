@@ -18,7 +18,11 @@
                 <input type="hidden" name="action" value="update">
                 <input type="hidden" name="item-type" value="{$license->getType()}">
                 <input type="hidden" name="item-id" value="{$license->getID()}">
-                <button class="update-item btn btn-primary" name="action" value="update"><i class="fas fa-refresh"></i> {__('Update')}</button>
+                {$licData = $license->getLicense()}
+                {$subscription = $licData->getSubscription()}
+                <button{if $licData->isExpired() || $subscription->isExpired()} disabled{/if} class="btn btn-primary update-item" name="action" value="update">
+                    <i class="fas fa-refresh"></i> {__('Update')}
+                </button>
             </form>
         {/if}
     {else}

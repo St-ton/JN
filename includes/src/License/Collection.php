@@ -52,9 +52,7 @@ class Collection extends \Illuminate\Support\Collection
 
             return $ref !== null
                 && $ref->isActive()
-                && ($e->getLicense()->isExpired()
-                    || ($e->getLicense()->getSubscription() !== null &&
-                        $e->getLicense()->getSubscription()->isExpired()));
+                && ($e->getLicense()->isExpired() || $e->getLicense()->getSubscription()->isExpired());
         });
     }
 

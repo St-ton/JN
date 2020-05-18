@@ -13,13 +13,12 @@ class Migration_20200508095000 extends Migration implements IMigration
      */
     public function up()
     {
-        $this->setLocalization('ger', 'newsletter', 'unsubscribeAnytime', 'Bitte senden Sie mir entsprechend Ihrer ' .
-            '<a href="%s" target="_blank">Datenschutzerklärung</a> regelmäßig [ALTERNATIV: alle [X] Wochen] und jederzeit ' .
-            'widerruflich Informationen zu folgendem Produktsortiment per E-Mail zu: [AUFZÄHLUNG DER VON IHNEN VERTRIEBENEN WARENGRUPPEN].');
-        $this->setLocalization('eng', 'newsletter', 'unsubscribeAnytime', 'Please email me the latest information on ' .
-            'the product ranges listed below in regular intervals [ALTERNATIVELY: EVERY [X] WEEKS] in accordance with ' .
-            'your <a href="%s" target="_blank">Privacy notice</a>. I recognise that I can revoke my permission to ' .
-            'receive said emails at any time. [ADD LIST OF PRODUCT GROUPS SOLD BY YOU]');
+        $this->setLocalization('ger', 'newsletter', 'unsubscribeAnytime', '
+        Bitte senden Sie mir entsprechend Ihrer <a href="%s" target="_blank">Datenschutzerklärung</a> regelmäßig und '
+            . 'jederzeit widerruflich Informationen zu Ihrem Produktsortiment per E-Mail zu.');
+        $this->setLocalization('eng', 'newsletter', 'unsubscribeAnytime', 'Please email me the latest information on '
+            . 'your product portfolio regularly and in accordance with your data <a href="%s" target="_blank">privacy notice</a>. '
+            . 'I recognise that I can revoke my permission to receive said emails at any time.');
     }
 
     /**

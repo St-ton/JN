@@ -20,6 +20,7 @@ if (Request::postInt('zuruecksetzen') === 1 && Form::validateToken()) {
             switch ($option) {
                 // JTL-Wawi Inhalte
                 case 'artikel':
+                    $db->query('SET FOREIGN_KEY_CHECKS = 0;', ReturnType::DEFAULT);
                     $db->query('TRUNCATE tartikel', ReturnType::DEFAULT);
                     $db->query('TRUNCATE tartikelabnahme', ReturnType::DEFAULT);
                     $db->query('TRUNCATE tartikelattribut', ReturnType::DEFAULT);
@@ -81,6 +82,7 @@ if (Request::postInt('zuruecksetzen') === 1 && Form::validateToken()) {
                     $db->query('TRUNCATE tuploadschemasprache', ReturnType::DEFAULT);
                     $db->query('TRUNCATE tmasseinheit', ReturnType::DEFAULT);
                     $db->query('TRUNCATE tmasseinheitsprache', ReturnType::DEFAULT);
+                    $db->query('SET FOREIGN_KEY_CHECKS = 1;', ReturnType::DEFAULT);
 
                     $db->query(
                         "DELETE FROM tseo

@@ -7,7 +7,7 @@
     </div>
     <div class="card">
         <div class="card-header">
-            <div class="subheading1">{__('available')} {__('agbwrb')}</div>
+            <div class="subheading1">{__('availableAGBWRB')}</div>
         </div>
         <div class="card-body">
             <div class="table-responsive">

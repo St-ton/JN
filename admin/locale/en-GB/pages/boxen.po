@@ -3,7 +3,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "boxen"
-msgstr "Boxes/Footer"
+msgstr "Footers/Boxes"
 
 msgid "boxenURL"
 msgstr "https://jtl-url.de/li846"

@@ -9,6 +9,7 @@ use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use JTL\Plugin\State;
 use JTL\Shop;
+use JTL\Shopsetting;
 use stdClass;
 
 /**
@@ -345,7 +346,7 @@ final class Link extends AbstractLink
             $this->setReference($link->reference);
             $this->setSSL((bool)$link->bSSL);
             $this->setIsFluid((bool)$link->bIsFluid);
-            $this->setIsEnabled((bool)$link->bIsActive);
+            $this->setIsEnabled($this->checkActivationSetting((bool)$link->bIsActive));
             $this->setFileName($link->cDateiname ?? '');
             $this->setLanguageCode($link->cISOSprache, $link->languageID);
             $this->setContent($link->content ?? '', $link->languageID);
@@ -1211,5 +1212,25 @@ final class Link extends AbstractLink
         $res['db'] = '*truncated*';
 
         return $res;
+    }
+
+    /**
+     * @param bool $isActive
+     * @return bool
+     */
+    private function checkActivationSetting(bool $isActive): bool
+    {
+        if (!$isActive) {
+            return false;
+        }
+        $conf = Shopsetting::getInstance()->getAll();
+
+        switch ($this->getLinkType()) {
+            case \LINKTYP_NEWSLETTER:
+            case \LINKTYP_NEWSLETTERARCHIV:
+                return $conf['newsletter']['newsletter_active'] === 'Y';
+            default:
+                return true;
+        }
     }
 }

@@ -115,7 +115,9 @@ final class Controller
             $newsItem->nAktiv        = $active;
             $newsItem->dErstellt     = (new DateTime())->format('Y-m-d H:i:s');
             $newsItem->dGueltigVon   = DateTime::createFromFormat('d.m.Y H:i', $dateValidFrom)->format('Y-m-d H:i:00');
-            $newsItem->cPreviewImage = $previewImage;
+            if ($previewImage !== '') {
+                $newsItem->cPreviewImage = $previewImage;
+            }
             if ($update === true) {
                 $revision = new Revision($this->db);
                 $revision->addRevision('news', $newsItemID, true);
@@ -222,13 +224,15 @@ final class Controller
             if (!\is_dir($dir) && !\mkdir(self::UPLOAD_DIR . $newsItemID) && !\is_dir($dir)) {
                 throw new Exception('Cannot create upload dir: ' . $dir);
             }
-            $oldImages = $this->getNewsImages($newsItemID, self::UPLOAD_DIR);
 
-            $newsItem->cPreviewImage = $this->addPreviewImage($oldImages, $newsItemID);
+            $oldImages = $this->getNewsImages($newsItemID, self::UPLOAD_DIR, false);
             $this->addImages($oldImages, $newsItemID);
-            $upd                = new stdClass();
-            $upd->cPreviewImage = $newsItem->cPreviewImage;
-            $this->db->update('tnews', 'kNews', $newsItemID, $upd);
+            if ($previewImage !== '') {
+                $upd                = new stdClass();
+                $upd->cPreviewImage = $this->addPreviewImage($oldImages, $newsItemID);
+                $this->db->update('tnews', 'kNews', $newsItemID, $upd);
+            }
+
             $this->db->delete('tnewskategorienews', 'kNews', $newsItemID);
             foreach ($newsCategoryIDs as $categoryID) {
                 $ins                 = new stdClass();
@@ -545,14 +549,17 @@ final class Controller
             $extension = 'jpg';
         }
         foreach ($oldImages as $image) {
-            if (\mb_strpos($image->cDatei, 'preview') !== false) {
+            if (\mb_strpos($image->cDatei, '_preview.') !== false) {
                 $this->deleteNewsImage($image->cName, $newsItemID, self::UPLOAD_DIR);
             }
         }
-        $uploadFile = self::UPLOAD_DIR . $newsItemID . '/preview.' . $extension;
+
+        $fileIDName = $newsItemID . '/' . \explode('.', \basename($_FILES['previewImage']['name']))[0]
+            . '_preview.' . $extension;
+        $uploadFile = self::UPLOAD_DIR . $fileIDName;
         \move_uploaded_file($_FILES['previewImage']['tmp_name'], $uploadFile);
 
-        return \PFAD_NEWSBILDER . $newsItemID . '/preview.' . $extension;
+        return \PFAD_NEWSBILDER . $fileIDName;
     }
 
     /**
@@ -684,11 +691,12 @@ final class Controller
     /**
      * @param int    $itemID
      * @param string $uploadDirName
+     * @param bool   $excludePreview
      * @return array
      */
-    public function getNewsImages(int $itemID, string $uploadDirName): array
+    public function getNewsImages(int $itemID, string $uploadDirName, bool $excludePreview = true): array
     {
-        return $this->getImages(\PFAD_NEWSBILDER, $itemID, $uploadDirName);
+        return $this->getImages(\PFAD_NEWSBILDER, $itemID, $uploadDirName, $excludePreview);
     }
 
     /**
@@ -705,9 +713,10 @@ final class Controller
      * @param string $base
      * @param int    $itemID
      * @param string $uploadDirName
+     * @param bool   $excludePreview
      * @return array
      */
-    private function getImages(string $base, int $itemID, string $uploadDirName): array
+    private function getImages(string $base, int $itemID, string $uploadDirName, bool $excludePreview = true): array
     {
         $images = [];
         if ($this->sanitizeDir('fake', $itemID, $uploadDirName) === false) {
@@ -717,11 +726,9 @@ final class Controller
         $iterator     = new DirectoryIterator($uploadDirName . $itemID);
         foreach ($iterator as $fileinfo) {
             $fileName = $fileinfo->getFilename();
-            if ($fileinfo->isDot()
+            if (($excludePreview && \mb_strpos($fileName, '_preview.') !== false)
                 || !$fileinfo->isFile()
-                || $fileName === 'preview.png'
-                || $fileName === 'preview.jpeg'
-                || $fileName === 'preview.jpg'
+                || $fileinfo->isDot()
             ) {
                 continue;
             }
@@ -883,18 +890,15 @@ final class Controller
         });
 
         $shopURL = Shop::getURL() . '/';
-        $count   = \count($images);
-        for ($i = 1; $i <= $count; $i++) {
+        foreach ($images as $image) {
+            if (\mb_strpos($image, '_preview.') !== false) {
+                $placeholder = '$#preview#$';
+            } else {
+                $placeholder = '$#Bild' . \substr(\explode('.', $image)[0], 4) . '#$';
+            }
             $text = \str_replace(
-                '$#Bild' . $i . '#$',
-                '<img alt="" src="' . $shopURL . \PFAD_NEWSBILDER . $id . '/' . $images[$i - 1] . '" />',
-                $text
-            );
-        }
-        if (\count($images) > 0 && \mb_strpos(\end($images), 'preview') !== false) {
-            $text = \str_replace(
-                '$#preview#$',
-                '<img alt="" src="' . $shopURL . \PFAD_NEWSBILDER . $id . '/' . $images[\count($images) - 1] . '" />',
+                $placeholder,
+                '<img alt="" src="' . $shopURL . \PFAD_NEWSBILDER . $id . '/' . $image . '" />',
                 $text
             );
         }

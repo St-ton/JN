@@ -23,13 +23,14 @@
                    type="checkbox"
                    name="aktiv[]"
                    id="box-id-{$oBox->getID()}"
+                   data-box-id="{$oBox->getID()}"
                    {if ($nPage !== 0 && $oBox->isVisibleOnPage($nPage)) || ($nPage === 0 && \Functional\true($oBox->getFilter()))}checked="checked"{/if} value="{$oBox->getID()}">
             <label class="custom-control-label" for="box-id-{$oBox->getID()}"></label>
         </div>
         <input type="hidden" name="box[]" value="{$oBox->getID()}">
         {*prevents overwriting specific visibility when indeterminate checkbox is set on 'all pages' view*}
         {if $nPage === 0 && !\Functional\true($oBox->getFilter()) && !\Functional\false($oBox->getFilter())}
-            <input type="hidden" name="ignore[]" value="{$oBox->getID()}">
+            <input type="hidden" name="ignore[]" value="{$oBox->getID()}" id="boxIgnore{$oBox->getID()}">
         {/if}
         {if $nPage === 0}
             {if \Functional\true($oBox->getFilter())}

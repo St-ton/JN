@@ -150,9 +150,9 @@ abstract class AbstractLoader implements LoaderInterface
             c.cWertName AS confName
             FROM tplugineinstellungenconf AS c
             LEFT JOIN tplugineinstellungenconfwerte AS v
-              ON c.kPluginEinstellungenConf = v.kPluginEinstellungenConf
+                ON c.kPluginEinstellungenConf = v.kPluginEinstellungenConf
             LEFT JOIN tplugineinstellungen AS e
-			  ON e.kPlugin = c.kPlugin AND e.cName = c.cWertName
+                ON e.kPlugin = c.kPlugin AND e.cName = c.cWertName
             WHERE c.kPlugin = :pid
             GROUP BY id, confValue
             ORDER BY c.nSort',
@@ -223,6 +223,8 @@ abstract class AbstractLoader implements LoaderInterface
         $license->setClass($data->cLizenzKlasse);
         $license->setClassName($data->cLizenzKlasseName);
         $license->setKey($data->cLizenz);
+        $manager  = new Manager($this->db);
+        $license->setExsLicense($manager->getLicenseByItemID($data->cPluginID));
 
         return $license;
     }
@@ -367,8 +369,7 @@ abstract class AbstractLoader implements LoaderInterface
     {
         $lastItem = $items->last();
         $lastIdx  = $lastItem->idx ?? -1;
-        $manager  = new Manager($this->db);
-        $license  = $manager->getLicenseByItemID($plugin->getPluginID());
+        $license  = $plugin->getLicense()->getExsLicense();
         if ($license !== null) {
             ++$lastIdx;
             $menu                   = new stdClass();
@@ -488,7 +489,7 @@ abstract class AbstractLoader implements LoaderInterface
             "SELECT *
                 FROM tzahlungsart
                 JOIN tpluginzahlungsartklasse
-		            ON tpluginzahlungsartklasse.cModulID = tzahlungsart.cModulId
+                    ON tpluginzahlungsartklasse.cModulID = tzahlungsart.cModulId
                 WHERE tzahlungsart.cModulId LIKE 'kPlugin\_" . $plugin->getID() . "%'",
             ReturnType::ARRAY_OF_OBJECTS
         );

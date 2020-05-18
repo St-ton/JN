@@ -22,8 +22,8 @@ class Migration_20200515082600 extends Migration implements IMigration
 
         $rows = $this->__execute(
             "UPDATE tslide
-                SET cBild = '$mediafilesPath' + cBild,
-                    cThumbnail = '$mediafilesPath' + 'Bilder/.tmb/' + substring_index(cBild, '/', -1)
+                SET cBild = CONCAT('$mediafilesPath', cBild),
+                    cThumbnail = CONCAT('$mediafilesPath', 'Bilder/.tmb/', substring_index(cBild, '/', -1))
                 WHERE cBild LIKE 'Bilder/%'",
             ReturnType::DEFAULT
         );
@@ -31,7 +31,9 @@ class Migration_20200515082600 extends Migration implements IMigration
         $shopPath = \parse_url(Shop::getURL() . '/', \PHP_URL_PATH);
 
         $rows = $this->__execute(
-            "UPDATE tslide SET cBild = TRIM(LEADING '$shopPath' FROM cBild) WHERE cBild LIKE '$shopPath%'",
+            "UPDATE tslide
+                SET cBild = TRIM(LEADING '$shopPath' FROM cBild)
+                WHERE cBild LIKE '$shopPath%'",
             ReturnType::DEFAULT
         );
     }

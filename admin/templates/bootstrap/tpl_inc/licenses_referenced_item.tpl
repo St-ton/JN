@@ -13,14 +13,15 @@
         {if $referencedItem->hasUpdate()}
             <span class="update-available badge badge-success">{__('Update to version %s available', $referencedItem->getMaxInstallableVersion())}</span>
             <hr>
-            <form method="post" class="update-item-form">
+            {$licData = $license->getLicense()}
+            {$subscription = $licData->getSubscription()}
+            {$disabled = $licData->isExpired() || $subscription->isExpired()}
+            <form method="post"{if !$disabled} class="update-item-form"{/if}>
                 {$jtl_token}
                 <input type="hidden" name="action" value="update">
                 <input type="hidden" name="item-type" value="{$license->getType()}">
                 <input type="hidden" name="item-id" value="{$license->getID()}">
-                {$licData = $license->getLicense()}
-                {$subscription = $licData->getSubscription()}
-                <button{if $licData->isExpired() || $subscription->isExpired()} disabled{/if} class="btn btn-primary update-item" name="action" value="update">
+                <button{if $disabled} disabled{/if} class="btn btn-default btn-sm update-item" name="action" value="update">
                     <i class="fas fa-refresh"></i> {__('Update')}
                 </button>
             </form>

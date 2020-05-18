@@ -33,7 +33,7 @@
             <div class="save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-12 col-xl-auto">
-                        <button class="btn btn-default"><i class="fas fa-refresh"></i> {__('Update all')}</button>
+                        <button class="btn btn-primary" id="update-all"><i class="fas fa-refresh"></i> {__('Update all')}</button>
                     </div>
                 </div>
             </div>
@@ -70,8 +70,20 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
+        const showUpdateAll = function () {
+            const updateBTN = $('#update-all');
+            updateBTN.attr('disabled', false);
+            updateBTN.find('i').removeClass('fa-spin');
+        };
+        const hideUpdateAll = function () {
+            const updateBTN = $('#update-all');
+            updateBTN.attr('disabled', true);
+            updateBTN.find('i').addClass('fa-spin');
+        }
+        var formCount = 0,
+            done = 0;
         $('#active-licenses').on('submit', '.update-item-form', function (e) {
-            var updateBTN = $(e.target).find('.update-item');
+            const updateBTN = $(e.target).find('.update-item');
             updateBTN.attr('disabled', true);
             updateBTN.find('i').addClass('fa-spin');
             $.ajax({
@@ -79,9 +91,9 @@
                 url: '{$shopURL}/admin/licenses.php',
                 data: $(e.target).serialize()
             }).done(function (r) {
-                var result = JSON.parse(r);
+                let result = JSON.parse(r);
                 if (result.id && result.html) {
-                    var itemID = '#' + result.id;
+                    let itemID = '#' + result.id;
                     if (result.action === 'update') {
                         itemID = '#license-item-' + result.id;
                     }
@@ -89,8 +101,19 @@
                     updateBTN.attr('disabled', false);
                     updateBTN.find('i').removeClass('fa-spin');
                 }
+                ++done;
+                if (formCount > 0 && formCount === done) {
+                    showUpdateAll();
+                }
             });
             return false;
+        });
+        $('#active-licenses').on('click', '#update-all', function (e) {
+            hideUpdateAll();
+            done = 0;
+            const forms = $('#active-licenses .update-item-form');
+            formCount = forms.length;
+            forms.submit();
         });
     });
 </script>

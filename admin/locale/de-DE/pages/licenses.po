@@ -36,7 +36,7 @@ msgid "License expired"
 msgstr "Lizenz abgelaufen"
 
 msgid "Subscription expired on %s"
-msgstr "Subskription abgelaufen am %s"
+msgstr "Subscription abgelaufen am %s"
 
 msgid "License expired on %s"
 msgstr "Lizenz abgelaufen am %s"
@@ -66,7 +66,7 @@ msgid "Links"
 msgstr "Links"
 
 msgid "Subscription"
-msgstr "Subskription"
+msgstr "Subscription"
 
 msgid "Developer"
 msgstr "Entwickler"

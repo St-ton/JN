@@ -361,7 +361,7 @@ msgid "Plug-in manager"
 msgstr "Plugin-Manager"
 
 msgid "My purchases"
-msgstr "Meine Einkäufe"
+msgstr "Meine Käufe"
 
 msgid "Plug-in profiler"
 msgstr "Plugin-Profiler"

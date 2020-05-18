@@ -45,4 +45,4 @@ msgid "setBinding"
 msgstr "An aktuellen Shop binden"
 
 msgid "extendSubscription"
-msgstr "Subskription verlängern"
+msgstr "Subscription verlängern"

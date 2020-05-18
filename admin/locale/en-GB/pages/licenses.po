@@ -17,6 +17,9 @@ msgstr "(disabled)"
 msgid "Active licenses"
 msgstr "Active licenses"
 
+msgid "Update all"
+msgstr "Update all"
+
 msgid "Unbound licenses"
 msgstr "Unbound licenses"
 

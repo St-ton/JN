@@ -816,4 +816,24 @@ final class Admin
 
         return $result;
     }
+
+    /**
+     * @return void
+     */
+    public function setNewsletterCheckboxStatus(): void
+    {
+        $active = $_POST['newsletter_active'] === 'Y' ? 1 : 0;
+
+        $this->db->queryPrepared(
+            'UPDATE tcheckbox
+                LEFT JOIN tcheckboxfunktion USING(kCheckBoxFunktion)
+                SET nAktiv = :active
+                  WHERE tcheckboxfunktion.cID = :newsletterID',
+            [
+                'active'       => $active,
+                'newsletterID' => 'jtl_newsletter'
+            ],
+            ReturnType::DEFAULT
+        );
+    }
 }

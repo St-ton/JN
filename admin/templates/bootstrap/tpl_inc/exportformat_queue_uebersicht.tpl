@@ -107,12 +107,18 @@
                         {else}
                             <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                             <div class="card-footer save-wrapper">
-                                <button name="action[triggern]" type="submit" value="1" class="btn btn-outline-primary btn-block">
-                                    <i class="fal fa-play-circle"></i> {__('exportformatTriggerCron')}
-                                </button>
-                                <button name="action[erstellen]" type="submit" value="1" class="btn btn-primary btn-block add">
-                                    <i class="fa fa-share"></i> {__('exportformatAdd')}
-                                </button>
+                                <div class="row">
+                                    <div class="ml-auto col-sm-6 col-xl-auto">
+                                        <button name="action[triggern]" type="submit" value="1" class="btn btn-outline-primary btn-block">
+                                            <i class="fal fa-play-circle"></i> {__('exportformatTriggerCron')}
+                                        </button>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-auto">
+                                        <button name="action[erstellen]" type="submit" value="1" class="btn btn-primary btn-block add">
+                                            <i class="fa fa-share"></i> {__('exportformatAdd')}
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         {/if}
                     </div>

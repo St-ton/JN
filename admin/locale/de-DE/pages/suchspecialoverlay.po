@@ -24,7 +24,7 @@ msgid "suchspecialoverlayFileName"
 msgstr "Sticker-Grafik"
 
 msgid "suchspecialoverlayFileNameDesc"
-msgstr "Hier wählen Sie die Grafik aus, die als Artikelsticker angezeigt werden soll."
+msgstr "Hier wählen Sie die Grafik aus, die als Artikelsticker angezeigt werden soll. Diese Einstellung gilt nur für das EVO-Template und hat im NOVA-Template keine Auswirkung."
 
 msgid "suchspecialoverlayPrio"
 msgstr "Priorität (1 = niedrige Priorität)"
@@ -36,16 +36,16 @@ msgid "suchspecialoverlayMarginDesc"
 msgstr "Hier legen Sie fest, wie viele Pixel der Abstand zwischen dem Sticker und dem Artikelbild betragen soll."
 
 msgid "suchspecialoverlayClarityDesc"
-msgstr "Hier legen Sie fest, wie transparent der Sticker sein soll. Die Angabe bezieht sich auf Prozent. Falls Sie das von JTL-Shop 4 mitgelieferte EVO-Template oder das von JTL-Shop 5 mitgelieferte NOVA-Template verwenden, wird diese Einstellung über eine Template-Anpassung realisiert."
+msgstr "Hier legen Sie fest, wie transparent der Sticker sein soll. Die Angabe bezieht sich auf Prozent. Falls Sie das EVO-Template verwenden, wird diese Einstellung über eine Template-Anpassung realisiert. Bei Verwendung des NOVA-Templates hat diese Einstellung keine Auswirkung."
 
 msgid "suchspecialoverlaySize"
 msgstr "Größe des Stickers in Pixel (px)"
 
 msgid "suchspecialoverlaySizeDesc"
-msgstr "Hier legen Sie fest, wie groß der Sticker im Vergleich zum Artikelbild sein soll. Falls Sie das von JTL-Shop 4 mitgelieferte EVO-Template oder das von JTL-Shop 5 mitgelieferte NOVA-Template verwenden, wird diese Einstellung über eine Template-Anpassung realisiert."
+msgstr "Hier legen Sie fest, wie groß der Sticker im Vergleich zum Artikelbild sein soll. Falls Sie das EVO-Template verwenden, wird diese Einstellung über eine Template-Anpassung realisiert. Bei Verwendung des NOVA-Templates hat diese Einstellung keine Auswirkung."
 
 msgid "suchspecialoverlayPositionDesc"
-msgstr "Hier legen Sie fest, wo sich der Sticker im Artikelbild befinden soll. Falls Sie das von JTL-Shop 4 mitgelieferte EVO-Template oder das von JTL-Shop 5 mitgelieferte NOVA-Template verwenden, wird diese Einstellung über eine Template-Anpassung realisiert."
+msgstr "Hier legen Sie fest, wo sich der Sticker im Artikelbild befinden soll. Falls Sie das EVO-Template verwenden, wird diese Einstellung über eine Template-Anpassung realisiert. Bei Verwendung des NOVA-Templates hat diese Einstellung keine Auswirkung."
 
 msgid "suchspecialoverlayPrioDesc"
 msgstr "Falls auf einen Artikel mehrere Sticker zutreffen, können Sie hier bestimmen, welcher Sticker angezeigt werden soll. Dabei wird der Sticker mit der höchsten Priorität angezeigt."

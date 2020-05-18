@@ -7,6 +7,7 @@
 
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
+use JTL\Shopsetting;
 
 /**
  * Class Migration_20200518103100
@@ -22,21 +23,23 @@ class Migration_20200518103100 extends Migration implements IMigration
      */
     public function up()
     {
-        $this->setConfig(
-            'newsletter_active',
-            'Y',
-            \CONF_NEWSLETTER,
-            'Newsletter aktivieren',
-            'selectbox',
-            15,
-            (object)[
-                'cBeschreibung' => 'Hier legen Sie fest, ob der Newsletter genutzt werden soll.',
-                'inputOptions'  => [
-                    'Y' => 'Ja',
-                    'N' => 'Nein',
-                ],
-            ]
-        );
+        if(Shopsetting::getInstance()->getValue(\CONF_NEWSLETTER, 'newsletter_active') === null) {
+            $this->setConfig(
+                'newsletter_active',
+                'Y',
+                \CONF_NEWSLETTER,
+                'Newsletter aktivieren',
+                'selectbox',
+                15,
+                (object)[
+                    'cBeschreibung' => 'Hier legen Sie fest, ob der Newsletter genutzt werden soll.',
+                    'inputOptions'  => [
+                        'Y' => 'Ja',
+                        'N' => 'Nein',
+                    ],
+                ]
+            );
+        }
     }
 
     /**

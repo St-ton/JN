@@ -143,12 +143,15 @@
 	#gallery {
 		margin-bottom: map-get($spacers, 5);
 		&:not(.slick-initialized) {
-			padding: 0 map-get($spacers, 3);
+			padding: 0;
 		}
 		.slick-list {
 			@include media-breakpoint-down(md) {
 				padding-right: 0;
 			}
+		}
+		.slick-slide {
+			padding: 0;
 		}
 	}
 

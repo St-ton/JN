@@ -23849,12 +23849,15 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   margin-bottom: 2rem;
 }
 #image_wrapper #gallery:not(.slick-initialized) {
-  padding: 0 1rem;
+  padding: 0;
 }
 @media (max-width: 991.98px) {
   #image_wrapper #gallery .slick-list {
     padding-right: 0;
   }
+}
+#image_wrapper #gallery .slick-slide {
+  padding: 0;
 }
 #image_wrapper #gallery_preview:not(.slick-initialized) div.js-gallery-images {
   width: calc(79%/5);

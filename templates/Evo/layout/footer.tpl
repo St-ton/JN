@@ -124,9 +124,33 @@
                         </div>
                     </div>
                 {/if}
-
+                {block name='footer-currency'}
+                    {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}
+                        <div class="col-xs-4">
+                            <div class="currency-dropdown dropdown visible-xs text-center footer-additional-wrapper">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    {if $smarty.session.Waehrung->getCode() === 'EUR'}
+                                        <i class="fa fa-eur" title="{$smarty.session.Waehrung->getName()}"></i>
+                                    {elseif $smarty.session.Waehrung->getCode() === 'USD'}
+                                        <i class="fa fa-usd" title="{$smarty.session.Waehrung->getName()}"></i>
+                                    {elseif $smarty.session.Waehrung->getCode() === 'GBP'}
+                                        <i class="fa fa-gbp" title="{$smarty.session.Waehrung->getName()}"></i>
+                                    {/if}
+                                    {lang key='currency'} <span class="caret"></span>
+                                </a>
+                                <ul id="currency-dropdown-small" class="dropdown-menu dropdown-menu-right">
+                                    {foreach $smarty.session.Waehrungen as $oWaehrung}
+                                        <li>
+                                            <a href="{$oWaehrung->getURL()}" rel="nofollow">{$oWaehrung->getName()}</a>
+                                        </li>
+                                    {/foreach}
+                                </ul>
+                            </div>
+                        </div>
+                    {/if}
+                {/block}
                 {if $Einstellungen.template.footer.socialmedia_footer === 'Y'}
-                    <div class="{block name='footer-socialmedia-class'}col-xs-12 col-md-5 pull-right{/block}">
+                    <div class="{block name='footer-socialmedia-class'}col-xs-8 col-md-5{/block}">
                         <div class="footer-additional-wrapper pull-right">
                             {block name='footer-socialmedia'}
                                 {if !empty($Einstellungen.template.footer.facebook)}
@@ -163,31 +187,6 @@
             </div>{* /row footer-additional *}
             {/if}
             {/block}{* /footer-additional *}
-            <div class="row">
-                {block name='footer-currency'}
-                {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}
-                    <div class="currency-dropdown dropdown visible-xs col-xs-6 text-center">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            {if $smarty.session.Waehrung->getCode() === 'EUR'}
-                                <i class="fa fa-eur" title="{$smarty.session.Waehrung->getName()}"></i>
-                            {elseif $smarty.session.Waehrung->getCode() === 'USD'}
-                                <i class="fa fa-usd" title="{$smarty.session.Waehrung->getName()}"></i>
-                            {elseif $smarty.session.Waehrung->getCode() === 'GBP'}
-                                <i class="fa fa-gbp" title="{$smarty.session.Waehrung->getName()}"></i>
-                            {/if}
-                            {lang key='currency'} <span class="caret"></span>
-                        </a>
-                        <ul id="currency-dropdown-small" class="dropdown-menu dropdown-menu-right">
-                            {foreach $smarty.session.Waehrungen as $oWaehrung}
-                                <li>
-                                    <a href="{$oWaehrung->getURL()}" rel="nofollow">{$oWaehrung->getName()}</a>
-                                </li>
-                            {/foreach}
-                        </ul>
-                    </div>
-                {/if}
-                {/block}
-            </div>
             <div class="footnote-vat text-center">
                 {if $NettoPreise == 1}
                     {lang key='footnoteExclusiveVat' section='global' assign='footnoteVat'}

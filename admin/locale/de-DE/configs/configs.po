@@ -2240,6 +2240,12 @@ msgstr "Bewertung nur bei bereits gekauftem Artikel"
 msgid "bewertung_artikel_gekauft_desc"
 msgstr "Hier legen Sie fest, ob Kunden nur die Artikel bewerten dürfen, die sie selbst auch erworben haben."
 
+msgid "newsletter_active_name"
+msgstr "Newsletter aktivieren"
+
+msgid "newsletter_active_desc"
+msgstr "Hier legen Sie fest, ob der Newsletter genutzt werden soll."
+
 msgid "newsletter_emailmethode_name"
 msgstr "E-Mails versenden per"
 

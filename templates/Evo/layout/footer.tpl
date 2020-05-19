@@ -91,7 +91,8 @@
             {block name='footer-additional'}
             {if $Einstellungen.template.footer.socialmedia_footer === 'Y' || $Einstellungen.template.footer.newsletter_footer === 'Y'}
             <div class="row footer-additional">
-                {if $Einstellungen.template.footer.newsletter_footer === 'Y'}
+                {if $Einstellungen.template.footer.newsletter_footer === 'Y'
+                    && $Einstellungen.newsletter.newsletter_active === 'Y'}
                     <div class="{block name='footer-newsletter-class'}col-xs-12 col-md-7 newsletter-footer{/block}">
                         <div class="row">
                             {block name='footer-newsletter'}

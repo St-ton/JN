@@ -7,12 +7,11 @@ use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-$step         = 'prepare';
-$aslertHelper = Shop::Container()->getAlertService();
+$step        = 'prepare';
+$alertHelper = Shop::Container()->getAlertService();
 if (isset($_POST['mail']) && Form::validateToken()) {
     $account = Shop::Container()->getAdminAccount();
     $account->prepareResetPassword(Text::filterXSS($_POST['mail']));
-    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successEmailSend'), 'successEmailSend');
 } elseif (isset($_POST['pw_new'], $_POST['pw_new_confirm'], $_POST['fpm'], $_POST['fpwh']) && Form::validateToken()) {
     if ($_POST['pw_new'] === $_POST['pw_new_confirm']) {
         $account  = Shop::Container()->getAdminAccount();
@@ -38,12 +37,12 @@ if (isset($_POST['mail']) && Form::validateToken()) {
     } else {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorPasswordMismatch'), 'errorPasswordMismatch');
     }
-    $smarty->assign('fpwh', $_POST['fpwh'])
-           ->assign('fpm', $_POST['fpm']);
+    $smarty->assign('fpwh', Text::filterXSS($_POST['fpwh']))
+           ->assign('fpm', Text::filterXSS($_POST['fpm']));
     $step = 'confirm';
 } elseif (isset($_GET['fpwh'], $_GET['mail'])) {
-    $smarty->assign('fpwh', $_GET['fpwh'])
-           ->assign('fpm', $_GET['mail']);
+    $smarty->assign('fpwh', Text::filterXSS($_GET['fpwh']))
+           ->assign('fpm', Text::filterXSS($_GET['mail']));
     $step = 'confirm';
 }
 

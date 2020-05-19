@@ -608,7 +608,8 @@ class IOMethods
                        ->assign('Warenkorbtext', \lang_warenkorb_warenkorbEnthaeltXArtikel($cart))
                        ->assign('NettoPreise', Frontend::getCustomerGroup()->getIsMerchant())
                        ->assign('FavourableShipping', $cart->getFavourableShipping(
-                           ShippingMethod::getShippingFreeDifference($shippingFreeMin, $cartValue) <= 0
+                           $shippingFreeMin !== 0
+                           && ShippingMethod::getShippingFreeDifference($shippingFreeMin, $cartValue) <= 0
                                ? (int)$shippingFreeMin->kVersandart
                                : null
                        ))

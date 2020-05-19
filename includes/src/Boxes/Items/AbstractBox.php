@@ -290,7 +290,7 @@ abstract class AbstractBox implements BoxInterface
         }
         foreach ($boxData as $box) {
             $pageIDs            = \array_map('\intval', \explode(',', $box->pageIDs));
-            $sort               = \array_map('\intval', \explode(',', $box->sortBypageIDs));
+            $sort               = \array_map('\intval', \explode(',', $box->sortBypageIDs ?? ''));
             $this->sortByPageID = \array_combine($pageIDs, $sort);
             if (!empty($box->cFilter)) {
                 $this->filter[(int)$box->kSeite] = \array_map('\intval', \explode(',', $box->cFilter));

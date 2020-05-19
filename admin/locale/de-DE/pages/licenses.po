@@ -8,14 +8,29 @@ msgstr ""
 msgid "errorFetchLicenseAPI"
 msgstr "Konnte keine Daten von der Store API holen."
 
+msgid "Error code: %d"
+msgstr "Fehlercode: %d"
+
 msgid "Licenses"
 msgstr "Lizenzen"
 
 msgid "(disabled)"
 msgstr "(deaktiviert)"
 
+msgid "Update"
+msgstr "Aktualisieren"
+
 msgid "Update all"
 msgstr "Alle aktualisieren"
+
+msgid "Install"
+msgstr "Installieren"
+
+msgid "Install all"
+msgstr "Alle installieren"
+
+msgid "Refresh"
+msgstr "Erneut prüfen"
 
 msgid "Unbound licenses"
 msgstr "Ungebundene Lizenzen"
@@ -40,6 +55,9 @@ msgstr "Subscription abgelaufen am %s"
 
 msgid "License expired on %s"
 msgstr "Lizenz abgelaufen am %s"
+
+msgid "Version %s available"
+msgstr "Version %s verfügbar"
 
 msgid "Valid until %s"
 msgstr "gültig bis %s"

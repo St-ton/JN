@@ -8,6 +8,9 @@ msgstr ""
 msgid "errorFetchLicenseAPI"
 msgstr "Could fetch data from store API."
 
+msgid "Error code: %d"
+msgstr "Error code: %d"
+
 msgid "Licenses"
 msgstr "Licenses"
 
@@ -17,8 +20,20 @@ msgstr "(disabled)"
 msgid "Active licenses"
 msgstr "Active licenses"
 
+msgid "Update"
+msgstr "Update"
+
 msgid "Update all"
 msgstr "Update all"
+
+msgid "Install"
+msgstr "Install"
+
+msgid "Install all"
+msgstr "Install all"
+
+msgid "Refresh"
+msgstr "Refresh"
 
 msgid "Unbound licenses"
 msgstr "Unbound licenses"
@@ -37,6 +52,9 @@ msgstr "dev"
 
 msgid "License expired"
 msgstr "License expired"
+
+msgid "Version %s available"
+msgstr "Version %s available"
 
 msgid "Subscription expired on %s"
 msgstr "Subscription expired on %s"

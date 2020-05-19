@@ -19582,6 +19582,13 @@ aside .box-monthlynews a .value:hover {
   opacity: 0;
 }
 
+@media (max-width: 767.98px) {
+  #shop-nav .nav-link {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+}
+
 .breadcrumb-wrapper {
   margin-bottom: 2rem;
 }

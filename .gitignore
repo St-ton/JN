@@ -53,6 +53,7 @@
 /mediafiles/.thumbs
 
 # other
+/templates/NOVA/images/overlay/*
 /admin/templates_c/*
 /templates_c/*
 /export/*

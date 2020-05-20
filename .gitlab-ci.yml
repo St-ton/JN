@@ -371,6 +371,7 @@ deploy:
     - *preBuildDeployScripts
     - dockerLogin
   script:
+    - echo 'CI_MERGE_REQUEST_TARGET_BRANCH_NAME' $CI_MERGE_REQUEST_TARGET_BRANCH_NAME   # --DEBUG--
     - deployProcess
     - buildscript pipeline:shop5up "$CI_PROJECT_DIR" "$CI_COMMIT_REF_NAME" "$CI_COMMIT_SHA"
   after_script:

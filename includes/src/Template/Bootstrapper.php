@@ -4,6 +4,7 @@ namespace JTL\Template;
 
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
+use JTL\License\Struct\ExsLicense;
 use JTL\Smarty\JTLSmarty;
 
 /**
@@ -147,5 +148,12 @@ abstract class Bootstrapper implements BootstrapperInterface
     public function setCache(JTLCacheInterface $cache): void
     {
         $this->cache = $cache;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function licenseExpired(ExsLicense $license): void
+    {
     }
 }

@@ -4,6 +4,7 @@ namespace JTL\Template;
 
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
+use JTL\License\Struct\ExsLicense;
 use JTL\Smarty\JTLSmarty;
 
 /**
@@ -84,4 +85,9 @@ interface BootstrapperInterface
      * @param JTLCacheInterface $cache
      */
     public function setCache(JTLCacheInterface $cache): void;
+
+    /**
+     * @param ExsLicense $license
+     */
+    public function licenseExpired(ExsLicense $license): void;
 }

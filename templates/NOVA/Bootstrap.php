@@ -2,6 +2,7 @@
 
 namespace Template\NOVA;
 
+use JTL\License\Struct\ExsLicense;
 use JTL\Shop;
 use JTL\Template\Bootstrapper;
 use scc\DefaultComponentRegistrator;
@@ -66,6 +67,13 @@ class Bootstrap extends Bootstrapper
     }
 
     /**
+     * @inheritDoc
+     */
+    public function licenseExpired(ExsLicense $license): void
+    {
+    }
+
+    /**
      * @inheritdoc
      */
     public function installed(): void
@@ -94,7 +102,6 @@ class Bootstrap extends Bootstrapper
      */
     public function updated($oldVersion, $newVersion): void
     {
-        \error_log('updated from ' . $oldVersion . ' to ' . $newVersion);
     }
 
     /**

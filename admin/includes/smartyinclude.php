@@ -6,6 +6,8 @@ use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
+use JTL\License\Manager;
+use JTL\License\Mapper;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Plugin\State;
 use JTL\Shop;
@@ -174,7 +176,9 @@ if (empty($template->version)) {
 } else {
     $adminTplVersion = $template->version;
 }
+$mapper  = new Mapper($db, new Manager($db));
 $langTag = $_SESSION['AdminAccount']->language ?? Shop::Container()->getGetText()->getLanguage();
+
 $smarty->assign('URL_SHOP', $shopURL)
     ->assign('jtl_token', Form::getTokenInput())
     ->assign('shopURL', $shopURL)
@@ -195,6 +199,7 @@ $smarty->assign('URL_SHOP', $shopURL)
     ->assign('oLinkOberGruppe_arr', $mainGroups)
     ->assign('currentMenuPath', [$currentToplevel, $currentSecondLevel, $currentThirdLevel])
     ->assign('notifications', Notification::getInstance())
+    ->assign('licenseItemUpdates', $mapper->getCollection()->getUpdateableItems())
     ->assign('alertList', Shop::Container()->getAlertService())
     ->assign('favorites', $oAccount->favorites())
     ->assign('language', $langTag)

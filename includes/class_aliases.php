@@ -175,6 +175,7 @@ class_alias(\JTL\Nice::class, 'Nice', true);
 class_alias(\JTL\ImageMap::class, 'ImageMap', true);
 class_alias(\JTL\CheckBox::class, 'CheckBox', true);
 class_alias(\JTL\Redirect::class, 'Redirect', true);
+class_alias(\JTL\Helpers\Template::class, 'JTL\Template', true);
 class_alias(\JTL\Helpers\Template::class, 'Template', true);
 class_alias(\JTL\Events\Event::class, 'Event', true);
 class_alias(\JTL\Events\Dispatcher::class, 'Dispatcher', true);

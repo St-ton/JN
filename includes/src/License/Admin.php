@@ -97,8 +97,10 @@ class Admin
                 }
                 $smarty->assign('licenseErrorMessage', $msg);
             }
+            $this->getList($smarty);
             $smarty->assign('license', $this->manager->getLicenseByItemID($itemID));
-            $response->html = $smarty->fetch('tpl_inc/licenses_referenced_item.tpl');
+            $response->html         = $smarty->fetch('tpl_inc/licenses_referenced_item.tpl');
+            $response->notification = $smarty->fetch('tpl_inc/updates_drop.tpl');
             $this->sendResponse($response);
         }
     }
@@ -121,8 +123,10 @@ class Admin
      */
     private function getList(JTLSmarty $smarty): void
     {
-        $mapper = new Mapper($this->db, $this->manager);
-        $smarty->assign('licenses', $mapper->getCollection());
+        $mapper     = new Mapper($this->db, $this->manager);
+        $collection = $mapper->getCollection();
+        $smarty->assign('licenses', $collection)
+            ->assign('licenseItemUpdates', $collection->getUpdateableItems());
     }
 
     /**

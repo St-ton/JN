@@ -18,6 +18,11 @@ class AjaxResponse implements JsonSerializable
     /**
      * @var string
      */
+    public $notification = '';
+
+    /**
+     * @var string
+     */
     public $id = '';
 
     /**
@@ -46,11 +51,12 @@ class AjaxResponse implements JsonSerializable
     public function jsonSerialize(): array
     {
         return [
-            'error'  => $this->error,
-            'status' => $this->status,
-            'action' => $this->action,
-            'id'     => $this->id,
-            'html'   => \trim($this->html)
+            'error'        => $this->error,
+            'status'       => $this->status,
+            'action'       => $this->action,
+            'id'           => $this->id,
+            'notification' => \trim($this->notification),
+            'html'         => \trim($this->html)
         ];
     }
 }

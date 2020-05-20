@@ -95,4 +95,24 @@ class Collection extends \Illuminate\Support\Collection
             return $e->getType() === ExsLicense::TYPE_PORTLET;
         });
     }
+
+    /**
+     * @return $this
+     */
+    public function getInstalled(): self
+    {
+        return $this->filter(static function (ExsLicense $e) {
+            return $e->getReferencedItem() !== null;
+        });
+    }
+
+    /**
+     * @return $this
+     */
+    public function getUpdateableItems(): self
+    {
+        return $this->getInstalled()->filter(static function (ExsLicense $e) {
+            return $e->getReferencedItem()->hasUpdate() === true;
+        });
+    }
 }

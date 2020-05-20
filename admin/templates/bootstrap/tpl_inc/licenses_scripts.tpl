@@ -29,9 +29,11 @@
                 data: $(e.target).serialize()
             }).done(function (r) {
                 const result = JSON.parse(r);
-                console.log('RES: ', result);
                 if (result.id && result.html) {
                     let itemID = '#' + result.id;
+                    if (result.notification) {
+                        $('#updates-drop').html(result.notification);
+                    }
                     if (result.action === 'update' || result.action === 'install') {
                         itemID = '#license-item-' + result.id;
                     }

@@ -94,6 +94,27 @@ const updateSummary = (slide = current) => {
 	})
 }
 
+const checkRequired = slide => {
+    let errors     = [],
+    	$summaries = $currentSlide.find(`[${Data.summaryId}]`);
+
+    $.each($summaries, (index, summary) => {
+        let $summary   = $(summary),
+        	isRequired = $summary.prop('required'),
+        	isCheckbox = $summary.is(':checkbox'),
+        	id 		   = $summary.attr(`${Data.summaryId}`);
+
+        if(isRequired) {
+        	if ((isCheckbox && !$summary.prop('checked')) || !$summary.val()) {
+                errors.push(id);
+                $summary.parent().addClass('error');
+			}
+        }
+    })
+
+	return errors;
+}
+
 /* events */
 
 $(document).on('click', `${modal} [${Data.step}]:not(.active):not(.active ~ [${Data.step}])`, function(e) {
@@ -108,9 +129,15 @@ $(document).on('click', `${modal} [${Data.prev}]`, () => {
 })
 
 $(document).on('click', `${modal} [${Data.next}]`, () => {
-	updateSummary()
-	showSlide((current < last) ? current + 1 : last)
+    if(checkRequired().length === 0) {
+        updateSummary();
+        showSlide((current < last) ? current + 1 : last);
+	}
 })
+
+$(document).on('click', `${modal} input`, function() {
+    $(this).parent().removeClass('error');
+});
 
 $form.on('submit', (e) => {
 	e.preventDefault()

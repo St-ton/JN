@@ -28,7 +28,7 @@ final class PaymentPlugins extends AbstractStep
         $recommendations = json_decode(file_get_contents(\JTLURL_GET_MP_RECOMMENDATIONS));
 
         $question = new Question($db);
-        $question->setID(8);
+        $question->setID(10);
         $question->setSubheading(__('weRecommend') . ':');
         $question->setSubheadingDescription(__('weRecommendPaymentDesc'));
         $question->setSummaryText(__('paymentMethods'));

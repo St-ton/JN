@@ -7,14 +7,17 @@
                     <span class="fal fa-info-circle text-muted ml-4" data-toggle="tooltip" title="{$question->getDescription()}"></span>
                 {/if}
             </span>
-            <input type="{if $question->getType() === JTL\Backend\Wizard\QuestionType::EMAIL}email{else}text{/if}"
-                   class="form-control rounded-pill"
-                   id="question-{$question->getID()}"
-                   placeholder=""
-                   data-setup-summary-id="question-{$question->getID()}"
-                   name="question-{$question->getID()}"
-                   value="{if $question->getValue() !== null}{$question->getValue()}{/if}"
-            >
+            <div>
+                <input type="{if $question->getType() === JTL\Backend\Wizard\QuestionType::EMAIL}email{else}text{/if}"
+                       class="form-control rounded-pill"
+                       id="question-{$question->getID()}"
+                       placeholder=""
+                       data-setup-summary-id="question-{$question->getID()}"
+                       name="question-{$question->getID()}"
+                       value="{if $question->getValue() !== null}{$question->getValue()}{/if}"
+                       {if $question->isRequired()}required{/if}
+                >
+            </div>
         </div>
     {elseif $question->getType() === JTL\Backend\Wizard\QuestionType::NUMBER}
         <div class="form-group-lg mb-4">
@@ -37,6 +40,7 @@
                        data-setup-summary-id="question-{$question->getID()}"
                        name="question-{$question->getID()}"
                        value="{if $question->getValue() !== null}{$question->getValue()}{/if}"
+                       {if $question->isRequired()}required{/if}
                 >
                 <div class="input-group-append">
                     <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
@@ -62,6 +66,7 @@
                    data-setup-summary-id="question-{$question->getID()}"
                    data-setup-summary-text="{if $question->getText() !== null}{$question->getText()}{else}{$question->getSummaryText()}{/if}"
                     {if $question->getValue() === true} checked{/if}
+                    {if $question->isRequired()}required{/if}
             >
             <label class="custom-control-label" for="question-{$question->getID()}">
                 {$question->getLabel()}
@@ -88,6 +93,7 @@
                            data-setup-summary-text="{$option->getName()}"
                            value="{$option->getValue()}"
                             {if $option->isSelected($question->getValue())} checked{/if}
+                            {if $question->isRequired()}required{/if}
                     >
                     <label class="custom-control-label" for="question-{$question->getID()}-{$option@index}">
                         {$option->getName()}
@@ -110,6 +116,7 @@
                                        data-setup-summary-text="{$option->getValue()}"
                                        value="{$option->getValue()}"
                                         {if $option->isSelected($question->getValue())} checked{/if}
+                                        {if $question->isRequired()}required{/if}
                                 >
                                 <label class="custom-control-label" for="question-{$question->getID()}-{$option@index}">
                                     <img src="{$option->getLogoPath()}" width="108" height="42" alt="{$option->getName()}">

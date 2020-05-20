@@ -13463,6 +13463,10 @@ body {
 #modal-setup-assistant:not([data-setup-current="6"]) [data-setup-close] {
   display: none;
 }
+#modal-setup-assistant .error input {
+  color: #e10505;
+  border-color: #e10505;
+}
 
 #sidebar .submenu > .nav-item.active, #sidebar .nav-link:hover, #sidebar .navigation [data-toggle=collapse]:not(.collapsed) + .submenu, #sidebar .navigation [data-toggle=collapse]:not(.collapsed) {
   background-color: #0b6aa2;

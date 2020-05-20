@@ -27,7 +27,7 @@ final class EmailSettings extends AbstractStep
         $this->setID(4);
 
         $question = new Question($db);
-        $question->setID(1);
+        $question->setID(11);
         $question->setSubheading(__('stepFour'));
         $question->setText(__('masterEmail'));
         $question->setDescription(__('masterEmailDesc'));

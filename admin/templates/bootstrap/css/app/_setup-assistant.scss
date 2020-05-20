@@ -46,4 +46,10 @@
 	&:not([data-setup-current="6"]) {
 		[data-setup-close] { display: none; }
 	}
+	.error {
+		input {
+			color: $danger;
+			border-color: $danger;
+		}
+	}
 }

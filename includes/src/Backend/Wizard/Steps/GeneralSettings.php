@@ -127,6 +127,7 @@ final class GeneralSettings extends AbstractStep
         $question->setSummaryText(__('customerGroup'));
         $question->setType(QuestionType::MULTI_BOOL);
         $question->setIsFullWidth(true);
+        $question->setIsRequired(false);
         $option = new SelectOption();
         $option->setName(__('customerGroupB2B'));
         $option->setValue('b2b');
@@ -160,6 +161,8 @@ final class GeneralSettings extends AbstractStep
         $question->setText(__('bestellabschluss_bestellnummer_praefix_name'));
         $question->setDescription(__('bestellabschluss_bestellnummer_praefix_desc'));
         $question->setType(QuestionType::TEXT);
+        $question->setIsRequired(false);
+        $question->setValue(Shop::getSettingValue(\CONF_KAUFABWICKLUNG, 'bestellabschluss_bestellnummer_praefix'));
         $question->setOnSave(function (QuestionInterface $question) {
             $question->updateConfig('bestellabschluss_bestellnummer_praefix', $question->getValue());
         });
@@ -170,6 +173,8 @@ final class GeneralSettings extends AbstractStep
         $question->setText(__('bestellabschluss_bestellnummer_suffix_name'));
         $question->setDescription(__('bestellabschluss_bestellnummer_suffix_desc'));
         $question->setType(QuestionType::TEXT);
+        $question->setIsRequired(false);
+        $question->setValue(Shop::getSettingValue(\CONF_KAUFABWICKLUNG, 'bestellabschluss_bestellnummer_suffix'));
         $question->setOnSave(function (QuestionInterface $question) {
             $question->updateConfig('bestellabschluss_bestellnummer_suffix', $question->getValue());
         });
@@ -180,7 +185,10 @@ final class GeneralSettings extends AbstractStep
         $question->setText(__('bestellabschluss_bestellnummer_anfangsnummer_name'));
         $question->setDescription(__('bestellabschluss_bestellnummer_anfangsnummer_desc'));
         $question->setType(QuestionType::NUMBER);
-        $question->setValue(1);
+        $question->setValue(Shop::getSettingValue(
+            \CONF_KAUFABWICKLUNG,
+            'bestellabschluss_bestellnummer_anfangsnummer'
+        ));
         $question->setOnSave(function (QuestionInterface $question) {
             $question->updateConfig('bestellabschluss_bestellnummer_anfangsnummer', $question->getValue());
         });

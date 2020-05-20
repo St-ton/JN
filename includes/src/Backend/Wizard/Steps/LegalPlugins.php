@@ -26,7 +26,7 @@ final class LegalPlugins extends AbstractStep
         $this->setID(2);
 
         $question = new Question($db);
-        $question->setID(7);
+        $question->setID(9);
         $question->setSubheading(__('weRecommend') . ':');
         $question->setSubheadingDescription(__('weRecommendLegalDesc'));
         $question->setSummaryText(__('legalTexts'));

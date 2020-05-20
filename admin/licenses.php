@@ -11,21 +11,7 @@ use JTL\Shop;
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
-
-$db      = Shop::Container()->getDB();
-$manager = new Manager($db);
-try {
-    $manager->update();
-} catch (RequestException $e) {
-    Shop::Container()->getAlertService()->addAlert(
-        Alert::TYPE_ERROR,
-        __('errorFetchLicenseAPI'),
-        'errorFetchLicenseAPI'
-    );
-}
-$mapper = new Mapper($db, $manager);
-$admin  = new Admin($manager, $db, Shop::Container()->getCache());
+$db    = Shop::Container()->getDB();
+$admin = new Admin(new Manager($db), $db, Shop::Container()->getCache());
 $admin->handle($smarty);
-
-$smarty->assign('licenses', $mapper->getCollection())
-    ->display('licenses.tpl');
+$smarty->display('licenses.tpl');

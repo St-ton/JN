@@ -33,7 +33,12 @@
             <div class="save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-12 col-xl-auto">
-                        <button class="btn btn-primary" id="update-all"><i class="fas fa-refresh"></i> {__('Update all')}</button>
+                        <form method="post">
+                            {$jtl_token}
+                            <button class="btn btn-default" id="recheck" name="action" value="recheck"><i class="fas fa-refresh"></i> {__('Refresh')}</button>
+                            <button class="btn btn-primary" id="install-all" name="action" value="install-all"><i class="fa fa-share"></i> {__('Install all')}</button>
+                            <button class="btn btn-primary" id="update-all" name="action" value="update-all"><i class="fas fa-refresh"></i> {__('Update all')}</button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -68,54 +73,5 @@
     </div>
 </div>
 
-<script type="text/javascript">
-    $(document).ready(function () {
-        const showUpdateAll = function () {
-            const updateBTN = $('#update-all');
-            updateBTN.attr('disabled', false);
-            updateBTN.find('i').removeClass('fa-spin');
-        };
-        const hideUpdateAll = function () {
-            const updateBTN = $('#update-all');
-            updateBTN.attr('disabled', true);
-            updateBTN.find('i').addClass('fa-spin');
-        }
-        var formCount = 0,
-            done = 0;
-        $('#active-licenses').on('submit', '.update-item-form', function (e) {
-            const updateBTN = $(e.target).find('.update-item');
-            updateBTN.attr('disabled', true);
-            updateBTN.find('i').addClass('fa-spin');
-            $.ajax({
-                method: 'POST',
-                url: '{$shopURL}/admin/licenses.php',
-                data: $(e.target).serialize()
-            }).done(function (r) {
-                let result = JSON.parse(r);
-                if (result.id && result.html) {
-                    let itemID = '#' + result.id;
-                    if (result.action === 'update') {
-                        itemID = '#license-item-' + result.id;
-                    }
-                    $(itemID).replaceWith(result.html);
-                    updateBTN.attr('disabled', false);
-                    updateBTN.find('i').removeClass('fa-spin');
-                }
-                ++done;
-                if (formCount > 0 && formCount === done) {
-                    showUpdateAll();
-                }
-            });
-            return false;
-        });
-        $('#active-licenses').on('click', '#update-all', function (e) {
-            hideUpdateAll();
-            done = 0;
-            const forms = $('#active-licenses .update-item-form');
-            formCount = forms.length;
-            forms.submit();
-        });
-    });
-</script>
-{include file='tpl_inc/dbupdater_scripts.tpl'}
+{include file='tpl_inc/licenses_scripts.tpl'}
 {include file='tpl_inc/footer.tpl'}

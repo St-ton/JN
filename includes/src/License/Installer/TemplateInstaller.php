@@ -55,4 +55,12 @@ class TemplateInstaller implements InstallerInterface
 
         return 1;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function install(string $itemID, string $downloadedArchive, AjaxResponse $response): int
+    {
+        return $this->update($itemID, $downloadedArchive, $response);
+    }
 }

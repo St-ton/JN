@@ -3,13 +3,9 @@
 namespace JTL\License;
 
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\License\Struct\ExsLicense;
-use JTL\License\Struct\ReferencedItem;
 use JTL\License\Struct\ReferencedPlugin;
 use JTL\License\Struct\ReferencedTemplate;
-use JTL\Shop;
-use JTLShop\SemVer\Version;
 use stdClass;
 
 /**
@@ -69,6 +65,7 @@ class Mapper
     /**
      * @param ExsLicense $esxLicense
      * @param stdClass   $license
+     * @throws \Exception
      */
     private function setReference(ExsLicense $esxLicense, stdClass $license): void
     {

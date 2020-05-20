@@ -65,4 +65,28 @@ class PluginInstaller implements InstallerInterface
 
         return $updater->update(Helper::getIDByPluginID($itemID));
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function install(string $itemID, string $downloadedArchive, AjaxResponse $response): int
+    {
+        $parser          = new XMLParser();
+        $uninstaller     = new Uninstaller($this->db, $this->cache);
+        $legacyValidator = new LegacyPluginValidator($this->db, $parser);
+        $pluginValidator = new PluginValidator($this->db, $parser);
+        $installer       = new Installer($this->db, $uninstaller, $legacyValidator, $pluginValidator);
+        $installer->setDir($itemID);
+        $extractor        = new Extractor($parser);
+        $installResponse  = $extractor->extractPlugin($downloadedArchive);
+        $response->status = $installResponse->getStatus();
+        if ($response->status === InstallationResponse::STATUS_FAILED) {
+            $response->error      = $installResponse->getError() ?? \implode(', ', $installResponse->getMessages());
+            $response->additional = $installResponse;
+
+            return 0;
+        }
+
+        return $installer->prepare();
+    }
 }

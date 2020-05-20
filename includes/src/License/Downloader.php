@@ -2,14 +2,12 @@
 
 namespace JTL\License;
 
-use InvalidArgumentException;
+use GuzzleHttp\Client;
 use JTL\License\Exception\ApiResultCodeException;
 use JTL\License\Exception\DownloadValidationException;
 use JTL\License\Exception\FilePermissionException;
-use JTL\Shop;
-use Psr\Http\Message\ResponseInterface;
-use GuzzleHttp\Client;
 use JTL\License\Struct\Release;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class Downloader
@@ -21,6 +19,8 @@ class Downloader
      * @param Release $available
      * @return ResponseInterface|string
      * @throws DownloadValidationException
+     * @throws FilePermissionException
+     * @throws ApiResultCodeException
      */
     public function downloadRelease(Release $available): string
     {
@@ -36,7 +36,8 @@ class Downloader
      * @param string $url
      * @param string $targetName
      * @return ResponseInterface
-     * @throws string
+     * @throws FilePermissionException
+     * @throws ApiResultCodeException
      */
     private function downloadItemArchive(string $url, string $targetName): string
     {

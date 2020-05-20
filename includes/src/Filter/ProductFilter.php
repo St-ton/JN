@@ -980,13 +980,9 @@ class ProductFilter
         return \array_filter(
             $this->filters,
             static function ($f) {
-                $templateSettings = Template::getInstance()->getConfig();
                 /** @var FilterInterface $f */
                 return $f->getVisibility() === Visibility::SHOW_ALWAYS
-                    || $f->getVisibility() === Visibility::SHOW_CONTENT
-                    || ($f->getClassName() === PriceRange::class
-                        && isset($templateSettings['sidebar_settings'])
-                        && $templateSettings['sidebar_settings']['always_show_price_range'] ?? 'N' === 'Y');
+                    || $f->getVisibility() === Visibility::SHOW_CONTENT;
             }
         );
     }

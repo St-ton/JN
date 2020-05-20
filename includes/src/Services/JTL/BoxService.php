@@ -472,6 +472,7 @@ class BoxService implements BoxServiceInterface
                 $plugin = $loader->init($box->getCustomID());
                 $box->setTemplateFile($plugin->getPaths()->getFrontendPath() . $box->getTemplateFile());
                 $box->setExtension($plugin);
+                $box->setPlugin($plugin);
             } elseif ($box->getType() === Type::CONTAINER) {
                 $box->setChildren($children);
             }

@@ -13335,6 +13335,10 @@ body {
   }
 }
 
+.alert-info a {
+  color: #ffffff;
+}
+
 #content_wrapper {
   padding-top: 0.5rem;
 }

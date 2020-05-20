@@ -18,11 +18,6 @@
 	.slick-slide,
 	img {
 		outline: none !important;
-		width: 100%;
-	}
-
-	.slick-slide img {
-		margin: 0 auto;
 	}
 
 	.slick-slide:not(.slick-current) img{
@@ -31,13 +26,6 @@
 		&:hover {
 			-webkit-filter: opacity(1);
 			filter: opacity(1);
-		}
-	}
-
-	#gallery_preview_wrapper {
-		.product-image {
-			border: $border-width solid $gray-darker;
-			border-radius: $border-radius;
 		}
 	}
 
@@ -56,7 +44,7 @@
 		overflow: hidden;
 
 		img {
-			width: initial;
+			margin: 0 auto;
 		}
 
 		.product-actions {
@@ -80,8 +68,22 @@
 				margin-right: 10px;
 			}
 		}
-		#gallery .product-image {
-			cursor: pointer;
+		#gallery
+		{
+			margin-bottom: 0;
+			.product-image {
+				cursor: pointer;
+			}
+			.square-image {
+				.inner {
+					img {
+						left: initial;
+						top: initial;
+						-webkit-transform: initial;
+						transform: initial;
+					}
+				}
+			}
 		}
 
 		#gallery_preview_wrapper {
@@ -111,6 +113,9 @@
 				opacity: 1;
 			}
 		}
+		img {
+			object-fit: contain;
+		}
 		&::before, &::after {
 			left: 100%;
 			top: 50%;
@@ -136,6 +141,7 @@
 	}
 
 	#gallery {
+		margin-bottom: map-get($spacers, 5);
 		&:not(.slick-initialized) {
 			padding: 0 map-get($spacers, 3);
 		}
@@ -149,11 +155,19 @@
 	#gallery_preview {
 		&:not(.slick-initialized) {
 			div.js-gallery-images {
-				width: calc((100% - 49px)/5);
-				min-width: calc((100% - 49px)/5);
-				padding: 0 .5rem;
+				width: calc(79%/5);
+				min-width: calc(79%/5);
+				height: 100%;
 				&:not(.preview-first) {
 					opacity: 0.2;
+				}
+				padding: 0;
+				border: $border-width solid $gray-darker;
+				border-radius: $border-radius;
+				margin: 0 0.5rem;
+				@include media-breakpoint-down(lg) {
+					width: calc(72%/5);
+					min-width: calc(72%/5);
 				}
 			}
 			&.slick-count-default {

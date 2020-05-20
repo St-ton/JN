@@ -75,9 +75,11 @@
 
     {block name='layout-footer-content'}
         {if !$bExclusive}
+            {$newsletterActive = $Einstellungen.template.footer.newsletter_footer === 'Y'
+                && $Einstellungen.newsletter.newsletter_active === 'Y'}
             <footer id="footer">
                 {container class="d-print-none pt-4"}
-                    {if $Einstellungen.template.footer.newsletter_footer === 'Y'}
+                    {if $newsletterActive}
                         {block name='layout-footer-newsletter'}
                             {row class="newsletter-footer" class="text-center text-md-left align-items-center"}
                                 {col cols=12 lg=6}
@@ -88,7 +90,7 @@
                                     {/block}
                                     {block name='layout-footer-newsletter-info'}
                                         <p class="info">
-                                            {lang key='unsubscribeAnytime' section='newsletter'}
+                                            {lang key='unsubscribeAnytime' section='newsletter' printf=$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL()}
                                         </p>
                                     {/block}
                                 {/col}
@@ -123,7 +125,7 @@
                     {block name='layout-footer-boxes'}
                         {getBoxesByPosition position='bottom' assign='footerBoxes'}
                         {if isset($footerBoxes) && count($footerBoxes) > 0}
-                            {row id='footer-boxes' class='mt-4 mt-lg-7'}
+                            {row id='footer-boxes' class="{if $newsletterActive}mt-4 mt-lg-7{/if}"}
                                 {foreach $footerBoxes as $box}
                                     {col cols=12 sm=6 md=3}
                                         {$box->getRenderedContent()}
@@ -134,7 +136,7 @@
                     {/block}
 
                     {block name='layout-footer-additional'}
-                        {if $Einstellungen.template.footer.socialmedia_footer === 'Y' || $Einstellungen.template.footer.newsletter_footer === 'Y'}
+                        {if $Einstellungen.template.footer.socialmedia_footer === 'Y'}
                             {row class="mb-3 mt-5"}
                             {if $Einstellungen.template.footer.socialmedia_footer === 'Y'}
                                 {block name='layout-footer-socialmedia'}

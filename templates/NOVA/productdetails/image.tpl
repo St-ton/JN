@@ -34,31 +34,35 @@
                         {block name='productdetails-image-images'}
                             {foreach $Artikel->Bilder as $image}
                                 {strip}
-                                    <div class="js-gallery-images {if !$image@first}d-none{/if}">
-                                        {image alt=$image->cAltAttribut|escape:'html'
-                                            class="product-image"
-                                            fluid=true
-                                            lazy=true
-                                            webp=true
-                                            src="{$image->cURLMini}"
-                                            srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
-                                                {$image->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
-                                            data=["list"=>"{$image->galleryJSON|escape:"html"}", "index"=>$image@index, "sizes"=>"auto"]
-                                        }
+                                    <div class="square square-image js-gallery-images {if !$image@first}d-none{/if}">
+                                        <div class="inner">
+                                            {image alt=$image->cAltAttribut|escape:'html'
+                                                class="product-image"
+                                                fluid=true
+                                                lazy=true
+                                                webp=true
+                                                src="{$image->cURLMini}"
+                                                srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                    {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                    {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
+                                                    {$image->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
+                                                data=["list"=>"{$image->galleryJSON|escape:"html"}", "index"=>$image@index, "sizes"=>"auto"]
+                                            }
+                                        </div>
                                     </div>
                                 {/strip}
                             {/foreach}
                         {/block}
                     </div>
-                    <ul class="slick-dots initial-slick-dots d-lg-none" style="" role="tablist">
-                        {foreach $Artikel->Bilder as $image}
-                            <li class="{if $image@first}slick-active{/if}" role="presentation">
-                                {button}{/button}
-                            </li>
-                        {/foreach}
-                    </ul>
+                    {if $Artikel->Bilder|count > 1}
+                        <ul class="slick-dots initial-slick-dots d-lg-none" style="" role="tablist">
+                            {foreach $Artikel->Bilder as $image}
+                                <li class="{if $image@first}slick-active{/if}" role="presentation">
+                                    {button}{/button}
+                                </li>
+                            {/foreach}
+                        </ul>
+                    {/if}
                 </div>
             {/block}
             {/col}
@@ -68,7 +72,7 @@
             {$imageCount = $Artikel->Bilder|@count}
             {$imageCountDefault = 5}
             {if $imageCount > 1}
-                <div id="gallery_preview_wrapper" class="mx-auto mt-4">
+                <div id="gallery_preview_wrapper" class="mx-auto">
                     <div id="gallery_preview"
                          class="product-thumbnails slick-smooth-loading carousel carousel-thumbnails mb-5 mb-lg-0 d-none d-lg-flex mx-0 slick-lazy {if $imageCount <= $imageCountDefault}slick-count-default{/if}"
                          data-slick-type="gallery_preview">
@@ -78,10 +82,11 @@
                         {block name='productdetails-image-preview-images'}
                             {foreach $Artikel->Bilder as $image}
                                 {strip}
-                                    <div class="js-gallery-images
+                                <div class="square square-image mb-0 js-gallery-images
                                     {if $image@first} preview-first {if $imageCount <= $imageCountDefault} ml-auto{/if}
                                     {elseif $image@index >= $imageCountDefault} d-none{/if}
                                     {if $image@last && $imageCount <= $imageCountDefault} mr-auto{/if}">
+                                    <div class="inner p-1 p-xl-2">
                                         {image alt=$image->cAltAttribut|escape:'html'
                                             class="product-image"
                                             fluid=true
@@ -90,6 +95,7 @@
                                             src="{$image->cURLKlein}"
                                         }
                                     </div>
+                                </div>
                                 {/strip}
                             {/foreach}
                         {/block}
@@ -122,16 +128,20 @@
                     {foreach name=Variationswerte from=$Variation->Werte key=y item=Variationswert}
                         {if $Variationswert->getImage() !== null}
                             <div class="variation-image-preview d-none fade vt{$Variationswert->kEigenschaftWert}">
-                                {image fluid=true webp=true lazy=true
-                                    class=""
-                                    src=$Variationswert->getImage(\JTL\Media\Image::SIZE_XS)
-                                    srcset="{$Variationswert->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_variationen_mini_breite}w,
+                                <div class="square square-image">
+                                    <div class="inner">
+                                        {image fluid=true webp=true lazy=true
+                                        class=""
+                                        src=$Variationswert->getImage(\JTL\Media\Image::SIZE_XS)
+                                        srcset="{$Variationswert->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_variationen_mini_breite}w,
                                         {$Variationswert->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_variationen_klein_breite}w,
                                         {$Variationswert->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_variationen_breite}w,
                                         {$Variationswert->getImage(\JTL\Media\Image::SIZE_LG)} {$Einstellungen.bilder.bilder_variationen_gross_breite}w,"
-                                    sizes="50vw"
-                                    alt=$Variationswert->cName|escape:'quotes'
-                                }
+                                        sizes="100vw"
+                                        alt=$Variationswert->cName|escape:'quotes'
+                                        }
+                                    </div>
+                                </div>
                             </div>
                         {/if}
                     {/foreach}

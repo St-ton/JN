@@ -91,7 +91,8 @@
             {block name='footer-additional'}
             {if $Einstellungen.template.footer.socialmedia_footer === 'Y' || $Einstellungen.template.footer.newsletter_footer === 'Y'}
             <div class="row footer-additional">
-                {if $Einstellungen.template.footer.newsletter_footer === 'Y'}
+                {if $Einstellungen.template.footer.newsletter_footer === 'Y'
+                    && $Einstellungen.newsletter.newsletter_active === 'Y'}
                     <div class="{block name='footer-newsletter-class'}col-xs-12 col-md-7 newsletter-footer{/block}">
                         <div class="row">
                             {block name='footer-newsletter'}
@@ -99,7 +100,7 @@
                                     <h5>{lang key='newsletter' section='newsletter'} {lang key='newsletterSendSubscribe' section='newsletter'}
                                     </h5>
                                     <p class="info small">
-                                        {lang key='unsubscribeAnytime' section='newsletter'}
+                                        {lang key='unsubscribeAnytime' section='newsletter' printf=$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL()}
                                     </p>
                                 </div>
                                 <form method="post" action="{get_static_route id='newsletter.php'}" class="form col-xs-12 col-sm-6">

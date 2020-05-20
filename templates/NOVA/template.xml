@@ -54,7 +54,7 @@
                 <Option Value="Y">Aktiv</Option>
                 <Option Value="N">Inaktiv</Option>
             </Setting>
-            <Setting Description="Seiten der Linkgruppe 'megamenu'" Key="show_pages" Type="select" Value="Y">
+            <Setting Description="Seiten der Linkgruppe &quot;megamenu&quot;" Key="show_pages" Type="select" Value="Y">
                 <Option Value="Y">Aktiv</Option>
                 <Option Value="N">Inaktiv</Option>
             </Setting>
@@ -90,7 +90,7 @@
                 <Option Value="5"><![CDATA[max. 5]]></Option>
                 <Option Value="9999"><![CDATA[keine Beschr&auml;nkung]]></Option>
             </Setting>
-            <Setting Description="Anzahl der möglichen Variationswerte für Radio und Swatches. &lt;span data-html=&quot;true&quot; data-toggle=&quot;tooltip&quot;
+            <Setting Description="Anzahl der möglichen Variationswerte für Radio und Swatches &lt;span data-html=&quot;true&quot; data-toggle=&quot;tooltip&quot;
                         title=&quot;nur in Verbindung mit „Variationsauswahl anzeigen“&quot;&gt; &lt;span
                         class=&quot;fas fa-info-circle fa-fw&quot;>&lt;/span&gt; &lt;/span&gt;" Key="variation_max_werte_productlist" Type="select" Value="3">
                 <Option Value="3"><![CDATA[max. 3]]></Option>
@@ -99,7 +99,7 @@
                 <Option Value="12"><![CDATA[max. 12]]></Option>
                 <Option Value="9999"><![CDATA[keine Beschr&auml;nkung]]></Option>
             </Setting>
-            <Setting Description="Anzahl der sichtbaren Filteroptionen in Boxen. &lt;span data-html=&quot;true&quot; data-toggle=&quot;tooltip&quot;
+            <Setting Description="Anzahl der sichtbaren Filteroptionen in Boxen &lt;span data-html=&quot;true&quot; data-toggle=&quot;tooltip&quot;
                         title=&quot;weitere Optionen können eingeblendet werden&quot;&gt; &lt;span
                         class=&quot;fas fa-info-circle fa-fw&quot;>&lt;/span&gt; &lt;/span&gt;" Key="filter_max_options" Type="select" Value="5">
                 <Option Value="3"><![CDATA[max. 3]]></Option>

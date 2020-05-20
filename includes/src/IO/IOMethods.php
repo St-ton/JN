@@ -594,6 +594,10 @@ class IOMethods
                     $country         = $customer->cLand;
                     $plz             = $customer->cPLZ;
                 }
+
+                $shippingFreeMin = ShippingMethod::getFreeShippingMinimum($customerGroupID, $country);
+                $cartValue       = $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true, true, $country);
+
                 $smarty->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
                        ->assign('Warensumme', $cart->gibGesamtsummeWaren())
                        ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
@@ -603,10 +607,15 @@ class IOMethods
                        ->assign('WarenkorbGesamtgewicht', $cart->getWeight())
                        ->assign('Warenkorbtext', \lang_warenkorb_warenkorbEnthaeltXArtikel($cart))
                        ->assign('NettoPreise', Frontend::getCustomerGroup()->getIsMerchant())
-                       ->assign('FavourableShipping', $cart->getFavourableShipping())
+                       ->assign('FavourableShipping', $cart->getFavourableShipping(
+                           $shippingFreeMin !== 0
+                           && ShippingMethod::getShippingFreeDifference($shippingFreeMin, $cartValue) <= 0
+                               ? (int)$shippingFreeMin->kVersandart
+                               : null
+                       ))
                        ->assign('WarenkorbVersandkostenfreiHinweis', ShippingMethod::getShippingFreeString(
-                           ShippingMethod::getFreeShippingMinimum($customerGroupID, $country),
-                           $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true, true, $country)
+                           $shippingFreeMin,
+                           $cartValue
                        ))
                        ->assign('oSpezialseiten_arr', Shop::Container()->getLinkService()->getSpecialPages());
 

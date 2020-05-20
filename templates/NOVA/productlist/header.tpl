@@ -41,14 +41,14 @@
                         {$navData = $oNavigationsinfo->getCharacteristicValue()}
                     {/if}
                     {if $navData->getImage(\JTL\Media\Image::SIZE_XS)|default:null !== null}
-                        {image fluid-grow=true lazy=true webp=true
+                        {image fluid=true lazy=true webp=true
                             src=$navData->getImage(\JTL\Media\Image::SIZE_XS)
                             srcset="{$navData->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_kategorien_mini_breite}w,
                                 {$navData->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_kategorien_klein_breite}w,
                                 {$navData->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_kategorien_breite}w,
                                 {$navData->getImage(\JTL\Media\Image::SIZE_LG)} {$Einstellungen.bilder.bilder_kategorien_gross_breite}w"
                             alt="{$navData->cBeschreibung|strip_tags|truncate:40|escape:'html'}"
-                            sizes="auto"
+                            sizes="100vw"
                             class="mb-5"
                         }
                     {/if}
@@ -95,11 +95,13 @@
                         {link href=$subCategory->getURL()}
                             {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}
                                 {block name='productlist-header-subcategories-image'}
-                                    {image fluid-grow=true lazy=true webp=true
-                                        src=$subCategory->getImage()
-                                        alt=$subCategory->getName()
-                                        class="mb-2 d-none d-md-block"
-                                    }
+                                    <div class="square square-image mb-2 d-none d-md-flex">
+                                        <div class="inner">
+                                            {image fluid=true lazy=true webp=true
+                                                src=$subCategory->getImage(\JTL\Media\Image::SIZE_SM)
+                                                alt=$subCategory->getName()}
+                                        </div>
+                                    </div>
                                 {/block}
                             {/if}
                             {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'B'}

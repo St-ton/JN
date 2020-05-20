@@ -67,6 +67,7 @@ Shop::setIsFrontend(false);
 if ($loggedIn
     && $_SERVER['REQUEST_METHOD'] === 'GET'
     && strpos($_SERVER['SCRIPT_FILENAME'], 'dbupdater') === false
+    && strpos($_SERVER['SCRIPT_FILENAME'], 'io.php') === false
     && $updater->hasPendingUpdates()
 ) {
     \header('Location: ' . Shop::getURL(true) . '/' . \PFAD_ADMIN . 'dbupdater.php');

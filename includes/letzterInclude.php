@@ -108,6 +108,10 @@ $origin  = (isset($_SESSION['Kunde']->cLand) && mb_strlen($_SESSION['Kunde']->cL
     : '';
 $service = new MinifyService();
 $service->buildURIs($smarty, $template, $themeDir);
+
+$shippingFreeMin = ShippingMethod::getFreeShippingMinimum($customerGroupID, $origin);
+$cartValue       = $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true, true, $origin);
+
 $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
        ->assign('NaviFilter', $NaviFilter)
        ->assign('manufacturers', Manufacturer::getInstance()->getManufacturers())
@@ -142,10 +146,7 @@ $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
        ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
        ->assign(
            'WarenkorbVersandkostenfreiHinweis',
-           ShippingMethod::getShippingFreeString(
-               ShippingMethod::getFreeShippingMinimum($customerGroupID, $origin),
-               $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true, true, $origin)
-           )
+           ShippingMethod::getShippingFreeString($shippingFreeMin, $cartValue)
        )
        ->assign('meta_title', $cMetaTitle ?? '')
        ->assign('meta_description', $cMetaDescription ?? '')
@@ -163,7 +164,12 @@ $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
        ->assign('bAdminWartungsmodus', isset($bAdminWartungsmodus) && $bAdminWartungsmodus)
        ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
        ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
-       ->assign('FavourableShipping', $cart->getFavourableShipping())
+       ->assign('FavourableShipping', $cart->getFavourableShipping(
+           $shippingFreeMin !== 0
+           && ShippingMethod::getShippingFreeDifference($shippingFreeMin, $cartValue) <= 0
+               ? (int)$shippingFreeMin->kVersandart
+               : null
+       ))
        ->assign('Einstellungen', $conf)
        ->assign('isFluidTemplate', isset($conf['template']['theme']['pagelayout'])
            && $conf['template']['theme']['pagelayout'] === 'fluid')

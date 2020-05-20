@@ -43,13 +43,23 @@
             {foreach $productlist as $Artikel}
                 <div class="product-wrapper">
                     <a href="{$Artikel->cURLFull}">
-                        <img src="{$Artikel->Bilder[0]->cURLNormal}" alt="{$Artikel->cName}"
-                             title="{$Artikel->cName}">
+                        <div class="square square-image">
+                            <div class="inner">
+                                <img src="{$Artikel->Bilder[0]->cURLNormal}" alt="{$Artikel->cName}"
+                                     title="{$Artikel->cName}">
+                            </div>
+                        </div>
                     </a>
                 </div>
             {/foreach}
         </div>
     {elseif $style === 'slider'}
+        {if $inContainer === false}
+            <div class="container-fluid">
+        {/if}
         {include file='snippets/product_slider.tpl' productlist=$productlist}
+        {if $inContainer === false}
+            </div>
+        {/if}
     {/if}
 {/if}

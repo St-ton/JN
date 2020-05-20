@@ -23,7 +23,7 @@ class Migration_20191014113600 extends Migration implements IMigration
     {
         $this->setConfig(
             'bilder_news_mini_breite',
-            '12',
+            '120',
             \CONF_BILDER,
             'Newsbilder Mini Breite',
             'number',

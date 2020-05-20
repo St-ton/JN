@@ -218,6 +218,11 @@ abstract class AbstractBox implements BoxInterface
     protected $config;
 
     /**
+     * @var array
+     */
+    protected $sortByPageID = [];
+
+    /**
      * @inheritdoc
      */
     public function __construct(array $config)
@@ -274,7 +279,7 @@ abstract class AbstractBox implements BoxInterface
         $this->setPosition($data->ePosition);
         $this->setType($data->eTyp);
 
-        if ($this->getType() !== Type::PLUGIN) {
+        if ($this->getType() !== Type::PLUGIN && \strpos($data->cTemplate, 'boxes/') !== 0) {
             $data->cTemplate = 'boxes/' . $data->cTemplate;
         }
         $this->setTemplateFile($data->cTemplate);
@@ -284,17 +289,18 @@ abstract class AbstractBox implements BoxInterface
             $this->filter[$pageType] = false;
         }
         foreach ($boxData as $box) {
+            $pageIDs            = \array_map('\intval', \explode(',', $box->pageIDs));
+            $sort               = \array_map('\intval', \explode(',', $box->sortBypageIDs ?? ''));
+            $this->sortByPageID = \array_combine($pageIDs, $sort);
             if (!empty($box->cFilter)) {
                 $this->filter[(int)$box->kSeite] = \array_map('\intval', \explode(',', $box->cFilter));
             } else {
-                $pageIDs          = \explode(',', $box->pageIDs);
-                $pageVisibilities = \explode(',', $box->pageVisibilities);
+                $pageVisibilities = \array_map('\intval', \explode(',', $box->pageVisibilities));
                 $filter           = \array_combine($pageIDs, $pageVisibilities);
                 foreach ($filter as $pageID => $visibility) {
-                    $this->filter[(int)$pageID] = (bool)$visibility;
+                    $this->filter[$pageID] = (bool)$visibility;
                 }
             }
-
             if (!empty($box->kSprache)) {
                 if (!\is_array($this->content)) {
                     $this->content = [];
@@ -583,23 +589,27 @@ abstract class AbstractBox implements BoxInterface
     }
 
     /**
-     * @return int
+     * @inheritDoc
      */
-    public function getSort(): int
+    public function getSort(?int $pageID = null): int
     {
-        return $this->sort;
+        return $pageID === null ? $this->sort : $this->sortByPageID[$pageID] ?? 0;
     }
 
     /**
-     * @param int $sort
+     * @inheritDoc
      */
-    public function setSort(int $sort): void
+    public function setSort(int $sort, ?int $pageID = null): void
     {
-        $this->sort = $sort;
+        if ($pageID !== null) {
+            $this->sortByPageID[$pageID] = $sort;
+        } else {
+            $this->sort = $sort;
+        }
     }
 
     /**
-     * @return int
+     * @inheritDoc
      */
     public function getItemCount(): int
     {
@@ -607,7 +617,7 @@ abstract class AbstractBox implements BoxInterface
     }
 
     /**
-     * @param int $count
+     * @inheritDoc
      */
     public function setItemCount(int $count): void
     {
@@ -615,7 +625,7 @@ abstract class AbstractBox implements BoxInterface
     }
 
     /**
-     * @return bool
+     * @inheritDoc
      */
     public function supportsRevisions(): bool
     {
@@ -623,7 +633,7 @@ abstract class AbstractBox implements BoxInterface
     }
 
     /**
-     * @param bool $supportsRevisions
+     * @inheritDoc
      */
     public function setSupportsRevisions(bool $supportsRevisions): void
     {

@@ -294,6 +294,7 @@ test_PHP_7.3:
   script:
     - *testingScript
     - testing
+  <<: *debugging
   rules:
     - if: $CI_COMMIT_BRANCH != "master"
     - if: $CI_MERGE_REQUEST_ID == ""

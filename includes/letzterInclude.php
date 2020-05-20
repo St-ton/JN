@@ -164,7 +164,8 @@ $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
     ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
     ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
     ->assign('FavourableShipping', $cart->getFavourableShipping(
-        ShippingMethod::getShippingFreeDifference($shippingFreeMin, $cartValue) <= 0
+        $shippingFreeMin !== 0
+        && ShippingMethod::getShippingFreeDifference($shippingFreeMin, $cartValue) <= 0
             ? (int)$shippingFreeMin->kVersandart
             : null
     ))

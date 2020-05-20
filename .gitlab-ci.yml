@@ -445,7 +445,7 @@ stagingDevPhp73:
   tags:
     - dev-checkout
 
-stagingMarketplaceDev:
+.stagingMarketplaceDev:
   stage: stagingMarketplaceDev
   variables:
     GIT_STRATEGY: none

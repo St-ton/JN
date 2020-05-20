@@ -400,8 +400,11 @@ removeContainer:
     - failedScript
   rules:
     - if: $CI_MERGE_REQUEST_IID
+      when: never
     - if: $CI_COMMIT_TAG
+      when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: never
     #- if: $CI_COMMIT_REF_NAME == "master"
     #- if: $CI_COMMIT_REF_NAME =~ /^release\/.*$/
     #- if: $CI_COMMIT_TAG != ""

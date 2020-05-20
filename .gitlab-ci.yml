@@ -1,5 +1,6 @@
 variables:
   GLOBAL_CI_REGISTRY_URL: "registry.gitlab.com/jtl-software/jtl-shop/core"
+  GIT_DEPTH: 1
 
 stages:
   - codeQuality
@@ -241,10 +242,9 @@ code_quality:
     - codeQualityCheck
   artifacts:
     paths: [code-quality-report.txt]
-  only:
-    - branches
-  except:
-    - master
+  rules:
+    - if: $CI_COMMIT_BRANCH != "master"
+    - if: $CI_MERGE_REQUEST_ID == ""
 
 removeContainerCodeQuality:
   stage: cleanUpCodeQuality
@@ -258,12 +258,11 @@ removeContainerCodeQuality:
   script:
     - *cleanUpTesting
     - failedCodeQuality
-  only:
-    - branches
-  except:
-    - master
-    - /^release\/.*$/
-  when: on_failure
+  rules:
+    - if: $CI_COMMIT_BRANCH != "master"
+        && $CI_COMMIT_BRANCH !~ /^release\/.*$/
+        && $CI_MERGE_REQUEST_ID == ""
+    - when: on_failure
 
 test_PHP_7.2:
   stage: test
@@ -277,10 +276,9 @@ test_PHP_7.2:
   script:
     - *testingScript
     - testing
-  only:
-    - branches
-  except:
-    - master
+  rules:
+    - if: $CI_COMMIT_BRANCH != "master"
+    - if: $CI_MERGE_REQUEST_ID == ""
 
 test_PHP_7.3:
   stage: test
@@ -294,10 +292,9 @@ test_PHP_7.3:
   script:
     - *testingScript
     - testing
-  only:
-    - branches
-  except:
-    - master
+  rules:
+    - if: $CI_COMMIT_BRANCH != "master"
+    - if: $CI_MERGE_REQUEST_ID == ""
 
 removeContainerPHP7.2:
   stage: cleanUpTest
@@ -312,12 +309,11 @@ removeContainerPHP7.2:
   script:
     - *cleanUpTesting
     - failedTesting
-  only:
-    - branches
-  except:
-    - master
-    - /^release\/.*$/
-  when: on_failure
+  rules:
+    - if: $CI_COMMIT_BRANCH != "master"
+        && $CI_COMMIT_BRANCH !~ /^release\/.*$/
+        && $CI_MERGE_REQUEST_ID == ""
+    - when: on_failure
 
 removeContainerPHP7.3:
   stage: cleanUpTest
@@ -332,12 +328,11 @@ removeContainerPHP7.3:
   script:
     - *cleanUpTesting
     - failedTesting
-  only:
-    - branches
-  except:
-    - master
-    - /^release\/.*$/
-  when: on_failure
+  rules:
+    - if: $CI_COMMIT_BRANCH != "master"
+        && $CI_COMMIT_BRANCH !~ /^release\/.*$/
+        && $CI_MERGE_REQUEST_ID == ""
+    - when: on_failure
 
 build:
   stage: build

@@ -3,7 +3,6 @@
 namespace JTL\License\Struct;
 
 use DateTime;
-use JTL\Shop;
 use stdClass;
 
 /**
@@ -122,6 +121,7 @@ class License
 
     /**
      * @param DateTime|string $created
+     * @throws \Exception
      */
     public function setCreated($created): void
     {
@@ -154,6 +154,7 @@ class License
 
     /**
      * @param DateTime|string|null $validUntil
+     * @throws \Exception
      */
     public function setValidUntil($validUntil): void
     {

@@ -52,6 +52,7 @@ class Subscription
 
     /**
      * @param DateTime|string|null $validUntil
+     * @throws \Exception
      */
     public function setValidUntil($validUntil): void
     {

@@ -108,6 +108,7 @@ class Release
 
     /**
      * @param DateTime|string $releaseDate
+     * @throws \Exception
      */
     public function setReleaseDate($releaseDate): void
     {

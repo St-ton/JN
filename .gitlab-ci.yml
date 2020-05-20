@@ -344,10 +344,10 @@ build:
   after_script:
     - *postBuildDeployScripts
     - dockerLogout
-  only:
-    - master
-    - /^release\/.*$/
-    - tags
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+    - if: $CI_COMMIT_BRANCH ~ /^release\/.*$/
+    - if: $CI_COMMIT_TAG != ""
   tags:
     - build
 
@@ -364,11 +364,11 @@ deploy:
   after_script:
     - *postBuildDeployScripts
     - dockerLogout
-  only:
-    - master
-    - /^release\/.*$/
-    - tags
-  when: on_success
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+    - if: $CI_COMMIT_BRANCH ~ /^release\/.*$/
+    - if: $CI_COMMIT_TAG != ""
+    - when: on_success
   tags:
     - build
 
@@ -377,11 +377,11 @@ removeContainer:
   script:
     - *cleanUpScript
     - failedScript
-  only:
-    - master
-    - /^release\/.*$/
-    - tags
-  when: on_failure
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+    - if: $CI_COMMIT_BRANCH ~ /^release\/.*$/
+    - if: $CI_COMMIT_TAG != ""
+    - when: on_failure
   tags:
     - build
 
@@ -391,10 +391,9 @@ tagsDeployment:
     GIT_STRATEGY: none
   script:
     - buildscript release:deployment "$CI_BUILD_SERVER_ARCHIVE_PATH"
-  except:
-    - branches
-  only:
-    - tags
+  rules:
+    - if: $CI_COMMIT_BRANCH == ""
+        && $CI_COMMIT_TAG != ""
   tags:
     - build
 
@@ -405,8 +404,8 @@ stagingPreDeploy:
   script:
     - *devCheckoutScripts
     - downloadProcess
-  only:
-    - master
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
   tags:
     - dev-checkout
 
@@ -420,8 +419,8 @@ stagingDevPhp72:
   environment:
     name: staging master php 7.2
     url: https://$STAGING_USER-72-master.$STAGING_DOMAIN
-  only:
-    - master
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
   tags:
     - dev-checkout
 
@@ -435,8 +434,8 @@ stagingDevPhp73:
   environment:
     name: staging master php 7.3
     url: https://$STAGING_USER-73-master.$STAGING_DOMAIN
-  only:
-    - master
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
   tags:
     - dev-checkout
 
@@ -451,7 +450,7 @@ stagingDevPhp73:
   environment:
     name: staging marketplace dev
     url: https://$STAGING_MARKETPLACE_DOMAIN
-  only:
-    - master
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
   tags:
     - test-marketplace

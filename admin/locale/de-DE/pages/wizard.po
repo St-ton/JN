@@ -24,7 +24,7 @@ msgid "beginSetup"
 msgstr "Starten"
 
 msgid "stepOne"
-msgstr "Schritt 1 - Globale Einstellungen"
+msgstr "Schritt 1 - Grundeinstellungen"
 
 msgid "stepOneDesc"
 msgstr "Hier legen Sie die wichtigsten Grundeinstellungen für Ihren Onlineshop fest. Alle Einstellungen können hinterher im Backend von JTL-Shop geändert werden."
@@ -42,9 +42,15 @@ msgid "stepThreeDesc"
 msgstr "Hier legen Sie fest, welche Zahlungsarten Sie in Ihrem JTL-Shop anbieten möchten. Außerdem können Sie direkt die Plugins für einige der beliebtesten Zahlungsanbieter zur Installation auswählen."
 
 msgid "stepFour"
-msgstr "Schritt 4 - Übersicht & Bestätigung"
+msgstr "Schritt 4 - E-Mail-Einstellungen"
 
 msgid "stepFourDesc"
+msgstr "Hier sehen Sie einen Überblick über die E-Mail-Einstellungen“"
+
+msgid "stepFive"
+msgstr "Schritt 5 - Übersicht & Bestätigung"
+
+msgid "stepFiveDesc"
 msgstr "Hier sehen Sie einen Überblick über die getroffenen Einstellungen. Sie können jeden einzelnen Punkt noch einmal bearbeiten. Klicken Sie anschließend auf „Bestätigen“"
 
 msgid "legalTexts"
@@ -169,3 +175,24 @@ msgstr "JTL-Search"
 
 msgid "recommendationJTLSearchDesc"
 msgstr "JTL-Search ist ein kostenpflichtiges Zusatzmodul und ermöglicht Ihren Kunden eine fehlertolerante Suche und After-Search Navigation."
+
+msgid "orderNumberSettings"
+msgstr "Bestellnummer-Einstellungen"
+
+msgid "orderNumberPre"
+msgstr "Bestellnummer Präfix"
+
+msgid "orderNumberPreDesc"
+msgstr "Hier legen Sie fest, wie die Bestellnummer aufgebaut sein soll. Diese wird wie folgt generiert: {Präfix}{Fortlaufende Nummer + Anfangsnummer}{Suffix}"
+
+msgid "orderNumberSuf"
+msgstr "Bestellnummer-Einstellungen"
+
+msgid "orderNumberSufDesc"
+msgstr "Bestellnummer-Einstellungen"
+
+msgid "orderNumberFirst"
+msgstr "Bestellnummer Anfangsnummer"
+
+msgid "orderNumberFirstDesc"
+msgstr "Bestellnummer-Einstellungen"

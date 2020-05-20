@@ -19,4 +19,6 @@ class QuestionType
     public const MULTI_BOOL = 4;
 
     public const PLUGIN = 5;
+
+    public const NUMBER = 6;
 }

@@ -16,6 +16,35 @@
                    value="{if $question->getValue() !== null}{$question->getValue()}{/if}"
             >
         </div>
+    {elseif $question->getType() === JTL\Backend\Wizard\QuestionType::NUMBER}
+        <div class="form-group-lg mb-4">
+            <span class="form-title">
+                {$question->getText()}:
+                {if $question->getDescription() !== null}
+                    <span class="fal fa-info-circle text-muted ml-4" data-toggle="tooltip" title="{$question->getDescription()}"></span>
+                {/if}
+            </span>
+            <div class="input-group form-counter min-w-sm">
+                <div class="input-group-prepend">
+                    <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                        <span class="fas fa-minus"></span>
+                    </button>
+                </div>
+                <input type="number"
+                       class="form-control rounded-pill"
+                       id="question-{$question->getID()}"
+                       placeholder=""
+                       data-setup-summary-id="question-{$question->getID()}"
+                       name="question-{$question->getID()}"
+                       value="{if $question->getValue() !== null}{$question->getValue()}{/if}"
+                >
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                        <span class="fas fa-plus"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
     {elseif $question->getType() === JTL\Backend\Wizard\QuestionType::BOOL}
         {if $question->getText() !== null}
             <span class="form-title">

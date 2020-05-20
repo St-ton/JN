@@ -30,20 +30,20 @@
 		.setup-steps, .modal-footer { display: none; }
 	}
 
-	&[data-setup-current="4"]:not(.installed) {
+	&[data-setup-current="5"]:not(.installed) {
 		[data-setup-next] { display: none; }
 	}
 
-	&[data-setup-current="5"] {
+	&[data-setup-current="6"] {
 		[data-setup-prev], [data-setup-next],
 		[data-setup-submit], .setup-steps { display: none; }
 	}
 
-	&:not([data-setup-current="4"]), &.installed {
+	&:not([data-setup-current="5"]), &.installed {
 		[data-setup-submit] { display: none; }
 	}
 
-	&:not([data-setup-current="5"]) {
+	&:not([data-setup-current="6"]) {
 		[data-setup-close] { display: none; }
 	}
 }

@@ -59,7 +59,7 @@
                                 <div class="row">
                                     {foreach $step->getQuestions() as $question}
                                         {if $question->getSubheading() !== null}
-                                            <div class="col-12 {if !$question@first}mt-5{/if}">
+                                            <div class="col-12">
                                                 <span class="subheading1 form-title">
                                                     {$question->getSubheading()}
                                                     {if $question->getSubheadingDescription() !== null}
@@ -77,8 +77,8 @@
 
                     <div class="setup-slide row" data-setup-slide="{$stepID + 1}">
                         <div class="col-lg-4 mb-5 mb-lg-0">
-                            <span class="setup-subheadline">{__('stepFour')}</span>
-                            <p class="text-muted">{__('stepFourDesc')}</p>
+                            <span class="setup-subheadline">{__('stepFive')}</span>
+                            <p class="text-muted">{__('stepFiveDesc')}</p>
                         </div>
                         <div class="col-lg-6 ml-lg-auto col-xl-7 mt-lg-n5">
                             <div class="table-responsive">
@@ -120,7 +120,7 @@
                         </div>
                     </div>
 
-                    <div class="setup-slide row" data-setup-slide="5">
+                    <div class="setup-slide row" data-setup-slide="{$stepID + 2}">
                         <div class="col-lg-4 mb-5 mb-lg-0">
                             <span class="setup-subheadline">{__('thankYouText')}</span>
                             <p>{__('thankYouTextDesc')}</p>

@@ -136,8 +136,12 @@ $form.on('submit', (e) => {
 		}, 1500)
 
 		setTimeout(() => {
+			$currentSlide.find(`[${Data.step}="4"]`).html(checkmark)
+		}, 2000)
+
+		setTimeout(() => {
 			resolve()
-		}, 2500)
+		}, 3000)
 	});
 
 	callback.then(() => {

@@ -3,10 +3,12 @@
 namespace JTL\Backend\Wizard;
 
 use Illuminate\Support\Collection;
-use JTL\Backend\Wizard\Steps\GlobalSettings;
+use JTL\Backend\Wizard\Steps\EmailSettings;
+use JTL\Backend\Wizard\Steps\GeneralSettings;
 use JTL\Backend\Wizard\Steps\LegalPlugins;
 use JTL\Backend\Wizard\Steps\PaymentPlugins;
 use JTL\DB\DbInterface;
+use JTL\L10n\GetText;
 
 /**
  * Class DefaultFactory
@@ -22,13 +24,17 @@ final class DefaultFactory
     /**
      * DefaultFactory constructor.
      * @param DbInterface $db
+     * @param GetText $getText
      */
-    public function __construct(DbInterface $db)
+    public function __construct(DbInterface $db, GetText $getText)
     {
+        $getText->loadConfigLocales();
+
         $this->steps = new Collection();
-        $this->steps->push(new GlobalSettings($db));
+        $this->steps->push(new GeneralSettings($db));
         $this->steps->push(new LegalPlugins($db));
         $this->steps->push(new PaymentPlugins($db));
+        $this->steps->push(new EmailSettings($db));
     }
 
     /**

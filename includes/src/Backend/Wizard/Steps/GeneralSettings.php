@@ -13,7 +13,7 @@ use JTL\Shop;
  * Class GlobalSettings
  * @package JTL\Backend\Wizard\Steps
  */
-final class GlobalSettings extends AbstractStep
+final class GeneralSettings extends AbstractStep
 {
     /**
      * ShopConfig constructor.
@@ -40,24 +40,12 @@ final class GlobalSettings extends AbstractStep
 
         $question = new Question($db);
         $question->setID(2);
-        $question->setText(__('masterEmail'));
-        $question->setDescription(__('masterEmailDesc'));
-        $question->setType(QuestionType::EMAIL);
-        $question->setValue(Shop::getSettingValue(\CONF_EMAILS, 'email_master_absender'));
-        $question->setOnSave(function (QuestionInterface $question) {
-            $question->updateConfig('email_master_absender', $question->getValue());
-        });
-        $this->addQuestion($question);
-
-        $question = new Question($db);
-        $question->setID(3);
         $question->setIsRequired(false);
         $question->setValue(true);
         $question->setLabel(__('secureDefaultSettings'));
         $question->setDescription(__('secureDefaultSettingsDesc'));
         $question->setSummaryText(__('secureDefaultSettings'));
         $question->setType(QuestionType::BOOL);
-        $question->setIsFullWidth(true);
         $question->setOnSave(function (QuestionInterface $question) {
             if ($question->getValue() === true) {
                 $question->updateConfig('kaufabwicklung_ssl_nutzen', 'P');
@@ -77,7 +65,7 @@ final class GlobalSettings extends AbstractStep
 
         $question = new Question($db);
         $question->setSubheading(__('vatSettings'));
-        $question->setID(4);
+        $question->setID(3);
         $question->setText(__('vatIDCompany'));
         $question->setDescription(__('vatIDCompanyTitle'));
         $question->setIsRequired(false);
@@ -89,7 +77,7 @@ final class GlobalSettings extends AbstractStep
         $this->addQuestion($question);
 
         $question = new Question($db);
-        $question->setID(5);
+        $question->setID(4);
         $question->setText(__('smallEntrepreneur'));
         $question->setDescription(__('vatSmallEntrepreneurTitle'));
         $question->setLabel(__('vatSmallEntrepreneur'));
@@ -133,7 +121,7 @@ final class GlobalSettings extends AbstractStep
         $this->addQuestion($question);
 
         $question = new Question($db);
-        $question->setID(6);
+        $question->setID(5);
         $question->setText(__('customerGroupDesc'));
         $question->setDescription(__('customerGroupDescTitle'));
         $question->setSummaryText(__('customerGroup'));
@@ -162,6 +150,39 @@ final class GlobalSettings extends AbstractStep
                 $question->updateConfig('kundenregistrierung_abfragen_firma', 'N');
                 $question->updateConfig('kundenregistrierung_abfragen_ustid', 'N');
             }
+        });
+        $this->addQuestion($question);
+
+
+        $question = new Question($db);
+        $question->setID(6);
+        $question->setSubheading(__('orderNumberSettings'));
+        $question->setText(__('bestellabschluss_bestellnummer_praefix_name'));
+        $question->setDescription(__('bestellabschluss_bestellnummer_praefix_desc'));
+        $question->setType(QuestionType::TEXT);
+        $question->setOnSave(function (QuestionInterface $question) {
+            $question->updateConfig('bestellabschluss_bestellnummer_praefix', $question->getValue());
+        });
+        $this->addQuestion($question);
+
+        $question = new Question($db);
+        $question->setID(7);
+        $question->setText(__('bestellabschluss_bestellnummer_suffix_name'));
+        $question->setDescription(__('bestellabschluss_bestellnummer_suffix_desc'));
+        $question->setType(QuestionType::TEXT);
+        $question->setOnSave(function (QuestionInterface $question) {
+            $question->updateConfig('bestellabschluss_bestellnummer_suffix', $question->getValue());
+        });
+
+        $this->addQuestion($question);
+        $question = new Question($db);
+        $question->setID(8);
+        $question->setText(__('bestellabschluss_bestellnummer_anfangsnummer_name'));
+        $question->setDescription(__('bestellabschluss_bestellnummer_anfangsnummer_desc'));
+        $question->setType(QuestionType::NUMBER);
+        $question->setValue(1);
+        $question->setOnSave(function (QuestionInterface $question) {
+            $question->updateConfig('bestellabschluss_bestellnummer_anfangsnummer', $question->getValue());
         });
         $this->addQuestion($question);
     }

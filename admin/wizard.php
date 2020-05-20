@@ -7,7 +7,7 @@ use JTL\Shop;
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->redirectOnFailure();
 
-$factory    = new DefaultFactory(Shop::Container()->getDB());
+$factory    = new DefaultFactory(Shop::Container()->getDB(), Shop::Container()->getGetText());
 $controller = new Controller($factory);
 $conf       = Shop::getSettings([CONF_GLOBAL]);
 $controller->answerQuestions($_POST);

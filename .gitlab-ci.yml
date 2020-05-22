@@ -359,11 +359,12 @@ build:
   after_script:
     - *postBuildDeployScripts
     - dockerLogout
-  rules:
-    - if: $CI_MERGE_REQUEST_IID
-      when: never
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      when: never
+  workflow:
+    rules:
+      - if: $CI_MERGE_REQUEST_IID
+        when: never
+      - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+        when: never
   tags:
     - build
 

@@ -73,7 +73,7 @@ class Seo
             'Any-Latin; Latin-ASCII;' . (\SEO_SLUG_LOWERCASE ? ' Lower();' : ''),
             \trim($str, ' -_')
         );
-
+        $str = preg_replace('/\s+/', '-', $str);
         return $str;
     }
 

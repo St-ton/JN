@@ -33,13 +33,13 @@ msgid "stepTwo"
 msgstr "Schritt 2 - Rechtstexte"
 
 msgid "stepTwoDesc"
-msgstr "Hier können Sie direkt passende Plugins von JTL-Partnern wählen, die Ihnen dabei helfen, rechtssichere Texte wie AGB, Widerrufsbelehrung usw. in Ihren Onlineshop einzupflegen."
+msgstr "Hier können Sie direkt passende Plugins von JTL-Partnern wählen, die Ihnen dabei helfen, rechtssichere Texte wie AGB, Widerrufsbelehrung usw. in Ihren Onlineshop einzupflegen. Sie können ihre Rechtstexte auch selbst festlegen. Wie dies funktioniert beschreiben wir in unserem <a href=\"https://guide.jtl-software.de\" target=\"_blank\">Guide</a>."
 
 msgid "stepThree"
 msgstr "Schritt 3 - Zahlungsarten"
 
 msgid "stepThreeDesc"
-msgstr "Hier legen Sie fest, welche Zahlungsarten Sie in Ihrem JTL-Shop anbieten möchten. Außerdem können Sie direkt die Plugins für einige der beliebtesten Zahlungsanbieter zur Installation auswählen."
+msgstr "Wählen Sie passende Plugins um die Zahlungsartauswahl für Ihre Kunden zu erweitern. Welche Zahlungsarten Ihren Kunden wann angeboten werden, hängt von Ihren Versandarten ab. Lesen Sie dazu im Guide(LINK) mehr. Standardmäßig bietet der JTL-Shop folgende Zahlungsarten: %s"
 
 msgid "stepFour"
 msgstr "Schritt 4 - E-Mail-Einstellungen"
@@ -72,7 +72,7 @@ msgid "customerGroupDesc"
 msgstr "Das Angebot dieses Shops richtet sich an"
 
 msgid "customerGroupDescTitle"
-msgstr "Falls Sie Ihren Onlineshop nur an gewerbliche Kunden / Unternehmer richten, werden Nettopreise (ohne Umsatzsteuer) angezeigt. Für Onlineshops, die sich auch an Endverbraucher wenden, werden Bruttopreise angezeigt."
+msgstr "B2B aktiviert verpflichtete Firmen- und UST-IdNr-Abfrage im Kundenformular und deaktiviert WRB im Bestellvorgang. B2C deaktiviert Firmen- und UST-IDNr-Abfrage im Kundenformular. B2B und B2C aktiviert optionale Firmen- und UST-IdNr-Abfrage im Kundenformular."
 
 msgid "customerGroupB2B"
 msgstr "Unternehmer / gewerbliche Kunden (B2B)"
@@ -84,7 +84,7 @@ msgid "vatIDCompany"
 msgstr "USt-IdNr. der Firma"
 
 msgid "vatIDCompanyTitle"
-msgstr "Falls Sie für mehrere Länder Umsatzsteuer-Identifikationsnummern haben, geben Sie hier die USt-IdNr. für das Land ein, in dem sich der Hauptsitz Ihres Unternehmens befindet."
+msgstr "Geben Sie hier die USt-IdNr. für das Land ein, in dem sich der Hauptsitz Ihres Unternehmens befindet."
 
 msgid "shopSettings"
 msgstr "Online-Shop Einstellungen"
@@ -93,7 +93,7 @@ msgid "shopName"
 msgstr "Name des Online-Shops"
 
 msgid "shopNameDesc"
-msgstr "Name des Online-Shops"
+msgstr "Der angegebene Name wird an mehreren Stellen angezeigt. Beispiele: Meta-Titel, Emails, externe Zahlungsartseiten, ..."
 
 msgid "masterEmail"
 msgstr "Master-E-Mail Adresse"
@@ -105,7 +105,7 @@ msgid "secureDefaultSettings"
 msgstr "Sichere Voreinstellungen"
 
 msgid "secureDefaultSettingsDesc"
-msgstr "Sichere Voreinstellungen"
+msgstr "Aktiviert permanente SSL-Verschlüsselung (https, SSL-Zertifikat bei Ihrem Hosting-Provider erforderlich), Email-Verschlüsselung via TLS und die Cookie-Flags Secure/HTTPOnly."
 
 msgid "weRecommend"
 msgstr "Wir empfehlen"

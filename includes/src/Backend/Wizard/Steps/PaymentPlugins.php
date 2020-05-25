@@ -22,6 +22,9 @@ final class PaymentPlugins extends AbstractStep
     {
         parent::__construct($db);
         $this->setTitle(__('stepThree'));
+
+//        $db->query("SELECT cModulId FROM tzahlungsart WHERE nNutzbar = 1 AND cModulId LIKE 'za_%'");
+
         $this->setDescription(__('stepThreeDesc'));
         $this->setID(3);
 

@@ -33,13 +33,13 @@ msgid "stepTwo"
 msgstr "Schritt 2 - Rechtstexte"
 
 msgid "stepTwoDesc"
-msgstr "Hier können Sie direkt passende Plugins von JTL-Partnern wählen, die Ihnen dabei helfen, rechtssichere Texte wie AGB, Widerrufsbelehrung usw. in Ihren Onlineshop einzupflegen."
+msgstr "Choose suitable plugins from JTL-partners, which will help you to maintain legal texts like General Terms and Conditions, cancellation instructions, etc."
 
 msgid "stepThree"
 msgstr "Schritt 3 - Zahlungsarten"
 
 msgid "stepThreeDesc"
-msgstr "Hier legen Sie fest, welche Zahlungsarten Sie in Ihrem JTL-Shop anbieten möchten. Außerdem können Sie direkt die Plugins für einige der beliebtesten Zahlungsanbieter zur Installation auswählen."
+msgstr ""
 
 msgid "stepFour"
 msgstr "Schritt 4 - Übersicht & Bestätigung"
@@ -66,7 +66,7 @@ msgid "customerGroupDesc"
 msgstr "Das Angebot dieses Shops richtet sich an"
 
 msgid "customerGroupDescTitle"
-msgstr "Falls Sie Ihren Onlineshop nur an gewerbliche Kunden / Unternehmer richten, werden Nettopreise (ohne Umsatzsteuer) angezeigt. Für Onlineshops, die sich auch an Endverbraucher wenden, werden Bruttopreise angezeigt."
+msgstr "B2B activates mandatory company and vat-id inquiry in customer form. B2C deactivates company and vat-id inquiery in customer form. B2B and B2C activates optional company and vat-id inquiry in customer form."
 
 msgid "customerGroupB2B"
 msgstr "Unternehmer / gewerbliche Kunden (B2B)"
@@ -78,7 +78,7 @@ msgid "vatIDCompany"
 msgstr "USt-IdNr. der Firma"
 
 msgid "vatIDCompanyTitle"
-msgstr "Falls Sie für mehrere Länder Umsatzsteuer-Identifikationsnummern haben, geben Sie hier die USt-IdNr. für das Land ein, in dem sich der Hauptsitz Ihres Unternehmens befindet."
+msgstr "Specify the vat-id for the country in which your company resides."
 
 msgid "shopSettings"
 msgstr "Online-Shop Einstellungen"
@@ -87,7 +87,7 @@ msgid "shopName"
 msgstr "Name des Online-Shops"
 
 msgid "shopNameDesc"
-msgstr "Name des Online-Shops"
+msgstr "The chosen name is shown at several spots. Examples: meta-title, emails, external payments, ..."
 
 msgid "masterEmail"
 msgstr "Master-E-Mail Adresse"
@@ -99,7 +99,7 @@ msgid "secureDefaultSettings"
 msgstr "Sichere Voreinstellungen"
 
 msgid "secureDefaultSettingsDesc"
-msgstr "Sichere Voreinstellungen"
+msgstr "Activates permanent SSL-encryption (https, SSL-certificate of your hosting-provider required), email encryption via TLS and cookie flags Secure/HTTPOnly."
 
 msgid "weRecommend"
 msgstr "Wir empfehlen"

@@ -1,6 +1,12 @@
 <script type="text/javascript">
     $(document).ready(function () {
-        ioCall('getRemoteData', ['{$smarty.const.JTLURL_GET_SHOPPATCH}?vf={$version}', 'oPatch_arr', 'widgets/patch_data.tpl', 'patch_data_wrapper']);
+        ioCall(
+            'getRemoteData',
+            ['{$smarty.const.JTLURL_GET_SHOPPATCH}?vf={$version}',
+                'oPatch_arr',
+                'widgets/patch_data.tpl',
+                'patch_data_wrapper']
+        );
     });
 </script>
 

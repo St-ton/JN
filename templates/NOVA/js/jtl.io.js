@@ -54,27 +54,43 @@
             });
         },
 
-        handleResponse: function (data, context) {
-            var jslist = data.js || [];
-            var csslist = data.css || [];
+        handleResponse: function (data, context)
+        {
+            data.csslist.forEach(item => {
+                let $item = $('#' + item.target);
 
-            for (var i = 0; i < csslist.length; i++) {
-                var item = csslist[i];
-                var value = item.data.replace(/'/g, "\\'").replace(/\n/g, "\\n");
-                var js = "if ($('#" + item.target + "').length > 0) $('#" + item.target + "')[0]['" + item.attr + "'] = '" + value + "';";
-                jslist.push(js);
-            }
+                if ($item.length > 0) {
+                    $item[0][item.attr] = item.data;
+                }
+            });
 
             if (!context) {
                 context = this;
             }
 
-            context.delegate = function () {
-                var calllist = jslist.join('');
-                eval(calllist);
-            };
+            data.debugLogLines.forEach(line => {
+                if(line[1]) {
+                    console.groupCollapsed(...line[0]);
+                }
+                else if(line[2]) {
+                    console.groupEnd();
+                }
+                else {
+                    console.log(...line[0]);
+                }
+            });
 
-            context.delegate();
+            data.evoProductCalls.forEach(([name, args]) => {
+                $.evo.article()[name](...args);
+            });
+
+            data.varAssigns.forEach(assign => {
+                context[assign.name] = assign.value;
+            })
+
+            if(data.windowLocationHref) {
+                window.location.href = data.windowLocationHref;
+            }
         },
 
         handleError: function (textStatus, errorThrown) {

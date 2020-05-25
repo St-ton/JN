@@ -489,7 +489,7 @@ function getCurrencyConversionIO($fPreisNetto, $fPreisBrutto, $cTargetID)
 {
     $response = new IOResponse();
     $cString  = Currency::getCurrencyConversion($fPreisNetto, $fPreisBrutto);
-    $response->assign($cTargetID, 'innerHTML', $cString);
+    $response->assignDom($cTargetID, 'innerHTML', $cString);
 
     return $response;
 }
@@ -504,7 +504,7 @@ function setCurrencyConversionTooltipIO($fPreisNetto, $fPreisBrutto, $cTooltipID
 {
     $response = new IOResponse();
     $cString  = Currency::getCurrencyConversion($fPreisNetto, $fPreisBrutto);
-    $response->assign($cTooltipID, 'dataset.originalTitle', $cString);
+    $response->assignDom($cTooltipID, 'dataset.originalTitle', $cString);
 
     return $response;
 }

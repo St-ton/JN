@@ -10,7 +10,6 @@ $oAccount->redirectOnFailure();
 $factory    = new DefaultFactory(Shop::Container()->getDB(), Shop::Container()->getGetText());
 $controller = new Controller($factory);
 $conf       = Shop::getSettings([CONF_GLOBAL]);
-$controller->answerQuestions($_POST);
 
 $smarty->assign('steps', $controller->getSteps())
     ->assign('wizardFirstTime', $conf['global']['global_wizard_done'] === 'N')

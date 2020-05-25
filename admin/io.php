@@ -3,6 +3,8 @@
 use JTL\Backend\AdminIO;
 use JTL\Backend\JSONAPI;
 use JTL\Backend\TwoFA;
+use JTL\Backend\Wizard\DefaultFactory;
+use JTL\Backend\Wizard\Controller;
 use JTL\Helpers\Form;
 use JTL\IO\IOError;
 use JTL\Jtllog;
@@ -28,6 +30,9 @@ $jsonApi  = JSONAPI::getInstance();
 $io       = AdminIO::getInstance()->setAccount($oAccount);
 $images   = new Manager($db, $gettext);
 $updateIO = new UpdateIO($db, $gettext);
+
+$wizardFactory    = new DefaultFactory(Shop::Container()->getDB(), Shop::Container()->getGetText());
+$wizardController = new Controller($wizardFactory);
 
 Shop::Container()->getOPC()->registerAdminIOFunctions($io);
 Shop::Container()->getOPCPageService()->registerAdminIOFunctions($io);
@@ -82,6 +87,7 @@ $io->register('getPages', [$jsonApi, 'getPages'])
    ->register('dbupdaterDownload', [$updateIO, 'download'], null, 'SHOP_UPDATE_VIEW')
    ->register('dbupdaterStatusTpl', [$updateIO, 'getStatus'], null, 'SHOP_UPDATE_VIEW')
    ->register('dbupdaterMigration', [$updateIO, 'executeMigration'], null, 'SHOP_UPDATE_VIEW')
+   ->register('finishWizard', [$wizardController, 'answerQuestions'], null, 'SHOP_UPDATE_VIEW')
    ->register('migrateToInnoDB_utf8', 'doMigrateToInnoDB_utf8', $dbcheckInc, 'DBCHECK_VIEW')
    ->register('redirectCheckAvailability', [JTL\Redirect::class, 'checkAvailability'])
    ->register('updateRedirectState', null, $redirectInc, 'REDIRECT_VIEW')

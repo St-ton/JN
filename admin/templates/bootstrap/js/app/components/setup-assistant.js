@@ -168,6 +168,7 @@ $form.on('submit', (e) => {
 
 		setTimeout(() => {
 			resolve()
+            ioCall('finishWizard', [$form.serializeArray()], function (result) {});
 		}, 3000)
 	});
 

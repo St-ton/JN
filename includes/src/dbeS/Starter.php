@@ -411,9 +411,9 @@ class Starter
 
     public function setVersionByUserAgent(): void
     {
-        $useragent = $_SERVER['HTTP_USER_AGENT'];
+        $useragent = $_SERVER['HTTP_USER_AGENT'] ?? null;
         $matches   = [];
-        if (isset($useragent)) {
+        if ($useragent !== null) {
             \preg_match('/JTL-Wawi\/(\d+(\.\d+)+)/', $useragent, $matches);
             if (\count($matches) > 0 && isset($matches[1])) {
                 $this->setWawiVersion($matches[1]);

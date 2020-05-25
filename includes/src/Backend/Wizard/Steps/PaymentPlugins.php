@@ -7,6 +7,8 @@ use JTL\Backend\Wizard\QuestionInterface;
 use JTL\Backend\Wizard\QuestionType;
 use JTL\Backend\Wizard\SelectOption;
 use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use function Functional\map;
 
 /**
  * Class PaymentPlugins
@@ -23,9 +25,14 @@ final class PaymentPlugins extends AbstractStep
         parent::__construct($db);
         $this->setTitle(__('stepThree'));
 
-//        $db->query("SELECT cModulId FROM tzahlungsart WHERE nNutzbar = 1 AND cModulId LIKE 'za_%'");
+        $paymentMethods = map($db->query(
+            "SELECT cModulId FROM tzahlungsart WHERE nNutzbar = 1 AND cModulId LIKE 'za_%'",
+            ReturnType::ARRAY_OF_OBJECTS
+        ), static function ($e) {
+            return __($e->cModulId);
+        });
 
-        $this->setDescription(__('stepThreeDesc'));
+        $this->setDescription(sprintf(__('stepThreeDesc'), implode(', ', $paymentMethods)));
         $this->setID(3);
 
         $recommendations = json_decode(file_get_contents(\JTLURL_GET_MP_RECOMMENDATIONS));
@@ -37,6 +44,7 @@ final class PaymentPlugins extends AbstractStep
         $question->setSummaryText(__('paymentMethods'));
         $question->setType(QuestionType::PLUGIN);
         $question->setIsFullWidth(true);
+        $question->setIsRequired(false);
 
         foreach ($recommendations->extensions ?? [] as $recommendation) {
             $option = new SelectOption();

@@ -4,7 +4,7 @@
             <span class="form-title">
                 {$question->getText()}:
                 {if $question->getDescription() !== null}
-                    <span class="fal fa-info-circle text-muted ml-4" data-toggle="tooltip" title="{$question->getDescription()}"></span>
+                    <span class="fal fa-info-circle text-muted ml-3" data-toggle="tooltip" title="{$question->getDescription()}"></span>
                 {/if}
             </span>
             <div>
@@ -24,7 +24,7 @@
             <span class="form-title">
                 {$question->getText()}:
                 {if $question->getDescription() !== null}
-                    <span class="fal fa-info-circle text-muted ml-4" data-toggle="tooltip" title="{$question->getDescription()}"></span>
+                    <span class="fal fa-info-circle text-muted ml-3" data-toggle="tooltip" title="{$question->getDescription()}"></span>
                 {/if}
             </span>
             <div class="input-group form-counter min-w-sm">
@@ -54,7 +54,7 @@
             <span class="form-title">
                 {$question->getText()}:
                 {if $question->getDescription() !== null}
-                    <span class="fal fa-info-circle text-muted ml-4" data-toggle="tooltip" title="{$question->getDescription()}"></span>
+                    <span class="fal fa-info-circle text-muted ml-3" data-toggle="tooltip" title="{$question->getDescription()}"></span>
                 {/if}
             </span>
         {/if}
@@ -71,7 +71,7 @@
             <label class="custom-control-label" for="question-{$question->getID()}">
                 {$question->getLabel()}
                 {if $question->getText() === null && $question->getDescription() !== null}
-                    <span class="fal fa-info-circle text-muted ml-4" data-toggle="tooltip" title="{$question->getDescription()}"></span>
+                    <span class="fal fa-info-circle text-muted ml-3" data-toggle="tooltip" title="{$question->getDescription()}"></span>
                 {/if}
             </label>
         </div>
@@ -80,7 +80,7 @@
             <span class="form-title">
                 {$question->getText()}:
                 {if $question->getDescription() !== null}
-                    <span class="fal fa-info-circle text-muted ml-4" data-toggle="tooltip" title="{$question->getDescription()}"></span>
+                    <span class="fal fa-info-circle text-muted ml-3" data-toggle="tooltip" title="{$question->getDescription()}"></span>
                 {/if}
             </span>
             {foreach $question->getOptions() as $option}

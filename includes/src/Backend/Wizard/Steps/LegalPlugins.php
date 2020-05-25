@@ -32,6 +32,7 @@ final class LegalPlugins extends AbstractStep
         $question->setSummaryText(__('legalTexts'));
         $question->setType(QuestionType::PLUGIN);
         $question->setIsFullWidth(true);
+        $question->setIsRequired(false);
         $option = new SelectOption();
         $option->setName(__('Klarna 1'));
         $option->setValue('pluginid klarna 1');

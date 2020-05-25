@@ -39,7 +39,7 @@ msgid "stepThree"
 msgstr "Schritt 3 - Zahlungsarten"
 
 msgid "stepThreeDesc"
-msgstr ""
+msgstr "Choose suitable plugins to widen the selection of payment methods for your customers. Which payment methods your customers are offered in which situation depends on your shipping methods. Read more on that in our <a href=\"https://jtl-url.de/kbw2p\" target=\"_blank\">guide</a>. By default JTL-Shop offers following payment methods: %s"
 
 msgid "stepFour"
 msgstr "Schritt 4 - Übersicht & Bestätigung"
@@ -88,12 +88,6 @@ msgstr "Name des Online-Shops"
 
 msgid "shopNameDesc"
 msgstr "The chosen name is shown at several spots. Examples: meta-title, emails, external payments, ..."
-
-msgid "masterEmail"
-msgstr "Master-E-Mail Adresse"
-
-msgid "masterEmailDesc"
-msgstr "Master-E-Mail Adresse"
 
 msgid "secureDefaultSettings"
 msgstr "Sichere Voreinstellungen"

@@ -39,7 +39,7 @@ msgid "stepThree"
 msgstr "Schritt 3 - Zahlungsarten"
 
 msgid "stepThreeDesc"
-msgstr "Wählen Sie passende Plugins um die Zahlungsartauswahl für Ihre Kunden zu erweitern. Welche Zahlungsarten Ihren Kunden wann angeboten werden, hängt von Ihren Versandarten ab. Lesen Sie dazu im Guide(LINK) mehr. Standardmäßig bietet der JTL-Shop folgende Zahlungsarten: %s"
+msgstr "Wählen Sie passende Plugins um die Zahlungsartauswahl für Ihre Kunden zu erweitern. Welche Zahlungsarten Ihren Kunden wann angeboten werden, hängt von Ihren Versandarten ab. Lesen Sie dazu im <a href=\"https://jtl-url.de/dlkpz\" target=\"_blank\">Guide</a> mehr. Standardmäßig bietet der JTL-Shop folgende Zahlungsarten: %s"
 
 msgid "stepFour"
 msgstr "Schritt 4 - E-Mail-Einstellungen"
@@ -94,12 +94,6 @@ msgstr "Name des Online-Shops"
 
 msgid "shopNameDesc"
 msgstr "Der angegebene Name wird an mehreren Stellen angezeigt. Beispiele: Meta-Titel, Emails, externe Zahlungsartseiten, ..."
-
-msgid "masterEmail"
-msgstr "Master-E-Mail Adresse"
-
-msgid "masterEmailDesc"
-msgstr "Master-E-Mail Adresse"
 
 msgid "secureDefaultSettings"
 msgstr "Sichere Voreinstellungen"

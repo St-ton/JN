@@ -14,6 +14,7 @@ use JTL\Mail\Mailer;
 use JTL\Mail\Template\Model;
 use JTL\Mail\Template\TemplateFactory;
 use JTL\Mail\Template\TemplateInterface;
+use JTL\Shop;
 use PHPMailer\PHPMailer\Exception;
 use stdClass;
 
@@ -235,6 +236,7 @@ final class Controller
      */
     public function updateTemplate(int $templateID, array $post, array $files): int
     {
+        Shop::dbg($post);
         $this->model = $this->getTemplateByID($templateID);
         if ($this->model === null) {
             throw new InvalidArgumentException('Cannot find model with ID ' . $templateID);

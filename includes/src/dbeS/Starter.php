@@ -413,9 +413,11 @@ class Starter
     {
         $useragent = $_SERVER['HTTP_USER_AGENT'];
         $matches   = [];
-        \preg_match('/JTL-Wawi\/(\d+(\.\d+)+)/', $useragent, $matches);
-        if (\count($matches) > 0 && isset($matches[1])) {
-            $this->setWawiVersion($matches[1]);
+        if (isset($useragent)) {
+            \preg_match('/JTL-Wawi\/(\d+(\.\d+)+)/', $useragent, $matches);
+            if (\count($matches) > 0 && isset($matches[1])) {
+                $this->setWawiVersion($matches[1]);
+            }
         }
     }
 

@@ -97,7 +97,6 @@
                                                 </li>
                                             {/if}
                                         {/block}
-                                        {if (($Brotnavi|@count)-2)>0}
                                         {block name='productdetails-details-info-category-wrapper'}
                                             {if $Einstellungen.artikeldetails.artikeldetails_kategorie_anzeigen === 'Y'}
                                                 {block name='productdetails-details-info-category'}
@@ -109,7 +108,6 @@
                                                 {/block}
                                             {/if}
                                         {/block}
-                                        {/if}
                                         {block name='productdetails-details-info-manufacturer-wrapper'}
                                             {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'N' && isset($Artikel->cHersteller)}
                                                 {block name='productdetails-details-product-info-manufacturer'}

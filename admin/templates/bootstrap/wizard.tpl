@@ -217,7 +217,7 @@
                         <div class="col text-right">
                             <button type="button" class="btn btn-primary min-w-sm ml-sm-3 my-2 my-sm-0 w-100 w-sm-auto" data-setup-next>{__('next')}</button>
                             <button type="submit" class="btn btn-primary min-w-sm ml-sm-3 my-2 my-sm-0 w-100 w-sm-auto" data-setup-submit>{__('confirm')}</button>
-                            <button type="button" class="btn btn-primary min-w-sm ml-sm-3 my-2 my-sm-0 w-100 w-sm-auto" data-setup-close data-dismiss="modal">{__('finalize')}</button>
+                            <a href="index.php" class="btn btn-primary min-w-sm ml-sm-3 my-2 my-sm-0 w-100 w-sm-auto" data-setup-close>{__('finalize')}</a>
                         </div>
                     </div>
                 </div>

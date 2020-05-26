@@ -24,14 +24,17 @@ if (!Form::validateToken()) {
     AdminIO::getInstance()->respondAndExit(new IOError('CSRF validation failed.', 403));
 }
 
-$db       = Shop::Container()->getDB();
-$gettext  = Shop::Container()->getGetText();
-$jsonApi  = JSONAPI::getInstance();
-$io       = AdminIO::getInstance()->setAccount($oAccount);
-$images   = new Manager($db, $gettext);
-$updateIO = new UpdateIO($db, $gettext);
-
-$wizardFactory    = new DefaultFactory(Shop::Container()->getDB(), Shop::Container()->getGetText());
+$db               = Shop::Container()->getDB();
+$gettext          = Shop::Container()->getGetText();
+$jsonApi          = JSONAPI::getInstance();
+$io               = AdminIO::getInstance()->setAccount($oAccount);
+$images           = new Manager($db, $gettext);
+$updateIO         = new UpdateIO($db, $gettext);
+$wizardFactory    = new DefaultFactory(
+    Shop::Container()->getDB(),
+    Shop::Container()->getGetText(),
+    Shop::Container()->getAdminAccount()
+);
 $wizardController = new Controller($wizardFactory);
 
 Shop::Container()->getOPC()->registerAdminIOFunctions($io);

@@ -225,8 +225,7 @@ class AuthToken
         $logger   = null;
         try {
             $logger = Shop::Container()->getLogService();
-        } catch (CircularReferenceException $e) {
-        } catch (ServiceNotFoundException $e) {
+        } catch (ServiceNotFoundException | CircularReferenceException $e) {
             $logger = null;
         }
 

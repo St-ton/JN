@@ -2,11 +2,13 @@
 
 namespace JTL\License;
 
+use Exception;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;
 use InvalidArgumentException;
 use JTL\Alert\Alert;
+use JTL\Backend\AuthToken;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Form;
@@ -18,6 +20,7 @@ use JTL\License\Installer\PluginInstaller;
 use JTL\License\Installer\TemplateInstaller;
 use JTL\License\Struct\ExsLicense;
 use JTL\Plugin\InstallCode;
+use JTL\Session\Backend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
@@ -56,6 +59,11 @@ class Admin
         $this->cache   = $cache;
     }
 
+    public function handleAuth(): void
+    {
+        AuthToken::getInstance($this->db)->responseToken();
+    }
+
     /**
      * @param JTLSmarty $smarty
      * @throws DownloadValidationException
@@ -64,15 +72,26 @@ class Admin
     public function handle(JTLSmarty $smarty): void
     {
         \ob_start();
+        $token  = AuthToken::getInstance($this->db);
         $action = Request::postVar('action');
         $valid  = Form::validateToken();
         if ($action === 'recheck' && $valid) {
             $this->getLicenses();
             $action = null;
         }
+        if ($action === 'revoke' && $valid) {
+            $token->revoke();
+            $action = null;
+        }
         if ($action === null || !$valid) {
             $this->getList($smarty);
             return;
+        }
+        if ($action === 'redirect') {
+            $token->requestToken(
+                Backend::get('jtl_token'),
+                Shop::getURL(true) . $_SERVER['SCRIPT_NAME'] . '?action=code'
+            );
         }
         $response         = new AjaxResponse();
         $response->action = $action;
@@ -105,14 +124,25 @@ class Admin
         }
     }
 
+    /**
+     * @param JTLSmarty $smarty
+     */
+    private function setOverviewData(JTLSmarty $smarty): void
+    {
+        $token = AuthToken::getInstance($this->db);
+        $data  = $this->manager->getLicenseData();
+        $smarty->assign('hasAuth', $token->isValid())
+            ->assign('lastUpdate', $data->timestamp ?? null);
+    }
+
     private function getLicenses(): void
     {
         try {
             $this->manager->update();
-        } catch (RequestException $e) {
+        } catch (RequestException | Exception $e) {
             Shop::Container()->getAlertService()->addAlert(
                 Alert::TYPE_ERROR,
-                __('errorFetchLicenseAPI'),
+                __('errorFetchLicenseAPI') . '' . $e->getMessage(),
                 'errorFetchLicenseAPI'
             );
         }
@@ -123,6 +153,7 @@ class Admin
      */
     private function getList(JTLSmarty $smarty): void
     {
+        $this->setOverviewData($smarty);
         $mapper     = new Mapper($this->db, $this->manager);
         $collection = $mapper->getCollection();
         $smarty->assign('licenses', $collection)

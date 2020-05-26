@@ -385,8 +385,8 @@ if ($reload === true) {
     exit();
 }
 
-$hasAuth = AuthToken::getInstance($db)->isValid();
-$alert   = Shop::Container()->getAlertService();
+
+$alert = Shop::Container()->getAlertService();
 if (SAFE_MODE) {
     $alert->addAlert(Alert::TYPE_WARNING, __('Safe mode enabled.'), 'warnSafeMode');
 }
@@ -403,5 +403,4 @@ $smarty->assign('hinweis64', base64_encode($notice))
     ->assign('pluginsProblematic', $pluginsProblematic)
     ->assign('pluginsDisabled', $pluginsDisabled)
     ->assign('allPluginItems', $pluginsAll)
-    ->assign('hasAuth', $hasAuth)
     ->display('pluginverwaltung.tpl');

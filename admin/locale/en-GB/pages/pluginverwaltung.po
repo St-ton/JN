@@ -185,33 +185,6 @@ msgstr "Please note that the plug-in is not fully compatible with JTL-Shop&nbsp;
 msgid "licensePlugin"
 msgstr "Plug-in licence"
 
-msgid "storeNotLinkedDesc"
-msgstr "In order to access contents of JTL-Store, connect your JTL account to the marketplace first."
-
-msgid "storeLink"
-msgstr "Connect account"
-
-msgid "storeRevoke"
-msgstr "Cancel connection"
-
-msgid "storeUpdatesAvailable"
-msgstr "Available updates"
-
-msgid "storeListUpdates"
-msgstr "View updates"
-
-msgid "storePlugins"
-msgstr "Licenced plug-ins"
-
-msgid "storeListAll"
-msgstr "View all"
-
-msgid "storeLastUpdate"
-msgstr "Last updated"
-
-msgid "storeUpdateNow"
-msgstr "Update"
-
 msgid "deletePluginData"
 msgstr "Delete plug-in from database?"
 

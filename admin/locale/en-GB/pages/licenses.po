@@ -97,3 +97,27 @@ msgstr "Bind to current shop"
 
 msgid "Update to version %s available"
 msgstr "Update to version %s available"
+
+msgid "storeNotLinkedDesc"
+msgstr "Um auf Inhalte von JTL-Store zugreifen zu können, müssen Sie zunächst Ihr JTL-Konto mit dem Marktplatz verknüpfen."
+
+msgid "storeLink"
+msgstr "Konto verknüpfen"
+
+msgid "storeRevoke"
+msgstr "Verknüpfung aufheben"
+
+msgid "storeUpdatesAvailable"
+msgstr "Updates verfügbar"
+
+msgid "storeListUpdates"
+msgstr "Updates anzeigen"
+
+msgid "storePlugins"
+msgstr "Lizenzierte Plugins"
+
+msgid "storeListAll"
+msgstr "Alle anzeigen"
+
+msgid "last update"
+msgstr "Zuletzt aktualisiert"

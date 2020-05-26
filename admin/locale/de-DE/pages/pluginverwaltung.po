@@ -185,33 +185,6 @@ msgstr "Bitte beachten Sie, dass das Plugin nicht vollständig mit JTL-Shop&nbsp
 msgid "licensePlugin"
 msgstr "Plugin-Lizenz"
 
-msgid "storeNotLinkedDesc"
-msgstr "Um auf Inhalte von JTL-Store zugreifen zu können, müssen Sie zunächst Ihr JTL-Konto mit dem Marktplatz verknüpfen."
-
-msgid "storeLink"
-msgstr "Konto verknüpfen"
-
-msgid "storeRevoke"
-msgstr "Verknüpfung aufheben"
-
-msgid "storeUpdatesAvailable"
-msgstr "Updates verfügbar"
-
-msgid "storeListUpdates"
-msgstr "Updates anzeigen"
-
-msgid "storePlugins"
-msgstr "Lizenzierte Plugins"
-
-msgid "storeListAll"
-msgstr "Alle anzeigen"
-
-msgid "storeLastUpdate"
-msgstr "Zuletzt aktualisiert"
-
-msgid "storeUpdateNow"
-msgstr "Aktualisieren"
-
 msgid "deletePluginData"
 msgstr "Möchten Sie das Plugin aus der Datenbank löschen?"
 

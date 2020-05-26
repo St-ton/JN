@@ -3,9 +3,13 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('Licenses') cBeschreibung=__('pageDesc') cDokuURL=__('https://www.jtl-software.de')}
 
 <div id="content">
-    <div class="card" id="active-licenses">
-        <div class="card-header">{__('Active licenses')}</div>
-        <div class="card-body">
+    {include file='tpl_inc/licenses_store_connection.tpl'}
+    {if $hasAuth}
+        <div class="card" id="active-licenses">
+            <div class="card-header">
+                {__('Active licenses')}
+                <hr class="mb-n3">
+            </div>
             <table class="table table-striped">
                 <thead>
                 <tr>
@@ -33,20 +37,19 @@
             <div class="save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-12 col-xl-auto">
-                        <form method="post">
-                            {$jtl_token}
-                            <button class="btn btn-default" id="recheck" name="action" value="recheck"><i class="fas fa-refresh"></i> {__('Refresh')}</button>
+                        {form}
                             <button class="btn btn-primary" id="install-all" name="action" value="install-all"><i class="fa fa-share"></i> {__('Install all')}</button>
                             <button class="btn btn-primary" id="update-all" name="action" value="update-all"><i class="fas fa-refresh"></i> {__('Update all')}</button>
-                        </form>
+                        {/form}
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="card">
-        <div class="card-header">{__('Unbound licenses')}</div>
-        <div class="card-body">
+        <div class="card">
+            <div class="card-header">
+                {__('Unbound licenses')}
+                <hr class="mb-n3">
+            </div>
             <table class="table table-striped">
                 <thead>
                 <tr>
@@ -70,7 +73,7 @@
                 {/foreach}
             </table>
         </div>
-    </div>
+    {/if}
 </div>
 
 {include file='tpl_inc/licenses_scripts.tpl'}

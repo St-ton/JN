@@ -76,7 +76,7 @@ final class EmailSettings extends AbstractStep
             )->kEmailvorlage;
             if (empty($template->getCopyTo())) {
                 $db->queryPrepared(
-                    "INSERT INTO temailvorlageeinstellungen VALUES (3, 'cEmailCopyTo', :emailBCC)",
+                    "INSERT INTO temailvorlageeinstellungen VALUES (:emailTemplateID, 'cEmailCopyTo', :emailBCC)",
                     [
                         'emailTemplateID' => $emailTemplateID,
                         'emailBCC'        => $question->getValue()
@@ -87,7 +87,7 @@ final class EmailSettings extends AbstractStep
                 $db->queryPrepared(
                     "UPDATE temailvorlageeinstellungen
                       SET cValue = :emailBCC
-                      WHERE kEmailvorlage = 3
+                      WHERE kEmailvorlage = :emailTemplateID
                         AND cKey = 'cEmailCopyTo'",
                     [
                         'emailTemplateID' => $emailTemplateID,

@@ -33,6 +33,13 @@ final class Controller
         if (empty($post)) {
             return;
         }
+        if (\is_array($post[0])) {
+            $postTMP = [];
+            foreach ($post as $postItem) {
+                $postTMP[$postItem['name']] = $postItem['value'];
+            }
+            $post = $postTMP;
+        }
         //TODO: errors?
         $errors = false;
         foreach ($this->getSteps() as $step) {
@@ -42,7 +49,7 @@ final class Controller
             }
         }
         if (!$errors) {
-//            $this->finish();
+            $this->finish();
         }
     }
 

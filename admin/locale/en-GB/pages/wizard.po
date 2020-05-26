@@ -3,7 +3,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "setupAssistant"
-msgstr "Einrichtungsassistent"
+msgstr "Setup assistant"
 
 msgid "setupAssistantDesc"
 msgstr " "
@@ -12,154 +12,175 @@ msgid "setupAssistantURL"
 msgstr " "
 
 msgid "launchSetup"
-msgstr "Einstellen"
+msgstr "Configure"
 
 msgid "welcome"
-msgstr "Herzlich Wilkommen"
+msgstr "Welcome"
 
 msgid "welcomeDesc"
-msgstr "In diesem Assistenten führen wir Sie durch die wichtigsten Schritte, die für die Einrichtung von JTL-Shop notwendig sind."
+msgstr "In this setup assistant we guide you through the most important steps to configure JTL-Shop."
 
 msgid "beginSetup"
-msgstr "Starten"
+msgstr "Begin"
 
 msgid "stepOne"
-msgstr "Schritt 1 - Globale Einstellungen"
+msgstr "Step 1 - Basic settings"
 
 msgid "stepOneDesc"
-msgstr "Hier legen Sie die wichtigsten Grundeinstellungen für Ihren Onlineshop fest. Alle Einstellungen können hinterher im Backend von JTL-Shop geändert werden."
+msgstr "Configure basic settings for JTL-Shop. All settings can be changed later in the backend of JTL-Shop."
 
 msgid "stepTwo"
-msgstr "Schritt 2 - Rechtstexte"
+msgstr "Step 2 - Legal texts"
 
 msgid "stepTwoDesc"
 msgstr "Choose suitable plugins from JTL-partners, which will help you to maintain legal texts like General Terms and Conditions, cancellation instructions, etc."
 
 msgid "stepThree"
-msgstr "Schritt 3 - Zahlungsarten"
+msgstr "Step 3 - Payment methods"
 
 msgid "stepThreeDesc"
 msgstr "Choose suitable plugins to widen the selection of payment methods for your customers. Which payment methods your customers are offered in which situation depends on your shipping methods. Read more on that in our <a href=\"https://jtl-url.de/kbw2p\" target=\"_blank\">guide</a>. By default JTL-Shop offers following payment methods: %s"
 
 msgid "stepFour"
-msgstr "Schritt 4 - Übersicht & Bestätigung"
+msgstr "Step 4 - Email settings"
 
 msgid "stepFourDesc"
-msgstr "Hier sehen Sie einen Überblick über die getroffenen Einstellungen. Sie können jeden einzelnen Punkt noch einmal bearbeiten. Klicken Sie anschließend auf „Bestätigen“"
+msgstr "Here you see an overview of useful email settings. All other email server settings should be set right after this setup, see \"Administration > Email > Server\". For additional information use our <a href=\"https://guide.jtl-software.de/jtl-shop/systemverwaltung/e-mail-versand-einrichten/\" target=\"_blank\">guide</a>."
+
+msgid "stepFive"
+msgstr "Step 5 - Overview & confirmation"
+
+msgid "stepFiveDesc"
+msgstr "Here you see an overview of your chosen settings. You can change each step anytime. Afterwards finish the setup by pressing \"Confirm\"."
 
 msgid "legalTexts"
-msgstr "Rechtstexte"
+msgstr "Legal texts"
 
 msgid "vatSettings"
-msgstr "Steuereinstellung"
+msgstr "Vat settings"
 
 msgid "smallEntrepreneur"
-msgstr "Kleinunternehmerregelung"
+msgstr "Small business regulation"
 
 msgid "vatSmallEntrepreneur"
-msgstr "Kleinunternehmerregelung nach §19 UStG anwenden"
+msgstr "Use small business regulation after §19 UStG"
 
 msgid "vatSmallEntrepreneurTitle"
-msgstr "Wenn Sie diese Option aktivieren, wird in Ihrem Onlineshop keine Umsatzsteuer ausgewiesen."
+msgstr "Use this option to diable the view of the VAT in your online shop."
 
 msgid "customerGroupDesc"
-msgstr "Das Angebot dieses Shops richtet sich an"
+msgstr "This online shop refers to"
 
 msgid "customerGroupDescTitle"
 msgstr "B2B activates mandatory company and vat-id inquiry in customer form. B2C deactivates company and vat-id inquiery in customer form. B2B and B2C activates optional company and vat-id inquiry in customer form."
 
 msgid "customerGroupB2B"
-msgstr "Unternehmer / gewerbliche Kunden (B2B)"
+msgstr "Business customer (B2B)"
 
 msgid "customerGroupB2C"
-msgstr "Endverbraucher / private Kunden (B2C)"
+msgstr "Privat customer (B2C)"
 
 msgid "vatIDCompany"
-msgstr "USt-IdNr. der Firma"
+msgstr "VAT-ID of your company"
 
 msgid "vatIDCompanyTitle"
 msgstr "Specify the vat-id for the country in which your company resides."
 
 msgid "shopSettings"
-msgstr "Online-Shop Einstellungen"
+msgstr "Online shop settings"
 
 msgid "shopName"
-msgstr "Name des Online-Shops"
+msgstr "Name of online shop"
 
 msgid "shopNameDesc"
 msgstr "The chosen name is shown at several spots. Examples: meta-title, emails, external payments, ..."
 
 msgid "secureDefaultSettings"
-msgstr "Sichere Voreinstellungen"
+msgstr "Secure settings"
 
 msgid "secureDefaultSettingsDesc"
 msgstr "Activates permanent SSL-encryption (https, SSL-certificate of your hosting-provider required), email encryption via TLS and cookie flags Secure/HTTPOnly."
 
 msgid "weRecommend"
-msgstr "Wir empfehlen"
+msgstr "We recommend"
 
 msgid "weRecommendLegalDesc"
-msgstr "Um die Plugins verwenden zu können, müssen Sie mit dem jeweiligen Partner einen separaten Vertrag abschließen. Klicken Sie auf 'Mehr erfahren' für weitere Informationen zu den einzelnen Plugins."
+msgstr "To use the plugins, you need to close a separate deal with the corresponding partners. Click on \"More\" top get more informations to each plugin."
 
 msgid "weRecommendPaymentDesc"
-msgstr "Um die Plugins verwenden zu können, müssen Sie mit dem jeweiligen Zahlungsanbieter einen Vertrag abschließen. Klicken Sie auf 'Mehr erfahren' für weitere Informationen zu den einzelnen Plugins."
+msgstr "To use the plugins, you need to close a separate deal with the corresponding payment provider."
 
 msgid "getToKnowMore"
-msgstr "Mehr erfahren"
+msgstr "More"
 
 msgid "paymentPluginInstalled"
-msgstr "Das Plugin wurde erfolgreich installiert. Sie müssen es nun noch unter Kaufabwicklung > Zahlungen > Zahlungsarten einrichten."
+msgstr "Plugin installed succesfully. See <span class=\"text-primary font-weight-bold\">\"Administration > Payments > Payment methods\"</span> next and finish configuring it."
 
 msgid "finalize"
-msgstr "Beenden"
+msgstr "Finalize"
 
 msgid "thankYouText"
-msgstr "Vielen Dank!"
+msgstr "Thank you!"
 
 msgid "thankYouTextDesc"
-msgstr "Sie haben nun die wichtigsten Einstellungen für JTL-Shop getroffen."
+msgstr "You configured the most important settings for you online shop."
 
 msgid "thankYouTextPluginsInstalled"
-msgstr "Folgende Plugins wurden erfolgreich installiert, müssen aber noch unter <span class=\"text-primary font-weight-bold\">Kaufabwicklung > Zahlungen > Zahlungsarten</span> eingerichtet werden."
+msgstr "Plugin installed succesfully."
 
 msgid "installedPlugins"
-msgstr "Installierte Plugins"
+msgstr "Installed plugins"
 
 msgid "finalizeHelpNotice"
-msgstr "Sie brauchen Hilfe bei der weiteren Einrichtung von JTL-Shop? Folgen Sie einfach einem der Links in unseren JTL-Guide!"
+msgstr "You need help for further configurations of JTL-Shop? Follow this <a href=\"https://guide.jtl-software.de/\" target=\"_blank\">link</a> to our <a href=\"https://guide.jtl-software.de/\" target=\"_blank\">guide</a>!"
 
 msgid "recommendationAppearance"
-msgstr "Optik"
+msgstr "Appearance"
 
 msgid "recommendationAppearanceDesc"
-msgstr "Sie können das Aussehen des JTL-Shops anpassen, so dass es genau zu Ihrem Unternehmen passt."
+msgstr "Change the appearance of JTL-Shop to adjust it to your company design."
 
 msgid "recommendationFormsAndTexts"
-msgstr "Formular und Texte"
+msgstr "Forms and texts"
 
 msgid "recommendationFormsAndTextsDesc"
-msgstr "Die meisten Texte und Formulare, die in JTL-Shop angezeigt werden, können Sie individuell an Ihren Onlineshop anpassen."
+msgstr "Most forms and text in JTL-Shop can be changed individually."
 
 msgid "recommendationSystem"
-msgstr "Systemverwaltung"
+msgstr "Administration"
 
 msgid "recommendationSystemDesc"
-msgstr "Passwörter ändern, Weiterleitungen schalten, Produktdarstellung auf den Artikeldetailsseiten und vieles mehr."
+msgstr "Change passwords, redirects, item view, item detail view and more."
 
 msgid "recommendationExtendShop"
-msgstr "Shop erweitern"
+msgstr "Shop extensions"
 
 msgid "recommendationExtendShopDesc"
-msgstr "Mit Plugins und Modulen können Sie die Funktionalitäten von JTL-Shop um sinnvolle Optionen ergänzen."
+msgstr "Use plugins and modules to extend the functionality of JTL-Shop to your liking."
 
 msgid "recommendationMarketingSeo"
-msgstr "Shop Marketing / SEO"
+msgstr "Shop marketing / SEO"
 
 msgid "recommendationMarketingSeoDesc"
-msgstr "JTL-Shop bietet Ihnen verschiedene Möglichkeiten, mit den Inhalten Ihres Onlineshops Marketing zu betreiben."
+msgstr "JTL-Shop offers different options to do marketing for your online shop."
 
 msgid "recommendationJTLSearch"
 msgstr "JTL-Search"
 
 msgid "recommendationJTLSearchDesc"
-msgstr "JTL-Search ist ein kostenpflichtiges Zusatzmodul und ermöglicht Ihren Kunden eine fehlertolerante Suche und After-Search Navigation."
+msgstr "JTL-Search is a chargeable plugin which extends the search of JTL-Shop to be more error tolerant and other things."
+
+msgid "orderNumberSettings"
+msgstr "Order number settings"
+
+msgid "orderConfirmationBCC"
+msgstr "Order confirmation copy (bcc)"
+
+msgid "orderConfirmationBCCDesc"
+msgstr "For documentation we strongly recommend to provide an email-adress for copys of order confirmations. For an organzied structure, archive these via filters in your individual email account/client in seperate folders."
+
+msgid "adminUserEmail"
+msgstr "Email for this admin user"
+
+msgid "adminUserEmailDesc"
+msgstr "Necessary for forgot password function."

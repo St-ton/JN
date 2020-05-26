@@ -517,7 +517,7 @@ function setCurrencyConversionTooltipIO($fPreisNetto, $fPreisBrutto, $cTooltipID
 function addFav($title, $url)
 {
     $success     = false;
-    $kAdminlogin = (int)$_SESSION['AdminAccount']->kAdminlogin;
+    $kAdminlogin = Shop::Container()->getAdminAccount()->getID();
 
     if (!empty($title) && !empty($url)) {
         $success = AdminFavorite::add($kAdminlogin, $title, $url);

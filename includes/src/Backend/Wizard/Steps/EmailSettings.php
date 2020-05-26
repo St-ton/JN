@@ -2,6 +2,7 @@
 
 namespace JTL\Backend\Wizard\Steps;
 
+use JTL\Backend\AdminAccount;
 use JTL\Backend\Wizard\Question;
 use JTL\Backend\Wizard\QuestionInterface;
 use JTL\Backend\Wizard\QuestionType;
@@ -21,7 +22,7 @@ final class EmailSettings extends AbstractStep
      * ShopConfig constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(DbInterface $db, AdminAccount $adminAccount)
     {
         parent::__construct($db);
         $this->setTitle(__('stepFour'));
@@ -96,6 +97,32 @@ final class EmailSettings extends AbstractStep
                     ReturnType::DEFAULT
                 );
             }
+        });
+        $this->addQuestion($question);
+
+        $question = new Question($db);
+        $question->setID(14);
+        $question->setText(__('adminUserEmail'));
+        $question->setDescription(__('adminUserEmailDesc'));
+        $question->setType(QuestionType::TEXT);
+        $question->setValue($db->select(
+            'tadminlogin',
+            'kAdminlogin',
+            $adminAccount->getID(),
+            null,
+            null,
+            null,
+            null,
+            false,
+            'cMail'
+        )->cMail ?? '');
+        $question->setOnSave(function (QuestionInterface $question) use ($adminAccount, $db) {
+            $db->update(
+                'tadminlogin',
+                'kAdminlogin',
+                $adminAccount->getID(),
+                (object)['cMail' => $question->getValue()]
+            );
         });
         $this->addQuestion($question);
     }

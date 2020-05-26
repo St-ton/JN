@@ -7,7 +7,11 @@ use JTL\Shop;
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->redirectOnFailure();
 
-$factory    = new DefaultFactory(Shop::Container()->getDB(), Shop::Container()->getGetText());
+$factory    = new DefaultFactory(
+    Shop::Container()->getDB(),
+    Shop::Container()->getGetText(),
+    Shop::Container()->getAdminAccount()
+);
 $controller = new Controller($factory);
 $conf       = Shop::getSettings([CONF_GLOBAL]);
 

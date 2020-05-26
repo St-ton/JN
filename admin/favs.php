@@ -3,6 +3,7 @@
 use JTL\Backend\AdminFavorite;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Shop;
 
 /**
  * @global \JTL\Smarty\JTLSmarty     $smarty
@@ -12,7 +13,7 @@ use JTL\Helpers\Request;
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->redirectOnFailure();
 
-$adminID = (int)$_SESSION['AdminAccount']->kAdminlogin;
+$adminID = Shop::Container()->getAdminAccount()->getID();
 if (isset($_POST['title'], $_POST['url'])
     && Form::validateToken()
     && Request::verifyGPDataString('action') === 'save'

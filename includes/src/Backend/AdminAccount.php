@@ -671,4 +671,12 @@ class AdminAccount
 
         return false;
     }
+
+    /**
+     * @return int|null
+     */
+    public function getID(): ?int
+    {
+        return $_SESSION['AdminAccount']->kAdminlogin;
+    }
 }

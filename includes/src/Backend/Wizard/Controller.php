@@ -60,12 +60,12 @@ final class Controller
     {
         //TODO: errors?
         $errors = false;
-        foreach ($this->getSteps() as $step) {
-            foreach ($step->getQuestions() as $question) {
-                /** @var QuestionInterface $question */
-                $question->save();
-            }
-        }
+//        foreach ($this->getSteps() as $step) {
+//            foreach ($step->getQuestions() as $question) {
+//                /** @var QuestionInterface $question */
+//                $question->save();
+//            }
+//        }
         if (!$errors) {
             Shop::Container()->getDB()->update(
                 'teinstellungen',

@@ -3,6 +3,7 @@
 namespace JTL\Backend\Wizard;
 
 use Illuminate\Support\Collection;
+use JTL\Backend\AdminAccount;
 use JTL\Backend\Wizard\Steps\EmailSettings;
 use JTL\Backend\Wizard\Steps\GeneralSettings;
 use JTL\Backend\Wizard\Steps\LegalPlugins;
@@ -25,8 +26,9 @@ final class DefaultFactory
      * DefaultFactory constructor.
      * @param DbInterface $db
      * @param GetText $getText
+     * @param AdminAccount $adminAccount
      */
-    public function __construct(DbInterface $db, GetText $getText)
+    public function __construct(DbInterface $db, GetText $getText, AdminAccount $adminAccount)
     {
         $getText->loadConfigLocales();
 
@@ -34,7 +36,7 @@ final class DefaultFactory
         $this->steps->push(new GeneralSettings($db));
         $this->steps->push(new LegalPlugins($db));
         $this->steps->push(new PaymentPlugins($db));
-        $this->steps->push(new EmailSettings($db));
+        $this->steps->push(new EmailSettings($db, $adminAccount));
     }
 
     /**

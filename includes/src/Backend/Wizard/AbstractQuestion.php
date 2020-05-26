@@ -94,11 +94,6 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     protected $fullWidth = false;
 
     /**
-     * @var bool
-     */
-    protected $valid = true;
-
-    /**
      * @var callable
      */
     protected $validation;

@@ -129,10 +129,12 @@ $(document).on('click', `${modal} [${Data.prev}]`, () => {
 })
 
 $(document).on('click', `${modal} [${Data.next}]`, () => {
-    if(checkRequired().length === 0) {
+    ioCall('validateStepWizard', [$form.serializeArray()], function (result) {});
+
+    // if(checkRequired().length === 0) {
         updateSummary();
         showSlide((current < last) ? current + 1 : last);
-	}
+	// }
 })
 
 $(document).on('click', `${modal} input`, function() {

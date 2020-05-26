@@ -87,10 +87,21 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
      * @var bool
      */
     protected $required = true;
+
     /**
      * @var bool
      */
     protected $fullWidth = false;
+
+    /**
+     * @var bool
+     */
+    protected $valid = true;
+
+    /**
+     * @var callable
+     */
+    protected $validation;
 
     /**
      * AbstractQuestion constructor.
@@ -99,6 +110,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     public function __construct(DbInterface $db)
     {
         $this->setDB($db);
+        $this->setValidation();
     }
 
     /**
@@ -395,6 +407,37 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     public function setIsFullWidth(bool $fullWidth): void
     {
         $this->fullWidth = $fullWidth;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setValidation(?callable $validation = null): void
+    {
+        $this->validation = $validation ?? function (QuestionInterface $question) {
+            return (new QuestionValidation($question))->getValidationError();
+        };
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getValidation(): callable
+    {
+        return $this->validation;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function validate(): string
+    {
+        $cb = $this->getValidation();
+        if (\is_callable($cb)) {
+            return $cb($this);
+        }
+
+        return '';
     }
 
     /**

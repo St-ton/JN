@@ -5,6 +5,7 @@ namespace JTL\Backend\Wizard\Steps;
 use JTL\Backend\Wizard\Question;
 use JTL\Backend\Wizard\QuestionInterface;
 use JTL\Backend\Wizard\QuestionType;
+use JTL\Backend\Wizard\QuestionValidation;
 use JTL\Backend\Wizard\SelectOption;
 use JTL\DB\DbInterface;
 use JTL\Shop;

@@ -60,12 +60,12 @@ final class Controller
     {
         //TODO: errors?
         $errors = false;
-//        foreach ($this->getSteps() as $step) {
-//            foreach ($step->getQuestions() as $question) {
-//                /** @var QuestionInterface $question */
-//                $question->save();
-//            }
-//        }
+        foreach ($this->getSteps() as $step) {
+            foreach ($step->getQuestions() as $question) {
+                /** @var QuestionInterface $question */
+                $question->save();
+            }
+        }
         if (!$errors) {
             Shop::Container()->getDB()->update(
                 'teinstellungen',
@@ -75,6 +75,32 @@ final class Controller
             );
             Shop::Container()->getCache()->flushAll();
         }
+    }
+
+    /**
+     * @param array $post
+     */
+    public function validateStep(array $post): void
+    {
+        if (\is_array($post[0])) {
+            $postTMP = [];
+            foreach ($post as $postItem) {
+                $postTMP[$postItem['name']] = $postItem['value'];
+            }
+            $post = $postTMP;
+        }
+        $errorMessages = [];
+        foreach ($this->getSteps() as $step) {
+            foreach ($step->getQuestions() as $question) {
+                /** @var QuestionInterface $question */
+                $question->answerFromPost($post);
+                if (($validationError = $question->validate()) !== '') {
+                    $errorMessages[$question->getID()] = $validationError;
+                }
+            }
+        }
+
+        error_log(json_encode($errorMessages));
     }
 
     /**

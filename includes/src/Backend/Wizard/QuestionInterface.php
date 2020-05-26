@@ -202,6 +202,21 @@ interface QuestionInterface
     public function setIsFullWidth(bool $fullWidth): void;
 
     /**
+     *
+     */
+    public function validate(): string;
+
+    /**
+     * @param callable|null $validation
+     */
+    public function setValidation(?callable $validation): void;
+
+    /**
+     * @return callable
+     */
+    public function getValidation(): callable;
+
+    /**
      * @return stdClass
      */
     public function jsonSerialize(): stdClass;

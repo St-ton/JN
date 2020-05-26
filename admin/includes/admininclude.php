@@ -74,14 +74,6 @@ if ($loggedIn
     exit;
 }
 
-if ($loggedIn
-    && $conf['global']['global_wizard_done'] === 'N'
-    && strpos($_SERVER['SCRIPT_FILENAME'], 'wizard') === false
-) {
-    \header('Location: ' . Shop::getURL(true) . '/' . \PFAD_ADMIN . 'wizard.php');
-    exit;
-}
-
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'smartyinclude.php';
 
 Shop::Container()->singleton(CaptchaServiceInterface::class, static function () {

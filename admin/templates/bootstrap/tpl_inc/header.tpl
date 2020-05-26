@@ -56,45 +56,49 @@
     {getCurrentPage assign='currentPage'}
     <div class="spinner"></div>
     <div id="page-wrapper" class="backend-wrapper hidden disable-transitions{if $currentPage === 'index' || $currentPage === 'status'} dashboard{/if}">
-        {if !$hasPendingUpdates}
-        {include file='tpl_inc/backend_sidebar.tpl'}
+        {if !$hasPendingUpdates && $wizardDone}
+            {include file='tpl_inc/backend_sidebar.tpl'}
         {/if}
-        <div class="backend-main sidebar-offset">
+        <div class="backend-main {if $wizardDone}sidebar-offset{/if}">
             {if !$hasPendingUpdates}
             <div id="topbar" class="backend-navbar row mx-0 align-items-center topbar flex-nowrap">
                 <div class="col search px-0 px-md-3">
-                    {include file='tpl_inc/backend_search.tpl'}
+                    {if $wizardDone}
+                        {include file='tpl_inc/backend_search.tpl'}
+                    {/if}
                 </div>
                 <div class="col-auto ml-auto px-2">
                     <ul class="nav align-items-center">
-                        <li class="nav-item dropdown mr-md-3" id="favs-drop">
-                            {include file="tpl_inc/favs_drop.tpl"}
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a href="#" class="nav-link text-dark-gray px-2" data-toggle="dropdown">
-                                <span class="fal fa-map-marker-question fa-fw"></span>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <span class="dropdown-header">Hilfecenter</span>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="https://jtl-url.de/shopschritte" target="_blank" rel="noopener">
-                                    {__('firstSteps')}
+                        {if $wizardDone}
+                            <li class="nav-item dropdown mr-md-3" id="favs-drop">
+                                {include file="tpl_inc/favs_drop.tpl"}
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link text-dark-gray px-2" data-toggle="dropdown">
+                                    <span class="fal fa-map-marker-question fa-fw"></span>
                                 </a>
-                                <a class="dropdown-item" href="https://jtl-url.de/shopguide" target="_blank" rel="noopener">
-                                    {__('jtlGuide')}
-                                </a>
-                                <a class="dropdown-item" href="https://forum.jtl-software.de" target="_blank" rel="noopener">
-                                    {__('jtlForum')}
-                                </a>
-                                <a class="dropdown-item" href="https://www.jtl-software.de/Training" target="_blank" rel="noopener">
-                                    {__('training')}
-                                </a>
-                                <a class="dropdown-item" href="https://www.jtl-software.de/Servicepartner" target="_blank" rel="noopener">
-                                    {__('servicePartners')}
-                                </a>
-                            </div>
-                        </li>
-                        <li class="nav-item dropdown" id="notify-drop">{include file="tpl_inc/notify_drop.tpl"}</li>
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <span class="dropdown-header">Hilfecenter</span>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="https://jtl-url.de/shopschritte" target="_blank" rel="noopener">
+                                        {__('firstSteps')}
+                                    </a>
+                                    <a class="dropdown-item" href="https://jtl-url.de/shopguide" target="_blank" rel="noopener">
+                                        {__('jtlGuide')}
+                                    </a>
+                                    <a class="dropdown-item" href="https://forum.jtl-software.de" target="_blank" rel="noopener">
+                                        {__('jtlForum')}
+                                    </a>
+                                    <a class="dropdown-item" href="https://www.jtl-software.de/Training" target="_blank" rel="noopener">
+                                        {__('training')}
+                                    </a>
+                                    <a class="dropdown-item" href="https://www.jtl-software.de/Servicepartner" target="_blank" rel="noopener">
+                                        {__('servicePartners')}
+                                    </a>
+                                </div>
+                            </li>
+                            <li class="nav-item dropdown" id="notify-drop">{include file="tpl_inc/notify_drop.tpl"}</li>
+                        {/if}
                         <li class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle parent btn-toggle" data-toggle="dropdown">
                                 <i class="fal fa-language d-sm-none"></i> <span class="d-sm-block d-none">{$languageName}</span>

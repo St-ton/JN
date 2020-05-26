@@ -203,4 +203,8 @@ $smarty->assign('URL_SHOP', $shopURL)
     ->assign('availableLanguages', LanguageHelper::getInstance()->gibInstallierteSprachen())
     ->assign('languageName', Locale::getDisplayLanguage($langTag, $langTag))
     ->assign('languages', Shop::Container()->getGetText()->getAdminLanguages())
-    ->assign('faviconAdminURL', Shop::getFaviconURL(true));
+    ->assign('faviconAdminURL', Shop::getFaviconURL(true))
+    ->assign(
+        'wizardDone',
+        $conf['global']['global_wizard_done'] === 'Y' || \strpos($_SERVER['SCRIPT_NAME'], 'wizard.php') === false
+    );

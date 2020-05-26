@@ -15,17 +15,14 @@
      role="dialog"
      aria-labelledby="modal-setup-assistantTitle"
      aria-hidden="true"
-     data-backdrop="static"
-     {if $wizardFirstTime}data-keyboard="false"{/if}>
+     data-backdrop="static">
     <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
         <form method="post">
             <div class="modal-content">
                 <div class="modal-header">
-                    {if !$wizardFirstTime}
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span class="fal fa-times"></span>
-                        </button>
-                    {/if}
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span class="fal fa-times"></span>
+                    </button>
                 </div>
                 <div class="modal-body">
                     <img src="{$templateBaseURL}gfx/JTL-Shop-Logo-rgb.png" width="101" height="32" alt="JTL-Shop">

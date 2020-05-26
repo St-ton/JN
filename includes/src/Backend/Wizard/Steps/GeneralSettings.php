@@ -47,19 +47,19 @@ final class GeneralSettings extends AbstractStep
         $question->setSummaryText(__('secureDefaultSettings'));
         $question->setType(QuestionType::BOOL);
         $question->setOnSave(function (QuestionInterface $question) {
-            if ($question->getValue() === true) {
-                $question->updateConfig('kaufabwicklung_ssl_nutzen', 'P');
-                $question->updateConfig('email_smtp_verschluesselung', 'tls');
-                $question->updateConfig('email_methode', 'smtp');
-                $question->updateConfig('global_cookie_secure', 'Y');
-                $question->updateConfig('global_cookie_httponly', 'Y');
-            } else {
-                $question->updateConfig('kaufabwicklung_ssl_nutzen', 'N');
-                $question->updateConfig('email_smtp_verschluesselung', '');
-//                $question->updateConfig('email_methode', 'mail');
-                $question->updateConfig('global_cookie_secure', 'S');
-                $question->updateConfig('global_cookie_httponly', 'S');
-            }
+//            if ($question->getValue() === true) {
+//                $question->updateConfig('kaufabwicklung_ssl_nutzen', 'P');
+//                $question->updateConfig('email_smtp_verschluesselung', 'tls');
+//                $question->updateConfig('email_methode', 'smtp');
+//                $question->updateConfig('global_cookie_secure', 'Y');
+//                $question->updateConfig('global_cookie_httponly', 'Y');
+//            } else {
+//                $question->updateConfig('kaufabwicklung_ssl_nutzen', 'N');
+//                $question->updateConfig('email_smtp_verschluesselung', '');
+////                $question->updateConfig('email_methode', 'mail');
+//                $question->updateConfig('global_cookie_secure', 'S');
+//                $question->updateConfig('global_cookie_httponly', 'S');
+//            }
         });
         $this->addQuestion($question);
 

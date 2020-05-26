@@ -12,5 +12,4 @@ $controller = new Controller($factory);
 $conf       = Shop::getSettings([CONF_GLOBAL]);
 
 $smarty->assign('steps', $controller->getSteps())
-    ->assign('wizardFirstTime', $conf['global']['global_wizard_done'] === 'N')
     ->display('wizard.tpl');

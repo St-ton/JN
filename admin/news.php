@@ -30,7 +30,7 @@ $newsCategory   = new Category($db);
 $languages      = LanguageHelper::getAllLanguages();
 $defaultLang    = LanguageHelper::getDefaultLanguage();
 $adminID        = (int)$_SESSION['AdminAccount']->kAdminlogin;
-$adminName      = $db->select('tadminlogin','kAdminlogin',$adminID)->cName;
+$adminName      = $db->select('tadminlogin', 'kAdminlogin', $adminID)->cName;
 
 $_SESSION['kSprache'] = $defaultLang->kSprache;
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {

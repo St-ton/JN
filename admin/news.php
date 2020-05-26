@@ -210,6 +210,7 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
             $controller->newsRedirect(empty($tab) ? 'inaktiv' : $tab, $controller->getMsg());
         } else {
             $controller->setErrorMsg(__('errorAtLeastOneNewsComment'));
+            $controller->newsRedirect('', $controller->getErrorMsg());
         }
     } elseif (isset(
         $_POST['newskommentar_freischalten'],

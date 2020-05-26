@@ -5,6 +5,9 @@ msgstr ""
 msgid "agbwrb"
 msgstr "Terms/Withdrawal"
 
+msgid "availableAGBWRB"
+msgstr "Available Terms/Withdrawal"
+
 msgid "agbwrbURL"
 msgstr "https://jtl-url.de/09qo2"
 

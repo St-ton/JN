@@ -17,7 +17,7 @@
                 if (height < wndHeight) {
                     offset = offset - ((wndHeight / 2) - (height / 2));
                 }
-                
+
                 $('html, body').stop().animate({ scrollTop: offset }, 400);
             }
         });
@@ -77,7 +77,7 @@
                                     <input class="form-control" type="text" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{if isset($cnf->gesetzterWert)}{$cnf->gesetzterWert}{/if}" tabindex="1" />
                                 {/if}
                             </div>
-                            {if $cnf->cBeschreibung}
+                            {if !empty($cnf->cBeschreibung)}
                                 <div class="col-auto ml-sm-n4 order-2 order-sm-3">
                                     {getHelpDesc cDesc=$cnf->cBeschreibung cID=$cnf->kEinstellungenConf}
                                 </div>

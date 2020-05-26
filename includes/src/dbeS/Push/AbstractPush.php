@@ -79,13 +79,17 @@ abstract class AbstractPush
     }
 
     /**
-     * @param string       $zip
+     * @param string $zip
      * @param object|array $xml
+     * @param string $wawiVersion
      */
-    public function zipRedirect($zip, $xml): void
+    public function zipRedirect($zip, $xml, string $wawiVersion): void
     {
-        $xmlfile = \fopen(\PFAD_SYNC_TMP . self::XML_FILE, 'w');
-        \fwrite($xmlfile, strtr(Text::convertISO(XML::serialize($xml)), "\0", ' '));
+        $xmlfile       = \fopen(\PFAD_SYNC_TMP . self::XML_FILE, 'w');
+        $serializedXML = $wawiVersion === 'unknown'
+            ? \strtr(Text::convertISO(XML::serialize($xml)), "\0", ' ')
+            : XML::serialize($xml);
+        \fwrite($xmlfile, $serializedXML);
         \fclose($xmlfile);
         if (\file_exists(\PFAD_SYNC_TMP . self::XML_FILE)) {
             $archive = new ZipArchive();

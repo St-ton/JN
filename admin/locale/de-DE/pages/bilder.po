@@ -12,7 +12,10 @@ msgid "bilderDesc"
 msgstr "Bildeinstellungen"
 
 msgid "newscategory"
-msgstr "Blogkategorie"
+msgstr "Blogkategorien"
 
 msgid "News"
 msgstr "Blog"
+
+msgid "configGroups"
+msgstr "Konfigurationsgruppen"

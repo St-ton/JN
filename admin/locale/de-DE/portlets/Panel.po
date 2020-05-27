@@ -10,3 +10,6 @@ msgstr "Kopf anzeigen"
 
 msgid "showFooter"
 msgstr "Fuß anzeigen"
+
+msgid "panelType"
+msgstr "Farbschema"

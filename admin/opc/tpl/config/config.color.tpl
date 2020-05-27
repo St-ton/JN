@@ -2,7 +2,13 @@
     {$propid = $propname}
 {/if}
 <div class="form-group no-pb">
-    <label for="config-{$propid}">{$propdesc.label}</label>
+    <label for="config-{$propid}"
+            {if !empty($propdesc.desc) || !empty($propdesc.hint)}
+                data-toggle="tooltip" title="{$propdesc.desc|default:''} - {$propdesc.hint|default:''}"
+                data-placement="auto"
+            {/if}>
+        {$propdesc.label}
+    </label>
     <div class="input-group" id="config-{$propid}-group">
         <input type="text" class="form-control colorpicker-input" name="{$propname}" value="{$propval}"
                {if $required}required{/if} id="config-{$propid}" autocomplete="off"

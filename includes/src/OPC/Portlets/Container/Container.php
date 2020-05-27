@@ -36,6 +36,7 @@ class Container extends Portlet
                 'default' => false,
                 'label' => __('boxedContainer'),
                 'width' => 50,
+                'desc'  => __('boxedContainerDesc')
             ],
             'background-flag' => [
                 'type'    => InputType::RADIO,

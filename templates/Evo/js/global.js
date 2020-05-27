@@ -540,6 +540,7 @@ $(document).ready(function () {
             minLength: 0
         },
         {
+            limit:  50,
             name:   'cities',
             source: citySuggestion
         }

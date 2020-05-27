@@ -102,7 +102,7 @@ msgid "successFileAppendixDelete"
 msgstr "Dateianhänge für die gewählte Sprache wurden erfolgreich gelöscht."
 
 msgid "multipleDividedColon"
-msgstr "(mehrere Empfänger durch Semikolon trennen)"
+msgstr "Mehrere Empfänger durch Semikolon trennen"
 
 msgid "resetEmailTemplate"
 msgstr "Die E-Mail-Vorlage wird zurückgesetzt."
@@ -135,7 +135,7 @@ msgstr "Neukundenregistrierung"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_accounterstellung_durch_betreiber"
-msgstr "Erstellung eines Benutzerkontos durch den Onlineshop-Betreiber"
+msgstr "Erstellung eines Kundenkontos durch den Onlineshop-Betreiber"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_bestellung_bezahlt"
@@ -147,7 +147,7 @@ msgstr "Bestellung versandt"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_account_geloescht"
-msgstr "Löschung eines Benutzerkontos"
+msgstr "Löschung eines Kundenkontos"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_kdgrp_zuweisung"

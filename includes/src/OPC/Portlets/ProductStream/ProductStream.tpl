@@ -54,6 +54,12 @@
             {/foreach}
         </div>
     {elseif $style === 'slider'}
+        {if $inContainer === false}
+            <div class="container-fluid">
+        {/if}
         {include file='snippets/product_slider.tpl' productlist=$productlist}
+        {if $inContainer === false}
+            </div>
+        {/if}
     {/if}
 {/if}

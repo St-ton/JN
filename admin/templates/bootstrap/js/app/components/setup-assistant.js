@@ -1,3 +1,4 @@
+import { startSpinner, stopSpinner } from '../snippets/spinner.js'
 
 const modal					= '#modal-setup-assistant'
 const dataPrefix			= 'data-setup'
@@ -94,27 +95,6 @@ const updateSummary = (slide = current) => {
 	})
 }
 
-const checkRequired = slide => {
-    let errors     = [],
-    	$summaries = $currentSlide.find(`[${Data.summaryId}]`);
-
-    $.each($summaries, (index, summary) => {
-        let $summary   = $(summary),
-        	isRequired = $summary.prop('required'),
-        	isCheckbox = $summary.is(':checkbox'),
-        	id 		   = $summary.attr(`${Data.summaryId}`);
-
-        if(isRequired) {
-        	if ((isCheckbox && !$summary.prop('checked')) || !$summary.val()) {
-                errors.push(id);
-                $summary.parent().addClass('error');
-			}
-        }
-    })
-
-	return errors;
-}
-
 /* events */
 
 $(document).on('click', `${modal} [${Data.step}]:not(.active):not(.active ~ [${Data.step}])`, function(e) {
@@ -129,6 +109,7 @@ $(document).on('click', `${modal} [${Data.prev}]`, () => {
 })
 
 $(document).on('click', `${modal} [${Data.next}]`, () => {
+    startSpinner();
     ioCall('validateStepWizard', [$currentSlide.find(`[${Data.summaryId}]`).serializeArray()], function (errors) {
         if (errors.length !== 0) {
         	$.each(errors, (index, error) => {
@@ -140,6 +121,8 @@ $(document).on('click', `${modal} [${Data.next}]`, () => {
             updateSummary();
             showSlide((current < last) ? current + 1 : last);
 		}
+	}).done(function () {
+        stopSpinner();
 	});
 });
 

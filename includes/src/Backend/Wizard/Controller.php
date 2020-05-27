@@ -33,24 +33,16 @@ final class Controller
         if (empty($post)) {
             return;
         }
-        if (\is_array($post[0])) {
-            $postTMP = [];
-            foreach ($post as $postItem) {
-                $postTMP[$postItem['name']] = $postItem['value'];
-            }
-            $post = $postTMP;
-        }
-        //TODO: errors?
-        $errors = false;
+        $post = $this->serializeToArray($post);
+
         foreach ($this->getSteps() as $step) {
             foreach ($step->getQuestions() as $question) {
                 /** @var QuestionInterface $question */
                 $question->answerFromPost($post);
             }
         }
-        if (!$errors) {
-            $this->finish();
-        }
+
+        $this->finish();
     }
 
     /**
@@ -79,8 +71,32 @@ final class Controller
 
     /**
      * @param array $post
+     * @return array
      */
-    public function validateStep(array $post): void
+    public function validateStep(array $post): array
+    {
+        $post          = $this->serializeToArray($post);
+        $errorMessages = [];
+        foreach ($this->getSteps() as $step) {
+            foreach ($step->getQuestions() as $question) {
+                if (isset($post['question-' . $question->getID()])) {
+                    /** @var QuestionInterface $question */
+                    $question->answerFromPost($post);
+                    if (($validationError = $question->validate()) !== '') {
+                        $errorMessages[$question->getID()] = $validationError;
+                    }
+                }
+            }
+        }
+
+        return $errorMessages;
+    }
+
+    /**
+     * @param array $post
+     * @return array
+     */
+    public function serializeToArray(array $post): array
     {
         if (\is_array($post[0])) {
             $postTMP = [];
@@ -89,18 +105,8 @@ final class Controller
             }
             $post = $postTMP;
         }
-        $errorMessages = [];
-        foreach ($this->getSteps() as $step) {
-            foreach ($step->getQuestions() as $question) {
-                /** @var QuestionInterface $question */
-                $question->answerFromPost($post);
-                if (($validationError = $question->validate()) !== '') {
-                    $errorMessages[$question->getID()] = $validationError;
-                }
-            }
-        }
 
-        error_log(json_encode($errorMessages));
+        return $post;
     }
 
     /**

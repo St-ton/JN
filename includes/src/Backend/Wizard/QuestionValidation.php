@@ -54,6 +54,7 @@ class QuestionValidation
     public function checkEmail(): bool
     {
         if ($this->question->getType() === QuestionType::EMAIL
+            && !empty($this->question->getValue())
             && Text::filterEmailAddress($this->question->getValue()) === false
         ) {
             $this->setValidationError('Keine Email');

@@ -105,8 +105,9 @@ final class EmailSettings extends AbstractStep
         $question->setID(14);
         $question->setText(__('adminUserEmail'));
         $question->setDescription(__('adminUserEmailDesc'));
-        $question->setType(QuestionType::TEXT);
+        $question->setType(QuestionType::EMAIL);
         $question->setIsFullWidth(true);
+        $question->setIsRequired(false);
         $question->setValue($db->select(
             'tadminlogin',
             'kAdminlogin',

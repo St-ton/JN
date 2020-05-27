@@ -186,6 +186,7 @@ final class GeneralSettings extends AbstractStep
         $question->setText(__('bestellabschluss_bestellnummer_anfangsnummer_name'));
         $question->setDescription(__('bestellabschluss_bestellnummer_anfangsnummer_desc'));
         $question->setType(QuestionType::NUMBER);
+        $question->setIsRequired(false);
         $question->setValue(Shop::getSettingValue(
             \CONF_KAUFABWICKLUNG,
             'bestellabschluss_bestellnummer_anfangsnummer'

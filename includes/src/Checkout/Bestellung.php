@@ -1050,7 +1050,7 @@ class Bestellung
                 $item->nPosTyp = (int)$item->nPosTyp;
                 if ($item->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL
                     || !isset($item->Artikel)
-                    || !$item instanceof Artikel
+                    || !$item->Artikel instanceof Artikel
                 ) {
                     continue;
                 }

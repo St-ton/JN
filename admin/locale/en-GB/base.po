@@ -1817,18 +1817,6 @@ msgstr "Period"
 msgid "directEntry"
 msgstr "Direct entry"
 
-msgid "width"
-msgstr "Width"
-
-msgid "height"
-msgstr "Height"
-
-msgid "start"
-msgstr "Start"
-
-msgid "end"
-msgstr "End"
-
 msgid "color"
 msgstr "Colour"
 

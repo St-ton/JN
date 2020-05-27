@@ -19,3 +19,6 @@ msgstr "Titel"
 
 msgid "bannerAreas"
 msgstr "Banner-Zonen"
+
+msgid "altTextDesc"
+msgstr "„alt“-Attribut des Bildes"

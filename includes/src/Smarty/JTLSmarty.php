@@ -95,24 +95,24 @@ class JTLSmarty extends \SmartyBC
             if (!\file_exists($compileDir)) {
                 \mkdir($compileDir);
             }
-            $templatePaths[$this->context] = \PFAD_ROOT . \PFAD_TEMPLATES . $tplDir . '/';
+            $this->template_dir = [];
             $this->setCompileDir($compileDir)
                 ->setCacheDir(\PFAD_ROOT . \PFAD_COMPILEDIR . $tplDir . '/' . 'page_cache/')
                 ->setPluginsDir(\SMARTY_PLUGINS_DIR)
                 ->assign('tplDir', \PFAD_ROOT . \PFAD_TEMPLATES . $tplDir . '/');
 
             if ($parent !== null) {
-                self::$isChildTemplate  = true;
-                $templatePaths[$parent] = \PFAD_ROOT . \PFAD_TEMPLATES . $parent;
+                self::$isChildTemplate = true;
+                $this->addTemplateDir(\PFAD_ROOT . \PFAD_TEMPLATES . $parent, $parent);
                 $this->assign('tplDir', \PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/')
                     ->assign('parent_template_path', \PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/')
                     ->assign('parentTemplateDir', \PFAD_TEMPLATES . $parent . '/');
             }
+            $this->addTemplateDir(\PFAD_ROOT . \PFAD_TEMPLATES . $tplDir . '/', $this->context);
             foreach (Helper::getTemplatePaths() as $moduleId => $path) {
-                $templateKey                 = 'plugin_' . $moduleId;
-                $templatePaths[$templateKey] = $path;
+                $templateKey = 'plugin_' . $moduleId;
+                $this->addTemplateDir($path, $templateKey);
             }
-            $this->setTemplateDir($templatePaths);
         } else {
             $compileDir = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_COMPILEDIR;
             if (!\file_exists($compileDir)) {

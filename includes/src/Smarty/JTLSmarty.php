@@ -108,7 +108,7 @@ class JTLSmarty extends \SmartyBC
             $this->addTemplateDir(\PFAD_ROOT . \PFAD_TEMPLATES . $tplDir . '/', $this->context);
             if ($parent !== null) {
                 $this->parentTemplateName = $parent;
-                self::$isChildTemplate = true;
+                self::$isChildTemplate    = true;
                 $this->addTemplateDir(\PFAD_ROOT . \PFAD_TEMPLATES . $parent, $parent);
                 $this->assign('tplDir', \PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/')
                     ->assign('parent_template_path', \PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/')

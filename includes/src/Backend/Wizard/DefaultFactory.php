@@ -31,6 +31,7 @@ final class DefaultFactory
     public function __construct(DbInterface $db, GetText $getText, AdminAccount $adminAccount)
     {
         $getText->loadConfigLocales();
+        $getText->loadAdminLocale('pages/wizard');
 
         $this->steps = new Collection();
         $this->steps->push(new GeneralSettings($db));

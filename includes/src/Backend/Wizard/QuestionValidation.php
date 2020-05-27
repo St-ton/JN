@@ -40,7 +40,7 @@ class QuestionValidation
     public function checkRequired(): bool
     {
         if ($this->question->isRequired() && empty($this->question->getValue())) {
-            $this->setValidationError('Pflichtfeld');
+            $this->setValidationError(__('validationErrorRequired'));
 
             return false;
         }
@@ -57,7 +57,7 @@ class QuestionValidation
             && !empty($this->question->getValue())
             && Text::filterEmailAddress($this->question->getValue()) === false
         ) {
-            $this->setValidationError('Keine Email');
+            $this->setValidationError(__('validationErrorIncorrectEmail'));
 
             return false;
         }

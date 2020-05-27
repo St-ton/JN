@@ -184,3 +184,9 @@ msgstr "Email for this admin user"
 
 msgid "adminUserEmailDesc"
 msgstr "Necessary for forgot password function."
+
+msgid "validationErrorRequired"
+msgstr "Required: Please fill this field."
+
+msgid "validationErrorIncorrectEmail"
+msgstr "Please enter a valid email."

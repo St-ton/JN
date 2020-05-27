@@ -2,7 +2,13 @@
     {$propid = $propname}
 {/if}
 <div class="form-group">
-    <label for="config-{$propid}">{$propdesc.label}</label>
+    <label for="config-{$propid}"
+            {if !empty($propdesc.desc) || !empty($propdesc.hint)}
+                data-toggle="tooltip" title="{$propdesc.desc|default:''} - {$propdesc.hint|default:''}"
+                data-placement="auto"
+            {/if}>
+        {$propdesc.label}
+    </label>
     <div class="select-wrapper">
         <select class="form-control" id="config-{$propid}" name="{$propname}" {if $required === true}required{/if}>
             {foreach $propdesc.options as $value => $label}

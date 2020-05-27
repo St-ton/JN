@@ -19,3 +19,6 @@ msgstr "Name"
 
 msgid "bannerAreas"
 msgstr "Banner zones"
+
+msgid "altTextDesc"
+msgstr "„alt“ attribute of the image"

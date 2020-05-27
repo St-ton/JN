@@ -25,3 +25,6 @@ msgstr "kein Hintergrund"
 
 msgid "placeholderImage"
 msgstr "Platzhalterbild"
+
+msgid "boxedContainerDesc"
+msgstr "Responsiver Container mit konstanter Breite"

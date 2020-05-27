@@ -25,3 +25,6 @@ msgstr "no background"
 
 msgid "placeholderImage"
 msgstr "Placeholder image"
+
+msgid "boxedContainerDesc"
+msgstr "Responsive container with fixed width"

@@ -61,7 +61,8 @@ class Row extends Portlet
                     'sm' => '6+6',
                     'md' => '6+6',
                     'lg' => '6+6',
-                ]
+                ],
+                'desc' => __('rowLayoutDesc'),
             ],
         ];
     }

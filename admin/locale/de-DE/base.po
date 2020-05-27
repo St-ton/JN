@@ -1817,18 +1817,6 @@ msgstr "Zeitraum"
 msgid "directEntry"
 msgstr "Direkter Einstieg"
 
-msgid "width"
-msgstr "Breite"
-
-msgid "height"
-msgstr "Höhe"
-
-msgid "start"
-msgstr "Start"
-
-msgid "end"
-msgstr "Ende"
-
 msgid "color"
 msgstr "Farbe"
 

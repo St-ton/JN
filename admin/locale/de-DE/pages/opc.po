@@ -110,6 +110,10 @@ msgstr "Verstecken bei MD"
 msgid "Hidden on LG"
 msgstr "Verstecken bei LG"
 
+msgid "cssNumericDesc"
+msgstr "Geben Sie den gewünschten Wert ohne Leerzeichen und mit Punkt als Dezimaltrennzeichen ein "
+"(z.B. 5px, 0.5em, 50%)."
+
 # Animations tab
 
 msgid "Animation style"

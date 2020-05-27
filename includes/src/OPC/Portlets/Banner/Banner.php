@@ -48,6 +48,7 @@ class Banner extends Portlet
             ],
             'alt'   => [
                 'label' => __('alternativeText'),
+                'desc'  => __('altTextDesc'),
             ],
         ];
     }

@@ -16,3 +16,7 @@ msgstr "Layout M"
 
 msgid "layoutL"
 msgstr "Layout L"
+
+msgid "rowLayoutDesc"
+msgstr "Specifies the width of columns on devices of different sizes. 12 means that a column is displayed at "
+"full width."

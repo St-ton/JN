@@ -83,6 +83,7 @@ trait PortletStyles
                 'label'   => __('Font size'),
                 'default' => '',
                 'width'   => 34,
+                'desc'    => __('cssNumericDesc'),
             ],
             'box-styles'  => [
                 'type'    => InputType::BOX_STYLES,

@@ -206,5 +206,6 @@ $smarty->assign('URL_SHOP', $shopURL)
     ->assign('faviconAdminURL', Shop::getFaviconURL(true))
     ->assign(
         'wizardDone',
-        $conf['global']['global_wizard_done'] === 'Y' || \strpos($_SERVER['SCRIPT_NAME'], 'wizard.php') === false
+        ($conf['global']['global_wizard_done'] ?? 'Y') === 'Y'
+        || \strpos($_SERVER['SCRIPT_NAME'], 'wizard.php') === false
     );

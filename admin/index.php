@@ -75,7 +75,7 @@ if (Request::postInt('adminlogin') === 1) {
             case AdminLoginStatus::LOGIN_OK:
                 Backend::getInstance()->reHash();
                 $_SESSION['loginIsValid'] = true; // "enable" the "header.tpl"-navigation again
-                if ($conf['global']['global_wizard_done'] === 'N') {
+                if (($conf['global']['global_wizard_done'] ?? 'Y') === 'N') {
                     \header('Location: ' . Shop::getURL(true) . '/' . \PFAD_ADMIN . 'wizard.php');
                     exit;
                 }

@@ -415,7 +415,7 @@ class JTLSmarty extends \SmartyBC
                         }
                     }
                     if (\file_exists($templateDir . $resource_cfb_name)) {
-                        $extends    [] = \sprintf('[%s]%s', $module, $resource_cfb_name);
+                        $extends[] = \sprintf('[%s]%s', $module, $resource_cfb_name);
                     }
                 }
                 if (\count($extends) > 1) {

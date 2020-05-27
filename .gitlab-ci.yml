@@ -263,6 +263,8 @@ code_quality:
   rules:
     - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH
     - if: $CI_MERGE_REQUEST_ID
+    - if: $CI_COMMIT_TAG != ""
+      when: never
 
 removeContainerCodeQuality:
   stage: cleanUpCodeQuality
@@ -278,11 +280,14 @@ removeContainerCodeQuality:
     - failedCodeQuality
 #  <<: *debugging
   rules:
+    - when: on_failure
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: never
     - if: $CI_COMMIT_BRANCH =~ /^release\/.*$/
       when: never
-    - when: on_failure
+    - if: $CI_COMMIT_TAG != ""
+      when: never
+
 
 test_PHP_7.2:
   stage: test
@@ -300,6 +305,8 @@ test_PHP_7.2:
   rules:
     - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH
     - if: $CI_MERGE_REQUEST_ID
+    - if: $CI_COMMIT_TAG != ""
+      when: never
 
 test_PHP_7.3:
   stage: test
@@ -317,6 +324,8 @@ test_PHP_7.3:
   rules:
     - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH
     - if: $CI_MERGE_REQUEST_ID
+    - if: $CI_COMMIT_TAG != ""
+      when: never
 
 removeContainerPHP7.2:
   stage: cleanUpTest
@@ -396,12 +405,11 @@ deploy:
     - *postBuildDeployScripts
     - dockerLogout
   rules:
-    - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
       when: never
     - if: $CI_MERGE_REQUEST_ID
       when: never
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-    - if: $CI_COMMIT_BRANCH =~ /^release\/.*$/
+    - if: $CI_COMMIT_REF_NAME =~ /^release\/.*$/
     - if: $CI_COMMIT_TAG
     - when: on_success
   tags:
@@ -432,7 +440,8 @@ tagsDeployment:
     - buildscript release:deployment "$CI_BUILD_SERVER_ARCHIVE_PATH"
 #  <<: *debugging
   rules:
-    - if: $CI_COMMIT_BRANCH != "" && $CI_COMMIT_TAG
+    - if: $CI_COMMIT_TAG == $CI_COMMIT_REF_NAME
+    - if: $CI_COMMIT_TAG == ''
       when: never
   tags:
     - build

@@ -52,6 +52,11 @@ class JTLSmarty extends SmartyBC
     private $templateDir;
 
     /**
+     * @var string|null
+     */
+    private $parentTemplateName;
+
+    /**
      * modified constructor with custom initialisation
      *
      * @param bool   $fast - set to true when init from backend to avoid setting session data
@@ -99,15 +104,16 @@ class JTLSmarty extends SmartyBC
             $this->setCompileDir($compileDir)
                 ->setCacheDir(\PFAD_ROOT . \PFAD_COMPILEDIR . $tplDir . '/' . 'page_cache/')
                 ->setPluginsDir(\SMARTY_PLUGINS_DIR)
-                ->assign('tplDir', \PFAD_ROOT . \PFAD_TEMPLATES . $tplDir . '/');
+                ->assign('tplDir', \PFAD_ROOT . \PFAD_TEMPLATES . $tplDir . '/')
+                ->addTemplateDir(\PFAD_ROOT . \PFAD_TEMPLATES . $tplDir . '/', $this->context);
             if ($parent !== null) {
-                self::$isChildTemplate = true;
+                $this->parentTemplateName = $parent;
+                self::$isChildTemplate    = true;
                 $this->addTemplateDir(\PFAD_ROOT . \PFAD_TEMPLATES . $parent, $parent);
                 $this->assign('tplDir', \PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/')
                     ->assign('parent_template_path', \PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/')
                     ->assign('parentTemplateDir', \PFAD_TEMPLATES . $parent . '/');
             }
-            $this->addTemplateDir(\PFAD_ROOT . \PFAD_TEMPLATES . $tplDir . '/', $this->context);
             foreach (Helper::getTemplatePaths() as $moduleId => $path) {
                 $templateKey = 'plugin_' . $moduleId;
                 $this->addTemplateDir($path, $templateKey);
@@ -131,6 +137,7 @@ class JTLSmarty extends SmartyBC
                 ->setPluginsDir(\SMARTY_PLUGINS_DIR);
         }
         $this->templateDir = $tplDir;
+        Shop::dbg($this->getTemplateDir());
 
         return $parent;
     }
@@ -410,9 +417,11 @@ class JTLSmarty extends SmartyBC
                 'transform' => $transform
             ]);
             if ($resourceName === $resource_cfb_name) {
-                $extends = [];
-                foreach ($this->getTemplateDir() as $module => $templateDir) {
-                    if (\mb_strpos($module, 'plugin_') === 0) {
+                $extends   = [];
+                $pluginHit = false;
+                foreach ($this->getExtendableTemplateDirs() as $module => $templateDir) {
+                    $isPlugin = \mb_strpos($module, 'plugin_') === 0;
+                    if ($isPlugin === true) {
                         $pluginID    = \mb_substr($module, 7);
                         $templateVar = 'oPlugin_' . $pluginID;
                         if ($this->getTemplateVars($templateVar) === null) {
@@ -421,11 +430,13 @@ class JTLSmarty extends SmartyBC
                         }
                     }
                     if (\file_exists($templateDir . $resource_cfb_name)) {
-                        $extends    [] = \sprintf('[%s]%s', $module, $resource_cfb_name);
+                        $extends[] = \sprintf('[%s]%s', $module, $resource_cfb_name);
+                        if ($isPlugin) {
+                            $pluginHit = true;
+                        }
                     }
                 }
-
-                if (\count($extends) > 1) {
+                if ($pluginHit === true && \count($extends) > 1) {
                     $transform         = false;
                     $resource_cfb_name = \sprintf(
                         'extends:%s',
@@ -436,6 +447,32 @@ class JTLSmarty extends SmartyBC
         }
 
         return $transform ? ('file:' . $resource_cfb_name) : $resource_cfb_name;
+    }
+
+    /**
+     * for displaying templates we need the hierarchy to be: 1)child 2)parent 3..n)plugin
+     * but when building "extends:[tpl1]some/template.tpl|[tpl2]some/template.tpl|.." strings
+     * it must be 1)parent 2)child 3..n)plugin - so the list of template paths has to be sorted differently
+     *
+     * @return array
+     */
+    private function getExtendableTemplateDirs(): array
+    {
+        $dirs = $this->getTemplateDir();
+        if ($this->parentTemplateName !== null) {
+            \uksort($dirs, function ($a, $b) {
+                if ($a === $this->parentTemplateName) {
+                    return -1;
+                }
+                if ($b === $this->parentTemplateName) {
+                    return 1;
+                }
+
+                return 0;
+            });
+        }
+
+        return $dirs;
     }
 
     /**

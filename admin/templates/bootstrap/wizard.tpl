@@ -134,10 +134,10 @@
 
                             <div class="form-row">
                                 <div class="col-lg-6 mb-2">
-                                    <a href="#" class="card setup-card h-100">
+                                    <a href="{__('recommendationGuideLink')}" class="card setup-card h-100" target="_blank">
                                         <div class="card-body">
-                                            <span class="setup-subheadline mt-0 mb-2">{__('recommendationAppearance')}</span>
-                                            <p class="text-muted small m-0">{__('recommendationAppearanceDesc')}</p>
+                                            <span class="setup-subheadline mt-0 mb-2">{__('recommendationGuide')}</span>
+                                            <p class="text-muted small m-0">{__('recommendationGuideDesc')}</p>
                                             <span class="icon-hover text-primary icon-more">
 												<span class="fal fa-long-arrow-right"></span>
 												<span class="fas fa-long-arrow-right"></span>
@@ -146,10 +146,10 @@
                                     </a>
                                 </div>
                                 <div class="col-lg-6 mb-2">
-                                    <a href="#" class="card setup-card h-100">
+                                    <a href="{__('recommendationSupportLink')}" class="card setup-card h-100" target="_blank">
                                         <div class="card-body">
-                                            <span class="setup-subheadline mt-0 mb-2">{__('recommendationFormsAndTexts')}</span>
-                                            <p class="text-muted small m-0">{__('recommendationFormsAndTextsDesc')}</p>
+                                            <span class="setup-subheadline mt-0 mb-2">{__('recommendationSupport')}</span>
+                                            <p class="text-muted small m-0">{__('recommendationSupportDesc')}</p>
                                             <span class="icon-hover text-primary icon-more">
 												<span class="fal fa-long-arrow-right"></span>
 												<span class="fas fa-long-arrow-right"></span>
@@ -158,10 +158,10 @@
                                     </a>
                                 </div>
                                 <div class="col-lg-6 mb-2">
-                                    <a href="#" class="card setup-card h-100">
+                                    <a href="{__('recommendationExtensionStoreLink')}" class="card setup-card h-100" target="_blank">
                                         <div class="card-body">
-                                            <span class="setup-subheadline mt-0 mb-2">{__('recommendationSystem')}</span>
-                                            <p class="text-muted small m-0">{__('recommendationSystemDesc')}</p>
+                                            <span class="setup-subheadline mt-0 mb-2">{__('recommendationExtensionStore')}</span>
+                                            <p class="text-muted small m-0">{__('recommendationExtensionStoreDesc')}</p>
                                             <span class="icon-hover text-primary icon-more">
 												<span class="fal fa-long-arrow-right"></span>
 												<span class="fas fa-long-arrow-right"></span>
@@ -170,10 +170,10 @@
                                     </a>
                                 </div>
                                 <div class="col-lg-6 mb-2">
-                                    <a href="#" class="card setup-card h-100">
+                                    <a href="{__('recommendationIssuetrackerLink')}" class="card setup-card h-100" target="_blank">
                                         <div class="card-body">
-                                            <span class="setup-subheadline mt-0 mb-2">{__('recommendationExtendShop')}</span>
-                                            <p class="text-muted small m-0">{__('recommendationExtendShopDesc')}</p>
+                                            <span class="setup-subheadline mt-0 mb-2">{__('recommendationIssuetracker')}</span>
+                                            <p class="text-muted small m-0">{__('recommendationIssuetrackerDesc')}</p>
                                             <span class="icon-hover text-primary icon-more">
 												<span class="fal fa-long-arrow-right"></span>
 												<span class="fas fa-long-arrow-right"></span>
@@ -182,10 +182,10 @@
                                     </a>
                                 </div>
                                 <div class="col-lg-6 mb-2">
-                                    <a href="#" class="card setup-card h-100">
+                                    <a href="{__('recommendationForumLink')}" class="card setup-card h-100" target="_blank">
                                         <div class="card-body">
-                                            <span class="setup-subheadline mt-0 mb-2">{__('recommendationMarketingSeo')}</span>
-                                            <p class="text-muted small m-0">{__('recommendationMarketingSeoDesc')}</p>
+                                            <span class="setup-subheadline mt-0 mb-2">{__('recommendationForum')}</span>
+                                            <p class="text-muted small m-0">{__('recommendationForumDesc')}</p>
                                             <span class="icon-hover text-primary icon-more">
 												<span class="fal fa-long-arrow-right"></span>
 												<span class="fas fa-long-arrow-right"></span>
@@ -194,7 +194,31 @@
                                     </a>
                                 </div>
                                 <div class="col-lg-6 mb-2">
-                                    <a href="#" class="card setup-card h-100">
+                                    <a href="{__('recommendationReleaseForumLink')}" class="card setup-card h-100" target="_blank">
+                                        <div class="card-body">
+                                            <span class="setup-subheadline mt-0 mb-2">{__('recommendationReleaseForum')}</span>
+                                            <p class="text-muted small m-0">{__('recommendationReleaseForumDesc')}</p>
+                                            <span class="icon-hover text-primary icon-more">
+												<span class="fal fa-long-arrow-right"></span>
+												<span class="fas fa-long-arrow-right"></span>
+											</span>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-lg-6 mb-2">
+                                    <a href="{__('recommendationBlogLink')}" class="card setup-card h-100" target="_blank">
+                                        <div class="card-body">
+                                            <span class="setup-subheadline mt-0 mb-2">{__('recommendationBlog')}</span>
+                                            <p class="text-muted small m-0">{__('recommendationBlogDesc')}</p>
+                                            <span class="icon-hover text-primary icon-more">
+												<span class="fal fa-long-arrow-right"></span>
+												<span class="fas fa-long-arrow-right"></span>
+											</span>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-lg-6 mb-2">
+                                    <a href="{__('recommendationJTLSearchLink')}" class="card setup-card h-100" target="_blank">
                                         <div class="card-body">
                                             <span class="setup-subheadline mt-0 mb-2">{__('recommendationJTLSearch')}</span>
                                             <p class="text-muted small m-0">{__('recommendationJTLSearchDesc')}</p>
@@ -204,6 +228,33 @@
 											</span>
                                         </div>
                                     </a>
+                                </div>
+                                <div class="col-lg-6">
+                                    <ul class="list-unstyled d-flex flex-row flex-wrap mb-0">
+                                        <li>
+                                            {__('followUs')}
+                                        </li>
+                                        <li class="ml-1">
+                                            <a href="//www.facebook.com/JTLSoftware" target="_blank">
+                                                <i class="fab fa-facebook-f"></i>
+                                            </a>
+                                        </li>
+                                        <li class="ml-2">
+                                            <a href="//www.twitter.com/jtlsoftware" target="_blank">
+                                                <i class="fab fa-twitter"></i>
+                                            </a>
+                                        </li>
+                                        <li class="ml-2">
+                                            <a href="//www.youtube.com/user/JTLSoftwareGmbH" target="_blank">
+                                                <i class="fab fa-youtube"></i>
+                                            </a>
+                                        </li>
+                                        <li class="ml-2">
+                                            <a href="//www.xing.com/companies/jtl-softwaregmbh" target="_blank">
+                                                <i class="fab fa-xing"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>

@@ -132,43 +132,79 @@ msgid "installedPlugins"
 msgstr "Installed plugins"
 
 msgid "finalizeHelpNotice"
-msgstr "You need help for further configurations of JTL-Shop? Follow this <a href=\"https://guide.jtl-software.de/\" target=\"_blank\">link</a> to our <a href=\"https://guide.jtl-software.de/\" target=\"_blank\">guide</a>!"
+msgstr "Sie brauchen Hilfe bei der weiteren Einrichtung von JTL-Shop? Folgen Sie einfach einem der folgenden Links!"
 
-msgid "recommendationAppearance"
-msgstr "Appearance"
+msgid "recommendationGuideLink"
+msgstr "https://guide.jtl-software.de/jtl-shop/"
 
-msgid "recommendationAppearanceDesc"
-msgstr "Change the appearance of JTL-Shop to adjust it to your company design."
+msgid "recommendationGuide"
+msgstr "JTL-Guide"
 
-msgid "recommendationFormsAndTexts"
-msgstr "Forms and texts"
+msgid "recommendationGuideDesc"
+msgstr "Wie Sie den JTL-Shop über die Grundkonfiguration individuell für Ihre Bedürfnisse einstellen, erfahren Sie in unserem Guide."
 
-msgid "recommendationFormsAndTextsDesc"
-msgstr "Most forms and text in JTL-Shop can be changed individually."
+msgid "recommendationSupportLink"
+msgstr "https://www.jtl-software.de/hilfecenter/support#preisuebersicht"
 
-msgid "recommendationSystem"
-msgstr "Administration"
+msgid "recommendationSupport"
+msgstr "Support"
 
-msgid "recommendationSystemDesc"
-msgstr "Change passwords, redirects, item view, item detail view and more."
+msgid "recommendationSupportDesc"
+msgstr "Haben Sie weitere Fragen, bieten wir Ihnen verschiedene Supportmodelle (war bei Lizenzkauf für 12 Monate inklusive, nicht benötigt wenn Sie bei JTL hosten)"
 
-msgid "recommendationExtendShop"
-msgstr "Shop extensions"
+msgid "recommendationExtensionStoreLink"
+msgstr "https://www.jtl-software.de/jtl-store/marktplatz"
 
-msgid "recommendationExtendShopDesc"
-msgstr "Use plugins and modules to extend the functionality of JTL-Shop to your liking."
+msgid "recommendationExtensionStore"
+msgstr "Extension Store"
 
-msgid "recommendationMarketingSeo"
-msgstr "Shop marketing / SEO"
+msgid "recommendationExtensionStoreDesc"
+msgstr "Möchten Sie Ihren JTL-Shop individuell anpassen, bieten Ihnen Plugins viele Möglichkeiten."
 
-msgid "recommendationMarketingSeoDesc"
-msgstr "JTL-Shop offers different options to do marketing for your online shop."
+msgid "recommendationIssuetrackerLink"
+msgstr "https://issues.jtl-software.de/issues?project=shop"
+
+msgid "recommendationIssuetracker"
+msgstr "JTL-IssueTracker"
+
+msgid "recommendationIssuetrackerDesc"
+msgstr "Bekannte Fehler und Wünsche an unsere Software können Sie in unserem Issuetracker finden."
+
+msgid "recommendationForumLink"
+msgstr "https://forum.jtl-software.de/#jtl-shop.250"
+
+msgid "recommendationForum"
+msgstr "JTL-Forum"
+
+msgid "recommendationForumDesc"
+msgstr "Für Diskussion und Anregungen mit der gesamten JTL Community steht Ihnen unser Forum zur Verfügung."
+
+msgid "recommendationReleaseForumLink"
+msgstr "https://forum.jtl-software.de/forums/releaseforum.36/"
+
+msgid "recommendationReleaseForum"
+msgstr "JTL Release-Forum"
+
+msgid "recommendationReleaseForumDesc"
+msgstr "Abonnieren Sie unser Releaseforum, um über neue Releases unserer Software stehts via Email informiert zu werden."
+
+msgid "recommendationBlogLink"
+msgstr "https://www.jtl-software.de/blog"
+
+msgid "recommendationBlog"
+msgstr "JTL-Blog"
+
+msgid "recommendationBlogDesc"
+msgstr "Bleiben Sie stehts informiert rund um Neues aus der JTL-Welt mit unserem Blog und Newsletter."
+
+msgid "recommendationJTLSearchLink"
+msgstr "https://www.jtl-software.de/online-shopsystem/fehlertolerante-suche"
 
 msgid "recommendationJTLSearch"
 msgstr "JTL-Search"
 
 msgid "recommendationJTLSearchDesc"
-msgstr "JTL-Search is a chargeable plugin which extends the search of JTL-Shop to be more error tolerant and other things."
+msgstr "JTL-Search ist ein kostenpflichtiges Zusatzmodul und ermöglicht Ihren Kunden eine fehlertolerante Suche."
 
 msgid "orderNumberSettings"
 msgstr "Order number settings"
@@ -190,3 +226,6 @@ msgstr "Required: Please fill this field."
 
 msgid "validationErrorIncorrectEmail"
 msgstr "Please enter a valid email."
+
+msgid "followUs"
+msgstr "Folgen Sie uns auch auf:"

@@ -106,7 +106,7 @@ if (Request::postInt('neu_export') === 1 && Form::validateToken()) {
         $_POST['cKopfzeile'] = str_replace('<tab>', "\t", Request::postVar('cKopfzeile', ''));
         $_POST['cFusszeile'] = str_replace('<tab>', "\t", Request::postVar('cFusszeile', ''));
         $smarty->assign('cPlausiValue_arr', $checkResult)
-               ->assign('cPostVar_arr', Text::filterXSS($_POST));
+               ->assign('cPostVar_arr', Text::htmlentities(Text::filterXSS($_POST)));
         $step = 'neuer Export';
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCheckInput'), 'errorCheckInput');
     }
@@ -271,7 +271,7 @@ if ($step === 'neuer Export') {
             Request::postInt('kExportformat')
         );
         $exportformat->cKopfzeile      = str_replace("\t", '<tab>', $exportformat->cKopfzeile);
-        $exportformat->cContent        = str_replace("\t", '<tab>', $exportformat->cContent);
+        $exportformat->cContent        = Text::htmlentities(str_replace("\t", '<tab>', $exportformat->cContent));
         $exportformat->cFusszeile      = str_replace("\t", '<tab>', $exportformat->cFusszeile);
         $exportformat->kExportformat   = (int)$exportformat->kExportformat;
         $exportformat->kKundengruppe   = (int)$exportformat->kKundengruppe;

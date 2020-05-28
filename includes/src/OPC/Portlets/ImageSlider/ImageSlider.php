@@ -72,7 +72,7 @@ class ImageSlider extends Portlet
                 ],
                 'default'    => 'true',
                 'inline'     => true,
-                'width'      => 34,
+                'width'      => 25,
             ],
             'slider-pause'                => [
                 'label'      => __('pauseOnHover'),
@@ -82,7 +82,7 @@ class ImageSlider extends Portlet
                     'false' => __('pauseOnHoverContinue'),
                 ],
                 'default'    => 'false',
-                'width'      => 34,
+                'width'      => 25,
             ],
             'slider-navigation'           => [
                 'label'      => __('pointNavigation'),
@@ -92,12 +92,7 @@ class ImageSlider extends Portlet
                     'false' => __('no'),
                 ],
                 'default'    => 'false',
-                'width'      => 34,
-            ],
-            'slider-kenburns'             => [
-                'label'      => __('useKenBurnsEffect'),
-                'type'       => InputType::CHECKBOX,
-                'hint'       => __('overridesOtherSettings'),
+                'width'      => 25,
             ],
             'slider-direction-navigation' => [
                 'label'      => __('showNavigationArrows'),
@@ -107,7 +102,13 @@ class ImageSlider extends Portlet
                     'false' => __('no'),
                 ],
                 'default'    => 'false',
-                'width'      => 50
+                'width'      => 25
+            ],
+            'slider-kenburns'             => [
+                'label'      => __('useKenBurnsEffect'),
+                'type'       => InputType::CHECKBOX,
+                'hint'       => __('overridesOtherSettings'),
+                'desc'       => __('kenBurnsDesc')
             ],
             'slider-effects-random'       => [
                 'label'   => __('randomEffects'),
@@ -117,7 +118,7 @@ class ImageSlider extends Portlet
                     'false' => __('no'),
                 ],
                 'default' => 'true',
-                'width'   => 50
+                'desc'    => __('randomEffectsDesc'),
             ],
             'slides'                      => [
                 'label'      => __('images'),

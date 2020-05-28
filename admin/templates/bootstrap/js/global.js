@@ -601,8 +601,6 @@ function ioCall(name, args, success, error, context)
         throw 'Error: IO call not possible. JTL_TOKEN was not set on this page.';
     }
 
-    var evalInContext = function (code) { eval(code); }.bind(context);
-
     return $.ajax({
         url: 'io.php',
         method: 'post',
@@ -616,21 +614,37 @@ function ioCall(name, args, success, error, context)
         },
         success: function (data, textStatus, jqXHR) {
             if (data) {
-                var jslist = data.js || [];
-                var csslist = data.css || [];
+                data.csslist.forEach(item => {
+                    let $item = $('#' + item.target);
 
-                csslist.forEach(function (assign) {
-                    var value = assign.data.replace(/'/g, "\\'").replace(/\n/g, "\\n");
-                    var js =
-                        "if ($('#" + assign.target + "').length > 0) {" +
-                        "   $('#" + assign.target + "')[0]." + assign.attr + " = '" + value + "';" +
-                        "}";
-                    jslist.push(js);
+                    if ($item.length > 0) {
+                        $item[0][item.attr] = item.data;
+                    }
                 });
 
-                jslist.forEach(function (js) {
-                    evalInContext(js);
+                data.debugLogLines.forEach(line => {
+                    if(line[1]) {
+                        console.groupCollapsed(...line[0]);
+                    }
+                    else if(line[2]) {
+                        console.groupEnd();
+                    }
+                    else {
+                        console.log(...line[0]);
+                    }
                 });
+
+                data.evoProductCalls.forEach(([name, args]) => {
+                    $.evo.article()[name](...args);
+                });
+
+                data.varAssigns.forEach(assign => {
+                    context[assign.name] = assign.value;
+                })
+
+                if(data.windowLocationHref) {
+                    window.location.href = data.windowLocationHref;
+                }
             }
 
             success(data, context);

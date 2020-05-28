@@ -504,7 +504,7 @@ function setCurrencyConversionTooltipIO($fPreisNetto, $fPreisBrutto, $cTooltipID
 {
     $response = new IOResponse();
     $cString  = Currency::getCurrencyConversion($fPreisNetto, $fPreisBrutto);
-    $response->assignDom($cTooltipID, 'dataset.originalTitle', $cString);
+    $response->assignVar('originalTilte', $cString);
 
     return $response;
 }

@@ -98,11 +98,11 @@
                                             {/if}
                                         {/block}
                                         {block name='productdetails-details-info-category-wrapper'}
-                                            {if $Einstellungen.artikeldetails.artikeldetails_kategorie_anzeigen === 'Y'}
+                                            {assign var=cidx value=($Brotnavi|@count)-2}
+                                            {if $Einstellungen.artikeldetails.artikeldetails_kategorie_anzeigen === 'Y' && isset($Brotnavi[$cidx])}
                                                 {block name='productdetails-details-info-category'}
                                                     <li class="product-category word-break">
                                                         <span class="font-weight-bold">{lang key='category'}: </span>
-                                                        {assign var=cidx value=($Brotnavi|@count)-2}
                                                         <a href="{$Brotnavi[$cidx]->getURLFull()}" itemprop="category">{$Brotnavi[$cidx]->getName()}</a>
                                                     </li>
                                                 {/block}

@@ -114,6 +114,9 @@ msgstr "Hidden on MD"
 msgid "Hidden on LG"
 msgstr "Hidden on LG"
 
+msgid "cssNumericDesc"
+msgstr "Enter the desired value without spaces and use a decimal point as separator (e.g. 5px, 0.5em, 50%)."
+
 # Animations tab
 
 msgid "Animation style"

@@ -13,3 +13,7 @@ msgstr "Spalte"
 
 msgid "Columns"
 msgstr "Spalten"
+
+msgid "rowLayoutDesc"
+msgstr "Definiert die Aufteilung der Spalten bei verschiedenen Gerätegrößen. 12 bedeutet dabei, die Spalte wird in "
+"voller Breite dargestellt."

@@ -821,23 +821,23 @@ class Bestellung
             $OrderAttributes = $db->selectAll(
                 'tbestellattribut',
                 'kbestellung',
-                (int)$this->kBestellung);
+                (int)$this->kBestellung
+            );
             foreach ($OrderAttributes as $attribute) {
-                $attr = new stdClass();
-                $attr->kBestellattribut = (int) $attribute->kBestellattribut;
-                $attr->kBestellung = (int) $attribute->kBestellung;
-                $attr->cName = $attribute->cName;
-                $attr->cValue = $attribute->cValue;
+                $attr                   = new stdClass();
+                $attr->kBestellattribut = (int)$attribute->kBestellattribut;
+                $attr->kBestellung      = (int)$attribute->kBestellung;
+                $attr->cName            = $attribute->cName;
+                $attr->cValue           = $attribute->cValue;
                 if ($attribute->cName === "Finanzierungskosten") {
                     $attr->cValue = Preise::getLocalizedPriceString(
-                        str_replace(',','.',$attribute->cValue),
+                        str_replace(',', '.', $attribute->cValue),
                         $this->Waehrung,
                         $htmlCurrency
                     );
                 }
                 $this->OrderAttributes[] = $attr;
             }
-
         }
 
         $this->setKampagne();

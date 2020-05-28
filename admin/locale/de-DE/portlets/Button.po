@@ -14,9 +14,6 @@ msgstr "In neuer Registerkarte öffnen"
 msgid "linkTitle"
 msgstr "Linktitel"
 
-msgid "alignment"
-msgstr "Ausrichtung"
-
 msgid "useFullWidth"
 msgstr "gesamte Breite nutzen"
 

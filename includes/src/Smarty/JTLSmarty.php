@@ -107,13 +107,13 @@ class JTLSmarty extends SmartyBC
                 ->assign('tplDir', \PFAD_ROOT . \PFAD_TEMPLATES . $tplDir . '/')
                 ->addTemplateDir(\PFAD_ROOT . \PFAD_TEMPLATES . $tplDir . '/', $this->context);
             if ($parent !== null) {
-                $this->parentTemplateName = $parent;
-                self::$isChildTemplate    = true;
-                $this->addTemplateDir(\PFAD_ROOT . \PFAD_TEMPLATES . $parent, $parent);
+                self::$isChildTemplate = true;
                 $this->assign('tplDir', \PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/')
                     ->assign('parent_template_path', \PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/')
-                    ->assign('parentTemplateDir', \PFAD_TEMPLATES . $parent . '/');
+                    ->assign('parentTemplateDir', \PFAD_TEMPLATES . $parent . '/')
+                    ->addTemplateDir(\PFAD_ROOT . \PFAD_TEMPLATES . $parent, $parent);
             }
+            $this->addTemplateDir(\PFAD_ROOT . \PFAD_TEMPLATES . $tplDir . '/', $this->context);
             foreach (Helper::getTemplatePaths() as $moduleId => $path) {
                 $templateKey = 'plugin_' . $moduleId;
                 $this->addTemplateDir($path, $templateKey);
@@ -137,7 +137,6 @@ class JTLSmarty extends SmartyBC
                 ->setPluginsDir(\SMARTY_PLUGINS_DIR);
         }
         $this->templateDir = $tplDir;
-        Shop::dbg($this->getTemplateDir());
 
         return $parent;
     }
@@ -417,11 +416,9 @@ class JTLSmarty extends SmartyBC
                 'transform' => $transform
             ]);
             if ($resourceName === $resource_cfb_name) {
-                $extends   = [];
-                $pluginHit = false;
-                foreach ($this->getExtendableTemplateDirs() as $module => $templateDir) {
-                    $isPlugin = \mb_strpos($module, 'plugin_') === 0;
-                    if ($isPlugin === true) {
+                $extends = [];
+                foreach ($this->getTemplateDir() as $module => $templateDir) {
+                    if (\mb_strpos($module, 'plugin_') === 0) {
                         $pluginID    = \mb_substr($module, 7);
                         $templateVar = 'oPlugin_' . $pluginID;
                         if ($this->getTemplateVars($templateVar) === null) {
@@ -431,12 +428,9 @@ class JTLSmarty extends SmartyBC
                     }
                     if (\file_exists($templateDir . $resource_cfb_name)) {
                         $extends[] = \sprintf('[%s]%s', $module, $resource_cfb_name);
-                        if ($isPlugin) {
-                            $pluginHit = true;
-                        }
                     }
                 }
-                if ($pluginHit === true && \count($extends) > 1) {
+                if (\count($extends) > 1) {
                     $transform         = false;
                     $resource_cfb_name = \sprintf(
                         'extends:%s',

@@ -23,8 +23,8 @@ class Migration_20200514140500 extends Migration implements IMigration
     public function up()
     {
 
-        $this->setLocalization('ger', 'order', 'financeCosts', 'Finanzierungskosten');
-        $this->setLocalization('eng', 'order', 'financeCosts', 'finance costs');
+        $this->setLocalization('ger', 'order', 'financeCosts', 'zzgl. Finanzierungskosten');
+        $this->setLocalization('eng', 'order', 'financeCosts', 'plus finance costs');
     }
 
     /**

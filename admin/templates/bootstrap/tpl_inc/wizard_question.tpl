@@ -125,7 +125,7 @@
                         </div>
                         <div class="col-xl">
                             <p class="text-muted">{$option->getDescription()}</p>
-                            <a href="{$option->getLink()}">{__('getToKnowMore')}</a>
+                            <a href="{$option->getLink()}" target="_blank">{__('getToKnowMore')}</a>
                         </div>
                     </div>
                 </div>

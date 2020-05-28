@@ -45,7 +45,7 @@ msgid "stepFour"
 msgstr "Schritt 4 - E-Mail-Einstellungen"
 
 msgid "stepFourDesc"
-msgstr "Hier sehen Sie einen Überblick über die E-Mail-Einstellungen. Die restlichen Einstellung für den E-Mail-Server sollten schnellstmöglich nach dieser Erinrichtung erfolgen, unter \"Administration > E-Mail > Server\". Weitere Informationen dazu <a href=\"https://guide.jtl-software.de/jtl-shop/systemverwaltung/e-mail-versand-einrichten/\" target=\"_blank\">Guide</a>."
+msgstr "Hier sehen Sie einen Überblick über die E-Mail-Einstellungen. Die restlichen Einstellungen für den E-Mail-Server sollten schnellstmöglich nach dieser Erinrichtung unter \"Administration > E-Mail > Server\" erfolgen. Weitere Informationen dazu <a href=\"https://guide.jtl-software.de/jtl-shop/systemverwaltung/e-mail-versand-einrichten/\" target=\"_blank\">Guide</a>."
 
 msgid "stepFive"
 msgstr "Schritt 5 - Übersicht & Bestätigung"

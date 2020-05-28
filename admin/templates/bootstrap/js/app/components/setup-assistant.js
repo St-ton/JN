@@ -109,21 +109,27 @@ $(document).on('click', `${modal} [${Data.prev}]`, () => {
 })
 
 $(document).on('click', `${modal} [${Data.next}]`, () => {
-    startSpinner();
-    ioCall('validateStepWizard', [$currentSlide.find(`[${Data.summaryId}]`).serializeArray()], function (errors) {
-        if (errors.length !== 0) {
-        	$.each(errors, (index, error) => {
-        		let $question = $('#question-' + index);
-                $question.parent().addClass('error');
-                $question.after('<div class="error js-wizard-validation-error">' + error + '</div>');
-			});
-		} else {
-            updateSummary();
-            showSlide((current < last) ? current + 1 : last);
-		}
-	}).done(function () {
-        stopSpinner();
-	});
+	let $inputs = $currentSlide.find(`[${Data.summaryId}]`);
+	if ($inputs.length === 0) {
+        updateSummary();
+        showSlide((current < last) ? current + 1 : last);
+    } else {
+        startSpinner();
+        ioCall('validateStepWizard', [$inputs.serializeArray()], function (errors) {
+            if (errors.length !== 0) {
+                $.each(errors, (index, error) => {
+                    let $question = $('#question-' + index);
+                    $question.parent().addClass('error');
+                    $question.after('<div class="error js-wizard-validation-error">' + error + '</div>');
+                });
+            } else {
+                updateSummary();
+                showSlide((current < last) ? current + 1 : last);
+            }
+        }).done(function () {
+            stopSpinner();
+        });
+    }
 });
 
 $(document).on('click', `${modal} input`, function() {

@@ -41,7 +41,7 @@ final class PaymentPlugins extends AbstractStep
         $question->setID(10);
         $question->setSubheading(__('weRecommend') . ':');
         $question->setSubheadingDescription(__('weRecommendPaymentDesc'));
-        $question->setSummaryText(__('paymentMethods'));
+        $question->setSummaryText(__('paymentTypes'));
         $question->setType(QuestionType::PLUGIN);
         $question->setIsFullWidth(true);
         $question->setIsRequired(false);

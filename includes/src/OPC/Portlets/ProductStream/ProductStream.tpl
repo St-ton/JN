@@ -1,7 +1,7 @@
 {$style = $instance->getProperty('listStyle')}
 
 {if $isPreview}
-    <div class="opc-ProductStream">
+    <div class="opc-ProductStream" style="{$instance->getStyleString()}">
         {image alt='ProductStream' src=$portlet->getBaseUrl()|cat:'preview.'|cat:$style|cat:'.png'}
     </div>
 {else}
@@ -19,7 +19,10 @@
             <div class="container-fluid">
         {/if}
         {row class=$style|cat:' product-list opc-ProductStream opc-ProductStream-'|cat:$style|cat:' '|cat:$instance->getStyleClasses()
-             itemprop="mainEntity" itemscope=true itemtype="http://schema.org/ItemList"}
+            itemprop="mainEntity"
+            itemscope=true
+            itemtype="http://schema.org/ItemList"
+            style="{$instance->getStyleString()}"}
             {foreach $productlist as $Artikel}
                 {col cols={$grid} md="{if isset($gridmd)}{$gridmd}{/if}" xl="{if isset($gridxl)}{$gridxl}{/if}"
                      class="product-wrapper {if !($style === 'list' && $Artikel@last)}mb-4{/if}"
@@ -39,7 +42,8 @@
         <div id="{$instance->getUid()}"
              class="carousel carousel-arrows-inside evo-slider slick-lazy
                     opc-ProductStream opc-ProductStream-slider slick-type-product"
-             data-slick-type="product-slider">
+             data-slick-type="product-slider"
+             style="{$instance->getStyleString()}">
             {foreach $productlist as $Artikel}
                 <div class="product-wrapper">
                     <a href="{$Artikel->cURLFull}">
@@ -57,7 +61,9 @@
         {if $inContainer === false}
             <div class="container-fluid">
         {/if}
-        {include file='snippets/product_slider.tpl' productlist=$productlist}
+        <div style="{$instance->getStyleString()}">
+            {include file='snippets/product_slider.tpl' productlist=$productlist}
+        </div>
         {if $inContainer === false}
             </div>
         {/if}

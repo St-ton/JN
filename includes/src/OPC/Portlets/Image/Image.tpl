@@ -8,7 +8,16 @@
         </div>
     </div>
 {elseif !empty($imgAttribs.src)}
+    {$alignCSS = ''}
+    {if $instance->getProperty('align') === 'left'}
+        {$alignCSS = 'margin-right: auto;'}
+    {elseif $instance->getProperty('align') === 'right'}
+        {$alignCSS = 'margin-left: auto;'}
+    {elseif $instance->getProperty('align') === 'center'}
+        {$alignCSS = 'margin-left: auto;margin-right: auto;'}
+    {/if}
     {if $isPreview}<div class="opc-Image-with-image">{/if}
+    <div style="max-width: {$imgAttribs.realWidth}px; {$alignCSS}">
         {image
             src=$imgAttribs.src
             srcset=$imgAttribs.srcset
@@ -20,5 +29,6 @@
             thumbnail=$portlet->getThumbnailProp($instance)
             class=$instance->getStyleClasses()
         }
+    </div>
     {if $isPreview}</div>{/if}
 {/if}

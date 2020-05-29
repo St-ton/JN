@@ -1,6 +1,6 @@
 {block name='productlist-item-slider'}
-    {link href=$Artikel->cURLFull}
-        {block name='productlist-item-slider-link'}
+    {block name='productlist-item-slider-link'}
+        {link href=$Artikel->cURLFull}
             <div class="productbox-image square square-image mb-0">
                 <div class="inner">
                     {if isset($Artikel->Bilder[0]->cAltAttribut)}
@@ -24,32 +24,32 @@
                     {/if}
                 </div>
             </div>
-        {/block}
-        {block name='productlist-item-slider-caption'}
-            <div class="text-center">
-                {block name='productlist-item-slider-caption-short-desc'}
-                    <span class="text-clamp-2 d-block">
-                        {if isset($showPartsList) && $showPartsList === true && isset($Artikel->fAnzahl_stueckliste)}
-                            {block name='productlist-item-slider-caption-bundle'}
-                                {$Artikel->fAnzahl_stueckliste}x
-                            {/block}
-                        {/if}
-                        <span {if $tplscope !== 'box'}itemprop="name"{/if}>{$Artikel->cKurzbezeichnung}</span>
-                    </span>
-                {/block}
-                {if $tplscope === 'box'}
-                    {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}
-                        {block name='productlist-item-slider-include-rating'}
-                            <small>{include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}</small>
+        {/link}
+    {/block}
+    {block name='productlist-item-slider-caption'}
+        {link href=$Artikel->cURLFull}
+            {block name='productlist-item-slider-caption-short-desc'}
+                <span class="text-clamp-2 d-block">
+                    {if isset($showPartsList) && $showPartsList === true && isset($Artikel->fAnzahl_stueckliste)}
+                        {block name='productlist-item-slider-caption-bundle'}
+                            {$Artikel->fAnzahl_stueckliste}x
                         {/block}
                     {/if}
-                {/if}
-                {block name='productlist-item-slider-include-price'}
-                    <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
-                        {include file='productdetails/price.tpl' Artikel=$Artikel tplscope=$tplscope}
-                    </div>
+                    <span {if $tplscope !== 'box'}itemprop="name"{/if}>{$Artikel->cKurzbezeichnung}</span>
+                </span>
+            {/block}
+        {/link}
+        {if $tplscope === 'box'}
+            {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}
+                {block name='productlist-item-slider-include-rating'}
+                    <small>{include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}</small>
                 {/block}
+            {/if}
+        {/if}
+        {block name='productlist-item-slider-include-price'}
+            <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                {include file='productdetails/price.tpl' Artikel=$Artikel tplscope=$tplscope}
             </div>
         {/block}
-    {/link}
+    {/block}
 {/block}

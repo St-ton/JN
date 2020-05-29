@@ -27,8 +27,8 @@
         {/link}
     {/block}
     {block name='productlist-item-slider-caption'}
-        {link href=$Artikel->cURLFull}
-            {block name='productlist-item-slider-caption-short-desc'}
+        {block name='productlist-item-slider-caption-short-desc'}
+            {link href=$Artikel->cURLFull}
                 <span class="text-clamp-2 d-block">
                     {if isset($showPartsList) && $showPartsList === true && isset($Artikel->fAnzahl_stueckliste)}
                         {block name='productlist-item-slider-caption-bundle'}
@@ -37,8 +37,8 @@
                     {/if}
                     <span {if $tplscope !== 'box'}itemprop="name"{/if}>{$Artikel->cKurzbezeichnung}</span>
                 </span>
-            {/block}
-        {/link}
+            {/link}
+        {/block}
         {if $tplscope === 'box'}
             {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}
                 {block name='productlist-item-slider-include-rating'}

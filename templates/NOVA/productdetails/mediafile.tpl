@@ -67,7 +67,17 @@
                         {* Video *}
                     {elseif $oMedienDatei->nMedienTyp === 3}
                         {block name='productdetails-mediafile-video'}
-                        <!-- flash videos are not supported any more. Use html5 videos instead. -->
+                            {if isset($oMedienDatei->videoType) 
+                            && ($oMedienDatei->videoType === 'mp4' 
+                            || $oMedienDatei->videoType === 'webm'
+                            || $oMedienDatei->videoType === 'ogg')}             
+                                <video controls>
+                                    <source src="{$ShopURL}/{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" type="video/{$oMedienDatei->videoType}">
+                                    Your browser does not support the video tag.
+                                </video> 
+                            {else}
+                                {lang key='videoTypeNotSupported' section='errorMessages'}
+                            {/if}      
                         {/block}
                         {* Sonstiges *}
                     {elseif $oMedienDatei->nMedienTyp === 4}

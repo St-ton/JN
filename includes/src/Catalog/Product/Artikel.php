@@ -1716,9 +1716,16 @@ class Artikel
             $mediaFile->nErreichbar              = 1; // Beschreibt, ob eine Datei vorhanden ist
             $mediaFile->cMedienTyp               = ''; // Wird zum Aufbau der Reiter gebraucht
             if (\mb_strlen($mediaFile->cTyp) > 0) {
+                if ($mediaFile->cTyp === '.*') {
+                    //checks for video formats if wildcard type
+                    $extMatch = [];
+                    preg_match('/\.\w{3,4}($|\?)/', $mediaFile->cPfad, $extMatch);
+                    $mediaFile->cTyp =$extMatch[0];
+                }
                 $mapped                = $this->mapMediaType($mediaFile->cTyp);
                 $mediaFile->cMedienTyp = $mapped->cName;
                 $mediaFile->nMedienTyp = $mapped->nTyp;
+                $mediaFile->videoType  = $mapped->videoType;
             }
             if ($mediaFile->cPfad !== '' && $mediaFile->cPfad[0] === '/') {
                 //remove double slashes
@@ -4902,6 +4909,7 @@ class Artikel
     private function mapMediaType(string $type)
     {
         $mapping = new stdClass();
+        $mapping->videoType  = null;
         switch ($type) {
             case '.bmp':
             case '.gif':
@@ -4933,6 +4941,7 @@ class Artikel
             case '.3gp':
                 $mapping->cName = Shop::Lang()->get('tabVideo', 'media');
                 $mapping->nTyp  = 3;
+                $mapping->videoType  = str_replace('.', '', $type);
                 break;
             case '.pdf':
                 $mapping->cName = Shop::Lang()->get('tabPdf', 'media');

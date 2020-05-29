@@ -194,7 +194,7 @@ class ProductFilter
     /**
      * @var bool
      */
-    private $bExtendedJTLSearch;
+    private $bExtendedJTLSearch = false;
 
     /**
      * @var stdClass|null
@@ -981,6 +981,10 @@ class ProductFilter
      */
     public function getAvailableContentFilters(): array
     {
+        if ($this->bExtendedJTLSearch === true) {
+            return [];
+        }
+
         return \array_filter(
             $this->filters,
             static function ($f) {
@@ -1999,6 +2003,22 @@ class ProductFilter
     public function setFilterConfig(Config $filterConfig): void
     {
         $this->filterConfig = $filterConfig;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isExtendedJTLSearch(): bool
+    {
+        return $this->bExtendedJTLSearch;
+    }
+
+    /**
+     * @param bool $isSearch
+     */
+    public function setExtendedJTLSearch(bool $isSearch): void
+    {
+        $this->bExtendedJTLSearch = $isSearch;
     }
 
     /**

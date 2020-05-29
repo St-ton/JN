@@ -475,3 +475,8 @@ msgstr "Zurück"
 
 msgid "Done"
 msgstr "Fertig"
+
+# MISC
+
+msgid "alignment"
+msgstr "Ausrichtung"

@@ -454,3 +454,8 @@ msgstr "Back"
 
 msgid "Done"
 msgstr "Done"
+
+# MISC
+
+msgid "alignment"
+msgstr "Alignment"

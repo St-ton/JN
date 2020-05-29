@@ -14,9 +14,6 @@ msgstr "Open in new tab"
 msgid "linkTitle"
 msgstr "Link title"
 
-msgid "alignment"
-msgstr "Alignment"
-
 msgid "useFullWidth"
 msgstr "full width"
 

@@ -67,7 +67,7 @@ class Button extends Portlet
                     'block'  => __('useFullWidth'),
                     'left'   => __('left'),
                     'right'  => __('right'),
-                    'center' => __('centred'),
+                    'center' => __('centered'),
                 ],
                 'default'    => 'left',
                 'width'      => 50,

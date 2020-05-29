@@ -7,7 +7,7 @@
                 </div>
                 <div class="heading-right">
                     {if $hasAuth}
-                        <button name="action" value="revoke" class="btn btn-default"><i class="fas fa-unlink"></i> {__('storeRevoke')}</button>
+                        <button name="action" value="revoke" class="btn btn-default"><i class="fas fa-unlink"></i> {__('unlink')}</button>
                     {/if}
                 </div>
                 <hr class="mb-n3">
@@ -18,7 +18,7 @@
                         <div class="col-md-4 border-right">
                             <div class="text-center">
                                 <h2>{$licenseItemUpdates->count()}</h2>
-                                <p>{__('storeUpdatesAvailable')}</p>
+                                <p>{__('updates available')}</p>
                             </div>
                         </div>
                         <div class="col-md-4 border-right">

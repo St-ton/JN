@@ -4939,9 +4939,9 @@ class Artikel
             case '.mp4':
             case '.flv':
             case '.3gp':
-                $mapping->cName = Shop::Lang()->get('tabVideo', 'media');
-                $mapping->nTyp  = 3;
-                $mapping->videoType  = str_replace('.', '', $type);
+                $mapping->cName      = Shop::Lang()->get('tabVideo', 'media');
+                $mapping->nTyp       = 3;
+                $mapping->videoType  = \strtolower(\str_replace('.', '', $type));
                 break;
             case '.pdf':
                 $mapping->cName = Shop::Lang()->get('tabPdf', 'media');

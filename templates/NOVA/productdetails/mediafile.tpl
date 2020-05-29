@@ -67,8 +67,7 @@
                         {* Video *}
                     {elseif $oMedienDatei->nMedienTyp === 3}
                         {block name='productdetails-mediafile-video'}
-                            {if isset($oMedienDatei->videoType) 
-                            && ($oMedienDatei->videoType === 'mp4' 
+                            {if ($oMedienDatei->videoType === 'mp4' 
                             || $oMedienDatei->videoType === 'webm'
                             || $oMedienDatei->videoType === 'ogg')}             
                                 <video controls>

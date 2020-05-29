@@ -589,7 +589,7 @@ function hideBackdrop() {
  * @param context - object to be assigned 'this' in eval()-code (default: { } = a new empty anonymous object)
  * @returns XMLHttpRequest jqxhr
  */
-function ioCall(name, args, success, error, context)
+function ioCall(name, args, success, error, context, disableSpinner)
 {
     'use strict';
     args    = args || [];
@@ -602,6 +602,10 @@ function ioCall(name, args, success, error, context)
     }
 
     var evalInContext = function (code) { eval(code); }.bind(context);
+
+    if (disableSpinner === undefined && $('.ajax-spinner').length === 0) {
+        $('body').append('<div class="ajax-spinner"><i class="fa fa-spinner fa-pulse"></i></div>');
+    }
 
     return $.ajax({
         url: 'io.php',
@@ -637,6 +641,10 @@ function ioCall(name, args, success, error, context)
         },
         error: function (jqXHR, textStatus, errorThrown) {
             error(jqXHR.responseJSON);
+        }
+    }).done(function () {
+        if (disableSpinner === undefined) {
+            $('body').find('.ajax-spinner').remove();
         }
     });
 }

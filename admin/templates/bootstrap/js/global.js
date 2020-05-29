@@ -604,8 +604,8 @@ function ioCall(name, args, success, error, context, disableSpinner)
 
     var evalInContext = function (code) { eval(code); }.bind(context);
 
-    if (disableSpinner === undefined && $('.ajax-spinner').length === 0) {
-        $('body').append('<div class="ajax-spinner"><i class="fa fa-spinner fa-pulse"></i></div>');
+    if (disableSpinner === undefined) {
+        startSpinner();
     }
 
     return $.ajax({
@@ -645,7 +645,7 @@ function ioCall(name, args, success, error, context, disableSpinner)
         }
     }).done(function () {
         if (disableSpinner === undefined) {
-            $('body').find('.ajax-spinner').remove();
+            stopSpinner();
         }
     });
 }
@@ -811,8 +811,8 @@ function simmpleAjaxCall(url, data, success, error, context, disableSpinner)
     error   = error || function () { };
     context = context || { };
 
-    if (disableSpinner === undefined && $('.ajax-spinner').length === 0) {
-        $('body').append('<div class="ajax-spinner"><i class="fa fa-spinner fa-pulse"></i></div>');
+    if (disableSpinner === undefined) {
+        startSpinner();
     }
     $.ajax({
         type:    'POST',
@@ -826,7 +826,19 @@ function simmpleAjaxCall(url, data, success, error, context, disableSpinner)
         }
     }).done(function () {
         if (disableSpinner === undefined) {
-            $('body').find('.ajax-spinner').remove();
+            stopSpinner();
         }
     });
+}
+
+function startSpinner()
+{
+    if ($('.ajax-spinner').length === 0) {
+        $('body').append('<div class="ajax-spinner"><i class="fa fa-spinner fa-pulse"></i></div>');
+    }
+}
+
+function stopSpinner()
+{
+    $('body').find('.ajax-spinner').remove();
 }

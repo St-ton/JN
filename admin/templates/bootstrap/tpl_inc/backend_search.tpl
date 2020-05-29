@@ -36,23 +36,30 @@
                         lastIoSearchCall = null;
                     }
 
-                    lastIoSearchCall = ioCall('adminSearch', [lastSearchTerm], function (html) {
-                        if (html) {
-                            searchDropdown.html(html).addClass('show');
-                            $('a.dropdown-item').on('click', function () {
-                                window.location = $(this).attr('href');
-                            });
-                            $('.dropdown-item form').on('click', function () {
-                                    $(this).submit();
-                            });
-                        } else {
-                            searchDropdown.removeClass('show');
-                        }
+                    lastIoSearchCall = ioCall(
+                        'adminSearch',
+                        [lastSearchTerm],
+                        function (html) {
+                            if (html) {
+                                searchDropdown.html(html).addClass('show');
+                                $('a.dropdown-item').on('click', function () {
+                                    window.location = $(this).attr('href');
+                                });
+                                $('.dropdown-item form').on('click', function () {
+                                        $(this).submit();
+                                });
+                            } else {
+                                searchDropdown.removeClass('show');
+                            }
 
-                        searchItems         = null;
-                        selectedSearchIndex = null;
-                        selectedSearchItem  = null;
-                    });
+                            searchItems         = null;
+                            selectedSearchIndex = null;
+                            selectedSearchItem  = null;
+                        },
+                        function () { },
+                        { },
+                        true
+                    );
                 } else {
                     searchDropdown.html('');
                     searchDropdown.removeClass('show');

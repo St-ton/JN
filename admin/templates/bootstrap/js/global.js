@@ -587,6 +587,7 @@ function hideBackdrop() {
  * @param success - (optional) function (data, context) success-callback
  * @param error - (optional) function (data) error-callback
  * @param context - object to be assigned 'this' in eval()-code (default: { } = a new empty anonymous object)
+ * @param disableSpinner - bool, set true to disable spinner
  * @returns XMLHttpRequest jqxhr
  */
 function ioCall(name, args, success, error, context, disableSpinner)
@@ -800,4 +801,32 @@ function onChangeFormSubmit()
 
 function closeTooltips() {
     $('.tooltip[role="tooltip"]').remove();
+}
+
+function simmpleAjaxCall(url, data, success, error, context, disableSpinner)
+{
+    'use strict';
+    data    = data || [];
+    success = success || function () { };
+    error   = error || function () { };
+    context = context || { };
+
+    if (disableSpinner === undefined && $('.ajax-spinner').length === 0) {
+        $('body').append('<div class="ajax-spinner"><i class="fa fa-spinner fa-pulse"></i></div>');
+    }
+    $.ajax({
+        type:    'POST',
+        url:     url,
+        data:    data,
+        success: function (data) {
+            success(data, context);
+        },
+        error: function (data) {
+            error(data, context);
+        }
+    }).done(function () {
+        if (disableSpinner === undefined) {
+            $('body').find('.ajax-spinner').remove();
+        }
+    });
 }

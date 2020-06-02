@@ -23756,9 +23756,6 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   background-color: rgba(155, 155, 155, 0.5);
   overflow: hidden;
 }
-#image_wrapper.fullscreen img {
-  margin: 0 auto;
-}
 #image_wrapper.fullscreen .product-actions {
   display: none;
 }
@@ -23784,6 +23781,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   cursor: pointer;
 }
 #image_wrapper.fullscreen #gallery .square-image .inner img {
+  margin: 0 auto;
   left: initial;
   top: initial;
   -webkit-transform: initial;

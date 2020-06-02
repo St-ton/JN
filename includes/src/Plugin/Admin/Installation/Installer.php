@@ -260,8 +260,8 @@ final class Installer
             $this->uninstaller->uninstall($plugin->kPlugin);
         }
         if ($code === InstallCode::OK
-            && $this->plugin !== null
-            && ($p = Helper::bootstrap($this->plugin->getID(), $loader)) !== null
+            && $this->plugin === null
+            && ($p = Helper::bootstrap($plugin->kPlugin, $loader)) !== null
         ) {
             $p->installed();
         }

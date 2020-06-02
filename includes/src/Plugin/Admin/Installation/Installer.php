@@ -605,7 +605,7 @@ final class Installer
             (object)['kPlugin' => $oldPluginID]
         );
         $return = false;
-        \executeHook(\PLUGIN_UPDATE_LANG_VARS, ['return' => &$return]);
+        \executeHook(\PLUGIN_UPDATE_LANG_VARS, ['return' => &$return, 'pluginID' => $oldPluginID]);
         if ($return === true) {
             return;
         }
@@ -695,7 +695,7 @@ final class Installer
     {
         $this->db->update('temailvorlage', 'kPlugin', $pluginID, (object)['kPlugin' => $oldPluginID]);
         $return = false;
-        \executeHook(\PLUGIN_UPDATE_MAIL_TEMPLATES, ['return' => &$return]);
+        \executeHook(\PLUGIN_UPDATE_MAIL_TEMPLATES, ['return' => &$return, 'pluginID' => $oldPluginID]);
         if ($return === true) {
             return;
         }
@@ -767,7 +767,7 @@ final class Installer
             ReturnType::AFFECTED_ROWS
         );
         $return = false;
-        \executeHook(\PLUGIN_UPDATE_PAYMENT_METHODS, ['return' => &$return]);
+        \executeHook(\PLUGIN_UPDATE_PAYMENT_METHODS, ['return' => &$return, 'pluginID' => $oldPluginID]);
         if ($return === true) {
             return;
         }

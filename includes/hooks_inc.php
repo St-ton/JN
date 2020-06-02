@@ -1963,6 +1963,7 @@ define('CONSENT_MANAGER_GET_ACTIVE_ITEMS', 320);
  * @since 5.0.0
  * @file includes/src/Plugin/Admin/Installation/Installer.php
  * @param bool $return
+ * @param int $pluginID
  */
 define('PLUGIN_UPDATE_LANG_VARS', 330);
 
@@ -1970,6 +1971,7 @@ define('PLUGIN_UPDATE_LANG_VARS', 330);
  * @since 5.0.0
  * @file includes/src/Plugin/Admin/Installation/Installer.php
  * @param bool $return
+ * @param int $pluginID
  */
 define('PLUGIN_UPDATE_MAIL_TEMPLATES', 331);
 
@@ -1977,5 +1979,6 @@ define('PLUGIN_UPDATE_MAIL_TEMPLATES', 331);
  * @since 5.0.0
  * @file includes/src/Plugin/Admin/Installation/Installer.php
  * @param bool $return
+ * @param int $pluginID
  */
 define('PLUGIN_UPDATE_PAYMENT_METHODS', 332);

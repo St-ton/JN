@@ -1717,7 +1717,6 @@ class Artikel
             $mediaFile->cMedienTyp               = ''; // Wird zum Aufbau der Reiter gebraucht
             if (\mb_strlen($mediaFile->cTyp) > 0) {
                 if ($mediaFile->cTyp === '.*') {
-                    //checks for video formats if wildcard type
                     $extMatch = [];
                     preg_match('/\.\w{3,4}($|\?)/', $mediaFile->cPfad, $extMatch);
                     $mediaFile->cTyp = $extMatch[0];

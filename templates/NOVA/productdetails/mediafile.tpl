@@ -54,7 +54,7 @@
                                                 {if $audiosrc|strlen > 1}
                                                     <audio controls controlsList="nodownload">
                                                         <source src="{$audiosrc}" type="audio/mpeg">
-                                                        Your browser does not support the audio element.
+                                                        {lang key='audioTagNotSupported' section='errorMessages'}
                                                     </audio>
                                                 {/if}
                                             {/if}
@@ -72,7 +72,7 @@
                             || $oMedienDatei->videoType === 'ogg')}             
                                 <video controls>
                                     <source src="{$ShopURL}/{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" type="video/{$oMedienDatei->videoType}">
-                                    Your browser does not support the video tag.
+                                    {lang key='videoTagNotSupported' section='errorMessages'}
                                 </video> 
                             {else}
                                 {lang key='videoTypeNotSupported' section='errorMessages'}

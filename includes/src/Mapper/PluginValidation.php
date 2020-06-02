@@ -441,7 +441,118 @@ class PluginValidation
                 $return = __('WRONG_EXT_DIR');
                 break;
             case InstallCode::MISSING_PLUGIN_NODE:
-                $return = 'Fehler: Der jtlshopplugin-Knoten ist nicht vorhanden.';
+                $return = __('MISSING_PLUGIN_NODE');
+                break;
+            case InstallCode::OK_LEGACY:
+                $return = __('OK_LEGACY');
+                break;
+            case InstallCode::SQL_MISSING_DATA:
+                $return = __('SQL_MISSING_DATA');
+                break;
+            case InstallCode::SQL_ERROR:
+                $return = __('SQL_ERROR');
+                break;
+            case InstallCode::SQL_WRONG_TABLE_NAME_DELETE:
+                $return = __('SQL_WRONG_TABLE_NAME_DELETE');
+                break;
+            case InstallCode::SQL_WRONG_TABLE_NAME_CREATE:
+                $return = __('SQL_WRONG_TABLE_NAME_CREATE');
+                break;
+            case InstallCode::SQL_INVALID_FILE_CONTENT:
+                $return = __('SQL_INVALID_FILE_CONTENT');
+                break;
+            case InstallCode::SQL_CANNOT_SAVE_HOOK:
+                $return = __('SQL_CANNOT_SAVE_HOOK');
+                break;
+            case InstallCode::SQL_CANNOT_SAVE_UNINSTALL:
+                $return = __('SQL_CANNOT_SAVE_UNINSTALL');
+                break;
+            case InstallCode::SQL_CANNOT_SAVE_ADMIN_MENU_ITEM:
+                $return = __('SQL_CANNOT_SAVE_ADMIN_MENU_ITEM');
+                break;
+            case InstallCode::SQL_CANNOT_SAVE_SETTINGS_ITEM:
+                $return = __('SQL_CANNOT_SAVE_SETTINGS_ITEM');
+                break;
+            case InstallCode::SQL_CANNOT_SAVE_SETTING:
+                $return = __('SQL_CANNOT_SAVE_SETTING');
+                break;
+            case InstallCode::SQL_CANNOT_FIND_LINK_GROUP:
+                $return = __('SQL_CANNOT_FIND_LINK_GROUP');
+                break;
+            case InstallCode::SQL_CANNOT_SAVE_LINK:
+                $return = __('SQL_CANNOT_SAVE_LINK');
+                break;
+            case InstallCode::SQL_CANNOT_SAVE_PAYMENT_METHOD:
+                $return = __('SQL_CANNOT_SAVE_PAYMENT_METHOD');
+                break;
+            case InstallCode::SQL_CANNOT_SAVE_PAYMENT_METHOD_LOCALIZATION:
+                $return = __('SQL_CANNOT_SAVE_PAYMENT_METHOD_LOCALIZATION');
+                break;
+            case InstallCode::SQL_CANNOT_SAVE_PAYMENT_METHOD_LANGUAGE:
+                $return = __('SQL_CANNOT_SAVE_PAYMENT_METHOD_LANGUAGE');
+                break;
+            case InstallCode::SQL_CANNOT_SAVE_PAYMENT_METHOD_SETTING:
+                $return = __('SQL_CANNOT_SAVE_PAYMENT_METHOD_SETTING');
+                break;
+            case InstallCode::SQL_CANNOT_SAVE_BOX_TEMPLATE:
+                $return = __('SQL_CANNOT_SAVE_BOX_TEMPLATE');
+                break;
+            case InstallCode::SQL_CANNOT_SAVE_TEMPLATE:
+                $return = __('SQL_CANNOT_SAVE_TEMPLATE');
+                break;
+            case InstallCode::SQL_CANNOT_SAVE_EMAIL_TEMPLATE:
+                $return = __('SQL_CANNOT_SAVE_EMAIL_TEMPLATE');
+                break;
+            case InstallCode::SQL_CANNOT_SAVE_LANG_VAR:
+                $return = __('SQL_CANNOT_SAVE_LANG_VAR');
+                break;
+            case InstallCode::SQL_CANNOT_SAVE_LANG_VAR_LOCALIZATION:
+                $return = __('SQL_CANNOT_SAVE_LANG_VAR_LOCALIZATION');
+                break;
+            case InstallCode::SQL_CANNOT_SAVE_WIDGET:
+                $return = __('SQL_CANNOT_SAVE_WIDGET');
+                break;
+            case InstallCode::SQL_CANNOT_SAVE_PORTLET:
+                $return = __('SQL_CANNOT_SAVE_PORTLET');
+                break;
+            case InstallCode::SQL_CANNOT_SAVE_BLUEPRINT:
+                $return = __('SQL_CANNOT_SAVE_BLUEPRINT');
+                break;
+            case InstallCode::SQL_CANNOT_SAVE_EXPORT:
+                $return = __('SQL_CANNOT_SAVE_EXPORT');
+                break;
+            case InstallCode::INVALID_STORE_ID:
+                $return = __('INVALID_STORE_ID');
+                break;
+            case InstallCode::SQL_CANNOT_SAVE_VENDOR:
+                $return = __('SQL_CANNOT_SAVE_VENDOR');
+                break;
+            case InstallCode::MISSING_CONSENT_VENDOR:
+                $return = __('MISSING_CONSENT_VENDOR');
+                break;
+            case InstallCode::INVALID_CONSENT_VENDOR_NAME:
+                $return = __('INVALID_CONSENT_VENDOR_NAME');
+                break;
+            case InstallCode::INVALID_CONSENT_VENDOR_PURPOSE:
+                $return = __('INVALID_CONSENT_VENDOR_PURPOSE');
+                break;
+            case InstallCode::INVALID_CONSENT_VENDOR_LOCALIZATION:
+                $return = __('INVALID_CONSENT_VENDOR_LOCALIZATION');
+                break;
+            case InstallCode::INVALID_CONSENT_VENDOR_LOCALIZATION_ISO:
+                $return = __('INVALID_CONSENT_VENDOR_LOCALIZATION_ISO');
+                break;
+            case InstallCode::INVALID_CONSENT_VENDOR_DESCRIPTION:
+                $return = __('INVALID_CONSENT_VENDOR_DESCRIPTION');
+                break;
+            case InstallCode::INVALID_CONSENT_VENDOR_PRIV_POL:
+                $return = __('INVALID_CONSENT_VENDOR_PRIV_POL');
+                break;
+            case InstallCode::INVALID_CONSENT_VENDOR_ID:
+                $return = __('INVALID_CONSENT_VENDOR_ID');
+                break;
+            case InstallCode::INVALID_CONSENT_VENDOR_COMPANY:
+                $return = __('INVALID_CONSENT_VENDOR_COMPANY');
                 break;
             default:
                 $return = __('unknownError');

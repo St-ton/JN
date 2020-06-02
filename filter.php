@@ -119,7 +119,7 @@ if (!isset($_SESSION['ArtikelProSeite']) && $conf['artikeluebersicht']['artikelu
         ARTICLES_PER_PAGE_HARD_LIMIT
     );
 }
-$oSuchergebnisse->getProducts()->transform(function ($product) use ($conf) {
+$oSuchergebnisse->getProducts()->transform(static function ($product) use ($conf) {
     $product->verfuegbarkeitsBenachrichtigung = Product::showAvailabilityForm(
         $product,
         $conf['artikeldetails']['benachrichtigung_nutzen']

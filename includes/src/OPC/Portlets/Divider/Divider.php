@@ -38,6 +38,7 @@ class Divider extends Portlet
         return [
             'id' => [
                 'label' => 'ID',
+                'desc'  => __('dividerIdDesc')
             ],
         ];
     }

@@ -236,7 +236,7 @@ class Visitor
         if (\mb_stripos($agent, 'vivaldi') !== false) {
             return 'Vivaldi' . $mobile;
         }
-        if (\mb_strpos($agent, 'safari') !== false) {
+        if (\mb_strpos($agent, 'safari') !== false && \mb_strpos($agent, 'chrome') === false) {
             return 'Safari' . $mobile;
         }
         if (\mb_strpos($agent, 'firefox') !== false) {

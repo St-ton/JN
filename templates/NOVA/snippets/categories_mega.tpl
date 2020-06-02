@@ -222,39 +222,6 @@
                     </li>
                 {/if}
             {/block}
-            {block name='layout-header-top-bar-user-settings-language'}
-                {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
-                    <li class="nav-item nav-scrollbar-item dropdown dropdown-full">
-                        {block name='layout-header-top-bar-user-settings-language-link'}
-                            {link id='language-dropdown' href='#' title={lang key='selectLanguage'} class="nav-link dropdown-toggle" target="_self"}
-                                {lang key='selectLanguage'}
-                            {/link}
-                        {/block}
-                        {block name='layout-header-top-bar-user-settings-language-body'}
-                            <div class="dropdown-menu">
-                                {container}
-                                    {row class="lg-row-lg nav"}
-                                        {col lg=4 xl=3 class="my-lg-4 nav-item dropdown d-lg-none"}
-                                        {block name='layout-header-top-bar-user-settings-language-header'}
-                                            <span class="font-size-base font-weight-bold">{lang key='selectLanguage'}</span>
-                                        {/block}
-                                        {/col}
-                                        {foreach $smarty.session.Sprachen as $language}
-                                            {col lg=4 xl=3 class='my-lg-4 nav-item'}
-                                                {block name='layout-header-top-bar-user-settings-language-header-items'}
-                                                    {dropdownitem href=$language->cURL rel="nofollow" active=($language->kSprache == $smarty.session.kSprache)}
-                                                        {$language->iso639|upper}
-                                                    {/dropdownitem}
-                                                {/block}
-                                            {/col}
-                                        {/foreach}
-                                    {/row}
-                                {/container}
-                            </div>
-                        {/block}
-                    </li>
-                {/if}
-            {/block}
         {/block}
     {/if}
 

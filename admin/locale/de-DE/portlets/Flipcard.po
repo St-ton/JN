@@ -22,3 +22,6 @@ msgstr "Vorderseite"
 
 msgid "flipcardBack"
 msgstr "Rückseite"
+
+msgid "flipDirDesc"
+msgstr "Legt fest, ob sich die Flipcard um die vertikale oder horizontale Achse dreht."

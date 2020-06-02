@@ -68,6 +68,18 @@ class Image extends Portlet
                 ],
                 'width' => 50,
             ],
+            'align' => [
+                'type'       => InputType::SELECT,
+                'label'      => __('alignment'),
+                'options'    => [
+                    'center' => __('centered'),
+                    'left'   => __('left'),
+                    'right'  => __('right'),
+                ],
+                'default'    => 'center',
+                'width'      => 50,
+                'desc'       => __('alignmentDesc')
+            ],
             'alt'        => [
                 'label' => __('alternativeText'),
             ],

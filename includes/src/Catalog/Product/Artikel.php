@@ -1720,7 +1720,7 @@ class Artikel
                     //checks for video formats if wildcard type
                     $extMatch = [];
                     preg_match('/\.\w{3,4}($|\?)/', $mediaFile->cPfad, $extMatch);
-                    $mediaFile->cTyp =$extMatch[0];
+                    $mediaFile->cTyp = $extMatch[0];
                 }
                 $mapped                = $this->mapMediaType($mediaFile->cTyp);
                 $mediaFile->cMedienTyp = $mapped->cName;
@@ -4908,8 +4908,8 @@ class Artikel
      */
     private function mapMediaType(string $type)
     {
-        $mapping = new stdClass();
-        $mapping->videoType  = null;
+        $mapping            = new stdClass();
+        $mapping->videoType = null;
         switch ($type) {
             case '.bmp':
             case '.gif':
@@ -4939,9 +4939,9 @@ class Artikel
             case '.mp4':
             case '.flv':
             case '.3gp':
-                $mapping->cName      = Shop::Lang()->get('tabVideo', 'media');
-                $mapping->nTyp       = 3;
-                $mapping->videoType  = \strtolower(\str_replace('.', '', $type));
+                $mapping->cName     = Shop::Lang()->get('tabVideo', 'media');
+                $mapping->nTyp      = 3;
+                $mapping->videoType = \strtolower(\str_replace('.', '', $type));
                 break;
             case '.pdf':
                 $mapping->cName = Shop::Lang()->get('tabPdf', 'media');

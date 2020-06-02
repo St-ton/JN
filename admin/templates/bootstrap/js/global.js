@@ -593,10 +593,11 @@ function hideBackdrop() {
 function ioCall(name, args, success, error, context, disableSpinner)
 {
     'use strict';
-    args    = args || [];
-    success = success || function () { };
-    error   = error || function () { };
-    context = context || { };
+    args           = args || [];
+    success        = success || function () { };
+    error          = error || function () { };
+    context        = context || { };
+    disableSpinner = disableSpinner || false;
 
     if(JTL_TOKEN === null) {
         throw 'Error: IO call not possible. JTL_TOKEN was not set on this page.';
@@ -604,7 +605,7 @@ function ioCall(name, args, success, error, context, disableSpinner)
 
     var evalInContext = function (code) { eval(code); }.bind(context);
 
-    if (disableSpinner === undefined) {
+    if (disableSpinner === false) {
         startSpinner();
     }
 
@@ -644,7 +645,7 @@ function ioCall(name, args, success, error, context, disableSpinner)
             error(jqXHR.responseJSON);
         }
     }).done(function () {
-        if (disableSpinner === undefined) {
+        if (disableSpinner === false) {
             stopSpinner();
         }
     });
@@ -806,12 +807,13 @@ function closeTooltips() {
 function simmpleAjaxCall(url, data, success, error, context, disableSpinner)
 {
     'use strict';
-    data    = data || [];
-    success = success || function () { };
-    error   = error || function () { };
-    context = context || { };
+    data           = data || [];
+    success        = success || function () { };
+    error          = error || function () { };
+    context        = context || { };
+    disableSpinner = disableSpinner || false;
 
-    if (disableSpinner === undefined) {
+    if (disableSpinner === false) {
         startSpinner();
     }
     $.ajax({
@@ -825,7 +827,7 @@ function simmpleAjaxCall(url, data, success, error, context, disableSpinner)
             error(data, context);
         }
     }).done(function () {
-        if (disableSpinner === undefined) {
+        if (disableSpinner === false) {
             stopSpinner();
         }
     });

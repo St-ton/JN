@@ -64,21 +64,22 @@
                             {/block}
                         {/if}
 
-                        {* Video *}
+                    {* Video *}
                     {elseif $oMedienDatei->nMedienTyp === 3}
                         {block name='productdetails-mediafile-video'}
                             {if ($oMedienDatei->videoType === 'mp4' 
                             || $oMedienDatei->videoType === 'webm'
-                            || $oMedienDatei->videoType === 'ogg')}             
-                                <video controls>
-                                    <source src="{$ShopURL}/{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" type="video/{$oMedienDatei->videoType}">
-                                    {lang key='videoTagNotSupported' section='errorMessages'}
-                                </video> 
+                            || $oMedienDatei->videoType === 'ogg')}
+                                    <video class="product-detail-video" controls>
+                                        <source src="{$ShopURL}/{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" type="video/{$oMedienDatei->videoType}">
+                                        {lang key='videoTagNotSupported' section='errorMessages'}
+                                    </video>
+
                             {else}
                                 {lang key='videoTypeNotSupported' section='errorMessages'}
                             {/if}      
                         {/block}
-                        {* Sonstiges *}
+                    {* Sonstiges *}
                     {elseif $oMedienDatei->nMedienTyp === 4}
                         {block name='productdetails-mediafile-misc'}
                             {card title=$oMedienDatei->cName class="mb-3"}

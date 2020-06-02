@@ -11878,6 +11878,12 @@ li span.value {
   width: auto;
   height: 28px;
 }
+.border-none {
+  border: none;
+}
+.product-detail-video {
+  max-width: 100%;
+}
 .btn-default,
 .btn-primary,
 .btn-success,
@@ -12333,5 +12339,9 @@ li span.value {
   border-color: #dcdcdc;
   -webkit-box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 0 rgba(255, 255, 255, 0.1);
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+.navbar-default .nav > li > a,
+.navbar-inverse .nav > li > a {
+  padding: 18px 15px;
 }
 /*# sourceMappingURL=sourcemap.map */

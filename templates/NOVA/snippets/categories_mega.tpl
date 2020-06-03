@@ -162,7 +162,7 @@
             <li class="d-lg-none"><hr></li>
         {/block}
         {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
-            {navitem href="{get_static_route id='wunschliste.php'}" class="nav-scrollbar-item"}
+            {navitem href="{get_static_route id='wunschliste.php'}" class="wl-nav-scrollbar-item nav-scrollbar-item"}
                 {lang key='wishlist'}
                 {badge id="badge-wl-count" variant="primary" class="text-gray-darker product-count"}
                     {if isset($smarty.session.Wunschliste) && !empty($smarty.session.Wunschliste->CWunschlistePos_arr|count)}
@@ -173,7 +173,7 @@
                 {/badge}
             {/navitem}
         {/if}
-        {navitem href="{get_static_route id='vergleichsliste.php'}" class="nav-scrollbar-item"}
+        {navitem href="{get_static_route id='vergleichsliste.php'}" class="comparelist-nav-scrollbar-item nav-scrollbar-item"}
             {lang key='compare'}
             {badge id="comparelist-badge" variant="primary" class="text-gray-darker product-count"}
                 {if !empty($smarty.session.Vergleichsliste->oArtikel_arr)}{$smarty.session.Vergleichsliste->oArtikel_arr|count}{else}0{/if}
@@ -189,7 +189,7 @@
         {block name='layout-header-top-bar-user-settings'}
             {block name='layout-header-top-bar-user-settings-currency'}
                 {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}
-                    <li class="nav-item nav-scrollbar-item dropdown dropdown-full">
+                    <li class="currency-nav-scrollbar-item nav-item nav-scrollbar-item dropdown dropdown-full">
                         {block name='layout-header-top-bar-user-settings-currency-link'}
                             {link id='currency-dropdown' href='#' title={lang key='currency'} class="nav-link dropdown-toggle" target="_self"}
                                 {lang key='currency'}

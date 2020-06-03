@@ -156,13 +156,13 @@ msgid "successNewsCommentDelete"
 msgstr "Selected blog comments deleted successfully."
 
 msgid "commentReply"
-msgstr "Answer"
+msgstr "Reply to comment"
 
 msgid "answerComment"
 msgstr "Reply comment"
 
 msgid "newsCommentAnswerEdit"
-msgstr "Edit answer"
+msgstr "Edit reply"
 
 msgid "displayedName"
 msgstr "Displayed name"

@@ -24,7 +24,7 @@ class Migration_20200512132300 extends Migration implements IMigration
                     ADD `isAdmin` int(10) unsigned NOT NULL DEFAULT '0' AFTER `parentCommentID`;"
         );
         $this->setLocalization('ger', 'news', 'commentReply', 'Antwort');
-        $this->setLocalization('eng', 'news', 'commentReply', 'Answer');
+        $this->setLocalization('eng', 'news', 'commentReply', 'Reply');
     }
 
     /**

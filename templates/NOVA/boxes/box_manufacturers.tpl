@@ -1,5 +1,5 @@
 {block name='boxes-box-manufacturers'}
-    {card class="box box-manufacturers mb-md-4" id="sidebox{$oBox->getID()}"}
+    {card class="box box-manufacturers mb-md-4 dropdown-full-width" id="sidebox{$oBox->getID()}"}
         {block name='boxes-box-manufacturers-content'}
             {block name='boxes-box-manufacturers-toggle-title'}
                 {link id="crd-hdr-{$oBox->getID()}"

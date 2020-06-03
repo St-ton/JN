@@ -4,3 +4,7 @@ msgstr ""
 
 msgid "Divider"
 msgstr "Divider"
+
+msgid "dividerIdDesc"
+msgstr "Here you can enter a unique identifier (anchor). Use it to link to this position from other positions or "
+"pages (allowed characters: numbers, letters, –, _)."

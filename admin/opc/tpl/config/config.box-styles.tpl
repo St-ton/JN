@@ -103,7 +103,9 @@
             ]
         }
         <div class='form-group'>
-            <label for="config-{$propname}-border-radius">{__('Border radius')}</label>
+            <label for="config-{$propname}-border-radius"
+                   data-toggle="tooltip" title="{__('cssNumericDesc')}" data-placement="auto">
+                {__('Border radius')}</label>
             <input type="text" class="form-control" id="config-{$propname}-border-radius"
                    name="{$propname}[border-radius]" value="{$propval['border-radius']}">
         </div>

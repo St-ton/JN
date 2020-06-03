@@ -24,7 +24,6 @@ function adminSearch($query, $standalonePage = false): ?string
     $settings        = bearbeiteEinstellungsSuche($query);
     $shippings       = getShippingByName($query);
     $paymentMethods  = getPaymentMethodsByName($query);
-    $plugins         = getPluginsByName($query);
     $groupedSettings = [];
     $currentGroup    = null;
 
@@ -54,7 +53,7 @@ function adminSearch($query, $standalonePage = false): ?string
         ->assign('settings', !empty($settings->oEinstellung_arr) ? $groupedSettings : null)
         ->assign('shippings', count($shippings) > 0 ? $shippings : null)
         ->assign('paymentMethods', count($paymentMethods) > 0 ? $paymentMethods : null)
-        ->assign('plugins', $plugins);
+        ->assign('plugins', getPlugins($query));
 
     if ($standalonePage) {
         Shop::Smarty()->display('suche.tpl');
@@ -133,7 +132,7 @@ function highlightSearchTerm($haystack, $needle)
  * @param string $query
  * @return Collection
  */
-function getPluginsByName(string $query): Collection
+function getPlugins(string $query): Collection
 {
     $plugins = new Collection();
     if (mb_strlen($query) <= 2) {

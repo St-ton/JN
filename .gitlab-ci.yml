@@ -233,17 +233,23 @@ stages:
 
 .debugging: &debugging
   script:
-    - echo 'CI_COMMIT_BRANCH :' $CI_COMMIT_BRANCH                                       # --DEBUG--
-    - echo 'CI_COMMIT_REF_NAME :' $CI_COMMIT_REF_NAME                                   # --DEBUG--
-    - echo 'CI_MERGE_REQUEST_IID :' $CI_MERGE_REQUEST_IID                               # --DEBUG--
-    - echo 'CI_MERGE_REQUEST_ID :' $CI_MERGE_REQUEST_ID                                 # --DEBUG--
-    - echo 'CI_COMMIT_TAG :' $CI_COMMIT_TAG                                             # --DEBUG--
-    - echo 'CI_PIPELINE_SOURCE :' $CI_PIPELINE_SOURCE                                   # --DEBUG--
-    - echo 'CI_MERGE_REQUEST_EVENT_TYPE :' $CI_MERGE_REQUEST_EVENT_TYPE                 # --DEBUG--
-    - echo 'CI_MERGE_REQUEST_SOURCE_BRANCH_NAME :' $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME # --DEBUG--
-    - echo 'CI_MERGE_REQUEST_TARGET_BRANCH_NAME :' $CI_MERGE_REQUEST_TARGET_BRANCH_NAME # --DEBUG--
-    - echo 'CI_DEFAULT_BRANCH :' $CI_DEFAULT_BRANCH                                     # --DEBUG--
-    - echo 'CI_MERGE_REQUEST_TARGET_BRANCH_NAME :' $CI_MERGE_REQUEST_TARGET_BRANCH_NAME # --DEBUG--
+    - if [ $CI_COMMIT_BRANCH ] ; then echo 'CI_COMMIT_BRANCH :' $CI_COMMIT_BRANCH; fi;                                                          # --DEBUG--
+    - if [ $CI_COMMIT_REF_NAME ] ; then echo 'CI_COMMIT_REF_NAME :' $CI_COMMIT_REF_NAME; fi;                                                    # --DEBUG--
+    - if [ $CI_MERGE_REQUEST_IID ] ; then echo 'CI_MERGE_REQUEST_IID :' $CI_MERGE_REQUEST_IID; fi;                                              # --DEBUG--
+    - if [ $CI_MERGE_REQUEST_ID ] ; then echo 'CI_MERGE_REQUEST_ID :' $CI_MERGE_REQUEST_ID; fi;                                                 # --DEBUG--
+    - if [ $CI_COMMIT_TAG ] ; then echo 'CI_COMMIT_TAG :' $CI_COMMIT_TAG; fi;                                                                   # --DEBUG--
+    - if [ $CI_PIPELINE_SOURCE ] ; then echo 'CI_PIPELINE_SOURCE :' $CI_PIPELINE_SOURCE; fi;                                                    # --DEBUG--
+    - if [ $CI_MERGE_REQUEST_EVENT_TYPE ] ; then echo 'CI_MERGE_REQUEST_EVENT_TYPE :' $CI_MERGE_REQUEST_EVENT_TYPE; fi;                         # --DEBUG--
+    - if [ $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME ] ; then echo 'CI_MERGE_REQUEST_SOURCE_BRANCH_NAME :' $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME; fi; # --DEBUG--
+    - if [ $CI_MERGE_REQUEST_TARGET_BRANCH_NAME ] ; then echo 'CI_MERGE_REQUEST_TARGET_BRANCH_NAME :' $CI_MERGE_REQUEST_TARGET_BRANCH_NAME; fi; # --DEBUG--
+    - if [ $CI_DEFAULT_BRANCH ] ; then echo 'CI_DEFAULT_BRANCH :' $CI_DEFAULT_BRANCH; fi;                                                       # --DEBUG--
+
+
+workflow:
+  rules:
+    - if: $CI_MERGE_REQUEST_ID
+      when: never
+    - when: always
 
 
 code_quality:
@@ -261,10 +267,10 @@ code_quality:
   artifacts:
     paths: [code-quality-report.txt]
   rules:
-    - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH
-    - if: $CI_MERGE_REQUEST_ID
-    - if: $CI_COMMIT_TAG != ""
-      when: never
+    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
+        && $CI_COMMIT_REF_NAME !~ /^release\/.*$/
+        && $CI_COMMIT_TAG == null
+      when: always
 
 removeContainerCodeQuality:
   stage: cleanUpCodeQuality
@@ -280,13 +286,11 @@ removeContainerCodeQuality:
     - failedCodeQuality
 #  <<: *debugging
   rules:
-    - when: on_failure
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      when: never
-    - if: $CI_COMMIT_BRANCH =~ /^release\/.*$/
-      when: never
-    - if: $CI_COMMIT_TAG != ""
-      when: never
+    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
+        && $CI_COMMIT_REF_NAME !~ /^release\/.*$/
+        && $CI_COMMIT_TAG == null
+      when: on_failure
+
 
 
 test_PHP_7.2:
@@ -303,10 +307,10 @@ test_PHP_7.2:
     - testing
 #  <<: *debugging
   rules:
-    - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH
-    - if: $CI_MERGE_REQUEST_ID
-    - if: $CI_COMMIT_TAG != ""
-      when: never
+    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
+        && $CI_COMMIT_REF_NAME !~ /^release\/.*$/
+        && $CI_COMMIT_TAG == null
+      when: always
 
 test_PHP_7.3:
   stage: test
@@ -322,10 +326,10 @@ test_PHP_7.3:
     - testing
 #  <<: *debugging
   rules:
-    - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH
-    - if: $CI_MERGE_REQUEST_ID
-    - if: $CI_COMMIT_TAG != ""
-      when: never
+    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
+        && $CI_COMMIT_REF_NAME !~ /^release\/.*$/
+        && $CI_COMMIT_TAG == null
+      when: always
 
 removeContainerPHP7.2:
   stage: cleanUpTest
@@ -342,11 +346,10 @@ removeContainerPHP7.2:
     - failedTesting
 #  <<: *debugging
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      when: never
-    - if: $CI_COMMIT_BRANCH =~ /^release\/.*$/
-      when: never
-    - when: on_failure
+    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
+        && $CI_COMMIT_REF_NAME !~ /^release\/.*$/
+        && $CI_COMMIT_TAG == null
+      when: on_failure
 
 removeContainerPHP7.3:
   stage: cleanUpTest
@@ -363,11 +366,11 @@ removeContainerPHP7.3:
     - failedTesting
 #  <<: *debugging
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      when: never
-    - if: $CI_COMMIT_BRANCH =~ /^release\/.*$/
-      when: never
-    - when: on_failure
+    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
+        && $CI_COMMIT_REF_NAME !~ /^release\/.*$/
+        && $CI_COMMIT_TAG == null
+      when: on_failure
+
 
 
 build:
@@ -382,11 +385,9 @@ build:
     - *postBuildDeployScripts
     - dockerLogout
   rules:
-    - if: $CI_MERGE_REQUEST_ID
-      when: never
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-    - if: $CI_COMMIT_BRANCH =~ /^release\/.*$/
-    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+        || $CI_COMMIT_REF_NAME =~ /^release\/.*$/
+        || $CI_COMMIT_TAG == $CI_COMMIT_REF_NAME
   tags:
     - build
 
@@ -405,15 +406,13 @@ deploy:
     - *postBuildDeployScripts
     - dockerLogout
   rules:
-    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
-      when: never
-    - if: $CI_MERGE_REQUEST_ID
-      when: never
-    - if: $CI_COMMIT_REF_NAME =~ /^release\/.*$/
-    - if: $CI_COMMIT_TAG
-    - when: on_success
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+        || $CI_COMMIT_REF_NAME =~ /^release\/.*$/
+        || $CI_COMMIT_TAG == $CI_COMMIT_REF_NAME
+      when: on_success
   tags:
     - build
+
 
 removeContainer:
   stage: cleanUp
@@ -422,15 +421,14 @@ removeContainer:
     - failedScript
 #  <<: *debugging
   rules:
-    - if: $CI_MERGE_REQUEST_ID
-      when: never
-    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
-      when: never
-    - if: $CI_COMMIT_REF_NAME =~ /^release\/.*$/
-    - if: $CI_COMMIT_TAG
-    - when: on_failure
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+        || $CI_COMMIT_REF_NAME =~ /^release\/.*$/
+        || $CI_COMMIT_TAG == $CI_COMMIT_REF_NAME
+      when: on_failure
   tags:
     - build
+
+
 
 tagsDeployment:
   stage: tagsDeployment
@@ -447,6 +445,7 @@ tagsDeployment:
     - build
 
 
+
 stagingPreDeploy:
   stage: stagingPre
   variables:
@@ -457,6 +456,7 @@ stagingPreDeploy:
 #  <<: *debugging
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+        || $CI_COMMIT_REF_NAME =~ /^release\/.*$/
   tags:
     - dev-checkout
 
@@ -473,6 +473,7 @@ stagingDevPhp72:
     url: https://$STAGING_USER-72-master.$STAGING_DOMAIN
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+        || $CI_COMMIT_REF_NAME =~ /^release\/.*$/
   tags:
     - dev-checkout
 
@@ -489,8 +490,10 @@ stagingDevPhp73:
     url: https://$STAGING_USER-73-master.$STAGING_DOMAIN
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+        || $CI_COMMIT_REF_NAME =~ /^release\/.*$/
   tags:
     - dev-checkout
+
 
 
 .stagingMarketplaceDev:

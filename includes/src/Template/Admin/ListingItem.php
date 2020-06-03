@@ -39,7 +39,12 @@ class ListingItem
     /**
      * @var Version
      */
-    private $shopVersion;
+    private $maxShopVersion;
+
+    /**
+     * @var Version
+     */
+    private $minShopVersion;
 
     /**
      * @var string
@@ -173,32 +178,37 @@ class ListingItem
 
     /**
      * @param array $xml
+     * @param int   $validationResult
      * @return ListingItem
      */
-    public function parseXML(array $xml): self
+    public function parseXML(array $xml, int $validationResult): self
     {
         $this->name = $xml['cVerzeichnis'];
         $this->dir  = $xml['cVerzeichnis'];
         $node       = $xml['Template'][0] ?? null;
+        if ($validationResult !== TemplateValidator::RES_OK) {
+            return $this->fail($validationResult);
+        }
         if ($node !== null) {
-            if (!isset($node['ShopVersion'])) {
+            if (!isset($node['ShopVersion']) && !isset($node['MaxShopVersion'])) {
                 return $this->fail(TemplateValidator::RES_SHOP_VERSION_NOT_FOUND);
             }
             if (!isset($node['Name'])) {
                 return $this->fail(TemplateValidator::RES_NAME_NOT_FOUND);
             }
-            $this->name         = $node['Name'];
-            $this->description  = $node['Description'] ?? '';
-            $this->exsid        = $node['ExsID'] ?? '';
-            $this->author       = $node['Author'] ?? '';
-            $this->url          = $node['URL'] ?? null;
-            $this->preview      = $node['Preview'] ?? null;
-            $this->framework    = $node['Framework'] ?? null;
-            $this->isChild      = isset($node['Parent']);
-            $this->parent       = $node['Parent'] ?? null;
-            $version            = $node['Version'] ?? $node['ShopVersion'];
-            $this->optionsCount = isset($node['Settings'][0]) ? 1 : 0;
-            $this->shopVersion  = Version::parse($node['ShopVersion']);
+            $this->name           = $node['Name'];
+            $this->description    = $node['Description'] ?? '';
+            $this->exsid          = $node['ExsID'] ?? '';
+            $this->author         = $node['Author'] ?? '';
+            $this->url            = $node['URL'] ?? null;
+            $this->preview        = $node['Preview'] ?? null;
+            $this->framework      = $node['Framework'] ?? null;
+            $this->isChild        = isset($node['Parent']);
+            $this->parent         = $node['Parent'] ?? null;
+            $version              = $node['Version'] ?? $node['ShopVersion'];
+            $this->optionsCount   = isset($node['Settings'][0]) ? 1 : 0;
+            $this->maxShopVersion = Version::parse($node['MaxShopVersion'] ?? '0.0.0');
+            $this->minShopVersion = Version::parse($node['MinShopVersion'] ?? $node['ShopVersion'] ?? '5.0.0');
             $this->addChecksums();
             try {
                 $this->version = Version::parse($version);
@@ -237,6 +247,9 @@ class ListingItem
             case TemplateValidator::RES_NAME_NOT_FOUND:
                 $msg = __('errorNameNotFound');
                 break;
+            case TemplateValidator::RES_INVALID_VERSION:
+                $msg = __('errorInvalidVersion');
+                break;
             default:
                 $msg = __('errorUnknown');
                 break;
@@ -265,10 +278,11 @@ class ListingItem
      */
     private function fail(int $errorCode): self
     {
-        $this->version     = Version::parse('0.0.0');
-        $this->shopVersion = $this->shopVersion ?? $this->version;
-        $this->available   = false;
-        $this->hasError    = true;
+        $this->version        = Version::parse('0.0.0');
+        $this->maxShopVersion = $this->maxShopVersion ?? Version::parse('0.0.0');
+        $this->minShopVersion = $this->minShopVersion ?? Version::parse('5.0.0');
+        $this->available      = false;
+        $this->hasError       = true;
         $this->setErrorCode($errorCode);
         $this->generateErrorMessage($errorCode);
 
@@ -694,17 +708,33 @@ class ListingItem
     /**
      * @return Version
      */
-    public function getShopVersion(): Version
+    public function getMaxShopVersion(): Version
     {
-        return $this->shopVersion;
+        return $this->maxShopVersion;
     }
 
     /**
-     * @param Version $shopVersion
+     * @param Version $maxShopVersion
      */
-    public function setShopVersion(Version $shopVersion): void
+    public function setMaxShopVersion(Version $maxShopVersion): void
     {
-        $this->shopVersion = $shopVersion;
+        $this->maxShopVersion = $maxShopVersion;
+    }
+
+    /**
+     * @return Version
+     */
+    public function getMinShopVersion(): Version
+    {
+        return $this->minShopVersion;
+    }
+
+    /**
+     * @param Version $minShopVersion
+     */
+    public function setMinShopVersion(Version $minShopVersion): void
+    {
+        $this->minShopVersion = $minShopVersion;
     }
 
     /**

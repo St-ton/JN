@@ -2,8 +2,11 @@
 
 namespace JTL\Template\Admin\Validation;
 
+use InvalidArgumentException;
 use JTL\DB\DbInterface;
 use JTL\Plugin\InstallCode;
+use JTL\Shop;
+use JTLShop\SemVer\Version;
 
 /**
  * Class TemplateValidator
@@ -26,6 +29,8 @@ class TemplateValidator implements ValidatorInterface
     public const RES_SHOP_VERSION_NOT_FOUND = 6;
 
     public const RES_NAME_NOT_FOUND = 7;
+
+    public const RES_INVALID_VERSION = 8;
 
     /**
      * @var DbInterface
@@ -113,9 +118,17 @@ class TemplateValidator implements ValidatorInterface
                 return self::RES_PARENT_NOT_FOUND;
             }
         }
-        $shopVersion = $node['ShopVersion'] ?? null;
-        if ($shopVersion === null) {
+        $minShopversion = $node['MinShopVersion'] ?? $node['ShopVersion'] ?? null;
+        if ($minShopversion === null) {
             return self::RES_SHOP_VERSION_NOT_FOUND;
+        }
+        try {
+            // all *version nodes have to be valid semver strings
+            Version::parse($node['Version'] ?? '0');
+            Version::parse($minShopversion);
+            Version::parse($node['MaxShopVersion'] ?? '0.0.0');
+        } catch (InvalidArgumentException $e) {
+            return self::RES_INVALID_VERSION;
         }
 
         return self::RES_OK;

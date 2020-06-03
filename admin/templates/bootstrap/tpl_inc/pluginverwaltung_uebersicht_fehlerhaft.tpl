@@ -13,6 +13,7 @@
                             <th class="text-left">{__('pluginName')}</th>
                             <th class="text-center">{__('pluginErrorCode')}</th>
                             <th class="text-center">{__('pluginVersion')}</th>
+                            <th class="text-center">{__('pluginCompatibility')}</th>
                             <th>{__('pluginFolder')}</th>
                         </tr>
                         </thead>
@@ -30,6 +31,7 @@
                                     </p>
                                 </td>
                                 <td class="text-center">{$listingItem->getVersion()}</td>
+                                <td class="text-center">{$listingItem->getMinShopVersion()} &dash; {$listingItem->getMaxShopVersion()}</td>
                                 <td>{$listingItem->getDir()}</td>
                             </tr>
                         {/foreach}

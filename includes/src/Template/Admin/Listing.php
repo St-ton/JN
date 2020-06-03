@@ -95,7 +95,7 @@ final class Listing
             $xml['cVerzeichnis'] = $dir;
             $xml['cFehlercode']  = $code;
             $item                = new ListingItem();
-            $item->parseXML($xml);
+            $item->parseXML($xml, $code);
             $item->setPath($templateDir . $dir);
             $item->setActive($item->getDir() === $active->getTemplate());
 

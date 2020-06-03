@@ -72,7 +72,7 @@ msgid "errorParentNotFound"
 msgstr "Das Elterntemplate konnte nicht gefunden werden."
 
 msgid "errorShopVersionNotFound"
-msgstr "XML-Knoten \"ShopVersion\" nicht gefunden."
+msgstr "XML-Knoten \"MaxShopVersion\" nicht gefunden."
 
 msgid "errorXmlNotFound"
 msgstr "template.xml nicht gefunden."
@@ -82,6 +82,9 @@ msgstr "XML konnte nicht geparst werden."
 
 msgid "errorNameNotFound"
 msgstr "XML-Knoten \"Name\" konnte nicht gefunden werden."
+
+msgid "errorInvalidVersion"
+msgstr "Keine gültige SemVer."
 
 msgid "errorUnknown"
 msgstr "Unbekannter Fehler."

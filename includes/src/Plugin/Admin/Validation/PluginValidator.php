@@ -2,6 +2,7 @@
 
 namespace JTL\Plugin\Admin\Validation;
 
+use InvalidArgumentException;
 use JTL\Plugin\InstallCode;
 use JTLShop\SemVer\Version;
 
@@ -18,9 +19,10 @@ final class PluginValidator extends AbstractValidator
      */
     public function pluginPlausiIntern($xml, bool $forUpdate): int
     {
-        $baseNode    = $xml['jtlshopplugin'][0] ?? null;
-        $appVersion  = Version::parse(\APPLICATION_VERSION);
-        $shopVersion = null;
+        $baseNode       = $xml['jtlshopplugin'][0] ?? null;
+        $shopVersion    = Version::parse(\APPLICATION_VERSION);
+        $minShopVersion = null;
+        $maxShopVersion = null;
         if ($baseNode === null) {
             return InstallCode::MISSING_PLUGIN_NODE;
         }
@@ -44,10 +46,20 @@ final class PluginValidator extends AbstractValidator
                 return InstallCode::DUPLICATE_PLUGIN_ID;
             }
         }
-        if (isset($baseNode['ShopVersion'])) {
-            $shopVersion = Version::parse($baseNode['ShopVersion']);
+        if (isset($baseNode['MinShopVersion'])) {
+            try {
+                $minShopVersion = Version::parse($baseNode['MinShopVersion']);
+            } catch (InvalidArgumentException $e) {
+                $minShopVersion = null;
+            }
+        } elseif (isset($baseNode['ShopVersion'])) {
+            try {
+                $minShopVersion = Version::parse($baseNode['ShopVersion']);
+            } catch (InvalidArgumentException $e) {
+                $minShopVersion = null;
+            }
         }
-        if (empty($appVersion) || empty($shopVersion) || $shopVersion->greaterThan($appVersion)) {
+        if (empty($shopVersion) || empty($minShopVersion) || $minShopVersion->greaterThan($shopVersion)) {
             return InstallCode::SHOP_VERSION_COMPATIBILITY;
         }
 

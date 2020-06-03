@@ -193,11 +193,6 @@ class Controller
         $version = empty($tplConfig->Version) && $parentConfig
             ? (string)$parentConfig->Version
             : (string)$tplConfig->Version;
-        if (empty($version)) {
-            $version = !empty($tplConfig->ShopVersion)
-                ? (string)$tplConfig->ShopVersion
-                : (string)$parentConfig->ShopVersion;
-        }
         $model->setVersion($version);
         $model->setBootstrap((int)\file_exists(\PFAD_ROOT . \PFAD_TEMPLATES . $dir . '/Bootstrap.php'));
         $save = $model->save();

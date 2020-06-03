@@ -56,6 +56,9 @@ msgstr "Sprachen"
 msgid "pluginVersion"
 msgstr "Version"
 
+msgid "pluginCompatibility"
+msgstr "Onlineshop-Version"
+
 msgid "pluginInfo"
 msgstr "Info"
 

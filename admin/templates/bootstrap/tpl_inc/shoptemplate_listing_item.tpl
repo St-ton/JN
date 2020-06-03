@@ -91,7 +91,7 @@
         {$listingItem->getVersion()}
     </td>
     <td class="text-vcenter text-center">
-        {$listingItem->getShopVersion()}
+        {$listingItem->getMinShopVersion()} &dash; {$listingItem->getMaxShopVersion()}
     </td>
     <td class="text-vcenter text-center">
         {if $listingItem->hasError()}

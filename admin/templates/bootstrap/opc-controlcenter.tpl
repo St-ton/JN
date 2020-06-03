@@ -30,6 +30,7 @@
                         <table class="list table">
                             <thead>
                             <tr>
+                                <th></th>
                                 <th>{__('url')}</th>
                                 <th>{__('pageID')}</th>
                                 <th class="text-center">{__('actions')}</th>
@@ -40,6 +41,11 @@
                                     {assign var=pageIdHash value=$page->cPageId|md5}
                                     {assign var=publicPageRow value=$opcPageDB->getPublicPageRow($page->cPageId)}
                                     <tr>
+                                        <td>
+                                            <a href="#page-{$pageIdHash}" data-toggle="collapse">
+                                                <i class="far fa-chevron-circle-down rotate-180 font-size-lg" title="{__('details')}" data-toggle="tooltip"></i>
+                                            </a>
+                                        </td>
                                         <td>
                                             <a href="{$URL_SHOP}{$page->cPageUrl}" target="_blank">
                                                 <span class="icon-hover">

@@ -63,6 +63,7 @@ final class EmailSettings extends AbstractStep
         $question->setType(QuestionType::TEXT);
         $question->setValue(\implode(';', $template->getCopyTo()));
         $question->setIsFullWidth(true);
+        $question->setIsRequired(false);
         $question->setOnSave(function (QuestionInterface $question) use ($template, $db) {
             //TODO use Mail classes ( saveEmailSetting() )
             $emailTemplateID = $db->select(
@@ -107,7 +108,6 @@ final class EmailSettings extends AbstractStep
         $question->setDescription(__('adminUserEmailDesc'));
         $question->setType(QuestionType::EMAIL);
         $question->setIsFullWidth(true);
-        $question->setIsRequired(false);
         $question->setValue($db->select(
             'tadminlogin',
             'kAdminlogin',

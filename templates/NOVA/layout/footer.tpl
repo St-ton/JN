@@ -271,6 +271,9 @@
         {/if}
     {/block}
 
+    {block name='layout-footer-io-path'}
+        <div id="jtl-io-path" data-path="{$ShopURL}" class="d-none"></div>
+    {/block}
 
     {* JavaScripts *}
     {block name='layout-footer-js'}

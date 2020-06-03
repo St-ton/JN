@@ -20,7 +20,7 @@
                     {if $ratingAllowed}
                         {block name='productdetails-review-form-form-main'}
                             {block name='productdetails-review-form'}
-                                <div class="alert alert-info">{lang key='shareYourRatingGuidelines' section='product rating'}.</div>
+                                <div class="alert alert-info">{lang key='shareYourRatingGuidelines' section='product rating'}</div>
                             {/block}
                             {block name='productdetails-review-form-image-name'}
                                 <div class="vmiddle">

@@ -179,7 +179,7 @@
                     } else {
                         data += '0';
                     }
-                    simmpleAjaxCall('pluginverwaltung.php', data, function () {
+                    simpleAjaxCall('pluginverwaltung.php', data, function () {
                         location.reload();
                     });
                 }

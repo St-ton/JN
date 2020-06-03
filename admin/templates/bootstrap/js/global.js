@@ -804,7 +804,7 @@ function closeTooltips() {
     $('.tooltip[role="tooltip"]').remove();
 }
 
-function simmpleAjaxCall(url, data, success, error, context, disableSpinner)
+function simpleAjaxCall(url, data, success, error, context, disableSpinner)
 {
     'use strict';
     data           = data || [];

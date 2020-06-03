@@ -26,6 +26,7 @@ class Flipcard extends Portlet
                     'h' => __('horizontal'),
                 ],
                 'default' => 'v',
+                'desc'    => __('flipDirDesc'),
             ],
             'flip-trigger' => [
                 'type'    => InputType::RADIO,

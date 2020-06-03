@@ -56,3 +56,18 @@ msgstr "Kanalinformationen anzeigen"
 
 msgid "videoURL"
 msgstr "Video-URL"
+
+msgid "colorYtDesc"
+msgstr "Farbe der Steuerelemente"
+
+msgid "widthPx"
+msgstr "Breite (px)"
+
+msgid "heightPx"
+msgstr "Höhe (px)"
+
+msgid "startSec"
+msgstr "Start bei Sekunde"
+
+msgid "endSec"
+msgstr "Ende bei Sekunde"

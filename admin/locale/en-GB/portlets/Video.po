@@ -53,3 +53,18 @@ msgstr "Show channel information"
 
 msgid "videoURL"
 msgstr "Video URL"
+
+msgid "colorYtDesc"
+msgstr "Colour of control elements"
+
+msgid "widthPx"
+msgstr "Width (px)"
+
+msgid "heightPx"
+msgstr "Height (px)"
+
+msgid "startSec"
+msgstr "Starts at second"
+
+msgid "endSec"
+msgstr "Ends at second"

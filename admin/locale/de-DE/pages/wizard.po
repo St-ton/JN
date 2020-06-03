@@ -12,52 +12,52 @@ msgid "setupAssistantURL"
 msgstr " "
 
 msgid "launchSetup"
-msgstr "Einstellen"
+msgstr "Einrichtungsassistent öffnen"
 
 msgid "welcome"
-msgstr "Herzlich Wilkommen"
+msgstr "Herzlich willkommen!"
 
 msgid "welcomeDesc"
-msgstr "In diesem Assistenten führen wir Sie durch die wichtigsten Schritte, die für die Einrichtung von JTL-Shop notwendig sind."
+msgstr "In diesem Assistenten führen wir Sie durch die wichtigsten Schritte der Einrichtung von JTL-Shop."
 
 msgid "beginSetup"
 msgstr "Starten"
 
 msgid "stepOne"
-msgstr "Schritt 1 - Grundeinstellungen"
+msgstr "Schritt 1 – Grundeinstellungen"
 
 msgid "stepOneDesc"
-msgstr "Hier legen Sie die wichtigsten Grundeinstellungen für Ihren Onlineshop fest. Alle Einstellungen können hinterher im Backend von JTL-Shop geändert werden."
+msgstr "Hier legen Sie die wichtigsten Grundeinstellungen für Ihren Onlineshop fest. Sie können jederzeit alle Einstellungen im Backend von JTL-Shop ändern."
 
 msgid "stepTwo"
-msgstr "Schritt 2 - Rechtstexte"
+msgstr "Schritt 2 – Rechtstexte"
 
 msgid "stepTwoDesc"
-msgstr "Hier können Sie direkt passende Plugins von JTL-Partnern wählen, die Ihnen dabei helfen, rechtssichere Texte wie AGB, Widerrufsbelehrung usw. in Ihren Onlineshop einzupflegen. Sie können ihre Rechtstexte auch selbst festlegen. Wie dies funktioniert beschreiben wir in unserem <a href=\"https://guide.jtl-software.de\" target=\"_blank\">Guide</a>."
+msgstr "Für rechtliche relevante Texte bieten wir passende Plugins von JTL-Partnern an. Diese Plugins erleichtern es Ihnen, rechtssichere Texte wie AGB, Widerrufsbelehrung usw. in Ihren Onlineshop einzupflegen. Sie können Ihre Rechtstexte auch selbst formulieren und einrichten. Die Anleitung dazu finden Sie in unserem <a href=\"https://jtl-url.de/15ge9\" target=\"_blank\">JTL-Guide</a>."
 
 msgid "stepThree"
-msgstr "Schritt 3 - Zahlungsarten"
+msgstr "Schritt 3 – Zahlungsarten"
 
 msgid "stepThreeDesc"
-msgstr "Wählen Sie passende Plugins um die Zahlungsartauswahl für Ihre Kunden zu erweitern. Welche Zahlungsarten Ihren Kunden wann angeboten werden, hängt von Ihren Versandarten ab. Lesen Sie dazu im <a href=\"https://jtl-url.de/dlkpz\" target=\"_blank\">Guide</a> mehr. Standardmäßig bietet der JTL-Shop folgende Zahlungsarten: %s"
+msgstr "Wählen Sie passende Plugins, um Ihren Kunden diverse Zahlungsarten anzubieten. Welche Zahlungsarten Ihren Kunden wann angeboten werden, legen Sie in den einzelnen Versandarten fest. Weitere Informationen dazu finden Sie im <a href=\"https://jtl-url.de/dlkpz\" target=\"_blank\">JTL-Guide</a>. Standardmäßig bietet JTL-Shop folgende Zahlungsarten: %s"
 
 msgid "stepFour"
-msgstr "Schritt 4 - E-Mail-Einstellungen"
+msgstr "Schritt 4 – E-Mail-Einstellungen"
 
 msgid "stepFourDesc"
-msgstr "Hier sehen Sie einen Überblick über die E-Mail-Einstellungen. Die restlichen Einstellungen für den E-Mail-Server sollten schnellstmöglich nach dieser Erinrichtung unter \"Administration > E-Mail > Server\" erfolgen. Weitere Informationen dazu <a href=\"https://guide.jtl-software.de/jtl-shop/systemverwaltung/e-mail-versand-einrichten/\" target=\"_blank\">Guide</a>."
+msgstr "Hier sehen Sie die wichtigsten E-Mail-Einstellungen. Nehmen Sie die übrigen Einstellungen zum E-Mail-Server möglichst zeitnah nach dieser Ersteinrichtung unter „Administration > E-Mail > Server“ vor. Weitere Informationen dazu finden Sie im <a href=\"https://jtl-url.de/jnw83\" target=\"_blank\">JTL-Guide</a>."
 
 msgid "stepFive"
-msgstr "Schritt 5 - Übersicht & Bestätigung"
+msgstr "Schritt 5 – Übersicht & Bestätigung"
 
 msgid "stepFiveDesc"
-msgstr "Hier sehen Sie einen Überblick über die getroffenen Einstellungen. Sie können jeden einzelnen Punkt noch einmal bearbeiten. Klicken Sie anschließend auf „Bestätigen“"
+msgstr "Hier sehen Sie noch einmal einen Überblick der gerade vorgenommenen Einstellungen. Sie können jeden Punkt noch einmal bearbeiten. Klicken Sie anschließend auf „Bestätigen“."
 
 msgid "legalTexts"
 msgstr "Rechtstexte"
 
 msgid "vatSettings"
-msgstr "Steuereinstellung"
+msgstr "Steuereinstellungen"
 
 msgid "smallEntrepreneur"
 msgstr "Kleinunternehmerregelung"
@@ -69,10 +69,10 @@ msgid "vatSmallEntrepreneurTitle"
 msgstr "Wenn Sie diese Option aktivieren, wird in Ihrem Onlineshop keine Umsatzsteuer ausgewiesen."
 
 msgid "customerGroupDesc"
-msgstr "Das Angebot dieses Shops richtet sich an"
+msgstr "Der Onlineshop richtet sich an:"
 
 msgid "customerGroupDescTitle"
-msgstr "B2B aktiviert verpflichtete Firmen- und UST-IdNr-Abfrage im Kundenformular und deaktiviert WRB im Bestellvorgang. B2C deaktiviert Firmen- und UST-IDNr-Abfrage im Kundenformular. B2B und B2C aktiviert optionale Firmen- und UST-IdNr-Abfrage im Kundenformular."
+msgstr "B2B aktiviert die verpflichtende Abfrage von Firma und USt-IdNr. im Kundenformular und deaktiviert die Widerrufsbelehrung im Bestellvorgang. B2C deaktiviert die Abfrage von Firma und USt-IdNr. im Kundenformular. B2B und B2C aktiviert die optionale Abfrage von Firma und USt-IdNr. im Kundenformular."
 
 msgid "customerGroupB2B"
 msgstr "Unternehmer / gewerbliche Kunden (B2B)"
@@ -84,37 +84,37 @@ msgid "vatIDCompany"
 msgstr "USt-IdNr. der Firma"
 
 msgid "vatIDCompanyTitle"
-msgstr "Geben Sie hier die USt-IdNr. für das Land ein, in dem sich der Hauptsitz Ihres Unternehmens befindet."
+msgstr "Geben Sie hier die USt-IdNr. des Landes ein, in dem sich der Hauptsitz Ihres Unternehmens befindet."
 
 msgid "shopSettings"
-msgstr "Online-Shop Einstellungen"
+msgstr "Onlineshop-Einstellungen"
 
 msgid "shopName"
-msgstr "Name des Online-Shops"
+msgstr "Name des Onlineshops"
 
 msgid "shopNameDesc"
-msgstr "Der angegebene Name wird an mehreren Stellen angezeigt. Beispiele: Meta-Titel, Emails, externe Zahlungsartseiten, ..."
+msgstr "Der angegebene Name wird an mehreren Stellen angezeigt. Beispiele: Meta-Titel, E-Mails, Seiten externer Zahlungsarten etc."
 
 msgid "secureDefaultSettings"
 msgstr "Sichere Voreinstellungen"
 
 msgid "secureDefaultSettingsDesc"
-msgstr "Aktiviert permanente SSL-Verschlüsselung (https, SSL-Zertifikat bei Ihrem Hosting-Provider erforderlich), Email-Verschlüsselung via TLS und die Cookie-Flags Secure/HTTPOnly."
+msgstr "Aktiviert permanente SSL-Verschlüsselung (https, SSL-Zertifikat bei Ihrem Hosting-Provider erforderlich), E-Mail-Verschlüsselung via TLS und die Cookie-Flags Secure/HTTPOnly."
 
 msgid "weRecommend"
 msgstr "Wir empfehlen"
 
 msgid "weRecommendLegalDesc"
-msgstr "Um die Plugins verwenden zu können, müssen Sie mit dem jeweiligen Partner einen separaten Vertrag abschließen. Klicken Sie auf 'Mehr erfahren' für weitere Informationen zu den einzelnen Plugins."
+msgstr "Um die Plugins verwenden zu können, müssen Sie mit dem jeweiligen Partner einen separaten Vertrag abschließen. Klicken Sie auf „Mehr erfahren“, um weitere Informationen zu den einzelnen Plugins zu erhalten."
 
 msgid "weRecommendPaymentDesc"
-msgstr "Um die Plugins verwenden zu können, müssen Sie mit dem jeweiligen Zahlungsanbieter einen Vertrag abschließen. Klicken Sie auf 'Mehr erfahren' für weitere Informationen zu den einzelnen Plugins."
+msgstr "Um die Plugins verwenden zu können, müssen Sie mit dem jeweiligen Zahlungsanbieter einen Vertrag abschließen. Klicken Sie auf „Mehr erfahren“, um weitere Informationen zu den einzelnen Plugins zu erhalten."
 
 msgid "getToKnowMore"
 msgstr "Mehr erfahren"
 
 msgid "paymentPluginInstalled"
-msgstr "Das Plugin wurde erfolgreich installiert. Sie müssen es nun noch unter Kaufabwicklung > Zahlungen > Zahlungsarten einrichten."
+msgstr "Das Plugin wurde erfolgreich installiert. Sie müssen es nun noch unter „Administration > Zahlungen > Zahlungsarten“ einrichten."
 
 msgid "finalize"
 msgstr "Beenden"
@@ -126,13 +126,13 @@ msgid "thankYouTextDesc"
 msgstr "Sie haben nun die wichtigsten Einstellungen für JTL-Shop getroffen."
 
 msgid "thankYouTextPluginsInstalled"
-msgstr "Folgende Plugins wurden erfolgreich installiert, müssen aber noch unter <span class=\"text-primary font-weight-bold\">Kaufabwicklung > Zahlungen > Zahlungsarten</span> eingerichtet werden."
+msgstr "Folgende Plugins wurden erfolgreich installiert, müssen aber noch unter <span class=\"text-primary font-weight-bold\">Administration > Zahlungen > Zahlungsarten</span> eingerichtet werden."
 
 msgid "installedPlugins"
 msgstr "Installierte Plugins"
 
 msgid "finalizeHelpNotice"
-msgstr "Sie brauchen Hilfe bei der weiteren Einrichtung von JTL-Shop? Folgen Sie einfach einem der folgenden Links!"
+msgstr "Sie benötigen Hilfe bei der weiteren Einrichtung von JTL-Shop? Klicken Sie einfach auf einen der folgenden Links!"
 
 msgid "recommendationGuideLink"
 msgstr "https://guide.jtl-software.de/jtl-shop/"
@@ -141,7 +141,7 @@ msgid "recommendationGuide"
 msgstr "JTL-Guide"
 
 msgid "recommendationGuideDesc"
-msgstr "Wie Sie den JTL-Shop über die Grundkonfiguration individuell für Ihre Bedürfnisse einstellen, erfahren Sie in unserem Guide."
+msgstr "Wie Sie JTL-Shop über die Grundkonfiguration hinaus individuell auf Ihre Bedürfnisse anpassen, erfahren Sie im JTL-Guide."
 
 msgid "recommendationSupportLink"
 msgstr "https://www.jtl-software.de/hilfecenter/support#preisuebersicht"
@@ -150,7 +150,7 @@ msgid "recommendationSupport"
 msgstr "Support"
 
 msgid "recommendationSupportDesc"
-msgstr "Haben Sie weitere Fragen, bieten wir Ihnen verschiedene Supportmodelle (war bei Lizenzkauf für 12 Monate inklusive, nicht benötigt wenn Sie bei JTL hosten)"
+msgstr "Haben Sie weitere Fragen, bieten wir Ihnen verschiedene Supportmodelle (ab Lizenzkauf für 12 Monate inklusive; wird nicht benötigt, wenn Sie bei JTL hosten)."
 
 msgid "recommendationExtensionStoreLink"
 msgstr "https://www.jtl-software.de/jtl-store/marktplatz"
@@ -159,7 +159,7 @@ msgid "recommendationExtensionStore"
 msgstr "Extension Store"
 
 msgid "recommendationExtensionStoreDesc"
-msgstr "Möchten Sie Ihren JTL-Shop individuell anpassen, bieten Ihnen Plugins viele Möglichkeiten."
+msgstr "Hier finden Sie viele Plugins, um Ihren JTL-Shop individuell nach Ihren Wünschen anzupassen."
 
 msgid "recommendationIssuetrackerLink"
 msgstr "https://issues.jtl-software.de/issues?project=shop"
@@ -168,7 +168,7 @@ msgid "recommendationIssuetracker"
 msgstr "JTL-IssueTracker"
 
 msgid "recommendationIssuetrackerDesc"
-msgstr "Bekannte Fehler und Wünsche an unsere Software können Sie in unserem Issuetracker finden."
+msgstr "Bekannte Fehler und Wünsche an unsere Software können Sie im JTL-IssueTracker finden."
 
 msgid "recommendationForumLink"
 msgstr "https://forum.jtl-software.de/#jtl-shop.250"
@@ -177,16 +177,16 @@ msgid "recommendationForum"
 msgstr "JTL-Forum"
 
 msgid "recommendationForumDesc"
-msgstr "Für Diskussion und Anregungen mit der gesamten JTL Community steht Ihnen unser Forum zur Verfügung."
+msgstr "Für Diskussionen und Anregungen mit der gesamten JTL-Community steht Ihnen unser Forum zur Verfügung."
 
 msgid "recommendationReleaseForumLink"
 msgstr "https://forum.jtl-software.de/forums/releaseforum.36/"
 
 msgid "recommendationReleaseForum"
-msgstr "JTL Release-Forum"
+msgstr "JTL-Releaseforum"
 
 msgid "recommendationReleaseForumDesc"
-msgstr "Abonnieren Sie unser Releaseforum, um über neue Releases unserer Software stehts via Email informiert zu werden."
+msgstr "Abonnieren Sie unser Releaseforum, um über neue Versionen unserer Software via E-Mail informiert zu werden."
 
 msgid "recommendationBlogLink"
 msgstr "https://www.jtl-software.de/blog"
@@ -195,7 +195,7 @@ msgid "recommendationBlog"
 msgstr "JTL-Blog"
 
 msgid "recommendationBlogDesc"
-msgstr "Bleiben Sie stehts informiert rund um Neues aus der JTL-Welt mit unserem Blog und Newsletter."
+msgstr "Unser Blog versorgt Sie stets mit den neuesten Informationen rund um die Welt von JTL."
 
 msgid "recommendationJTLSearchLink"
 msgstr "https://www.jtl-software.de/online-shopsystem/fehlertolerante-suche"
@@ -207,19 +207,19 @@ msgid "recommendationJTLSearchDesc"
 msgstr "JTL-Search ist ein kostenpflichtiges Zusatzmodul und ermöglicht Ihren Kunden eine fehlertolerante Suche."
 
 msgid "orderNumberSettings"
-msgstr "Bestellnummer-Einstellungen"
+msgstr "Bestellnummerneinstellungen"
 
 msgid "orderConfirmationBCC"
-msgstr "Bestellbestätigungs-Kopie (BCC)"
+msgstr "Bestellbestätigungskopie (BCC)"
 
 msgid "orderConfirmationBCCDesc"
-msgstr "Wir empfehlen dringend zu Dokumentationszwecken eine Email-Adresse für Bestellbestätigungskopien zu hinterlegen. Lassen Sie sich diese zur Übersichtlichkeit in Ihrem individuellen Email Postfach/Client in seperate Ordner filtern."
+msgstr "Wir empfehlen dringend, zu Dokumentationszwecken eine E-Mail-Adresse für Bestellbestätigungskopien zu hinterlegen. Lassen Sie sich diese zur Übersichtlichkeit in Ihrem individuellen E-Mail-Postfach/-Client in separate Ordner filtern."
 
 msgid "adminUserEmail"
-msgstr "E-Mail für diesen Admin-User"
+msgstr "E-Mail-Adresse bei Passwortverlust"
 
 msgid "adminUserEmailDesc"
-msgstr "Wird für die Passwort-Vergessen Funktion benötigt."
+msgstr "Diese E-Mail-Adresse wird verwendet, um beim Verlust eines Passwortes das Passwort zurückzusetzen."
 
 msgid "validationErrorRequired"
 msgstr "Pflichtfeld: Bitte füllen Sie dieses Feld aus."

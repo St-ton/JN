@@ -142,7 +142,7 @@
                                     <a class="popup" href="{if !empty($oSpezialseiten_arr) && isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}{else}#{/if}" data-toggle="tooltip"  data-placement="bottom" title="{lang key='shippingInfo' section='login'}">
                                         <i class="fa fa-info-circle"></i>
                                     </a>
-                                    {$WarenkorbVersandkostenfreiHinweis|truncate:120:"..."}
+                                    {$WarenkorbVersandkostenfreiHinweis|truncate:160:"..."}
                                 </li>
                             </ul>
                         {/block}

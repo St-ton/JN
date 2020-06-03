@@ -134,9 +134,8 @@ function highlightSearchTerm($haystack, $needle)
  */
 function getPlugins(string $query): Collection
 {
-    $plugins = new Collection();
     if (mb_strlen($query) <= 2) {
-        return $plugins;
+        return new Collection();
     }
     $db               = Shop::Container()->getDB();
     $cache            = Shop::Container()->getCache();

@@ -1296,8 +1296,7 @@ class ShippingMethod
             return \sprintf(
                 Shop::Lang()->get('noShippingCostsReached', 'basket'),
                 $name,
-                self::getShippingFreeCountriesString($method),
-                (string)$method->cLaender
+                self::getShippingFreeCountriesString($method)
             );
         }
 
@@ -1346,24 +1345,19 @@ class ShippingMethod
         if (!\is_object($shippingMethod) || (float)$shippingMethod->fVersandkostenfreiAbX <= 0) {
             return '';
         }
-        $cacheID = 'bvkfls_' .
-            $shippingMethod->fVersandkostenfreiAbX .
-            \mb_strlen($shippingMethod->cLaender) . '_' .
+        $cacheID = 'bvkfls_' . $shippingMethod->fVersandkostenfreiAbX . \mb_strlen($shippingMethod->cLaender) . '_' .
             Shop::getLanguageID();
-        if (($vkfls = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $countries = Shop::Container()->getCountryService()->getFilteredCountryList(
-                \array_filter(\explode(' ', $shippingMethod->cLaender))
-            )->toArray();
-            // re-concatinate isos with "," for the final output
-            $resultString = \implode(', ', \array_map(static function (Country $e) {
+        if (($shippingFreeCountries = Shop::Container()->getCache()->get($cacheID)) === false) {
+            $shippingFreeCountries = \implode(', ', \array_map(static function (Country $e) {
                 return $e->getName();
-            }, $countries));
+            }, Shop::Container()->getCountryService()->getFilteredCountryList(
+                \array_filter(\explode(' ', $shippingMethod->cLaender))
+            )->toArray()));
 
-            $vkfls = \sprintf(Shop::Lang()->get('noShippingCostsAtExtended', 'basket'), $resultString);
-            Shop::Container()->getCache()->set($cacheID, $vkfls, [\CACHING_GROUP_OPTION]);
+            Shop::Container()->getCache()->set($cacheID, $shippingFreeCountries, [\CACHING_GROUP_OPTION]);
         }
 
-        return $vkfls;
+        return $shippingFreeCountries;
     }
 
     /**

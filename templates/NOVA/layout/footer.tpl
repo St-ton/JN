@@ -1,40 +1,40 @@
-{block name='consent-manager'}
-    {include file='snippets/consent_manager.tpl'}
-    {inline_script}
-        <script>
-            const CM = new ConsentManager({
-                version: 1
-            });
-            var trigger = document.querySelectorAll('.trigger')
-            var triggerCall = function(e) {
-                e.preventDefault();
-                let type = e.target.dataset.consent;
-                if (CM.getSettings(type) === false) {
-                    CM.openConfirmationModal(type, function() {
-                        let data = CM._getLocalData();
-                        if (data === null ) {
-                            data = { settings: {} };
-                        }
-                        data.settings[type] = true;
-                        document.dispatchEvent(new CustomEvent('consent.updated', { detail: data.settings }));
-                    });
+{block name='layout-footer'}
+    {block name='layout-footer-consent-manager'}
+        {include file='snippets/consent_manager.tpl'}
+        {inline_script}
+            <script>
+                const CM = new ConsentManager({
+                    version: 1
+                });
+                var trigger = document.querySelectorAll('.trigger')
+                var triggerCall = function(e) {
+                    e.preventDefault();
+                    let type = e.target.dataset.consent;
+                    if (CM.getSettings(type) === false) {
+                        CM.openConfirmationModal(type, function() {
+                            let data = CM._getLocalData();
+                            if (data === null ) {
+                                data = { settings: {} };
+                            }
+                            data.settings[type] = true;
+                            document.dispatchEvent(new CustomEvent('consent.updated', { detail: data.settings }));
+                        });
+                    }
                 }
-            }
-            for(let i = 0; i < trigger.length; ++i) {
-                trigger[i].addEventListener('click', triggerCall)
-            }
-            document.addEventListener('consent.updated', function(e) {
-                $.post('{$ShopURLSSL}/', {
+                for(let i = 0; i < trigger.length; ++i) {
+                    trigger[i].addEventListener('click', triggerCall)
+                }
+                document.addEventListener('consent.updated', function(e) {
+                    $.post('{$ShopURLSSL}/', {
                             'action': 'updateconsent',
                             'jtl_token': '{$smarty.session.jtl_token}',
                             'data': e.detail
                         }
-                );
-            });
-        </script>
-    {/inline_script}
-{/block}
-{block name='layout-footer'}
+                    );
+                });
+            </script>
+        {/inline_script}
+    {/block}
     {block name='layout-footer-content-all-closingtags'}
 
         {block name='layout-footer-aside'}

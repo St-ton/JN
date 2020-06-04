@@ -81,6 +81,7 @@ class ComparisonList
             $product->kArtikel             = $item->kArtikel;
             $product->cName                = $tmpProduct->cName ?? '';
             $product->cURLFull             = $tmpProduct->cURLFull ?? '';
+            $product->image                = $tmpProduct->Bilder[0] ?? '';
             $compareList->oArtikel_arr[$i] = $product;
         }
 

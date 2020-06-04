@@ -992,7 +992,6 @@ class ProductFilter
                 return $f->getVisibility() === Visibility::SHOW_ALWAYS
                     || $f->getVisibility() === Visibility::SHOW_CONTENT
                     || ($f->getClassName() === PriceRange::class
-                        && isset($templateSettings['productlist'])
                         && ($templateSettings['productlist']['always_show_price_range'] ?? 'N') === 'Y'
                     );
             }

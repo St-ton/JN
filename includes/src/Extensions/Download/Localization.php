@@ -169,17 +169,4 @@ class Localization
     {
         return $this->cBeschreibung;
     }
-
-    /**
-     * @return stdClass
-     */
-    private function kopiereMembers(): stdClass
-    {
-        $obj = new stdClass();
-        foreach (\array_keys(\get_object_vars($this)) as $member) {
-            $obj->$member = $this->$member;
-        }
-
-        return $obj;
-    }
 }

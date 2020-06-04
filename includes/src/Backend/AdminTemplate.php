@@ -2,9 +2,7 @@
 
 namespace JTL\Backend;
 
-use JTL\Helpers\Template;
 use JTL\Shop;
-use JTL\Template\Config;
 use JTL\Template\XMLReader;
 use SimpleXMLElement;
 

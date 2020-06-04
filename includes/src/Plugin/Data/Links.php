@@ -5,7 +5,6 @@ namespace JTL\Plugin\Data;
 use Illuminate\Support\Collection;
 use JTL\DB\DbInterface;
 use JTL\Link\LinkList;
-use JTL\Shop;
 use stdClass;
 use function Functional\map;
 

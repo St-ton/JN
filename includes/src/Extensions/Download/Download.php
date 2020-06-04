@@ -656,22 +656,6 @@ class Download
     }
 
     /**
-     * @return mixed
-     */
-    private function kopiereMembers()
-    {
-        $obj     = new stdClass();
-        $members = \array_keys(\get_object_vars($this));
-        if (\is_array($members) && \count($members) > 0) {
-            foreach ($members as &$member) {
-                $obj->$member = $this->$member;
-            }
-        }
-
-        return $obj;
-    }
-
-    /**
      * @param string $filename
      * @param string $mimetype
      */

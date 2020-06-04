@@ -219,7 +219,7 @@ class Extractor
                 if (\mb_strpos($dirName, '.') !== false) {
                     $this->handlExtractionErrors(0, 'Invalid archive');
 
-                    return false;
+                    return $dirName;
                 }
                 \preg_match(self::GIT_REGEX, $dirName, $hits);
                 if (\count($hits) >= 3) {

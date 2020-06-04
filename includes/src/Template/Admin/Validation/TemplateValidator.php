@@ -5,7 +5,6 @@ namespace JTL\Template\Admin\Validation;
 use InvalidArgumentException;
 use JTL\DB\DbInterface;
 use JTL\Plugin\InstallCode;
-use JTL\Shop;
 use JTLShop\SemVer\Version;
 
 /**

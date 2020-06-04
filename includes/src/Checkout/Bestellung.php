@@ -829,9 +829,9 @@ class Bestellung
                 $attr->kBestellung      = (int)$attribute->kBestellung;
                 $attr->cName            = $attribute->cName;
                 $attr->cValue           = $attribute->cValue;
-                if ($attribute->cName === "Finanzierungskosten") {
+                if ($attribute->cName === 'Finanzierungskosten') {
                     $attr->cValue = Preise::getLocalizedPriceString(
-                        str_replace(',', '.', $attribute->cValue),
+                        \str_replace(',', '.', $attribute->cValue),
                         $this->Waehrung,
                         $htmlCurrency
                     );

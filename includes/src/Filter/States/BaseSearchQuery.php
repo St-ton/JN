@@ -364,10 +364,10 @@ class BaseSearchQuery extends AbstractFilter
                 ->setCount((int)$searchFilter->nAnzahl);
             if (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0 && $nPrioStep > 0) {
                 $fo->setClass(
-                    (string)\round(
+                    (string)(\round(
                         ($searchFilter->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) /
                         $nPrioStep
-                    ) + 1
+                    ) + 1)
                 );
             }
             $options[] = $fo;

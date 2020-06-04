@@ -3,10 +3,6 @@
 namespace JTL\Helpers;
 
 use Exception;
-use JTL\DB\ReturnType;
-use JTL\Language\LanguageHelper;
-use JTL\Shop;
-use stdClass;
 
 /**
  * Class Strings

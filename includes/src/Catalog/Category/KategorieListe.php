@@ -4,7 +4,6 @@ namespace JTL\Catalog\Category;
 
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use JTL\Helpers\Text;
 use JTL\Helpers\URL;
 use JTL\Language\LanguageHelper;
 use JTL\Session\Frontend;

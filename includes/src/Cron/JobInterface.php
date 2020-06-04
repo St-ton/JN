@@ -95,7 +95,7 @@ interface JobInterface
     public function getDateLastFinished(): ?DateTime;
 
     /**
-     * @param DateTime $date
+     * @param DateTime|string $date
      */
     public function setDateLastFinished($date): void;
 

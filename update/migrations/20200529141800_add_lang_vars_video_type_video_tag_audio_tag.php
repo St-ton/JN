@@ -24,7 +24,7 @@ class Migration_20200529141800 extends Migration implements IMigration
     public function up()
     {
         $this->setLocalization('ger', 'errorMessages', 'videoTypeNotSupported', 'Dieses Video kann nicht angezeigt werden. Folgende Formate werden unterstützt: .mp4, .ogg und .webm .');
-        $this->setLocalization('eng', 'errorMessages', 'videoTypeNotSupported', 'This video can\'t be played. Following video types are supported: .mp4, .ogg and .webm .');   
+        $this->setLocalization('eng', 'errorMessages', 'videoTypeNotSupported', 'This video cannot be played. Following video types are supported: .mp4, .ogg and .webm .');
         $this->setLocalization('ger', 'errorMessages', 'videoTagNotSupported', 'Das HTML5 <video> Tag wird von Ihrem Browser nicht unterstützt.');
         $this->setLocalization('eng', 'errorMessages', 'videoTagNotSupported', 'Your browser does not support the HTML5 <video> tag.');
         $this->setLocalization('ger', 'errorMessages', 'audioTagNotSupported', 'Das HTML5 <audio> Tag wird von Ihrem Browser nicht unterstützt.');

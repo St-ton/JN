@@ -486,3 +486,6 @@ msgstr "Global"
 
 msgid "Availability notifications"
 msgstr "Availability requests"
+
+msgid "Consent manager"
+msgstr "Consent manager"

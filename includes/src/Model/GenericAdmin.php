@@ -52,6 +52,11 @@ class GenericAdmin
     private $item;
 
     /**
+     * @var string
+     */
+    private $tab = 'overview';
+
+    /**
      * GenericAdmin constructor.
      * @param DataModelInterface    $model
      * @param string                $adminBaseFile
@@ -72,15 +77,16 @@ class GenericAdmin
 
     public function handle(): void
     {
-        $this->item = new $this->modelClass($this->db);
-        $this->step = $_SESSION['step'] ?? 'overview';
-        $valid      = Form::validateToken();
-        $action     = Request::postVar('action') ?? Request::getVar('action');
-        $itemID     = $_SESSION['modelid'] ?? Request::postInt('id', null) ?? Request::getInt('id', null);
-        $continue   = $_SESSION['continue'] ?? Request::postInt('save-model-continue') === 1;
-        $save       = $valid && ($continue || Request::postInt('save-model') === 1);
-        $cancel     = Request::postInt('go-back') === 1;
-        $delete     = $valid && Request::postInt('model-delete') === 1 && \count(Request::postVar('mid')) > 0;
+        $this->item   = new $this->modelClass($this->db);
+        $this->step   = $_SESSION['step'] ?? 'overview';
+        $valid        = Form::validateToken();
+        $action       = Request::postVar('action') ?? Request::getVar('action');
+        $itemID       = $_SESSION['modelid'] ?? Request::postInt('id', null) ?? Request::getInt('id', null);
+        $continue     = $_SESSION['continue'] ?? Request::postInt('save-model-continue') === 1;
+        $save         = $valid && ($continue || Request::postInt('save-model') === 1);
+        $cancel       = Request::postInt('go-back') === 1;
+        $delete       = $valid && Request::postInt('model-delete') === 1 && \count(Request::postVar('mid')) > 0;
+        $saveSettings = Request::postVar('a') === 'saveSettings';
         if ($cancel) {
             $this->modelPRG();
         }
@@ -99,6 +105,8 @@ class GenericAdmin
             $this->save($itemID, $continue);
         } elseif ($delete === true) {
             $this->update($continue);
+        } elseif ($saveSettings === true) {
+            $this->saveSettings();
         }
         $this->setMessages();
     }
@@ -171,6 +179,8 @@ class GenericAdmin
             ->assign('models', $models)
             ->assign('action', Shop::getAdminURL() . '/' . $this->adminBaseFile)
             ->assign('pagination', $pagination)
+            ->assign('settings', getAdminSectionSettings(\CONF_CONSENT_MANAGER))
+            ->assign('tab', $this->tab)
             ->display($template);
     }
 
@@ -233,5 +243,18 @@ class GenericAdmin
         }), static function (bool $e) {
             return $e === true;
         });
+    }
+
+    /**
+     * @return void
+     */
+    public function saveSettings(): void
+    {
+        $this->tab = 'settings';
+        $this->alertService->addAlert(
+            Alert::TYPE_SUCCESS,
+            saveAdminSectionSettings(\CONF_CONSENT_MANAGER, $_POST),
+            'saveSettings'
+        );
     }
 }

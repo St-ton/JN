@@ -70,7 +70,7 @@
                             {if ($oMedienDatei->videoType === 'mp4' 
                             || $oMedienDatei->videoType === 'webm'
                             || $oMedienDatei->videoType === 'ogg')}
-                                    <video class="product-detail-video" controls>
+                                    <video class="product-detail-video mw-100" controls>
                                         <source src="{$ShopURL}/{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" type="video/{$oMedienDatei->videoType}">
                                         {lang key='videoTagNotSupported' section='errorMessages'}
                                     </video>

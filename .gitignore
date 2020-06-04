@@ -1,6 +1,7 @@
 # files
 /includes/config.JTL-Shop.ini.php
 /includes/plugins/*
+/plugins/*
 /rss.xml
 /shopinfo.xml
 /.idea
@@ -85,6 +86,8 @@
 !/mediafiles/Bilder/.md/.gitkeep
 !/mediafiles/Bilder/.lg/.gitkeep
 !/mediafiles/Bilder/.xl/.gitkeep
+!/plugins/.gitkeep
+!/plugins/.htaccess
 bootstrap/*
 node_modules/
 /uploads/*

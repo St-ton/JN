@@ -193,7 +193,7 @@ class ProductFilter
     /**
      * @var bool
      */
-    private $bExtendedJTLSearch;
+    private $bExtendedJTLSearch = false;
 
     /**
      * @var stdClass|null
@@ -980,6 +980,9 @@ class ProductFilter
      */
     public function getAvailableContentFilters(): array
     {
+        if ($this->bExtendedJTLSearch === true) {
+            return [];
+        }
         $templateSettings = $this->filterConfig->getConfig('template');
 
         return \array_filter(
@@ -990,8 +993,8 @@ class ProductFilter
                     || $f->getVisibility() === Visibility::SHOW_CONTENT
                     || ($f->getClassName() === PriceRange::class
                         && isset($templateSettings['productlist'])
-                        && $templateSettings['productlist']['always_show_price_range'] ?? 'N' === 'Y');
-                ;
+                        && ($templateSettings['productlist']['always_show_price_range'] ?? 'N') === 'Y'
+                    );
             }
         );
     }
@@ -2000,6 +2003,22 @@ class ProductFilter
     public function setFilterConfig(Config $filterConfig): void
     {
         $this->filterConfig = $filterConfig;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isExtendedJTLSearch(): bool
+    {
+        return $this->bExtendedJTLSearch;
+    }
+
+    /**
+     * @param bool $isSearch
+     */
+    public function setExtendedJTLSearch(bool $isSearch): void
+    {
+        $this->bExtendedJTLSearch = $isSearch;
     }
 
     /**

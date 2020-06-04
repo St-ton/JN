@@ -1,8 +1,8 @@
 {block name='productlist-result-options'}
-    {assign var=show_filters value=$Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab == 0
-    || $NaviFilter->getSearchResults()->getProductCount() >= $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab
+    {assign var=show_filters value=(count($NaviFilter->getAvailableContentFilters()) > 0
+    && ($Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab == 0
+        || $NaviFilter->getSearchResults()->getProductCount() >= $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab))
     || $NaviFilter->getFilterCount() > 0}
-
     <div id="result-options">
         {row}
         {block name='productlist-result-options-filter-link'}

@@ -91,7 +91,7 @@
 
     $.evo.io = function() {
         return new IOClass({
-            'ioUrl': 'io.php'
+            'ioUrl': $('#jtl-io-path').data('path') + '/io.php'
         });
     };
 })(jQuery);

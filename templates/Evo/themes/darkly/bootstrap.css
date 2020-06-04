@@ -11878,6 +11878,12 @@ li span.value {
   width: auto;
   height: 28px;
 }
+.border-none {
+  border: none;
+}
+.product-detail-video {
+  max-width: 100%;
+}
 @font-face {
   font-family: 'Lato';
   font-style: normal;
@@ -12172,6 +12178,7 @@ a.list-group-item-danger.active:focus {
 }
 .navbar-default .nav > li > a,
 .navbar-inverse .nav > li > a {
+  padding: 22px 15px;
   margin-top: 0px;
   margin-bottom: 0px;
 }

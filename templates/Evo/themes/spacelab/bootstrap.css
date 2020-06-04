@@ -11878,6 +11878,12 @@ li span.value {
   width: auto;
   height: 28px;
 }
+.border-none {
+  border: none;
+}
+.product-detail-video {
+  max-width: 100%;
+}
 @font-face {
   font-family: 'Open Sans';
   font-style: italic;
@@ -12074,6 +12080,7 @@ li span.value {
 }
 .navbar-default .nav > li > a,
 .navbar-inverse .nav > li > a {
+  padding: 16px 15px;
   margin-top: 0px;
   margin-bottom: 0px;
 }

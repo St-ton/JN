@@ -24020,6 +24020,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   }
 }
 
+.product-detail-video {
+  max-width: 100%;
+}
+
 /* header */
 #header-top-bar {
   position: relative;

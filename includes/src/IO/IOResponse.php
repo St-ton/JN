@@ -44,6 +44,18 @@ class IOResponse implements JsonSerializable
     private $evoProductFunctionCalls = [];
 
     /**
+     * @param $target
+     * @param $attr
+     * @param $data
+     * @return $this
+     * @deprecated since 5.0.0
+     */
+    public function assign($target, $attr, $data): self
+    {
+        return $this->assignDom($target, $attr, $data);
+    }
+
+    /**
      * @param string $target
      * @param string $attr
      * @param mixed  $data

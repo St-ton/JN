@@ -4,7 +4,8 @@
         router-aria=['label' => {lang key='myAccount'}]
         no-caret=true
         right=true
-        text='<span class="fas fa-user"></span>'}
+        text='<span class="fas fa-user"></span>'
+        class="account-icon-dropdown"}
         {if empty($smarty.session.Kunde->kKunde)}
             {block name='layout-header-shop-nav-account-logged-out'}
                 <div class="dropdown-body lg-min-w-lg">

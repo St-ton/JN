@@ -29,7 +29,7 @@
     {block name='productlist-item-slider-caption'}
         {block name='productlist-item-slider-caption-short-desc'}
             {link href=$Artikel->cURLFull}
-                <span class="text-clamp-2 d-block">
+                <span class="text-clamp-2">
                     {if isset($showPartsList) && $showPartsList === true && isset($Artikel->fAnzahl_stueckliste)}
                         {block name='productlist-item-slider-caption-bundle'}
                             {$Artikel->fAnzahl_stueckliste}x

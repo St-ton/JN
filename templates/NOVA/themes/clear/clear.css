@@ -23757,9 +23757,6 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   background-color: rgba(82, 82, 82, 0.5);
   overflow: hidden;
 }
-#image_wrapper.fullscreen img {
-  margin: 0 auto;
-}
 #image_wrapper.fullscreen .product-actions {
   display: none;
 }
@@ -23785,6 +23782,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   cursor: pointer;
 }
 #image_wrapper.fullscreen #gallery .square-image .inner img {
+  margin: 0 auto;
   left: initial;
   top: initial;
   -webkit-transform: initial;
@@ -24018,6 +24016,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   #product-configurator .modal-dialog .btn-sm, #product-configurator .modal-dialog .btn-group-sm > .btn {
     padding: 0.2rem 0.5rem;
   }
+}
+
+.product-detail-video {
+  max-width: 100%;
 }
 
 /* header */

@@ -22,7 +22,13 @@ function setzeBruttoAjax(cTargetID, elem, targetElemID, fSteuersatz)
       $('#' + cTargetID).fadeIn('fast');
 
    setzeBrutto(elem, targetElemID, fSteuersatz);
-   ioCall('getCurrencyConversion', [lem.value, 0, cTargetID]);
+   ioCall('getCurrencyConversion',
+       [lem.value, 0, cTargetID],
+       undefined,
+       undefined,
+       undefined,
+       true
+   );
 
    $('#' + cTargetID).css({
       position: 'absolute',
@@ -50,7 +56,14 @@ function setzeNettoAjax(cTargetID, elem, targetElemID, fSteuersatz)
       $('#' + cTargetID).fadeIn('fast');
 
     setzeNetto(elem, targetElemID, fSteuersatz);
-    ioCall('getCurrencyConversion', [0, elem.value, cTargetID]);
+    ioCall(
+        'getCurrencyConversion',
+        [0, elem.value, cTargetID],
+        function () { },
+        function () { },
+        { },
+        true
+    );
    
    $('#' + cTargetID).css({
       position: 'absolute',
@@ -66,20 +79,40 @@ function setzeNettoAjax(cTargetID, elem, targetElemID, fSteuersatz)
 
 function setzePreisAjax(bNetto, cTargetID, elem)
 {
+    let args;
     if (bNetto) {
-        ioCall('getCurrencyConversion', [elem.value, 0, cTargetID]);
+        args = [elem.value, 0, cTargetID];
     } else {
-        ioCall('getCurrencyConversion', [0, elem.value, cTargetID]);
+        args = [0, elem.value, cTargetID];
     }
+
+    ioCall(
+        'getCurrencyConversion',
+        args,
+        undefined,
+        undefined,
+        undefined,
+        true
+    );
 }
 
 function setzePreisTooltipAjax(bNetto, cTooltipID, sourceElem)
 {
+    let args;
     if (bNetto) {
-        ioCall('setCurrencyConversionTooltip', [parseFloat($(sourceElem).val().replace(',', '.')), 0, cTooltipID]);
+        args = [parseFloat($(sourceElem).val().replace(',', '.')), 0, cTooltipID];
     } else {
-        ioCall('setCurrencyConversionTooltip', [0, parseFloat($(sourceElem).val().replace(',', '.')), cTooltipID]);
+        args = [0, parseFloat($(sourceElem).val().replace(',', '.')), cTooltipID]
     }
+
+    ioCall(
+        'setCurrencyConversionTooltip',
+        args,
+        undefined,
+        undefined,
+        undefined,
+        true
+    );
 }
 
 function setzeAufpreisTyp(elem, bruttoElemID, nettoElemID)

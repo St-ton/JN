@@ -62,7 +62,7 @@
                                             {if $audiosrc|strlen > 1}
                                                 <audio controls controlsList="nodownload">
                                                     <source src="{$audiosrc}" type="audio/mpeg">
-                                                    Your browser does not support the audio element.
+                                                    {lang key='audioTagNotSupported' section='errorMessages'}
                                                 </audio>
                                             {/if}
                                         {/if}
@@ -73,10 +73,21 @@
                         {* Audio *}
                     {/if}
 
-                    {* Video *}
-                {elseif $oMedienDatei->nMedienTyp == 3}
-                    <!-- flash videos are not supported any more. Use html5 videos instead. -->
-                    {* Sonstiges *}
+                {* Video *}
+                 {elseif $oMedienDatei->nMedienTyp === 3}
+                        {block name='productdetails-mediafile-video'}
+                            {if ($oMedienDatei->videoType === 'mp4' 
+                            || $oMedienDatei->videoType === 'webm'
+                            || $oMedienDatei->videoType === 'ogg')}
+                                <video class="product-detail-video" controls>
+                                    <source src="{$ShopURL}/{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" type="video/{$oMedienDatei->videoType}">
+                                    {lang key='videoTagNotSupported' section='errorMessages'}
+                                </video> 
+                            {else}
+                                {lang key='videoTypeNotSupported' section='errorMessages'}
+                            {/if}      
+                        {/block}
+                {* Sonstiges *}
                 {elseif $oMedienDatei->nMedienTyp == 4}
                     <div class="col-xs-12">
                         <div class="panel-wrap">

@@ -394,7 +394,14 @@
 <script type="text/javascript">
     {foreach $oConfig_arr as $oConfig}
         {if $oConfig->cWertName|strpos:'_guthaben'}
-            ioCall('getCurrencyConversion', [0, $('#{$oConfig->cWertName}').val(), 'EinstellungAjax_{$oConfig->cWertName}']);
+            ioCall(
+                'getCurrencyConversion',
+                [0, $('#{$oConfig->cWertName}').val(), 'EinstellungAjax_{$oConfig->cWertName}'],
+                undefined,
+                undefined,
+                undefined,
+                true
+            );
         {/if}
     {/foreach}
 </script>

@@ -587,21 +587,22 @@ function hideBackdrop() {
  * @param success - (optional) function (data, context) success-callback
  * @param error - (optional) function (data) error-callback
  * @param context - object to be assigned 'this' in eval()-code (default: { } = a new empty anonymous object)
+ * @param disableSpinner - bool, set true to disable spinner
  * @returns XMLHttpRequest jqxhr
  */
-function ioCall(name, args, success, error, context)
+function ioCall(name, args = [], success = ()=>{}, error = ()=>{}, context = {}, disableSpinner = false)
 {
     'use strict';
-    args    = args || [];
-    success = success || function () { };
-    error   = error || function () { };
-    context = context || { };
 
     if(JTL_TOKEN === null) {
         throw 'Error: IO call not possible. JTL_TOKEN was not set on this page.';
     }
 
     var evalInContext = function (code) { eval(code); }.bind(context);
+
+    if (disableSpinner === false) {
+        startSpinner();
+    }
 
     return $.ajax({
         url: 'io.php',
@@ -637,6 +638,10 @@ function ioCall(name, args, success, error, context)
         },
         error: function (jqXHR, textStatus, errorThrown) {
             error(jqXHR.responseJSON);
+        }
+    }).done(function () {
+        if (disableSpinner === false) {
+            stopSpinner();
         }
     });
 }
@@ -792,4 +797,45 @@ function onChangeFormSubmit()
 
 function closeTooltips() {
     $('.tooltip[role="tooltip"]').remove();
+}
+
+function simpleAjaxCall(url, data, success, error, context, disableSpinner)
+{
+    'use strict';
+    data           = data || [];
+    success        = success || function () { };
+    error          = error || function () { };
+    context        = context || { };
+    disableSpinner = disableSpinner || false;
+
+    if (disableSpinner === false) {
+        startSpinner();
+    }
+    $.ajax({
+        type:    'POST',
+        url:     url,
+        data:    data,
+        success: function (data) {
+            success(data, context);
+        },
+        error: function (data) {
+            error(data, context);
+        }
+    }).done(function () {
+        if (disableSpinner === false) {
+            stopSpinner();
+        }
+    });
+}
+
+function startSpinner()
+{
+    if ($('.ajax-spinner').length === 0) {
+        $('body').append('<div class="ajax-spinner"><i class="fa fa-spinner fa-pulse"></i></div>');
+    }
+}
+
+function stopSpinner()
+{
+    $('body').find('.ajax-spinner').remove();
 }

@@ -397,9 +397,9 @@
             ioCall(
                 'getCurrencyConversion',
                 [0, $('#{$oConfig->cWertName}').val(), 'EinstellungAjax_{$oConfig->cWertName}'],
-                function () { },
-                function () { },
-                { },
+                undefined,
+                undefined,
+                undefined,
                 true
             );
         {/if}

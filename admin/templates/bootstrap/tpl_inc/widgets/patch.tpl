@@ -3,9 +3,9 @@
         ioCall(
             'getRemoteData',
             ['{$smarty.const.JTLURL_GET_SHOPPATCH}?vf={$version}', 'oPatch_arr', 'widgets/patch_data.tpl', 'patch_data_wrapper'],
-            function () { },
-            function () { },
-            { },
+            undefined,
+            undefined,
+            undefined,
             true
         );
     });

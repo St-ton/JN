@@ -14,7 +14,7 @@
     }
 
     $(function() {
-        ioCall('truncateJtllog', [], function () { }, function () { }, { }, true);
+        ioCall('truncateJtllog', undefined, undefined, undefined, undefined, true);
     });
     </script>
 

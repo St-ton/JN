@@ -56,8 +56,8 @@
                             selectedSearchIndex = null;
                             selectedSearchItem  = null;
                         },
-                        function () { },
-                        { },
+                        undefined,
+                        undefined,
                         true
                     );
                 } else {

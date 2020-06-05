@@ -24,9 +24,9 @@ function setzeBruttoAjax(cTargetID, elem, targetElemID, fSteuersatz)
    setzeBrutto(elem, targetElemID, fSteuersatz);
    ioCall('getCurrencyConversion',
        [lem.value, 0, cTargetID],
-       function () { },
-       function () { },
-       { },
+       undefined,
+       undefined,
+       undefined,
        true
    );
 
@@ -89,9 +89,9 @@ function setzePreisAjax(bNetto, cTargetID, elem)
     ioCall(
         'getCurrencyConversion',
         args,
-        function () { },
-        function () { },
-        { },
+        undefined,
+        undefined,
+        undefined,
         true
     );
 }
@@ -108,9 +108,9 @@ function setzePreisTooltipAjax(bNetto, cTooltipID, sourceElem)
     ioCall(
         'setCurrencyConversionTooltip',
         args,
-        function () { },
-        function () { },
-        { },
+        undefined,
+        undefined,
+        undefined,
         true
     );
 }

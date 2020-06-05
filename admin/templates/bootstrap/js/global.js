@@ -590,14 +590,9 @@ function hideBackdrop() {
  * @param disableSpinner - bool, set true to disable spinner
  * @returns XMLHttpRequest jqxhr
  */
-function ioCall(name, args, success, error, context, disableSpinner)
+function ioCall(name, args = [], success = ()=>{}, error = ()=>{}, context = {}, disableSpinner = false)
 {
     'use strict';
-    args           = args || [];
-    success        = success || function () { };
-    error          = error || function () { };
-    context        = context || { };
-    disableSpinner = disableSpinner || false;
 
     if(JTL_TOKEN === null) {
         throw 'Error: IO call not possible. JTL_TOKEN was not set on this page.';

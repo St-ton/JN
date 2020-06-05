@@ -28,9 +28,9 @@
         ioCall(
             'getShopInfo',
             ['widgets/shopinfo_version.tpl', 'version_data_wrapper'],
-            function () { },
-            function () { },
-            { },
+            undefined,
+            undefined,
+            undefined,
             true
         );
     });

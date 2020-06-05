@@ -3,9 +3,9 @@
         ioCall(
             'getRemoteData',
             ['{$smarty.const.JTLURL_GET_SHOPNEWS}','oNews_arr', 'widgets/news_data.tpl', 'news_data_wrapper'],
-            function () { },
-            function () { },
-            { },
+            undefined,
+            undefined,
+            undefined,
             true
         );
     });

@@ -5,7 +5,11 @@
             ['{$smarty.const.JTLURL_GET_SHOPNEWS}',
                 'oNews_arr',
                 'widgets/news_data.tpl',
-                'news_data_wrapper']
+                'news_data_wrapper'],
+            undefined,
+            undefined,
+            undefined,
+            true
         );
     });
 </script>

@@ -605,6 +605,9 @@
         addToWishlist: function(data) {
             var productId = parseInt(data[this.options.input.id]);
             var qty =  parseInt(data[this.options.input.quantity]);
+            if (isNaN(qty)) {
+                qty = 1;
+            }
             if (productId > 0) {
                 var that = this;
                 $.evo.io().call('pushToWishlist', [productId, qty, data], that, function(error, data) {

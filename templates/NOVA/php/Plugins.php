@@ -730,7 +730,7 @@ class Plugins
      */
     public function seofy($optStr = ''): string
     {
-        return Seo::sanitizeSeoSlug($optStr);
+        return \str_replace('/', '-', Seo::sanitizeSeoSlug($optStr));
     }
 
     /**

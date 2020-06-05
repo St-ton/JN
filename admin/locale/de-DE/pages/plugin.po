@@ -13,3 +13,6 @@ msgstr "Autor"
 
 msgid "pluginHomepage"
 msgstr "Website"
+
+msgid "pluginIsDeactivated"
+msgstr "Plugin ist deaktiviert."

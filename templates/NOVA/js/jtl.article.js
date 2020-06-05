@@ -138,6 +138,13 @@
 
                     $galleryImages.css('max-height', maxHeight-otherElemHeight);
                     $('#gallery').css('max-height', maxHeight-otherElemHeight);
+
+                    $('body').off('click.toggleFullscreen').on('click.toggleFullscreen', function (event) {
+                        if (!($(event.target).hasClass('product-image') || $(event.target).hasClass('slick-arrow'))) {
+                            toggleFullscreen(false);
+                            $('body').off('click.toggleFullscreen');
+                        }
+                    });
                 } else {
                     $('#image_wrapper').removeClass('fullscreen');
                     $galleryImages.css('max-height', '100%');
@@ -171,11 +178,6 @@
                         toggleFullscreen();
                         addClickListener();
                     }
-                });
-
-                $('#image_fullscreen_close').on('click', e => {
-                    toggleFullscreen();
-                    addClickListener();
                 });
             }
         },

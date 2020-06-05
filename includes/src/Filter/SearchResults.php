@@ -702,6 +702,9 @@ class SearchResults implements SearchResultsInterface
         $currentCategory = null,
         $selectionWizard = false
     ): SearchResultsInterface {
+        if ($productFilter->isExtendedJTLSearch()) {
+            return $this;
+        }
         // @todo: make option
         $hideActiveOnly              = true;
         $manufacturerOptions         = $productFilter->getManufacturerFilter()->getOptions();

@@ -17,7 +17,13 @@
                 if (this.checked) { // it's checked yet, right after the click was fired
                     $('input[id="plugin-check-'+szPluginName+'"]').attr('disabled', 'disabled'); // block the checkbox!
                     $('div[id="licenseModal"]').modal({backdrop : 'static'}); // set our modal static (a click in black did not hide it!)
-                    $('div[id="licenseModal"]').find('.modal-body').load('getMarkdownAsHTML.php', {'jtl_token':token, 'path':vLicenses[szPluginName]});
+                    startSpinner();
+                    $('div[id="licenseModal"]').find('.modal-body').load(
+                        'getMarkdownAsHTML.php',
+                        {'jtl_token':token, 'path':vLicenses[szPluginName]},
+                        function () {
+                        stopSpinner();
+                    });
                     $('div[id="licenseModal"]').modal('show');
                 }
             });

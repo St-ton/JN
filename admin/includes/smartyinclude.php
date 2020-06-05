@@ -88,7 +88,7 @@ if (!$hasPendingUpdates) {
                     ];
 
                     $linkGruppe->oLink_arr[] = $link;
-                    if (Request::verifyGPCDataInt('kPlugin') === $pluginID) {
+                    if (Request::getInt('kPlugin') === $pluginID) {
                         $currentToplevel    = $mainGroup->key;
                         $currentSecondLevel = $linkGruppe->key;
                         $currentThirdLevel  = $link->key;

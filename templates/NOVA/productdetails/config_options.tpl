@@ -100,6 +100,7 @@
                                                 && isset($smarty.post.item[$kKonfiggruppe])
                                                 && $oItem->getKonfigitem()|in_array:$smarty.post.item[$kKonfiggruppe])
                                             || ($oItem->getSelektiert()
+                                                && !isset($kEditKonfig)
                                                 && (!isset($aKonfigerror_arr)
                                                     || !$aKonfigerror_arr))}
                                         {$cKurzBeschreibung = $oItem->getKurzBeschreibung()}

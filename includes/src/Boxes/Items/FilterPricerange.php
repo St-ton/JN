@@ -23,7 +23,7 @@ final class FilterPricerange extends AbstractBox
         $filter           = Shop::getProductFilter()->getPriceRangeFilter();
         $searchResults    = Shop::getProductFilter()->getSearchResults();
         $show             = (isset($templateSettings['productlist'])
-                && $templateSettings['productlist']['always_show_price_range'] ?? 'N' === 'Y')
+                && ($templateSettings['productlist']['always_show_price_range'] ?? 'N') === 'Y')
             || ($filter->getVisibility() !== Visibility::SHOW_NEVER
                 && $filter->getVisibility() !== Visibility::SHOW_CONTENT
                 && (!empty($searchResults->getPriceRangeFilterOptions()) || $filter->isInitialized()));

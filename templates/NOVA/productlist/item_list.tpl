@@ -32,25 +32,32 @@
                                         {block name="productlist-item-list-image"}
                                             {strip}
                                                 {$image = $Artikel->Bilder[0]}
-                                                {image alt=$image->cAltAttribut|escape:'html' fluid=true webp=true lazy=true
-                                                    src="{$image->cURLKlein}"
-                                                    srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                        {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                        {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                                    sizes="auto"
-                                                    class="{if !$isMobile && !empty($Artikel->Bilder[1])}first{/if}"
-                                                    fluid-grow=true
-                                                }
+                                                <div class="productbox-image square square-image first-wrapper">
+                                                    <div class="inner">
+                                                        {image alt=$image->cAltAttribut|escape:'html' fluid=true webp=true lazy=true
+                                                            src="{$image->cURLKlein}"
+                                                            srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                                {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                                {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                            sizes="auto"
+                                                            class="{if !$isMobile && !empty($Artikel->Bilder[1])}first{/if}"
+                                                        }
+                                                    </div>
+                                                </div>
                                                 {if !$isMobile && !empty($Artikel->Bilder[1])}
                                                     {$image = $Artikel->Bilder[1]}
-                                                    {image alt=$image->cAltAttribut|escape:'html' fluid=true webp=true lazy=true
-                                                        src="{$image->cURLKlein}"
-                                                        srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                            {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                            {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                                        sizes="auto"
-                                                        class="second"
-                                                    }
+                                                    <div class="productbox-image square square-image second-wrapper">
+                                                        <div class="inner">
+                                                            {image alt=$image->cAltAttribut|escape:'html' fluid=true webp=true lazy=true
+                                                                src="{$image->cURLKlein}"
+                                                                srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                                    {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                                    {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                                sizes="auto"
+                                                                class="second"
+                                                            }
+                                                        </div>
+                                                    </div>
                                                 {/if}
                                             {/strip}
                                         {/block}

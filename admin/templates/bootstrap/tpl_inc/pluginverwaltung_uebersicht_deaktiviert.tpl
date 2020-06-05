@@ -188,13 +188,8 @@
                         } else {
                             data += '0';
                         }
-                        $.ajax({
-                            type:    'POST',
-                            url:     'pluginverwaltung.php',
-                            data:    data,
-                            success: function () {
-                                location.reload();
-                            }
+                        simpleAjaxCall('pluginverwaltung.php', data, function () {
+                            location.reload();
                         });
                     }
                 });

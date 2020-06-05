@@ -592,8 +592,6 @@ function hideBackdrop() {
  */
 function ioCall(name, args = [], success = ()=>{}, error = ()=>{}, context = {}, disableSpinner = false)
 {
-    'use strict';
-
     if(JTL_TOKEN === null) {
         throw 'Error: IO call not possible. JTL_TOKEN was not set on this page.';
     }

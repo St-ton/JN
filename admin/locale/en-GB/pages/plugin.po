@@ -46,3 +46,6 @@ msgstr "Bind to current shop"
 
 msgid "extendSubscription"
 msgstr "Extend subscription"
+
+msgid "pluginIsDeactivated"
+msgstr "Plugin is disabled."

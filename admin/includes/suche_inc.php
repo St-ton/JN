@@ -1,5 +1,10 @@
 <?php
 
+use Illuminate\Support\Collection;
+use JTL\Plugin\Admin\Listing;
+use JTL\Plugin\Admin\ListingItem;
+use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
+use JTL\Plugin\Admin\Validation\PluginValidator;
 use JTL\Shop;
 
 /**
@@ -47,7 +52,8 @@ function adminSearch($query, $standalonePage = false): ?string
         ->assign('adminMenuItems', $adminMenuItems)
         ->assign('settings', !empty($settings->oEinstellung_arr) ? $groupedSettings : null)
         ->assign('shippings', count($shippings) > 0 ? $shippings : null)
-        ->assign('paymentMethods', count($paymentMethods) > 0 ? $paymentMethods : null);
+        ->assign('paymentMethods', count($paymentMethods) > 0 ? $paymentMethods : null)
+        ->assign('plugins', getPlugins($query));
 
     if ($standalonePage) {
         Shop::Smarty()->display('suche.tpl');
@@ -120,4 +126,31 @@ function highlightSearchTerm($haystack, $needle)
         '<mark>$0</mark>',
         $haystack
     );
+}
+
+/**
+ * @param string $query
+ * @return Collection
+ */
+function getPlugins(string $query): Collection
+{
+    if (mb_strlen($query) <= 2) {
+        return new Collection();
+    }
+    $db               = Shop::Container()->getDB();
+    $cache            = Shop::Container()->getCache();
+    $parser           = new XMLParser();
+    $legacyValidator  = new LegacyPluginValidator($db, $parser);
+    $pluginValidator  = new PluginValidator($db, $parser);
+    $listing          = new Listing($db, $cache, $legacyValidator, $pluginValidator);
+    $pluginsInstalled = $listing->getInstalled();
+
+    return $pluginsInstalled->filter(static function (ListingItem $e) use ($query) {
+        if (\stripos($e->getName(), $query) !== false) {
+            $e->setName(highlightSearchTerm($e->getName(), $query));
+            return true;
+        }
+
+        return false;
+    });
 }

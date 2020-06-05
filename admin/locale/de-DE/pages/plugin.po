@@ -46,3 +46,6 @@ msgstr "An aktuellen Shop binden"
 
 msgid "extendSubscription"
 msgstr "Subscription verlängern"
+
+msgid "pluginIsDeactivated"
+msgstr "Plugin ist deaktiviert."

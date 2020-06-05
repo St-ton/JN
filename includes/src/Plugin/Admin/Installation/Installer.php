@@ -200,8 +200,8 @@ final class Installer
             return InstallCode::WRONG_PARAM;
         }
         $factory = $plugin->bExtension === 0
-            ? new LegacyPluginInstallerFactory($this->db, $xml, $plugin)
-            : new PluginInstallerFactory($this->db, $xml, $plugin);
+            ? new LegacyPluginInstallerFactory($this->db, $xml, $plugin, $this->plugin)
+            : new PluginInstallerFactory($this->db, $xml, $plugin, $this->plugin);
         $res     = $factory->install();
         if ($res !== InstallCode::OK) {
             $this->uninstaller->uninstall($plugin->kPlugin);

@@ -762,5 +762,5 @@ function getStates($params, $smarty)
  */
 function seofy($optStr = '')
 {
-    return Seo::sanitizeSeoSlug($optStr);
+    return \str_replace('/', '-', Seo::sanitizeSeoSlug($optStr));
 }

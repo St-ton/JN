@@ -589,14 +589,8 @@ function hideBackdrop() {
  * @param context - object to be assigned 'this' in eval()-code (default: { } = a new empty anonymous object)
  * @returns XMLHttpRequest jqxhr
  */
-function ioCall(name, args, success, error, context)
+function ioCall(name, args = [], success = ()=>{}, error = ()=>{}, context = {})
 {
-    'use strict';
-    args    = args || [];
-    success = success || function () { };
-    error   = error || function () { };
-    context = context || { };
-
     if(JTL_TOKEN === null) {
         throw 'Error: IO call not possible. JTL_TOKEN was not set on this page.';
     }
@@ -614,8 +608,8 @@ function ioCall(name, args, success, error, context)
         },
         success: function (data, textStatus, jqXHR) {
             if (data) {
-                if(data.csslist) {
-                    data.csslist.forEach(item => {
+                if(data.domAssigns) {
+                    data.domAssigns.forEach(item => {
                         let $item = $('#' + item.target);
 
                         if ($item.length > 0) {

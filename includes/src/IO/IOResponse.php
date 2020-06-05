@@ -24,6 +24,7 @@ class IOResponse implements JsonSerializable
 
     /**
      * @var array
+     * @deprecated since 5.0.0
      */
     private $scripts = [];
 
@@ -232,7 +233,7 @@ class IOResponse implements JsonSerializable
     {
         return [
             'js'                 => $this->scripts,
-            'css'                => $this->domAssigns,
+            'domAssigns'         => $this->domAssigns,
             'varAssigns'         => $this->varAssigns,
             'windowLocationHref' => $this->windowLocationHref,
             'debugLogLines'      => $this->debugLogLines,

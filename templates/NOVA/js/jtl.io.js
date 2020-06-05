@@ -56,37 +56,45 @@
 
         handleResponse: function (data, context)
         {
-            data.csslist.forEach(item => {
-                let $item = $('#' + item.target);
+            if(data.domAssigns) {
+                data.domAssigns.forEach(item => {
+                    let $item = $('#' + item.target);
 
-                if ($item.length > 0) {
-                    $item[0][item.attr] = item.data;
-                }
-            });
+                    if ($item.length > 0) {
+                        $item[0][item.attr] = item.data;
+                    }
+                });
+            }
 
             if (!context) {
                 context = this;
             }
 
-            data.debugLogLines.forEach(line => {
-                if(line[1]) {
-                    console.groupCollapsed(...line[0]);
-                }
-                else if(line[2]) {
-                    console.groupEnd();
-                }
-                else {
-                    console.log(...line[0]);
-                }
-            });
+            if(data.debugLogLines) {
+                data.debugLogLines.forEach(line => {
+                    if(line[1]) {
+                        console.groupCollapsed(...line[0]);
+                    }
+                    else if(line[2]) {
+                        console.groupEnd();
+                    }
+                    else {
+                        console.log(...line[0]);
+                    }
+                });
+            }
 
-            data.evoProductCalls.forEach(([name, args]) => {
-                $.evo.article()[name](...args);
-            });
+            if(data.evoProductCalls) {
+                data.evoProductCalls.forEach(([name, args]) => {
+                    $.evo.article()[name](...args);
+                });
+            }
 
-            data.varAssigns.forEach(assign => {
-                context[assign.name] = assign.value;
-            })
+            if(data.varAssigns) {
+                data.varAssigns.forEach(assign => {
+                    context[assign.name] = assign.value;
+                });
+            }
 
             if(data.windowLocationHref) {
                 window.location.href = data.windowLocationHref;

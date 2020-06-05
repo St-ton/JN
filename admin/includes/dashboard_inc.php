@@ -193,12 +193,10 @@ function getRemoteData($url, $timeout = 15)
  * @param string $tpl
  * @param string $wrapperID
  * @param string $post
- * @param null   $callback
- * @param bool   $decodeUTF8
  * @return IOResponse
  * @throws SmartyException
  */
-function getRemoteDataIO($url, $dataName, $tpl, $wrapperID, $post = null, $callback = null, $decodeUTF8 = false)
+function getRemoteDataIO($url, $dataName, $tpl, $wrapperID, $post = null)
 {
     Shop::Container()->getGetText()->loadAdminLocale('widgets');
     $response    = new IOResponse();
@@ -218,13 +216,8 @@ function getRemoteDataIO($url, $dataName, $tpl, $wrapperID, $post = null, $callb
     } else {
         $data = json_decode($remoteData);
     }
-    $data    = $decodeUTF8 ? Text::utf8_convert_recursive($data) : $data;
     $wrapper = Shop::Smarty()->assign($dataName, $data)->fetch('tpl_inc/' . $tpl);
-    $response->assign($wrapperID, 'innerHTML', $wrapper);
-
-    if ($callback !== null) {
-        $response->script("if(typeof {$callback} === 'function') {$callback}({$remoteData});");
-    }
+    $response->assignDom($wrapperID, 'innerHTML', $wrapper);
 
     return $response;
 }
@@ -253,7 +246,7 @@ function getShopInfoIO($tpl, $wrapperID)
         ->assign('bUpdateAvailable', $api->hasNewerVersion())
         ->fetch('tpl_inc/' . $tpl);
 
-    return $response->assign($wrapperID, 'innerHTML', $wrapper);
+    return $response->assignDom($wrapperID, 'innerHTML', $wrapper);
 }
 
 /**
@@ -267,5 +260,5 @@ function getAvailableWidgetsIO()
     $wrapper          = Shop::Smarty()->assign('oAvailableWidget_arr', $availableWidgets)
                                       ->fetch('tpl_inc/widget_selector.tpl');
 
-    return $response->assign('settings', 'innerHTML', $wrapper);
+    return $response->assignDom('settings', 'innerHTML', $wrapper);
 }

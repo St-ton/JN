@@ -23,6 +23,7 @@ class Migration_20200604121000 extends Migration implements IMigration
     public function up()
     {
         $this->removeConfig('configgroup_110_tag_filter');
+        $this->removeConfig('configgroup_8_box_tagcloud');
     }
 
     /**

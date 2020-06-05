@@ -26,7 +26,6 @@ use JTL\Minify\MinifyService;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
-use JTL\Template\TemplateServiceInterface;
 use JTL\Visitor;
 
 $smarty     = Shop::Smarty();

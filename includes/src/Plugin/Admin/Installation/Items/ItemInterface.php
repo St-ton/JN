@@ -3,7 +3,6 @@
 namespace JTL\Plugin\Admin\Installation\Items;
 
 use JTL\DB\DbInterface;
-use JTL\Plugin\LegacyPlugin;
 use JTL\Plugin\PluginInterface;
 use stdClass;
 

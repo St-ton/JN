@@ -8,7 +8,6 @@ use JTL\Checkout\Bestellung;
 use JTL\DB\ReturnType;
 use JTL\Nice;
 use JTL\Shop;
-use stdClass;
 
 /**
  * Class Download

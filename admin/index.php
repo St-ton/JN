@@ -8,7 +8,6 @@ use JTL\Helpers\Text;
 use JTL\Profiler;
 use JTL\Session\Backend;
 use JTL\Shop;
-use JTL\Template;
 use JTL\Update\Updater;
 use JTLShop\SemVer\Version;
 

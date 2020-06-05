@@ -1,12 +1,8 @@
 <?php declare(strict_types=1);
 
-use GuzzleHttp\Exception\RequestException;
-use JTL\Alert\Alert;
-use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\License\Admin;
 use JTL\License\Manager;
-use JTL\License\Mapper;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';

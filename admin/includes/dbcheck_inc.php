@@ -7,7 +7,6 @@ use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Helpers\Text;
 use JTL\Session\Backend;
 use JTL\Shop;
-use JTL\Template\TemplateServiceInterface;
 use JTL\Update\DBMigrationHelper;
 use JTLShop\SemVer\Parser;
 

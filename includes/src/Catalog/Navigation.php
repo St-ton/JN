@@ -494,14 +494,15 @@ class Navigation
 
             default:
                 if ($this->link !== null && $this->link instanceof Link) {
-                    $elems = $this->linkService->getParentLinks($this->link->getID())->map(static function (LinkInterface $l) {
-                        $res = new NavigationEntry();
-                        $res->setName($l->getName());
-                        $res->setURL($l->getURL());
-                        $res->setURLFull($l->getURL());
+                    $elems = $this->linkService->getParentLinks($this->link->getID())
+                        ->map(static function (LinkInterface $l) {
+                            $res = new NavigationEntry();
+                            $res->setName($l->getName());
+                            $res->setURL($l->getURL());
+                            $res->setURLFull($l->getURL());
 
-                        return $res;
-                    })->reverse()->all();
+                            return $res;
+                        })->reverse()->all();
 
                     $breadCrumb = \array_merge($breadCrumb, $elems);
                     $ele->setName($this->link->getName());

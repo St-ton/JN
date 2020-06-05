@@ -8,8 +8,6 @@ use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Minify\MinifyService;
 use JTL\Shop;
-use JTL\Template\Model;
-use JTL\Template\TemplateServiceInterface;
 
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */

@@ -28,7 +28,6 @@ function kundeSpeichern(array $post)
            $knd;
 
     unset($_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['Zahlungsart']);
-    $db   = Shop::Container()->getDB();
     $conf = Shop::getSettings([CONF_GLOBAL]);
     $cart = Frontend::getCart();
     $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)

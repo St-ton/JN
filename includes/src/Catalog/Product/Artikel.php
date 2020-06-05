@@ -1717,7 +1717,7 @@ class Artikel
             if (\mb_strlen($mediaFile->cTyp) > 0) {
                 if ($mediaFile->cTyp === '.*') {
                     $extMatch = [];
-                    preg_match('/\.\w{3,4}($|\?)/', $mediaFile->cPfad, $extMatch);
+                    \preg_match('/\.\w{3,4}($|\?)/', $mediaFile->cPfad, $extMatch);
                     $mediaFile->cTyp = $extMatch[0];
                 }
                 $mapped                = $this->mapMediaType($mediaFile->cTyp);
@@ -2032,7 +2032,7 @@ class Artikel
                 $scoreSelect . '
                     FROM tartikel
                     JOIN teigenschaftkombiwert
-	                    ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
+                        ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
                     LEFT JOIN teigenschaft
                         ON teigenschaft.kEigenschaft = teigenschaftkombiwert.kEigenschaft
                     LEFT JOIN teigenschaftwert
@@ -2042,18 +2042,18 @@ class Artikel
                     ' . $scoreJoin . '
                     LEFT JOIN teigenschaftsichtbarkeit
                         ON teigenschaftsichtbarkeit.kEigenschaft = teigenschaftkombiwert.kEigenschaft
-	                    AND teigenschaftsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                        AND teigenschaftsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
                     LEFT JOIN teigenschaftwertsichtbarkeit
                         ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert
-	                    AND teigenschaftwertsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                        AND teigenschaftwertsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
                     LEFT JOIN teigenschaftwertpict
                         ON teigenschaftwertpict.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert
                     LEFT JOIN teigenschaftwertaufpreis
                         ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert
-	                    AND teigenschaftwertaufpreis.kKundengruppe = ' . $customerGroupID . '
+                        AND teigenschaftwertaufpreis.kKundengruppe = ' . $customerGroupID . '
                     WHERE tartikel.kVaterArtikel = ' . (int)$this->kVaterArtikel . '
-	                    AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
-	                    AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL';
+                        AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
+                        AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL';
             if ($exportWorkaround === false) {
                 /* Workaround for performance-issue in MySQL 5.5 with large varcombis */
                 $allCombinations = Shop::Container()->getDB()->query(

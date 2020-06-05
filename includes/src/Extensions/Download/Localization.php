@@ -4,7 +4,6 @@ namespace JTL\Extensions\Download;
 
 use JTL\Nice;
 use JTL\Shop;
-use stdClass;
 
 /**
  * Class Localization

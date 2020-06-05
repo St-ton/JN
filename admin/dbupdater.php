@@ -2,7 +2,6 @@
 
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use JTL\Template\TemplateServiceInterface;
 use JTL\Update\MigrationManager;
 use JTL\Update\Updater;
 use JTLShop\SemVer\Version;

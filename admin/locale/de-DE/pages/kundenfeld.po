@@ -3,13 +3,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "kundenfeld"
-msgstr "Eigene Formularfelder"
+msgstr "Erweiterte Kundendaten"
 
 msgid "kundenfeldURL"
 msgstr "https://jtl-url.de/nsmuy"
 
 msgid "kundenfeldDesc"
-msgstr "Hier können Sie eigene Formularfelder definieren, die bei der Erstellung von Kundenkonten und im Bestellvorgang abgefragt werden."
+msgstr "Hier können Sie eigene Formularfelder definieren, mit denen Sie bei der Erstellung von Kundenkonten und im Bestellvorgang weitere Kundendaten abfragen können."
 
 msgid "kundenfeldExistingDesc"
 msgstr "Ihre eigenen Formularfelder:"
@@ -18,7 +18,7 @@ msgid "kundenfeldName"
 msgstr "Feldname in JTL-Shop"
 
 msgid "kundenfeldNameShort"
-msgstr "Attributname"
+msgstr "Feldname in JTL-Shop"
 
 msgid "kundenfeldPflicht"
 msgstr "Pflichtfeld"
@@ -48,25 +48,25 @@ msgid "headingKundenfeldCreate"
 msgstr "Neues Formularfeld erstellen"
 
 msgid "successCustomerFieldDelete"
-msgstr "Die ausgewählten Formularfelder wurden erfolgreich gelöscht."
+msgstr "Ausgewählte Formularfelder wurden erfolgreich gelöscht."
 
 msgid "errorCustomerFieldDelete"
-msgstr "Die ausgewählten Formularfelder konnten nicht gelöscht werden."
+msgstr "Ausgewählte Formularfelder konnten nicht gelöscht werden."
 
 msgid "errorAtLeastOneCustomerField"
 msgstr "Bitte wählen Sie mindestens ein Formularfeld aus."
 
 msgid "successCustomerFieldUpdate"
-msgstr "Die Formularfelder wurden erfolgreich aktualisiert."
+msgstr "Formularfelder wurden erfolgreich aktualisiert."
 
 msgid "errorCustomerFieldUpdate"
-msgstr "Die Formularfelder konnten nicht aktualisiert werden."
+msgstr "Formularfelder konnten nicht aktualisiert werden."
 
 msgid "successCustomerFieldSave"
-msgstr "Das Formularfeld wurde erfolgreich gespeichert."
+msgstr "Formularfeld wurde erfolgreich gespeichert."
 
 msgid "errorCustomerFieldSave"
-msgstr "Das Formularfeld konnte nicht gespeichert werden."
+msgstr "Formularfeld konnte nicht gespeichert werden."
 
 msgid "errorCustomerFieldNameExists"
 msgstr "Ein Feld mit diesem Namen existiert bereits."

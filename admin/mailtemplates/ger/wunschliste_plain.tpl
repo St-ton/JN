@@ -1,7 +1,7 @@
 {includeMailTemplate template=header type=plain}
 
 Hallo,
-schau dir doch mal meinen Wunschzettel an {$Firma->cName}.
+schau dir doch mal meinen Wunschzettel bei {$Firma->cName} an.
 
 {foreach $Wunschliste->CWunschlistePos_arr as $CWunschlistePos}
     *{$CWunschlistePos->cArtikelName}*
@@ -17,7 +17,7 @@ schau dir doch mal meinen Wunschzettel an {$Firma->cName}.
 
 
 Alle Artikel anschauen >
-{$ShopURL}/index.php?wlid={$CWunschliste->cURLID}
+{$ShopURL}/index.php?wlid={$Wunschliste->cURLID}
 
 Danke.
 {$Kunde->cVorname} {$Kunde->cNachname}

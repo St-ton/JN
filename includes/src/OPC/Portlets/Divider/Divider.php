@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\OPC\Portlets\Divider;
 
@@ -15,6 +11,25 @@ use JTL\OPC\PortletInstance;
  */
 class Divider extends Portlet
 {
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     */
+    public function getPreviewHtml(PortletInstance $instance): string
+    {
+        return '<hr ' . $instance->getAttributeString(). '>';
+    }
+
+    /**
+     * @param PortletInstance $instance
+     * @param bool $inContainer
+     * @return string
+     */
+    public function getFinalHtml(PortletInstance $instance, bool $inContainer = true): string
+    {
+        return '<hr class="' . $instance->getStyleClasses() . '" ' . $instance->getAttributeString(). '>';
+    }
+
     /**
      * @return array
      */
@@ -33,6 +48,7 @@ class Divider extends Portlet
             ],
             'id' => [
                 'label' => __('dividerElmID'),
+                'desc'  => __('dividerIdDesc'),
             ],
         ];
     }

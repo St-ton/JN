@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Update;
 
@@ -10,8 +6,11 @@ use Exception;
 use Ifsnop\Mysqldump\Mysqldump;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Minify\MinifyService;
 use JTL\Network\JTLApi;
 use JTL\Shop;
+use JTL\Smarty\ContextType;
+use JTL\Smarty\JTLSmarty;
 use JTLShop\SemVer\Version;
 use JTLShop\SemVer\VersionCollection;
 use PDOException;
@@ -51,39 +50,39 @@ class Updater
      */
     public function verify(): void
     {
-        if (static::$isVerified !== true) {
-            MigrationHelper::verifyIntegrity();
-            $dbVersion      = $this->getCurrentDatabaseVersion();
-            $dbVersionShort = (int)\sprintf('%d%02d', $dbVersion->getMajor(), $dbVersion->getMinor());
-
-            // While updating from 3.xx to 4.xx provide a default admin-template row
-            if ($dbVersionShort < 400) {
-                $count = (int)$this->db->query(
-                    "SELECT * FROM `ttemplate` WHERE `eTyp` = 'admin'",
-                    ReturnType::AFFECTED_ROWS
-                );
-                if ($count === 0) {
-                    $this->db->query(
-                        "ALTER TABLE `ttemplate` 
-                            CHANGE `eTyp` `eTyp` ENUM('standard','mobil','admin') NOT NULL",
-                        ReturnType::AFFECTED_ROWS
-                    );
-                    $this->db->query(
-                        "INSERT INTO `ttemplate` (`cTemplate`, `eTyp`) VALUES ('bootstrap', 'admin')",
-                        ReturnType::AFFECTED_ROWS
-                    );
-                }
-            }
-
-            if ($dbVersionShort < 404) {
-                $this->db->query(
-                    'ALTER TABLE `tversion` CHANGE `nTyp` `nTyp` INT(4) UNSIGNED NOT NULL',
-                    ReturnType::AFFECTED_ROWS
-                );
-            }
-
-            static::$isVerified = true;
+        if (static::$isVerified === true) {
+            return;
         }
+        MigrationHelper::verifyIntegrity();
+        $dbVersion      = $this->getCurrentDatabaseVersion();
+        $dbVersionShort = (int)\sprintf('%d%02d', $dbVersion->getMajor(), $dbVersion->getMinor());
+        // While updating from 3.xx to 4.xx provide a default admin-template row
+        if ($dbVersionShort < 400) {
+            $count = (int)$this->db->query(
+                "SELECT * FROM `ttemplate` WHERE `eTyp` = 'admin'",
+                ReturnType::AFFECTED_ROWS
+            );
+            if ($count === 0) {
+                $this->db->query(
+                    "ALTER TABLE `ttemplate` 
+                        CHANGE `eTyp` `eTyp` ENUM('standard','mobil','admin') NOT NULL",
+                    ReturnType::AFFECTED_ROWS
+                );
+                $this->db->query(
+                    "INSERT INTO `ttemplate` (`cTemplate`, `eTyp`) VALUES ('bootstrap', 'admin')",
+                    ReturnType::AFFECTED_ROWS
+                );
+            }
+        }
+
+        if ($dbVersionShort < 404) {
+            $this->db->query(
+                'ALTER TABLE `tversion` CHANGE `nTyp` `nTyp` INT(4) UNSIGNED NOT NULL',
+                ReturnType::AFFECTED_ROWS
+            );
+        }
+
+        static::$isVerified = true;
     }
 
     /**
@@ -99,7 +98,7 @@ class Updater
 
         if ($force || $pending === null) {
             $fileVersion = $this->getCurrentFileVersion();
-            $dbVersion = $this->getCurrentDatabaseVersion();
+            $dbVersion   = $this->getCurrentDatabaseVersion();
 
             if (Version::parse($fileVersion)->greaterThan($dbVersion)
                 || ($dbVersion->smallerThan(Version::parse('2.19'))
@@ -301,6 +300,15 @@ class Updater
         return $this->hasPendingUpdates()
             ? $this->updateToNextVersion()
             : Version::parse(\APPLICATION_VERSION);
+    }
+
+    public function finalize(): void
+    {
+        $smarty = new JTLSmarty(true, ContextType::FRONTEND);
+        $smarty->clearCompiledTemplate();
+        Shop::Container()->getCache()->flushAll();
+        $ms = new MinifyService();
+        $ms->flushCache();
     }
 
     /**

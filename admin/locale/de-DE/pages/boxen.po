@@ -3,22 +3,16 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "boxen"
-msgstr "Boxen"
+msgstr "Footer / Boxen"
 
 msgid "boxenURL"
 msgstr "https://jtl-url.de/2uknw"
 
 msgid "boxenDesc"
-msgstr "Hier können Sie verschiedenen Boxen-Containern Boxen hinzufügen bzw. Boxen entfernen. Für jeden Container können Sie festlegen, auf welchen Seiten er sichtbar sein soll. Ob ein spezieller Container verfügbar ist oder nicht, wird durch das Template bestimmt. Sie können eigene Boxen, z. B. Linkgruppen oder Boxen mit eigenem xHTML-Inhalt, in einem Boxen-Container anlegen. Einige Boxen können Sie über die Bearbeiten-Schaltfläche weiter konfigurieren."
+msgstr "Hier können Sie Boxen in verschiedenen Boxen-Containern verwalten und den Footer pflegen. Für jeden Container können Sie festlegen, auf welchen Seiten er sichtbar sein soll. Je nach Template sind verschiedene Container verfügbar. Einige Boxen können Sie über die Bearbeiten-Schaltfläche weiter konfigurieren."
 
 msgid "showContainer"
-msgstr "Container anzeigen"
-
-msgid "deactivateOnAnyPage"
-msgstr "%s auf jeder Seite deaktivieren"
-
-msgid "activateOnAnyPage"
-msgstr "%s auf jeder Seite aktivieren"
+msgstr "Container aktivieren"
 
 msgid "boxTitle"
 msgstr "Titel"
@@ -59,11 +53,8 @@ msgstr "Neuer Container"
 msgid "pleaseSelect"
 msgstr "Bitte auswählen"
 
-msgid "resort"
-msgstr "Sortieren"
-
 msgid "noTemplateConfig"
-msgstr "Die Konfigurationsdatei (template.xml) wurde nicht gefunden."
+msgstr "Konfigurationsdatei (template.xml) wurde nicht gefunden."
 
 msgid "noBoxActivated"
 msgstr "Es wurde keine Box aktiviert."
@@ -79,9 +70,6 @@ msgstr "Momentan sind noch keine Boxen für „%s“ vorhanden."
 
 msgid "showBoxOnlyFor"
 msgstr "Box „%s“ nur anzeigen für:"
-
-msgid "visibleOnPages"
-msgstr "Sichtbar auf folgenden Seiten"
 
 msgid "invisibleBoxes"
 msgstr "Nicht sichtbare Boxen"
@@ -126,13 +114,13 @@ msgid "errorBoxEdit"
 msgstr "Box konnte nicht bearbeitet werden."
 
 msgid "successBoxRefresh"
-msgstr "Die Boxen wurden aktualisiert."
+msgstr "Boxen wurden erfolgreich aktualisiert."
 
 msgid "visibleOnAllPages"
 msgstr "sichtbar auf allen Seiten"
 
 msgid "visibleOnSomePages"
-msgstr "sichtbar auf manchen Seiten"
+msgstr "sichtbar auf ausgewählten Seiten"
 
 msgid "deactivatedOnAllPages"
 msgstr "auf allen Seiten deaktiviert"
@@ -141,7 +129,7 @@ msgid "warningChangesForAllPages"
 msgstr "Die Auswahl „Alle Seiten“ überschreibt entsprechende Änderungen an den Boxen, die vorher für einzelne Seiten vorgenommen wurden."
 
 msgid "errorBoxesVisibilityEdit"
-msgstr "Die Sichtbarkeit der Boxen konnte nicht gesetzt werden. Es ist ein MySQL-Fehler aufgetreten. Bitte wenden Sie sich an den Support."
+msgstr "Sichtbarkeit der Boxen konnte nicht gesetzt werden. Es ist ein MySQL-Fehler aufgetreten. Bitte wenden Sie sich an den Support."
 
 #box name
 msgid "Bestseller"
@@ -177,11 +165,11 @@ msgstr "Neu im Sortiment"
 
 #box name
 msgid "News Kategorien"
-msgstr "News: Kategorien des News-Systems"
+msgstr "Blog: Kategorien des Blogsystems"
 
 #box name
 msgid "News (Monatsübersicht)"
-msgstr "News: Monate mit Beiträgen"
+msgstr "Blog: Monate mit Beiträgen"
 
 #box name
 msgid "Schnellkauf"
@@ -241,7 +229,7 @@ msgstr "Filter (Suche)"
 
 #box name
 msgid "Filter (Suchspecial)"
-msgstr "Filter (Artikel-Overlay)"
+msgstr "Filter (Artikelsticker)"
 
 #box name
 msgid "Eigene Box (Ohne Rahmen)"
@@ -251,9 +239,6 @@ msgstr "Eigene Box (ohne Rahmen)"
 msgid "Eigene Box (Mit Rahmen)"
 msgstr "Eigene Box (mit Rahmen)"
 
-#box name
-msgid "Tagwolke"
-msgstr "Tag-Wolke"
 
 #box name
 msgid "Konfigurator"
@@ -266,10 +251,6 @@ msgstr "Filter (Hersteller)"
 #box name
 msgid "Filter (Kategorie)"
 msgstr "Filter (Kategorie)"
-
-#box name
-msgid "Trusted Shops - Reviews"
-msgstr "Trusted Shops – Reviews"
 
 msgid "templateTypeTemplate"
 msgstr "Vorlage"
@@ -287,4 +268,4 @@ msgid "templateTypeCategory"
 msgstr "Kategorie"
 
 msgid "templateTypeExtension"
-msgstr "Extension"
+msgstr "Plugin"

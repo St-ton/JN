@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Backend\AdminTemplate;
 use JTL\Backend\Notification;
@@ -92,7 +88,7 @@ if (!$hasPendingUpdates) {
                     ];
 
                     $linkGruppe->oLink_arr[] = $link;
-                    if (Request::verifyGPCDataInt('kPlugin') === $pluginID) {
+                    if (Request::getInt('kPlugin') === $pluginID) {
                         $currentToplevel    = $mainGroup->key;
                         $currentSecondLevel = $linkGruppe->key;
                         $currentThirdLevel  = $link->key;

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='boxes-box-news-categories'}
     {card class="box box-newscategories mb-md-4" id="sidebox{$oBox->getID()}"}
         {block name='boxes-box-news-categories-content'}
@@ -17,7 +13,7 @@
             {/block}
             {block name='boxes-box-news-categories-title'}
                 <div class="productlist-filter-headline d-none d-md-flex">
-                    <span>{lang key='newsBoxCatOverview'}</span>
+                    {lang key='newsBoxCatOverview'}
                 </div>
             {/block}
             {block name='boxes-box-news-categories-collapse'}
@@ -29,11 +25,9 @@
                     {nav vertical=true}
                         {foreach $oBox->getItems() as $newsCategory}
                             {if $newsCategory@index === 10}{break}{/if}
-                            {navitem href=$newsCategory->cURLFull title=$newsCategory->cName}
-                                <span class="align-items-center d-flex">
-                                    {$newsCategory->cName}
-                                    <span class="badge badge-outline-secondary ml-auto">{$newsCategory->nAnzahlNews}</span>
-                                </span>
+                            {navitem href=$newsCategory->cURLFull title=$newsCategory->cName router-class="align-items-center d-flex"}
+                                {$newsCategory->cName}
+                                <span class="badge badge-outline-secondary ml-auto">{$newsCategory->nAnzahlNews}</span>
                             {/navitem}
                         {/foreach}
                     {/nav}

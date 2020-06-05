@@ -6,7 +6,10 @@ msgid "Panel"
 msgstr "Panel"
 
 msgid "showHeader"
-msgstr "Kopf anzeigen?"
+msgstr "Kopf anzeigen"
 
 msgid "showFooter"
-msgstr "Fuß anzeigen?"
+msgstr "Fuß anzeigen"
+
+msgid "panelType"
+msgstr "Farbschema"

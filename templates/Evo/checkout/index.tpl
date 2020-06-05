@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='header'}
     {if !isset($bAjaxRequest) || !$bAjaxRequest}
         {include file='layout/header.tpl'}
@@ -12,7 +8,7 @@
     <div id="result-wrapper">
         <div id="checkout">
             {include file='checkout/inc_steps.tpl'}
-    
+
             {include file='snippets/extension.tpl'}
             {if $step === 'accountwahl'}
                 {include file='checkout/step0_login_or_register.tpl'}{*bestellvorgang_accountwahl.tpl*}
@@ -27,19 +23,19 @@
             {/if}
         </div>
     </div>
-    
+
     {if (isset($nWarenkorb2PersMerge) && $nWarenkorb2PersMerge === 1)}
         <script type="text/javascript">
             $(window).on('load', function() {
                 eModal.confirm({ldelim}message: '{lang key='basket2PersMerge' section='login'}', label1: '{lang key='no' section='global'}', label2: '{lang key='yes' section='global'}'{rdelim}, '{lang key='basket' section='global'}', function(res) {
                     if (res) {
-                        window.location = "{get_static_route id='bestellvorgang.php'}?basket2Pers=1"
+                        window.location = "{get_static_route id='bestellvorgang.php'}?basket2Pers=1&token={$smarty.session.jtl_token}"
                     }
                 });
             });
         </script>
     {/if}
-    
+
     <script type="text/javascript">
         if (top.location !== self.location) {ldelim}
             top.location = self.location.href;

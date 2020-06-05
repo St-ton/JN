@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Plugin\Admin\Installation\Installer;
 use JTL\Plugin\Admin\Installation\Uninstaller;

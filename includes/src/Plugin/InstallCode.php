@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Plugin;
 
@@ -353,4 +349,24 @@ class InstallCode extends Enum
     public const INVALID_STORE_ID = 402;
 
     public const MISSING_PLUGIN_NODE = 403;
+
+    public const SQL_CANNOT_SAVE_VENDOR = 410;
+
+    public const MISSING_CONSENT_VENDOR = 411;
+
+    public const INVALID_CONSENT_VENDOR_NAME = 412;
+
+    public const INVALID_CONSENT_VENDOR_PURPOSE = 413;
+
+    public const INVALID_CONSENT_VENDOR_LOCALIZATION = 414;
+
+    public const INVALID_CONSENT_VENDOR_LOCALIZATION_ISO = 415;
+
+    public const INVALID_CONSENT_VENDOR_DESCRIPTION = 416;
+
+    public const INVALID_CONSENT_VENDOR_PRIV_POL = 417;
+
+    public const INVALID_CONSENT_VENDOR_ID = 418;
+
+    public const INVALID_CONSENT_VENDOR_COMPANY = 419;
 }

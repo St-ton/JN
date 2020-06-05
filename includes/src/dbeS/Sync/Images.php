@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\dbeS\Sync;
 
@@ -712,7 +708,6 @@ final class Images extends AbstractSync
         $branding = null
     ): bool {
         $container        = $this->config['container_verwenden'] === 'Y';
-        $enlarge          = $this->config['bilder_skalieren'] === 'Y';
         $extension        = $this->getNewExtension($target);
         $target           = \PFAD_ROOT . $target;
         [$width, $height] = \getimagesize($source);
@@ -721,7 +716,7 @@ final class Images extends AbstractSync
 
             return false;
         }
-        if (!$enlarge && $width < $targetWidth && $height < $targetHeight) {
+        if ($width < $targetWidth && $height < $targetHeight) {
             $newWidth  = $width;
             $newHeight = $height;
         } else {

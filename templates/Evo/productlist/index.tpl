@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='header'}
     {if !isset($bAjaxRequest) || !$bAjaxRequest}
         {include file='layout/header.tpl'}
@@ -9,7 +5,7 @@
 {/block}
 
 {block name='content'}
-    <div id="result-wrapper">
+    <div id="result-wrapper" data-wrapper="true">
         {block name='productlist-header'}
             {include file='productlist/header.tpl'}
         {/block}

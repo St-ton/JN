@@ -45,7 +45,7 @@
                             </div>
                         </div>
                         <div class="form-group form-row align-items-center">
-                            <label class="col col-sm-4 col-form-label text-sm-right" for="cEmailCopyTo">{__('emailCopyTo')} :</label>
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cEmailCopyTo">{__('emailCopyTo')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <input class="form-control" id="cEmailCopyTo" name="cEmailCopyTo" type="text" value="{if isset($mailConfig.cEmailCopyTo)}{$mailConfig.cEmailCopyTo|escape}{/if}" />
                             </div>
@@ -144,11 +144,11 @@
                     </code>
                 </div>
             </div>
-            {foreach $availableLanguages as $language}
+            {foreach $availableLanguages as $availableLanguage}
                 <div class="box_info card">
-                    {assign var=kSprache value=$language->getId()}
+                    {assign var=kSprache value=$availableLanguage->getId()}
                     <div class="card-header">
-                        <div class="subheading1">{__('content')} {$language->getLocalizedName()}</div>
+                        <div class="subheading1">{__('content')} {$availableLanguage->getLocalizedName()}</div>
                         <hr class="mb-n2">
                     </div>
                     <div class="card-body">
@@ -199,7 +199,7 @@
                                     <label for="cPDFS_{$smarty.section.anhaenge.index}_{$kSprache}">{__('pdf')} {$smarty.section.anhaenge.index}:</label>
                                     <div class="for">
                                         {math equation="x-y" x=$smarty.section.anhaenge.index y=1 assign=loopdekr}
-                                        <div class="form-row mb-2">
+                                        <div class="form-row mb-2{if count($cFehlerAnhang_arr) > 0 && isset($cFehlerAnhang_arr[$kSprache][$smarty.section.anhaenge.index]) && $cFehlerAnhang_arr[$kSprache][$smarty.section.anhaenge.index] == 1} form-error{/if}">
                                             <div class="col-sm-auto col-form-label">
                                                 <label for="cPDFNames_{$smarty.section.anhaenge.index}_{$kSprache}">{__('filename')}:</label>
                                             </div>
@@ -208,18 +208,19 @@
                                                    name="cPDFNames_{$kSprache}[]"
                                                    type="text"
                                                    value="{if isset($attachments[$loopdekr + 1])}{$attachments[$loopdekr + 1]}{/if}"
-                                                   class="form-control{if count($cFehlerAnhang_arr) > 0}{if isset($cFehlerAnhang_arr[$kSprache][$smarty.section.anhaenge.index]) && $cFehlerAnhang_arr[$kSprache][$smarty.section.anhaenge.index] == 1} fieldfillout{/if}{/if}"
+                                                   class="form-control"
                                                    size="50"/>
                                             </div>
                                         </div>
-                                        <div class="input-group mb-3">
-                                            <div class="custom-file">
-                                                <input id="cPDFS_{$smarty.section.anhaenge.index}_{$kSprache}" name="cPDFS_{$kSprache}[]" type="file" class="custom-file-input" maxlength="2097152"/>
-                                                <label class="custom-file-label" for="cPDFS_{$smarty.section.anhaenge.index}_{$kSprache}">
-                                                    <span class="text-truncate">{__('fileSelect')}</span>
-                                                </label>
-                                            </div>
-                                        </div>
+                                        {include file='tpl_inc/fileupload.tpl'
+                                            fileID="cPDFS_{$smarty.section.anhaenge.index}_{$kSprache}"
+                                            fileName="cPDFS_{$kSprache}[]"
+                                            fileAllowedExtensions="['pdf']"
+                                            fileShowRemove=true
+                                            fileMaxSize=2097152
+                                            filePreview=false
+                                            fileErrorMsg=true
+                                        }
                                     </div>
                                 </div>
                             {/section}

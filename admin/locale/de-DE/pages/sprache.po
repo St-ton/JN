@@ -3,13 +3,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "lang"
-msgstr "Sprachverwaltung"
+msgstr "Sprachvariablen und Textbausteine"
 
 msgid "langURL"
 msgstr "https://jtl-url.de/nab7v"
 
 msgid "langDesc"
-msgstr "Ändern Sie hier die Standard-Textbausteine des Onlineshops. Alle Texte sind sprachabhängig definiert. Sie haben in der Sprachverwaltung außerdem die Möglichkeit, Ihre Textbausteine pro Sprache zu exportieren und wieder zu importieren."
+msgstr "Ändern Sie hier die Standard-Textbausteine des Onlineshops. Alle Texte sind sprachabhängig definiert. Sie können außerdem Ihre Textbausteine pro Sprache exportieren und wieder importieren."
 
 msgid "langVars"
 msgstr "Sprachvariablen"
@@ -57,16 +57,16 @@ msgid "errorVarExistsForLang"
 msgstr "Die Variable existiert bereits für folgende Sprachen: %s. Bitte wählen Sie aus, welche Versionen Sie überschreiben möchten."
 
 msgid "successVarChange"
-msgstr "Variablen erfolgreich geändert: "
+msgstr "Variablen wurden erfolgreich geändert: "
 
 msgid "errorVarChangeNone"
 msgstr "Es wurde keine Variable geändert."
 
 msgid "successListReset"
-msgstr "Liste erfolgreich zurückgesetzt."
+msgstr "Liste wurde erfolgreich zurückgesetzt."
 
 msgid "searchInContentAndVarName"
-msgstr "Suchen im Variablennamen und im Inhalt"
+msgstr "Sucht im Variablennamen und im Inhalt"
 
 msgid "systemOwn"
 msgstr "System / eigene"

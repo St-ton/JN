@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 // Version
 define('APPLICATION_VERSION', '5.0.0');
@@ -36,6 +32,9 @@ define('CONF_EMAILBLACKLIST', 111);
 define('CONF_METAANGABEN', 112);
 define('CONF_NEWS', 113);
 define('CONF_SITEMAP', 114);
+/**
+ * @deprecated
+ */
 define('CONF_KUNDENWERBENKUNDEN', 116);
 define('CONF_SUCHSPECIAL', 119);
 define('CONF_CHECKBOX', 120);
@@ -84,6 +83,7 @@ define('URLART_NEWS', 8);
 define('URLART_NEWSMONAT', 9);
 define('URLART_NEWSKATEGORIE', 10);
 define('URLART_SEARCHSPECIALS', 12);
+define('URLART_NEWSLETTER', 13);
 // bestellstatus
 define('BESTELLUNG_STATUS_STORNO', -1);
 define('BESTELLUNG_STATUS_OFFEN', 1);
@@ -116,7 +116,13 @@ define('MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR', 'core_jtl_verfuegbarkeitsbenach
 define('MAILTEMPLATE_WUNSCHLISTE', 'core_jtl_wunschliste');
 define('MAILTEMPLATE_BEWERTUNGERINNERUNG', 'core_jtl_bewertungerinnerung');
 define('MAILTEMPLATE_NEWSLETTERANMELDEN', 'core_jtl_newsletteranmelden');
+/**
+ * @deprecated
+ */
 define('MAILTEMPLATE_KUNDENWERBENKUNDEN', 'core_jtl_kundenwerbenkunden');
+/**
+ * @deprecated
+ */
 define('MAILTEMPLATE_KUNDENWERBENKUNDENBONI', 'core_jtl_kundenwerbenkundenboni');
 define('MAILTEMPLATE_STATUSEMAIL', 'core_jtl_statusemail');
 define('MAILTEMPLATE_CHECKBOX_SHOPBETREIBER', 'core_jtl_checkbox_shopbetreiber');
@@ -137,6 +143,9 @@ define('SEARCH_SORT_PRICE_DESC', 4);
 define('SEARCH_SORT_EAN', 5);
 define('SEARCH_SORT_NEWEST_FIRST', 6);
 define('SEARCH_SORT_PRODUCTNO', 7);
+/**
+ * @deprecated
+ */
 define('SEARCH_SORT_AVAILABILITY', 8);
 define('SEARCH_SORT_WEIGHT', 9);
 define('SEARCH_SORT_DATEOFISSUE', 10);
@@ -147,6 +156,9 @@ define('SEARCH_SORT_CRITERION_NAME', 'artikelname');
 define('SEARCH_SORT_CRITERION_NAME_ASC', 'artikelname aufsteigend');
 define('SEARCH_SORT_CRITERION_NAME_DESC', 'artikelname absteigend');
 define('SEARCH_SORT_CRITERION_PRODUCTNO', 'artikelnummer');
+/**
+ * @deprecated
+ */
 define('SEARCH_SORT_CRITERION_AVAILABILITY', 'lagerbestand');
 define('SEARCH_SORT_CRITERION_WEIGHT', 'gewicht');
 define('SEARCH_SORT_CRITERION_PRICE', 'preis');
@@ -175,15 +187,24 @@ define('LINKTYP_PASSWORD_VERGESSEN', 10);
 define('LINKTYP_AGB', 11);
 define('LINKTYP_DATENSCHUTZ', 12);
 define('LINKTYP_KONTAKT', 13);
-define('LINKTYP_TAGGING', 14); // @deprecated
+/**
+ * @deprecated
+ */
+define('LINKTYP_TAGGING', 14);
 define('LINKTYP_LIVESUCHE', 15);
 define('LINKTYP_HERSTELLER', 16);
 define('LINKTYP_NEWSLETTER', 17);
 define('LINKTYP_NEWSLETTERARCHIV', 18);
 define('LINKTYP_NEWS', 19);
-define('LINKTYP_NEWSARCHIV', 20); // @deprecated
+/**
+ * @deprecated
+ */
+define('LINKTYP_NEWSARCHIV', 20);
 define('LINKTYP_SITEMAP', 21);
-define('LINKTYP_UMFRAGE', 22); // @deprecated
+/**
+ * @deprecated
+ */
+define('LINKTYP_UMFRAGE', 22);
 define('LINKTYP_GRATISGESCHENK', 23);
 define('LINKTYP_WRB', 24);
 define('LINKTYP_PLUGIN', 25);
@@ -239,7 +260,10 @@ define('FKT_ATTRIBUT_ATTRIBUTEANHAENGEN', 'attribute anhaengen');
 define('FKT_ATTRIBUT_STUECKLISTENKOMPONENTEN', 'stuecklistenkomponenten');
 define('FKT_ATTRIBUT_INHALT', 'inhalt');
 define('FKT_ATTRIBUT_CANONICALURL_VARKOMBI', 'varkombi_canonicalurl');
-define('FKT_ATTRIBUT_KONFIG_MAX_ITEMS', 'konfig_max_items'); // deprecated? not in use anywhere
+/**
+ * @deprecated
+ */
+define('FKT_ATTRIBUT_KONFIG_MAX_ITEMS', 'konfig_max_items');
 // Special Content
 define('SC_KONTAKTFORMULAR', '1');
 // Suchspecials
@@ -298,6 +322,7 @@ define('R_UNVERKAEUFLICH', 15);
 define('R_AUFANFRAGE', 16);
 define('R_EMPTY_TAG', 17);
 define('R_EMPTY_VARIBOX', 18);
+define('R_MISSING_TOKEN', 19);
 // Kategorietiefe
 // 0 = Aus
 // 1 = Tiefe 0 (Hauptkategorien)
@@ -343,14 +368,20 @@ define('PAGE_ARTIKELLISTE', 2); // Artikelliste
 define('PAGE_WARENKORB', 3); // Warenkorb
 define('PAGE_MEINKONTO', 4); // Mein Konto
 define('PAGE_KONTAKT', 5); // Kontakt
-define('PAGE_UMFRAGE', 6); // Umfrage - @deprecated
+/**
+ * @deprecated
+ */
+define('PAGE_UMFRAGE', 6); // Umfrage
 define('PAGE_NEWS', 7); // News
 define('PAGE_NEWSLETTER', 8); // Newsletter
 define('PAGE_LOGIN', 9); // Login
 define('PAGE_REGISTRIERUNG', 10); // Registrierung
 define('PAGE_BESTELLVORGANG', 11); // Bestellvorgang
 define('PAGE_BEWERTUNG', 12); // Bewertung [NEIN]
-define('PAGE_DRUCKANSICHT', 13); // Druckansicht @deprecated
+/**
+ * @deprecated
+ */
+define('PAGE_DRUCKANSICHT', 13); // Druckansicht
 define('PAGE_PASSWORTVERGESSEN', 14); // Passwort vergessen
 define('PAGE_WARTUNG', 15); // Wartung
 define('PAGE_WUNSCHLISTE', 16); // Wunschliste
@@ -359,7 +390,10 @@ define('PAGE_STARTSEITE', 18); // Startseite
 define('PAGE_VERSAND', 19); // Versand
 define('PAGE_AGB', 20); // AGB
 define('PAGE_DATENSCHUTZ', 21); // Datenschutz
-define('PAGE_TAGGING', 22); // Tagging @deprecated
+/**
+ * @deprecated
+ */
+define('PAGE_TAGGING', 22); // Tagging
 define('PAGE_LIVESUCHE', 23); // Livesuche
 define('PAGE_HERSTELLER', 24); // Hersteller
 define('PAGE_SITEMAP', 25); // Sitemap
@@ -367,7 +401,10 @@ define('PAGE_GRATISGESCHENK', 26); // Gratis Geschenk
 define('PAGE_WRB', 27); // WRB
 define('PAGE_PLUGIN', 28); // Plugin
 define('PAGE_NEWSLETTERARCHIV', 29); // Newsletterarchiv
-define('PAGE_NEWSARCHIV', 30); // Newsarchiv @deprecated
+/**
+ * @deprecated
+ */
+define('PAGE_NEWSARCHIV', 30); // Newsarchiv
 define('PAGE_EIGENE', 31); // Eigene Seite
 define('PAGE_AUSWAHLASSISTENT', 32); // Auswahlassistent
 define('PAGE_BESTELLABSCHLUSS', 33); // Bestellabschluss
@@ -408,6 +445,7 @@ define('BOX_FILTER_SUCHE', 28);
 define('BOX_FILTER_SUCHSPECIAL', 29);
 define('BOX_FILTER_HERSTELLER', 101);
 define('BOX_FILTER_KATEGORIE', 102);
+define('BOX_FILTER_AVAILABILITY', 103);
 define('BOX_EIGENE_BOX_OHNE_RAHMEN', 30);
 define('BOX_EIGENE_BOX_MIT_RAHMEN', 31);
 define('BOX_KONFIGURATOR', 33);
@@ -513,3 +551,19 @@ define('PRIO_VERYLOW', '0.0');
 
 define('SPM_PORT', 443);
 define('SPM_TIMEOUT', 30);
+
+define('CACHING_GROUP_ARTICLE', 'art');
+define('CACHING_GROUP_PRODUCT', 'art');
+define('CACHING_GROUP_CATEGORY', 'cat');
+define('CACHING_GROUP_LANGUAGE', 'lang');
+define('CACHING_GROUP_TEMPLATE', 'tpl');
+define('CACHING_GROUP_OPTION', 'opt');
+define('CACHING_GROUP_PLUGIN', 'plgn');
+define('CACHING_GROUP_CORE', 'core');
+define('CACHING_GROUP_OBJECT', 'obj');
+define('CACHING_GROUP_BOX', 'bx');
+define('CACHING_GROUP_NEWS', 'nws');
+define('CACHING_GROUP_ATTRIBUTE', 'attr');
+define('CACHING_GROUP_MANUFACTURER', 'mnf');
+define('CACHING_GROUP_FILTER', 'fltr');
+define('CACHING_GROUP_FILTER_CHARACTERISTIC', 'fltrchr');

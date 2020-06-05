@@ -1,9 +1,5 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='boxes-box-manufacturers'}
-    {card class="box box-manufacturers mb-md-4" id="sidebox{$oBox->getID()}"}
+    {card class="box box-manufacturers mb-md-4 dropdown-full-width" id="sidebox{$oBox->getID()}"}
         {block name='boxes-box-manufacturers-content'}
             {block name='boxes-box-manufacturers-toggle-title'}
                 {link id="crd-hdr-{$oBox->getID()}"
@@ -17,7 +13,7 @@
             {/block}
             {block name='boxes-box-manufacturers-title'}
                 <div class="productlist-filter-headline d-none d-md-flex">
-                    <span>{lang key='manufacturers'}</span>
+                    {lang key='manufacturers'}
                 </div>
             {/block}
             {block name='boxes-box-manufacturers-collapse'}
@@ -31,7 +27,7 @@
                             {dropdown class="w-100" variant="secondary btn-block" text="{lang key='selectManufacturer'}<span class='caret'></span>"}
                                 {foreach $oBox->getManufacturers() as $manufacturer}
                                     {if $manufacturer@index === 10}{break}{/if}
-                                    {dropdownitem href=$hst->cSeo}
+                                    {dropdownitem href=$manufacturer->cSeo}
                                         {$manufacturer->cName|escape:'html'}
                                     {/dropdownitem}
                                 {/foreach}

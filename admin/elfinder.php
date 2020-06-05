@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -14,7 +10,7 @@ use JTL\Shop;
  */
 
 require_once __DIR__ . '/includes/admininclude.php';
-$oAccount->permission('CONTENT_PAGE_VIEW', true, true);
+$oAccount->permission('IMAGE_UPLOAD', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'elfinder_inc.php';
 
 if (Form::validateToken()) {

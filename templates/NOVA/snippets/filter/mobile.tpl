@@ -1,14 +1,10 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='snippets-filter-mobile'}
     {if $isMobile && !$isTablet}
         <span class="h2 mt-3 border-0 px-3" id="productlist-filter">{lang key='filterAndSort'}</span>
     {/if}
-    <div class="productlist-filter-wrapper">
+    <div class="productlist-filter-wrapper dropdown-full-width">
         <ul class="productlist-filter-accordion border-md-bottom border-lg-bottom-0">
-        {block name='productlist-result-options-sorting'}
+        {block name='snippets-filter-mobile-sorting'}
             <li>
                 {link class="text-decoration-none text-left filter-type-FilterItemSort"
                 data=["toggle"=> "collapse", "target"=>"#sorting-collapse"]}
@@ -33,7 +29,7 @@
         {/block}
         {if $show_filters}
             {if count($NaviFilter->getAvailableContentFilters()) > 0}
-                {block name='productlist-result-options-filters'}
+                {block name='snippets-filter-mobile-filters'}
                     {foreach $NaviFilter->getAvailableContentFilters() as $filter}
                         {if count($filter->getFilterCollection()) > 0}
                             {foreach $filter->getOptions() as $subFilter}
@@ -41,13 +37,13 @@
                                     && $subFilter->getVisibility() !== \JTL\Filter\Visibility::SHOW_BOX
                                     && $filter->getOptions()|count > 0}
                                     <li>
-                                        {block name='productlist-result-options-filters-button'}
+                                        {block name='snippets-filter-mobile-filters-button'}
                                             {link class="collapsed"
                                                 data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$subFilter->getFrontendName()|@seofy}"]}
                                                 {$subFilter->getFrontendName()}
                                             {/link}
                                         {/block}
-                                        {block name='productlist-result-options-filters-collapse'}
+                                        {block name='snippets-filter-mobile-filters-collapse'}
                                             {collapse id="filter-collapse-{$subFilter->getFrontendName()|@seofy}"
                                                 class="my-2"
                                                 visible=$subFilter->isActive()}
@@ -66,22 +62,22 @@
                         {elseif $filter->getOptions()|count > 0}
                             <li>
                                 {if $filter->getClassName() === "JTL\Filter\Items\PriceRange"}
-                                    {block name='productlist-result-options-filters-price-range'}
+                                    {block name='snippets-filter-mobile-filters-price-range'}
                                         {link class="collapsed"
                                             data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$filter->getFrontendName()|@seofy}"]}
                                             {$filter->getFrontendName()}
                                         {/link}
                                         {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}"
                                             class="my-2 py-2"
-                                            visible=$Einstellungen.template.sidebar_settings.always_show_price_range === 'Y' || $filter->isActive()}
-                                            {block name='boxes-box-filter-pricerange-include-price-slider'}
+                                            visible=true}
+                                            {block name='snippets-filter-mobile-include-price-slider'}
                                                 {input data=['id'=>'js-price-range-url'] type="hidden" value="{$NaviFilter->getFilterURL()->getURL()}"}
                                                 {include file='snippets/filter/price_slider.tpl' id='price-slider-content'}
                                             {/block}
                                         {/collapse}
                                     {/block}
                                 {elseif $filter->getClassName() === "JTL\Filter\Items\Search"}
-                                    {block name='productlist-result-options-filters-price-range'}
+                                    {block name='snippets-filter-mobile-filters-search'}
                                         {link class="collapsed"
                                             data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$filter->getFrontendName()|@seofy}"]}
                                             {$filter->getFrontendName()}
@@ -89,13 +85,13 @@
                                         {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}"
                                             class="my-2 py-2"
                                             visible=$filter->isActive()}
-                                            {block name='boxes-box-filter-pricerange-include-price-slider'}
+                                            {block name='snippets-filter-mobile-include-search'}
                                                 {include file='snippets/filter/search.tpl'}
                                             {/block}
                                         {/collapse}
                                     {/block}
                                 {elseif $filter->getClassName() === "JTL\Filter\Items\Manufacturer"}
-                                    {block name='productlist-result-options-filters-price-range'}
+                                    {block name='snippets-filter-mobile-filters-manufacturer'}
                                         {link class="collapsed"
                                             data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$filter->getFrontendName()|@seofy}"]}
                                             {$filter->getFrontendName()}
@@ -103,20 +99,22 @@
                                         {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}"
                                             class="my-2 py-2"
                                             visible=$filter->isActive()}
-                                            {block name='boxes-box-filter-pricerange-include-price-slider'}
+                                            {block name='snippets-filter-mobile-include-manufacturer'}
                                                 {include file='snippets/filter/manufacturer.tpl'}
                                             {/block}
                                         {/collapse}
                                     {/block}
                                 {elseif $filter->getOptions()|count > 0}
-                                    {block name='productlist-result-options-filters-select'}
+                                    {block name='snippets-filter-mobile-filters-generic'}
                                         {link data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$filter->getFrontendName()|@seofy}"]}
                                             {$filter->getFrontendName()}
                                         {/link}
                                         {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}"
                                             class="my-2"
                                             visible=$filter->isActive()}
-                                            {include file='snippets/filter/genericFilterItem.tpl' filter=$filter}
+                                            {block name='snippets-filter-mobile-include-generic-filter-item'}
+                                                {include file='snippets/filter/genericFilterItem.tpl' filter=$filter}
+                                            {/block}
                                         {/collapse}
                                     {/block}
                                 {/if}
@@ -127,44 +125,50 @@
             {/if}
         {/if}
         </ul>
-        {block name='productlist-result-options-include-active-filter'}
+        {block name='snippets-filter-mobile-include-active-filter'}
             <div class="productlist-applied-filter mb-5">
                 {include file='snippets/filter/active_filter.tpl'}
             </div>
         {/block}
     </div>
-    <div class="productlist-filter-footer px-3 mt-auto">
-        {formrow class="justify-content-end align-items-center"}
-            {col}
-                {button block=true
-                    variant="outline-primary"
-                    class="my-1 no-caret"
-                    data=['toggle'=>'collapse', 'dismiss'=>'modal']
-                    href="#collapseFilter"
-                    aria=['expanded'=>'true','controls'=>'collapseFilter']}
-                    {lang key='filterCancel'}
-                {/button}
-            {/col}
-            {col}
-                {button type="link"
-                    block=true
-                    variant="primary"
-                    class="min-w-sm my-1 text-nowrap"
-                    href="{$NaviFilter->getURL()->getCategories()}"}
-                    {lang key='filterShowItem' printf=$itemCount}
-                {/button}
-            {/col}
-        {/formrow}
-    </div>
-    <div class="js-helpers">
-        {input id="js-price-redirect" type="hidden" value=1}
-    </div>
-    {inline_script}<script>
-        {literal}
-            $('.js-collapse-filter .filter-item, .js-collapse-filter .js-filter-item').on('click', function(e) {
-                e.preventDefault();
-                $.evo.initFilters($(this).attr('href'));
-            });
-        {/literal}
-    </script>{/inline_script}
+    {block name='snippets-filter-mobile-footer-buttons'}
+        <div class="productlist-filter-footer px-3 mt-auto">
+            {formrow class="justify-content-end align-items-center"}
+                {col}
+                    {button block=true
+                        variant="outline-primary"
+                        class="my-1 no-caret"
+                        data=['toggle'=>'collapse', 'dismiss'=>'modal']
+                        href="#collapseFilter"
+                        aria=['expanded'=>'true','controls'=>'collapseFilter']}
+                        {lang key='filterCancel'}
+                    {/button}
+                {/col}
+                {col}
+                    {button type="link"
+                        block=true
+                        variant="primary"
+                        class="min-w-sm my-1 text-nowrap"
+                        href="{$NaviFilter->getURL()->getCategories()}"}
+                        {lang key='filterShowItem' printf=$itemCount}
+                    {/button}
+                {/col}
+            {/formrow}
+        </div>
+    {/block}
+    {block name='snippets-filter-mobile-js-helpers'}
+        <div class="js-helpers">
+            {input id="js-price-redirect" type="hidden" value=1}
+        </div>
+    {/block}
+    {block name='snippets-filter-mobile-scripts'}
+        {inline_script}<script>
+            {literal}
+                $('.js-collapse-filter .filter-item, .js-collapse-filter .js-filter-item').on('click', function(e) {
+                    e.preventDefault();
+                    $.evo.initFilters($(this).attr('href'));
+                });
+            {/literal}
+        </script>{/inline_script}
+    {/block}
 {/block}

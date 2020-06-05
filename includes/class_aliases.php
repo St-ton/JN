@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 class_alias(\JTL\Helpers\Text::class, 'StringHandler', true);
 class_alias(\JTL\Smarty\JTLSmarty::class, 'Smarty\JTLSmarty', true);
@@ -20,6 +16,7 @@ class_alias(\JTL\Events\Dispatcher::class, 'EventDispatcher', true);
 class_alias(\JTL\Widgets\AbstractWidget::class, 'WidgetBase', true);
 class_alias(\JTL\Helpers\PHPSettings::class, 'PHPSettingsHelper', true);
 class_alias(\JTL\Helpers\PaymentMethod::class, 'ZahlungsartHelper', true);
+class_alias(\JTL\Plugin\Payment\LegacyMethod::class, 'PaymentMethod', true);
 class_alias(\JTL\Helpers\ShippingMethod::class, 'VersandartHelper', true);
 class_alias(\JTL\Cart\CartHelper::class, 'WarenkorbHelper', true);
 class_alias(\JTL\Helpers\Order::class, 'BestellungHelper', true);
@@ -50,7 +47,6 @@ class_alias(\JTL\SimpleCSS::class, 'SimpleCSS', true);
 class_alias(\JTL\Piechart::class, 'Piechart', true);
 class_alias(\JTL\Slider::class, 'Slider', true);
 class_alias(\JTL\XMLParser::class, 'XMLParser', true);
-class_alias(\JTL\Customer\Referral::class, 'KundenwerbenKunden', true);
 class_alias(\JTL\SimpleMail::class, 'SimpleMail', true);
 class_alias(\JTL\ExtensionPoint::class, 'ExtensionPoint', true);
 class_alias(\JTL\PlausiKundenfeld::class, 'PlausiKundenfeld', true);

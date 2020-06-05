@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Cart;
 
@@ -23,6 +19,7 @@ use JTL\DB\ReturnType;
 use JTL\Extensions\Config\Configurator;
 use JTL\Extensions\Config\Item;
 use JTL\Extensions\Upload\Upload;
+use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
@@ -53,19 +50,18 @@ class CartHelper
     {
         $info            = new stdClass();
         $info->type      = Frontend::getCustomerGroup()->isMerchant() ? self::NET : self::GROSS;
-        $info->currency  = null;
+        $info->currency  = $this->getCurrency();
         $info->article   = [0, 0];
         $info->shipping  = [0, 0];
         $info->discount  = [0, 0];
         $info->surcharge = [0, 0];
         $info->total     = [0, 0];
         $info->items     = [];
-        $info->currency  = $this->getCurrency();
 
         foreach (Frontend::getCart()->PositionenArr as $item) {
             $amountItem = $item->fPreisEinzelNetto;
-            if (GeneralObject::isCountable('WarenkorbPosEigenschaftArr', $item)
-                && (!isset($item->Artikel->kVaterArtikel) || (int)$item->Artikel->kVaterArtikel === 0)
+            if ((!isset($item->Artikel->kVaterArtikel) || (int)$item->Artikel->kVaterArtikel === 0)
+                && GeneralObject::isCountable('WarenkorbPosEigenschaftArr', $item)
             ) {
                 foreach ($item->WarenkorbPosEigenschaftArr as $attr) {
                     if ($attr->fAufpreis != 0) {
@@ -739,16 +735,17 @@ class CartHelper
      * @param int            $qty
      * @param array          $attributes
      * @param int            $accuracy
+     * @param string|null    $token
      * @return array
      * @former pruefeFuegeEinInWarenkorb()
      */
-    public static function addToCartCheck($product, $qty, $attributes, int $accuracy = 2): array
+    public static function addToCartCheck($product, $qty, $attributes, int $accuracy = 2, ?string $token = null): array
     {
         $cart          = Frontend::getCart();
         $productID     = (int)$product->kArtikel; // relevant für die Berechnung von Artikelsummen im Warenkorb
         $redirectParam = [];
         $conf          = Shop::getSettings([\CONF_GLOBAL]);
-        if ($product->fAbnahmeintervall > 0 && !self::isMultiple($qty, $product->fAbnahmeintervall)) {
+        if ($product->fAbnahmeintervall > 0 && !self::isMultiple($qty, (float)$product->fAbnahmeintervall)) {
             $redirectParam[] = \R_ARTIKELABNAHMEINTERVALL;
         }
         if ((int)$qty != $qty && $product->cTeilbar !== 'Y') {
@@ -869,6 +866,9 @@ class CartHelper
                 $redirectParam[] = \R_VARWAEHLEN;
                 break;
             }
+        }
+        if (!Form::validateToken($token)) {
+            $redirectParam[] = \R_MISSING_TOKEN;
         }
         \executeHook(\HOOK_ADD_TO_CART_CHECK, [
             'product'       => $product,
@@ -1284,13 +1284,11 @@ class CartHelper
         if (\count($attributes) === 0) {
             return;
         }
-
-        $errors  = [];
-        $options = Artikel::getDefaultOptions();
+        $errors         = [];
+        $defaultOptions = Artikel::getDefaultOptions();
         foreach ($attributes as $key => $attribute) {
-            // Prüfe ob er Artikel in den Warenkorb gelegt werden darf
             $redirects = self::addToCartCheck(
-                (new Artikel())->fuelleArtikel($attribute->kArtikel, $options),
+                (new Artikel())->fuelleArtikel($attribute->kArtikel, $defaultOptions),
                 (float)$variBoxCounts[$key],
                 $attribute->oEigenschaft_arr
             );
@@ -1773,7 +1771,7 @@ class CartHelper
             );
         }
         if (isset($productData->kArtikel) && $productData->kArtikel > 0) {
-            $product = (new Artikel())->fuelleArtikel($productData->kArtikel);
+            $product = (new Artikel())->fuelleArtikel($productData->kArtikel, Artikel::getDefaultOptions());
             if ($product !== null
                 && (int)$product->kArtikel > 0
                 && self::addProductIDToCart(
@@ -1864,9 +1862,9 @@ class CartHelper
             if (\count($xsellData) > 0) {
                 $xSelling->Kauf          = new stdClass();
                 $xSelling->Kauf->Artikel = [];
-                $options                 = Artikel::getDefaultOptions();
+                $defaultOptions          = Artikel::getDefaultOptions();
                 foreach ($xsellData as $item) {
-                    $product = (new Artikel())->fuelleArtikel((int)$item->kXSellArtikel, $options);
+                    $product = (new Artikel())->fuelleArtikel((int)$item->kXSellArtikel, $defaultOptions);
                     if ($product !== null
                         && (int)$product->kArtikel > 0
                         && $product->aufLagerSichtbarkeit()) {

@@ -294,7 +294,7 @@ msgid "artikeluebersicht_lagerbestandsanzeige_value(genau)"
 msgstr "Genauen Lagerbestand anzeigen"
 
 msgid "artikeluebersicht_lagerbestandsanzeige_value(ampel)"
-msgstr "Lagerbestandsampel verwenden"
+msgstr "Lagerbestandsanzeige in grün, gelb und rot"
 
 msgid "artikeluebersicht_lagerbestandsanzeige_value(nichts)"
 msgstr "Keine Lagerbestandsanzeige"
@@ -309,10 +309,10 @@ msgid "artikeluebersicht_lagerbestandanzeige_anzeigen_value(N)"
 msgstr "Nein"
 
 msgid "artikeluebersicht_lagerbestandanzeige_anzeigen_value(U)"
-msgstr "Ja, wenn Artikel ausverkauft und Überverkäufe möglich sind."
+msgstr "Ja, wenn Artikel ausverkauft und Überverkäufe möglich sind"
 
 msgid "artikeluebersicht_lagerbestandanzeige_anzeigen_value(I)"
-msgstr "Ja, wenn Artikel ausverkauft und keine Überverkäufe möglich sind."
+msgstr "Ja, wenn Artikel ausverkauft und keine Überverkäufe möglich sind"
 
 msgid "artikeluebersicht_hersteller_anzeigen_value(Y)"
 msgstr "Ja, als Text"
@@ -342,7 +342,7 @@ msgid "artikeluebersicht_artikelsortierung_value(4)"
 msgstr "Preis absteigend"
 
 msgid "artikeluebersicht_artikelsortierung_value(5)"
-msgstr "EAN"
+msgstr "GTIN"
 
 msgid "artikeluebersicht_artikelsortierung_value(6)"
 msgstr "Neueste zuerst"
@@ -507,7 +507,7 @@ msgid "artikel_lagerbestandsanzeige_value(genau)"
 msgstr "Genauen Lagerbestand anzeigen"
 
 msgid "artikel_lagerbestandsanzeige_value(ampel)"
-msgstr "Lagerbestandsampel verwenden"
+msgstr "Lagerbestandsanzeige in grün, gelb und rot"
 
 msgid "artikel_lagerbestandsanzeige_value(nichts)"
 msgstr "Keine Lagerbestandsanzeige"
@@ -516,10 +516,10 @@ msgid "artikeldetails_lieferantenbestand_anzeigen_value(N)"
 msgstr "Nein"
 
 msgid "artikeldetails_lieferantenbestand_anzeigen_value(U)"
-msgstr "Ja, wenn Artikel ausverkauft und Überverkäufe möglich sind."
+msgstr "Ja, wenn Artikel ausverkauft und Überverkäufe möglich sind"
 
 msgid "artikeldetails_lieferantenbestand_anzeigen_value(I)"
-msgstr "Ja, wenn Artikel ausverkauft und keine Überverkäufe möglich sind."
+msgstr "Ja, wenn Artikel ausverkauft und keine Überverkäufe möglich sind"
 
 msgid "artikeldetails_kurzbeschreibung_anzeigen_value(Y)"
 msgstr "Ja"
@@ -615,7 +615,7 @@ msgid "artikeldetails_anzahl_pfeile_value(Y)"
 msgstr "Immer"
 
 msgid "artikeldetails_anzahl_pfeile_value(I)"
-msgstr "„Wenn Abnahmeintervall vorhanden“"
+msgstr "Wenn Abnahmeintervall vorhanden"
 
 msgid "artikeldetails_anzahl_pfeile_value(N)"
 msgstr "Nicht anzeigen"
@@ -1251,7 +1251,7 @@ msgid "bilder_artikel_namen_value(3)"
 msgstr "Artikelnummer_Artikelname (URL-Pfad)"
 
 msgid "bilder_artikel_namen_value(4)"
-msgstr "EAN"
+msgstr "GTIN"
 
 msgid "bilder_kategorie_namen_value(0)"
 msgstr "Primärschlüssel (Vorgabe von JTL-Wawi)"
@@ -1310,9 +1310,6 @@ msgstr "Deaktivieren"
 msgid "bilder_dateiformat_value(JPG)"
 msgstr "JPEG"
 
-msgid "bilder_skalieren_value(Y)"
-msgstr "Ja"
-
 msgid "container_verwenden_value(Y)"
 msgstr "Ja"
 
@@ -1320,10 +1317,7 @@ msgid "bilder_dateiformat_value(PNG)"
 msgstr "PNG"
 
 msgid "bilder_dateiformat_value(AUTO)"
-msgstr "Auto"
-
-msgid "bilder_skalieren_value(N)"
-msgstr "Nein"
+msgstr "Auto (zusätzlich .webp anlegen)"
 
 msgid "container_verwenden_value(N)"
 msgstr "Nein"
@@ -1589,6 +1583,12 @@ msgstr "Ja"
 msgid "bewertung_artikel_gekauft_value(N)"
 msgstr "Nein"
 
+msgid "newsletter_active_value(N)"
+msgstr "Nein"
+
+msgid "newsletter_active_value(Y)"
+msgstr "Ja"
+
 msgid "newsletter_emailmethode_value(mail)"
 msgstr "PHP mail()"
 
@@ -1686,6 +1686,18 @@ msgid "allgemein_kategoriefilter_benutzen_value(Y)"
 msgstr "Ja, im Content-Bereich und der Navigationsbox"
 
 msgid "allgemein_kategoriefilter_benutzen_value(N)"
+msgstr "Nein"
+
+msgid "allgemein_availabilityfilter_benutzen_value(content)"
+msgstr "Ja, im Content-Bereich"
+
+msgid "allgemein_availabilityfilter_benutzen_value(box)"
+msgstr "Ja, in Navigationsbox"
+
+msgid "allgemein_availabilityfilter_benutzen_value(Y)"
+msgstr "Ja, im Content-Bereich und der Navigationsbox"
+
+msgid "allgemein_availabilityfilter_benutzen_value(N)"
 msgstr "Nein"
 
 msgid "kategoriefilter_anzeigen_als_value(KA)"
@@ -2012,12 +2024,6 @@ msgstr "Ja"
 msgid "sitemap_google_ping_value(N)"
 msgstr "Nein"
 
-msgid "kwk_nutzen_value(Y)"
-msgstr "Ja"
-
-msgid "kwk_nutzen_value(N)"
-msgstr "Nein"
-
 msgid "suchspecials_sortierung_bestseller_value(-1)"
 msgstr "Keine spezielle Sortierung nutzen"
 
@@ -2034,7 +2040,7 @@ msgid "suchspecials_sortierung_bestseller_value(4)"
 msgstr "Preis absteigend"
 
 msgid "suchspecials_sortierung_bestseller_value(5)"
-msgstr "EAN"
+msgstr "GTIN"
 
 msgid "suchspecials_sortierung_bestseller_value(6)"
 msgstr "Neueste zuerst"
@@ -2073,7 +2079,7 @@ msgid "suchspecials_sortierung_sonderangebote_value(4)"
 msgstr "Preis absteigend"
 
 msgid "suchspecials_sortierung_sonderangebote_value(5)"
-msgstr "EAN"
+msgstr "GTIN"
 
 msgid "suchspecials_sortierung_sonderangebote_value(6)"
 msgstr "Neueste zuerst"
@@ -2112,7 +2118,7 @@ msgid "suchspecials_sortierung_neuimsortiment_value(4)"
 msgstr "Preis absteigend"
 
 msgid "suchspecials_sortierung_neuimsortiment_value(5)"
-msgstr "EAN"
+msgstr "GTIN"
 
 msgid "suchspecials_sortierung_neuimsortiment_value(6)"
 msgstr "Neueste zuerst"
@@ -2151,7 +2157,7 @@ msgid "suchspecials_sortierung_topangebote_value(4)"
 msgstr "Preis absteigend"
 
 msgid "suchspecials_sortierung_topangebote_value(5)"
-msgstr "EAN"
+msgstr "GTIN"
 
 msgid "suchspecials_sortierung_topangebote_value(6)"
 msgstr "Neueste zuerst"
@@ -2190,7 +2196,7 @@ msgid "suchspecials_sortierung_inkuerzeverfuegbar_value(4)"
 msgstr "Preis absteigend"
 
 msgid "suchspecials_sortierung_inkuerzeverfuegbar_value(5)"
-msgstr "EAN"
+msgstr "GTIN"
 
 msgid "suchspecials_sortierung_inkuerzeverfuegbar_value(6)"
 msgstr "Neueste zuerst"
@@ -2229,7 +2235,7 @@ msgid "suchspecials_sortierung_topbewertet_value(4)"
 msgstr "Preis absteigend"
 
 msgid "suchspecials_sortierung_topbewertet_value(5)"
-msgstr "EAN"
+msgstr "GTIN"
 
 msgid "suchspecials_sortierung_topbewertet_value(6)"
 msgstr "Neueste zuerst"
@@ -2392,3 +2398,15 @@ msgstr "Ja"
 
 msgid "general_child_item_bulk_pricing_value(N)"
 msgstr "Nein"
+
+msgid "gtin_display_value(N)"
+msgstr "Nein"
+
+msgid "gtin_display_value(details)"
+msgstr "Ja, auf der Artikeldetailseite"
+
+msgid "gtin_display_value(lists)"
+msgstr "Ja, in Listen"
+
+msgid "gtin_display_value(always)"
+msgstr "Ja, auf der Artikeldetailseite und in den Listen"

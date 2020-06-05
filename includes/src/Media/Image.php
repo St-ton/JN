@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Media;
 
@@ -96,7 +92,6 @@ class Image
             'background'                    => $settings['bilder_hintergrundfarbe'],
             'container'                     => $settings['container_verwenden'] === 'Y',
             'format'                        => \mb_convert_case($settings['bilder_dateiformat'], \MB_CASE_LOWER),
-            'scale'                         => $settings['bilder_skalieren'] === 'Y',
             'quality'                       => (int)$settings['bilder_jpg_quali'],
             'branding'                      => self::getBranding()[self::TYPE_PRODUCT] ?? null,
             self::TYPE_PRODUCT              => [
@@ -271,8 +266,8 @@ class Image
                     'height' => (int)$settings['bilder_newskategorie_klein_hoehe']
                 ],
                 self::SIZE_MD => [
-                    'width'  => (int)$settings['bilder_newskategorie_normal_hoehe'],
-                    'height' => (int)$settings['bilder_newskategorie_normal_breite']
+                    'width'  => (int)$settings['bilder_newskategorie_normal_breite'],
+                    'height' => (int)$settings['bilder_newskategorie_normal_hoehe']
                 ],
                 self::SIZE_LG => [
                     'width'  => (int)$settings['bilder_newskategorie_gross_breite'],
@@ -414,14 +409,13 @@ class Image
         $maxWidth     = $containerDim->getWidth();
         $maxHeight    = $containerDim->getHeight();
         if ($maxWidth > 0 && $maxHeight > 0) {
-            if ($settings['scale'] === true || $img->getWidth() > $maxWidth || $img->getHeight() > $maxHeight) {
+            if ($img->getWidth() > $maxWidth || $img->getHeight() > $maxHeight) {
                 $img->resize($maxWidth, $maxHeight, static function (Constraint $constraint) {
                     $constraint->aspectRatio();
                 });
             }
             if ($settings['container'] === true && $req->getType() !== self::TYPE_OPC) {
-                $background = $req->getExt() === 'png' ? 'rgba(0,0,0,0)' : $settings['background'];
-                $img->resizeCanvas($maxWidth, $maxHeight, 'center', false, $background);
+                $img->resizeCanvas($maxWidth, $maxHeight, 'center', false, $settings['background']);
             }
         }
     }

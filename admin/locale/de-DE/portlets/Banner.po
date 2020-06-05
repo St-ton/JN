@@ -12,10 +12,13 @@ msgid "CSS class"
 msgstr "CSS-Klasse"
 
 msgid "Altenativ text"
-msgstr "Altenativtext"
+msgstr "Alternativtext"
 
 msgid "Title"
 msgstr "Titel"
 
 msgid "bannerAreas"
 msgstr "Banner-Zonen"
+
+msgid "altTextDesc"
+msgstr "„alt“-Attribut des Bildes"

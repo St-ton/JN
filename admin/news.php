@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Alert\Alert;
 use JTL\ContentAuthor;
@@ -196,6 +192,7 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
             $controller->newsRedirect(empty($tab) ? 'inaktiv' : $tab, $controller->getMsg());
         } else {
             $controller->setErrorMsg(__('errorAtLeastOneNewsComment'));
+            $controller->newsRedirect('', $controller->getErrorMsg());
         }
     } elseif (isset(
         $_POST['newskommentar_freischalten'],

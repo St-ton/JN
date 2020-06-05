@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL;
 
@@ -17,6 +13,8 @@ use JTL\Cache\JTLCache;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Wishlist\Wishlist;
+use JTL\Consent\Manager;
+use JTL\Consent\ManagerInterface;
 use JTL\Cron\Admin\Controller as CronController;
 use JTL\Cron\Starter\StarterFactory;
 use JTL\DB\DbInterface;
@@ -28,11 +26,11 @@ use JTL\Debug\JTLDebugBar;
 use JTL\Events\Dispatcher;
 use JTL\Events\Event;
 use JTL\Filesystem\AdapterFactory;
-use JTL\Filesystem\Factory;
 use JTL\Filesystem\Filesystem;
 use JTL\Filter\Config;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\ProductFilter;
+use JTL\Helpers\Form;
 use JTL\Helpers\PHPSettings;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
@@ -908,6 +906,10 @@ final class Shop
      */
     public static function run(): ProductFilter
     {
+        if (Request::postVar('action') === 'updateconsent' && Form::validateToken()) {
+            $manager = new Manager();
+            die(\json_encode((object)['status' => 'OK', 'data' => $manager->save(Request::postVar('data'))]));
+        }
         self::$kKonfigPos             = Request::verifyGPCDataInt('ek');
         self::$kKategorie             = Request::verifyGPCDataInt('k');
         self::$kArtikel               = Request::verifyGPCDataInt('a');
@@ -1006,6 +1008,7 @@ final class Shop
             \header('Location: ' . LinkService::getInstance()->getStaticRoute('jtl.php') . '?li=1', true, 303);
             exit;
         }
+        self::Container()->get(ManagerInterface::class)->initActiveItems(self::$kSprache);
         $conf = new Config();
         $conf->setLanguageID(self::$kSprache);
         $conf->setLanguages(self::Lang()->getLangArray());
@@ -1085,12 +1088,28 @@ final class Shop
         ];
     }
 
+    private static function getLanguageFromServerName(): void
+    {
+        if (!\defined('EXPERIMENTAL_MULTILANG_SHOP') || \EXPERIMENTAL_MULTILANG_SHOP !== true) {
+            return;
+        }
+        foreach ($_SESSION['Sprachen'] ?? [] as $language) {
+            $code    = \mb_convert_case($language->getCode(), \MB_CASE_UPPER);
+            $shopURL = \defined('URL_SHOP_' . $code) ? \constant('URL_SHOP_' . $code) : \URL_SHOP;
+            if ($_SERVER['HTTP_HOST'] === \parse_url($shopURL)['host']) {
+                self::setLanguage($language->getId(), $language->getCode());
+                break;
+            }
+        }
+    }
+
     /**
      * check for seo url
      */
     public static function seoCheck(): void
     {
-        $uri                             = $_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'];
+        self::getLanguageFromServerName();
+        $uri                             = $_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'] ?? '';
         self::$uri                       = $uri;
         self::$bSEOMerkmalNotFound       = false;
         self::$bKatFilterNotFound        = false;
@@ -1528,7 +1547,7 @@ final class Shop
                 }
                 self::$kLink = isset($link->kLink)
                     ? (int)$link->kLink
-                    : self::Container()->getLinkService()->getSpecialPageLinkKey(\LINKTYP_STARTSEITE);
+                    : self::Container()->getLinkService()->getSpecialPageID(\LINKTYP_STARTSEITE);
             } elseif (Media::getInstance()->isValidRequest($path)) {
                 Media::getInstance()->handleRequest($path);
             } else {
@@ -1654,7 +1673,7 @@ final class Shop
             $kLink         = $hookInfos['value'];
             $bFileNotFound = $hookInfos['isFileNotFound'];
             if (!$kLink) {
-                self::$kLink = self::Container()->getLinkService()->getSpecialPageLinkKey(\LINKTYP_404);
+                self::$kLink = self::Container()->getLinkService()->getSpecialPageID(\LINKTYP_404);
             }
         }
 
@@ -1822,32 +1841,36 @@ final class Shop
     }
 
     /**
-     * @param bool $bForceSSL
-     * @param bool $bMultilang
+     * @param bool     $forceSSL
+     * @param int|null $langID
      * @return string - the shop URL without trailing slash
      */
-    public static function getURL(bool $bForceSSL = false, bool $bMultilang = true): string
+    public static function getURL(bool $forceSSL = false, int $langID = null): string
     {
-        $idx = (int)$bForceSSL;
-        if (isset(self::$url[self::$kSprache][$idx])) {
-            return self::$url[self::$kSprache][$idx];
+        $langID = $langID ?? self::$kSprache;
+        $idx    = (int)$forceSSL;
+        if (isset(self::$url[$langID][$idx])) {
+            return self::$url[$langID][$idx];
         }
-        // EXPERIMENTAL_MULTILANG_SHOP
-        $shopURL   = ($bMultilang === true && isset($_SESSION['cISOSprache'])
-            && \defined('URL_SHOP_' . \mb_convert_case($_SESSION['cISOSprache'], \MB_CASE_UPPER)))
-            ? \constant('URL_SHOP_' . \mb_convert_case($_SESSION['cISOSprache'], \MB_CASE_UPPER))
-            : \URL_SHOP;
+        $shopURL   = \URL_SHOP;
         $sslStatus = Request::checkSSL();
         if ($sslStatus === 2) {
             $shopURL = \str_replace('http://', 'https://', $shopURL);
-        } elseif ($sslStatus === 4 || ($sslStatus === 3 && $bForceSSL)) {
+        } elseif ($sslStatus === 4 || ($sslStatus === 3 && $forceSSL)) {
             $shopURL = \str_replace('http://', 'https://', $shopURL);
         }
-
-        $url                              = \rtrim($shopURL, '/');
-        self::$url[self::$kSprache][$idx] = $url;
+        $url                      = \rtrim($shopURL, '/');
+        self::$url[$langID][$idx] = $url;
 
         return $url;
+    }
+
+    /**
+     * @param array $urls
+     */
+    public static function setURLs(array $urls): void
+    {
+        self::$url = $urls;
     }
 
     /**
@@ -1934,7 +1957,7 @@ final class Shop
                 $adminLangTag = $_SESSION['AdminAccount']->language;
                 \session_write_close();
                 \session_id($oldID);
-                new Session\Frontend();
+                Frontend::getInstance();
             } else {
                 $result       = $isLogged();
                 $adminToken   = $_SESSION['jtl_token'];
@@ -2117,7 +2140,8 @@ final class Shop
                 $container->getBackendLogService(),
                 new AdminLoginStatusMessageMapper(),
                 new AdminLoginStatusToLogLevel(),
-                $container->getGetText()
+                $container->getGetText(),
+                $container->getAlertService()
             );
         });
 
@@ -2135,6 +2159,10 @@ final class Shop
             $validator = new MailValidator($db, $settings->getAll());
 
             return new Mailer($hydrator, $smarty, $settings, $validator);
+        });
+
+        $container->singleton(ManagerInterface::class, static function () {
+            return new Manager();
         });
 
         $container->bind(CronController::class);

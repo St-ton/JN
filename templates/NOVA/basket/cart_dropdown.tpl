@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='basket-cart-dropdown'}
     <div class="dropdown-menu dropdown-menu-right lg-min-w-lg">
         {if $smarty.session.Warenkorb->PositionenArr|@count > 0}
@@ -146,7 +142,7 @@
                                     <a class="popup" href="{if !empty($oSpezialseiten_arr) && isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}{else}#{/if}" data-toggle="tooltip"  data-placement="bottom" title="{lang key='shippingInfo' section='login'}">
                                         <i class="fa fa-info-circle"></i>
                                     </a>
-                                    {$WarenkorbVersandkostenfreiHinweis|truncate:120:"..."}
+                                    {$WarenkorbVersandkostenfreiHinweis|truncate:160:"..."}
                                 </li>
                             </ul>
                         {/block}

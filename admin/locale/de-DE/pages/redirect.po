@@ -24,7 +24,7 @@ msgid "redirectTo"
 msgstr "Ziel-URL"
 
 msgid "redirectRefererCount"
-msgstr "Aufrufe"
+msgstr "Verweise"
 
 msgid "redirectReferer"
 msgstr "Verweis"
@@ -39,10 +39,10 @@ msgid "errorURLNotReachable"
 msgstr "Änderungen konnten nicht gespeichert werden, da die weiterzuleitende URL %s nicht erreichbar ist."
 
 msgid "successRedirectSave"
-msgstr "Die Weiterleitung wurde erfolgreich gespeichert."
+msgstr "Weiterleitung wurde erfolgreich gespeichert."
 
 msgid "errorImport"
 msgstr "Der Import konnte nicht durchgeführt werden. Bitte prüfen Sie die CSV-Datei."
 
 msgid "successImport"
-msgstr "Der Import wurde erfolgreich durchgeführt."
+msgstr "Import wurde erfolgreich durchgeführt."

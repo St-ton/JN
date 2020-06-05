@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='header'}
     {include file='layout/header.tpl'}
 {/block}
@@ -24,7 +20,7 @@
                     '{lang key='basket' section='global'}',
                     function(res) {
                     if (res) {
-                        window.location = "{get_static_route id='jtl.php'}?basket2Pers=1"
+                        window.location = "{get_static_route id='jtl.php'}?basket2Pers=1&token={$smarty.session.jtl_token}"
                     }}
                 );
             });
@@ -65,7 +61,7 @@
                 {opcMountPoint id='opc_after_menu'}
             </div>
         {/if}
-    
+
         <div class="col-xs-12 {if !$showLoginPanel}col-md-12{else}col-md-9{/if}">
             {if $showLoginPanel}
                 {opcMountPoint id='opc_before_account_page'}

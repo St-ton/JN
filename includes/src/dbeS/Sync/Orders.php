@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\dbeS\Sync;
 
@@ -12,7 +8,6 @@ use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Lieferschein;
 use JTL\Checkout\Rechnungsadresse;
 use JTL\Customer\Customer;
-use JTL\Customer\Referral;
 use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\Language\LanguageHelper;
@@ -718,9 +713,6 @@ final class Orders extends AbstractSync
             foreach ($updatedOrder->oLieferschein_arr as $note) {
                 $note->setEmailVerschickt(true)->update();
             }
-            // Guthaben an Bestandskunden verbuchen, Email rausschicken:
-            $oKwK = new Referral();
-            $oKwK->verbucheBestandskundenBoni($customer->cMail);
         }
     }
 

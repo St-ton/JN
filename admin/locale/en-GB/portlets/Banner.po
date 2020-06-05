@@ -6,16 +6,19 @@ msgid "Banner"
 msgstr "Banner"
 
 msgid "Zones"
-msgstr "Zonen"
+msgstr "Zones"
 
 msgid "CSS class"
-msgstr "CSS-Klasse"
+msgstr "CSS class"
 
 msgid "Altenativ text"
-msgstr "Altenativtext"
+msgstr "Alternative text"
 
 msgid "Title"
-msgstr "Titel"
+msgstr "Name"
 
 msgid "bannerAreas"
-msgstr "Banner-Zonen"
+msgstr "Banner zones"
+
+msgid "altTextDesc"
+msgstr "„alt“ attribute of the image"

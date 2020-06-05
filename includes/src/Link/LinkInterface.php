@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Link;
 
@@ -55,12 +51,12 @@ interface LinkInterface
     public function setParent(int $parent): void;
 
     /**
-     * @return array
+     * @return int[]
      */
     public function getLinkGroups(): array;
 
     /**
-     * @param array $linkGroups
+     * @param int[] $linkGroups
      */
     public function setLinkGroups(array $linkGroups): void;
 

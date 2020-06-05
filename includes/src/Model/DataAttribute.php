@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Model;
 
@@ -51,6 +47,38 @@ class DataAttribute
      * @var bool
      */
     public $dynamic = false;
+
+    /**
+     * @var InputConfig
+     */
+    public $inputConfig;
+
+    /**
+     * DataAttribute constructor.
+     */
+    public function __construct()
+    {
+        $this->inputConfig = new InputConfig();
+    }
+
+    /**
+     * @return InputConfig
+     */
+    public function getInputConfig(): InputConfig
+    {
+        return $this->inputConfig;
+    }
+
+    /**
+     * @param InputConfig $inputConfig
+     * @return DataAttribute
+     */
+    public function setInputConfig(InputConfig $inputConfig): DataAttribute
+    {
+        $this->inputConfig = $inputConfig;
+
+        return $this;
+    }
 
     /**
      * @return string
@@ -201,13 +229,6 @@ class DataAttribute
         $this->dynamic = $dynamic;
 
         return $this;
-    }
-
-    /**
-     * DataAttribute constructor.
-     */
-    public function __construct()
-    {
     }
 
     /**

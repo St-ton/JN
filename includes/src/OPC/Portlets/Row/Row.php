@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\OPC\Portlets\Row;
 
@@ -30,10 +26,6 @@ class Row extends Portlet
     public function getPropertyDesc(): array
     {
         return [
-//            'dropper' => [
-//                'type' => InputType::CUSTOM,
-//                'template' => 'dropper-extension'
-//            ],
             'layout' => [
                 'type'    => InputType::ROW_LAYOUT,
                 'label'   => __('Layout'),
@@ -69,7 +61,8 @@ class Row extends Portlet
                     'sm' => '6+6',
                     'md' => '6+6',
                     'lg' => '6+6',
-                ]
+                ],
+                'desc' => __('rowLayoutDesc'),
             ],
         ];
     }

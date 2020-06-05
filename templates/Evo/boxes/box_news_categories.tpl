@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 <section class="panel panel-default box box-newscategories" id="sidebox{$oBox->getID()}">
     <div class="panel-heading">
         <div class="panel-title">{lang key='newsBoxCatOverview'}</div>

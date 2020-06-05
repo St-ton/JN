@@ -1,13 +1,9 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {if $Einstellungen.template.productlist.variation_select_productlist === 'N' || $Einstellungen.template.productlist.hover_productlist !== 'Y'}
     {assign var='hasOnlyListableVariations' value=0}
 {else}
     {hasOnlyListableVariations artikel=$Artikel maxVariationCount=$Einstellungen.template.productlist.variation_select_productlist maxWerteCount=$Einstellungen.template.productlist.variation_max_werte_productlist assign='hasOnlyListableVariations'}
 {/if}
-<div id="result-wrapper_buy_form_{$Artikel->kArtikel}" class="product-cell{if $Einstellungen.template.productlist.hover_productlist === 'Y'} hover-enabled{/if}{if isset($listStyle) && $listStyle === 'list'} active{/if}">
+<div id="result-wrapper_buy_form_{$Artikel->kArtikel}" data-wrapper="true" class="product-cell{if $Einstellungen.template.productlist.hover_productlist === 'Y'} hover-enabled{/if}{if isset($listStyle) && $listStyle === 'list'} active{/if}">
     <div class="product-body row {if $tplscope !== 'list'} text-center{/if}">
         <div class="col-xs-3 text-center">
             {block name='image-wrapper'}
@@ -81,6 +77,13 @@
                         <li class="item row attr-sku">
                             <span class="attr-label col-sm-5">{lang key='productNo'}: </span> <span class="value col-sm-7" itemprop="sku">{$Artikel->cArtNr}</span>
                         </li>
+                        {if !empty($Artikel->cBarcode)
+                            && ($Einstellungen.artikeldetails.gtin_display === 'lists'
+                                || $Einstellungen.artikeldetails.gtin_display === 'always')}
+                            <li class="item row">
+                                <span class="attr-label col-sm-5">{lang key='ean'}: </span> <span class="value col-sm-7">{$Artikel->cBarcode}</span>
+                            </li>
+                        {/if}
                         {if !empty($Artikel->cISBN)
                             && ($Einstellungen.artikeldetails.isbn_display === 'L'
                                 || $Einstellungen.artikeldetails.isbn_display === 'DL')}
@@ -241,7 +244,7 @@
                                             {if $Artikel->nIstVater && $Artikel->kVaterArtikel == 0}
                                                 <p class="alert alert-info choose-variations">{lang key='chooseVariations' section='messages'}</p>
                                             {else}
-                                                <div class="quantity-wrapper form-group top7">
+                                                <div class="quantity-wrapper form-group top7" data-bulk={!empty($Artikel->staffelPreis_arr)}>
                                                     <div class="input-group input-group-sm">
                                                         <input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
                                                                min="{if $Artikel->fMindestbestellmenge}{$Artikel->fMindestbestellmenge}{else}0{/if}"

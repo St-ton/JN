@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Alert\Alert;
 use JTL\Helpers\Form;
@@ -82,13 +78,13 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
 }
 
 $indices = [
-    'kategorien'    => __('category'),
+    'kategorien'    => __('categories'),
     'variationen'   => __('variations'),
     'artikel'       => __('product'),
     'hersteller'    => __('manufacturer'),
     'merkmal'       => __('attributes'),
     'merkmalwert'   => __('attributeValues'),
-    'konfiggruppe'  => __('configGroup'),
+    'konfiggruppe'  => __('configGroups'),
     'news'          => __('news'),
     'newskategorie' => __('newscategory')
 ];

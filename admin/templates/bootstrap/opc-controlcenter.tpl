@@ -1,5 +1,4 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section='opc'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('opc') cBeschreibung=__('opcDesc') cDokuURL=__('opcUrl')}
 
 <div class="tabs">
@@ -31,6 +30,7 @@
                         <table class="list table">
                             <thead>
                             <tr>
+                                <th></th>
                                 <th>{__('url')}</th>
                                 <th>{__('pageID')}</th>
                                 <th class="text-center">{__('actions')}</th>
@@ -41,6 +41,11 @@
                                     {assign var=pageIdHash value=$page->cPageId|md5}
                                     {assign var=publicPageRow value=$opcPageDB->getPublicPageRow($page->cPageId)}
                                     <tr>
+                                        <td>
+                                            <a href="#page-{$pageIdHash}" data-toggle="collapse">
+                                                <i class="far fa-chevron-down rotate-180 font-size-lg" title="{__('details')}" data-toggle="tooltip"></i>
+                                            </a>
+                                        </td>
                                         <td>
                                             <a href="{$URL_SHOP}{$page->cPageUrl}" target="_blank">
                                                 <span class="icon-hover">
@@ -82,7 +87,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td colspan="3" class="border-top-0">
+                                        <td colspan="4" class="border-top-0">
                                             <div  class="collapse" id="page-{$pageIdHash}">
                                             <table class="list table ">
                                                 <thead>

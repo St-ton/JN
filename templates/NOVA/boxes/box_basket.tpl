@@ -1,14 +1,10 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='boxes-box-basket'}
     {card class="box box-basket mb-4" id="sidebox{$oBox->getID()}"}
         <div class="box-body text-center">
             {block name='boxes-box-basket-content'}
                 {block name='boxes-box-basket-title'}
                     <div class="productlist-filter-headline align-items-center d-flex">
-                        <span>{lang key='yourBasket'}</span>
+                        {lang key='yourBasket'}
                         <span id='basket_loader'></span>
                     </div>
                 {/block}

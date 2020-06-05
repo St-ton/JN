@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 <div id="evo-main-nav-wrapper" class="nav-wrapper{if $Einstellungen.template.theme.static_header === 'Y'} do-affix{/if}">
     <nav id="evo-main-nav" class="navbar navbar-default">
         <div class="container{if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'fluid'}-fluid{/if}">
@@ -9,6 +5,9 @@
                 <button type="button" class="btn btn-default navbar-toggle collapsed" data-toggle="collapse" data-target="#evo-navbar-collapse" aria-expanded="false">
                     <span class="sr-only">Toggle navigation</span>
                     <i class="fa fa-bars"></i> {lang key='allCategories' section='global'}
+                </button>
+                <button type="button" class="btn btn-link navbar-toggle collapsed visible-xs border-none" data-toggle="collapse" data-target="#evo-navbar-collapse-language" aria-expanded="false">
+                    <i class="fa fa-language"></i>
                 </button>
                 <ul class="nav navbar-nav navbar-right force-float visible-xs visible-sm">
                     {if isset($smarty.session.Kunde) && isset($smarty.session.Kunde->kKunde) && $smarty.session.Kunde->kKunde > 0}
@@ -35,7 +34,28 @@
                     </li>
                 </ul>
             </div>
-
+            {block name='header-language-sm'}
+                {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
+                    <div class="visible-xs">
+                        <div class="collapse navbar-collapse" id="evo-navbar-collapse-language">
+                            <ul id="language-dropdown-small" class="nav navbar-nav">
+                                {foreach $smarty.session.Sprachen as $Sprache}
+                                    {if $Sprache->kSprache == $smarty.session.kSprache}
+                                        <li class="active lang-{$lang}"><a>{$Sprache->displayLanguage}</a></li>
+                                    {/if}
+                                {/foreach}
+                                {foreach $smarty.session.Sprachen as $oSprache}
+                                    {if $oSprache->kSprache != $smarty.session.kSprache}
+                                        <li>
+                                            <a href="{$oSprache->cURL}" class="link_lang {$oSprache->cISO}" rel="nofollow">{$oSprache->displayLanguage}</a>
+                                        </li>
+                                    {/if}
+                                {/foreach}
+                            </ul>
+                        </div>
+                    </div>
+                {/if}
+            {/block}
             <div class="megamenu collapse navbar-collapse" id="evo-navbar-collapse">
                 <ul class="nav navbar-nav">
                     {include file='snippets/categories_mega.tpl'}

@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Cart;
 
@@ -26,6 +22,7 @@ use JTL\Shop;
 use stdClass;
 use function Functional\select;
 use function Functional\some;
+use function Functional\map;
 
 /**
  * Class Warenkorb
@@ -589,9 +586,10 @@ class Cart
 
     /**
      * @param int $type
+     * @param bool $force
      * @return $this
      */
-    public function loescheSpezialPos(int $type): self
+    public function loescheSpezialPos(int $type, bool $force = false): self
     {
         if (\count($this->PositionenArr) === 0) {
             return $this;
@@ -602,7 +600,7 @@ class Cart
             }
         }
         $this->PositionenArr = \array_merge($this->PositionenArr);
-        if (!empty($_POST['Kuponcode']) && $type === \C_WARENKORBPOS_TYP_KUPON) {
+        if (($force || !empty($_POST['Kuponcode'])) && $type === \C_WARENKORBPOS_TYP_KUPON) {
             if (!empty($_SESSION['Kupon'])) {
                 unset($_SESSION['Kupon']);
             } elseif (!empty($_SESSION['oVersandfreiKupon'])) {
@@ -923,6 +921,8 @@ class Cart
     {
         $defaultOptions               = Artikel::getDefaultOptions();
         $defaultOptions->nStueckliste = 1;
+        $this->oFavourableShipping    = null;
+
         foreach ($this->PositionenArr as $i => $item) {
             if ($item->kArtikel > 0 && $item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
                 $oldItem = clone $item;
@@ -1819,9 +1819,10 @@ class Cart
     }
 
     /**
+     * @param int|null $shippingFreeMinID
      * @return null|Versandart - cheapest shipping except shippings that offer cash payment
      */
-    public function getFavourableShipping(): ?Versandart
+    public function getFavourableShipping(?int $shippingFreeMinID = null): ?Versandart
     {
         if ((!empty($_SESSION['Versandart']->kVersandart) && isset($_SESSION['Versandart']->nMinLiefertage))
             || empty($_SESSION['Warenkorb']->PositionenArr)
@@ -1845,15 +1846,36 @@ class Cart
             return $this->oFavourableShipping;
         }
 
+        //use previously determined shippingfree shipping method
+        if ($shippingFreeMinID !== null) {
+            $localizedZero              = Preise::getLocalizedPriceString(0);
+            $method                     = new Versandart($shippingFreeMinID);
+            $method->cCountryCode       = $countryCode;
+            $method->cPriceLocalized[0] = $localizedZero;
+            $method->cPriceLocalized[1] = $localizedZero;
+
+            $this->oFavourableShipping = $method;
+
+            return $this->oFavourableShipping;
+        }
+
         $maxPrices       = 0;
         $itemCount       = 0;
         $totalWeight     = 0;
         $shippingClasses = ShippingMethod::getShippingClasses(Frontend::getCart());
+        $shippingMethods = map(ShippingMethod::getPossibleShippingMethods(
+            $_SESSION['Lieferadresse']->cLand ?? Frontend::getCustomer()->cLand ?? $_SESSION['cLieferlandISO'],
+            $_SESSION['Lieferadresse']->cPLZ ?? Frontend::getCustomer()->cPLZ,
+            $shippingClasses,
+            $customerGroupID
+        ), static function ($e) {
+            return $e->kVersandart;
+        });
 
         foreach ($this->PositionenArr as $item) {
             $totalWeight += $item->fGesamtgewicht;
             $itemCount   += $item->nAnzahl;
-            $maxPrices   += $item->Artikel->Preise->fVKNetto
+            $maxPrices   += isset($item->Artikel->Preise->fVKNetto)
                 ? $item->Artikel->Preise->fVKNetto * $item->nAnzahl : 0;
         }
 
@@ -1878,6 +1900,7 @@ class Cart
                     OR ( va.kVersandberechnung = 2 AND vas.fBis > 0 AND :totalWeight <= vas.fBis )
                     OR ( va.kVersandberechnung = 3 AND vas.fBis > 0 AND :maxPrices <= vas.fBis )
                     )
+                AND va.kVersandart IN (' . \implode(', ', $shippingMethods) . ')
                 ORDER BY minPrice, nSort ASC LIMIT 1',
             [
                 'iso'         => '%' . $countryCode . '%',
@@ -1891,7 +1914,7 @@ class Cart
 
         $this->oFavourableShipping = null;
         if (isset($shipping->kVersandart)) {
-            $method               = new Versandart($shipping->kVersandart);
+            $method               = new Versandart((int)$shipping->kVersandart);
             $method->cCountryCode = $countryCode;
 
             if ($method->eSteuer === 'brutto') {

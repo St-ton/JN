@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Plugin;
 
@@ -85,6 +81,7 @@ class PluginLoader extends AbstractLoader
         $getText = Shop::Container()->getGetText();
         $getText->setLanguage();
         $plugin->setID($id);
+        $plugin->setPluginID($obj->cPluginID);
         $plugin->setIsExtension(true);
         $plugin->setPaths($paths);
         $getText->loadPluginLocale('base', $plugin);

@@ -1,4 +1,3 @@
-{config_load file="$lang.conf" section='news'}
 {include file='tpl_inc/header.tpl'}
 {if $step === 'news_erstellen' || $step === 'news_editieren'}
     {include file='tpl_inc/news_erstellen.tpl'}

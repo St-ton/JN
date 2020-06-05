@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {has_boxes position='left' assign='hasLeftBox'}
 {if isset($bWarenkorbHinzugefuegt) && $bWarenkorbHinzugefuegt}
     {include file='productdetails/pushed_success.tpl'}
@@ -61,7 +57,9 @@
                                 {/if}
                             </div>
                         {/if}
-                        {if !empty($Artikel->cBarcode)}
+                        {if !empty($Artikel->cBarcode)
+                            && ($Einstellungen.artikeldetails.gtin_display === 'details'
+                                || $Einstellungen.artikeldetails.gtin_display === 'always')}
                             <div class="col-xs-8">
                                 <p class="text-muted">{lang key='ean'}: <span itemprop="{if $Artikel->cBarcode|count_characters === 8}gtin8{else}gtin13{/if}">{$Artikel->cBarcode}</span></p>
                             </div>
@@ -123,11 +121,11 @@
                 {/block}
 
                 {block name='productdetails-info-category-wrapper'}
-                {if $Einstellungen.artikeldetails.artikeldetails_kategorie_anzeigen === 'Y'}
+                {assign var=i_kat value=($Brotnavi|@count)-2}
+                {if $Einstellungen.artikeldetails.artikeldetails_kategorie_anzeigen === 'Y' && isset($Brotnavi[$i_kat])}
                     {block name='productdetails-info-category'}
                     <p class="product-category word-break">
                         <span class="text-muted">{lang key='category'}: </span>
-                        {assign var=i_kat value=$Brotnavi|@count}{assign var=i_kat value=$i_kat-2}
                         <a href="{$Brotnavi[$i_kat]->getURLFull()}" itemprop="category">{$Brotnavi[$i_kat]->getName()}</a>
                     </p>
                     {/block}

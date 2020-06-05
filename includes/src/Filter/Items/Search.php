@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Filter\Items;
 
@@ -69,7 +65,7 @@ class Search extends AbstractFilter
         parent::__construct($productFilter);
         $this->setIsCustom(false)
              ->setVisibility($this->getConfig('navigationsfilter')['suchtrefferfilter_nutzen'])
-             ->setFrontendName(Shop::Lang()->get('searchFilter'))
+             ->setFrontendName(Shop::isAdmin() ? __('filterSearch') : Shop::Lang()->get('searchFilter'))
              ->setUrlParam('sf');
     }
 
@@ -136,28 +132,19 @@ class Search extends AbstractFilter
     public function setSeo(array $languages): FilterInterface
     {
         $seo = $this->productFilter->getDB()->executeQueryPrepared(
-            "SELECT tseo.cSeo, tseo.kSprache, tsuchanfrage.cSuche
-                FROM tseo
-                LEFT JOIN tsuchanfrage
-                    ON tsuchanfrage.kSuchanfrage = tseo.kKey
-                    AND tsuchanfrage.kSprache = tseo.kSprache
-                WHERE cKey = 'kSuchanfrage'
-                    AND kKey = :kkey",
-            ['kkey' => $this->getValue()],
+            'SELECT cSuche
+                FROM tsuchanfrage
+                WHERE kSuchanfrage = :kkey
+                  AND kSprache = :languageID',
+            [
+                'kkey'       => $this->getValue(),
+                'languageID' => (int)$_SESSION['kSprache']
+            ],
             ReturnType::SINGLE_OBJECT
         );
-        foreach ($languages as $language) {
-            $this->cSeo[$language->kSprache] = '';
-            if (isset($seo->kSprache) && $language->kSprache === $seo->kSprache) {
-                $this->cSeo[$language->kSprache] = $seo->cSeo;
-            }
-        }
         if (!empty($seo->cSuche)) {
             $this->setName($seo->cSuche);
-        } elseif (!empty($seo->cSeo)) {
-            $this->setName($seo->cSeo);
         }
-
 
         return $this;
     }

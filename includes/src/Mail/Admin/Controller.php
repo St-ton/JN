@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Mail\Admin;
 
@@ -388,14 +384,13 @@ final class Controller
             $convertText        = \mb_detect_encoding($upd->cContentText, ['UTF-8'], true) !== 'UTF-8';
             $upd->cContentHtml  = $convertHTML === true ? Text::convertUTF8($upd->cContentHtml) : $upd->cContentHtml;
             $upd->cContentText  = $convertText === true ? Text::convertUTF8($upd->cContentText) : $upd->cContentText;
-            $this->db->delete(
+            $updCount           = $this->db->update(
                 'temailvorlagesprache',
                 ['kEmailVorlage', 'kSprache'],
-                [$templateID, $lang->getId()]
+                [$templateID, $lang->getId()],
+                $upd
             );
-            if ($this->db->insert('temailvorlagesprache', $upd)) {
-                ++$affected;
-            }
+            $affected          += $updCount > 0 ? $updCount : 0;
         }
 
         return $affected;

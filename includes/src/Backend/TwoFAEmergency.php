@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Backend;
 
@@ -128,8 +124,7 @@ class TwoFAEmergency
                 $effected = $this->db->delete(
                     'tadmin2facodes',
                     ['kAdminlogin', 'cEmergencyCode'],
-                    [$adminID, $item->cEmergencyCode],
-                    ReturnType::AFFECTED_ROWS
+                    [$adminID, $item->cEmergencyCode]
                 );
                 if ($effected !== 1) {
                     Shop::Container()->getLogService()->error('2FA-Notfall-Code konnte nicht gelöscht werden.');

@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Cache;
 
@@ -12,24 +8,6 @@ use JTL\Profiler;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
-
-\define('CACHING_ROOT_DIR', __DIR__ . '/');
-\define('CACHING_METHODS_DIR', \CACHING_ROOT_DIR . 'CachingMethods/');
-\define('CACHING_GROUP_ARTICLE', 'art');
-\define('CACHING_GROUP_PRODUCT', 'art');
-\define('CACHING_GROUP_CATEGORY', 'cat');
-\define('CACHING_GROUP_LANGUAGE', 'lang');
-\define('CACHING_GROUP_TEMPLATE', 'tpl');
-\define('CACHING_GROUP_OPTION', 'opt');
-\define('CACHING_GROUP_PLUGIN', 'plgn');
-\define('CACHING_GROUP_CORE', 'core');
-\define('CACHING_GROUP_OBJECT', 'obj');
-\define('CACHING_GROUP_BOX', 'bx');
-\define('CACHING_GROUP_NEWS', 'nws');
-\define('CACHING_GROUP_ATTRIBUTE', 'attr');
-\define('CACHING_GROUP_MANUFACTURER', 'mnf');
-\define('CACHING_GROUP_FILTER', 'fltr');
-\define('CACHING_GROUP_FILTER_CHARACTERISTIC', 'fltrchr');
 
 /**
  * Class JTLCache
@@ -782,11 +760,11 @@ final class JTLCache implements JTLCacheInterface
         // add language ID
         if ($languageID === true) {
             $baseID .= '_lid';
-            $lang    = Shop::getLanguage();
+            $lang    = Shop::getLanguageID();
             if ($lang > 0) {
                 $baseID .= $lang;
-            } elseif (Shop::getLanguage() > 0) {
-                $baseID .= Shop::getLanguage();
+            } elseif (Shop::getLanguageID() > 0) {
+                $baseID .= Shop::getLanguageID();
             } else {
                 $baseID .= '0';
             }

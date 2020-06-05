@@ -1,9 +1,5 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='page-freegift'}
-    {opcMountPoint id='opc_before_free_gift'}
+    {opcMountPoint id='opc_before_free_gift' inContainer=false}
     {container}
         <p>{lang key='freeGiftFromOrderValue'}</p>
         {if !empty($oArtikelGeschenk_arr)}

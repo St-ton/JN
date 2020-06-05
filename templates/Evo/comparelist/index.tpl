@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='header'}
     {include file='layout/header.tpl'}
 {/block}
@@ -12,7 +8,7 @@
     <h1>{lang key='compare' section='global'}</h1>
 
     {include file='snippets/extension.tpl'}
-    
+
     {if $oVergleichsliste->oArtikel_arr|@count > 1}
         {opcMountPoint id='opc_before_compare_list'}
 

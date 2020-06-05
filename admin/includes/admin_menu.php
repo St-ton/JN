@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 \JTL\Shop::Container()->getGetText()->loadAdminLocale('menu');
 
@@ -33,11 +29,6 @@ $adminMenu = [
                 __('Free gifts')               => (object)[
                     'link'   => 'gratisgeschenk.php',
                     'permissions' => 'MODULE_GIFT_VIEW',
-                ],
-                __('Recommendations') => (object)[
-                    'link'   => 'kundenwerbenkunden.php',
-                    'permissions' => 'MODULE_CAC_VIEW',
-                    'section' => CONF_KUNDENWERBENKUNDEN,
                 ],
             ],
             __('Statistics')       => [

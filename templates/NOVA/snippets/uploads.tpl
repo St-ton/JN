@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='snippets-uploads'}
     {getUploaderLang iso=$smarty.session.currentLanguage->cISO639|default:'' assign='uploaderLang'}
     {if !empty($oUploadSchema_arr)}
@@ -16,7 +12,7 @@
             {/block}
             {block name='snippets-uploads-schemes-product'}
                 {foreach $oUploadSchema_arr as $oUploadSchema}
-                    {row class="mb-5"}
+                    {row class="mb-4"}
                         {if !empty($oUploadSchema->cName) || !empty($oUploadSchema->cBeschreibung)}
                             {block name='snippets-uploads-scheme-product-name'}
                                 {col cols=12}

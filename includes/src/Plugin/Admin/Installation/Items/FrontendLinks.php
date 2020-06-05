@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Plugin\Admin\Installation\Items;
 
@@ -35,7 +31,7 @@ class FrontendLinks extends AbstractItem
     public function install(): int
     {
         $pluginID    = $this->plugin->kPlugin;
-        $oldPluginID = $this->oldPlugin->kPlugin ?? 0;
+        $oldPluginID = $this->oldPlugin === null ? 0 : $this->oldPlugin->getID();
         foreach ($this->getNode() as $i => $links) {
             $i = (string)$i;
             \preg_match('/[0-9]+\sattr/', $i, $hits1);
@@ -63,9 +59,21 @@ class FrontendLinks extends AbstractItem
             $linkLang->kLink = $linkID;
             $bLinkStandard   = false;
             $defaultLang     = new stdClass();
-            $oldLinkID       = $oldPluginID === 0
+            $oldLink         = $oldPluginID === 0
                 ? null
                 : $this->db->select('tlink', 'kPlugin', $oldPluginID, 'cName', $links['Name']);
+            if ($oldLink !== null) {
+                $oldLinkGroup   = $this->db->select('tlinkgroupassociations', 'linkID', (int)$oldLink->kLink);
+                $oldLinkGroupID = (int)($oldLinkGroup->linkGroupID ?? 0);
+                if ($oldLinkGroupID > 0) {
+                    $this->db->update(
+                        'tlinkgroupassociations',
+                        'linkID',
+                        $linkID,
+                        (object)['linkGroupID' => $oldLinkGroupID]
+                    );
+                }
+            }
             foreach ($links['LinkLanguage'] as $l => $localized) {
                 $l = (string)$l;
                 \preg_match('/[0-9]+\sattr/', $l, $hits1);
@@ -85,10 +93,8 @@ class FrontendLinks extends AbstractItem
                         $defaultLang   = $linkLang;
                         $bLinkStandard = true;
                     }
-                    if (isset($allLanguages[$linkLang->cISOSprache])
-                        && $allLanguages[$linkLang->cISOSprache]->kSprache > 0
-                    ) {
-                        $or = isset($oldLinkID->kLink) ? (' OR kKey = ' . (int)$oldLinkID->kLink) : '';
+                    if (($allLanguages[$linkLang->cISOSprache]->kSprache ?? 0) > 0) {
+                        $or = isset($oldLink->kLink) ? (' OR kKey = ' . (int)$oldLink->kLink) : '';
                         $this->db->query(
                             "DELETE FROM tseo
                                 WHERE cKey = 'kLink'
@@ -160,7 +166,7 @@ class FrontendLinks extends AbstractItem
         $linkFile                      = new stdClass();
         $linkFile->kPlugin             = $pluginID;
         $linkFile->kLink               = $linkID;
-        $linkFile->cDatei              = $links['Filename'];
+        $linkFile->cDatei              = $links['Filename'] ?? '';
         $linkFile->cTemplate           = $links['Template'] ?? '_DBNULL_';
         $linkFile->cFullscreenTemplate = $links['FullscreenTemplate'] ?? '_DBNULL_';
 

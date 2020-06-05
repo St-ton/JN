@@ -18,7 +18,7 @@ msgid "hasInstallDirTitle"
 msgstr "System"
 
 msgid "hasInstallDirMessage"
-msgstr "Bitte löschen Sie das Installationsverzeichnis „/install/“ im Shop-Wurzelverzeichnis."
+msgstr "Bitte löschen Sie das Installationsverzeichnis „/install/“ im Wurzelverzeichnis des Onlineshops."
 
 msgid "validDatabaseStructTitle"
 msgstr "Datenbankstruktur"
@@ -60,7 +60,7 @@ msgid "hasFullTextIndexErrorTitle"
 msgstr "Volltextsuche"
 
 msgid "hasFullTextIndexErrorMessage"
-msgstr "Der Volltextindex ist nicht vorhanden."
+msgstr "Volltextindex ist nicht vorhanden."
 
 msgid "hasInvalidPasswordResetMailTemplateTitle"
 msgstr "Defekte E-Mail-Vorlage"
@@ -72,7 +72,7 @@ msgid "hasInsecureMailConfigTitle"
 msgstr "Unsichere SMTP-Verbindung"
 
 msgid "hasInsecureMailConfigMessage"
-msgstr "Sie haben SMTP gewählt, allerdings keine SMTP-Security-Methode.<br/> Wir empfehlen Ihnen dringend, Ihre E-Mail-Einstellungen anzupassen.<br/> Sie finden die Option unter „System > E-Mails > E-Mail-Einstellungen > SMTP-Security.“"
+msgstr "Sie haben SMTP gewählt, allerdings keine SMTP-Security-Methode.<br/> Wir empfehlen Ihnen dringend, Ihre E-Mail-Einstellungen anzupassen.<br/> Sie finden die Option unter „Administration > E-Mail > Server.“"
 
 msgid "needPasswordRehash2FATryTitle"
 msgstr "Benutzerverwaltung"
@@ -115,3 +115,9 @@ msgstr "Mindestens eine Spezialseite wurde mehrmals für die gleiche(n) Kundengr
 
 msgid "Safe mode enabled."
 msgstr "Abgesicherter Modus aktiv. Gewisse Funktionalitäten stehen nicht zur Verfügung."
+
+msgid "ustIdMiasCheckTitle"
+msgstr "Ust-ID Prüfung"
+
+msgid "ustIdMiasCheckMessage"
+msgstr "Wenn Sie die europaweite Umsatzsteuerprüfung durch das MIAS-System der EU verwenden wollen, installieren Sie bitte das PHP-Modul 'php_soap'."

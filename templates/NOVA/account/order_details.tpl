@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='account-order-details'}
     {block name='account-order-details-script-location'}
         <script>
@@ -59,6 +55,29 @@
                                             </li>
                                         {/foreach}
                                     {/if}
+                                    {foreach $Bestellung->OrderAttributes as $attribute}
+                                        {if $attribute->cName === 'Finanzierungskosten'}
+                                            {row class="type-{$smarty.const.C_WARENKORBPOS_TYP_ZINSAUFSCHLAG}"}
+                                                {col}
+                                                    {row}
+                                                        {col}
+                                                            {block name='account-order-details-finance-costs'}
+                                                                {lang key='financeCosts' section='order'}
+                                                            {/block}
+                                                        {/col}
+                                                    {/row}
+                                                {/col}
+
+                                                {block name='account-order-details-finance-costs-value'}
+                                                    {col class="col-auto ml-auto text-right price-col"}
+                                                        <strong class="price_overall">
+                                                            {$attribute->cValue}
+                                                        </strong>
+                                                    {/col}
+                                                {/block}
+                                            {/row}
+                                        {/if}
+                                    {/foreach}
                                 </ul>
                             {/block}
                             <ul class="list-unstyled mt-lg-5">
@@ -152,7 +171,7 @@
                     {block name='account-order-details-request-plz'}
                         {row}
                             {col cols=12 md=6}
-                                {form method="post" id='request-plz' action="{get_static_route}" class="jtl-validate label-slide"}
+                                {form method="post" id='request-plz' action="{get_static_route}" class="jtl-validate" slide=true}
                                     {input type="hidden" name="uid" value="{$uid}"}
                                     <p>{lang key='enter_plz_for_details' section='account data'}</p>
                                     {formgroup
@@ -337,7 +356,7 @@
         {block name='account-order-details-actions'}
             {row}
                 {col md=3 cols=12}
-                    {link class="btn btn-outline-primary btn-block" href="{get_static_route id='jtl.php'}?bestellungen=1"}
+                    {link class="btn btn-outline-primary btn-block mt-3" href="{get_static_route id='jtl.php'}?bestellungen=1"}
                         {lang key='back'}
                     {/link}
                 {/col}

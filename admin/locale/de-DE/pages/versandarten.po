@@ -8,20 +8,14 @@ msgstr "Versandarten"
 msgid "shippingmethodsURL"
 msgstr "https://jtl-url.de/dlkpz"
 
-msgid "documentationHint"
-msgstr "Hier sehen Sie eine Übersicht über alle Versandarten, die aktuell in JTL-Shop zur Verfügung stehen. Wenn Sie auf eines der Lieferländer einer Versandart klicken, können Sie Zuschläge für bestimmte Postleitzahlen hinterlegen (z.&nbsp;B. Inselzuschläge). Außerdem können Sie neue Versandarten anlegen und bestehende bearbeiten. Dokumentation und Beispiele zu diesem Thema finden Sie auf <i class=\"fa fa-external-link\"></i> <a href=\"https://jtl-url.de/guide\">http://guide.jtl-software.com</a>"
-
 msgid "isleListsHint"
 msgstr "Klicken Sie auf die einzelnen Versandländer, um Zuschlagslisten (z. B. Inselzuschläge) zu definieren. Ob für ein Lieferland Zuschlagslisten für die jeweilige Versandart hinterlegt sind, erkennen Sie an der entsprechenden Markierung."
 
-msgid "activeShippingmethods"
-msgstr "Aktive Versandarten"
-
 msgid "createShippingMethod"
-msgstr "Neue Versandart anlegen"
+msgstr "Versandart anlegen"
 
 msgid "createShippingMethodDesc"
-msgstr "Hier legen Sie eine neue Versandart für JTL-Shop an. Diese kann hinterher mit einer Versandart in JTL-Wawi verknüpft werden."
+msgstr "Hier legen Sie eine neue Versandart für JTL-Shop an. Diese kann im Anschluss mit einer Versandart in JTL-Wawi verknüpft werden."
 
 msgid "shippingMethodName"
 msgstr "Name der Versandart"
@@ -36,22 +30,13 @@ msgid "shippingNote"
 msgstr "Hinweistext"
 
 msgid "shippingNoteShop"
-msgstr "Hinweistext (Shop)"
+msgstr "Hinweistext (Onlineshop)"
 
 msgid "shippingNoteEmail"
 msgstr "Hinweistext (E-Mail)"
 
-msgid "trackingLink"
-msgstr "Tracking-Link"
-
-msgid "priceGross"
-msgstr "Preis (Brutto)"
-
 msgid "gross"
 msgstr "Brutto (fixer Versandkostenpreis)"
-
-msgid "grossValue"
-msgstr "19 %"
 
 msgid "amount"
 msgstr "Betrag"
@@ -59,11 +44,8 @@ msgstr "Betrag"
 msgid "taxshippingcosts"
 msgstr "Steuerberechnung für Versandkosten und Versandkostenfrei-Grenze"
 
-msgid "shippingtime"
-msgstr "Lieferzeit"
-
 msgid "taxshippingcostsDesc"
-msgstr "Hier legen Sie fest, ob die Versandkosten als fester Brutto-Preis angegeben werden sollen. Wenn die Option „Brutto (fixer Versandkostenpreis)“ gewählt wird, bleiben die Versandkosten für den Kunden immer gleich, da sich unterschiedliche Umsatzsteuersätze nicht auf die Gesamtkosten für den Versand auswirken. Außerdem wird bei der Grenze für kostenfreien Versand der Brutto-Warenkorbwert berücksichtigt. Wenn Sie als Option „Netto (automatischer USt-Aufschlag)“ wählen, wird der jeweils geltende Umsatzsteuersatz des Warenkorbs auf die Netto-Versandkosten aufgeschlagen, sodass es für den Kunden je nach Steuersatz zu unterschiedlichen Versandkosten kommen kann. Außerdem wird bei der Grenze für kostenfreien Versand der Netto-Warenkorbwert berücksichtigt."
+msgstr "Hier legen Sie fest, ob die Versandkosten als fester Brutto-Preis angegeben werden sollen. Wenn die Option „Brutto (fixer Versandkostenpreis)“ gewählt wird, bleiben die Versandkosten für den Kunden immer gleich, da sich unterschiedliche Umsatzsteuersätze nicht auf die Gesamtkosten für den Versand auswirken. Außerdem wird bei der Grenze für kostenfreien Versand der Brutto-Warenkorbwert berücksichtigt.<br> Wenn Sie als Option „Netto (automatischer USt-Aufschlag)“ wählen, wird der jeweils geltende Umsatzsteuersatz des Warenkorbs auf die Netto-Versandkosten aufgeschlagen, sodass es für den Kunden je nach Steuersatz zu unterschiedlichen Versandkosten kommen kann. Außerdem wird bei der Grenze für kostenfreien Versand der Netto-Warenkorbwert berücksichtigt."
 
 msgid "net"
 msgstr "Netto (automatischer USt-Aufschlag)"
@@ -81,7 +63,7 @@ msgid "excludeShippingProposal"
 msgstr "Für Kalkulation der günstigsten Versandkosten ignorieren"
 
 msgid "excludeShippingProposalDesc"
-msgstr "Hier legen Sie fest, ob diese Versandart für die Berechnung der günstigsten Versandkosten übersprungen werden soll. Unabhängig von dieser Einstellung wird die Versandart im Bestellvorgang und in der Warenkorb-Versandkostenermittlung als Option angeboten, sofern die sonstigen Kriterien erfüllt sind."
+msgstr "Hier legen Sie fest, ob diese Versandart für die Berechnung der günstigsten Versandkosten übersprungen werden soll.<br> Unabhängig von dieser Einstellung wird die Versandart im Bestellvorgang und in der Warenkorb-Versandkostenermittlung als Option angeboten, sofern die sonstigen Kriterien erfüllt sind."
 
 msgid "tax"
 msgstr "USt."
@@ -99,7 +81,7 @@ msgid "acceptedPaymentMethods"
 msgstr "Akzeptierte Zahlungsarten"
 
 msgid "createShippingType"
-msgstr "Versandart erstellen"
+msgstr "Versandart speichern"
 
 msgid "modifyedShippingType"
 msgstr "Änderungen speichern"
@@ -120,7 +102,7 @@ msgid "isleListFor"
 msgstr "Zuschlagslisten für"
 
 msgid "isleListsDesc"
-msgstr "Hier können Sie Zuschlagslisten (z. B. Inselzuschläge) auf PLZ-Basis definieren. Die Zuschlagsliste gilt nur für die ausgewählte Versandart und das ausgewählte Lieferland."
+msgstr "Hier können Sie Zuschlagslisten (z. B. Inselzuschläge) anlegen und über „+“ eine PLZ-Basis hinzufügen. Die Zuschlagsliste gilt nur für die ausgewählte Versandart und das ausgewählte Lieferland."
 
 msgid "isleList"
 msgstr "Zuschlagsliste"
@@ -135,13 +117,13 @@ msgid "additionalFeeDelete"
 msgstr "Zuschlagsliste löschen"
 
 msgid "createList"
-msgstr "Neue Zuschlagsliste erstellen"
+msgstr "Neue Zuschlagsliste anlegen"
 
 msgid "editList"
 msgstr "Zuschlagsliste bearbeiten"
 
 msgid "orZipRange"
-msgstr "oder PLZ-Bereich"
+msgstr "PLZ-Bereich"
 
 msgid "zipRange"
 msgstr "PLZ-Bereich"
@@ -150,19 +132,13 @@ msgid "add"
 msgstr "Hinzufügen"
 
 msgid "freeShipping"
-msgstr "Versandkostenfrei ab X"
+msgstr "Versandkostenfrei ab"
 
 msgid "maxCosts"
 msgstr "Deckelung"
 
 msgid "maxCostsUpTo"
 msgstr "Deckelung auf"
-
-msgid "activate"
-msgstr "aktivieren"
-
-msgid "freeFrom"
-msgstr "frei ab"
 
 msgid "checkEU"
 msgstr "Europäische Union"
@@ -173,20 +149,11 @@ msgstr "Europa Nicht-EU"
 msgid "checkEurope"
 msgstr "Europa"
 
-msgid "checkWorld"
-msgstr "Welt"
-
 msgid "checkNA"
 msgstr "Nordamerika"
 
 msgid "checkAsia"
 msgstr "Asien"
-
-msgid "checkAllOff"
-msgstr "Alle abwählen"
-
-msgid "checkAllOn"
-msgstr "Alle auswählen"
 
 msgid "pictureURL"
 msgstr "Bild-URL"
@@ -234,7 +201,7 @@ msgid "onlyForOwnShippingPrices"
 msgstr "Artikelabhängige Versandart"
 
 msgid "ownShippingPricesDesc"
-msgstr "Hier legen Sie fest, ob diese Versandart nur bei Bestellungen gelten soll, die nur Artikel enthalten, bei denen per Funktionsattribut artikelabhängige Versandkosten pro Lieferland gesetzt wurden."
+msgstr "Hier legen Sie fest, ob diese Versandart nur bei Bestellungen gelten soll, die ausschließlich Artikel enthalten, bei denen per Funktionsattribut artikelabhängige Versandkosten pro Lieferland gesetzt wurden."
 
 msgid "customerclass"
 msgstr "Kundengruppe"
@@ -251,9 +218,6 @@ msgstr "Letzte Preisstaffel löschen"
 msgid "versandklassenExceeded"
 msgstr "Sie haben mehr als 5 Versandklassen. Bitte reduzieren Sie die Anzahl in JTL-Wawi."
 
-msgid "back2shippingtypes"
-msgstr "Zurück zu Versandarten"
-
 msgid "coverageShippingClassCombination"
 msgstr "Es sind nicht alle Versandklassenkombinationen von den Versandarten abgedeckt."
 
@@ -264,10 +228,10 @@ msgid "showMissingCombinations"
 msgstr "Fehlende Versandklassen anzeigen"
 
 msgid "versandartenSortDesc"
-msgstr "Je niedriger die Priorität, desto weiter oben wird diese Versandart angezeigt."
+msgstr "Je kleiner die eingegebene Zahl, desto weiter oben wird diese Versandart angezeigt."
 
 msgid "successShippingMethodDelete"
-msgstr "Versandart erfolgreich gelöscht."
+msgstr "Versandart wurde erfolgreich gelöscht."
 
 msgid "successShippingMethodDuplicated"
 msgstr "Versandart wurde erfolgreich dupliziert."
@@ -276,10 +240,10 @@ msgid "errorShippingMethodDuplicated"
 msgstr "Versandart konnte nicht dupliziert werden."
 
 msgid "errorZIPOverlap"
-msgstr "Die PLZ %s überschneidet sich mit einer PLZ in dem Versandzuschlag „%s“.<br/>Bitte geben Sie eine andere PLZ an."
+msgstr "Die PLZ %s überschneidet sich mit einer PLZ in Zuschlagsliste „%s“.<br/>Bitte geben Sie eine andere PLZ an."
 
 msgid "errorZIPAreaOverlap"
-msgstr "Der PLZ-Bereich %s überschneidet sich mit einer PLZ in dem Versandzuschlag „%s“.<br/>Bitte geben Sie einen anderen PLZ-Bereich an."
+msgstr "Der PLZ-Bereich %s überschneidet sich mit einer PLZ in Zuschlagsliste „%s“.<br/>Bitte geben Sie einen anderen PLZ-Bereich an."
 
 msgid "successZIPAdd"
 msgstr "PLZ wurde erfolgreich hinzugefügt."
@@ -294,13 +258,13 @@ msgid "errorListNameMissing"
 msgstr "Bitte geben Sie der Zuschlagsliste einen Namen."
 
 msgid "errorListPriceMissing"
-msgstr "Bitte geben Sie einen Preis für den Zuschlag ein."
+msgstr "Bitte geben Sie einen Betrag für den Zuschlag ein."
 
 msgid "successShippingMethodCreate"
-msgstr "Die Versandart <strong>%s</strong> wurde erfolgreich hinzugefügt."
+msgstr "Versandart <strong>%s</strong> wurde erfolgreich hinzugefügt."
 
 msgid "successShippingMethodChange"
-msgstr "Die Versandart <strong>%s</strong> wurde erfolgreich bearbeitet."
+msgstr "Versandart <strong>%s</strong> wurde erfolgreich bearbeitet."
 
 msgid "errorShippingMethodNameMissing"
 msgstr "Bitte geben Sie dieser Versandart einen Namen."
@@ -324,10 +288,10 @@ msgid "deleteShippingMethod"
 msgstr "Versandart löschen: "
 
 msgid "successDeleteSurchargeList"
-msgstr "Die Zuschlagsliste wurde erfolgreich gelöscht."
+msgstr "Zuschlagsliste wurde erfolgreich gelöscht."
 
 msgid "successDeleteZIP"
-msgstr "Der PLZ/PLZ-Bereich wurde erfolgreich gelöscht."
+msgstr "PLZ/PLZ-Bereich wurde erfolgreich gelöscht."
 
 # shipping types (tversandberechnung)
 msgid "shippingType_vm_versandkosten_pauschale_jtl"
@@ -346,10 +310,10 @@ msgid "shippingType_vm_versandberechnung_gewicht_jtl"
 msgstr "Versandkosten nach Gewicht und Lieferland"
 
 msgid "surchargeListFor"
-msgstr "Zuschlagliste für "
+msgstr "Zuschlagsliste für "
 
 msgid "surchargeList"
-msgstr "Zuschlagliste"
+msgstr "Zuschlagsliste"
 
 msgid "surcharge"
 msgstr "Zuschlag"
@@ -362,3 +326,6 @@ msgstr "PLZ löschen"
 
 msgid "countriesSelected"
 msgstr "ausgewählt"
+
+msgid "acceptedPaymentMethodsDesc"
+msgstr "Geben Sie für einen Rabatt einen negativen Wert ein"

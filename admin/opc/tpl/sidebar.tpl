@@ -11,9 +11,9 @@
                 <button type="button" class="opc-dropdown-item" onclick="opc.gui.exportDraft()">
                     <i class="fa fas fa-download fa-fw"></i> {__('Export')}
                 </button>
-                {*<button type="button" class="opc-dropdown-item" id="btnHelp">
+                <button type="button" class="opc-dropdown-item" id="btnHelp" onclick="opc.tutorial.start()" ">
                     <i class="fa fas fa-question-circle fa-fw"></i> {__('help')}
-                </button>*}
+                </button>
             </div>
         </div>
         <h1 id="opc-sidebar-title">
@@ -95,18 +95,30 @@
     <div id="sidebarFooter">
         <div id="savePublishPanel">
             <label for="footerDraftNameInput" id="footerDraftName" onclick="opc.gui.onBeginEditDraftName()">
-                <span>{$page->getName()}</span><i class="fas fa-pencil-alt"></i>
+                <span>
+                    {if isset($page)}
+                        {$page->getName()}
+                    {else}
+                        No Page
+                    {/if}
+                </span>
+                <i class="fas fa-pencil-alt"></i>
             </label>
             <input type="text" id="footerDraftNameInput" onblur="opc.gui.onFinishEditDraftName()"
                    onkeydown="opc.gui.onDraftNameInputKeydown()" style="display:none">
             <div class="opc-draft-status" id="opcDraftStatus">
-                {include file="./draftstatus.tpl"}
+                {if isset($page)}
+                    {include file="./draftstatus.tpl"}
+                {else}
+                    No Page
+                {/if}
             </div>
             <div id="savePublishButtons">
                 <button type="button" class="opc-btn-secondary opc-small-btn" onclick="opc.gui.savePage()">
                     {__('save')} <i class="fas fa-asterisk" id="unsavedState" style="display: none"></i>
                 </button>
-                <button type="button" class="opc-btn-primary opc-small-btn" onclick="opc.gui.publishDraft()">
+                <button type="button" class="opc-btn-primary opc-small-btn" onclick="opc.gui.publishDraft()"
+                        id="btnPublishDraft">
                     {__('Publish')}
                 </button>
             </div>

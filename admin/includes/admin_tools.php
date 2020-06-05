@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Backend\AdminFavorite;
 use JTL\Backend\Notification;
@@ -185,7 +181,7 @@ function bearbeiteListBox($listBoxes, $cWertName, int $configSectionID)
 
             $db->insert('teinstellungen', $newConf);
         }
-    } elseif ($cWertName === 'bewertungserinnerung_kundengruppen' || $cWertName === 'kwk_kundengruppen') {
+    } elseif ($cWertName === 'bewertungserinnerung_kundengruppen') {
         // Leere Kundengruppen Work Around
         $customerGroup = $db->select('tkundengruppe', 'cStandard', 'Y');
         if ($customerGroup->kKundengruppe > 0) {
@@ -309,6 +305,7 @@ function getArrangedArray($xml, int $level = 1)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $parser = new XMLParser();
+
     return $parser->getArrangedArray($xml, $level);
 }
 
@@ -354,9 +351,9 @@ function firstDayOfMonth(int $month = -1, int $year = -1)
         0,
         0,
         0,
-        $month > -1 ? $month : date('m'),
+        $month > -1 ? $month : (int)date('m'),
         1,
-        $year > -1 ? $year : date('Y')
+        $year > -1 ? $year : (int)date('Y')
     );
 }
 
@@ -371,9 +368,9 @@ function lastDayOfMonth(int $month = -1, int $year = -1)
         23,
         59,
         59,
-        $month > -1 ? $month : date('m'),
-        date('t', firstDayOfMonth($month, $year)),
-        $year > -1 ? $year : date('Y')
+        $month > -1 ? $month : (int)date('m'),
+        (int)date('t', firstDayOfMonth($month, $year)),
+        $year > -1 ? $year : (int)date('Y')
     );
 }
 
@@ -412,12 +409,12 @@ function ermittleDatumWoche(string $dateString)
             ++$year;
         }
 
-        $daysPerMonth = date('t', mktime(0, 0, 0, $month, 1, $year));
+        $daysPerMonth = (int)date('t', mktime(0, 0, 0, $month, 1, $year));
         $day          = $daysPerMonth - $weekDay + $dayOld;
     }
     $stampStart   = mktime(0, 0, 0, $month, $day, $year);
     $days         = 6;
-    $daysPerMonth = date('t', mktime(0, 0, 0, $month, 1, $year));
+    $daysPerMonth = (int)date('t', mktime(0, 0, 0, $month, 1, $year));
     $day         += $days;
     if ($day > $daysPerMonth) {
         $day -= $daysPerMonth;
@@ -441,16 +438,21 @@ function ermittleDatumWoche(string $dateString)
  */
 function getJTLVersionDB(bool $bDate = false)
 {
-    $ret         = 0;
-    $versionData = Shop::Container()->getDB()->query(
-        'SELECT nVersion, dAktualisiert FROM tversion',
-        ReturnType::SINGLE_OBJECT
-    );
-    if (isset($versionData->nVersion)) {
-        $ret = $versionData->nVersion;
-    }
+    $ret = 0;
     if ($bDate) {
-        $ret = $versionData->dAktualisiert;
+        $latestUpdate = Shop::Container()->getDB()->query(
+            'SELECT max(dExecuted) as date FROM tmigration',
+            ReturnType::SINGLE_OBJECT
+        );
+        $ret          = $latestUpdate->date;
+    } else {
+        $versionData = Shop::Container()->getDB()->query(
+            'SELECT nVersion FROM tversion',
+            ReturnType::SINGLE_OBJECT
+        );
+        if (isset($versionData->nVersion)) {
+            $ret = $versionData->nVersion;
+        }
     }
 
     return $ret;
@@ -590,7 +592,7 @@ function getFrontendSmarty()
 
     if ($frontendSmarty === null) {
         $frontendSmarty = new JTLSmarty();
-        $frontendSmarty->assign('imageBaseURL', \Shop::getImageBaseURL())
+        $frontendSmarty->assign('imageBaseURL', Shop::getImageBaseURL())
             ->assign('NettoPreise', Frontend::getCustomerGroup()->getIsMerchant())
             ->assign('ShopURL', Shop::getURL())
             ->assign('Suchergebnisse', new SearchResults())

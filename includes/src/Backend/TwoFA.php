@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Backend;
 
@@ -213,7 +209,7 @@ class TwoFA
      */
     public function getShopName(): string
     {
-        if ($this->shopName !== '') {
+        if ($this->shopName === '') {
             $result         = $this->db->select('teinstellungen', 'cName', 'global_shopname');
             $this->shopName = $result->cWert;
         }

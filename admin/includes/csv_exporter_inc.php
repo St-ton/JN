@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -64,9 +60,8 @@ function handleCsvExportAction(
 
         foreach ($arr as $elem) {
             $csvRow = [];
-
             foreach ($fields as $field) {
-                $csvRow[] = (string)$elem->$field;
+                $csvRow[] = (string)($elem->$field ?? '');
             }
 
             fputcsv($fs, $csvRow, $delim);

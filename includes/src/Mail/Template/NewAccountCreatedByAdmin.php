@@ -1,10 +1,9 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Mail\Template;
+
+use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
 
 /**
  * Class NewAccountCreatedByAdmin
@@ -13,4 +12,17 @@ namespace JTL\Mail\Template;
 class NewAccountCreatedByAdmin extends AbstractTemplate
 {
     protected $id = \MAILTEMPLATE_ACCOUNTERSTELLUNG_DURCH_BETREIBER;
+
+    /**
+     * @inheritdoc
+     */
+    public function preRender(JTLSmarty $smarty, $data): void
+    {
+        parent::preRender($smarty, $data);
+
+        $smarty->assign(
+            'newPasswordURL',
+            Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_PASSWORD_VERGESSEN)->getURL()
+        );
+    }
 }

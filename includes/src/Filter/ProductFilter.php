@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Filter;
 
@@ -12,6 +8,7 @@ use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Product\Artikel;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Filter\Items\Availability;
 use JTL\Filter\Items\Category;
 use JTL\Filter\Items\Characteristic;
 use JTL\Filter\Items\Limit;
@@ -93,6 +90,11 @@ class ProductFilter
      * @var SearchSpecial
      */
     private $searchSpecialFilter;
+
+    /**
+     * @var Availability
+     */
+    private $availabilityFilter;
 
     /**
      * @var Rating
@@ -192,7 +194,12 @@ class ProductFilter
     /**
      * @var bool
      */
-    private $bExtendedJTLSearch;
+    private $bExtendedJTLSearch = false;
+
+    /**
+     * @var stdClass|null
+     */
+    private $oExtendedJTLSearchResponse;
 
     /**
      * @var int
@@ -594,6 +601,8 @@ class ProductFilter
 
         $this->searchSpecialFilter = new SearchSpecial($this);
 
+        $this->availabilityFilter = new Availability($this);
+
         $this->ratingFilter = new Rating($this);
 
         $this->priceRangeFilter = new PriceRange($this);
@@ -614,6 +623,7 @@ class ProductFilter
         $this->filters[] = $this->priceRangeFilter;
         $this->filters[] = $this->ratingFilter;
         $this->filters[] = $this->search;
+        $this->filters[] = $this->availabilityFilter;
 
         $this->sorting = new Sort($this);
         $this->limits  = new Limit($this);
@@ -724,9 +734,9 @@ class ProductFilter
             if (!$this->baseState->isInitialized()) {
                 $this->baseState = $this->searchQuery;
             }
-            $limit                      = $this->limits->getProductsPerPageLimit();
-            $oExtendedJTLSearchResponse = null;
-            $this->bExtendedJTLSearch   = false;
+            $limit                            = $this->limits->getProductsPerPageLimit();
+            $this->oExtendedJTLSearchResponse = null;
+            $this->bExtendedJTLSearch         = false;
 
             \executeHook(\HOOK_NAVI_PRESUCHE, [
                 'cValue'             => &$this->EchteSuche->cSuche,
@@ -735,11 +745,9 @@ class ProductFilter
             if (empty($params['cSuche'])) {
                 $this->bExtendedJTLSearch = false;
             }
-            $this->search->bExtendedJTLSearch = $this->bExtendedJTLSearch;
-
             \executeHook(\HOOK_NAVI_SUCHE, [
-                'bExtendedJTLSearch'         => $this->bExtendedJTLSearch,
-                'oExtendedJTLSearchResponse' => &$oExtendedJTLSearchResponse,
+                'bExtendedJTLSearch'         => &$this->bExtendedJTLSearch,
+                'oExtendedJTLSearchResponse' => &$this->oExtendedJTLSearchResponse,
                 'cValue'                     => &$this->EchteSuche->cSuche,
                 'nArtikelProSeite'           => &$limit,
                 'nSeite'                     => &$this->nSeite,
@@ -747,6 +755,7 @@ class ProductFilter
                 'bLagerbeachten'             => (int)$this->getFilterConfig()->getConfig('global')
                     ['artikel_artikelanzeigefilter'] === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
             ]);
+            $this->search->bExtendedJTLSearch = $this->bExtendedJTLSearch;
         }
         $this->nSeite = \max(1, Request::verifyGPCDataInt('seite'));
         foreach ($this->getCustomFilters() as $filter) {
@@ -972,6 +981,10 @@ class ProductFilter
      */
     public function getAvailableContentFilters(): array
     {
+        if ($this->bExtendedJTLSearch === true) {
+            return [];
+        }
+
         return \array_filter(
             $this->filters,
             static function ($f) {
@@ -980,8 +993,9 @@ class ProductFilter
                 return $f->getVisibility() === Visibility::SHOW_ALWAYS
                     || $f->getVisibility() === Visibility::SHOW_CONTENT
                     || ($f->getClassName() === PriceRange::class
-                        && isset($templateSettings['sidebar_settings'])
-                        && $templateSettings['sidebar_settings']['always_show_price_range'] ?? 'N' === 'Y');
+                        && isset($templateSettings['productlist'])
+                        && ($templateSettings['productlist']['always_show_price_range'] ?? 'N') === 'Y'
+                    );
             }
         );
     }
@@ -1337,6 +1351,25 @@ class ProductFilter
     }
 
     /**
+     * @return SearchSpecial
+     */
+    public function getAvailabilitylFilter(): FilterInterface
+    {
+        return $this->availabilityFilter;
+    }
+
+    /**
+     * @param FilterInterface $filter
+     * @return $this
+     */
+    public function setAvailabilityFilter(FilterInterface $filter): self
+    {
+        $this->availabilityFilter = $filter;
+
+        return $this;
+    }
+
+    /**
      * @return bool
      */
     public function hasSearchSpecialFilter(): bool
@@ -1561,10 +1594,12 @@ class ProductFilter
         $orderData->cOrder = $sorting->getOrderBy();
 
         \executeHook(\HOOK_FILTER_INC_GIBARTIKELKEYS, [
-            'oArtikelKey_arr' => &$productKeys,
-            'FilterSQL'       => new stdClass(),
-            'NaviFilter'      => $this,
-            'SortierungsSQL'  => &$orderData
+            'oArtikelKey_arr'            => &$productKeys,
+            'FilterSQL'                  => new stdClass(),
+            'NaviFilter'                 => $this,
+            'SortierungsSQL'             => &$orderData,
+            'bExtendedJTLSearch'         => $this->bExtendedJTLSearch,
+            'oExtendedJTLSearchResponse' => $this->oExtendedJTLSearchResponse
         ]);
 
         return $productKeys;
@@ -1677,12 +1712,8 @@ class ProductFilter
                 ->setError($error);
         }
         if ($fill === true) { // @todo: slice list of IDs when not filling?
-            $opt                        = new stdClass();
-            $opt->nMerkmale             = 1;
+            $opt                        = Artikel::getDefaultOptions();
             $opt->nKategorie            = 1;
-            $opt->nAttribute            = 1;
-            $opt->nArtikelAttribute     = 1;
-            $opt->nVariationKombiKinder = 1;
             $opt->nVariationen          = 1;
             $opt->nWarenlager           = 1;
             $opt->nRatings              = \PRODUCT_LIST_SHOW_RATINGS === true ? 1 : 0;
@@ -1973,6 +2004,22 @@ class ProductFilter
     public function setFilterConfig(Config $filterConfig): void
     {
         $this->filterConfig = $filterConfig;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isExtendedJTLSearch(): bool
+    {
+        return $this->bExtendedJTLSearch;
+    }
+
+    /**
+     * @param bool $isSearch
+     */
+    public function setExtendedJTLSearch(bool $isSearch): void
+    {
+        $this->bExtendedJTLSearch = $isSearch;
     }
 
     /**

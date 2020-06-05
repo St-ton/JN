@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Alert\Alert;
 use JTL\Catalog\Category\Kategorie;
@@ -11,6 +7,7 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\Product\Preisverlauf;
 use JTL\Extensions\Upload\Upload;
+use JTL\Helpers\Form;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -34,6 +31,7 @@ $nonAllowed     = [];
 $conf           = Shopsetting::getInstance()->getAll();
 $shopURL        = Shop::getURL() . '/';
 $alertHelper    = Shop::Container()->getAlertService();
+$valid          = Form::validateToken();
 if ($productNote = Product::mapErrorCode(
     Request::verifyGPDataString('cHinweis'),
     ((float)Request::getVar('fB', 0) > 0) ? (float)$_GET['fB'] : 0.0
@@ -43,9 +41,9 @@ if ($productNote = Product::mapErrorCode(
 if ($productError = Product::mapErrorCode(Request::verifyGPDataString('cFehler'))) {
     $alertHelper->addAlert(Alert::TYPE_ERROR, $productError, 'productError');
 }
-if (isset($_POST['a'])
+if ($valid && isset($_POST['a'])
     && Request::verifyGPCDataInt('addproductbundle') === 1
-    && Product::addProductBundleToCart($_POST['a'])
+    && Product::addProductBundleToCart(Request::verifyGPCDataInt('a'))
 ) {
     $alertHelper->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('basketAllAdded', 'messages'), 'allAdded');
     Shop::$kArtikel = Request::postInt('aBundle');
@@ -77,8 +75,7 @@ $similarProducts = (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel
     ? $AktuellerArtikel->holeAehnlicheArtikel()
     : [];
 if (Shop::$kVariKindArtikel > 0) {
-    $options          = Artikel::getDetailOptions();
-    $oVariKindArtikel = (new Artikel())->fuelleArtikel(Shop::$kVariKindArtikel, $options);
+    $oVariKindArtikel = (new Artikel())->fuelleArtikel(Shop::$kVariKindArtikel, Artikel::getDetailOptions());
     if ($oVariKindArtikel !== null && $oVariKindArtikel->kArtikel > 0) {
         $oVariKindArtikel->verfuegbarkeitsBenachrichtigung = Product::showAvailabilityForm(
             $oVariKindArtikel,
@@ -114,9 +111,9 @@ if (empty($cCanonicalURL)) {
 $AktuellerArtikel->berechneSieSparenX($conf['artikeldetails']['sie_sparen_x_anzeigen']);
 $productNotices = Product::getProductMessages();
 
-if (Request::postInt('fragezumprodukt') === 1) {
+if ($valid && Request::postInt('fragezumprodukt') === 1) {
     $productNotices = Product::checkProductQuestion($productNotices, $conf);
-} elseif (Request::postInt('benachrichtigung_verfuegbarkeit') === 1) {
+} elseif ($valid && Request::postInt('benachrichtigung_verfuegbarkeit') === 1) {
     $productNotices = Product::checkAvailabilityMessage($productNotices);
 }
 foreach ($productNotices as $productNoticeKey => $productNotice) {

@@ -16,7 +16,7 @@ Take a look at my wish list at {$Firma->cName}.
 {/foreach}
 
 View all products
-{$ShopURL}/index.php?wlid={$CWunschliste->cURLID}
+{$ShopURL}/index.php?wlid={$Wunschliste->cURLID}
 
 Kind regards,
 {$Kunde->cVorname} {$Kunde->cNachname}

@@ -3,7 +3,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "checkbox"
-msgstr "Check box administration"
+msgstr "Check boxes"
 
 msgid "checkboxDesc"
 msgstr " "
@@ -41,17 +41,20 @@ msgstr "Existing check boxes"
 msgid "checkboxCreate"
 msgstr "Create new check box"
 
+msgid "internalLinkTitle"
+msgstr "Interner Link"
+
 msgid "internalLink"
-msgstr "Internal link"
+msgstr "Yes"
 
 msgid "noLink"
-msgstr "No link"
+msgstr "No"
 
 msgid "hintInternalPage"
 msgstr "You can optionally link a custom page next to the check box."
 
 msgid "hintPlaceToShowCheckbox"
-msgstr "Specify the place in which the check box is to be displayed. This setting and the setting \"Special shop function\" must not contain same values."
+msgstr "Specify the place in which the check box is to be displayed. This setting and \"Special function in online shop\" cannot be the same."
 
 msgid "hintCheckCheckboxActivation"
 msgstr "Specify whether the check box must be activated or whether it is optional."
@@ -60,7 +63,7 @@ msgid "hintCheckboxActive"
 msgstr "Specify whether the check box is to be visible."
 
 msgid "checkboxLogging"
-msgstr "Check box log"
+msgstr "Check box logging"
 
 msgid "hintCheckboxLogActivate"
 msgstr "Specify whether the activation of the check box is to be logged in the JTL-Shop database."
@@ -69,7 +72,7 @@ msgid "sortHigherBottom"
 msgstr "Sorting"
 
 msgid "specialShopFunction"
-msgstr "Special shop function"
+msgstr "Special function in online shop"
 
 msgid "hintCheckboxFunction"
 msgstr "Specify whether a special function of JTL-Shop is to be executed when the check box gets activated."
@@ -81,7 +84,7 @@ msgid "hintCheckboxText"
 msgstr "For each language, enter a short description that will appear behind the check box."
 
 msgid "hintCheckboxDescription"
-msgstr "You can optionally enter an additional description for each language that will be displayed together with the check box."
+msgstr "You can optionally enter an additional description for each language that will be displayed together with the check box to provide assistance or an explanation."
 
 msgid "hintCheckboxOrder"
 msgstr "Specify where the check box is to be displayed in case there are several check boxes. Check boxes with a higher sorting number are depicted at a lower position."
@@ -93,7 +96,7 @@ msgid "Newsletteranmeldung"
 msgstr "Newsletter subscription"
 
 msgid "Emailbenachrichtigung an Shopbetreiber"
-msgstr "Email notification to shop operator"
+msgstr "Email notification to online shop operator"
 
 msgid "checkboxPositionRegistration"
 msgstr "Registration"
@@ -114,4 +117,4 @@ msgid "checkboxPositionProductQuestion"
 msgstr "Question about item"
 
 msgid "checkboxPositionAvailabilityNotification"
-msgstr "Availability request"
+msgstr "Availability requests"

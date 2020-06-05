@@ -1,13 +1,11 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Plugin\Admin\Installation\Items;
 
 use JTL\DB\DbInterface;
 use JTL\Plugin\LegacyPlugin;
+use JTL\Plugin\PluginInterface;
+use stdClass;
 
 /**
  * Interface ItemInterface
@@ -17,10 +15,10 @@ interface ItemInterface
 {
     /**
      * ItemInterface constructor.
-     * @param DbInterface                 $db
-     * @param array|null                  $baseNode
-     * @param \stdClass                   $plugin
-     * @param \stdClass|LegacyPlugin|null $oldPlugin
+     * @param DbInterface          $db
+     * @param array|null           $baseNode
+     * @param stdClass|null        $plugin
+     * @param PluginInterface|null $oldPlugin
      */
     public function __construct(DbInterface $db = null, array $baseNode = null, $plugin = null, $oldPlugin = null);
 
@@ -45,14 +43,24 @@ interface ItemInterface
     public function setDB(DbInterface $db): void;
 
     /**
-     * @return \stdClass
+     * @return stdClass
      */
-    public function getPlugin(): \stdClass;
+    public function getPlugin(): stdClass;
 
     /**
-     * @param \stdClass $plugin
+     * @param stdClass $plugin
      */
-    public function setPlugin(\stdClass $plugin): void;
+    public function setPlugin(stdClass $plugin): void;
+
+    /**
+     * @return PluginInterface|null
+     */
+    public function getOldPlugin(): ?PluginInterface;
+
+    /**
+     * @param PluginInterface|null $plugin
+     */
+    public function setOldPlugin(?PluginInterface $plugin): void;
 
     /**
      * @return array

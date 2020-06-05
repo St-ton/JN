@@ -14,26 +14,11 @@ msgstr "https://jtl-url.de/cknmv"
 msgid "votesystemDesc"
 msgstr "Here you can specify whether customers can write a review of your items. You can also search all existing active and inactive reviews and edit them if required."
 
-msgid "bewertungsText1"
-msgstr "Das Bewertungssystem zeigt eine von Ihnen angegebene Anzahl an Bewertungssternen unter den Artikeln in der Detailansicht an. "
-
-msgid "bewertungsText2"
-msgstr "Wir empfehlen bei Änderung der Bewertungsstern-Anzahl auf jeden Fall, auch die Bewertungen zurückzusetzen. Ansonsten kann es zu Rechenfehlern kommen."
-
-msgid "bewertungsText3"
-msgstr "Kommentiert werden darf grundsätzlich nur von eingeloggten Benutzern, egal was unter \"Benutzung nur mit Login\" eingetragen wird.<br/>Wenn angemeldete Benutzer eine Bewertung vornehmen, werden sie auch nicht nach einem Tag zurückgesetzt und können erneut bewerten.<br/>Dies ist nur bei nicht eingeloggten Benutzern so."
-
-msgid "popup"
-msgstr "as a dialogue box"
-
 msgid "clearVotes"
 msgstr "Reset all reviews"
 
 msgid "removeReply"
 msgstr "Delete reply"
-
-msgid "clearVotesComent"
-msgstr "Wählen Sie diese Option nur dann, wenn Sie alle bisher abgegebenen Bewertungspunkte löschen möchten. Das Bewertungssystem wird komplett zurückgesetzt, inklusive aller Kommentare."
 
 msgid "options"
 msgstr "Selection"
@@ -72,10 +57,10 @@ msgid "ratingLast50"
 msgstr "Active customer reviews"
 
 msgid "successRatingEdit"
-msgstr "Your review was edited successfully."
+msgstr "Review edited successfully."
 
 msgid "errorCreditUnlock"
-msgstr "In order to grant a credit bonus, the option \"Approve customer review\" must be activated."
+msgstr "In order to grant a credit bonus, the option \"Activate customer review\" must be activated."
 
 msgid "successRatingUnlock"
 msgstr " Review(s) enabled successfully."
@@ -84,7 +69,7 @@ msgid "successRatingDelete"
 msgstr " Review(s) deleted successfully."
 
 msgid "successRatingCommentDelete"
-msgstr "Response deleted successfully."
+msgstr "Answer deleted successfully."
 
 msgid "linkItemShop"
-msgstr "See item in shop."
+msgstr "View item in online shop"

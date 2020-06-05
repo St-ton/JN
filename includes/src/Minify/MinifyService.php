@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Minify;
 
@@ -23,6 +19,16 @@ class MinifyService
     public const TYPE_CSS = 'css';
 
     public const TYPE_JS = 'js';
+
+    /**
+     * MinifyService constructor.
+     */
+    public function __construct()
+    {
+        if (!\is_dir($this->baseDir) && !\mkdir($this->baseDir) && !\is_dir($this->baseDir)) {
+            throw new \RuntimeException(\sprintf('Directory "%s" was not created', $this->baseDir));
+        }
+    }
 
     /**
      * Build a URI for the static cache

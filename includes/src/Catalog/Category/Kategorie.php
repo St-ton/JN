@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Catalog\Category;
 
@@ -266,7 +262,6 @@ class Kategorie
         }
         $subCats                = $db->select('tkategorie', 'kOberKategorie', $this->kKategorie);
         $this->bUnterKategorien = isset($subCats->kKategorie);
-        $this->cBeschreibung    = Text::parseNewsText($this->cBeschreibung);
         $this->cKurzbezeichnung = (!empty($this->categoryAttributes[\ART_ATTRIBUT_SHORTNAME])
             && !empty($this->categoryAttributes[\ART_ATTRIBUT_SHORTNAME]->cWert))
             ? $this->categoryAttributes[\ART_ATTRIBUT_SHORTNAME]->cWert
@@ -428,11 +423,7 @@ class Kategorie
         if (\is_array(\get_object_vars($obj))) {
             $members = \array_keys(\get_object_vars($obj));
             foreach ($members as $member) {
-                if ($member === 'cBeschreibung') {
-                    $this->$member = Text::parseNewsText($obj->$member);
-                } else {
-                    $this->$member = $obj->$member;
-                }
+                $this->$member = $obj->$member;
             }
             $this->kKategorie     = (int)$this->kKategorie;
             $this->kOberKategorie = (int)$this->kOberKategorie;
@@ -565,7 +556,7 @@ class Kategorie
     /**
      * @return int|null
      */
-    public function getID(): ?int
+    public function getID()
     {
         return $this->kKategorie;
     }

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='checkout-step6-init-payment'}
     {block name='checkout-step6-init-payment-include-header'}
         {include file='layout/header.tpl'}

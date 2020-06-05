@@ -1,14 +1,11 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Filter\SortingOptions;
 
 use Illuminate\Support\Collection;
 use JTL\Filter\ProductFilter;
 use JTL\Mapper\SortingType;
+use JTL\Plugin\PluginInterface;
 
 /**
  * Class Factory
@@ -33,7 +30,6 @@ class Factory
         \SEARCH_SORT_EAN,
         \SEARCH_SORT_NEWEST_FIRST,
         \SEARCH_SORT_PRODUCTNO,
-        \SEARCH_SORT_AVAILABILITY,
         \SEARCH_SORT_WEIGHT,
         \SEARCH_SORT_DATEOFISSUE,
         \SEARCH_SORT_BESTSELLER,
@@ -44,6 +40,11 @@ class Factory
      * @var array
      */
     private $mapping = [];
+
+    /**
+     * @var PluginInterface[]
+     */
+    private $plugins = [];
 
     /**
      * Factory constructor.
@@ -63,9 +64,10 @@ class Factory
      * @param int    $value
      * @param string $className
      */
-    public function registerSortingOption(int $value, string $className): void
+    public function registerSortingOption(int $value, string $className, PluginInterface $plugin = null): void
     {
         $this->mapping[$value] = $className;
+        $this->plugins[$value] = $plugin;
     }
 
     /**
@@ -81,7 +83,7 @@ class Factory
             }
         }
         foreach ($this->mapping as $id => $class) {
-            $all->push(new $class($this->productFilter));
+            $all->push(new $class($this->productFilter, $this->plugins[$id]));
         }
 
         return $all;
@@ -103,6 +105,6 @@ class Factory
             throw new \InvalidArgumentException('Cannot map type ' . $type);
         }
 
-        return new $mapping($this->productFilter);
+        return new $mapping($this->productFilter, $this->plugins[$type] ?? null);
     }
 }

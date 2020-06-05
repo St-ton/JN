@@ -1,5 +1,4 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section='shopzuruecksetzen'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('shopResetTitle') cBeschreibung=__('shopResetDesc') cDokuURL=__('shopResetURL')}
 {literal}
     <script>
@@ -143,12 +142,6 @@
                         <div class="custom-control custom-checkbox">
                             <input class="custom-control-input" type="checkbox" name="cOption_arr[]" value="shopkunden" tabindex="14" id="Shopkunden" />
                             <label class="custom-control-label" for="Shopkunden">{__('deleteCustomers')}</label>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <div class="custom-control custom-checkbox">
-                            <input class="custom-control-input" type="checkbox" name="cOption_arr[]" value="kwerbenk" tabindex="14" id="KwerbenK" />
-                            <label class="custom-control-label" for="KwerbenK">{__('deleteCustomersRecruitCustomers')}</label>
                         </div>
                     </div>
                     <div class="item">

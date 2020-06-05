@@ -1,12 +1,8 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='boxes-box-filter-characteristics'}
     {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE
         && !($isMobile || $Einstellungen.template.productlist.filter_placement === 'modal')}
         {foreach $oBox->getItems() as $characteristic}
-            <div id="sidebox{$oBox->getID()}-{$characteristic->getID()}" class="box box-filter-characteristics{if $characteristic@last} mb-7{/if} d-none d-lg-block">
+            <div id="sidebox{$oBox->getID()}-{$characteristic->getID()}" class="box box-filter-characteristics d-none d-lg-block">
                 {button
                     variant="link"
                     class="text-decoration-none px-0 text-left dropdown-toggle"
@@ -54,11 +50,9 @@
                     {/if}
                 {/block}
                 {/collapse}
-                {if !$characteristic@last}
-                    {block name='boxes-box-filter-characteristics-hr'}
-                        <hr class="my-2">
-                    {/block}
-                {/if}
+                {block name='boxes-box-filter-characteristics-hr'}
+                    <hr class="my-2">
+                {/block}
             </div>
         {/foreach}
     {/if}

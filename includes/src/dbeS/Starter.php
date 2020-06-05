@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\dbeS;
 
@@ -146,6 +142,11 @@ class Starter
      * @var JTLCacheInterface
      */
     private $cache;
+
+    /**
+     * @var string
+     */
+    private $wawiVersion = 'unknown';
 
     /**
      * Starter constructor.
@@ -312,6 +313,7 @@ class Starter
      */
     public function start(string $handledFile, array $post, array $files): int
     {
+        $this->setVersionByUserAgent();
         $this->handleSpecialCases($handledFile, $post);
         $this->executeNetSync($handledFile);
         $direction = self::DIRECTION_PULL;
@@ -342,9 +344,11 @@ class Starter
                 echo $return;
                 exit();
             }
-
+            $serializedXML = $this->getWawiVersion() === 'unknown'
+                ? Text::convertISO(XML::serialize($res))
+                : XML::serialize($res);
             echo \is_array($res)
-                ? $return . ";\n" . Text::convertISO(XML::serialize($res))
+                ? $return . ";\n" . $serializedXML
                 : $return . ';' . $res;
         } else {
             $this->init($post, [], false);
@@ -352,7 +356,7 @@ class Starter
             $pusher = new $handler($this->db, $this->cache, $this->logger);
             $xml    = $pusher->getData();
             if (\is_array($xml) && \count($xml) > 0) {
-                $pusher->zipRedirect(\time() . '.jtl', $xml);
+                $pusher->zipRedirect(\time() . '.jtl', $xml, $this->getWawiVersion());
             }
 
             echo self::OK;
@@ -403,5 +407,33 @@ class Starter
 
             yield [$xmlFile => $string ? \simplexml_load_string($data) : XML::unserialize($data)];
         }
+    }
+
+    public function setVersionByUserAgent(): void
+    {
+        $useragent = $_SERVER['HTTP_USER_AGENT'] ?? null;
+        $matches   = [];
+        if ($useragent !== null) {
+            \preg_match('/JTL-Wawi\/(\d+(\.\d+)+)/', $useragent, $matches);
+            if (\count($matches) > 0 && isset($matches[1])) {
+                $this->setWawiVersion($matches[1]);
+            }
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public function getWawiVersion(): string
+    {
+        return $this->wawiVersion;
+    }
+
+    /**
+     * @param  string $wawiVersion
+     */
+    public function setWawiVersion(string $wawiVersion): void
+    {
+        $this->wawiVersion = $wawiVersion;
     }
 }

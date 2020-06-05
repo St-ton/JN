@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Helpers;
 
@@ -195,7 +191,7 @@ class Category
         $imageJoin            = ($categoryCount >= \CATEGORY_FULL_LOAD_LIMIT && $showCategoryImages === 'N')
             ? '' //the join is not needed if we don't select the category image path
             : ' LEFT JOIN tkategoriepict
-                        ON tkategoriepict.kKategorie = node.kKategorie';
+                    ON tkategoriepict.kKategorie = node.kKategorie';
             $nameSelect       = $isDefaultLang === true
                 ? ', node.cName'
                 : ', node.cName, tkategoriesprache.cName AS cName_spr';

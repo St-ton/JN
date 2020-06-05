@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='header'}
     {include file='layout/header.tpl'}
 {/block}
@@ -21,7 +17,7 @@
                         <fieldset>
                             {include file='snippets/form_group_simple.tpl'
                                 options=[
-                                    'email', 'email', 'email', null,
+                                    'email', 'email', 'email', "{if $presetEmail !== ''}{$presetEmail}{/if}",
                                     {lang key='emailadress'}, true
                                 ]
                             }

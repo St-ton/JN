@@ -13,17 +13,17 @@
                 <input type="hidden" name="kLinkgruppe" value="{if $linkGroup !== null}{$linkGroup->getID()}{/if}" />
 
                 <div class="settings">
-                    <div class="form-group form-row align-items-center{if isset($xPlausiVar_arr.cName)} error{/if}">
-                        <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('linkGroup')}{if isset($xPlausiVar_arr.cName)} <span class="fillout">{__('FillOut')}</span>{/if}:</label>
+                    <div class="form-group form-row align-items-center{if isset($xPlausiVar_arr.cName)} form-error{/if}">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('linkGroup')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <input type="text" name="cName" id="cName"  class="form-control{if isset($xPlausiVar_arr.cName)} fieldfillout{/if}" value="{if isset($xPostVar_arr.cName)}{$xPostVar_arr.cName}{elseif $linkGroup !== null}{$linkGroup->getGroupName()}{/if}" />
+                            <input type="text" name="cName" id="cName"  class="form-control" value="{if isset($xPostVar_arr.cName)}{$xPostVar_arr.cName}{elseif $linkGroup !== null}{$linkGroup->getGroupName()}{/if}" />
                         </div>
                     </div>
 
-                    <div class="form-group form-row align-items-center{if isset($xPlausiVar_arr.cTemplatename)} error{/if}">
-                        <label class="col col-sm-4 col-form-label text-sm-right" for="cTemplatename">{__('linkGroupTemplatename')}{if isset($xPlausiVar_arr.cTemplatename)} <span class="fillout">{__('FillOut')}</span>{/if}:</label>
+                    <div class="form-group form-row align-items-center{if isset($xPlausiVar_arr.cTemplatename)} form-error{/if}">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="cTemplatename">{__('linkGroupTemplatename')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <input type="text" name="cTemplatename" id="cTemplatename" class="form-control{if isset($xPlausiVar_arr.cTemplatename)} fieldfillout{/if}" value="{if isset($xPostVar_arr.cTemplatename)}{$xPostVar_arr.cTemplatename}{elseif $linkGroup !== null}{$linkGroup->getTemplate()}{/if}" />
+                            <input type="text" name="cTemplatename" id="cTemplatename" class="form-control" value="{if isset($xPostVar_arr.cTemplatename)}{$xPostVar_arr.cTemplatename}{elseif $linkGroup !== null}{$linkGroup->getTemplate()}{/if}" />
                         </div>
                     </div>
                     {foreach $availableLanguages as $language}

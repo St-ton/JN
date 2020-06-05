@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Filter\States;
 
@@ -78,18 +74,18 @@ class BaseCharacteristic extends AbstractFilter
         }
         $select = 'tmerkmal.cName';
         $join   = '';
-        if (Shop::getLanguage() > 0 && !LanguageHelper::isDefaultLanguageActive()) {
+        if (Shop::getLanguageID() > 0 && !LanguageHelper::isDefaultLanguageActive()) {
             $select = 'tmerkmalsprache.cName, tmerkmal.cName AS cMMName';
             $join   = ' JOIN tmerkmalsprache 
                              ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
-                             AND tmerkmalsprache.kSprache = ' . Shop::getLanguage();
+                             AND tmerkmalsprache.kSprache = ' . Shop::getLanguageID();
         }
         $characteristicValues = $this->productFilter->getDB()->query(
             'SELECT tmerkmalwertsprache.cWert, ' . $select . '
                 FROM tmerkmalwert
                 JOIN tmerkmalwertsprache 
                     ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                    AND kSprache = ' . Shop::getLanguage() . '
+                    AND kSprache = ' . Shop::getLanguageID() . '
                 JOIN tmerkmal ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
                 ' . $join . '
                 WHERE tmerkmalwert.kMerkmalWert = ' . $this->getValue(),

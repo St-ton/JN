@@ -1,78 +1,4 @@
 <script type="text/javascript">
-    $(function () {
-        var $el = $('#images');
-        $el.fileinput({
-            uploadAsync:           false,
-            showPreview:           true,
-            showUpload:            false,
-            showRemove:            false,
-            showDrag:              false,
-            browseClass:           'btn btn-default',
-            cancelClass:           'btn btn-outline-primary',
-            cancelIcon:            '<i class="fas fa-exclamation"></i>',
-            fileActionSettings:    {
-                showZoom:   false,
-                showDrag:   false,
-                showRemove: false,
-            },
-            theme:                 'fas',
-            language:              '{$language|mb_substr:0:2}',
-            allowedFileExtensions: ['jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp'],
-            browseOnZoneClick:     true,
-            maxFileSize:           {$nMaxFileSize},
-            initialPreview:        [
-                {foreach $files as $file}
-                '<img src="{$file->cURLFull}" class="file-preview-image img-fluid"/><a href="news.php?news=1&news_editieren=1&kNews={$oNews->getID()}&delpic={$file->cName}&token={$smarty.session.jtl_token}" title="{__('delete')}"><i class="fas fa-trash-alt"></i></a>',
-                {/foreach}
-            ],
-            initialPreviewConfig:  [
-                {foreach $files as $file}
-                {
-                    caption: '$#{$file->cName}#$',
-                    width:   '120px'
-                },
-                {/foreach}
-            ]
-        }).on('filebatchselected', function(event, files) {
-            $('#images').fileinput('upload');
-        });
-        var $preview = $('#previewImage');
-        $preview.fileinput({
-            uploadAsync:           false,
-            showPreview:           true,
-            showUpload:            false,
-            showRemove:            false,
-            showDrag:              false,
-            browseClass:           'btn btn-default',
-            cancelClass:           'btn btn-outline-primary',
-            cancelIcon:            '<i class="fas fa-exclamation"></i>',
-            fileActionSettings:    {
-                showZoom:   false,
-                showDrag:   false,
-                showRemove: false,
-            },
-            theme:                 'fas',
-            language:              '{$language|mb_substr:0:2}',
-            allowedFileExtensions: ['jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp'],
-            browseOnZoneClick:     true,
-            maxFileSize:           {$nMaxFileSize},
-            initialPreview:        [
-                {if !empty($oNews->getPreviewImage())}
-                '<img src="{$shopURL}/{$oNews->getPreviewImage()}" class="preview-image"/>',
-                {/if}
-            ],
-            initialPreviewConfig:  [
-                {if !empty($oNews->getPreviewImage())}
-                {
-                    caption: '{__('preview')}',
-                    width:   '120px'
-                }
-                {/if}
-            ]
-        }).on('filebatchselected', function(event, files) {
-            $('#preview').fileinput('upload');
-        });
-    });
     {literal}
     $(document).ready(function () {
         $('#lang').on('change', function () {
@@ -223,13 +149,47 @@
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="previewImage">{__('preview')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <input class="form-control-upload" name="previewImage" id="previewImage" type="file"/>
+                                {include file='tpl_inc/fileupload.tpl'
+                                    fileID='previewImage'
+                                    fileMaxSize={$nMaxFileSize}
+                                    fileInitialPreview="[
+                                            {if !empty($oNews->getPreviewImage())}
+                                            '<img src=\"{$shopURL}/{$oNews->getPreviewImage()}\" class=\"preview-image\"/>',
+                                            {/if}
+                                        ]"
+                                    fileInitialPreviewConfig="[
+                                            {if !empty($oNews->getPreviewImage())}
+                                            {
+                                                caption: '$#preview#$',
+                                                width:   '120px'
+                                            }
+                                            {/if}
+                                        ]"
+                                }
                             </div>
                         </div>
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right">{__('newsPics')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <input class="form-control-upload" id="images" name="Bilder[]" type="file" multiple/>
+                                {include file='tpl_inc/fileupload.tpl'
+                                    fileID='images'
+                                    fileName='Bilder[]'
+                                    fileMaxSize={$nMaxFileSize}
+                                    fileIsSingle=false
+                                    fileInitialPreview="[
+                                            {foreach $files as $file}
+                                            '<img src=\"{$file->cURLFull}\" class=\"file-preview-image img-fluid\"/><a class=\"d-block\" href=\"news.php?news=1&news_editieren=1&kNews={$oNews->getID()}&delpic={$file->cName}&token={$smarty.session.jtl_token}\" title=\"{__('delete')}\"><i class=\"fas fa-trash-alt\"></i></a>',
+                                            {/foreach}
+                                        ]"
+                                    fileInitialPreviewConfig="[
+                                            {foreach $files as $file}
+                                            {
+                                                caption: '$#{$file->cName}#$',
+                                                width:   '120px'
+                                            },
+                                            {/foreach}
+                                        ]"
+                                }
                             </div>
                         </div>
                         <div class="form-group form-row align-items-center">

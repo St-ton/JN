@@ -12,22 +12,22 @@ msgid "bannerDesc"
 msgstr "Hier pflegen Sie für beliebige Seiten in Ihrem Onlineshop anklickbare Grafikbanner ein. Die anklickbaren Flächen lassen sich innerhalb des Grafikbanners frei positionieren und mit Artikeln oder beliebigen URLs verknüpfen.<br/><strong>Achtung:</strong> Deaktivieren Sie Ihren Adblocker, falls Sie Probleme auf dieser Seite feststellen."
 
 msgid "successSave"
-msgstr "Ihr Banner wurde erfolgreich gespeichert."
+msgstr "Banner wurde erfolgreich gespeichert."
 
 msgid "errorSave"
-msgstr "Das Banner konnte nicht angelegt werden."
+msgstr "Banner konnte nicht angelegt werden."
 
 msgid "errrorBannerNotFound"
-msgstr "Das Banner wurde nicht gefunden."
+msgstr "Banner wurde nicht gefunden."
 
 msgid "successDeleted"
-msgstr "Das Banner wurde erfolgreich gelöscht."
+msgstr "Banner wurde erfolgreich gelöscht."
 
 msgid "errorDeleted"
-msgstr "Das Banner konnte nicht gelöscht werden."
+msgstr "Banner konnte nicht gelöscht werden."
 
 msgid "errorDate"
-msgstr "Ihre Eingabe für das Feld „Aktiv von Datum“ konnte nicht verarbeitet werden."
+msgstr "Eingabe für das Feld „Aktiv von “ konnte nicht verarbeitet werden."
 
 msgid "errorDateActiveToGreater"
 msgstr "Das Datum im Feld „Aktiv bis“ muss nach dem Datum im Feld „Aktiv von“ liegen."

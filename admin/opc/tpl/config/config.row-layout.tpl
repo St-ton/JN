@@ -1,5 +1,11 @@
 <div class="row-layout-controls">
-    <label for="config-{$propname}">{$propdesc.label}</label>
+    <label for="config-{$propname}"
+            {if !empty($propdesc.desc) || !empty($propdesc.hint)}
+                data-toggle="tooltip" title="{$propdesc.desc|default:''} - {$propdesc.hint|default:''}"
+                data-placement="auto"
+            {/if}>
+        {$propdesc.label}
+    </label>
     <div class="row">
         <div class="col-4">
             <div class="select-wrapper">
@@ -36,7 +42,7 @@
     </div>
 </div>
 
-<label>Vorschau</label>
+<label>{__('preview')}</label>
 
 <div class="row-layout-previews" id="{$propname}-previews">
     <div>

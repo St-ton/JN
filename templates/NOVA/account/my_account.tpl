@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='account-my-account'}
     {block name='heading'}
         <div class="h2 mb-4">{lang key='welcome' section='login'} {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}</div>
@@ -75,7 +71,9 @@
                             {/block}
                         {else}
                             {block name='account-my-account-orders-content-nodata'}
-                                {lang key='noOrdersYet' section='account data'}
+                                {cardbody}
+                                    {lang key='noOrdersYet' section='account data'}
+                                {/cardbody}
                             {/block}
                         {/if}
                     {/card}
@@ -214,7 +212,9 @@
                             {/block}
                         {else}
                             {block name='account-my-account-wishlist-no-data'}
-                                {lang key='noWishlist' section='account data'}
+                                {cardbody}
+                                    {lang key='noWishlist' section='account data'}
+                                {/cardbody}
                             {/block}
                         {/if}
                     {/card}

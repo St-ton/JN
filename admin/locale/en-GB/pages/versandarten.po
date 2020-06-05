@@ -8,14 +8,8 @@ msgstr "Shipping methods"
 msgid "shippingmethodsURL"
 msgstr "https://jtl-url.de/kbw2p"
 
-msgid "documentationHint"
-msgstr "Here you can view all shipping methods that are currently available for JTL-Shop. If you click on one of the destination countries of a shipping method, you can enter surcharges for special postal codes (e.g.&nbsp;surcharges for islands). You can also create new shipping methods and edit existing ones. For technical instructions and examples regarding this topic, please see <i class=\"fa fa-external-link\"></i> <a href=\"https://jtl-url.de/guide\">http://guide.jtl-software.com</a>."
-
 msgid "isleListsHint"
-msgstr "Click on the respective destination country to enter surcharges (e.g.&nbsp;for islands). When there are surcharge lists saved for the destination country and shipping method, this is indicated by the respective marking."
-
-msgid "activeShippingmethods"
-msgstr "Active shipping methods"
+msgstr "Click on the respective destination country to enter surcharges (e.g. for islands). When there are surcharge lists saved for the destination country and shipping method, this is indicated by the respective marking."
 
 msgid "createShippingMethod"
 msgstr "Create shipping method"
@@ -41,29 +35,17 @@ msgstr "Note (online shop)"
 msgid "shippingNoteEmail"
 msgstr "Note (email)"
 
-msgid "trackingLink"
-msgstr "Tracking link"
-
-msgid "priceGross"
-msgstr "Price (gross)"
-
 msgid "gross"
 msgstr "Gross (fixed shipping costs)"
 
-msgid "grossValue"
-msgstr "19%"
-
 msgid "amount"
-msgstr "Value"
+msgstr "Amount"
 
 msgid "taxshippingcosts"
 msgstr "Taxes for shipping costs and threshold for free shipping"
 
-msgid "shippingtime"
-msgstr "Delivery time"
-
 msgid "taxshippingcostsDesc"
-msgstr "Specify whether the shipping costs are indicated as a fixed gross price. If the option \"Gross (fixed shipping costs)\" is selected, customers always pay the same shipping costs since different VAT rates do not affect the total costs of shipping. This also means that the threshold for free shipping refers to the gross basket value. If the option \"Net (automatic VAT addition)\" is selected, the respective VAT rate charged for the current basket is added to the net shipping costs. This may lead to varying shipping costs due to different VAT rates. This also means that the threshold for free shipping refers to the net basket value."
+msgstr "Specify whether the shipping costs are indicated as a fixed gross price. If the option \"Gross (fixed shipping costs)\" is selected, customers always pay the same shipping costs since different VAT rates do not affect the total costs of shipping. This also means that the threshold for free shipping refers to the gross basket value.<br>If the option \"Net (automatic VAT addition)\" is selected, the respective VAT rate charged for the current basket is added to the net shipping costs. This may lead to varying shipping costs due to different VAT rates. This also means that the threshold for free shipping refers to the net basket value."
 
 msgid "net"
 msgstr "Net (automatic VAT addition)"
@@ -81,7 +63,7 @@ msgid "excludeShippingProposal"
 msgstr "Ignore when calculating the cheapest shipping costs"
 
 msgid "excludeShippingProposalDesc"
-msgstr "Specify whether this shipping method is to be ignored when calculating the cheapest shipping costs. Irrespective of what is specified in this setting, the shipping method will be listed during the ordering process and in the shipping cost determination of the basket when the other criteria are met."
+msgstr "Specify whether this shipping method is to be ignored when calculating the cheapest shipping costs.<br>Irrespective of what is specified in this setting, the shipping method will be listed during the ordering process and in the shipping cost determination of the basket when the other criteria are met."
 
 msgid "tax"
 msgstr "VAT"
@@ -90,16 +72,16 @@ msgid "sortnr"
 msgstr "Sort number"
 
 msgid "minLiefertage"
-msgstr "Min. DeliveryDays"
+msgstr "Shipping days min."
 
 msgid "maxLiefertage"
-msgstr "Max. DeliveryDays"
+msgstr "Shipping days max."
 
 msgid "acceptedPaymentMethods"
 msgstr "Accepted payment methods"
 
 msgid "createShippingType"
-msgstr "Create shipping method"
+msgstr "Save shipping method"
 
 msgid "modifyedShippingType"
 msgstr "Save changes"
@@ -120,7 +102,7 @@ msgid "isleListFor"
 msgstr "Surcharge lists for"
 
 msgid "isleListsDesc"
-msgstr "Here you can define surcharge lists such&nbsp;as extra charges for islands on the basis of postal codes. The surcharge list is only valid for the respective shipping method and the selected destination country."
+msgstr "Here you can create surcharge lists, e.g. for extra charges for islands, and add postal codes via the \"+\" button. The surcharge list is only valid for the respective shipping method and the selected destination country."
 
 msgid "isleList"
 msgstr "Surcharge list"
@@ -141,7 +123,7 @@ msgid "editList"
 msgstr "Edit surcharge list"
 
 msgid "orZipRange"
-msgstr "or postal code area"
+msgstr "Postal code area"
 
 msgid "zipRange"
 msgstr "Postal code area"
@@ -150,19 +132,13 @@ msgid "add"
 msgstr "Add"
 
 msgid "freeShipping"
-msgstr "Free shipping threshold"
+msgstr "Free shipping from"
 
 msgid "maxCosts"
 msgstr "Capping"
 
 msgid "maxCostsUpTo"
 msgstr "Capped to"
-
-msgid "activate"
-msgstr "enable"
-
-msgid "freeFrom"
-msgstr "free from"
 
 msgid "checkEU"
 msgstr "European Union"
@@ -173,20 +149,11 @@ msgstr "Europe, non-EU countries"
 msgid "checkEurope"
 msgstr "Europe"
 
-msgid "checkWorld"
-msgstr "World"
-
 msgid "checkNA"
 msgstr "North America"
 
 msgid "checkAsia"
 msgstr "Asia"
-
-msgid "checkAllOff"
-msgstr "Deselect all"
-
-msgid "checkAllOn"
-msgstr "Select all"
 
 msgid "pictureURL"
 msgstr "Image URL"
@@ -251,9 +218,6 @@ msgstr "Delete last price scale"
 msgid "versandklassenExceeded"
 msgstr "There are more than 5 shipping classes. Please reduce the number of classes in JTL-Wawi."
 
-msgid "back2shippingtypes"
-msgstr "Go back to shipping methods"
-
 msgid "coverageShippingClassCombination"
 msgstr "Not all shipping class combinations are covered by the shipping methods."
 
@@ -264,7 +228,7 @@ msgid "showMissingCombinations"
 msgstr "Show missing shipping classes"
 
 msgid "versandartenSortDesc"
-msgstr "The lower the priority, the higher up a shipping method is listed."
+msgstr "The smaller the number, the higher up the shipping method will be displayed."
 
 msgid "successShippingMethodDelete"
 msgstr "Shipping method deleted successfully."
@@ -276,10 +240,10 @@ msgid "errorShippingMethodDuplicated"
 msgstr "Could not duplicate shipping method."
 
 msgid "errorZIPOverlap"
-msgstr "Postal code %s overlaps with %s.<br/>Please enter a different postal code."
+msgstr "Postal code %s overlaps with a postal code in surcharge list \"%s\".<br/>Please enter a different postal code."
 
 msgid "errorZIPAreaOverlap"
-msgstr "Postal code area %s overlaps with %s.<br/>Please enter a different postal code area."
+msgstr "Postal code area %s overlaps with a postal code in surcharge list \"%s\".<br/>Please enter a different postal code area."
 
 msgid "successZIPAdd"
 msgstr "Postal code added successfully."
@@ -294,7 +258,7 @@ msgid "errorListNameMissing"
 msgstr "Please enter a name for the surcharge list."
 
 msgid "errorListPriceMissing"
-msgstr "Please enter a price for the surcharge."
+msgstr "Please enter an amount for the surcharge."
 
 msgid "successShippingMethodCreate"
 msgstr "Shipping method <strong>%s</strong> added successfully."
@@ -355,10 +319,13 @@ msgid "surcharge"
 msgstr "Surcharge"
 
 msgid "addZip"
-msgstr "Add ZIP"
+msgstr "Add postal code"
 
 msgid "deleteZip"
-msgstr "Delete zip code/zip area"
+msgstr "Delete postal code"
 
 msgid "countriesSelected"
 msgstr "selected"
+
+msgid "acceptedPaymentMethodsDesc"
+msgstr "Enter a negative value to grant a discount"

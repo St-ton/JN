@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Catalog\Product;
 
@@ -218,7 +214,7 @@ class Merkmal
     /**
      * @return int|null
      */
-    public function getID(): ?int
+    public function getID()
     {
         return $this->kMerkmal;
     }

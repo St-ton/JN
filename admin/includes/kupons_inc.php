@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Hersteller;
@@ -186,7 +182,7 @@ function getExportableCoupons($type = Kupon::TYPE_STANDARD, $whereSQL = '')
 {
     $coupons = getRawCoupons($type, $whereSQL);
     foreach ($coupons as $rawCoupon) {
-        foreach (getCouponNames($rawCoupon->kKupon) as $iso => $name) {
+        foreach (getCouponNames((int)$rawCoupon->kKupon) as $iso => $name) {
             $rawCoupon->{'cName_' . $iso} = $name;
         }
     }

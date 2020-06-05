@@ -3,13 +3,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "shoptemplates"
-msgstr "Shop-Templates"
+msgstr "Templates für JTL-Shop"
 
 msgid "shoptemplateURL"
 msgstr "https://jtl-url.de/dq1g2"
 
 msgid "shoptemplatesDesc"
-msgstr "Auf dieser Seite finden Sie alle Templates, die sich im Ordner „/templates/“ des Shop-Wurzelverzeichnis befinden. Falls Sie ein neues Template haben und es nutzen möchten, übertragen Sie es zuerst per <abbr title=\"FTP (File Transfer Protokoll) ist ein Dateiübertragungsprotokoll\">FTP</abbr> in dieses Verzeichnis. Sie können immer nur ein normales und ein Mobile Template zur gleichen Zeit für JTL-Shop aktivieren. Über die Schaltfläche „Einstellungen“ konfigurieren Sie das aktivierte Template."
+msgstr "Auf dieser Seite finden Sie alle Templates, die sich im Ordner „/templates/“ des Wurzelverzeichnisses von JTL-Shop befinden. Falls Sie ein neues Template haben und es nutzen möchten, übertragen Sie es zuerst per <abbr title=\"FTP (File Transfer Protokoll) ist ein Dateiübertragungsprotokoll\">FTP</abbr> in dieses Verzeichnis. Sie können immer nur ein normales und ein Mobile Template zur gleichen Zeit für JTL-Shop aktivieren. Über die Schaltfläche „Einstellungen“ konfigurieren Sie das aktivierte Template."
 
 msgid "templateName"
 msgstr "Template-Name"
@@ -63,4 +63,4 @@ msgid "parentTemplateMissing"
 msgstr "Parent-Template fehlt"
 
 msgid "errorOverlayWritePermissions"
-msgstr "Die Overlays konnten nicht erzeugt werden. Bitte prüfen Sie die Schreibrechte des Ordners „%s“ und aktivieren Sie das Template erneut."
+msgstr "Die Artikelsticker konnten nicht erzeugt werden. Bitte prüfen Sie die Schreibrechte des Ordners „%s“ und aktivieren Sie das Template erneut."

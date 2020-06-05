@@ -3,10 +3,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "navigationsfilter"
-msgstr "Item filter"
+msgstr "Item overview"
 
 msgid "navigationsfilterDesc"
-msgstr "Here you can set the various filter possibilities of JTL-Shop, e.g. for item overview pages."
+msgstr "Here you can set the various filter possibilities for item overview pages of JTL-Shop."
 
 msgid "navigationsfilterUrl"
 msgstr "https://jtl-url.de/gbz5f"

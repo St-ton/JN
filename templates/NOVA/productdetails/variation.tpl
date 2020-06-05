@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productdetails-variation'}
     {if isset($Artikel->Variationen) && $Artikel->Variationen|@count > 0 && !$showMatrix}
         {assign var=VariationsSource value='Variationen'}
@@ -21,8 +17,21 @@
                 {col}
                     <dl>
                     {foreach name=Variationen from=$Artikel->$VariationsSource key=i item=Variation}
+
                     {strip}
-                        <dt>{$Variation->cName}{if $Variation->cTyp === 'IMGSWATCHES'} <span class="swatches-selected text-muted" data-id="{$Variation->kEigenschaft}"></span>{/if}</dt>
+                        <dt>{$Variation->cName}&nbsp;
+                            {if $Variation->cTyp === 'IMGSWATCHES'}
+                                <span class="swatches-selected text-success" data-id="{$Variation->kEigenschaft}">
+                                {foreach $Variation->Werte as $variationValue}
+                                    {if isset($oVariationKombi_arr[$variationValue->kEigenschaft])
+                                        && in_array($variationValue->kEigenschaftWert, $oVariationKombi_arr[$variationValue->kEigenschaft])}
+                                        {$variationValue->cName}
+                                        {break}
+                                    {/if}
+                                {/foreach}
+                                </span>
+                            {/if}
+                        </dt>
                         <dd class="form-group text-left">
                             {if $Variation->cTyp === 'SELECTBOX'}
                                 {block name='productdetails-variation-select-outer'}
@@ -171,20 +180,22 @@
                                                                {if $bSelected}checked="checked"{/if}
                                                                {if $smarty.foreach.Variationswerte.index === 0 && !$showMatrix} required{/if}
                                                                />
-                                                        <span class="label-variation">
                                                             {if $hasImage}
-                                                                {image fluid=true webp=true lazy=true
-                                                                    src=$Variationswert->getImage(\JTL\Media\Image::SIZE_XS)
-                                                                    srcset="{$Variationswert->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_variationen_mini_breite}w,
-                                                                        {$Variationswert->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_variationen_klein_breite}w,
-                                                                        {$Variationswert->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_variationen_breite}w"
-                                                                    sizes="40px"
-                                                                    alt=$Variationswert->cName|escape:'quotes'
-                                                                }
+                                                                <div class="square square-image">
+                                                                    <div class="inner">
+                                                                        {image fluid=true webp=true lazy=true
+                                                                            src=$Variationswert->getImage(\JTL\Media\Image::SIZE_XS)
+                                                                            srcset="{$Variationswert->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_variationen_mini_breite}w,
+                                                                                {$Variationswert->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_variationen_klein_breite}w,
+                                                                                {$Variationswert->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_variationen_breite}w"
+                                                                            sizes="90px"
+                                                                            alt=$Variationswert->cName|escape:'quotes'
+                                                                        }
+                                                                    </div>
+                                                                </div>
                                                             {else}
                                                                 {$Variationswert->cName}
                                                             {/if}
-                                                        </span>
                                                         {block name='productdetails-variation-swatch-include-variation-value'}
                                                             {include file='productdetails/variation_value.tpl' hideVariationValue=true}
                                                         {/block}

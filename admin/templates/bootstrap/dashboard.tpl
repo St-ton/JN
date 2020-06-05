@@ -1,6 +1,4 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section='login'}
-{config_load file="$lang.conf" section='shopupdate'}
 
 {if 'DASHBOARD_VIEW'|permission}
     <script type="text/javascript" src="{$templateBaseURL}js/html.sortable.js"></script>
@@ -16,18 +14,18 @@
     }
 
     $(function() {
-        ioCall('truncateJtllog');
+        ioCall('truncateJtllog', undefined, undefined, undefined, undefined, true);
     });
     </script>
 
     <div id="content">
-        <div class="row">
+        <div class="row p-2">
             <div class="col">
                 <h1 class="content-header-headline">{__('dashboard')}</h1>
             </div>
             <div class="col-auto ml-auto">
                 <div class="dropleft d-inline-block">
-                    <button class="btn btn-link btn-lg px-0" type="button" id="helpcenter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button class="btn btn-link btn-lg p-0" type="button" id="helpcenter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="icon-hover">
                             <span class="fal fa-cog"></span>
                             <span class="fas fa-cog"></span>

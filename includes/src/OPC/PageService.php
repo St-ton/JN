@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\OPC;
 
@@ -109,15 +105,16 @@ class PageService
      */
     public function renderMountPoint(array $params): string
     {
-        $id     = $params['id'];
-        $title  = $params['title'] ?? $id;
-        $output = '';
+        $id          = $params['id'];
+        $title       = $params['title'] ?? $id;
+        $inContainer = $params['inContainer'] ?? true;
+        $output      = '';
 
         if ($this->opc->isEditMode()) {
             $output = '<div class="opc-area opc-rootarea" data-area-id="' . $id . '" data-title="' . $title
                 . '"></div>';
         } elseif ($this->getCurPage()->getAreaList()->hasArea($id)) {
-            $output = $this->getCurPage()->getAreaList()->getArea($id)->getFinalHtml();
+            $output = $this->getCurPage()->getAreaList()->getArea($id)->getFinalHtml($inContainer);
         }
 
         Shop::fire('shop.OPC.PageService.renderMountPoint', [
@@ -211,8 +208,9 @@ class PageService
      * @param int $langId
      * @return string
      */
-    public function getCurPageUri(int $langId = 0)
+    public function getCurPageUri(int $langId = 0): string
     {
+        $uri = $_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'];
         if ($langId > 0) {
             $languages = $_SESSION['Sprachen'];
             foreach ($languages as $language) {
@@ -221,13 +219,9 @@ class PageService
                     break;
                 }
             }
-        } else {
-            $uri = $_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'];
         }
-
         $shopURLdata = \parse_url(Shop::getURL());
         $baseURLdata = \parse_url($uri);
-
         if (empty($shopURLdata['path'])) {
             $shopURLdata['path'] = '/';
         }
@@ -235,13 +229,10 @@ class PageService
         if (!isset($baseURLdata['path'])) {
             return '/';
         }
-
         $result = \mb_substr($baseURLdata['path'], \mb_strlen($shopURLdata['path']));
-
         if (isset($baseURLdata['query'])) {
             $result .= '?' . $baseURLdata['query'];
         }
-
         $result = '/' . \ltrim($result, '/');
 
         return $result;
@@ -263,7 +254,7 @@ class PageService
     public function createCurrentPageId(int $langId = 0): string
     {
         if ($langId === 0) {
-            $langId = \Shop::getLanguageID();
+            $langId = Shop::getLanguageID();
         }
 
         $params    = Shop::getParameters();
@@ -414,14 +405,21 @@ class PageService
 
     /**
      * @param int $key
-     * @return bool true if the draft could be locked, false if it is still locked by some other user
+     * @return int
+     *      0 if the draft could be locked
+     *      1 if it is still locked by some other user
+     *      2 if the Shop has pending database updates
      * @throws \Exception
      */
-    public function lockDraft(int $key): bool
+    public function lockDraft(int $key): int
     {
+        if ($this->pageDB->shopHasPendingUpdates()) {
+            return 2;
+        }
+
         $draft = $this->getDraft($key);
 
-        return $this->locker->lock($this->adminName, $draft);
+        return $this->locker->lock($this->adminName, $draft) ? 0 : 1;
     }
 
     /**

@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Plugin\Admin\Installation\Items;
 
@@ -90,7 +86,7 @@ class MailTemplates extends AbstractItem
                     continue;
                 }
                 $addedLanguages[] = $localizedTpl->kSprache;
-                if (!isset($this->oldPlugin->kPlugin) || !$this->oldPlugin->kPlugin) {
+                if ($this->oldPlugin === null) { // @todo: this check does not seem to be sufficient
                     $this->db->insert('temailvorlagesprache', $localizedTpl);
                 }
                 $this->db->insert('temailvorlagespracheoriginal', $localizedTpl);

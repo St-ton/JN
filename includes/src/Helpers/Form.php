@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Helpers;
 
@@ -61,22 +57,23 @@ class Form
     /**
      * validate token from POST/GET
      *
+     * @param null|string $token
      * @return bool
      * @since 5.0.0
      */
-    public static function validateToken(): bool
+    public static function validateToken(?string $token = null): bool
     {
         if (!isset($_SESSION['jtl_token'])) {
             return false;
         }
 
-        $token = $_POST['jtl_token'] ?? $_GET['token'] ?? null;
+        $tokenTMP = $token ?? $_POST['jtl_token'] ?? $_GET['token'] ?? null;
 
-        if ($token === null) {
+        if ($tokenTMP === null) {
             return false;
         }
 
-        return Shop::Container()->getCryptoService()->stableStringEquals($_SESSION['jtl_token'], $token);
+        return Shop::Container()->getCryptoService()->stableStringEquals($_SESSION['jtl_token'], $tokenTMP);
     }
 
     /**
@@ -102,41 +99,31 @@ class Form
     public static function getMissingContactFormData(): array
     {
         $ret  = [];
-        $conf = Shop::getSettings([\CONF_KONTAKTFORMULAR, \CONF_GLOBAL]);
-        if (!$_POST['nachricht']) {
+        $conf = Shop::getSettings([\CONF_KONTAKTFORMULAR, \CONF_GLOBAL])['kontakt'];
+        if (empty($_POST['nachricht'])) {
             $ret['nachricht'] = 1;
         }
-        if (!$_POST['email']) {
-            $ret['email'] = 1;
-        }
-        if (!$_POST['subject']) {
+        if (empty($_POST['subject'])) {
             $ret['subject'] = 1;
         }
-        if (Text::filterEmailAddress($_POST['email']) === false) {
+        if (empty($_POST['email'])) {
+            $ret['email'] = 1;
+        } elseif (Text::filterEmailAddress($_POST['email'] ?? '') === false) {
             $ret['email'] = 2;
-        }
-        if (SimpleMail::checkBlacklist($_POST['email'])) {
+        } elseif (SimpleMail::checkBlacklist($_POST['email'] ?? '')) {
             $ret['email'] = 3;
         }
-        if (!$_POST['vorname'] && $conf['kontakt']['kontakt_abfragen_vorname'] === 'Y') {
-            $ret['vorname'] = 1;
+        foreach (['vorname', 'nachname', 'firma'] as $key) {
+            if (empty($_POST[$key]) && $conf['kontakt_abfragen_' . $key] === 'Y') {
+                $ret[$key] = 1;
+            }
         }
-        if (!$_POST['nachname'] && $conf['kontakt']['kontakt_abfragen_nachname'] === 'Y') {
-            $ret['nachname'] = 1;
+        foreach (['fax', 'tel', 'mobil'] as $numberKey) {
+            if ($conf['kontakt_abfragen_' . $numberKey] === 'Y') {
+                $ret[$numberKey] = Text::checkPhoneNumber($_POST[$numberKey] ?? '');
+            }
         }
-        if (!$_POST['firma'] && $conf['kontakt']['kontakt_abfragen_firma'] === 'Y') {
-            $ret['firma'] = 1;
-        }
-        if ($conf['kontakt']['kontakt_abfragen_fax'] === 'Y') {
-            $ret['fax'] = Text::checkPhoneNumber($_POST['fax']);
-        }
-        if ($conf['kontakt']['kontakt_abfragen_tel'] === 'Y') {
-            $ret['tel'] = Text::checkPhoneNumber($_POST['tel']);
-        }
-        if ($conf['kontakt']['kontakt_abfragen_mobil'] === 'Y') {
-            $ret['mobil'] = Text::checkPhoneNumber($_POST['mobil']);
-        }
-        if ($conf['kontakt']['kontakt_abfragen_captcha'] !== 'N' && !self::validateCaptcha($_POST)) {
+        if ($conf['kontakt_abfragen_captcha'] !== 'N' && !self::validateCaptcha($_POST)) {
             $ret['captcha'] = 2;
         }
 
@@ -144,12 +131,28 @@ class Form
     }
 
     /**
+     * @param bool $clear
      * @return stdClass
      * @since 5.0.0
      */
-    public static function baueKontaktFormularVorgaben(): stdClass
+    public static function baueKontaktFormularVorgaben(bool $clear = false): stdClass
     {
-        $msg = new stdClass();
+        $msg                  = new stdClass();
+        $msg->cAnrede         = '';
+        $msg->cVorname        = '';
+        $msg->cNachname       = '';
+        $msg->cFirma          = '';
+        $msg->cMail           = '';
+        $msg->cTel            = '';
+        $msg->cMobil          = '';
+        $msg->cFax            = '';
+        $msg->kKontaktBetreff = null;
+        $msg->cNachricht      = null;
+
+        if ($clear) {
+            return $msg;
+        }
+
         if (isset($_SESSION['Kunde'])) {
             $msg->cAnrede   = $_SESSION['Kunde']->cAnrede;
             $msg->cVorname  = $_SESSION['Kunde']->cVorname;
@@ -201,30 +204,6 @@ class Form
             } elseif ($msg->cAnrede === 'w') {
                 $msg->cAnredeLocalized = Shop::Lang()->get('salutationW');
             }
-        }
-        if (!isset($msg->cAnrede)) {
-            $msg->cAnrede = '';
-        }
-        if (!isset($msg->cVorname)) {
-            $msg->cVorname = '';
-        }
-        if (!isset($msg->cNachname)) {
-            $msg->cNachname = '';
-        }
-        if (!isset($msg->cFirma)) {
-            $msg->cFirma = '';
-        }
-        if (!isset($msg->cMail)) {
-            $msg->cMail = '';
-        }
-        if (!isset($msg->cTel)) {
-            $msg->cTel = '';
-        }
-        if (!isset($msg->cMobil)) {
-            $msg->cMobil = '';
-        }
-        if (!isset($msg->cFax)) {
-            $msg->cFax = '';
         }
 
         return $msg;

@@ -1,12 +1,9 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\OPC;
 
 use JTL\Helpers\GeneralObject;
+use JTL\Helpers\Text;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
 use JTL\Shop;
@@ -103,6 +100,12 @@ class PortletInstance implements \JsonSerializable
     public function getPreviewHtml(): string
     {
         $result = $this->portlet->getPreviewHtml($this);
+        $dom    = new \DOMDocument('1.0', 'utf-8');
+        $dom->loadHTML('<?xml encoding="utf-8" ?>' . $result);
+        /** @var \DOMElement $root */
+        $root = $dom->getElementsByTagName('body')[0]->firstChild;
+        $root->setAttribute('data-portlet', \json_encode($this->getData()));
+        $result = $dom->saveHTML($root);
 
         Shop::fire('shop.OPC.PortletInstance.getPreviewHtml', [
             'portletInstance' => $this,
@@ -113,12 +116,13 @@ class PortletInstance implements \JsonSerializable
     }
 
     /**
+     * @param bool $inContainer
      * @return string
      * @throws \Exception
      */
-    public function getFinalHtml(): string
+    public function getFinalHtml(bool $inContainer = true): string
     {
-        $result = $this->portlet->getFinalHtml($this);
+        $result = $this->portlet->getFinalHtml($this, $inContainer);
 
         Shop::fire('shop.OPC.PortletInstance.getFinalHtml', [
             'portletInstance' => $this,
@@ -140,8 +144,9 @@ class PortletInstance implements \JsonSerializable
     /**
      * @param string $id
      * @return string
+     * @throws \Exception
      */
-    public function getSubareaPreviewHtml($id): string
+    public function getSubareaPreviewHtml(string $id): string
     {
         return $this->hasSubarea($id)
             ? $this->getSubarea($id)->getPreviewHtml()
@@ -151,8 +156,9 @@ class PortletInstance implements \JsonSerializable
     /**
      * @param string $id
      * @return string
+     * @throws \Exception
      */
-    public function getSubareaFinalHtml($id): string
+    public function getSubareaFinalHtml(string $id): string
     {
         return $this->hasSubarea($id)
             ? $this->getSubarea($id)->getFinalHtml()
@@ -163,7 +169,7 @@ class PortletInstance implements \JsonSerializable
      * @param string $name
      * @return mixed
      */
-    public function getProperty($name)
+    public function getProperty(string $name)
     {
         return $this->properties[$name] ?? '';
     }
@@ -173,7 +179,7 @@ class PortletInstance implements \JsonSerializable
      * @param mixed  $value
      * @return PortletInstance
      */
-    public function setProperty($name, $value): self
+    public function setProperty(string $name, $value): self
     {
         $this->properties[$name] = $value;
 
@@ -184,7 +190,7 @@ class PortletInstance implements \JsonSerializable
      * @param string $name
      * @return bool
      */
-    public function hasProperty($name): bool
+    public function hasProperty(string $name): bool
     {
         return \array_key_exists($name, $this->properties);
     }
@@ -201,7 +207,7 @@ class PortletInstance implements \JsonSerializable
      * @param string $id
      * @return Area
      */
-    public function getSubarea($id): Area
+    public function getSubarea(string $id): Area
     {
         return $this->subareaList->getArea($id);
     }
@@ -210,7 +216,7 @@ class PortletInstance implements \JsonSerializable
      * @param string $id
      * @return bool
      */
-    public function hasSubarea($id): bool
+    public function hasSubarea(string $id): bool
     {
         return $this->subareaList->hasArea($id);
     }
@@ -230,13 +236,13 @@ class PortletInstance implements \JsonSerializable
      * @param string $name
      * @return string
      */
-    public function getAttribute($name): string
+    public function getAttribute(string $name): string
     {
         return $this->attributes[$name] ?? '';
     }
 
     /**
-     * @return string|null
+     * @return string
      */
     public function getUid(): string
     {
@@ -245,10 +251,10 @@ class PortletInstance implements \JsonSerializable
 
     /**
      * @param string $name
-     * @param string $value
-     * @return $this
+     * @param $value
+     * @return PortletInstance
      */
-    public function setAttribute($name, $value): self
+    public function setAttribute(string $name, $value): self
     {
         $this->attributes[$name] = $value;
 
@@ -285,7 +291,7 @@ class PortletInstance implements \JsonSerializable
                     foreach ($boxStyles as $styleName => $styleValue) {
                         $this->setStyle($styleName, $styleValue);
                     }
-                } else {
+                } elseif (!Text::startsWith($propname, 'hidden-')) {
                     $this->setStyle($propname, $this->getProperty($propname));
                 }
             }
@@ -310,10 +316,10 @@ class PortletInstance implements \JsonSerializable
 
     /**
      * @param string $name
-     * @param string $value
-     * @return $this
+     * @param $value
+     * @return PortletInstance
      */
-    public function setStyle($name, $value): self
+    public function setStyle(string $name, $value): self
     {
         $this->styles[$name] = $value;
 
@@ -322,10 +328,10 @@ class PortletInstance implements \JsonSerializable
 
     /**
      * @param string $name
-     * @param string $value
-     * @return $this
+     * @param $value
+     * @return PortletInstance
      */
-    public function setAnimation($name, $value): self
+    public function setAnimation(string $name, $value): self
     {
         $this->animations[$name] = $value;
 
@@ -354,6 +360,32 @@ class PortletInstance implements \JsonSerializable
         }
 
         return $styleString;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStyleClasses(): string
+    {
+        $res = '';
+
+        if ($this->getProperty('hidden-xs')) {
+            $res .= 'opc-hidden-xs ';
+        }
+        if ($this->getProperty('hidden-sm')) {
+            $res .= 'opc-hidden-sm ';
+        }
+        if ($this->getProperty('hidden-md')) {
+            $res .= 'opc-hidden-md ';
+        }
+        if ($this->getProperty('hidden-lg')) {
+            $res .= 'opc-hidden-lg ';
+        }
+        if ($this->getProperty('hidden-xl')) {
+            $res .= 'opc-hidden-xl ';
+        }
+
+        return $res;
     }
 
     /**
@@ -480,13 +512,20 @@ class PortletInstance implements \JsonSerializable
         $srcset   = '';
         $srcsizes = '';
 
+        $filepath   = \PFAD_ROOT . \STORAGE_OPC . \basename($src);
+        $sizes      = \file_exists($filepath) ? \getimagesize($filepath) : [0, 0];
+        $realWidth  = $sizes[0];
+        $realHeight = $sizes[1];
+
         if (empty($src)) {
             return [
-                'srcset'   => '',
-                'srcsizes' => '',
-                'src'      => $default ?? '',
-                'alt'      => $alt,
-                'title'    => $title,
+                'srcset'     => '',
+                'srcsizes'   => '',
+                'src'        => $default ?? '',
+                'alt'        => $alt,
+                'title'      => $title,
+                'realWidth'  => $realWidth,
+                'realHeight' => $realHeight,
             ];
         }
         $this->generateAllImageSizes(true, 1, \rawurldecode(\basename($src)));
@@ -541,6 +580,8 @@ class PortletInstance implements \JsonSerializable
             'src'      => \str_replace(' ', '%20', $this->getImage()),
             'alt'      => $alt,
             'title'    => $title,
+            'realWidth'  => $realWidth,
+            'realHeight' => $realHeight,
         ];
     }
 

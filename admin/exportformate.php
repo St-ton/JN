@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Alert\Alert;
 use JTL\Backend\Revision;
@@ -16,7 +12,7 @@ use JTL\Shop;
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
 
-JTL\Shop::Container()->getGetText()->loadConfigLocales(true, true);
+Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
 $oAccount->permission('EXPORT_FORMATS_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
@@ -78,7 +74,7 @@ if (Request::postInt('neu_export') === 1 && Form::validateToken()) {
             '*',
             'nSort'
         );
-        JTL\Shop::Container()->getGetText()->localizeConfigs($Conf);
+        Shop::Container()->getGetText()->localizeConfigs($Conf);
         $configCount = count($Conf);
         for ($i = 0; $i < $configCount; $i++) {
             $aktWert                = new stdClass();
@@ -110,7 +106,7 @@ if (Request::postInt('neu_export') === 1 && Form::validateToken()) {
         $_POST['cKopfzeile'] = str_replace('<tab>', "\t", Request::postVar('cKopfzeile', ''));
         $_POST['cFusszeile'] = str_replace('<tab>', "\t", Request::postVar('cFusszeile', ''));
         $smarty->assign('cPlausiValue_arr', $checkResult)
-               ->assign('cPostVar_arr', Text::filterXSS($_POST));
+               ->assign('cPostVar_arr', Text::htmlentities(Text::filterXSS($_POST)));
         $step = 'neuer Export';
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCheckInput'), 'errorCheckInput');
     }
@@ -275,7 +271,7 @@ if ($step === 'neuer Export') {
             Request::postInt('kExportformat')
         );
         $exportformat->cKopfzeile      = str_replace("\t", '<tab>', $exportformat->cKopfzeile);
-        $exportformat->cContent        = str_replace("\t", '<tab>', $exportformat->cContent);
+        $exportformat->cContent        = Text::htmlentities(str_replace("\t", '<tab>', $exportformat->cContent));
         $exportformat->cFusszeile      = str_replace("\t", '<tab>', $exportformat->cFusszeile);
         $exportformat->kExportformat   = (int)$exportformat->kExportformat;
         $exportformat->kKundengruppe   = (int)$exportformat->kKundengruppe;

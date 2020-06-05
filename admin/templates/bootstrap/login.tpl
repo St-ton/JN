@@ -1,6 +1,4 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section='login'}
-{config_load file="$lang.conf" section='shopupdate'}
 
 <script type="text/javascript">
     {literal}
@@ -43,9 +41,9 @@
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-user"></i></span>
                                 <input class="form-control" type="text" placeholder="2fa-code" name="TwoFA_code" id="inputTwoFA" value="" size="20" tabindex="10" />
-                                <!-- <div id="counterbar" style="width:5px; background:lightgreen; position:absolute; left:250px; top:8px;"></div> -->
-                                <div style="clear:both;"></div>
-                                <div id="cb" style="width:218px;height:1px;background:red"></div>
+                                <div id="counterbar" style="width:10px; background:lightgreen; position:absolute; left:250px; top:2px;"></div>
+                                {*<div style="clear:both;"></div>*}
+                                {*<div id="cb" style="width:218px;height:1px;background:red"></div>*}
                             </div>
 
                             {literal}
@@ -91,7 +89,7 @@
                         {else}
                             <div class="input-group">
                                 <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-user"></i></span></div>
-                                <input class="form-control" type="text" placeholder="{__('username')}" name="benutzer" id="user_login" value="" size="20" tabindex="10" />
+                                <input class="form-control" type="text" placeholder="{__('username')}" name="benutzer" id="user_login" value="" size="20" tabindex="10" autocomplete="username" />
                             </div>
                             <div class="input-group mt-2">
                                 <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-lock"></i></span></div>

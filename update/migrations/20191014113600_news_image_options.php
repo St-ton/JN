@@ -23,7 +23,7 @@ class Migration_20191014113600 extends Migration implements IMigration
     {
         $this->setConfig(
             'bilder_news_mini_breite',
-            '40',
+            '120',
             \CONF_BILDER,
             'Newsbilder Mini Breite',
             'number',
@@ -39,7 +39,7 @@ class Migration_20191014113600 extends Migration implements IMigration
         );
         $this->setConfig(
             'bilder_news_klein_breite',
-            '100',
+            '600',
             \CONF_BILDER,
             'Newsbilder Klein Breite',
             'number',
@@ -47,7 +47,7 @@ class Migration_20191014113600 extends Migration implements IMigration
         );
         $this->setConfig(
             'bilder_news_klein_hoehe',
-            '100',
+            '200',
             \CONF_BILDER,
             'Newsbilder Klein Höhe',
             'number',
@@ -55,7 +55,7 @@ class Migration_20191014113600 extends Migration implements IMigration
         );
         $this->setConfig(
             'bilder_news_normal_breite',
-            '200',
+            '1200',
             \CONF_BILDER,
             'Newsbilder Normal Breite',
             'number',
@@ -63,7 +63,7 @@ class Migration_20191014113600 extends Migration implements IMigration
         );
         $this->setConfig(
             'bilder_news_normal_hoehe',
-            '200',
+            '400',
             \CONF_BILDER,
             'Newsbilder Normal Höhe',
             'number',
@@ -71,7 +71,7 @@ class Migration_20191014113600 extends Migration implements IMigration
         );
         $this->setConfig(
             'bilder_news_gross_breite',
-            '800',
+            '1800',
             \CONF_BILDER,
             'Newsbilder Groß Breite',
             'number',
@@ -79,7 +79,7 @@ class Migration_20191014113600 extends Migration implements IMigration
         );
         $this->setConfig(
             'bilder_news_gross_hoehe',
-            '800',
+            '600',
             \CONF_BILDER,
             'Newsbilder Groß Höhe',
             'number',
@@ -87,7 +87,7 @@ class Migration_20191014113600 extends Migration implements IMigration
         );
         $this->setConfig(
             'bilder_newskategorie_mini_breite',
-            '40',
+            '120',
             \CONF_BILDER,
             'Newskategoriebilder Mini Breite',
             'number',
@@ -103,7 +103,7 @@ class Migration_20191014113600 extends Migration implements IMigration
         );
         $this->setConfig(
             'bilder_newskategorie_klein_breite',
-            '100',
+            '600',
             \CONF_BILDER,
             'Newskategoriebilder Klein Breite',
             'number',
@@ -111,7 +111,7 @@ class Migration_20191014113600 extends Migration implements IMigration
         );
         $this->setConfig(
             'bilder_newskategorie_klein_hoehe',
-            '100',
+            '200',
             \CONF_BILDER,
             'Newskategoriebilder Klein Höhe',
             'number',
@@ -119,7 +119,7 @@ class Migration_20191014113600 extends Migration implements IMigration
         );
         $this->setConfig(
             'bilder_newskategorie_normal_breite',
-            '200',
+            '1200',
             \CONF_BILDER,
             'Newskategoriebilder Normal Breite',
             'number',
@@ -127,7 +127,7 @@ class Migration_20191014113600 extends Migration implements IMigration
         );
         $this->setConfig(
             'bilder_newskategorie_normal_hoehe',
-            '200',
+            '400',
             \CONF_BILDER,
             'Newskategoriebilder Normal Höhe',
             'number',
@@ -135,7 +135,7 @@ class Migration_20191014113600 extends Migration implements IMigration
         );
         $this->setConfig(
             'bilder_newskategorie_gross_breite',
-            '800',
+            '1800',
             \CONF_BILDER,
             'Newskategoriebilder Groß Breite',
             'number',
@@ -143,7 +143,7 @@ class Migration_20191014113600 extends Migration implements IMigration
         );
         $this->setConfig(
             'bilder_newskategorie_gross_hoehe',
-            '800',
+            '600',
             \CONF_BILDER,
             'Newskategoriebilder Groß Höhe',
             'number',

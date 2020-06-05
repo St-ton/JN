@@ -151,6 +151,7 @@
   line-height: 15px !important;
   border-radius: 50% !important;
   padding: 0;
+  z-index: 1;
   &::before { display: none; }
   &.circle-small {
     width: 36px;
@@ -182,6 +183,11 @@
   border-radius: 50% !important;
   transition: all .2s;
   &::before { display: none; }
+  &.badge-circle-no-sizes {
+    width: unset;
+    height: unset;
+    min-width: unset;
+  }
   &.circle-small {
     width: 36px;
     height: 36px;

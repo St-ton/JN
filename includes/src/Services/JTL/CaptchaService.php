@@ -1,14 +1,9 @@
-<?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- * @package       jtl-shop
- * @since         5.0
- */
+<?php declare(strict_types=1);
 
 namespace JTL\Services\JTL;
 
 use JTL\Smarty\JTLSmarty;
+use JTL\Smarty\JTLSmartyTemplateClass;
 
 /**
  * Class CaptchaService
@@ -57,7 +52,7 @@ class CaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @param JTLSmarty $smarty
+     * @param JTLSmarty|JTLSmartyTemplateClass $smarty
      * @return string
      */
     public function getHeadMarkup($smarty): string
@@ -80,7 +75,7 @@ class CaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @param JTLSmarty $smarty
+     * @param JTLSmarty|JTLSmartyTemplateClass $smarty
      * @return string
      */
     public function getBodyMarkup($smarty): string

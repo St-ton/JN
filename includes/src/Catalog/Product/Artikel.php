@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Catalog\Product;
 
@@ -519,11 +515,6 @@ class Artikel
     /**
      * @var array
      */
-    public $nVariationKombiNichtMoeglich_arr = [];
-
-    /**
-     * @var array
-     */
     public $oVariBoxMatrixBild_arr;
 
     /**
@@ -692,11 +683,6 @@ class Artikel
     public $oStueckliste_arr = [];
 
     /**
-     * @var array
-     */
-    public $nVariationKombiUnique_arr = [];
-
-    /**
      * @var int
      */
     public $nErscheinendesProdukt;
@@ -725,11 +711,6 @@ class Artikel
      * @var string
      */
     public $cVersandklasse;
-
-    /**
-     * @var float
-     */
-    public $fMaxRabatt;
 
     /**
      * @var float
@@ -775,11 +756,6 @@ class Artikel
      * @var string
      */
     public $cBildpfad_thersteller;
-
-    /**
-     * @var int
-     */
-    public $nMindestbestellmenge;
 
     /**
      * @var string
@@ -997,21 +973,6 @@ class Artikel
     public $cMassMenge = '';
 
     /**
-     * @var string
-     */
-    public $cLaenge = '';
-
-    /**
-     * @var string
-     */
-    public $cBreite = '';
-
-    /**
-     * @var string
-     */
-    public $cHoehe = '';
-
-    /**
      * @var bool
      */
     public $cacheHit = false;
@@ -1030,11 +991,6 @@ class Artikel
      * @var string
      */
     public $originalSeo = '';
-
-    /**
-     * @var array
-     */
-    public $languageURLs = [];
 
     /**
      * @var int
@@ -1454,7 +1410,11 @@ class Artikel
                 'height' => $height
             ],
             'type' => $type,
-            'alt'  => $image->cAltAttribut
+            'alt'  => htmlspecialchars(
+                str_replace('"', '', $image->cAltAttribut),
+                ENT_COMPAT | ENT_HTML401,
+                JTL_CHARSET
+            )
         ];
     }
 
@@ -1651,24 +1611,21 @@ class Artikel
             ReturnType::SINGLE_OBJECT
         );
         if (isset($main->kArtikel, $main->kStueckliste) && $main->kArtikel > 0 && $main->kStueckliste > 0) {
-            $options                             = new stdClass();
-            $options->nMerkmale                  = 1;
-            $options->nAttribute                 = 1;
-            $options->nArtikelAttribute          = 1;
+            $options                             = self::getDefaultOptions();
             $options->nKeineSichtbarkeitBeachten = 1;
             $options->nStueckliste               = 1;
             $this->oProduktBundleMain->fuelleArtikel((int)$main->kArtikel, $options);
 
-            $currency = Frontend::getCurrency();
-            $bundles  = Shop::Container()->getDB()->selectAll(
+            $currency                            = Frontend::getCurrency();
+            $bundles                             = Shop::Container()->getDB()->selectAll(
                 'tstueckliste',
                 'kStueckliste',
                 $main->kStueckliste,
                 'kArtikel, fAnzahl'
             );
+            $options->nKeineSichtbarkeitBeachten = 0;
             foreach ($bundles as $bundle) {
-                $options->nKeineSichtbarkeitBeachten = 0;
-                $product                             = new self();
+                $product = new self();
                 $product->fuelleArtikel((int)$bundle->kArtikel, $options);
 
                 $this->oProduktBundle_arr[]           = $product;
@@ -1752,15 +1709,22 @@ class Artikel
 
         $this->oMedienDatei_arr = $db->query($sql, ReturnType::ARRAY_OF_OBJECTS);
         foreach ($this->oMedienDatei_arr as $mediaFile) {
+            $mediaFile->kMedienDatei             = (int)$mediaFile->kMedienDatei;
             $mediaFile->kSprache                 = (int)$mediaFile->kSprache;
             $mediaFile->nSort                    = (int)$mediaFile->nSort;
             $mediaFile->oMedienDateiAttribut_arr = [];
             $mediaFile->nErreichbar              = 1; // Beschreibt, ob eine Datei vorhanden ist
             $mediaFile->cMedienTyp               = ''; // Wird zum Aufbau der Reiter gebraucht
             if (\mb_strlen($mediaFile->cTyp) > 0) {
+                if ($mediaFile->cTyp === '.*') {
+                    $extMatch = [];
+                    preg_match('/\.\w{3,4}($|\?)/', $mediaFile->cPfad, $extMatch);
+                    $mediaFile->cTyp = $extMatch[0];
+                }
                 $mapped                = $this->mapMediaType($mediaFile->cTyp);
                 $mediaFile->cMedienTyp = $mapped->cName;
                 $mediaFile->nMedienTyp = $mapped->nTyp;
+                $mediaFile->videoType  = $mapped->videoType;
             }
             if ($mediaFile->cPfad !== '' && $mediaFile->cPfad[0] === '/') {
                 //remove double slashes
@@ -1780,9 +1744,6 @@ class Artikel
                         $mediaFile->cAttributTab = $oMedienDateiAttribut->cWert;
                     }
                 }
-            }
-            if ($mediaFile->nMedienTyp === 4) {
-                $this->buildYoutubeEmbed($mediaFile);
             }
             $mediaTypeName = \mb_strlen($mediaFile->cAttributTab) > 0
                 ? $mediaFile->cAttributTab
@@ -1825,83 +1786,10 @@ class Artikel
     /**
      * @param object $mediaFile
      * @return $this
+     * @deprecated since 5.0.0
      */
     public function buildYoutubeEmbed($mediaFile): self
     {
-        if (!isset($mediaFile->cURL)) {
-            return $this;
-        }
-        if (\mb_strpos($mediaFile->cURL, 'youtube') !== false) {
-            $mediaFile->oEmbed = new stdClass();
-            if (\mb_strpos($mediaFile->cURL, 'watch?v=') !== false) {
-                $height     = 'auto';
-                $width      = '100%';
-                $related    = '?rel=0';
-                $fullscreen = ' allowfullscreen';
-                if (isset($mediaFile->oMedienDateiAttribut_arr) && \count($mediaFile->oMedienDateiAttribut_arr) > 0) {
-                    foreach ($mediaFile->oMedienDateiAttribut_arr as $attr) {
-                        if ($attr->cName === 'related' && $attr->cWert === '1') {
-                            $related = '';
-                        } elseif ($attr->cName === 'width' && \is_numeric($attr->cWert)) {
-                            $width = $attr->cWert;
-                        } elseif ($attr->cName === 'height' && \is_numeric($attr->cWert)) {
-                            $height = $attr->cWert;
-                        } elseif ($attr->cName === 'fullscreen' && ($attr->cWert === '0' || $attr->cWert === 'false')) {
-                            $fullscreen = '';
-                        }
-                    }
-                }
-                $search                     = ['https://', 'watch?v='];
-                $replace                    = ['//', 'embed/'];
-                $embedURL                   = \str_replace($search, $replace, $mediaFile->cURL) . $related;
-                $mediaFile->oEmbed->code    = '<iframe class="youtube" width="' . $width . '" height="' . $height
-                    . '" src="' . $embedURL . '" frameborder="0"' . $fullscreen . '></iframe>';
-                $mediaFile->oEmbed->options = [
-                    'height'     => $height,
-                    'width'      => $width,
-                    'related'    => $related,
-                    'fullscreen' => $fullscreen
-                ];
-            } elseif (\mb_strpos($mediaFile->cURL, 'embed') !== false) {
-                $mediaFile->oEmbed->code = $mediaFile->cURL;
-            }
-        } elseif (\mb_strpos($mediaFile->cURL, 'youtu.be') !== false) {
-            $mediaFile->oEmbed = new stdClass();
-            if (\mb_strpos($mediaFile->cURL, 'embed') !== false) {
-                $mediaFile->oEmbed->code = $mediaFile->cURL;
-            } else {
-                $height     = 'auto';
-                $width      = '100%';
-                $related    = '?rel=0';
-                $fullscreen = ' allowfullscreen';
-                if (isset($mediaFile->oMedienDateiAttribut_arr) && \count($mediaFile->oMedienDateiAttribut_arr) > 0) {
-                    foreach ($mediaFile->oMedienDateiAttribut_arr as $attr) {
-                        if ($attr->cName === 'related' && $attr->cWert === '1') {
-                            $related = '';
-                        } elseif ($attr->cName === 'width' && \is_numeric($attr->cWert)) {
-                            $width = $attr->cWert;
-                        } elseif ($attr->cName === 'height' && \is_numeric($attr->cWert)) {
-                            $height = $attr->cWert;
-                        } elseif ($attr->cName === 'fullscreen' && ($attr->cWert === '0'
-                                || $attr->cWert === 'false')) {
-                            $fullscreen = '';
-                        }
-                    }
-                }
-                $search                     = ['https://', 'youtu.be/'];
-                $replace                    = ['//', 'youtube.com/embed/'];
-                $embedURL                   = \str_replace($search, $replace, $mediaFile->cURL) . $related;
-                $mediaFile->oEmbed->code    = '<iframe class="youtube" width="' . $width . '" height="' . $height
-                    . '" src="' . $embedURL . '" frameborder="0"' . $fullscreen . '></iframe>';
-                $mediaFile->oEmbed->options = [
-                    'height'     => $height,
-                    'width'      => $width,
-                    'related'    => $related,
-                    'fullscreen' => $fullscreen
-                ];
-            }
-        }
-
         return $this;
     }
 
@@ -2789,19 +2677,17 @@ class Artikel
 
         // Preise holen bzw. Artikel
         if (\is_array($varCombChildren) && ($cnt = \count($varCombChildren)) > 0 && $cnt <= \ART_MATRIX_MAX) {
-            $tmp      = [];
-            $per      = ' ' . Shop::Lang()->get('vpePer') . ' ';
-            $taxRate  = $_SESSION['Steuersatz'][$this->kSteuerklasse];
-            $currency = Frontend::getCurrency();
+            $tmp                                = [];
+            $per                                = ' ' . Shop::Lang()->get('vpePer') . ' ';
+            $taxRate                            = $_SESSION['Steuersatz'][$this->kSteuerklasse];
+            $currency                           = Frontend::getCurrency();
+            $options                            = self::getDefaultOptions();
+            $options->nKeinLagerbestandBeachten = 1;
             foreach ($varCombChildren as $i => $productID) {
                 if (isset($tmp[$productID])) {
                     $varCombChildren[$i] = $tmp[$productID];
                 } else {
-                    $options                            = new stdClass();
-                    $options->nKeinLagerbestandBeachten = 1;
-                    $options->nArtikelAttribute         = 1;
-                    $options->nVariationen              = 0;
-                    $product                            = new self();
+                    $product = new self();
                     $product->fuelleArtikel($productID, $options);
 
                     $tmp[$productID]     = $product;
@@ -3101,8 +2987,6 @@ class Artikel
             'nAttribute',
             'nArtikelAttribute',
             'nMedienDatei',
-            'nVariationKombi',
-            'nVariationKombiKinder',
             'nVariationDetailPreis',
             'nWarenkorbmatrix',
             'nStueckliste',
@@ -3116,7 +3000,6 @@ class Artikel
             'nWarenlager',
             'bSimilar',
             'nRatings',
-            'nLanguageURLs',
             'nVariationen',
         ];
     }
@@ -3136,7 +3019,7 @@ class Artikel
         $given = \get_object_vars($options);
         $mask  = '';
         if (isset($options->nDownload) && $options->nDownload === 1 && !Download::checkLicense()) {
-            //unset download-option if there is no license for the download module
+            // unset download-option if there is no license for the download module
             $options->nDownload = 0;
         }
         foreach (self::getAllOptions() as $_opt) {
@@ -3159,8 +3042,6 @@ class Artikel
         $options->nArtikelAttribute     = 1;
         $options->nMedienDatei          = 1;
         $options->nVariationen          = 1;
-        $options->nVariationKombi       = 1;
-        $options->nVariationKombiKinder = 1;
         $options->nWarenlager           = 1;
         $options->nVariationDetailPreis = 1;
         $options->nRatings              = 1;
@@ -3171,7 +3052,6 @@ class Artikel
         $options->nKonfig               = 1;
         $options->nMain                 = 1;
         $options->bSimilar              = true;
-        $options->nLanguageURLs         = 1;
 
         return $options;
     }
@@ -3205,7 +3085,6 @@ class Artikel
         $options->nKeinLagerbestandBeachten = 1;
         $options->nMedienDatei              = 1;
         $options->nVariationen              = 1;
-        $options->nVariationKombi           = 0;
 
         return $options;
     }
@@ -3359,17 +3238,15 @@ class Artikel
         if ($this->getOption('nDownload', 0) === 1) {
             $this->oDownload_arr = Download::getDownloads(['kArtikel' => $this->kArtikel], $langID);
         }
-        if (Configurator::checkLicense()) {
-            $this->bHasKonfig = Configurator::hasKonfig($this->kArtikel);
-            if ($this->bHasKonfig && $this->getOption('nKonfig', 0) === 1) {
-                if (Configurator::validateKonfig($this->kArtikel)) {
-                    $this->oKonfig_arr = Configurator::getKonfig($this->kArtikel, $langID);
-                } else {
-                    Shop::Container()->getLogService()->error(
-                        'Konfigurator für Artikel (Art.Nr.: ' .
-                        $this->cArtNr . ') konnte nicht geladen werden.'
-                    );
-                }
+        $this->bHasKonfig = Configurator::hasKonfig($this->kArtikel);
+        if ($this->bHasKonfig && $this->getOption('nKonfig', 0) === 1) {
+            if (Configurator::validateKonfig($this->kArtikel)) {
+                $this->oKonfig_arr = Configurator::getKonfig($this->kArtikel, $langID);
+            } else {
+                Shop::Container()->getLogService()->error(
+                    'Konfigurator für Artikel (Art.Nr.: ' .
+                    $this->cArtNr . ') konnte nicht geladen werden.'
+                );
             }
         }
         $this->checkCanBePurchased();
@@ -3418,14 +3295,10 @@ class Artikel
         if ($noCache === false) {
             // oVariationKombiKinderAssoc_arr can contain a lot of article objects, prices may depend on customers
             // so do not save to cache
-            $newPrice                             = $this->Preise;
-            $children                             = $this->oVariationKombiKinderAssoc_arr;
-            $this->oVariationKombiKinderAssoc_arr = null;
-            $this->Preise                         = $basePrice;
-            Shop::Container()->getCache()->set($this->cacheID, $this, $cacheTags);
-            // restore oVariationKombiKinderAssoc_arr and Preise to class instance
-            $this->oVariationKombiKinderAssoc_arr = $children;
-            $this->Preise                         = $newPrice;
+            $toSave                                 = clone $this;
+            $toSave->oVariationKombiKinderAssoc_arr = null;
+            $toSave->Preise                         = $basePrice;
+            Shop::Container()->getCache()->set($this->cacheID, $toSave, $cacheTags);
         }
 
         return $this;
@@ -3735,7 +3608,7 @@ class Artikel
         $this->fVPEWert                          = $data->fVPEWert;
         $this->cName                             = Text::htmlentitiesOnce($data->cName, \ENT_COMPAT | \ENT_HTML401);
         $this->cSeo                              = $data->cSeo;
-        $this->cBeschreibung                     = Text::parseNewsText($data->cBeschreibung);
+        $this->cBeschreibung                     = $data->cBeschreibung;
         $this->cAnmerkung                        = $data->cAnmerkung;
         $this->cArtNr                            = $data->cArtNr;
         $this->cVPE                              = $data->cVPE;
@@ -3747,7 +3620,7 @@ class Artikel
         $this->cLagerBeachten                    = $data->cLagerBeachten;
         $this->cLagerKleinerNull                 = $data->cLagerKleinerNull;
         $this->cLagerVariation                   = $data->cLagerVariation;
-        $this->cKurzBeschreibung                 = Text::parseNewsText($data->cKurzBeschreibung);
+        $this->cKurzBeschreibung                 = $data->cKurzBeschreibung;
         $this->cLieferstatus                     = $data->cName_tlieferstatus;
         $this->cTopArtikel                       = $data->cTopArtikel;
         $this->cNeu                              = $data->cNeu;
@@ -3900,7 +3773,7 @@ class Artikel
             $this->cHerstellerMetaTitle       = $data->cMetaTitle_spr;
             $this->cHerstellerMetaKeywords    = $data->cMetaKeywords_spr;
             $this->cHerstellerMetaDescription = $data->cMetaDescription_spr;
-            $this->cHerstellerBeschreibung    = Text::parseNewsText($data->cBeschreibung_hst_spr);
+            $this->cHerstellerBeschreibung    = $data->cBeschreibung_hst_spr;
             $this->cHerstellerSortNr          = $data->nSortNr_thersteller;
             if ($data->manufImg !== null && \mb_strlen($data->manufImg) > 0) {
                 $this->cBildpfad_thersteller    = $manufacturer->getImage(Image::SIZE_XS);
@@ -4669,9 +4542,7 @@ class Artikel
     {
         \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
         foreach (\array_keys(\get_object_vars($obj)) as $member) {
-            $this->$member = ($member === 'cBeschreibung' || $member === 'cKurzBeschreibung')
-                ? Text::parseNewsText($obj->$member)
-                : $obj->$member;
+            $this->$member = $obj->$member;
         }
 
         return $this;
@@ -5036,7 +4907,8 @@ class Artikel
      */
     private function mapMediaType(string $type)
     {
-        $mapping = new stdClass();
+        $mapping            = new stdClass();
+        $mapping->videoType = null;
         switch ($type) {
             case '.bmp':
             case '.gif':
@@ -5066,8 +4938,9 @@ class Artikel
             case '.mp4':
             case '.flv':
             case '.3gp':
-                $mapping->cName = Shop::Lang()->get('tabVideo', 'media');
-                $mapping->nTyp  = 3;
+                $mapping->cName     = Shop::Lang()->get('tabVideo', 'media');
+                $mapping->nTyp      = 3;
+                $mapping->videoType = \strtolower(\str_replace('.', '', $type));
                 break;
             case '.pdf':
                 $mapping->cName = Shop::Lang()->get('tabPdf', 'media');
@@ -5562,31 +5435,17 @@ class Artikel
      */
     public function getMetaKeywords(): string
     {
+        $keyWords = '';
         if (!empty($this->AttributeAssoc[\ART_ATTRIBUT_METAKEYWORDS])) {
-            return $this->AttributeAssoc[\ART_ATTRIBUT_METAKEYWORDS];
+            $keyWords = $this->AttributeAssoc[\ART_ATTRIBUT_METAKEYWORDS];
+        } elseif (!empty($this->FunktionsAttribute[\ART_ATTRIBUT_METAKEYWORDS])) {
+            $keyWords = $this->FunktionsAttribute[\ART_ATTRIBUT_METAKEYWORDS];
+        } elseif (!empty($this->metaKeywords)) {
+            $keyWords = $this->metaKeywords;
         }
-        if (!empty($this->FunktionsAttribute[\ART_ATTRIBUT_METAKEYWORDS])) {
-            return $this->FunktionsAttribute[\ART_ATTRIBUT_METAKEYWORDS];
-        }
-        if (!empty($this->metaKeywords)) {
-            return $this->metaKeywords;
-        }
+        \executeHook(\HOOK_ARTIKEL_INC_METAKEYWORDS, ['keywords' => &$keyWords]);
 
-        $description = $this->cBeschreibung;
-        if (empty($description)) {
-            $description = $this->cKurzBeschreibung;
-        }
-        if (empty($description)) {
-            $expandedCategories = new KategorieListe();
-            $expandedCategories->getOpenCategories(new Kategorie($this->gibKategorie()));
-            $description = $this->getMetaDescription($expandedCategories);
-        }
-
-        $metaKeywords = Metadata::getTopMetaKeywords($description);
-
-        \executeHook(\HOOK_ARTIKEL_INC_METAKEYWORDS, ['keywords' => $metaKeywords]);
-
-        return $metaKeywords;
+        return $keyWords;
     }
 
     /**
@@ -6083,7 +5942,7 @@ class Artikel
     /**
      * @return int|null
      */
-    public function getID(): ?int
+    public function getID()
     {
         return $this->kArtikel;
     }

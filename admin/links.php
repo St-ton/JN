@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use Illuminate\Support\Collection;
 use JTL\Alert\Alert;
@@ -51,7 +47,11 @@ if ($action !== '' && Form::validateToken()) {
                     'successLinkFromLinkGroupDelete'
                 );
             } else {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLinkFromLinkGroupDelete'), 'errorLinkFromLinkGroupDelete');
+                $alertHelper->addAlert(
+                    Alert::TYPE_ERROR,
+                    __('errorLinkFromLinkGroupDelete'),
+                    'errorLinkFromLinkGroupDelete'
+                );
             }
             unset($_POST['kLinkgruppe']);
             $step       = 'uebersicht';
@@ -108,14 +108,22 @@ if ($action !== '' && Form::validateToken()) {
                         $linkGroup = new LinkGroup($db);
                         $linkGroup = $linkGroup->load($linkGroupID);
                     }
-                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTemplateNameDuplicate'), 'errorTemplateNameDuplicate');
+                    $alertHelper->addAlert(
+                        Alert::TYPE_ERROR,
+                        __('errorTemplateNameDuplicate'),
+                        'errorTemplateNameDuplicate'
+                    );
                     $smarty->assign('xPlausiVar_arr', $checks->getPlausiVar())
                            ->assign('xPostVar_arr', $checks->getPostVar())
                            ->assign('linkGroup', $linkGroup);
                 } else {
                     if ($linkGroupID === 0) {
                         $linkAdmin->createOrUpdateLinkGroup(0, $_POST);
-                        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successLinkGroupCreate'), 'successLinkGroupCreate');
+                        $alertHelper->addAlert(
+                            Alert::TYPE_SUCCESS,
+                            __('successLinkGroupCreate'),
+                            'successLinkGroupCreate'
+                        );
                     } else {
                         $linkgruppe = $linkAdmin->createOrUpdateLinkGroup($linkGroupID, $_POST);
                         $alertHelper->addAlert(

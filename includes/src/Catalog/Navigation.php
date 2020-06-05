@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Catalog;
 
@@ -290,10 +286,8 @@ class Navigation
                 $ele->setURL($this->product->cURL);
                 $ele->setURLFull($this->product->cURLFull);
                 if ($this->product->isChild()) {
-                    $parent         = new Artikel();
-                    $options        = new stdClass();
-                    $options->nMain = 1;
-                    $parent->fuelleArtikel($this->product->kVaterArtikel, $options);
+                    $parent = new Artikel();
+                    $parent->fuelleArtikel($this->product->kVaterArtikel, Artikel::getDefaultOptions());
                     $ele->setName($parent->cKurzbezeichnung);
                     $ele->setURL($parent->cURL);
                     $ele->setURLFull($parent->cURLFull);
@@ -359,8 +353,7 @@ class Navigation
                         'del'                  => $this->language->get('deleteAccount', 'login'),
                         'bestellung'           => $this->language->get('bcOrder', 'breadcrumb'),
                         'wl'                   => $this->language->get('bcWishlist', 'breadcrumb'),
-                        'pass'                 => $this->language->get('changePassword', 'login'),
-                        'KwK'                  => $this->language->get('kwkName', 'login')
+                        'pass'                 => $this->language->get('changePassword', 'login')
                     ];
 
                     foreach ($childPages as $childPage => $childPageLang) {
@@ -478,10 +471,8 @@ class Navigation
                     $ele->setURL($this->product->cURL);
                     $ele->setURLFull($this->product->cURLFull);
                     if ($this->product->isChild()) {
-                        $parent         = new Artikel();
-                        $options        = new stdClass();
-                        $options->nMain = 1;
-                        $parent->fuelleArtikel($this->product->kVaterArtikel, $options);
+                        $parent = new Artikel();
+                        $parent->fuelleArtikel($this->product->kVaterArtikel, Artikel::getDefaultOptions());
                         $ele->setName($parent->cKurzbezeichnung);
                         $ele->setURL($parent->cURL);
                         $ele->setURLFull($parent->cURLFull);

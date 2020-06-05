@@ -1,14 +1,12 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Catalog\Product;
 
 use JTL\DB\ReturnType;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
+use function Functional\each;
 
 /**
  * Class Bewertung
@@ -84,18 +82,25 @@ class Bewertung
     {
         $this->oBewertung_arr = [];
         if ($productID > 0 && $languageID > 0) {
-            $data = Shop::Container()->getDB()->query(
-                "SELECT *, DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum,
-                        DATE_FORMAT(dAntwortDatum, '%d.%m.%Y') AS AntwortDatum
+            $data = Shop::Container()->getDB()->queryPrepared(
+                "SELECT tbewertung.*,
+                        DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum,
+                        DATE_FORMAT(dAntwortDatum, '%d.%m.%Y') AS AntwortDatum,
+                        tbewertunghilfreich.nBewertung AS rated
                     FROM tbewertung
+                    LEFT JOIN tbewertunghilfreich
+                      ON tbewertung.kBewertung = tbewertunghilfreich.kBewertung
+                      AND tbewertunghilfreich.kKunde = :customerID
                     WHERE kSprache = " . $languageID . '
                         AND kArtikel = ' . $productID . '
                         AND nAktiv = 1
                     ORDER BY nHilfreich DESC
                     LIMIT 1',
+                ['customerID' => Frontend::getCustomer()->getID()],
                 ReturnType::SINGLE_OBJECT
             );
             if (!empty($data)) {
+                $this->sanitizeRatingData($data);
                 $data->nAnzahlHilfreich = $data->nHilfreich + $data->nNichtHilfreich;
             }
 
@@ -104,6 +109,21 @@ class Bewertung
         }
 
         return $this;
+    }
+
+    /**
+     * @param stdClass $item
+     */
+    public function sanitizeRatingData(stdClass $item): void
+    {
+        $item->kBewertung      = (int)$item->kBewertung;
+        $item->kArtikel        = (int)$item->kArtikel;
+        $item->kKunde          = (int)$item->kKunde;
+        $item->kSprache        = (int)$item->kSprache;
+        $item->nHilfreich      = (int)$item->nHilfreich;
+        $item->nNichtHilfreich = (int)$item->nNichtHilfreich;
+        $item->nSterne         = (int)$item->nSterne;
+        $item->nAktiv          = (int)$item->nAktiv;
     }
 
     /**
@@ -185,14 +205,21 @@ class Bewertung
                     ? ' LIMIT ' . (($page - 1) * $pageOffset) . ', ' . $pageOffset
                     : ' LIMIT ' . $pageOffset;
             }
-            $this->oBewertung_arr = $db->query(
-                "SELECT *, DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum,
-                        DATE_FORMAT(dAntwortDatum, '%d.%m.%Y') AS AntwortDatum
+            $this->oBewertung_arr = $db->queryPrepared(
+                "SELECT tbewertung.*,
+                        DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum,
+                        DATE_FORMAT(dAntwortDatum, '%d.%m.%Y') AS AntwortDatum,
+                        tbewertunghilfreich.nBewertung AS rated
                     FROM tbewertung
+                    LEFT JOIN tbewertunghilfreich
+                      ON tbewertung.kBewertung = tbewertunghilfreich.kBewertung
+                      AND tbewertunghilfreich.kKunde = :customerID
                     WHERE kArtikel = " . $productID . $langSQL . $condSQL . $activateSQL . '
                     ORDER BY' . $orderSQL . $limitSQL,
+                ['customerID' => Frontend::getCustomer()->getID()],
                 ReturnType::ARRAY_OF_OBJECTS
             );
+            each($this->oBewertung_arr, [$this, 'sanitizeRatingData']);
         }
         $total = $db->query(
             'SELECT COUNT(*) AS nAnzahl, tartikelext.fDurchschnittsBewertung AS fDurchschnitt
@@ -228,9 +255,8 @@ class Bewertung
         }
         $this->nSterne_arr = [0, 0, 0, 0, 0];
         foreach ($ratingCounts as $item) {
-            $this->nSterne_arr[5 - $item->nSterne] = $item->nAnzahl;
+            $this->nSterne_arr[5 - (int)$item->nSterne] = (int)$item->nAnzahl;
         }
-
         \executeHook(\HOOK_BEWERTUNG_CLASS_BEWERTUNG, ['oBewertung' => &$this]);
 
         return $this;

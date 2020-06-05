@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {strip}
 <ul class="header-shop-nav nav navbar-nav force-float horizontal pull-right">
     {block name='navbar-productsearch'}
@@ -20,7 +16,7 @@
     {/block}
 
     {block name='navbar-top-user'}
-    <li class="dropdown hidden-xs">
+    <li class="dropdown hidden-sm hidden-xs">
         {if empty($smarty.session.Kunde->kKunde)}
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="{lang key='login'}">
                 <i class="fa fa-user"></i> <span class="hidden-xs hidden-sm">{lang key='login'} </span> <i class="caret"></i>
@@ -82,7 +78,7 @@
     </li>
     {include file='layout/header_shop_nav_compare.tpl'}
     {include file='layout/header_shop_nav_wish.tpl'}
-    <li class="hidden-xs cart-menu dropdown{if $nSeitenTyp == 3} current{/if}" data-toggle="basket-items">
+    <li class="hidden-sm hidden-xs cart-menu dropdown{if $nSeitenTyp == 3} current{/if}" data-toggle="basket-items">
         {include file='basket/cart_dropdown_label.tpl'}
     </li>
     {/block}

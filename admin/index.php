@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Alert\Alert;
 use JTL\Backend\AdminLoginStatus;
@@ -47,11 +43,8 @@ if (Request::postInt('adminlogin') === 1) {
 
             case AdminLoginStatus::ERROR_USER_NOT_FOUND:
             case AdminLoginStatus::ERROR_INVALID_PASSWORD:
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorWrongPasswordUser'), 'errorWrongPasswordUser');
-                if (isset($_SESSION['AdminAccount']->TwoFA_expired)
-                    && $_SESSION['AdminAccount']->TwoFA_expired === true
-                ) {
-                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTwoFactorExpired'), 'errorTwoFactorExpired');
+                if (empty(Request::verifyGPDataString('TwoFA_code'))) {
+                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorWrongPasswordUser'), 'errorWrongPasswordUser');
                 }
                 break;
 
@@ -94,8 +87,10 @@ if (Request::postInt('adminlogin') === 1) {
 
                 break;
         }
-    } elseif ($csrfOK !== true) {
+    } elseif (isset($_COOKIE['eSIdAdm'])) {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCSRF'), 'errorCSRF');
+    } else {
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCookieSettings'), 'errorCookieSettings');
     }
 }
 $type          = '';
@@ -188,6 +183,13 @@ if ($oAccount->getIsAuthenticated()) {
                 $_SESSION['AdminAccount']->TwoFA_valid   = true;
                 $_SESSION['loginIsValid']                = true;
                 openDashboard();
+            } else {
+                $alertHelper->addAlert(
+                    Alert::TYPE_ERROR,
+                    __('errorTwoFactorFaultyExpired'),
+                    'errorTwoFactorFaultyExpired'
+                );
+                $smarty->assign('alertError', true);
             }
         } else {
             $_SESSION['AdminAccount']->TwoFA_expired = true;

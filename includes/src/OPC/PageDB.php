@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\OPC;
 
@@ -11,6 +7,7 @@ use JTL\Backend\Revision;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Shop;
+use JTL\Update\Updater;
 use stdClass;
 
 /**
@@ -31,6 +28,16 @@ class PageDB
     public function __construct(DbInterface $shopDB)
     {
         $this->shopDB = $shopDB;
+    }
+
+    /**
+     * @return bool
+     * @throws Exception
+     */
+    public function shopHasPendingUpdates()
+    {
+        $updater = new Updater($this->shopDB);
+        return $updater->hasPendingUpdates();
     }
 
     /**

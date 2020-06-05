@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productdetails-question-on-item'}
     {if isset($fehlendeAngaben_fragezumprodukt)}
         {$fehlendeAngaben = $fehlendeAngaben_fragezumprodukt}
@@ -21,8 +17,8 @@
     {form action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'Y'}#tab-productquestion{/if}{else}{$ShopURL}/{/if}"
         method="post"
         id="article_question"
-        class="jtl-validate label-slide"
-    }
+        class="jtl-validate"
+        slide=true}
         {block name='productdetails-question-on-item-form-fieldset-contact'}
             <fieldset>
                 {block name='productdetails-question-on-item-form-legend-contact'}
@@ -128,7 +124,7 @@
                                     }
                                 {/col}
                             {/if}
-                    {/block}
+                        {/block}
                     {/if}
 
                     {if $Einstellungen.artikeldetails.produktfrage_abfragen_fax !== 'N'}
@@ -185,7 +181,7 @@
             {block name='productdetails-question-on-item-form-privacy'}
                 <p class="privacy text-muted small">
                     {link href=$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL() class="popup"}
-                        {$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getName()}
+                        {lang key='privacyNotice'}
                     {/link}
                 </p>
             {/block}

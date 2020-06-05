@@ -1,10 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- * @package       jtl-shop
- * @since
- */
 
 namespace JTL\Customer;
 
@@ -25,7 +19,7 @@ use function Functional\select;
 class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
 {
     /**
-     * @var CustomerField[]
+     * @var CustomerFields[][]
      */
     private static $fields = [];
 
@@ -73,9 +67,9 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * @return CustomerField[]
+     * @return CustomerFields[]
      */
-    private function getFields(): array
+    public function getFields(): array
     {
         return self::$fields[$this->langID] ?? [];
     }

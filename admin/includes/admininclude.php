@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Backend\AdminLoginStatus;
 use JTL\Backend\Notification;
@@ -70,6 +66,7 @@ Shop::setIsFrontend(false);
 if ($loggedIn
     && $_SERVER['REQUEST_METHOD'] === 'GET'
     && strpos($_SERVER['SCRIPT_FILENAME'], 'dbupdater') === false
+    && strpos($_SERVER['SCRIPT_FILENAME'], 'io.php') === false
     && $updater->hasPendingUpdates()
 ) {
     \header('Location: ' . Shop::getURL(true) . '/' . \PFAD_ADMIN . 'dbupdater.php');
@@ -105,6 +102,4 @@ if ($loggedIn) {
     }
 }
 
-$pageName = basename($_SERVER['PHP_SELF'], '.php');
-
-Shop::Container()->getGetText()->loadAdminLocale("pages/$pageName");
+Shop::Container()->getGetText()->loadAdminLocale('pages/' . basename($_SERVER['PHP_SELF'], '.php'));

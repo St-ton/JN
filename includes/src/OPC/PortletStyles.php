@@ -1,10 +1,8 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\OPC;
+
+use JTL\Shop;
 
 /**
  * Trait PortletStyles
@@ -29,36 +27,48 @@ trait PortletStyles
     }
 
     /**
+     * @param bool $preview
+     * @return array|string[]
+     */
+    final public function getCssFiles($preview = false)
+    {
+        $list = [];
+        $file = $this->getCssFile($preview);
+
+        if (!empty($file)) {
+            $list[$file] = true;
+        }
+
+        $extras = $this->getExtraCssFiles();
+
+        foreach ($extras as $extra) {
+            $list[$extra] = true;
+        }
+
+        if (\in_array('styles', $this->getPropertyTabs())) {
+            if (!$preview) {
+                $url        = $this->getCommonResource('hidden-size.css');
+                $list[$url] = true;
+            }
+        }
+
+        return $list;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getExtraCssFiles()
+    {
+        return [];
+    }
+
+    /**
      * @return array
      */
     public function getStylesPropertyDesc(): array
     {
         return [
-            // TODO: Support these options for both bootstrap versions
-//            'hidden-xs'        => [
-//                'type'       => InputType::CHECKBOX,
-//                'label'      => '<i class="fa fa-mobile"></i> ' . __('Visibility') . ' XS',
-//                'option'     => __('hide'),
-//                'width'      => 25,
-//            ],
-//            'hidden-sm'        => [
-//                'type'       => InputType::CHECKBOX,
-//                'label'      => '<i class="fa fa-tablet"></i> ' . __('Visibility') . ' S',
-//                'option'     => __('hide'),
-//                'width'      => 25,
-//            ],
-//            'hidden-md'        => [
-//                'type'       => InputType::CHECKBOX,
-//                'label'      => '<i class="fa fa-laptop"></i> ' . __('Visibility') . ' M',
-//                'option'     => __('hide'),
-//                'width'      => 25,
-//            ],
-//            'hidden-lg'        => [
-//                'type'       => InputType::CHECKBOX,
-//                'label'      => '<i class="fa fa-desktop"></i> ' . __('Visibility') . ' L',
-//                'option'     => __('hide'),
-//                'width'      => 25,
-//            ],
             'background-color' => [
                 'label'   => __('Background colour'),
                 'type'    => InputType::COLOR,
@@ -75,9 +85,30 @@ trait PortletStyles
                 'label'   => __('Font size'),
                 'default' => '',
                 'width'   => 34,
+                'desc'    => __('cssNumericDesc'),
             ],
             'box-styles'  => [
                 'type'    => InputType::BOX_STYLES,
+            ],
+            'hidden-xs'        => [
+                'type'       => InputType::CHECKBOX,
+                'label'      => __('Hidden on XS'),
+                'width'      => 25,
+            ],
+            'hidden-sm'        => [
+                'type'       => InputType::CHECKBOX,
+                'label'      => __('Hidden on SM'),
+                'width'      => 25,
+            ],
+            'hidden-md'        => [
+                'type'       => InputType::CHECKBOX,
+                'label'      => __('Hidden on MD'),
+                'width'      => 25,
+            ],
+            'hidden-lg'        => [
+                'type'       => InputType::CHECKBOX,
+                'label'      => __('Hidden on LG'),
+                'width'      => 25,
             ],
         ];
     }

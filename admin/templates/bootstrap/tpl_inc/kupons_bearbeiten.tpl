@@ -73,12 +73,12 @@
                     <div class="subheading1">
                         <label>
                             <div class="custom-control custom-checkbox">
-                                <label class="custom-control-label" for="couponCreation"></label>
                                 <input class="custom-control-input" type="checkbox" name="couponCreation"
                                        id="couponCreation" class="checkfield"{if isset($oKupon->massCreationCoupon->cActiv) && $oKupon->massCreationCoupon->cActiv == 1} checked{/if}
                                        value="1" data-toggle="collapse" data-target="#massCreationCouponsBody"
                                        aria-expanded="{if isset($oKupon->massCreationCoupon->cActiv) && $oKupon->massCreationCoupon->cActiv == 1}true{else}false{/if}"
-                                       aria-controls="massCreationCouponsBody"/>{__('couponsCreation')}
+                                       aria-controls="massCreationCouponsBody"/>
+                                <label class="custom-control-label" for="couponCreation">{__('couponsCreation')}</label>
                             </div>
                         </label>
                     </div>
@@ -528,6 +528,11 @@
         <div class="card-footer save-wrapper">
             <div class="row">
                 <div class="ml-auto col-sm-6 col-xl-auto">
+                    <a class="btn btn-outline-primary btn-block" href="kupons.php">
+                        {__('cancelWithIcon')}
+                    </a>
+                </div>
+                <div class="col-sm-6 col-xl-auto">
                     <button type="submit" class="btn btn-primary btn-block" name="action" value="speichern">
                         {__('saveWithIcon')}
                     </button>

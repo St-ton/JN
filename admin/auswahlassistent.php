@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Alert\Alert;
 use JTL\DB\ReturnType;
@@ -23,7 +19,7 @@ $nice        = Nice::getInstance();
 $tab         = 'uebersicht';
 $alertHelper = Shop::Container()->getAlertService();
 
-JTL\Shop::Container()->getGetText()->loadConfigLocales();
+Shop::Container()->getGetText()->loadConfigLocales();
 
 if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     $group    = new Group();

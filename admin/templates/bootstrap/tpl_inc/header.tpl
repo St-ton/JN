@@ -62,12 +62,12 @@
         <div class="backend-main sidebar-offset">
             {if !$hasPendingUpdates}
             <div id="topbar" class="backend-navbar row mx-0 align-items-center topbar flex-nowrap">
-                <div class="col search">
+                <div class="col search px-0 px-md-3">
                     {include file='tpl_inc/backend_search.tpl'}
                 </div>
                 <div class="col-auto ml-auto px-2">
                     <ul class="nav align-items-center">
-                        <li class="nav-item dropdown mr-3" id="favs-drop">
+                        <li class="nav-item dropdown mr-md-3" id="favs-drop">
                             {include file="tpl_inc/favs_drop.tpl"}
                         </li>
                         <li class="nav-item dropdown">
@@ -111,7 +111,7 @@
                         </li>
                     </ul>
                 </div>
-                <div class="col-auto border-left border-dark-gray">
+                <div class="col-auto border-left border-dark-gray px-0 px-md-3">
                     <div class="dropdown avatar">
                         <button class="btn btn-link text-decoration-none dropdown-toggle p-0" data-toggle="dropdown">
                             <img src="{getAvatar account=$account}" class="img-circle">

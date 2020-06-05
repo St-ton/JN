@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\OPC\Portlets\Image;
 
@@ -71,6 +67,18 @@ class Image extends Portlet
                     'thumbnail' => __('shapeThumbnail'),
                 ],
                 'width' => 50,
+            ],
+            'align' => [
+                'type'       => InputType::SELECT,
+                'label'      => __('alignment'),
+                'options'    => [
+                    'center' => __('centered'),
+                    'left'   => __('left'),
+                    'right'  => __('right'),
+                ],
+                'default'    => 'center',
+                'width'      => 50,
+                'desc'       => __('alignmentDesc')
             ],
             'alt'        => [
                 'label' => __('alternativeText'),

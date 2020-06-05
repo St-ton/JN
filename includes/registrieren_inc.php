@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\CheckBox;
 use JTL\Customer\Customer;
@@ -33,7 +29,7 @@ function kundeSpeichern(array $post)
 
     unset($_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['Zahlungsart']);
     $db   = Shop::Container()->getDB();
-    $conf = Shop::getSettings([CONF_GLOBAL, CONF_KUNDENWERBENKUNDEN]);
+    $conf = Shop::getSettings([CONF_GLOBAL]);
     $cart = Frontend::getCart();
     $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
          ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART);
@@ -98,24 +94,10 @@ function kundeSpeichern(array $post)
             $_SESSION['Kunde'] = new Customer($_SESSION['Kunde']->kKunde);
             $_SESSION['Kunde']->getCustomerAttributes()->load($_SESSION['Kunde']->kKunde);
         } else {
-            // Guthaben des Neukunden aufstocken insofern er geworben wurde
-            $oNeukunde       = $db->select(
-                'tkundenwerbenkunden',
-                'cEmail',
-                $knd->cMail,
-                'nRegistriert',
-                0
-            );
             $customerGroupID = Frontend::getCustomerGroup()->getID();
-            if (isset($oNeukunde->kKundenWerbenKunden, $conf['kundenwerbenkunden']['kwk_kundengruppen'])
-                && $oNeukunde->kKundenWerbenKunden > 0
-                && (int)$conf['kundenwerbenkunden']['kwk_kundengruppen'] > 0
-            ) {
-                $customerGroupID = (int)$conf['kundenwerbenkunden']['kwk_kundengruppen'];
-            }
 
             $knd->kKundengruppe     = $customerGroupID;
-            $knd->kSprache          = Shop::getLanguage();
+            $knd->kSprache          = Shop::getLanguageID();
             $knd->cAbgeholt         = 'N';
             $knd->cSperre           = 'N';
             $knd->cAktiv            = $conf['global']['global_kundenkonto_aktiv'] === 'A'
@@ -151,20 +133,6 @@ function kundeSpeichern(array $post)
                 $_SESSION['Kunde']->getCustomerAttributes()->load($knd->kKunde);
             } else {
                 $step = 'formular eingegangen';
-            }
-            // Guthaben des Neukunden aufstocken insofern er geworben wurde
-            if (isset($oNeukunde->kKundenWerbenKunden) && $oNeukunde->kKundenWerbenKunden > 0) {
-                $db->queryPrepared(
-                    'UPDATE tkunde
-                        SET fGuthaben = fGuthaben + :amount
-                        WHERE kKunde = :cid',
-                    [
-                        'cid'    => (int)$knd->kKunde,
-                        'amount' => (float)$conf['kundenwerbenkunden']['kwk_neukundenguthaben']
-                    ],
-                    ReturnType::AFFECTED_ROWS
-                );
-                $db->update('tkundenwerbenkunden', 'cEmail', $knd->cMail, (object)['nRegistriert' => 1]);
             }
         }
         if (isset($cart->kWarenkorb) && $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0) {

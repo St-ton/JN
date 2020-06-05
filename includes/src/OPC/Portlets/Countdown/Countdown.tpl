@@ -1,10 +1,9 @@
 {$uid = $instance->getUid()}
 
 <div id="{$uid}"
-     class="opc-Countdown {$instance->getAnimationClass()}"
+     class="opc-Countdown {$instance->getAnimationClass()} {$instance->getStyleClasses()}"
      style="{$instance->getStyleString()}"
      {$instance->getAnimationDataAttributeString()}
-     {if $isPreview}{$instance->getDataAttributeString()}{/if}
 >
     <div class="opc-area" {if $isPreview}data-area-id="cntdwn-title"{/if}>
         {if $isPreview}
@@ -16,19 +15,19 @@
     {row class='text-center'}
         {col cols=3 class='days'}
             <div class="cntdwn-item"></div>
-            <div class="cntdwn-unit">{lang key='days'}</div>
+            <div class="cntdwn-unit">{if $isPreview}{__('days')}{else}{lang key='days'}{/if}</div>
         {/col}
         {col cols=3 class='hours'}
             <div class="cntdwn-item"></div>
-            <div class="cntdwn-unit">{lang key='hours'}</div>
+            <div class="cntdwn-unit">{if $isPreview}{__('hours')}{else}{lang key='hours'}{/if}</div>
         {/col}
         {col cols=3 class='minutes'}
             <div class="cntdwn-item"></div>
-            <div class="cntdwn-unit">{lang key='minutes'}</div>
+            <div class="cntdwn-unit">{if $isPreview}{__('minutes')}{else}{lang key='minutes'}{/if}</div>
         {/col}
         {col cols=3 class='seconds'}
             <div class="cntdwn-item"></div>
-            <div class="cntdwn-unit">{lang key='seconds'}</div>
+            <div class="cntdwn-unit">{if $isPreview}{__('seconds')}{else}{lang key='seconds'}{/if}</div>
         {/col}
         {col cols=12 class='expired'}
             {$instance->getProperty('expired-text')}

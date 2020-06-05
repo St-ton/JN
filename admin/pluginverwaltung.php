@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Alert\Alert;
 use JTL\DB\ReturnType;
@@ -65,8 +61,8 @@ if (isset($_SESSION['plugin_msg'])) {
 }
 
 
-if (!empty($_FILES['file_data'])) {
-    $response       = $extractor->extractPlugin($_FILES['file_data']['tmp_name']);
+if (!empty($_FILES['plugin-install-upload'])) {
+    $response       = $extractor->extractPlugin($_FILES['plugin-install-upload']['tmp_name']);
     $pluginUploaded = true;
 }
 $pluginsInstalled   = $listing->getInstalled();
@@ -92,8 +88,7 @@ $pluginsErroneous = $pluginsAll->filter(static function (ListingItem $item) {
     return $item->isHasError() === true && $item->isInstalled() === false;
 });
 if ($pluginUploaded === true) {
-    $smarty->configLoad('german.conf', 'pluginverwaltung')
-        ->assign('pluginsDisabled', $pluginsDisabled)
+    $smarty->assign('pluginsDisabled', $pluginsDisabled)
         ->assign('pluginsInstalled', $pluginsInstalled)
         ->assign('pluginsProblematic', $pluginsProblematic)
         ->assign('pluginsAvailable', $pluginsAvailable)

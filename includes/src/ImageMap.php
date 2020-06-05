@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL;
 
@@ -39,7 +35,7 @@ class ImageMap implements IExtensionPoint
     public function __construct(DbInterface $db)
     {
         $this->db            = $db;
-        $this->kSprache      = Shop::getLanguage();
+        $this->kSprache      = Shop::getLanguageID();
         $this->kKundengruppe = isset($_SESSION['Kundengruppe']->kKundengruppe)
             ? Session\Frontend::getCustomerGroup()->getID()
             : null;

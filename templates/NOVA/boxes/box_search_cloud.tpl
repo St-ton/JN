@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='boxes-box-search-cloud'}
     {block name='boxes-box-search-cloud-script'}
         {inline_script}<script>
@@ -28,7 +24,7 @@
         {block name='boxes-box-search-cloud-content'}
             {block name='boxes-box-search-cloud-title'}
                 <div class="productlist-filter-headline">
-                    <span>{lang key='searchcloud'}</span>
+                    {lang key='searchcloud'}
                 </div>
             {/block}
             <div class="searchcloud"></div>

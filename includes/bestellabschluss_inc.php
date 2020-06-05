@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Cart\CartItem;
 use JTL\Catalog\Currency;
@@ -291,7 +287,7 @@ function bestellungInDB($cleared = 0, $orderNo = '')
     $order->kRechnungsadresse = $billingAddressID;
     $order->kZahlungsart      = $_SESSION['Zahlungsart']->kZahlungsart;
     $order->kVersandart       = $_SESSION['Versandart']->kVersandart;
-    $order->kSprache          = Shop::getLanguage();
+    $order->kSprache          = Shop::getLanguageID();
     $order->kWaehrung         = Frontend::getCurrency()->getID();
     $order->fGesamtsumme      = Frontend::getCart()->gibGesamtsummeWaren(true);
     $order->cVersandartName   = $_SESSION['Versandart']->angezeigterName[$_SESSION['cISOSprache']];
@@ -330,6 +326,17 @@ function bestellungInDB($cleared = 0, $orderNo = '')
     executeHook(HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB, ['oBestellung' => &$order]);
 
     $orderID = $order->insertInDB();
+
+    // OrderAttributes
+    if (!empty($_SESSION['Warenkorb']->OrderAttributes)) {
+        foreach ($_SESSION['Warenkorb']->OrderAttributes as $orderAttr) {
+            $obj              = new stdClass();
+            $obj->kBestellung = $orderID;
+            $obj->cName       = $orderAttr->cName;
+            $obj->cValue      = $orderAttr->cName === "Finanzierungskosten" ? (float)str_replace(',', '.', $orderAttr->cValue) : $orderAttr->cValue;
+            Shop::Container()->getDB()->insert('tbestellattribut', $obj);
+        }
+    }
 
     $logger = Shop::Container()->getLogService();
     if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
@@ -469,7 +476,7 @@ function unhtmlSession(): void
     if ($sessionCustomer->kKundengruppe > 0) {
         $customer->kKundengruppe = $sessionCustomer->kKundengruppe;
     }
-    $customer->kSprache = Shop::getLanguage();
+    $customer->kSprache = Shop::getLanguageID();
     if ($sessionCustomer->kSprache > 0) {
         $customer->kSprache = $sessionCustomer->kSprache;
     }
@@ -1080,7 +1087,7 @@ function fakeBestellung()
     $order->kWaehrung        = Frontend::getCurrency()->getID();
     $order->fWaehrungsFaktor = Frontend::getCurrency()->getConversionFactor();
 
-    $order->oRechnungsadresse              = $order->oRechnungsadresse ?? new stdClass();
+    $order->oRechnungsadresse              = $order->oRechnungsadresse ?? new Rechnungsadresse();
     $order->oRechnungsadresse->cVorname    = $customer->cVorname;
     $order->oRechnungsadresse->cNachname   = $customer->cNachname;
     $order->oRechnungsadresse->cFirma      = $customer->cFirma;
@@ -1111,7 +1118,9 @@ function fakeBestellung()
                 $order->Positionen[$i]->$member = $item->$member;
             }
 
-            $order->Positionen[$i]->cName = $order->Positionen[$i]->cName[$_SESSION['cISOSprache']];
+            if (is_array($order->Positionen[$i]->cName)) {
+                $order->Positionen[$i]->cName = $order->Positionen[$i]->cName[$_SESSION['cISOSprache']];
+            }
             $order->Positionen[$i]->fMwSt = Tax::getSalesTax($item->kSteuerklasse);
             $order->Positionen[$i]->setzeGesamtpreisLocalized();
         }

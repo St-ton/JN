@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\OPC\Portlets\Flipcard;
 
@@ -30,6 +26,7 @@ class Flipcard extends Portlet
                     'h' => __('horizontal'),
                 ],
                 'default' => 'v',
+                'desc'    => __('flipDirDesc'),
             ],
             'flip-trigger' => [
                 'type'    => InputType::RADIO,

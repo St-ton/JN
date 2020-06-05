@@ -1,8 +1,4 @@
-<?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
+<?php declare(strict_types=1);
 
 namespace JTL\Backend;
 
@@ -11,14 +7,15 @@ use Exception;
 use JTL\Alert\Alert;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use StringHandler;
-use function Functional\reindex;
 use stdClass;
+use function Functional\pluck;
+use function Functional\reindex;
 
 /**
  * Class AdminAccountManager
@@ -168,13 +165,7 @@ class AdminAccountManager
      */
     public function getAdminGroupPermissions(int $groupID): array
     {
-        $permissions = [];
-        $data        = $this->db->selectAll('tadminrechtegruppe', 'kAdminlogingruppe', $groupID);
-        foreach ($data as $oPermission) {
-            $permissions[] = $oPermission->cRecht;
-        }
-
-        return $permissions;
+        return pluck($this->db->selectAll('tadminrechtegruppe', 'kAdminlogingruppe', $groupID), 'cRecht');
     }
 
     /**
@@ -182,7 +173,7 @@ class AdminAccountManager
      * @param string|int $value
      * @return bool
      */
-    public function getInfoInUse($row, $value): bool
+    public function getInfoInUse(string $row, $value): bool
     {
         return \is_object($this->db->select('tadminlogin', $row, $value));
     }
@@ -329,7 +320,7 @@ class AdminAccountManager
         foreach (LanguageHelper::getAllLanguages() as $language) {
             $useVita_ISO = 'useVita_' . $language->cISO;
             if (!empty($attribs[$useVita_ISO])) {
-                $shortText = StringHandler::filterXSS($attribs[$useVita_ISO]);
+                $shortText = Text::filterXSS($attribs[$useVita_ISO]);
                 $longtText = $attribs[$useVita_ISO];
 
                 if (\mb_strlen($shortText) > 255) {
@@ -461,7 +452,7 @@ class AdminAccountManager
         $knownSecret = '';
         if ($adminID !== null) {
             $twoFA = new TwoFA($this->db);
-            $twoFA->setUserByID($_POST['id']);
+            $twoFA->setUserByID($adminID);
 
             if ($twoFA->is2FAauthSecretExist() === true) {
                 $qrCode      = $twoFA->getQRcode();
@@ -475,8 +466,8 @@ class AdminAccountManager
             $errors              = [];
             $tmpAcc              = new stdClass();
             $tmpAcc->kAdminlogin = Request::postInt('kAdminlogin');
-            $tmpAcc->cName       = \htmlspecialchars(\trim($_POST['cName']), ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-            $tmpAcc->cMail       = \htmlspecialchars(\trim($_POST['cMail']), ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+            $tmpAcc->cName       = \htmlspecialchars(\trim($_POST['cName']), \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET);
+            $tmpAcc->cMail       = \htmlspecialchars(\trim($_POST['cMail']), \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET);
             $tmpAcc->language    = $_POST['language'];
             $tmpAcc->cLogin      = \trim($_POST['cLogin']);
             $tmpAcc->cPass       = \trim($_POST['cPass']);
@@ -799,14 +790,15 @@ class AdminAccountManager
     public function actionGroupDelete(): string
     {
         $groupID = Request::postInt('id');
-        $data    = $this->db->query(
+        $data    = $this->db->queryPrepared(
             'SELECT COUNT(*) AS member_count
                 FROM tadminlogin
-                WHERE kAdminlogingruppe = ' . $groupID,
+                WHERE kAdminlogingruppe = :gid',
+            ['gid' => $groupID],
             ReturnType::SINGLE_OBJECT
         );
         if ((int)$data->member_count !== 0) {
-            $$this->addError(__('errorGroupDeleteCustomer'));
+            $this->addError(__('errorGroupDeleteCustomer'));
 
             return 'group_redirect';
         }
@@ -823,14 +815,49 @@ class AdminAccountManager
     }
 
     /**
+     * @return string
+     * @throws Exception
+     */
+    public function getNextAction(): string
+    {
+        $action = 'account_view';
+        if (isset($_REQUEST['action']) && Form::validateToken()) {
+            $action = $_REQUEST['action'];
+        }
+        switch ($action) {
+            case 'account_lock':
+                $action = $this->actionAccountLock();
+                break;
+            case 'account_unlock':
+                $action = $this->actionAccountUnLock();
+                break;
+            case 'account_edit':
+                $action = $this->actionAccountEdit();
+                break;
+            case 'account_delete':
+                $action = $this->actionAccountDelete();
+                break;
+            case 'group_edit':
+                $action = $this->actionGroupEdit();
+                break;
+            case 'group_delete':
+                $action = $this->actionGroupDelete();
+                break;
+            case 'quick_change_language':
+                $this->actionQuickChangeLanguage();
+                break;
+        }
+
+        return $action;
+    }
+
+    /**
      *
      */
     public function actionQuickChangeLanguage(): void
     {
-        $language = Request::verifyGPDataString('language');
-        $referer  = Request::verifyGPDataString('referer');
-        $this->changeAdminUserLanguage($language);
-        \header('Location: ' . $referer);
+        $this->changeAdminUserLanguage(Request::verifyGPDataString('language'));
+        \header('Location: ' . Request::verifyGPDataString('referer'));
     }
 
     /**
@@ -861,10 +888,10 @@ class AdminAccountManager
     }
 
     /**
-     * @param $step
+     * @param string $step
      * @throws \SmartyException
      */
-    public function finalize($step): void
+    public function finalize(string $step): void
     {
         if (isset($_SESSION['benutzerverwaltung.notice'])) {
             $this->messages['notice'] = $_SESSION['benutzerverwaltung.notice'];

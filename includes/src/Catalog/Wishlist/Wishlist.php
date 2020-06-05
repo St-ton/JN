@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Catalog\Wishlist;
 
@@ -1266,5 +1262,33 @@ class Wishlist
 
             return $list;
         });
+    }
+
+    /**
+     * @param int $product
+     * @param array $params
+     * @return int
+     */
+    public static function checkVariOnList(int $product, array $params): int
+    {
+        $variationCount = \count($params);
+        $wishlist       = Frontend::getWishList();
+        foreach ($wishlist->CWunschlistePos_arr as $item) {
+            if ($product === $item->kArtikel) {
+                $variCountTMP = 0;
+                foreach ($item->CWunschlistePosEigenschaft_arr as $itemAttribute) {
+                    if ((string)$itemAttribute->kEigenschaftWert === $params[$itemAttribute->kEigenschaft]
+                        || (string)$itemAttribute->cFreifeldWert === $params[$itemAttribute->kEigenschaft]
+                    ) {
+                        $variCountTMP++;
+                    }
+                }
+                if ($variCountTMP === $variationCount) {
+                    return $item->kWunschlistePos;
+                }
+            }
+        }
+
+        return 0;
     }
 }

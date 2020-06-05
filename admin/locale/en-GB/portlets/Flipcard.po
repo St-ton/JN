@@ -6,13 +6,22 @@ msgid "Flipcard"
 msgstr "Flipcard"
 
 msgid "flipcardOrientation"
-msgstr "Orientation"
+msgstr "Direction"
 
 msgid "flipTrigger"
-msgstr "Flip Trigger"
+msgstr "Flip trigger"
 
 msgid "onClick"
-msgstr "click"
+msgstr "Click"
 
 msgid "onHover"
-msgstr "hover"
+msgstr "Hover"
+
+msgid "flipcardFront"
+msgstr "Front"
+
+msgid "flipcardBack"
+msgstr "Back"
+
+msgid "flipDirDesc"
+msgstr "Specifies whether the flip card rotates around the vertical or horizontal axis."

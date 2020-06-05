@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {foreach $oBox->getItems() as $oMerkmal}
     <section class="panel panel-default box box-global-characteristics" id="sidebox{$oBox->getID()}-{$oMerkmal->kMerkmal}">
         <div class="panel-heading">

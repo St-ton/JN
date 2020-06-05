@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='checkout-step5-confirmation'}
     <div id="order-confirm">
         {block name='checkout-step5-confirmation-alert'}
@@ -24,13 +20,14 @@
                                         <span class="h3 mb-0">{lang section="account data" key='billingAndDeliveryAddress'}</span>
                                     {/col}
                                     {col class='col-auto'}
-                                        {link class="text-decoration-none"
+                                        {button variant="link"
+                                            size="sm"
                                             href="{get_static_route id='bestellvorgang.php'}?editRechnungsadresse=1"
                                             aria=['label'=>{lang key='change'}]
                                         }
                                             <span class="mr-1 d-none text-decoration-underline d-md-inline-block">{lang key='change'}</span>
                                             <span class="fa fa-pencil-alt"></span>
-                                        {/link}
+                                        {/button}
                                     {/col}
                                 {/row}
                             {/block}
@@ -66,13 +63,14 @@
                                         <span class="h3 mb-0">{lang section="account data" key='shippingAndPaymentOptions'}</span>
                                     {/col}
                                     {col class='col-auto'}
-                                        {link class="text-decoration-none"
+                                        {button variant="link"
+                                            size="sm"
                                             href="{get_static_route id='bestellvorgang.php'}?editVersandart=1"
                                             aria=['label'=>{lang key='change'}]
                                         }
                                             <span class="mr-1 d-none text-decoration-underline d-md-inline-block">{lang key='change'}</span>
                                             <span class="fa fa-pencil-alt"></span>
-                                        {/link}
+                                        {/button}
                                     {/col}
                                 {/row}
                             {/block}
@@ -256,10 +254,13 @@
                                         {card no-body=true class='card-gray card-products'}
                                             {cardheader class='p-0 text-right'}
                                                 {block name='checkout-step5-confirmation-order-items-header'}
-                                                    {link class="btn btn-sm btn-link" href="{get_static_route id='warenkorb.php'}"}
+                                                    {button variant="link"
+                                                        size="sm"
+                                                        href="{get_static_route id='warenkorb.php'}"
+                                                    }
                                                         <span class="text-decoration-underline mr-2">{lang key='change'}</span>
                                                         <span class="fa fa-pencil-alt"></span>
-                                                    {/link}
+                                                    {/button}
                                                 {/block}
                                             {/cardheader}
                                             {cardbody class='pt-5'}

@@ -15,7 +15,7 @@ msgid "backToOverview"
 msgstr "Zurück zur Übersicht"
 
 msgid "settingsSaved"
-msgstr "Die Einstellungen wurden erfolgreich gespeichert."
+msgstr "Einstellungen wurden erfolgreich gespeichert."
 
 msgid "prefDesc5"
 msgstr ""
@@ -70,3 +70,6 @@ msgstr ""
 
 msgid "prefURL2"
 msgstr "https://jtl-url.de/sdka5"
+
+msgid "prefDesc5ProductQuestion"
+msgstr "Hier können Sie Einstellungen bezüglich Fragen von Kunden zu bestimmten Artikeln vornehmen. Der Kunde ruft das zugehörige Fenster über die jeweilige Artikeldetailseite auf."

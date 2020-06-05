@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Helpers;
 
@@ -280,13 +276,13 @@ class CMS
         $history = Shop::Container()->getDB()->selectAll(
             'tnewsletterhistory',
             'kSprache',
-            Shop::getLanguage(),
+            Shop::getLanguageID(),
             'kNewsletterHistory, cBetreff, DATE_FORMAT(dStart, \'%d.%m.%Y %H:%i\') AS Datum, cHTMLStatic',
             'dStart DESC'
         );
         foreach ($history as $item) {
-            $item->cURL     = URL::buildURL($item, \URLART_NEWS);
-            $item->cURLFull = URL::buildURL($item, \URLART_NEWS, true);
+            $item->cURL     = URL::buildURL($item, \URLART_NEWSLETTER);
+            $item->cURLFull = URL::buildURL($item, \URLART_NEWSLETTER, true);
         }
 
         return $history;
@@ -326,10 +322,10 @@ class CMS
             ReturnType::ARRAY_OF_OBJECTS
         );
 
-        $options = Artikel::getDefaultOptions();
+        $defaultOptions = Artikel::getDefaultOptions();
         foreach ($tmpGifts as $item) {
             $product = new Artikel();
-            $product->fuelleArtikel($item->kArtikel, $options);
+            $product->fuelleArtikel($item->kArtikel, $defaultOptions);
             $product->cBestellwert = Preise::getLocalizedPriceString((float)$item->cWert);
 
             if ($product->kEigenschaftKombi > 0 || \count($product->Variationen) === 0) {

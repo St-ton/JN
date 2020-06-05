@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 <input type="submit" name="fake" class="hidden">
 
 <table class="table table-striped order-items layout-fixed hyphens">
@@ -57,7 +53,7 @@
                     <td class="hidden-xs"></td>
                 {/if}
                 <td>
-                    {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
+                    {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL || $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_GRATISGESCHENK}
                         <a href="{$oPosition->Artikel->cURLFull}" title="{$oPosition->cName|trans}">{$oPosition->cName|trans}</a>
                         <ul class="list-unstyled text-muted small">
                             <li class="sku"><strong>{lang key='productNo' section='global'}:</strong> {$oPosition->Artikel->cArtNr}</li>
@@ -66,7 +62,10 @@
                                     <strong>{lang key='productMHD' section='global'}:</strong> {$oPosition->Artikel->dMHD_de}
                                 </li>
                             {/if}
-                            {if $oPosition->Artikel->cLocalizedVPE && $oPosition->Artikel->cVPE !== 'N'}
+                            {if $oPosition->Artikel->cLocalizedVPE
+                                && $oPosition->Artikel->cVPE !== 'N'
+                                && $oPosition->nPosTyp != $C_WARENKORBPOS_TYP_GRATISGESCHENK
+                            }
                                 <li class="baseprice"><strong>{lang key='basePrice' section='global'}:</strong> {$oPosition->Artikel->cLocalizedVPE[$NettoPreise]}</li>
                             {/if}
                             {if $Einstellungen.kaufabwicklung.warenkorb_varianten_varikombi_anzeigen === 'Y' && isset($oPosition->WarenkorbPosEigenschaftArr) && !empty($oPosition->WarenkorbPosEigenschaftArr)}
@@ -396,5 +395,20 @@
                 <td colspan="{$colspan}"><small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() key='shippingInformation' section='basket'}</small></td>
             </tr>
         {/if}
+        {foreach $smarty.session.Warenkorb->OrderAttributes as $attribute}
+            {if $attribute->cName === 'Finanzierungskosten'}
+                <tr class="type-{$smarty.const.C_WARENKORBPOS_TYP_ZINSAUFSCHLAG}">
+                    {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
+                        <td class="hidden-xs"></td>
+                    {/if}
+                    <td class="text-right" colspan="2">
+                        {lang key='financeCosts' section='order'}
+                    </td>
+                    <td class="text-right price-col" colspan="{if $tplscope === 'cart'}4{else}3{/if}">
+                        {$attribute->cValue}
+                    </td>
+                </tr>
+            {/if}
+        {/foreach}
     </tfoot>
 </table>

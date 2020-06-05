@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace Nova;
 
@@ -734,7 +730,7 @@ class Plugins
      */
     public function seofy($optStr = ''): string
     {
-        return Seo::sanitizeSeoSlug($optStr);
+        return \str_replace('/', '-', Seo::sanitizeSeoSlug($optStr));
     }
 
     /**

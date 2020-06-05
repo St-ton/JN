@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Link;
 
@@ -13,6 +9,7 @@ use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use JTL\Plugin\State;
 use JTL\Shop;
+use JTL\Shopsetting;
 use stdClass;
 
 /**
@@ -52,52 +49,52 @@ final class Link extends AbstractLink
     protected $linkType = -1;
 
     /**
-     * @var array
+     * @var int[]
      */
     protected $linkGroups = [];
 
     /**
-     * @var array
+     * @var string[]
      */
     protected $names = [];
 
     /**
-     * @var array
+     * @var string[]
      */
     protected $urls = [];
 
     /**
-     * @var array
+     * @var string[]
      */
     protected $seo = [];
 
     /**
-     * @var array
+     * @var string[]
      */
     protected $titles = [];
 
     /**
-     * @var array
+     * @var string[]
      */
     protected $contents = [];
 
     /**
-     * @var array
+     * @var string[]
      */
     protected $metaTitles = [];
 
     /**
-     * @var array
+     * @var string[]
      */
     protected $metaKeywords = [];
 
     /**
-     * @var array
+     * @var string[]
      */
     protected $metaDescriptions = [];
 
     /**
-     * @var array
+     * @var int[]
      */
     protected $customerGroups = [];
 
@@ -332,7 +329,6 @@ final class Link extends AbstractLink
     public function map(array $localizedLinks): LinkInterface
     {
         \executeHook(\HOOK_LINK_PRE_MAP, ['data' => $localizedLinks]);
-        $baseURL = Shop::getURL(true) . '/';
         foreach ($localizedLinks as $link) {
             $link = $this->sanitizeLinkData($link);
             $this->setIdentifier($link->cIdentifier ?? '');
@@ -350,10 +346,10 @@ final class Link extends AbstractLink
             $this->setReference($link->reference);
             $this->setSSL((bool)$link->bSSL);
             $this->setIsFluid((bool)$link->bIsFluid);
-            $this->setIsEnabled((bool)$link->bIsActive);
+            $this->setIsEnabled($this->checkActivationSetting((bool)$link->bIsActive));
             $this->setFileName($link->cDateiname ?? '');
             $this->setLanguageCode($link->cISOSprache, $link->languageID);
-            $this->setContent(Text::parseNewsText($link->content ?? ''), $link->languageID);
+            $this->setContent($link->content ?? '', $link->languageID);
             $this->setMetaDescription($link->metaDescription ?? '', $link->languageID);
             $this->setMetaTitle($link->metaTitle ?? '', $link->languageID);
             $this->setMetaKeyword($link->metaKeywords ?? '', $link->languageID);
@@ -365,7 +361,7 @@ final class Link extends AbstractLink
             $this->setURL(
                 $this->linkType === 2
                     ? $link->localizedUrl
-                    : ($baseURL . $link->localizedUrl),
+                    : (Shop::getURL(true, $link->languageID) . '/' . $link->localizedUrl),
                 $link->languageID
             );
             $this->setHandler($link->handler ?? '');
@@ -451,7 +447,7 @@ final class Link extends AbstractLink
     }
 
     /**
-     * @return array
+     * @return int[]
      */
     public function getLinkGroups(): array
     {
@@ -1216,5 +1212,25 @@ final class Link extends AbstractLink
         $res['db'] = '*truncated*';
 
         return $res;
+    }
+
+    /**
+     * @param bool $isActive
+     * @return bool
+     */
+    private function checkActivationSetting(bool $isActive): bool
+    {
+        if (!$isActive) {
+            return false;
+        }
+        $conf = Shopsetting::getInstance()->getAll();
+
+        switch ($this->getLinkType()) {
+            case \LINKTYP_NEWSLETTER:
+            case \LINKTYP_NEWSLETTERARCHIV:
+                return $conf['newsletter']['newsletter_active'] === 'Y';
+            default:
+                return true;
+        }
     }
 }

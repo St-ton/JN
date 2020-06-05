@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Filter;
 
@@ -218,6 +214,17 @@ interface SearchResultsInterface
      * @return $this
      */
     public function setSearchSpecialFilterOptions($options): SearchResultsInterface;
+
+    /**
+     * @return Option[]
+     */
+    public function getAvailabilityFilterOptions(): array;
+
+    /**
+     * @param Option[] $options
+     * @return $this
+     */
+    public function setAvailabilityFilterOptions($options): SearchResultsInterface;
 
     /**
      * @return Option[]

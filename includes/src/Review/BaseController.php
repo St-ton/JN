@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Review;
 
@@ -14,7 +10,7 @@ use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
-use JTLSmarty;
+use JTL\Smarty\JTLSmarty;
 use stdClass;
 
 /**

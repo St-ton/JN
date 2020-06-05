@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Newsletter;
 
@@ -481,7 +477,7 @@ final class Admin
     public function saveTemplate($post)
     {
         foreach (['cName', 'cBetreff', 'cHtml', 'cText'] as $key) {
-            $post[$key] = trim($post[$key]);
+            $post[$key] = \trim($post[$key]);
         }
 
         $alertHelper = Shop::Container()->getAlertService();
@@ -791,7 +787,7 @@ final class Admin
      */
     public function getSubscribers($limitSQL, $searchSQL): array
     {
-        return $this->db->query(
+        $result = $this->db->query(
             "SELECT tnewsletterempfaenger.*,
                 DATE_FORMAT(tnewsletterempfaenger.dEingetragen, '%d.%m.%Y %H:%i') AS dEingetragen_de,
                 DATE_FORMAT(tnewsletterempfaenger.dLetzterNewsletter, '%d.%m.%Y %H:%i') AS dLetzterNewsletter_de,
@@ -813,6 +809,31 @@ final class Admin
             $searchSQL->cWHERE . '
                 ORDER BY tnewsletterempfaenger.dEingetragen DESC' . $limitSQL,
             ReturnType::ARRAY_OF_OBJECTS
+        );
+        if (empty($result)) {
+            return [];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return void
+     */
+    public function setNewsletterCheckboxStatus(): void
+    {
+        $active = $_POST['newsletter_active'] === 'Y' ? 1 : 0;
+
+        $this->db->queryPrepared(
+            'UPDATE tcheckbox
+                LEFT JOIN tcheckboxfunktion USING(kCheckBoxFunktion)
+                SET nAktiv = :active
+                  WHERE tcheckboxfunktion.cID = :newsletterID',
+            [
+                'active'       => $active,
+                'newsletterID' => 'jtl_newsletter'
+            ],
+            ReturnType::DEFAULT
         );
     }
 }

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {if isset($fehlendeAngaben_fragezumprodukt)}
     {$fehlendeAngaben = $fehlendeAngaben_fragezumprodukt}
 {/if}
@@ -172,7 +168,9 @@
 
         {if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'P' && !empty($oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getName())}
             <p class="privacy text-muted small">
-                <a href="{$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL()}" class="popup">{$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getName()}</a>
+                <a href="{$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL()}" class="popup">
+                    {lang key='privacyNotice'}
+                </a>
             </p>
         {/if}
         <input type="hidden" name="a" value="{$Artikel->kArtikel}" />

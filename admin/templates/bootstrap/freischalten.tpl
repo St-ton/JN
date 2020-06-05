@@ -1,4 +1,3 @@
-{config_load file="$lang.conf" section='freischalten'}
 {include file='tpl_inc/header.tpl'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('freischalten') cBeschreibung=__('freischaltenDesc') cDokuURL=__('freischaltenURL')}
 <div id="content">
@@ -49,22 +48,22 @@
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link {if !isset($cTab) || empty($cTab) || $cTab === 'bewertungen'} active{/if}" data-toggle="tab" role="tab" href="#bewertungen">
-                        {__('reviews')} <span class="badge">{$oPagiBewertungen->getItemCount()}</span>
+                        {__('reviews')} <span class="badge badge-primary">{$oPagiBewertungen->getItemCount()}</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {if isset($cTab) && $cTab === 'livesearch'} active{/if}" data-toggle="tab" role="tab" href="#livesearch">
-                        {__('freischaltenLivesearch')} <span class="badge">{$oPagiSuchanfragen->getItemCount()}</span>
+                        {__('freischaltenLivesearch')} <span class="badge badge-primary">{$oPagiSuchanfragen->getItemCount()}</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {if isset($cTab) && $cTab === 'newscomments'} active{/if}" data-toggle="tab" role="tab" href="#newscomments">
-                        {__('freischaltenNewsComments')} <span class="badge">{$oPagiNewskommentare->getItemCount()}</span>
+                        {__('freischaltenNewsComments')} <span class="badge badge-primary">{$oPagiNewskommentare->getItemCount()}</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {if isset($cTab) && $cTab === 'newsletter'} active{/if}" data-toggle="tab" role="tab" href="#newsletter">
-                        {__('freischaltenNewsletterReceiver')} <span class="badge">{$oPagiNewsletterEmpfaenger->getItemCount()}</span>
+                        {__('freischaltenNewsletterReceiver')} <span class="badge badge-primary">{$oPagiNewsletterEmpfaenger->getItemCount()}</span>
                     </a>
                 </li>
             </ul>

@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\OPC\Portlets\MissingPortlet;
 
@@ -38,9 +34,10 @@ class MissingPortlet extends Portlet
 
     /**
      * @param PortletInstance $instance
+     * @param bool $inContainer
      * @return string
      */
-    public function getFinalHtml(PortletInstance $instance): string
+    public function getFinalHtml(PortletInstance $instance, bool $inContainer = true): string
     {
         return '';
     }

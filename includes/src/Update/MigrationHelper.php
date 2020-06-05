@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Update;
 
@@ -143,18 +139,28 @@ class MigrationHelper
      */
     public static function verifyIntegrity(): void
     {
-        Shop::Container()->getDB()->query(
-            "CREATE TABLE IF NOT EXISTS tmigration 
+        if (Shop::Container()->getDB()->queryPrepared(
+                "SELECT `table_name` 
+                    FROM information_schema.tables 
+                    WHERE `table_type` = 'base table'
+                        AND `table_schema` = :sma
+                        AND `table_name` = :tn",
+                ['sma' => DB_NAME, 'tn' => 'tmigration'],
+                ReturnType::SINGLE_OBJECT
+            ) === false
+        ) {
+            Shop::Container()->getDB()->query(
+                "CREATE TABLE IF NOT EXISTS tmigration 
             (
                 kMigration bigint(14) NOT NULL, 
                 nVersion int(3) NOT NULL, 
                 dExecuted datetime NOT NULL,
                 PRIMARY KEY (kMigration)
             ) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'",
-            ReturnType::DEFAULT
-        );
-        Shop::Container()->getDB()->query(
-            "CREATE TABLE IF NOT EXISTS tmigrationlog 
+                ReturnType::DEFAULT
+            );
+            Shop::Container()->getDB()->query(
+                "CREATE TABLE IF NOT EXISTS tmigrationlog 
             (
                 kMigrationlog int(10) NOT NULL AUTO_INCREMENT, 
                 kMigration bigint(20) NOT NULL, 
@@ -164,8 +170,9 @@ class MigrationHelper
                 dCreated datetime NOT NULL, 
                 PRIMARY KEY (kMigrationlog)
             ) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'",
-            ReturnType::DEFAULT
-        );
+                ReturnType::DEFAULT
+            );
+        }
     }
 
     /**

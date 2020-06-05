@@ -1,14 +1,11 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Services;
 
 use JTL\Backend\AdminAccount;
 use JTL\Boxes\FactoryInterface;
 use JTL\Cache\JTLCacheInterface;
+use JTL\Consent\ManagerInterface;
 use JTL\DB\DbInterface;
 use JTL\DB\Services\GcServiceInterface;
 use JTL\Debug\JTLDebugBar;
@@ -186,6 +183,14 @@ class Container extends ContainerBase implements DefaultServicesInterface
     /**
      * @inheritdoc
      */
+    public function getConsentManager(): ManagerInterface
+    {
+        return $this->get(ManagerInterface::class);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getGetText(): GetText
     {
         return $this->get(GetText::class);
@@ -206,7 +211,6 @@ class Container extends ContainerBase implements DefaultServicesInterface
     {
         return $this->get(JTLDebugBar::class);
     }
-
 
     /**
      * @inheritdoc

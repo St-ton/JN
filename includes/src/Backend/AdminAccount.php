@@ -1,13 +1,10 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Backend;
 
 use DateTime;
 use Exception;
+use JTL\Alert\Alert;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
@@ -17,6 +14,7 @@ use JTL\Mail\Mailer;
 use JTL\Mapper\AdminLoginStatusMessageMapper;
 use JTL\Mapper\AdminLoginStatusToLogLevel;
 use JTL\Model\AuthLogEntry;
+use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Session\Backend;
 use JTL\Shop;
 use Psr\Log\LoggerInterface;
@@ -70,12 +68,18 @@ class AdminAccount
     private $getText;
 
     /**
+     * @var AlertServiceInterface
+     */
+    private $alertService;
+
+    /**
      * AdminAccount constructor.
      * @param DbInterface                   $db
      * @param LoggerInterface               $logger
      * @param AdminLoginStatusMessageMapper $statusMessageMapper
      * @param AdminLoginStatusToLogLevel    $levelMapper
      * @param GetText                       $getText
+     * @param AlertServiceInterface         $alertService
      * @throws Exception
      */
     public function __construct(
@@ -83,13 +87,15 @@ class AdminAccount
         LoggerInterface $logger,
         AdminLoginStatusMessageMapper $statusMessageMapper,
         AdminLoginStatusToLogLevel $levelMapper,
-        GetText $getText
+        GetText $getText,
+        AlertServiceInterface $alertService
     ) {
         $this->db            = $db;
         $this->authLogger    = $logger;
         $this->messageMapper = $statusMessageMapper;
         $this->levelMapper   = $levelMapper;
         $this->getText       = $getText;
+        $this->alertService  = $alertService;
         Backend::getInstance();
         $this->initDefaults();
         $this->validateSession();
@@ -190,8 +196,11 @@ class AdminAccount
             $mail   = new Mail();
             $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_ADMINLOGIN_PASSWORT_VERGESSEN, $obj));
 
+            $this->alertService->addAlert(Alert::TYPE_SUCCESS, __('successEmailSend'), 'successEmailSend');
+
             return true;
         }
+        $this->alertService->addAlert(Alert::TYPE_ERROR, __('errorEmailNotFound'), 'errorEmailNotFound');
 
         return false;
     }
@@ -301,10 +310,10 @@ class AdminAccount
                 }
             }
             if (!isset($admin->kSprache)) {
-                $admin->kSprache = Shop::getLanguage();
+                $admin->kSprache = Shop::getLanguageID();
             }
-            $admin->cISO       = Shop::Lang()->getIsoFromLangID($admin->kSprache)->cISO;
-            $admin->attributes = $this->getAttributes($admin->kAdminlogin);
+            $admin->cISO       = Shop::Lang()->getIsoFromLangID((int)$admin->kSprache)->cISO;
+            $admin->attributes = $this->getAttributes((int)$admin->kAdminlogin);
             $this->toSession($admin);
             $this->checkAndUpdateHash($cPass);
             if (!$this->getIsTwoFaAuthenticated()) {

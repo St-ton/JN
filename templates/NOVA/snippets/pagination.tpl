@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='snippets-pagination'}
     {assign var=cParam_arr value=$cParam_arr|default:[]}
     {assign var=noWrapper value=$noWrapper|default:false}
@@ -166,12 +162,5 @@
                 {/block}
             {/if}
         {/row}
-    {/block}
-    {block name='snippets-pagination-script'}
-        {inline_script}<script>
-            $('.pagination-wrapper select').on('change', function () {
-                this.form.submit();
-            });
-        </script>{/inline_script}
     {/block}
 {/block}

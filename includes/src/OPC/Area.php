@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\OPC;
 
@@ -77,14 +73,15 @@ class Area implements \JsonSerializable
     }
 
     /**
+     * @param bool $inContainer
      * @return string
      * @throws \Exception
      */
-    public function getFinalHtml(): string
+    public function getFinalHtml(bool $inContainer = true): string
     {
         $result = '';
         foreach ($this->content as $portletInstance) {
-            $result .= $portletInstance->getFinalHtml();
+            $result .= $portletInstance->getFinalHtml($inContainer);
         }
 
         Shop::fire('shop.OPC.Area.getFinalHtml', [
@@ -104,11 +101,8 @@ class Area implements \JsonSerializable
         $list = [];
 
         foreach ($this->content as $portletInstance) {
-            $cssFile = $portletInstance->getPortlet()->getCssFile($preview);
-
-            if (!empty($cssFile)) {
-                $list[$cssFile] = true;
-            }
+            $cssFiles = $portletInstance->getPortlet()->getCssFiles($preview);
+            $list     = $list + $cssFiles;
 
             foreach ($portletInstance->getSubareaList()->getAreas() as $area) {
                 $list = $list + $area->getCssList($preview);

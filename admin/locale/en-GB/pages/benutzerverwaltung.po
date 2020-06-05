@@ -3,7 +3,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "benutzer"
-msgstr "User management"
+msgstr "Users and rights"
 
 msgid "benutzerDesc"
 msgstr "Here you manage the user and group rights for the backend of JTL-Shop. You can add new users and assign them to a group. In the tab \"User groups\" you can set the permissions for specific areas of the back end."
@@ -15,7 +15,7 @@ msgid "benutzerTab"
 msgstr "Users"
 
 msgid "benutzerKategorie"
-msgstr "Manage users"
+msgstr "Managing users"
 
 msgid "benutzer2FA"
 msgstr "Two-factor authentication"
@@ -33,13 +33,13 @@ msgid "benutzerSperren"
 msgstr "Block access"
 
 msgid "benutzerBearbeiten"
-msgstr "Edit user"
+msgstr "Editing a user"
 
 msgid "benutzerLoeschen"
 msgstr "Delete user"
 
 msgid "benutzerNeu"
-msgstr "Create user"
+msgstr "Creating a user"
 
 msgid "sperrenLabel"
 msgstr "Block user"
@@ -53,17 +53,14 @@ msgstr "Cannot be deleted. The user group still has members."
 msgid "gruppenTab"
 msgstr "User groups"
 
-msgid "gruppenverwaltung"
-msgstr "User group management"
-
 msgid "gruppenKategorie"
 msgstr "Managing user groups"
 
 msgid "gruppeNeu"
-msgstr "Create user group"
+msgstr "Creating a user group"
 
 msgid "gruppeBearbeiten"
-msgstr "Edit user group"
+msgstr "Editing a user group"
 
 msgid "stateON"
 msgstr "Enabled"
@@ -78,7 +75,7 @@ msgid "errorLockAdmin"
 msgstr "Administrators cannot be blocked."
 
 msgid "successLock"
-msgstr "User deleted successfully."
+msgstr "User blocked successfully."
 
 msgid "errorUserNotFound"
 msgstr "User not found."
@@ -90,7 +87,7 @@ msgid "errorAtLeastOneAdmin"
 msgstr "At least one administrator must exist."
 
 msgid "successUserSave"
-msgstr "User saved successfully."
+msgstr "User data edited successfully."
 
 msgid "errorUserSave"
 msgstr "Could not save user."
@@ -123,7 +120,7 @@ msgid "successGroupDelete"
 msgstr "User group deleted successfully."
 
 msgid "errorGroupDelete"
-msgstr "Cannot delete user group."
+msgstr "Could not delete user group."
 
 msgid "errorGroupDeleteCustomer"
 msgstr "The user group cannot be deleted because it has at least one member."
@@ -141,7 +138,7 @@ msgid "temporaryAccess"
 msgstr "Temporary access"
 
 msgid "tillInclusive"
-msgstr "… up to and including"
+msgstr "Up to and including"
 
 msgid "errorUsernameMissing"
 msgstr "Please specify a user name in the login data first."
@@ -173,46 +170,6 @@ msgstr "Generate new emergency codes"
 msgid "shopEmergencyCodes"
 msgstr "Emergency codes for the back end of JTL-Shop"
 
-#module name (tadminrechtemodul)
-msgid "Admin"
-msgstr "Administrator"
-
-#module name (tadminrechtemodul)
-msgid "Einstellungen"
-msgstr "Settings"
-
-#module name (tadminrechtemodul)
-msgid "Darstellung"
-msgstr "View"
-
-#module name (tadminrechtemodul)
-msgid "Inhalt"
-msgstr "Contents"
-
-#module name (tadminrechtemodul)
-msgid "Kaufabwicklung"
-msgstr "Checkout"
-
-#module name (tadminrechtemodul)
-msgid "Module"
-msgstr "Module"
-
-#module name (tadminrechtemodul)
-msgid "Import / Export"
-msgstr "Import/Export"
-
-#module name (tadminrechtemodul)
-msgid "Erweiterungen"
-msgstr "Extensions"
-
-#module name (tadminrechtemodul)
-msgid "Plugins"
-msgstr "Plug-ins"
-
-#module name (tadminrechtemodul)
-msgid "Statistik"
-msgstr "Reports"
-
 msgid "permission_SETTINGS_META_KEYWORD_BLACKLIST_VIEW"
 msgstr "Blacklist for meta keywords"
 
@@ -223,35 +180,38 @@ msgid "permission_DASHBOARD_VIEW"
 msgstr "Dashboard"
 
 msgid "permission_SETTINGS_SEARCH_VIEW"
-msgstr "Searching the settings"
+msgstr "Search settings"
 
 msgid "permission_FILECHECK_VIEW"
-msgstr "Shop file check"
+msgstr "Check online shop files"
 
 msgid "permission_DBCHECK_VIEW"
-msgstr "Database check"
+msgstr "Check database"
 
 msgid "permission_PERMISSIONCHECK_VIEW"
-msgstr "Directory check"
+msgstr "Check directory"
+
+msgid "permission_IMAGE_UPLOAD"
+msgstr "Image upload"
 
 # description of admin group (tadminlogingruppe)
 msgid "Voller Zugriff auf den Administrationsbereich."
 msgstr "Full access to administration area"
 
 msgid "resume"
-msgstr "Résumé"
+msgstr "About the author (for example displayed with blog posts)"
 
 msgid "personalInformation"
-msgstr "Personal information"
+msgstr "Author"
 
 msgid "avatar"
-msgstr "Avatar"
+msgstr "User image"
 
 msgid "errorImageMissing"
-msgstr "Please upload an image."
+msgstr "Please select an image."
 
 msgid "errorImageUpload"
-msgstr "An error occured while uploading the image."
+msgstr "Error uploading the image."
 
 msgid "noMenuItem"
-msgstr "No menu item"
+msgstr "Other"

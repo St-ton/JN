@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productlist-header'}
     {if !isset($oNavigationsinfo) || isset($Suchergebnisse) && isset($oNavigationsinfo) && empty($oNavigationsinfo->getName())}
         {opcMountPoint id='opc_before_heading'}
@@ -16,7 +12,7 @@
             {alert variant="info"}{lang key='noResults' section='productOverview'}{/alert}
         {/block}
         {block name='productlist-header-form-search'}
-            {form id="suche2" action=$ShopURL method="get"}
+            {form id="suche2" action=$ShopURL method="get" slide=true}
                 <fieldset>
                     {formgroup label-for="searchkey" label="{lang key='searchText'}"}
                             {input type="text" name="suchausdruck" value="{if $Suchergebnisse->getSearchTerm()}{$Suchergebnisse->getSearchTerm()|escape:'htmlall'}{/if}" id="searchkey"}
@@ -45,14 +41,14 @@
                         {$navData = $oNavigationsinfo->getCharacteristicValue()}
                     {/if}
                     {if $navData->getImage(\JTL\Media\Image::SIZE_XS)|default:null !== null}
-                        {image fluid-grow=true lazy=true webp=true
+                        {image fluid=true lazy=true webp=true
                             src=$navData->getImage(\JTL\Media\Image::SIZE_XS)
                             srcset="{$navData->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_kategorien_mini_breite}w,
                                 {$navData->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_kategorien_klein_breite}w,
                                 {$navData->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_kategorien_breite}w,
                                 {$navData->getImage(\JTL\Media\Image::SIZE_LG)} {$Einstellungen.bilder.bilder_kategorien_gross_breite}w"
                             alt="{$navData->cBeschreibung|strip_tags|truncate:40|escape:'html'}"
-                            sizes="auto"
+                            sizes="100vw"
                             class="mb-5"
                         }
                     {/if}
@@ -96,26 +92,26 @@
             {row class="row-eq-height content-cats-small clearfix"}
                 {foreach $oUnterKategorien_arr as $subCategory}
                     {col cols=12 md=4 lg=3}
-                        {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}
-                            {block name='productlist-header-subcategories-image'}
-                                {link href=$subCategory->getURL() class='d-none d-md-block'}
-                                    {image fluid-grow=true lazy=true webp=true
-                                        src=$subCategory->getImage()
-                                        alt=$subCategory->getName()
-                                        class="mb-2"
-                                    }
-                                {/link}
-                            {/block}
-                        {/if}
-                        {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'B'}
-                            {block name='productlist-header-subcategories-link'}
-                                <div class="caption text-md-center mb-2">
-                                    {link href=$subCategory->getURL()}
+                        {link href=$subCategory->getURL()}
+                            {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}
+                                {block name='productlist-header-subcategories-image'}
+                                    <div class="square square-image mb-2 d-none d-md-flex">
+                                        <div class="inner">
+                                            {image fluid=true lazy=true webp=true
+                                                src=$subCategory->getImage(\JTL\Media\Image::SIZE_SM)
+                                                alt=$subCategory->getName()}
+                                        </div>
+                                    </div>
+                                {/block}
+                            {/if}
+                            {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'B'}
+                                {block name='productlist-header-subcategories-link'}
+                                    <div class="caption text-md-center mb-2">
                                         {$subCategory->getName()}
-                                    {/link}
-                                </div>
-                            {/block}
-                        {/if}
+                                    </div>
+                                {/block}
+                            {/if}
+                        {/link}
                         {if $Einstellungen.navigationsfilter.unterkategorien_beschreibung_anzeigen === 'Y' && !empty($subCategory->getDescription())}
                             {block name='productlist-header-subcategories-description'}
                                 <p class="item_desc small text-muted d-none d-md-block">{$subCategory->getDescription()|strip_tags|truncate:68}</p>

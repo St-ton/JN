@@ -39,7 +39,7 @@
 
 .productbox-sale-percentage { position: relative; top: -(map-get($spacers, 7)); }
 
-.productbox-image { position: relative; margin-bottom: $spacer; }
+.productbox-image { position: relative;}
 
 .productbox-image-wrapper { @extend .square; }
 .productbox-image-wrapper-inner { @extend .square-inner;

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 <h1 class="menu-title">{lang key='welcome' section='login'} {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}</h1>
 
 <div class="row">
@@ -34,13 +30,6 @@
         {/block}
         {block name='account-general'}
             <div class="panel-group" id="account-general" role="tablist" aria-multiselectable="true">
-                {if $Einstellungen.kundenwerbenkunden.kwk_nutzen === 'Y'}
-                    <p>
-                        <a class="btn btn-default btn-group-justified" href="{get_static_route id='jtl.php' params=['KwK' => 1]}">
-                            <span class="fa fa-comment"></span> {lang key='kwkName' section='login'}
-                        </a>
-                    </p>
-                {/if}
                 <p>
                     <a class="btn btn-default btn-group-justified" href="{get_static_route id='jtl.php' params=['pass' => 1]}">
                         <span class="fa fa-lock"></span> {lang key='changePassword' section='login'}

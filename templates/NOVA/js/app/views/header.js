@@ -25,10 +25,10 @@ const $header					= $(header)
 const $mainNavigation			= $(mainNavigation)
 const $navRightDropdowns		= $(navRightDropdowns)
 const $navbarNav				= $(navbarNav)
+const $consentManager           = $('#consent-manager')
 
 const delayDropdownFadeIn		= 400
 const delayDropdownFadeOut		= 200
-const delayActiveDropdownFadeIn	= 100
 
 let mobileCurrentLevel			= 0
 let dropdownInTo				= null
@@ -160,6 +160,7 @@ $backdropMobileNav.on('click', onMobile(() => {
 $document.on('show.bs.collapse', mainNavigation, () => {
     lockScreen()
     $backdropMobileNav.insertBefore($mainNavigation)
+    $consentManager.addClass('d-none');
 })
 
 $document.on('shown.bs.collapse', mainNavigation, () => {
@@ -169,6 +170,7 @@ $document.on('shown.bs.collapse', mainNavigation, () => {
 
 $document.on('hide.bs.collapse', mainNavigation, () => {
     $backdropMobileNav.removeClass('show')
+    $consentManager.removeClass('d-none');
 })
 
 $document.on('hidden.bs.collapse', mainNavigation, () => {
@@ -231,17 +233,13 @@ $document.on('mouseenter', `${mainNavigation} .navbar-nav > .dropdown`, onDeskto
     if(dropdownOutTo != undefined)
         clearTimeout(dropdownOutTo)
 
-    let delay = delayDropdownFadeIn
-
-    if($activeDropdown !== null) {
-        hideDropdown()
-        delay = delayActiveDropdownFadeIn
-    }
-
     dropdownInTo = setTimeout(() => {
+        if($activeDropdown !== null) {
+            hideDropdown()
+        }
         showDropdown($(e.currentTarget).find('> .dropdown-toggle'))
         $backdropDropdowns.insertBefore($header).addClass('show zindex-dropdown')
-    }, delay)
+    }, delayDropdownFadeIn)
 })).on('mouseleave', `${mainNavigation} .navbar-nav > .dropdown`, onDesktop((e) => {
     if(hasTouch())
         return

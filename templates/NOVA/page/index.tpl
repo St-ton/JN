@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='page-index'}
     {block name='page-index-include-selection-wizard'}
         {include file='selectionwizard/index.tpl'}
@@ -11,7 +7,7 @@
         {assign var=moreLink value=null}
         {assign var=moreTitle value=null}
 
-        {opcMountPoint id='opc_before_boxes'}
+        {opcMountPoint id='opc_before_boxes' inContainer=false}
 
         {block name='page-index-boxes'}
             {foreach $StartseiteBoxen as $Box}
@@ -32,7 +28,13 @@
                     {assign var=moreLink value=$Box->cURL}
                     {block name='page-index-include-product-slider'}
                         {container fluid=true}
-                            {include file='snippets/product_slider.tpl' productlist=$Box->Artikel->elemente title=$title hideOverlays=true moreLink=$moreLink moreTitle=$moreTitle}
+                            {include file='snippets/product_slider.tpl'
+                                productlist=$Box->Artikel->elemente
+                                title=$title
+                                hideOverlays=true
+                                moreLink=$moreLink
+                                moreTitle=$moreTitle
+                                titleContainer=true}
                         {/container}
                     {/block}
                 {/if}
@@ -43,7 +45,7 @@
     {block name='page-index-additional-content'}
         {if isset($oNews_arr) && $oNews_arr|@count > 0}
 
-            {opcMountPoint id='opc_before_news'}
+            {opcMountPoint id='opc_before_news' inContainer=false}
 
             <section>
                 {container}
@@ -53,15 +55,13 @@
                         </div>
                     {/block}
                     {block name='page-index-news'}
-                        <div itemprop="about" itemscope=true itemtype="http://schema.org/Blog" class="slick-smooth-loading carousel news-slider">
-                            {foreach $oNews_arr as $newsItem}
-                                <div>
-                                    {block name='page-index-include-preview'}
-                                        {include file='blog/preview.tpl'}
-                                    {/block}
-                                </div>
-                            {/foreach}
-                        </div>
+                        {row itemprop="about"
+                             itemscope=true
+                             itemtype="http://schema.org/Blog"
+                             class="slick-smooth-loading carousel carousel-arrows-inside slick-lazy slick-type-news"
+                             data=["slick-type"=>"news-slider"]}
+                            {include file='snippets/slider_items.tpl' items=$oNews_arr type='news'}
+                        {/row}
                     {/block}
                 {/container}
             </section>

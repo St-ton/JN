@@ -42,7 +42,7 @@ msgid "Watermark"
 msgstr "Wasserzeichen"
 
 msgid "Shop logo"
-msgstr "Shop-Logo"
+msgstr "Logo"
 
 msgid "Item badges"
 msgstr "Artikelsticker"
@@ -84,7 +84,7 @@ msgid "Home page"
 msgstr "Startseite"
 
 msgid "Terms / Withdrawal"
-msgstr "AGB & Widerrufsbelehrung"
+msgstr "AGB &amp; Widerrufsbelehrung"
 
 msgid "Blog posts"
 msgstr "Blogbeiträge"
@@ -93,7 +93,7 @@ msgid "Footer / Boxes"
 msgstr "Footer / Boxen"
 
 msgid "Languages"
-msgstr "Sprachen"
+msgstr "Sprachvariablen"
 
 # Just incase you want to add a translation for partners:
 #   msgid "IT-Recht Kanzlei"
@@ -187,9 +187,6 @@ msgstr "Marketing"
 msgid "Customer loyalty"
 msgstr "Kundenbindung"
 
-msgid "Recommendations"
-msgstr "Kundenempfehlungen"
-
 msgid "Coupons"
 msgstr "Coupons"
 
@@ -238,10 +235,6 @@ msgstr "Einstiegsseiten"
 
 msgid "Coupon statistics"
 msgstr "Coupons"
-
-# Top Menu
-msgid "Import / Export"
-msgstr "Import / Export"
 
 # Mid Menu
 msgid "Import"
@@ -328,7 +321,7 @@ msgid "Update"
 msgstr "Aktualisieren"
 
 msgid "Item images"
-msgstr "Artikelbilder"
+msgstr "Bilder"
 
 msgid "Forwarding"
 msgstr "Weiterleitungen"
@@ -390,7 +383,7 @@ msgid "Help"
 msgstr "Hilfe"
 
 msgid "System check"
-msgstr "System-Check"
+msgstr "Systemprüfung"
 
 msgid "Rating system"
 msgstr "Bewertungssystem"
@@ -442,7 +435,7 @@ msgid "There are errors within the database structure."
 msgstr "Es liegen Fehler in der Datenbankstruktur vor."
 
 msgid "Your template version differs from your shop version.<br />For additional help about template updates go to <i class='fa fa-external-link'></i> Wiki"
-msgstr "Ihre Template-Version unterscheidet sich von Ihrer Shop-Version.<br/>Weitere Hilfe zu Template-Anpassungen finden Sie im <i class=\"fa fa-external-link\"></i> JTL-Guide."
+msgstr "Ihre Template-Version unterscheidet sich von der Version Ihres Onlineshops.<br/>Weitere Hilfe zu Template-Anpassungen finden Sie im <i class=\"fa fa-external-link\"></i> JTL-Guide."
 
 msgid "You are using a full responsive template. The activation of a separate mobile template is not necessary in this case."
 msgstr "Sie nutzen ein Full-Responsive-Template. Die Aktivierung eines separaten Mobile-Templates ist in diesem Fall nicht notwendig."
@@ -463,19 +456,19 @@ msgid "You've selected Google reCaptcha as spam protection method, but homepage 
 msgstr "Sie haben Google reCaptcha als Spamschutz-Methode gewählt, aber Websiteschlüssel und/oder Geheimen Schlüssel nicht angegeben."
 
 msgid "The full-text index does not exist!"
-msgstr "Der Volltextindex ist nicht vorhanden."
+msgstr "Volltextindex ist nicht vorhanden."
 
 msgid "E-mail template broken"
-msgstr "E-Mail-Vorlage defekt"
+msgstr "Defekte E-Mail-Vorlage"
 
 msgid "The E-mail template 'Passwort vergessen'/'Forgotten password' is outdated. The variable $neues_passwort is not available anymore. Please replace this with $passwordResetLink or reset the template."
-msgstr "Die E-Mail-Vorlage „Passwort Vergessen“ ist veraltet. Die Variable $neues_passwort ist nicht mehr verfügbar. Bitte ersetzen Sie diese durch $passwordResetLink oder setzen Sie die Vorlage zurück."
+msgstr "Die E-Mail-Vorlage „Passwort vergessen“ ist veraltet. Variable $neues_passwort ist nicht mehr verfügbar. Bitte ersetzen Sie diese durch $passwordResetLink oder setzen Sie die Vorlage zurück."
 
 msgid "Insecure SMTP connection"
 msgstr "Unsichere SMTP-Verbindung"
 
 msgid "You have selected SMTP as mail-method, but no encryption method has been chosen. We recommend you urgently to adjust your mail settings. You can find these options at 'System > E-Mails > Emaileinstellungen > SMTP Security'"
-msgstr "Sie haben SMTP gewählt, allerdings keine SMTP-Security-Methode. Wir empfehlen Ihnen dringend, Ihre E-Mail-Einstellungen anzupassen. Sie finden die Option unter „System &gt; E-Mails &gt; E-Mail-Einstellungen &gt; SMTP-Security.“"
+msgstr "Sie haben SMTP gewählt, allerdings keine SMTP-Security-Methode. Wir empfehlen Ihnen dringend, Ihre E-Mail-Einstellungen anzupassen. Sie finden die Option unter „Administration > E-Mail > Server.“"
 
 msgid "User management"
 msgstr "Benutzerverwaltung"
@@ -508,7 +501,7 @@ msgid "Server"
 msgstr "Server"
 
 msgid "Accounts"
-msgstr "Zugänge"
+msgstr "Benutzer & Rechte"
 
 msgid "Troubleshooting"
 msgstr "Fehlerbehebung"
@@ -517,7 +510,7 @@ msgid "System diagnostics"
 msgstr "Diagnose"
 
 msgid "Email templates"
-msgstr "Vorlage"
+msgstr "Vorlagen"
 
 msgid "Global"
 msgstr "Global"

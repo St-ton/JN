@@ -9,13 +9,13 @@ msgid "sliderURL"
 msgstr "https://jtl-url.de/uywto"
 
 msgid "sliderDesc"
-msgstr "Über die Sliderverwaltung pflegen Sie für beliebige Seiten in Ihrem Onlineshop Slider ein."
+msgstr "Hier pflegen Sie für beliebige Seiten Ihres Onlineshops Slider ein."
 
 msgid "errorSliderSave"
 msgstr "Der Slider konnte nicht in der Datenbank gespeichert werden. Bitte wenden Sie sich an den Support."
 
 msgid "successSliderSave"
-msgstr "Änderungen erfolgreich gespeichert."
+msgstr "Änderungen wurden erfolgreich gespeichert."
 
 msgid "errorSliderNotFound"
 msgstr "Slider wurde nicht gefunden."
@@ -103,3 +103,15 @@ msgstr "Der Wert von „Animationsgeschwindigkeit“ darf den Wert von „Pausen
 
 msgid "pauseTime"
 msgstr "Pausenzeit (in ms)"
+
+msgid "dotNavigation"
+msgstr "Punktnavigation"
+
+msgid "thumbnailNavigation"
+msgstr "Thumbnail-Navigation"
+
+msgid "directionNavigation"
+msgstr "Pfeilnavigation"
+
+msgid "animationSpeed"
+msgstr "Animations-Geschwindigkeit"

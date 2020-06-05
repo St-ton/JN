@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Helpers;
 
@@ -44,16 +40,24 @@ class Order extends CartHelper
         $order           = $this->getObject();
         $info            = new stdClass();
         $info->type      = self::GROSS;
-        $info->currency  = null;
+        $info->currency  = $order->Waehrung;
         $info->article   = [0, 0];
         $info->shipping  = [0, 0];
         $info->discount  = [0, 0];
         $info->surcharge = [0, 0];
         $info->total     = [0, 0];
         $info->items     = [];
-        $info->currency  = $order->Waehrung;
         foreach ($order->Positionen as $orderItem) {
-            $amountItem  = $orderItem->fPreisEinzelNetto;
+            $amountItem = $orderItem->fPreisEinzelNetto;
+            if ((!isset($orderItem->Artikel->kVaterArtikel) || (int)$orderItem->Artikel->kVaterArtikel === 0)
+                && GeneralObject::isCountable('WarenkorbPosEigenschaftArr', $orderItem)
+            ) {
+                foreach ($orderItem->WarenkorbPosEigenschaftArr as $attr) {
+                    if ($attr->fAufpreis !== 0) {
+                        $amountItem += $attr->fAufpreis;
+                    }
+                }
+            }
             $amount      = $amountItem; /* $order->fWaehrungsFaktor;*/
             $amountGross = $amount + ($amount * $orderItem->fMwSt / 100);
             // floating-point precission bug

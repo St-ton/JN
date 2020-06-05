@@ -1,5 +1,3 @@
-{config_load file="$lang.conf" section='dbupdater'}
-{config_load file="$lang.conf" section='shopupdate'}
 {include file='tpl_inc/header.tpl'}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('dbupdater') cBeschreibung=__('dbupdaterDesc') cDokuURL=__('dbupdaterURL')}

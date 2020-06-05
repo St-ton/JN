@@ -9,6 +9,7 @@ Programmier-Tipps
     :hidden:
 
     alerts
+    notifications
     shopclass
     pagination
     backend_filter
@@ -16,5 +17,6 @@ Programmier-Tipps
     profiling
     botsessions
     config_tips
+    breaking_changes
 
 .. include:: /shop_programming_tips/map.rst.inc

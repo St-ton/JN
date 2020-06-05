@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='checkout-index'}
     {block name='checkout-index-include-header'}
         {if !isset($bAjaxRequest) || !$bAjaxRequest}
@@ -46,7 +42,7 @@
                             };
                             eModal.confirm(options).then(
                                 function() {
-                                    window.location = "{get_static_route id='bestellvorgang.php'}?basket2Pers=1"
+                                    window.location = "{get_static_route id='bestellvorgang.php'}?basket2Pers=1&token={$smarty.session.jtl_token}"
                                 }
                             );
                         });

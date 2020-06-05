@@ -1,9 +1,6 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
+use JTL\Crawler;
 use JTL\Helpers\Request;
 use JTL\Pagination\Filter;
 use JTL\Pagination\Pagination;
@@ -11,7 +8,11 @@ use JTL\Pagination\Pagination;
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statistik_inc.php';
 
-$statsType = Request::verifyGPCDataInt('s');
+$statsType    = Request::verifyGPCDataInt('s');
+$db           = Shop::Container()->getDB();
+$cache        = Shop::Container()->getCache();
+$alertService = Shop::Container()->getAlertService();
+$crawler      = null;
 
 switch ($statsType) {
     case 2:
@@ -53,21 +54,39 @@ if (in_array($statsType, $pie, true)) {
     $smarty->assign('linechart', prepareLineChartStats($stats, $statsTypeName, $axisNames))
         ->assign('ylabel', $members['nCount'] ?? 0);
 }
-$members = [];
-foreach ($stats as $stat) {
-    $members[] = array_keys(get_object_vars($stat));
+if ($statsType === 3) {
+    $controller = new Crawler\Controller($db, $cache, $alertService);
+    if (($crawler = $controller->checkRequest()) === false) {
+        if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
+            $backTab = Request::verifyGPDataString('tab');
+            $smarty->assign('cTab', $backTab);
+        }
+        $crawlerPagination = (new Pagination('crawler'))
+            ->setItemArray($controller->getAllCrawlers())
+            ->assemble();
+        $smarty->assign('crawler_arr', $crawlerPagination->getPageItems())
+            ->assign('crawlerPagination', $crawlerPagination);
+    }
 }
 
-$pagination = (new Pagination())
-    ->setItemCount(count($stats))
-    ->assemble();
-
-$smarty->assign('headline', $statsTypeName)
-    ->assign('nTyp', $statsType)
-    ->assign('oStat_arr', $stats)
-    ->assign('cMember_arr', mappeDatenMember($members, gibMappingDaten($statsType)))
-    ->assign('nPosAb', $pagination->getFirstPageItem())
-    ->assign('nPosBis', $pagination->getFirstPageItem() + $pagination->getPageItemCount())
-    ->assign('pagination', $pagination)
-    ->assign('oFilter', $filter)
-    ->display('statistik.tpl');
+if ($statsType === 3 && is_object($crawler)) {
+    $smarty->assign('crawler', $crawler)
+        ->display('tpl_inc/crawler_edit.tpl');
+} else {
+    $members = [];
+    foreach ($stats as $stat) {
+        $members[] = array_keys(get_object_vars($stat));
+    }
+    $pagination = (new Pagination())
+        ->setItemCount(count($stats))
+        ->assemble();
+    $smarty->assign('headline', $statsTypeName)
+        ->assign('nTyp', $statsType)
+        ->assign('oStat_arr', $stats)
+        ->assign('cMember_arr', mappeDatenMember($members, gibMappingDaten($statsType)))
+        ->assign('nPosAb', $pagination->getFirstPageItem())
+        ->assign('nPosBis', $pagination->getFirstPageItem() + $pagination->getPageItemCount())
+        ->assign('pagination', $pagination)
+        ->assign('oFilter', $filter)
+        ->display('statistik.tpl');
+}

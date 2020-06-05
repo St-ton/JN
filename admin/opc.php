@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -38,10 +34,15 @@ $smarty->assign('shopUrl', $shopUrl)
        ->assign('pageKey', $pageKey)
        ->assign('opc', $opc);
 
-if ($opc->isOPCInstalled() === false) {
-    // OPC not installed correctly
-    $smarty->assign('error', __('opcNotInstalled'))
-           ->display(PFAD_ROOT . PFAD_ADMIN . '/opc/tpl/editor.tpl');
+if ($hasUpdates) {
+    // Database update needed
+    Shop::Container()->getGetText()->loadAdminLocale('pages/dbupdater');
+    $smarty
+        ->assign('error', [
+            'heading' => __('dbUpdate') . ' ' . __('required'),
+            'desc' => sprintf(__('dbUpdateNeeded'), $shopUrl),
+        ])
+        ->display(PFAD_ROOT . PFAD_ADMIN . '/opc/tpl/editor.tpl');
 } elseif ($action === 'edit') {
     // Enter OPC to edit a page
     try {
@@ -49,6 +50,8 @@ if ($opc->isOPCInstalled() === false) {
     } catch (Exception $e) {
         $error = $e->getMessage();
     }
+
+    Shop::Container()->getGetText()->loadAdminLocale('pages/opc/tutorials');
 
     $smarty->assign('error', $error)
            ->assign('page', $page)

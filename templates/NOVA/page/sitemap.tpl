@@ -1,11 +1,7 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='page-sitemap'}
     {if $Einstellungen.sitemap.sitemap_seiten_anzeigen === 'Y'}
         {block name='page-sitemap-pages'}
-            {opcMountPoint id='opc_before_pages'}
+            {opcMountPoint id='opc_before_pages' inContainer=false}
             {container}
                 {card header={lang key='sitemapSites'} class="mb-5"}
                     {block name='page-sitemap-pages-content'}
@@ -29,7 +25,7 @@
     {/if}
     {if $Einstellungen.sitemap.sitemap_kategorien_anzeigen === 'Y' && isset($oKategorieliste->elemente) && $oKategorieliste->elemente|@count > 0}
         {block name='page-sitemap-categories'}
-            {opcMountPoint id='opc_before_categories'}
+            {opcMountPoint id='opc_before_categories' inContainer=false}
             {container}
                 {card header={lang key='sitemapKats'} class="mb-5"}
                     {block name='page-sitemap-categories-content'}
@@ -90,7 +86,7 @@
     {/if}
     {if $Einstellungen.sitemap.sitemap_hersteller_anzeigen === 'Y' && $oHersteller_arr|@count > 0}
         {block name='page-sitemap-manufacturer'}
-            {opcMountPoint id='opc_before_manufacturers'}
+            {opcMountPoint id='opc_before_manufacturers' inContainer=false}
             {container}
                 {card header={lang key='sitemapNanufacturer'} class="mb-5"}
                     {block name='page-sitemap-manufacturer-content'}
@@ -108,7 +104,7 @@
     {/if}
     {if $Einstellungen.news.news_benutzen === 'Y' && $Einstellungen.sitemap.sitemap_news_anzeigen === 'Y' && !empty($oNewsMonatsUebersicht_arr) && $oNewsMonatsUebersicht_arr|@count > 0}
         {block name='page-sitemap-news'}
-            {opcMountPoint id='opc_before_news'}
+            {opcMountPoint id='opc_before_news' inContainer=false}
             {container}
                 {card header={lang key='sitemapNews'} class="mb-5"}
                     {block name='page-sitemap-news-content'}
@@ -138,7 +134,7 @@
         && $oNewsKategorie_arr|@count > 0
     }
         {block name='page-sitemap-news-categories'}
-            {opcMountPoint id='opc_before_news_categories'}
+            {opcMountPoint id='opc_before_news_categories' inContainer=false}
             {container}
                 {card header={lang key='sitemapNewsCats'} class="mb-5"}
                     {block name='page-sitemap-news-categories-content'}

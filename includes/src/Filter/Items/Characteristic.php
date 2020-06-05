@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Filter\Items;
 
@@ -74,6 +70,9 @@ class Characteristic extends BaseCharacteristic
         $this->setIsCustom(false)
             ->setUrlParam('mf')
             ->setUrlParamSEO(\SEP_MERKMAL)
+            ->setFrontendName(Shop::isAdmin()
+                ? __('filterCharacteristics')
+                : Shop::Lang()->get('characteristics', 'comparelist'))
             ->setVisibility($this->getConfig('navigationsfilter')['merkmalfilter_verwenden']);
     }
 

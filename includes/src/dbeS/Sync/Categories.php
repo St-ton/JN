@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\dbeS\Sync;
 
@@ -92,26 +88,24 @@ final class Categories extends AbstractSync
             return 0;
         }
         // Altes SEO merken => falls sich es bei der aktualisierten Kategorie ändert => Eintrag in tredirect
-        $oldData    = $this->db->queryPrepared(
+        $oldData = $this->db->queryPrepared(
             'SELECT cSeo, lft, rght, nLevel
                 FROM tkategorie
                 WHERE kKategorie = :categoryID',
             ['categoryID' => $category->kKategorie],
             ReturnType::SINGLE_OBJECT
         );
+        $this->db->delete('tseo', ['kKey', 'cKey'], [$category->kKategorie, 'kKategorie']);
         $categories = $this->mapper->mapArray($xml, 'tkategorie', 'mKategorie');
         if ($categories[0]->kKategorie > 0) {
             if (!$categories[0]->cSeo) {
                 $categories[0]->cSeo = Seo::getFlatSeoPath($categories[0]->cName);
             }
-            $categories[0]->cSeo                  = Seo::getSeo($categories[0]->cSeo);
+            $categories[0]->cSeo                  = Seo::checkSeo(Seo::getSeo($categories[0]->cSeo));
             $categories[0]->dLetzteAktualisierung = 'NOW()';
             $categories[0]->lft                   = $oldData->lft ?? 0;
             $categories[0]->rght                  = $oldData->rght ?? 0;
             $categories[0]->nLevel                = $oldData->nLevel ?? 0;
-            if (!isset($oldData->cSeo) || $oldData->cSeo !== $categories[0]->cSeo) {
-                $categories[0]->cSeo = Seo::checkSeo($categories[0]->cSeo);
-            }
             $this->insertOnExistUpdate('tkategorie', $categories, ['kKategorie']);
             if (isset($oldData->cSeo)) {
                 $this->checkDbeSXmlRedirect($oldData->cSeo, $categories[0]->cSeo);
@@ -137,6 +131,9 @@ final class Categories extends AbstractSync
         $this->setLanguages($xml, $category->kKategorie, $categories[0]);
         $this->setCustomerGroups($xml, $category->kKategorie);
         $this->setCategoryDiscount($category->kKategorie);
+        foreach ($this->getLinkedDiscountCategories($category->kKategorie) as $linkedCategory) {
+            $this->setCategoryDiscount((int)$linkedCategory->kKategorie);
+        }
         $this->setVisibility($xml, $category->kKategorie);
         $this->setAttributes($xml, $category->kKategorie);
 
@@ -350,6 +347,31 @@ final class Categories extends AbstractSync
                         tartikelkategorierabatt.fRabatt)',
             ['categoryID' => $categoryID],
             ReturnType::DEFAULT
+        );
+    }
+
+    /**
+     * @param int $categoryID
+     * @return array
+     */
+    private function getLinkedDiscountCategories(int $categoryID): array
+    {
+        return $this->db->queryPrepared(
+            'SELECT DISTINCT tkgrp_b.kKategorie
+                FROM tkategorieartikel tart_a
+                INNER JOIN tkategorieartikel tart_b ON tart_a.kArtikel = tart_b.kArtikel
+                    AND tart_a.kKategorie != tart_b.kKategorie
+                INNER JOIN tkategoriekundengruppe tkgrp_b ON tart_b.kKategorie = tkgrp_b.kKategorie
+                LEFT JOIN tkategoriekundengruppe tkgrp_a ON tkgrp_a.kKategorie = tart_a.kKategorie
+                LEFT JOIN tkategoriesichtbarkeit tsicht ON tsicht.kKategorie = tkgrp_b.kKategorie
+                    AND tsicht.kKundengruppe = tkgrp_b.kKundengruppe
+                WHERE tart_a.kKategorie = :categoryID
+                    AND tkgrp_b.fRabatt > COALESCE(tkgrp_a.fRabatt, 0)
+                    AND tsicht.kKategorie IS NULL',
+            [
+                'categoryID' => $categoryID
+            ],
+            ReturnType::ARRAY_OF_OBJECTS
         );
     }
 }

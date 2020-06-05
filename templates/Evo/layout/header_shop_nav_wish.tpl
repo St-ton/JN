@@ -1,8 +1,4 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
-<li class="hidden-xs wish-list-menu">
+<li class="hidden-sm hidden-xs wish-list-menu">
     {if !empty($smarty.session.Wunschliste->CWunschlistePos_arr)}
         <a href="{get_static_route id='wunschliste.php'}" title="{lang key='goToWishlist'}"
             class="link_to_wishlist{if $Einstellungen.vergleichsliste.vergleichsliste_target === 'popup'} popup{/if}">

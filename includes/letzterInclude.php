@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Alert\Alert;
 use JTL\Cart\Cart;
@@ -13,6 +9,8 @@ use JTL\Catalog\NavigationEntry;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\Wishlist\Wishlist;
+use JTL\Consent\Manager;
+use JTL\Consent\ManagerInterface;
 use JTL\DB\ReturnType;
 use JTL\ExtensionPoint;
 use JTL\Filter\Metadata;
@@ -75,9 +73,6 @@ if (is_object($globalMetaData)) {
     if (empty($cMetaDescription)) {
         $cMetaDescription = $globalMetaData->Meta_Description;
     }
-    if (empty($cMetaKeywords)) {
-        $cMetaKeywords = $globalMetaData->Meta_Keywords;
-    }
     $cMetaTitle       = Metadata::prepareMeta(
         $cMetaTitle,
         null,
@@ -88,9 +83,6 @@ if (is_object($globalMetaData)) {
         null,
         (int)$conf['metaangaben']['global_meta_maxlaenge_description']
     );
-    if (empty($cMetaKeywords) && $link !== null && !empty($link->getContent())) {
-        $cMetaKeywords = Metadata::getTopMetaKeywords($link->getContent());
-    }
 }
 if (!isset($AktuelleKategorie)) {
     $AktuelleKategorie = new Kategorie(Request::verifyGPCDataInt('kategorie'));
@@ -99,12 +91,27 @@ $expandedCategories->getOpenCategories($AktuelleKategorie);
 if (!isset($NaviFilter)) {
     $NaviFilter = Shop::run();
 }
+//put availability on top
+$filters = $NaviFilter->getAvailableContentFilters();
+foreach ($filters as $key => $filter) {
+    if ($filter->getClassName() === 'JTL\Filter\Items\Availability') {
+        unset($filters[$key]);
+        \array_unshift($filters, $filter);
+        break;
+    }
+}
+$NaviFilter->setAvailableFilters($filters);
+
 $linkHelper->activate($pageType);
 $origin  = (isset($_SESSION['Kunde']->cLand) && mb_strlen($_SESSION['Kunde']->cLand) > 0)
     ? $_SESSION['Kunde']->cLand
     : '';
 $service = new MinifyService();
 $service->buildURIs($smarty, $template, $themeDir);
+
+$shippingFreeMin = ShippingMethod::getFreeShippingMinimum($customerGroupID, $origin);
+$cartValue       = $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true, true, $origin);
+
 $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
        ->assign('NaviFilter', $NaviFilter)
        ->assign('manufacturers', Manufacturer::getInstance()->getManufacturers())
@@ -139,10 +146,7 @@ $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
        ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
        ->assign(
            'WarenkorbVersandkostenfreiHinweis',
-           ShippingMethod::getShippingFreeString(
-               ShippingMethod::getFreeShippingMinimum($customerGroupID, $origin),
-               $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true, true, $origin)
-           )
+           ShippingMethod::getShippingFreeString($shippingFreeMin, $cartValue)
        )
        ->assign('meta_title', $cMetaTitle ?? '')
        ->assign('meta_description', $cMetaDescription ?? '')
@@ -160,7 +164,12 @@ $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
        ->assign('bAdminWartungsmodus', isset($bAdminWartungsmodus) && $bAdminWartungsmodus)
        ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
        ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
-       ->assign('FavourableShipping', $cart->getFavourableShipping())
+       ->assign('FavourableShipping', $cart->getFavourableShipping(
+           $shippingFreeMin !== 0
+           && ShippingMethod::getShippingFreeDifference($shippingFreeMin, $cartValue) <= 0
+               ? (int)$shippingFreeMin->kVersandart
+               : null
+       ))
        ->assign('Einstellungen', $conf)
        ->assign('isFluidTemplate', isset($conf['template']['theme']['pagelayout'])
            && $conf['template']['theme']['pagelayout'] === 'fluid')
@@ -237,11 +246,11 @@ if (isset($hinweis)) {
     $alertHelper->addAlert(Alert::TYPE_NOTE, $hinweis, 'miscHinweis');
     trigger_error('global $hinweis is deprecated.', \E_USER_DEPRECATED);
 }
-
 $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
        ->assign('Brotnavi', $nav->createNavigation())
        ->assign('nIsSSL', Request::checkSSL())
        ->assign('boxes', $boxesToShow)
+       ->assign('consentItems', Shop::Container()->getConsentManager()->getActiveItems(Shop::getLanguageID()))
        ->assign('nZeitGebraucht', isset($nStartzeit) ? (microtime(true) - $nStartzeit) : 0)
        ->assign('Besucherzaehler', $visitorCount)
        ->assign('alertList', Shop::Container()->getAlertService())

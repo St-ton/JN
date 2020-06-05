@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productlist-footer'}
     {assign var=Suchergebnisse value=$NaviFilter->getSearchResults(false)}
     {*{if $Suchergebnisse->getProducts()|@count > 0}

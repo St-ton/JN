@@ -99,10 +99,10 @@ msgid "metaDescription"
 msgstr "Meta description"
 
 msgid "metaTitleDesc"
-msgstr "Search engines use the meta title as a page's headline. It should be as precise as possible and should not be longer than 69 characters. "
+msgstr "Search engines use the meta title as a page headline. It should be as precise as possible and should not be longer than 69 characters. "
 
 msgid "metaKeywordsDesc"
-msgstr "Into Meta Keywords, enter important keywords for this page. The most important keywords should be right in the front. If the shop language is German, umlauts are possible. (Note: the Google search engine does not consider the meta keywords of a page.) "
+msgstr "Into Meta Keywords, enter important keywords for this page. The most important keywords should be right in the front. If the online shop language is German, umlauts are possible. (Note: the Google search engine does not consider the meta keywords of a page.) "
 
 msgid "metaDescriptionDesc"
 msgstr "The meta description provides a summary of the page contents and is displayed as a text snippet under the page's URL in search engines. The description should mirror the page content as short and precise as possible (156 characters max). "
@@ -122,11 +122,8 @@ msgstr "Show Print button"
 msgid "noFollow"
 msgstr "Set attribute \"nofollow\" or \"noindex\" to prevent the indexation of the page by search engines"
 
-msgid "tagging"
-msgstr "Tagging overview"
-
 msgid "livesearch"
-msgstr "Live search"
+msgstr "Search queries"
 
 msgid "manufacturer"
 msgstr "Manufacturer overview"
@@ -135,7 +132,7 @@ msgid "newsletterArchive"
 msgstr "Newsletter archive"
 
 msgid "newsArchive"
-msgstr "News archive"
+msgstr "Blog archive"
 
 msgid "gratisGeschenk"
 msgstr "Free gift"
@@ -207,7 +204,7 @@ msgid "errorLinkMove"
 msgstr "Could not move link."
 
 msgid "errorLinkCopyDuplicate"
-msgstr "Could not remove link. It is already part of the target link group."
+msgstr "Could not copy link. It is already part of the target link group."
 
 msgid "successLinkCopy"
 msgstr "Link %s copied successfully."
@@ -216,7 +213,7 @@ msgid "dangerDeleteAllLinksInLinkGroup"
 msgstr "All links in this link group will also be deleted."
 
 msgid "dangerDeleteLinksAlso"
-msgstr "The following links are referenced in other link groups and will also be deleted from those."
+msgstr "The following links are referenced in other link groups and will also be deleted from those groups."
 
 msgid "sureDeleteLinkGroup"
 msgstr "Delete link group \"<strong>%s</strong>\"?"

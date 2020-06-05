@@ -53,26 +53,26 @@
                     <input name="kNewsletterVorlage" type="hidden" value="{$cPostVar_arr.kNewslettervorlage}">
                 {/if}
 
-                <div class="form-group form-row align-items-center{if isset($cPlausiValue_arr.cName)} error{/if}">
+                <div class="form-group form-row align-items-center{if isset($cPlausiValue_arr.cName)} form-error{/if}">
                     <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('newsletterdraftname')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                        <input{if isset($cPlausiValue_arr.cName)} placeholder="{__('newsletterdraftFillOut')}"{/if} id="cName" name="cName" type="text" class="form-control {if isset($cPlausiValue_arr.cName)}fieldfillout{else}field{/if}" value="{if isset($cPostVar_arr.cName)}{$cPostVar_arr.cName}{elseif isset($oNewslettervorlageStd->cName)}{$oNewslettervorlageStd->cName}{/if}">
+                        <input{if isset($cPlausiValue_arr.cName)} placeholder="{__('newsletterdraftFillOut')}"{/if} id="cName" name="cName" type="text" class="form-control" value="{if isset($cPostVar_arr.cName)}{$cPostVar_arr.cName}{elseif isset($oNewslettervorlageStd->cName)}{$oNewslettervorlageStd->cName}{/if}">
                     </div>
                 </div>
 
-                <div class="form-group form-row align-items-center{if isset($cPlausiValue_arr.cBetreff)} error{/if}">
+                <div class="form-group form-row align-items-center{if isset($cPlausiValue_arr.cBetreff)} form-error{/if}">
                     <label class="col col-sm-4 col-form-label text-sm-right" for="cBetreff">{__('subject')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                        <input{if isset($cPlausiValue_arr.cBetreff)} placeholder="{__('newsletterdraftFillOut')}"{/if} id="cBetreff" name="cBetreff" type="text" class="form-control {if isset($cPlausiValue_arr.cBetreff)}fieldfillout{else}field{/if}" value="{if isset($cPostVar_arr.cBetreff)}{$cPostVar_arr.cBetreff}{elseif isset($oNewslettervorlageStd->cBetreff)}{$oNewslettervorlageStd->cBetreff}{/if}">
+                        <input{if isset($cPlausiValue_arr.cBetreff)} placeholder="{__('newsletterdraftFillOut')}"{/if} id="cBetreff" name="cBetreff" type="text" class="form-control" value="{if isset($cPostVar_arr.cBetreff)}{$cPostVar_arr.cBetreff}{elseif isset($oNewslettervorlageStd->cBetreff)}{$oNewslettervorlageStd->cBetreff}{/if}">
                     </div>
                 </div>
-                <div class="form-group form-row align-items-center{if isset($cPlausiValue_arr.kKundengruppe_arr)} error{/if}">
+                <div class="form-group form-row align-items-center{if isset($cPlausiValue_arr.kKundengruppe_arr)} form-error{/if}">
                     <label class="col col-sm-4 col-form-label text-sm-right" for="kKundengruppeSelect">{__('newslettercustomergrp')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <select id="kKundengruppeSelect"
                                 name="kKundengruppe[]"
                                 multiple="multiple"
-                                class="selectpicker custom-select {if isset($cPlausiValue_arr.kKundengruppe_arr)}fieldfillout{else}combo{/if}"
+                                class="selectpicker custom-select {if !isset($cPlausiValue_arr.kKundengruppe_arr)}combo{/if}"
                                 data-selected-text-format="count > 2"
                                 data-size="7"
                                 data-actions-box="true">
@@ -320,25 +320,18 @@
                 {if isset($oNewslettervorlageStd->oNewslettervorlageStdVar_arr) && $oNewslettervorlageStd->oNewslettervorlageStdVar_arr|@count > 0}
                     {foreach $oNewslettervorlageStd->oNewslettervorlageStdVar_arr as $oNewslettervorlageStdVar}
                         {if $oNewslettervorlageStdVar->cTyp === 'BILD'}
-                            {if isset($oNewslettervorlageStdVar->cInhalt) && $oNewslettervorlageStdVar->cInhalt|strlen > 0}
-                                <div class="form-group form-row align-items-center">
-                                    <label class="col col-sm-4 col-form-label text-sm-right"></label>
-                                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                        <img class="img-fluid" src="{$oNewslettervorlageStdVar->cInhalt}?={$nRand}" />
-                                    </div>
-                                </div>
-                            {/if}
                             <div class="form-group form-row align-items-center">
                                 <label class="col col-sm-4 col-form-label text-sm-right" for="kNewslettervorlageStdVar_{$oNewslettervorlageStdVar->kNewslettervorlageStdVar}">{$oNewslettervorlageStdVar->cName}:</label>
                                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                    <div class="input-group mb-3">
-                                        <div class="custom-file">
-                                            <input class="custom-file-input" id="kNewslettervorlageStdVar_{$oNewslettervorlageStdVar->kNewslettervorlageStdVar}" name="kNewslettervorlageStdVar_{$oNewslettervorlageStdVar->kNewslettervorlageStdVar}" type="file" accept="image/*" />
-                                            <label class="custom-file-label" for="cBrandingBild">
-                                                <span class="text-truncate">{__('fileSelect')}</span>
-                                            </label>
-                                        </div>
-                                    </div>
+                                    {include file='tpl_inc/fileupload.tpl'
+                                        fileID="kNewslettervorlageStdVar_{$oNewslettervorlageStdVar->kNewslettervorlageStdVar}"
+                                        fileShowRemove=true
+                                        fileInitialPreview="[
+                                                {if isset($oNewslettervorlageStdVar->cInhalt) && $oNewslettervorlageStdVar->cInhalt|strlen > 0}
+                                                    '<img class=\"img-fluid\" src=\"{$oNewslettervorlageStdVar->cInhalt}?={$nRand}\" />'
+                                                {/if}
+                                                ]"
+                                            }
                                 </div>
                             </div>
                             <div class="form-group form-row align-items-center">

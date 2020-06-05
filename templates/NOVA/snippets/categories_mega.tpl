@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='snippets-categories-mega'}
     {strip}
     {if !isset($i)}
@@ -48,7 +44,7 @@
                                     {container}
                                         {row class="lg-row-lg nav"}
                                             {col lg=4 xl=3 class="my-lg-4 nav-item dropdown d-lg-none"}
-                                                {link href=$category->getURL() class="nav-link font-size-base" rel="nofollow"}
+                                                {link href=$category->getURL() class="font-size-base" rel="nofollow"}
                                                     <span class="text-truncate font-weight-bold d-block pr-3 pr-lg-0">{lang key='menuShow' printf=$category->getName()}</span>
                                                 {/link}
                                             {/col}
@@ -78,8 +74,7 @@
                     {block name='snippets-categories-mega-category-no-child'}
                         {navitem href=$category->getURL() title=$category->getName()
                             class="nav-scrollbar-item {if $category->getID() === $activeId}active{/if}"}
-                            <span class="text-truncate d-block pr-3 pr-lg-0">{$category->getShortName()}</span>
-                            <span class="badge text-gray-dark product-count">{$category->getProductCount()}</span>
+                            <span class="text-truncate d-block">{$category->getShortName()}</span>
                         {/navitem}
                     {/block}
                 {/if}
@@ -98,7 +93,7 @@
         {if !empty($manufacturers)}
             {assign var=manufacturerOverview value=\JTL\Shop::Container()->getLinkService()->getSpecialPage(LINKTYP_HERSTELLER)}
             {block name='snippets-categories-mega-manufacturers-inner'}
-                <li class="nav-item nav-scrollbar-item dropdown dropdown-full">
+                <li class="nav-item nav-scrollbar-item dropdown dropdown-full {if $nSeitenTyp === $smarty.const.PAGE_HERSTELLER}active{/if}">
                     {link href="{if $manufacturerOverview !== null}{$manufacturerOverview->getURL()}{else}#{/if}" title={lang key='manufacturers'} class="nav-link dropdown-toggle" target="_self"}
                         <span class="text-truncate">
                             {if $manufacturerOverview !== null && !empty($manufacturerOverview->getName())}
@@ -112,15 +107,16 @@
                         <div class="dropdown-body p-0 py-lg-4">
                             {container}
                                 {row class="lg-row-lg nav"}
-                                    {col lg=4 xl=3 class="my-lg-4 nav-item dropdown d-lg-none"}
+                                    {col lg=4 xl=3 class="my-lg-4 nav-item d-lg-none"}
                                         {block name='snippets-categories-mega-manufacturers-header'}
-                                            {link href="{if $manufacturerOverview !== null}{$manufacturerOverview->getURL()}{else}#{/if}" class="nav-link font-size-base" rel="nofollow"}
+                                            {link href="{if $manufacturerOverview !== null}{$manufacturerOverview->getURL()}{else}#{/if}" class="font-size-base" rel="nofollow"}
                                                 <span class="text-truncate font-weight-bold d-block pr-3 pr-lg-0">
                                                     {if $manufacturerOverview !== null && !empty($manufacturerOverview->getName())}
-                                                        {$manufacturerOverview->getName()}
+                                                        {$manufacturerTitle = $manufacturerOverview->getName()}
                                                     {else}
-                                                        {lang key='manufacturers'}
+                                                        {$manufacturerTitle = {lang key='manufacturers'}}
                                                     {/if}
+                                                    {lang key='menuShow' printf=$manufacturerTitle}
                                                 </span>
                                             {/link}
                                         {/block}
@@ -137,7 +133,7 @@
                                                             srcset="{$mft->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_hersteller_mini_breite}w,
                                                                     {$mft->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_hersteller_klein_breite}w,
                                                                     {$mft->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_hersteller_normal_breite}w"
-                                                            sizes="80px"
+                                                            sizes="auto"
                                                             alt=$mft->getName()|escape:'html'
                                                             class="d-none d-md-block mb-3"}
                                                     {/if}
@@ -166,7 +162,7 @@
             <li class="d-lg-none"><hr></li>
         {/block}
         {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
-            {navitem href="{get_static_route id='wunschliste.php'}" class="nav-scrollbar-item"}
+            {navitem href="{get_static_route id='wunschliste.php'}" class="wl-nav-scrollbar-item nav-scrollbar-item"}
                 {lang key='wishlist'}
                 {badge id="badge-wl-count" variant="primary" class="text-gray-darker product-count"}
                     {if isset($smarty.session.Wunschliste) && !empty($smarty.session.Wunschliste->CWunschlistePos_arr|count)}
@@ -177,7 +173,7 @@
                 {/badge}
             {/navitem}
         {/if}
-        {navitem href="{get_static_route id='vergleichsliste.php'}" class="nav-scrollbar-item"}
+        {navitem href="{get_static_route id='vergleichsliste.php'}" class="comparelist-nav-scrollbar-item nav-scrollbar-item"}
             {lang key='compare'}
             {badge id="comparelist-badge" variant="primary" class="text-gray-darker product-count"}
                 {if !empty($smarty.session.Vergleichsliste->oArtikel_arr)}{$smarty.session.Vergleichsliste->oArtikel_arr|count}{else}0{/if}
@@ -193,7 +189,7 @@
         {block name='layout-header-top-bar-user-settings'}
             {block name='layout-header-top-bar-user-settings-currency'}
                 {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}
-                    <li class="nav-item nav-scrollbar-item dropdown dropdown-full">
+                    <li class="currency-nav-scrollbar-item nav-item nav-scrollbar-item dropdown dropdown-full">
                         {block name='layout-header-top-bar-user-settings-currency-link'}
                             {link id='currency-dropdown' href='#' title={lang key='currency'} class="nav-link dropdown-toggle" target="_self"}
                                 {lang key='currency'}
@@ -221,39 +217,6 @@
                                         {/row}
                                     {/container}
                                 </div>
-                            </div>
-                        {/block}
-                    </li>
-                {/if}
-            {/block}
-            {block name='layout-header-top-bar-user-settings-language'}
-                {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
-                    <li class="nav-item nav-scrollbar-item dropdown dropdown-full">
-                        {block name='layout-header-top-bar-user-settings-language-link'}
-                            {link id='language-dropdown' href='#' title={lang key='selectLanguage'} class="nav-link dropdown-toggle" target="_self"}
-                                {lang key='selectLanguage'}
-                            {/link}
-                        {/block}
-                        {block name='layout-header-top-bar-user-settings-language-body'}
-                            <div class="dropdown-menu">
-                                {container}
-                                    {row class="lg-row-lg nav"}
-                                        {col lg=4 xl=3 class="my-lg-4 nav-item dropdown d-lg-none"}
-                                        {block name='layout-header-top-bar-user-settings-language-header'}
-                                            <span class="font-size-base font-weight-bold">{lang key='selectLanguage'}</span>
-                                        {/block}
-                                        {/col}
-                                        {foreach $smarty.session.Sprachen as $language}
-                                            {col lg=4 xl=3 class='my-lg-4 nav-item'}
-                                                {block name='layout-header-top-bar-user-settings-language-header-items'}
-                                                    {dropdownitem href=$language->cURL rel="nofollow" active=($language->kSprache == $smarty.session.kSprache)}
-                                                        {$language->iso639|upper}
-                                                    {/dropdownitem}
-                                                {/block}
-                                            {/col}
-                                        {/foreach}
-                                    {/row}
-                                {/container}
                             </div>
                         {/block}
                     </li>

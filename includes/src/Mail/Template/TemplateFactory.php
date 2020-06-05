@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Mail\Template;
 
@@ -61,10 +57,6 @@ final class TemplateFactory
                 return new CustomerAccountDeleted($this->db);
             case \MAILTEMPLATE_KUNDENGRUPPE_ZUWEISEN:
                 return new CustomerGroupAssigned($this->db);
-            case \MAILTEMPLATE_KUNDENWERBENKUNDEN:
-                return new CustomerPromotion($this->db);
-            case \MAILTEMPLATE_KUNDENWERBENKUNDENBONI:
-                return new CustomerPromotionBonus($this->db);
             case \MAILTEMPLATE_ADMINLOGIN_PASSWORT_VERGESSEN:
                 return new ForgotAdminPassword($this->db);
             case \MAILTEMPLATE_PASSWORT_VERGESSEN:

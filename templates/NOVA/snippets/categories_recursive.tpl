@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='snippets-categories-recursive'}
     {if (!empty($categories) ||isset($categoryId)) && (!isset($i) || isset($i) && isset($limit) && $i < $limit)}
         {strip}
@@ -60,19 +56,21 @@
                                         </a>
                                     {/block}
                                     {block name='snippets-categories-recursive-categories-has-items-nav'}
-                                        {nav vertical=true class="collapse {if $category->getID() == $activeId
-                                            || ((isset($activeParent)
-                                            && isset($activeParent->kKategorie))
-                                            && $activeParent->kKategorie == $category->getID())}show{/if}" id="category_box_{$category->getID()}_{$i}"
-                                        }
-                                            {block name='snippets-categories-recursive-include-categories-recursive'}
-                                                {if $category->hasChildren()}
-                                                    {include file='snippets/categories_recursive.tpl' i=$i+1 categories=$category->getChildren() limit=$limit activeId=$activeId activeParents=$activeParents}
-                                                {else}
-                                                    {include file='snippets/categories_recursive.tpl' i=$i+1 categoryId=$category->getID() limit=$limit categories=null activeId=$activeId activeParents=$activeParents}
-                                                {/if}
-                                            {/block}
-                                        {/nav}
+                                        {collapse id="category_box_{$category->getID()}_{$i}"
+                                             class="{if $category->getID() == $activeId
+                                                || ((isset($activeParent)
+                                                && isset($activeParent->kKategorie))
+                                                && $activeParent->kKategorie == $category->getID())}show{/if}"}
+                                            {nav vertical=true}
+                                                {block name='snippets-categories-recursive-include-categories-recursive'}
+                                                    {if $category->hasChildren()}
+                                                        {include file='snippets/categories_recursive.tpl' i=$i+1 categories=$category->getChildren() limit=$limit activeId=$activeId activeParents=$activeParents}
+                                                    {else}
+                                                        {include file='snippets/categories_recursive.tpl' i=$i+1 categoryId=$category->getID() limit=$limit categories=null activeId=$activeId activeParents=$activeParents}
+                                                    {/if}
+                                                {/block}
+                                            {/nav}
+                                        {/collapse}
                                     {/block}
                                 </li>
                             {/block}

@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Backend\AdminIO;
 use JTL\Backend\JSONAPI;
@@ -13,6 +9,7 @@ use JTL\Jtllog;
 use JTL\Link\Admin\LinkAdmin;
 use JTL\Media\Manager;
 use JTL\Shop;
+use JTL\Update\UpdateIO;
 
 /** @global \JTL\Backend\AdminAccount $oAccount */
 
@@ -25,9 +22,12 @@ if (!Form::validateToken()) {
     AdminIO::getInstance()->respondAndExit(new IOError('CSRF validation failed.', 403));
 }
 
-$jsonApi = JSONAPI::getInstance();
-$io      = AdminIO::getInstance()->setAccount($oAccount);
-$images  = new Manager();
+$db       = Shop::Container()->getDB();
+$gettext  = Shop::Container()->getGetText();
+$jsonApi  = JSONAPI::getInstance();
+$io       = AdminIO::getInstance()->setAccount($oAccount);
+$images   = new Manager($db, $gettext);
+$updateIO = new UpdateIO($db, $gettext);
 
 Shop::Container()->getOPC()->registerAdminIOFunctions($io);
 Shop::Container()->getOPCPageService()->registerAdminIOFunctions($io);
@@ -39,7 +39,6 @@ $sucheInc           = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'suche_inc.php';
 $sucheinstellungInc = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'sucheinstellungen_inc.php';
 $plzimportInc       = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'plz_ort_import_inc.php';
 $redirectInc        = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'redirect_inc.php';
-$dbupdaterInc       = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbupdater_inc.php';
 $dbcheckInc         = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php';
 $versandartenInc    = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'versandarten_inc.php';
 
@@ -78,11 +77,11 @@ $io->register('getPages', [$jsonApi, 'getPages'])
    ->register('plzimportActionRestoreBackup', null, $plzimportInc, 'PLZ_ORT_IMPORT_VIEW')
    ->register('plzimportActionCheckStatus', null, $plzimportInc, 'PLZ_ORT_IMPORT_VIEW')
    ->register('plzimportActionDelTempImport', null, $plzimportInc, 'PLZ_ORT_IMPORT_VIEW')
-   ->register('dbUpdateIO', null, $dbupdaterInc, 'SHOP_UPDATE_VIEW')
-   ->register('dbupdaterBackup', null, $dbupdaterInc, 'SHOP_UPDATE_VIEW')
-   ->register('dbupdaterDownload', null, $dbupdaterInc, 'SHOP_UPDATE_VIEW')
-   ->register('dbupdaterStatusTpl', null, $dbupdaterInc, 'SHOP_UPDATE_VIEW')
-   ->register('dbupdaterMigration', null, $dbupdaterInc, 'SHOP_UPDATE_VIEW')
+   ->register('dbUpdateIO', [$updateIO, 'update'], null, 'SHOP_UPDATE_VIEW')
+   ->register('dbupdaterBackup', [$updateIO, 'backup'], null, 'SHOP_UPDATE_VIEW')
+   ->register('dbupdaterDownload', [$updateIO, 'download'], null, 'SHOP_UPDATE_VIEW')
+   ->register('dbupdaterStatusTpl', [$updateIO, 'getStatus'], null, 'SHOP_UPDATE_VIEW')
+   ->register('dbupdaterMigration', [$updateIO, 'executeMigration'], null, 'SHOP_UPDATE_VIEW')
    ->register('migrateToInnoDB_utf8', 'doMigrateToInnoDB_utf8', $dbcheckInc, 'DBCHECK_VIEW')
    ->register('redirectCheckAvailability', [JTL\Redirect::class, 'checkAvailability'])
    ->register('updateRedirectState', null, $redirectInc, 'REDIRECT_VIEW')
@@ -97,4 +96,11 @@ $io->register('getPages', [$jsonApi, 'getPages'])
    ->register('createShippingSurchargeZIP', 'createShippingSurchargeZIP', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
    ->register('getShippingSurcharge', 'getShippingSurcharge', $versandartenInc, 'ORDER_SHIPMENT_VIEW');
 
-$io->respondAndExit($io->handleRequest($_REQUEST['io']));
+$request = $_REQUEST['io'];
+
+executeHook(HOOK_IO_HANDLE_REQUEST_ADMIN, [
+    'io'      => &$io,
+    'request' => &$request
+]);
+
+$io->respondAndExit($io->handleRequest($request));

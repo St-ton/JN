@@ -1,12 +1,9 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL;
 
 use JTL\DB\ReturnType;
+use JTL\Helpers\Text;
 use stdClass;
 
 /**
@@ -171,8 +168,8 @@ class Slide
     private function setAbsoluteImagePaths(): self
     {
         $basePath                = Shop::getImageBaseURL();
-        $this->absoluteImage     = $basePath . \str_replace($basePath, '', \mb_substr($this->image, 1));
-        $this->absoluteThumbnail = $basePath . \str_replace($basePath, '', \mb_substr($this->thumbnail, 1));
+        $this->absoluteImage     = $basePath . $this->image;
+        $this->absoluteThumbnail = $basePath . $this->thumbnail;
 
         return $this;
     }
@@ -183,24 +180,10 @@ class Slide
     public function save(): bool
     {
         if (!empty($this->image)) {
-            $shopURL  = \parse_url(Shop::getURL(), \PHP_URL_PATH);
-            $shopURL2 = \parse_url(\URL_SHOP, \PHP_URL_PATH);
-            if (\mb_strrpos($shopURL, '/') !== (\mb_strlen($shopURL) - 1)) {
-                $shopURL .= '/';
-            }
-            if (\mb_strrpos($shopURL2, '/') !== (\mb_strlen($shopURL2) - 1)) {
-                $shopURL2 .= '/';
-            }
-            $path  = $shopURL . \PFAD_MEDIAFILES;
-            $path2 = $shopURL2 . \PFAD_MEDIAFILES;
-            if (\mb_strpos($this->image, $path) !== false) {
-                $len             = \mb_strlen($path);
-                $this->image     = \mb_substr($this->image, $len);
-                $this->thumbnail = '.thumbs/' . $this->image;
-            } elseif (\mb_strpos($this->image, $path2) !== false) {
-                $len             = \mb_strlen($path2);
-                $this->image     = \mb_substr($this->image, $len);
-                $this->thumbnail = '.thumbs/' . $this->image;
+            if (Text::startsWith($this->image, 'Bilder/')) {
+                $this->thumbnail = \PFAD_MEDIAFILES . 'Bilder/.tmb/' . \basename($this->image);
+            } else {
+                $this->thumbnail = \STORAGE_OPC . '.tmb/' . \basename($this->image);
             }
         }
 

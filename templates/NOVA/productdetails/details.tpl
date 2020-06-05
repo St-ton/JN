@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='productdetails-details'}
     {*{has_boxes position='left' assign='hasLeftBox'}*}
     {$hasLeftBox = false}
@@ -17,7 +13,7 @@
         {/if}
     {/container}
     {block name='productdetails-details-form'}
-        {opcMountPoint id='opc_before_buy_form'}
+        {opcMountPoint id='opc_before_buy_form' inContainer=false}
         {container}
             {form id="buy_form" action=$Artikel->cURLFull class="jtl-validate"}
                 {row id="product-offer" class="product-detail"}
@@ -61,43 +57,52 @@
                                 {/if}
                                 {block name='productdetails-details-info-essential'}
                                     <ul class="list-unstyled my-5">
-                                        {if isset($Artikel->cArtNr)}
-                                            <li class='product-sku'>
-                                                <span class="font-weight-bold">
-                                                    {lang key='sortProductno'}:
-                                                </span>
-                                                <span itemprop="sku">{$Artikel->cArtNr}</span>
-                                            </li>
-                                        {/if}
-                                        {if isset($Artikel->dMHD) && isset($Artikel->dMHD_de)}
-                                            <li>
-                                                <span class="font-weight-bold" title="{lang key='productMHDTool'}">
-                                                    {lang key='productMHD'}:
-                                                </span>
-                                                <span itemprop="best-before">{$Artikel->dMHD_de}</span>
-                                            </li>
-                                        {/if}
-
-                                        {if !empty($Artikel->cBarcode)}
-                                            <li>
-                                                <span class="font-weight-bold">{lang key='ean'}:</span>
-                                                <span itemprop="{if $Artikel->cBarcode|count_characters === 8}gtin8{else}gtin13{/if}">{$Artikel->cBarcode}</span>
-                                            </li>
-                                        {/if}
-                                        {if !empty($Artikel->cISBN)
-                                        && ($Einstellungen.artikeldetails.isbn_display === 'D'
-                                        || $Einstellungen.artikeldetails.isbn_display === 'DL')}
-                                            <li>
-                                                <span class="font-weight-bold">{lang key='isbn'}:</span>
-                                                <span itemprop="gtin13">{$Artikel->cISBN}</span>
-                                            </li>
-                                        {/if}
+                                        {block name='productdetails-details-info-item-id'}
+                                            {if isset($Artikel->cArtNr)}
+                                                <li class='product-sku'>
+                                                    <span class="font-weight-bold">
+                                                        {lang key='sortProductno'}:
+                                                    </span>
+                                                    <span itemprop="sku">{$Artikel->cArtNr}</span>
+                                                </li>
+                                            {/if}
+                                        {/block}
+                                        {block name='productdetails-details-info-mhd'}
+                                            {if isset($Artikel->dMHD) && isset($Artikel->dMHD_de)}
+                                                <li>
+                                                    <span class="font-weight-bold" title="{lang key='productMHDTool'}">
+                                                        {lang key='productMHD'}:
+                                                    </span>
+                                                    <span itemprop="best-before">{$Artikel->dMHD_de}</span>
+                                                </li>
+                                            {/if}
+                                        {/block}
+                                        {block name='productdetails-details-info-gtin'}
+                                            {if !empty($Artikel->cBarcode)
+                                            && ($Einstellungen.artikeldetails.gtin_display === 'details'
+                                            || $Einstellungen.artikeldetails.gtin_display === 'always')}
+                                                <li>
+                                                    <span class="font-weight-bold">{lang key='ean'}:</span>
+                                                    <span itemprop="{if $Artikel->cBarcode|count_characters === 8}gtin8{else}gtin13{/if}">{$Artikel->cBarcode}</span>
+                                                </li>
+                                            {/if}
+                                        {/block}
+                                        {block name='productdetails-details-info-isbn'}
+                                            {if !empty($Artikel->cISBN)
+                                            && ($Einstellungen.artikeldetails.isbn_display === 'D'
+                                            || $Einstellungen.artikeldetails.isbn_display === 'DL')}
+                                                <li>
+                                                    <span class="font-weight-bold">{lang key='isbn'}:</span>
+                                                    <span itemprop="gtin13">{$Artikel->cISBN}</span>
+                                                </li>
+                                            {/if}
+                                        {/block}
                                         {block name='productdetails-details-info-category-wrapper'}
-                                            {if $Einstellungen.artikeldetails.artikeldetails_kategorie_anzeigen === 'Y'}
+                                            {assign var=cidx value=($Brotnavi|@count)-2}
+                                            {if $Einstellungen.artikeldetails.artikeldetails_kategorie_anzeigen === 'Y' && isset($Brotnavi[$cidx])}
                                                 {block name='productdetails-details-info-category'}
                                                     <li class="product-category word-break">
                                                         <span class="font-weight-bold">{lang key='category'}: </span>
-                                                        {assign var=cidx value=($Brotnavi|@count)-2}
                                                         <a href="{$Brotnavi[$cidx]->getURLFull()}" itemprop="category">{$Brotnavi[$cidx]->getName()}</a>
                                                     </li>
                                                 {/block}
@@ -112,9 +117,11 @@
                                                             {if ($Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B'
                                                                 || $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'BT')
                                                                 && !empty($Artikel->cHerstellerBildURLKlein)}
-                                                                {image lazy=true webp=true
+                                                                {image lazy=true
+                                                                    webp=true
                                                                     src=$Artikel->cHerstellerBildURLKlein
                                                                     alt=$Artikel->cHersteller
+                                                                    width="60px"
                                                                 }
                                                                 <meta itemprop="image" content="{$Artikel->cHerstellerBildURLKlein}">
                                                             {/if}
@@ -126,10 +133,10 @@
                                                 {/block}
                                             {/if}
                                         {/block}
-                                        {if !empty($Artikel->cUNNummer) && !empty($Artikel->cGefahrnr)
-                                        && ($Einstellungen.artikeldetails.adr_hazard_display === 'D'
-                                        || $Einstellungen.artikeldetails.adr_hazard_display === 'DL')}
-                                            {block name='productdetails-details-hazard-info'}
+                                        {block name='productdetails-details-hazard-info'}
+                                            {if !empty($Artikel->cUNNummer) && !empty($Artikel->cGefahrnr)
+                                            && ($Einstellungen.artikeldetails.adr_hazard_display === 'D'
+                                            || $Einstellungen.artikeldetails.adr_hazard_display === 'DL')}
                                                 <li>
                                                     <span class="font-weight-bold">{lang key='adrHazardSign'}:</span>
                                                     <table class="adr-table">
@@ -141,8 +148,8 @@
                                                         </tr>
                                                     </table>
                                                 </li>
-                                            {/block}
-                                        {/if}
+                                            {/if}
+                                        {/block}
                                     </ul>
                                 {/block}
                             {/if}
@@ -187,29 +194,33 @@
                                     {include file='productdetails/variation.tpl' simple=$Artikel->isSimpleVariation showMatrix=$showMatrix}
                                 {/block}
 
-                                {row}
+                                {row class="mb-4"}
                                     {block name='productdetails-details-include-price'}
                                         {col}
                                             {include file='productdetails/price.tpl' Artikel=$Artikel tplscope='detail' priceLarge=true}
                                         {/col}
                                     {/block}
-                                    {block name='productdetails-details-include-stock'}
+                                    {block name='productdetails-details-stock'}
                                         {col cols=12}
-                                            {row class="border-top border-bottom align-items-end no-gutters {if !isset($availability) && !isset($shippingTime)}py-3 mt-5 px-lg-3{/if}"}
+                                            {row class="border-top border-bottom align-items-end no-gutters {if !isset($availability) && !isset($shippingTime)}py-3 px-lg-3{/if}"}
                                                 {col}
-                                                    {include file='productdetails/stock.tpl'}
+                                                    {block name='productdetails-details-include-stock'}
+                                                        {include file='productdetails/stock.tpl'}
+                                                    {/block}
                                                 {/col}
                                                 {col class="col-auto ml-auto"}
-                                                    {if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'P'}
-                                                        <button type="button" id="z{$Artikel->kArtikel}"
-                                                                class="btn btn-link question p-0"
-                                                                title="{lang key='productQuestion' section='productDetails'}"
-                                                                data-toggle="modal"
-                                                                data-target="#question-popup-{$Artikel->kArtikel}">
-                                                            <span class="fa fa-question-circle"></span>
-                                                            <span class="hidden-xs hidden-sm">{lang key='productQuestion' section='productDetails'}</span>
-                                                        </button>
-                                                    {/if}
+                                                    {block name='productdetails-details-question-on-item'}
+                                                        {if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'P'}
+                                                            <button type="button" id="z{$Artikel->kArtikel}"
+                                                                    class="btn btn-link question p-0"
+                                                                    title="{lang key='productQuestion' section='productDetails'}"
+                                                                    data-toggle="modal"
+                                                                    data-target="#question-popup-{$Artikel->kArtikel}">
+                                                                <span class="fa fa-question-circle"></span>
+                                                                <span class="hidden-xs hidden-sm">{lang key='productQuestion' section='productDetails'}</span>
+                                                            </button>
+                                                        {/if}
+                                                    {/block}
                                                 {/col}
                                             {/row}
                                             {block name='snippets-stock-note-include-warehouse'}
@@ -223,7 +234,27 @@
                                     {include file="snippets/uploads.tpl" tplscope='product'}
                                 {/block}
                                 {*WARENKORB anzeigen wenn keine variationen mehr auf lager sind?!*}
-                                {if !$Artikel->bHasKonfig}
+                                {if $Artikel->bHasKonfig}
+                                    {row class="mb-4"}
+                                        {col cols=12 sm=6}
+                                            {button type="button"
+                                                value="{lang key='configure'}"
+                                                block=true
+                                                data=["toggle"=>"modal", "target"=>"#cfg-container"]
+                                            }
+                                                <span class="mr-1">{lang key='configure'}</span> <i class="fas fa-cogs"></i>
+                                            {/button}
+                                        {/col}
+                                    {/row}
+
+                                    {block name='productdetails-details-include-config-container'}
+                                        {col}
+                                            {row id="product-configurator"}
+                                                {include file='productdetails/config_container.tpl'}
+                                            {/row}
+                                        {/col}
+                                    {/block}
+                                {else}
                                     {block name='productdetails-details-include-basket'}
                                         {include file='productdetails/basket.tpl'}
                                     {/block}
@@ -233,15 +264,6 @@
                         {/block}{* productdetails-info *}
                         {opcMountPoint id='opc_after_product_info'}
                     {/col}
-                    {if $Artikel->bHasKonfig}
-                        {block name='productdetails-details-include-config-container'}
-                            {col}
-                                {row id="product-configurator"}
-                                    {include file='productdetails/config_container.tpl'}
-                                {/row}
-                            {/col}
-                        {/block}
-                    {/if}
                 {/row}
                 {block name='productdetails-details-include-matrix'}
                     {include file='productdetails/matrix.tpl'}

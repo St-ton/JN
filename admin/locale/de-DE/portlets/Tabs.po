@@ -6,10 +6,10 @@ msgid "Tabs"
 msgstr "Tabs"
 
 msgid "tabOne"
-msgstr "Tab eins"
+msgstr "Registerkarte eins"
 
 msgid "tabTwo"
-msgstr "Tab zwei"
+msgstr "Registerkarte zwei"
 
 msgid "tabThree"
-msgstr "Tab drei"
+msgstr "Registerkarte drei"

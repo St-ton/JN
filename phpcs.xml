@@ -17,8 +17,6 @@
 
     <rule ref="Generic.PHP.DeprecatedFunctions"/>
 
-    <rule ref="Generic.CodeAnalysis.UnusedFunctionParameter"/>
-
     <rule ref="Generic.ControlStructures.InlineControlStructure"/>
 
     <rule ref="Generic.Commenting.Todo"/>

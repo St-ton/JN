@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Catalog;
 
@@ -50,11 +46,11 @@ class ComparisonList
     {
         $compareList = Frontend::get('Vergleichsliste');
         if ($compareList !== null) {
-            $options = Artikel::getDefaultOptions();
-            $baseURL = Shop::Container()->getLinkService()->getStaticRoute('vergleichsliste.php');
+            $defaultOptions = Artikel::getDefaultOptions();
+            $baseURL        = Shop::Container()->getLinkService()->getStaticRoute('vergleichsliste.php');
             foreach ($compareList->oArtikel_arr as $item) {
                 $product = new Artikel();
-                $product->fuelleArtikel($item->kArtikel, $options);
+                $product->fuelleArtikel($item->kArtikel, $defaultOptions);
                 $product->cURLDEL = $baseURL . '?vlplo=' . $item->kArtikel;
                 if (isset($item->oVariationen_arr) && \count($item->oVariationen_arr) > 0) {
                     $product->Variationen = $item->oVariationen_arr;
@@ -69,8 +65,8 @@ class ComparisonList
      */
     public function umgebungsWechsel(): self
     {
-        $options     = Artikel::getDefaultOptions();
-        $compareList = Frontend::get('Vergleichsliste');
+        $defaultOptions = Artikel::getDefaultOptions();
+        $compareList    = Frontend::get('Vergleichsliste');
         if ($compareList === null) {
             return $this;
         }
@@ -78,13 +74,14 @@ class ComparisonList
             $product    = new stdClass();
             $tmpProduct = new Artikel();
             try {
-                $tmpProduct->fuelleArtikel($item->kArtikel, $options);
+                $tmpProduct->fuelleArtikel($item->kArtikel, $defaultOptions);
             } catch (Exception $e) {
                 continue;
             }
             $product->kArtikel             = $item->kArtikel;
             $product->cName                = $tmpProduct->cName ?? '';
             $product->cURLFull             = $tmpProduct->cURLFull ?? '';
+            $product->image                = $tmpProduct->Bilder[0] ?? '';
             $compareList->oArtikel_arr[$i] = $product;
         }
 
@@ -99,7 +96,7 @@ class ComparisonList
     public function addProduct(int $productID, array $variations = []): self
     {
         $product           = new stdClass();
-        $tmpProduct        = (new Artikel())->fuelleArtikel($productID);
+        $tmpProduct        = (new Artikel())->fuelleArtikel($productID, Artikel::getDefaultOptions());
         $product->kArtikel = $productID;
         $product->cName    = $tmpProduct !== null ? $tmpProduct->cName : '';
         $product->cURLFull = $tmpProduct !== null ? $tmpProduct->cURLFull : '';
@@ -108,9 +105,9 @@ class ComparisonList
             $product->Variationen = $variations;
         }
         $this->oArtikel_arr[] = $product;
-        if (Frontend::get('Vergleichsliste') === null) {
-            Frontend::set('Vergleichsliste', $this);
-        }
+
+        Frontend::set('Vergleichsliste', $this);
+
         \executeHook(\HOOK_VERGLEICHSLISTE_CLASS_EINFUEGEN);
 
         return $this;

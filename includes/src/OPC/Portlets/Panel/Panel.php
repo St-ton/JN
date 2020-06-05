@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\OPC\Portlets\Panel;
 
@@ -30,9 +26,9 @@ class Panel extends Portlet
     {
         return [
             'panel-state' => [
-                'label' => __('type'),
+                'label' => __('panelType'),
                 'type'  => InputType::SELECT,
-                'width' => 50,
+                'width' => 30,
                 'options'    => [
                     'default' => __('standard'),
                     'primary' => __('stylePrimary'),
@@ -45,12 +41,12 @@ class Panel extends Portlet
             'title-flag'  => [
                 'label' => __('showHeader'),
                 'type'  => InputType::CHECKBOX,
-                'width' => 50,
+                'width' => 30,
             ],
             'footer-flag' => [
                 'label' => __('showFooter'),
                 'type'  => InputType::CHECKBOX,
-                'width' => 50,
+                'width' => 30,
             ],
         ];
     }

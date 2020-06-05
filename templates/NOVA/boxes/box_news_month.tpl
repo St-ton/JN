@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='boxes-box-news-month'}
     {card class="box box-monthlynews mb-md-4" id="sidebox{$oBox->getID()}"}
         {block name='boxes-box-news-month-content'}
@@ -17,7 +13,7 @@
             {/block}
             {block name='boxes-box-news-month-title'}
                 <div class="productlist-filter-headline d-none d-md-flex">
-                    <span>{lang key='newsBoxMonthOverview'}</span>
+                    {lang key='newsBoxMonthOverview'}
                 </div>
             {/block}
             {block name='boxes-box-news-month-collapse'}
@@ -30,12 +26,10 @@
                         {foreach $oBox->getItems() as $newsMonth}
                             {if $newsMonth@index === 10}{break}{/if}
                             {block name='boxes-box-news-month-news-link'}
-                                {navitem href=$newsMonth->cURL  title=$newsMonth->cName}
-                                    <span class="align-items-center d-flex">
-                                        <i class="far fa-newspaper mr-2"></i>
-                                        {$newsMonth->cName}
-                                        <span class="badge badge-outline-secondary ml-auto">{$newsMonth->nAnzahl}</span>
-                                    </span>
+                                {navitem href=$newsMonth->cURL  title=$newsMonth->cName router-class="align-items-center d-flex"}
+                                    <i class="far fa-newspaper mr-2"></i>
+                                    {$newsMonth->cName}
+                                    <span class="badge badge-outline-secondary ml-auto">{$newsMonth->nAnzahl}</span>
                                 {/navitem}
                             {/block}
                         {/foreach}

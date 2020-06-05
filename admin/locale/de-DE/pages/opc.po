@@ -64,10 +64,10 @@ msgstr "Vorlage löschen?"
 # Config Tabs
 
 msgid "Styles"
-msgstr "Stile"
+msgstr "Layout"
 
 msgid "Animation"
-msgstr "Animation" 
+msgstr "Animation"
 
 # Styles tab
 
@@ -98,6 +98,22 @@ msgstr "Rahmenfarbe"
 msgid "Border radius"
 msgstr "Rahmenabrundung"
 
+msgid "Hidden on XS"
+msgstr "Verstecken bei XS"
+
+msgid "Hidden on SM"
+msgstr "Verstecken bei SM"
+
+msgid "Hidden on MD"
+msgstr "Verstecken bei MD"
+
+msgid "Hidden on LG"
+msgstr "Verstecken bei LG"
+
+msgid "cssNumericDesc"
+msgstr "Geben Sie den gewünschten Wert ohne Leerzeichen und mit Punkt als Dezimaltrennzeichen ein "
+"(z.B. 5px, 0.5em, 50%)."
+
 # Animations tab
 
 msgid "Animation style"
@@ -116,7 +132,7 @@ msgid "Iteration"
 msgstr "Wiederholung"
 
 msgid "Change the animation duration (e.g. 2s)"
-msgstr "Dauer der Animation (z.&nbsp;B. 2 s)"
+msgstr "Dauer der Animation (z.&nbsp;B. 2&nbsp;s)"
 
 msgid "Delay before the animation starts"
 msgstr "Wartezeit, bis die Animation beginnt"
@@ -173,7 +189,7 @@ msgid "restoreChanges"
 msgstr "Lokale Änderungen wiederherstellen"
 
 msgid "restoreUnsaved"
-msgstr "Dieser Entwurf wurde während der letzten Sitzung nicht gespeichert. Letzte Änderungen weiter bearbeiten?"
+msgstr "Dieser Entwurf wurde während der letzten Sitzung nicht gespeichert. Letzte Änderung weiter bearbeiten?"
 
 msgid "noCurrent"
 msgstr "Nein, Änderungen verwerfen"
@@ -233,7 +249,7 @@ msgid "zoneDelete"
 msgstr "Zone löschen"
 
 msgid "templateDeleteSure"
-msgstr "Wollen Sie diese Vorlage wirklich löschen?"
+msgstr "Vorlage wirklich löschen?"
 
 msgid "publishNot"
 msgstr "Nicht veröffentlichen"
@@ -269,7 +285,7 @@ msgid "plannedFrom"
 msgstr "geplant ab"
 
 msgid "publicFrom"
-msgstr "ab"
+msgstr "von"
 
 msgid "publicTill"
 msgstr "bis"
@@ -281,7 +297,7 @@ msgid "duplicate"
 msgstr "Duplizieren"
 
 msgid "useForOtherLang"
-msgstr "Für andere Sprache übernehmen"
+msgstr "Für andere Sprachen übernehmen"
 
 msgid "editPage"
 msgstr "Seite bearbeiten"
@@ -296,13 +312,13 @@ msgid "deleteDraftsContinue"
 msgstr "Entwürfe werden gelöscht! Fortfahren?"
 
 msgid "draftDeleteSure"
-msgstr "Wollen Sie diesen Entwurf wirklich löschen?"
+msgstr "Möchten Sie diesen Entwurf wirklich löschen?"
 
 msgid "label"
-msgstr "Label"
+msgstr "Beschriftung"
 
 msgid "style"
-msgstr "Stil"
+msgstr "Farbschema"
 
 msgid "stylePrimary"
 msgstr "Primär"
@@ -425,7 +441,7 @@ msgstr "Portlet hier einfügen"
 # Messages
 
 msgid "opcImportSuccess"
-msgstr "Entwurf wurde erfolgreich importiert! "
+msgstr "Der Entwurf wurde erfolgreich importiert."
 
 msgid "opcImportUnmappedS"
 msgstr "Ein Bereich konnte nicht abgebildet werden, da dessen ID auf der aktuellen Seite nicht auftaucht."
@@ -434,7 +450,7 @@ msgid "opcImportUnmappedP"
 msgstr "%s Bereiche konnten nicht abgebildet werden, da deren IDs auf der aktuellen Seite nicht auftauchen."
 
 msgid "opcImportSuccessTitle"
-msgstr "Entwurf erfolgreich importiert"
+msgstr "Import erfolgreich"
 
 msgid "btnTitleCopyArea"
 msgstr "Inhalt in sichtbaren Bereich übertragen"
@@ -447,3 +463,20 @@ msgstr "Diesen Bereich verwerfen"
 
 msgid "Cancel"
 msgstr "Abbrechen"
+
+msgid "opcPageLocked"
+msgstr "Dieser Entwurf ist zurzeit durch einen anderen Benutzer für die Bearbeitung gesperrt."
+
+msgid "Next"
+msgstr "Weiter"
+
+msgid "Back"
+msgstr "Zurück"
+
+msgid "Done"
+msgstr "Fertig"
+
+# MISC
+
+msgid "alignment"
+msgstr "Ausrichtung"

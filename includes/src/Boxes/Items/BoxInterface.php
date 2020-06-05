@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Boxes\Items;
 
@@ -167,14 +163,16 @@ interface BoxInterface
     public function setCustomID(int $id): void;
 
     /**
+     * @param int|null $pageID
      * @return int
      */
-    public function getSort(): int;
+    public function getSort(?int $pageID = null): int;
 
     /**
-     * @param int $sort
+     * @param int      $sort
+     * @param int|null $pageID
      */
-    public function setSort(int $sort): void;
+    public function setSort(int $sort, ?int $pageID = null): void;
 
     /**
      * @return int

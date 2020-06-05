@@ -6,7 +6,7 @@ msgid "systemlog_flag_name"
 msgstr "systemlog_flag"
 
 msgid "systemlog_flag_desc"
-msgstr ""
+msgstr " "
 
 msgid "artikel_artikelanzeigefilter_name"
 msgstr "Item display filter"
@@ -21,22 +21,22 @@ msgid "artikel_artikelanzeigefilter_seo_desc"
 msgstr "Specify whether sold-out items can still be accessed directly via the item URL. This option is only valid when \"Item display filter\" is active."
 
 msgid "artikel_lagerampel_gruen_name"
-msgstr "Green stock level indicator"
+msgstr "Green stock level"
 
 msgid "artikel_lagerampel_gruen_desc"
-msgstr "From this value on, the text for \"Green stock level indicator\" is shown. Between this value and the value for \"Red stock level indicator\", the text for \"Yellow stock level indicator\" appears."
+msgstr "Enter from which stock level on the content of the language variable \"ampel gruen\" is displayed. Between this stock level and the stock level for \"Red stock level\", the content of the language variable \"ampel gelb\" is displayed."
 
 msgid "artikel_lagerampel_rot_name"
-msgstr "Red stock level indicator"
+msgstr "Red stock level"
 
 msgid "artikel_lagerampel_rot_desc"
-msgstr "Up to this value, the text for \"Red stock level indicator\" is shown. Between this value and the value for \"Green stock level indicator\", the text for \"Yellow stock level indicator\" appears."
+msgstr "Enter until which stock level on the content of the language variable \"ampel rot\" is displayed. Between this stock level and the stock level for \"Green stock level\", the content of the language variable \"ampel gelb\" is displayed."
 
 msgid "artikel_ampel_lagernull_gruen_name"
-msgstr "Green stock level indicator with \"Allow negative stock\"."
+msgstr "Green stock level with \"Allow negative stock\""
 
 msgid "artikel_ampel_lagernull_gruen_desc"
-msgstr "Specify whether the text for \"Green stock level indicator\" is always shown with items for which \"Allow negative stock\" is activated in JTL-Wawi."
+msgstr "Specify whether for items for which \"Allow negative stock\" is activated in JTL-Wawi, the content of the language variable \"ampel gruen\" is always displayed."
 
 msgid "global_preis0_name"
 msgstr "If price is 0"
@@ -54,7 +54,7 @@ msgid "global_versandfrei_anzeigen_name"
 msgstr "Show that item can be shipped free of charge"
 
 msgid "global_versandfrei_anzeigen_desc"
-msgstr "Specify whether to display an item that is shipped free of shipping costs. The display depends on the settings in the shipping method and the setting \"Show countries free of shipping costs (1470)\"."
+msgstr "Specify whether to display that an item is eligible for free shipping. The display depends on the settings in the shipping method and the setting \"Show countries free of shipping costs (1470)\"."
 
 msgid "global_warenkorb_weiterleitung_name"
 msgstr "Forwarding to basket"
@@ -66,7 +66,7 @@ msgid "global_versandklasse_anzeigen_name"
 msgstr "Show shipping class in shipping text"
 
 msgid "global_versandklasse_anzeigen_desc"
-msgstr "Specify whether the shipping class is shown for items that no not have the shipping class \"standard\"."
+msgstr "Specify whether the shipping class is shown for items that do not have the shipping class \"standard\"."
 
 msgid "global_lieferverzoegerung_anzeigen_name"
 msgstr "Show possible delivery delay"
@@ -87,7 +87,7 @@ msgid "global_bestseller_minanzahl_desc"
 msgstr "Specify the minimum number of times an item must be sold in order to be marked as a bestseller."
 
 msgid "kategorien_anzeigefilter_name"
-msgstr "Category display filter"
+msgstr "Category display"
 
 msgid "kategorien_anzeigefilter_desc"
 msgstr "Specify whether to display all categories in JTL-Shop or only categories that are not empty."
@@ -102,16 +102,16 @@ msgid "global_shopname_name"
 msgstr "Online shop name"
 
 msgid "global_shopname_desc"
-msgstr "Specify the title of your online shop here. The title is displayed, for example, when you move the mouse over your shop logo."
+msgstr "Specify the title of your online shop here. The title is displayed, for example, when you move the mouse over the logo of your online shop."
 
 msgid "global_sichtbarkeit_name"
-msgstr "Visible to default customer group"
+msgstr "Visible without login"
 
 msgid "global_sichtbarkeit_desc"
-msgstr "Specify whether visitors who are not logged in can see everything that the default customer can see, whether they can only see items without prices, or whether they cannot see items and categories at all."
+msgstr "Specify whether visitors who are not logged in can see everything, can only see items without prices, or whether they cannot see items and categories at all."
 
 msgid "global_kundenkonto_aktiv_name"
-msgstr "Activation of new customer account"
+msgstr "Activation of new customer accounts"
 
 msgid "global_kundenkonto_aktiv_desc"
 msgstr "Specify whether customer accounts have to be activated in JTL-Wawi first or whether they are active in JTL-Shop directly after creation and can be immediately used for a purchase."
@@ -126,7 +126,7 @@ msgid "global_versandhinweis_name"
 msgstr "Refer to shipping costs underneath item price"
 
 msgid "global_versandhinweis_desc"
-msgstr ""
+msgstr " "
 
 msgid "global_erscheinende_kaeuflich_name"
 msgstr "Items with release date in future"
@@ -138,25 +138,25 @@ msgid "global_zaehler_anzeigen_name"
 msgstr "Show visitor counter"
 
 msgid "global_zaehler_anzeigen_desc"
-msgstr ""
+msgstr " "
 
 msgid "global_dezimaltrennzeichen_sonstigeangaben_name"
-msgstr "Decimal separator for other data"
+msgstr "Decimal separator for \"Split quantity\""
 
 msgid "global_dezimaltrennzeichen_sonstigeangaben_desc"
-msgstr "Specify whether to use a period or a comma as a decimal separator for other data. "
+msgstr "Specify which decimal separator is to be used for item quantities for which \"Split quantity\" is active in JTL-Wawi. "
 
 msgid "garbagecollector_wawiabgleich_name"
-msgstr "Automatic shop clean-up (GarbageCollector)"
+msgstr "Automatic clean-up of JTL-Shop (GarbageCollector)"
 
 msgid "garbagecollector_wawiabgleich_desc"
-msgstr "Specify whether entries in fast-growing tables are to be deleted regularly."
+msgstr "Specify whether entries in fast-growing tables are to be deleted regularly. We recommend settings this option to \"Yes\"."
 
 msgid "global_merkmalwert_url_indexierung_name"
-msgstr "Indexation of URLs for characteristic values by search engines"
+msgstr "Search engine indexing of characteristic URLs"
 
 msgid "global_merkmalwert_url_indexierung_desc"
-msgstr ""
+msgstr " "
 
 msgid "redirect_save_404_name"
 msgstr "Automatically record 404 hits under \"Forwarding\""
@@ -174,19 +174,19 @@ msgid "global_fusszeilehinweis_name"
 msgstr "Notes in footer"
 
 msgid "global_fusszeilehinweis_desc"
-msgstr "Here you can give further information on the item price (e.g. as a small-business owner)."
+msgstr "Here you can give further information on the item price (e.g. as a small-business&nbsp;owner)."
 
 msgid "global_steuerpos_anzeigen_name"
 msgstr "Show tax positions in order process/emails"
 
 msgid "global_steuerpos_anzeigen_desc"
-msgstr "As a small-business owner, you can deactivate stating VAT here."
+msgstr "As a small-business owner, you can activate and deactivate stating VAT here."
 
 msgid "warenkorbpers_nutzen_name"
 msgstr "Save basket"
 
 msgid "warenkorbpers_nutzen_desc"
-msgstr "Specify whether to save the last basket with unordered items for customers in the database. This allows customers to access their previous baskets when they log on again at a later time. "
+msgstr "Specify whether to save the last basket with unordered items for customers in the database. This allows customers to access their previous baskets when they log in again at a later time. "
 
 msgid "global_wunschliste_weiterleitung_name"
 msgstr "Forwarding to wish list"
@@ -222,7 +222,7 @@ msgid "wartungsmodus_aktiviert_name"
 msgstr "Enable maintenance mode"
 
 msgid "wartungsmodus_aktiviert_desc"
-msgstr "The visitor sees a message saying that the online shop is undergoing maintenance. The text of this message is managed via the language variable \"maintenanceModeActive\". Go to the Language administration to edit the info message text."
+msgstr "Visitors of your online shop are shown an info text about ongoing maintenance work. This text is controlled via the language variable \"maintenanceModeActive\". Go to the menu \"Language variables\" to change the text displayed for this variable."
 
 msgid "global_versandermittlung_anzeigen_name"
 msgstr "Show shipping cost determination"
@@ -246,7 +246,7 @@ msgid "admin_login_logger_mode_name"
 msgstr "Record failed login attempts by Admin"
 
 msgid "admin_login_logger_mode_desc"
-msgstr "Specify whether failed login attempts by the Admin account are logged in the back end."
+msgstr "Specify whether login attempts by the Admin account are logged in the back end."
 
 msgid "global_cookie_lifetime_name"
 msgstr "Cookie lifetime"
@@ -264,7 +264,7 @@ msgid "global_cookie_domain_name"
 msgstr "Cookie domain"
 
 msgid "global_cookie_domain_desc"
-msgstr "Enter the domain for which the cookies are valid, e.g. \"www.example.com\". For cookies to be available on all subdomains as well, the subdomain must be preceded by a dot. Leave this field empty to get the default setting."
+msgstr "Enter the domain for&nbsp;which the cookies are valid, e.g. \"www.example.com\". For cookies to be available on all subdomains as well, the subdomain must be preceded by a dot. Leave this field empty to get the default setting."
 
 msgid "global_cookie_secure_name"
 msgstr "Secure"
@@ -288,7 +288,7 @@ msgid "startseite_neuimsortiment_anzahl_name"
 msgstr "\"New in product range\": Number of items"
 
 msgid "startseite_neuimsortiment_anzahl_desc"
-msgstr "Specify the number of items per box. 0 means that the box is hidden."
+msgstr "Specify the number of items per box. Enter 0 if you do not want this box to be displayed."
 
 msgid "startseite_neuimsortiment_sortnr_name"
 msgstr "\"New in product range\": Sort number"
@@ -297,37 +297,37 @@ msgid "startseite_neuimsortiment_sortnr_desc"
 msgstr "Specify the position of the box. The lower an entered number is in comparison to that of other boxes, the higher up a box appears."
 
 msgid "startseite_topangebote_anzahl_name"
-msgstr "Top item: Number of items"
+msgstr "Top items: Number of items"
 
 msgid "startseite_topangebote_anzahl_desc"
 msgstr ""
 
 msgid "startseite_topangebote_sortnr_name"
-msgstr "Top item: Sort number"
+msgstr "Top items: Sort number"
 
 msgid "startseite_topangebote_sortnr_desc"
 msgstr ""
 
 msgid "startseite_sonderangebote_anzahl_name"
-msgstr "Special offers: number of items"
+msgstr "Special offers: Number of items"
 
 msgid "startseite_sonderangebote_anzahl_desc"
 msgstr ""
 
 msgid "startseite_sonderangebote_sortnr_name"
-msgstr "Special offers: sort number"
+msgstr "Special offers: Sort number"
 
 msgid "startseite_sonderangebote_sortnr_desc"
 msgstr ""
 
 msgid "startseite_bestseller_anzahl_name"
-msgstr "Bestsellers: number of items"
+msgstr "Bestsellers: Number of items"
 
 msgid "startseite_bestseller_anzahl_desc"
 msgstr ""
 
 msgid "startseite_bestseller_sortnr_name"
-msgstr "Bestsellers: sort number"
+msgstr "Bestsellers: Sort number"
 
 msgid "startseite_bestseller_sortnr_desc"
 msgstr ""
@@ -348,13 +348,13 @@ msgid "email_smtp_hostname_name"
 msgstr "SMTP host name"
 
 msgid "email_smtp_hostname_desc"
-msgstr "If you have selected the \"SMTP\" option under \"Send emails via\", enter the port number here."
+msgstr "If you have selected the \"SMTP\" option under \"Send emails via\", enter the host name here."
 
 msgid "email_smtp_port_name"
 msgstr "SMTP port"
 
 msgid "email_smtp_port_desc"
-msgstr "If you have selected the \"SMTP\" option under \"Send emails via\", you can specify here whether SMTP authentication is required."
+msgstr "If you have selected the \"SMTP\" option under \"Send emails via\", enter the port number here."
 
 msgid "email_smtp_auth_name"
 msgstr "Use SMTP Auth"
@@ -402,133 +402,127 @@ msgid "suche_prio_name_name"
 msgstr "Search priority of item name"
 
 msgid "suche_prio_name_desc"
-msgstr "Specify the order in which fields are searched. The higher the priority, the earlier the field is searched. 0 ensures that the field is not considered at all."
+msgstr "Specify the order in which fields are to be searched. The smaller the entered number, the earlier a field is searched. 0 ensures that the field is not considered at all."
 
 msgid "suche_prio_suchbegriffe_name"
 msgstr "Search priority of search terms of an item"
 
 msgid "suche_prio_suchbegriffe_desc"
-msgstr "Specify the order in which fields are searched. The higher the priority, the earlier the field is searched. 0 ensures that the field is not considered at all."
+msgstr "Specify the order in which fields are to be searched. The smaller the entered number, the earlier a field is searched. 0 ensures that the field is not considered at all."
 
 msgid "suche_prio_artikelnummer_name"
 msgstr "Search priority of SKU"
 
 msgid "suche_prio_artikelnummer_desc"
-msgstr "Specify the order in which fields are searched. The higher the priority, the earlier the field is searched. 0 ensures that the field is not considered at all."
+msgstr "Specify the order in which fields are to be searched. The smaller the entered number, the earlier a field is searched. 0 ensures that the field is not considered at all."
 
 msgid "suche_prio_kurzbeschreibung_name"
 msgstr "Search priority of brief item description"
 
 msgid "suche_prio_kurzbeschreibung_desc"
-msgstr "Specify the order in which fields are searched. The higher the priority, the earlier the field is searched. 0 ensures that the field is not considered at all."
+msgstr "Specify the order in which fields are to be searched. The smaller the entered number, the earlier a field is searched. 0 ensures that the field is not considered at all."
 
 msgid "suche_prio_beschreibung_name"
 msgstr "Search priority of item description"
 
 msgid "suche_prio_beschreibung_desc"
-msgstr "Specify the order in which fields are searched. The higher the priority, the earlier the field is searched. 0 ensures that the field is not considered at all."
+msgstr "Specify the order in which fields are to be searched. The smaller the entered number, the earlier a field is searched. 0 ensures that the field is not considered at all."
 
 msgid "suche_prio_ean_name"
-msgstr "Search priority of item EAN"
+msgstr "Search priority of item GTIN"
 
 msgid "suche_prio_ean_desc"
-msgstr "Specify the order in which fields are searched. The higher the priority, the earlier the field is searched. 0 ensures that the field is not considered at all."
+msgstr "Specify the order in which fields are to be searched. The smaller the entered number, the earlier a field is searched. 0 ensures that the field is not considered at all."
 
 msgid "suche_prio_isbn_name"
 msgstr "Search priority of item ISBN"
 
 msgid "suche_prio_isbn_desc"
-msgstr "Specify the order in which fields are searched. The higher the priority, the earlier the field is searched. 0 ensures that the field is not considered at all."
+msgstr "Specify the order in which fields are to be searched. The smaller the entered number, the earlier a field is searched. 0 ensures that the field is not considered at all."
 
 msgid "suche_prio_han_name"
 msgstr "Search priority of item MPN"
 
 msgid "suche_prio_han_desc"
-msgstr "Specify the order in which fields are searched. The higher the priority, the earlier the field is searched. 0 ensures that the field is not considered at all."
+msgstr "Specify the order in which fields are to be searched. The smaller the entered number, the earlier a field is searched. 0 ensures that the field is not considered at all."
 
 msgid "suche_prio_anmerkung_name"
 msgstr "Search priority of item note"
 
 msgid "suche_prio_anmerkung_desc"
-msgstr "Specify the order in which fields are searched. The higher the priority, the earlier the field is searched. 0 ensures that the field is not considered at all."
+msgstr "Specify the order in which fields are to be searched. The smaller the entered number, the earlier a field is searched. 0 ensures that the field is not considered at all."
 
 msgid "suche_min_zeichen_name"
 msgstr "Minimum number of characters for search term"
 
 msgid "suche_min_zeichen_desc"
-msgstr "Specify the minimum number of characters that a search term must contain for the search to be executed. (When using the full-text search, this value should be adjusted to the database parameter ft_min_word_len.)"
+msgstr "Specify the minimum number of characters that a search term must contain for the search to be executed. When using the full-text search, this value should be adjusted to the database parameter ft_min_word_len."
 
 msgid "suche_sortierprio_name_name"
 msgstr "Priority of sorting options: name from A to Z"
 
 msgid "suche_sortierprio_name_desc"
-msgstr "The higher the priority, the higher up a sorting option is shown. Set the priority to 0 to hide this sorting option."
+msgstr "The smaller the number, the higher up the sorting option will be displayed. Enter 0 if you do not want this option to be displayed."
 
 msgid "suche_sortierprio_name_ab_name"
 msgstr "Priority of sorting options: name from Z to A"
 
 msgid "suche_sortierprio_name_ab_desc"
-msgstr "The higher the priority, the higher up a sorting option is shown. Set the priority to 0 to hide this sorting option."
+msgstr "The smaller the number, the higher up the sorting option will be displayed. Enter 0 if you do not want this option to be displayed."
 
 msgid "suche_sortierprio_preis_name"
 msgstr "Priority of sorting options: price low to high"
 
 msgid "suche_sortierprio_preis_desc"
-msgstr "The higher the priority, the higher up a sorting option is shown. Set the priority to 0 to hide this sorting option."
+msgstr "The smaller the number, the higher up the sorting option will be displayed. Enter 0 if you do not want this option to be displayed."
 
 msgid "suche_sortierprio_preis_ab_name"
 msgstr "Priority of sorting options: price high to low"
 
 msgid "suche_sortierprio_preis_ab_desc"
-msgstr "The higher the priority, the higher up a sorting option is shown. Set the priority to 0 to hide this sorting option."
+msgstr "The smaller the number, the higher up the sorting option will be displayed. Enter 0 if you do not want this option to be displayed."
 
 msgid "suche_sortierprio_ean_name"
-msgstr "Priority of sorting options: EAN"
+msgstr "Priority of sorting options: GTIN"
 
 msgid "suche_sortierprio_ean_desc"
-msgstr "The higher the priority, the higher up a sorting option is shown. Set the priority to 0 to hide this sorting option."
+msgstr "The smaller the number, the higher up the sorting option will be displayed. Enter 0 if you do not want this option to be displayed."
 
 msgid "suche_sortierprio_erstelldatum_name"
 msgstr "Priority of sorting options: newest items"
 
 msgid "suche_sortierprio_erstelldatum_desc"
-msgstr "The higher the priority, the higher up a sorting option is shown. Set the priority to 0 to hide this sorting option. The items that have been added last will be shown first."
+msgstr "The smaller the number, the higher up the sorting option will be displayed. Enter 0 if you do not want this option to be displayed. The items that have been added last will be shown first."
 
 msgid "suche_sortierprio_artikelnummer_name"
 msgstr "Priority of sorting options: SKU"
 
 msgid "suche_sortierprio_artikelnummer_desc"
-msgstr "The higher the priority, the higher up a sorting option is shown. Set the priority to 0 to hide this sorting option."
-
-msgid "suche_sortierprio_lagerbestand_name"
-msgstr "Priority of sorting options: availability"
-
-msgid "suche_sortierprio_lagerbestand_desc"
-msgstr "The higher the priority, the higher up a sorting possibility is shown. Set the priority to 0 to hide this sorting option."
+msgstr "The smaller the number, the higher up the sorting option will be displayed. Enter 0 if you do not want this option to be displayed."
 
 msgid "suche_sortierprio_gewicht_name"
-msgstr "Priority of sorting options: Weight"
+msgstr "Priority of sorting options: weight"
 
 msgid "suche_sortierprio_gewicht_desc"
-msgstr "The higher the priority, the higher up a sorting possibility is shown. Set the priority to 0 to hide this sorting option."
+msgstr "The smaller the number, the higher up the sorting option will be displayed. Enter 0 if you do not want this option to be displayed."
 
 msgid "suche_sortierprio_erscheinungsdatum_name"
 msgstr "Priority of sorting options: release date"
 
 msgid "suche_sortierprio_erscheinungsdatum_desc"
-msgstr "The higher the priority, the higher up a sorting option is shown. Set the priority to 0 to hide this sorting option."
+msgstr "The smaller the number, the higher up the sorting option will be displayed. Enter 0 if you do not want this option to be displayed."
 
 msgid "suche_sortierprio_bestseller_name"
 msgstr "Priority of sorting options: bestsellers"
 
 msgid "suche_sortierprio_bestseller_desc"
-msgstr "The higher the priority, the higher up a sorting possibility is shown. Set the priority to 0 to hide this sorting option."
+msgstr "The smaller the number, the higher up the sorting option will be displayed. Enter 0 if you do not want this option to be displayed."
 
 msgid "suche_sortierprio_bewertung_name"
-msgstr "Priority of sorting options: customer reviews"
+msgstr "Priority of sorting options: reviews"
 
 msgid "suche_sortierprio_bewertung_desc"
-msgstr "The higher the priority, the higher up a sorting possibility is shown. Set the priority to 0 to hide this sorting option."
+msgstr "The smaller the number, the higher up the sorting option will be displayed. Enter 0 if you do not want this option to be displayed."
 
 msgid "suche_max_treffer_name"
 msgstr "Maximum number of search results"
@@ -552,7 +546,7 @@ msgid "artikeluebersicht_kurzbeschreibung_anzeigen_name"
 msgstr "Show brief description"
 
 msgid "artikeluebersicht_kurzbeschreibung_anzeigen_desc"
-msgstr "Specify whether to display also the brief description field of an item in the item overview. This setting applies only to the list view."
+msgstr "Specify whether to display also the brief description of an item in the item overview. This setting applies only to the list view."
 
 msgid "artikeluebersicht_lagerbestandanzeige_anzeigen_name"
 msgstr "Show reference to supplier stocks"
@@ -570,7 +564,7 @@ msgid "artikeluebersicht_artikelproseite_name"
 msgstr "Items per page in item overview"
 
 msgid "artikeluebersicht_artikelproseite_desc"
-msgstr ""
+msgstr "This setting takes effect when no value has been entered for \"Number of items in list view/gallery view\" in the section \"Expanded view\"."
 
 msgid "artikeluebersicht_artikelsortierung_name"
 msgstr "Default sorting"
@@ -585,7 +579,7 @@ msgid "artikeluebersicht_max_seitenzahl_desc"
 msgstr "Specify the maximum number of pages to be displayed underneath the search results on a search result page."
 
 msgid "artikeluebersicht_rabattanzeige_name"
-msgstr "Show discounted prices (item overview/search)"
+msgstr "Display of discounted prices (item overview/search)"
 
 msgid "artikeluebersicht_rabattanzeige_desc"
 msgstr "Specify how discounts are to be displayed."
@@ -597,7 +591,7 @@ msgid "artikeluebersicht_sonderpreisanzeige_desc"
 msgstr "Specify how to display the price for items with a special price."
 
 msgid "articleoverview_pricerange_width_name"
-msgstr "Maximum price gap for price display with \"from\""
+msgstr "Price gap for price display with \"from\""
 
 msgid "articleoverview_pricerange_width_desc"
 msgstr "Specify how large the gap (in %) between the lowest and the highest price must be so that the price is indicated as \"from\" + cheapest price."
@@ -612,7 +606,7 @@ msgid "artikelubersicht_topbest_anzahl_name"
 msgstr "Maximum number of top items/bestsellers"
 
 msgid "artikelubersicht_topbest_anzahl_desc"
-msgstr "Specify how many items are to be displayed as top offers / bestsellers. If you select \"0\", no item is displayed."
+msgstr "Specify how many items are to be displayed as top items/bestsellers. If you select 0, no item is displayed."
 
 msgid "artikelubersicht_bestseller_gruppieren_name"
 msgstr "Group bestsellers on top of page"
@@ -621,10 +615,10 @@ msgid "artikelubersicht_bestseller_gruppieren_desc"
 msgstr "Specify whether to group the bestsellers above the search results."
 
 msgid "artikeluebersicht_bestseller_anzahl_name"
-msgstr "Maximum number of grouped best sellers"
+msgstr "Maximum number of grouped bestsellers"
 
 msgid "artikeluebersicht_bestseller_anzahl_desc"
-msgstr "Specify the maximum number best sellers to be grouped. For this purpose, the option \"Group best sellers per page\" must be activated."
+msgstr "Specify the maximum number of bestsellers to be grouped. For this purpose, the option \"Group bestsellers per page\" must be activated."
 
 msgid "artikeluebersicht_gewicht_anzeigen_name"
 msgstr "Show shipping weight"
@@ -666,13 +660,13 @@ msgid "livesuche_max_ip_count_name"
 msgstr "Maximum entries per visitor per hour"
 
 msgid "livesuche_max_ip_count_desc"
-msgstr "Specify the maximum number of entries per visitor and hour saved in the live search. This allows you to prevent manipulation of the live search."
+msgstr "Specify the maximum number of entries per visitor and hour that is saved in the search queries. This allows you to prevent manipulation of the search queries."
 
 msgid "suchfilter_anzeigen_ab_name"
-msgstr "Show search filters from"
+msgstr "Show filters in content area from"
 
 msgid "suchfilter_anzeigen_ab_desc"
-msgstr "Specify the minimum number of items that must be displayed in the search results for search filters to be available for selection."
+msgstr "Specify the minimum number of items that must be displayed in the search results to show filters in the content area."
 
 msgid "artikeluebersicht_erw_darstellung_name"
 msgstr "Use expanded item overview"
@@ -684,31 +678,31 @@ msgid "artikeluebersicht_erw_darstellung_stdansicht_name"
 msgstr "Default design option for item overview"
 
 msgid "artikeluebersicht_erw_darstellung_stdansicht_desc"
-msgstr "Specify the default display option that your customers will be shown."
+msgstr "Specify the default display option for the item overview that your customers will be shown."
 
 msgid "artikeluebersicht_anzahl_darstellung1_name"
 msgstr "Number of items in list view"
 
 msgid "artikeluebersicht_anzahl_darstellung1_desc"
-msgstr "Specify how many items are to be displayed in the list view."
+msgstr "Specify how many items are to be displayed on each page of the list view."
 
 msgid "products_per_page_list_name"
 msgstr "Item selection options per page in list view"
 
 msgid "products_per_page_list_desc"
-msgstr "Specify how many item selection options are available per page. Set this value to -1 to display all."
+msgstr "Enter the values for the frontend from which the customer can choose how many items they want to view per page. Enter \"-1\" if you want to display the option to display all items on one page."
 
 msgid "artikeluebersicht_anzahl_darstellung2_name"
 msgstr "Number of items in gallery view"
 
 msgid "artikeluebersicht_anzahl_darstellung2_desc"
-msgstr "Specify how many items are to be displayed in the gallery view."
+msgstr "Specify how many items are to be displayed on each page of the gallery view."
 
 msgid "products_per_page_gallery_name"
 msgstr "Item selection options per page in gallery view"
 
 msgid "products_per_page_gallery_desc"
-msgstr "Specify how many item selection options are available per page. Set this value to -1 to display all."
+msgstr "Enter the values for the frontend from which the customer can choose how many items they want to view per page. Enter \"-1\" if you want to display the option to display all items on one page."
 
 msgid "artikeldetails_xselling_standard_anzeigen_name"
 msgstr "Show default cross-selling"
@@ -741,7 +735,7 @@ msgid "artikel_variationspreisanzeige_desc"
 msgstr "Specify how to indicate extra charges for variations."
 
 msgid "artikel_lagerbestandsanzeige_name"
-msgstr "Stock level display"
+msgstr "Display stock level"
 
 msgid "artikel_lagerbestandsanzeige_desc"
 msgstr "Specify how the stock level of an item is displayed (individual view)."
@@ -810,7 +804,7 @@ msgid "artikeldetails_tabs_nutzen_name"
 msgstr "Use tabs"
 
 msgid "artikeldetails_tabs_nutzen_desc"
-msgstr "Specify whether tabs are to be used on the item detail page. These include for example customer reviews, item tags or questions about the item. If you disable this option, all information is displayed one below the other."
+msgstr "Specify whether tabs are to be used on the item detail page. These include for example customer reviews or questions about the item. If you disable this option, all pieces of are displayed one below the other."
 
 msgid "artikeldetails_navi_blaettern_name"
 msgstr "Show navigation to next/previous item"
@@ -834,10 +828,10 @@ msgid "artikeldetails_canonicalurl_varkombikind_name"
 msgstr "Canonical URLs with child items"
 
 msgid "artikeldetails_canonicalurl_varkombikind_desc"
-msgstr "Specify whether to display canonical URLs of child item with the parent item."
+msgstr "Specify whether canonical URLs of child items point to the parent item."
 
 msgid "artikeldetails_warenkorbmatrix_anzeigeformat_name"
-msgstr "Displaying options for basket matrix"
+msgstr "Display options for basket matrix"
 
 msgid "artikeldetails_warenkorbmatrix_anzeigeformat_desc"
 msgstr "Specify how you want the basket matrix to be displayed."
@@ -846,7 +840,7 @@ msgid "artikeldetails_warenkorbmatrix_anzeige_name"
 msgstr "Show basket matrix"
 
 msgid "artikeldetails_warenkorbmatrix_anzeige_desc"
-msgstr "Specify whether selecting variations or child items is done via a basket matrix."
+msgstr "Specify whether selecting variations or parent-child relationships is done via a basket matrix."
 
 msgid "artikeldetails_warenkorbmatrix_lagerbeachten_name"
 msgstr "Hide unavailable items in basket matrix"
@@ -870,16 +864,16 @@ msgid "artikeldetails_variationskombikind_bildvorschau_name"
 msgstr "Show image previews with child items"
 
 msgid "artikeldetails_variationskombikind_bildvorschau_desc"
-msgstr "Specify whether to display thumbnails for child item in the item overview. If there are many variations, this may lead to long loading times."
+msgstr "Specify whether to display thumbnails for child items in the item overview. If there are many child items, this may lead to long loading times."
 
 msgid "artikeldetails_fragezumprodukt_anzeigen_name"
 msgstr "Show form with questions about item"
 
 msgid "artikeldetails_fragezumprodukt_anzeigen_desc"
-msgstr "Specify whether your customers are able to ask questions about the item on the item detail page. You receive questions by email."
+msgstr "Specify whether your customers are able to ask questions about the item on the item detail page. You will receive questions by email."
 
 msgid "artikeldetails_fragezumprodukt_email_name"
-msgstr "Email address for questions about the item"
+msgstr "Email address for questions about item"
 
 msgid "artikeldetails_fragezumprodukt_email_desc"
 msgstr "Indicate the email address to which questions about the item will be sent. If you want to use this option, entering an email address is mandatory."
@@ -948,25 +942,25 @@ msgid "benachrichtigung_nutzen_name"
 msgstr "Allow availability requests"
 
 msgid "benachrichtigung_nutzen_desc"
-msgstr "Specify whether customers can choose to receive a notification when an item becomes available that is not currently available. (dialogue box inactive in list view of NOVA template)"
+msgstr "Specify whether customers can choose to receive an email notification when an item becomes available that is not currently available (dialogue box inactive in list view of NOVA template)."
 
 msgid "benachrichtigung_abfragen_vorname_name"
 msgstr "Prompt first name"
 
 msgid "benachrichtigung_abfragen_vorname_desc"
-msgstr " "
+msgstr ""
 
 msgid "benachrichtigung_abfragen_nachname_name"
 msgstr "Prompt last name"
 
 msgid "benachrichtigung_abfragen_nachname_desc"
-msgstr " "
+msgstr ""
 
 msgid "benachrichtigung_sperre_minuten_name"
 msgstr "Lock form for availability requests for X minutes"
 
 msgid "benachrichtigung_sperre_minuten_desc"
-msgstr "Specify how many minutes must have passed between different availability requests."
+msgstr "Specify how many minutes must have passed between one request and the next."
 
 msgid "benachrichtigung_abfragen_captcha_name"
 msgstr "Enable spam protection"
@@ -996,7 +990,7 @@ msgid "artikeldetails_aehnlicheartikel_anzahl_name"
 msgstr "Number of items"
 
 msgid "artikeldetails_aehnlicheartikel_anzahl_desc"
-msgstr "Specify the maximum number of similar items that are to be displayed. 0 shows no items."
+msgstr "Specify the number of similar items that are to be displayed. Similar items are proposed on the basis of identical characteristics. If you do not use characteristics, similar items are derived from the search. Items that are already proposed via cross-selling will be disregarded. 0 shows no items."
 
 msgid "artikeldetails_stueckliste_anzeigen_name"
 msgstr "Show bill of materials components"
@@ -1050,7 +1044,7 @@ msgid "kundenregistrierung_abfragen_anrede_name"
 msgstr "Prompt title"
 
 msgid "kundenregistrierung_abfragen_anrede_desc"
-msgstr "Specify whether to prompt the title. Irrespective of what is specified in this setting, JTL-Shop uses a gender-neutral title in the front end and emails (e.g. \"Hello John Smith\"). The title used in email templates and print templates of JTL-Wawi can be adjusted accordingly."
+msgstr "Specify whether to prompt the title. Irrespective of what is specified in this setting, JTL-Shop uses a gender-neutral title in the front&nbsp;end and emails (e.g. \"Hello John Smith\"). The title used in email templates and print templates of JTL-Wawi can be adjusted accordingly."
 
 msgid "kundenregistrierung_pflicht_vorname_name"
 msgstr "Prompt first name"
@@ -1104,7 +1098,7 @@ msgid "kundenregistrierung_abfragen_www_name"
 msgstr "Prompt website address"
 
 msgid "kundenregistrierung_abfragen_www_desc"
-msgstr "Specify whether to prompt the website address."
+msgstr "Specify whether to prompt the customer's website address."
 
 msgid "kundenregistrierung_abfragen_geburtstag_name"
 msgstr "Prompt date of birth"
@@ -1119,7 +1113,7 @@ msgid "kundenregistrierung_passwortlaenge_desc"
 msgstr "Specify the minimum number of characters a customer password must contain."
 
 msgid "kundenregistrierung_standardland_name"
-msgstr "Pre-selected country"
+msgstr "Preselected country"
 
 msgid "kundenregistrierung_standardland_desc"
 msgstr "Specify the ISO code for the country that is to be preselected, e.g. DE for Germany or AT for Austria."
@@ -1143,7 +1137,7 @@ msgid "kundenregistrierung_pruefen_name_desc"
 msgstr "Specify whether JTL-Shop should check the entered first name and last name for numbers."
 
 msgid "kundenregistrierung_pruefen_zeit_name"
-msgstr "Check time"
+msgstr "Check time needed for completion"
 
 msgid "kundenregistrierung_pruefen_zeit_desc"
 msgstr "Specify if JTL-Shop should check whether the entire form was completed in less than 5 seconds."
@@ -1158,13 +1152,13 @@ msgid "kundenregistrierung_nur_lieferlaender_name"
 msgstr "Offer only countries with shipping method for selection"
 
 msgid "kundenregistrierung_nur_lieferlaender_desc"
-msgstr "Specify whether only countries for which there is at least one shipping method can be selected."
+msgstr "Specify whether only countries for which there is at least one shipping method can be selected for the invoice and shipping address. We recommend settings this option to \"Yes\"."
 
 msgid "kundenregistrierung_abgleichen_plz_name"
 msgstr "Check postal codes"
 
 msgid "kundenregistrierung_abgleichen_plz_desc"
-msgstr "Specify whether JTL-Shop checks if the entered postal code matches the entered city. If not, the customer will receive an error message. The customer can still continue the order process even if he does not make any changes."
+msgstr "Specify whether JTL-Shop checks if the entered postal code matches the entered city. If not, the customer will receive an error message. The customer can still continue the order process even if they do not make any changes."
 
 msgid "registrieren_captcha_name"
 msgstr "Enable spam protection"
@@ -1176,13 +1170,13 @@ msgid "kundenlogin_max_loginversuche_name"
 msgstr "Show CAPTCHA after X unsuccessful login attempts"
 
 msgid "kundenlogin_max_loginversuche_desc"
-msgstr "You can define how many login attempts a customer has before a CAPTCHA appears when they try to log on. This makes it more difficult for a bot to hack a customer account by trial and error."
+msgstr "You can define how many failed attempts a customer can have before a CAPTCHA appears. This makes it more difficult for a bot to hack a customer account by trial and error."
 
 msgid "lieferadresse_abfragen_anrede_name"
 msgstr "Prompt title"
 
 msgid "lieferadresse_abfragen_anrede_desc"
-msgstr "Specify whether to prompt the title. Irrespective of what is specified in this setting, JTL-Shop uses a gender-neutral title in the front end and emails (e.g. \"Hello John Smith\"). The title used in email templates and print templates of JTL-Wawi can be adjusted accordingly."
+msgstr "Specify whether to prompt the title. Irrespective of what is specified in this setting, JTL-Shop uses a gender-neutral title in the front&nbsp;end and emails (e.g. \"Hello John Smith\"). The title used in email templates and print templates of JTL-Wawi can be adjusted accordingly."
 
 msgid "lieferadresse_abfragen_titel_name"
 msgstr "Prompt academic title"
@@ -1227,13 +1221,13 @@ msgid "lieferadresse_abfragen_fax_desc"
 msgstr ""
 
 msgid "lieferadresse_abfragen_standardland_name"
-msgstr "Pre-selected country"
+msgstr "Preselected country"
 
 msgid "lieferadresse_abfragen_standardland_desc"
 msgstr "Specify the ISO code for the country that is to be preselected, e.g. DE for Germany or AT for Austria."
 
 msgid "shop_ustid_name"
-msgstr "VAT ID of shop"
+msgstr "VAT ID of online shop"
 
 msgid "shop_ustid_desc"
 msgstr "Specify the VAT identification number for the company that operates the JTL-Shop in order to be able to check a customer's VAT ID number."
@@ -1284,7 +1278,7 @@ msgid "warenkorb_varianten_varikombi_anzeigen_name"
 msgstr "Show variation values in basket"
 
 msgid "warenkorb_varianten_varikombi_anzeigen_desc"
-msgstr "Specify whether to display the variation values of child items in the basket."
+msgstr "Specify whether to display variation values (e.g. colour and size) in the basket."
 
 msgid "warenkorb_warenkorb2pers_merge_name"
 msgstr "Combine current basket with saved basket"
@@ -1305,13 +1299,13 @@ msgid "bestellvorgang_wrb_anzeigen_desc"
 msgstr ""
 
 msgid "bestellvorgang_einzelpreise_anzeigen_name"
-msgstr "Show individual prices of positions"
+msgstr "Show individual prices of line items"
 
 msgid "bestellvorgang_einzelpreise_anzeigen_desc"
-msgstr "Specify whether to display the individual prices of positions in the basket and the order process."
+msgstr "Specify whether to display the individual prices of line items in the basket and the order process."
 
 msgid "bestellvorgang_lieferstatus_anzeigen_name"
-msgstr "Show delivery status with positions"
+msgstr "Show delivery status with line items"
 
 msgid "bestellvorgang_lieferstatus_anzeigen_desc"
 msgstr ""
@@ -1353,22 +1347,22 @@ msgid "bestellvorgang_artikelkurzbeschreibung_desc"
 msgstr ""
 
 msgid "bestellabschluss_bestellnummer_praefix_name"
-msgstr "Purchase order ID – prefix"
+msgstr "Order ID – prefix"
 
 msgid "bestellabschluss_bestellnummer_praefix_desc"
-msgstr "Specify how to structure the sales order ID. It is generated as follows: {Prefix}{Consecutive number + Start number}{Suffix}"
+msgstr "Specify how to structure the order ID. It is generated as follows: {Prefix}{Consecutive number + Start number}{Suffix}"
 
 msgid "bestellabschluss_bestellnummer_anfangsnummer_name"
-msgstr "Purchase order ID – start number"
+msgstr "Order ID – start number"
 
 msgid "bestellabschluss_bestellnummer_anfangsnummer_desc"
-msgstr "Specify the structure of the purchase order ID. It is generated as follows: {prefix}{consecutive number + start number}{suffix}"
+msgstr "Specify how to structure the order ID. It is generated as follows: {Prefix}{Consecutive number + Start number}{Suffix}"
 
 msgid "bestellabschluss_bestellnummer_suffix_name"
-msgstr "Purchase order ID – suffix"
+msgstr "Order ID – suffix"
 
 msgid "bestellabschluss_bestellnummer_suffix_desc"
-msgstr "Specify how to structure the sales order ID. It is generated as follows: {Prefix}{Consecutive number + Start number}{Suffix}"
+msgstr "Specify how to structure the order ID. It is generated as follows: {Prefix}{Consecutive number + Start number}{Suffix}"
 
 msgid "bestellabschluss_runden5_name"
 msgstr "Round total sum to 5 centimes/cents"
@@ -1380,7 +1374,7 @@ msgid "bestellabschluss_spamschutz_nutzen_name"
 msgstr "Enable spam protection"
 
 msgid "bestellabschluss_spamschutz_nutzen_desc"
-msgstr "Specify whether further orders from the same IP address are only possible after a waiting period of 2 minutes. If attempt is made to order again earlier, the waiting time is doubled, i.e. 4, 8, 16, 32, etc. minutes. For this option, the IP address must be saved."
+msgstr "Specify whether further orders from the same IP address are only possible after a waiting period of 2 minutes. If an attempt is made to order again earlier, the waiting time is doubled, i.e. 4, 8, 16, 32, etc. minutes."
 
 msgid "bestellabschluss_abschlussseite_name"
 msgstr "Completion page after external payment"
@@ -1398,7 +1392,7 @@ msgid "box_bestseller_anzahl_basis_name"
 msgstr "Base number of items"
 
 msgid "box_bestseller_anzahl_basis_desc"
-msgstr "Specify the number of items from which the items to be displayed are to be selected."
+msgstr "Specify the number of items from which the items to be displayed are selected randomly."
 
 msgid "box_sonderangebote_anzahl_anzeige_name"
 msgstr "Number of displayed items"
@@ -1410,7 +1404,7 @@ msgid "box_sonderangebote_anzahl_basis_name"
 msgstr "Base number of items"
 
 msgid "box_sonderangebote_anzahl_basis_desc"
-msgstr "Specify the number of items from which the items to be displayed are to be selected."
+msgstr "Specify the number of items from which the items to be displayed are selected randomly."
 
 msgid "box_neuimsortiment_anzahl_anzeige_name"
 msgstr "Number of displayed items"
@@ -1428,7 +1422,7 @@ msgid "box_neuimsortiment_anzahl_basis_name"
 msgstr "Base number of items"
 
 msgid "box_neuimsortiment_anzahl_basis_desc"
-msgstr "Specify the number of items from which the items to be displayed are to be selected."
+msgstr "Specify the number of items from which the items to be displayed are selected randomly."
 
 msgid "box_topangebot_anzahl_anzeige_name"
 msgstr "Number of displayed items"
@@ -1440,7 +1434,7 @@ msgid "box_topangebot_anzahl_basis_name"
 msgstr "Base number of items"
 
 msgid "box_topangebot_anzahl_basis_desc"
-msgstr "Specify the number of items from which the items to be displayed are to be selected."
+msgstr "Specify the number of items from which the items to be displayed are selected randomly."
 
 msgid "box_zuletztangesehen_anzahl_name"
 msgstr "Number of displayed items"
@@ -1458,7 +1452,7 @@ msgid "box_erscheinende_anzahl_basis_name"
 msgstr "Base number of items"
 
 msgid "box_erscheinende_anzahl_basis_desc"
-msgstr "Specify the number of items from which the items to be displayed are to be selected."
+msgstr "Specify the number of items from which the items to be displayed are selected randomly."
 
 msgid "boxen_livesuche_anzeigen_name"
 msgstr "Show box"
@@ -1470,10 +1464,10 @@ msgid "boxen_livesuche_count_name"
 msgstr "Number of shown search terms"
 
 msgid "boxen_livesuche_count_desc"
-msgstr "Specify the number of terms that are displayed in the search cloud. You can display the search cloud in a box using the box management."
+msgstr "Specify the number of terms that are displayed in the search cloud."
 
 msgid "boxen_wunschzettel_anzahl_name"
-msgstr "Number of items in box"
+msgstr "Number of displayed items"
 
 msgid "boxen_wunschzettel_anzahl_desc"
 msgstr "Specify how many items are to be displayed in the \"Wish list\" box."
@@ -1500,10 +1494,10 @@ msgid "boxen_topbewertet_basisanzahl_name"
 msgstr "Base number of items"
 
 msgid "boxen_topbewertet_basisanzahl_desc"
-msgstr "Specify the number of items from which the items to be displayed are to be selected."
+msgstr "Specify the number of items from which the items to be displayed are selected randomly."
 
 msgid "boxen_topbewertet_minsterne_name"
-msgstr "\"Top rated\" applies as of the following average rating"
+msgstr "\"Top rated\" requires average rating of"
 
 msgid "boxen_topbewertet_minsterne_desc"
 msgstr "Specify the minimum number of stars with which an item must be rated on average to be considered as \"Top rated\"."
@@ -1575,7 +1569,7 @@ msgid "bilder_artikel_normal_breite_desc"
 msgstr ""
 
 msgid "bilder_artikel_normal_hoehe_name"
-msgstr "Item images, normal: width"
+msgstr "Item images, normal: hight"
 
 msgid "bilder_artikel_normal_hoehe_desc"
 msgstr ""
@@ -1713,19 +1707,19 @@ msgid "bilder_variation_namen_desc"
 msgstr "Specify how to generate the name of image files for variations."
 
 msgid "bilder_hersteller_namen_name"
-msgstr "Image name of manufacturer images"
+msgstr "Image names of manufacturer images"
 
 msgid "bilder_hersteller_namen_desc"
 msgstr "Specify how to generate the name of image files for manufacturers."
 
 msgid "bilder_merkmal_namen_name"
-msgstr "Image name of characteristic images"
+msgstr "Image names of characteristic images"
 
 msgid "bilder_merkmal_namen_desc"
 msgstr "Specify how to generate the name of image files for characteristics."
 
 msgid "bilder_merkmalwert_namen_name"
-msgstr "Image name of characteristic value images"
+msgstr "Image names of characteristic value images"
 
 msgid "bilder_merkmalwert_namen_desc"
 msgstr "Specify how to generate the name of image files for characteristic values."
@@ -1746,31 +1740,25 @@ msgid "bilder_dateiformat_name"
 msgstr "File format"
 
 msgid "bilder_dateiformat_desc"
-msgstr "Specify whether to save images in PNG or JPEG format."
-
-msgid "bilder_skalieren_name"
-msgstr "Scale up images"
-
-msgid "bilder_skalieren_desc"
-msgstr "Specify whether to scale up images whose dimensions are too small for the specified image size. Please note that if the size difference is too great, images may be pixelated."
+msgstr "Specify whether images are to be saved in the JPEG or PNG format. If 'Auto' is selected and the server allows this, all images are also saved in the webp format. While this requires more storage space on the server, webp images are significantly smaller and lead to better front-end performance"
 
 msgid "bilder_hintergrundfarbe_name"
 msgstr "Background colour"
 
 msgid "bilder_hintergrundfarbe_desc"
-msgstr ""
+msgstr "If file format is 'JPG', please select colors without transparency, e.g.: rgb(255,0,0)."
 
 msgid "sonstiges_livesuche_all_top_count_name"
 msgstr "Number of top search queries to be displayed"
 
 msgid "sonstiges_livesuche_all_top_count_desc"
-msgstr "Specify how many terms are displayed as top search queries in the complete overview of the live search."
+msgstr "Specify how many terms are displayed as top search queries in the complete overview of the search queries."
 
 msgid "sonstiges_livesuche_all_last_count_name"
 msgstr "Number of recent search queries"
 
 msgid "sonstiges_livesuche_all_last_count_desc"
-msgstr "Specify how many of the most recent search queries are to be displayed in the complete overview of the live search."
+msgstr "Specify how many of the most recent search queries are to be displayed in the complete overview of the search query."
 
 msgid "sonstiges_gratisgeschenk_nutzen_name"
 msgstr "Offer free gifts"
@@ -1794,7 +1782,7 @@ msgid "zahlungsart_ueberweisung_min_bestellungen_name"
 msgstr "Number of required orders"
 
 msgid "zahlungsart_ueberweisung_min_bestellungen_desc"
-msgstr "Specify the minimum number of successful orders a customer must have placed to be able to select this payment method."
+msgstr "Specify the minimum number of orders a customer must have placed to be offered this payment method."
 
 msgid "zahlungsart_ueberweisung_min_name"
 msgstr "Minimum order value"
@@ -1812,7 +1800,7 @@ msgid "zahlungsart_nachnahme_min_bestellungen_name"
 msgstr "Number of required orders"
 
 msgid "zahlungsart_nachnahme_min_bestellungen_desc"
-msgstr "Specify the minimum number of successful orders a customer must have placed to be able to select this payment method."
+msgstr "Specify the minimum number of orders a customer must have placed to be offered this payment method."
 
 msgid "zahlungsart_nachnahme_min_name"
 msgstr "Minimum order value"
@@ -1830,7 +1818,7 @@ msgid "zahlungsart_kreditkarte_min_bestellungen_name"
 msgstr "Number of required orders"
 
 msgid "zahlungsart_kreditkarte_min_bestellungen_desc"
-msgstr "Specify the minimum number of successful orders a customer must have placed to be able to select this payment method."
+msgstr "Specify the minimum number of orders a customer must have placed to be offered this payment method."
 
 msgid "zahlungsart_kreditkarte_min_name"
 msgstr "Minimum order value"
@@ -1848,7 +1836,7 @@ msgid "zahlungsart_rechnung_min_bestellungen_name"
 msgstr "Number of required orders"
 
 msgid "zahlungsart_rechnung_min_bestellungen_desc"
-msgstr "Specify the minimum number of successful orders a customer must have placed to be able to select this payment method."
+msgstr "Specify the minimum number of orders a customer must have placed to be offered this payment method."
 
 msgid "zahlungsart_rechnung_min_name"
 msgstr "Minimum order value"
@@ -1866,7 +1854,7 @@ msgid "zahlungsart_lastschrift_min_bestellungen_name"
 msgstr "Number of required orders"
 
 msgid "zahlungsart_lastschrift_min_bestellungen_desc"
-msgstr "Specify the minimum number of successful orders a customer must have placed to be able to select this payment method."
+msgstr "Specify the minimum number of orders a customer must have placed to be offered this payment method."
 
 msgid "zahlungsart_lastschrift_min_name"
 msgstr "Minimum order value"
@@ -1902,7 +1890,7 @@ msgid "zahlungsart_barzahlung_min_bestellungen_name"
 msgstr "Number of required orders"
 
 msgid "zahlungsart_barzahlung_min_bestellungen_desc"
-msgstr "Specify the minimum number of successful orders a customer must have placed to be able to select this payment method."
+msgstr "Specify the minimum number of orders a customer must have placed to be offered this payment method."
 
 msgid "zahlungsart_barzahlung_min_name"
 msgstr "Minimum order value"
@@ -1938,7 +1926,7 @@ msgid "exportformate_lieferland_name"
 msgstr "Shipping costs for destination country (ISO code)"
 
 msgid "exportformate_lieferland_desc"
-msgstr "The cheapest shipping costs for this ship to country will be calculated automatically. Specify the ISO code, for example DE for Germany."
+msgstr "The cheapest shipping costs for this destination country will be calculated automatically. Specify the ISO code, for example DE for Germany."
 
 msgid "exportformate_quot_name"
 msgstr "Escaping of \""
@@ -1962,7 +1950,7 @@ msgid "kontakt_abfragen_anrede_name"
 msgstr "Prompt title"
 
 msgid "kontakt_abfragen_anrede_desc"
-msgstr "Specify whether to prompt the title. Irrespective of what is specified in this setting, JTL-Shop uses a gender-neutral title in the front end and emails (e.g. \"Hello John Smith\"). The title used in email templates and print templates of JTL-Wawi can be adjusted accordingly."
+msgstr "Specify whether to prompt the title. Irrespective of what is specified in this setting, JTL-Shop uses a gender-neutral title in the front&nbsp;end and emails (e.g. \"Hello John Smith\"). The title used in email templates and print templates of JTL-Wawi can be adjusted accordingly."
 
 msgid "kontakt_abfragen_vorname_name"
 msgstr "Prompt first name"
@@ -2028,7 +2016,7 @@ msgid "rss_titel_name"
 msgstr "RSS feed name"
 
 msgid "rss_titel_desc"
-msgstr "Enables you to enter the name of the RSS feed."
+msgstr "Enter the name of the RSS feed."
 
 msgid "rss_description_name"
 msgstr "RSS feed description"
@@ -2061,22 +2049,22 @@ msgid "rss_artikel_beachten_desc"
 msgstr "Specify whether to display new items in the RSS feed."
 
 msgid "rss_news_beachten_name"
-msgstr "Include news postings in export"
+msgstr "Include blog posts in export"
 
 msgid "rss_news_beachten_desc"
-msgstr "Specify whether to display news postings in the RSS feed."
+msgstr "Specify whether to display blog posts in the RSS feed."
 
 msgid "rss_bewertungen_beachten_name"
 msgstr "Include customer reviews in export"
 
 msgid "rss_bewertungen_beachten_desc"
-msgstr "Specify whether to display newly approved customer reviews in the RSS feed."
+msgstr "Specify whether to display newly activated customer reviews in the RSS feed."
 
 msgid "rss_wawiabgleich_name"
 msgstr "Generate feed with each synchronisation with JTL-Wawi"
 
 msgid "rss_wawiabgleich_desc"
-msgstr "Specify whether to generate a new RSS feed with each synchronisation with JTL-Wawi. Attention: This option can slow down the synchronisation with JTL-Wawi."
+msgstr "Specify whether to generate a new RSS feed with each synchronisation with JTL-Wawi. Caution: This option can slow down the synchronisation with JTL-Wawi."
 
 msgid "preisverlauf_anzeigen_name"
 msgstr "Show price history"
@@ -2100,61 +2088,61 @@ msgid "vergleichsliste_artikelnummer_name"
 msgstr "Displaying priority of SKU"
 
 msgid "vergleichsliste_artikelnummer_desc"
-msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up the field appears. If you select \"0\", the field is not displayed."
+msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up the field appears. Enter 0 if you do not want this field to be displayed."
 
 msgid "vergleichsliste_verfuegbarkeit_name"
-msgstr "Displaying priority of Availability"
+msgstr "Displaying priority of availability"
 
 msgid "vergleichsliste_verfuegbarkeit_desc"
-msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up the field appears. If you select \"0\", the field is not displayed."
+msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up the field appears. Enter 0 if you do not want this field to be displayed."
 
 msgid "vergleichsliste_lieferzeit_name"
-msgstr "Displaying priority of Delivery time"
+msgstr "Displaying priority of delivery time"
 
 msgid "vergleichsliste_lieferzeit_desc"
-msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up the field appears. If you select \"0\", the field is not displayed."
+msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up the field appears. Enter 0 if you do not want this field to be displayed."
 
 msgid "vergleichsliste_hersteller_name"
 msgstr "Displaying priority of Manufacturer"
 
 msgid "vergleichsliste_hersteller_desc"
-msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up the field appears. If you select \"0\", the field is not displayed."
+msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up the field appears. Enter 0 if you do not want this field to be displayed."
 
 msgid "vergleichsliste_kurzbeschreibung_name"
-msgstr "Displaying priority of Brief description"
+msgstr "Displaying priority of brief description"
 
 msgid "vergleichsliste_kurzbeschreibung_desc"
-msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up the field appears. If you select \"0\", the field is not displayed."
+msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up the field appears. Enter 0 if you do not want this field to be displayed."
 
 msgid "vergleichsliste_beschreibung_name"
 msgstr "Displaying priority of description"
 
 msgid "vergleichsliste_beschreibung_desc"
-msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up the field appears. If you select \"0\", the field is not displayed."
+msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up the field appears. Enter 0 if you do not want this field to be displayed."
 
 msgid "vergleichsliste_artikelgewicht_name"
 msgstr "Displaying priority of item weight"
 
 msgid "vergleichsliste_artikelgewicht_desc"
-msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up the field appears. If you select \"0\", the field is not displayed."
+msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up the field appears. Enter 0 if you do not want this field to be displayed."
 
 msgid "vergleichsliste_versandgewicht_name"
 msgstr "Displaying priority of shipping weight"
 
 msgid "vergleichsliste_versandgewicht_desc"
-msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up the field appears. If you select \"0\", the field is not displayed."
+msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up the field appears. Enter 0 if you do not want this field to be displayed."
 
 msgid "vergleichsliste_variationen_name"
 msgstr "Displaying priority of variations"
 
 msgid "vergleichsliste_variationen_desc"
-msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up the field appears. If you select \"0\", the field is not displayed."
+msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up the field appears. Enter 0 if you do not want this field to be displayed."
 
 msgid "vergleichsliste_merkmale_name"
 msgstr "Displaying priority of characteristics"
 
 msgid "vergleichsliste_merkmale_desc"
-msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up the field appears. If you select \"0\", the field is not displayed."
+msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up the field appears. Enter 0 if you do not want this field to be displayed."
 
 msgid "vergleichsliste_spaltengroesse_name"
 msgstr "Column width for item"
@@ -2181,10 +2169,10 @@ msgid "bewertung_anzeigen_desc"
 msgstr "Specify whether the option of giving a review is displayed in the item details."
 
 msgid "bewertung_freischalten_name"
-msgstr "Approve customer reviews"
+msgstr "Activate customer reviews"
 
 msgid "bewertung_freischalten_desc"
-msgstr "Specify whether customer reviews must first be approved before they become visible to your visitors."
+msgstr "Specify whether customer reviews must first be activated before they become visible to your visitors."
 
 msgid "bewertung_anzahlseite_name"
 msgstr "Number of customer reviews per page"
@@ -2202,7 +2190,7 @@ msgid "bewertungserinnerung_nutzen_name"
 msgstr "Use customer review reminder"
 
 msgid "bewertungserinnerung_nutzen_desc"
-msgstr "Specify whether to send an email reminder, encouraging your customers to rate an item after purchase."
+msgstr "Specify whether to send an email reminder, encouraging your customers to rate an item after purchase. Review reminders are only emailed to customers who have consented to receiving newsletters via the double opt-in method. You can set the customer groups for which double opt-in is required in Marketing > Promotions > Newsletter > Settings > \"Double opt-in for the following customers\"."
 
 msgid "bewertungserinnerung_kundengruppen_name"
 msgstr "Allow customer review reminder only for"
@@ -2220,7 +2208,7 @@ msgid "bewertungserinnerung_versandtage_name"
 msgstr "Days after shipping until reminder"
 
 msgid "bewertungserinnerung_versandtage_desc"
-msgstr "Specify the number of days after the order until a reminder to write a customer review is sent to the customer."
+msgstr "Specify how many days after an order the customer receives an email reminder to write a review."
 
 msgid "bewertung_stufe2_anzahlzeichen_name"
 msgstr "Minimum text length for level 2"
@@ -2251,6 +2239,12 @@ msgstr "Allow customer review only for items already purchased"
 
 msgid "bewertung_artikel_gekauft_desc"
 msgstr "Specify whether customers can only rate items that they have purchased themselves."
+
+msgid "newsletter_active_name"
+msgstr "Enable newsletter"
+
+msgid "newsletter_active_desc"
+msgstr "Specify whether to enable the newsletter."
 
 msgid "newsletter_emailmethode_name"
 msgstr "Send emails via"
@@ -2319,10 +2313,10 @@ msgid "newsletter_emailabsender_desc"
 msgstr "Specify what name is to be used as the sender for newsletters."
 
 msgid "newsletter_doubleopt_name"
-msgstr "Enable double opt-in for"
+msgstr "Double opt-in for the following customers"
 
 msgid "newsletter_doubleopt_desc"
-msgstr "Specify whether only unregistered customers must additionally confirm their entry into the subscriber list by clicking on a link in an email or whether this applies to all customers."
+msgstr "Specify whether only unregistered customers must additionally confirm their subscription by clicking on a link in an email or whether this applies to all customers."
 
 msgid "newsletter_sicherheitscode_name"
 msgstr "Enable spam protection"
@@ -2331,10 +2325,10 @@ msgid "newsletter_sicherheitscode_desc"
 msgstr "Specify whether to enable the spam protection for this form. For this purpose, you may have to configure the spam protection of JTL-Shop in the global settings first."
 
 msgid "newsletter_send_delay_name"
-msgstr "Newsletter send delay"
+msgstr "Sending interval (hours)"
 
 msgid "newsletter_send_delay_desc"
-msgstr "Defines the waiting time (in hours) between newsletter broadcasts."
+msgstr "To avoid false identification as spam, newsletters are sent to groups of 100 recipients at a time when there are many subscribers. Here you can specify how many hours there must be between the groups."
 
 msgid "kundenfeld_anzeigen_name"
 msgstr "Show custom form fields"
@@ -2352,22 +2346,22 @@ msgid "allgemein_herstellerfilter_benutzen_name"
 msgstr "Allow filtering by manufacturer"
 
 msgid "allgemein_herstellerfilter_benutzen_desc"
-msgstr "Specify whether to display the manufacturer as a filter option for your customers in the results list under \"Filter by\". This option is not supported by NOVA template. Please select 'Yes, in content area and in navigation box' or 'No' when using NOVA."
+msgstr "Specify whether to display the manufacturer as a filter option for your customers in the results list under \"Filter by\". These options are only partially supported by the NOVA template. Please select \"Yes, in content area and in navigation box\" or \"No\" if you are using NOVA."
 
 msgid "manufacturer_filter_type_name"
-msgstr "Type of manufacturer filter"
+msgstr "Multiple selections for manufacturer filters"
 
 msgid "manufacturer_filter_type_desc"
 msgstr "Specify whether multiple selection of filter values is possible or whether a filter restricts the results to the respective selection."
 
 msgid "allgemein_suchspecialfilter_benutzen_name"
-msgstr "Use filter for special items"
+msgstr "Allow filtering by special items"
 
 msgid "allgemein_suchspecialfilter_benutzen_desc"
-msgstr "Specify whether to display special items (e.g. top items) as a filter option for your customers in the results list under \"Filter by\". This option is not supported by NOVA template. Please select 'Yes, in content area and in navigation box' or 'No' when using NOVA."
+msgstr "Specify whether to display special items (e.g. top items) as a filter option for your customers in the results list under \"Filter by\". These options are only partially supported by the NOVA template. Please select \"Yes, in content area and in navigation box\" or \"No\" if you are using NOVA."
 
 msgid "search_special_filter_type_name"
-msgstr "Special filter type"
+msgstr "Multiple selections for special filters"
 
 msgid "search_special_filter_type_desc"
 msgstr "Specify whether multiple selection of filter values is possible or whether a filter restricts the results to the respective selection."
@@ -2376,7 +2370,13 @@ msgid "allgemein_kategoriefilter_benutzen_name"
 msgstr "Allow filtering by category"
 
 msgid "allgemein_kategoriefilter_benutzen_desc"
-msgstr "Specify whether to display the category as a filter option for your customers in the results list under \"Filter by\". This option is not supported by NOVA template. Please select 'Yes, in content area and in navigation box' or 'No' when using NOVA."
+msgstr "Specify whether to display the category as a filter option for your customers in the results list under \"Filter by\". These options are only partially supported by the NOVA template. Please select \"Yes, in content area and in navigation box\" or \"No\" if you are using NOVA."
+
+msgid "allgemein_availabilityfilter_benutzen_name"
+msgstr "Allow filtering by availability"
+
+msgid "allgemein_availabilityfilter_benutzen_desc"
+msgstr "Specify whether to display the availability as a filter option for your customers in the results list under \"Filter by\". These options are only partially supported by the NOVA template. Please select \"Yes, in content area and in navigation box\" or \"No\" if you are using NOVA."
 
 msgid "kategoriefilter_anzeigen_als_name"
 msgstr "Show category filter as"
@@ -2385,7 +2385,7 @@ msgid "kategoriefilter_anzeigen_als_desc"
 msgstr "Specify how to display categories when the category filter is activated."
 
 msgid "category_filter_type_name"
-msgstr "Category filter type"
+msgstr "Multiple selections for category filters"
 
 msgid "category_filter_type_desc"
 msgstr "Specify whether multiple selection of filter values is possible or whether a filter restricts the results to the respective selection."
@@ -2394,13 +2394,13 @@ msgid "bewertungsfilter_benutzen_name"
 msgstr "Allow filtering by customer review"
 
 msgid "bewertungsfilter_benutzen_desc"
-msgstr "Specify whether it is possible to filter by customer reviews (if present). This option is not supported by NOVA template. Please select 'Yes, in content area and in navigation box' or 'No' when using NOVA."
+msgstr "Specify whether it is possible to filter by customer reviews (if present). These options are only partially supported by the NOVA template. Please select \"Yes, in content area and in navigation box\" or \"No\" if you are using NOVA."
 
 msgid "suchtrefferfilter_nutzen_name"
 msgstr "Allow filtering by search result"
 
 msgid "suchtrefferfilter_nutzen_desc"
-msgstr "Specify whether during a search, customers will see other searches which also match the displayed items. For this purpose, the live search results must be activated."
+msgstr "Specify whether during a search, customers will see other searches which also match the displayed items. For this purpose, the search query results must be activated. These options are only partially supported by the NOVA template. Please select \"Yes, in content area and in navigation box\" or \"No\" if you are using NOVA."
 
 msgid "suchtrefferfilter_anzahl_name"
 msgstr "Number of search results"
@@ -2412,7 +2412,7 @@ msgid "merkmalfilter_verwenden_name"
 msgstr "Allow filtering by characteristics"
 
 msgid "merkmalfilter_verwenden_desc"
-msgstr "Specify whether to display characteristics filters. This option is not supported by NOVA template. Please select 'Yes, in content area and in navigation box' or 'No' when using NOVA."
+msgstr "Specify whether to display characteristics filters. These options are only partially supported by the NOVA template. Please select \"Yes, in content area and in navigation box\" or \"No\" if you are using NOVA."
 
 msgid "merkmal_anzeigen_als_name"
 msgstr "Show characteristics as"
@@ -2436,7 +2436,7 @@ msgid "preisspannenfilter_benutzen_name"
 msgstr "Allow filtering by price range"
 
 msgid "preisspannenfilter_benutzen_desc"
-msgstr "Specify whether your customers are able to filter by specific price ranges when displaying an item list. This option is not supported by NOVA template. Please select 'Yes, in content area and in navigation box' or 'No' when using NOVA."
+msgstr "Specify whether your customers are able to filter by specific price ranges when displaying an item list. These options are only partially supported by the NOVA template. Please select \"Yes, in content area and in navigation box\" or \"No\" if you are using NOVA."
 
 msgid "preisspannenfilter_spannen_ausblenden_name"
 msgstr "Hide empty price ranges"
@@ -2448,7 +2448,7 @@ msgid "preisspannenfilter_anzeige_berechnung_name"
 msgstr "Automatic price range filtering"
 
 msgid "preisspannenfilter_anzeige_berechnung_desc"
-msgstr "Specify whether JTL-Shop selects the displayed price ranges itself (automatically) or whether always previously defined price ranges are to be selected (manually). If you select \"manually\", more fields appear into which you can enter the range of prices."
+msgstr "Specify whether JTL-Shop selects the displayed price ranges itself (automatically) or whether previously defined price ranges are to be selected (manually). If you select \"manually\", more fields appear into which you can enter the range of prices."
 
 msgid "hersteller_bild_anzeigen_name"
 msgstr "Show manufacturer"
@@ -2553,40 +2553,40 @@ msgid "global_meta_maxlaenge_description_desc"
 msgstr "Specify the maximum number of characters that a meta description may have (including spaces)."
 
 msgid "news_benutzen_name"
-msgstr "Use news system"
+msgstr "Use blog"
 
 msgid "news_benutzen_desc"
-msgstr "Specify whether to display the news system in the front end of JTL-Shop."
+msgstr "Specify whether to display the blog in the front end of JTL-Shop."
 
 msgid "news_kommentare_nutzen_name"
-msgstr "Allow comments on news"
+msgstr "Allow comments on blog posts"
 
 msgid "news_kommentare_nutzen_desc"
-msgstr "Specify whether a comment can be added to all news postings."
+msgstr "Specify whether a comment can be added to all blog posts."
 
 msgid "news_anzahl_uebersicht_name"
-msgstr "Number of news postings in overview"
+msgstr "Number of blog posts in overview"
 
 msgid "news_anzahl_uebersicht_desc"
-msgstr "Specify the number of news postings to be displayed in the news overview. For the default setting, enter 0."
+msgstr "Specify the number of blog post to be displayed in the blog overview. For the default setting, enter 0."
 
 msgid "news_anzahl_content_name"
-msgstr "Number of news on homepage"
+msgstr "Number of blog posts on homepage"
 
 msgid "news_anzahl_content_desc"
-msgstr "Specify the number of news postings to be displayed on the start page of your JTL-Shop."
+msgstr "Specify the number of blog posts to be displayed on the start page of your JTL-Shop."
 
 msgid "news_anzahl_box_name"
 msgstr "Number of months in the box"
 
 msgid "news_anzahl_box_desc"
-msgstr "Specify the number of months to be displayed in the \"News (monthly overview)\" box."
+msgstr "Specify the number of months to be displayed in the \"Blog (monthly overview)\" box."
 
 msgid "news_kommentare_freischalten_name"
 msgstr "Activate comments"
 
 msgid "news_kommentare_freischalten_desc"
-msgstr "Specify whether comments must always be approved by you before they are displayed under the news postings."
+msgstr "Specify whether comments must always be activated by you before they are displayed under blog posts."
 
 msgid "news_kommentare_eingeloggt_name"
 msgstr "Allow comments only after login"
@@ -2601,22 +2601,22 @@ msgid "news_kommentare_anzahlproseite_desc"
 msgstr "Specify the maximum number of comments allowed per page."
 
 msgid "news_kommentare_anzahlprobesucher_name"
-msgstr "Maximum number of comments per piece of news"
+msgstr "Maximum number of comments per post"
 
 msgid "news_kommentare_anzahlprobesucher_desc"
-msgstr "Specify the maximum number of comments a user can submit per news posting. 0 means that the number is not limited."
+msgstr "Specify the maximum number of comments a user can add to a blog post. 0 means that there is no limit."
 
 msgid "news_kategorie_unternewsanzeigen_name"
-msgstr "Display categories under news postings"
+msgstr "Show blog categories under blog"
 
 msgid "news_kategorie_unternewsanzeigen_desc"
-msgstr "Specify whether to display the appropriate news categories under a selected news posting."
+msgstr "Specify whether to display the respective blog categories under a selected blog post."
 
 msgid "news_kategorie_boxanzeigen_name"
-msgstr "Display news category in a box"
+msgstr "Display blog category in a box"
 
 msgid "news_kategorie_boxanzeigen_desc"
-msgstr "Specify whether to display a box with an overview of all news categories."
+msgstr "Specify whether to display a box with an overview of all blog categories."
 
 msgid "news_sicherheitscode_name"
 msgstr "Enable spam protection"
@@ -2637,28 +2637,28 @@ msgid "sitemap_kategorien_anzeigen_desc"
 msgstr "Specify whether all category sites should appear in the sitemap."
 
 msgid "sitemap_hersteller_anzeigen_name"
-msgstr "Show manufacturer"
+msgstr "Show manufacturers"
 
 msgid "sitemap_hersteller_anzeigen_desc"
 msgstr "Specify whether all manufacturer pages should appear in the sitemap."
 
 msgid "sitemap_news_anzeigen_name"
-msgstr "Show news"
+msgstr "Show blog"
 
 msgid "sitemap_news_anzeigen_desc"
-msgstr "Specify whether all news pages should appear in the sitemap."
+msgstr "Specify whether all blog pages should appear in the sitemap."
 
 msgid "sitemap_newskategorien_anzeigen_name"
-msgstr "Show news categories"
+msgstr "Show all blog categories"
 
 msgid "sitemap_newskategorien_anzeigen_desc"
-msgstr "Specify whether all news category pages should appear in the sitemap."
+msgstr "Specify whether all blog category pages should appear in the sitemap."
 
 msgid "sitemap_weitereseiten_artikeluebersicht_name"
 msgstr "Include pages of item overviews in sitemap"
 
 msgid "sitemap_weitereseiten_artikeluebersicht_desc"
-msgstr "Specify whether to include the pages of the item overviews (e.g. manufacturers, categories etc.) in the sitemap."
+msgstr "Specify whether to include the pages of the item overviews (e.g. manufacturers, categories, etc.) in the sitemap."
 
 msgid "sitemap_livesuche_anzeigen_name"
 msgstr "Show search queries"
@@ -2685,16 +2685,16 @@ msgid "sitemap_images_manufacturers_desc"
 msgstr "Specify whether all manufacturer images should appear in the sitemap."
 
 msgid "sitemap_images_newscategory_items_name"
-msgstr "Show news category images"
+msgstr "Show blog category images"
 
 msgid "sitemap_images_newscategory_items_desc"
-msgstr "Specify whether all news category images should appear in the sitemap."
+msgstr "Specify whether all blog category images should appear in the sitemap."
 
 msgid "sitemap_images_news_items_name"
-msgstr "Show news posting images"
+msgstr "Show blog post images"
 
 msgid "sitemap_images_news_items_desc"
-msgstr "Specify whether all news posting images should appear in the sitemap."
+msgstr "Specify whether all blog post images should appear in the sitemap."
 
 msgid "sitemap_images_attributes_name"
 msgstr "Show characteristic images"
@@ -2709,7 +2709,7 @@ msgid "sitemap_wawiabgleich_desc"
 msgstr "Specify whether to regenerate the sitemap during each synchronisation with JTL-Wawi."
 
 msgid "sitemap_varkombi_children_export_name"
-msgstr "Export of child items"
+msgstr "Export of child items (parent-child relationships)"
 
 msgid "sitemap_varkombi_children_export_desc"
 msgstr "Specify whether child items are to be included in the export file."
@@ -2738,30 +2738,6 @@ msgstr "Submit sitemap to Google and Bing after export"
 msgid "sitemap_google_ping_desc"
 msgstr "Specify whether a notification is sent to Google and Bing after the files sitemap.xml and sitemap_index.xml have been exported so that they can recrawl the sitemap."
 
-msgid "kwk_nutzen_name"
-msgstr "Activate customer referral programme"
-
-msgid "kwk_nutzen_desc"
-msgstr "Enables you to activate a bonus system for existing customers who invite new customers to register for your JTL-Shop."
-
-msgid "kwk_neukundenguthaben_name"
-msgstr "Initial credit for referred new customers"
-
-msgid "kwk_neukundenguthaben_desc"
-msgstr "Enter the amount of credit that a referred new customer receives after registration."
-
-msgid "kwk_bestandskundenguthaben_name"
-msgstr "Bonus credit for existing referring customers"
-
-msgid "kwk_bestandskundenguthaben_desc"
-msgstr "Enter the amount of credit that an existing customer receives when a new customer they invited to your online shop buys their first item."
-
-msgid "kwk_kundengruppen_name"
-msgstr "Default customer group"
-
-msgid "kwk_kundengruppen_desc"
-msgstr "Specify into which customer group new customers are sorted who have been newly referred."
-
 msgid "suchspecials_sortierung_bestseller_name"
 msgstr "Sorting of bestsellers"
 
@@ -2778,7 +2754,7 @@ msgid "suchspecials_sortierung_neuimsortiment_name"
 msgstr "Sorting of \"New in product range\" items"
 
 msgid "suchspecials_sortierung_neuimsortiment_desc"
-msgstr "Specify the default sorting for items with the identifier \"New in product range\"."
+msgstr "Specify the default sorting for items with the identifier \"New in product range\""
 
 msgid "suchspecials_sortierung_topangebote_name"
 msgstr "Sorting for top items"
@@ -2808,7 +2784,7 @@ msgid "auswahlassistent_anzeigeformat_name"
 msgstr "Displaying format for answers"
 
 msgid "auswahlassistent_anzeigeformat_desc"
-msgstr "Specify how to display the characteristics options. In order that images can be displayed, these images must be stored in the characteristics in JTL-Wawi."
+msgstr "Specify how to display possible answers. In order that images can be displayed, these images must be stored in the characteristics in JTL-Wawi."
 
 msgid "auswahlassistent_allefragen_name"
 msgstr "Show all questions directly"
@@ -2836,45 +2812,6 @@ msgstr "Specify the value by which the consecutive number is increased when good
 
 msgid "rma_number_startvalue_name"
 msgstr "Start value for consecutive number"
-
-msgid "rma_number_startvalue_desc"
-msgstr "Specify at which value the consecutive number starts."
-
-msgid "rma_receiver_head_name"
-msgstr "Address of recipient for goods return"
-
-msgid "rma_receiver_head_desc"
-msgstr ""
-
-msgid "rma_receiver_email_name"
-msgstr "Email address of recipient"
-
-msgid "rma_receiver_email_desc"
-msgstr "Specify the email address to which information on the goods return is to be sent."
-
-msgid "rma_receiver_name_name"
-msgstr "Name of recipient"
-
-msgid "rma_receiver_name_desc"
-msgstr "Enter the name of the recipient."
-
-msgid "rma_receiver_name_extra_name"
-msgstr "Name 2 of recipient"
-
-msgid "rma_receiver_name_extra_desc"
-msgstr "Enter name 2 of the recipient."
-
-msgid "rma_receiver_street_name"
-msgstr "Street name and street number of the recipient."
-
-msgid "rma_receiver_street_desc"
-msgstr "Enter the street name and street number of the recipient."
-
-msgid "rma_receiver_town_name"
-msgstr "City of recipient"
-
-msgid "rma_receiver_town_desc"
-msgstr "Enter the name of the city in which the recipient is located."
 
 msgid "caching_types_disabled_name"
 msgstr "caching_types_disabled"
@@ -2937,7 +2874,7 @@ msgid "caching_memcache_host_desc"
 msgstr "If you have selected the Memcache(d) method, define the host here."
 
 msgid "caching_lifetime_name"
-msgstr "Life time"
+msgstr "Lifetime"
 
 msgid "caching_lifetime_desc"
 msgstr "Specify how many seconds data is saved in the cache."
@@ -2967,10 +2904,10 @@ msgid "caching_rediscluster_strategy_desc"
 msgstr "Strategy"
 
 msgid "compile_check_name"
-msgstr "Enable compile check"
+msgstr "Enable Compile check"
 
 msgid "compile_check_desc"
-msgstr "This enables the compile check. Changes to templates do not become visible when the compile check is disabled."
+msgstr "Enable the Compile Check here. Changes to templates do not become visible with disabled Compile Check."
 
 msgid "shop_logo_name"
 msgstr "shop_logo"
@@ -2994,16 +2931,16 @@ msgid "ftp_ssl_name"
 msgstr "Encrypted (SSL)"
 
 msgid "ftp_path_name"
-msgstr "Path to shop"
+msgstr "Path to online shop"
 
 msgid "sftp_hostname_name"
-msgstr "Hostname"
+msgstr "Host name"
 
 msgid "sftp_port_name"
 msgstr "Port"
 
 msgid "sftp_user_name"
-msgstr "Username"
+msgstr "User name"
 
 msgid "sftp_pass_name"
 msgstr "Password"
@@ -3012,7 +2949,7 @@ msgid "sftp_privkey_name"
 msgstr "Private key path"
 
 msgid "sftp_path_name"
-msgstr "Path to shop"
+msgstr "Path to online shop"
 
 msgid "fs_timeout_name"
 msgstr "Timeout (seconds)"
@@ -3039,20 +2976,25 @@ msgid "cron_freq_name"
 msgstr "Start server-to-server with every Xth call"
 
 msgid "cron_type_desc"
-msgstr "Which method should be used?"
+msgstr "Specifies whether a Pseudo Cron Method  is activated."
 
 msgid "cron_freq_desc"
 msgstr "Starts Pseudo Cron with every Xth call of the page"
 
 msgid "hersteller_anzeigen_als_name"
-msgstr "Show manufacturers as"
+msgstr "Display manufacturers as"
 
 msgid "hersteller_anzeigen_als_desc"
-msgstr "Specify how to display the manufacturers."
+msgstr "Specify how manufacturers are to be displayed."
 
 msgid "general_child_item_bulk_pricing_name"
 msgstr "Scale prices across variations"
 
 msgid "general_child_item_bulk_pricing_desc"
-msgstr "Scale prices across variations"
+msgstr "All child items of an item are taken into account for the calculation of scale prices in the basket."
 
+msgid "gtin_display_name"
+msgstr "Show GTIN"
+
+msgid "gtin_display_desc"
+msgstr "Specify whether to show the GTIN."

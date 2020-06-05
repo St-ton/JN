@@ -314,7 +314,7 @@
                         <hr class="mb-3">
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right">
-                                {__('shippingPrice')} {__('amount')}:
+                                {__('amount')}:
                             </label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <input type="text" id="fPreisNetto" name="fPreis" value="{if isset($Versandart->fPreis)}{$Versandart->fPreis}{/if}" class="form-control price_large">{* onKeyUp="setzePreisAjax(false, 'ajaxfPreisNetto', this)" /> <span id="ajaxfPreisNetto"></span>*}
@@ -451,7 +451,7 @@
                 </div>
                 <div class="card">
                     <div class="card-header">
-                        <div class="subheading1">{__('acceptedPaymentMethods')}</div>
+                        <div class="subheading1">{__('acceptedPaymentMethods')} {getHelpDesc cDesc=__('acceptedPaymentMethodsDesc')}</div>
                         <hr class="mb-n3">
                     </div>
                     <div class="card-body">

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='header'}
     {include file='layout/header.tpl'}
 {/block}
@@ -17,7 +13,7 @@
             {$alertList->displayAlertByKey('productNotBuyed')}
             {$alertList->displayAlertByKey('loginFirst')}
             {if $ratingAllowed}
-                <div class="alert alert-info">{lang key='shareYourRatingGuidelines' section='product rating'}.</div>
+                <div class="alert alert-info">{lang key='shareYourRatingGuidelines' section='product rating'}</div>
                 <div class="vmiddle">
                     {if !empty($Artikel->Bilder[0]->cPfadMini)}
                         <img src="{$Artikel->Bilder[0]->cURLMini}" class="image vmiddle" />

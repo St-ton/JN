@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {if !empty($Bestellung->oDownload_arr)}
     <h2>{lang key='yourDownloads'}</h2>
     <div class="panel-group" role="tablist">
@@ -22,13 +18,17 @@
                      aria-labelledby="download-{$oDownload@iteration}">
                     <div class="panel-body">
                         <dl>
+                            <dt>{lang key='downloadOrderDate'}</dt>
+                            <dd class="bottom17">{if isset($Bestellung->dErstellt)}{$Bestellung->dErstellt|date_format:"%d.%m.%Y %H:%M"}{else}--{/if}</dd>
                             <dt>{lang key='downloadLimit'}</dt>
                             <dd class="bottom17">{if isset($oDownload->cLimit)}{$oDownload->cLimit}{else}{lang key='unlimited'}{/if}</dd>
                             <dt>{lang key='validUntil'}</dt>
                             <dd class="bottom17">{if isset($oDownload->dGueltigBis)}{$oDownload->dGueltigBis}{else}{lang key='unlimited'}{/if}</dd>
                             <dt>{lang key='download'}</dt>
                             <dd class="bottom17">
-                                {if $Bestellung->cStatus == $smarty.const.BESTELLUNG_STATUS_BEZAHLT || $Bestellung->cStatus == $smarty.const.BESTELLUNG_STATUS_VERSANDT}
+                                {if $Bestellung->cStatus == $smarty.const.BESTELLUNG_STATUS_BEZAHLT
+                                || $Bestellung->cStatus == $smarty.const.BESTELLUNG_STATUS_VERSANDT
+                                || $Bestellung->cStatus == $smarty.const.BESTELLUNG_STATUS_TEILVERSANDT}
                                     <form method="post" action="{get_static_route id='jtl.php'}">
                                         {$jtl_token}
                                         <input name="a" type="hidden" value="getdl" />
@@ -68,6 +68,15 @@
                      aria-labelledby="download-{$oDownload@iteration}">
                     <div class="panel-body">
                         <dl>
+                            {assign var=cStatus value=$smarty.const.BESTELLUNG_STATUS_OFFEN}
+                            {foreach $Bestellungen as $Bestellung}
+                                {if $Bestellung->kBestellung == $oDownload->kBestellung}
+                                    {assign var=cStatus value=$Bestellung->cStatus}
+                                    {assign var=dErstellt value=$Bestellung->dErstellt}
+                                {/if}
+                            {/foreach}
+                            <dt>{lang key='downloadOrderDate'}</dt>
+                            <dd class="bottom17">{if isset($dErstellt)}{$dErstellt|date_format:"%d.%m.%Y %H:%M"}{else}--{/if}</dd>
                             <dt>{lang key='downloadLimit'}</dt>
                             <dd class="bottom17">{if isset($oDownload->cLimit)}{$oDownload->cLimit}{else}{lang key='unlimited'}{/if}</dd>
                             <dt>{lang key='validUntil'}</dt>
@@ -78,13 +87,9 @@
                                     {$jtl_token}
                                     <input name="kBestellung" type="hidden" value="{$oDownload->kBestellung}"/>
                                     <input name="kKunde" type="hidden" value="{$smarty.session.Kunde->kKunde}"/>
-                                    {assign var=cStatus value=$smarty.const.BESTELLUNG_STATUS_OFFEN}
-                                    {foreach $Bestellungen as $Bestellung}
-                                        {if $Bestellung->kBestellung == $oDownload->kBestellung}
-                                            {assign var=cStatus value=$Bestellung->cStatus}
-                                        {/if}
-                                    {/foreach}
-                                    {if $cStatus == $smarty.const.BESTELLUNG_STATUS_BEZAHLT || $cStatus == $smarty.const.BESTELLUNG_STATUS_VERSANDT}
+                                    {if $cStatus == $smarty.const.BESTELLUNG_STATUS_BEZAHLT
+                                    || $cStatus == $smarty.const.BESTELLUNG_STATUS_VERSANDT
+                                    || $cStatus == $smarty.const.BESTELLUNG_STATUS_TEILVERSANDT}
                                         <input name="dl" type="hidden" value="{$oDownload->getDownload()}"/>
                                         <button class="btn btn-default btn-xs" type="submit">
                                             <i class="fa fa-download"></i> {lang key='download'}

@@ -1,13 +1,10 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\OPC;
 
 use Exception;
 use JTL\Backend\AdminIO;
+use JTL\DB\DbInterface;
 use JTL\Filter\AbstractFilter;
 use JTL\Filter\Config;
 use JTL\Filter\Items\Characteristic;
@@ -32,7 +29,7 @@ class Service
     protected $adminName = '';
 
     /**
-     * @var DB
+     * @var DbInterface
      */
     protected $db;
 
@@ -44,6 +41,7 @@ class Service
     /**
      * Service constructor.
      * @param DB $db
+     * @throws Exception
      */
     public function __construct(DB $db)
     {
@@ -79,9 +77,9 @@ class Service
     /**
      * @return string[]
      */
-    public function getEditorMessageNames(): array
+    public function getEditorMessages(): array
     {
-        return [
+        $messageNames = [
             'opcImportSuccessTitle',
             'opcImportSuccess',
             'opcImportUnmappedS',
@@ -90,7 +88,22 @@ class Service
             'offscreenAreasDivider',
             'yesDeleteArea',
             'Cancel',
+            'opcPageLocked',
+            'dbUpdateNeeded',
         ];
+
+        foreach ([13,14,7] as $i => $stepcount) {
+            for ($j = 0; $j < $stepcount; $j++) {
+                $messageNames[] = 'tutStepTitle_' . $i . '_' . $j;
+                $messageNames[] = 'tutStepText_' . $i . '_' . $j;
+            }
+        }
+
+        foreach ($messageNames as $name) {
+            $messages[$name] = __($name);
+        }
+
+        return $messages;
     }
 
     /**
@@ -306,6 +319,15 @@ class Service
 
     /**
      * @return bool
+     * @throws Exception
+     */
+    public function shopHasUpdates(): bool
+    {
+        return $this->db->shopHasUpdates();
+    }
+
+    /**
+     * @return bool
      */
     public function isPreviewMode(): bool
     {
@@ -373,8 +395,6 @@ class Service
             $options = [];
 
             if ($class === Characteristic::class) {
-                $name = 'Merkmale';
-
                 foreach ($availableFilter->getOptions() as $option) {
                     foreach ($option->getOptions() as $suboption) {
                         /** @var Option $suboption */

@@ -3,22 +3,16 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "boxen"
-msgstr "Boxes"
+msgstr "Footers/Boxes"
 
 msgid "boxenURL"
 msgstr "https://jtl-url.de/li846"
 
 msgid "boxenDesc"
-msgstr "Here you can add boxes to different box containers or remove them. You can specify for each container on which pages it should be visible. Whether a specific container is available or not is determined by the template. You can create customised boxes, e.g. link groups or boxes with an individual xHTML content, in a box container. Some boxes can also be further configured via the Edit button."
+msgstr "Here you can create and edit boxes for different box containers and manage the footer. You can specify for each container on which pages it should be visible. Depending on the template used, different containers are available. Some boxes can also be further configured via the Edit button."
 
 msgid "showContainer"
-msgstr "Show container"
-
-msgid "deactivateOnAnyPage"
-msgstr "Deactivate %s on every page"
-
-msgid "activateOnAnyPage"
-msgstr "Activate %s on every page"
+msgstr "Activate container"
 
 msgid "boxTitle"
 msgstr "Name"
@@ -59,9 +53,6 @@ msgstr "New container"
 msgid "pleaseSelect"
 msgstr "Please select"
 
-msgid "resort"
-msgstr "Sort"
-
 msgid "noTemplateConfig"
 msgstr "Could not find configuration file (template.xml)."
 
@@ -79,9 +70,6 @@ msgstr "Currently there are no boxes available for \"%s\"."
 
 msgid "showBoxOnlyFor"
 msgstr "Show box \"%s\" only for:"
-
-msgid "visibleOnPages"
-msgstr "Visible on the following pages"
 
 msgid "invisibleBoxes"
 msgstr "Invisible boxes"
@@ -126,13 +114,13 @@ msgid "errorBoxEdit"
 msgstr "Could not edit box."
 
 msgid "successBoxRefresh"
-msgstr "The boxes were updated."
+msgstr "Boxes updated successfully."
 
 msgid "visibleOnAllPages"
 msgstr "visible on all pages"
 
 msgid "visibleOnSomePages"
-msgstr "visible on some pages"
+msgstr "visible on all selected pages"
 
 msgid "deactivatedOnAllPages"
 msgstr "deactivated on all pages"
@@ -141,7 +129,7 @@ msgid "warningChangesForAllPages"
 msgstr "The selection \"All pages\" overwrites existing changes to the boxes that were performed for individual pages beforehand."
 
 msgid "errorBoxesVisibilityEdit"
-msgstr "Could not set box visibility due to a MySQL error. Please contact the JTL Support team."
+msgstr "Could not set box visibility due to a MySQL error. Please contact the Support team."
 
 #box name
 msgid "Bestseller"
@@ -177,11 +165,11 @@ msgstr "New in product range"
 
 #box name
 msgid "News Kategorien"
-msgstr "News: categories of the news system"
+msgstr "Blog: blog categories"
 
 #box name
 msgid "News (Monatsübersicht)"
-msgstr "News: months with news postings"
+msgstr "Blog: months with blog posts"
 
 #box name
 msgid "Schnellkauf"
@@ -241,7 +229,7 @@ msgstr "Filter (search)"
 
 #box name
 msgid "Filter (Suchspecial)"
-msgstr "Filter (item overlay)"
+msgstr "Filter (item badge)"
 
 #box name
 msgid "Eigene Box (Ohne Rahmen)"
@@ -249,11 +237,8 @@ msgstr "Custom box (without frame)"
 
 #box name
 msgid "Eigene Box (Mit Rahmen)"
-msgstr "Custom shipping box (with frame)"
+msgstr "Custom box (with frame)"
 
-#box name
-msgid "Tagwolke"
-msgstr "Tag cloud"
 
 #box name
 msgid "Konfigurator"
@@ -266,10 +251,6 @@ msgstr "Filter (manufacturer)"
 #box name
 msgid "Filter (Kategorie)"
 msgstr "Filter (category)"
-
-#box name
-msgid "Trusted Shops - Reviews"
-msgstr "Trusted Shops – Reviews"
 
 msgid "templateTypeTemplate"
 msgstr "Template"
@@ -287,4 +268,4 @@ msgid "templateTypeCategory"
 msgstr "Category"
 
 msgid "templateTypeExtension"
-msgstr "Extension"
+msgstr "Plug-in"

@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='account-index'}
     {block name='include-header'}
         {include file='layout/header.tpl'}
@@ -30,15 +26,15 @@
                     };
                     eModal.confirm(options).then(
                         function() {
-                            window.location = "{get_static_route id='bestellvorgang.php'}?basket2Pers=1"
+                            window.location = "{get_static_route id='bestellvorgang.php'}?basket2Pers=1&token={$smarty.session.jtl_token}"
                         }
                     );
                 </script>{/inline_script}
             {/block}
         {/if}
 
-        {opcMountPoint id='opc_before_account'}
         {container}
+            {opcMountPoint id='opc_before_account'}
             {row id="account"}
                 {col cols=12}
                     {if $step === 'login'}

@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Review;
 
@@ -13,12 +9,13 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Customer\Customer;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTLSmarty;
+use JTL\Smarty\JTLSmarty;
 
 /**
  * Class ReviewController
@@ -51,6 +48,18 @@ class ReviewController extends BaseController
      */
     public function handleRequest()
     {
+        if (!Form::validateToken()) {
+            Shop::Container()->getAlertService()->addAlert(
+                Alert::TYPE_WARNING,
+                Shop::Lang()->get('invalidToken'),
+                'invalidToken',
+                [
+                    'saveInSession' => true,
+                ]
+            );
+
+            return false;
+        }
         $this->checkRedirect();
         $params   = Shop::getParameters();
         $customer = Frontend::getCustomer();
@@ -306,7 +315,7 @@ class ReviewController extends BaseController
         /** @var $helpfulReview ReviewHelpfulModel */
         $baseURL = $this->getProductURL($productID) . 'bewertung_anzeigen=1&btgseite=' . $page . '&btgsterne=' . $stars;
         // Hat der Kunde für diese Bewertung noch keine hilfreich flag gesetzt?
-        if ($helpfulReview->getId() === null) {
+        if ($helpfulReview->getId() === 0) {
             $helpfulReview->setReviewID($reviewID);
             $helpfulReview->setCustomerID($customerID);
             $helpfulReview->setRating(0);
@@ -325,8 +334,10 @@ class ReviewController extends BaseController
 
             $helpfulReview->save();
             $this->cache->flushTags([\CACHING_GROUP_ARTICLE . '_' . $review->getProductID()]);
-            \header('Location: ' . $baseURL . '&cHinweis=h02', true, 303);
-            exit;
+            if (!Request::isAjaxRequest()) {
+                \header('Location: ' . $baseURL . '&cHinweis=h02', true, 303);
+                exit;
+            }
         }
         // Wenn Hilfreich nicht neu (wechsel) für eine Bewertung eingetragen wird und diese positiv ist
         if ($helpful === 1 && $helpfulReview->getRating() !== $helpful) {
@@ -344,7 +355,9 @@ class ReviewController extends BaseController
         $helpfulReview->customerID = $customerID;
         $helpfulReview->save();
         $this->cache->flushTags([\CACHING_GROUP_ARTICLE . '_' . $review->getProductID()]);
-        \header('Location: ' . $baseURL . '&cHinweis=h03', true, 303);
-        exit;
+        if (!Request::isAjaxRequest()) {
+            \header('Location: ' . $baseURL . '&cHinweis=h03', true, 303);
+            exit;
+        }
     }
 }

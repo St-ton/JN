@@ -1,7 +1,3 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='snippets-maintenance'}
     {block name='snippets-maintenance-include-header'}
         {include file='layout/header.tpl'}
@@ -19,11 +15,9 @@
                 </p>
             {/card}
         {/modal}
-        {inline_script}
-            <script>
+        {inline_script}<script>
                 $('#maintenance').modal('show');
-            </script>
-        {/inline_script}
+        </script>{/inline_script}
     {/block}
 
     {block name='snippets-maintenance-include-footer'}

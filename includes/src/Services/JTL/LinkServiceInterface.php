@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Services\JTL;
 
@@ -88,26 +84,27 @@ interface LinkServiceInterface
 
     /**
      * @former gibLinkKeySpecialSeite()
-     * @param int $nLinkart
+     * @param int $linkType
      * @return LinkInterface|null
      */
-    public function getSpecialPage(int $nLinkart): ?LinkInterface;
+    public function getSpecialPage(int $linkType): ?LinkInterface;
 
     /**
      * @former gibLinkKeySpecialSeite()
-     * @param int $nLinkart
+     * @param int $linkType
+     * @param bool $fallback
      * @return int|bool
      */
-    public function getSpecialPageID(int $nLinkart);
+    public function getSpecialPageID(int $linkType, bool $fallback = true);
 
     /**
      * for compatability only
      *
      * @former gibLinkKeySpecialSeite()
-     * @param int $nLinkart
+     * @param int $linkType
      * @return int|bool
      */
-    public function getSpecialPageLinkKey(int $nLinkart);
+    public function getSpecialPageLinkKey(int $linkType);
 
     /**
      * @param string $name

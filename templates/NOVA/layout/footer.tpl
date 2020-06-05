@@ -1,8 +1,40 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='layout-footer'}
+    {block name='layout-footer-consent-manager'}
+        {include file='snippets/consent_manager.tpl'}
+        {inline_script}
+            <script>
+                const CM = new ConsentManager({
+                    version: 1
+                });
+                var trigger = document.querySelectorAll('.trigger')
+                var triggerCall = function(e) {
+                    e.preventDefault();
+                    let type = e.target.dataset.consent;
+                    if (CM.getSettings(type) === false) {
+                        CM.openConfirmationModal(type, function() {
+                            let data = CM._getLocalData();
+                            if (data === null ) {
+                                data = { settings: {} };
+                            }
+                            data.settings[type] = true;
+                            document.dispatchEvent(new CustomEvent('consent.updated', { detail: data.settings }));
+                        });
+                    }
+                }
+                for(let i = 0; i < trigger.length; ++i) {
+                    trigger[i].addEventListener('click', triggerCall)
+                }
+                document.addEventListener('consent.updated', function(e) {
+                    $.post('{$ShopURLSSL}/', {
+                            'action': 'updateconsent',
+                            'jtl_token': '{$smarty.session.jtl_token}',
+                            'data': e.detail
+                        }
+                    );
+                });
+            </script>
+        {/inline_script}
+    {/block}
     {block name='layout-footer-content-all-closingtags'}
 
         {block name='layout-footer-aside'}
@@ -17,7 +49,7 @@
                     </div>{* /col *}
                 {/block}
                 {block name='layout-footer-sidepanel-left'}
-                    <aside id="sidepanel_left" class="d-print-none col-12 col-lg-4 col-xl-3 order-lg-0 pr-lg-5 pr-xl-7">
+                    <aside id="sidepanel_left" class="d-print-none col-12 col-lg-4 col-xl-3 order-lg-0 pr-lg-5 pr-xl-7 dropdown-full-width">
                         {block name='footer-sidepanel-left-content'}{$boxes.left}{/block}
                     </aside>
                 {/block}
@@ -28,7 +60,7 @@
         {/block}
 
         {block name='layout-footer-content-closingtag'}
-            {opcMountPoint id='opc_content' title='Default Area'}
+            {opcMountPoint id='opc_content' title='Default Area' inContainer=false}
             </div>{* /content *}
         {/block}
 
@@ -43,9 +75,11 @@
 
     {block name='layout-footer-content'}
         {if !$bExclusive}
+            {$newsletterActive = $Einstellungen.template.footer.newsletter_footer === 'Y'
+                && $Einstellungen.newsletter.newsletter_active === 'Y'}
             <footer id="footer">
                 {container class="d-print-none pt-4"}
-                    {if $Einstellungen.template.footer.newsletter_footer === 'Y'}
+                    {if $newsletterActive}
                         {block name='layout-footer-newsletter'}
                             {row class="newsletter-footer" class="text-center text-md-left align-items-center"}
                                 {col cols=12 lg=6}
@@ -56,7 +90,7 @@
                                     {/block}
                                     {block name='layout-footer-newsletter-info'}
                                         <p class="info">
-                                            {lang key='unsubscribeAnytime' section='newsletter'}
+                                            {lang key='unsubscribeAnytime' section='newsletter' printf=$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL()}
                                         </p>
                                     {/block}
                                 {/col}
@@ -76,6 +110,11 @@
                                                     {/inputgroup}
                                                 {/formgroup}
                                             {/block}
+                                            {block name='layout-footer-form-captcha'}
+                                                <div class="d-none form-group{if !empty($plausiArr.captcha) && $plausiArr.captcha === true} has-error{/if}">
+                                                    {captchaMarkup getBody=true}
+                                                </div>
+                                            {/block}
                                         {/form}
                                     {/block}
                                 {/col}
@@ -86,7 +125,7 @@
                     {block name='layout-footer-boxes'}
                         {getBoxesByPosition position='bottom' assign='footerBoxes'}
                         {if isset($footerBoxes) && count($footerBoxes) > 0}
-                            {row id='footer-boxes' class='mt-4 mt-lg-7'}
+                            {row id='footer-boxes' class="{if $newsletterActive}mt-4 mt-lg-7{/if}"}
                                 {foreach $footerBoxes as $box}
                                     {col cols=12 sm=6 md=3}
                                         {$box->getRenderedContent()}
@@ -97,7 +136,7 @@
                     {/block}
 
                     {block name='layout-footer-additional'}
-                        {if $Einstellungen.template.footer.socialmedia_footer === 'Y' || $Einstellungen.template.footer.newsletter_footer === 'Y'}
+                        {if $Einstellungen.template.footer.socialmedia_footer === 'Y'}
                             {row class="mb-3 mt-5"}
                             {if $Einstellungen.template.footer.socialmedia_footer === 'Y'}
                                 {block name='layout-footer-socialmedia'}
@@ -215,7 +254,7 @@
                                     {/if}
                                 {/col}
                                 {if !$isBrandFree}
-                                    {col class="col-auto ml-auto" id="system-credits"}
+                                    {col class="col-auto ml-auto{if $Einstellungen.template.theme.button_scroll_top === 'Y'} pr-8{/if}" id="system-credits"}
                                         Powered by {link href="https://jtl-url.de/jtlshop" class="text-white text-decoration-underline" title="JTL-Shop" target="_blank" rel="noopener nofollow"}JTL-Shop{/link}
                                     {/col}
                                 {/if}
@@ -223,10 +262,18 @@
                         {/container}
                     </div>
                 {/block}
+                {block name='layout-footer-scroll-top'}
+                    {if $Einstellungen.template.theme.button_scroll_top === 'Y'}
+                        {include file='snippets/scroll_top.tpl'}
+                    {/if}
+                {/block}
             </footer>
         {/if}
     {/block}
 
+    {block name='layout-footer-io-path'}
+        <div id="jtl-io-path" data-path="{$ShopURL}" class="d-none"></div>
+    {/block}
 
     {* JavaScripts *}
     {block name='layout-footer-js'}

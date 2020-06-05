@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 use JTL\Alert\Alert;
 use JTL\DB\ReturnType;
@@ -24,6 +20,7 @@ if (Request::postInt('zuruecksetzen') === 1 && Form::validateToken()) {
             switch ($option) {
                 // JTL-Wawi Inhalte
                 case 'artikel':
+                    $db->query('SET FOREIGN_KEY_CHECKS = 0;', ReturnType::DEFAULT);
                     $db->query('TRUNCATE tartikel', ReturnType::DEFAULT);
                     $db->query('TRUNCATE tartikelabnahme', ReturnType::DEFAULT);
                     $db->query('TRUNCATE tartikelattribut', ReturnType::DEFAULT);
@@ -85,6 +82,7 @@ if (Request::postInt('zuruecksetzen') === 1 && Form::validateToken()) {
                     $db->query('TRUNCATE tuploadschemasprache', ReturnType::DEFAULT);
                     $db->query('TRUNCATE tmasseinheit', ReturnType::DEFAULT);
                     $db->query('TRUNCATE tmasseinheitsprache', ReturnType::DEFAULT);
+                    $db->query('SET FOREIGN_KEY_CHECKS = 1;', ReturnType::DEFAULT);
 
                     $db->query(
                         "DELETE FROM tseo
@@ -181,7 +179,6 @@ if (Request::postInt('zuruecksetzen') === 1 && Form::validateToken()) {
                     $db->query('TRUNCATE tkundenfeldwert', ReturnType::DEFAULT);
                     $db->query('TRUNCATE tkundenherkunft', ReturnType::DEFAULT);
                     $db->query('TRUNCATE tkundenkontodaten', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE tkundenwerbenkunden', ReturnType::DEFAULT);
                     $db->query('TRUNCATE tlieferadresse', ReturnType::DEFAULT);
                     $db->query('TRUNCATE twarenkorbpers', ReturnType::DEFAULT);
                     $db->query('TRUNCATE twarenkorbperspos', ReturnType::DEFAULT);
@@ -189,10 +186,6 @@ if (Request::postInt('zuruecksetzen') === 1 && Form::validateToken()) {
                     $db->query('TRUNCATE twunschliste', ReturnType::DEFAULT);
                     $db->query('TRUNCATE twunschlistepos', ReturnType::DEFAULT);
                     $db->query('TRUNCATE twunschlisteposeigenschaft', ReturnType::DEFAULT);
-                    break;
-                case 'kwerbenk':
-                    $db->query('TRUNCATE tkundenwerbenkunden', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE tkundenwerbenkundenbonus', ReturnType::DEFAULT);
                     break;
                 case 'bestellungen':
                     $db->query('TRUNCATE tbestellid', ReturnType::DEFAULT);

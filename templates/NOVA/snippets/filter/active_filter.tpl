@@ -1,13 +1,6 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license https://jtl-url.de/jtlshoplicense
- *}
 {block name='snippets-filter-active-filter'}
 {if $NaviFilter->getFilterCount() > 0}
     {block name='snippets-filter-active-filter-content'}
-        {block name='snippets-filter-active-filter-clearfix'}
-            <div class="clearfix mt-2"></div>
-        {/block}
         <div class="active-filters">
             {foreach $NaviFilter->getActiveFilters() as $activeFilter}
                 {assign var=activeFilterValue value=$activeFilter->getValue()}

@@ -1,8 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\OPC\Portlets\Video;
 
@@ -38,26 +34,27 @@ class Video extends Portlet
                 'label'      => __('cssClass'),
                 'width'      => 50,
             ],
+            'video-width'       => [
+                'type'       => InputType::NUMBER,
+                'label'      => __('widthPx'),
+                'default'    => 600,
+                'width'      => 33,
+            ],
+            'video-height'      => [
+                'type'       => InputType::NUMBER,
+                'label'      => __('heightPx'),
+                'default'    => 338,
+                'width'      => 33,
+            ],
             'video-responsive'  => [
                 'type'    => InputType::RADIO,
                 'label'   => __('embedResponsive'),
                 'default' => true,
                 'options' => [
-                    false => __('no'),
                     true  => __('yes'),
+                    false => __('no'),
                 ],
-            ],
-            'video-width'       => [
-                'type'       => InputType::NUMBER,
-                'label'      => __('width'),
-                'default'    => 600,
-                'width'      => 50,
-            ],
-            'video-height'      => [
-                'type'       => InputType::NUMBER,
-                'label'      => __('height'),
-                'default'    => 338,
-                'width'      => 50,
+                'width'      => 33,
             ],
             'video-vendor'      => [
                 'label'   => __('source'),
@@ -82,12 +79,12 @@ class Video extends Portlet
                             'help'    => __('videoIDHelpYoutube'),
                         ],
                         'video-yt-start'    => [
-                            'label'      => __('start'),
+                            'label'      => __('startSec'),
                             'type'       => InputType::NUMBER,
                             'width'      => 50,
                         ],
                         'video-yt-end'      => [
-                            'label'      => __('end'),
+                            'label'      => __('endSec'),
                             'type'       => InputType::NUMBER,
                             'width'      => 50,
                         ],
@@ -100,7 +97,7 @@ class Video extends Portlet
                                 '0' => __('no'),
                             ],
                             'default'    => '1',
-                            'width'      => 50,
+                            'width'      => 33,
                         ],
                         'video-yt-rel'      => [
                             'label'      => __('showSimilarVideos'),
@@ -111,7 +108,7 @@ class Video extends Portlet
                                 '0' => __('no'),
                             ],
                             'default'    => '0',
-                            'width'      => 50,
+                            'width'      => 33,
                         ],
                         'video-yt-color'    => [
                             'label'        => __('color'),
@@ -122,8 +119,9 @@ class Video extends Portlet
                                 'red'   => __('red'),
                             ],
                             'default'      => 'white',
-                            'width'        => 50,
+                            'width'        => 33,
                             'color-format' => '#',
+                            'desc'         => __('colorYtDesc'),
                         ],
                         'video-yt-playlist' => [
                             'label'              => __('playlist'),

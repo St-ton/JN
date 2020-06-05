@@ -1,12 +1,9 @@
 <?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license       http://jtl-url.de/jtlshoplicense
- */
 
 namespace JTL\Update;
 
 use Exception;
+use JTL\DB\ReturnType;
 use stdClass;
 
 /**
@@ -93,10 +90,29 @@ trait MigrationTableTrait
 
     /**
      * @param string $key
+     * @param string|null $section
      */
-    public function removeLocalization($key): void
+    public function removeLocalization($key, $section = null): void
     {
-        $this->execute("DELETE FROM tsprachwerte WHERE cName = '{$key}'");
+        if ($section) {
+            $this->getDB()->queryPrepared(
+                'DELETE tsprachwerte
+                    FROM tsprachwerte
+                    INNER JOIN tsprachsektion USING(kSprachsektion)
+                    WHERE tsprachwerte.cName = :langKey AND tsprachsektion.cName = :langSection',
+                [
+                    'langKey'     => $key,
+                    'langSection' => $section
+                ],
+                ReturnType::DEFAULT
+            );
+        } else {
+            $this->getDB()->queryPrepared(
+                'DELETE FROM tsprachwerte WHERE cName = :langKey',
+                ['langKey' => $key],
+                ReturnType::DEFAULT
+            );
+        }
     }
 
     /**
@@ -104,18 +120,16 @@ trait MigrationTableTrait
      */
     private function getAvailableInputTypes(): array
     {
-        $result = [];
-        $items  = $this->fetchAll(
-            "SELECT DISTINCT cInputTyp 
-                FROM `teinstellungenconf` 
-                WHERE cInputTyp IS NOT NULL 
-                    AND cInputTyp != ''"
-        );
-        foreach ($items as $item) {
-            $result[] = $item->cInputTyp;
-        }
-
-        return $result;
+        return [
+            'selectbox',
+            'number',
+            'pass',
+            'text',
+            'kommazahl',
+            'listbox',
+            'selectkdngrp',
+            'color'
+        ];
     }
 
     /**

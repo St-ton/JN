@@ -30,7 +30,7 @@ msgid "configgroup_1_admin_area"
 msgstr "Admin area"
 
 msgid "configgroup_1_cookies"
-msgstr "Cookie setting (Please note: Change only if you possess sufficient knowledge in this field.)"
+msgstr "Cookie settings"
 
 msgid "configgroup_2_general"
 msgstr "General"
@@ -42,13 +42,13 @@ msgid "configgroup_4_search"
 msgstr "Search"
 
 msgid "configgroup_4_livesearch"
-msgstr "Live search"
+msgstr "Search queries"
 
 msgid "configgroup_4_extended_view"
 msgstr "Expanded view"
 
 msgid "configgroup_5_cross_sell"
-msgstr "Cross-selling (Standard)"
+msgstr "Cross-selling (manual setting in JTL-Wawi)"
 
 msgid "configgroup_5_cross_sell_xy"
 msgstr "Cross-selling (Others also bought)"
@@ -60,7 +60,7 @@ msgid "configgroup_5_product_question"
 msgstr "Question about item"
 
 msgid "configgroup_5_product_available"
-msgstr "Back in stock notification email"
+msgstr "Availability requests"
 
 msgid "configgroup_5_comparelist"
 msgstr "Comparison list"
@@ -105,7 +105,7 @@ msgid "configgroup_8_box_new_products"
 msgstr "Box: New in product range"
 
 msgid "configgroup_8_box_top_products"
-msgstr "Box: Top items"
+msgstr "Box: Top item"
 
 msgid "configgroup_8_box_last_viewed"
 msgstr "Box: Last viewed"
@@ -125,14 +125,11 @@ msgstr "Comparison list"
 msgid "configgroup_8_box_top_rated"
 msgstr "Box: Top rated"
 
-msgid "configgroup_8_box_priceradar"
-msgstr "Box: Price radar"
-
 msgid "configgroup_9_image_settings"
 msgstr "Image settings"
 
 msgid "configgroup_10_livesearch_overview"
-msgstr "Live search overview"
+msgstr "Search query overview"
 
 msgid "configgroup_10_gifts"
 msgstr "Free gift"
@@ -147,7 +144,7 @@ msgid "configgroup_100_credit_card"
 msgstr "Credit card"
 
 msgid "configgroup_100_invoice"
-msgstr "A/R invoice"
+msgstr "Invoice"
 
 msgid "configgroup_100_debit"
 msgstr "Direct debit"
@@ -171,7 +168,7 @@ msgid "configgroup_107_rating"
 msgstr "Review"
 
 msgid "configgroup_107_rating_reminder"
-msgstr "Remind customer of writing a customer review"
+msgstr "Remind customer to leave a customer review"
 
 msgid "configgroup_108_newsletter"
 msgstr "Newsletter"
@@ -206,6 +203,9 @@ msgstr "Current characteristic value"
 msgid "configgroup_110_current_category"
 msgstr "Current category"
 
+msgid "configgroup_110_availability_filter"
+msgstr "Availability filter"
+
 msgid "configgroup_111_email_blacklist"
 msgstr "Email blacklist"
 
@@ -213,22 +213,16 @@ msgid "configgroup_112_meta"
 msgstr "Meta data"
 
 msgid "configgroup_113_news"
-msgstr "News system"
+msgstr "Blog"
 
 msgid "configgroup_114_sitemap_settings"
 msgstr "Sitemap settings"
-
-msgid "configgroup_116_customer_recruit_customer"
-msgstr "Settings for customer referral programme"
 
 msgid "configgroup_119_searchspecial_standard_search"
 msgstr "Default sorting for special items"
 
 msgid "configgroup_122_returns"
-msgstr "Goods returns"
-
-msgid "rma_receiver_head"
-msgstr "Recipient address for goods return"
+msgstr "Goods return"
 
 msgid "ftp_header"
 msgstr "FTP connection"

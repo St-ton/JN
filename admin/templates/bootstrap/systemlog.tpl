@@ -1,5 +1,4 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section='systemlog'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('systemlog') cBeschreibung=__('systemlogDesc') cDokuURL=__('systemlogURL')}
 {assign var=cTab value=$cTab|default:'log'}
 <div class="tabs">
@@ -34,7 +33,7 @@
                     {else}
                         <div class="listgroup">
                             {foreach $oLog_arr as $oLog}
-                                <div class="list-group-item border-left-0 border-right-0 {cycle values="bg-secondary,"}">
+                                <div class="list-group-item border-left-0 border-right-0 {cycle values="bg-light-gray,"}">
                                     <div class="row">
                                         <div class="col-md-3 col-xs-12">
                                             <label class="custom-control custom-checkbox">

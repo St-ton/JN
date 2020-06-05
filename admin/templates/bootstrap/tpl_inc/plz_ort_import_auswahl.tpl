@@ -1,4 +1,3 @@
-{config_load file="$lang.conf" section='plz_ort_import'}
 <div id="modalSelect" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">

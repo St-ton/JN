@@ -43,7 +43,7 @@
                                     <tr>
                                         <td>
                                             <a href="#page-{$pageIdHash}" data-toggle="collapse">
-                                                <i class="far fa-chevron-circle-down rotate-180 font-size-lg" title="{__('details')}" data-toggle="tooltip"></i>
+                                                <i class="far fa-chevron-down rotate-180 font-size-lg" title="{__('details')}" data-toggle="tooltip"></i>
                                             </a>
                                         </td>
                                         <td>
@@ -87,7 +87,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td colspan="3" class="border-top-0">
+                                        <td colspan="4" class="border-top-0">
                                             <div  class="collapse" id="page-{$pageIdHash}">
                                             <table class="list table ">
                                                 <thead>

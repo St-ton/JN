@@ -76,13 +76,13 @@
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
-            <Setting Description="Zusatzinfos zu Artikeln beim Hovern/Antippen anzeigen" Key="hover_productlist" Type="select" Value="N">
+            <Setting Description="Zusatzinfos zu Artikeln beim Hovern/Antippen anzeigen" Key="hover_productlist" Type="select" Value="Y">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
             <Setting Description="Variationsauswahl anzeigen &lt;span data-html=&quot;true&quot; data-toggle=&quot;tooltip&quot;
                         title=&quot;nur in Verbindung mit Zusatzinfos beim Hovern/Antippen&quot;&gt; &lt;span
-                        class=&quot;fas fa-info-circle fa-fw&quot;>&lt;/span&gt; &lt;/span&gt;" Key="variation_select_productlist" Type="select" Value="N">
+                        class=&quot;fas fa-info-circle fa-fw&quot;>&lt;/span&gt; &lt;/span&gt;" Key="variation_select_productlist" Type="select" Value="3">
                 <Option Value="N"><![CDATA[Nein]]></Option>
                 <Option Value="1"><![CDATA[max. 1]]></Option>
                 <Option Value="2"><![CDATA[max. 2]]></Option>

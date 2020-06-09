@@ -189,12 +189,6 @@ class ListingItem
             return $this->fail($validationResult);
         }
         if ($node !== null) {
-            if (!isset($node['ShopVersion']) && !isset($node['MaxShopVersion'])) {
-                return $this->fail(TemplateValidator::RES_SHOP_VERSION_NOT_FOUND);
-            }
-            if (!isset($node['Name'])) {
-                return $this->fail(TemplateValidator::RES_NAME_NOT_FOUND);
-            }
             $this->name           = $node['Name'];
             $this->description    = $node['Description'] ?? '';
             $this->exsid          = $node['ExsID'] ?? '';
@@ -277,11 +271,11 @@ class ListingItem
      */
     private function fail(int $errorCode): self
     {
-        $this->version        = Version::parse('0.0.0');
+        $this->version        = $this->version ?? Version::parse('0.0.0');
         $this->maxShopVersion = $this->maxShopVersion ?? Version::parse('0.0.0');
         $this->minShopVersion = $this->minShopVersion ?? Version::parse('5.0.0');
-        $this->available      = false;
-        $this->hasError       = true;
+        $this->setAvailable(false);
+        $this->setHasError(true);
         $this->setErrorCode($errorCode);
         $this->generateErrorMessage($errorCode);
 
@@ -734,6 +728,32 @@ class ListingItem
     public function setMinShopVersion(Version $minShopVersion): void
     {
         $this->minShopVersion = $minShopVersion;
+    }
+
+    /**
+     * @return string
+     */
+    public function displayVersionRange(): string
+    {
+        $min = null;
+        $max = null;
+        if ($this->minShopVersion !== null && $this->minShopVersion->greaterThan('0.0.0')) {
+            $min = (string)$this->minShopVersion;
+        }
+        if ($this->maxShopVersion !== null && $this->maxShopVersion->greaterThan('0.0.0')) {
+            $max = (string)$this->maxShopVersion;
+        }
+        if ($min === null && $max !== null) {
+            return '<= ' . $max;
+        }
+        if ($min !== null && $max === null) {
+            return '>= ' . $min;
+        }
+        if ($min !== null && $max !== null) {
+            return $min . ' &dash; ' . $max;
+        }
+
+        return '?';
     }
 
     /**

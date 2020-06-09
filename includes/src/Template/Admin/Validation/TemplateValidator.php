@@ -121,6 +121,9 @@ class TemplateValidator implements ValidatorInterface
         if ($minShopversion === null) {
             return self::RES_SHOP_VERSION_NOT_FOUND;
         }
+        if (!isset($node['Name'])) {
+            return self::RES_NAME_NOT_FOUND;
+        }
         try {
             // all *version nodes have to be valid semver strings
             Version::parse($node['Version'] ?? '0');

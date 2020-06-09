@@ -399,6 +399,32 @@ class ListingItem
     /**
      * @return string
      */
+    public function displayVersionRange(): string
+    {
+        $min = null;
+        $max = null;
+        if ($this->minShopVersion !== null && $this->minShopVersion->greaterThan('0.0.0')) {
+            $min = (string)$this->minShopVersion;
+        }
+        if ($this->maxShopVersion !== null && $this->maxShopVersion->greaterThan('0.0.0')) {
+            $max = (string)$this->maxShopVersion;
+        }
+        if ($min === null && $max !== null) {
+            return '<= ' . $max;
+        }
+        if ($min !== null && $max === null) {
+            return '>= ' . $min;
+        }
+        if ($min !== null && $max !== null) {
+            return $min . ' &dash; ' . $max;
+        }
+
+        return '?';
+    }
+
+    /**
+     * @return string
+     */
     public function getDescription(): string
     {
         return $this->description;

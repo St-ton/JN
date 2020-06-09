@@ -37,7 +37,7 @@ final class PluginValidator extends AbstractValidator
         ) {
             return InstallCode::INVALID_XML_VERSION;
         }
-        if (empty($baseNode['ShopVersion']) && empty($baseNode['Shop4Version'])) {
+        if (empty($baseNode['ShopVersion']) && empty($baseNode['MinShopVersion'])) {
             return InstallCode::INVALID_SHOP_VERSION;
         }
         if ($forUpdate === false) {

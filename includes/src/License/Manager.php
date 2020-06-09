@@ -45,12 +45,9 @@ class Manager
      */
     private function checkUpdate(): bool
     {
-        $lastItem = $this->getLicenseData();
-        if ($lastItem === null) {
-            return true;
-        }
-
-        return (\time() - \strtotime($lastItem->timestamp)) / (60 * 60) > self::CHECK_INTERVAL_HOURS;
+        return ($lastItem = $this->getLicenseData()) === null
+            ? true
+            : (\time() - \strtotime($lastItem->timestamp)) / (60 * 60) > self::CHECK_INTERVAL_HOURS;
     }
 
     /**

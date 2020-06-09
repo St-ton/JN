@@ -13,6 +13,7 @@
                 <Option Value="static">Ja, statisch</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
+            <Setting Description="Ist Nova Template" Key="is_nova" Type="text" Value="Y" Editable="false"/>
         </Section>
         <Section Name="Theme" Key="theme">
             <Setting Description="Theme" Key="theme_default" Type="select" Value="clear" Editable="false">

@@ -44,6 +44,7 @@ $themeDir   = empty($conf['template']['theme']['theme_default'])
     : $conf['template']['theme']['theme_default'];
 
 $device             = new Mobile_Detect();
+$templateSettings   = $template->getConfig() ?: [];
 $expandedCategories = $expandedCategories ?? new KategorieListe();
 $debugbar           = Shop::Container()->getDebugBar();
 $debugbarRenderer   = $debugbar->getJavascriptRenderer();
@@ -189,7 +190,8 @@ $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
        ->assign('robotsContent', $smarty->get_template_vars('robotsContent'))
        ->assign('device', $device)
        ->assign('isMobile', $device->isMobile())
-       ->assign('isTablet', $device->isTablet());
+       ->assign('isTablet', $device->isTablet())
+       ->assign('isNova', ($templateSettings['general']['is_nova'] ?? 'N') === 'Y');
 
 $nav = new Navigation(Shop::Lang(), Shop::Container()->getLinkService());
 $nav->setPageType(Shop::getPageType());

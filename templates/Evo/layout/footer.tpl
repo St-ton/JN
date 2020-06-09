@@ -300,6 +300,7 @@
     </script>
     {captchaMarkup getBody=false}
 {/block}
+{block name='layout-footer-js'}{/block}
 
 {block name='layout-footer-io-path'}
     <div id="jtl-io-path" data-path="{$ShopURL}" class="d-none"></div>

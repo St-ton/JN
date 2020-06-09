@@ -4,7 +4,7 @@
         <li id="search">
             <form action="index.php" method="get">
                 <div class="input-group">
-                    <input name="qs" type="text" class="form-control ac_input" placeholder="{lang key='search'}" autocomplete="off" aria-label="{lang key='search'}"/>
+                    <input name="qs" type="text" id="search-header" class="form-control ac_input" placeholder="{lang key='search'}" autocomplete="off" aria-label="{lang key='search'}"/>
                     <span class="input-group-addon">
                         <button type="submit" name="search" id="search-submit-button" aria-label="{lang key='search'}">
                             <span class="fa fa-search"></span>

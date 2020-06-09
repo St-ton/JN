@@ -68,7 +68,7 @@ class PortletInstance implements \JsonSerializable
     protected $uid;
 
     /**
-     * @var null|AreaList mapping area ids to subareas
+     * @var AreaList mapping area ids to subareas
      */
     protected $subareaList;
 
@@ -196,9 +196,9 @@ class PortletInstance implements \JsonSerializable
     }
 
     /**
-     * @return null|AreaList
+     * @return AreaList
      */
-    public function getSubareaList(): ?AreaList
+    public function getSubareaList(): AreaList
     {
         return $this->subareaList;
     }

@@ -239,15 +239,6 @@ class PageService
     }
 
     /**
-     * @param string $id
-     * @return array
-     */
-    public function getOtherLanguageDrafts(string $id): array
-    {
-        return $this->pageDB->getOtherLanguageDraftRows($id);
-    }
-
-    /**
      * @param int $langId
      * @return string
      */

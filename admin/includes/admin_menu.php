@@ -178,6 +178,10 @@ $adminMenu = [
                     'link'        => 'consent.php',
                     'permissions' => 'CONSENT_MANAGER'
                 ],
+                __('Consent manager')            => (object)[
+                    'link'   => 'consent.php',
+                    'permissions' => 'CONTENT_PAGE_VIEW',
+                ],
             ],
             __('Custom contents')  => [
                 __('Pages')                  => (object)[

@@ -65,6 +65,7 @@ final class Shopsetting implements ArrayAccess
         \CONF_CRON                => 'cron',
         \CONF_FS                  => 'fs',
         \CONF_CACHING             => 'caching',
+        \CONF_CONSENTMANAGER      => 'consentmanager',
         \CONF_BRANDING            => 'branding'
     ];
 

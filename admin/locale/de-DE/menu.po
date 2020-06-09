@@ -523,3 +523,6 @@ msgstr "Global"
 
 msgid "Availability notifications"
 msgstr "Verfügbarkeitsanfragen"
+
+msgid "Consent manager"
+msgstr "Consent-Manager"

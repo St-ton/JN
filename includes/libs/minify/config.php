@@ -199,3 +199,20 @@ $min_uploaderHoursBehind = 0;
  */
 //$min_factories['minify'] = ... a callable accepting a Minify\App object
 //$min_factories['controller'] = ... a callable accepting a Minify\App object
+
+/**
+ * @param string $content
+ * @param string $type
+ * @return string
+ */
+function removeSourceMaps($content, $type) {
+    if ($type === Minify::TYPE_JS) {
+        $regex = '~//[#@]\s(source(?:Mapping)?URL)=\s*(\S+)~';
+
+        return preg_replace($regex, '', $content);
+    }
+
+    return $content;
+}
+
+$min_serveOptions['postprocessor'] = 'removeSourceMaps';

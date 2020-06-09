@@ -206,7 +206,7 @@ $min_uploaderHoursBehind = 0;
  * @return string
  */
 function removeSourceMaps($content, $type) {
-    if ($type === Minify::TYPE_JS) {
+    if ($type === Minify::TYPE_JS || $type === Minify::TYPE_CSS) {
         $regex = '~//[#@]\s(source(?:Mapping)?URL)=\s*(\S+)~';
 
         return preg_replace($regex, '', $content);

@@ -43,7 +43,7 @@
         "monolog/monolog": "^1.23",
         "mrclay/minify": "~3.0.0",
         "myclabs/php-enum": "^1.6",
-        "jtlshop/semver": "~0.0.5",
+        "jtlshop/semver": "~0.0.7",
         "studio-42/elfinder": "^2.1",
         "maximebf/debugbar": "^1.15",
         "gettext/gettext": "^4.6",
@@ -98,6 +98,10 @@
         {
             "type": "vcs",
             "url": "https://gitlab.com/jtl-software/jtl-shop/tools/xtea.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://gitlab.com/jtl-software/jtl-shop/tools/semver.git"
         }
 
     ],

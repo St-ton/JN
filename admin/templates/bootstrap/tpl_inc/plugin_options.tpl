@@ -54,26 +54,18 @@
                                 {/foreach}
                             </select>
                         {elseif $confItem->inputType === JTL\Plugin\Admin\InputType::COLORPICKER}
-                            <div id="{$confItem->valueID}" style="display:inline-block">
-                                <div style="background-color: {$confItem->value}" class="colorSelector"></div>
+                            <div class="input-group" id="{$confItem->valueID}-group">
+                                <input type="text" class="form-control colorpicker-input"
+                                       name="{$confItem->valueID}" value="{$confItem->value}" id="{$confItem->valueID}"
+                                       autocomplete="off">
+                                <span class="input-group-append">
+                                    <span class="input-group-text colorpicker-input-addon">
+                                        <i></i>
+                                    </span>
+                                </span>
                             </div>
-                            <input type="hidden" name="{$confItem->valueID}" class="{$confItem->valueID}_data" value="{$confItem->value}" />
-                            <script type="text/javascript">
-                                $('#{$confItem->valueID}').ColorPicker({ldelim}
-                                    color:    '{$confItem->value}',
-                                    onShow:   function (colpkr) {ldelim}
-                                        $(colpkr).fadeIn(500);
-                                        return false;
-                                    {rdelim},
-                                    onHide:   function (colpkr) {ldelim}
-                                        $(colpkr).fadeOut(500);
-                                        return false;
-                                    {rdelim},
-                                    onChange: function (hsb, hex, rgb) {ldelim}
-                                        $('#{$confItem->valueID} div').css('backgroundColor', '#' + hex);
-                                        $('.{$confItem->valueID}_data').val('#' + hex);
-                                    {rdelim}
-                                {rdelim});
+                            <script>
+                                $('#{$confItem->valueID}-group').colorpicker();
                             </script>
                         {elseif $confItem->inputType === JTL\Plugin\Admin\InputType::PASSWORD}
                             <input autocomplete="off" class="form-control" id="{$confItem->valueID}" name="{$confItem->valueID}" type="password" value="{$confItem->value}" />

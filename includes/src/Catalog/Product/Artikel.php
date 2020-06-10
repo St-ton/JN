@@ -3155,10 +3155,7 @@ class Artikel
             return null;
         }
         // EXPERIMENTAL_MULTILANG_SHOP
-        if ($tmpProduct->cSeo === null
-            && \defined('EXPERIMENTAL_MULTILANG_SHOP')
-            && \EXPERIMENTAL_MULTILANG_SHOP === true
-        ) {
+        if ($tmpProduct->cSeo === null && \EXPERIMENTAL_MULTILANG_SHOP === true) {
             // redo the query with modified seo join - without language ID
             $productSQL = \str_replace(
                 $this->getSeoSQL()->cJOIN,

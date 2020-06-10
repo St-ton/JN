@@ -236,7 +236,7 @@ class Kategorie
         );
         if ($item === null || $item === false) {
             if (!$recall && !$defaultLangActive) {
-                if (\defined('EXPERIMENTAL_MULTILANG_SHOP') && \EXPERIMENTAL_MULTILANG_SHOP === true) {
+                if (\EXPERIMENTAL_MULTILANG_SHOP === true) {
                     $defaultLangID = LanguageHelper::getDefaultLanguage()->kSprache;
                     if ($defaultLangID !== $languageID) {
                         return $this->loadFromDB($id, $defaultLangID, $customerGroupID, true);
@@ -286,7 +286,7 @@ class Kategorie
     private function addExperimentalMultiShopLang(stdClass $item, int $languageID, DbInterface $db): void
     {
         // EXPERIMENTAL_MULTILANG_SHOP
-        if (!empty($item->cSeo) || !\defined('EXPERIMENTAL_MULTILANG_SHOP') || \EXPERIMENTAL_MULTILANG_SHOP !== true) {
+        if (!empty($item->cSeo) || \EXPERIMENTAL_MULTILANG_SHOP !== true) {
             return;
         }
         $defaultLangID = (int)($tmpLang->kSprache ?? LanguageHelper::getDefaultLanguage()->kSprache);

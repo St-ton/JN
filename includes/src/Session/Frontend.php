@@ -120,7 +120,7 @@ class Frontend extends AbstractSession
      */
     private function initLanguageURLs(): void
     {
-        if (!\defined('EXPERIMENTAL_MULTILANG_SHOP') || \EXPERIMENTAL_MULTILANG_SHOP !== true) {
+        if (\EXPERIMENTAL_MULTILANG_SHOP !== true) {
             return;
         }
         $urls      = [];

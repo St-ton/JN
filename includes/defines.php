@@ -224,6 +224,11 @@ ifndef('SHOW_DEBUG_BAR', false);
 
 ifndef('ART_MATRIX_MAX', 250);
 
+// multi-domain support for different languages
+ifndef('EXPERIMENTAL_MULTILANG_SHOP', false);
+// slug language does not have to match shop base url language if enabled
+ifndef('MULTILANG_URL_FALLBACK', false);
+
 // security
 ifndef('EXPORTFORMAT_ALLOW_PHP', false);
 ifndef('NEWSLETTER_USE_SECURITY', true);

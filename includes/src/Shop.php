@@ -1090,7 +1090,7 @@ final class Shop
 
     private static function getLanguageFromServerName(): void
     {
-        if (!\defined('EXPERIMENTAL_MULTILANG_SHOP') || \EXPERIMENTAL_MULTILANG_SHOP !== true) {
+        if (\EXPERIMENTAL_MULTILANG_SHOP !== true) {
             return;
         }
         foreach ($_SESSION['Sprachen'] ?? [] as $language) {
@@ -1369,10 +1369,14 @@ final class Shop
             // EXPERIMENTAL_MULTILANG_SHOP
             if (isset($oSeo->kSprache)
                 && self::$kSprache !== $oSeo->kSprache
-                && \defined('EXPERIMENTAL_MULTILANG_SHOP')
                 && \EXPERIMENTAL_MULTILANG_SHOP === true
             ) {
-                $oSeo->kSprache = self::$kSprache;
+                if (\MULTILANG_URL_FALLBACK === true) {
+                    $oSeo->kSprache = self::$kSprache;
+                } else {
+                    // slug language id and shop language id have to match - 404 otherwise
+                    $oSeo = null;
+                }
             }
             // EXPERIMENTAL_MULTILANG_SHOP END
             // Link active?

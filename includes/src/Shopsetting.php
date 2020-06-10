@@ -62,7 +62,8 @@ final class Shopsetting implements ArrayAccess
         \CONF_AUSWAHLASSISTENT    => 'auswahlassistent',
         \CONF_CRON                => 'cron',
         \CONF_FS                  => 'fs',
-        \CONF_CACHING             => 'caching'
+        \CONF_CACHING             => 'caching',
+        \CONF_CONSENTMANAGER      => 'consentmanager'
     ];
 
     /**

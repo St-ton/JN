@@ -4,7 +4,9 @@
             {include file='snippets/consent_manager.tpl'}
             {inline_script}
                 <script>
-                    $('#consent-manager').removeClass('d-none');
+                    setTimeout(function() {
+                        $('#consent-manager, #consent-settings-btn').removeClass('d-none');
+                    }, 100)
                     const CM = new ConsentManager({
                         version: 1
                     });

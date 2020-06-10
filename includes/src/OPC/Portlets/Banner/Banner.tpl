@@ -32,13 +32,15 @@
             {if !empty($zone.desc)}
                 {$desc = $zone.desc}
             {/if}
-            <a class="area {$zone.class}" href="{$url}" title="{$title|strip_tags|escape:'html'|escape:'quotes'}"
+            <a class="area {$zone.class|escape:'html'}"
+               href="{$url|escape:'html'}"
+               title="{$title|strip_tags|escape:'html'|escape:'quotes'}"
                style="left: {$zone.left}%; top: {$zone.top}%; width: {$zone.width}%; height: {$zone.height}%;">
                 <div class="area-desc">
                     {if !empty($product) > 0}
                         {image
                             src=$product->cVorschaubildURL
-                            alt=$product->cName|strip_tags|escape:'quotes'|truncate:60
+                            alt=$product->cName|escape:'html'|truncate:60
                             style='display: block; margin-left: auto; margin-right: auto'
                             fluid=true}
                         {include file='productdetails/price.tpl' Artikel=$product tplscope="box"}

@@ -1,1 +1,1 @@
-<input type="hidden" name="{$propname} " value="{$propval}" id="config-{$propname}">
+<input type="hidden" name="{$propname} " value="{$propval|escape:'html'}" id="config-{$propname}">

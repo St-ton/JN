@@ -4,6 +4,7 @@
             {include file='snippets/consent_manager.tpl'}
             {inline_script}
                 <script>
+                    $('#consent-manager').removeClass('d-none');
                     const CM = new ConsentManager({
                         version: 1
                     });

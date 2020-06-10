@@ -20,10 +20,20 @@
 		li { margin: 0; }
 	}
 
-	&:not(.active) { display: none; }
+	&:not(.active) {
+		//crit.scss
+		display: none;
+	}
 }
 
-.#{$prefix}-icon { display: inline-block; vertical-align: -.2em; width: 1em; height: 1em; margin-left: .25em; }
+.#{$prefix}-icon {
+	display: inline-block;
+	vertical-align: -.2em;
+	//crit.scss
+	width: 1em;
+	height: 1em;
+	margin-left: .25em;
+}
 
 .#{$prefix}-help { color: $gray-dark-consent; font-size: .9em; margin-top: .5rem; display: block; }
 

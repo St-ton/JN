@@ -1,5 +1,5 @@
 {block name='snippets-consent-manager'}
-<div id="consent-manager">
+<div id="consent-manager" class="d-none">
 	{$privacyURL = $oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL()}
 	{block name='snippets-consent-manager-banner'}
 		<div id="consent-banner">

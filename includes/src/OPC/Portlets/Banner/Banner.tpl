@@ -7,7 +7,7 @@
         src=$imgAttribs.src
         srcset=$imgAttribs.srcset
         sizes=$imgAttribs.srcsizes
-        alt=$imgAttribs.alt
+        alt=$imgAttribs.alt|escape:'html'|truncate:60
         title=$imgAttribs.title
         fluid=true
     }
@@ -34,7 +34,7 @@
             {/if}
             <a class="area {$zone.class|escape:'html'}"
                href="{$url|escape:'html'}"
-               title="{$title|strip_tags|escape:'html'|escape:'quotes'}"
+               title="{$title|escape:'html'}"
                style="left: {$zone.left}%; top: {$zone.top}%; width: {$zone.width}%; height: {$zone.height}%;">
                 <div class="area-desc">
                     {if !empty($product) > 0}

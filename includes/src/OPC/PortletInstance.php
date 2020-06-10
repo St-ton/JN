@@ -395,7 +395,7 @@ class PortletInstance implements \JsonSerializable
     {
         $style = $this->getProperty('animation-style');
 
-        return $style !== '' ? 'wow ' . $style : '';
+        return $style !== '' ? 'wow ' . \htmlspecialchars($style) : '';
     }
 
     /**
@@ -409,7 +409,7 @@ class PortletInstance implements \JsonSerializable
             if ($this->hasProperty($propname) && \strpos($propname, 'wow-') === 0 &&
                 !empty($this->getProperty($propname))
             ) {
-                $data[$propname] = $this->getProperty($propname);
+                $data[$propname] = \htmlspecialchars($this->getProperty($propname));
             }
         }
 

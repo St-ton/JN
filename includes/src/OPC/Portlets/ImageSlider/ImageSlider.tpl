@@ -30,7 +30,8 @@
                             {$imgAttribs = $instance->getImageAttributes($slide.url, '', '')}
 
                             {if !empty($slide.link)}
-                                <a href="{$slide.link}"{if !empty($slide.title)} title="{$slide.title}"{/if}
+                                <a href="{$slide.link}"
+                                   {if !empty($slide.title)}title="{$slide.title|escape:'html'}"{/if}
                                    class="slide">
                             {else}
                                 <div class="slide">
@@ -39,9 +40,9 @@
                                 srcset=$imgAttribs.srcset
                                 sizes=$imgAttribs.srcsizes
                                 src=$imgAttribs.src
-                                alt=$imgAttribs.alt
-                                title=$slideTitle
-                                data=['desc' => $slide.desc]}
+                                alt=$imgAttribs.alt|escape:'html'
+                                title=$slideTitle|escape:'html'
+                                data=['desc' => $slide.desc|escape:'html']}
                             {if empty($slide.link)}
                                 </div>
                             {else}
@@ -54,9 +55,9 @@
                     {if !empty($slide.title) || !empty($slide.desc)}
                         <div id="{$uid}_slide_caption_{$i}" class="htmlcaption" style="display: none">
                             {if !empty($slide.title)}
-                                <strong class="title">{$slide.title}</strong>
+                                <strong class="title">{$slide.title|escape:'html'}</strong>
                             {/if}
-                            <p class="desc">{$slide.desc}</p>
+                            <p class="desc">{$slide.desc|escape:'html'}</p>
                         </div>
                     {/if}
                 {/foreach}

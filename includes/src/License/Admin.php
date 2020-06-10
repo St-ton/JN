@@ -48,15 +48,13 @@ class Admin
 
     /**
      * Admin constructor.
-     * @param Manager           $manager
-     * @param DbInterface       $db
-     * @param JTLCacheInterface $cache
+     * @param Manager $manager
      */
-    public function __construct(Manager $manager, DbInterface $db, JTLCacheInterface $cache)
+    public function __construct(Manager $manager)
     {
         $this->manager = $manager;
-        $this->db      = $db;
-        $this->cache   = $cache;
+        $this->db      = $manager->getDB();
+        $this->cache   = $manager->getCache();
     }
 
     public function handleAuth(): void
@@ -154,7 +152,7 @@ class Admin
     private function getList(JTLSmarty $smarty): void
     {
         $this->setOverviewData($smarty);
-        $mapper     = new Mapper($this->db, $this->manager);
+        $mapper     = new Mapper($this->manager);
         $collection = $mapper->getCollection();
         $smarty->assign('licenses', $collection)
             ->assign('licenseItemUpdates', $collection->getUpdateableItems());

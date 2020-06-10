@@ -176,7 +176,7 @@ if (empty($template->version)) {
 } else {
     $adminTplVersion = $template->version;
 }
-$mapper  = new Mapper($db, new Manager($db));
+$mapper  = new Mapper(new Manager($db, Shop::Container()->getCache()));
 $langTag = $_SESSION['AdminAccount']->language ?? Shop::Container()->getGetText()->getLanguage();
 
 $smarty->assign('URL_SHOP', $shopURL)

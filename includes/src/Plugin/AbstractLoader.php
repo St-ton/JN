@@ -223,7 +223,7 @@ abstract class AbstractLoader implements LoaderInterface
         $license->setClass($data->cLizenzKlasse);
         $license->setClassName($data->cLizenzKlasseName);
         $license->setKey($data->cLizenz);
-        $manager = new Manager($this->db);
+        $manager = new Manager($this->db, $this->cache);
         $license->setExsLicense($manager->getLicenseByItemID($data->cPluginID));
 
         return $license;

@@ -562,6 +562,7 @@ define('CACHING_GROUP_TEMPLATE', 'tpl');
 define('CACHING_GROUP_OPTION', 'opt');
 define('CACHING_GROUP_PLUGIN', 'plgn');
 define('CACHING_GROUP_CORE', 'core');
+define('CACHING_GROUP_LICENSES', 'lic');
 define('CACHING_GROUP_OBJECT', 'obj');
 define('CACHING_GROUP_BOX', 'bx');
 define('CACHING_GROUP_NEWS', 'nws');

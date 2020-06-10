@@ -29,7 +29,7 @@ final class LicenseCheck extends Job
     public function start(QueueEntry $queueEntry): JobInterface
     {
         parent::start($queueEntry);
-        $manager = new Manager($this->db);
+        $manager = new Manager($this->db, $this->cache);
         try {
             $res = $manager->update(true);
             if ($res <= 0) {
@@ -50,7 +50,7 @@ final class LicenseCheck extends Job
      */
     private function handleExpiredLicenses(Manager $manager): void
     {
-        $mapper     = new Mapper($this->db, $manager);
+        $mapper     = new Mapper($manager);
         $collection = $mapper->getCollection();
         $this->handleExpiredPluginTestLicenses($collection);
         $this->notifyPlugins($collection);

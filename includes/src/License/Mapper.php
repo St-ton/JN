@@ -2,7 +2,6 @@
 
 namespace JTL\License;
 
-use JTL\DB\DbInterface;
 use JTL\License\Struct\ExsLicense;
 use JTL\License\Struct\ReferencedPlugin;
 use JTL\License\Struct\ReferencedTemplate;
@@ -15,23 +14,16 @@ use stdClass;
 class Mapper
 {
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
      * @var Manager
      */
     private $manager;
 
     /**
      * Mapper constructor.
-     * @param DbInterface $db
      * @param Manager     $manager
      */
-    public function __construct(DbInterface $db, Manager $manager)
+    public function __construct(Manager $manager)
     {
-        $this->db      = $db;
         $this->manager = $manager;
     }
 
@@ -40,6 +32,10 @@ class Mapper
      */
     public function getCollection(): Collection
     {
+        $cacheID = 'mapper_lic_collection';
+        if (($collection = $this->manager->getCache()->get($cacheID)) !== false) {
+            return $collection;
+        }
         $collection = new Collection();
         $data       = $this->manager->getLicenseData();
         if ($data === null) {
@@ -58,6 +54,7 @@ class Mapper
             $esxLicense->setState(ExsLicense::STATE_UNBOUND);
             $collection->push($esxLicense);
         }
+        $this->manager->getCache()->set($cacheID, $collection, [\CACHING_GROUP_LICENSES]);
 
         return $collection;
     }
@@ -71,11 +68,19 @@ class Mapper
     {
         switch ($esxLicense->getType()) {
             case ExsLicense::TYPE_PLUGIN:
-                $plugin = new ReferencedPlugin($this->db, $license, $esxLicense->getReleases()->getAvailable());
+                $plugin = new ReferencedPlugin(
+                    $this->manager->getDB(),
+                    $license,
+                    $esxLicense->getReleases()->getAvailable()
+                );
                 $esxLicense->setReferencedItem($plugin);
                 break;
             case ExsLicense::TYPE_TEMPLATE:
-                $template = new ReferencedTemplate($this->db, $license, $esxLicense->getReleases()->getAvailable());
+                $template = new ReferencedTemplate(
+                    $this->manager->getDB(),
+                    $license,
+                    $esxLicense->getReleases()->getAvailable())
+                ;
                 $esxLicense->setReferencedItem($template);
                 break;
             case ExsLicense::TYPE_PORTLET:

@@ -5,6 +5,7 @@ namespace JTL\License;
 use DateTime;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\License\Struct\ExsLicense;
@@ -26,17 +27,24 @@ class Manager
     private $db;
 
     /**
+     * @var JTLCacheInterface
+     */
+    private $cache;
+
+    /**
      * @var Client
      */
     private $client;
 
     /**
      * Manager constructor.
-     * @param DbInterface $db
+     * @param DbInterface       $db
+     * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db)
+    public function __construct(DbInterface $db, JTLCacheInterface $cache)
     {
         $this->db     = $db;
+        $this->cache  = $cache;
         $this->client = new Client();
     }
 
@@ -69,6 +77,7 @@ class Manager
             ]
         );
         $this->housekeeping();
+        $this->cache->flushTags([\CACHING_GROUP_LICENSES]);
 
         return $this->db->insert(
             'licenses',
@@ -120,7 +129,7 @@ class Manager
      */
     public function getLicenseByItemID(string $itemID): ?ExsLicense
     {
-        return (new Mapper($this->db, $this))->getCollection()->getForItemID($itemID);
+        return (new Mapper($this))->getCollection()->getForItemID($itemID);
     }
 
     /**
@@ -140,5 +149,53 @@ class Manager
             ['max' => self::MAX_REQUESTS],
             ReturnType::AFFECTED_ROWS
         );
+    }
+
+    /**
+     * @return DbInterface
+     */
+    public function getDB(): DbInterface
+    {
+        return $this->db;
+    }
+
+    /**
+     * @param DbInterface $db
+     */
+    public function setDB(DbInterface $db): void
+    {
+        $this->db = $db;
+    }
+
+    /**
+     * @return JTLCacheInterface
+     */
+    public function getCache(): JTLCacheInterface
+    {
+        return $this->cache;
+    }
+
+    /**
+     * @param JTLCacheInterface $cache
+     */
+    public function setCache(JTLCacheInterface $cache): void
+    {
+        $this->cache = $cache;
+    }
+
+    /**
+     * @return Client
+     */
+    public function getClient(): Client
+    {
+        return $this->client;
+    }
+
+    /**
+     * @param Client $client
+     */
+    public function setClient(Client $client): void
+    {
+        $this->client = $client;
     }
 }

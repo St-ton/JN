@@ -7,8 +7,7 @@ use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
-$db    = Shop::Container()->getDB();
-$admin = new Admin(new Manager($db), $db, Shop::Container()->getCache());
+$admin = new Admin(new Manager(Shop::Container()->getDB(), Shop::Container()->getCache()));
 if (Request::postVar('action') === 'code') {
     $admin->handleAuth();
 } else {

@@ -74,6 +74,7 @@ class Seo
             \trim($str, ' -_')
         );
         $str = \preg_replace('/\s+/', '-', $str);
+        $str = \preg_replace('/[^A-Za-z0-9\-_~.]/', '', $str);
         
         return $str;
     }

@@ -79,8 +79,8 @@ class Mapper
                 $template = new ReferencedTemplate(
                     $this->manager->getDB(),
                     $license,
-                    $esxLicense->getReleases()->getAvailable())
-                ;
+                    $esxLicense->getReleases()->getAvailable()
+                );
                 $esxLicense->setReferencedItem($template);
                 break;
             case ExsLicense::TYPE_PORTLET:

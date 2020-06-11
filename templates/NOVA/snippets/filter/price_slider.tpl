@@ -2,7 +2,7 @@
     {block name='snippets-filter-price-slider-content'}
         {row class="no-gutters price-range-inputs"}
             {col cols=5}
-                {inputgroup class="mb-3" size="sm"}
+                {inputgroup class="mb-3"}
                     {input id="{$id}-from" class="price-range-input" placeholder=0 aria=["label" => {lang key='differentialPriceFrom' section='productOverview'}]}
                     {inputgroupaddon prepend=true}
                         {inputgrouptext}
@@ -12,7 +12,7 @@
                 {/inputgroup}
             {/col}
             {col cols=5 class="ml-auto"}
-                {inputgroup class="mb-3" size="sm"}
+                {inputgroup class="mb-3"}
                     {input id="{$id}-to" class="price-range-input"  placeholder=$priceRangeMax aria=["label" => {lang key='differentialPriceTo' section='productOverview'}]}
                     {inputgroupaddon prepend=true}
                         {inputgrouptext}

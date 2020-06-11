@@ -54,19 +54,10 @@
                                 {/foreach}
                             </select>
                         {elseif $confItem->inputType === JTL\Plugin\Admin\InputType::COLORPICKER}
-                            <div class="input-group" id="{$confItem->valueID}-group">
-                                <input type="text" class="form-control colorpicker-input"
-                                       name="{$confItem->valueID}" value="{$confItem->value}" id="{$confItem->valueID}"
-                                       autocomplete="off">
-                                <span class="input-group-append">
-                                    <span class="input-group-text colorpicker-input-addon">
-                                        <i></i>
-                                    </span>
-                                </span>
-                            </div>
-                            <script>
-                                $('#{$confItem->valueID}-group').colorpicker();
-                            </script>
+                            {include file='snippets/colorpicker.tpl'
+                                cpID=$confItem->valueID
+                                cpName=$confItem->valueID
+                                cpValue=$confItem->value}
                         {elseif $confItem->inputType === JTL\Plugin\Admin\InputType::PASSWORD}
                             <input autocomplete="off" class="form-control" id="{$confItem->valueID}" name="{$confItem->valueID}" type="password" value="{$confItem->value}" />
                         {elseif $confItem->inputType === JTL\Plugin\Admin\InputType::TEXTAREA}

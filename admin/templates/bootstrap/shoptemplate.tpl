@@ -111,19 +111,10 @@
                                                         {/foreach}
                                                     </select>
                                                 {elseif $oSetting->cType === 'colorpicker'}
-                                                    <div class="input-group" id="{$oSection->cKey}-{$oSetting->cKey}-group">
-                                                        <input type="text" class="form-control colorpicker-input"
-                                                               name="cWert[]" value="{$oSetting->cValue}" id="{$oSection->cKey}-{$oSetting->cKey}"
-                                                               autocomplete="off">
-                                                        <span class="input-group-append">
-                                                            <span class="input-group-text colorpicker-input-addon">
-                                                                <i></i>
-                                                            </span>
-                                                        </span>
-                                                    </div>
-                                                    <script>
-                                                        $('#{$oSection->cKey}-{$oSetting->cKey}-group').colorpicker();
-                                                    </script>
+                                                    {include file='snippets/colorpicker.tpl'
+                                                        cpID="{$oSection->cKey}-{$oSetting->cKey}"
+                                                        cpName="cWert[]"
+                                                        cpValue=$oSetting->cValue}
                                                 {elseif $oSetting->cType === 'number'}
                                                     <div class="input-group form-counter">
                                                         <div class="input-group-prepend">

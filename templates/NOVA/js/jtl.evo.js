@@ -829,11 +829,13 @@
                 step: 1
             });
             $priceSlider.noUiSlider.on('change', function (values, handle) {
-                $priceRangeFrom.val(values[0]);
-                $priceRangeTo.val(values[1]);
                 setTimeout(function(){
                     $.evo.redirectToNewPriceRange(values[0] + '_' + values[1], redirect, $wrapper);
                 },0);
+            });
+            $priceSlider.noUiSlider.on('update', function (values, handle) {
+                $priceRangeFrom.val(values[0]);
+                $priceRangeTo.val(values[1]);
             });
             $('.price-range-input').change(function () {
                 let prFrom = $priceRangeFrom.val(),

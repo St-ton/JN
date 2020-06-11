@@ -20557,6 +20557,7 @@ aside .box-monthlynews a .value:hover {
   position: relative;
 }
 .label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) label {
+  display: block;
   background: #ffffff;
   position: absolute;
   cursor: text;

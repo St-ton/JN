@@ -31,7 +31,7 @@ class Migration_20200612140816 extends Migration implements IMigration
                     WHERE cFromUrl LIKE :searchPath",
                 [
                     'path'       => $shopSubPath,
-                    'searchPath' => $shopSubPath . '%'
+                    'searchPath' => '/' . $shopSubPath . '%'
                 ],
                 ReturnType::DEFAULT
             );

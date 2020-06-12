@@ -93,27 +93,10 @@
                                                     {/foreach}
                                                 </select>
                                             {elseif $setting->cType === 'colorpicker'}
-                                                <div id="{$section->key}-{$setting->key}" style="display:inline-block">
-                                                    <div style="background-color: {$setting->value}" class="colorSelector"></div>
-                                                </div>
-                                                <input type="hidden" name="cWert[]" class="{$section->key}-{$setting->key}_data" value="{$setting->value}" />
-                                                <script type="text/javascript">
-                                                    $('#{$section->key}-{$setting->key}').ColorPicker({ldelim}
-                                                        color:    '{$setting->value}',
-                                                        onShow:   function (colpkr) {ldelim}
-                                                            $(colpkr).fadeIn(500);
-                                                            return false;
-                                                            {rdelim},
-                                                        onHide:   function (colpkr) {ldelim}
-                                                            $(colpkr).fadeOut(500);
-                                                            return false;
-                                                            {rdelim},
-                                                        onChange: function (hsb, hex, rgb) {ldelim}
-                                                            $('#{$section->key}-{$setting->key} div').css('backgroundColor', '#' + hex);
-                                                            $('.{$section->key}-{$setting->key}_data').val('#' + hex);
-                                                            {rdelim}
-                                                        {rdelim});
-                                                </script>
+                                                {include file='snippets/colorpicker.tpl'
+                                                cpID="{$oSection->cKey}-{$oSetting->cKey}"
+                                                cpName="cWert[]"
+                                                cpValue=$oSetting->cValue}
                                             {elseif $setting->cType === 'number'}
                                                 <div class="input-group form-counter">
                                                     <div class="input-group-prepend">

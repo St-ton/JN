@@ -155,7 +155,6 @@ export default class NavScrollbar {
         this._itemWidth = 0
 
         $.each(this.$scrollBarItems, (i, element) => {
-            console.log(element.offsetWidth);
             this._itemWidth += Math.round(element.offsetWidth)
         })
     }

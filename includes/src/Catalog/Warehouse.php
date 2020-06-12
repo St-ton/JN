@@ -721,9 +721,9 @@ class Warehouse extends MainModel
         ) {
             $backorder = sprintf(
                 Shop::Lang()->get('productInflowing', 'productDetails'),
-                $this->fZulauf,
+                $this->getBackorder(),
                 $item->cEinheit,
-                $this->dZulaufDatum_de
+                $this->getBackorderDateDE()
             );
         }
 

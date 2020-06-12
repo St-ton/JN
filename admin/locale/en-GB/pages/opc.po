@@ -459,3 +459,6 @@ msgstr "Done"
 
 msgid "alignment"
 msgstr "Alignment"
+
+msgid "targetBlank"
+msgstr "Open link in new tab"

@@ -372,8 +372,12 @@ class JTLSmarty extends SmartyBC
         if ($this->context === ContextType::FRONTEND) {
             $this->registerFilter('output', [$this, 'outputFilter']);
         }
+        $res = parent::display($this->getResourceName($template), $cacheID, $compileID, $parent);
+        if ($this->context === ContextType::BACKEND) {
+            require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';
+        }
 
-        return parent::display($this->getResourceName($template), $cacheID, $compileID, $parent);
+        return $res;
     }
 
     /**

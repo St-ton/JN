@@ -24,7 +24,7 @@ class Migration_20200612150000 extends Migration implements IMigration
     public function up()
     {
         $this->setLocalization('ger', 'productDetails', 'productInflowing', 'Ware bestellt. %s %s voraussichtlich ab dem %s verfügbar.');
-        $this->setLocalization('eng', 'productDetails', 'productInflowing', 'Ware bestellt. %s %s voraussichtlich ab dem %s verfügbar.');
+        $this->setLocalization('eng', 'productDetails', 'productInflowing', 'Goods ordered. %s %s expected on %s.');
     }
 
     /**
@@ -33,6 +33,6 @@ class Migration_20200612150000 extends Migration implements IMigration
     public function down()
     {
         $this->setLocalization('ger', 'productDetails', 'productInflowing', '%s bestellt, am %s erwartet');
-        $this->setLocalization('eng', 'productDetails', 'productInflowing', '%s bestellt, am %s erwartet');
+        $this->setLocalization('eng', 'productDetails', 'productInflowing', '%s ordered, expected on %s');
     }
 }

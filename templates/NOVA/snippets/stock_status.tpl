@@ -1,5 +1,5 @@
 {block name='snippets-stock-status'}
-    {assign var=anzeige value=$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige}aaaaaaaaa
+    {assign var=anzeige value=$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige}
     {if $anzeige !== 'nichts'
         && ($currentProduct->cLagerKleinerNull === 'N'
             || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')

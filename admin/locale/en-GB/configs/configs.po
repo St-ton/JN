@@ -2998,3 +2998,9 @@ msgstr "Show GTIN"
 
 msgid "gtin_display_desc"
 msgstr "Specify whether to show the GTIN."
+
+msgid "consent_manager_active_name"
+msgstr "Enable Consent manager"
+
+msgid "consent_manager_active_desc"
+msgstr "Specify whether to enable the Consent manager."

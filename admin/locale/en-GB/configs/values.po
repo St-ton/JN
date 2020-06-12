@@ -2416,3 +2416,9 @@ msgstr "Yes, in lists"
 
 msgid "gtin_display_value(always)"
 msgstr "Yes, on item detail page and in lists"
+
+msgid "consent_manager_active_value(N)"
+msgstr "No"
+
+msgid "consent_manager_active_value(Y)"
+msgstr "Yes"

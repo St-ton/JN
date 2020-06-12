@@ -2,7 +2,10 @@
     $(document).ready(function () {
         ioCall(
             'getRemoteData',
-            ['{$smarty.const.JTLURL_GET_SHOPNEWS}','oNews_arr', 'widgets/news_data.tpl', 'news_data_wrapper'],
+            ['{$smarty.const.JTLURL_GET_SHOPNEWS}',
+                'oNews_arr',
+                'widgets/news_data.tpl',
+                'news_data_wrapper'],
             undefined,
             undefined,
             undefined,

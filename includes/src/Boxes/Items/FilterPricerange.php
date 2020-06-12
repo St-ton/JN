@@ -20,9 +20,11 @@ final class FilterPricerange extends AbstractBox
     {
         parent::__construct($config);
         $templateSettings = Template::getInstance()->getConfig();
-        $filter           = Shop::getProductFilter()->getPriceRangeFilter();
-        $searchResults    = Shop::getProductFilter()->getSearchResults();
+        $productFilter    = Shop::getProductFilter();
+        $filter           = $productFilter->getPriceRangeFilter();
+        $searchResults    = $productFilter->getSearchResults();
         $show             = (isset($templateSettings['productlist'])
+                && !$productFilter->isExtendedJTLSearch()
                 && ($templateSettings['productlist']['always_show_price_range'] ?? 'N') === 'Y')
             || ($filter->getVisibility() !== Visibility::SHOW_NEVER
                 && $filter->getVisibility() !== Visibility::SHOW_CONTENT

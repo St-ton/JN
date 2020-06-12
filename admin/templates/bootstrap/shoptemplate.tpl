@@ -111,27 +111,10 @@
                                                         {/foreach}
                                                     </select>
                                                 {elseif $oSetting->cType === 'colorpicker'}
-                                                    <div id="{$oSection->cKey}-{$oSetting->cKey}" style="display:inline-block">
-                                                        <div style="background-color: {$oSetting->cValue}" class="colorSelector"></div>
-                                                    </div>
-                                                    <input type="hidden" name="cWert[]" class="{$oSection->cKey}-{$oSetting->cKey}_data" value="{$oSetting->cValue}" />
-                                                    <script type="text/javascript">
-                                                        $('#{$oSection->cKey}-{$oSetting->cKey}').ColorPicker({ldelim}
-                                                            color:    '{$oSetting->cValue}',
-                                                            onShow:   function (colpkr) {ldelim}
-                                                                $(colpkr).fadeIn(500);
-                                                                return false;
-                                                                {rdelim},
-                                                            onHide:   function (colpkr) {ldelim}
-                                                                $(colpkr).fadeOut(500);
-                                                                return false;
-                                                                {rdelim},
-                                                            onChange: function (hsb, hex, rgb) {ldelim}
-                                                                $('#{$oSection->cKey}-{$oSetting->cKey} div').css('backgroundColor', '#' + hex);
-                                                                $('.{$oSection->cKey}-{$oSetting->cKey}_data').val('#' + hex);
-                                                                {rdelim}
-                                                            {rdelim});
-                                                    </script>
+                                                    {include file='snippets/colorpicker.tpl'
+                                                        cpID="{$oSection->cKey}-{$oSetting->cKey}"
+                                                        cpName="cWert[]"
+                                                        cpValue=$oSetting->cValue}
                                                 {elseif $oSetting->cType === 'number'}
                                                     <div class="input-group form-counter">
                                                         <div class="input-group-prepend">

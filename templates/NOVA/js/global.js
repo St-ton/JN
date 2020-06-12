@@ -155,8 +155,12 @@ function loadContent(url)
             addValidationListener();
         }
 
+        let topbarHeight      = $('#header-top-bar').outerHeight() || 0,
+            wrapperHeight     = $('#jtl-nav-wrapper').outerHeight() || 0,
+            productListHeight = $('#product-list').offset().top || 0,
+            pageNavHeight     = $('.productlist-page-nav').outerHeight() || 0;
         $('html,body').animate({
-            scrollTop: $('.list-pageinfo').offset().top - $('#main-nav-wrapper').outerHeight() - 10
+            scrollTop: productListHeight - wrapperHeight - topbarHeight - pageNavHeight - 20
         }, 100);
     });
 }

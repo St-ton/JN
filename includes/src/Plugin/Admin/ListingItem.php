@@ -212,7 +212,7 @@ class ListingItem
      */
     private function fail(): self
     {
-        $this->version = Version::parse('0.0.0');
+        $this->version = $this->version ?? Version::parse('0.0.0');
 
         return $this;
     }

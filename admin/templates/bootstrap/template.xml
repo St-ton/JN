@@ -10,7 +10,6 @@
             <File Path="css/jquery-ui.theme.css"/>
             <File Path="css/jquery-ui.min.css"/>
             <File Path="css/font-awesome.min.css"/>
-            <File Path="css/colorpicker.css"/>
             <File Path="css/bootstrap-ladda.css"/>
             <File Path="js/fileinput/fileinput.css"/>
             <File Path="css/animate.css"/>
@@ -30,7 +29,6 @@
             <File Path="js/popper.min.js"/>
             <File Path="js/bootstrap.js"/>
             <File Path="js/button.js"/>
-            <File Path="js/colorpicker.js"/>
             <File Path="js/jquery-ui-timepicker-addon.js"/>
             <File Path="js/jquery.cookie.js"/>
             <File Path="js/highcharts.min.js"/>

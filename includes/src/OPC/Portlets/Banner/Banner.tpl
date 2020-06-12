@@ -32,7 +32,7 @@
             {if !empty($zone.desc)}
                 {$desc = $zone.desc}
             {/if}
-            <a class="area {$zone.class}" href="{$url}" {if $zone.target}target="_blank"{/if} title="{$title|strip_tags|escape:'html'|escape:'quotes'}"
+            <a class="area {if empty($product) && $desc|@strlen === 0 && empty($title)}empty-popover{/if} {$zone.class}" href="{$url}" {if $zone.target}target="_blank"{/if} title="{$title|strip_tags|escape:'html'|escape:'quotes'}"
                style="left: {$zone.left}%; top: {$zone.top}%; width: {$zone.width}%; height: {$zone.height}%;">
                 <div class="area-desc">
                     {if !empty($product) > 0}

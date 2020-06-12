@@ -94,9 +94,9 @@
                                                 </select>
                                             {elseif $setting->cType === 'colorpicker'}
                                                 {include file='snippets/colorpicker.tpl'
-                                                cpID="{$oSection->cKey}-{$oSetting->cKey}"
+                                                cpID="{$section->key}-{$setting->key}"
                                                 cpName="cWert[]"
-                                                cpValue=$oSetting->cValue}
+                                                cpValue=$setting->value}
                                             {elseif $setting->cType === 'number'}
                                                 <div class="input-group form-counter">
                                                     <div class="input-group-prepend">

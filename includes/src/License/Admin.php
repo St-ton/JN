@@ -102,6 +102,7 @@ class Admin
                 $result    = $action === 'update'
                     ? $installer->update($itemID, $download, $response)
                     : $installer->install($itemID, $download, $response);
+                $this->cache->flushTags([\CACHING_GROUP_LICENSES]);
                 if ($result !== InstallCode::OK) {
                     $smarty->assign('licenseErrorMessage', $response->error)
                         ->assign('resultCode', $result);

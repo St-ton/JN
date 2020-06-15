@@ -6,18 +6,20 @@
             <span class="badge badge-info">{$licenseItemUpdates->count()}</span>
         </span>
     </a>
-        <div class="dropdown-menu dropdown-menu-right dropdown-menu-lg" role="main">
-            <span class="dropdown-header">{__('Updates available')}</span>
-            <div class="dropdown-divider"></div>
-            {foreach $licenseItemUpdates as $item}
-                <div class="dropdown-item-text">
-                    <span class="icon-text-indent">
-                        <div><i class="fa fa-circle text-info" aria-hidden="true"></i></div>
-                        <a href="{$shopURL}/{$smarty.const.PFAD_ADMIN}licenses.php">
-                            <span class="item-name">{$item->getName()} </span> <span class="badge badge-info">{$item->getReferencedItem()->getInstalledVersion()} &rarr; {$item->getReferencedItem()->getMaxInstallableVersion()}</span>
-                        </a>
-                    </span>
-                </div>
-            {/foreach}
-        </div>
+    <div class="dropdown-menu dropdown-menu-right dropdown-menu-lg" role="main">
+        <span class="dropdown-header">{__('Updates available')}</span>
+        <div class="dropdown-divider"></div>
+        {foreach $licenseItemUpdates as $item}
+            <div class="dropdown-item-text">
+                <span class="icon-text-indent">
+                    <div><i class="fa fa-circle text-info" aria-hidden="true"></i></div>
+                    <a href="{$shopURL}/{$smarty.const.PFAD_ADMIN}licenses.php#license-item-{$item->getID()}">
+                        <span class="item-name">{$item->getName()} </span> <span class="badge badge-info">
+                            {$item->getReferencedItem()->getInstalledVersion()} &rarr; {$item->getReferencedItem()->getMaxInstallableVersion()}
+                        </span>
+                    </a>
+                </span>
+            </div>
+        {/foreach}
+    </div>
 {/if}

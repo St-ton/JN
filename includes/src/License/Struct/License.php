@@ -164,6 +164,18 @@ class License
     }
 
     /**
+     * @return int
+     */
+    public function getDaysRemaining(): int
+    {
+        if ($this->getValidUntil() === null) {
+            return 0;
+        }
+
+        return (int)(new DateTime())->diff($this->getValidUntil())->format('%R%a');
+    }
+
+    /**
      * @return bool
      */
     public function isExpired(): bool

@@ -468,7 +468,7 @@ $(document).ready(function () {
     /*
      * Banner
      */
-    var bannerLink = $('.banner > a');
+    var bannerLink = $('.banner > a:not(.empty-popover)');
     bannerLink.popover({
         html:      true,
         placement: 'bottom',

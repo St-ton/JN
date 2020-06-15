@@ -826,18 +826,28 @@
                     'min': parseInt(priceRangeMin),
                     'max': parseInt(priceRangeMax)
                 },
-                step: 1
+                step: 1,
+                format: {
+                    to: function (value) {
+                        return parseInt(value);
+                    },
+                    from: function (value) {
+                        return parseInt(value);
+                    }
+                }
             });
             $priceSlider.noUiSlider.on('change', function (values, handle) {
-                $priceRangeFrom.val(values[0]);
-                $priceRangeTo.val(values[1]);
                 setTimeout(function(){
                     $.evo.redirectToNewPriceRange(values[0] + '_' + values[1], redirect, $wrapper);
                 },0);
             });
+            $priceSlider.noUiSlider.on('update', function (values, handle) {
+                $priceRangeFrom.val(values[0]);
+                $priceRangeTo.val(values[1]);
+            });
             $('.price-range-input').change(function () {
-                let prFrom = $priceRangeFrom.val(),
-                    prTo = $priceRangeTo.val();
+                let prFrom = parseInt($priceRangeFrom.val()),
+                    prTo = parseInt($priceRangeTo.val());
                 $.evo.redirectToNewPriceRange(
                     (prFrom > 0 ? prFrom : priceRangeMin) + '_' + (prTo > 0 ? prTo : priceRangeMax),
                     redirect,

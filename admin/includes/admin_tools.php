@@ -88,14 +88,14 @@ function getAdminSectionSettings($configSectionID)
 
             $conf->gesetzterWert = $setValue;
         } elseif ($conf->cInputTyp === 'selectkdngrp') {
-            $setValue           = $db->selectAll(
+            $setValue            = $db->selectAll(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
                 [$conf->kEinstellungenSektion, $conf->cWertName]
             );
             $conf->gesetzterWert = $setValue;
         } else {
-            $setValue           = $db->select(
+            $setValue            = $db->select(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
                 [$conf->kEinstellungenSektion, $conf->cWertName]

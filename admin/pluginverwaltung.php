@@ -143,8 +143,9 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
         $smarty->assign('kPlugin', $pluginID)
             ->assign('oPlugin', $plugin);
     } elseif (is_array($_POST['kPlugin'] ?? false) && count($_POST['kPlugin']) > 0) {
-        $pluginIDs  = array_map('\intval', $_POST['kPlugin'] ?? []);
-        $deleteData = Request::postInt('delete-data', 1) === 1;
+        $pluginIDs   = array_map('\intval', $_POST['kPlugin'] ?? []);
+        $deleteData  = Request::postInt('delete-data', 1) === 1;
+        $deleteFiles = Request::postInt('delete-files', 1) === 1;
         foreach ($pluginIDs as $pluginID) {
             if (isset($_POST['aktivieren'])) {
                 $res = $stateChanger->activate($pluginID);
@@ -191,7 +192,7 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
             } elseif (isset($_POST['deinstallieren'])) {
                 $plugin = $db->select('tplugin', 'kPlugin', $pluginID);
                 if (isset($plugin->kPlugin) && $plugin->kPlugin > 0) {
-                    switch ($uninstaller->uninstall($pluginID, false, null, $deleteData)) {
+                    switch ($uninstaller->uninstall($pluginID, false, null, $deleteData, $deleteFiles)) {
                         case InstallCode::WRONG_PARAM:
                             $errorMsg = __('errorAtLeastOnePlugin');
                             break;

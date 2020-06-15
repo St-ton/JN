@@ -191,6 +191,9 @@ msgstr "Plug-in licence"
 msgid "deletePluginData"
 msgstr "Delete plug-in from database?"
 
+msgid "deletePluginFilesQuestion"
+msgstr "Also try to delete plugin files?"
+
 msgid "deletePluginDataYes"
 msgstr "Yes, delete all plug-in data."
 

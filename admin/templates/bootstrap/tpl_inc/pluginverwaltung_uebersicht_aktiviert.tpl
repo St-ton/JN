@@ -164,7 +164,8 @@
                 </button>
             </div>
             <div class="modal-body">
-
+                <label for="delete-files">{__('deletePluginFilesQuestion')}</label>
+                <input type="checkbox" id="delete-files" name="delete-files">
             </div>
             <div class="modal-footer">
                 <div class="row">
@@ -172,7 +173,8 @@
                         <button type="button" class="btn btn-danger btn-bock" name="yes" data-dismiss="modal">
                             <i class="fa fa-close"></i>&nbsp;{__('deletePluginDataYes')}
                         </button>
-                    </div> <div class="col-sm-6 col-xl-auto submit">
+                    </div>
+                    <div class="col-sm-6 col-xl-auto submit">
                         <button type="button" class="btn btn-outline-primary" name="no" data-dismiss="modal">
                             <i class="fa fa-close"></i>&nbsp;{__('deletePluginDataNo')}
                         </button>
@@ -203,6 +205,12 @@
                     data += '1';
                 } else {
                     data += '0';
+                }
+                data += '&delete-files=';
+                if (document.getElementById('delete-files').checked) {
+                    data += '1'
+                } else {
+                    data += '0'
                 }
                 simpleAjaxCall('pluginverwaltung.php', data, function () {
                     location.reload();

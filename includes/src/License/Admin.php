@@ -74,7 +74,7 @@ class Admin
         $action = Request::postVar('action');
         $valid  = Form::validateToken();
         if ($action === 'recheck' && $valid) {
-            $this->getLicenses();
+            $this->getLicenses(true);
             $action = null;
         }
         if ($action === 'revoke' && $valid) {
@@ -133,10 +133,13 @@ class Admin
             ->assign('lastUpdate', $data->timestamp ?? null);
     }
 
-    private function getLicenses(): void
+    /**
+     * @param bool $force
+     */
+    private function getLicenses(bool $force = false): void
     {
         try {
-            $this->manager->update();
+            $this->manager->update($force);
         } catch (RequestException | Exception $e) {
             Shop::Container()->getAlertService()->addAlert(
                 Alert::TYPE_ERROR,

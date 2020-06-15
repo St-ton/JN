@@ -178,7 +178,7 @@ class GenericAdmin
             ->assign('models', $models)
             ->assign('action', Shop::getAdminURL() . '/' . $this->adminBaseFile)
             ->assign('pagination', $pagination)
-            ->assign('settings', getAdminSectionSettings(\CONF_CONSENTMANAGER))
+            ->assign('settings', \getAdminSectionSettings(\CONF_CONSENTMANAGER))
             ->assign('tab', $this->tab)
             ->display($template);
     }
@@ -252,7 +252,7 @@ class GenericAdmin
         $this->tab = 'settings';
         $this->alertService->addAlert(
             Alert::TYPE_SUCCESS,
-            saveAdminSectionSettings(\CONF_CONSENTMANAGER, $_POST),
+            \saveAdminSectionSettings(\CONF_CONSENTMANAGER, $_POST),
             'saveSettings'
         );
     }

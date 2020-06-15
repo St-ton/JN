@@ -68,6 +68,16 @@ class Manager
         if (!$force && !$this->checkUpdate()) {
             return 0;
         }
+        if (true) { // @todo: remove
+            $data = $this->getLocalTestData();
+            $this->housekeeping();
+            $this->cache->flushTags([\CACHING_GROUP_LICENSES]);
+
+            return $this->db->insert(
+                'licenses',
+                (object)['data' => \json_encode($data), 'returnCode' => 200]
+            );
+        }
         $res = $this->client->request(
             'POST',
             'https://license.jtl-test.de/v1/exs',
@@ -87,6 +97,7 @@ class Manager
 
     /**
      * @return stdClass
+     * @todo: remove
      */
     private function getLocalTestData(): stdClass
     {
@@ -103,7 +114,7 @@ class Manager
      */
     public function getLicenseData(): ?stdClass
     {
-        if (true) {
+        if (true) { // @todo: remove
             return $this->getLocalTestData();
         }
         $data = $this->db->query(

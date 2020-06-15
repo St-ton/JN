@@ -134,7 +134,7 @@ class Plugins
                 : [];
 
             if (\count($qp) > 0) {
-                $url = $url . (\parse_url($url, \PHP_URL_QUERY) ? '&' : '?') . \http_build_query($qp, '', '&');
+                $url .= (\parse_url($url, \PHP_URL_QUERY) ? '&' : '?') . \http_build_query($qp, '', '&');
             }
             if (isset($params['assign'])) {
                 $smarty->assign($params['assign'], $url);
@@ -339,10 +339,8 @@ class Plugins
                             $precision
                         ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
 
-                    $surcharge->cAufpreisLocalized = $surcharge->cAufpreisLocalized . ', ' .
-                        $surcharge->cPreisVPEWertAufpreis;
-                    $surcharge->cPreisInklAufpreis = $surcharge->cPreisInklAufpreis . ', ' .
-                        $surcharge->cPreisVPEWertInklAufpreis;
+                    $surcharge->cAufpreisLocalized .= ', ' . $surcharge->cPreisVPEWertAufpreis;
+                    $surcharge->cPreisInklAufpreis .= ', ' . $surcharge->cPreisVPEWertInklAufpreis;
                 }
             } else {
                 $surcharge->cAufpreisLocalized = Preise::getLocalizedPriceString(
@@ -372,10 +370,8 @@ class Plugins
                             $precision
                         ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
 
-                    $surcharge->cAufpreisLocalized = $surcharge->cAufpreisLocalized .
-                        ', ' . $surcharge->cPreisVPEWertAufpreis;
-                    $surcharge->cPreisInklAufpreis = $surcharge->cPreisInklAufpreis .
-                        ', ' . $surcharge->cPreisVPEWertInklAufpreis;
+                    $surcharge->cAufpreisLocalized .= ', ' . $surcharge->cPreisVPEWertAufpreis;
+                    $surcharge->cPreisInklAufpreis .= ', ' . $surcharge->cPreisVPEWertInklAufpreis;
                 }
             }
         }

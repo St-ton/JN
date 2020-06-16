@@ -24,6 +24,7 @@ use JTL\Plugin\PluginLoader;
 use JTL\Plugin\State;
 use JTL\Shop;
 use JTL\XMLParser;
+use JTLShop\SemVer\Version;
 use function Functional\first;
 use function Functional\group;
 use function Functional\select;
@@ -90,7 +91,8 @@ if ($pluginUploaded === true) {
         ->assign('pluginsInstalled', $pluginsInstalled)
         ->assign('pluginsProblematic', $pluginsProblematic)
         ->assign('pluginsAvailable', $pluginsAvailable)
-        ->assign('pluginsErroneous', $pluginsErroneous);
+        ->assign('pluginsErroneous', $pluginsErroneous)
+        ->assign('shopVersion', Version::parse(\APPLICATION_VERSION));
 
     $html                  = new stdClass();
     $html->available       = $smarty->fetch('tpl_inc/pluginverwaltung_uebersicht_verfuegbar.tpl');
@@ -403,4 +405,5 @@ $smarty->assign('hinweis64', base64_encode($notice))
     ->assign('pluginsProblematic', $pluginsProblematic)
     ->assign('pluginsDisabled', $pluginsDisabled)
     ->assign('allPluginItems', $pluginsAll)
+    ->assign('shopVersion', Version::parse(\APPLICATION_VERSION))
     ->display('pluginverwaltung.tpl');

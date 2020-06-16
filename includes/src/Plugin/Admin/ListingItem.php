@@ -247,8 +247,8 @@ class ListingItem
         $this->setAuthor($meta->getAuthor());
         $this->setID($plugin->getID());
         $this->setPluginID($plugin->getPluginID());
-        $this->setPath($plugin->getPaths()->getBaseDir());
-        $this->setDir($plugin->getPaths()->getVersionedPath());
+        $this->setPath($plugin->getPaths()->getVersionedPath());
+        $this->setDir($plugin->getPaths()->getBaseDir());
         $this->setIsLegacy($plugin->isLegacy());
         $this->setIcon($meta->getIcon());
         $this->setVersion($meta->getSemVer());
@@ -264,6 +264,8 @@ class ListingItem
         $this->setIsShop5Compatible(!$this->isLegacy());
         $this->setLicenseKey($plugin->getLicense()->getKey());
         $this->setUpdateAvailable($plugin->getMeta()->getUpdateAvailable());
+        $this->setMinShopVersion(Version::parse('0.0.0'));
+        $this->setMaxShopVersion(Version::parse('0.0.0'));
 
         return $this;
     }

@@ -185,6 +185,12 @@ msgstr "Bitte beachten Sie, dass das Plugin nicht vollständig mit JTL-Shop&nbsp
 msgid "dangerPluginNotCompatibleShop4"
 msgstr "Bitte beachten Sie, dass das Plugin nicht vollständig mit JTL-Shop&nbsp;4 kompatibel ist. Es können daher Probleme beim Betrieb entstehen."
 
+msgid "dangerMinShopVersion"
+msgstr "Bitte beachten Sie, dass das Plugin eine aktuellere Version von JTL-Shop erfordert. Es können daher Probleme beim Betrieb entstehen."
+
+msgid "dangerMaxShopVersion"
+msgstr "Bitte beachten Sie, dass das Plugin für eine ältere Version von JTL-Shop entwickelt wurde. Es können daher Probleme beim Betrieb entstehen."
+
 msgid "licensePlugin"
 msgstr "Plugin-Lizenz"
 

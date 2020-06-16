@@ -183,7 +183,13 @@ msgid "dangerPluginNotCompatibleShop5"
 msgstr "Please note that the plug-in is not fully compatible with JTL-Shop&nbsp;5. This might lead to performance issues."
 
 msgid "dangerPluginNotCompatibleShop4"
-msgstr "Please note that the plug-in is not fully compatible with JTL-Shop&nbsp;4. This might lead to performance issues."
+msgstr "Pleas note that the plug-in is not fully compatible with JTL-Shop&nbsp;4. This might lead to performance issues."
+
+msgid "dangerMinShopVersion"
+msgstr "Pleas note that the plug-in requires a newer version of JTL-Shop. This might lead to issues."
+
+msgid "dangerMaxShopVersion"
+msgstr "Pleas note that the plug-in requires an older version of JTL-Shop. This might lead to issues."
 
 msgid "licensePlugin"
 msgstr "Plug-in licence"

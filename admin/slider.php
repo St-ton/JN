@@ -39,6 +39,7 @@ switch ($action) {
             $slide->setSliderID($kSlider);
             $slide->setTitle(htmlspecialchars($aSlide['cTitel'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET));
             $slide->setImage($aSlide['cBild']);
+            $slide->setThumbnail($aSlide['cThumbnail']);
             $slide->setText($aSlide['cText']);
             $slide->setLink($aSlide['cLink']);
             $slide->setSort((int)$aSlide['nSort']);

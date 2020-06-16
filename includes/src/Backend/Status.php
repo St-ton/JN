@@ -7,6 +7,9 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\Checkout\ZahlungsLog;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\License\Manager;
+use JTL\License\Mapper;
+use JTL\License\Struct\ExsLicense;
 use JTL\Media\Image\Product;
 use JTL\Media\Image\StatsItem;
 use JTL\Plugin\Helper;
@@ -383,6 +386,26 @@ class Status
                     WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'",
                     ReturnType::SINGLE_OBJECT
                 ));
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasLicenseExpirations(): bool
+    {
+        $manager    = new Manager($this->db, Shop::Container()->getCache());
+        $mapper     = new Mapper($manager);
+        $collection = $mapper->getCollection();
+
+        return $collection->contains(static function (ExsLicense $item) {
+            $license = $item->getLicense();
+            if ($license->getValidUntil() !== null && $license->getDaysRemaining() < 28) {
+                return true;
+            }
+            $subscription = $license->getSubscription();
+
+            return $subscription->getValidUntil() !== null && $subscription->getDaysRemaining() < 28;
+        });
     }
 
     /**

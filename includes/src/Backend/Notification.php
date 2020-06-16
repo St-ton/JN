@@ -175,6 +175,15 @@ class Notification implements IteratorAggregate, Countable
             );
         }
 
+        if ($status->hasLicenseExpirations()) {
+            $this->add(
+                NotificationEntry::TYPE_WARNING,
+                __('hasLicenseExpirationsTitle'),
+                __('hasLicenseExpirationsMessage'),
+                'licenses.php'
+            );
+        }
+
         /* REMOTE CALL
         if (($subscription =  Shop()->RS()->getSubscription()) !== null) {
             if ((int)$subscription->bUpdate === 1) {

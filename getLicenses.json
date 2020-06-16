@@ -335,7 +335,7 @@
         "created": "2019-01-01T12:00:00.000Z",
         "validUntil": null,
         "subscription": {
-          "validUntil": "2020-07-01T00:00:00.000Z"
+          "validUntil": "2020-07-14T00:00:00.000Z"
         }
       },
       "vendor": {
@@ -389,7 +389,7 @@
         "created": "2020-04-01T12:00:00.000Z",
         "validUntil": null,
         "subscription": {
-          "validUntil": "2020-06-09T00:00:00.000Z"
+          "validUntil": "2020-08-09T00:00:00.000Z"
         }
       },
       "vendor": {
@@ -443,7 +443,7 @@
         "created": "2020-04-01T12:00:00.000Z",
         "validUntil": null,
         "subscription": {
-          "validUntil": "2020-06-09T00:00:00.000Z"
+          "validUntil": "2020-09-09T00:00:00.000Z"
         }
       },
       "vendor": {
@@ -497,7 +497,7 @@
         "created": "2020-04-01T12:00:00.000Z",
         "validUntil": null,
         "subscription": {
-          "validUntil": "2020-06-09T00:00:00.000Z"
+          "validUntil": "2022-06-09T00:00:00.000Z"
         }
       },
       "vendor": {
@@ -551,7 +551,7 @@
         "created": "2020-04-01T12:00:00.000Z",
         "validUntil": null,
         "subscription": {
-          "validUntil": "2020-06-09T00:00:00.000Z"
+          "validUntil": "2021-06-09T00:00:00.000Z"
         }
       },
       "vendor": {
@@ -657,7 +657,7 @@
         "key": "LIC-8337",
         "type": "prod",
         "created": "2020-05-01T12:00:00.000Z",
-        "validUntil": "2020-01-01T12:00:00.000Z",
+        "validUntil": "2021-01-01T12:00:00.000Z",
         "subscription": {
           "validUntil": null
         }

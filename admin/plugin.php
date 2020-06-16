@@ -146,6 +146,11 @@ if ($step === 'plugin_uebersicht' && $pluginID > 0) {
                     ob_start();
                     require $plugin->getPaths()->getAdminPath() . $menu->file;
                     $menu->html = ob_get_clean();
+                } elseif (!empty($menu->tpl) && $menu->kPluginAdminMenu === -1) {
+                    if (isset($menu->data)) {
+                        $smarty->assign('data', $menu->data);
+                    }
+                    $menu->html = $smarty->fetch($menu->tpl);
                 } elseif ($plugin->isBootstrap() === true) {
                     $menu->html = PluginHelper::bootstrap($pluginID, $loader)
                         ->renderAdminMenuTab($menu->name, $menu->id, $smarty);

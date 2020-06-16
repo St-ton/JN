@@ -50,7 +50,7 @@ final class LinkService implements LinkServiceInterface
     }
 
     /**
-     * @inheritdoc
+     * @return LinkServiceInterface
      */
     public static function getInstance(): LinkServiceInterface
     {

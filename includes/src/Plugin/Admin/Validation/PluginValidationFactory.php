@@ -23,6 +23,7 @@ use JTL\Plugin\Admin\Validation\Items\NoUninstaller;
 use JTL\Plugin\Admin\Validation\Items\PaymentMethods;
 use JTL\Plugin\Admin\Validation\Items\PluginID;
 use JTL\Plugin\Admin\Validation\Items\Portlets;
+use JTL\Plugin\Admin\Validation\Items\SemVer;
 use JTL\Plugin\Admin\Validation\Items\Version;
 use JTL\Plugin\Admin\Validation\Items\WidgetsExtension;
 use JTL\Plugin\Admin\Validation\Items\XMLVersion;
@@ -67,6 +68,7 @@ class PluginValidationFactory
         $validation[] = new Exports($node, $dir, $version, $pluginID);
         $validation[] = new ExtendedTemplates($node, $dir, $version, $pluginID);
         $validation[] = new NoUninstaller($node, $dir, $version, $pluginID);
+        $validation[] = new SemVer($node, $dir, $version, $pluginID);
 
         return $validation;
     }

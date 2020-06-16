@@ -4,8 +4,10 @@
     <Author>JTL-Software-GmbH</Author>
     <URL>https://www.jtl-software.de</URL>
     <ShopVersion>5.0.0</ShopVersion>
+    <Version>1.0.0</Version>
     <Preview>preview.png</Preview>
     <Description>JTL-Shop Responsive-Template</Description>
+    <Framework>Bootstrap4</Framework>
     <Settings>
         <Section Name="Allgemein" Key="general">
             <Setting Description="Komprimierung von JavaScript- und CSS-Dateien" Key="use_minify" Type="select" Value="N">
@@ -81,9 +83,7 @@
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
-            <Setting Description="Variationsauswahl anzeigen &lt;span data-html=&quot;true&quot; data-toggle=&quot;tooltip&quot;
-                        title=&quot;nur in Verbindung mit Zusatzinfos beim Hovern/Antippen&quot;&gt; &lt;span
-                        class=&quot;fas fa-info-circle fa-fw&quot;>&lt;/span&gt; &lt;/span&gt;" Key="variation_select_productlist" Type="select" Value="3">
+            <Setting Description="Variationsauswahl anzeigen" Key="variation_select_productlist" Type="select" Value="3">
                 <Option Value="N"><![CDATA[Nein]]></Option>
                 <Option Value="1"><![CDATA[max. 1]]></Option>
                 <Option Value="2"><![CDATA[max. 2]]></Option>
@@ -91,23 +91,19 @@
                 <Option Value="5"><![CDATA[max. 5]]></Option>
                 <Option Value="9999"><![CDATA[keine Beschr&auml;nkung]]></Option>
             </Setting>
-            <Setting Description="Anzahl der möglichen Variationswerte für Radio und Swatches &lt;span data-html=&quot;true&quot; data-toggle=&quot;tooltip&quot;
-                        title=&quot;nur in Verbindung mit „Variationsauswahl anzeigen“&quot;&gt; &lt;span
-                        class=&quot;fas fa-info-circle fa-fw&quot;>&lt;/span&gt; &lt;/span&gt;" Key="variation_max_werte_productlist" Type="select" Value="3">
+            <Setting Description="Anzahl der möglichen Variationswerte für Radio und Swatches" Key="variation_max_werte_productlist" Type="select" Value="3">
                 <Option Value="3"><![CDATA[max. 3]]></Option>
                 <Option Value="5"><![CDATA[max. 5]]></Option>
                 <Option Value="9"><![CDATA[max. 9]]></Option>
                 <Option Value="12"><![CDATA[max. 12]]></Option>
-                <Option Value="9999"><![CDATA[keine Beschr&auml;nkung]]></Option>
+                <Option Value="9999"><![CDATA[keine Beschränkung]]></Option>
             </Setting>
-            <Setting Description="Anzahl der sichtbaren Filteroptionen in Boxen &lt;span data-html=&quot;true&quot; data-toggle=&quot;tooltip&quot;
-                        title=&quot;weitere Optionen können eingeblendet werden&quot;&gt; &lt;span
-                        class=&quot;fas fa-info-circle fa-fw&quot;>&lt;/span&gt; &lt;/span&gt;" Key="filter_max_options" Type="select" Value="5">
+            <Setting Description="Anzahl der sichtbaren Filteroptionen in Boxen" Key="filter_max_options" Type="select" Value="5">
                 <Option Value="3"><![CDATA[max. 3]]></Option>
                 <Option Value="5"><![CDATA[max. 5]]></Option>
                 <Option Value="9"><![CDATA[max. 9]]></Option>
                 <Option Value="12"><![CDATA[max. 12]]></Option>
-                <Option Value="-1"><![CDATA[keine Beschr&auml;nkung]]></Option>
+                <Option Value="-1"><![CDATA[keine Beschränkung]]></Option>
             </Setting>
             <Setting Description="Preisspanne immer anzeigen (empfohlen)" Key="always_show_price_range" Type="select" Value="Y" Editable="false">
                 <Option Value="Y">Ja</Option>

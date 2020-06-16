@@ -125,12 +125,9 @@ final class Listing
      */
     public function getAll(Collection $installed): Collection
     {
-        $installedItems = $installed->map(static function (ListingItem $item) {
-            return $item->getPath();
-        });
-        $parser         = new XMLParser();
-        $this->parsePluginsDir($parser, self::PLUGINS_DIR, $installedItems);
-        $this->parsePluginsDir($parser, self::LEGACY_PLUGINS_DIR, $installedItems);
+        $parser = new XMLParser();
+        $this->parsePluginsDir($parser, self::PLUGINS_DIR, $installed);
+        $this->parsePluginsDir($parser, self::LEGACY_PLUGINS_DIR, $installed);
         $this->sort();
 
         return $this->items;
@@ -220,7 +217,15 @@ final class Listing
                 // do not add legacy plugins to list when there is a modern variant for it
                 continue;
             }
-            if ($code === InstallCode::DUPLICATE_PLUGIN_ID && $installedPlugins->contains($dir)) {
+            /** @var ListingItem|null $plugin */
+            $plugin = $installedPlugins->first(static function (ListingItem $value) use ($dir) {
+                return $value->getDir() === $dir;
+            });
+            if ($plugin !== null) {
+                $plugin->setMinShopVersion($item->getMinShopVersion());
+                $plugin->setMaxShopVersion($item->getMaxShopVersion());
+            }
+            if ($code === InstallCode::DUPLICATE_PLUGIN_ID && $plugin !== null) {
                 $item->setInstalled(true);
                 $item->setHasError(false);
                 $item->setIsShop4Compatible(true);

@@ -66,7 +66,15 @@ class PluginLoader extends AbstractLoader
     public function saveToCache(PluginInterface $plugin): bool
     {
         return $this->cacheID !== null
-            ? $this->cache->set($this->cacheID, $plugin, [\CACHING_GROUP_PLUGIN, $plugin->getCache()->getGroup()])
+            ? $this->cache->set(
+                $this->cacheID,
+                $plugin,
+                [
+                    \CACHING_GROUP_PLUGIN . '_' . $plugin->getID(),
+                    \CACHING_GROUP_PLUGIN,
+                    $plugin->getCache()->getGroup()
+                ]
+            )
             : false;
     }
 
@@ -86,6 +94,7 @@ class PluginLoader extends AbstractLoader
         $plugin->setPaths($paths);
         $getText->loadPluginLocale('base', $plugin);
         $plugin->setMeta($this->loadMetaData($obj));
+        $plugin->setLicense($this->loadLicense($obj));
         $this->loadMarkdownFiles($paths->getBasePath(), $plugin->getMeta());
         $this->loadAdminMenu($plugin);
         $plugin->setHooks($this->loadHooks($id));
@@ -94,7 +103,6 @@ class PluginLoader extends AbstractLoader
         $plugin->setLinks($this->loadLinks($id));
         $plugin->setPluginID($obj->cPluginID);
         $plugin->setPriority((int)$obj->nPrio);
-        $plugin->setLicense($this->loadLicense($obj));
         $plugin->setCache($this->loadCacheData($plugin));
         $plugin->setConfig($this->loadConfig($paths->getAdminPath(), $plugin->getID()));
         $plugin->setLocalization($this->loadLocalization($id, $currentLanguageCode));

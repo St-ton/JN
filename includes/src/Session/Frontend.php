@@ -120,7 +120,7 @@ class Frontend extends AbstractSession
      */
     private function initLanguageURLs(): void
     {
-        if (!\defined('EXPERIMENTAL_MULTILANG_SHOP') || \EXPERIMENTAL_MULTILANG_SHOP !== true) {
+        if (\EXPERIMENTAL_MULTILANG_SHOP !== true) {
             return;
         }
         $urls      = [];
@@ -222,7 +222,7 @@ class Frontend extends AbstractSession
      */
     private function updateGlobals(): void
     {
-        unset($_SESSION['cTemplate'], $_SESSION['template'], $_SESSION['oKategorie_arr_new']);
+        unset($_SESSION['oKategorie_arr_new']);
         $_SESSION['ks']       = [];
         $_SESSION['Sprachen'] = LanguageHelper::getInstance()->gibInstallierteSprachen();
         Currency::setCurrencies(true);
@@ -271,7 +271,7 @@ class Frontend extends AbstractSession
             }
         } else {
             foreach ($_SESSION['Waehrungen'] as $currency) {
-                /** @var $currency Currency */
+                /** @var Currency $currency */
                 if ($currency->isDefault()) {
                     $_SESSION['Waehrung']      = $currency;
                     $_SESSION['cWaehrungName'] = $currency->getName();

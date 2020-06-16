@@ -27,7 +27,7 @@ interface RendererInterface
     public function renderItem(ItemInterface $item): string;
 
     /**
-     * @inheritdoc
+     * @return string
      */
     public function flush(): string;
 }

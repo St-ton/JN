@@ -180,11 +180,13 @@ class Slide
     public function save(): bool
     {
         if (!empty($this->image)) {
+            $basename = \basename($this->image);
             if (Text::startsWith($this->image, 'Bilder/')) {
-                $this->thumbnail = \PFAD_MEDIAFILES . 'Bilder/.tmb/' . \basename($this->image);
+                $this->thumbnail = \PFAD_MEDIAFILES . 'Bilder/.tmb/' . $basename;
             } else {
-                $this->thumbnail = \STORAGE_OPC . '.tmb/' . \basename($this->image);
+                $this->thumbnail = \STORAGE_OPC . '.tmb/' . $basename;
             }
+            $this->setImage(\STORAGE_OPC . $basename);
         }
 
         return $this->id === null || $this->id === 0

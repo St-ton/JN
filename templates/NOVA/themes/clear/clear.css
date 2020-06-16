@@ -21445,6 +21445,10 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
   padding-top: 25px;
 }
 
+.nivo-controlNav .active img {
+  border: 1px solid #525252;
+}
+
 .stepper {
   align-items: center;
   border: 1px solid #ebebeb;

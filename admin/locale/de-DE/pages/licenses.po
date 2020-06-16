@@ -62,6 +62,9 @@ msgstr "Version %s verfügbar"
 msgid "Valid until %s"
 msgstr "gültig bis %s"
 
+msgid "Warning: only valid until %s"
+msgstr "Achtung: nur noch gültig bis %s"
+
 msgid "Active licenses"
 msgstr "Aktive Lizenzen"
 

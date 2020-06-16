@@ -65,6 +65,9 @@ msgstr "License expired on %s"
 msgid "Valid until %s"
 msgstr "Valid until %s"
 
+msgid "Warning: only valid until %s"
+msgstr "Warning: only valid until %s"
+
 msgid "pageDesc"
 msgstr "Manage your active and available licenses."
 

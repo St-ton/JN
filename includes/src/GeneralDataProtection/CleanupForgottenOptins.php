@@ -59,23 +59,29 @@ class CleanupForgottenOptins extends Method implements MethodInterface
             ReturnType::ARRAY_OF_OBJECTS
         );
 
-        $toptinKeys                = [];
-        $tnewsletterempfaengerKeys = [];
+        $optinIDs     = [];
+        $recipientIDs = [];
         foreach ($result as $row) {
-            $toptinKeys[]                = $row->o_kOptin;
-            $tnewsletterempfaengerKeys[] = $row->e_kNewsletterEmpfaenger;
+            $optinIDs[]     = $row->o_kOptin;
+            $recipientIDs[] = $row->e_kNewsletterEmpfaenger;
         }
-        $this->db->query(
-            'DELETE FROM toptin WHERE kOptin IN ('.
-            \implode(',', \array_filter($toptinKeys)).
-            ')',
-            ReturnType::AFFECTED_ROWS
-        );
-        $this->db->query(
-            'DELETE from tnewsletterempfaenger WHERE kNewsletterEmpfaenger IN ('.
-            \implode(',', \array_filter($tnewsletterempfaengerKeys)).
-            ')',
-            ReturnType::AFFECTED_ROWS
-        );
+        $recipientIDs = \array_filter($recipientIDs);
+        $optinIDs     = \array_filter($optinIDs);
+        if (\count($optinIDs) > 0) {
+            $this->db->query(
+                'DELETE FROM toptin WHERE kOptin IN (' .
+                \implode(',', $optinIDs) .
+                ')',
+                ReturnType::AFFECTED_ROWS
+            );
+        }
+        if (\count($recipientIDs) > 0) {
+            $this->db->query(
+                'DELETE from tnewsletterempfaenger WHERE kNewsletterEmpfaenger IN (' .
+                \implode(',', $recipientIDs) .
+                ')',
+                ReturnType::AFFECTED_ROWS
+            );
+        }
     }
 }

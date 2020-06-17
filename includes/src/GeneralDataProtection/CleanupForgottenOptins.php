@@ -72,7 +72,7 @@ class CleanupForgottenOptins extends Method implements MethodInterface
                 'DELETE FROM toptin WHERE kOptin IN (' .
                 \implode(',', $optinIDs) .
                 ')',
-                ReturnType::AFFECTED_ROWS
+                ReturnType::DEFAULT
             );
         }
         if (\count($recipientIDs) > 0) {
@@ -80,7 +80,7 @@ class CleanupForgottenOptins extends Method implements MethodInterface
                 'DELETE from tnewsletterempfaenger WHERE kNewsletterEmpfaenger IN (' .
                 \implode(',', $recipientIDs) .
                 ')',
-                ReturnType::AFFECTED_ROWS
+                ReturnType::DEFAULT
             );
         }
     }

@@ -51,7 +51,7 @@ class UpdateIO
             if ($updateResult instanceof IMigration) {
                 $updateResult = \sprintf('Migration: %s', $updateResult->getDescription());
             } elseif ($updateResult instanceof Version) {
-                $updateResult = \sprintf('Version: %d.%02d', $updateResult->getMajor(), $updateResult->getMinor());
+                $updateResult = \sprintf('Version: %s', $updateResult->__toString());
             } else {
                 $updateResult = \sprintf('Version: %.2f', $updateResult / 100);
             }

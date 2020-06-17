@@ -68,6 +68,22 @@ class Queue
     }
 
     /**
+     * @return int
+     */
+    public function unStuckQueues(): int
+    {
+        return $this->db->query(
+            'UPDATE tjobqueue
+                SET isRunning = 0
+                WHERE isRunning = 1
+                    AND startTime <= NOW()
+                    AND lastStart IS NOT NULL
+                    AND DATE_SUB(CURTIME(), INTERVAL 24 Hour) > lastStart',
+            ReturnType::AFFECTED_ROWS
+        );
+    }
+
+    /**
      * @param stdClass[] $jobs
      */
     public function enqueueCronJobs(array $jobs): void
@@ -100,6 +116,10 @@ class Queue
         }
         $checker->lock();
         $this->enqueueCronJobs($checker->check());
+        $affected = $this->unStuckQueues();
+        if ($affected > 0) {
+            $this->logger->debug('Unstuck ' . $affected . ' job(s).');
+        }
         $this->loadQueueFromDB();
         foreach ($this->queueEntries as $i => $queueEntry) {
             if ($i >= \JOBQUEUE_LIMIT_JOBS) {

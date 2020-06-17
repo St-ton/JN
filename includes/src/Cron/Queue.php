@@ -78,7 +78,7 @@ class Queue
                 WHERE isRunning = 1
                     AND startTime <= NOW()
                     AND lastStart IS NOT NULL
-                    AND DATE_SUB(CURTIME(), INTERVAL 24 Hour) > lastStart',
+                    AND DATE_SUB(CURTIME(), INTERVAL ' . \QUEUE_MAX_STUCK_HOURS . ' Hour) > lastStart',
             ReturnType::AFFECTED_ROWS
         );
     }

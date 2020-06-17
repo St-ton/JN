@@ -122,15 +122,16 @@ class Queue
                 $job->getCronID(),
                 (object)['lastFinish' => $queueEntry->lastFinish->format('Y-m-d H:i')]
             );
+            \executeHook(\HOOK_JOBQUEUE_INC_BEHIND_SWITCH, [
+                'oJobQueue' => $queueEntry,
+                'job'       => $job,
+                'logger'    => $this->logger
+            ]);
             $job->saveProgress($queueEntry);
             if ($job->isFinished()) {
                 $this->logger->notice('Job ' . $job->getID() . ' successfully finished.');
                 $job->delete();
             }
-            \executeHook(\HOOK_JOBQUEUE_INC_BEHIND_SWITCH, [
-                'oJobQueue' => $queueEntry,
-                'job'       => $job
-            ]);
         }
         $checker->unlock();
     }

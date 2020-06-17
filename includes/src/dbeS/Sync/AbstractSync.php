@@ -734,7 +734,7 @@ abstract class AbstractSync
                     IF(tartikelsonderpreis.nIstDatum = 0, null, tartikelsonderpreis.dEnde) dEnde
                 FROM tartikel
                 INNER JOIN tpreis ON tpreis.kArtikel = tartikel.kArtikel
-	            INNER JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
+                INNER JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
                 INNER JOIN tartikelsonderpreis ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
                 INNER JOIN tsonderpreise
                     ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis

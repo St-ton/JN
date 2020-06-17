@@ -22711,6 +22711,20 @@ body {
   object-fit: contain;
 }
 
+.price-range-inputs .input-group-prepend {
+  height: 1.6rem;
+}
+.price-range-inputs .input-group-prepend .input-group-text {
+  border-left: 0;
+  font-weight: 700;
+  padding: 0.375rem 0.5rem;
+}
+.price-range-inputs input {
+  font-weight: 700;
+  height: 1.6rem;
+  padding: 0.375rem 0.5rem;
+}
+
 /* utilities */
 .rounded-top-left {
   border-top-left-radius: 0.125rem !important;

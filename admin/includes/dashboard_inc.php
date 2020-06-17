@@ -2,7 +2,6 @@
 
 use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
-use JTL\Helpers\Text;
 use JTL\IO\IOResponse;
 use JTL\Network\JTLApi;
 use JTL\Plugin\Helper;

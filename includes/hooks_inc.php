@@ -1918,7 +1918,7 @@ define('HOOK_LINKGROUP_MAPPED', 302);
 define('HOOK_LINKGROUPS_LOADED', 303);
 
 /**
- * Kurz vor dem Einfügen einer neuen / bisher unbekannten Lieferadresse in die DB, beim Einfügen einer Bestellung in die DB.
+ * Kurz vor dem Einfügen einer neuen/bisher unbekannten Lieferadresse in die DB
  *
  * @since 5.0.0
  * @file bestellabschluss_inc.php

@@ -110,7 +110,9 @@ class Queue
             $queueEntry->tasksExecuted = $job->getExecuted();
             $queueEntry->taskLimit     = $job->getLimit();
             $queueEntry->isRunning     = 1;
-            $this->logger->notice('Got job (ID = ' . $job->getCronID() . ', type = ' . $job->getType() . ')');
+            $this->logger->notice('Got job ' . \get_class($job)
+                . ' (ID = ' . $job->getCronID()
+                . ', type = ' . $job->getType() . ')');
             $job->start($queueEntry);
             $queueEntry->isRunning = 0;
             $queueEntry->lastStart = new DateTime();

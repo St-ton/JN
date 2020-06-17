@@ -4,7 +4,6 @@ namespace JTL\Catalog\Category;
 
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use JTL\Helpers\Text;
 use JTL\Helpers\URL;
 use JTL\Language\LanguageHelper;
 use JTL\Session\Frontend;
@@ -315,7 +314,7 @@ class KategorieListe
             }
             //EXPERIMENTAL_MULTILANG_SHOP
             if ((!isset($category->cSeo) || $category->cSeo === null || $category->cSeo === '')
-                && \defined('EXPERIMENTAL_MULTILANG_SHOP') && \EXPERIMENTAL_MULTILANG_SHOP === true
+                && \EXPERIMENTAL_MULTILANG_SHOP === true
             ) {
                 $defaultLangID = (int)$defaultLanguage->kSprache;
                 if ($languageID !== $defaultLangID) {

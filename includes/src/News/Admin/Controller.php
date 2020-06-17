@@ -344,7 +344,7 @@ final class Controller
     }
 
     /**
-     * @param int[] $ids
+     * @param int[]|string[] $ids
      * @return bool
      */
     public function deleteCategories(array $ids): bool

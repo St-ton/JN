@@ -81,14 +81,14 @@ abstract class AbstractInstallerFactory
         $items->push(new SettingsLinks());
         $items->push(new FrontendLinks());
         $items->push(new PaymentMethods());
-        $items->push(new Boxes());//@todo: extension check
+        $items->push(new Boxes());
         $items->push(new Templates());
         $items->push(new MailTemplates());
         $items->push(new LanguageVariables());
-        $items->push(new Checkboxes());//@todo: extension check
-        $items->push(new Widgets());//@todo: extension check
-        $items->push(new Portlets());//@todo: extension check
-        $items->push(new Blueprints());//@todo: extension check
+        $items->push(new Checkboxes());
+        $items->push(new Widgets());
+        $items->push(new Portlets());
+        $items->push(new Blueprints());
         $items->push(new Exports());
         $items->push(new CSS());
         $items->push(new JS());

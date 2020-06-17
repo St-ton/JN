@@ -63,7 +63,9 @@ class Application extends BaseApplication
         $this->isInstalled = \defined('BLOWFISH_KEY');
         if ($this->isInstalled) {
             $cache = Shop::Container()->getCache();
-            $cache->setJtlCacheConfig(Shop::Container()->getDB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
+            $cache->setJtlCacheConfig(
+                Shop::Container()->getDB()->selectAll('teinstellungen', 'kEinstellungenSektion', \CONF_CACHING)
+            );
         }
 
         parent::__construct('JTL-Shop', \APPLICATION_VERSION . ' - ' . ($this->devMode ? 'develop' : 'production'));

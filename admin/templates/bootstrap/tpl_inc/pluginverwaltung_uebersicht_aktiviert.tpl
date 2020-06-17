@@ -12,8 +12,8 @@
                             <tr>
                                 <th></th>
                                 <th class="text-left">{__('pluginName')}</th>
-                                <th class="text-center">{__('status')}</th>
                                 <th class="text-center">{__('pluginVersion')}</th>
+                                <th class="text-center">{__('pluginCompatibility')}</th>
                                 <th class="text-center">{__('pluginInstalled')}</th>
                                 <th>{__('pluginFolder')}</th>
                                 <th class="text-center">{__('pluginEditLocales')}</th>
@@ -33,27 +33,33 @@
                                 </td>
                                 <td>
                                     <label for="plugin-check-{$plugin->getID()}">{$plugin->getName()}</label>
-                                </td>
-                                <td class="text-center plugin-status">
-                                    <span class="text-nowrap">
-                                        <span class="label {if $plugin->getState() === \JTL\Plugin\State::ACTIVATED} text-success
-                                                {elseif $plugin->getState() === \JTL\Plugin\State::DISABLED} text-warning
-                                                {elseif $plugin->getState() === \JTL\Plugin\State::ERRONEOUS || $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_INVALID}} text-danger
-                                                {elseif $plugin->getState() === \JTL\Plugin\State::UPDATE_FAILED || $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_MISSING} text-warning{/if}">
-                                            {$mapper->map($plugin->getState())}
+                                    {if $plugin->getMinShopVersion()->greaterThan($shopVersion)}
+                                        <span title="{__('dangerMinShopVersion')}" class="label text-danger" data-toggle="tooltip">
+                                            <span class="icon-hover">
+                                                <span class="fal fa-exclamation-triangle"></span>
+                                                <span class="fas fa-exclamation-triangle"></span>
+                                            </span>
                                         </span>
-                                        {if $plugin->isShop5Compatible() === false}
-                                            <span title="{__('dangerPluginNotCompatibleShop5')}" class="label text-warning"><i class="fal fa-exclamation-triangle"></i></span>
-                                        {elseif $plugin->isShop5Compatible() === false && $p->isShop4Compatible() === false}
-                                            <span title="{__('dangerPluginNotCompatibleShop4')}" class="label text-warning"><i class="fal fa-exclamation-triangle"></i></span>
-                                        {/if}
-                                    </span>
+                                    {elseif $plugin->getMaxShopVersion()->greaterThan('0.0.0') && $plugin->getMaxShopVersion()->smallerThan($shopVersion)}
+                                        <span title="{__('dangerMaxShopVersion')}" class="label text-danger" data-toggle="tooltip">
+                                            <span class="icon-hover">
+                                                <span class="fal fa-exclamation-triangle"></span>
+                                                <span class="fas fa-exclamation-triangle"></span>
+                                            </span>
+                                        </span>
+                                    {/if}
                                 </td>
                                 <td class="text-center plugin-version">
                                     {(string)$plugin->getVersion()}{if $plugin->isUpdateAvailable()} <span class="badge update-available">{(string)$plugin->isUpdateAvailable()}</span>{/if}
+                                    {if $plugin->isShop5Compatible() === false}
+                                        <span title="{__('dangerPluginNotCompatibleShop5')}" class="label text-warning"><i class="fal fa-exclamation-triangle"></i></span>
+                                    {elseif $plugin->isShop5Compatible() === false && $p->isShop4Compatible() === false}
+                                        <span title="{__('dangerPluginNotCompatibleShop4')}" class="label text-warning"><i class="fal fa-exclamation-triangle"></i></span>
+                                    {/if}
                                 </td>
+                                <td class="text-center">{$plugin->displayVersionRange()}</td>
                                 <td class="text-center plugin-install-date">{$plugin->getDateInstalled()->format('d.m.Y H:i')}</td>
-                                <td class="plugin-folder">{$plugin->getPath()}</td>
+                                <td class="plugin-folder">{$plugin->getDir()}</td>
                                 <td class="text-center plugin-lang-vars">
                                     {if $plugin->getLangVarCount() > 0}
                                         <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}&token={$smarty.session.jtl_token}"
@@ -164,7 +170,8 @@
                 </button>
             </div>
             <div class="modal-body">
-
+                <label for="delete-files">{__('deletePluginFilesQuestion')}</label>
+                <input type="checkbox" id="delete-files" name="delete-files">
             </div>
             <div class="modal-footer">
                 <div class="row">
@@ -172,7 +179,8 @@
                         <button type="button" class="btn btn-danger btn-bock" name="yes" data-dismiss="modal">
                             <i class="fa fa-close"></i>&nbsp;{__('deletePluginDataYes')}
                         </button>
-                    </div> <div class="col-sm-6 col-xl-auto submit">
+                    </div>
+                    <div class="col-sm-6 col-xl-auto submit">
                         <button type="button" class="btn btn-outline-primary" name="no" data-dismiss="modal">
                             <i class="fa fa-close"></i>&nbsp;{__('deletePluginDataNo')}
                         </button>
@@ -203,6 +211,12 @@
                     data += '1';
                 } else {
                     data += '0';
+                }
+                data += '&delete-files=';
+                if (document.getElementById('delete-files').checked) {
+                    data += '1'
+                } else {
+                    data += '0'
                 }
                 simpleAjaxCall('pluginverwaltung.php', data, function () {
                     location.reload();

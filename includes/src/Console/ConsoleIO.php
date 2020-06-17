@@ -433,30 +433,32 @@ class ConsoleIO extends OutputStyle
         $this->autoPrependText();
 
         $messages = \is_array($message) ? \array_values($message) : [$message];
-        foreach ($messages as $message) {
-            $this->writeln(\sprintf(' %s', $message));
+        foreach ($messages as $msg) {
+            $this->writeln(\sprintf(' %s', $msg));
         }
 
         return $this;
     }
 
     /**
-     * {@inheritdoc}
+     * @param string|array $message
+     * @return $this
      */
     public function comment($message)
     {
         $this->autoPrependText();
 
         $messages = \is_array($message) ? \array_values($message) : [$message];
-        foreach ($messages as $message) {
-            $this->writeln(\sprintf('<fg=white;bg=magenta>%s</>', $message));
+        foreach ($messages as $msg) {
+            $this->writeln(\sprintf('<fg=white;bg=magenta>%s</>', $msg));
         }
 
         return $this;
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $message
+     * @return $this
      */
     public function verbose($message)
     {

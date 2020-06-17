@@ -23,8 +23,9 @@ $dbFileStruct      = getDBFileStruct();
 $maintenanceResult = null;
 $engineUpdate      = null;
 $fulltextIndizes   = null;
+$valid             = Form::validateToken();
 
-if (Request::postVar('update') === 'script' && Form::validateToken()) {
+if (Request::postVar('update') === 'script' && $valid) {
     $scriptName = 'innodb_and_utf8_update_'
         . str_replace('.', '_', Shop::Container()->getDB()->getConfig()['host']) . '_'
         . Shop::Container()->getDB()->getConfig()['database'] . '_'
@@ -43,7 +44,7 @@ $conf     = Shop::getSettings([
     CONF_ARTIKELUEBERSICHT
 ]);
 
-if (!empty($_POST['action']) && !empty($_POST['check'])) {
+if ($valid && !empty($_POST['action']) && !empty($_POST['check'])) {
     $maintenanceResult = doDBMaintenance($_POST['action'], $_POST['check']);
 }
 
@@ -68,13 +69,13 @@ if (count($dbErrors) > 0) {
 Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $errorMsg, 'errorDBCheck');
 
 $smarty->assign('cDBFileStruct_arr', $dbFileStruct)
-       ->assign('cDBStruct_arr', $dbStruct)
-       ->assign('cDBError_arr', $dbErrors)
-       ->assign('maintenanceResult', $maintenanceResult)
-       ->assign('scriptGenerationAvailable', ADMIN_MIGRATION)
-       ->assign('tab', isset($_REQUEST['tab']) ? Text::filterXSS($_REQUEST['tab']) : '')
-       ->assign('Einstellungen', $conf)
-       ->assign('DB_Version', DBMigrationHelper::getMySQLVersion())
-       ->assign('FulltextIndizes', $fulltextIndizes)
-       ->assign('engineUpdate', $engineUpdate)
-       ->display('dbcheck.tpl');
+    ->assign('cDBStruct_arr', $dbStruct)
+    ->assign('cDBError_arr', $dbErrors)
+    ->assign('maintenanceResult', $maintenanceResult)
+    ->assign('scriptGenerationAvailable', ADMIN_MIGRATION)
+    ->assign('tab', isset($_REQUEST['tab']) ? Text::filterXSS($_REQUEST['tab']) : '')
+    ->assign('Einstellungen', $conf)
+    ->assign('DB_Version', DBMigrationHelper::getMySQLVersion())
+    ->assign('FulltextIndizes', $fulltextIndizes)
+    ->assign('engineUpdate', $engineUpdate)
+    ->display('dbcheck.tpl');

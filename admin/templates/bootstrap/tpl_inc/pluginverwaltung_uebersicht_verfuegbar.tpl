@@ -91,6 +91,7 @@
                             <tr>
                                 <th></th>
                                 <th class="text-left">{__('pluginName')}</th>
+                                <th class="text-center">{__('pluginCompatibility')}</th>
                                 <th class="text-center">{__('pluginVersion')}</th>
                                 <th>{__('pluginFolder')}</th>
                             </tr>
@@ -128,6 +129,7 @@
                                         <div class="alert alert-info">{__('dangerPluginNotCompatibleShop4')}</div>
                                     {/if}
                                 </td>
+                                <td class="text-center">{$listingItem->displayVersionRange()}</td>
                                 <td class="text-center">{$listingItem->getVersion()}</td>
                                 <td>{$listingItem->getDir()}</td>
                             </tr>

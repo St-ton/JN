@@ -215,7 +215,7 @@ class CustomerFields
                         // all customer values will be changed to numbers if possible
                         Shop::Container()->getDB()->executeQueryPrepared(
                             'UPDATE tkundenattribut SET
-	                            cWert =	CAST(CAST(cWert AS DOUBLE) AS CHAR)
+                                cWert =	CAST(CAST(cWert AS DOUBLE) AS CHAR)
                                 WHERE tkundenattribut.kKundenfeld = :kKundenfeld',
                             ['kKundenfeld' => $key],
                             ReturnType::AFFECTED_ROWS
@@ -225,7 +225,7 @@ class CustomerFields
                         // all customer values will be changed to date if possible
                         Shop::Container()->getDB()->executeQueryPrepared(
                             "UPDATE tkundenattribut SET
-	                            cWert =	DATE_FORMAT(STR_TO_DATE(cWert, '%d.%m.%Y'), '%d.%m.%Y')
+                                cWert =	DATE_FORMAT(STR_TO_DATE(cWert, '%d.%m.%Y'), '%d.%m.%Y')
                                 WHERE tkundenattribut.kKundenfeld = :kKundenfeld",
                             ['kKundenfeld' => $key],
                             ReturnType::AFFECTED_ROWS

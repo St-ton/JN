@@ -25,6 +25,9 @@ if (Request::postInt('einstellungen') > 0) {
         'saveSettings'
     );
 }
+if (!\file_exists(PFAD_ROOT . FILE_RSS_FEED)) {
+    @touch(PFAD_ROOT . FILE_RSS_FEED);
+}
 if (!is_writable(PFAD_ROOT . FILE_RSS_FEED)) {
     $alertHelper->addAlert(
         Alert::TYPE_ERROR,

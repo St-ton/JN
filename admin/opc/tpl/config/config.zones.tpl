@@ -44,6 +44,16 @@
                 </div>
             </div>
         </div>
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <input type="checkbox" class="form-control" id="zone-target-{$propname}" value="1">
+                    <label for="zone-target-{$propname}">
+                        {__('targetBlank')}
+                    </label>
+                </div>
+            </div>
+        </div>
         <textarea class="form-control" id="zone-desc-{$propname}" placeholder="{__('description')}"></textarea>
     </div>
 </div>
@@ -67,6 +77,7 @@
         var zoneUrl       = $('#zone-url-{$propname}');
         var zoneClass     = $('#zone-class-{$propname}');
         var zoneProduct   = $('#zone-product-{$propname}');
+        var zoneTarget    = $('#zone-target-{$propname}');
         var dragging      = false;
         var resizing      = false;
         var editorw       = 0;
@@ -103,6 +114,7 @@
                 desc: '',
                 url: '',
                 class: '',
+                target: false,
                 productId: 0,
                 productName: '',
                 left: 50,
@@ -175,6 +187,7 @@
             zoneDesc.val(zoneData.desc);
             zoneUrl.val(zoneData.url);
             zoneClass.val(zoneData.class);
+            zoneTarget.prop('checked', zoneData.target);
             zoneProps.show();
             $('#banner-del-zone').show();
         }
@@ -248,6 +261,7 @@
         zoneDesc.on('input', function() { changeZoneProp('desc', $(this).val()); });
         zoneUrl.on('input', function() { changeZoneProp('url', $(this).val()); });
         zoneClass.on('input', function() { changeZoneProp('class', $(this).val()); });
+        zoneTarget.on('input', function() { changeZoneProp('target', $(this).prop('checked')); });
 
         function changeZoneProp(name, val)
         {

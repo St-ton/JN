@@ -224,7 +224,7 @@ ifndef('SHOW_DEBUG_BAR', false);
 
 ifndef('ART_MATRIX_MAX', 250);
 
-ifndef('QUEUE_MAX_STUCK_HOURS', 12);
+ifndef('QUEUE_MAX_STUCK_HOURS', 1);
 
 // multi-domain support for different languages
 ifndef('EXPERIMENTAL_MULTILANG_SHOP', false);

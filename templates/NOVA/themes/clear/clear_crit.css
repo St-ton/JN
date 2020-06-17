@@ -1,4 +1,3 @@
-@charset "UTF-8";
 /* grid breakpoints */
 /* grid containers */
 /* links */
@@ -1822,6 +1821,10 @@ pre code {
   src: local("Montserrat"), local("Montserrat"), url("templates/NOVA/themes/base/fonts/montserrat/Montserrat-SemiBold.eot?") format("eot"), url("templates/NOVA/themes/base/fonts/montserrat/Montserrat-SemiBold.woff2") format("woff2"), url("templates/NOVA/themes/base/fonts/montserrat/Montserrat-SemiBold.woff") format("woff"), url("templates/NOVA/themes/base/fonts/montserrat/Montserrat-SemiBold.ttf") format("truetype"), url("templates/NOVA/themes/base/fonts/montserrat/Montserrat-SemiBold.svg#Montserrat") format("svg");
   font-display: swap;
 }
+.fa, .fas, .far, .fal {
+  display: inline-block;
+}
+
 h1, h2, h3, h4, h5, h6,
 .h1, .h2, .h3, .h4, .h5, .h6 {
   margin-bottom: 1rem;
@@ -1881,11 +1884,6 @@ h6, .h6 {
   display: none;
 }
 
-.btn-secondary {
-  background-color: #525252;
-  color: #f5f7fa;
-}
-
 html {
   overflow-y: scroll;
 }
@@ -1895,35 +1893,10 @@ html {
   display: none;
 }
 
-.dropdown-toggle {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: nowrap;
-}
 .dropdown-toggle::after {
-  content: "" !important;
-  font-family: "Font Awesome 5 Free" !important;
+  content: "";
   margin-left: 0.5rem;
-  vertical-align: middle;
   display: inline-block;
-  line-height: 1;
-  transition: transform 0.2s;
-  will-change: transform;
-  border-top: 0;
-  font-size: 0.75em;
-}
-.dropdown-toggle[aria-expanded=true]::after {
-  transform: rotate(180deg);
-}
-.dropdown-toggle.no-caret {
-  display: block;
-}
-.dropdown-toggle.no-caret::after {
-  display: none;
-}
-.dropdown-toggle:focus {
-  outline: none;
 }
 
 /* dropdown end */
@@ -1933,6 +1906,10 @@ html {
   flex-wrap: wrap;
   align-items: stretch;
   width: 100%;
+}
+.input-group > .form-control {
+  flex: 1 1 auto;
+  width: 1%;
 }
 
 .breadcrumb {
@@ -2007,6 +1984,10 @@ html {
   .d-md-flex {
     display: flex !important;
   }
+
+  .d-md-inline-block {
+    display: inline-block !important;
+  }
 }
 /* spacing */
 .p-0 {
@@ -2064,6 +2045,10 @@ html {
 
   .pb-lg-0 {
     padding-bottom: 0 !important;
+  }
+
+  .mr-lg-6 {
+    margin-right: 3rem !important;
   }
 }
 @media (min-width: 1200px) {
@@ -2309,6 +2294,11 @@ header .nav-right .dropdown-menu {
 /* bootstrap end */
 .form-group {
   margin-bottom: 1rem;
+}
+
+.btn-secondary {
+  background-color: #525252;
+  color: #f5f7fa;
 }
 
 /*# sourceMappingURL=clear_crit.css.map */

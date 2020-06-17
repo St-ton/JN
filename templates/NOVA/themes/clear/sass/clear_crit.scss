@@ -19,6 +19,10 @@
 @include font-face('Open Sans', 'templates/NOVA/themes/base/fonts/opensans/open-sans-600', 'OpenSans-Semibold' 'OpenSans-Semibold', normal, 600);
 @include font-face('Montserrat', 'templates/NOVA/themes/base/fonts/montserrat/Montserrat-SemiBold', 'Montserrat' 'Montserrat', normal, 600);
 
+.fa, .fas, .far, .fal {
+  display: inline-block;
+}
+
 h1, h2, h3, h4, h5, h6,
 .h1, .h2, .h3, .h4, .h5, .h6 {
   margin-bottom: $headings-margin-bottom;
@@ -65,11 +69,6 @@ h6, .h6 { @include font-size($h6-font-size); }
   display: none;
 }
 
-.btn-secondary {
-  background-color: $secondary;
-  color: $gray-lighter;
-}
-
 html {
   overflow-y: scroll;
 }
@@ -81,33 +80,16 @@ html {
 
 .dropdown-toggle {
   &::after {
-    content: '\f078' !important;
-    font-family: "Font Awesome 5 Free" !important;
-    margin-left: map-get($spacers, 2);
-    vertical-align: middle;
+    content: '';
+    margin-left: .5rem;
     display: inline-block;
-    line-height: 1;
-    transition: transform $transition-base-duration;
-    will-change: transform;
-    border-top: 0;
-    font-size: .75em;
-  }
-  &[aria-expanded='true']::after {
-    transform: rotate(180deg);
-  }
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: nowrap;
-  &.no-caret { display: block; }
-  &.no-caret::after { display: none; }
-
-  &:focus {
-    outline: none;
   }
 }
 /* dropdown end */
+
+//.navbar-brand {
+//  padding-top: 0;
+//}
 
 .input-group {
   position: relative;
@@ -115,6 +97,10 @@ html {
   flex-wrap: wrap;
   align-items: stretch;
   width: 100%;
+  > .form-control {
+    flex: 1 1 auto;
+    width: 1%;
+  }
 }
 
 .breadcrumb {
@@ -182,6 +168,9 @@ html {
   .d-md-flex {
     display: flex !important;
   }
+  .d-md-inline-block {
+    display: inline-block !important;;
+  }
 }
 
 /* spacing */
@@ -204,6 +193,7 @@ html {
   .pt-lg-7 { padding-top: map-get($spacers, 7) !important; }
   .pr-lg-5 { padding-right: map-get($spacers, 5) !important; }
   .pb-lg-0 { padding-bottom: 0 !important; }
+  .mr-lg-6 { margin-right: map-get($spacers, 6) !important; }
 }
 
 @media (min-width: 1200px) {
@@ -512,4 +502,9 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 
 .form-group {
   margin-bottom: 1rem;
+}
+
+.btn-secondary {
+  background-color: $secondary;
+  color: $gray-lighter;
 }

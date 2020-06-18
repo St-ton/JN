@@ -153,7 +153,6 @@
             <File Path="js/jtl.evo.js"/>
             <File Path="js/spin.js"/>
             <File Path="js/typeahead.bundle.js"/>
-            <File Path="js/clipboard.min.js"/>
             <File Path="js/wow.min.js"/>
             <File Path="js/global.js"/>
             <File Path="js/slick-lightbox.min.js"/>

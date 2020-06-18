@@ -1368,7 +1368,7 @@ final class Shop
             $oSeo = self::Container()->getDB()->select('tseo', 'cSeo', $seo);
             // EXPERIMENTAL_MULTILANG_SHOP
             if (isset($oSeo->kSprache)
-                && self::$kSprache !== $oSeo->kSprache
+                && self::$kSprache !== (int)$oSeo->kSprache
                 && \EXPERIMENTAL_MULTILANG_SHOP === true
             ) {
                 if (\MULTILANG_URL_FALLBACK === true) {

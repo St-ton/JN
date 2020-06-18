@@ -5975,4 +5975,26 @@ class Artikel
                 return null;
         }
     }
+
+    /**
+     * @return string
+     */
+    public function getBackorderString():string
+    {
+        $backorder = '';
+        if ($this->cLagerBeachten === 'Y'
+            && $this->fLagerbestand <= 0
+            && $this->fZulauf > 0
+            && $this->dZulaufDatum_de !== null
+        ) {
+            $backorder = sprintf(
+                Shop::Lang()->get('productInflowing', 'productDetails'),
+                $this->fZulauf,
+                $this->cEinheit,
+                $this->dZulaufDatum_de
+            );
+        }
+
+        return $backorder;
+    }
 }

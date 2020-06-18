@@ -141,8 +141,6 @@
         </CSS>
         <JS Name="jtl3.js">
             <File Path="js/lazysizes.min.js"/>
-            <!--<File Path="js/jquery.backstretch.min.js"/>-->
-            <!--<File Path="js/jquery.lazy.js"/>-->
             <File Path="js/bootstrap-toolkit.js"/>
             <File Path="js/popper.min.js"/>
             <File Path="js/bootstrap.bundle.min.js"/>
@@ -164,7 +162,6 @@
             <File Path="js/Chart.bundle.min.js" DependsOnSettingGroup="CONF_PREISVERLAUF" DependsOnSetting="preisverlauf.preisverlauf_anzeigen" DependsOnSettingValue="Y"/>
             <File Path="js/jqcloud.js"/>
             <File Path="js/nouislider.min.js"/>
-            <File Path="js/password/password.min.js"/>
             <File Path="js/consent.js"/>
             <File Path="js/consent.youtube.js"/>
         </JS>

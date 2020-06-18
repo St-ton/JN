@@ -1826,7 +1826,7 @@ pre code {
 }
 
 h1, h2, h3, h4, h5, h6,
-.h1, .h2, .h3, .h4, .h5, .h6 {
+.h1, .h2, .h3, .productlist-filter-headline, .h4, .h5, .h6 {
   margin-bottom: 1rem;
   font-family: Montserrat, sans-serif;
   font-weight: 400;
@@ -1842,7 +1842,7 @@ h2, .h2 {
   font-size: 1.5rem;
 }
 
-h3, .h3 {
+h3, .h3, .productlist-filter-headline {
   font-size: 1rem;
 }
 
@@ -1900,6 +1900,10 @@ html {
 }
 
 /* dropdown end */
+.flex-shrink-0 {
+  flex-shrink: 0 !important;
+}
+
 .input-group {
   position: relative;
   display: flex;
@@ -1952,6 +1956,10 @@ html {
 
 .d-flex {
   display: flex !important;
+}
+
+.d-inline-block {
+  display: inline-block !important;
 }
 
 @media (min-width: 992px) {
@@ -2029,9 +2037,28 @@ html {
   margin-bottom: 4rem !important;
 }
 
+.mx-auto {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
 @media (min-width: 576px) {
   .pt-sm-3 {
     padding-top: 1rem !important;
+  }
+}
+@media (min-width: 768px) {
+  .ml-md-auto {
+    margin-left: auto !important;
+  }
+
+  .mb-md-0 {
+    margin-bottom: 0 !important;
+  }
+
+  .mx-auto {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
   }
 }
 @media (min-width: 992px) {
@@ -2299,6 +2326,28 @@ header .nav-right .dropdown-menu {
 .btn-secondary {
   background-color: #525252;
   color: #f5f7fa;
+}
+
+.btn-outline-secondary {
+  color: #525252;
+  border-color: #525252;
+}
+
+.btn-group {
+  display: inline-flex;
+}
+
+.productlist-filter-headline {
+  border-bottom: 1px solid #ebebeb;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+hr {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 /*# sourceMappingURL=clear_crit.css.map */

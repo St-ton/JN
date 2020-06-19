@@ -55,7 +55,7 @@
                 let startX;
                 slickItem.addEventListener('touchstart', function (e) {
                     startX = e.changedTouches[0].pageX;
-                });
+                }, {passive: true});
                 slickItem.addEventListener('touchmove', function (e) {
                     let mainNode = $(this);
                     if (!mainNode.hasClass('slick-initialized')
@@ -68,7 +68,7 @@
                             mainNode.slick('slickGoTo', 1);
                         }
                     }
-                });
+                }, {passive: true});
             });
         },
 

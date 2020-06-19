@@ -21697,6 +21697,21 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
   line-height: inherit;
 }
 
+.jtl-spinner i {
+  margin-top: -40px;
+  margin-left: -40px;
+  position: absolute;
+  top: 50%;
+  font-size: 80px;
+  left: 50%;
+  color: #9b9b9b;
+  z-index: 100000;
+}
+
+.modal-body.js-collapse-filter {
+  min-height: 100px;
+}
+
 :root {
   --vh: 1vh;
 }

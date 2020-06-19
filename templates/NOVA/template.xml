@@ -154,7 +154,7 @@
             <File Path="js/wow.min.js"/>
             <File Path="js/global.js"/>
             <File Path="js/slick-lightbox.min.js"/>
-            <File Path="js/jquery.serialize-object.js"/>
+            <File Path="js/jquery.serialize-object.min.js"/>
             <File Path="js/jtl.io.js"/>
             <File Path="js/jtl.article.js"/>
             <File Path="js/jtl.basket.js"/>

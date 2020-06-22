@@ -19334,10 +19334,11 @@ aside .card > .card-body .card-title {
 aside .nav-panel .nav {
   flex-wrap: initial;
 }
-aside .nav-panel > .nav > .active > a {
+aside .nav-panel > .nav > .active > .nav-link {
   border-bottom: 0.375rem solid #0ef83c;
+  cursor: pointer;
 }
-aside .nav-panel .active > a {
+aside .nav-panel .active > .nav-link {
   font-weight: 700;
 }
 aside .nav-panel .nav-link[aria-expanded=true] i.fa-chevron-down {

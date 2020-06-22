@@ -43,10 +43,11 @@ aside {
     .nav {
       flex-wrap: initial;
     }
-    > .nav > .active > a{
+    > .nav > .active > .nav-link {
       border-bottom: $highlight-border-size solid $primary;
+      cursor: pointer;
     }
-    .active > a {
+    .active > .nav-link {
       font-weight: $font-weight-bold;
     }
     .nav-link[aria-expanded=true] i.fa-chevron-down {

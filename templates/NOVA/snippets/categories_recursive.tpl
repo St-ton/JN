@@ -46,14 +46,14 @@
                                             && isset($activeParent->kKategorie))
                                         && $activeParent->kKategorie == $category->getID())}active{/if}">
                                     {block name='snippets-categories-recursive-categories-has-items-link'}
-                                        <a class="nav-link px-2 dropdown-toggle" target="_self" href="{$category->getURL()}" data-toggle="collapse"
+                                        <span class="nav-link px-2 dropdown-toggle" data-toggle="collapse"
                                            data-target="#category_box_{$category->getID()}_{$i}"
                                            aria-expanded="{if $category->getID() == $activeId
                                            || ((isset($activeParent)
                                            && isset($activeParent->kKategorie))
                                            && $activeParent->kKategorie == $category->getID())}true{else}false{/if}">
-                                            {$category->getShortName()}
-                                        </a>
+                                            <a href="{$category->getURL()}" onclick="event.stopPropagation();">{$category->getShortName()}</a>
+                                        </span>
                                     {/block}
                                     {block name='snippets-categories-recursive-categories-has-items-nav'}
                                         {collapse id="category_box_{$category->getID()}_{$i}"

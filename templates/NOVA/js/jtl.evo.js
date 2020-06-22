@@ -659,7 +659,7 @@
         },
 
         stopSpinner: function () {
-            $('body').find('.jtl-spinner').remove();
+            $('.jtl-spinner').remove();
         },
 
         trigger: function(event, args) {

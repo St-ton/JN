@@ -87,7 +87,7 @@ final class LinkGroupList implements LinkGroupListInterface
         }
         $cached = true;
         if (($this->linkGroups = $this->cache->get('linkgroups')) === false) {
-            $cached = false;
+            $cached           = false;
             $this->linkGroups = new LinkGroupCollection();
             foreach ($this->loadDefaultGroups() as $group) {
                 $this->linkGroups->push($group);

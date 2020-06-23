@@ -91,7 +91,7 @@ final class LinkGroup implements LinkGroupInterface
             'SELECT l.*, g.cTemplatename AS template, g.cName AS groupName, lang.kSprache 
                 FROM tlinkgruppe AS g 
                 JOIN tlinkgruppesprache AS l
-					ON g.kLinkgruppe = l.kLinkgruppe
+                    ON g.kLinkgruppe = l.kLinkgruppe
                 JOIN tsprache AS lang
                     ON lang.cISO = l.cISOSprache
                 WHERE g.kLinkgruppe = :lgid',

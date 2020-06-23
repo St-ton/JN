@@ -586,9 +586,10 @@ class Cart
 
     /**
      * @param int $type
+     * @param bool $force
      * @return $this
      */
-    public function loescheSpezialPos(int $type): self
+    public function loescheSpezialPos(int $type, bool $force = false): self
     {
         if (\count($this->PositionenArr) === 0) {
             return $this;
@@ -599,7 +600,7 @@ class Cart
             }
         }
         $this->PositionenArr = \array_merge($this->PositionenArr);
-        if (!empty($_POST['Kuponcode']) && $type === \C_WARENKORBPOS_TYP_KUPON) {
+        if (($force || !empty($_POST['Kuponcode'])) && $type === \C_WARENKORBPOS_TYP_KUPON) {
             if (!empty($_SESSION['Kupon'])) {
                 unset($_SESSION['Kupon']);
             } elseif (!empty($_SESSION['oVersandfreiKupon'])) {
@@ -920,6 +921,8 @@ class Cart
     {
         $defaultOptions               = Artikel::getDefaultOptions();
         $defaultOptions->nStueckliste = 1;
+        $this->oFavourableShipping    = null;
+
         foreach ($this->PositionenArr as $i => $item) {
             if ($item->kArtikel > 0 && $item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
                 $oldItem = clone $item;
@@ -951,7 +954,9 @@ class Cart
                         }
                     }
                 }
-                if ($product->kVaterArtikel > 0 && $this->config['kaufabwicklung']['general_child_item_bulk_pricing'] === 'Y') {
+                if ($product->kVaterArtikel > 0
+                    && $this->config['kaufabwicklung']['general_child_item_bulk_pricing'] === 'Y'
+                ) {
                     $qty = $this->gibAnzahlEinesArtikels($product->kVaterArtikel, -1, true);
                 } else {
                     $qty = $this->gibAnzahlEinesArtikels($product->kArtikel);
@@ -1816,9 +1821,10 @@ class Cart
     }
 
     /**
+     * @param int|null $shippingFreeMinID
      * @return null|Versandart - cheapest shipping except shippings that offer cash payment
      */
-    public function getFavourableShipping(): ?Versandart
+    public function getFavourableShipping(?int $shippingFreeMinID = null): ?Versandart
     {
         if ((!empty($_SESSION['Versandart']->kVersandart) && isset($_SESSION['Versandart']->nMinLiefertage))
             || empty($_SESSION['Warenkorb']->PositionenArr)
@@ -1839,6 +1845,19 @@ class Cart
         if ($this->oFavourableShipping !== null
             && $this->oFavourableShipping->cCountryCode === $_SESSION['cLieferlandISO']
         ) {
+            return $this->oFavourableShipping;
+        }
+
+        //use previously determined shippingfree shipping method
+        if ($shippingFreeMinID !== null) {
+            $localizedZero              = Preise::getLocalizedPriceString(0);
+            $method                     = new Versandart($shippingFreeMinID);
+            $method->cCountryCode       = $countryCode;
+            $method->cPriceLocalized[0] = $localizedZero;
+            $method->cPriceLocalized[1] = $localizedZero;
+
+            $this->oFavourableShipping = $method;
+
             return $this->oFavourableShipping;
         }
 

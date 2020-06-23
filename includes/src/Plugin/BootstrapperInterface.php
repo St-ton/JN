@@ -5,6 +5,7 @@ namespace JTL\Plugin;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Events\Dispatcher;
+use JTL\License\Struct\ExsLicense;
 use JTL\Link\LinkInterface;
 use JTL\Smarty\JTLSmarty;
 
@@ -103,4 +104,9 @@ interface BootstrapperInterface
      * @return int
      */
     public function loaded(): int;
+
+    /**
+     * @param ExsLicense $license
+     */
+    public function licenseExpired(ExsLicense $license): void;
 }

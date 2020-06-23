@@ -25,6 +25,13 @@
 </div>
 <script type="text/javascript">
     $(document).ready(function () {
-        ioCall('getShopInfo', ['widgets/shopinfo_version.tpl', 'version_data_wrapper']);
+        ioCall(
+            'getShopInfo',
+            ['widgets/shopinfo_version.tpl', 'version_data_wrapper'],
+            undefined,
+            undefined,
+            undefined,
+            true
+        );
     });
 </script>

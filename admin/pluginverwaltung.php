@@ -24,6 +24,7 @@ use JTL\Plugin\PluginLoader;
 use JTL\Plugin\State;
 use JTL\Shop;
 use JTL\XMLParser;
+use JTLShop\SemVer\Version;
 use function Functional\first;
 use function Functional\group;
 use function Functional\select;
@@ -59,10 +60,8 @@ if (isset($_SESSION['plugin_msg'])) {
 } elseif (mb_strlen(Request::verifyGPDataString('h')) > 0) {
     $notice = Text::filterXSS(base64_decode(Request::verifyGPDataString('h')));
 }
-
-
-if (!empty($_FILES['file_data'])) {
-    $response       = $extractor->extractPlugin($_FILES['file_data']['tmp_name']);
+if (!empty($_FILES['plugin-install-upload']) && Form::validateToken()) {
+    $response       = $extractor->extractPlugin($_FILES['plugin-install-upload']['tmp_name']);
     $pluginUploaded = true;
 }
 $pluginsInstalled   = $listing->getInstalled();
@@ -92,7 +91,8 @@ if ($pluginUploaded === true) {
         ->assign('pluginsInstalled', $pluginsInstalled)
         ->assign('pluginsProblematic', $pluginsProblematic)
         ->assign('pluginsAvailable', $pluginsAvailable)
-        ->assign('pluginsErroneous', $pluginsErroneous);
+        ->assign('pluginsErroneous', $pluginsErroneous)
+        ->assign('shopVersion', Version::parse(\APPLICATION_VERSION));
 
     $html                  = new stdClass();
     $html->available       = $smarty->fetch('tpl_inc/pluginverwaltung_uebersicht_verfuegbar.tpl');
@@ -145,8 +145,9 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
         $smarty->assign('kPlugin', $pluginID)
             ->assign('oPlugin', $plugin);
     } elseif (is_array($_POST['kPlugin'] ?? false) && count($_POST['kPlugin']) > 0) {
-        $pluginIDs  = array_map('\intval', $_POST['kPlugin'] ?? []);
-        $deleteData = Request::postInt('delete-data', 1) === 1;
+        $pluginIDs   = array_map('\intval', $_POST['kPlugin'] ?? []);
+        $deleteData  = Request::postInt('delete-data', 1) === 1;
+        $deleteFiles = Request::postInt('delete-files', 1) === 1;
         foreach ($pluginIDs as $pluginID) {
             if (isset($_POST['aktivieren'])) {
                 $res = $stateChanger->activate($pluginID);
@@ -193,7 +194,7 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
             } elseif (isset($_POST['deinstallieren'])) {
                 $plugin = $db->select('tplugin', 'kPlugin', $pluginID);
                 if (isset($plugin->kPlugin) && $plugin->kPlugin > 0) {
-                    switch ($uninstaller->uninstall($pluginID, false, null, $deleteData)) {
+                    switch ($uninstaller->uninstall($pluginID, false, null, $deleteData, $deleteFiles)) {
                         case InstallCode::WRONG_PARAM:
                             $errorMsg = __('errorAtLeastOnePlugin');
                             break;
@@ -386,17 +387,14 @@ if ($reload === true) {
     exit();
 }
 
-$hasAuth = (bool)$db->query(
-    'SELECT access_token FROM tstoreauth WHERE access_token IS NOT NULL',
-    ReturnType::AFFECTED_ROWS
-);
 
+$alert = Shop::Container()->getAlertService();
 if (SAFE_MODE) {
-    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_WARNING, __('Safe mode enabled.'), 'warnSafeMode');
+    $alert->addAlert(Alert::TYPE_WARNING, __('Safe mode enabled.'), 'warnSafeMode');
 }
 
-Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $errorMsg, 'errorPlugin');
-Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $notice, 'noticePlugin');
+$alert->addAlert(Alert::TYPE_ERROR, $errorMsg, 'errorPlugin');
+$alert->addAlert(Alert::TYPE_NOTE, $notice, 'noticePlugin');
 
 $smarty->assign('hinweis64', base64_encode($notice))
     ->assign('step', $step)
@@ -407,5 +405,5 @@ $smarty->assign('hinweis64', base64_encode($notice))
     ->assign('pluginsProblematic', $pluginsProblematic)
     ->assign('pluginsDisabled', $pluginsDisabled)
     ->assign('allPluginItems', $pluginsAll)
-    ->assign('hasAuth', $hasAuth)
+    ->assign('shopVersion', Version::parse(\APPLICATION_VERSION))
     ->display('pluginverwaltung.tpl');

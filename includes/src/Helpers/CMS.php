@@ -59,7 +59,6 @@ class CMS
                 return (int)$e->kArtikel;
             });
             if (\count($productIDs) > 0) {
-                \shuffle($productIDs);
                 $box->cURL    = SearchSpecial::buildURL($url);
                 $box->Artikel = new ArtikelListe();
                 $box->Artikel->getArtikelByKeys($productIDs, 0, \count($productIDs));

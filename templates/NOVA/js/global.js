@@ -9,9 +9,7 @@ $('body').on('click', '.option li', function (e) {
 
 // prevent multiple form submit on client side
 $('.submit_once').closest('form').on('submit', function() {
-    $(this).on('submit', function() {
-        return false;
-    });
+    $(this).find('.submit_once').prop('disabled', 'true');
     return true;
 });
 
@@ -86,53 +84,63 @@ function compatibility() {
         }
     };
 }
+function regionsToState(){
+    $('.js-country-select').on('change', function() {
 
-function regionsToState() {
-    var state = $('#state');
-    if (state.length === 0) {
-        return;
-    }
-    var title = state.attr('title');
-    var stateIsRequired = state.attr('required') === 'required';
-
-    $('#country').on('change', function() {
         var result = {};
         var io = $.evo.io();
-        var val = $(this).find(':selected').val();
+        var country = $(this).find(':selected').val();
+        var connection_id = $(this).attr('id').toString().replace("-country","");
 
-        io.call('getRegionsByCountry', [val], result, function (error, data) {
+        io.call('getRegionsByCountry', [country], result, function (error, data) {
             if (error) {
                 console.error(data);
             } else {
+                var state_id = connection_id+'-state';
+                var state = $('#'+state_id);
+                var state_data = state.data();
+                if (state.length === 0) {
+                    return;
+                }
+                var title = state_data.defaultoption;
+                var stateIsRequired = state.attr('required') === 'required';
                 var data = result.response;
-                var def = $('#state').val();
-                if (data !== null && data.length > 0) {
-                    if (stateIsRequired){
-                        var state = $('<select />').attr({ id: 'state', name: 'bundesland', class: 'custom-select required form-control', required: 'required'});
-                    } else {
-                        var state = $('<select />').attr({ id: 'state', name: 'bundesland', class: 'custom-select form-control'});
-                    }
+                var def = $('#'+state_id).val();
+                if(typeof(data)!=='undefined'){
+                    if (data !== null && data.length > 0) {
+                        if (stateIsRequired){
+                            var state = $('<select />').attr({ id: state_id, name: state.attr('name'), class: 'custom-select required form-control js-state-select', required: 'required'});
+                        } else {
+                            var state = $('<select />').attr({ id: state_id, name: state.attr('name'), class: 'custom-select form-control js-state-select'});
+                        }
 
-                    state.append('<option value="">' + title + '</option>');
-                    $(data).each(function(idx, item) {
-                        state.append(
-                            $('<option></option>').val(item.cCode).html(item.cName)
-                                .attr('selected', item.cCode == def || item.cName == def ? 'selected' : false)
-                        );
-                    });
-                    $('#state').replaceWith(state);
-                } else {
-                    if (stateIsRequired) {
-                        var state = $('<input />').attr({ type: 'text', id: 'state', name: 'bundesland', class: 'required form-control', placeholder: title, required: 'required' });
+                        Object.keys(state_data).forEach(function(key,index) {
+                            state.data(key,state_data[key]);
+                        });
+
+                        state.append('<option value="">' + title + '</option>');
+                        $(data).each(function(idx, item) {
+                            state.append(
+                                $('<option></option>').val(item.cCode).html(item.cName)
+                                    .attr('selected', item.cCode == def || item.cName == def ? 'selected' : false)
+                            );
+                        });
+                        $('#'+state_id).replaceWith(state);
                     } else {
-                        var state = $('<input />').attr({ type: 'text', id: 'state', name: 'bundesland', class: 'form-control', placeholder: title });
+                        if (stateIsRequired) {
+                            var state = $('<input />').attr({ type: 'text', id: state_id, name: state.attr('name'),  class: 'required form-control js-state-select', placeholder: title, required: 'required' });
+                        } else {
+                            var state = $('<input />').attr({ type: 'text', id: state_id, name: state.attr('name'),  class: 'form-control js-state-select', placeholder: title });
+                        }
+                        Object.keys(state_data).forEach(function(key,index) {
+                            state.data(key,state_data[key]);
+                        });
+                        $('#'+state_id).replaceWith(state);
                     }
-                    $('#state').replaceWith(state);
                 }
             }
         });
         return false;
-
     }).trigger('change');
 }
 
@@ -147,8 +155,12 @@ function loadContent(url)
             addValidationListener();
         }
 
+        let topbarHeight      = $('#header-top-bar').outerHeight() || 0,
+            wrapperHeight     = $('#jtl-nav-wrapper').outerHeight() || 0,
+            productListHeight = $('#product-list').offset().top || 0,
+            pageNavHeight     = $('.productlist-page-nav').outerHeight() || 0;
         $('html,body').animate({
-            scrollTop: $('.list-pageinfo').offset().top - $('#main-nav-wrapper').outerHeight() - 10
+            scrollTop: productListHeight - wrapperHeight - topbarHeight - pageNavHeight - 20
         }, 100);
     });
 }
@@ -413,6 +425,7 @@ $(document).ready(function () {
             minLength: 0
         },
         {
+            limit:  50,
             name:   'cities',
             source: citySuggestion
         }
@@ -455,7 +468,7 @@ $(document).ready(function () {
     /*
      * Banner
      */
-    var bannerLink = $('.banner > a');
+    var bannerLink = $('.banner > a:not(.empty-popover)');
     bannerLink.popover({
         html:      true,
         placement: 'bottom',
@@ -508,6 +521,10 @@ $(document).ready(function () {
         }
     });
 
+    /*
+     * margin to last filter-box
+     */
+    $('aside .box[class*=box-filter-]').last().addClass('mb-5');
 
     /*
      * set bootstrap viewport
@@ -535,6 +552,16 @@ $(document).ready(function () {
     addCopyToClipboardListener();
     initWow();
     setClickableRow();
+
+    document.addEventListener('lazybeforesizes', function(e){
+        //use width of parent node instead of the image width itself
+        var parent = e.target.parentNode;
+
+        if(parent.nodeName == 'PICTURE'){
+            parent = parent.parentNode;
+        }
+        e.detail.width = parent.offsetWidth || e.detail.width;
+    });
 });
 
 function setClickableRow ()

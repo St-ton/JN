@@ -256,7 +256,7 @@ class ValidationService implements ValidationServiceInterface
     }
 
     /**
-     * @inheritdoc
+     * @return ValidationResult
      */
     protected function createMissingResult(): ValidationResult
     {

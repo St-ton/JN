@@ -6,7 +6,6 @@ use JTL\DB\ReturnType;
 use JTL\Language\LanguageHelper;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
-use JTL\Template;
 use stdClass;
 
 /**
@@ -360,7 +359,8 @@ class Overlay
      */
     public function setTemplateName(string $template = null): self
     {
-        $this->templateName = $template ?: Template::getInstance()->getName();
+        $this->templateName = $template
+            ?: Shop::Container()->getTemplateService()->getActiveTemplate()->getName();
 
         return $this;
     }

@@ -79,6 +79,7 @@ class Service
      */
     public function getEditorMessages(): array
     {
+        $messages     = [];
         $messageNames = [
             'opcImportSuccessTitle',
             'opcImportSuccess',

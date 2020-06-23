@@ -93,7 +93,7 @@
         {if !empty($manufacturers)}
             {assign var=manufacturerOverview value=\JTL\Shop::Container()->getLinkService()->getSpecialPage(LINKTYP_HERSTELLER)}
             {block name='snippets-categories-mega-manufacturers-inner'}
-                <li class="nav-item nav-scrollbar-item dropdown dropdown-full">
+                <li class="nav-item nav-scrollbar-item dropdown dropdown-full {if $nSeitenTyp === $smarty.const.PAGE_HERSTELLER}active{/if}">
                     {link href="{if $manufacturerOverview !== null}{$manufacturerOverview->getURL()}{else}#{/if}" title={lang key='manufacturers'} class="nav-link dropdown-toggle" target="_self"}
                         <span class="text-truncate">
                             {if $manufacturerOverview !== null && !empty($manufacturerOverview->getName())}
@@ -162,7 +162,7 @@
             <li class="d-lg-none"><hr></li>
         {/block}
         {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
-            {navitem href="{get_static_route id='wunschliste.php'}" class="nav-scrollbar-item"}
+            {navitem href="{get_static_route id='wunschliste.php'}" class="wl-nav-scrollbar-item nav-scrollbar-item"}
                 {lang key='wishlist'}
                 {badge id="badge-wl-count" variant="primary" class="text-gray-darker product-count"}
                     {if isset($smarty.session.Wunschliste) && !empty($smarty.session.Wunschliste->CWunschlistePos_arr|count)}
@@ -173,7 +173,7 @@
                 {/badge}
             {/navitem}
         {/if}
-        {navitem href="{get_static_route id='vergleichsliste.php'}" class="nav-scrollbar-item"}
+        {navitem href="{get_static_route id='vergleichsliste.php'}" class="comparelist-nav-scrollbar-item nav-scrollbar-item"}
             {lang key='compare'}
             {badge id="comparelist-badge" variant="primary" class="text-gray-darker product-count"}
                 {if !empty($smarty.session.Vergleichsliste->oArtikel_arr)}{$smarty.session.Vergleichsliste->oArtikel_arr|count}{else}0{/if}
@@ -189,7 +189,7 @@
         {block name='layout-header-top-bar-user-settings'}
             {block name='layout-header-top-bar-user-settings-currency'}
                 {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}
-                    <li class="nav-item nav-scrollbar-item dropdown dropdown-full">
+                    <li class="currency-nav-scrollbar-item nav-item nav-scrollbar-item dropdown dropdown-full">
                         {block name='layout-header-top-bar-user-settings-currency-link'}
                             {link id='currency-dropdown' href='#' title={lang key='currency'} class="nav-link dropdown-toggle" target="_self"}
                                 {lang key='currency'}
@@ -217,39 +217,6 @@
                                         {/row}
                                     {/container}
                                 </div>
-                            </div>
-                        {/block}
-                    </li>
-                {/if}
-            {/block}
-            {block name='layout-header-top-bar-user-settings-language'}
-                {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
-                    <li class="nav-item nav-scrollbar-item dropdown dropdown-full">
-                        {block name='layout-header-top-bar-user-settings-language-link'}
-                            {link id='language-dropdown' href='#' title={lang key='selectLanguage'} class="nav-link dropdown-toggle" target="_self"}
-                                {lang key='selectLanguage'}
-                            {/link}
-                        {/block}
-                        {block name='layout-header-top-bar-user-settings-language-body'}
-                            <div class="dropdown-menu">
-                                {container}
-                                    {row class="lg-row-lg nav"}
-                                        {col lg=4 xl=3 class="my-lg-4 nav-item dropdown d-lg-none"}
-                                        {block name='layout-header-top-bar-user-settings-language-header'}
-                                            <span class="font-size-base font-weight-bold">{lang key='selectLanguage'}</span>
-                                        {/block}
-                                        {/col}
-                                        {foreach $smarty.session.Sprachen as $language}
-                                            {col lg=4 xl=3 class='my-lg-4 nav-item'}
-                                                {block name='layout-header-top-bar-user-settings-language-header-items'}
-                                                    {dropdownitem href=$language->cURL rel="nofollow" active=($language->kSprache == $smarty.session.kSprache)}
-                                                        {$language->iso639|upper}
-                                                    {/dropdownitem}
-                                                {/block}
-                                            {/col}
-                                        {/foreach}
-                                    {/row}
-                                {/container}
                             </div>
                         {/block}
                     </li>

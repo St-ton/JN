@@ -106,7 +106,7 @@
 									<span class="consent-display-3 consent-no-space">{lang key='company' section='consent'}:</span>
 									<p>{$item->getCompany()}</p>
 									<span class="consent-display-3 consent-no-space">{lang key='terms' section='consent'}:</span>
-									<a href="{$item->getPrivacyPolicy()}" target="_blank">{lang key='link' section='consent'}</a>
+									<a href="{$item->getPrivacyPolicy()}" target="_blank" rel="noopener">{lang key='link' section='consent'}</a>
 								</div>
 							{/block}
 						</div>

@@ -15,6 +15,7 @@ use JTL\Console\Command\Migration\StatusCommand;
 use JTL\Console\Command\Plugin\CreateCommandCommand;
 use JTL\Console\Command\Plugin\CreateMigrationCommand;
 use JTL\Console\Command\Model\CreateCommand as CreateModelCommand;
+use JTL\Console\Command\Plugin\ValidateCommand;
 use JTL\Plugin\Admin\Listing;
 use JTL\Plugin\Admin\ListingItem;
 use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
@@ -62,7 +63,9 @@ class Application extends BaseApplication
         $this->isInstalled = \defined('BLOWFISH_KEY');
         if ($this->isInstalled) {
             $cache = Shop::Container()->getCache();
-            $cache->setJtlCacheConfig(Shop::Container()->getDB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
+            $cache->setJtlCacheConfig(
+                Shop::Container()->getDB()->selectAll('teinstellungen', 'kEinstellungenSektion', \CONF_CACHING)
+            );
         }
 
         parent::__construct('JTL-Shop', \APPLICATION_VERSION . ' - ' . ($this->devMode ? 'develop' : 'production'));
@@ -158,6 +161,7 @@ class Application extends BaseApplication
             if (\PLUGIN_DEV_MODE === true) {
                 $cmds[] = new CreateMigrationCommand();
                 $cmds[] = new CreateCommandCommand();
+                $cmds[] = new ValidateCommand();
             }
         } else {
             $cmds[] = new InstallCommand();

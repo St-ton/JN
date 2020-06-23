@@ -485,7 +485,7 @@ class PageService
             ->assign('page', $draft)
             ->fetch(\PFAD_ROOT . \PFAD_ADMIN . 'opc/tpl/draftstatus.tpl');
 
-        $response->assign('opcDraftStatus', 'innerHTML', $draftStatusHtml);
+        $response->assignDom('opcDraftStatus', 'innerHTML', $draftStatusHtml);
 
         return $response;
     }

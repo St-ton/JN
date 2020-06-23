@@ -677,13 +677,27 @@ input.form-control[name="wishlist-url"] {
   height: $input-height;
 }
 
+#filter-checkboxes {
+  @include media-breakpoint-down(md) {
+    .custom-checkbox label {
+      max-width: 32vw;
+    }
+  }
+}
+
+.delete-link-times {
+  position: absolute;
+  z-index: 1;
+  right: 0.5rem;
+  top: 0.5rem;
+  font-size: $font-size-lg;
+}
+
 .comparelist {
-  max-height: 800px;
-  .table thead th, td {
+  .table tr.comparelist-row td {
     &:first-child {
       position: sticky;
       left: 0;
-      background: #fff;
       z-index: $zindex-dropdown - 4;
     }
   }
@@ -696,20 +710,30 @@ input.form-control[name="wishlist-url"] {
       &:not(:first-child) {
         z-index: $zindex-dropdown - 2;
       }
-      background: #fff;
+      background: $white;
       vertical-align: top;
       z-index: $zindex-dropdown - 1;
     }
     tbody td:first-child {
-      background-color: #f5f7fa;
+      background-color: $gray-lighter;
+      font-weight: $font-weight-bold;
+    }
+    @include media-breakpoint-down(md) {
+      td {
+        padding: 0.3rem;
+        &:first-child > div {
+          width: 110px;
+        }
+      }
+      th {
+        padding: 0;
+      }
     }
   }
 
   .stretched {
     display: flex;
     flex-direction: column;
-    height: 100%;
-    justify-content: space-between;
   }
 }
 
@@ -879,4 +903,34 @@ body {
 .lazyloaded {
   opacity: 1;
   transition: opacity 300ms;
+}
+
+#shop-nav {
+  img {
+    width: 45px;
+    height: 45px;
+    object-fit: contain;
+  }
+}
+.box-compare, .box-wishlist {
+  img {
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+  }
+}
+.price-range-inputs {
+  .input-group-prepend {
+    height: 1.6rem;
+    .input-group-text {
+      border-left: 0;
+      font-weight: $font-weight-bold;
+      padding: $input-padding-y-sm $input-padding-x-sm;
+    }
+  }
+  input {
+    font-weight: $font-weight-bold;
+    height: 1.6rem;
+    padding: $input-padding-y-sm $input-padding-x-sm;
+  }
 }

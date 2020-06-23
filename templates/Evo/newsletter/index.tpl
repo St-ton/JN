@@ -100,7 +100,7 @@
                                             <span>{lang key='newsletterSendSubscribe' section='newsletter'}</span>
                                         </button>
                                         <p class="info small">
-                                            {lang key='unsubscribeAnytime' section='newsletter'}
+                                            {lang key='unsubscribeAnytime' section='newsletter' printf=$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL()}
                                         </p>
                                 </div>
                             </fieldset>

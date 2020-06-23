@@ -3,8 +3,8 @@
 namespace JTL\Consent;
 
 use Illuminate\Support\Collection;
+use JTL\DB\DbInterface;
 use JTL\Session\Frontend;
-use JTL\Shop;
 
 /**
  * Class Manager
@@ -16,6 +16,21 @@ class Manager implements ManagerInterface
      * @var Collection
      */
     private $activeItems;
+
+    /**
+     * @var DbInterface
+     */
+    private $db;
+
+    /**
+     * Manager constructor.
+     * @param DbInterface $db
+     */
+    public function __construct(DbInterface $db)
+    {
+        $this->db = $db;
+    }
+
 
     /**
      * @inheritDoc
@@ -86,12 +101,12 @@ class Manager implements ManagerInterface
      */
     public function initActiveItems(int $languageID): Collection
     {
-        $models = ConsentModel::loadAll(Shop::Container()->getDB(), 'active', 1)->map(
+        $models = ConsentModel::loadAll($this->db, 'active', 1)->map(
             static function (ConsentModel $model) use ($languageID) {
                 return (new Item($languageID))->loadFromModel($model);
             }
         );
-        \executeHook(CONSENT_MANAGER_GET_ACTIVE_ITEMS, ['items' => $models]);
+        \executeHook(\CONSENT_MANAGER_GET_ACTIVE_ITEMS, ['items' => $models]);
         $this->activeItems = $models;
 
         return $this->activeItems;

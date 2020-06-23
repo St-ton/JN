@@ -1,5 +1,6 @@
 variables:
   GLOBAL_CI_REGISTRY_URL: "registry.gitlab.com/jtl-software/jtl-shop/core"
+  GIT_DEPTH: 1
 
 stages:
   - codeQuality
@@ -228,6 +229,29 @@ stages:
     fi
   }
 
+
+
+.debugging: &debugging
+  script:
+    - if [ $CI_COMMIT_BRANCH ] ; then echo 'CI_COMMIT_BRANCH :' $CI_COMMIT_BRANCH; fi;                                                          # --DEBUG--
+    - if [ $CI_COMMIT_REF_NAME ] ; then echo 'CI_COMMIT_REF_NAME :' $CI_COMMIT_REF_NAME; fi;                                                    # --DEBUG--
+    - if [ $CI_MERGE_REQUEST_IID ] ; then echo 'CI_MERGE_REQUEST_IID :' $CI_MERGE_REQUEST_IID; fi;                                              # --DEBUG--
+    - if [ $CI_MERGE_REQUEST_ID ] ; then echo 'CI_MERGE_REQUEST_ID :' $CI_MERGE_REQUEST_ID; fi;                                                 # --DEBUG--
+    - if [ $CI_COMMIT_TAG ] ; then echo 'CI_COMMIT_TAG :' $CI_COMMIT_TAG; fi;                                                                   # --DEBUG--
+    - if [ $CI_PIPELINE_SOURCE ] ; then echo 'CI_PIPELINE_SOURCE :' $CI_PIPELINE_SOURCE; fi;                                                    # --DEBUG--
+    - if [ $CI_MERGE_REQUEST_EVENT_TYPE ] ; then echo 'CI_MERGE_REQUEST_EVENT_TYPE :' $CI_MERGE_REQUEST_EVENT_TYPE; fi;                         # --DEBUG--
+    - if [ $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME ] ; then echo 'CI_MERGE_REQUEST_SOURCE_BRANCH_NAME :' $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME; fi; # --DEBUG--
+    - if [ $CI_MERGE_REQUEST_TARGET_BRANCH_NAME ] ; then echo 'CI_MERGE_REQUEST_TARGET_BRANCH_NAME :' $CI_MERGE_REQUEST_TARGET_BRANCH_NAME; fi; # --DEBUG--
+    - if [ $CI_DEFAULT_BRANCH ] ; then echo 'CI_DEFAULT_BRANCH :' $CI_DEFAULT_BRANCH; fi;                                                       # --DEBUG--
+
+
+workflow:
+  rules:
+    - if: $CI_MERGE_REQUEST_ID
+      when: never
+    - when: always
+
+
 code_quality:
   stage: codeQuality
   image: docker:19.03.1
@@ -239,12 +263,14 @@ code_quality:
   script:
     - *codeQualityScripts
     - codeQualityCheck
+#  <<: *debugging
   artifacts:
     paths: [code-quality-report.txt]
-  only:
-    - branches
-  except:
-    - master
+  rules:
+    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
+        && $CI_COMMIT_REF_NAME !~ /^release\/.*$/
+        && $CI_COMMIT_TAG == null
+      when: always
 
 removeContainerCodeQuality:
   stage: cleanUpCodeQuality
@@ -258,12 +284,14 @@ removeContainerCodeQuality:
   script:
     - *cleanUpTesting
     - failedCodeQuality
-  only:
-    - branches
-  except:
-    - master
-    - /^release\/.*$/
-  when: on_failure
+#  <<: *debugging
+  rules:
+    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
+        && $CI_COMMIT_REF_NAME !~ /^release\/.*$/
+        && $CI_COMMIT_TAG == null
+      when: on_failure
+
+
 
 test_PHP_7.2:
   stage: test
@@ -277,10 +305,12 @@ test_PHP_7.2:
   script:
     - *testingScript
     - testing
-  only:
-    - branches
-  except:
-    - master
+#  <<: *debugging
+  rules:
+    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
+        && $CI_COMMIT_REF_NAME !~ /^release\/.*$/
+        && $CI_COMMIT_TAG == null
+      when: always
 
 test_PHP_7.3:
   stage: test
@@ -294,10 +324,12 @@ test_PHP_7.3:
   script:
     - *testingScript
     - testing
-  only:
-    - branches
-  except:
-    - master
+#  <<: *debugging
+  rules:
+    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
+        && $CI_COMMIT_REF_NAME !~ /^release\/.*$/
+        && $CI_COMMIT_TAG == null
+      when: always
 
 removeContainerPHP7.2:
   stage: cleanUpTest
@@ -312,12 +344,12 @@ removeContainerPHP7.2:
   script:
     - *cleanUpTesting
     - failedTesting
-  only:
-    - branches
-  except:
-    - master
-    - /^release\/.*$/
-  when: on_failure
+#  <<: *debugging
+  rules:
+    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
+        && $CI_COMMIT_REF_NAME !~ /^release\/.*$/
+        && $CI_COMMIT_TAG == null
+      when: on_failure
 
 removeContainerPHP7.3:
   stage: cleanUpTest
@@ -332,12 +364,14 @@ removeContainerPHP7.3:
   script:
     - *cleanUpTesting
     - failedTesting
-  only:
-    - branches
-  except:
-    - master
-    - /^release\/.*$/
-  when: on_failure
+#  <<: *debugging
+  rules:
+    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
+        && $CI_COMMIT_REF_NAME !~ /^release\/.*$/
+        && $CI_COMMIT_TAG == null
+      when: on_failure
+
+
 
 build:
   stage: build
@@ -346,13 +380,14 @@ build:
     - dockerLogin
   script:
     - buildProcess
+#  <<: *debugging
   after_script:
     - *postBuildDeployScripts
     - dockerLogout
-  only:
-    - master
-    - /^release\/.*$/
-    - tags
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+        || $CI_COMMIT_REF_NAME =~ /^release\/.*$/
+        || $CI_COMMIT_TAG == $CI_COMMIT_REF_NAME
   tags:
     - build
 
@@ -366,29 +401,34 @@ deploy:
   script:
     - deployProcess
     - buildscript pipeline:shop5up "$CI_PROJECT_DIR" "$CI_COMMIT_REF_NAME" "$CI_COMMIT_SHA"
+#  <<: *debugging
   after_script:
     - *postBuildDeployScripts
     - dockerLogout
-  only:
-    - master
-    - /^release\/.*$/
-    - tags
-  when: on_success
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+        || $CI_COMMIT_REF_NAME =~ /^release\/.*$/
+        || $CI_COMMIT_TAG == $CI_COMMIT_REF_NAME
+      when: on_success
   tags:
     - build
+
 
 removeContainer:
   stage: cleanUp
   script:
     - *cleanUpScript
     - failedScript
-  only:
-    - master
-    - /^release\/.*$/
-    - tags
-  when: on_failure
+#  <<: *debugging
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+        || $CI_COMMIT_REF_NAME =~ /^release\/.*$/
+        || $CI_COMMIT_TAG == $CI_COMMIT_REF_NAME
+      when: on_failure
   tags:
     - build
+
+
 
 tagsDeployment:
   stage: tagsDeployment
@@ -396,12 +436,15 @@ tagsDeployment:
     GIT_STRATEGY: none
   script:
     - buildscript release:deployment "$CI_BUILD_SERVER_ARCHIVE_PATH"
-  except:
-    - branches
-  only:
-    - tags
+#  <<: *debugging
+  rules:
+    - if: $CI_COMMIT_TAG == $CI_COMMIT_REF_NAME
+    - if: $CI_COMMIT_TAG == ''
+      when: never
   tags:
     - build
+
+
 
 stagingPreDeploy:
   stage: stagingPre
@@ -410,8 +453,10 @@ stagingPreDeploy:
   script:
     - *devCheckoutScripts
     - downloadProcess
-  only:
-    - master
+#  <<: *debugging
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+        || $CI_COMMIT_REF_NAME =~ /^release\/.*$/
   tags:
     - dev-checkout
 
@@ -422,11 +467,13 @@ stagingDevPhp72:
   script:
     - *devCheckoutScripts
     - deployProcess 72
+#  <<: *debugging
   environment:
     name: staging master php 7.2
     url: https://$STAGING_USER-72-master.$STAGING_DOMAIN
-  only:
-    - master
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+        || $CI_COMMIT_REF_NAME =~ /^release\/.*$/
   tags:
     - dev-checkout
 
@@ -437,15 +484,19 @@ stagingDevPhp73:
   script:
     - *devCheckoutScripts
     - deployProcess 73
+#  <<: *debugging
   environment:
     name: staging master php 7.3
     url: https://$STAGING_USER-73-master.$STAGING_DOMAIN
-  only:
-    - master
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+        || $CI_COMMIT_REF_NAME =~ /^release\/.*$/
   tags:
     - dev-checkout
 
-stagingMarketplaceDev:
+
+
+.stagingMarketplaceDev:
   stage: stagingMarketplaceDev
   variables:
     GIT_STRATEGY: none
@@ -456,7 +507,7 @@ stagingMarketplaceDev:
   environment:
     name: staging marketplace dev
     url: https://$STAGING_MARKETPLACE_DOMAIN
-  only:
-    - master
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
   tags:
     - test-marketplace

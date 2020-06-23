@@ -24,7 +24,7 @@
                                 fileID='csv'
                                 fileAllowedExtensions="['csv','txt']"
                                 fileShowRemove=true
-                                fileMaxSize='false'
+                                fileMaxSize=false
                                 fileRequired=true
                             }
                         </div>

@@ -225,13 +225,13 @@ final class LinkGroupList implements LinkGroupListInterface
                     JOIN tsprache
                         ON tsprache.cISO = tlinksprache.cISOSprache
                     JOIN tlinkgroupassociations
-					    ON tlinkgroupassociations.linkID = tlinksprache.kLink
+                        ON tlinkgroupassociations.linkID = tlinksprache.kLink
                     LEFT JOIN tseo
                         ON tseo.cKey = 'kLink'
                         AND tseo.kKey = tlink.kLink
                         AND tseo.kSprache = tsprache.kSprache
                     LEFT JOIN tspezialseite
-						ON tspezialseite.nLinkart = tlink.nLinkart
+                        ON tspezialseite.nLinkart = tlink.nLinkart
                     WHERE tlink.kLink = tlinksprache.kLink
                         AND tlink.nLinkart >= 5
                     GROUP BY tlink.kLink, tseo.kSprache",

@@ -9,7 +9,6 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Link\LinkGroupInterface;
 use JTL\Shop;
-use JTL\Template;
 use function Functional\map;
 use function Functional\reindex;
 
@@ -17,13 +16,13 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('BOXES_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 
-$pageID      = Request::verifyGPCDataInt('page');
 $boxService  = Shop::Container()->getBoxService();
+$alertHelper = Shop::Container()->getAlertService();
 $boxAdmin    = new BoxAdmin(Shop::Container()->getDB());
-$ok          = false;
+$pageID      = Request::verifyGPCDataInt('page');
 $linkID      = Request::verifyGPCDataInt('linkID');
 $boxID       = Request::verifyGPCDataInt('item');
-$alertHelper = Shop::Container()->getAlertService();
+$ok          = false;
 
 if (Request::postInt('einstellungen') > 0) {
     $alertHelper->addAlert(
@@ -133,17 +132,16 @@ if (Request::postInt('einstellungen') > 0) {
 
         case 'resort':
             $position = $_REQUEST['position'];
-            $boxes    = $_REQUEST['box'] ?? [];
-            $sort     = $_REQUEST['sort'] ?? [];
-            $active   = $_REQUEST['aktiv'] ?? [];
-            $ignore   = $_REQUEST['ignore'] ?? [];
+            $boxes    = array_map('\intval', $_REQUEST['box'] ?? []);
+            $sort     = array_map('\intval', $_REQUEST['sort'] ?? []);
+            $active   = array_map('\intval', $_REQUEST['aktiv'] ?? []);
+            $ignore   = array_map('\intval', $_REQUEST['ignore'] ?? []);
             $boxCount = count($boxes);
             $show     = $_REQUEST['box_show'] ?? false;
             $ok       = $boxAdmin->setVisibility($pageID, $position, $show);
-
             foreach ($boxes as $i => $box) {
                 $idx = 'box-filter-' . $box;
-                $boxAdmin->sort($box, $pageID, $sort[$i], in_array($box, $active), in_array($box, $ignore));
+                $boxAdmin->sort($box, $pageID, $sort[$i], in_array($box, $active, true), in_array($box, $ignore, true));
                 $boxAdmin->filterBoxVisibility((int)$box, $pageID, $_POST[$idx] ?? '');
             }
             // see jtlshop/jtl-shop/issues#544 && jtlshop/shop4#41
@@ -186,7 +184,8 @@ if (Request::postInt('einstellungen') > 0) {
 }
 $boxList       = $boxService->buildList($pageID, false);
 $boxTemplates  = $boxAdmin->getTemplates($pageID);
-$boxContainer  = Template::getInstance()->getBoxLayoutXML();
+$model         = Shop::Container()->getTemplateService()->getActiveTemplate();
+$boxContainer  = $model->getBoxLayout();
 $filterMapping = [];
 if ($pageID === PAGE_ARTIKELLISTE) { //map category name
     $filterMapping = Shop::Container()->getDB()->query(

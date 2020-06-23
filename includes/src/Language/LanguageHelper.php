@@ -365,7 +365,9 @@ class LanguageHelper
             }
         }
         $this->currentLanguageID = $this->mappekISO($this->currentISOCode);
-        $_SESSION['kSprachISO']  = $this->currentLanguageID;
+        if (isset($_SESSION)) {
+            $_SESSION['kSprachISO'] = $this->currentLanguageID;
+        }
 
         return $this;
     }

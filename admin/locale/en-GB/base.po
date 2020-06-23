@@ -48,7 +48,7 @@ msgid "showedName"
 msgstr "Displayed name"
 
 msgid "multipleChoice"
-msgstr "By holding the Ctrl key, you can select multiple options."
+msgstr "Multiple selections possible."
 
 msgid "save"
 msgstr "Save"
@@ -330,7 +330,10 @@ msgid "both"
 msgstr "Both"
 
 msgid "successEmailSend"
-msgstr "An email with further instructions has been sent to the indicated email address (if applicable)."
+msgstr "An email with further instructions has been sent to the indicated email address."
+
+msgid "errorEmailNotFound"
+msgstr "Email not found."
 
 msgid "successPasswordChange"
 msgstr "Password changed successfully."
@@ -504,7 +507,7 @@ msgid "twoFactorAuth"
 msgstr "Two-factor authentication"
 
 msgid "activate"
-msgstr "enable"
+msgstr "Enable"
 
 msgid "permissions"
 msgstr "Permissions"
@@ -1275,7 +1278,7 @@ msgid "more"
 msgstr "More"
 
 msgid "insert"
-msgstr "insert"
+msgstr "Insert"
 
 msgid "pages"
 msgstr "Pages"
@@ -1813,18 +1816,6 @@ msgstr "Period"
 
 msgid "directEntry"
 msgstr "Direct entry"
-
-msgid "width"
-msgstr "Width"
-
-msgid "height"
-msgstr "Height"
-
-msgid "start"
-msgstr "Start"
-
-msgid "end"
-msgstr "End"
 
 msgid "color"
 msgstr "Colour"

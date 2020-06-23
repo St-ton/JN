@@ -1,38 +1,40 @@
 {block name='consent-manager'}
-    {include file='snippets/consent_manager.tpl'}
-    <script>
-        $(window).on('load', function () {
-            const CM = new ConsentManager({
-                version: 1
-            });
-            var trigger = document.querySelectorAll('.trigger');
-            var triggerCall = function (e) {
-                e.preventDefault();
-                let type = e.target.dataset.consent;
-                if (CM.getSettings(type) === false) {
-                    CM.openConfirmationModal(type, function () {
-                        let data = CM._getLocalData();
-                        if (data === null) {
-                            data = { settings: {} };
-                        }
-                        data.settings[type] = true;
-                        document.dispatchEvent(new CustomEvent('consent.updated', { detail: data.settings }));
-                    });
-                }
-            }
-            for (let i = 0; i < trigger.length; ++i) {
-                trigger[i].addEventListener('click', triggerCall)
-            }
-            document.addEventListener('consent.updated', function (e) {
-                $.post('{$ShopURLSSL}/', {
-                        'action': 'updateconsent',
-                        'jtl_token': '{$smarty.session.jtl_token}',
-                        'data': e.detail
+    {if $Einstellungen.consentmanager.consent_manager_active === 'Y'}
+        {include file='snippets/consent_manager.tpl'}
+        <script>
+            $(window).on('load', function () {
+                const CM = new ConsentManager({
+                    version: 1
+                });
+                var trigger = document.querySelectorAll('.trigger');
+                var triggerCall = function (e) {
+                    e.preventDefault();
+                    let type = e.target.dataset.consent;
+                    if (CM.getSettings(type) === false) {
+                        CM.openConfirmationModal(type, function () {
+                            let data = CM._getLocalData();
+                            if (data === null) {
+                                data = { settings: {} };
+                            }
+                            data.settings[type] = true;
+                            document.dispatchEvent(new CustomEvent('consent.updated', { detail: data.settings }));
+                        });
                     }
-                );
+                }
+                for (let i = 0; i < trigger.length; ++i) {
+                    trigger[i].addEventListener('click', triggerCall)
+                }
+                document.addEventListener('consent.updated', function (e) {
+                    $.post('{$ShopURLSSL}/', {
+                            'action': 'updateconsent',
+                            'jtl_token': '{$smarty.session.jtl_token}',
+                            'data': e.detail
+                        }
+                    );
+                });
             });
-        });
-    </script>
+        </script>
+    {/if}
 {/block}
 {block name='content-all-closingtags'}
     {block name='content-closingtag'}
@@ -91,7 +93,8 @@
             {block name='footer-additional'}
             {if $Einstellungen.template.footer.socialmedia_footer === 'Y' || $Einstellungen.template.footer.newsletter_footer === 'Y'}
             <div class="row footer-additional">
-                {if $Einstellungen.template.footer.newsletter_footer === 'Y'}
+                {if $Einstellungen.template.footer.newsletter_footer === 'Y'
+                    && $Einstellungen.newsletter.newsletter_active === 'Y'}
                     <div class="{block name='footer-newsletter-class'}col-xs-12 col-md-7 newsletter-footer{/block}">
                         <div class="row">
                             {block name='footer-newsletter'}
@@ -99,7 +102,7 @@
                                     <h5>{lang key='newsletter' section='newsletter'} {lang key='newsletterSendSubscribe' section='newsletter'}
                                     </h5>
                                     <p class="info small">
-                                        {lang key='unsubscribeAnytime' section='newsletter'}
+                                        {lang key='unsubscribeAnytime' section='newsletter' printf=$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL()}
                                     </p>
                                 </div>
                                 <form method="post" action="{get_static_route id='newsletter.php'}" class="form col-xs-12 col-sm-6">
@@ -123,9 +126,33 @@
                         </div>
                     </div>
                 {/if}
-
+                {block name='footer-currency'}
+                    {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}
+                        <div class="col-xs-4">
+                            <div class="currency-dropdown dropdown visible-xs text-center footer-additional-wrapper">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    {if $smarty.session.Waehrung->getCode() === 'EUR'}
+                                        <i class="fa fa-eur" title="{$smarty.session.Waehrung->getName()}"></i>
+                                    {elseif $smarty.session.Waehrung->getCode() === 'USD'}
+                                        <i class="fa fa-usd" title="{$smarty.session.Waehrung->getName()}"></i>
+                                    {elseif $smarty.session.Waehrung->getCode() === 'GBP'}
+                                        <i class="fa fa-gbp" title="{$smarty.session.Waehrung->getName()}"></i>
+                                    {/if}
+                                    {lang key='currency'} <span class="caret"></span>
+                                </a>
+                                <ul id="currency-dropdown-small" class="dropdown-menu dropdown-menu-right">
+                                    {foreach $smarty.session.Waehrungen as $oWaehrung}
+                                        <li>
+                                            <a href="{$oWaehrung->getURL()}" rel="nofollow">{$oWaehrung->getName()}</a>
+                                        </li>
+                                    {/foreach}
+                                </ul>
+                            </div>
+                        </div>
+                    {/if}
+                {/block}
                 {if $Einstellungen.template.footer.socialmedia_footer === 'Y'}
-                    <div class="{block name='footer-socialmedia-class'}col-xs-12 col-md-5 pull-right{/block}">
+                    <div class="{block name='footer-socialmedia-class'}col-xs-8 col-md-5{/block}">
                         <div class="footer-additional-wrapper pull-right">
                             {block name='footer-socialmedia'}
                                 {if !empty($Einstellungen.template.footer.facebook)}
@@ -162,56 +189,6 @@
             </div>{* /row footer-additional *}
             {/if}
             {/block}{* /footer-additional *}
-            <div class="row">
-                {block name='footer-language'}
-                {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
-                    <div class="language-dropdown dropdown visible-xs col-xs-6 text-center">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="{lang key='selectLang'}">
-                            <i class="fa fa-language"></i>
-                            {lang key='language'}
-                            <span class="caret"></span>
-                        </a>
-                        <ul id="language-dropdown-small" class="dropdown-menu dropdown-menu-right">
-                            {foreach $smarty.session.Sprachen as $Sprache}
-                                {if $Sprache->kSprache == $smarty.session.kSprache}
-                                    <li class="active lang-{$lang} visible-xs"><a>{$Sprache->displayLanguage}</a></li>
-                                {/if}
-                            {/foreach}
-                            {foreach $smarty.session.Sprachen as $oSprache}
-                                {if $oSprache->kSprache != $smarty.session.kSprache}
-                                    <li>
-                                        <a href="{$oSprache->cURL}" class="link_lang {$oSprache->cISO}" rel="nofollow">{$oSprache->displayLanguage}</a>
-                                    </li>
-                                {/if}
-                            {/foreach}
-                        </ul>
-                    </div>
-                {/if}
-                {/block}
-                {block name='footer-currency'}
-                {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}
-                    <div class="currency-dropdown dropdown visible-xs col-xs-6 text-center">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            {if $smarty.session.Waehrung->getCode() === 'EUR'}
-                                <i class="fa fa-eur" title="{$smarty.session.Waehrung->getName()}"></i>
-                            {elseif $smarty.session.Waehrung->getCode() === 'USD'}
-                                <i class="fa fa-usd" title="{$smarty.session.Waehrung->getName()}"></i>
-                            {elseif $smarty.session.Waehrung->getCode() === 'GBP'}
-                                <i class="fa fa-gbp" title="{$smarty.session.Waehrung->getName()}"></i>
-                            {/if}
-                            {lang key='currency'} <span class="caret"></span>
-                        </a>
-                        <ul id="currency-dropdown-small" class="dropdown-menu dropdown-menu-right">
-                            {foreach $smarty.session.Waehrungen as $oWaehrung}
-                                <li>
-                                    <a href="{$oWaehrung->getURL()}" rel="nofollow">{$oWaehrung->getName()}</a>
-                                </li>
-                            {/foreach}
-                        </ul>
-                    </div>
-                {/if}
-                {/block}
-            </div>
             <div class="footnote-vat text-center">
                 {if $NettoPreise == 1}
                     {lang key='footnoteExclusiveVat' section='global' assign='footnoteVat'}
@@ -325,5 +302,11 @@
     </script>
     {captchaMarkup getBody=false}
 {/block}
+{block name='layout-footer-js'}{/block}
+
+{block name='layout-footer-io-path'}
+    <div id="jtl-io-path" data-path="{$ShopURL}" class="d-none"></div>
+{/block}
+
 </body>
 </html>

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Plugin;
 
@@ -9,8 +9,8 @@ namespace JTL\Plugin;
 interface LicenseInterface
 {
     /**
-     * @param string $cLicence
+     * @param string $key
      * @return mixed
      */
-    public function checkLicence($cLicence);
+    public function checkLicence($key);
 }

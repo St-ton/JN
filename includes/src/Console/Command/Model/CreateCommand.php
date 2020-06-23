@@ -108,7 +108,9 @@ class CreateCommand extends Command
 
                     return $carry;
                 }),
-                'default'      => isset($attrib['Default']) ? "self::cast('{$attrib['Default']}', '{$dataType}')" : 'null',
+                'default'      => isset($attrib['Default'])
+                    ? "self::cast('{$attrib['Default']}', '{$dataType}')"
+                    : 'null',
                 'nullable'     => $attrib['Null'] === 'YES' ? 'true' : 'false',
                 'isPrimaryKey' => $attrib['Key'] === 'PRI' ? 'true' : 'false',
             ];

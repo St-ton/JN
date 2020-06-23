@@ -2,7 +2,11 @@
     <input type="hidden" value="0" name="{$propname}">
     <input type="checkbox" id="config-{$propname}" value="1" name="{$propname}"
            {if $propval == '1'}checked{/if} {if $required === true}required{/if}>
-    <label for="config-{$propname}">
+    <label for="config-{$propname}"
+            {if !empty($propdesc.desc) || !empty($propdesc.hint)}
+                data-toggle="tooltip" title="{$propdesc.desc|default:''} - {$propdesc.hint|default:''}"
+                data-placement="auto"
+            {/if}>
         {$propdesc.label}
     </label>
 </div>

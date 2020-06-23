@@ -69,7 +69,7 @@
                                         {/link}
                                         {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}"
                                             class="my-2 py-2"
-                                            visible=$Einstellungen.template.sidebar_settings.always_show_price_range === 'Y' || $filter->isActive()}
+                                            visible=true}
                                             {block name='snippets-filter-mobile-include-price-slider'}
                                                 {input data=['id'=>'js-price-range-url'] type="hidden" value="{$NaviFilter->getFilterURL()->getURL()}"}
                                                 {include file='snippets/filter/price_slider.tpl' id='price-slider-content'}

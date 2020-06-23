@@ -1,0 +1,117 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "docURL"
+msgstr ""
+
+msgid "errorFetchLicenseAPI"
+msgstr "Could fetch data from store API."
+
+msgid "Error code: %d"
+msgstr "Error code: %d"
+
+msgid "Licenses"
+msgstr "Licenses"
+
+msgid "(disabled)"
+msgstr "(disabled)"
+
+msgid "Active licenses"
+msgstr "Active licenses"
+
+msgid "Update"
+msgstr "Update"
+
+msgid "Update all"
+msgstr "Update all"
+
+msgid "Install"
+msgstr "Install"
+
+msgid "Install all"
+msgstr "Install all"
+
+msgid "Refresh"
+msgstr "Refresh"
+
+msgid "Unbound licenses"
+msgstr "Unbound licenses"
+
+msgid "free"
+msgstr "free"
+
+msgid "prod"
+msgstr "productive"
+
+msgid "test"
+msgstr "test"
+
+msgid "dev"
+msgstr "dev"
+
+msgid "License expired"
+msgstr "License expired"
+
+msgid "Version %s available"
+msgstr "Version %s available"
+
+msgid "Subscription expired on %s"
+msgstr "Subscription expired on %s"
+
+msgid "License expired on %s"
+msgstr "License expired on %s"
+
+msgid "Valid until %s"
+msgstr "Valid until %s"
+
+msgid "Warning: only valid until %s"
+msgstr "Warning: only valid until %s"
+
+msgid "pageDesc"
+msgstr "Manage your active and available licenses."
+
+msgid "ID"
+msgstr "ID"
+
+msgid "Name"
+msgstr "Name"
+
+msgid "Installed"
+msgstr "Installed"
+
+msgid "Type"
+msgstr "Typ"
+
+msgid "Links"
+msgstr "Links"
+
+msgid "Subscription"
+msgstr "Subscription"
+
+msgid "Developer"
+msgstr "Developer"
+
+msgid "itemDetails"
+msgstr "Details"
+
+msgid "setBinding"
+msgstr "Bind to current shop"
+
+msgid "Update to version %s available"
+msgstr "Update to version %s available"
+
+msgid "storeNotLinkedDesc"
+msgstr "To access contents from the JTL-Store you have to link your account first."
+
+msgid "storeLink"
+msgstr "Konto verknüpfen"
+
+msgid "unlink"
+msgstr "unlink"
+
+msgid "updates available"
+msgstr "updates available"
+
+msgid "last update"
+msgstr "Zuletzt aktualisiert"

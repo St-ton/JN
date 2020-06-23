@@ -89,6 +89,7 @@ class TestHydrator extends DefaultsHydrator
         $mail->nAnzahlBesucherSuchmaschine              = 165;
         $mail->nAnzahlBewertungen                       = 99;
         $mail->nAnzahlBewertungenNichtFreigeschaltet    = 15;
+        $mail->nAnzahlVersendeterBestellungen           = 15;
         $mail->oAnzahlGezahltesGuthaben                 = -1;
         $mail->nAnzahlGeworbenerKunden                  = 11;
         $mail->nAnzahlErfolgreichGeworbenerKunden       = 0;
@@ -100,7 +101,8 @@ class TestHydrator extends DefaultsHydrator
         $mail->nAnzahlVergleiche                        = 3;
         $mail->nAnzahlGenutzteKupons                    = 4;
         $mail->nAnzahlZahlungseingaengeVonBestellungen  = 5;
-        $mail->nAnzahlVersendeterBestellungen           = 6;
+        $mail->nAnzahlNewsletterAbmeldungen             = 6;
+        $mail->nAnzahlNewsletterAnmeldungen             = 6;
         $mail->dVon                                     = '01.01.2019';
         $mail->dBis                                     = '31.01.2019';
         $mail->oLogEntry_arr                            = [];

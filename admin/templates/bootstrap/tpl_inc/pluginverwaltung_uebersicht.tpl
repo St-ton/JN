@@ -20,54 +20,6 @@
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('pluginverwaltung') cBeschreibung=__('pluginverwaltungDesc') cDokuURL=__('pluginverwaltungURL')}
 
-<div>
-    <div class="card">
-        <div class="card-header">
-            <div class="heading-body">
-                <div class="subheading1">{__('pluginverwaltung')}</div>
-            </div>
-            <div class="heading-right">
-                {if $hasAuth}
-                    <a href="store.php" class="btn btn-outline-primary"><i class="fa fa-link"></i> {__('storeRevoke')}</a>
-                {/if}
-            </div>
-            <hr class="mb-n3">
-        </div>
-        <div class="card-body">
-            <div class="row">
-                {if $hasAuth}
-                    <div class="col-md-4 border-right">
-                        <div class="text-center">
-                            <h2>2</h2>
-                            <p>{__('storeUpdatesAvailable')}</p>
-                            <a class="btn btn-outline-primary" href="#">{__('storeListUpdates')}</a>
-                        </div>
-                    </div>
-                    <div class="col-md-4 border-right">
-                        <div class="text-center">
-                            <h2>3</h2>
-                            <p>{__('storePlugins')}</p>
-                            <a class="btn btn-outline-primary" href="#">{__('storeListAll')}</a>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="text-center">
-                            <h2>{$smarty.now|date_format}</h2>
-                            <p>{__('storeLastUpdate')}</p>
-                            <a class="btn btn-outline-primary" href="#">{__('storeUpdateNow')}</a>
-                        </div>
-                    </div>
-                {else}
-                    <div class="col-md-12">
-                        <div class="alert alert-default" role="alert">{__('storeNotLinkedDesc')}</div>
-                        <a href="store.php" class="btn btn-primary">{__('storeLink')}</a>
-                    </div>
-                {/if}
-            </div>
-        </div>
-    </div>
-</div>
-
 <div id="content">
     <div id="settings">
         <div class="tabs">
@@ -109,64 +61,7 @@
                 {include file='tpl_inc/pluginverwaltung_uebersicht_probleme.tpl'}
                 {include file='tpl_inc/pluginverwaltung_uebersicht_verfuegbar.tpl'}
                 {include file='tpl_inc/pluginverwaltung_uebersicht_fehlerhaft.tpl'}
-                <div class="tab-pane fade" id="upload">
-                    <form enctype="multipart/form-data">
-                        {$jtl_token}
-                        <div class="form-group">
-                            {include file='tpl_inc/fileupload.tpl'
-                                fileID='plugin-install-upload'
-                                fileUploadUrl="{$shopURL}/{$PFAD_ADMIN}pluginverwaltung.php"
-                                fileBrowseClear=true
-                                fileUploadAsync=true
-                                fileAllowedExtensions="['zip']"
-                                fileMaxSize=100000
-                                fileOverwriteInitial='false'
-                                fileShowUpload=true
-                                fileShowRemove=true
-                                fileDefaultBatchSelectedEvent=false
-                                fileSuccessMsg="{__('successPluginUpload')}"
-                            }
-                        </div>
-                        <hr>
-                    </form>
-
-                    <script>
-                        let defaultError = '{__('errorPluginUpload')}',
-                            $fi          = $('#plugin-install-upload');
-                        {literal}
-                        $fi.on('fileuploaded', function(event, data, previewId, index) {
-                            var response = data.response,
-                                alert = $('#plugin-install-upload-upload-error');
-                            if (response.status === 'OK') {
-                                alert.hide();
-                                var wasActiveVerfuegbar = $('#verfuegbar').hasClass('active'),
-                                    wasActiveFehlerhaft = $('#fehlerhaft').hasClass('active');
-                                $('#verfuegbar').replaceWith(response.html.available);
-                                $('#fehlerhaft').replaceWith(response.html.erroneous);
-                                $('a[href="#fehlerhaft"]').find('.badge').html(response.html.erroneous_count);
-                                $('a[href="#verfuegbar"]').find('.badge').html(response.html.available_count);
-                                $('#plugin-install-upload-upload-success').show().removeClass('hidden');
-                                if (wasActiveFehlerhaft) {
-                                    $('#fehlerhaft').addClass('active show');
-                                } else if (wasActiveVerfuegbar) {
-                                    $('#verfuegbar').addClass('active show');
-                                }
-                            } else {
-                                if (response.error !== null && response.error.length > 0) {
-                                    alert.html(defaultError + ': ' + response.error);
-                                } else {
-                                    alert.html(defaultError);
-                                }
-                                alert.show().removeClass('hidden');
-                            }
-                            $fi.fileinput('reset');
-                            $fi.fileinput('clear');
-                            $fi.fileinput('refresh');
-                            $fi.fileinput('enable');
-                        });
-                        {/literal}
-                    </script>
-                </div>
+                {include file='tpl_inc/pluginverwaltung_upload.tpl'}
             </div>
         </div>
     </div>

@@ -41,6 +41,9 @@ msgstr "Hinweistext (Onlineshop)"
 msgid "noticeTextEmail"
 msgstr "Hinweistext (E-Mail)"
 
+msgid "noticeTextEmailDesc"
+msgstr "Dieser Text wird zusätzlich zum vorhandenen Inhalt der E-Mail-Vorlagen „Bestellbestätigung“ und „Bestellung aktualisiert“ angezeigt."
+
 msgid "paymentAckMail"
 msgstr "E-Mail: Bestätigung der Zahlung"
 

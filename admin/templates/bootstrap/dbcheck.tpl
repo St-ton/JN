@@ -3,7 +3,7 @@
 <div id="content">
     {if $maintenanceResult !== null}
         {if $maintenanceResult|is_array}
-            <ul class="list-group">
+            <ul class="list-group mb-3">
                 {foreach $maintenanceResult as $result}
                     <li class="list-group-item">
                         <strong>{$result->Op} {$result->Table}:</strong> {$result->Msg_text}
@@ -22,6 +22,7 @@
                 <div class="alert alert-info"><strong>{__('countTables')}:</strong> {$cDBFileStruct_arr|@count}<br /><strong>{__('showModifiedTables')}:</strong> {$cDBError_arr|@count}</div>
             {/if}
             <form action="dbcheck.php" method="post">
+                {$jtl_token}
                 <div id="contentCheck" class="card">
                     <div class="card-header">
                         <div class="subheading1">{__('databaseStructure')}</div>

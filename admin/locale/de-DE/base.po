@@ -48,7 +48,7 @@ msgid "showedName"
 msgstr "Angezeigter Name"
 
 msgid "multipleChoice"
-msgstr "Mehrfachauswahl möglich mit gedrückter Strg- / Umschalttaste"
+msgstr "Mehrfachauswahl möglich"
 
 msgid "save"
 msgstr "Speichern"
@@ -330,7 +330,10 @@ msgid "both"
 msgstr "Beide"
 
 msgid "successEmailSend"
-msgstr "Eine E-Mail mit weiteren Anweisungen wurde an die hinterlegte Adresse, sofern vorhanden, gesendet."
+msgstr "Eine E-Mail mit weiteren Anweisungen wurde an die hinterlegte Adresse gesendet."
+
+msgid "errorEmailNotFound"
+msgstr "Die E-Mail wurde nicht gefunden."
 
 msgid "successPasswordChange"
 msgstr "Passwort wurde erfolgreich geändert."
@@ -504,7 +507,7 @@ msgid "twoFactorAuth"
 msgstr "2-Faktor-Authentifizierung"
 
 msgid "activate"
-msgstr "aktivieren"
+msgstr "Aktivieren"
 
 msgid "permissions"
 msgstr "Berechtigungen"
@@ -1275,7 +1278,7 @@ msgid "more"
 msgstr "Mehr"
 
 msgid "insert"
-msgstr "einfügen"
+msgstr "Hinzufügen"
 
 msgid "pages"
 msgstr "Seiten"
@@ -1813,18 +1816,6 @@ msgstr "Zeitraum"
 
 msgid "directEntry"
 msgstr "Direkter Einstieg"
-
-msgid "width"
-msgstr "Breite"
-
-msgid "height"
-msgstr "Höhe"
-
-msgid "start"
-msgstr "Start"
-
-msgid "end"
-msgstr "Ende"
 
 msgid "color"
 msgstr "Farbe"

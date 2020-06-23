@@ -84,6 +84,8 @@ use JTL\Session\Frontend;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
 use JTL\Smarty\MailSmarty;
+use JTL\Template\TemplateService;
+use JTL\Template\TemplateServiceInterface;
 use JTLShop\SemVer\Version;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
@@ -987,8 +989,6 @@ final class Shop
                 self::$kArtikel = 0;
             }
         }
-        $_SESSION['cTemplate'] = Template::$cTemplate;
-
         if (self::$kWunschliste === 0
             && Request::verifyGPDataString('error') === ''
             && \mb_strlen(Request::verifyGPDataString('wlid')) > 0
@@ -1090,7 +1090,7 @@ final class Shop
 
     private static function getLanguageFromServerName(): void
     {
-        if (!\defined('EXPERIMENTAL_MULTILANG_SHOP') || \EXPERIMENTAL_MULTILANG_SHOP !== true) {
+        if (\EXPERIMENTAL_MULTILANG_SHOP !== true) {
             return;
         }
         foreach ($_SESSION['Sprachen'] ?? [] as $language) {
@@ -1368,11 +1368,15 @@ final class Shop
             $oSeo = self::Container()->getDB()->select('tseo', 'cSeo', $seo);
             // EXPERIMENTAL_MULTILANG_SHOP
             if (isset($oSeo->kSprache)
-                && self::$kSprache !== $oSeo->kSprache
-                && \defined('EXPERIMENTAL_MULTILANG_SHOP')
+                && self::$kSprache !== (int)$oSeo->kSprache
                 && \EXPERIMENTAL_MULTILANG_SHOP === true
             ) {
-                $oSeo->kSprache = self::$kSprache;
+                if (\MULTILANG_URL_FALLBACK === true) {
+                    $oSeo->kSprache = self::$kSprache;
+                } else {
+                    // slug language id and shop language id have to match - 404 otherwise
+                    $oSeo = null;
+                }
             }
             // EXPERIMENTAL_MULTILANG_SHOP END
             // Link active?
@@ -2140,7 +2144,8 @@ final class Shop
                 $container->getBackendLogService(),
                 new AdminLoginStatusMessageMapper(),
                 new AdminLoginStatusToLogLevel(),
-                $container->getGetText()
+                $container->getGetText(),
+                $container->getAlertService()
             );
         });
 
@@ -2160,8 +2165,12 @@ final class Shop
             return new Mailer($hydrator, $smarty, $settings, $validator);
         });
 
-        $container->singleton(ManagerInterface::class, static function () {
-            return new Manager();
+        $container->singleton(ManagerInterface::class, static function (Container $container) {
+            return new Manager($container->getDB());
+        });
+
+        $container->singleton(TemplateServiceInterface::class, static function (Container $container) {
+            return new TemplateService($container->getDB(), $container->getCache());
         });
 
         $container->bind(CronController::class);

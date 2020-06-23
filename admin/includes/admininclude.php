@@ -6,6 +6,7 @@ use JTL\Backend\Revision;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
+use JTL\Profiler;
 use JTL\Services\JTL\CaptchaServiceInterface;
 use JTL\Services\JTL\SimpleCaptchaService;
 use JTL\Session\Backend;
@@ -52,6 +53,7 @@ if (!function_exists('Shop')) {
         return Shop::getInstance();
     }
 }
+Profiler::start();
 $db         = Shop::Container()->getDB();
 $cache      = Shop::Container()->getCache()->setJtlCacheConfig(
     $db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING)
@@ -66,6 +68,7 @@ Shop::setIsFrontend(false);
 if ($loggedIn
     && $_SERVER['REQUEST_METHOD'] === 'GET'
     && strpos($_SERVER['SCRIPT_FILENAME'], 'dbupdater') === false
+    && strpos($_SERVER['SCRIPT_FILENAME'], 'io.php') === false
     && $updater->hasPendingUpdates()
 ) {
     \header('Location: ' . Shop::getURL(true) . '/' . \PFAD_ADMIN . 'dbupdater.php');

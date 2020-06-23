@@ -41,6 +41,9 @@ msgstr "Existing check boxes"
 msgid "checkboxCreate"
 msgstr "Create new check box"
 
+msgid "internalLinkTitle"
+msgstr "Interner Link"
+
 msgid "internalLink"
 msgstr "Yes"
 

@@ -35,7 +35,6 @@ use JTL\Services\JTL\LinkServiceInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
-use JTL\SimpleMail;
 use JTL\Smarty\JTLSmarty;
 use stdClass;
 use function Functional\some;
@@ -395,6 +394,8 @@ class AccountController
                 $persCart = new PersistentCart($customer->getID());
                 if (\count($persCart->oWarenkorbPersPos_arr) > 0) {
                     $this->smarty->assign('nWarenkorb2PersMerge', 1);
+                } else {
+                    $this->setzeWarenkorbPersInWarenkorb($customer->getID());
                 }
             }
         }

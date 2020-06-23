@@ -25,6 +25,7 @@ use JTL\Services\JTL\CryptoServiceInterface;
 use JTL\Services\JTL\LinkServiceInterface;
 use JTL\Services\JTL\NewsServiceInterface;
 use JTL\Services\JTL\PasswordServiceInterface;
+use JTL\Template\TemplateServiceInterface;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 
@@ -156,4 +157,9 @@ interface DefaultServicesInterface extends ContainerInterface
      * @return CountryServiceInterface
      */
     public function getCountryService(): CountryServiceInterface;
+
+    /**
+     * @return TemplateServiceInterface
+     */
+    public function getTemplateService(): TemplateServiceInterface;
 }

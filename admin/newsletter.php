@@ -51,6 +51,7 @@ if (Form::validateToken()) {
                 saveAdminSectionSettings(CONF_NEWSLETTER, $_POST),
                 'saveSettings'
             );
+            $admin->setNewsletterCheckboxStatus();
         }
     } elseif (Request::postInt('newsletterabonnent_loeschen') === 1
         || (Request::verifyGPCDataInt('inaktiveabonnenten') === 1 && isset($_POST['abonnentloeschenSubmit']))

@@ -45,7 +45,7 @@
                             </div>
                         </div>
                         <div class="form-group form-row align-items-center">
-                            <label class="col col-sm-4 col-form-label text-sm-right" for="cEmailCopyTo">{__('emailCopyTo')} :</label>
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cEmailCopyTo">{__('emailCopyTo')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <input class="form-control" id="cEmailCopyTo" name="cEmailCopyTo" type="text" value="{if isset($mailConfig.cEmailCopyTo)}{$mailConfig.cEmailCopyTo|escape}{/if}" />
                             </div>
@@ -218,8 +218,8 @@
                                             fileAllowedExtensions="['pdf']"
                                             fileShowRemove=true
                                             fileMaxSize=2097152
-                                            filePreview='false'
-                                            fileErrorMsg='true'
+                                            filePreview=false
+                                            fileErrorMsg=true
                                         }
                                     </div>
                                 </div>

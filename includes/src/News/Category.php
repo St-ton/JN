@@ -186,7 +186,8 @@ class Category implements CategoryInterface
     }
 
     /**
-     * @inheritdoc
+     * @param array $categoryLanguages
+     * @return $this|CategoryInterface
      */
     public function map(array $categoryLanguages): CategoryInterface
     {

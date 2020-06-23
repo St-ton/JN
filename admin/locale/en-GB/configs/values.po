@@ -1310,9 +1310,6 @@ msgstr "Disable"
 msgid "bilder_dateiformat_value(JPG)"
 msgstr "JPEG"
 
-msgid "bilder_skalieren_value(Y)"
-msgstr "Yes"
-
 msgid "container_verwenden_value(Y)"
 msgstr "Yes"
 
@@ -1320,10 +1317,7 @@ msgid "bilder_dateiformat_value(PNG)"
 msgstr "PNG"
 
 msgid "bilder_dateiformat_value(AUTO)"
-msgstr "Auto"
-
-msgid "bilder_skalieren_value(N)"
-msgstr "No"
+msgstr "Auto (additionally create .webp)"
 
 msgid "container_verwenden_value(N)"
 msgstr "No"
@@ -1588,6 +1582,12 @@ msgstr "Yes"
 
 msgid "bewertung_artikel_gekauft_value(N)"
 msgstr "No"
+
+msgid "newsletter_active_value(N)"
+msgstr "No"
+
+msgid "newsletter_active_value(Y)"
+msgstr "Yes"
 
 msgid "newsletter_emailmethode_value(mail)"
 msgstr "PHP mail()"
@@ -2416,3 +2416,9 @@ msgstr "Yes, in lists"
 
 msgid "gtin_display_value(always)"
 msgstr "Yes, on item detail page and in lists"
+
+msgid "consent_manager_active_value(N)"
+msgstr "No"
+
+msgid "consent_manager_active_value(Y)"
+msgstr "Yes"

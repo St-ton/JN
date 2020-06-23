@@ -6,8 +6,11 @@ use Exception;
 use Ifsnop\Mysqldump\Mysqldump;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Minify\MinifyService;
 use JTL\Network\JTLApi;
 use JTL\Shop;
+use JTL\Smarty\ContextType;
+use JTL\Smarty\JTLSmarty;
 use JTLShop\SemVer\Version;
 use JTLShop\SemVer\VersionCollection;
 use PDOException;
@@ -95,7 +98,7 @@ class Updater
 
         if ($force || $pending === null) {
             $fileVersion = $this->getCurrentFileVersion();
-            $dbVersion = $this->getCurrentDatabaseVersion();
+            $dbVersion   = $this->getCurrentDatabaseVersion();
 
             if (Version::parse($fileVersion)->greaterThan($dbVersion)
                 || ($dbVersion->smallerThan(Version::parse('2.19'))
@@ -297,6 +300,15 @@ class Updater
         return $this->hasPendingUpdates()
             ? $this->updateToNextVersion()
             : Version::parse(\APPLICATION_VERSION);
+    }
+
+    public function finalize(): void
+    {
+        $smarty = new JTLSmarty(true, ContextType::FRONTEND);
+        $smarty->clearCompiledTemplate();
+        Shop::Container()->getCache()->flushAll();
+        $ms = new MinifyService();
+        $ms->flushCache();
     }
 
     /**

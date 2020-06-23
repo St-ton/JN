@@ -21,7 +21,7 @@ class Migration_20200612140816 extends Migration implements IMigration
 
     public function up()
     {
-        $shopSubPath = trim(parse_url(Shop::getURL(), PHP_URL_PATH), '/') . '/';
+        $shopSubPath = trim(parse_url(Shop::getURL(), PHP_URL_PATH) ?? '', '/') . '/';
         if (strlen($shopSubPath) > 1) {
             $db = Shop()->_Container()->getDB();
             // remove Shop-URL path from redirection source

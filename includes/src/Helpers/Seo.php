@@ -66,15 +66,14 @@ class Seo
         $a = ['Ä', 'Ö', 'Ü', 'ß', 'ä', 'ö', 'ü', 'æ'];
         $b = ['Ae', 'Oe', 'Ue', 'ss', 'ae', 'oe', 'ue', 'ae'];
 
-        $str = \preg_replace('/[^\pL\d\-\/_\ ]+/u', '', \str_replace($a, $b, $str));
-        $str = \preg_replace('/[\-_\ ]+/u', '-', $str);
+        $str = \preg_replace('/[^\pL\d\-\/_\s]+/u', '', \str_replace($a, $b, $str));
         $str = \preg_replace('/[\/]+/u', '/', $str);
-        $str = \transliterator_transliterate(
+        $str = \iconv('"UTF-8"', 'ASCII//TRANSLIT//IGNORE', \transliterator_transliterate(
             'Any-Latin; Latin-ASCII;' . (\SEO_SLUG_LOWERCASE ? ' Lower();' : ''),
             \trim($str, ' -_')
-        );
-        $str = \preg_replace('/\s+/', '-', $str);
-        
+        ));
+        $str = \preg_replace('/[\-_\s]+/u', '-', $str);
+
         return $str;
     }
 

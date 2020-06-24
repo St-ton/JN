@@ -600,7 +600,7 @@ abstract class AbstractSync
      */
     protected function getSeoFromDB(int $keyValue, string $keyName, int $langID = null, $assoc = null)
     {
-        if ($keyValue <= 0 || \strlen($keyName) === 0) {
+        if ($keyValue <= 0 || $keyName === '') {
             return null;
         }
         if ($langID > 0) {
@@ -612,7 +612,7 @@ abstract class AbstractSync
         if (\count($seo) === 0) {
             return null;
         }
-        if ($assoc !== null && \strlen($assoc) > 0) {
+        if ($assoc !== null && $assoc !== '') {
             $seoData = [];
             foreach ($seo as $oSeo) {
                 if (isset($oSeo->{$assoc})) {
@@ -670,14 +670,12 @@ abstract class AbstractSync
     protected function checkDbeSXmlRedirect($oldSeo, $newSeo): bool
     {
         // Insert into tredirect weil sich das SEO von der Kategorie geändert hat
-        if ($oldSeo === $newSeo || \strlen($oldSeo) === 0 || \strlen($newSeo) === 0) {
+        if ($oldSeo === $newSeo || $oldSeo === '' || $newSeo === '') {
             return false;
         }
         $redirect = new Redirect();
-        $parsed   = \parse_url(Shop::getURL());
-        $source   = isset($parsed['path']) ? ($parsed['path'] . '/' . $oldSeo) : ('/' . $oldSeo);
 
-        return $redirect->saveExt($source, $newSeo, true);
+        return $redirect->saveExt('/' . $oldSeo, $newSeo, true);
     }
 
     /**

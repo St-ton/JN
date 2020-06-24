@@ -181,7 +181,9 @@ abstract class Job implements JobInterface
         $upd->lastFinish    = 'NOW()';
         $upd->isRunning     = 0;
 
-        return $this->db->update('tjobqueue', 'cronID', $this->getCronID(), $upd) >= 0;
+        return $this->getCronID() > 0
+            ? $this->db->update('tjobqueue', 'cronID', $this->getCronID(), $upd) >= 0
+            : $this->db->update('tjobqueue', 'jobQueueID', $queueEntry->jobQueueID, $upd) >= 0;
     }
 
     /**

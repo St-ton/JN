@@ -68,6 +68,22 @@ class Queue
     }
 
     /**
+     * @return int
+     */
+    public function unStuckQueues(): int
+    {
+        return $this->db->query(
+            'UPDATE tjobqueue
+                SET isRunning = 0
+                WHERE isRunning = 1
+                    AND startTime <= NOW()
+                    AND lastStart IS NOT NULL
+                    AND DATE_SUB(CURTIME(), INTERVAL ' . \QUEUE_MAX_STUCK_HOURS . ' Hour) > lastStart',
+            ReturnType::AFFECTED_ROWS
+        );
+    }
+
+    /**
      * @param stdClass[] $jobs
      */
     public function enqueueCronJobs(array $jobs): void
@@ -100,6 +116,10 @@ class Queue
         }
         $checker->lock();
         $this->enqueueCronJobs($checker->check());
+        $affected = $this->unStuckQueues();
+        if ($affected > 0) {
+            $this->logger->debug('Unstuck ' . $affected . ' job(s).');
+        }
         $this->loadQueueFromDB();
         foreach ($this->queueEntries as $i => $queueEntry) {
             if ($i >= \JOBQUEUE_LIMIT_JOBS) {
@@ -122,15 +142,16 @@ class Queue
                 $job->getCronID(),
                 (object)['lastFinish' => $queueEntry->lastFinish->format('Y-m-d H:i')]
             );
+            \executeHook(\HOOK_JOBQUEUE_INC_BEHIND_SWITCH, [
+                'oJobQueue' => $queueEntry,
+                'job'       => $job,
+                'logger'    => $this->logger
+            ]);
             $job->saveProgress($queueEntry);
             if ($job->isFinished()) {
                 $this->logger->notice('Job ' . $job->getID() . ' successfully finished.');
                 $job->delete();
             }
-            \executeHook(\HOOK_JOBQUEUE_INC_BEHIND_SWITCH, [
-                'oJobQueue' => $queueEntry,
-                'job'       => $job
-            ]);
         }
         $checker->unlock();
     }

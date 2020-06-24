@@ -1,20 +1,16 @@
-HOOK_LINKGROUPS_LOADED (303)
+HOOK_LINKGROUPS_LOADED_PRE_CACHE (306)
 ============================
 
 Triggerpunkt
 """"""""""""
 
-Nach dem Laden aller Link-Gruppen
+Nach dem Laden aller Link-Gruppen und vor dem Speichern in den Objektcache
 
 Parameter
 """""""""
 
 ``\JTL\Link\LinkGroupList list`` **list**
     **list** LinkGroupList-Object
-
-``bool``  **cache**
-    * ``true`` - Linkgruppe wurde aus dem Cache geladen
-    * ``false`` - Cache miss
 
 Beschreibung
 """"""""""""

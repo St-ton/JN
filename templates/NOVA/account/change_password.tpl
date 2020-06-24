@@ -31,7 +31,7 @@
                                 </label>
                             </div>
                             {block name='account-change-password-include-password-check'}
-                                {include file='snippets/password_check.tpl' id='#newPassword'}
+                                {include file='snippets/password_check.tpl' id='#newPassword' loadScript=true}
                             {/block}
                             {include file='snippets/form_group_simple.tpl'
                                 options=[

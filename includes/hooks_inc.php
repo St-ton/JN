@@ -1185,7 +1185,9 @@ define('HOOK_TOOLSGLOBAL_INC_GIBBELIEFERBARELAENDER', 157);
  * after executing job
  *
  * @file jobqueue_inc.php
- * @param oJobQueue
+ * @param JTL\Cron\QueueEntry oJobQueue
+ * @param JTL\Cron\Job job
+ * @param Psr\Log\LoggerInterface logger
  */
 define('HOOK_JOBQUEUE_INC_BEHIND_SWITCH', 158);
 

@@ -5791,7 +5791,7 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
 h1, h2, h3, h4, h5, h6,
-.h1, .h2, .h3, .productlist-filter-headline, .h4, .h5, .h6 {
+.h1, .h2, .h3, .h4, .h5, .h6 {
   margin-bottom: 1rem;
   font-family: Montserrat, sans-serif;
   font-weight: 400;
@@ -5807,7 +5807,7 @@ h2, .h2 {
   font-size: 1.5rem;
 }
 
-h3, .h3, .productlist-filter-headline {
+h3, .h3 {
   font-size: 1rem;
 }
 
@@ -5850,13 +5850,6 @@ h6, .h6 {
   font-size: 3.5rem;
   font-weight: 300;
   line-height: 1.2;
-}
-
-hr {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-  border: 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 small,
@@ -20556,6 +20549,7 @@ aside .box-monthlynews a .value:hover {
   position: relative;
 }
 .label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) label {
+  display: block;
   background: #343434;
   position: absolute;
   cursor: text;
@@ -23565,12 +23559,6 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 
 /* productlist */
-.productlist-filter-headline {
-  border-bottom: 1px solid #f5f7fa;
-  padding-bottom: 0.5rem;
-  margin-bottom: 1rem;
-}
-
 #footer .productlist-filter-headline {
   border-bottom: 0 solid #f5f7fa;
   font-size: 0.875rem;

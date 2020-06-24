@@ -140,7 +140,7 @@
             <File Path="themes/dark/custom.css"/>
         </CSS>
         <JS Name="jtl3.js">
-            <File Path="js/lazysizes.min.js"/>
+<!--            <File Path="js/lazysizes.min.js"/>-->
             <!--<File Path="js/jquery.backstretch.min.js"/>-->
             <!--<File Path="js/jquery.lazy.js"/>-->
             <File Path="js/bootstrap-toolkit.js"/>

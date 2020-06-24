@@ -208,6 +208,7 @@
         {$dbgBarHead}
 
         <script src="{$ShopURL}/{$templateDir}js/jquery-3.4.1.min.js"></script>
+        <script src="{$ShopURL}/{$templateDir}js/lazysizes.min.js"></script>
         <script>
             window.lazySizesConfig = window.lazySizesConfig || {};
             window.lazySizesConfig.expand  = 1;
@@ -240,10 +241,11 @@
         <script defer src="{$ShopURL}/{$templateDir}js/fileinput/fileinput.min.js"></script>
         <script defer src="{$ShopURL}/{$templateDir}js/fileinput/themes/fas/theme.min.js"></script>
         <script defer src="{$ShopURL}/{$templateDir}js/fileinput/locales/{$uploaderLang}.js"></script>
-        {*<link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/opensans/open-sans-regular.woff2" as="font" crossorigin>
-        <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/opensans/open-sans-600.woff2" as="font" crossorigin>
-        <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/montserrat/Montserrat-SemiBold.woff2" as="font" crossorigin>*}
-        <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fontawesome/webfonts/fa-solid-900.woff2" as="font" crossorigin>
+        {*<link rel="preload" importance="low" href="{$ShopURL}/{$templateDir}themes/base/fonts/opensans/open-sans-regular.woff2" as="font" crossorigin>
+        <link rel="preload" importance="low" href="{$ShopURL}/{$templateDir}themes/base/fonts/opensans/open-sans-600.woff2" as="font" crossorigin>
+        <link rel="preload" importance="low" href="{$ShopURL}/{$templateDir}themes/base/fonts/montserrat/Montserrat-SemiBold.woff2" as="font" crossorigin>*}
+        <link rel="preload" importance="low" href="{$ShopURL}/{$templateDir}themes/base/fontawesome/webfonts/fa-solid-900.woff2" as="font" crossorigin/>
+        <link rel="preload" importance="low" href="{$ShopURL}/{$templateDir}themes/base/fontawesome/webfonts/fa-regular-400.woff2" as="font" crossorigin/>
         <link rel="preload" href="{$ShopURL}/{$templateDir}js/app/globals.js" as="script" crossorigin>
         <link rel="preload" href="{$ShopURL}/{$templateDir}js/app/snippets/form-counter.js" as="script" crossorigin>
         <link rel="preload" href="{$ShopURL}/{$templateDir}js/app/plugins/navscrollbar.js" as="script" crossorigin>

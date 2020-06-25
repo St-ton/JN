@@ -210,8 +210,9 @@
         <script src="{$ShopURL}/{$templateDir}js/jquery-3.4.1.min.js"></script>
         <script src="{$ShopURL}/{$templateDir}js/lazysizes.min.js"></script>
         <script>
-            window.lazySizesConfig = window.lazySizesConfig || {};
             window.lazySizesConfig.expand  = 1;
+            window.lazySizesConfig = window.lazySizesConfig || {};
+            window.lazySizes.init();
         </script>
         {if $Einstellungen.template.general.use_minify === 'N'}
             {if isset($cPluginJsHead_arr)}

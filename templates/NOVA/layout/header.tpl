@@ -210,7 +210,6 @@
         <script src="{$ShopURL}/{$templateDir}js/jquery-3.4.1.min.js"></script>
         <script src="{$ShopURL}/{$templateDir}js/lazysizes.min.js"></script>
         <script>
-            window.lazySizesConfig.expand  = 1;
             window.lazySizesConfig = window.lazySizesConfig || {};
             window.lazySizes.init();
         </script>

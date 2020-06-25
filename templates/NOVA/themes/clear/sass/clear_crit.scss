@@ -15,12 +15,6 @@
 @import "../../base/bootstrap/scss/navbar";
 @import "../../base/sass/mixins";
 
-/*
-@include font-face('Open Sans', 'templates/NOVA/themes/base/fonts/opensans/open-sans-regular', 'OpenSans-Regular' 'OpenSans-Regular', normal, 400);
-@include font-face('Open Sans', 'templates/NOVA/themes/base/fonts/opensans/open-sans-600', 'OpenSans-Semibold' 'OpenSans-Semibold', normal, 600);
-@include font-face('Montserrat', 'templates/NOVA/themes/base/fonts/montserrat/Montserrat-SemiBold', 'Montserrat' 'Montserrat', normal, 600);
-*/
-
 .fa, .fas, .far, .fal {
   display: inline-block;
 }

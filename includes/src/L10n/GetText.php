@@ -5,8 +5,8 @@ namespace JTL\L10n;
 use Gettext\Translations;
 use Gettext\Translator;
 use JTL\Plugin\Admin\ListingItem as PluginListingItem;
-use JTL\Template\Admin\ListingItem as TemplateListingItem;
 use JTL\Plugin\PluginInterface;
+use JTL\Template\Admin\ListingItem as TemplateListingItem;
 use JTL\Template\Model;
 
 /**

@@ -5792,7 +5792,7 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
 h1, h2, h3, h4, h5, h6,
-.h1, .h2, .h3, .productlist-filter-headline, .h4, .h5, .h6 {
+.h1, .h2, .h3, .h4, .h5, .h6 {
   margin-bottom: 1rem;
   font-family: Montserrat, sans-serif;
   font-weight: 400;
@@ -5808,7 +5808,7 @@ h2, .h2 {
   font-size: 1.5rem;
 }
 
-h3, .h3, .productlist-filter-headline {
+h3, .h3 {
   font-size: 1rem;
 }
 
@@ -5851,13 +5851,6 @@ h6, .h6 {
   font-size: 3.5rem;
   font-weight: 300;
   line-height: 1.2;
-}
-
-hr {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-  border: 0;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 small,
@@ -20558,6 +20551,7 @@ aside .box-monthlynews a .value:hover {
   position: relative;
 }
 .label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) label {
+  display: block;
   background: #ffffff;
   position: absolute;
   cursor: text;
@@ -21697,6 +21691,21 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
 
 .smoothscroll-top i.fa {
   line-height: inherit;
+}
+
+.jtl-spinner i {
+  margin-top: -40px;
+  margin-left: -40px;
+  position: absolute;
+  top: 50%;
+  font-size: 80px;
+  left: 50%;
+  color: #525252;
+  z-index: 100000;
+}
+
+.modal-body.js-collapse-filter {
+  min-height: 100px;
 }
 
 :root {
@@ -23552,12 +23561,6 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 
 /* productlist */
-.productlist-filter-headline {
-  border-bottom: 1px solid #ebebeb;
-  padding-bottom: 0.5rem;
-  margin-bottom: 1rem;
-}
-
 #footer .productlist-filter-headline {
   border-bottom: 0 solid #ebebeb;
   font-size: 0.875rem;

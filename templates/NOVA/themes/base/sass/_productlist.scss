@@ -1,9 +1,9 @@
-.productlist-filter-headline {
-	border-bottom: $border-width solid $border-color;
-	padding-bottom: map-get($spacers, 2);
-	margin-bottom: map-get($spacers, 3);
-	@extend .h3;
-}
+//.productlist-filter-headline {
+//	border-bottom: $border-width solid $border-color;
+//	padding-bottom: map-get($spacers, 2);
+//	margin-bottom: map-get($spacers, 3);
+//	@extend .h3;
+//}
 
 #footer .productlist-filter-headline {
 	border-bottom: 0 solid $border-color;

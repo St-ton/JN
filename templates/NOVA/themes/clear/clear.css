@@ -20110,8 +20110,8 @@ aside .box-monthlynews a .value:hover {
 }
 @media (min-width: 1300px) {
   .carousel:not(.slick-initialized).slick-type-news .product-wrapper {
-    width: calc(100%/4);
-    min-width: calc(100%/4);
+    width: calc(100%/5);
+    min-width: calc(100%/5);
   }
 }
 @media (max-width: 1299.98px) {

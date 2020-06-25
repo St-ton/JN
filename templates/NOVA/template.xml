@@ -140,7 +140,6 @@
             <File Path="themes/dark/custom.css"/>
         </CSS>
         <JS Name="jtl3.js">
-<!--            <File Path="js/lazysizes.min.js"/>-->
             <File Path="js/bootstrap-toolkit.js"/>
             <File Path="js/popper.min.js"/>
             <File Path="js/bootstrap.bundle.min.js"/>

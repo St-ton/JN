@@ -28,31 +28,31 @@
                         <table class="table table-vertical-middle table-striped table-img">
                             <tbody>
                                 {block name='boxes-box-wishlist-wishlist-items'}
-                                {foreach $oBox->getItems() as $product}
-                                        {if $product@iteration > $maxItems}{break}{/if}
+                                {foreach $oBox->getItems() as $wishlistItem}
+                                        {if $wishlistItem@iteration > $maxItems}{break}{/if}
                                     <tr>
-                                        <td class="w-100" data-id={$product->kArtikel}>
+                                        <td class="w-100" data-id={$wishlistItem->kArtikel}>
                                             {block name='boxes-box-wishlist-dropdown-products-image-title'}
                                                 {formrow class="align-items-center"}
                                                     {if $oBox->getShowImages()}
                                                         {col class="col-auto"}
                                                             {block name='boxes-box-wishlist-dropdown-products-image'}
-                                                                {link href=$product->Artikel->cURLFull title=$product->cArtikelName|escape:'quotes'}
+                                                                {link href=$wishlistItem->Artikel->cURLFull title=$wishlistItem->cArtikelName|escape:'quotes'}
                                                                     {image fluid=true webp=true lazy=true
-                                                                        src=$product->Artikel->Bilder[0]->cURLMini
-                                                                        srcset="{$product->Artikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                                                {$product->Artikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                                                {$product->Artikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                                        src=$wishlistItem->Artikel->Bilder[0]->cURLMini
+                                                                        srcset="{$wishlistItem->Artikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                                                {$wishlistItem->Artikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                                                {$wishlistItem->Artikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
                                                                         sizes="24px"
-                                                                        alt=$product->Artikel->cName|strip_tags|escape:'html'}
+                                                                        alt=$wishlistItem->Artikel->cName|strip_tags|escape:'html'}
                                                                 {/link}
                                                             {/block}
                                                         {/col}
                                                     {/if}
                                                     {col}
                                                         {block name='boxes-box-wishlist-dropdown-products-title'}
-                                                            {link href=$product->Artikel->cURLFull title=$product->cArtikelName|escape:'quotes'}
-                                                                {$product->fAnzahl|replace_delim} &times; {$product->cArtikelName|truncate:40:"..."}
+                                                            {link href=$wishlistItem->Artikel->cURLFull title=$wishlistItem->cArtikelName|escape:'quotes'}
+                                                                {$wishlistItem->fAnzahl|replace_delim} &times; {$wishlistItem->cArtikelName|truncate:40:"..."}
                                                             {/link}
                                                         {/block}
                                                     {/col}
@@ -62,10 +62,10 @@
                                         <td class="text-right text-nowrap">
                                             {block name='snippets-wishlist-dropdown-products-remove'}
                                                 {link class="remove float-right"
-                                                    href=$product->cURL
+                                                    href=$wishlistItem->cURL
                                                     data=["name"=>"Wunschliste.remove",
                                                     "toggle"=>"product-actions",
-                                                    "value"=>['a'=>$product->kWunschlistePos]|json_encode|escape:'html'
+                                                    "value"=>['a'=>$wishlistItem->kWunschlistePos]|json_encode|escape:'html'
                                                     ]
                                                     aria=["label"=>"{lang section='login' key='wishlistremoveItem'}"]}
                                                     <span class="fas fa-times"></span>

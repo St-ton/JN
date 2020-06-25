@@ -41,7 +41,7 @@
                             data=['toggle' => 'collapse', 'target' => '#'|cat:$groupId, 'parent' => '#'|cat:$uid]
                             aria=['expanded' => $ariaExpanded, 'controls' => $groupId]
                         }
-                            {$group|escape:'html'}a
+                            {$group|escape:'html'}
                         {/button}
                     </h2>
                 {/cardheader}

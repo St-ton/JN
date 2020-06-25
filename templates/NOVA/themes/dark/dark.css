@@ -19374,11 +19374,6 @@ aside .box-monthlynews a .value:hover {
   text-decoration: none;
 }
 
-.box-slider .more {
-  padding: 1rem;
-  margin-top: -1rem;
-}
-
 .jqcloud-word.w0 {
   color: #1daa39;
   font-size: 70%;
@@ -21647,6 +21642,12 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
   background-color: #343a40;
 }
 
+.table-img img {
+  width: 45px;
+  height: 45px;
+  object-fit: contain;
+}
+
 .list-icons > li {
   padding-left: 2em;
 }
@@ -22706,18 +22707,6 @@ body {
   transition: opacity 300ms;
 }
 
-#shop-nav img {
-  width: 45px;
-  height: 45px;
-  object-fit: contain;
-}
-
-.box-compare img, .box-wishlist img {
-  width: 26px;
-  height: 26px;
-  object-fit: contain;
-}
-
 .price-range-inputs .input-group-prepend {
   height: 1.6rem;
 }
@@ -23627,6 +23616,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   max-width: 42px;
   margin: 0.2rem;
   border: 3px solid transparent;
+  object-fit: contain;
 }
 .filter-item.active, .filter-item:active {
   color: #9b9b9b;

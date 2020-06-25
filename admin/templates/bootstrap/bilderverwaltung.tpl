@@ -131,19 +131,22 @@
         updateStats();
     });
 
-    function updateStats() {
+    function updateStats(typeToUpdate) {
+        typeToUpdate = typeToUpdate || null;
         $('#cache-items tbody > tr').each(function (i, item) {
             var type = $(item).data('type');
-            ioCall('loadStats', [type], function (data) {
-                var totalCached = 0;
-                $('.item-total', item).text(data.total);
-                $('.item-corrupted', item).text(data.corrupted);
-                $('.item-total-size', item).text(formatSize(data.totalSize));
-                $(['xs', 'sm', 'md', 'lg']).each(function (i, size) {
-                    totalCached += data.generated[size];
-                });
-                $('.item-generated', item).text(Math.round(totalCached / 4, 0));
-            }, undefined, undefined, true);
+            if (typeToUpdate === null || typeToUpdate === type) {
+                ioCall('loadStats', [type], function (data) {
+                    var totalCached = 0;
+                    $('.item-total', item).text(data.total);
+                    $('.item-corrupted', item).text(data.corrupted);
+                    $('.item-total-size', item).text(formatSize(data.totalSize));
+                    $(['xs', 'sm', 'md', 'lg']).each(function (i, size) {
+                        totalCached += data.generated[size];
+                    });
+                    $('.item-generated', item).text(Math.round(totalCached / 4, 0));
+                }, undefined, undefined, true);
+            }
         });
     }
 
@@ -153,12 +156,13 @@
         notify = null;
 
     function cleanup(param) {
+        var type = (typeof param.data('type') !== 'undefined') ? param.data('type') : 'product';
         running = true;
         lastResults = [];
         lastTick = new Date();
-        notify = showGenerateNotify('{/literal}{__('pendingImageCleanup')}{literal}', '{/literal}{__('successImageDelete')}{literal}');
+        notify = showCleanupNotify('{/literal}{__('pendingImageCleanup')}{literal}', '{/literal}{__('successImageDelete')}{literal}', type);
         $('.action-buttons a').attr('disabled', true);
-        doCleanup((typeof param.data('type') !== 'undefined') ? param.data('type') : 'product', 0);
+        doCleanup(type, 0);
     }
 
     function stopCleanup() {
@@ -219,20 +223,6 @@
         }, undefined, undefined, true);
     }
 
-    function showCleanupNotify(title, message) {
-        return createNotify({
-            title: title,
-            message: message
-        }, {
-            allow_dismiss: true,
-            showProgressbar: true,
-            delay: 0,
-            onClose: function () {
-                stopCleanup();
-            }
-        });
-    }
-
     function generate(param) {
         startGenerate((typeof param.data('type') !== 'undefined') ? param.data('type') : 'product');
     }
@@ -240,8 +230,8 @@
     function flush(param) {
         var type = (typeof param.data('type') !== 'undefined') ? param.data('type') : 'product';
         return ioCall('clearImageCache', [type, true], function (result) {
-            updateStats();
-            showGenerateNotify(result.success).update({
+            updateStats(type);
+            showFlushNotify(result.success, '', type).update({
                 progress: 100,
                 message: '&nbsp;',
                 type: 'success',
@@ -254,7 +244,7 @@
         running = true;
         lastResults = [];
         lastTick = new Date();
-        notify = showGenerateNotify('{/literal}{__('pendingImageGenerate')}{literal}', '{/literal}{__('pendingStatisticCalc')}{literal}');
+        notify = showGenerateNotify('{/literal}{__('pendingImageGenerate')}{literal}', '{/literal}{__('pendingStatisticCalc')}{literal}', type);
 
         $('.action-buttons a').attr('disabled', true);
         doGenerate(type, 0);
@@ -265,9 +255,10 @@
         $('.action-buttons a').attr('disabled', false);
     }
 
-    function finishGenerate() {
+    function finishGenerate(type) {
+        type = type || null;
         stopGenerate();
-        updateStats();
+        updateStats(type);
 
         notify.update({
             progress: 100,
@@ -312,7 +303,7 @@
             });
 
             if (rendered >= total) {
-                finishGenerate();
+                finishGenerate(type);
                 return;
             }
 
@@ -356,7 +347,32 @@
         }, undefined, undefined, true);
     }
 
-    function showGenerateNotify(title, message) {
+    function showFlushNotify(title, message, type) {
+        return createNotify({
+            title: title,
+            message: message
+        }, {
+            allow_dismiss: true,
+            showProgressbar: true,
+            delay: 0
+        });
+    }
+
+    function showCleanupNotify(title, message, type) {
+        return createNotify({
+            title: title,
+            message: message
+        }, {
+            allow_dismiss: true,
+            showProgressbar: true,
+            delay: 0,
+            onClose: function () {
+                stopCleanup();
+            }
+        });
+    }
+
+    function showGenerateNotify(title, message, type) {
         return createNotify({
             title: title,
             message: message
@@ -366,7 +382,7 @@
             delay: 0,
             onClose: function () {
                 stopGenerate();
-                updateStats();
+                updateStats(type);
             }
         });
     }

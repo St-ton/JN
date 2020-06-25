@@ -120,7 +120,8 @@ trait PortletHtml
 
     /**
      * @param PortletInstance $instance
-     * @param bool $isPreview
+     * @param bool            $isPreview
+     * @param bool            $inContainer
      * @return string
      * @throws \SmartyException
      */
@@ -246,6 +247,7 @@ trait PortletHtml
     }
 
     /**
+     * @param string $name
      * @return string
      */
     final protected function getCommonResource($name)

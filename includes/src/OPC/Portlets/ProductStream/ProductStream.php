@@ -4,6 +4,8 @@ namespace JTL\OPC\Portlets\ProductStream;
 
 use Illuminate\Support\Collection;
 use JTL\Catalog\Product\Artikel;
+use JTL\Exceptions\CircularReferenceException;
+use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Filter\AbstractFilter;
 use JTL\Filter\Config;
 use JTL\Filter\ProductFilter;
@@ -90,8 +92,8 @@ class ProductStream extends Portlet
     /**
      * @param PortletInstance $instance
      * @return array
-     * @throws \JTL\Exceptions\CircularReferenceException
-     * @throws \JTL\Exceptions\ServiceNotFoundException
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
      */
     public function getFilteredProducts(PortletInstance $instance): array
     {

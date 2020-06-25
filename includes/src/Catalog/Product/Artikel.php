@@ -3,7 +3,6 @@
 namespace JTL\Catalog\Product;
 
 use DateTime;
-use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Hersteller;
 use JTL\Catalog\Separator;
@@ -1410,8 +1409,8 @@ class Artikel
                 'height' => $height
             ],
             'type' => $type,
-            'alt'  => htmlspecialchars(
-                str_replace('"', '', $image->cAltAttribut),
+            'alt'  => \htmlspecialchars(
+                \str_replace('"', '', $image->cAltAttribut),
                 ENT_COMPAT | ENT_HTML401,
                 JTL_CHARSET
             )
@@ -1718,8 +1717,8 @@ class Artikel
             if (\mb_strlen($mediaFile->cTyp) > 0) {
                 if ($mediaFile->cTyp === '.*') {
                     $extMatch = [];
-                    preg_match('/\.\w{3,4}($|\?)/', $mediaFile->cPfad, $extMatch);
-                    $mediaFile->cTyp = $extMatch[0];
+                    \preg_match('/\.\w{3,4}($|\?)/', $mediaFile->cPfad, $extMatch);
+                    $mediaFile->cTyp = $extMatch[0] ?? '.*';
                 }
                 $mapped                = $this->mapMediaType($mediaFile->cTyp);
                 $mediaFile->cMedienTyp = $mapped->cName;
@@ -2033,7 +2032,7 @@ class Artikel
                 $scoreSelect . '
                     FROM tartikel
                     JOIN teigenschaftkombiwert
-	                    ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
+                        ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
                     LEFT JOIN teigenschaft
                         ON teigenschaft.kEigenschaft = teigenschaftkombiwert.kEigenschaft
                     LEFT JOIN teigenschaftwert
@@ -2043,18 +2042,18 @@ class Artikel
                     ' . $scoreJoin . '
                     LEFT JOIN teigenschaftsichtbarkeit
                         ON teigenschaftsichtbarkeit.kEigenschaft = teigenschaftkombiwert.kEigenschaft
-	                    AND teigenschaftsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                        AND teigenschaftsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
                     LEFT JOIN teigenschaftwertsichtbarkeit
                         ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert
-	                    AND teigenschaftwertsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                        AND teigenschaftwertsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
                     LEFT JOIN teigenschaftwertpict
                         ON teigenschaftwertpict.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert
                     LEFT JOIN teigenschaftwertaufpreis
                         ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert
-	                    AND teigenschaftwertaufpreis.kKundengruppe = ' . $customerGroupID . '
+                        AND teigenschaftwertaufpreis.kKundengruppe = ' . $customerGroupID . '
                     WHERE tartikel.kVaterArtikel = ' . (int)$this->kVaterArtikel . '
-	                    AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
-	                    AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL';
+                        AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
+                        AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL';
             if ($exportWorkaround === false) {
                 /* Workaround for performance-issue in MySQL 5.5 with large varcombis */
                 $allCombinations = Shop::Container()->getDB()->query(
@@ -3156,10 +3155,7 @@ class Artikel
             return null;
         }
         // EXPERIMENTAL_MULTILANG_SHOP
-        if ($tmpProduct->cSeo === null
-            && \defined('EXPERIMENTAL_MULTILANG_SHOP')
-            && \EXPERIMENTAL_MULTILANG_SHOP === true
-        ) {
+        if ($tmpProduct->cSeo === null && \EXPERIMENTAL_MULTILANG_SHOP === true) {
             // redo the query with modified seo join - without language ID
             $productSQL = \str_replace(
                 $this->getSeoSQL()->cJOIN,
@@ -5978,5 +5974,27 @@ class Artikel
             default:
                 return null;
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getBackorderString():string
+    {
+        $backorder = '';
+        if ($this->cLagerBeachten === 'Y'
+            && $this->fLagerbestand <= 0
+            && $this->fZulauf > 0
+            && $this->dZulaufDatum_de !== null
+        ) {
+            $backorder = sprintf(
+                Shop::Lang()->get('productInflowing', 'productDetails'),
+                $this->fZulauf,
+                $this->cEinheit,
+                $this->dZulaufDatum_de
+            );
+        }
+
+        return $backorder;
     }
 }

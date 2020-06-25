@@ -70,7 +70,7 @@
                         <li class="nav-item dropdown mr-md-3" id="favs-drop">
                             {include file="tpl_inc/favs_drop.tpl"}
                         </li>
-                        <li class="nav-item dropdown">
+                        <li class="nav-item dropdown fa-lg">
                             <a href="#" class="nav-link text-dark-gray px-2" data-toggle="dropdown">
                                 <span class="fal fa-map-marker-question fa-fw"></span>
                             </a>
@@ -94,7 +94,8 @@
                                 </a>
                             </div>
                         </li>
-                        <li class="nav-item dropdown" id="notify-drop">{include file="tpl_inc/notify_drop.tpl"}</li>
+                        <li class="nav-item dropdown fa-lg" id="notify-drop">{include file="tpl_inc/notify_drop.tpl"}</li>
+                        <li class="nav-item dropdown fa-lg" id="updates-drop">{include file="tpl_inc/updates_drop.tpl"}</li>
                         <li class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle parent btn-toggle" data-toggle="dropdown">
                                 <i class="fal fa-language d-sm-none"></i> <span class="d-sm-block d-none">{$languageName}</span>

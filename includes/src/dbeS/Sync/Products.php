@@ -116,8 +116,12 @@ final class Products extends AbstractSync
      * @param string $stockFilter
      * @return bool
      */
-    private function checkStockLevelChanges(int $productID, array $xml, array $newCategoryIDs, string $stockFilter): bool
-    {
+    private function checkStockLevelChanges(
+        int $productID,
+        array $xml,
+        array $newCategoryIDs,
+        string $stockFilter
+    ): bool {
         $filter = $this->productVisibilityFilter;
         if ($filter === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_ALLE || \count($newCategoryIDs) === 0) {
             return false;
@@ -1151,7 +1155,7 @@ final class Products extends AbstractSync
      */
     private function getDownloadIDs(int $productID): array
     {
-        return map($this->db->selectAll('tartikeldownload', 'kArtikel', $productID, 'kDownload'), static function ($item) {
+        return map($this->db->selectAll('tartikeldownload', 'kArtikel', $productID), static function ($item) {
             return (int)$item->kDownload;
         });
     }

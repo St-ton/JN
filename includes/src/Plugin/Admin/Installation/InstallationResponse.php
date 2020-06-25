@@ -22,7 +22,7 @@ class InstallationResponse
     /**
      * @var string|null
      */
-    private $error;
+    private $errorMessage;
 
     /**
      * @var string|null
@@ -78,16 +78,16 @@ class InstallationResponse
      */
     public function getError(): ?string
     {
-        return $this->error;
+        return $this->errorMessage;
     }
 
     /**
-     * @param string|null $error
+     * @param string|null $errorMessage
      * @return InstallationResponse
      */
-    public function setError(?string $error): InstallationResponse
+    public function setError(?string $errorMessage): InstallationResponse
     {
-        $this->error = $error;
+        $this->errorMessage = $errorMessage;
 
         return $this;
     }

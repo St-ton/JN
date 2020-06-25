@@ -654,6 +654,7 @@ class IOMethods
         $variationValues    = $aValues['eigenschaftwert'] ?? [];
         $amount             = $aValues['anzahl'] ?? 1;
         $invalidGroups      = [];
+        $configItems        = [];
         $config             = Product::buildConfig(
             $productID,
             $amount,

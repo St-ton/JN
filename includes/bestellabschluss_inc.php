@@ -333,7 +333,9 @@ function bestellungInDB($cleared = 0, $orderNo = '')
             $obj              = new stdClass();
             $obj->kBestellung = $orderID;
             $obj->cName       = $orderAttr->cName;
-            $obj->cValue      = $orderAttr->cName === "Finanzierungskosten" ? (float)str_replace(',', '.', $orderAttr->cValue) : $orderAttr->cValue;
+            $obj->cValue      = $orderAttr->cName === 'Finanzierungskosten'
+                ? (float)str_replace(',', '.', $orderAttr->cValue)
+                : $orderAttr->cValue;
             Shop::Container()->getDB()->insert('tbestellattribut', $obj);
         }
     }

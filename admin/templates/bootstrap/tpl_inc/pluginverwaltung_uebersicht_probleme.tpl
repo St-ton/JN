@@ -47,7 +47,7 @@
                         </td>
                         <td class="text-center">{(string)$plugin->getVersion()}{if $plugin->isUpdateAvailable()} <span class="error">{(string)$plugin->isUpdateAvailable()}</span>{/if}</td>
                         <td class="text-center">{$plugin->getDateInstalled()->format('d.m.Y H:i')}</td>
-                        <td>{$plugin->getPath()}</td>
+                        <td>{$plugin->getDir()}</td>
                         <td class="text-center">
                             {if $plugin->getLangVarCount() > 0}
                                 <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}"

@@ -266,20 +266,6 @@ function isTouchCapable() {
     return 'ontouchstart' in window || (window.DocumentTouch && document instanceof window.DocumentTouch);
 }
 
-function addCopyToClipboardListener() {
-    var clipboard = new ClipboardJS('.btn.copyToClipboard');
-
-    clipboard.on('success', function(e) {
-        $(e.trigger).tooltip({title: 'copied'});
-        e.clearSelection();
-    });
-
-    clipboard.on('error', function(e) {
-        console.error('Action:', e.action);
-        console.error('Trigger:', e.trigger);
-    });
-}
-
 function initWow()
 {
     new WOW().init();
@@ -468,7 +454,7 @@ $(document).ready(function () {
     /*
      * Banner
      */
-    var bannerLink = $('.banner > a');
+    var bannerLink = $('.banner > a:not(.empty-popover)');
     bannerLink.popover({
         html:      true,
         placement: 'bottom',
@@ -549,7 +535,6 @@ $(document).ready(function () {
     regionsToState();
     compatibility();
     addValidationListener();
-    addCopyToClipboardListener();
     initWow();
     setClickableRow();
 

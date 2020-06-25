@@ -54,13 +54,9 @@
                     {/if}
                 {elseif $anzeige !== 'nichts'
                     && $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen !== 'N'
-                    && $Artikel->cLagerBeachten === 'Y'
-                    && ($Artikel->cLagerKleinerNull === 'N' || $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen === 'U')
-                    && $Artikel->fLagerbestand <= 0
-                    && $Artikel->fZulauf > 0
-                    && isset($Artikel->dZulaufDatum_de)}
-                    {assign var=cZulauf value=$Artikel->fZulauf|cat:':::'|cat:$Artikel->dZulaufDatum_de}
-                    <div class="signal_image status-1"><small>{lang key='productInflowing' section='productDetails' printf=$cZulauf}</small></div>
+                    && $Artikel->getBackorderString() !== ''
+                    && ($Artikel->cLagerKleinerNull === 'N' || $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen === 'U')}
+                    <div class="signal_image status-1"><small>{$Artikel->getBackorderString()}</small></div>
                 {elseif $anzeige !== 'nichts'
                     && $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen !== 'N'
                     && $Artikel->cLagerBeachten === 'Y'

@@ -46,7 +46,7 @@ final class CommentList implements ItemListInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function createItems(array $itemIDs): Collection
     {
@@ -83,7 +83,8 @@ final class CommentList implements ItemListInterface
     }
 
     /**
-     * @inheritdoc
+     * @param int $newsID
+     * @return Collection
      */
     public function createItemsByNewsItem(int $newsID): Collection
     {
@@ -125,7 +126,7 @@ final class CommentList implements ItemListInterface
     }
 
     /**
-     * @return Collection
+     * @inheritDoc
      */
     public function getItems(): Collection
     {
@@ -133,7 +134,7 @@ final class CommentList implements ItemListInterface
     }
 
     /**
-     * @param Collection $items
+     * @inheritDoc
      */
     public function setItems(Collection $items): void
     {
@@ -141,7 +142,7 @@ final class CommentList implements ItemListInterface
     }
 
     /**
-     * @param Comment $item
+     * @inheritDoc
      */
     public function addItem($item): void
     {

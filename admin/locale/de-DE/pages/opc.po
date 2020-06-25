@@ -484,3 +484,6 @@ msgstr "Fertig"
 
 msgid "alignment"
 msgstr "Ausrichtung"
+
+msgid "targetBlank"
+msgstr "Link in neuem Tab öffnen"

@@ -2,10 +2,7 @@
 
 namespace JTL\Plugin\Admin\Validation\Items;
 
-use JTL\Helpers\GeneralObject;
-use JTL\Plugin\Admin\Validation\ValidationItemInterface;
 use JTL\Plugin\InstallCode;
-use JTL\Shop;
 
 /**
  * Class Consent

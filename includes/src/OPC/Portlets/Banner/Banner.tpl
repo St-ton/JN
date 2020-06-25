@@ -32,8 +32,10 @@
             {if !empty($zone.desc)}
                 {$desc = $zone.desc}
             {/if}
-            <a class="area {$zone.class|escape:'html'}"
+            <a class="area {if empty($product) && empty($desc) && empty($title)}empty-popover{/if}
+                     {$zone.class|escape:'html'}"
                href="{$url|escape:'html'}"
+               {if $zone.target}target="_blank"{/if}
                title="{$title|escape:'html'}"
                style="left: {$zone.left}%; top: {$zone.top}%; width: {$zone.width}%; height: {$zone.height}%;">
                 <div class="area-desc">

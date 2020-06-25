@@ -74,7 +74,7 @@ class Item implements ItemInterface
      * @param ConsentModel|DataModelInterface $model
      * @return $this
      */
-    public function loadFromModel(DataModelInterface $model)
+    public function loadFromModel(DataModelInterface $model): self
     {
         $this->setID($model->getId());
         $this->setItemID($model->getItemID());

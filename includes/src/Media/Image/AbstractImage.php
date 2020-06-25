@@ -147,7 +147,9 @@ abstract class AbstractImage implements IMedia
     }
 
     /**
-     * @inheritdoc
+     * @param string $type
+     * @param int    $id
+     * @return stdClass|null
      */
     public static function getImageStmt(string $type, int $id): ?stdClass
     {

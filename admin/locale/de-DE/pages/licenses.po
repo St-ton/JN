@@ -1,0 +1,120 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "docURL"
+msgstr ""
+
+msgid "errorFetchLicenseAPI"
+msgstr "Konnte keine Daten von der Store API holen."
+
+msgid "Error code: %d"
+msgstr "Fehlercode: %d"
+
+msgid "Licenses"
+msgstr "Lizenzen"
+
+msgid "(disabled)"
+msgstr "(deaktiviert)"
+
+msgid "Update"
+msgstr "Aktualisieren"
+
+msgid "Update all"
+msgstr "Alle aktualisieren"
+
+msgid "Install"
+msgstr "Installieren"
+
+msgid "Install all"
+msgstr "Alle installieren"
+
+msgid "Refresh"
+msgstr "Erneut prüfen"
+
+msgid "Unbound licenses"
+msgstr "Ungebundene Lizenzen"
+
+msgid "free"
+msgstr "kostenlos"
+
+msgid "prod"
+msgstr "produktiv"
+
+msgid "test"
+msgstr "test"
+
+msgid "dev"
+msgstr "Entwicklung"
+
+msgid "License expired"
+msgstr "Lizenz abgelaufen"
+
+msgid "Subscription expired on %s"
+msgstr "Subscription abgelaufen am %s"
+
+msgid "License expired on %s"
+msgstr "Lizenz abgelaufen am %s"
+
+msgid "Version %s available"
+msgstr "Version %s verfügbar"
+
+msgid "Valid until %s"
+msgstr "gültig bis %s"
+
+msgid "Warning: only valid until %s"
+msgstr "Achtung: nur noch gültig bis %s"
+
+msgid "Active licenses"
+msgstr "Aktive Lizenzen"
+
+msgid "pageDesc"
+msgstr "Hier können Sie Ihre verfügbaren und aktiven Lizenzen einsehen."
+
+msgid "ID"
+msgstr "ID"
+
+msgid "Name"
+msgstr "Name"
+
+msgid "Installed"
+msgstr "Installiert"
+
+msgid "Type"
+msgstr "Typ"
+
+msgid "Links"
+msgstr "Links"
+
+msgid "Subscription"
+msgstr "Subscription"
+
+msgid "Developer"
+msgstr "Entwickler"
+
+msgid "itemDetails"
+msgstr "Details"
+
+msgid "setBinding"
+msgstr "An aktuellen Shop binden"
+
+msgid "Update to version %s available"
+msgstr "Aktualisierung auf Version %s verfügbar"
+
+msgid "storeNotLinkedDesc"
+msgstr "Um auf Inhalte von JTL-Store zugreifen zu können, müssen Sie zunächst Ihr JTL-Konto mit dem JTL-Store verknüpfen."
+
+msgid "storeLink"
+msgstr "Konto verknüpfen"
+
+msgid "unlink"
+msgstr "Verknüpfung aufheben"
+
+msgid "updates available"
+msgstr "Updates verfügbar"
+
+msgid "Licensed items"
+msgstr "Lizenzen"
+
+msgid "last update"
+msgstr "Zuletzt aktualisiert"

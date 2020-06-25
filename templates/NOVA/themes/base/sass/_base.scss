@@ -919,3 +919,18 @@ body {
     object-fit: contain;
   }
 }
+.price-range-inputs {
+  .input-group-prepend {
+    height: 1.6rem;
+    .input-group-text {
+      border-left: 0;
+      font-weight: $font-weight-bold;
+      padding: $input-padding-y-sm $input-padding-x-sm;
+    }
+  }
+  input {
+    font-weight: $font-weight-bold;
+    height: 1.6rem;
+    padding: $input-padding-y-sm $input-padding-x-sm;
+  }
+}

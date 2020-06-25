@@ -52,7 +52,7 @@
                                         {/if}
                                     </div>
                                     {block name='account-change-password-include-password-check'}
-                                        {include file='snippets/password_check.tpl' id='#password'}
+                                        {include file='snippets/password_check.tpl' id='#password' loadScript=true}
                                     {/block}
                                 {/col}
                             {/block}

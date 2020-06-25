@@ -1,6 +1,6 @@
 {block name='snippets-uploads'}
-    {getUploaderLang iso=$smarty.session.currentLanguage->cISO639|default:'' assign='uploaderLang'}
     {if !empty($oUploadSchema_arr)}
+        {getUploaderLang iso=$smarty.session.currentLanguage->cISO639|default:'' assign='uploaderLang'}
         {if $tplscope === 'product'}
             {block name='snippets-uploads-subheading-product'}
                 <div class="h3 section-heading">{lang key='uploadHeadline'}</div>

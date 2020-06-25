@@ -141,8 +141,6 @@
         </CSS>
         <JS Name="jtl3.js">
             <File Path="js/lazysizes.min.js"/>
-            <!--<File Path="js/jquery.backstretch.min.js"/>-->
-            <!--<File Path="js/jquery.lazy.js"/>-->
             <File Path="js/bootstrap-toolkit.js"/>
             <File Path="js/popper.min.js"/>
             <File Path="js/bootstrap.bundle.min.js"/>
@@ -151,21 +149,17 @@
             <File Path="js/jquery.nivo.slider.pack.js"/>
             <File Path="js/bootstrap-select.min.js"/>
             <File Path="js/jtl.evo.js"/>
-            <File Path="js/spin.js"/>
             <File Path="js/typeahead.bundle.js"/>
-            <File Path="js/clipboard.min.js"/>
             <File Path="js/wow.min.js"/>
             <File Path="js/global.js"/>
             <File Path="js/slick-lightbox.min.js"/>
-            <File Path="js/jquery.serialize-object.js"/>
+            <File Path="js/jquery.serialize-object.min.js"/>
             <File Path="js/jtl.io.js"/>
             <File Path="js/jtl.article.js"/>
             <File Path="js/jtl.basket.js"/>
             <File Path="js/parallax.min.js"/>
-            <File Path="js/Chart.bundle.min.js" DependsOnSettingGroup="CONF_PREISVERLAUF" DependsOnSetting="preisverlauf.preisverlauf_anzeigen" DependsOnSettingValue="Y"/>
             <File Path="js/jqcloud.js"/>
             <File Path="js/nouislider.min.js"/>
-            <File Path="js/password/password.min.js"/>
             <File Path="js/consent.js"/>
             <File Path="js/consent.youtube.js"/>
         </JS>

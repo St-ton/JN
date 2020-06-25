@@ -33,11 +33,11 @@ $(function () {
         $('<a href="#" class="btn-sm"><i class="fa fa-chevron-' + (hidden ? 'down' : 'up') + '"></li></a>')
             .on('click', function (e) {
                 if ($widgetContent.is(':hidden')) {
-                    ioCall('expandWidget', [widgetId, 1]);
+                    ioCall('expandWidget', [widgetId, 1], undefined, undefined, undefined, true);
                     $widgetContent.slideDown('fast');
                     $('i', this).attr('class', 'fa fa-chevron-up');
                 } else {
-                    ioCall('expandWidget', [widgetId, 0]);
+                    ioCall('expandWidget', [widgetId, 0], undefined, undefined, undefined, true);
                     $widgetContent.slideUp('fast');
                     $('i', this).attr('class', 'fa fa-chevron-down');
                 }

@@ -143,7 +143,7 @@
                     totalCached += data.generated[size];
                 });
                 $('.item-generated', item).text(Math.round(totalCached / 4, 0));
-            });
+            }, undefined, undefined, true);
         });
     }
 
@@ -216,7 +216,7 @@
             if (result.nextIndex > 0 && result.nextIndex < total && running) {
                 doCleanup(type, result.nextIndex);
             }
-        });
+        }, undefined, undefined, true);
     }
 
     function showCleanupNotify(title, message) {
@@ -247,7 +247,7 @@
                 type: 'success',
                 title: result.success
             });
-        });
+        }, undefined, undefined, true);
     }
 
     function startGenerate(type) {
@@ -353,7 +353,7 @@
     function loadGenerate(type, index, callback) {
         return ioCall('generateImageCache', [type, index], function (result) {
             callback(result);
-        });
+        }, undefined, undefined, true);
     }
 
     function showGenerateNotify(title, message) {

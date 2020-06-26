@@ -3,7 +3,6 @@
 namespace JTL\Pagination;
 
 use Illuminate\Support\Collection;
-use JTL\Shop;
 
 /**
  * Class Pagination

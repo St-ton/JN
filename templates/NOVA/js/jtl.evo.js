@@ -53,9 +53,21 @@
 
             document.querySelectorAll('.slick-lazy').forEach(function(slickItem) {
                 let startX;
+                let supportsPassive = false;
+                try {
+                    let opts = Object.defineProperty({}, 'passive', {
+                        get: function() {
+                            supportsPassive = true;
+                        }
+                    });
+                    window.addEventListener("testPassive", null, opts);
+                    window.removeEventListener("testPassive", null, opts);
+                } catch (e) {}
+
                 slickItem.addEventListener('touchstart', function (e) {
                     startX = e.changedTouches[0].pageX;
-                }, {passive: true});
+
+                },supportsPassive ? { passive: true } : false);
                 slickItem.addEventListener('touchmove', function (e) {
                     let mainNode = $(this);
                     if (!mainNode.hasClass('slick-initialized')
@@ -68,7 +80,7 @@
                             mainNode.slick('slickGoTo', 1);
                         }
                     }
-                }, {passive: true});
+                }, supportsPassive ? { passive: true } : false);
             });
         },
 

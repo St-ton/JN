@@ -121,7 +121,7 @@
                             {if $subCategory->hasChildren()}
                                 {block name='productlist-header-subcategories-list'}
                                     <hr class="my-3 d-none d-md-block">
-                                    <ul class="list-unstyled small subsub d-none d-md-block">
+                                    <ul class="list-unstyled d-none d-md-block">
                                         {foreach $subCategory->getChildren() as $subChild}
                                             <li>
                                                 {link href=$subChild->getURL() title=$subChild->getName()}{$subChild->getName()}{/link}

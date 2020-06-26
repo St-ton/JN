@@ -211,6 +211,7 @@
         <script src="{$ShopURL}/{$templateDir}js/lazysizes.min.js"></script>
         <script>
             window.lazySizesConfig = window.lazySizesConfig || {};
+            window.lazySizesConfig.expand  = 1;
             window.lazySizes.init();
         </script>
         {if $Einstellungen.template.general.use_minify === 'N'}

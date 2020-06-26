@@ -29,7 +29,7 @@
                         {if $newsItem->getAuthor() !== null}
                             {block name='blog-details-include-author'}
                                 {include file='snippets/author.tpl' oAuthor=$newsItem->getAuthor() dDate=$dDate cDate=$newsItem->getDateValidFrom()->format('Y-m-d H:i:s')}
-                            {/block} /
+                            {/block}
                         {else}
                             {block name='blog-details-noauthor'}
                                 <div itemprop="author publisher" itemscope itemtype="http://schema.org/Organization" class="d-none">
@@ -45,12 +45,12 @@
                         {if isset($Einstellungen.news.news_kategorie_unternewsanzeigen) && $Einstellungen.news.news_kategorie_unternewsanzeigen === 'Y' && !empty($oNewsKategorie_arr)}
                             {block name='blog-details-sub-news'}
                                 <span class="news-categorylist mb-4">
-                                    /
+                                    {if $newsItem->getAuthor() === null}/{/if}
                                     {foreach $oNewsKategorie_arr as $oNewsKategorie}
                                         {link itemprop="articleSection"
                                             href="{$oNewsKategorie->cURLFull}"
                                             title="{$oNewsKategorie->cBeschreibung|strip_tags|escape:'html'|truncate:60}"
-                                            class="mr-2"
+                                            class="{if !$oNewsKategorie@last}mr-1{/if} d-inline-block"
                                         }
                                             {$oNewsKategorie->cName}
                                         {/link}

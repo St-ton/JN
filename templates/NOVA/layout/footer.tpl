@@ -132,7 +132,7 @@
                         {if isset($footerBoxes) && count($footerBoxes) > 0}
                             {row id='footer-boxes' class="{if $newsletterActive}mt-4 mt-lg-7{/if}"}
                                 {foreach $footerBoxes as $box}
-                                    {col cols=12 sm=6 md=3}
+                                    {col cols=12 sm=6 md=4 lg=3}
                                         {$box->getRenderedContent()}
                                     {/col}
                                 {/foreach}

@@ -3,6 +3,7 @@
 namespace JTL\Pagination;
 
 use Illuminate\Support\Collection;
+use JTL\Shop;
 
 /**
  * Class Pagination
@@ -265,8 +266,8 @@ class Pagination
             $this->itemsPerPageExplicit ? $this->itemsPerPage : (
             isset($_GET[$idx]) ? (int)$_GET[$idx] : (
             isset($_POST[$idx]) ? (int)$_POST[$idx] : (
-            isset($_SESSION[$idx]) ? (int)$_SESSION[$idx] : (
-            $this->defaultItemsPerPage >= -1 ? $this->defaultItemsPerPage :
+            !empty($_SESSION[$idx]) ? (int)$_SESSION[$idx] : (
+            $this->defaultItemsPerPage === -1 ? $this->defaultItemsPerPage :
                 $this->itemsPerPageOptions[0]))));
         $idx                = $this->id . '_nSortByDir';
         $this->sortByDir    =

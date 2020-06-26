@@ -1,22 +1,25 @@
 {block name='blog-preview'}
+    {$title = $newsItem->getTitle()|escape:'quotes'}
     <div itemprop="blogPost" itemscope=true itemtype="https://schema.org/BlogPosting" class="newsbox h-100 border-bottom border-sm-bottom-0 pb-5 position-relative">
         <meta itemprop="mainEntityOfPage" content="{$ShopURL}/{$newsItem->getURL()}">
         {block name='blog-preview-news-header'}
             <div class="newsbox-header">
                 {if !empty($newsItem->getPreviewImage())}
                     {block name='blog-preview-news-image'}
-                        <div class="newsbox-image">
-                            {image webp=true lazy=true fluid-grow=true
-                                src=$newsItem->getImage(\JTL\Media\Image::SIZE_MD)
-                                srcset="{$newsItem->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_news_mini_breite}w,
-                                    {$newsItem->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_news_klein_breite}w,
-                                    {$newsItem->getImage(\JTL\Media\Image::SIZE_LG)} {$Einstellungen.bilder.bilder_news_normal_breite}w,
-                                    {$newsItem->getImage(\JTL\Media\Image::SIZE_XL)} {$Einstellungen.bilder.bilder_news_gross_breite}w"
-                                sizes="auto"
-                                alt="{$newsItem->getTitle()|escape:'quotes'} - {$newsItem->getMetaTitle()|escape:'quotes'}"
-                            }
-                        </div>
-                        <meta itemprop="image" content="{$imageBaseURL}{$newsItem->getPreviewImage()}">
+                        {link href=$newsItem->getURL() title=$title}
+                            <div class="newsbox-image">
+                                {image webp=true lazy=true fluid-grow=true
+                                    src=$newsItem->getImage(\JTL\Media\Image::SIZE_MD)
+                                    srcset="{$newsItem->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_news_mini_breite}w,
+                                        {$newsItem->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_news_klein_breite}w,
+                                        {$newsItem->getImage(\JTL\Media\Image::SIZE_LG)} {$Einstellungen.bilder.bilder_news_normal_breite}w,
+                                        {$newsItem->getImage(\JTL\Media\Image::SIZE_XL)} {$Einstellungen.bilder.bilder_news_gross_breite}w"
+                                    sizes="auto"
+                                    alt="{$title} - {$newsItem->getMetaTitle()|escape:'quotes'}"
+                                }
+                            </div>
+                            <meta itemprop="image" content="{$imageBaseURL}{$newsItem->getPreviewImage()}">
+                        {/link}
                     {/block}
                 {/if}
             </div>
@@ -48,21 +51,23 @@
                     {col cols="auto" class="ml-auto"}
                         {if isset($Einstellungen.news.news_kommentare_nutzen) && $Einstellungen.news.news_kommentare_nutzen === 'Y'}
                             {block name='blog-preview-comments'}
-                                <span class="fas fa-comments"></span>
-                                <span class="sr-only">
-                                        {if $newsItem->getCommentCount() === 1}
-                                            {lang key='newsComment' section='news'}
-                                        {else}
-                                            {lang key='newsComments' section='news'}
-                                        {/if}
-                                    </span>
-                                <span itemprop="commentCount">{$newsItem->getCommentCount()}</span>
+                                {link href=$newsItem->getURL()|cat:'#comments' class='text-decoration-none'}
+                                    <span class="fas fa-comments"></span>
+                                    <span class="sr-only">
+                                            {if $newsItem->getCommentCount() === 1}
+                                                {lang key='newsComment' section='news'}
+                                            {else}
+                                                {lang key='newsComments' section='news'}
+                                            {/if}
+                                        </span>
+                                    <span itemprop="commentCount">{$newsItem->getCommentCount()}</span>
+                                {/link}
                             {/block}
                         {/if}
                     {/col}
                 {/row}
                 {block name='blog-preview-heading'}
-                    {link itemprop="url" href=$newsItem->getURL() title=$newsItem->getTitle()|escape:'quotes' class="newsbox-headline stretched-link"}
+                    {link itemprop="url" href=$newsItem->getURL() title=$title class="newsbox-headline"}
                         <span itemprop="headline">{$newsItem->getTitle()}</span>
                     {/link}
                 {/block}
@@ -79,8 +84,10 @@
         {/block}
         {block name='blog-preview-news-footer'}
             <div class="newsbox-footer">
-                {lang key='moreLink' section='news'}
-                <i class="fas fa-long-arrow-alt-right ml-2"></i>
+                {link href=$newsItem->getURL() title=$title}
+                    {lang key='moreLink' section='news'}
+                    <i class="fas fa-long-arrow-alt-right ml-2"></i>
+                {/link}
             </div>
         {/block}
     </div>

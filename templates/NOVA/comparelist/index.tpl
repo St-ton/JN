@@ -123,7 +123,7 @@
                                                     </span>
                                                 {/block}
                                                 {block name='comparelist-index-include-rating'}
-                                                    {include file='productdetails/rating.tpl' stars=$oArtikel->fDurchschnittsBewertung}
+                                                    {include file='productdetails/rating.tpl' stars=$oArtikel->fDurchschnittsBewertung link=$oArtikel->cURLFull}
                                                 {/block}
                                                 {block name='comparelist-index-products-header-availability'}
                                                     {if $oArtikel->getOption('nShowOnlyOnSEORequest', 0) === 1}

@@ -8,7 +8,6 @@ use JTL\Checkout\Bestellung;
 use JTL\DB\ReturnType;
 use JTL\Nice;
 use JTL\Shop;
-use stdClass;
 
 /**
  * Class Download
@@ -653,22 +652,6 @@ class Download
     public function getErstellt()
     {
         return $this->dErstellt;
-    }
-
-    /**
-     * @return mixed
-     */
-    private function kopiereMembers()
-    {
-        $obj     = new stdClass();
-        $members = \array_keys(\get_object_vars($this));
-        if (\is_array($members) && \count($members) > 0) {
-            foreach ($members as &$member) {
-                $obj->$member = $this->$member;
-            }
-        }
-
-        return $obj;
     }
 
     /**

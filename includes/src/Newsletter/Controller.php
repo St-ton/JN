@@ -181,7 +181,8 @@ final class Controller
                         'oNewsletterEmpfaengerHistory' => $history
                     ]);
                     $this->db->delete('tnewsletterempfaengerblacklist', 'cMail', $customer->cEmail);
-                    if (($this->config['newsletter']['newsletter_doubleopt'] === 'U' && empty($_SESSION['Kunde']->kKunde))
+                    if (($this->config['newsletter']['newsletter_doubleopt'] === 'U'
+                            && empty($_SESSION['Kunde']->kKunde))
                         || $this->config['newsletter']['newsletter_doubleopt'] === 'A'
                     ) {
                         $recipient->cLoeschURL     = Shop::getURL() . '/newsletter.php?lang=' .

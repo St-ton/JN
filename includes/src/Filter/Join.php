@@ -126,7 +126,7 @@ class Join implements JoinInterface
     }
 
     /**
-     * @inheritdoc
+     * @return string
      */
     public function __toString(): string
     {

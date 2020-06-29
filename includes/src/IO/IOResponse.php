@@ -36,7 +36,7 @@ class IOResponse implements JsonSerializable
     /**
      * @var null|string
      */
-    private $windowLocationHref = null;
+    private $windowLocationHref;
 
     /**
      * @var array

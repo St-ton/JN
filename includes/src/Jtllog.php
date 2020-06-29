@@ -242,21 +242,21 @@ class Jtllog
      */
     public static function truncateLog(): void
     {
-        Shop::Container()->getDB()->query(
+        $db = Shop::Container()->getDB();
+        $db->query(
             'DELETE FROM tjtllog 
                 WHERE DATE_ADD(dErstellt, INTERVAL 30 DAY) < NOW()',
             ReturnType::AFFECTED_ROWS
         );
-        $data = Shop::Container()->getDB()->query(
-            'SELECT COUNT(*) AS nCount 
+        $count = (int)$db->query(
+            'SELECT COUNT(*) AS cnt 
                 FROM tjtllog',
             ReturnType::SINGLE_OBJECT
-        );
+        )->cnt;
 
-        if (isset($data->nCount) && (int)$data->nCount > \JTLLOG_MAX_LOGSIZE) {
-            $limit = (int)$data->nCount - \JTLLOG_MAX_LOGSIZE;
-            Shop::Container()->getDB()->query(
-                'DELETE FROM tjtllog ORDER BY dErstellt LIMIT ' . $limit,
+        if ($count > \JTLLOG_MAX_LOGSIZE) {
+            $db->query(
+                'DELETE FROM tjtllog ORDER BY dErstellt LIMIT ' . ($count - \JTLLOG_MAX_LOGSIZE),
                 ReturnType::DEFAULT
             );
         }

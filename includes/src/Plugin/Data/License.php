@@ -2,6 +2,8 @@
 
 namespace JTL\Plugin\Data;
 
+use JTL\License\Struct\ExsLicense;
+
 /**
  * Class License
  * @package JTL\Plugin\Data
@@ -22,6 +24,11 @@ class License
      * @var string
      */
     private $class;
+
+    /**
+     * @var ExsLicense|null
+     */
+    private $exsLicense;
 
     /**
      * @return bool
@@ -85,5 +92,21 @@ class License
     public function setClass(string $class): void
     {
         $this->class = $class;
+    }
+
+    /**
+     * @return ExsLicense|null
+     */
+    public function getExsLicense(): ?ExsLicense
+    {
+        return $this->exsLicense;
+    }
+
+    /**
+     * @param ExsLicense|null $exsLicense
+     */
+    public function setExsLicense(?ExsLicense $exsLicense): void
+    {
+        $this->exsLicense = $exsLicense;
     }
 }

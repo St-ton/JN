@@ -461,13 +461,6 @@ h6, .h6 {
   }
 }
 
-hr {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-  border: 0;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-}
-
 small,
 .small {
   font-size: 0.8203125rem;
@@ -12927,7 +12920,7 @@ ul li:last-child, ol li:last-child {
 }
 
 .ajax-spinner {
-  z-index: 1060;
+  z-index: 1000000;
   position: fixed;
   top: 0;
   width: 100%;
@@ -12935,11 +12928,12 @@ ul li:last-child, ol li:last-child {
   background-color: rgba(0, 0, 0, 0.2);
 }
 .ajax-spinner i {
-  margin: 0 auto;
+  margin-top: -40px;
+  margin-left: -40px;
   position: absolute;
-  top: 46%;
+  top: 50%;
   font-size: 80px;
-  left: 47%;
+  left: 50%;
 }
 
 .min-w-sm {

@@ -16,6 +16,7 @@ define('CONF_BOXEN', 8);
 define('CONF_BILDER', 9);
 define('CONF_SONSTIGES', 10);
 define('CONF_TEMPLATE', 11);
+define('CONF_BRANDING', 12);
 //
 define('CONF_ZAHLUNGSARTEN', 100);
 define('CONF_EXPORTFORMATE', 101);
@@ -561,6 +562,7 @@ define('CACHING_GROUP_TEMPLATE', 'tpl');
 define('CACHING_GROUP_OPTION', 'opt');
 define('CACHING_GROUP_PLUGIN', 'plgn');
 define('CACHING_GROUP_CORE', 'core');
+define('CACHING_GROUP_LICENSES', 'lic');
 define('CACHING_GROUP_OBJECT', 'obj');
 define('CACHING_GROUP_BOX', 'bx');
 define('CACHING_GROUP_NEWS', 'nws');

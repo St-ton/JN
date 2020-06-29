@@ -52,7 +52,8 @@ class LegacyMethod
     }
 
     /**
-     * @inheritDoc
+     * @param string $name
+     * @return mixed|null
      */
     public function __get($name)
     {
@@ -64,7 +65,8 @@ class LegacyMethod
     }
 
     /**
-     * @inheritDoc
+     * @param string $name
+     * @param mixed $value
      */
     public function __set($name, $value)
     {
@@ -76,7 +78,8 @@ class LegacyMethod
     }
 
     /**
-     * @inheritDoc
+     * @param string $name
+     * @return bool
      */
     public function __isset($name)
     {

@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 use JTL\Backend\AdminAccountManager;
-use JTL\Helpers\Form;
-use JTL\Helpers\Text;
 
 require_once __DIR__ . '/includes/admininclude.php';
 

@@ -28,7 +28,7 @@ class Limit extends AbstractFilter
     }
 
     /**
-     * @inheritdoc
+     * @return int
      */
     public function getProductsPerPageLimit(): int
     {

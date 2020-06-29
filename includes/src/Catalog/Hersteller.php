@@ -3,7 +3,6 @@
 namespace JTL\Catalog;
 
 use JTL\DB\ReturnType;
-use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;

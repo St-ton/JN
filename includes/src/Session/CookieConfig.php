@@ -93,7 +93,7 @@ class CookieConfig
      */
     private function experimentalMultiLangDomain(string $domain)
     {
-        if (!\defined('EXPERIMENTAL_MULTILANG_SHOP')) {
+        if (\EXPERIMENTAL_MULTILANG_SHOP !== true) {
             return $domain;
         }
         foreach (LanguageHelper::getAllLanguages() as $language) {

@@ -146,7 +146,7 @@ if (isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreic
 ) {
     $ratings = array_filter(
         $AktuellerArtikel->Bewertungen->oBewertung_arr,
-        function ($oBewertung) use (&$AktuellerArtikel) {
+        static function ($oBewertung) use (&$AktuellerArtikel) {
             return (int)$AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung
                 !== (int)$oBewertung->kBewertung;
         }

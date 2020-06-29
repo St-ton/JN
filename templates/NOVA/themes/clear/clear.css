@@ -19914,7 +19914,7 @@ aside .box-monthlynews a .value:hover {
   min-width: 44px;
   width: 44px;
   height: 44px;
-  border: 1.5px solid #707070;
+  border: 1px solid #707070;
   opacity: 0.8;
   color: #707070;
   font-size: 18px;
@@ -19947,7 +19947,7 @@ aside .box-monthlynews a .value:hover {
   animation: size 0.4s;
   color: #fff;
   opacity: 1;
-  border: 1.5px solid #F8BF00;
+  border: 1px solid #F8BF00;
   background-color: #F8BF00;
 }
 

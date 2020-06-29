@@ -476,8 +476,8 @@
                 }, 200);
             });
 
-            let $tabID = $('#content a[href="' + window.location.hash + '"]');
-            if ($tabID) {
+            let $tabID = $('#product-tabs a[href="' + window.location.hash + '"]');
+            if ($tabID.length) {
                 $tabID.tab('show');
                 $([document.documentElement, document.body]).animate({
                     scrollTop: $tabID.offset().top

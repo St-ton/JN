@@ -19346,6 +19346,10 @@ aside .box .dropdown-menu .dropdown-item {
   text-decoration: none;
   white-space: normal;
 }
+aside .box .nav-link {
+  padding-left: 0;
+  padding-right: 0;
+}
 aside .box-monthlynews a .value {
   text-decoration: underline;
 }

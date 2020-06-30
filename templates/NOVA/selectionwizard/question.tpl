@@ -1,5 +1,5 @@
 {block name='selectionwizard-question'}
-    {listgroupitem class="selection-wizard-question {if $nQuestion > $AWA->getCurQuestion()}disabled{/if}"}
+    {listgroupitem class="selection-wizard-question px-0 {if $nQuestion > $AWA->getCurQuestion()}disabled{/if}"}
         {block name='selectionwizard-question-heading'}
             <div class="h5 selection-wizard-question-heading">
                 {$oFrage->cFrage}

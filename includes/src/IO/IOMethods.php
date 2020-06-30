@@ -546,7 +546,6 @@ class IOMethods
             ->fetch('layout/header_shop_nav_wish.tpl');
 
         foreach ($this->forceRenderBoxes(\BOX_WUNSCHLISTE, $conf, $smarty) as $id => $html) {
-            error_log($id);
             $response->cBoxContainer[$id] = $html;
         }
         $objResponse->assignVar('response', $response);

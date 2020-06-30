@@ -172,6 +172,14 @@ final class Installer
             $bootstrapper       = $versionedDir . \PLUGIN_BOOTSTRAPPER;
             $plugin->bExtension = 1;
         }
+        if ($this->plugin !== null) {
+            $loader      = $this->plugin->isExtension() === true
+                ? new PluginLoader($this->db, Shop::Container()->getCache())
+                : new LegacyPluginLoader($this->db, Shop::Container()->getCache());
+            if (($p = Helper::bootstrap($this->plugin->getID(), $loader)) !== null) {
+                $p->preUpdate($this->plugin->getMeta()->getVersion(), $version);
+            }
+        }
         $plugin                       = $this->addLicenseData($baseNode, $plugin);
         $plugin->cName                = $baseNode['Name'];
         $plugin->cBeschreibung        = $baseNode['Description'];
@@ -605,11 +613,6 @@ final class Installer
             $pluginID,
             (object)['kPlugin' => $oldPluginID]
         );
-        $return = false;
-        \executeHook(\PLUGIN_UPDATE_LANG_VARS, ['return' => &$return, 'pluginID' => $oldPluginID]);
-        if ($return === true) {
-            return;
-        }
         $customLangVars = $this->db->queryPrepared(
             'SELECT DISTINCT tpluginsprachvariable.kPluginSprachvariable AS newID,
                 tpluginsprachvariablecustomsprache.kPluginSprachvariable AS oldID, tpluginsprachvariable.cName
@@ -695,11 +698,6 @@ final class Installer
     private function updateMailTemplates(int $oldPluginID, int $pluginID): void
     {
         $this->db->update('temailvorlage', 'kPlugin', $pluginID, (object)['kPlugin' => $oldPluginID]);
-        $return = false;
-        \executeHook(\PLUGIN_UPDATE_MAIL_TEMPLATES, ['return' => &$return, 'pluginID' => $oldPluginID]);
-        if ($return === true) {
-            return;
-        }
         $oldMailTpl = $this->db->select('temailvorlage', 'kPlugin', $oldPluginID);
         $newMailTpl = $this->db->select('temailvorlage', 'kPlugin', $pluginID);
         if (isset($newMailTpl->kEmailvorlage, $oldMailTpl->kEmailvorlage)) {
@@ -767,11 +765,6 @@ final class Installer
                 WHERE kPlugin = " . $pluginID,
             ReturnType::AFFECTED_ROWS
         );
-        $return = false;
-        \executeHook(\PLUGIN_UPDATE_PAYMENT_METHODS, ['return' => &$return, 'pluginID' => $oldPluginID]);
-        if ($return === true) {
-            return;
-        }
         $oldPaymentMethods = $this->db->queryPrepared(
             'SELECT kZahlungsart, cModulId
                 FROM tzahlungsart

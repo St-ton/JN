@@ -112,6 +112,13 @@ abstract class Bootstrapper implements BootstrapperInterface
     /**
      * @inheritdoc
      */
+    public function preUpdate($oldVersion, $newVersion): void
+    {
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function updated($oldVersion, $newVersion)
     {
     }

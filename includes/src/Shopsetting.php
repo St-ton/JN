@@ -3,7 +3,9 @@
 namespace JTL;
 
 use ArrayAccess;
+use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use function Functional\reindex;
 
 /**
  * Class Shopsetting
@@ -62,11 +64,13 @@ final class Shopsetting implements ArrayAccess
         \CONF_AUSWAHLASSISTENT    => 'auswahlassistent',
         \CONF_CRON                => 'cron',
         \CONF_FS                  => 'fs',
-        \CONF_CACHING             => 'caching'
+        \CONF_CACHING             => 'caching',
+        \CONF_CONSENTMANAGER      => 'consentmanager',
+        \CONF_BRANDING            => 'branding'
     ];
 
     /**
-     *
+     * Shopsetting constructor.
      */
     private function __construct()
     {
@@ -154,8 +158,8 @@ final class Shopsetting implements ArrayAccess
         if ($section === \CONF_TEMPLATE) {
             $settings = Shop::Container()->getCache()->get(
                 $cacheID,
-                static function ($cache, $id, &$content, &$tags) {
-                    $content = Template::getInstance()->getConfig();
+                function ($cache, $id, &$content, &$tags) {
+                    $content = $this->getTemplateConfig(Shop::Container()->getDB());
                     $tags    = [\CACHING_GROUP_TEMPLATE, \CACHING_GROUP_OPTION];
 
                     return true;
@@ -287,6 +291,56 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
+     * @param DbInterface $db
+     * @return array
+     */
+    private function getBrandingConfig(DbInterface $db): array
+    {
+        $data = $db->query(
+            'SELECT tbranding.kBranding AS id, tbranding.cBildKategorie AS type, 
+            tbrandingeinstellung.cPosition AS position, tbrandingeinstellung.cBrandingBild AS path,
+            tbrandingeinstellung.dTransparenz AS transparency, tbrandingeinstellung.dGroesse AS size
+                FROM tbrandingeinstellung
+                INNER JOIN tbranding 
+                    ON tbrandingeinstellung.kBranding = tbranding.kBranding
+                WHERE tbrandingeinstellung.nAktiv = 1',
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        foreach ($data as $item) {
+            $item->size         = (int)$item->size;
+            $item->transparency = (int)$item->transparency;
+            $item->path         = \PFAD_ROOT . \PFAD_BRANDINGBILDER . $item->path;
+        }
+
+        return reindex($data, static function ($e) {
+            return $e->type;
+        });
+    }
+
+    /**
+     * @param DbInterface $db
+     * @return array
+     */
+    private function getTemplateConfig(DbInterface $db): array
+    {
+        $data     = $db->query(
+            "SELECT cSektion AS sec, cWert AS val, cName AS name 
+                FROM ttemplateeinstellungen 
+                WHERE cTemplate = (SELECT cTemplate FROM ttemplate WHERE eTyp = 'standard')",
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        $settings = [];
+        foreach ($data as $setting) {
+            if (!isset($settings[$setting->sec])) {
+                $settings[$setting->sec] = [];
+            }
+            $settings[$setting->sec][$setting->name] = $setting->val;
+        }
+
+        return $settings;
+    }
+
+    /**
      * @return array
      */
     public function getAll(): array
@@ -294,8 +348,9 @@ final class Shopsetting implements ArrayAccess
         if ($this->allSettings !== null) {
             return $this->allSettings;
         }
+        $db       = Shop::Container()->getDB();
         $result   = [];
-        $settings = Shop::Container()->getDB()->query(
+        $settings = $db->query(
             'SELECT teinstellungen.kEinstellungenSektion, teinstellungen.cName, teinstellungen.cWert,
                 teinstellungenconf.cInputTyp AS type
                 FROM teinstellungen
@@ -325,8 +380,8 @@ final class Shopsetting implements ArrayAccess
                 }
             }
         }
-        $template           = Template::getInstance();
-        $result['template'] = $template->getConfig();
+        $result['template'] = $this->getTemplateConfig($db);
+        $result['branding'] = $this->getBrandingConfig($db);
         $this->allSettings  = $result;
 
         return $result;

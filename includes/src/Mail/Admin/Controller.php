@@ -201,7 +201,9 @@ final class Controller
                                 return self::ERROR_UPLOAD_FILE_SAVE;
                             }
                             $filenames[$langID][] = $post['cPDFNames_' . $langID][$i];
-                            $pdfFiles[$langID][]  = $model->getID() . '_' . $langID . '_' . ($i + 1) . $cPlugin . '.pdf';
+                            $pdfFiles[$langID][]  = $model->getID()
+                                . '_' . $langID
+                                . '_' . ($i + 1) . $cPlugin . '.pdf';
                         } else {
                             $this->addErrorMessage(__('errorFileNameMissing'));
 

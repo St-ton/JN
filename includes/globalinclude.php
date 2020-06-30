@@ -8,7 +8,6 @@ use JTL\Plugin\Helper;
 use JTL\Profiler;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Template;
 use JTLShop\SemVer\Version;
 
 $nStartzeit = microtime(true);
@@ -113,7 +112,6 @@ if (!JTL_INCLUDE_ONLY_DB && !defined('CLI_BATCHRUN')) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'parameterhandler.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikelsuchspecial_inc.php';
     $pluginHooks    = Helper::getHookList();
-    $template       = Template::getInstance();
     $globalMetaData = Metadata::getGlobalMetaData();
     executeHook(HOOK_GLOBALINCLUDE_INC);
     $session             = (defined('JTLCRON') && JTLCRON === true)

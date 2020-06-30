@@ -96,7 +96,7 @@ if ($pages->getCurrentPage() > 0
     exit;
 }
 if ($conf['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y') {
-    $productsIDs = $oSuchergebnisse->getProducts()->map(function ($product) {
+    $productsIDs = $oSuchergebnisse->getProducts()->map(static function ($product) {
         return (int)$product->kArtikel;
     });
     $bestsellers = Bestseller::buildBestsellers(

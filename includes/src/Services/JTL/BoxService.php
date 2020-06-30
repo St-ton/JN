@@ -21,7 +21,6 @@ use JTL\Plugin\State;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use JTL\Template;
 use function Functional\first;
 use function Functional\group;
 use function Functional\map;
@@ -338,7 +337,8 @@ class BoxService implements BoxServiceInterface
      */
     public function buildList(int $pageType = \PAGE_UNBEKANNT, bool $activeOnly = true): array
     {
-        $visiblePositions = $this->getVisiblePositions($pageType, Template::getInstance()->getBoxLayoutXML());
+        $model            = Shop::Container()->getTemplateService()->getActiveTemplate();
+        $visiblePositions = $this->getVisiblePositions($pageType, $model->getBoxLayout());
         if ($activeOnly === true && \count($visiblePositions) === 0) {
             return [];
         }

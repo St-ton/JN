@@ -15,7 +15,9 @@ msgid "localVideo"
 msgstr "Locally stored video"
 
 msgid "youtubeNote"
-msgstr "In your data privacy policy, point out the following:<br/>- YouTube videos are embedded in your pages in the \"Extended data privacy mode\".<br/>- Opening the pages establishes a connection with YouTube and DoubleClick.<br/>- Clicking on the video can lead to further data processing that cannot be influenced by the website owner."
+msgstr "In your data privacy policy, point out the following:<br/>- YouTube videos are embedded in your pages in the "
+"\"Extended data privacy mode\".<br/>- Opening the pages establishes a connection with YouTube and DoubleClick.<br/>- "
+"Clicking on the video can lead to further data processing that cannot be influenced by the website owner."
 
 msgid "videoID"
 msgstr "Video ID"

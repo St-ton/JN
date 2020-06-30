@@ -237,9 +237,14 @@
 
         {getUploaderLang iso=$smarty.session.currentLanguage->cISO639|default:'' assign='uploaderLang'}
 
-        <script defer src="{$ShopURL}/{$templateDir}js/fileinput/fileinput.min.js"></script>
-        <script defer src="{$ShopURL}/{$templateDir}js/fileinput/themes/fas/theme.min.js"></script>
-        <script defer src="{$ShopURL}/{$templateDir}js/fileinput/locales/{$uploaderLang}.js"></script>
+        {if !empty($oUploadSchema_arr)}
+            <script defer src="{$ShopURL}/{$templateDir}js/fileinput/fileinput.min.js"></script>
+            <script defer src="{$ShopURL}/{$templateDir}js/fileinput/themes/fas/theme.min.js"></script>
+            <script defer src="{$ShopURL}/{$templateDir}js/fileinput/locales/{$uploaderLang}.js"></script>
+        {/if}
+        {if $Einstellungen.preisverlauf.preisverlauf_anzeigen === 'Y' && !empty($bPreisverlauf)}
+            <script defer src="{$ShopURL}/{$templateDir}js/Chart.bundle.min.js"></script>
+        {/if}
         <script defer type="module" src="{$ShopURL}/{$templateDir}js/app/app.js"></script>
     </head>
     {/block}

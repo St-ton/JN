@@ -1,11 +1,14 @@
 <?php
 
+use Illuminate\Support\Collection;
 use JTL\Backend\AdminTemplate;
 use JTL\Backend\Notification;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
+use JTL\License\Manager;
+use JTL\License\Mapper;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Plugin\State;
 use JTL\Shop;
@@ -21,6 +24,7 @@ $config             = Shop::getSettings([CONF_GLOBAL]);
 $shopURL            = Shop::getURL();
 $db                 = Shop::Container()->getDB();
 $currentTemplateDir = $smarty->getTemplateUrlPath();
+$updates            = new Collection();
 $updater            = new Updater($db);
 $hasPendingUpdates  = $updater->hasPendingUpdates();
 $resourcePaths      = $template->getResources(isset($config['template']['general']['use_minify'])
@@ -42,12 +46,13 @@ if (!$hasPendingUpdates) {
     );
     $curScriptFileNameWithRequest = basename($_SERVER['REQUEST_URI']);
     foreach ($adminMenu as $rootName => $rootEntry) {
+        $rootKey   = (string)$rootKey;
         $mainGroup = (object)[
             'cName'           => $rootName,
             'icon'            => $rootEntry->icon,
             'oLink_arr'       => [],
             'oLinkGruppe_arr' => [],
-            'key'             => (string)$rootKey,
+            'key'             => $rootKey,
         ];
 
         $secondKey = 0;
@@ -56,7 +61,7 @@ if (!$hasPendingUpdates) {
             $linkGruppe = (object)[
                 'cName'     => $secondName,
                 'oLink_arr' => [],
-                'key'       => "$rootKey.$secondKey",
+                'key'       => $rootKey . $secondKey,
             ];
 
             if ($secondEntry === 'DYNAMIC_PLUGINS') {
@@ -88,7 +93,7 @@ if (!$hasPendingUpdates) {
                     ];
 
                     $linkGruppe->oLink_arr[] = $link;
-                    if (Request::verifyGPCDataInt('kPlugin') === $pluginID) {
+                    if (Request::getInt('kPlugin') === $pluginID) {
                         $currentToplevel    = $mainGroup->key;
                         $currentSecondLevel = $linkGruppe->key;
                         $currentThirdLevel  = $link->key;
@@ -114,19 +119,20 @@ if (!$hasPendingUpdates) {
                     }
                 } else {
                     foreach ($secondEntry as $thirdName => $thirdEntry) {
-                        if ($thirdEntry === 'DYNAMIC_JTL_SEARCH' && isset($jtlSearch->kPlugin) && $jtlSearch->kPlugin > 0) {
+                        if ($thirdEntry === 'DYNAMIC_JTL_SEARCH' && ($jtlSearch->kPlugin ?? 0) > 0) {
                             $link = (object)[
                                 'cLinkname' => 'JTL Search',
-                                'cURL'      => $shopURL . '/' . PFAD_ADMIN . 'plugin.php?kPlugin=' . $jtlSearch->kPlugin,
+                                'cURL'      => $shopURL . '/' . PFAD_ADMIN
+                                    . 'plugin.php?kPlugin=' . $jtlSearch->kPlugin,
                                 'cRecht'    => 'PLUGIN_ADMIN_VIEW',
-                                'key'       => "$rootKey.$secondKey.$thirdKey",
+                                'key'       => $rootKey . $secondKey . $thirdKey,
                             ];
                         } elseif (is_object($thirdEntry)) {
                             $link = (object)[
                                 'cLinkname' => $thirdName,
                                 'cURL'      => $thirdEntry->link,
                                 'cRecht'    => $thirdEntry->permissions,
-                                'key'       => "$rootKey.$secondKey.$thirdKey",
+                                'key'       => $rootKey . $secondKey . $thirdKey,
                             ];
                         } else {
                             continue;
@@ -168,6 +174,8 @@ if (!$hasPendingUpdates) {
         }
         $rootKey++;
     }
+    $mapper  = new Mapper(new Manager($db, Shop::Container()->getCache()));
+    $updates = $mapper->getCollection()->getUpdateableItems();
 }
 if (empty($template->version)) {
     $adminTplVersion = '1.0.0';
@@ -175,6 +183,7 @@ if (empty($template->version)) {
     $adminTplVersion = $template->version;
 }
 $langTag = $_SESSION['AdminAccount']->language ?? Shop::Container()->getGetText()->getLanguage();
+
 $smarty->assign('URL_SHOP', $shopURL)
     ->assign('jtl_token', Form::getTokenInput())
     ->assign('shopURL', $shopURL)
@@ -195,6 +204,7 @@ $smarty->assign('URL_SHOP', $shopURL)
     ->assign('oLinkOberGruppe_arr', $mainGroups)
     ->assign('currentMenuPath', [$currentToplevel, $currentSecondLevel, $currentThirdLevel])
     ->assign('notifications', Notification::getInstance())
+    ->assign('licenseItemUpdates', $updates)
     ->assign('alertList', Shop::Container()->getAlertService())
     ->assign('favorites', $oAccount->favorites())
     ->assign('language', $langTag)

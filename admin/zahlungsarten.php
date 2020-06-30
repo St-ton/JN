@@ -383,9 +383,9 @@ if ($step === 'uebersicht') {
         }
         $method->nEingangAnzahl = (int)$db->executeQueryPrepared(
             'SELECT COUNT(*) AS `cnt`
-            FROM `tzahlungseingang` AS ze
-                JOIN `tbestellung` AS b ON ze.`kBestellung` = b.`kBestellung`
-            WHERE b.`kZahlungsart` = :kzahlungsart',
+                FROM `tzahlungseingang` AS ze
+                    JOIN `tbestellung` AS b ON ze.`kBestellung` = b.`kBestellung`
+                WHERE b.`kZahlungsart` = :kzahlungsart',
             ['kzahlungsart' => $method->kZahlungsart],
             ReturnType::SINGLE_OBJECT
         )->cnt;

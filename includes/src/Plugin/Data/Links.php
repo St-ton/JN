@@ -3,8 +3,9 @@
 namespace JTL\Plugin\Data;
 
 use Illuminate\Support\Collection;
+use JTL\DB\DbInterface;
 use JTL\Link\LinkList;
-use JTL\Shop;
+use stdClass;
 use function Functional\map;
 
 /**
@@ -27,15 +28,16 @@ class Links
     }
 
     /**
-     * @param $data
+     * @param stdClass[]  $data
+     * @param DbInterface $db
      * @return $this
      */
-    public function load($data): self
+    public function load(array $data, DbInterface $db): self
     {
         $data        = map($data, static function ($e) {
             return (int)$e->kLink;
         });
-        $links       = new LinkList(Shop::Container()->getDB());
+        $links       = new LinkList($db);
         $this->links = $links->createLinks($data);
 
         return $this;

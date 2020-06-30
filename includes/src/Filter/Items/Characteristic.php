@@ -266,7 +266,9 @@ class Characteristic extends BaseCharacteristic
         $state->setGroupBy([]);
         $state->setSelect(['tmerkmal.cName']);
         // @todo?
-        if (true || (!$this->productFilter->hasCharacteristicValue() && !$this->productFilter->hasCharacteristicFilter())) {
+        if (true
+            || (!$this->productFilter->hasCharacteristicValue() && !$this->productFilter->hasCharacteristicFilter())
+        ) {
             $state->addJoin((new Join())
                 ->setComment('join1 from ' . __METHOD__)
                 ->setType('JOIN')

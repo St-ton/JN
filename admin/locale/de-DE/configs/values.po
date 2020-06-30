@@ -2410,3 +2410,9 @@ msgstr "Ja, in Listen"
 
 msgid "gtin_display_value(always)"
 msgstr "Ja, auf der Artikeldetailseite und in den Listen"
+
+msgid "consent_manager_active_value(N)"
+msgstr "Nein"
+
+msgid "consent_manager_active_value(Y)"
+msgstr "Ja"

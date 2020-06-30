@@ -85,7 +85,9 @@ final class LinkGroupList implements LinkGroupListInterface
         if ($this->linkGroups->count() > 0) {
             return $this;
         }
+        $cached = true;
         if (($this->linkGroups = $this->cache->get('linkgroups')) === false) {
+            $cached           = false;
             $this->linkGroups = new LinkGroupCollection();
             foreach ($this->loadDefaultGroups() as $group) {
                 $this->linkGroups->push($group);
@@ -94,10 +96,11 @@ final class LinkGroupList implements LinkGroupListInterface
             $this->linkGroups->push($this->loadStaticRoutes());
             $this->linkGroups->push($this->loadUnassignedGroups());
 
+            \executeHook(\HOOK_LINKGROUPS_LOADED_PRE_CACHE, ['list' => $this]);
             $this->cache->set('linkgroups', $this->linkGroups, [\CACHING_GROUP_CORE]);
         }
         $this->applyVisibilityFilter(Frontend::getCustomerGroup()->getID(), Frontend::getCustomer()->getID());
-        \executeHook(\HOOK_LINKGROUPS_LOADED, ['list' => $this]);
+        \executeHook(\HOOK_LINKGROUPS_LOADED, ['list' => $this, 'cached' => $cached]);
 
         return $this;
     }
@@ -135,11 +138,10 @@ final class LinkGroupList implements LinkGroupListInterface
                     GROUP BY tlink.kLink, tsprache.kSprache",
             ReturnType::ARRAY_OF_OBJECTS
         );
-
-        $grouped = group($unassigned, static function ($e) {
+        $grouped    = group($unassigned, static function ($e) {
             return $e->kLink;
         });
-        $lg      = new LinkGroup($this->db);
+        $lg         = new LinkGroup($this->db);
         $lg->setID(-1);
         $lg->setNames(['unassigned']);
         $lg->setTemplate('unassigned');
@@ -225,13 +227,13 @@ final class LinkGroupList implements LinkGroupListInterface
                     JOIN tsprache
                         ON tsprache.cISO = tlinksprache.cISOSprache
                     JOIN tlinkgroupassociations
-					    ON tlinkgroupassociations.linkID = tlinksprache.kLink
+                        ON tlinkgroupassociations.linkID = tlinksprache.kLink
                     LEFT JOIN tseo
                         ON tseo.cKey = 'kLink'
                         AND tseo.kKey = tlink.kLink
                         AND tseo.kSprache = tsprache.kSprache
                     LEFT JOIN tspezialseite
-						ON tspezialseite.nLinkart = tlink.nLinkart
+                        ON tspezialseite.nLinkart = tlink.nLinkart
                     WHERE tlink.kLink = tlinksprache.kLink
                         AND tlink.nLinkart >= 5
                     GROUP BY tlink.kLink, tseo.kSprache",

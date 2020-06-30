@@ -180,6 +180,7 @@ final class Installer
         $plugin->cIcon                = $baseNode['Icon'] ?? null;
         $plugin->cVerzeichnis         = $baseDir;
         $plugin->cPluginID            = $baseNode['PluginID'];
+        $plugin->exsID                = $baseNode['ExsID'] ?? '_DBNULL_';
         $plugin->cStoreID             = $baseNode['StoreID'] ?? null;
         $plugin->cFehler              = '';
         $plugin->nVersion             = $version;
@@ -200,8 +201,8 @@ final class Installer
             return InstallCode::WRONG_PARAM;
         }
         $factory = $plugin->bExtension === 0
-            ? new LegacyPluginInstallerFactory($this->db, $xml, $plugin)
-            : new PluginInstallerFactory($this->db, $xml, $plugin);
+            ? new LegacyPluginInstallerFactory($this->db, $xml, $plugin, $this->plugin)
+            : new PluginInstallerFactory($this->db, $xml, $plugin, $this->plugin);
         $res     = $factory->install();
         if ($res !== InstallCode::OK) {
             $this->uninstaller->uninstall($plugin->kPlugin);

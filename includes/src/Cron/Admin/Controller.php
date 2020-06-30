@@ -4,6 +4,7 @@ namespace JTL\Cron\Admin;
 
 use DateTime;
 use InvalidArgumentException;
+use JTL\Cache\JTLCacheInterface;
 use JTL\Cron\Job\Statusmail;
 use JTL\Cron\JobHydrator;
 use JTL\Cron\JobInterface;
@@ -38,16 +39,27 @@ final class Controller
     private $hydrator;
 
     /**
-     * Listing constructor.
-     * @param DbInterface     $db
-     * @param LoggerInterface $logger
-     * @param JobHydrator     $hydrator
+     * @var JTLCacheInterface
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger, JobHydrator $hydrator)
-    {
+    private $cache;
+
+    /**
+     * Controller constructor.
+     * @param DbInterface       $db
+     * @param LoggerInterface   $logger
+     * @param JobHydrator       $hydrator
+     * @param JTLCacheInterface $cache
+     */
+    public function __construct(
+        DbInterface $db,
+        LoggerInterface $logger,
+        JobHydrator $hydrator,
+        JTLCacheInterface $cache
+    ) {
         $this->db       = $db;
         $this->logger   = $logger;
         $this->hydrator = $hydrator;
+        $this->cache    = $cache;
     }
 
     /**
@@ -158,7 +170,7 @@ final class Controller
             $mapper          = new JobTypeToJob();
             try {
                 $class = $mapper->map($cron->jobType);
-                $job   = new $class($this->db, $this->logger, $this->hydrator);
+                $job   = new $class($this->db, $this->logger, $this->hydrator, $this->cache);
                 /** @var JobInterface $job */
                 $jobs[] = $job->hydrate($cron);
             } catch (InvalidArgumentException $e) {

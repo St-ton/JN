@@ -30,7 +30,7 @@ function holeExportformatCron(): array
         ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($exports as $export) {
-        $export->cAlleXStdToDays = rechneUmAlleXStunden($export->frequency);
+        $export->cAlleXStdToDays = rechneUmAlleXStunden((int)$export->frequency);
         $export->Sprache         = Shop::Lang()->getLanguageByID((int)$export->kSprache);
         $export->Waehrung        = $db->select(
             'twaehrung',
@@ -84,7 +84,7 @@ function holeCron(int $cronID)
  * @param int $hours
  * @return bool|string
  */
-function rechneUmAlleXStunden($hours)
+function rechneUmAlleXStunden(int $hours)
 {
     if ($hours <= 0) {
         return false;

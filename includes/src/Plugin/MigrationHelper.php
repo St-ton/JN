@@ -20,12 +20,12 @@ final class MigrationHelper
     /**
      * @var string
      */
-    private const MIGRATION_FILE_NAME_PATTERN = '/^Migration(\d+).php$/i';
+    private const MIGRATION_FILE_NAME_PATTERN = '/^Migration(\d{14}).php$/';
 
     /**
      * @var string
      */
-    public const MIGRATION_CLASS_NAME_PATTERN = '/Migration(\d+)$/i';
+    public const MIGRATION_CLASS_NAME_PATTERN = '/Migration(\d{14})$/';
 
     /**
      * @var string

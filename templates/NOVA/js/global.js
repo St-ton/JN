@@ -9,9 +9,7 @@ $('body').on('click', '.option li', function (e) {
 
 // prevent multiple form submit on client side
 $('.submit_once').closest('form').on('submit', function() {
-    $(this).on('submit', function() {
-        return false;
-    });
+    $(this).find('.submit_once').prop('disabled', 'true');
     return true;
 });
 
@@ -157,8 +155,12 @@ function loadContent(url)
             addValidationListener();
         }
 
+        let topbarHeight      = $('#header-top-bar').outerHeight() || 0,
+            wrapperHeight     = $('#jtl-nav-wrapper').outerHeight() || 0,
+            productListHeight = $('#product-list').offset().top || 0,
+            pageNavHeight     = $('.productlist-page-nav').outerHeight() || 0;
         $('html,body').animate({
-            scrollTop: $('.list-pageinfo').offset().top - $('#main-nav-wrapper').outerHeight() - 10
+            scrollTop: productListHeight - wrapperHeight - topbarHeight - pageNavHeight - 20
         }, 100);
     });
 }
@@ -262,20 +264,6 @@ function captcha_filled() {
 
 function isTouchCapable() {
     return 'ontouchstart' in window || (window.DocumentTouch && document instanceof window.DocumentTouch);
-}
-
-function addCopyToClipboardListener() {
-    var clipboard = new ClipboardJS('.btn.copyToClipboard');
-
-    clipboard.on('success', function(e) {
-        $(e.trigger).tooltip({title: 'copied'});
-        e.clearSelection();
-    });
-
-    clipboard.on('error', function(e) {
-        console.error('Action:', e.action);
-        console.error('Trigger:', e.trigger);
-    });
 }
 
 function initWow()
@@ -466,7 +454,7 @@ $(document).ready(function () {
     /*
      * Banner
      */
-    var bannerLink = $('.banner > a');
+    var bannerLink = $('.banner > a:not(.empty-popover)');
     bannerLink.popover({
         html:      true,
         placement: 'bottom',
@@ -547,7 +535,6 @@ $(document).ready(function () {
     regionsToState();
     compatibility();
     addValidationListener();
-    addCopyToClipboardListener();
     initWow();
     setClickableRow();
 

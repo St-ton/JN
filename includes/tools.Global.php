@@ -1147,7 +1147,10 @@ function setzeSteuersaetze($countryCode = null)
  */
 function gibAlteSteuerpositionen($items, $net = -1, $htmlCurrency = 1, $currency = 0)
 {
-    trigger_error(__FUNCTION__ . ' is deprecated. Use ' . Tax::class . '::getOldTaxPositions() instead.', E_USER_DEPRECATED);
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use ' . Tax::class . '::getOldTaxPositions() instead.',
+        E_USER_DEPRECATED
+    );
     return Tax::getOldTaxItems($items, $net, $htmlCurrency, $currency);
 }
 

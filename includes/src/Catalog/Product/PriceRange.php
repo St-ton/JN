@@ -141,7 +141,7 @@ class PriceRange
     {
         $configItems = Shop::Container()->getDB()->queryPrepared(
             'SELECT tartikel.kArtikel,
-	                tkonfiggruppe.kKonfiggruppe,
+                    tkonfiggruppe.kKonfiggruppe,
                     MIN(tkonfiggruppe.nMin) nMin,
                     MAX(tkonfiggruppe.nMax) nMax,
                     tkonfigitem.kArtikel kKindArtikel,
@@ -160,9 +160,9 @@ class PriceRange
                 WHERE tartikel.kArtikel = :articleID
                     AND tkonfigitempreis.kKundengruppe = :customerGroup
                 GROUP BY tartikel.kArtikel,
-	                tkonfiggruppe.kKonfiggruppe,
-	                tkonfigitem.kArtikel,
-	                tkonfigitem.bPreis,
+                    tkonfiggruppe.kKonfiggruppe,
+                    tkonfigitem.kArtikel,
+                    tkonfigitem.bPreis,
                     IF(tkonfigitem.bPreis = 0, tkonfigitempreis.kSteuerklasse, tartikel.kSteuerklasse)',
             [
                 'articleID'     => $this->productData->kArtikel,

@@ -56,7 +56,7 @@ if ($action === 'save') {
         holdInputOnError($packaging, $customerGroupIDs, $packagingID, $smarty);
         $action = 'edit';
     } else {
-        if ($customerGroupIDs[0] == '-1') {
+        if ((int)$customerGroupIDs[0] === -1) {
             $packaging->cKundengruppe = '-1';
         } else {
             $packaging->cKundengruppe = ';' . implode(';', $customerGroupIDs) . ';';
@@ -180,7 +180,7 @@ $smarty->assign('customerGroups', CustomerGroup::getGroups())
 
 /**
  * @param string $groupString
- * @return stdClass|null
+ * @return stdClass
  */
 function gibKundengruppeObj($groupString)
 {
@@ -194,17 +194,15 @@ function gibKundengruppeObj($groupString)
             'SELECT kKundengruppe, cName FROM tkundengruppe',
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $customerGroupIDs = explode(';', $groupString);
-        if (!in_array('-1', $customerGroupIDs)) {
+        $customerGroupIDs = array_map('\intval', array_filter(explode(';', $groupString)));
+        if (!in_array(-1, $customerGroupIDs, true)) {
             foreach ($customerGroupIDs as $id) {
                 $id       = (int)$id;
                 $tmpIDs[] = $id;
-                if (is_array($data) && count($data) > 0) {
-                    foreach ($data as $customerGroup) {
-                        if ($customerGroup->kKundengruppe == $id) {
-                            $tmpNames[] = $customerGroup->cName;
-                            break;
-                        }
+                foreach ($data as $customerGroup) {
+                    if ((int)$customerGroup->kKundengruppe === $id) {
+                        $tmpNames[] = $customerGroup->cName;
+                        break;
                     }
                 }
             }

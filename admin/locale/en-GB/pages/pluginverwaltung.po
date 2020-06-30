@@ -56,6 +56,9 @@ msgstr "Languages"
 msgid "pluginVersion"
 msgstr "Version"
 
+msgid "pluginCompatibility"
+msgstr "Online shop version"
+
 msgid "pluginInfo"
 msgstr "Info"
 
@@ -180,40 +183,22 @@ msgid "dangerPluginNotCompatibleShop5"
 msgstr "Please note that the plug-in is not fully compatible with JTL-Shop&nbsp;5. This might lead to performance issues."
 
 msgid "dangerPluginNotCompatibleShop4"
-msgstr "Please note that the plug-in is not fully compatible with JTL-Shop&nbsp;4. This might lead to performance issues."
+msgstr "Pleas note that the plug-in is not fully compatible with JTL-Shop&nbsp;4. This might lead to performance issues."
+
+msgid "dangerMinShopVersion"
+msgstr "Pleas note that the plug-in requires a newer version of JTL-Shop. This might lead to issues."
+
+msgid "dangerMaxShopVersion"
+msgstr "Pleas note that the plug-in requires an older version of JTL-Shop. This might lead to issues."
 
 msgid "licensePlugin"
 msgstr "Plug-in licence"
 
-msgid "storeNotLinkedDesc"
-msgstr "In order to access contents of JTL-Store, connect your JTL account to the marketplace first."
-
-msgid "storeLink"
-msgstr "Connect account"
-
-msgid "storeRevoke"
-msgstr "Cancel connection"
-
-msgid "storeUpdatesAvailable"
-msgstr "Available updates"
-
-msgid "storeListUpdates"
-msgstr "View updates"
-
-msgid "storePlugins"
-msgstr "Licenced plug-ins"
-
-msgid "storeListAll"
-msgstr "View all"
-
-msgid "storeLastUpdate"
-msgstr "Last updated"
-
-msgid "storeUpdateNow"
-msgstr "Update"
-
 msgid "deletePluginData"
 msgstr "Delete plug-in from database?"
+
+msgid "deletePluginFilesQuestion"
+msgstr "Also try to delete plugin files?"
 
 msgid "deletePluginDataYes"
 msgstr "Yes, delete all plug-in data."

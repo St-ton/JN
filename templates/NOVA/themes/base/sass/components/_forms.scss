@@ -121,3 +121,39 @@ label[for="register-shipping_address-city"] {
 label {
 	display: block;
 }
+
+.form-control {
+	-webkit-box-shadow: none;
+	box-shadow: none;
+}
+
+.form-group.has-error{
+	.form-control {
+		border: 1px solid theme-color("danger");
+	}
+}
+
+.radio-w-100 {
+	.custom-control-inline {
+		display: block;
+		width: 100%;
+		padding-bottom: $spacer / 2;
+	}
+}
+
+.price-range-inputs {
+	.input-group-prepend {
+		height: 1.6rem;
+		.input-group-text {
+			border-left: 0;
+			font-weight: $font-weight-bold;
+			padding: $input-padding-y-sm $input-padding-x-sm;
+		}
+	}
+	input {
+		font-weight: $font-weight-bold;
+		height: 1.6rem;
+		padding: $input-padding-y-sm $input-padding-x-sm;
+	}
+}
+

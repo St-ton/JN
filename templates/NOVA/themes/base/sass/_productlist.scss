@@ -117,3 +117,28 @@
 		}
 	}
 }
+
+.row.gallery .product-wrapper {
+	border-bottom: none;
+	border-right: none;
+}
+
+.gallery,
+.list {
+	align-items: flex-end;
+	.image-wrapper {
+		display: block;
+		position: relative;
+		.yousave{
+			position: absolute;
+			padding: $pagination-padding-y $pagination-padding-x;
+			left: ($grid-gutter-width / 2);
+		}
+	}
+}
+.gallery .image-wrapper .yousave {
+	margin-top: -(1 + (2 * map_get($spacers, 2)));
+}
+.list .image-wrapper .yousave {
+	margin-top: -(0.6 + (2 * $pagination-padding-y));
+}

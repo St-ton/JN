@@ -60,3 +60,7 @@
 		align-items: center;
 	}
 }
+
+.badge-not-available{
+	margin-left: map-get($spacers, 2);
+}

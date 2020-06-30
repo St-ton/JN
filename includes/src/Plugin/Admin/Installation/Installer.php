@@ -173,7 +173,7 @@ final class Installer
             $plugin->bExtension = 1;
         }
         if ($this->plugin !== null) {
-            $loader      = $this->plugin->isExtension() === true
+            $loader = $this->plugin->isExtension() === true
                 ? new PluginLoader($this->db, Shop::Container()->getCache())
                 : new LegacyPluginLoader($this->db, Shop::Container()->getCache());
             if (($p = Helper::bootstrap($this->plugin->getID(), $loader)) !== null) {

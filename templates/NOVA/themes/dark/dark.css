@@ -21518,6 +21518,10 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
   color: #9b9b9b !important;
 }
 
+.nivo-controlNav .active img {
+  border: 1px solid #9b9b9b;
+}
+
 .stepper {
   align-items: center;
   border: 1px solid #f5f7fa;

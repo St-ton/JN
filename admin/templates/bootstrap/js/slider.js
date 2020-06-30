@@ -137,9 +137,10 @@ $(function() {
 
 function select_image(key)
 {
-    openElFinder(function(url) {
-        $('#img' + key).attr('src', url);
-        $('input[name="aSlide\[' + key + '\]\[cBild\]"]').val(url);
+    openElFinder(function(file) {
+        $('#img' + key).attr('src', file.url);
+        $('input[name="aSlide\[' + key + '\]\[cBild\]"]').val(file.url);
+        $('input[name="aSlide\[' + key + '\]\[cThumbnail\]"]').val(file.tmb);
     }, 'image');
 }
 

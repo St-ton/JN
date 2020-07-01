@@ -1,11 +1,5 @@
 <?php declare(strict_types=1);
 
-# only cs check (cicd)
-$varShort = 'short';
-$variableLong = 'long'; # not aligned
-$anotherVar = 'not aligned var';
-
-
 use JTL\Cart\CartHelper;
 use JTL\Shop;
 

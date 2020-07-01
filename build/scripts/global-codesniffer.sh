@@ -10,6 +10,8 @@ phpcs -n \
 
 export codeQualityExitCode=$?
 
+# shortend, because noch really needed (2020-07-01, cr)
+#
 #echo "Show code quality information"
 #phpcs -n -q \
 #    --extensions=php \

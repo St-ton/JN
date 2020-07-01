@@ -235,6 +235,7 @@
         }
     </script>{/inline_script}
     <div id="opc">
+        {$opcPageService->getPageSeo($curPageId)}
         {if $pageDrafts|count === 0 && $shopHasUpdates === false}
             <nav id="opc-startmenu">
                 <form method="post" action="{$opcStartUrl}">

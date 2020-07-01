@@ -6,6 +6,7 @@ use Exception;
 use JTL\Backend\Revision;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
 use JTL\Update\Updater;
 use stdClass;
@@ -154,27 +155,6 @@ class PageDB
     }
 
     /**
-     * @param string $id
-     * @return array
-     */
-    public function getOtherLanguageDraftRows(string $id): array
-    {
-        $pageIdFields       = \explode(';', $id);
-        $langField          = \array_pop($pageIdFields);
-        $languageKey        = \explode(':', $langField);
-        $languageKey        = (int)$languageKey[1];
-        $pageIdSearchPrefix = \implode(';', $pageIdFields) . ';lang:';
-
-        return $this->shopDB->query(
-            "SELECT o.*, s.kSprache, s.cNameEnglisch
-                FROM topcpage AS o
-                    JOIN tsprache AS s ON CONCAT('$pageIdSearchPrefix', s.kSprache) = o.cPageId
-                WHERE kSprache != $languageKey",
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-    }
-
-    /**
      * @param int $key
      * @return Page
      * @throws Exception
@@ -229,6 +209,38 @@ class PageDB
         ]);
 
         return $page;
+    }
+
+    /**
+     * @param string $pageId
+     * @return string
+     */
+    public function getPageSeo(string $pageId)
+    {
+        $pageIdObj = \json_decode($pageId);
+        $cKey      = null;
+
+        switch ($pageIdObj->type) {
+            case 'product':
+                $cKey = 'kArtikel';
+                break;
+        }
+
+        if (!empty($cKey)) {
+            $seo = $this->shopDB->queryPrepared(
+                'SELECT * FROM tseo WHERE cKey = :ckey AND kKey = :key AND kSprache = :lang',
+                ['ckey' => $cKey, 'key' => $pageIdObj->id, 'lang' => $pageIdObj->lang],
+                ReturnType::SINGLE_OBJECT
+            );
+
+            if (empty($seo)) {
+                return '?a=' . $pageIdObj->id . '&lang=eng';
+            }
+
+            return '/' . $seo->cSeo;
+        }
+
+        return '';
     }
 
     /**

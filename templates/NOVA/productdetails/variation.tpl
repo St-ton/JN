@@ -271,7 +271,8 @@
                                 {/block}
                             {elseif $Variation->cTyp === 'FREIFELD' || $Variation->cTyp === 'PFLICHT-FREIFELD'}
                                 {block name='productdetails-variation-info-variation-text'}
-                                    {input name='eigenschaftwert['|cat:$Variation->kEigenschaft|cat:']'
+                                    <label for="vari-{$Variation->kEigenschaft}" class="sr-only">{$Variation->cName}</label>
+                                    {input id="vari-{$Variation->kEigenschaft}" name='eigenschaftwert['|cat:$Variation->kEigenschaft|cat:']'
                                        value=$oEigenschaftWertEdit_arr[$Variation->kEigenschaft]->cEigenschaftWertNameLocalized|default:''
                                        data=['key' => $Variation->kEigenschaft] required=$Variation->cTyp === 'PFLICHT-FREIFELD'}
                                 {/block}

@@ -246,7 +246,7 @@ if (isset($hinweis)) {
     trigger_error('global $hinweis is deprecated.', \E_USER_DEPRECATED);
 }
 $tplService->save();
-$smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
+$smarty->assign('bCookieErlaubt', isset($_COOKIE[Frontend::getSessionName()]))
     ->assign('Brotnavi', $nav->createNavigation())
     ->assign('nIsSSL', Request::checkSSL())
     ->assign('boxes', $boxesToShow)

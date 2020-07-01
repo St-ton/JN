@@ -232,9 +232,8 @@
             {/foreach}
         {/if}
 
-        {$customJSPath = $currentTemplateDir|cat:'/js/custom.js'}
-        {if file_exists($customJSPath)}
-            <script defer src="{$ShopURL}/{$customJSPath}?v={$nTemplateVersion}"></script>
+        {if file_exists($currentTemplateDirFullPath|cat:'js/custom.js')}
+            <script defer src="{$ShopURL}/{$currentTemplateDir}js/custom.js?v={$nTemplateVersion}"></script>
         {/if}
 
         {getUploaderLang iso=$smarty.session.currentLanguage->cISO639|default:'' assign='uploaderLang'}
@@ -265,7 +264,6 @@
               data-page="{$nSeitenTyp}"
               {if isset($Link) && !empty($Link->getIdentifier())} id="{$Link->getIdentifier()}"{/if}>
     {/block}
-
     {if !$bExclusive}
         {include file=$opcDir|cat:'tpl/startmenu.tpl'}
 

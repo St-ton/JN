@@ -115,7 +115,7 @@
                                                                 data-ref="{$Variationswert->oVariationsKombi->kArtikel}"
                                                            {/if}>
                                                         {block name='productdetails-variation-radio-include-variation-value'}
-                                                            {include file="productdetails/variation_value.tpl"}
+                                                            {include file="productdetails/variation_value.tpl" badgeRight=true}
                                                             {if $Variationswert->notExists}
                                                                 {badge class='badge-not-available' variant='danger'}{lang key='notAvailableInSelection'}{/badge}
                                                             {elseif !$Variationswert->inStock}
@@ -256,7 +256,7 @@
                                                                {if $bSelected}checked="checked"{/if}
                                                                {if $smarty.foreach.Variationswerte.index === 0 && !$showMatrix} required{/if}
                                                                />
-                                                        <span class="label-variation mr-2">
+                                                        <span class="label-variation">
                                                             {$Variationswert->cName}
                                                         </span>
                                                         {block name='productdetails-variation-textswatch-include-variation-value'}

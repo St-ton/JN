@@ -10,13 +10,13 @@ phpcs -n \
 
 export codeQualityExitCode=$?
 
-echo "Show code quality information"
-phpcs -n -q \
-    --extensions=php \
-    --standard=${REPO_DIR}/phpcs-gitlab.xml \
-    --exclude=PSR1.Methods.CamelCapsMethodName \
-    --report=info \
-    "${REPO_DIR}"
+#echo "Show code quality information"
+#phpcs -n -q \
+#    --extensions=php \
+#    --standard=${REPO_DIR}/phpcs-gitlab.xml \
+#    --exclude=PSR1.Methods.CamelCapsMethodName \
+#    --report=info \
+#    "${REPO_DIR}"
 
 echo "Save code quality report"
 phpcs -n -q \

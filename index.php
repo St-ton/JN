@@ -3,6 +3,7 @@
 # only cs check (cicd)
 $varShort = 'short';
 $variableLong = 'long'; # not aligned
+$anotherVar = 'not aligned var';
 
 
 use JTL\Cart\CartHelper;

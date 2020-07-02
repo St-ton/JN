@@ -19670,6 +19670,7 @@ aside .box-monthlynews a .value:hover {
 .btn-primary:hover {
   background-color: #ffcc22;
   border-color: #ffcc22;
+  color: #525252;
 }
 .btn-primary.disabled, .btn-primary:disabled {
   background-color: #ebebeb;
@@ -19679,11 +19680,13 @@ aside .box-monthlynews a .value:hover {
 .btn-primary:not(:disabled):not(.disabled):active, .btn-primary:not(:disabled):not(.disabled).active, .show > .btn-primary.dropdown-toggle, .show > .btn-primary[data-toggle=collapse]:not(.navbar-toggler) {
   background-color: #F8BF00;
   border-color: #F8BF00;
+  color: #525252;
 }
 
 .btn-outline-primary {
   border-color: #F8BF00;
   background-color: transparent;
+  color: #525252;
   position: relative;
   overflow: hidden;
 }
@@ -19699,6 +19702,7 @@ aside .box-monthlynews a .value:hover {
 .btn-outline-primary:not(:disabled):not(.disabled):active, .btn-outline-primary:not(:disabled):not(.disabled).active, .show > .btn-outline-primary.dropdown-toggle, .show > .btn-outline-primary[data-toggle=collapse]:not(.navbar-toggler) {
   border-color: #F8BF00;
   background-color: #F8BF00;
+  color: #525252;
 }
 .btn-outline-primary:not(:disabled):not(.disabled):active::after, .btn-outline-primary:not(:disabled):not(.disabled).active::after, .show > .btn-outline-primary.dropdown-toggle::after, .show > .btn-outline-primary[data-toggle=collapse]:not(.navbar-toggler)::after {
   width: 300%;
@@ -19712,10 +19716,12 @@ aside .box-monthlynews a .value:hover {
 .btn-outline-secondary {
   border-color: #525252;
   background-color: transparent;
+  color: #525252;
 }
 .btn-outline-secondary:hover {
   border-color: #525252;
   background-color: #ebebeb;
+  color: #525252;
 }
 .btn-outline-secondary.disabled, .btn-outline-secondary:disabled {
   background-color: transparent;
@@ -19725,6 +19731,7 @@ aside .box-monthlynews a .value:hover {
 .btn-outline-secondary:not(:disabled):not(.disabled):active, .btn-outline-secondary:not(:disabled):not(.disabled).active, .show > .btn-outline-secondary.dropdown-toggle, .show > .btn-outline-secondary[data-toggle=collapse]:not(.navbar-toggler) {
   border-color: #525252;
   background-color: #ebebeb;
+  color: #525252;
 }
 
 .btn-icon {

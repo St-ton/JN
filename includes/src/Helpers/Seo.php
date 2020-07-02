@@ -58,7 +58,7 @@ class Seo
 
     /**
      * @param string $str
-     * @var string $convertedStr
+     * @var mixed $convertedStr
      * @return mixed
      */
     public static function sanitizeSeoSlug(string $str): string
@@ -73,8 +73,8 @@ class Seo
             'Any-Latin; Latin-ASCII;' . (\SEO_SLUG_LOWERCASE ? ' Lower();' : ''),
             \trim($str, ' -_')
         );
-        $convertedStr = \iconv('"UTF-8"', 'ASCII//TRANSLIT//IGNORE', $str);
-        $str          = empty($convertedStr) ? \preg_replace('/[^a-zA-Z0-9\s]/', '', $str) : $convertedStr;
+        $convertedStr = @iconv('"UTF-8"', 'ASCII//TRANSLIT//IGNORE', $str);
+        $str          = $convertedStr === false ? \preg_replace('/[^a-zA-Z0-9\s]/', '', $str) : $convertedStr;
         $str          = \preg_replace('/[\-_\s]+/u', '-', \trim($str));
 
         return $str;

@@ -399,13 +399,16 @@ class IOMethods
         $res     = [];
         $boxData = Shop::Container()->getDB()->queryPrepared(
             'SELECT *, 0 AS nSort, \'\' AS pageIDs, \'\' AS pageVisibilities,
-                       GROUP_CONCAT(tboxensichtbar.nSort) AS sortBypageIDs
+                       GROUP_CONCAT(tboxensichtbar.nSort) AS sortBypageIDs,
+                       GROUP_CONCAT(tboxensichtbar.kSeite) AS pageIDs,
+                       GROUP_CONCAT(tboxensichtbar.bAktiv) AS pageVisibilities
                 FROM tboxen
                 LEFT JOIN tboxensichtbar
                     ON tboxen.kBox = tboxensichtbar.kBox
                 LEFT JOIN tboxvorlage
                     ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
-                WHERE tboxen.kBoxvorlage = :type',
+                WHERE tboxen.kBoxvorlage = :type
+                GROUP BY tboxen.kBox',
             ['type' => $type],
             ReturnType::ARRAY_OF_OBJECTS
         );

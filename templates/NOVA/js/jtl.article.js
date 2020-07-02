@@ -476,6 +476,14 @@
                 }, 200);
             });
 
+            let $tabID = $('#product-tabs a[href="' + window.location.hash + '"]');
+            if ($tabID.length) {
+                $tabID.tab('show');
+                $([document.documentElement, document.body]).animate({
+                    scrollTop: $tabID.offset().top
+                }, 200);
+            }
+
             if (this.isSingleArticle()) {
                 if ($('.switch-variations .form-group', $wrapper).length === 1) {
                     var wrapper = '#' + $($wrapper).attr('id');

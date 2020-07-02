@@ -48,7 +48,7 @@
             {opcMountPoint id='opc_before_news' inContainer=false}
 
             <section>
-                {container}
+                {container fluid=true}
                     {block name='page-index-subheading-news'}
                         <div class="hr-sect h2 mb-5">
                             {link href="{get_static_route id='news.php'}"}{lang key='news' section='news'}{/link}

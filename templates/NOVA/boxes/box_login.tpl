@@ -16,13 +16,13 @@
                             {input type="hidden" name="login" value="1"}
                             {include file='snippets/form_group_simple.tpl'
                                 options=[
-                                    'email', "email-box-login-{$oBox->getID()}", 'email', null,{lang key='emailadress'}, true, null, "email"
+                                    'email', "email-box-login-{$oBox->getID()}", 'email', null,{lang key='emailadress'}, true, null, 'email', 'sm'
                                 ]
                             }
                             {include file='snippets/form_group_simple.tpl'
                                 options=[
                                     'password', "password-box-login-{$oBox->getID()}", 'passwort', null,
-                                    {lang key='password' section='account data'}, true, null, "current-password"
+                                    {lang key='password' section='account data'}, true, null, 'current-password', 'sm'
                                 ]
                             }
                         {/block}
@@ -42,23 +42,19 @@
                                     {input type="hidden" name="r" value=$oRedirect->nRedirect}
                                     {input type="hidden" name="cURL" value=$oRedirect->cURL}
                                 {/if}
-                                {button type="submit" name="speichern" value="1" variant="primary" block=true class="submit"}
+                                {button type="submit" name="speichern" value="1" variant="primary" block=true class="submit" size="sm"}
                                     {lang key='login' section='checkout'}
                                 {/button}
                             {/formgroup}
                         {/block}
                         {block name='boxes-box-login-form-links'}
-                            {nav vertical=true class="register-or-resetpw"}
-                                {navitem class="resetpw" href="{get_static_route id='pass.php' secure=true}"}
-                                    {lang key='forgotPassword'}
-                                {/navitem}
-                                <li class="nav-item">
-                                    {lang key='newHere'}
-                                    {link class="register text-decoration-underline" href="{get_static_route id='registrieren.php'}"}
-                                        {lang key='registerNow'}
-                                    {/link}
-                                </li>
-                            {/nav}
+                            {link class="resetpw px-0 d-block mb-2" href="{get_static_route id='pass.php' secure=true}"}
+                                {lang key='forgotPassword'}
+                            {/link}
+                            {lang key='newHere'}
+                            {link class="register text-decoration-underline" href="{get_static_route id='registrieren.php'}"}
+                                {lang key='registerNow'}
+                            {/link}
                         {/block}
                     {/form}
                 {/block}

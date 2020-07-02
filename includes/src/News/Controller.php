@@ -217,7 +217,6 @@ class Controller
             ? $conf
             : 10;
         $pagination->setItemsPerPageOptions([$newsCountShow, $newsCountShow * 2, $newsCountShow * 5])
-                   ->setDefaultItemsPerPage(-1)
                    ->setItemCount($category->getItems()->count())
                    ->assemble();
         if ($pagination->getItemsPerPage() > -1) {

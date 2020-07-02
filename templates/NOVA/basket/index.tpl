@@ -53,7 +53,7 @@
                                                     {$selectedFreegift=$oPosition->Artikel->kArtikel}
                                                 {/if}
                                             {/foreach}
-                                            {row}
+                                            {row class="mb-4"}
                                                 {col cols=12}
                                                     {block name='basket-index-freegifts-heading'}
                                                         <h3 class="mb-4">{lang key='freeGiftFromOrderValueBasket'}</h3>

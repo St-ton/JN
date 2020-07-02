@@ -48,7 +48,7 @@
                                 </div>
                             {/if}
                             <div class="proceed col-xs-12 text-right{if $showCoupon} col-sm-6 col-lg-8{/if}">
-                                <a href="{get_static_route id='bestellvorgang.php'}?wk=1" class="submit btn btn-primary btn-lg pull-right bottom15">{lang key='nextStepCheckout' section='checkout'}</a>
+                                <a id="cart-checkout-btn" href="{get_static_route id='bestellvorgang.php'}?wk=1" class="submit btn btn-primary btn-lg pull-right bottom15">{lang key='nextStepCheckout' section='checkout'}</a>
                             </div>
                         </div>
                     {/block}

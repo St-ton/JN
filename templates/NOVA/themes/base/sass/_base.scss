@@ -453,3 +453,11 @@ input.typeahead {
   opacity: 1;
   transition: opacity 300ms;
 }
+
+.list-group-wrapper.disabled{
+  cursor: not-allowed;
+  .list-group-item {
+    padding: map-get($spacers, 3);
+    background-color: $gray-lighter;
+  }
+}

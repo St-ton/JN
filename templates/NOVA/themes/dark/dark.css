@@ -22377,6 +22377,14 @@ input.typeahead:-ms-input-placeholder {
   transition: opacity 300ms;
 }
 
+.list-group-wrapper.disabled {
+  cursor: not-allowed;
+}
+.list-group-wrapper.disabled .list-group-item {
+  padding: 1rem;
+  background-color: #525252;
+}
+
 /* utilities */
 .rounded-top-left {
   border-top-left-radius: 0.125rem !important;

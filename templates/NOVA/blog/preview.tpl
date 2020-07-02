@@ -68,7 +68,7 @@
                 {/row}
                 {block name='blog-preview-heading'}
                     {link itemprop="url" href=$newsItem->getURL() title=$title class="newsbox-headline"}
-                        <span itemprop="headline">{$newsItem->getTitle()}</span>
+                        <span itemprop="headline">{$title}</span>
                     {/link}
                 {/block}
                 {block name='blog-preview-description'}

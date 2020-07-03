@@ -299,11 +299,6 @@ class PageService
         return \json_encode($pageIdObj);
     }
 
-    public function getPageSeo(string $pageId)
-    {
-        return $this->pageDB->getPageSeo($pageId);
-    }
-
     /**
      * @param string $id
      * @return Page[]

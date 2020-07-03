@@ -12,5 +12,9 @@ Parameter
 ``\JTL\Link\LinkGroupList list`` **list**
     **list** LinkGroupList-Object
 
+``bool``  **cache**
+    * ``true`` - Linkgruppe wurde aus dem Cache geladen
+    * ``false`` - Cache miss
+
 Beschreibung
 """"""""""""

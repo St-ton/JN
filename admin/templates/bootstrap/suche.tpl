@@ -75,8 +75,21 @@
         {/foreach}
     </ul>
 {/if}
+{if $plugins->isNotEmpty()}
+    <div class="dropdown-divider dropdown-divider-light"></div>
+    <div class="dropdown-header"><a href="pluginverwaltung.php" class="value">{__('Plug-in manager')}</a></div>
+    <ul>
+        {foreach $plugins as $plugin}
+            <li>
+                <a href="plugin.php?kPlugin={$plugin->getID()}&token={$smarty.session.jtl_token}" class="dropdown-item value">
+                    {$plugin->getName()}
+                </a>
+            </li>
+        {/foreach}
+    </ul>
+{/if}
 
-{if empty($adminMenuItems) && empty($settings) && empty($shippings) && empty($paymentMethods)}
+{if empty($adminMenuItems) && empty($settings) && empty($shippings) && empty($paymentMethods) && $plugins->isEmpty()}
     <span class="{if !$standalonePage}ml-3{/if}">{__('noSearchResult')}</span>
 {/if}
 {if $standalonePage}

@@ -239,15 +239,6 @@ class PageService
     }
 
     /**
-     * @param string $id
-     * @return array
-     */
-    public function getOtherLanguageDrafts(string $id): array
-    {
-        return $this->pageDB->getOtherLanguageDraftRows($id);
-    }
-
-    /**
      * @param int $langId
      * @return string
      */
@@ -485,7 +476,7 @@ class PageService
             ->assign('page', $draft)
             ->fetch(\PFAD_ROOT . \PFAD_ADMIN . 'opc/tpl/draftstatus.tpl');
 
-        $response->assign('opcDraftStatus', 'innerHTML', $draftStatusHtml);
+        $response->assignDom('opcDraftStatus', 'innerHTML', $draftStatusHtml);
 
         return $response;
     }

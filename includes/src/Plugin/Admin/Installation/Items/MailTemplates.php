@@ -86,7 +86,7 @@ class MailTemplates extends AbstractItem
                     continue;
                 }
                 $addedLanguages[] = $localizedTpl->kSprache;
-                if (!isset($this->oldPlugin->kPlugin) || !$this->oldPlugin->kPlugin) {
+                if ($this->oldPlugin === null) { // @todo: this check does not seem to be sufficient
                     $this->db->insert('temailvorlagesprache', $localizedTpl);
                 }
                 $this->db->insert('temailvorlagespracheoriginal', $localizedTpl);

@@ -3,6 +3,8 @@
 namespace JTL\Cron;
 
 use DateTime;
+use JTL\Cache\ICachingMethod;
+use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use Psr\Log\LoggerInterface;
 use stdClass;
@@ -109,13 +111,23 @@ abstract class Job implements JobInterface
     protected $hydrator;
 
     /**
+     * @var ICachingMethod
+     */
+    protected $cache;
+
+    /**
      * @inheritdoc
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger, JobHydrator $hydrator)
-    {
+    public function __construct(
+        DbInterface $db,
+        LoggerInterface $logger,
+        JobHydrator $hydrator,
+        JTLCacheInterface $cache
+    ) {
         $this->db       = $db;
         $this->logger   = $logger;
         $this->hydrator = $hydrator;
+        $this->cache    = $cache;
     }
 
     /**
@@ -169,7 +181,9 @@ abstract class Job implements JobInterface
         $upd->lastFinish    = 'NOW()';
         $upd->isRunning     = 0;
 
-        return $this->db->update('tjobqueue', 'cronID', $this->getCronID(), $upd) >= 0;
+        return $this->getCronID() > 0
+            ? $this->db->update('tjobqueue', 'cronID', $this->getCronID(), $upd) >= 0
+            : $this->db->update('tjobqueue', 'jobQueueID', $queueEntry->jobQueueID, $upd) >= 0;
     }
 
     /**

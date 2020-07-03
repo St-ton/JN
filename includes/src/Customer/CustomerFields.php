@@ -152,7 +152,7 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * @inheritDoc
+     * @return array
      */
     public function __debugInfo(): array
     {

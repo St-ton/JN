@@ -208,7 +208,7 @@ class IOMethods
             $response->nType  = 0;
             $response->cLabel = Shop::Lang()->get('basket');
             $response->cHints = Text::utf8_convert_recursive($localizedErrors);
-            $objResponse->script('this.response = ' . \json_encode($response) . ';');
+            $objResponse->assignVar('response', $response);
 
             return $objResponse;
         }
@@ -277,7 +277,7 @@ class IOMethods
         $response->oArtikel        = $product;
         $response->cNotification   = Shop::Lang()->get('basketAllAdded', 'messages');
 
-        $objResponse->script('this.response = ' . \json_encode($response) . ';');
+        $objResponse->assignVar('response', $response);
         // Kampagne
         if (isset($_SESSION['Kampagnenbesucher'])) {
             Campaign::setCampaignAction(\KAMPAGNE_DEF_WARENKORB, $productID, $amount); // Warenkorb
@@ -286,7 +286,7 @@ class IOMethods
         if ($config['global']['global_warenkorb_weiterleitung'] === 'Y') {
             $response->nType     = 1;
             $response->cLocation = Shop::Container()->getLinkService()->getStaticRoute('warenkorb.php');
-            $objResponse->script('this.response = ' . \json_encode($response) . ';');
+            $objResponse->assignVar('response', $response);
         }
 
         return $objResponse;
@@ -349,7 +349,7 @@ class IOMethods
             $response->cBoxContainer[$id] = $html;
         }
 
-        $objResponse->script('this.response = ' . \json_encode($response) . ';');
+        $objResponse->assignVar('response', $response);
 
         return $objResponse;
     }
@@ -383,7 +383,7 @@ class IOMethods
         foreach ($this->forceRenderBoxes(\BOX_VERGLEICHSLISTE, $conf, $smarty) as $id => $html) {
             $response->cBoxContainer[$id] = $html;
         }
-        $objResponse->script('this.response = ' . \json_encode($response) . ';');
+        $objResponse->assignVar('response', $response);
 
         return $objResponse;
     }
@@ -398,11 +398,17 @@ class IOMethods
     {
         $res     = [];
         $boxData = Shop::Container()->getDB()->queryPrepared(
-            'SELECT *, 0 AS nSort, \'\' AS pageIDs, \'\' AS pageVisibilities
+            'SELECT *, 0 AS nSort, \'\' AS pageIDs, \'\' AS pageVisibilities,
+                       GROUP_CONCAT(tboxensichtbar.nSort) AS sortBypageIDs,
+                       GROUP_CONCAT(tboxensichtbar.kSeite) AS pageIDs,
+                       GROUP_CONCAT(tboxensichtbar.bAktiv) AS pageVisibilities
                 FROM tboxen
+                LEFT JOIN tboxensichtbar
+                    ON tboxen.kBox = tboxensichtbar.kBox
                 LEFT JOIN tboxvorlage
                     ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
-                WHERE tboxen.kBoxvorlage = :type',
+                WHERE tboxen.kBoxvorlage = :type
+                GROUP BY tboxen.kBox',
             ['type' => $type],
             ReturnType::ARRAY_OF_OBJECTS
         );
@@ -440,7 +446,7 @@ class IOMethods
                 '?a=' . $productID .
                 '&n=' . $qty .
                 '&r=' . \R_LOGIN_WUNSCHLISTE;
-            $objResponse->script('this.response = ' . \json_encode($response) . ';');
+            $objResponse->assignVar('response', $response);
 
             return $objResponse;
         }
@@ -452,7 +458,7 @@ class IOMethods
             $response->cLocation = (Shop::getURL() . '/?a=' . $productID .
                 '&n=' . $qty .
                 '&r=' . \R_VARWAEHLEN);
-            $objResponse->script('this.response = ' . \json_encode($response) . ';');
+            $objResponse->assignVar('response', $response);
 
             return $objResponse;
         }
@@ -504,12 +510,12 @@ class IOMethods
         foreach ($this->forceRenderBoxes(\BOX_WUNSCHLISTE, $conf, $smarty) as $id => $html) {
             $response->cBoxContainer[$id] = $html;
         }
-        $objResponse->script('this.response = ' . \json_encode($response) . ';');
+        $objResponse->assignVar('response', $response);
 
         if ($conf['global']['global_wunschliste_weiterleitung'] === 'Y') {
             $response->nType     = 1;
             $response->cLocation = Shop::Container()->getLinkService()->getStaticRoute('wunschliste.php');
-            $objResponse->script('this.response = ' . \json_encode($response) . ';');
+            $objResponse->assignVar('response', $response);
         }
 
         return $objResponse;
@@ -542,7 +548,7 @@ class IOMethods
         foreach ($this->forceRenderBoxes(\BOX_WUNSCHLISTE, $conf, $smarty) as $id => $html) {
             $response->cBoxContainer[$id] = $html;
         }
-        $objResponse->script('this.response = ' . \json_encode($response) . ';');
+        $objResponse->assignVar('response', $response);
 
         return $objResponse;
     }
@@ -561,7 +567,7 @@ class IOMethods
             ->fetch('snippets/wishlist_dropdown.tpl');
         $response->currentPosCount = \count(Frontend::getWishList()->CWunschlistePos_arr);
 
-        $objResponse->script('this.response = ' . \json_encode($response) . ';');
+        $objResponse->assignVar('response', $response);
 
         return $objResponse;
     }
@@ -628,7 +634,7 @@ class IOMethods
                 break;
         }
 
-        $objResponse->script('this.response = ' . \json_encode($response) . ';');
+        $objResponse->assignVar('response', $response);
 
         return $objResponse;
     }
@@ -651,6 +657,7 @@ class IOMethods
         $variationValues    = $aValues['eigenschaftwert'] ?? [];
         $amount             = $aValues['anzahl'] ?? 1;
         $invalidGroups      = [];
+        $configItems        = [];
         $config             = Product::buildConfig(
             $productID,
             $amount,
@@ -753,7 +760,7 @@ class IOMethods
                ->assign('Artikel', $product);
         $config->cTemplate = $smarty->fetch('productdetails/config_summary.tpl');
 
-        $response->script('this.response = ' . \json_encode($config) . ';');
+        $response->assignVar('response', $config);
 
         return $response;
     }
@@ -761,9 +768,9 @@ class IOMethods
     /**
      * @param int        $productID
      * @param array|null $selectedVariationValues
-     * @return null|stdClass
+     * @return stdClass
      */
-    public function getArticleStockInfo(int $productID, $selectedVariationValues = null): ?stdClass
+    public function getArticleStockInfo(int $productID, $selectedVariationValues = null): stdClass
     {
         $result = (object)[
             'stock'  => false,
@@ -840,7 +847,7 @@ class IOMethods
         $response->check  = Wishlist::checkVariOnList($kVaterArtikel, $valueIDs);
         $response->itemID = $kVaterArtikel;
 
-        $objResponse->script('this.response = ' . \json_encode($response) . ';');
+        $objResponse->assignVar('response', $response);
 
         // Alle Variationen ohne Freifeld
         $keyValueVariations = $product->keyValueVariations($product->VariationenOhneFreifeld);
@@ -886,17 +893,21 @@ class IOMethods
                 : Shop::Lang()->get('priceStarting');
         }
 
-        $objResponse->jsfunc(
-            '$.evo.article().setPrice',
+        $objResponse->callEvoProductFunction(
+            'setPrice',
             $fVK[$isNet],
             $cVKLocalized[$isNet],
             $cPriceLabel,
             $wrapper
         );
-        $objResponse->jsfunc('$.evo.article().setArticleWeight', [
-            [$product->fGewicht, $weightTotal . ' ' . $cUnitWeightLabel],
-            [$product->fArtikelgewicht, $weightProductTotal . ' ' . $cUnitWeightLabel],
-        ], $wrapper);
+        $objResponse->callEvoProductFunction(
+            'setArticleWeight',
+            [
+                [$product->fGewicht, $weightTotal . ' ' . $cUnitWeightLabel],
+                [$product->fArtikelgewicht, $weightProductTotal . ' ' . $cUnitWeightLabel],
+            ],
+            $wrapper
+        );
 
         if (!empty($product->staffelPreis_arr)) {
             $fStaffelVK = [0 => [], 1 => []];
@@ -917,8 +928,8 @@ class IOMethods
                 $cStaffelVK[1][$nAnzahl] = Preise::getLocalizedPriceString($fStaffelVK[1][$nAnzahl]);
             }
 
-            $objResponse->jsfunc(
-                '$.evo.article().setStaffelPrice',
+            $objResponse->callEvoProductFunction(
+                'setStaffelPrice',
                 $fStaffelVK[$isNet],
                 $cStaffelVK[$isNet],
                 $wrapper
@@ -941,8 +952,8 @@ class IOMethods
                 $cStaffelVPE[1][$nAnzahl] = $staffelPreis['cBasePriceLocalized'][1];
             }
 
-            $objResponse->jsfunc(
-                '$.evo.article().setVPEPrice',
+            $objResponse->callEvoProductFunction(
+                'setVPEPrice',
                 $product->cLocalizedVPE[$isNet],
                 $fStaffelVPE[$isNet],
                 $cStaffelVPE[$isNet],
@@ -951,7 +962,7 @@ class IOMethods
         }
 
         if (!empty($newProductNr)) {
-            $objResponse->jsfunc('$.evo.article().setProductNumber', $newProductNr, $wrapper);
+            $objResponse->callEvoProductFunction('setProductNumber', $newProductNr, $wrapper);
         }
 
         return $objResponse;
@@ -1003,7 +1014,7 @@ class IOMethods
             }
             // Auswahl zurücksetzen sobald eine nicht vorhandene Variation ausgewählt wurde.
             if ($hasInvalidSelection) {
-                $objResponse->jsfunc('$.evo.article().variationResetAll', $wrapper);
+                $objResponse->callEvoProductFunction('variationResetAll', $wrapper);
                 $set               = [$propertyID => $propertyValueID];
                 $invalidVariations = $product->getVariationsBySelection($set, true);
                 // Auswählter EigenschaftWert ist ebenfalls nicht vorhanden
@@ -1011,8 +1022,8 @@ class IOMethods
                     $set = [];
                     // Wir befinden uns im Kind-Artikel -> Weiterleitung auf Vater-Artikel
                     if ($childProductID > 0) {
-                        $objResponse->jsfunc(
-                            '$.evo.article().setArticleContent',
+                        $objResponse->callEvoProductFunction(
+                            'setArticleContent',
                             $product->kArtikel,
                             0,
                             $product->cURL,
@@ -1037,8 +1048,8 @@ class IOMethods
                         ];
                     }
                     $cUrl = URL::buildURL($tmpProduct, \URLART_ARTIKEL, true);
-                    $objResponse->jsfunc(
-                        '$.evo.article().setArticleContent',
+                    $objResponse->callEvoProductFunction(
+                        'setArticleContent',
                         $parentProductID,
                         $tmpProduct->kArtikel,
                         $cUrl,
@@ -1056,7 +1067,7 @@ class IOMethods
                 }
             }
 
-            $objResponse->jsfunc('$.evo.article().variationDisableAll', $wrapper);
+            $objResponse->callEvoProductFunction('variationDisableAll', $wrapper);
             $possibleVariations = $product->getVariationsBySelection($set);
             $checkStockInfo     = \count($set) > 0
                 && (\count($set) === \count($possibleVariations) - 1);
@@ -1067,7 +1078,7 @@ class IOMethods
             ];
             foreach ($product->Variationen as $variation) {
                 if (\in_array($variation->cTyp, ['FREITEXT', 'PFLICHTFREITEXT'])) {
-                    $objResponse->jsfunc('$.evo.article().variationEnable', $variation->kEigenschaft, 0, $wrapper);
+                    $objResponse->callEvoProductFunction('variationEnable', $variation->kEigenschaft, 0, $wrapper);
                 } else {
                     foreach ($variation->Werte as $value) {
                         $stockInfo->stock = true;
@@ -1076,8 +1087,8 @@ class IOMethods
                         if (isset($possibleVariations[$value->kEigenschaft])
                             && \in_array($value->kEigenschaftWert, $possibleVariations[$value->kEigenschaft])
                         ) {
-                            $objResponse->jsfunc(
-                                '$.evo.article().variationEnable',
+                            $objResponse->callEvoProductFunction(
+                                'variationEnable',
                                 $value->kEigenschaft,
                                 $value->kEigenschaftWert,
                                 $wrapper
@@ -1107,8 +1118,8 @@ class IOMethods
                                 : Shop::Lang()->get('ampelRot');
                         }
                         if (!$stockInfo->stock) {
-                            $objResponse->jsfunc(
-                                '$.evo.article().variationInfo',
+                            $objResponse->callEvoProductFunction(
+                                'variationInfo',
                                 $value->kEigenschaftWert,
                                 $stockInfo->status,
                                 $stockInfo->text,
@@ -1118,8 +1129,8 @@ class IOMethods
                     }
 
                     if (isset($set[$variation->kEigenschaft])) {
-                        $objResponse->jsfunc(
-                            '$.evo.article().variationActive',
+                        $objResponse->callEvoProductFunction(
+                            'variationActive',
                             $variation->kEigenschaft,
                             \addslashes($set[$variation->kEigenschaft]),
                             null,
@@ -1129,9 +1140,9 @@ class IOMethods
                 }
             }
         } else {
-            $objResponse->jsfunc('$.evo.error', 'Article not found', $parentProductID);
+            throw new \Exception('Article not found ' . $parentProductID);
         }
-        $objResponse->jsfunc('$.evo.article().variationRefreshAll', $wrapper);
+        $objResponse->callEvoProductFunction('variationRefreshAll', $wrapper);
 
         return $objResponse;
     }
@@ -1231,7 +1242,7 @@ class IOMethods
         $smarty->assign('result', (object)['current' => $category, 'items' => $categories])
                ->assign('nSeitenTyp', 0);
 
-        $response->script('this.response = ' . \json_encode($smarty->fetch('snippets/categories_offcanvas.tpl')) . ';');
+        $response->assignVar('response', $smarty->fetch('snippets/categories_offcanvas.tpl'));
 
         return $response;
     }
@@ -1245,7 +1256,7 @@ class IOMethods
         $response = new IOResponse();
         if (\mb_strlen($country) === 2) {
             $regions = Staat::getRegions($country);
-            $response->script('this.response = ' . \json_encode($regions) . ';');
+            $response->assignVar('response', $regions);
         }
 
         return $response;
@@ -1265,7 +1276,7 @@ class IOMethods
                 false,
                 [$country]
             );
-            $response->script('this.response = ' . (\count($deliveryCountries) === 1 ? 'true' : 'false') . ';');
+            $response->assignVar('response', \count($deliveryCountries) === 1);
         }
 
         return $response;
@@ -1290,11 +1301,9 @@ class IOMethods
             if (($oLastSelectedValue !== null && $oLastSelectedValue->nAnzahl === 1)
                 || $wizard->getCurQuestion() === $wizard->getQuestionCount()
                 || $wizard->getQuestion($wizard->getCurQuestion())->nTotalResultCount === 0) {
-                $response->script("window.location.href='" . Text::htmlentitydecode(
-                    $NaviFilter->getFilterURL()->getURL()
-                ) . "';");
+                $response->setClientRedirect($NaviFilter->getFilterURL()->getURL());
             } else {
-                $response->assign('selectionwizard', 'innerHTML', $wizard->fetchForm($smarty));
+                $response->assignDom('selectionwizard', 'innerHTML', $wizard->fetchForm($smarty));
             }
         }
 
@@ -1335,7 +1344,7 @@ class IOMethods
             ->assign('opcStartUrl', Shop::getURL() . '/admin/opc.php')
             ->fetch(\PFAD_ROOT . \PFAD_ADMIN . 'opc/tpl/draftlist.tpl');
 
-        $response->assign('opc-draft-list', 'innerHTML', $newDraftListHtml);
+        $response->assignDom('opc-draft-list', 'innerHTML', $newDraftListHtml);
 
         return $response;
     }
@@ -1376,7 +1385,7 @@ class IOMethods
         $response->state = $state;
         $response->url   = Wishlist::instanceByID($wlID)->cURLID;
 
-        $objResponse->script('this.response = ' . \json_encode($response) . ';');
+        $objResponse->assignVar('response', $response);
 
         return $objResponse;
     }
@@ -1396,7 +1405,7 @@ class IOMethods
         $response       = new stdClass();
         $response->wlID = $wlID;
 
-        $objResponse->script('this.response = ' . \json_encode($response) . ';');
+        $objResponse->assignVar('response', $response);
 
         return $objResponse;
     }
@@ -1426,7 +1435,7 @@ class IOMethods
             }
         ))[0];
 
-        $objResponse->script('this.response = ' . \json_encode($response) . ';');
+        $objResponse->assignVar('response', $response);
 
         return $objResponse;
     }

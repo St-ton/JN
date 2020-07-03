@@ -61,8 +61,9 @@ class Factory
     }
 
     /**
-     * @param int    $value
-     * @param string $className
+     * @param int                  $value
+     * @param string               $className
+     * @param PluginInterface|null $plugin
      */
     public function registerSortingOption(int $value, string $className, PluginInterface $plugin = null): void
     {

@@ -905,17 +905,18 @@ body {
   transition: opacity 300ms;
 }
 
-#shop-nav {
-  img {
-    width: 45px;
-    height: 45px;
-    object-fit: contain;
+.price-range-inputs {
+  .input-group-prepend {
+    height: 1.6rem;
+    .input-group-text {
+      border-left: 0;
+      font-weight: $font-weight-bold;
+      padding: $input-padding-y-sm $input-padding-x-sm;
+    }
   }
-}
-.box-compare, .box-wishlist {
-  img {
-    width: 26px;
-    height: 26px;
-    object-fit: contain;
+  input {
+    font-weight: $font-weight-bold;
+    height: 1.6rem;
+    padding: $input-padding-y-sm $input-padding-x-sm;
   }
 }

@@ -312,7 +312,7 @@ class ReviewController extends BaseController
             $this->db,
             ReviewHelpfulModel::ON_NOTEXISTS_NEW
         );
-        /** @var $helpfulReview ReviewHelpfulModel */
+        /** @var ReviewHelpfulModel $helpfulReview */
         $baseURL = $this->getProductURL($productID) . 'bewertung_anzeigen=1&btgseite=' . $page . '&btgsterne=' . $stars;
         // Hat der Kunde für diese Bewertung noch keine hilfreich flag gesetzt?
         if ($helpfulReview->getId() === 0) {

@@ -3,7 +3,6 @@
 use JTL\Alert\Alert;
 use JTL\DB\ReturnType;
 use JTL\Shop;
-use JTL\Template;
 
 /**
  * @return array
@@ -63,7 +62,8 @@ function speicherEinstellung(
             ->setPriority((int)$post['nPrio']);
 
     if (mb_strlen($files['name']) > 0) {
-        $template    = $template ?: Template::getInstance()->getName();
+        $template    = $template
+            ?: Shop::Container()->getTemplateService()->getActiveTemplate()->getName();
         $overlayPath = PFAD_ROOT . PFAD_TEMPLATES . $template . PFAD_OVERLAY_TEMPLATE;
         if (!is_writable($overlayPath)) {
             Shop::Container()->getAlertService()->addAlert(
@@ -373,22 +373,16 @@ function loescheBild(JTL\Media\Image\Overlay $overlay): void
 function mappeFileTyp(string $type): string
 {
     switch ($type) {
-        case 'image/jpeg':
-            return '.jpg';
-        case 'image/pjpeg':
-            return '.jpg';
         case 'image/gif':
             return '.gif';
         case 'image/png':
+        case 'image/x-png':
             return '.png';
         case 'image/bmp':
             return '.bmp';
-        // Adding MIME types that Internet Explorer returns
-        case 'image/x-png':
-            return '.png';
         case 'image/jpg':
-            return '.jpg';
-        //default jpg
+        case 'image/jpeg':
+        case 'image/pjpeg':
         default:
             return '.jpg';
     }

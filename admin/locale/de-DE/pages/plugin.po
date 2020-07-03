@@ -13,3 +13,39 @@ msgstr "Autor"
 
 msgid "pluginHomepage"
 msgstr "Website"
+
+msgid "Lizenzvereinbarungen"
+msgstr "Lizenzvereinbarungen"
+
+msgid "Lizenz"
+msgstr "Lizenz"
+
+msgid "Key"
+msgstr "Schlüssel"
+
+msgid "Vendor"
+msgstr "Hersteller"
+
+msgid "Date created"
+msgstr "Erstellungsdatum"
+
+msgid "Valid until"
+msgstr "Gültig bis"
+
+msgid "License"
+msgstr "Lizenz"
+
+msgid "documentation"
+msgstr "Dokumentation"
+
+msgid "itemDetails"
+msgstr "Details"
+
+msgid "setBinding"
+msgstr "An aktuellen Shop binden"
+
+msgid "extendSubscription"
+msgstr "Subscription verlängern"
+
+msgid "pluginIsDeactivated"
+msgstr "Plugin ist deaktiviert."

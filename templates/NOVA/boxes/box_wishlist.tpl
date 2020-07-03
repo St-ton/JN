@@ -24,41 +24,60 @@
                         visible=false
                         id="crd-cllps-{$oBox->getID()}"
                         aria=["labelledby"=>"crd-hdr-{$oBox->getID()}"]}
-                        {listgroup}
                             {assign var=maxItems value=$oBox->getItemCount()}
-                            {block name='boxes-box-wishlist-wishlist-items'}
-                            {foreach $oBox->getItems() as $oWunschlistePos}
-                                    {if $oWunschlistePos@iteration > $maxItems}{break}{/if}
-                                    {listgroupitem data-id=$oWunschlistePos->kArtikel class="border-0"}
-                                        {link class="remove float-right"
-                                            href=$oWunschlistePos->cURL
-                                            data=["name"=>"Wunschliste.remove",
-                                                "toggle"=>"product-actions",
-                                                "value"=>['a'=>$oWunschlistePos->kWunschlistePos]|json_encode|escape:'html'
-                                            ]
-                                            aria=["label"=>"{lang section='login' key='wishlistremoveItem'}"]
-                                        }
-                                            <span class="fas fa-times"></span>
-                                        {/link}
-                                        {link href=$oWunschlistePos->Artikel->cURLFull title=$oWunschlistePos->cArtikelName|escape:'quotes'}
-                                            {if $oBox->getShowImages()}
-                                                {image fluid=true webp=true lazy=true
-                                                    src=$oWunschlistePos->Artikel->Bilder[0]->cURLMini
-                                                    srcset="{$oWunschlistePos->Artikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                            {$oWunschlistePos->Artikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                            {$oWunschlistePos->Artikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                                    sizes="24px"
-                                                    alt=$oWunschlistePos->Artikel->cName|strip_tags|truncate:60|escape:'html' class="img-xs mr-2"
-                                                }
-                                            {/if}
-                                            {$oWunschlistePos->fAnzahl|replace_delim} &times; {$oWunschlistePos->cArtikelName|truncate:25:"..."}
-                                        {/link}
-                                    {/listgroupitem}
-                            {/foreach}
-                            {/block}
-                        {/listgroup}
+                        <table class="table table-vertical-middle table-striped table-img">
+                            <tbody>
+                                {block name='boxes-box-wishlist-wishlist-items'}
+                                {foreach $oBox->getItems() as $wishlistItem}
+                                        {if $wishlistItem@iteration > $maxItems}{break}{/if}
+                                    <tr>
+                                        <td class="w-100" data-id={$wishlistItem->kArtikel}>
+                                            {block name='boxes-box-wishlist-dropdown-products-image-title'}
+                                                {formrow class="align-items-center"}
+                                                    {if $oBox->getShowImages()}
+                                                        {col class="col-auto"}
+                                                            {block name='boxes-box-wishlist-dropdown-products-image'}
+                                                                {link href=$wishlistItem->Artikel->cURLFull title=$wishlistItem->cArtikelName|escape:'quotes'}
+                                                                    {image fluid=true webp=true lazy=true
+                                                                        src=$wishlistItem->Artikel->Bilder[0]->cURLMini
+                                                                        srcset="{$wishlistItem->Artikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                                                {$wishlistItem->Artikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                                                {$wishlistItem->Artikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                                        sizes="24px"
+                                                                        alt=$wishlistItem->Artikel->cName|strip_tags|escape:'html'}
+                                                                {/link}
+                                                            {/block}
+                                                        {/col}
+                                                    {/if}
+                                                    {col}
+                                                        {block name='boxes-box-wishlist-dropdown-products-title'}
+                                                            {link href=$wishlistItem->Artikel->cURLFull title=$wishlistItem->cArtikelName|escape:'quotes'}
+                                                                {$wishlistItem->fAnzahl|replace_delim} &times; {$wishlistItem->cArtikelName|truncate:40:"..."}
+                                                            {/link}
+                                                        {/block}
+                                                    {/col}
+                                                {/formrow}
+                                            {/block}
+                                        </td>
+                                        <td class="text-right text-nowrap">
+                                            {block name='snippets-wishlist-dropdown-products-remove'}
+                                                {link class="remove float-right"
+                                                    href=$wishlistItem->cURL
+                                                    data=["name"=>"Wunschliste.remove",
+                                                    "toggle"=>"product-actions",
+                                                    "value"=>['a'=>$wishlistItem->kWunschlistePos]|json_encode|escape:'html'
+                                                    ]
+                                                    aria=["label"=>"{lang section='login' key='wishlistremoveItem'}"]}
+                                                    <span class="fas fa-times"></span>
+                                                {/link}
+                                            {/block}
+                                        </td>
+                                {/foreach}
+                                {/block}
+                            </tbody>
+                        </table>
                         {block name='boxes-box-wishlist-actions'}
-                            <hr class="my-4">
+                            <hr class="mt-n3 mb-3">
                             {link href="{get_static_route id='wunschliste.php'}?wl={$oBox->getWishListID()}" class="btn btn-outline-primary btn-block btn-sm"}
                                 {lang key='goToWishlist'}
                             {/link}

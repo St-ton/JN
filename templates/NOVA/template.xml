@@ -4,8 +4,10 @@
     <Author>JTL-Software-GmbH</Author>
     <URL>https://www.jtl-software.de</URL>
     <ShopVersion>5.0.0</ShopVersion>
+    <Version>1.0.0</Version>
     <Preview>preview.png</Preview>
     <Description>JTL-Shop Responsive-Template</Description>
+    <Framework>Bootstrap4</Framework>
     <Settings>
         <Section Name="Allgemein" Key="general">
             <Setting Description="Komprimierung von JavaScript- und CSS-Dateien" Key="use_minify" Type="select" Value="N">
@@ -13,6 +15,7 @@
                 <Option Value="static">Ja, statisch</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
+            <Setting Description="Ist Nova Template" Key="is_nova" Type="text" Value="Y" Editable="false"/>
         </Section>
         <Section Name="Theme" Key="theme">
             <Setting Description="Theme" Key="theme_default" Type="select" Value="clear" Editable="false">
@@ -76,13 +79,11 @@
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
-            <Setting Description="Zusatzinfos zu Artikeln beim Hovern/Antippen anzeigen" Key="hover_productlist" Type="select" Value="N">
+            <Setting Description="Zusatzinfos zu Artikeln beim Hovern/Antippen anzeigen" Key="hover_productlist" Type="select" Value="Y">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
-            <Setting Description="Variationsauswahl anzeigen &lt;span data-html=&quot;true&quot; data-toggle=&quot;tooltip&quot;
-                        title=&quot;nur in Verbindung mit Zusatzinfos beim Hovern/Antippen&quot;&gt; &lt;span
-                        class=&quot;fas fa-info-circle fa-fw&quot;>&lt;/span&gt; &lt;/span&gt;" Key="variation_select_productlist" Type="select" Value="N">
+            <Setting Description="Variationsauswahl anzeigen" Key="variation_select_productlist" Type="select" Value="3">
                 <Option Value="N"><![CDATA[Nein]]></Option>
                 <Option Value="1"><![CDATA[max. 1]]></Option>
                 <Option Value="2"><![CDATA[max. 2]]></Option>
@@ -90,23 +91,19 @@
                 <Option Value="5"><![CDATA[max. 5]]></Option>
                 <Option Value="9999"><![CDATA[keine Beschr&auml;nkung]]></Option>
             </Setting>
-            <Setting Description="Anzahl der möglichen Variationswerte für Radio und Swatches &lt;span data-html=&quot;true&quot; data-toggle=&quot;tooltip&quot;
-                        title=&quot;nur in Verbindung mit „Variationsauswahl anzeigen“&quot;&gt; &lt;span
-                        class=&quot;fas fa-info-circle fa-fw&quot;>&lt;/span&gt; &lt;/span&gt;" Key="variation_max_werte_productlist" Type="select" Value="3">
+            <Setting Description="Anzahl der möglichen Variationswerte für Radio und Swatches" Key="variation_max_werte_productlist" Type="select" Value="3">
                 <Option Value="3"><![CDATA[max. 3]]></Option>
                 <Option Value="5"><![CDATA[max. 5]]></Option>
                 <Option Value="9"><![CDATA[max. 9]]></Option>
                 <Option Value="12"><![CDATA[max. 12]]></Option>
-                <Option Value="9999"><![CDATA[keine Beschr&auml;nkung]]></Option>
+                <Option Value="9999"><![CDATA[keine Beschränkung]]></Option>
             </Setting>
-            <Setting Description="Anzahl der sichtbaren Filteroptionen in Boxen &lt;span data-html=&quot;true&quot; data-toggle=&quot;tooltip&quot;
-                        title=&quot;weitere Optionen können eingeblendet werden&quot;&gt; &lt;span
-                        class=&quot;fas fa-info-circle fa-fw&quot;>&lt;/span&gt; &lt;/span&gt;" Key="filter_max_options" Type="select" Value="5">
+            <Setting Description="Anzahl der sichtbaren Filteroptionen in Boxen" Key="filter_max_options" Type="select" Value="5">
                 <Option Value="3"><![CDATA[max. 3]]></Option>
                 <Option Value="5"><![CDATA[max. 5]]></Option>
                 <Option Value="9"><![CDATA[max. 9]]></Option>
                 <Option Value="12"><![CDATA[max. 12]]></Option>
-                <Option Value="-1"><![CDATA[keine Beschr&auml;nkung]]></Option>
+                <Option Value="-1"><![CDATA[keine Beschränkung]]></Option>
             </Setting>
             <Setting Description="Preisspanne immer anzeigen (empfohlen)" Key="always_show_price_range" Type="select" Value="Y" Editable="false">
                 <Option Value="Y">Ja</Option>
@@ -143,9 +140,6 @@
             <File Path="themes/dark/custom.css"/>
         </CSS>
         <JS Name="jtl3.js">
-            <File Path="js/lazysizes.min.js"/>
-            <!--<File Path="js/jquery.backstretch.min.js"/>-->
-            <!--<File Path="js/jquery.lazy.js"/>-->
             <File Path="js/bootstrap-toolkit.js"/>
             <File Path="js/popper.min.js"/>
             <File Path="js/bootstrap.bundle.min.js"/>
@@ -154,21 +148,17 @@
             <File Path="js/jquery.nivo.slider.pack.js"/>
             <File Path="js/bootstrap-select.min.js"/>
             <File Path="js/jtl.evo.js"/>
-            <File Path="js/spin.js"/>
             <File Path="js/typeahead.bundle.js"/>
-            <File Path="js/clipboard.min.js"/>
             <File Path="js/wow.min.js"/>
             <File Path="js/global.js"/>
             <File Path="js/slick-lightbox.min.js"/>
-            <File Path="js/jquery.serialize-object.js"/>
+            <File Path="js/jquery.serialize-object.min.js"/>
             <File Path="js/jtl.io.js"/>
             <File Path="js/jtl.article.js"/>
             <File Path="js/jtl.basket.js"/>
             <File Path="js/parallax.min.js"/>
-            <File Path="js/Chart.bundle.min.js" DependsOnSettingGroup="CONF_PREISVERLAUF" DependsOnSetting="preisverlauf.preisverlauf_anzeigen" DependsOnSettingValue="Y"/>
             <File Path="js/jqcloud.js"/>
             <File Path="js/nouislider.min.js"/>
-            <File Path="js/password/password.min.js"/>
             <File Path="js/consent.js"/>
             <File Path="js/consent.youtube.js"/>
         </JS>

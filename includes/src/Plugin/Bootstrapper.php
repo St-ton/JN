@@ -7,6 +7,7 @@ use JTL\Backend\NotificationEntry;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Events\Dispatcher;
+use JTL\License\Struct\ExsLicense;
 use JTL\Link\LinkInterface;
 use JTL\Plugin\Admin\StateChanger;
 use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
@@ -201,5 +202,12 @@ abstract class Bootstrapper implements BootstrapperInterface
         );
 
         return $stateChanger->reload($this->plugin);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function licenseExpired(ExsLicense $license): void
+    {
     }
 }

@@ -43,10 +43,6 @@
 		background-color: rgba($gray-darker, .5);
 		overflow: hidden;
 
-		img {
-			margin: 0 auto;
-		}
-
 		.product-actions {
 			display: none;
 		}
@@ -77,6 +73,7 @@
 			.square-image {
 				.inner {
 					img {
+						margin: 0 auto;
 						left: initial;
 						top: initial;
 						-webkit-transform: initial;
@@ -328,4 +325,7 @@
 			padding: 0.2rem 0.5rem;
 		}
 	}
+}
+.product-detail-video{
+	max-width: 100%;
 }

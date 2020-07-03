@@ -28,7 +28,7 @@ if (Request::verifyGPCDataInt('agbwrb') === 1 && Form::validateToken()) {
                 Request::verifyGPCDataInt('kKundengruppe')
             );
             $smarty->assign('kKundengruppe', Request::verifyGPCDataInt('kKundengruppe'))
-                   ->assign('oAGBWRB', $oAGBWRB);
+                ->assign('oAGBWRB', $oAGBWRB);
         } else {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorInvalidCustomerGroup'), 'errorInvalidCustomerGroup');
         }
@@ -55,9 +55,9 @@ if ($step === 'agbwrb_uebersicht') {
         $agbWrb[(int)$item->kKundengruppe] = $item;
     }
     $smarty->assign('customerGroups', CustomerGroup::getGroups())
-           ->assign('oAGBWRB_arr', $agbWrb);
+        ->assign('oAGBWRB_arr', $agbWrb);
 }
 
 $smarty->assign('step', $step)
-       ->assign('kSprache', $_SESSION['kSprache'])
-       ->display('agbwrb.tpl');
+    ->assign('kSprache', $_SESSION['kSprache'])
+    ->display('agbwrb.tpl');

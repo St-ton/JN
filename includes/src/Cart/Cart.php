@@ -20,9 +20,9 @@ use JTL\Helpers\Tax;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
+use function Functional\map;
 use function Functional\select;
 use function Functional\some;
-use function Functional\map;
 
 /**
  * Class Warenkorb
@@ -954,7 +954,9 @@ class Cart
                         }
                     }
                 }
-                if ($product->kVaterArtikel > 0 && $this->config['kaufabwicklung']['general_child_item_bulk_pricing'] === 'Y') {
+                if ($product->kVaterArtikel > 0
+                    && $this->config['kaufabwicklung']['general_child_item_bulk_pricing'] === 'Y'
+                ) {
                     $qty = $this->gibAnzahlEinesArtikels($product->kVaterArtikel, -1, true);
                 } else {
                     $qty = $this->gibAnzahlEinesArtikels($product->kArtikel);

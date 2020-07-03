@@ -138,7 +138,7 @@
     {/block}
 
     {block name='productlist-header-include-selection-wizard'}
-        {include file='selectionwizard/index.tpl'}
+        {include file='selectionwizard/index.tpl' container=false}
     {/block}
 
     {if $Suchergebnisse->getProducts()|@count <= 0 && isset($KategorieInhalt)}

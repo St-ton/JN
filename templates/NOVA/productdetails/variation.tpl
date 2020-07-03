@@ -115,7 +115,7 @@
                                                                 data-ref="{$Variationswert->oVariationsKombi->kArtikel}"
                                                            {/if}>
                                                         {block name='productdetails-variation-radio-include-variation-value'}
-                                                            {include file="productdetails/variation_value.tpl"}
+                                                            {include file="productdetails/variation_value.tpl" badgeRight=true}
                                                             {if $Variationswert->notExists}
                                                                 {badge class='badge-not-available' variant='danger'}{lang key='notAvailableInSelection'}{/badge}
                                                             {elseif !$Variationswert->inStock}
@@ -256,7 +256,7 @@
                                                                {if $bSelected}checked="checked"{/if}
                                                                {if $smarty.foreach.Variationswerte.index === 0 && !$showMatrix} required{/if}
                                                                />
-                                                        <span class="label-variation mr-2">
+                                                        <span class="label-variation">
                                                             {$Variationswert->cName}
                                                         </span>
                                                         {block name='productdetails-variation-textswatch-include-variation-value'}
@@ -271,7 +271,8 @@
                                 {/block}
                             {elseif $Variation->cTyp === 'FREIFELD' || $Variation->cTyp === 'PFLICHT-FREIFELD'}
                                 {block name='productdetails-variation-info-variation-text'}
-                                    {input name='eigenschaftwert['|cat:$Variation->kEigenschaft|cat:']'
+                                    <label for="vari-{$Variation->kEigenschaft}" class="sr-only">{$Variation->cName}</label>
+                                    {input id="vari-{$Variation->kEigenschaft}" name='eigenschaftwert['|cat:$Variation->kEigenschaft|cat:']'
                                        value=$oEigenschaftWertEdit_arr[$Variation->kEigenschaft]->cEigenschaftWertNameLocalized|default:''
                                        data=['key' => $Variation->kEigenschaft] required=$Variation->cTyp === 'PFLICHT-FREIFELD'}
                                 {/block}

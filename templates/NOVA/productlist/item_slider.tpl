@@ -42,7 +42,7 @@
         {if $tplscope === 'box'}
             {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}
                 {block name='productlist-item-slider-include-rating'}
-                    <small>{include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}</small>
+                    <small>{include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung link=$Artikel->cURLFull}</small>
                 {/block}
             {/if}
         {/if}

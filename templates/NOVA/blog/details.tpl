@@ -60,7 +60,7 @@
                         {/if}
 
                         {block name='blog-details-comments-link'}
-                            {link class="no-deco text-nowrap" href="#comments" title="{lang key='readComments' section='news'}"}
+                            {link class="text-decoration-none text-nowrap" href="#comments" title="{lang key='readComments' section='news'}"}
                                 /
                                 <span class="fas fa-comments"></span>
                                 <span class="sr-only">

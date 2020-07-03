@@ -1,8 +1,5 @@
 {block name='boxes-box-login'}
-    {card
-        class="box box-login mb-4"
-        id="sidebox{$oBox->getID()}"
-    }
+    {card id="sidebox{$oBox->getID()}" class="box box-login mb-4"}
         {block name='boxes-box-login-content'}
             {block name='boxes-box-login-title'}
                 <div class="productlist-filter-headline">

@@ -852,7 +852,15 @@ class IOMethods
         // Alle Variationen ohne Freifeld
         $keyValueVariations = $product->keyValueVariations($product->VariationenOhneFreifeld);
         foreach ($valueIDs as $index => $value) {
-            if (!isset($keyValueVariations[$index])) {
+            if (isset($keyValueVariations[$index])) {
+                $objResponse->callEvoProductFunction(
+                    'variationActive',
+                    $index,
+                    \addslashes($value),
+                    null,
+                    $wrapper
+                );
+            } else {
                 unset($valueIDs[$index]);
             }
         }

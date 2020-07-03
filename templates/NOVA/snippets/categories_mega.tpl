@@ -164,7 +164,7 @@
         {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
             {navitem href="{get_static_route id='wunschliste.php'}" class="wl-nav-scrollbar-item nav-scrollbar-item"}
                 {lang key='wishlist'}
-                {badge id="badge-wl-count" variant="primary" class="text-gray-darker product-count"}
+                {badge id="badge-wl-count" variant="primary" class="product-count"}
                     {if isset($smarty.session.Wunschliste) && !empty($smarty.session.Wunschliste->CWunschlistePos_arr|count)}
                         {$smarty.session.Wunschliste->CWunschlistePos_arr|count}
                     {else}
@@ -175,7 +175,7 @@
         {/if}
         {navitem href="{get_static_route id='vergleichsliste.php'}" class="comparelist-nav-scrollbar-item nav-scrollbar-item"}
             {lang key='compare'}
-            {badge id="comparelist-badge" variant="primary" class="text-gray-darker product-count"}
+            {badge id="comparelist-badge" variant="primary" class="product-count"}
                 {if !empty($smarty.session.Vergleichsliste->oArtikel_arr)}{$smarty.session.Vergleichsliste->oArtikel_arr|count}{else}0{/if}
             {/badge}
         {/navitem}

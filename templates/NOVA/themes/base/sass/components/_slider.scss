@@ -29,3 +29,11 @@
     padding-top: 25px;
   }
 }
+
+.nivo-controlNav {
+  .active {
+    img {
+      border: 1px solid $gray-dark;
+    }
+  }
+}

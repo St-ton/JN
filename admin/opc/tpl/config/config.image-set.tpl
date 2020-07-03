@@ -102,11 +102,11 @@
         });
     });
 
-    function elfinderCallback_{$propname}(url)
+    function elfinderCallback_{$propname}(file)
     {
         var image = $(this);
-        image.css('background-image', 'url("' + url + '")');
-        image.siblings('input').val(url);
+        image.css('background-image', 'url("' + file.url + '")');
+        image.siblings('input').val(file.url);
     }
 
     function addSlide_{$propname}()

@@ -37,6 +37,14 @@ abstract class AbstractSession
     }
 
     /**
+     * @return string
+     */
+    public static function getSessionName(): string
+    {
+        return self::$sessionName;
+    }
+
+    /**
      * @param array $conf
      * @param bool  $start
      * @return bool

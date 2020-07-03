@@ -9,15 +9,17 @@
             </div>
             <div class="card-body">
                 <input type="hidden" name="upload" value="1" />
+                {$allowedExtensions = ['jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp', 'svg', 'webp']}
                 <div class="col-xs-12">
                     {include file='tpl_inc/fileupload.tpl'
+                        fileAllowedExtensions=$allowedExtensions
                         fileID='shoplogo-upload'
                         fileName='shopLogo'
                         fileUploadUrl="{$shopURL}/{$PFAD_ADMIN}shoplogouploader.php?token={$smarty.session.jtl_token}"
                         fileDeleteUrl="{$shopURL}/{$PFAD_ADMIN}shoplogouploader.php?token={$smarty.session.jtl_token}"
                         fileBrowseClear=true
                         fileSuccessMsg="{__('successLogoUpload')}"
-                        fileErrorMsg="{{__('errorLogoUpload')}|sprintf:{$smarty.const.PFAD_SHOPLOGO}}"
+                        fileErrorMsg="{__('errorLogoUpload', $allowedExtensions|implode:', ', $smarty.const.PFAD_SHOPLOGO)}"
                         fileInitialPreview="[
                                 '<img src=\"{$ShopLogoURL}\" class=\"file-preview-image img-fluid\" alt=\"Logo\" title=\"Logo\" />'
                             ]"

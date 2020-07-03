@@ -13,7 +13,7 @@
     {literal}
     function delInputRow() {
         i -= 1;
-        $('#price_range tbody tr:last').remove();
+        $('#price_range tbody tr').last().remove();
     }
 
     function addShippingCombination() {

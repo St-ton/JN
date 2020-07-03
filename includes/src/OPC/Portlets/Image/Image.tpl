@@ -22,7 +22,7 @@
             src=$imgAttribs.src
             srcset=$imgAttribs.srcset
             sizes=$imgAttribs.srcsizes
-            alt=$imgAttribs.alt
+            alt=$imgAttribs.alt|escape:'html'
             title=$imgAttribs.title
             style=$instance->getStyleString()|cat:' display: block; width: 100%'
             rounded=$portlet->getRoundedProp($instance)

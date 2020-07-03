@@ -15,17 +15,17 @@
             {$imgAttribs = $instance->getImageAttributes($image.url, $image.alt, '')}
             <a {if $isPreview === false}
                     {if $image.action === 'link'}
-                        href="{$image.link}"
+                        href="{$image.link|escape:'html'}"
                     {elseif $image.action === 'lightbox'}
-                        href="{$imgAttribs.src}"
+                        href="{$imgAttribs.src|escape:'html'}"
                     {/if}
                {/if} class="opc-Gallery-btn {if $image.action === 'lightbox'}opc-Gallery-active-btn{/if}"
-               data-caption="{$image.desc}">
+               data-caption="{$image.desc|escape:'html'}">
                 {image class='opc-Gallery-img'
                        srcset=$imgAttribs.srcset
                        sizes=$imgAttribs.srcsizes
                        src=$imgAttribs.src
-                       alt=$imgAttribs.alt
+                       alt=$imgAttribs.alt|escape:'html'
                        title=$imgAttribs.title}
                 {if $image.action === 'lightbox'}
                     <i class="opc-Gallery-zoom fa fa-search fa-2x"></i>
@@ -92,20 +92,20 @@
             {col cols=$image.xs sm=$image.sm md=$image.md lg=$image.lg xl=$image.xl class="opc-Gallery-item"}
                 <a {if $isPreview === false}
                         {if $image.action === 'link'}
-                            href="{$image.link}"
+                            href="{$image.link|escape:'html'}"
                         {elseif $image.action === 'lightbox'}
-                            href="{$imgAttribs.src}"
+                            href="{$imgAttribs.src|escape:'html'}"
                         {/if}
                     {/if}
                    class="opc-Gallery-btn {if $image.action === 'lightbox'}opc-Gallery-active-btn{/if}"
-                   data-caption="{$image.desc}"
+                   data-caption="{$image.desc|escape:'html'}"
                    aria-label="{$image.alt}"
                 >
                     {image class='opc-Gallery-img'
                            srcset=$imgAttribs.srcset
                            sizes=$imgAttribs.srcsizes
                            src=$imgAttribs.src
-                           alt=$imgAttribs.alt
+                           alt=$imgAttribs.alt|escape:'html'
                            title=$imgAttribs.title}
                     {if $image.action === 'lightbox'}
                         <i class="opc-Gallery-zoom fa fa-search fa-2x"></i>

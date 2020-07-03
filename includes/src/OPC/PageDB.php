@@ -4,6 +4,7 @@ namespace JTL\OPC;
 
 use Exception;
 use JTL\Backend\Revision;
+use JTL\Catalog\Product\Artikel;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Language\LanguageHelper;
@@ -213,34 +214,140 @@ class PageDB
 
     /**
      * @param string $pageId
-     * @return string
+     * @return string|null
      */
-    public function getPageSeo(string $pageId)
+    public function getPageSeo(string $pageId): ?string
     {
         $pageIdObj = \json_decode($pageId);
-        $cKey      = null;
+
+        if (empty($pageIdObj)) {
+            return null;
+        }
+
+        $langIso = LanguageHelper::getIsoFromLangID($pageIdObj->lang);
+
+        if ($langIso === null) {
+            return null;
+        }
+
+        $langIso = $langIso->cISO;
+        $cKey    = null;
+        $param   = null;
 
         switch ($pageIdObj->type) {
             case 'product':
-                $cKey = 'kArtikel';
+                $cKey  = 'kArtikel';
+                $param = 'a';
+                break;
+            case 'category':
+                $cKey  = 'kKategorie';
+                $param = 'k';
+                break;
+            case 'manufacturer':
+                $cKey  = 'kHersteller';
+                $param = 'h';
+                break;
+            case 'link':
+                $cKey  = 'kLink';
+                $param = 's';
+                break;
+            case 'attrib':
+                $cKey  = 'kMerkmalWert';
+                $param = 'm';
+                break;
+            case 'special':
+                $cKey  = 'suchspecial';
+                $param = 'q';
+                break;
+            case 'news':
+                $cKey  = 'kNews';
+                $param = 'n';
+                break;
+            case 'newscat':
+                $cKey  = 'kNewsKategorie';
+                $param = 'nk';
                 break;
         }
 
         if (!empty($cKey)) {
+            $result = '';
+
             $seo = $this->shopDB->queryPrepared(
                 'SELECT * FROM tseo WHERE cKey = :ckey AND kKey = :key AND kSprache = :lang',
                 ['ckey' => $cKey, 'key' => $pageIdObj->id, 'lang' => $pageIdObj->lang],
                 ReturnType::SINGLE_OBJECT
             );
 
-            if (empty($seo)) {
-                return '?a=' . $pageIdObj->id . '&lang=eng';
+            if (!empty($pageIdObj->attribs)) {
+                $attribSeos = $this->shopDB->queryPrepared(
+                    'SELECT * FROM tseo WHERE cKey = "kMerkmalWert"
+                     AND kKey IN (' . implode(',', $pageIdObj->attribs) . ')
+                     AND kSprache = :lang',
+                    ['lang' => $pageIdObj->lang],
+                    ReturnType::ARRAY_OF_OBJECTS
+                );
             }
 
-            return '/' . $seo->cSeo;
+            if (!empty($pageIdObj->manufacturerFilter)) {
+                $manufacturerSeo = $this->shopDB->queryPrepared(
+                    'SELECT * FROM tseo WHERE cKey = "kHersteller"
+                     AND kKey = :kKey
+                     AND kSprache = :lang',
+                    ['kKey' => $pageIdObj->manufacturerFilter, 'lang' => $pageIdObj->lang],
+                    ReturnType::SINGLE_OBJECT
+                );
+            }
+
+            if (!empty($seo) &&
+                (empty($pageIdObj->attribs) || \count($pageIdObj->attribs) === \count($attribSeos)) &&
+                (empty($pageIdObj->manufacturerFilter) || !empty($manufacturerSeo))
+            ) {
+                $result .= $seo->cSeo;
+
+                if (!empty($attribSeos)) {
+                    foreach ($attribSeos as $seo) {
+                        $result .= '__' . $seo->cSeo;
+                    }
+                }
+
+                if (!empty($manufacturerSeo)) {
+                    $result .= '::' . $manufacturerSeo->cSeo;
+                }
+            } else {
+                $result .= '?' . $param . '=' . $pageIdObj->id;
+            }
+
+            if (empty($seo)) {
+                $result = '?' . $param . '=' . $pageIdObj->id . '&lang=' . $langIso;
+                $qmark  = true;
+            } else {
+                $result = '/' . $seo->cSeo;
+                $qmark  = false;
+            }
+
+            if (!empty($pageIdObj->attribs)) {
+                $attribSeos = $this->shopDB->queryPrepared(
+                    'SELECT * FROM tseo WHERE cKey = "kMerkmalWert"
+                     AND kKey IN (' . implode(',', $pageIdObj->attribs) . ')
+                     AND kSprache = :lang',
+                    ['lang' => $pageIdObj->lang],
+                    ReturnType::ARRAY_OF_OBJECTS
+                );
+
+                foreach ($attribSeos as $seo) {
+                    $result .= '__' . $seo->cSeo;
+                }
+            }
+
+            if (!empty($pageIdObj->range)) {
+                $result .= ($qmark ? '&' : '?') . 'pf=' . $pageIdObj->range;
+                $qmark   = true;
+            }
+
+            return $result;
         }
 
-        return '';
+        return null;
     }
 
     /**

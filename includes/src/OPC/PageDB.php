@@ -4,10 +4,8 @@ namespace JTL\OPC;
 
 use Exception;
 use JTL\Backend\Revision;
-use JTL\Catalog\Product\Artikel;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use JTL\Language\LanguageHelper;
 use JTL\Shop;
 use JTL\Update\Updater;
 use stdClass;

@@ -684,7 +684,7 @@ final class Controller
         ), static function ($e) {
             return (int)$e->id;
         });
-        $itemList->createItems($ids);
+        $itemList->createItems($ids, false);
 
         return $itemList->getItems();
     }

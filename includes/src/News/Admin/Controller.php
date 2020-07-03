@@ -469,7 +469,7 @@ final class Controller
         $sort         = (int)$post['nSort'];
         $active       = (int)$post['nAktiv'];
         $parentID     = (int)$post['kParent'];
-        $previewImage = $post['previewImage'];
+        $previewImage = $post['previewImage'] ?? '';
         $flag         = \ENT_COMPAT | \ENT_HTML401;
         $this->db->delete('tseo', ['cKey', 'kKey'], ['kNewsKategorie', $categoryID]);
         $newsCategory                        = new stdClass();

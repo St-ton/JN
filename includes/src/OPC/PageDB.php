@@ -257,55 +257,61 @@ class PageDB
                 break;
         }
 
-        if (!empty($cKey)) {
-            $seo = $this->shopDB->queryPrepared(
-                'SELECT * FROM tseo WHERE cKey = :ckey AND kKey = :key AND kSprache = :lang',
-                ['ckey' => $cKey, 'key' => $pageIdObj->id, 'lang' => $pageIdObj->lang],
-                ReturnType::SINGLE_OBJECT
+        if (empty($cKey)) {
+            return null;
+        }
+
+        $seo = $this->shopDB->queryPrepared(
+            'SELECT * FROM tseo WHERE cKey = :ckey AND kKey = :key AND kSprache = :lang',
+            ['ckey' => $cKey, 'key' => $pageIdObj->id, 'lang' => $pageIdObj->lang],
+            ReturnType::SINGLE_OBJECT
+        );
+
+        if (empty($seo)) {
+            return null;
+        }
+
+        if (!empty($pageIdObj->attribs)) {
+            $attribSeos = $this->shopDB->queryPrepared(
+                'SELECT * FROM tseo WHERE cKey = "kMerkmalWert"
+                     AND kKey IN (' . implode(',', $pageIdObj->attribs) . ')
+                     AND kSprache = :lang',
+                ['lang' => $pageIdObj->lang],
+                ReturnType::ARRAY_OF_OBJECTS
             );
 
-            if (!empty($seo)) {
-                if (!empty($pageIdObj->attribs)) {
-                    $attribSeos = $this->shopDB->queryPrepared(
-                        'SELECT * FROM tseo WHERE cKey = "kMerkmalWert"
-                             AND kKey IN (' . implode(',', $pageIdObj->attribs) . ')
-                             AND kSprache = :lang',
-                        ['lang' => $pageIdObj->lang],
-                        ReturnType::ARRAY_OF_OBJECTS
-                    );
-                }
-
-                if (!empty($pageIdObj->manufacturerFilter)) {
-                    $manufacturerSeo = $this->shopDB->queryPrepared(
-                        'SELECT * FROM tseo WHERE cKey = "kHersteller"
-                             AND kKey = :kKey
-                             AND kSprache = :lang',
-                        ['kKey' => $pageIdObj->manufacturerFilter, 'lang' => $pageIdObj->lang],
-                        ReturnType::SINGLE_OBJECT
-                    );
-                }
-
-                if ((empty($pageIdObj->attribs) || \count($pageIdObj->attribs) === \count($attribSeos)) &&
-                    (empty($pageIdObj->manufacturerFilter) || !empty($manufacturerSeo))
-                ) {
-                    $result = '/' . $seo->cSeo;
-
-                    if (!empty($attribSeos)) {
-                        foreach ($attribSeos as $seo) {
-                            $result .= '__' . $seo->cSeo;
-                        }
-                    }
-
-                    if (!empty($manufacturerSeo)) {
-                        $result .= '::' . $manufacturerSeo->cSeo;
-                    }
-
-                    return $result;
-                }
+            if (\count($attribSeos) !== \count($pageIdObj->attribs)) {
+                return null;
             }
         }
 
-        return null;
+        if (!empty($pageIdObj->manufacturerFilter)) {
+            $manufacturerSeo = $this->shopDB->queryPrepared(
+                'SELECT * FROM tseo WHERE cKey = "kHersteller"
+                     AND kKey = :kKey
+                     AND kSprache = :lang',
+                ['kKey' => $pageIdObj->manufacturerFilter, 'lang' => $pageIdObj->lang],
+                ReturnType::SINGLE_OBJECT
+            );
+
+            if (empty($manufacturerSeo)) {
+                return null;
+            }
+        }
+
+        $result = '/' . $seo->cSeo;
+
+        if (!empty($attribSeos)) {
+            foreach ($attribSeos as $seo) {
+                $result .= '__' . $seo->cSeo;
+            }
+        }
+
+        if (!empty($manufacturerSeo)) {
+            $result .= '::' . $manufacturerSeo->cSeo;
+        }
+
+        return $result;
     }
 
     /**

@@ -56,7 +56,7 @@ Beispiel für eine Implementierung
 
     switch ($args_arr['type']) {
         case 'VALIDATE':
-            if (empty($args_arr['attribs']['myField'] {
+            if (empty($args_arr['attribs']['myField'])) {
                 $args_arr['messages']['error'] = 'myField darf nicht leer sein!';
                 $args_arr['result'] = ['myField' => 1];
             } else {

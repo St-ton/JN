@@ -67,7 +67,6 @@ final class Listing
     private function getActiveTemplate(): Model
     {
         return Model::loadByAttributes(['type' => 'standard'], $this->db);
-
     }
 
     /**
@@ -82,7 +81,7 @@ final class Listing
             return $this->items;
         }
         try {
-            $active  = $this->getActiveTemplate();
+            $active = $this->getActiveTemplate();
         } catch (Exception $e) {
             $active = new Model($this->db);
             $active->setTemplate('no-template');

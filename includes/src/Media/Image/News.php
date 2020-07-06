@@ -7,7 +7,6 @@ use Generator;
 use JTL\DB\ReturnType;
 use JTL\Media\Image;
 use JTL\Media\MediaImageRequest;
-use JTL\Shop;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use SplFileInfo;
@@ -24,9 +23,9 @@ class News extends AbstractImage
     /**
      * @var string
      */
-    protected $regEx = '/^media\/image\/(?P<type>news)' .
-    '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl|os)\/(?P<name>[a-zA-Z0-9\-_]+)' .
-    '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
+    protected $regEx = '/^media\/image\/(?P<type>news)'
+    . '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl|os)\/(?P<name>[a-zA-Z0-9\-_]+)'
+    . '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**
      * @inheritdoc
@@ -35,8 +34,8 @@ class News extends AbstractImage
     {
         return (object)[
             'stmt' => 'SELECT kNews, 0 AS number  
-                          FROM tnews 
-                          WHERE kNews = :nid',
+                           FROM tnews 
+                           WHERE kNews = :nid',
             'bind' => ['nid' => $id]
         ];
     }
@@ -44,9 +43,9 @@ class News extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getImageNames(MediaImageRequest $req): array
+    public function getImageNames(MediaImageRequest $req): array
     {
-        return Shop::Container()->getDB()->queryPrepared(
+        return $this->db->queryPrepared(
             'SELECT a.kNews, a.cPreviewImage AS path, t.title
                 FROM tnews AS a
                 LEFT JOIN tnewssprache t
@@ -75,9 +74,9 @@ class News extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getPathByID($id, int $number = null): ?string
+    public function getPathByID($id, int $number = null): ?string
     {
-        $item = Shop::Container()->getDB()->queryPrepared(
+        $item = $this->db->queryPrepared(
             'SELECT cPreviewImage AS path
                 FROM tnews
                 WHERE kNews = :cid LIMIT 1',
@@ -101,7 +100,7 @@ class News extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getAllImages(int $offset = null, int $limit = null): Generator
+    public function getAllImages(int $offset = null, int $limit = null): Generator
     {
         $base = \PFAD_ROOT . self::getStoragePath();
         $rdi  = new RecursiveDirectoryIterator(
@@ -128,7 +127,7 @@ class News extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getTotalImageCount(): int
+    public function getTotalImageCount(): int
     {
         $rdi = new RecursiveDirectoryIterator(
             \PFAD_ROOT . self::getStoragePath(),

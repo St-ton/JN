@@ -6,7 +6,6 @@ use Generator;
 use JTL\DB\ReturnType;
 use JTL\Media\Image;
 use JTL\Media\MediaImageRequest;
-use JTL\Shop;
 use PDO;
 use stdClass;
 
@@ -21,9 +20,9 @@ class ConfigGroup extends AbstractImage
     /**
      * @var string
      */
-    protected $regEx = '/^media\/image\/(?P<type>configgroup)' .
-    '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl|os)\/(?P<name>[a-zA-Z0-9\-_]+)' .
-    '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
+    protected $regEx = '/^media\/image\/(?P<type>configgroup)'
+    . '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl|os)\/(?P<name>[a-zA-Z0-9\-_]+)'
+    . '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**
      * @inheritdoc
@@ -32,9 +31,9 @@ class ConfigGroup extends AbstractImage
     {
         return (object)[
             'stmt' => 'SELECT cBildpfad, 0 AS number 
-                        FROM tkonfiggruppe 
-                        WHERE kKonfiggruppe = :cid 
-                        ORDER BY nSort ASC',
+                           FROM tkonfiggruppe 
+                           WHERE kKonfiggruppe = :cid 
+                           ORDER BY nSort ASC',
             'bind' => ['cid' => $id]
         ];
     }
@@ -42,9 +41,9 @@ class ConfigGroup extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getImageNames(MediaImageRequest $req): array
+    public function getImageNames(MediaImageRequest $req): array
     {
-        return Shop::Container()->getDB()->queryPrepared(
+        return $this->db->queryPrepared(
             'SELECT a.kKonfiggruppe, t.cName, cBildPfad AS path
                 FROM tkonfiggruppe a
                 JOIN tkonfiggruppesprache t 
@@ -90,12 +89,12 @@ class ConfigGroup extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getPathByID($id, int $number = null): ?string
+    public function getPathByID($id, int $number = null): ?string
     {
-        return Shop::Container()->getDB()->queryPrepared(
+        return $this->db->queryPrepared(
             'SELECT cBildpfad AS path 
-                    FROM tkonfiggruppe 
-                    WHERE kKonfiggruppe = :cid LIMIT 1',
+                FROM tkonfiggruppe 
+                WHERE kKonfiggruppe = :cid LIMIT 1',
             ['cid' => $id],
             ReturnType::SINGLE_OBJECT
         )->path ?? null;
@@ -104,9 +103,9 @@ class ConfigGroup extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getAllImages(int $offset = null, int $limit = null): Generator
+    public function getAllImages(int $offset = null, int $limit = null): Generator
     {
-        $images = Shop::Container()->getDB()->query(
+        $images = $this->db->query(
             'SELECT a.kKonfiggruppe AS id, t.cName, cBildPfad AS path
                 FROM tkonfiggruppe a
                 JOIN tkonfiggruppesprache t 

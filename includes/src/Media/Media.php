@@ -13,6 +13,7 @@ use JTL\Media\Image\NewsCategory;
 use JTL\Media\Image\OPC;
 use JTL\Media\Image\Product;
 use JTL\Media\Image\Variation;
+use JTL\Shop;
 use function Functional\first;
 use function Functional\some;
 
@@ -70,17 +71,18 @@ class Media
      */
     public function __construct()
     {
+        $db             = Shop::Container()->getDB();
         self::$instance = $this;
-        $this->register(new Product())
-             ->register(new Category())
-             ->register(new Manufacturer())
-             ->register(new OPC())
-             ->register(new Characteristic())
-             ->register(new CharacteristicValue())
-             ->register(new ConfigGroup())
-             ->register(new Variation())
-             ->register(new News())
-             ->register(new NewsCategory());
+        $this->register(new Product($db))
+             ->register(new Category($db))
+             ->register(new Manufacturer($db))
+             ->register(new OPC($db))
+             ->register(new Characteristic($db))
+             ->register(new CharacteristicValue($db))
+             ->register(new ConfigGroup($db))
+             ->register(new Variation($db))
+             ->register(new News($db))
+             ->register(new NewsCategory($db));
     }
 
     /**

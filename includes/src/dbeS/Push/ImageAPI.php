@@ -36,10 +36,11 @@ final class ImageAPI extends AbstractPush
         } catch (InvalidArgumentException $e) {
             return;
         }
-        $instance = Media::getClass($this->imageType);
+        $class = Media::getClass($this->imageType);
         /** @var IMedia $instance */
-        $imageNo = Request::getInt('n', 1);
-        $path    = $instance::getPathByID($this->imageID, $imageNo);
+        $instance = new $class($this->db);
+        $imageNo  = Request::getInt('n', 1);
+        $path     = $instance->getPathByID($this->imageID, $imageNo);
         if ($path === null) {
             return;
         }
@@ -51,7 +52,7 @@ final class ImageAPI extends AbstractPush
             'ext'        => \pathinfo($path)['extension'],
             'sourcePath' => $path
         ]);
-        $names = $instance::getImageNames($req);
+        $names = $instance->getImageNames($req);
         if (\count($names) === 0) {
             return;
         }

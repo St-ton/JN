@@ -28,9 +28,9 @@ class Product extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getImageNames(MediaImageRequest $req): array
+    public function getImageNames(MediaImageRequest $req): array
     {
-        return Shop::Container()->getDB()->queryPrepared(
+        return $this->db->queryPrepared(
             'SELECT kArtikel, cName, cSeo, cSeo AS originalSeo, cArtNr, cBarcode
                 FROM tartikel
                 WHERE kArtikel = :pid',
@@ -44,9 +44,9 @@ class Product extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getTotalImageCount(): int
+    public function getTotalImageCount(): int
     {
-        return (int)Shop::Container()->getDB()->query(
+        return (int)$this->db->query(
             'SELECT COUNT(tartikelpict.kArtikel) AS cnt
                 FROM tartikelpict
                 INNER JOIN tartikel
@@ -58,7 +58,7 @@ class Product extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getAllImages(int $offset = null, int $limit = null): Generator
+    public function getAllImages(int $offset = null, int $limit = null): Generator
     {
         $cols = '';
         switch (Image::getSettings()['naming'][Image::TYPE_PRODUCT]) {
@@ -78,7 +78,7 @@ class Product extends AbstractImage
             default:
                 break;
         }
-        $images = Shop::Container()->getDB()->query(
+        $images = $this->db->query(
             'SELECT tartikelpict.cPfad AS path, tartikelpict.nNr AS number, tartikelpict.kArtikel ' . $cols . '
                 FROM tartikelpict
                 INNER JOIN tartikel
@@ -131,9 +131,9 @@ class Product extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getPathByID($id, int $number = null): ?string
+    public function getPathByID($id, int $number = null): ?string
     {
-        return Shop::Container()->getDB()->queryPrepared(
+        return $this->db->queryPrepared(
             'SELECT cPfad AS path
                 FROM tartikelpict
                 WHERE kArtikel = :pid
@@ -154,15 +154,16 @@ class Product extends AbstractImage
     }
 
     /**
-     * @param string $type
-     * @param int    $id
+     * @param int              $id
+     * @param DbInterface|null $db
      * @return int|null
      */
-    public static function getPrimaryNumber(string $type, int $id): ?int
+    public static function getPrimaryNumber(int $id, DbInterface $db = null): ?int
     {
-        $prepared = self::getImageStmt($type, $id);
+        $prepared = self::getImageStmt(Image::TYPE_PRODUCT, $id);
         if ($prepared !== null) {
-            $primary = Shop::Container()->getDB()->queryPrepared(
+            $db      = $db ?? Shop::Container()->getDB();
+            $primary = $db->queryPrepared(
                 $prepared->stmt,
                 $prepared->bind,
                 ReturnType::SINGLE_OBJECT
@@ -195,8 +196,8 @@ class Product extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function imageIsUsed(DbInterface $db, string $path): bool
+    public function imageIsUsed(string $path): bool
     {
-        return $db->select('tartikelpict', 'cPfad', $path) !== null;
+        return $this->db->select('tartikelpict', 'cPfad', $path) !== null;
     }
 }

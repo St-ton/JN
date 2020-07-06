@@ -41,24 +41,24 @@ final class ImageCache extends Job
     private function generateImageCache(int $index, IMedia $instance): bool
     {
         $rendered = 0;
-        $total    = $instance::getUncachedImageCount();
-        $images   = $instance::getImages(true, $index, $this->getLimit());
-        $totalAll = $instance::getTotalImageCount();
-        $this->logger->debug('Uncached images: ' . $total . '/' . $totalAll);
+        $total    = $instance->getUncachedImageCount();
+        $images   = $instance->getImages(true, $index, $this->getLimit());
+        $totalAll = $instance->getTotalImageCount();
+        $this->logger->debug('Uncached ' . $instance::getType() . ' images: ' . $total . '/' . $totalAll);
         if ($index >= $totalAll) {
             $index  = 0;
-            $images = $instance::getImages(true, $index, $this->getLimit());
+            $images = $instance->getImages(true, $index, $this->getLimit());
         }
         while (\count($images) === 0 && $index < $totalAll) {
             $index += $this->getLimit();
-            $images = $instance::getImages(true, $index, $this->getLimit());
+            $images = $instance->getImages(true, $index, $this->getLimit());
         }
         foreach ($images as $image) {
             $instance::cacheImage($image);
             ++$index;
             ++$rendered;
         }
-        $this->logger->debug('Generated cache for ' . $rendered . ' images');
+        $this->logger->debug('Generated cache for ' . $rendered . ' ' . $instance::getType() . ' images');
         $this->nextIndex = $total === 0 ? 0 : $index;
 
         return $total === 0;

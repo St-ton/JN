@@ -67,10 +67,10 @@ interface IMedia
 
     /**
      * @param int|string $id
-     * @param int|null $number
+     * @param int|null   $number
      * @return string|null
      */
-    public static function getPathByID($id, int $number = null): ?string;
+    public function getPathByID($id, int $number = null): ?string;
 
     /**
      * @return string
@@ -81,24 +81,24 @@ interface IMedia
      * @param bool $filesize
      * @return StatsItem
      */
-    public static function getStats(bool $filesize = false): StatsItem;
+    public function getStats(bool $filesize = false): StatsItem;
 
     /**
      * @param int|null $offset
      * @param int|null $limit
      * @return Generator
      */
-    public static function getAllImages(int $offset = null, int $limit = null): Generator;
+    public function getAllImages(int $offset = null, int $limit = null): Generator;
 
     /**
      * @return int
      */
-    public static function getTotalImageCount(): int;
+    public function getTotalImageCount(): int;
 
     /**
      * @return int
      */
-    public static function getUncachedImageCount(): int;
+    public function getUncachedImageCount(): int;
 
     /**
      * @param bool     $notCached
@@ -106,7 +106,7 @@ interface IMedia
      * @param int|null $limit
      * @return MediaImageRequest[]
      */
-    public static function getImages(bool $notCached = false, int $offset = null, int $limit = null): array;
+    public function getImages(bool $notCached = false, int $offset = null, int $limit = null): array;
 
     /**
      * @param MediaImageRequest $req
@@ -127,15 +127,19 @@ interface IMedia
     public static function toRequest(string $imageUrl): MediaImageRequest;
 
     /**
-     * @param DbInterface $db
-     * @param string      $path
+     * @param string $path
      * @return bool
      */
-    public static function imageIsUsed(DbInterface $db, string $path): bool;
+    public function imageIsUsed(string $path): bool;
 
     /**
      * @param MediaImageRequest $req
      * @return array
      */
-    public static function getImageNames(MediaImageRequest $req): array;
+    public function getImageNames(MediaImageRequest $req): array;
+
+    /**
+     * @return string
+     */
+    public static function getType(): string;
 }

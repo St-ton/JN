@@ -22,9 +22,9 @@ class Category extends AbstractImage
     /**
      * @var string
      */
-    protected $regEx = '/^media\/image\/(?P<type>category)' .
-    '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl|os)\/(?P<name>[a-zA-Z0-9\-_]+)' .
-    '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
+    protected $regEx = '/^media\/image\/(?P<type>category)'
+    . '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl|os)\/(?P<name>[a-zA-Z0-9\-_]+)'
+    . '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**
      * @inheritdoc
@@ -42,9 +42,9 @@ class Category extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getImageNames(MediaImageRequest $req): array
+    public function getImageNames(MediaImageRequest $req): array
     {
-        return Shop::Container()->getDB()->queryPrepared(
+        return $this->db->queryPrepared(
             'SELECT pic.cPfad AS path, pic.kKategorie, pic.kKategorie AS id, cat.cName, cat.cSeo AS seoPath
                 FROM tkategorie cat
                 JOIN tkategoriepict pic
@@ -94,9 +94,9 @@ class Category extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getPathByID($id, int $number = null): ?string
+    public function getPathByID($id, int $number = null): ?string
     {
-        return Shop::Container()->getDB()->queryPrepared(
+        return $this->db->queryPrepared(
             'SELECT cPfad AS path
                 FROM tkategoriepict
                 WHERE kKategorie = :cid LIMIT 1',
@@ -116,9 +116,9 @@ class Category extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getAllImages(int $offset = null, int $limit = null): Generator
+    public function getAllImages(int $offset = null, int $limit = null): Generator
     {
-        $images = Shop::Container()->getDB()->query(
+        $images = $this->db->query(
             'SELECT pic.cPfad AS path, pic.kKategorie, pic.kKategorie AS id, cat.cName, cat.cSeo AS seoPath
                 FROM tkategorie cat
                 JOIN tkategoriepict pic
@@ -141,9 +141,9 @@ class Category extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getTotalImageCount(): int
+    public function getTotalImageCount(): int
     {
-        return (int)Shop::Container()->getDB()->query(
+        return (int)$this->db->query(
             'SELECT COUNT(tkategoriepict.kKategorie) AS cnt
                 FROM tkategoriepict
                 INNER JOIN tkategorie
@@ -155,8 +155,8 @@ class Category extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function imageIsUsed(DbInterface $db, string $path): bool
+    public function imageIsUsed(string $path): bool
     {
-        return $db->select('tkategoriepict', 'cPfad', $path) !== null;
+        return $this->db->select('tkategoriepict', 'cPfad', $path) !== null;
     }
 }

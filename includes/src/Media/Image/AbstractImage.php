@@ -36,6 +36,20 @@ abstract class AbstractImage implements IMedia
     protected static $imageExtensions = ['jpg', 'jpeg', 'webp', 'gif', 'png', 'bmp'];
 
     /**
+     * @var DbInterface
+     */
+    protected $db;
+
+    /**
+     * AbstractImage constructor.
+     * @param DbInterface|null $db
+     */
+    public function __construct(DbInterface $db = null)
+    {
+        $this->db = $db ?? Shop::Container()->getDB();
+    }
+
+    /**
      * @inheritdoc
      */
     public function handle(string $request)
@@ -43,7 +57,7 @@ abstract class AbstractImage implements IMedia
         try {
             $request      = '/' . \ltrim($request, '/');
             $mediaReq     = $this->create($request);
-            $allowedNames = static::getImageNames($mediaReq);
+            $allowedNames = $this->getImageNames($mediaReq);
             if (\count($allowedNames) === 0) {
                 throw new Exception('No such image id: ' . (int)$mediaReq->id);
             }
@@ -159,7 +173,7 @@ abstract class AbstractImage implements IMedia
     /**
      * @inheritdoc
      */
-    public static function getImageNames(MediaImageRequest $req): array
+    public function getImageNames(MediaImageRequest $req): array
     {
         return [];
     }
@@ -167,7 +181,7 @@ abstract class AbstractImage implements IMedia
     /**
      * @inheritdoc
      */
-    public static function getPathByID($id, int $number = null): ?string
+    public function getPathByID($id, int $number = null): ?string
     {
         return null;
     }
@@ -183,10 +197,10 @@ abstract class AbstractImage implements IMedia
     /**
      * @inheritdoc
      */
-    public static function getStats(bool $filesize = false): StatsItem
+    public function getStats(bool $filesize = false): StatsItem
     {
         $result = new StatsItem();
-        foreach (static::getAllImages() as $image) {
+        foreach ($this->getAllImages() as $image) {
             if ($image === null) {
                 continue;
             }
@@ -223,9 +237,9 @@ abstract class AbstractImage implements IMedia
         if ($limit !== null) {
             $limitStmt = ' LIMIT ';
             if ($offset !== null) {
-                $limitStmt .= (int)$offset . ', ';
+                $limitStmt .= $offset . ', ';
             }
-            $limitStmt .= (int)$limit;
+            $limitStmt .= $limit;
         }
 
         return $limitStmt;
@@ -235,10 +249,10 @@ abstract class AbstractImage implements IMedia
      * @inheritdoc
      * @throws Exception
      */
-    public static function getImages(bool $notCached = false, int $offset = null, int $limit = null): array
+    public function getImages(bool $notCached = false, int $offset = null, int $limit = null): array
     {
         $requests = [];
-        foreach (static::getAllImages($offset, $limit) as $req) {
+        foreach ($this->getAllImages($offset, $limit) as $req) {
             if ($notCached && static::isCached($req)) {
                 continue;
             }
@@ -251,7 +265,7 @@ abstract class AbstractImage implements IMedia
     /**
      * @inheritdoc
      */
-    public static function getAllImages(int $offset = null, int $limit = null): Generator
+    public function getAllImages(int $offset = null, int $limit = null): Generator
     {
         yield from [];
     }
@@ -259,9 +273,9 @@ abstract class AbstractImage implements IMedia
     /**
      * @inheritdoc
      */
-    public static function getUncachedImageCount(): int
+    public function getUncachedImageCount(): int
     {
-        return \count(select(static::getAllImages(), static function (MediaImageRequest $e) {
+        return \count(select($this->getAllImages(), static function (MediaImageRequest $e) {
             return !static::isCached($e) && ($file = $e->getRaw()) !== null && \file_exists($file);
         }));
     }
@@ -352,7 +366,7 @@ abstract class AbstractImage implements IMedia
     /**
      * @inheritdoc
      */
-    public static function imageIsUsed(DbInterface $db, string $path): bool
+    public function imageIsUsed(string $path): bool
     {
         return true;
     }
@@ -360,7 +374,7 @@ abstract class AbstractImage implements IMedia
     /**
      * @inheritdoc
      */
-    public static function getTotalImageCount(): int
+    public function getTotalImageCount(): int
     {
         return 0;
     }

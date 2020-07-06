@@ -3,5 +3,5 @@
 <{$htag} style="{$instance->getStyleString()}"
          class="{$instance->getAnimationClass()} {$instance->getStyleClasses()}"
          {$instance->getAnimationDataAttributeString()}>
-    {$instance->getProperty('text')}
+    {$instance->getProperty('text')|escape:'html'}
 </{$htag}>

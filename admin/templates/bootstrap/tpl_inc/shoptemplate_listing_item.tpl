@@ -99,6 +99,21 @@
                 {$listingItem->getErrorMessage()}
             </span>
         {elseif $listingItem->isAvailable()}
+            {if $listingItem->getMinShopVersion()->greaterThan($shopVersion)}
+                <span title="{__('dangerMinShopVersion')}" class="label text-danger" data-toggle="tooltip">
+                    <span class="icon-hover">
+                        <span class="fal fa-exclamation-triangle"></span>
+                        <span class="fas fa-exclamation-triangle"></span>
+                    </span>
+                </span>
+            {elseif $listingItem->getMaxShopVersion()->greaterThan('0.0.0') && $listingItem->getMaxShopVersion()->smallerThan($shopVersion)}
+                <span title="{__('dangerMaxShopVersion')}" class="label text-danger" data-toggle="tooltip">
+                    <span class="icon-hover">
+                        <span class="fal fa-exclamation-triangle"></span>
+                        <span class="fas fa-exclamation-triangle"></span>
+                    </span>
+                </span>
+            {/if}
             {if !$listingItem->isActive()}
                 <a class="btn btn-primary" href="shoptemplate.php?action=switch&dir={$listingItem->getDir()}{if $listingItem->getOptionsCount() > 0}&config=1{/if}&token={$smarty.session.jtl_token}"><i class="fal fa-share"></i> {__('activate')}</a>
             {else}

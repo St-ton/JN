@@ -1,5 +1,5 @@
 {block name='boxes-box-categories'}
-    {card class="box box-categories word-break mb-md-4" id="sidebox_categories{$oBox->getCustomID()}"}
+    {card class="box box-categories word-break mb-md-4" id="sidebox-categories-{$oBox->getID()}"}
         {block name='boxes-box-categories-content'}
             {block name='boxes-box-categories-toggle-title'}
                 {link id="crd-hdr-{$oBox->getID()}"
@@ -25,7 +25,13 @@
                     <div class="nav-panel">
                         {nav vertical=true}
                             {block name='boxes-box-categories-include-categories-recursive'}
-                                {include file='snippets/categories_recursive.tpl' i=0 categoryId=0 categoryBoxNumber=$oBox->getCustomID() limit=3 categories=$oBox->getItems()}
+                                {include file='snippets/categories_recursive.tpl'
+                                    i=0
+                                    categoryId=0
+                                    categoryBoxNumber=$oBox->getCustomID()
+                                    limit=3
+                                    categories=$oBox->getItems()
+                                    id=$oBox->getID()}
                             {/block}
                         {/nav}
                     </div>

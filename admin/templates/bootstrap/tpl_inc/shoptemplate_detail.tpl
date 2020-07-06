@@ -130,9 +130,6 @@
                                                 </div>
                                             {elseif $setting->cType === 'upload' && isset($setting->rawAttributes.target)}
                                                 <input type="hidden" name="cWert[]" value="upload-{$setting@iteration}" />
-                                            {if !empty($setting->value)}
-                                                <img src="{$shopURL}/templates/{$template->getDir()}/{$setting->rawAttributes.target}{$setting->value}?v={$smarty.now}" class="file-preview-image"/><hr>
-                                            {/if}
                                             {include file='tpl_inc/fileupload.tpl'
                                                 fileID="tpl-upload-{$setting@iteration}"
                                                 fileName="upload-{$setting@iteration}"

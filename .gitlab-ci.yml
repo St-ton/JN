@@ -19,10 +19,10 @@ stages:
   function codeQualityCheck() {
     export CI_CONTAINER_NAME=ci-job-$CI_PROJECT_NAME-code-quality-$CI_COMMIT_SHA
 
-    echo "Logging to GitLab Container Registry with CI credentials..."
+    echo "Login to GitLab Container Registry with CI credentials..."
     docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
     echo ""
-    echo "Code quality check of projekt in docker image codesniffer..."
+    echo "Code quality check of project in docker image codesniffer..."
 
     docker run \
       -v $(pwd):/code \
@@ -41,10 +41,10 @@ stages:
   export CI_CONTAINER_NAME=ci-job-$CI_PROJECT_NAME-testing-$CI_COMMIT_SHA-php$PHP_VERSION_TEST_STEP
 
   function testing() {
-    echo "Logging to GitLab Container Registry with CI credentials..."
+    echo "Login to GitLab Container Registry with CI credentials..."
     docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
     echo ""
-    echo "Testing projekt in PHP $PHP_VERSION_TEST_STEP docker image..."
+    echo "Testing project in PHP $PHP_VERSION_TEST_STEP docker image..."
 
     docker run \
       -w '/creation' \
@@ -84,7 +84,7 @@ stages:
   export DEPLOY_SCRIPT_PATH=build/scripts/deploy.sh
 
   function dockerLogin() {
-    echo "Logging to GitLab Container Registry with CI credentials..."
+    echo "Login to GitLab Container Registry with CI credentials..."
     docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
     echo ""
   }

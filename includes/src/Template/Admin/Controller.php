@@ -20,6 +20,7 @@ use JTL\Template\BootChecker;
 use JTL\Template\Config;
 use JTL\Template\Model;
 use JTL\Template\XMLReader;
+use JTLShop\SemVer\Version;
 use stdClass;
 
 /**
@@ -268,7 +269,7 @@ class Controller
                 continue;
             }
             foreach ($section->settings as $setting) {
-                if (!isset($setting->cKey, $setting->rawAttributes['target']) || $setting->cKey !== $name) {
+                if (!isset($setting->key, $setting->rawAttributes['target']) || $setting->key !== $name) {
                     continue;
                 }
                 $templatePath = PFAD_TEMPLATES . $this->currentTemplateDir . '/' . $setting->rawAttributes['target'];
@@ -305,6 +306,7 @@ class Controller
     {
         $lstng = new Listing($this->db, new TemplateValidator($this->db));
         $this->smarty->assign('listingItems', $lstng->getAll())
+            ->assign('shopVersion', Version::parse(\APPLICATION_VERSION))
             ->display('shoptemplate.tpl');
     }
 
@@ -377,13 +379,13 @@ class Controller
                     $_setting->value = null;
                 }
             }
-            if (isset($_conf->cKey, $_conf->settings)
-                && $_conf->cKey === 'theme'
+            if (isset($_conf->key, $_conf->settings)
+                && $_conf->key === 'theme'
                 && \count($_conf->settings) > 0
             ) {
                 foreach ($_conf->settings as $_themeConf) {
-                    if (isset($_themeConf->cKey, $_themeConf->options)
-                        && $_themeConf->cKey === 'theme_default'
+                    if (isset($_themeConf->key, $_themeConf->options)
+                        && $_themeConf->key === 'theme_default'
                         && \count($_themeConf->options) > 0
                     ) {
                         foreach ($_themeConf->options as $_theme) {

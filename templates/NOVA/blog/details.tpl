@@ -29,7 +29,7 @@
                         {if $newsItem->getAuthor() !== null}
                             {block name='blog-details-include-author'}
                                 {include file='snippets/author.tpl' oAuthor=$newsItem->getAuthor() dDate=$dDate cDate=$newsItem->getDateValidFrom()->format('Y-m-d H:i:s')}
-                            {/block} /
+                            {/block}
                         {else}
                             {block name='blog-details-noauthor'}
                                 <div itemprop="author publisher" itemscope itemtype="http://schema.org/Organization" class="d-none">
@@ -45,12 +45,12 @@
                         {if isset($Einstellungen.news.news_kategorie_unternewsanzeigen) && $Einstellungen.news.news_kategorie_unternewsanzeigen === 'Y' && !empty($oNewsKategorie_arr)}
                             {block name='blog-details-sub-news'}
                                 <span class="news-categorylist mb-4">
-                                    /
+                                    {if $newsItem->getAuthor() === null}/{/if}
                                     {foreach $oNewsKategorie_arr as $oNewsKategorie}
                                         {link itemprop="articleSection"
                                             href="{$oNewsKategorie->cURLFull}"
                                             title="{$oNewsKategorie->cBeschreibung|strip_tags|escape:'html'|truncate:60}"
-                                            class="mr-2"
+                                            class="{if !$oNewsKategorie@last}mr-1{/if} d-inline-block"
                                         }
                                             {$oNewsKategorie->cName}
                                         {/link}
@@ -60,7 +60,7 @@
                         {/if}
 
                         {block name='blog-details-comments-link'}
-                            {link class="no-deco text-nowrap" href="#comments" title="{lang key='readComments' section='news'}"}
+                            {link class="text-decoration-none text-nowrap" href="#comments" title="{lang key='readComments' section='news'}"}
                                 /
                                 <span class="fas fa-comments"></span>
                                 <span class="sr-only">
@@ -210,8 +210,8 @@
                 <div itemprop="about"
                     itemscope=true
                     itemtype="http://schema.org/Blog"
-                    class="carousel carousel-arrows-inside mx-0 slick-lazy slick-type-news"
-                    data-slick-type="news-slider">
+                    class="carousel carousel-arrows-inside mx-0 slick-lazy slick-type-half"
+                    data-slick-type="slider-half">
                     {include file='snippets/slider_items.tpl' items=$oNews_arr type='news'}
                 </div>
             {/block}

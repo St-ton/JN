@@ -218,13 +218,9 @@
                                         {block name='productlist-item-list-rating'}
                                             {col tag='dt' cols=6}{lang key='ratingAverage'}:{/col}
                                             {col tag='dd' cols=6}
-                                                {link href="{$Artikel->cURLFull}#tab-votes"
-                                                    class="d-print-none text-decoration-none"
-                                                    aria=["label"=>{lang key='Votes'}]}
-                                                    {block name='productlist-item-list-include-rating'}
-                                                        {include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}
-                                                    {/block}
-                                                {/link}
+                                                {block name='productlist-item-list-include-rating'}
+                                                    {include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung link=$Artikel->cURLFull}
+                                                {/block}
                                             {/col}
                                         {/block}
                                     {/if}

@@ -9,7 +9,8 @@
                     <i class="fas fa-times fa-fw"></i>
                 </button>
             </div>
-            <input type="text" class="form-control" name="{$propname}[]" value="{$text}" id="{$propname}-{$i}">
+            <input type="text" class="form-control" name="{$propname}[]"
+                   value="{$text|escape:'html'}" id="{$propname}-{$i}">
         </div>
     {/foreach}
     <label class="sr-only" for="{$propname}-new"></label>

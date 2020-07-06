@@ -4,6 +4,7 @@ namespace JTL\Plugin\Admin\Installation;
 
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Events\Dispatcher;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Helpers\Text;
@@ -170,6 +171,14 @@ final class Installer
             $versionNode        = [];
             $bootstrapper       = $versionedDir . \PLUGIN_BOOTSTRAPPER;
             $plugin->bExtension = 1;
+        }
+        if ($this->plugin !== null) {
+            $loader = $this->plugin->isExtension() === true
+                ? new PluginLoader($this->db, Shop::Container()->getCache())
+                : new LegacyPluginLoader($this->db, Shop::Container()->getCache());
+            if (($p = Helper::bootstrap($this->plugin->getID(), $loader)) !== null) {
+                $p->preUpdate($this->plugin->getMeta()->getVersion(), $version);
+            }
         }
         $plugin                       = $this->addLicenseData($baseNode, $plugin);
         $plugin->cName                = $baseNode['Name'];
@@ -530,17 +539,17 @@ final class Installer
     }
 
     /**
-     * @param int $newPluginID
+     * @param int $oldPluginID
      * @param int $pluginID
      */
-    private function updateBoxes(int $newPluginID, int $pluginID): void
+    private function updateBoxes(int $oldPluginID, int $pluginID): void
     {
         $newBoxTemplates = $this->db->queryPrepared(
             "SELECT *
                 FROM tboxvorlage
                 WHERE kCustomID = :pid
                 AND (eTyp = 'plugin' OR eTyp = 'extension')",
-            ['pid' => $newPluginID],
+            ['pid' => $oldPluginID],
             ReturnType::ARRAY_OF_OBJECTS
         );
         $oldBoxTemplates = $this->db->queryPrepared(
@@ -560,7 +569,7 @@ final class Installer
                             WHERE kBoxvorlage = :oid',
                         [
                             'bid' => $newBoxTemplate->kBoxvorlage,
-                            'pid' => $newPluginID,
+                            'pid' => $oldPluginID,
                             'oid' => $template->kBoxvorlage
                         ],
                         ReturnType::DEFAULT
@@ -569,40 +578,40 @@ final class Installer
                 }
             }
         }
-        $this->db->delete('tboxvorlage', ['kCustomID', 'eTyp'], [$newPluginID, 'plugin']);
-        $this->db->delete('tboxvorlage', ['kCustomID', 'eTyp'], [$newPluginID, 'extension']);
+        $this->db->delete('tboxvorlage', ['kCustomID', 'eTyp'], [$oldPluginID, 'plugin']);
+        $this->db->delete('tboxvorlage', ['kCustomID', 'eTyp'], [$oldPluginID, 'extension']);
         $this->db->update(
             'tboxvorlage',
             ['kCustomID', 'eTyp'],
             [$pluginID, 'plugin'],
-            (object)['kCustomID' => $newPluginID]
+            (object)['kCustomID' => $oldPluginID]
         );
         $this->db->update(
             'tboxvorlage',
             ['kCustomID', 'eTyp'],
             [$pluginID, 'extension'],
-            (object)['kCustomID' => $newPluginID]
+            (object)['kCustomID' => $oldPluginID]
         );
         $this->db->queryPrepared(
             'DELETE FROM tboxen
                 WHERE kCustomID = :pid 
                 AND kBoxvorlage NOT IN (SELECT kBoxvorlage FROM tboxvorlage WHERE kCustomID = :pid)',
-            ['pid' => $newPluginID],
+            ['pid' => $oldPluginID],
             ReturnType::DEFAULT
         );
     }
 
     /**
-     * @param int $newPluginID
+     * @param int $oldPluginID
      * @param int $pluginID
      */
-    private function updateLangVars(int $newPluginID, int $pluginID): void
+    private function updateLangVars(int $oldPluginID, int $pluginID): void
     {
         $this->db->update(
             'tpluginsprachvariablecustomsprache',
             'kPlugin',
             $pluginID,
-            (object)['kPlugin' => $newPluginID]
+            (object)['kPlugin' => $oldPluginID]
         );
         $customLangVars = $this->db->queryPrepared(
             'SELECT DISTINCT tpluginsprachvariable.kPluginSprachvariable AS newID,
@@ -611,14 +620,14 @@ final class Installer
                 JOIN tpluginsprachvariable
                     ON tpluginsprachvariable.cName =  tpluginsprachvariablecustomsprache.cSprachvariable
                 WHERE tpluginsprachvariablecustomsprache.kPlugin = :pid',
-            ['pid' => $newPluginID],
+            ['pid' => $oldPluginID],
             ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($customLangVars as $langVar) {
             $this->db->update(
                 'tpluginsprachvariablecustomsprache',
                 ['kPlugin', 'kPluginSprachvariable'],
-                [$newPluginID, $langVar->oldID],
+                [$oldPluginID, $langVar->oldID],
                 (object)['kPluginSprachvariable' => $langVar->newID]
             );
         }

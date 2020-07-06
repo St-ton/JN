@@ -42,6 +42,12 @@ interface BootstrapperInterface
     public function disabled();
 
     /**
+     * @param string $oldVersion
+     * @param string $newVersion
+     */
+    public function preUpdate($oldVersion, $newVersion): void;
+
+    /**
      * @param mixed $oldVersion
      * @param mixed $newVersion
      * @return mixed

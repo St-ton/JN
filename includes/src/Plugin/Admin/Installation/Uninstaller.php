@@ -211,14 +211,13 @@ final class Uninstaller
      * @param null|int $newPluginID
      * @param bool     $deleteData
      */
-    private function doSQLDelete(int $pluginID, bool $update, int $newPluginID = null, $deleteData = true): void
+    private function doSQLDelete(int $pluginID, bool $update, int $newPluginID = null, bool $deleteData = true): void
     {
         if ($update) {
             $this->partialDelete($pluginID);
         } else {
             if ($deleteData === true) {
-                $customTables = $this->db->selectAll('tplugincustomtabelle', 'kPlugin', $pluginID);
-                foreach ($customTables as $table) {
+                foreach ($this->db->selectAll('tplugincustomtabelle', 'kPlugin', $pluginID) as $table) {
                     $this->db->query('DROP TABLE IF EXISTS ' . $table->cTabelle, ReturnType::DEFAULT);
                 }
             }

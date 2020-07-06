@@ -41,10 +41,10 @@ final class ImageCache extends Job
     private function generateImageCache(int $index, IMedia $instance): bool
     {
         $rendered = 0;
-        $total    = $instance->getUncachedImageCount();
+        $uncached = $instance->getUncachedImageCount();
         $images   = $instance->getImages(true, $index, $this->getLimit());
         $totalAll = $instance->getTotalImageCount();
-        $this->logger->debug('Uncached ' . $instance::getType() . ' images: ' . $total . '/' . $totalAll);
+        $this->logger->debug(\sprintf('Uncached %s images: %d/%d', $instance::getType(), $uncached, $totalAll));
         if ($index >= $totalAll) {
             $index  = 0;
             $images = $instance->getImages(true, $index, $this->getLimit());
@@ -58,10 +58,10 @@ final class ImageCache extends Job
             ++$index;
             ++$rendered;
         }
-        $this->logger->debug('Generated cache for ' . $rendered . ' ' . $instance::getType() . ' images');
-        $this->nextIndex = $total === 0 ? 0 : $index;
+        $this->logger->debug(\sprintf('Generated cache for %d %s images', $rendered, $instance::getType()));
+        $this->nextIndex = $uncached === 0 ? 0 : $index;
 
-        return $total === 0;
+        return $uncached === 0;
     }
 
     /**
@@ -70,7 +70,7 @@ final class ImageCache extends Job
     public function start(QueueEntry $queueEntry): JobInterface
     {
         parent::start($queueEntry);
-        $this->logger->debug('Generating image cache - max. ' . $this->getLimit());
+        $this->logger->debug(\sprintf('Generating image cache - max. %d', $this->getLimit()));
         $media = Media::getInstance();
         $res   = true;
         foreach ($media->getRegisteredClasses() as $type) {

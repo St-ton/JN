@@ -319,7 +319,7 @@ final class Export
                 : 0;
             $this->db->insert('tsitemapreportfile', $ins);
         }
-        $this->logger->debug('Sitemap erfolgreich mit ' . $totalCount . ' URLs erstellt');
+        $this->logger->debug(\sprintf('Sitemap erfolgreich mit %d URLs erstellt', $totalCount));
 
         return true;
     }

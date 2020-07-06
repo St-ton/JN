@@ -20,6 +20,7 @@ use JTL\Template\BootChecker;
 use JTL\Template\Config;
 use JTL\Template\Model;
 use JTL\Template\XMLReader;
+use JTLShop\SemVer\Version;
 use stdClass;
 
 /**
@@ -305,6 +306,7 @@ class Controller
     {
         $lstng = new Listing($this->db, new TemplateValidator($this->db));
         $this->smarty->assign('listingItems', $lstng->getAll())
+            ->assign('shopVersion', Version::parse(\APPLICATION_VERSION))
             ->display('shoptemplate.tpl');
     }
 

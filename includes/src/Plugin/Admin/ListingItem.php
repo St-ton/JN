@@ -418,7 +418,7 @@ class ListingItem
             return '>= ' . $min;
         }
         if ($min !== null && $max !== null) {
-            return $min . ' &dash; ' . $max;
+            return $min === $max ? $min : $min . ' &dash; ' . $max;
         }
 
         return '?';

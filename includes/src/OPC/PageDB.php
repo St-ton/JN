@@ -262,7 +262,7 @@ class PageDB
         }
 
         $seo = $this->shopDB->queryPrepared(
-            'SELECT * FROM tseo WHERE cKey = :ckey AND kKey = :key AND kSprache = :lang',
+            "SELECT cSeo FROM tseo WHERE cKey = :ckey AND kKey = :key AND kSprache = :lang",
             ['ckey' => $cKey, 'key' => $pageIdObj->id, 'lang' => $pageIdObj->lang],
             ReturnType::SINGLE_OBJECT
         );
@@ -273,9 +273,9 @@ class PageDB
 
         if (!empty($pageIdObj->attribs)) {
             $attribSeos = $this->shopDB->queryPrepared(
-                'SELECT * FROM tseo WHERE cKey = "kMerkmalWert"
-                     AND kKey IN (' . implode(',', $pageIdObj->attribs) . ')
-                     AND kSprache = :lang',
+                "SELECT cSeo FROM tseo WHERE cKey = 'kMerkmalWert'
+                     AND kKey IN (" . \implode(',', $pageIdObj->attribs) . ")
+                     AND kSprache = :lang",
                 ['lang' => $pageIdObj->lang],
                 ReturnType::ARRAY_OF_OBJECTS
             );
@@ -287,9 +287,9 @@ class PageDB
 
         if (!empty($pageIdObj->manufacturerFilter)) {
             $manufacturerSeo = $this->shopDB->queryPrepared(
-                'SELECT * FROM tseo WHERE cKey = "kHersteller"
+                "SELECT cSeo FROM tseo WHERE cKey = 'kHersteller'
                      AND kKey = :kKey
-                     AND kSprache = :lang',
+                     AND kSprache = :lang",
                 ['kKey' => $pageIdObj->manufacturerFilter, 'lang' => $pageIdObj->lang],
                 ReturnType::SINGLE_OBJECT
             );

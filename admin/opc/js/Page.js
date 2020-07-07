@@ -21,7 +21,7 @@ class Page
 
                 return Promise.resolve();
             } else {
-                if(this.lockTimeout !== null) {
+                if (this.lockTimeout !== null) {
                     clearTimeout(this.lockTimeout);
                     this.lockTimeout = null;
                 }

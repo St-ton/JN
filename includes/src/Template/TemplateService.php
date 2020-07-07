@@ -86,7 +86,12 @@ class TemplateService implements TemplateServiceInterface
      */
     public function loadFull(array $attributes): Model
     {
-        $template  = Model::loadByAttributes($attributes, $this->db);
+        try {
+            $template = Model::loadByAttributes($attributes, $this->db);
+        } catch (Exception $e) {
+            $template = new Model($this->db);
+            $template->setTemplate('no-template');
+        }
         $reader    = new XMLReader();
         $tplXML    = $reader->getXML($template->getTemplate(), $template->getType() === 'admin');
         $parentXML = ($tplXML === null || empty($tplXML->Parent)) ? null : $reader->getXML((string)$tplXML->Parent);

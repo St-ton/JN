@@ -66,7 +66,7 @@
 
     {block name='snippets-shipping-tax-info-shipping-class'}
         {if !empty($taxdata.shippingClass) && $taxdata.shippingClass !== 'standard' && $Einstellungen.global.global_versandklasse_anzeigen === 'Y'}
-            ({$taxdata.shippingClass})
+            <span class="ml-1">({$taxdata.shippingClass})</span>
         {/if}
     {/block}
 {/block}

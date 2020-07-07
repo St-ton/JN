@@ -38,6 +38,9 @@ msgstr "Erfolgreich gelöscht."
 msgid "imagecache"
 msgstr "Bilder-Cache"
 
+msgid "licensecheck"
+msgstr "Lizenzprüfungen"
+
 msgid "statusemail"
 msgstr "Status-E-Mails"
 

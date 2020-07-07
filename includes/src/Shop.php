@@ -909,7 +909,7 @@ final class Shop
     public static function run(): ProductFilter
     {
         if (Request::postVar('action') === 'updateconsent' && Form::validateToken()) {
-            $manager = new Manager();
+            $manager = new Manager(self::Container()->getDB());
             die(\json_encode((object)['status' => 'OK', 'data' => $manager->save(Request::postVar('data'))]));
         }
         self::$kKonfigPos             = Request::verifyGPCDataInt('ek');

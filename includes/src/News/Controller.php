@@ -159,7 +159,9 @@ class Controller
             $category->cURL     = URL::buildURL($category, \URLART_NEWSKATEGORIE);
             $category->cURLFull = URL::buildURL($category, \URLART_NEWSKATEGORIE, true);
         }
-        $comments            = $newsItem->getComments()->filter(true);
+        $comments            = $newsItem->getComments()->getThreadedItems()->filter(static function ($item) {
+            return $item->isActive();
+        });
         $itemsPerPageOptions = ($perPage = (int)$this->config['news']['news_kommentare_anzahlproseite']) > 0
             ? [$perPage, $perPage * 2, $perPage * 5]
             : [10, 20, 50];
@@ -249,17 +251,17 @@ class Controller
     }
 
     /**
-     * @param bool $showOnlyActive
+     * @param bool $activeOnly
      * @return Collection
      */
-    public function getAllNewsCategories(bool $showOnlyActive = false): Collection
+    public function getAllNewsCategories(bool $activeOnly = false): Collection
     {
         $itemList = new CategoryList($this->db);
         $ids      = map($this->db->query(
             'SELECT node.kNewsKategorie AS id
                 FROM tnewskategorie AS node INNER JOIN tnewskategorie AS parent
                 WHERE node.lvl > 0 
-                    AND parent.lvl > 0 ' . ($showOnlyActive ? ' AND node.nAktiv = 1 ' : '') .
+                    AND parent.lvl > 0 ' . ($activeOnly ? ' AND node.nAktiv = 1 ' : '') .
             ' GROUP BY node.kNewsKategorie
                 ORDER BY node.lft, node.nSort ASC',
             ReturnType::ARRAY_OF_OBJECTS

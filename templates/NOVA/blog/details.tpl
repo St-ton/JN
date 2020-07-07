@@ -185,7 +185,6 @@
                                             {/block}
                                         {/col}
                                     {/row}
-
                                     {block name='blog-details-comments'}
                                         {listgroup class="list-group-flush p-3 bg-info"}
                                             {foreach $comments as $comment}
@@ -194,6 +193,15 @@
                                                         {$comment->getName()}, {$comment->getDateCreated()->format('d.m.y H:i')}
                                                     </p>
                                                     {$comment->getText()}
+                                                     {foreach $comment->getChildComments() as $childComment}
+                                                        <div class="review-reply mt-3 ml-3">
+                                                            <span class="subheadline">{lang key='commentReply' section='news'}:</span>
+                                                            <blockquote>
+                                                                {$childComment->getText()}
+                                                                <div class="mt-3 blockquote-footer">{$childComment->getName()}, {$childComment->getDateCreated()->format('d.m.y H:i')}</div>
+                                                            </blockquote>
+                                                        </div>
+                                                     {/foreach}
                                                 {/listgroupitem}
                                             {/foreach}
                                         {/listgroup}

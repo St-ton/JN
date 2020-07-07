@@ -104,7 +104,6 @@ if (PHP_SAPI !== 'cli'
         exit();
     }
 }
-Shop::dbg($_SERVER);
 if (!JTL_INCLUDE_ONLY_DB && !defined('CLI_BATCHRUN')) {
     $debugbar = Shop::Container()->getDebugBar();
 

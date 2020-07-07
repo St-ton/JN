@@ -54,7 +54,7 @@ final class ImageCache extends Job
             $images = $instance->getImages(true, $index, $this->getLimit());
         }
         foreach ($images as $image) {
-            $instance::cacheImage($image);
+            $instance->cacheImage($image);
             ++$index;
             ++$rendered;
         }

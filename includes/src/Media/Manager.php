@@ -191,10 +191,12 @@ class Manager
         if ($type !== null && \preg_match('/[a-z]*/', $type)) {
             $instance = Media::getClass($type);
             /** @var IMedia $instance */
-            $instance::clearCache();
+            $res = $instance::clearCache();
             unset($_SESSION['image_count'], $_SESSION['renderedImages']);
             if ($isAjax === true) {
-                return ['success' => __('successCacheReset')];
+                return $res === true
+                    ? ['msg' => __('successCacheReset'), 'ok' => true]
+                    : ['msg' => __('errorCacheReset'), 'ok' => false];
             }
             Shop::Smarty()->assign('success', __('successCacheReset'));
         }
@@ -242,7 +244,7 @@ class Manager
             if ($seconds >= 10) {
                 break;
             }
-            $result->images[] = $instance::cacheImage($image);
+            $result->images[] = $instance->cacheImage($image);
             ++$index;
             ++$_SESSION['renderedImages'];
         }

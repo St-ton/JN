@@ -59,7 +59,7 @@ final class ImageAPI extends AbstractPush
         $req->setName($names[0]);
         $thumb = $req->getThumb();
         if (!\file_exists(\PFAD_ROOT . $thumb)) {
-            $instance::cacheImage($req);
+            $instance->cacheImage($req);
         }
         if (Request::verifyGPCDataInt('url') === 1) {
             echo Shop::getURL() . '/' . $thumb;

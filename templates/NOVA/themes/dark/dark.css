@@ -20527,16 +20527,6 @@ aside .box-monthlynews a .value:hover {
   width: 100%;
 }
 
-.square, .productbox-image-wrapper {
-  display: flex;
-  position: relative;
-}
-.square::before, .productbox-image-wrapper::before {
-  content: "";
-  display: inline-block;
-  padding-bottom: 100%;
-}
-
 .slick-slide .square, .slick-slide .productbox-image-wrapper {
   display: flex !important;
 }

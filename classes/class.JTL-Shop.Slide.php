@@ -149,11 +149,11 @@ class Slide
             if (strpos($this->cBild, $cPfad) !== false) {
                 $nStrLength       = strlen($cPfad);
                 $this->cBild      = substr($this->cBild, $nStrLength);
-                $this->cThumbnail = '.thumbs/' . $this->cBild;
+                $this->cThumbnail = substr($this->cThumbnail, $nStrLength);
             } elseif (strpos($this->cBild, $cPfad2) !== false) {
                 $nStrLength       = strlen($cPfad2);
                 $this->cBild      = substr($this->cBild, $nStrLength);
-                $this->cThumbnail = '.thumbs/' . $this->cBild;
+                $this->cThumbnail = substr($this->cThumbnail, $nStrLength);
             }
         }
 

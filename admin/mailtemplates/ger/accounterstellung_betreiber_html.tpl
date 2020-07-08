@@ -2,8 +2,8 @@
 
 Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br>
 <br>
-wunschgem�� haben wir f�r Sie in unserem Onlineshop unter
-<strong><a href="{$ShopURL}" target="_blank" style="color: #313131;">{$ShopURL}</a></strong> ein Kundenkonto f�r Sie eingerichtet.<br>
+wunschgemäß haben wir für Sie in unserem Onlineshop unter
+<strong><a href="{$ShopURL}" target="_blank" style="color: #313131;">{$ShopURL}</a></strong> ein Kundenkonto für Sie eingerichtet.<br>
 <br>
 Zur Kontrolle hier noch einmal Ihre Kundendaten:<br>
 <br>
@@ -168,17 +168,17 @@ Zur Kontrolle hier noch einmal Ihre Kundendaten:<br>
 </table><br>
 Bitte setzen Sie mit Hilfe der „Passwort vergessen“-Funktion ein neues Passwort.<br>
 
-Mit diesen Daten k�nnen Sie sich ab sofort in Ihrem pers�nlichen
+Mit diesen Daten können Sie sich ab sofort in Ihrem persönlichen
 Kundenkonto anmelden und den aktuellen Status Ihrer Bestellungen
 verfolgen.<br>
 <br>
-Wir freuen uns sehr, Sie als neuen Kunden bei uns begr��en zu d�rfen.
+Wir freuen uns sehr, Sie als neuen Kunden bei uns begrüßen zu dürfen.
 Wenn sie Fragen zu unserem Angebot oder speziellen Produkten haben,
 nehmen Sie einfach Kontakt mit uns auf.<br>
 <br>
-Wir w�nschen Ihnen viel Spa� beim St�bern in unserem Sortiment.<br>
+Wir wünschen Ihnen viel Spaß beim Stöbern in unserem Sortiment.<br>
 <br>
-Mit freundlichem Gru�,<br>
+Mit freundlichem Gruß,<br>
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=html}

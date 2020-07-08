@@ -32,6 +32,7 @@ function saveShopLogo(array $files): int
         'image/bmp',
         'image/jpg',
         'image/svg+xml',
+        'image/svg',
         'image/webp'
     ];
     if (!in_array($files['shopLogo']['type'], $allowedTypes, true)

@@ -1,6 +1,7 @@
 <?php
 
 use JTL\Plugin\PremiumPlugin;
+use JTL\Recommendation\Manager;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -187,4 +188,5 @@ target="_blank"><i class="fa fa-external-link"></i> Link</a>.')
 }
 
 $smarty->assign('pp', $pp)
+       ->assign('recommendation', (new Manager())->getRecommendationById($_GET['id']))
        ->display('premiumplugin.tpl');

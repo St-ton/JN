@@ -92,50 +92,29 @@
         </div>
     </div>
     <div class="col-md-5">
-        {*<div class="card">*}
-            {*<div class="card-body">*}
-                {*<div class="table-responsive">*}
-                    {*<table class="table">*}
-                        {*<thead>*}
-                        {*<tr>*}
-                            {*<th colspan="2">Wir empfehlen:</th>*}
-                        {*</tr>*}
-                        {*</thead>*}
-                        {*<tbody>*}
-                        {*<tr>*}
-                            {*<td><img src="placeholder/klarna-logo.png" width="108" height="42" alt="Klarna"></td>*}
-                            {*<td>*}
-                                {*<p>Klarna wurde 2005 in Stockholm mit der Idee gegründet, das Einkaufen zu*}
-                                    {*vereinfachen. Dies erreichen wir, indem wir es den Verbrauchern ermöglichen,*}
-                                    {*erst nach Warenerhalt zu bezahlen, und gleichzeitig das Kredit- und*}
-                                    {*Betrugsrisiko für die Händler übernehmen.</p>*}
-                                {*<a href="#" class="btn btn-primary">Mehr erfahren</a>*}
-                            {*</td>*}
-                        {*</tr>*}
-                        {*<tr>*}
-                            {*<td><img src="placeholder/klarna-logo.png" width="108" height="42" alt="Klarna"></td>*}
-                            {*<td>*}
-                                {*<p>Klarna wurde 2005 in Stockholm mit der Idee gegründet, das Einkaufen zu*}
-                                    {*vereinfachen. Dies erreichen wir, indem wir es den Verbrauchern ermöglichen,*}
-                                    {*erst nach Warenerhalt zu bezahlen, und gleichzeitig das Kredit- und*}
-                                    {*Betrugsrisiko für die Händler übernehmen.</p>*}
-                                {*<a href="#" class="btn btn-primary">Mehr erfahren</a>*}
-                            {*</td>*}
-                        {*</tr>*}
-                        {*<tr>*}
-                            {*<td><img src="placeholder/klarna-logo.png" width="108" height="42" alt="Klarna"></td>*}
-                            {*<td>*}
-                                {*<p>Klarna wurde 2005 in Stockholm mit der Idee gegründet, das Einkaufen zu*}
-                                    {*vereinfachen. Dies erreichen wir, indem wir es den Verbrauchern ermöglichen,*}
-                                    {*erst nach Warenerhalt zu bezahlen, und gleichzeitig das Kredit- und*}
-                                    {*Betrugsrisiko für die Händler übernehmen.</p>*}
-                                {*<a href="#" class="btn btn-primary">Mehr erfahren</a>*}
-                            {*</td>*}
-                        {*</tr>*}
-                        {*</tbody>*}
-                    {*</table>*}
-                {*</div>*}
-            {*</div>*}
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th colspan="2">{__('weRecommend')}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {foreach $recommendations as $recommendation}
+                                <tr>
+                                    <td><img src="{$recommendation->getPreviewImage()}" width="108" height="42" alt="Klarna"></td>
+                                    <td>
+                                        <p>{$recommendation->getDescription()}</p>
+                                        <a href="premiumplugin.php?id={$recommendation->getId()}" class="btn btn-primary">Mehr erfahren</a>
+                                    </td>
+                                </tr>
+                            {/foreach}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </div>

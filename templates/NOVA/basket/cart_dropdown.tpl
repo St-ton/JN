@@ -8,24 +8,22 @@
                             {block name='basket-cart-dropdown-cart-item'}
                                 {foreach $smarty.session.Warenkorb->PositionenArr as $oPosition}
                                     {if !$oPosition->istKonfigKind()}
-                                        {if $oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL}
+                                        {if $oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL || $oPosition->nPosTyp == C_WARENKORBPOS_TYP_GRATISGESCHENK}
                                             <tr>
                                                 <td>
                                                     {formrow}
                                                         {block name='basket-cart-dropdown-cart-item-item-image'}
                                                             {col class="col-auto"}
-                                                                {if $oPosition->Artikel->Bilder[0]->cPfadMini !== $smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN}
-                                                                    {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans|escape:'html'}
-                                                                        {image lazy=true webp=true
-                                                                            src=$oPosition->Artikel->Bilder[0]->cURLMini
-                                                                            srcset="{$oPosition->Artikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                                                {$oPosition->Artikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                                                {$oPosition->Artikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                                                            sizes="45px"
-                                                                            alt=$oPosition->Artikel->cName
-                                                                            class="img-sm"}
-                                                                    {/link}
-                                                                {/if}
+                                                                {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans|escape:'html'}
+                                                                    {image lazy=true webp=true
+                                                                        src=$oPosition->Artikel->Bilder[0]->cURLMini
+                                                                        srcset="{$oPosition->Artikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                                            {$oPosition->Artikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                                            {$oPosition->Artikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                                        sizes="45px"
+                                                                        alt=$oPosition->Artikel->cName
+                                                                        class="img-sm"}
+                                                                {/link}
                                                             {/col}
                                                         {/block}
                                                         {block name='basket-cart-dropdown-cart-item-item-link'}
@@ -55,6 +53,7 @@
                                                 {block name='basket-cart-dropdown-cart-item-no-item-count'}
                                                     <td>
                                                         {formrow}
+                                                            {col class="col-auto"}{/col}
                                                             {col class="col-auto"}
                                                                 {$oPosition->nAnzahl|replace_delim}x
                                                             {/col}

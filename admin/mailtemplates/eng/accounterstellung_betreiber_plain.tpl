@@ -16,8 +16,8 @@ Please review your account details:
 {if $Kunde->cMobil}Mobile: {$Kunde->cMobil}{/if}
 {if $Kunde->cFax}Fax: {$Kunde->cFax}{/if}
 Email: {$Kunde->cMail}
-Password: {$Kunde->cPasswortKlartext}
 {if $Kunde->cUSTID}VAT ID: {$Kunde->cUSTID}{/if}
+Please use "Forgot password" to set a new password.
 
 Using these account details you can log into your personal account in
 future and track the current status of your order.

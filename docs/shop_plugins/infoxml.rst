@@ -268,6 +268,7 @@ Es befindet sich in der ``info.xml`` lediglich die wesentlich vereinfachtere Str
         <CreateDate>2018-11-13</CreateDate>
         <Version>1.0.0</Version>
         ...
+    </jtlshopplugin>
 
 
 .. _label_infoxml_hooks:
@@ -705,7 +706,7 @@ in Ihrer ``info.xml`` einfügen:
            ...
        </AdminWidget>
        ...
-   <Install>
+   </Install>
 
 In diesem XML-Container können sich beliebig viele Unterelemente vom Typ ``<Widget>`` befinden.
 Das heißt, ein Plugin kann beliebig viele *AdminWidgets* anlegen.
@@ -986,7 +987,7 @@ Backend konfiguriert und dann im eigenen Plugin-Code abgefragt werden.
             <Description>Online Watcher</Description>
             <ValueName>onlinewatcher</ValueName>
         </Setting>
-    <Settingslink>
+    </Settingslink>
 
 ``<Settinglink>``:
 
@@ -1367,7 +1368,7 @@ Falls das Plugin keine Zahlungsmethode implementieren soll, wird der ``<PaymentM
             ...
         </PaymentMethod>
         ...
-    <Install>
+    </Install>
 
 +----------------+-----------------+
 | Elementname    | Funktion        |

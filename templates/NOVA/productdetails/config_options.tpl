@@ -138,7 +138,7 @@
                                                                     {$productImage->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
                                                                     {$productImage->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
                                                                     {$productImage->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
-                                                                sizes="255px"
+                                                                sizes="auto"
                                                                 alt=$oItem->getName()
                                                             }
                                                             </div>
@@ -223,7 +223,7 @@
                                                                         {$productImage->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
                                                                         {$productImage->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
                                                                         {$productImage->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
-                                                                    sizes="255px"
+                                                                    sizes="auto"
                                                                     alt=$oItem->getName()
                                                                 }
                                                             </div>
@@ -347,7 +347,7 @@
                                                                     {$productImage->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
                                                                     {$productImage->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
                                                                     {$productImage->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
-                                                                sizes="255px"
+                                                                sizes="auto"
                                                                 alt=$oItem->getName()
                                                             }
                                                         </div>

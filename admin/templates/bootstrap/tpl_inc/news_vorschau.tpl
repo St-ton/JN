@@ -25,9 +25,8 @@
                     {__('newsComments')}
                     <hr class="my-2">
                 </div>
-
                 {foreach $comments as $comment}
-                    <div class="card ">
+                    <div class="card">
                         <div class="card-header">
                             <div class="form-check">
                                 <div class="custom-control custom-checkbox">
@@ -43,6 +42,15 @@
                                             <span class="fas fa-edit"></span>
                                         </span>
                                         </a>
+                                        <a href="news.php?news=1&kNews={$oNews->getID()}&parentCommentID={$comment->getID()}{if isset($cBackPage)}&{$cBackPage}{elseif isset($cTab)}&tab={$cTab}{/if}&nkanswer=1&token={$smarty.session.jtl_token}"
+                                           class="btn btn-link px-2"
+                                           title="{__('answerComment')}"
+                                           data-toggle="tooltip">
+                                        <span class="icon-hover">
+                                            <span class="fal fa-reply"></span>
+                                            <span class="fas fa-reply"></span>
+                                        </span>
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -50,6 +58,26 @@
                         </div>
                         <div class="card-body">
                             {$comment->getText()}
+                                {foreach $comment->getChildComments() as $childComment}
+                                <div class="card ">
+                                    <div class="card-header">
+                                        <div class="form-check">
+                                            <div class=" custom-control custom-checkbox">
+                                                <input class="custom-control-input form-check-input" name="kNewsKommentar[]" type="checkbox" value="{$childComment->getID()}" id="nk-{$childComment->getID()}" />
+                                                <label class="custom-control-label form-check-label" for="nk-{$childComment->getID()}">{$childComment->getName()}, {$childComment->getDateCreated()->format('d.m.Y H:i')}:</label>
+                                            </div>
+                                        </div>
+                                        <hr class="mb-n3">
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="review-reply mt-3 ml-3">
+                                            <blockquote>
+                                                {$childComment->getText()}
+                                            </blockquote>
+                                        </div>
+                                    </div>
+                                </div>
+                                {/foreach}
                         </div>
                     </div>
                 {/foreach}

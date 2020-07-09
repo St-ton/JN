@@ -13,7 +13,7 @@ Den *Alert*-Service beziehen Sie über die Shop-Klasse:
 
     <?php
 
-    use Services\JTL\AlertServiceInterface;
+    use JTL\Services\JTL\AlertServiceInterface;
 
     $alertHelper = Shop::Container()->getAlertService();
 

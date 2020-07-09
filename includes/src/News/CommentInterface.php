@@ -15,6 +15,12 @@ interface CommentInterface
     public function load(int $id): CommentInterface;
 
     /**
+     * @param int $parentID
+     * @return CommentInterface|null
+     */
+    public function loadByParentCommentID(int $parentID): ?CommentInterface;
+
+    /**
      * @param array $comments
      * @return CommentInterface
      */
@@ -124,4 +130,39 @@ interface CommentInterface
      * @param string $newsTitle
      */
     public function setNewsTitle(string $newsTitle): void;
+
+    /**
+    * @param int $isAdmin
+    */
+    public function setIsAdmin(int $isAdmin): void;
+
+    /**
+     * @return int
+     */
+    public function getIsAdmin(): int;
+
+    /**
+     * @param int $parentCommentID
+     */
+    public function setParentCommentID(int $parentCommentID): void;
+
+    /**
+     * @return int
+     */
+    public function getParentCommentID(): int;
+
+    /**
+     * @param object $childComment
+     */
+    public function setChildComment(object $childComment): void;
+
+    /**
+     * @param array $childComments
+     */
+    public function setChildComments(array $childComments): void;
+
+    /**
+     * @return array
+     */
+    public function getChildComments(): array;
 }

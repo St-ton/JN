@@ -53,7 +53,7 @@ $fileExtraData                 |         | you also need to add the jtl_token: j
     </div>
 {/if}
 {if $fileErrorMsg}
-    <div id="{$fileID}-upload-error" class="alert alert-danger d-none mt-3"></div>
+    <div id="{$fileID}-upload-error" class="alert alert-danger d-none mt-3">{$fileErrorMsg}</div>
 {/if}
 
 <script>
@@ -92,7 +92,9 @@ $fileExtraData                 |         | you also need to add the jtl_token: j
             {/if},
             allowedFileExtensions:
             {if empty($fileAllowedExtensions)}
-                ['jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp', 'svg']
+                ['jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp', 'svg', 'webp']
+            {elseif is_array($fileAllowedExtensions)}
+                ["{$fileAllowedExtensions|implode:'","'}"]
             {else}
                 {$fileAllowedExtensions}
             {/if},
@@ -121,7 +123,7 @@ $fileExtraData                 |         | you also need to add the jtl_token: j
                 $file.fileinput('clear');
             {/if}
             $fileSuccess.addClass('d-none');
-            $fileError.html('').addClass('d-none');
+            $fileError.addClass('d-none');
         });
         {/if}
         {if $fileDefaultBatchSelectedEvent|default:true}

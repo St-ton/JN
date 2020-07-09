@@ -163,7 +163,7 @@ ganze Tags gelöscht werden.
     <?php
     class testClass
     {
-        [...]
+        // [...]
 
         /**
          * return int - the number of deleted IDs

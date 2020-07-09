@@ -6,6 +6,7 @@ use Exception;
 use JTL\Backend\AdminIO;
 use JTL\Helpers\Request;
 use JTL\IO\IOResponse;
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
 
 /**

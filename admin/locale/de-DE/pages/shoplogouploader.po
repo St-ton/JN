@@ -36,4 +36,4 @@ msgid "yourLogo"
 msgstr "Ihr Logo"
 
 msgid "errorLogoUpload"
-msgstr "Das Logo konnte nicht hochgeladen werden. Bitte laden Sie nur Dateien vom Typ jpeg, pjpeg, gif, png, bmp, x-png oder jpg hoch. Prüfen Sie, ob die Datei einen Namen hat und prüfen Sie die Schreibrechte des Ordners %s."
+msgstr "Das Logo konnte nicht hochgeladen werden. Bitte laden Sie nur Dateien vom Typ %s hoch. Prüfen Sie, ob die Datei einen Namen hat und prüfen Sie die Schreibrechte des Ordners %s."

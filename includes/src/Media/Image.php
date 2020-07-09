@@ -49,8 +49,7 @@ class Image
         self::SIZE_SM,
         self::SIZE_MD,
         self::SIZE_LG,
-        self::SIZE_XL,
-        self::SIZE_ORIGINAL
+        self::SIZE_XL
     ];
 
     /**

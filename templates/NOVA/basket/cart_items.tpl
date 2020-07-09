@@ -235,10 +235,10 @@
                         {block name='basket-cart-items-price-single'}
                             {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
                                 {col cols=$cols xl=2 class="ml-auto text-nowrap mb-3 mb-xl-0"}
-                                {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
-                                    {if !$oPosition->istKonfigVater()}
-                                        <span class="mr-3 d-inline-flex d-xl-none font-weight-bold">{lang key="pricePerUnit" section="productDetails"}:</span>{$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
-                                    {/if}
+                                {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL && !$oPosition->istKonfigVater()}
+                                    <span class="mr-3 d-inline-flex d-xl-none font-weight-bold">
+                                        {lang key="pricePerUnit" section="productDetails"}:
+                                    </span>{$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
                                 {/if}
                                 {/col}
                             {/if}

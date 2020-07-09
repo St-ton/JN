@@ -25,7 +25,7 @@
                         aria=["labelledby"=>"crd-hdr-{$configGroup@iteration}"]
                         data=["parent"=>"#cfg-accordion"]
                         class="js-cfg-group-collapse"}
-                        <div class="text-center mb-5 sticky-top">
+                        <div class="text-center mb-4 sticky-top">
                             {if !empty($configGroup->getMin()) || !empty($configGroup->getMax())}
                                 {badge variant="info" class="js-group-badge-checked"}
                                     {if $configGroup->getMin() === 1 && $configGroup->getMax() === 1}
@@ -60,20 +60,24 @@
                             {/if}
                             {if $configLocalization->hatBeschreibung()}
                                 {col cols=12 lg="{if !empty($configImagePath) && $configImagePath|strpos:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN === false}8{else}12{/if}" order=1 order-lg=0}
-                                    <p class="desc">{$configLocalization->getBeschreibung()}</p>
+                                    {$configLocalization->getBeschreibung()}
                                 {/col}
                             {/if}
                             {if !empty($configImagePath) && $configImagePath|strpos:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN === false}
                                 {col cols=12 lg=4 offset-lg="{if $configLocalization->hatBeschreibung()}0{else}4{/if}" order=0 order-lg=1}
-                                    {image fluid=true lazy=true webp=true
-                                        src=$configImagePath
-                                        srcset="{$configGroup->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_konfiggruppe_mini_breite}w,
-                                            {$configGroup->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_konfiggruppe_klein_breite}w,
-                                            {$configGroup->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_konfiggruppe_normal_breite}w,
-                                            {$configGroup->getImage(\JTL\Media\Image::SIZE_LG)} {$Einstellungen.bilder.bilder_konfiggruppe_gross_breite}w"
-                                        alt=$configLocalization->getName()
-                                        sizes="auto"
-                                    }
+                                    <div class="square square-image">
+                                        <div class="inner">
+                                            {image fluid=true lazy=true webp=true
+                                                src=$configImagePath
+                                                srcset="{$configGroup->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_konfiggruppe_mini_breite}w,
+                                                    {$configGroup->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_konfiggruppe_klein_breite}w,
+                                                    {$configGroup->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_konfiggruppe_normal_breite}w,
+                                                    {$configGroup->getImage(\JTL\Media\Image::SIZE_LG)} {$Einstellungen.bilder.bilder_konfiggruppe_gross_breite}w"
+                                                alt=$configLocalization->getName()
+                                                sizes="auto"
+                                            }
+                                        </div>
+                                    </div>
                                 {/col}
                             {/if}
                         {/row}
@@ -119,22 +123,26 @@
                                                 class="cfg-swatch"
                                                 required=$oItem@first && $configGroup->getMin() > 0
                                             }
-                                                <div data-id="{$oItem->getKonfigitem()}" class="config-item text-center mb-5{if $oItem->getEmpfohlen()} bg-info{/if}{if empty($bSelectable)} disabled{/if}{if $checkboxActive} active{/if}">
+                                                <div data-id="{$oItem->getKonfigitem()}" class="config-item mb-5{if $oItem->getEmpfohlen()} bg-info{/if}{if empty($bSelectable)} disabled{/if}{if $checkboxActive} active{/if}">
                                                     {if isset($aKonfigitemerror_arr[$kKonfigitem]) && $aKonfigitemerror_arr[$kKonfigitem]}
                                                         <p class="box_error alert alert-danger">{$aKonfigitemerror_arr[$kKonfigitem]}</p>
                                                     {/if}
                                                     {badge class="badge-circle circle-small"}<i class="fas fa-check mx-auto"></i>{/badge}
                                                     {if !empty($oItem->getArtikel()->Bilder[0]->cURLNormal)}
                                                         {$productImage = $oItem->getArtikel()->Bilder[0]}
-                                                        {image fluid-grow=true webp=true lazy=true
-                                                            src=$productImage->cURLMini
-                                                            srcset="{$productImage->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                                {$productImage->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                                {$productImage->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
-                                                                {$productImage->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
-                                                            sizes="255px"
-                                                            alt=$oItem->getName()
-                                                        }
+                                                        <div class="square square-image">
+                                                            <div class="inner">
+                                                                {image fluid=true webp=true lazy=true
+                                                                src=$productImage->cURLMini
+                                                                srcset="{$productImage->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                                    {$productImage->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                                    {$productImage->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
+                                                                    {$productImage->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
+                                                                sizes="255px"
+                                                                alt=$oItem->getName()
+                                                            }
+                                                            </div>
+                                                        </div>
                                                     {/if}
                                                     <p class="my-2 cfg-item-description">
                                                         {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
@@ -206,18 +214,20 @@
                                                     {/if}
                                                     {badge class="badge-circle circle-small"}<i class="fas fa-check mx-auto"></i>{/badge}
                                                     {if !empty($oItem->getArtikel()->Bilder[0]->cURLNormal)}
-                                                        <p>
-                                                            {$productImage = $oItem->getArtikel()->Bilder[0]}
-                                                            {image fluid-grow=true webp=true lazy=true
-                                                                src=$productImage->cURLMini
-                                                                srcset="{$productImage->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                                    {$productImage->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                                    {$productImage->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
-                                                                    {$productImage->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
-                                                                sizes="255px"
-                                                                alt=$oItem->getName()
-                                                            }
-                                                        </p>
+                                                        <div class="square square-image">
+                                                            <div class="inner">
+                                                                {$productImage = $oItem->getArtikel()->Bilder[0]}
+                                                                {image fluid=true webp=true lazy=true
+                                                                    src=$productImage->cURLMini
+                                                                    srcset="{$productImage->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                                        {$productImage->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                                        {$productImage->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
+                                                                        {$productImage->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
+                                                                    sizes="255px"
+                                                                    alt=$oItem->getName()
+                                                                }
+                                                            </div>
+                                                        </div>
                                                     {/if}
                                                     <p class="mb-2 cfg-item-description">
                                                         {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
@@ -326,20 +336,22 @@
                                     {/if}
                                     {collapse visible=isset($nKonfigitem_arr) && in_array($oItem->getKonfigitem(), $nKonfigitem_arr) id="drpdwn_qnt_{$oItem->getKonfigitem()}" class="cfg-drpdwn-item"}
                                         {row}
-                                            {col cols=4}
+                                            {col md=4 cols="{if empty($cBeschreibung)}12{else}4{/if}"}
                                                 {if !empty($oItem->getArtikel()->Bilder[0]->cURLNormal)}
-                                                    <p>
-                                                        {$productImage = $oItem->getArtikel()->Bilder[0]}
-                                                        {image fluid-grow=true webp=true lazy=true
-                                                            src=$productImage->cURLMini
-                                                            srcset="{$productImage->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                                {$productImage->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                                {$productImage->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
-                                                                {$productImage->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
-                                                            sizes="255px"
-                                                            alt=$oItem->getName()
-                                                        }
-                                                    </p>
+                                                    <div class="square square-image">
+                                                        <div class="inner">
+                                                            {$productImage = $oItem->getArtikel()->Bilder[0]}
+                                                            {image fluid=true webp=true lazy=true
+                                                                src=$productImage->cURLMini
+                                                                srcset="{$productImage->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                                    {$productImage->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                                    {$productImage->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
+                                                                    {$productImage->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
+                                                                sizes="255px"
+                                                                alt=$oItem->getName()
+                                                            }
+                                                        </div>
+                                                    </div>
                                                 {/if}
                                                 <p class="mb-2 cfg-item-description">
                                                     {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
@@ -354,7 +366,7 @@
                                                     {/if}
                                                 </p>
                                             {/col}
-                                            {col cols=8}
+                                            {col md=8 cols="{if empty($cBeschreibung)}12{else}8{/if}"}
                                                 {if !empty($cBeschreibung)}
                                                     <div class="mb-2">
                                                         {$cBeschreibung}

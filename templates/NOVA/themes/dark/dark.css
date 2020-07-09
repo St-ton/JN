@@ -21712,6 +21712,9 @@ a[data-toggle=collapse][aria-expanded=true] i.fa-chevron-down,
   border-width: 0;
 }
 
+.table-vertical-middle {
+  margin-bottom: 0;
+}
 .table-vertical-middle th, .table-vertical-middle td {
   vertical-align: middle;
 }

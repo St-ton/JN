@@ -4434,6 +4434,7 @@ class Artikel
      */
     public function baueSuchspecialBildoverlay()
     {
+        $conf              = Shop::getSettings([CONF_BOXEN, CONF_GLOBAL]);
         $languageID        = isset($_SESSION['kSprache']) ? $_SESSION['kSprache'] : getDefaultLanguageID();
         $searchSpecial_arr = holeAlleSuchspecialOverlays($languageID);
         // Suchspecialbildoverlay
@@ -4453,7 +4454,6 @@ class Artikel
             $nStampJetzt = time();
             // Neu im Sortiment
             if (!empty($this->cNeu) && $this->cNeu === 'Y') {
-                $conf        = Shop::getSettings([CONF_BOXEN, CONF_GLOBAL]);
                 $nAlterTage  = (isset($conf['boxen']['box_neuimsortiment_alter_tage']) && (int)$conf['boxen']['box_neuimsortiment_alter_tage'] > 0)
                     ? (int)$conf['boxen']['box_neuimsortiment_alter_tage']
                     : 30;

@@ -26,6 +26,16 @@ class Migration_20200710094300 extends Migration implements IMigration
         $this->removeConfig('news_kategorie_boxanzeigen');
         $this->removeConfig('news_sicherheitscode');
         $this->removeConfig('artikeldetails_anzahl_pfeile');
+
+        $this->getDB()->update(
+            'teinstellungenconf',
+            'cWertName',
+            'warenkorbpers_nutzen',
+            (object)[
+                'kEinstellungenSektion' => \CONF_KAUFABWICKLUNG,
+                'nSort'                 => 275
+                ]
+            );
     }
 
     /**
@@ -78,6 +88,16 @@ class Migration_20200710094300 extends Migration implements IMigration
                     'I' => 'Wenn Abnahmeintervall vorhanden',
                     'N' => 'Nicht anzeigen',
                 ],
+            ]
+        );
+
+        $this->getDB()->update(
+            'teinstellungenconf',
+            'cWertName',
+            'warenkorbpers_nutzen',
+            (object)[
+                'kEinstellungenSektion' => \CONF_GLOBAL,
+                'nSort'                 => 810
             ]
         );
     }

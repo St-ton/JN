@@ -1251,10 +1251,10 @@ msgid "warenkorb_versandermittlung_anzeigen_desc"
 msgstr "Hier legen Sie fest, ob die Versandkostenermittlung auf der Spezialseite „Versand“ angezeigt wird."
 
 msgid "warenkorb_kupon_anzeigen_name"
-msgstr "Standardcoupons bereits im Warenkorb abfragen"
+msgstr "Coupons bereits im Warenkorb abfragen"
 
 msgid "warenkorb_kupon_anzeigen_desc"
-msgstr "Hier legen Sie fest, ob Standardcoupons bereits im Warenkorb abgefragt werden. Versandkostenfrei-Coupons können erst beim Bestellabschluss eingegeben werden."
+msgstr "Hier legen Sie fest, ob Coupons bereits im Warenkorb abgefragt werden."
 
 msgid "warenkorb_xselling_anzeigen_name"
 msgstr "Cross-Selling im Warenkorb anzeigen"

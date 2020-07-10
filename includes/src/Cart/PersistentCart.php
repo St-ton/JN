@@ -497,7 +497,7 @@ class PersistentCart
             return;
         }
         $conf = Shop::getSettings([\CONF_GLOBAL]);
-        if ($conf['global']['warenkorbpers_nutzen'] !== 'Y') {
+        if ($conf['kaufabwicklung']['warenkorbpers_nutzen'] !== 'Y') {
             return;
         }
         // Persistenter Warenkorb

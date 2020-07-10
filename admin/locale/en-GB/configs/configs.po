@@ -1251,10 +1251,10 @@ msgid "warenkorb_versandermittlung_anzeigen_desc"
 msgstr "Specify whether to display the shipping cost determination on the special page \"Shipments\"."
 
 msgid "warenkorb_kupon_anzeigen_name"
-msgstr "Prompt default coupons in basket"
+msgstr "Prompt coupons in basket"
 
 msgid "warenkorb_kupon_anzeigen_desc"
-msgstr "Specify whether to already prompt default coupons in the basket. Coupons for free shipping can only be entered when the order is completed."
+msgstr "Specify whether to already prompt coupons in the basket."
 
 msgid "warenkorb_xselling_anzeigen_name"
 msgstr "Show cross-selling in basket"

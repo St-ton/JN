@@ -187,12 +187,12 @@ final class Controller
                         ['cKey', 'kKey', 'kSprache'],
                         ['kNewsMonatsUebersicht', (int)$monthOverview->kNewsMonatsUebersicht, $langID]
                     );
-                    $oSeo           = new stdClass();
-                    $oSeo->cSeo     = Seo::checkSeo(Seo::getSeo($prefix . '-' . $month . '-' . $year));
-                    $oSeo->cKey     = 'kNewsMonatsUebersicht';
-                    $oSeo->kKey     = $monthOverview->kNewsMonatsUebersicht;
-                    $oSeo->kSprache = $langID;
-                    $this->db->insert('tseo', $oSeo);
+                    $seo           = new stdClass();
+                    $seo->cSeo     = Seo::checkSeo(Seo::getSeo($prefix . '-' . $month . '-' . $year));
+                    $seo->cKey     = 'kNewsMonatsUebersicht';
+                    $seo->kKey     = $monthOverview->kNewsMonatsUebersicht;
+                    $seo->kSprache = $langID;
+                    $this->db->insert('tseo', $seo);
                 } else {
                     $prefix                  = $this->db->select(
                         'tnewsmonatspraefix',
@@ -212,12 +212,12 @@ final class Controller
                         ['cKey', 'kKey', 'kSprache'],
                         ['kNewsMonatsUebersicht', $kNewsMonatsUebersicht, $langID]
                     );
-                    $oSeo           = new stdClass();
-                    $oSeo->cSeo     = Seo::checkSeo(Seo::getSeo($prefix . '-' . $month . '-' . $year));
-                    $oSeo->cKey     = 'kNewsMonatsUebersicht';
-                    $oSeo->kKey     = $kNewsMonatsUebersicht;
-                    $oSeo->kSprache = $langID;
-                    $this->db->insert('tseo', $oSeo);
+                    $seo           = new stdClass();
+                    $seo->cSeo     = Seo::checkSeo(Seo::getSeo($prefix . '-' . $month . '-' . $year));
+                    $seo->cKey     = 'kNewsMonatsUebersicht';
+                    $seo->kKey     = $kNewsMonatsUebersicht;
+                    $seo->kSprache = $langID;
+                    $this->db->insert('tseo', $seo);
                 }
             }
             $dir = self::UPLOAD_DIR . $newsItemID;
@@ -253,9 +253,9 @@ final class Controller
             $newsItem   = new Item($this->db);
             $this->step = 'news_editieren';
             $this->smarty->assign('cPostVar_arr', $post)
-                         ->assign('cPlausiValue_arr', $validation)
-                         ->assign('oNewsKategorie_arr', $this->getAllNewsCategories())
-                         ->assign('oNews', $newsItem);
+                ->assign('cPlausiValue_arr', $validation)
+                ->assign('oNewsKategorie_arr', $this->getAllNewsCategories())
+                ->assign('oNews', $newsItem);
             $this->errorMsg .= __('errorFillRequired');
 
             if (isset($post['kNews']) && \is_numeric($post['kNews'])) {
@@ -282,9 +282,9 @@ final class Controller
             $upd->cKommentar = $post['cKommentar'];
             $this->flushCache();
             return $this->db->update('tnewskommentar', 'kNewsKommentar', $id, $upd) >= 0;
-        } else {
-            return $this->insertComment($post);
         }
+
+        return $this->insertComment($post);
     }
 
     /**
@@ -470,6 +470,7 @@ final class Controller
         $active       = (int)$post['nAktiv'];
         $parentID     = (int)$post['kParent'];
         $previewImage = $post['previewImage'] ?? '';
+        $oldPreview   = null;
         $flag         = \ENT_COMPAT | \ENT_HTML401;
         $this->db->delete('tseo', ['cKey', 'kKey'], ['kNewsKategorie', $categoryID]);
         $newsCategory                        = new stdClass();
@@ -480,6 +481,7 @@ final class Controller
         $newsCategory->cPreviewImage         = $previewImage;
 
         if ($update === true) {
+            $oldPreview = $this->db->select('tnewskategorie', 'kNewsKategorie', $categoryID)->cPreviewImage ?? null;
             $this->db->update('tnewskategorie', 'kNewsKategorie', $categoryID, $newsCategory);
         } else {
             $categoryID = $this->db->insert('tnewskategorie', $newsCategory);
@@ -533,20 +535,7 @@ final class Controller
             $this->setErrorMsg(__('errorDirCreate') . $dir);
         }
         if (isset($_FILES['previewImage']['name']) && \mb_strlen($_FILES['previewImage']['name']) > 0) {
-            $extension = \mb_substr(
-                $_FILES['previewImage']['type'],
-                \mb_strpos($_FILES['previewImage']['type'], '/') + 1,
-                \mb_strlen($_FILES['previewImage']['type']) - \mb_strpos($_FILES['previewImage']['type'], '/') + 1
-            );
-            if ($extension === 'jpe') { // not elegant, but since it's 99% jpg..
-                $extension = 'jpg';
-            }
-            $uploadFile = self::UPLOAD_DIR_CATEGORY . $categoryID . '/preview.' . $extension;
-            \move_uploaded_file($_FILES['previewImage']['tmp_name'], $uploadFile);
-            $newsCategory->cPreviewImage = \PFAD_NEWSKATEGORIEBILDER . $categoryID . '/preview.' . $extension;
-            $upd                         = new stdClass();
-            $upd->cPreviewImage          = $newsCategory->cPreviewImage;
-            $this->db->update('tnewskategorie', 'kNewsKategorie', $categoryID, $upd);
+            $this->updateNewsCategoryPreview($_FILES['previewImage'], $oldPreview, $categoryID);
         }
         $this->rebuildCategoryTree(0, 1);
         if ($error === false) {
@@ -557,6 +546,30 @@ final class Controller
         $this->flushCache();
 
         return $newsCategory->load($categoryID);
+    }
+
+    /**
+     * @param array       $upload
+     * @param string|null $oldPreview
+     * @param int         $categoryID
+     * @return int
+     */
+    private function updateNewsCategoryPreview(array $upload, ?string $oldPreview, int $categoryID): int
+    {
+        if ($oldPreview !== null
+            && \strpos($oldPreview, \PFAD_NEWSKATEGORIEBILDER) === 0
+            && \file_exists(\PFAD_ROOT . $oldPreview)
+        ) {
+            $real = \realpath(\PFAD_ROOT . $oldPreview);
+            if (\strpos($real, self::UPLOAD_DIR_CATEGORY) === 0) {
+                \unlink($real);
+            }
+        }
+        $fileName = \basename($upload['name']);
+        \move_uploaded_file($upload['tmp_name'], self::UPLOAD_DIR_CATEGORY . $categoryID . '/' . $fileName);
+        $upd = (object)['cPreviewImage' => \PFAD_NEWSKATEGORIEBILDER . $categoryID . '/' . $fileName];
+
+        return $this->db->update('tnewskategorie', 'kNewsKategorie', $categoryID, $upd);
     }
 
     /**
@@ -578,7 +591,6 @@ final class Controller
                 $this->deleteNewsImage($image->cName, $newsItemID, self::UPLOAD_DIR);
             }
         }
-
         $fileIDName = $newsItemID . '/' . \explode('.', \basename($_FILES['previewImage']['name']))[0]
             . '_preview.' . $extension;
         $uploadFile = self::UPLOAD_DIR . $fileIDName;
@@ -778,25 +790,26 @@ final class Controller
      */
     public function deleteComments(array $items, Item $newsItem = null): void
     {
-        if (\count($items) > 0) {
-            foreach ($items as $id) {
-                $this->db->delete('tnewskommentar', 'kNewsKommentar', (int)$id);
-            }
-            $this->flushCache();
-            $this->setMsg(__('successNewsCommentDelete'));
-            $tab    = Request::verifyGPDataString('tab');
-            $params = [
-                'news'  => '1',
-                'token' => $_SESSION['jtl_token'],
-            ];
-            if ($newsItem !== null) {
-                $params['kNews'] = $newsItem->getID();
-                $params['nd']    = '1';
-            }
-            $this->newsRedirect(empty($tab) ? 'inaktiv' : $tab, $this->getMsg(), $params);
-        } else {
+        if (\count($items) === 0) {
             $this->setErrorMsg(__('errorAtLeastOneNewsComment'));
+
+            return;
         }
+        foreach ($items as $id) {
+            $this->db->delete('tnewskommentar', 'kNewsKommentar', (int)$id);
+        }
+        $this->flushCache();
+        $this->setMsg(__('successNewsCommentDelete'));
+        $tab    = Request::verifyGPDataString('tab');
+        $params = [
+            'news'  => '1',
+            'token' => $_SESSION['jtl_token'],
+        ];
+        if ($newsItem !== null) {
+            $params['kNews'] = $newsItem->getID();
+            $params['nd']    = '1';
+        }
+        $this->newsRedirect(empty($tab) ? 'inaktiv' : $tab, $this->getMsg(), $params);
     }
 
     /**

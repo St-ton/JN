@@ -644,12 +644,6 @@ msgstr "Show wish list button"
 msgid "artikeluebersicht_wunschzettel_anzeigen_desc"
 msgstr "Specify whether to show a button in the item list that allows adding items to the wish list."
 
-msgid "artikeluebersicht_anzahl_pfeile_name"
-msgstr "Arrow button for item quantity"
-
-msgid "artikeluebersicht_anzahl_pfeile_desc"
-msgstr "Specify whether to display arrow buttons for changing the item quantity."
-
 msgid "artikeluebersicht_artikelintervall_anzeigen_name"
 msgstr "Show permissible order quantity"
 

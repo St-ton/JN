@@ -644,12 +644,6 @@ msgstr "Wunschzettel-Schaltfläche anzeigen"
 msgid "artikeluebersicht_wunschzettel_anzeigen_desc"
 msgstr "Hier legen Sie fest, ob in der Artikelliste eine Schaltfläche angezeigt wird, mit der Artikel auf den Wunschzettel gesetzt werden können."
 
-msgid "artikeluebersicht_anzahl_pfeile_name"
-msgstr "Pfeil-Schaltflächen für die Artikelanzahl"
-
-msgid "artikeluebersicht_anzahl_pfeile_desc"
-msgstr "Hier können Sie festlegen, ob im Feld für die Artikelmenge Pfeil-Schaltflächen zur Änderung angezeigt werden sollen."
-
 msgid "artikeluebersicht_artikelintervall_anzeigen_name"
 msgstr "Abnahmeintervall anzeigen"
 

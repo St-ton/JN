@@ -446,15 +446,6 @@ msgstr "Yes"
 msgid "artikeluebersicht_wunschzettel_anzeigen_value(N)"
 msgstr "No"
 
-msgid "artikeluebersicht_anzahl_pfeile_value(Y)"
-msgstr "Always"
-
-msgid "artikeluebersicht_anzahl_pfeile_value(I)"
-msgstr "If permissible order quantity exists"
-
-msgid "artikeluebersicht_anzahl_pfeile_value(N)"
-msgstr "Hide"
-
 msgid "artikeluebersicht_artikelintervall_anzeigen_value(Y)"
 msgstr "Yes"
 

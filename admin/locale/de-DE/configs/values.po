@@ -446,15 +446,6 @@ msgstr "Ja"
 msgid "artikeluebersicht_wunschzettel_anzeigen_value(N)"
 msgstr "Nein"
 
-msgid "artikeluebersicht_anzahl_pfeile_value(Y)"
-msgstr "Immer"
-
-msgid "artikeluebersicht_anzahl_pfeile_value(I)"
-msgstr "Wenn Abnahmeintervall vorhanden"
-
-msgid "artikeluebersicht_anzahl_pfeile_value(N)"
-msgstr "Nicht anzeigen"
-
 msgid "artikeluebersicht_artikelintervall_anzeigen_value(Y)"
 msgstr "Ja"
 

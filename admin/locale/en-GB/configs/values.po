@@ -1824,7 +1824,7 @@ msgid "kategorie_bild_anzeigen_value(B)"
 msgstr "Yes, as image"
 
 msgid "kategorie_bild_anzeigen_value(N)"
-msgstr "No category image, no category description"
+msgstr "No"
 
 msgid "kategorie_beschreibung_anzeigen_value(Y)"
 msgstr "Yes"

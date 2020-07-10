@@ -288,7 +288,7 @@ msgid "startseite_neuimsortiment_anzahl_name"
 msgstr "\"New in product range\": Number of items"
 
 msgid "startseite_neuimsortiment_anzahl_desc"
-msgstr "Specify the number of items per box. Enter 0 if you do not want this box to be displayed."
+msgstr "Specify the number of items per box. Enter 0 if you do not want this box to be displayed. See the settings tab in \"Standard elements > Footers/Boxes\" for additional settings."
 
 msgid "startseite_neuimsortiment_sortnr_name"
 msgstr "\"New in product range\": Sort number"

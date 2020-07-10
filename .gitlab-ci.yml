@@ -291,7 +291,8 @@ code_quality:
   docker-php-ext-install -j$(nproc) zip &>/dev/null; if [ $? -gt 0 ] ; then echo -e "\e[1;31m run with ERRORs\e[0m"; else echo -e "\e[1;32m OK\e[0m"; fi
 
 .unitTestsRunScript: &unitTestsRunScript |
-  echo "] running unit tests.."
+  # RUNNING UNIT TESTS
+  echo "] start test script.."
   build/scripts/tests.sh
 
 

@@ -611,15 +611,6 @@ msgstr "Yes"
 msgid "sie_sparen_x_anzeigen_value(0)"
 msgstr "No"
 
-msgid "artikeldetails_anzahl_pfeile_value(Y)"
-msgstr "Always"
-
-msgid "artikeldetails_anzahl_pfeile_value(I)"
-msgstr "If permissible order quantity exists"
-
-msgid "artikeldetails_anzahl_pfeile_value(N)"
-msgstr "Hide"
-
 msgid "artikeldetails_canonicalurl_varkombikind_value(Y)"
 msgstr "Yes"
 
@@ -1902,18 +1893,6 @@ msgid "news_kategorie_unternewsanzeigen_value(Y)"
 msgstr "Yes"
 
 msgid "news_kategorie_unternewsanzeigen_value(N)"
-msgstr "No"
-
-msgid "news_kategorie_boxanzeigen_value(Y)"
-msgstr "Yes"
-
-msgid "news_kategorie_boxanzeigen_value(N)"
-msgstr "No"
-
-msgid "news_sicherheitscode_value(Y)"
-msgstr "Yes"
-
-msgid "news_sicherheitscode_value(N)"
 msgstr "No"
 
 msgid "sitemap_seiten_anzeigen_value(Y)"

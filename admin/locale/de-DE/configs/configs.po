@@ -818,12 +818,6 @@ msgstr "UVP-Ersparnis anzeigen"
 msgid "sie_sparen_x_anzeigen_desc"
 msgstr "Hier legen Sie fest, ob bei Artikeln mit UVP der Betrag und Prozentsatz angezeigt werden soll, den der Kunde spart."
 
-msgid "artikeldetails_anzahl_pfeile_name"
-msgstr "Pfeil-Schaltflächen für die Artikelanzahl"
-
-msgid "artikeldetails_anzahl_pfeile_desc"
-msgstr "Hier können Sie festlegen, ob im Feld für die Artikelmenge Pfeil-Schaltflächen zur Änderung angezeigt werden sollen."
-
 msgid "artikeldetails_canonicalurl_varkombikind_name"
 msgstr "Canonical-URLs bei Kindartikeln"
 
@@ -2611,18 +2605,6 @@ msgstr "Blogkategorien unter dem Blog anzeigen"
 
 msgid "news_kategorie_unternewsanzeigen_desc"
 msgstr "Hier legen Sie fest, ob unter einem ausgewählten Blogbeitrag auch die Blogkategorien angezeigt werden."
-
-msgid "news_kategorie_boxanzeigen_name"
-msgstr "Blogkategorien in einer Box anzeigen"
-
-msgid "news_kategorie_boxanzeigen_desc"
-msgstr "Hier legen Sie fest, ob eine Übersicht aller Blogkategorien in einer Box angezeigt werden soll."
-
-msgid "news_sicherheitscode_name"
-msgstr "Spamschutz aktivieren"
-
-msgid "news_sicherheitscode_desc"
-msgstr "Hier legen Sie fest, ob die unter den globalen Einstellungen hinterlegte Spamschutz-Methode verwendet werden soll."
 
 msgid "sitemap_seiten_anzeigen_name"
 msgstr "Alle eigenen Seiten anzeigen"

@@ -25,6 +25,7 @@ class Migration_20200710094300 extends Migration implements IMigration
     {
         $this->removeConfig('news_kategorie_boxanzeigen');
         $this->removeConfig('news_sicherheitscode');
+        $this->removeConfig('artikeldetails_anzahl_pfeile');
     }
 
     /**
@@ -60,6 +61,22 @@ class Migration_20200710094300 extends Migration implements IMigration
                 'inputOptions'  => [
                     'Y' => 'Ja',
                     'N' => 'Nein',
+                ],
+            ]
+        );
+        $this->setConfig(
+            'artikeldetails_anzahl_pfeile',
+            'Y',
+            \CONF_ARTIKELDETAILS,
+            'Pfeilbuttons für die Artikelanzahl',
+            'selectbox',
+            490,
+            (object)[
+                'cBeschreibung' => 'Wie sollen die Pfeile für die Anzahl in den Artikeldetails angezeigt werden.',
+                'inputOptions'  => [
+                    'Y' => 'Immer',
+                    'I' => 'Wenn Abnahmeintervall vorhanden',
+                    'N' => 'Nicht anzeigen',
                 ],
             ]
         );

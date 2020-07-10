@@ -818,12 +818,6 @@ msgstr "Show savings in comparison to RRP"
 msgid "sie_sparen_x_anzeigen_desc"
 msgstr "Specify whether to show the value or percentage that the customer saves on items in comparison to the RRP."
 
-msgid "artikeldetails_anzahl_pfeile_name"
-msgstr "Arrow button for item quantity"
-
-msgid "artikeldetails_anzahl_pfeile_desc"
-msgstr "Specify whether to display arrow buttons for changing the item quantity."
-
 msgid "artikeldetails_canonicalurl_varkombikind_name"
 msgstr "Canonical URLs with child items"
 
@@ -2611,18 +2605,6 @@ msgstr "Show blog categories under blog"
 
 msgid "news_kategorie_unternewsanzeigen_desc"
 msgstr "Specify whether to display the respective blog categories under a selected blog post."
-
-msgid "news_kategorie_boxanzeigen_name"
-msgstr "Display blog category in a box"
-
-msgid "news_kategorie_boxanzeigen_desc"
-msgstr "Specify whether to display a box with an overview of all blog categories."
-
-msgid "news_sicherheitscode_name"
-msgstr "Enable spam protection"
-
-msgid "news_sicherheitscode_desc"
-msgstr "Specify whether to use the spam protection method defined in the global settings."
 
 msgid "sitemap_seiten_anzeigen_name"
 msgstr "Show all custom pages"

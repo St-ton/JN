@@ -23,8 +23,8 @@ class News extends AbstractImage
     /**
      * @var string
      */
-    protected $regEx = '/^media\/image\/(?P<type>news)'
-    . '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl|os)\/(?P<name>[a-zA-Z0-9\-_]+)'
+    public const REGEX = '/^media\/image\/(?P<type>news)'
+    . '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl)\/(?P<name>[a-zA-Z0-9\-_]+)'
     . '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**
@@ -64,11 +64,31 @@ class News extends AbstractImage
     /**
      * @inheritdoc
      */
+    public static function getThumb(string $type, $id, $mixed, $size, int $number = 1, string $source = null): string
+    {
+        $req   = static::getRequest($type, $id, $source, $size, $number, $source);
+        $thumb = $req->getThumb($size);
+        $raw   = $req->getRaw();
+        if (!\file_exists(\PFAD_ROOT . $thumb) && ($raw === null || !\file_exists($raw))) {
+            $thumb = \BILD_KEIN_ARTIKELBILD_VORHANDEN;
+        }
+
+        return $thumb;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public static function getCustomName($mixed): string
     {
-        $result = \method_exists($mixed, 'getTitle') ? $mixed->getTitle() : $mixed->title;
+        if (\is_string($mixed) && \strpos($mixed, '/') !== false) {
+            $result = \explode('/', $mixed)[1];
+            $result = \pathinfo($result)['filename'];
+        } else {
+            $result = \method_exists($mixed, 'getTitle') ? $mixed->getTitle() : $mixed->title;
+        }
 
-        return empty($result) ? 'image' : Image::getCleanFilename($result);
+        return empty($result) ? 'image' : $result;
     }
 
     /**
@@ -102,19 +122,33 @@ class News extends AbstractImage
      */
     public function getAllImages(int $offset = null, int $limit = null): Generator
     {
-        $base = \PFAD_ROOT . self::getStoragePath();
-        $rdi  = new RecursiveDirectoryIterator(
+        $base    = \PFAD_ROOT . self::getStoragePath();
+        $rdi     = new RecursiveDirectoryIterator(
             $base,
             FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
         );
+        $index   = 0;
+        $yielded = 0;
         foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $fileinfo) {
             /** @var SplFileInfo $fileinfo */
             if ($fileinfo->isFile() && \in_array($fileinfo->getExtension(), self::$imageExtensions, true)) {
-                $path = \str_replace($base, '', $fileinfo->getPathname());
+                if ($offset !== null && $offset > $index++) {
+                    continue;
+                }
+                ++$yielded;
+                if ($limit !== null && $yielded > $limit) {
+                    return;
+                }
+                $path  = \str_replace($base, '', $fileinfo->getPathname());
+                $parts = \explode('/', $path);
+                $id    = 0;
+                if (isset($parts[0]) && \is_numeric($parts[0])) {
+                    $id = (int)$parts[0];
+                }
                 yield MediaImageRequest::create([
-                    'id'         => 1,
+                    'id'         => $id,
                     'type'       => self::TYPE,
-                    'name'       => $fileinfo->getFilename(),
+                    'name'       => $fileinfo->getBasename('.' . $fileinfo->getExtension()),
                     'number'     => 1,
                     'path'       => $path,
                     'sourcePath' => $path,

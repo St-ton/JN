@@ -23,7 +23,7 @@ class Product extends AbstractImage
     /**
      * @var string
      */
-    protected $regEx = \MEDIAIMAGE_REGEX;
+    public const REGEX = \MEDIAIMAGE_REGEX;
 
     /**
      * @inheritdoc

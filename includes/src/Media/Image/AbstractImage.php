@@ -28,7 +28,7 @@ abstract class AbstractImage implements IMedia
     /**
      * @var string
      */
-    protected $regEx = '';
+    public const REGEX = '';
 
     /**
      * @var array
@@ -47,6 +47,22 @@ abstract class AbstractImage implements IMedia
     public function __construct(DbInterface $db = null)
     {
         $this->db = $db ?? Shop::Container()->getDB();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getDB(): DbInterface
+    {
+        return $this->db;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setDB(DbInterface $db): void
+    {
+        $this->db = $db;
     }
 
     /**
@@ -155,9 +171,9 @@ abstract class AbstractImage implements IMedia
     /**
      * @inheritdoc
      */
-    public function isValid(string $request): bool
+    public static function isValid(string $request): bool
     {
-        return $this->parse($request) !== null;
+        return self::parse($request) !== null;
     }
 
     /**
@@ -414,7 +430,7 @@ abstract class AbstractImage implements IMedia
      * @param string $request
      * @return array|null
      */
-    protected function parse(?string $request): ?array
+    protected static function parse(?string $request): ?array
     {
         if (!\is_string($request) || \mb_strlen($request) === 0) {
             return null;
@@ -423,7 +439,7 @@ abstract class AbstractImage implements IMedia
             $request = \mb_substr($request, 1);
         }
 
-        return \preg_match($this->regEx, $request, $matches)
+        return \preg_match(static::REGEX, $request, $matches)
             ? \array_intersect_key($matches, \array_flip(\array_filter(\array_keys($matches), '\is_string')))
             : null;
     }
@@ -443,7 +459,7 @@ abstract class AbstractImage implements IMedia
      */
     protected function create(?string $request): MediaImageRequest
     {
-        return MediaImageRequest::create($this->parse($request));
+        return MediaImageRequest::create(self::parse($request));
     }
 
     /**

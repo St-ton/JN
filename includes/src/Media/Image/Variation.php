@@ -20,8 +20,8 @@ class Variation extends AbstractImage
     /**
      * @var string
      */
-    protected $regEx = '/^media\/image\/(?P<type>variation)'
-    . '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl|os)\/(?P<name>[a-zA-Z0-9\-_]+)'
+    public const REGEX = '/^media\/image\/(?P<type>variation)'
+    . '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl)\/(?P<name>[a-zA-Z0-9\-_]+)'
     . '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**

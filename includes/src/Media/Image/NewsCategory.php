@@ -23,8 +23,8 @@ class NewsCategory extends AbstractImage
     /**
      * @var string
      */
-    protected $regEx = '/^media\/image\/(?P<type>newscategory)'
-    . '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl|os)\/(?P<name>[a-zA-Z0-9\-_]+)'
+    public const REGEX = '/^media\/image\/(?P<type>newscategory)'
+    . '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl)\/(?P<name>[a-zA-Z0-9\-_]+)'
     . '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**
@@ -102,14 +102,23 @@ class NewsCategory extends AbstractImage
      */
     public function getAllImages(int $offset = null, int $limit = null): Generator
     {
-        $base = \PFAD_ROOT . self::getStoragePath();
-        $rdi  = new RecursiveDirectoryIterator(
+        $base    = \PFAD_ROOT . self::getStoragePath();
+        $rdi     = new RecursiveDirectoryIterator(
             $base,
             FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
         );
+        $index   = 0;
+        $yielded = 0;
         foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $fileinfo) {
             /** @var SplFileInfo $fileinfo */
             if ($fileinfo->isFile() && \in_array($fileinfo->getExtension(), self::$imageExtensions, true)) {
+                if ($offset !== null && $offset > $index++) {
+                    continue;
+                }
+                ++$yielded;
+                if ($limit !== null && $yielded > $limit) {
+                    return;
+                }
                 $path = \str_replace($base, '', $fileinfo->getPathname());
                 yield MediaImageRequest::create([
                     'id'         => 1,

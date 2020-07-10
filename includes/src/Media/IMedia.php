@@ -13,10 +13,20 @@ use JTL\Media\Image\StatsItem;
 interface IMedia
 {
     /**
+     * @return DbInterface
+     */
+    public function getDB(): DbInterface;
+
+    /**
+     * @param DbInterface $db
+     */
+    public function setDB(DbInterface $db): void;
+
+    /**
      * @param string $request
      * @return bool
      */
-    public function isValid(string $request): bool;
+    public static function isValid(string $request): bool;
 
     /**
      * @param string $request

@@ -18,9 +18,9 @@ class OPC extends AbstractImage
     /**
      * @var string
      */
-    protected $regEx = '/^media\/image\/'
+    public const REGEX = '/^media\/image\/'
     . '(?P<type>opc)'
-    . '\/(?P<size>xs|sm|md|lg|xl|os)'
+    . '\/(?P<size>xs|sm|md|lg|xl)'
     . '\/(?P<name>[a-zA-Z0-9\-_\. äööüÄÖÜß]+)'
     . '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 

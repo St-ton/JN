@@ -13,7 +13,6 @@ use JTL\Media\Image\NewsCategory;
 use JTL\Media\Image\OPC;
 use JTL\Media\Image\Product;
 use JTL\Media\Image\Variation;
-use JTL\Shop;
 use function Functional\first;
 use function Functional\some;
 
@@ -29,14 +28,10 @@ class Media
     private static $instance;
 
     /**
-     * @var IMedia[]
-     */
-    private $types = [];
-
-    /**
      * @var array
      */
     private static $classMapper = [
+        Image::TYPE_PRODUCT              => Product::class,
         Image::TYPE_CATEGORY             => Category::class,
         Image::TYPE_CHARACTERISTIC       => Characteristic::class,
         Image::TYPE_CHARACTERISTIC_VALUE => CharacteristicValue::class,
@@ -45,7 +40,6 @@ class Media
         Image::TYPE_NEWS                 => News::class,
         Image::TYPE_NEWSCATEGORY         => NewsCategory::class,
         Image::TYPE_OPC                  => OPC::class,
-        Image::TYPE_PRODUCT              => Product::class,
         Image::TYPE_VARIATION            => Variation::class
     ];
 
@@ -71,37 +65,19 @@ class Media
      */
     public function __construct()
     {
-        $db             = Shop::Container()->getDB();
         self::$instance = $this;
-        $this->register(new Product($db))
-             ->register(new Category($db))
-             ->register(new Manufacturer($db))
-             ->register(new OPC($db))
-             ->register(new Characteristic($db))
-             ->register(new CharacteristicValue($db))
-             ->register(new ConfigGroup($db))
-             ->register(new Variation($db))
-             ->register(new News($db))
-             ->register(new NewsCategory($db));
     }
 
     /**
-     * @param IMedia $media
+     * @param string $type
+     * @param string $class
      * @return $this
      */
-    public function register(IMedia $media): self
+    public function register(string $type, string $class): self
     {
-        $this->types[] = $media;
+        self::$classMapper[$type] = $class;
 
         return $this;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getAllClassNames(): array
-    {
-        return \array_values(self::$classMapper);
     }
 
     /**
@@ -109,7 +85,15 @@ class Media
      */
     public function getRegisteredClasses(): array
     {
-        return $this->types;
+        return \array_values(self::$classMapper);
+    }
+
+    /**
+     * @return IMedia[]
+     */
+    public function getRegisteredTypes(): array
+    {
+        return \array_keys(self::$classMapper);
     }
 
     /**
@@ -118,8 +102,9 @@ class Media
      */
     public function isValidRequest(string $requestUri): bool
     {
-        return some($this->types, static function (IMedia $e) use ($requestUri) {
-            return $e->isValid($requestUri);
+        return some(self::$classMapper, static function (string $class) use ($requestUri) {
+            /** @var IMedia $class */
+            return $class::isValid($requestUri);
         });
     }
 
@@ -130,8 +115,9 @@ class Media
      */
     public function handleRequest(string $requestUri)
     {
-        return first($this->types, static function (IMedia $type) use ($requestUri) {
-            return $type->isValid($requestUri);
+        return first(self::$classMapper, static function (string $class) use ($requestUri) {
+            /** @var IMedia $class */
+            return $class::isValid($requestUri);
         })->handle($requestUri);
     }
 }

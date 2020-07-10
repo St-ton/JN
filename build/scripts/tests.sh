@@ -23,3 +23,4 @@ done
 
 echo "] execute tests..";
 ./includes/vendor/bin/phpunit tests;
+echo "] unit tests finished."

@@ -209,19 +209,21 @@ workflow:
     - when: always
 
 
-.CodeSnifferInstallScript: &CodeSnifferInstallScript |
-  # CODESNIFFER INSTALLATION
+.ComposerInstall: &ComposerInstall |
+  # COMPOSER INSTALLATION
   echo "] installing composer.."
-  export REPODIR=$(pwd)
   php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
   php -r "if (hash_file('sha384', 'composer-setup.php') === file_get_contents('https://composer.github.io/installer.sig')) { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
   php composer-setup.php && rm composer-setup.php
   mv composer.phar composer
+
+
+.CodeSnifferInstallScript: &CodeSnifferInstallScript |
+  # CODESNIFFER INSTALLATION
   echo "] remove default composer files.."
-  cd includes/ && rm composer.json composer.lock
+  rm includes/composer.json includes/composer.lock
   echo "] runing phpcs install.."
-  ../composer -q require squizlabs/php_codesniffer
-  cd "$REPODIR"
+  ./composer -q require squizlabs/php_codesniffer -d includes/
 
 .CodeSnifferRunScript: &CodeSnifferRunScript |
   # CODESNIFFER RUN
@@ -230,7 +232,6 @@ workflow:
   echo "] create file list.."
   find . -iname '*.php' >filelisting.txt
   echo "] starting check script.."
-  # (use the normal script, but "build/scripts/global-codesniffer.sh", seems to be better)
   build/scripts/codesniffer.sh .
 
 
@@ -238,6 +239,7 @@ code_quality:
   stage: codeQuality
   image: php:7.3-alpine
   before_script:
+    - *ComposerInstall
     - *CodeSnifferInstallScript
   script:
     - *CodeSnifferRunScript
@@ -289,14 +291,8 @@ code_quality:
   docker-php-ext-install -j$(nproc) zip &>/dev/null; if [ $? -gt 0 ] ; then echo -e "\e[1;31m run with ERRORs\e[0m"; else echo -e "\e[1;32m OK\e[0m"; fi
 
 .unitTestsRunScript: &unitTestsRunScript |
-  # RUNNING TESTS
-  echo "] installing composer.."
-  php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-  php -r "if (hash_file('sha384', 'composer-setup.php') === file_get_contents('https://composer.github.io/installer.sig')) { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-  php composer-setup.php && rm composer-setup.php && mv composer.phar composer
   echo "] running unit tests.."
-  sh build/scripts/tests.sh
-  echo "] unit test finished."
+  build/scripts/tests.sh
 
 
 test_PHP_7.2:
@@ -305,6 +301,7 @@ test_PHP_7.2:
   before_script:
     - *unitTestsInstallScript
   script:
+    - *ComposerInstall
     - *unitTestsRunScript
 #  <<: *debugging
   rules:
@@ -319,6 +316,7 @@ test_PHP_7.3:
   before_script:
     - *unitTestsInstallScript
   script:
+    - *ComposerInstall
     - *unitTestsRunScript
 #  <<: *debugging
   rules:
@@ -333,10 +331,10 @@ test_PHP_7.4:
   before_script:
     - *unitTestsInstallScript
   script:
+    - *ComposerInstall
     - *unitTestsRunScript
 #  <<: *debugging
   rules:
-    # run only on branches, not master, not tags
     - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
         && $CI_COMMIT_REF_NAME !~ /^release\/.*$/
         && $CI_COMMIT_TAG == null

@@ -86,7 +86,7 @@ Zum Schluss stellen Sie die Pagination mit ``assemble()`` fertig:
 Die Einträge der momentan gewählten Blätter-Seite erhalten Sie durch ``$oPaginationStandard->getPageItems()``. |br|
 Durch diese Liste können Sie dann entsprechend iterieren und die darin enthaltenen Elemente im Frontend ausgeben.
 
-.. code-block:: php
+.. code-block:: smarty
 
     {foreach $oPaginationStandard->getPageItems() as $oKupon}
         ...

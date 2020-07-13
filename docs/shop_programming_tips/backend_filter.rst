@@ -161,7 +161,7 @@ Beschriftung und einem längerem Text, welcher als Tooltip angezeigt wird, beste
 
 .. code-block:: php
 
-    ['Suchbegriff', 'Sucht in Bestell-Nr., Betrag, Kunden-Vornamen, E-Mail-Adresse, Hinweis']
+    ['Suchbegriff', 'Sucht in Bestell-Nr., Betrag, Kunden-Vornamen, E-Mail-Adresse, Hinweis'];
 
 ``$nTestOp`` legt die Vergleichsmethode fest. |br| Dabei sind alle Werte möglich, die
 unter :ref:`Vergleichsmethoden <label_backend_filter_compare_const>` gelistet sind.

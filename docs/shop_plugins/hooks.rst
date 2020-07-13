@@ -32,7 +32,7 @@ zum Beispiel der dort übergebene Kommentar verändern.
 
     <?php
 
-    if (!empty($args_arr['comment']) {
+    if (!empty($args_arr['comment'])) {
         $args_arr['comment'] .= '<br>Dieser Text wird an nicht-leere Kommentare angehängt!';
     }
 

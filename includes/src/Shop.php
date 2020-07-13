@@ -1001,13 +1001,6 @@ final class Shop
             );
             exit();
         }
-        if ((self::$kArtikel > 0 || self::$kKategorie > 0)
-            && !Frontend::getCustomerGroup()->mayViewCategories()
-        ) {
-            // falls Artikel/Kategorien nicht gesehen werden duerfen -> login
-            \header('Location: ' . LinkService::getInstance()->getStaticRoute('jtl.php') . '?li=1', true, 303);
-            exit;
-        }
         self::Container()->get(ManagerInterface::class)->initActiveItems(self::$kSprache);
         $conf = new Config();
         $conf->setLanguageID(self::$kSprache);
@@ -1017,6 +1010,15 @@ final class Shop
         $conf->setBaseURL(self::getURL() . '/');
         self::$productFilter = new ProductFilter($conf, self::Container()->getDB(), self::Container()->getCache());
         self::seoCheck();
+
+        if ((self::$kArtikel > 0 || self::$kKategorie > 0)
+            && !Frontend::getCustomerGroup()->mayViewCategories()
+        ) {
+            // falls Artikel/Kategorien nicht gesehen werden duerfen -> login
+            \header('Location: ' . LinkService::getInstance()->getStaticRoute('jtl.php') . '?li=1', true, 303);
+            exit;
+        }
+
         self::setImageBaseURL(\defined('IMAGE_BASE_URL') ? \IMAGE_BASE_URL : self::getURL());
         Dispatcher::getInstance()->fire(Event::RUN);
 

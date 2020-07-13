@@ -45,6 +45,15 @@ class News extends AbstractImage
      */
     public function getImageNames(MediaImageRequest $req): array
     {
+        if (\mb_strpos($req->getName(), '_preview') === false && $req->getID() > 0) {
+            $base     = \PFAD_ROOT . \PFAD_NEWSBILDER;
+            $realPath = $req->getID() . '/' . $req->getName() . '.' . $req->getExt();
+            if (\file_exists($base . $realPath)) {
+                $req->setSourcePath($realPath);
+            }
+
+            return [$req->getName()];
+        }
         return $this->db->queryPrepared(
             'SELECT a.kNews, a.cPreviewImage AS path, t.title
                 FROM tnews AS a
@@ -66,6 +75,13 @@ class News extends AbstractImage
      */
     public static function getThumb(string $type, $id, $mixed, $size, int $number = 1, string $source = null): string
     {
+        if ($source !== null && $id === null && \mb_strpos($source, '/') !== false) {
+            // we have a path like <newsid>/<some-image.ext>
+            $exp = \explode('/', $source);
+            if (isset($exp[0]) && \is_numeric($exp[0])) {
+                $id = (int)$exp[0];
+            }
+        }
         $req   = static::getRequest($type, $id, $source, $size, $number, $source);
         $thumb = $req->getThumb($size);
         $raw   = $req->getRaw();
@@ -81,14 +97,18 @@ class News extends AbstractImage
      */
     public static function getCustomName($mixed): string
     {
-        if (\is_string($mixed) && \strpos($mixed, '/') !== false) {
-            $result = \explode('/', $mixed)[1];
+        if (\is_string($mixed)) {
+            if (\strpos($mixed, '/') !== false) {
+                $result = \explode('/', $mixed)[1];
+            } else {
+                $result = $mixed;
+            }
             $result = \pathinfo($result)['filename'];
         } else {
-            $result = Image::getCleanFilename(\method_exists($mixed, 'getTitle') ? $mixed->getTitle() : $mixed->title);
+            $result = \method_exists($mixed, 'getTitle') ? $mixed->getTitle() : $mixed->title;
         }
 
-        return empty($result) ? 'image' : $result;
+        return empty($result) ? 'image' : Image::getCleanFilename($result);
     }
 
     /**
@@ -97,12 +117,12 @@ class News extends AbstractImage
     public function getPathByID($id, int $number = null): ?string
     {
         $item = $this->db->queryPrepared(
-            'SELECT cPreviewImage AS path
-                FROM tnews
-                WHERE kNews = :cid LIMIT 1',
-            ['cid' => $id],
-            ReturnType::SINGLE_OBJECT
-        )->path ?? null;
+                'SELECT cPreviewImage AS path
+                    FROM tnews
+                    WHERE kNews = :cid LIMIT 1',
+                ['cid' => $id],
+                ReturnType::SINGLE_OBJECT
+            )->path ?? null;
 
         return empty($item->path)
             ? null

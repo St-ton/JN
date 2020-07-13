@@ -1910,12 +1910,6 @@ msgstr "Ja"
 msgid "sitemap_newskategorien_anzeigen_value(N)"
 msgstr "Nein"
 
-msgid "sitemap_weitereseiten_artikeluebersicht_value(Y)"
-msgstr "Ja"
-
-msgid "sitemap_weitereseiten_artikeluebersicht_value(N)"
-msgstr "Nein"
-
 msgid "sitemap_livesuche_anzeigen_value(Y)"
 msgstr "Ja"
 

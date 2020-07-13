@@ -28,6 +28,7 @@ class Migration_20200710094300 extends Migration implements IMigration
         $this->removeConfig('artikeldetails_anzahl_pfeile');
         $this->removeConfig('artikeluebersicht_anzahl_pfeile');
         $this->removeConfig('configgroup_1_saved_cart');
+        $this->removeConfig('sitemap_weitereseiten_artikeluebersicht');
 
         $this->getDB()->update(
             'teinstellungenconf',
@@ -105,6 +106,21 @@ class Migration_20200710094300 extends Migration implements IMigration
                     'Y' => 'Immer',
                     'I' => 'Wenn Abnahmeintervall vorhanden',
                     'N' => 'Nicht anzeigen',
+                ],
+            ]
+        );
+        $this->setConfig(
+            'sitemap_weitereseiten_artikeluebersicht',
+            'Y',
+            \CONF_SITEMAP,
+            'Seiten der Artikelübersichten in Sitemap aufnehmen',
+            'selectbox',
+            90,
+            (object)[
+                'cBeschreibung' => 'Sollen Seiten aus der Artikelübersicht wie z.b. Hersteller, Kategorien mit in die Sitemap aufgenommen werden?',
+                'inputOptions'  => [
+                    'Y' => 'Ja',
+                    'N' => 'Nein',
                 ],
             ]
         );

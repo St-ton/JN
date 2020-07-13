@@ -2630,12 +2630,6 @@ msgstr "Show all blog categories"
 msgid "sitemap_newskategorien_anzeigen_desc"
 msgstr "Specify whether all blog category pages should appear in the sitemap."
 
-msgid "sitemap_weitereseiten_artikeluebersicht_name"
-msgstr "Include pages of item overviews in sitemap"
-
-msgid "sitemap_weitereseiten_artikeluebersicht_desc"
-msgstr "Specify whether to include the pages of the item overviews (e.g. manufacturers, categories, etc.) in the sitemap."
-
 msgid "sitemap_livesuche_anzeigen_name"
 msgstr "Show search queries"
 

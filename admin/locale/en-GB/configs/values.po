@@ -1916,12 +1916,6 @@ msgstr "Yes"
 msgid "sitemap_newskategorien_anzeigen_value(N)"
 msgstr "No"
 
-msgid "sitemap_weitereseiten_artikeluebersicht_value(Y)"
-msgstr "Yes"
-
-msgid "sitemap_weitereseiten_artikeluebersicht_value(N)"
-msgstr "No"
-
 msgid "sitemap_livesuche_anzeigen_value(Y)"
 msgstr "Yes"
 

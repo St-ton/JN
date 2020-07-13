@@ -27,6 +27,7 @@ class Migration_20200710094300 extends Migration implements IMigration
         $this->removeConfig('news_sicherheitscode');
         $this->removeConfig('artikeldetails_anzahl_pfeile');
         $this->removeConfig('artikeluebersicht_anzahl_pfeile');
+        $this->removeConfig('configgroup_1_saved_cart');
 
         $this->getDB()->update(
             'teinstellungenconf',
@@ -106,6 +107,15 @@ class Migration_20200710094300 extends Migration implements IMigration
                     'N' => 'Nicht anzeigen',
                 ],
             ]
+        );
+        $this->setConfig(
+            'configgroup_1_saved_cart',
+            'Gespeicherter Warenkorb',
+            \CONF_GLOBAL,
+            'Gespeicherter Warenkorb',
+            null,
+            800,
+            (object)['cConf' => 'N']
         );
 
         $this->getDB()->update(

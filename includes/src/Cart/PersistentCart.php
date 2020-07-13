@@ -496,7 +496,7 @@ class PersistentCart
         if (!Frontend::getCustomer()->isLoggedIn()) {
             return;
         }
-        $conf = Shop::getSettings([\CONF_GLOBAL]);
+        $conf = Shop::getSettings([\CONF_KAUFABWICKLUNG]);
         if ($conf['kaufabwicklung']['warenkorbpers_nutzen'] !== 'Y') {
             return;
         }

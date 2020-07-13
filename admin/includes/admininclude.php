@@ -65,6 +65,28 @@ $loggedIn   = $oAccount->logged();
 $updater    = new Updater($db);
 $hasUpdates = $updater->hasPendingUpdates();
 Shop::setIsFrontend(false);
+
+if (!empty($_COOKIE['JTLSHOP']) && $loggedIn && empty($_SESSION['frontendNotified'])) {
+    $adminToken   = $_SESSION['jtl_token'];
+    $adminLangTag = $_SESSION['AdminAccount']->language;
+    \session_write_close();
+    \session_name('JTLSHOP');
+    \session_id($_COOKIE['JTLSHOP']);
+    \session_start();
+    $_SESSION['loggedAsAdmin'] = true;
+    $_SESSION['adminToken']    = $adminToken;
+    $_SESSION['adminLangTag']  = $adminLangTag;
+    \session_write_close();
+    \session_name('eSIdAdm');
+
+    if (!empty($_COOKIE['eSIdAdm'])) {
+        \session_id($_COOKIE['eSIdAdm']);
+    }
+
+    \session_start();
+    $_SESSION['frontendNotified'] = true;
+}
+
 if ($loggedIn
     && $_SERVER['REQUEST_METHOD'] === 'GET'
     && strpos($_SERVER['SCRIPT_FILENAME'], 'dbupdater') === false

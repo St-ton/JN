@@ -13,6 +13,7 @@ use JTL\Media\Image\NewsCategory;
 use JTL\Media\Image\OPC;
 use JTL\Media\Image\Product;
 use JTL\Media\Image\Variation;
+use JTL\Shop;
 use function Functional\first;
 use function Functional\some;
 
@@ -28,10 +29,14 @@ class Media
     private static $instance;
 
     /**
+     * @var IMedia[]
+     */
+    private $registeredClasses = [];
+
+    /**
      * @var array
      */
     private static $classMapper = [
-        Image::TYPE_PRODUCT              => Product::class,
         Image::TYPE_CATEGORY             => Category::class,
         Image::TYPE_CHARACTERISTIC       => Characteristic::class,
         Image::TYPE_CHARACTERISTIC_VALUE => CharacteristicValue::class,
@@ -40,6 +45,7 @@ class Media
         Image::TYPE_NEWS                 => News::class,
         Image::TYPE_NEWSCATEGORY         => NewsCategory::class,
         Image::TYPE_OPC                  => OPC::class,
+        Image::TYPE_PRODUCT              => Product::class,
         Image::TYPE_VARIATION            => Variation::class
     ];
 
@@ -61,21 +67,28 @@ class Media
     }
 
     /**
-     *
+     * Media constructor.
      */
     public function __construct()
     {
         self::$instance = $this;
+        $db             = Shop::Container()->getDB();
+        foreach (self::$classMapper as $imageType => $class) {
+            $this->register(new $class($db), $imageType);
+        }
     }
 
     /**
-     * @param string $type
-     * @param string $class
+     * @param IMedia $media
+     * @param string $imageType
      * @return $this
      */
-    public function register(string $type, string $class): self
+    public function register(IMedia $media, string $imageType): self
     {
-        self::$classMapper[$type] = $class;
+        $this->registeredClasses[] = $media;
+        if (!\array_key_exists($imageType, self::$classMapper)) {
+            self::$classMapper[$imageType] = \get_class($media);
+        }
 
         return $this;
     }
@@ -85,15 +98,7 @@ class Media
      */
     public function getRegisteredClasses(): array
     {
-        return \array_values(self::$classMapper);
-    }
-
-    /**
-     * @return IMedia[]
-     */
-    public function getRegisteredTypes(): array
-    {
-        return \array_keys(self::$classMapper);
+        return $this->registeredClasses;
     }
 
     /**
@@ -102,9 +107,8 @@ class Media
      */
     public function isValidRequest(string $requestUri): bool
     {
-        return some(self::$classMapper, static function (string $class) use ($requestUri) {
-            /** @var IMedia $class */
-            return $class::isValid($requestUri);
+        return some($this->registeredClasses, static function (IMedia $e) use ($requestUri) {
+            return $e::isValid($requestUri);
         });
     }
 
@@ -115,9 +119,8 @@ class Media
      */
     public function handleRequest(string $requestUri)
     {
-        return first(self::$classMapper, static function (string $class) use ($requestUri) {
-            /** @var IMedia $class */
-            return $class::isValid($requestUri);
+        return first($this->registeredClasses, static function (IMedia $type) use ($requestUri) {
+            return $type::isValid($requestUri);
         })->handle($requestUri);
     }
 }

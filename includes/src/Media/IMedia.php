@@ -43,7 +43,7 @@ interface IMedia
     /**
      * @param string      $type
      * @param string      $id
-     * @param object      $mixed
+     * @param mixed       $mixed
      * @param string      $size
      * @param int         $number
      * @param string|null $source
@@ -60,7 +60,7 @@ interface IMedia
     /**
      * @param string      $type
      * @param string|int  $id
-     * @param object      $mixed
+     * @param mixed       $mixed
      * @param string      $size
      * @param int         $number
      * @param string|null $sourcePath

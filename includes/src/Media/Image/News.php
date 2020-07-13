@@ -58,7 +58,7 @@ class News extends AbstractImage
                 $req->setSourcePath(\str_replace(\PFAD_NEWSBILDER, '', $item->path));
             }
             $item->imageName = self::getCustomName($item);
-        })->pluck('imageName')->toArray();
+        })->pluck('imageName')->push($req->getName())->toArray();
     }
 
     /**
@@ -85,7 +85,7 @@ class News extends AbstractImage
             $result = \explode('/', $mixed)[1];
             $result = \pathinfo($result)['filename'];
         } else {
-            $result = \method_exists($mixed, 'getTitle') ? $mixed->getTitle() : $mixed->title;
+            $result = Image::getCleanFilename(\method_exists($mixed, 'getTitle') ? $mixed->getTitle() : $mixed->title);
         }
 
         return empty($result) ? 'image' : $result;

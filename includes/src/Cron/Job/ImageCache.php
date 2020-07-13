@@ -66,7 +66,7 @@ final class ImageCache extends Job
                 $this->db->query('SELECT 1 AS avoidTimeout', ReturnType::DEFAULT);
             }
         }
-        $this->logger->debug(\sprintf('Generated cache for %d %s images', $rendered, $instance::getType()));
+        $this->logger->info(\sprintf('Generated cache for %d %s images', $rendered, $instance::getType()));
         $this->nextIndex = $uncached === 0 || ($uncached - $rendered === 0) ? 0 : $index;
 
         return $this->nextIndex === 0;
@@ -81,7 +81,7 @@ final class ImageCache extends Job
         $this->logger->debug(\sprintf('Generating image cache - max. %d', $this->getLimit()));
         $res = true;
         foreach (Media::getInstance()->getRegisteredClasses() as $type) {
-            $res = $this->generateImageCache($queueEntry->tasksExecuted, new $type($this->db)) && $res;
+            $res = $this->generateImageCache($queueEntry->tasksExecuted, $type) && $res;
         }
         $queueEntry->tasksExecuted = $this->nextIndex;
         $this->setFinished($res);

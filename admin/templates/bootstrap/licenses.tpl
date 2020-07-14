@@ -66,7 +66,11 @@
                         <td><a href="{$license->getVendor()->getHref()}" rel="noopener">{$license->getVendor()->getName()}</a></td>
                         <td>
                             {foreach $license->getLinks() as $link}
-                                <a class="btn btn-default" href="{$link->getHref()}" title="{__($link->getRel())}">{__($link->getRel())}</a>
+                                <a class="btn btn-default" href="{$link->getHref()}" title="{__($link->getRel())}">
+                                    {if $link->getRel() === 'setBinding'}<i class="fa fa-link"></i>
+                                    {elseif $link->getRel() === 'itemDetails'}<i class="fa fa-info"></i> {/if}
+                                    {__($link->getRel())}
+                                </a>
                             {/foreach}
                         </td>
                     </tr>

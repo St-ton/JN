@@ -5,7 +5,6 @@ namespace JTL\License;
 use JTL\License\Struct\ExsLicense;
 use JTL\License\Struct\ReferencedPlugin;
 use JTL\License\Struct\ReferencedTemplate;
-use JTL\Shop;
 use stdClass;
 
 /**

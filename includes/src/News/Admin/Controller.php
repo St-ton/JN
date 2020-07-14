@@ -14,6 +14,8 @@ use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Helpers\Seo;
 use JTL\Language\LanguageModel;
+use JTL\Media\Image;
+use JTL\Media\MultiSizeImage;
 use JTL\News\Category;
 use JTL\News\CategoryInterface;
 use JTL\News\CategoryList;
@@ -32,6 +34,8 @@ use function Functional\map;
  */
 final class Controller
 {
+    use MultiSizeImage;
+
     public const UPLOAD_DIR = \PFAD_ROOT . \PFAD_NEWSBILDER;
 
     public const UPLOAD_DIR_CATEGORY = \PFAD_ROOT . \PFAD_NEWSKATEGORIEBILDER;
@@ -591,8 +595,9 @@ final class Controller
                 $this->deleteNewsImage($image->cName, $newsItemID, self::UPLOAD_DIR);
             }
         }
-        $fileIDName = $newsItemID . '/' . \explode('.', \basename($_FILES['previewImage']['name']))[0]
-            . '_preview.' . $extension;
+        $newName    = Image::getCleanFilename(\explode('.', \basename($_FILES['previewImage']['name']))[0]
+            . '_preview.' . $extension);
+        $fileIDName = $newsItemID . '/' . $newName;
         $uploadFile = self::UPLOAD_DIR . $fileIDName;
         \move_uploaded_file($_FILES['previewImage']['tmp_name'], $uploadFile);
 
@@ -615,25 +620,10 @@ final class Controller
             if (!empty($_FILES['Bilder']['size'][$i - $counter])
                 && $_FILES['Bilder']['error'][$i - $counter] === \UPLOAD_ERR_OK
             ) {
-                $type      = $_FILES['Bilder']['type'][$i - $counter];
-                $extension = \mb_substr(
-                    $type,
-                    \mb_strpos($type, '/') + 1,
-                    \mb_strlen($type) - \mb_strpos($type, '/') + 1
-                );
-                // not elegant, but since it's 99% jpg..
-                if ($extension === 'jpe') {
-                    $extension = 'jpg';
-                }
-                // check if image exists and delete
-                foreach ($oldImages as $image) {
-                    if (\mb_strpos($image->cDatei, 'Bild' . ($i + 1) . '.') !== false
-                        && $_FILES['Bilder']['name'][$i - $counter] !== ''
-                    ) {
-                        $this->deleteNewsImage($image->cName, $newsItemID, self::UPLOAD_DIR);
-                    }
-                }
-                $uploadFile = self::UPLOAD_DIR . $newsItemID . '/Bild' . ($i + 1) . '.' . $extension;
+                $info       = \pathinfo($_FILES['Bilder']['name'][$i - $counter]);
+                $oldName    = $info['filename'];
+                $newName    = Image::getCleanFilename($oldName);
+                $uploadFile = self::UPLOAD_DIR . $newsItemID . '/' . $newName . '.' . $info['extension'];
                 \move_uploaded_file($_FILES['Bilder']['tmp_name'][$i - $counter], $uploadFile);
             }
         }
@@ -905,16 +895,24 @@ final class Controller
     }
 
     /**
+     * @return string
+     */
+    public function getImageType(): string
+    {
+        return Image::TYPE_NEWS;
+    }
+
+    /**
      * @param string $text
      * @param int    $id
      * @return string
      */
     private function parseContent(string $text, int $id): string
     {
-        $uploadDir = \PFAD_ROOT . \PFAD_NEWSBILDER;
+        $uploadDir = \PFAD_ROOT . \PFAD_NEWSBILDER . $id;
         $images    = [];
-        if (\is_dir($uploadDir . $id)) {
-            $handle = \opendir($uploadDir . $id);
+        if (\is_dir($uploadDir)) {
+            $handle = \opendir($uploadDir);
             while (($file = \readdir($handle)) !== false) {
                 if ($file !== '.' && $file !== '..') {
                     $images[] = $file;
@@ -926,17 +924,22 @@ final class Controller
         \usort($images, static function ($a, $b) {
             return \strcmp($a, $b);
         });
-
-        $shopURL = Shop::getURL() . '/';
+        $baseURL = Shop::getImageBaseURL();
         foreach ($images as $image) {
             if (\mb_strpos($image, '_preview.') !== false) {
                 $placeholder = '$#preview#$';
-            } else {
+            } elseif (\mb_strpos($image, 'Bild') === 0) {
                 $placeholder = '$#Bild' . \substr(\explode('.', $image)[0], 4) . '#$';
+            } else {
+                $info        = \pathinfo($image);
+                $placeholder = '$#' . $info['filename'] . '#$';
             }
             $text = \str_replace(
                 $placeholder,
-                '<img alt="" src="' . $shopURL . \PFAD_NEWSBILDER . $id . '/' . $image . '" />',
+                '<img alt="" src="'
+                . $baseURL
+                . $this->generateImagePath(Image::SIZE_LG, 1, $id . '/' . $image)
+                . '" />',
                 $text
             );
         }

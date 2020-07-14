@@ -3,6 +3,7 @@
 namespace JTL\Recommendation;
 
 use \Illuminate\Support\Collection;
+use JTL\Shop;
 
 /**
  * Class Manager
@@ -10,6 +11,10 @@ use \Illuminate\Support\Collection;
  */
 class Manager
 {
+    public const SCOPE_WIZARD_PAYMENT_PROVIDER  = 'wizard.payment-provider';
+    public const SCOPE_WIZARD_LEGAL_TEXTS       = 'wizard.legal-texts';
+    public const SCOPE_BACKEND_PAYMENT_PROVIDER = 'backend.payment-provider';
+    public const SCOPE_BACKEND_LEGAL_TEXTS      = 'backend.legal-texts';
 
     /**
      * @var Collection
@@ -17,10 +22,17 @@ class Manager
     private $recommendations;
 
     /**
-     * Manager constructor.
+     * @var string
      */
-    public function __construct()
+    private $scope;
+
+    /**
+     * Manager constructor.
+     * @param string $scope
+     */
+    public function __construct(string $scope)
     {
+        $this->scope = $scope;
         $this->setRecommendations();
     }
 
@@ -31,54 +43,8 @@ class Manager
     {
         $this->recommendations = new Collection();
 
-        $testRec1          = (object)[
-            'id' => 1,
-            'product_description_a' => 'Kurzbeschreibung Testplugin 1',
-            'offer_title' => 'Testplugin',
-            'preview_image' => 'https://bilder.jtl-software.de/splogos/kServicepartner_519.png',
-            'benefits' => ['toll', 'mega', 'muss man haben'],
-            'installation_setup_description' => 'Installieren und so',
-            'images' => [
-                'https://bilder.jtl-software.de/splogos/kServicepartner_519.png',
-                'https://bilder.jtl-software.de/splogos/kServicepartner_519.png',
-                'https://bilder.jtl-software.de/splogos/kServicepartner_519.png',
-                'https://bilder.jtl-software.de/splogos/kServicepartner_519.png'
-            ]
-        ];
-        $testRec2          = (object)[
-            'id' => 2,
-            'product_description_a' => 'Kurzbeschreibung Testplugin 2',
-            'offer_title' => 'Testplugin',
-            'preview_image' => 'https://bilder.jtl-software.de/splogos/kServicepartner_519.png',
-            'benefits' => ['toll', 'mega', 'muss man haben'],
-            'installation_setup_description' => 'Installieren und so',
-            'images' => [
-                'https://bilder.jtl-software.de/splogos/kServicepartner_519.png',
-                'https://bilder.jtl-software.de/splogos/kServicepartner_519.png',
-                'https://bilder.jtl-software.de/splogos/kServicepartner_519.png',
-                'https://bilder.jtl-software.de/splogos/kServicepartner_519.png'
-            ]
-        ];
-        $testRec3          = (object)[
-            'id' => 3,
-            'product_description_a' => 'Kurzbeschreibung Testplugin 3',
-            'offer_title' => 'Testplugin',
-            'preview_image' => 'https://bilder.jtl-software.de/splogos/kServicepartner_519.png',
-            'benefits' => ['toll', 'mega', 'muss man haben'],
-            'installation_setup_description' => 'Installieren und so',
-            'images' => [
-                'https://bilder.jtl-software.de/splogos/kServicepartner_519.png',
-                'https://bilder.jtl-software.de/splogos/kServicepartner_519.png',
-                'https://bilder.jtl-software.de/splogos/kServicepartner_519.png',
-                'https://bilder.jtl-software.de/splogos/kServicepartner_519.png'
-            ]
-        ];
-        $recommendations   = [];
-        $recommendations[] = $testRec1;
-        $recommendations[] = $testRec2;
-        $recommendations[] = $testRec3;
-        //TODO: Cache
-        foreach ($recommendations as $recommendation) {
+//        //TODO: Cache?
+        foreach ($this->getJSONFromAPI($this->getScope()) as $recommendation) {
             $this->recommendations->push(new Recommendation($recommendation));
         }
     }
@@ -92,13 +58,43 @@ class Manager
     }
 
     /**
-     * @param int $id
+     * @param string $id
      * @return Recommendation
      */
-    public function getRecommendationById(int $id): Recommendation
+    public function getRecommendationById(string $id): Recommendation
     {
         return $this->recommendations->filter(static function (Recommendation $e) use ($id) {
             return $e->getId() === $id;
         })->first();
     }
+
+    /**
+     * @param string $scope
+     * @return mixed
+     */
+    private function getJSONFromAPI(string $scope)
+    {
+        return $this->getTestJSON();
+//        return json_decode(file_get_contents(\JTLURL_RECOMMENDATIONS_SCOPE . $scope));
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getTestJSON()
+    {
+        return \json_decode(
+            \file_get_contents(\PFAD_ROOT .'includes/src/Recommendation/getRecommendation.json'),
+            false
+        )->extensions;
+    }
+
+    /**
+     * @return string
+     */
+    public function getScope(): string
+    {
+        return $this->scope;
+    }
+
 }

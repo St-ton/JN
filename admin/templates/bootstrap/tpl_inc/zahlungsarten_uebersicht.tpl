@@ -102,12 +102,15 @@
                         </tr>
                         </thead>
                         <tbody>
-                            {foreach $recommendations as $recommendation}
+                            {foreach $recommendations->getRecommendations() as $recommendation}
                                 <tr>
-                                    <td><img src="{$recommendation->getPreviewImage()}" width="108" height="42" alt="Klarna"></td>
+                                    <td><img src="{$recommendation->getPreviewImage()}" width="108" height="42" alt="{$recommendation->getTitle()}"></td>
                                     <td>
                                         <p>{$recommendation->getDescription()}</p>
-                                        <a href="premiumplugin.php?id={$recommendation->getId()}" class="btn btn-primary">Mehr erfahren</a>
+                                        <a href="premiumplugin.php?scope={$recommendations->getScope()}&id={$recommendation->getId()}"
+                                           class="btn btn-primary">
+                                            Mehr erfahren
+                                        </a>
                                     </td>
                                 </tr>
                             {/foreach}

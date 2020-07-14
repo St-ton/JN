@@ -29,7 +29,7 @@ $db              = Shop::Container()->getDB();
 $defaultCurrency = $db->select('twaehrung', 'cStandard', 'Y');
 $step            = 'uebersicht';
 $alertHelper     = Shop::Container()->getAlertService();
-$recommendations = (new Manager())->getRecommendations();
+$recommendations = new Manager(Manager::SCOPE_BACKEND_PAYMENT_PROVIDER);
 if (Request::verifyGPCDataInt('checkNutzbar') === 1) {
     PaymentMethod::checkPaymentMethodAvailability();
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successPaymentMethodCheck'), 'successPaymentMethodCheck');

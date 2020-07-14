@@ -188,5 +188,5 @@ target="_blank"><i class="fa fa-external-link"></i> Link</a>.')
 }
 
 $smarty->assign('pp', $pp)
-       ->assign('recommendation', (new Manager())->getRecommendationById($_GET['id']))
+       ->assign('recommendation', (new Manager($_GET['scope']))->getRecommendationById($_GET['id']))
        ->display('premiumplugin.tpl');

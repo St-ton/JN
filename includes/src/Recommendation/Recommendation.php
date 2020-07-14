@@ -11,7 +11,7 @@ use stdClass;
 class Recommendation
 {
     /**
-     * @var int
+     * @var string
      */
     private $id;
 
@@ -38,7 +38,7 @@ class Recommendation
     /**
      * @var string
      */
-    private $descriptionShort = '';
+    private $teaser = '';
 
     /**
      * @var array
@@ -57,26 +57,27 @@ class Recommendation
     public function __construct(stdClass $recommendation)
     {
         $this->setId($recommendation->id);
-        $this->setDescription($recommendation->product_description_a);
-        $this->setTitle($recommendation->offer_title);
-        $this->setPreviewImage($recommendation->preview_image);
+        $this->setDescription($recommendation->description);
+        $this->setTitle($recommendation->name);
+        $this->setPreviewImage($recommendation->preview_url);
         $this->setBenefits($recommendation->benefits);
-        $this->setSetupDescription($recommendation->installation_setup_description);
+        $this->setSetupDescription($recommendation->installation_description);
         $this->setImages($recommendation->images);
+        $this->setTeaser($recommendation->teaser);
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getId(): int
+    public function getId(): string
     {
         return $this->id;
     }
 
     /**
-     * @param int $id
+     * @param string $id
      */
-    public function setId(int $id): void
+    public function setId(string $id): void
     {
         $this->id = $id;
     }
@@ -148,17 +149,17 @@ class Recommendation
     /**
      * @return string
      */
-    public function getDescriptionShort(): string
+    public function getTeaser(): string
     {
-        return $this->descriptionShort;
+        return $this->teaser;
     }
 
     /**
-     * @param string $descriptionShort
+     * @param string $teaser
      */
-    public function setDescriptionShort(string $descriptionShort): void
+    public function setTeaser(string $teaser): void
     {
-        $this->descriptionShort = $descriptionShort;
+        $this->teaser = $teaser;
     }
 
     /**

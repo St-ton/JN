@@ -288,7 +288,7 @@ msgid "startseite_neuimsortiment_anzahl_name"
 msgstr "\"New in product range\": Number of items"
 
 msgid "startseite_neuimsortiment_anzahl_desc"
-msgstr "Specify the number of items per box. Enter 0 if you do not want this box to be displayed."
+msgstr "Specify the number of items per box. Enter 0 if you do not want this box to be displayed. See the settings tab in \"Standard elements > Footers/Boxes\" for additional settings."
 
 msgid "startseite_neuimsortiment_sortnr_name"
 msgstr "\"New in product range\": Sort number"
@@ -644,12 +644,6 @@ msgstr "Show wish list button"
 msgid "artikeluebersicht_wunschzettel_anzeigen_desc"
 msgstr "Specify whether to show a button in the item list that allows adding items to the wish list."
 
-msgid "artikeluebersicht_anzahl_pfeile_name"
-msgstr "Arrow button for item quantity"
-
-msgid "artikeluebersicht_anzahl_pfeile_desc"
-msgstr "Specify whether to display arrow buttons for changing the item quantity."
-
 msgid "artikeluebersicht_artikelintervall_anzeigen_name"
 msgstr "Show permissible order quantity"
 
@@ -817,12 +811,6 @@ msgstr "Show savings in comparison to RRP"
 
 msgid "sie_sparen_x_anzeigen_desc"
 msgstr "Specify whether to show the value or percentage that the customer saves on items in comparison to the RRP."
-
-msgid "artikeldetails_anzahl_pfeile_name"
-msgstr "Arrow button for item quantity"
-
-msgid "artikeldetails_anzahl_pfeile_desc"
-msgstr "Specify whether to display arrow buttons for changing the item quantity."
 
 msgid "artikeldetails_canonicalurl_varkombikind_name"
 msgstr "Canonical URLs with child items"
@@ -1257,10 +1245,10 @@ msgid "warenkorb_versandermittlung_anzeigen_desc"
 msgstr "Specify whether to display the shipping cost determination on the special page \"Shipments\"."
 
 msgid "warenkorb_kupon_anzeigen_name"
-msgstr "Prompt default coupons in basket"
+msgstr "Prompt coupons in basket"
 
 msgid "warenkorb_kupon_anzeigen_desc"
-msgstr "Specify whether to already prompt default coupons in the basket. Coupons for free shipping can only be entered when the order is completed."
+msgstr "Specify whether to already prompt coupons in the basket."
 
 msgid "warenkorb_xselling_anzeigen_name"
 msgstr "Show cross-selling in basket"
@@ -2612,18 +2600,6 @@ msgstr "Show blog categories under blog"
 msgid "news_kategorie_unternewsanzeigen_desc"
 msgstr "Specify whether to display the respective blog categories under a selected blog post."
 
-msgid "news_kategorie_boxanzeigen_name"
-msgstr "Display blog category in a box"
-
-msgid "news_kategorie_boxanzeigen_desc"
-msgstr "Specify whether to display a box with an overview of all blog categories."
-
-msgid "news_sicherheitscode_name"
-msgstr "Enable spam protection"
-
-msgid "news_sicherheitscode_desc"
-msgstr "Specify whether to use the spam protection method defined in the global settings."
-
 msgid "sitemap_seiten_anzeigen_name"
 msgstr "Show all custom pages"
 
@@ -2653,12 +2629,6 @@ msgstr "Show all blog categories"
 
 msgid "sitemap_newskategorien_anzeigen_desc"
 msgstr "Specify whether all blog category pages should appear in the sitemap."
-
-msgid "sitemap_weitereseiten_artikeluebersicht_name"
-msgstr "Include pages of item overviews in sitemap"
-
-msgid "sitemap_weitereseiten_artikeluebersicht_desc"
-msgstr "Specify whether to include the pages of the item overviews (e.g. manufacturers, categories, etc.) in the sitemap."
 
 msgid "sitemap_livesuche_anzeigen_name"
 msgstr "Show search queries"

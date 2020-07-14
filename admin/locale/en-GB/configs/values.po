@@ -446,15 +446,6 @@ msgstr "Yes"
 msgid "artikeluebersicht_wunschzettel_anzeigen_value(N)"
 msgstr "No"
 
-msgid "artikeluebersicht_anzahl_pfeile_value(Y)"
-msgstr "Always"
-
-msgid "artikeluebersicht_anzahl_pfeile_value(I)"
-msgstr "If permissible order quantity exists"
-
-msgid "artikeluebersicht_anzahl_pfeile_value(N)"
-msgstr "Hide"
-
 msgid "artikeluebersicht_artikelintervall_anzeigen_value(Y)"
 msgstr "Yes"
 
@@ -610,15 +601,6 @@ msgstr "Yes"
 
 msgid "sie_sparen_x_anzeigen_value(0)"
 msgstr "No"
-
-msgid "artikeldetails_anzahl_pfeile_value(Y)"
-msgstr "Always"
-
-msgid "artikeldetails_anzahl_pfeile_value(I)"
-msgstr "If permissible order quantity exists"
-
-msgid "artikeldetails_anzahl_pfeile_value(N)"
-msgstr "Hide"
 
 msgid "artikeldetails_canonicalurl_varkombikind_value(Y)"
 msgstr "Yes"
@@ -1824,7 +1806,7 @@ msgid "kategorie_bild_anzeigen_value(B)"
 msgstr "Yes, as image"
 
 msgid "kategorie_bild_anzeigen_value(N)"
-msgstr "No category image, no category description"
+msgstr "No"
 
 msgid "kategorie_beschreibung_anzeigen_value(Y)"
 msgstr "Yes"
@@ -1904,18 +1886,6 @@ msgstr "Yes"
 msgid "news_kategorie_unternewsanzeigen_value(N)"
 msgstr "No"
 
-msgid "news_kategorie_boxanzeigen_value(Y)"
-msgstr "Yes"
-
-msgid "news_kategorie_boxanzeigen_value(N)"
-msgstr "No"
-
-msgid "news_sicherheitscode_value(Y)"
-msgstr "Yes"
-
-msgid "news_sicherheitscode_value(N)"
-msgstr "No"
-
 msgid "sitemap_seiten_anzeigen_value(Y)"
 msgstr "Yes"
 
@@ -1944,12 +1914,6 @@ msgid "sitemap_newskategorien_anzeigen_value(Y)"
 msgstr "Yes"
 
 msgid "sitemap_newskategorien_anzeigen_value(N)"
-msgstr "No"
-
-msgid "sitemap_weitereseiten_artikeluebersicht_value(Y)"
-msgstr "Yes"
-
-msgid "sitemap_weitereseiten_artikeluebersicht_value(N)"
 msgstr "No"
 
 msgid "sitemap_livesuche_anzeigen_value(Y)"

@@ -66,25 +66,22 @@ $updater    = new Updater($db);
 $hasUpdates = $updater->hasPendingUpdates();
 Shop::setIsFrontend(false);
 
-if (!empty($_COOKIE['JTLSHOP']) && $loggedIn && empty($_SESSION['frontendNotified'])) {
+if (!empty($_COOKIE['JTLSHOP']) && empty($_SESSION['frontendUpToDate'])) {
     $adminToken   = $_SESSION['jtl_token'];
     $adminLangTag = $_SESSION['AdminAccount']->language;
+    $eSIdAdm      = \session_id();
     \session_write_close();
     \session_name('JTLSHOP');
     \session_id($_COOKIE['JTLSHOP']);
     \session_start();
-    $_SESSION['loggedAsAdmin'] = true;
+    $_SESSION['loggedAsAdmin'] = $loggedIn;
     $_SESSION['adminToken']    = $adminToken;
     $_SESSION['adminLangTag']  = $adminLangTag;
     \session_write_close();
     \session_name('eSIdAdm');
-
-    if (!empty($_COOKIE['eSIdAdm'])) {
-        \session_id($_COOKIE['eSIdAdm']);
-    }
-
+    \session_id($eSIdAdm);
     \session_start();
-    $_SESSION['frontendNotified'] = true;
+    $_SESSION['frontendUpToDate'] = true;
 }
 
 if ($loggedIn

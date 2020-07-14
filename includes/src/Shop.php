@@ -1943,37 +1943,21 @@ final class Shop
             return self::$logged;
         }
 
-        $result       = false;
-        $adminToken   = null;
-        $adminLangTag = null;
-
-        $isLogged = static function () {
-            return self::Container()->getAdminAccount()->logged();
-        };
-
-        if (isset($_COOKIE['eSIdAdm'])) {
-            if (\session_name() !== 'eSIdAdm') {
-                $oldID = \session_id();
-                \session_write_close();
-                \session_id($_COOKIE['eSIdAdm']);
-                $result       = $isLogged();
-                $adminToken   = $_SESSION['jtl_token'];
-                $adminLangTag = $_SESSION['AdminAccount']->language;
-                \session_write_close();
-                \session_id($oldID);
-                Frontend::getInstance();
-            } else {
-                $result       = $isLogged();
-                $adminToken   = $_SESSION['jtl_token'];
-                $adminLangTag = $_SESSION['AdminAccount']->language;
-            }
+        if (\session_name() === 'eSIdAdm') {
+            self::$logged       = self::Container()->getAdminAccount()->logged();
+            self::$adminToken   = $_SESSION['jtl_token'];
+            self::$adminLangTag = $_SESSION['AdminAccount']->language;
+        } elseif (!empty($_SESSION['loggedAsAdmin']) && $_SESSION['loggedAsAdmin'] === true) {
+            self::$logged       = true;
+            self::$adminToken   = $_SESSION['adminToken'];
+            self::$adminLangTag = $_SESSION['adminLangTag'];
+        } else {
+            self::$logged       = false;
+            self::$adminToken   = null;
+            self::$adminLangTag = null;
         }
 
-        self::$logged       = $result;
-        self::$adminToken   = $adminToken;
-        self::$adminLangTag = $adminLangTag;
-
-        return $result;
+        return self::$logged;
     }
 
     /**

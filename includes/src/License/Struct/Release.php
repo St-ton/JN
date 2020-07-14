@@ -3,6 +3,7 @@
 namespace JTL\License\Struct;
 
 use DateTime;
+use JTL\Shop;
 use JTLShop\SemVer\Version;
 use stdClass;
 
@@ -44,6 +45,11 @@ class Release
     private $downloadUrl;
 
     /**
+     * @var string - sha1 checksum
+     */
+    private $checksum;
+
+    /**
      * Release constructor.
      * @param stdClass|null $json
      */
@@ -61,9 +67,10 @@ class Release
     {
         $this->setVersion(Version::parse($json->version));
         $this->setType($json->type);
-        $this->setReleaseDate($json->releaseDate);
-        $this->setShortDescription($json->shortDescription);
-        $this->setDownloadURL($json->downloadUrl);
+        $this->setReleaseDate($json->release_date);
+        $this->setShortDescription($json->short_description);
+        $this->setDownloadURL($json->download_url);
+        $this->setChecksum($json->checksum ?? '');
     }
 
     /**
@@ -145,5 +152,21 @@ class Release
     public function setDownloadURL(string $downloadURL): void
     {
         $this->downloadUrl = $downloadURL;
+    }
+
+    /**
+     * @return string
+     */
+    public function getChecksum(): string
+    {
+        return $this->checksum;
+    }
+
+    /**
+     * @param string $checksum
+     */
+    public function setChecksum(string $checksum): void
+    {
+        $this->checksum = $checksum;
     }
 }

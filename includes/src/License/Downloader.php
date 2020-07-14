@@ -4,9 +4,11 @@ namespace JTL\License;
 
 use GuzzleHttp\Client;
 use JTL\License\Exception\ApiResultCodeException;
+use JTL\License\Exception\ChecksumValidationException;
 use JTL\License\Exception\DownloadValidationException;
 use JTL\License\Exception\FilePermissionException;
 use JTL\License\Struct\Release;
+use JTL\Shop;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -21,15 +23,23 @@ class Downloader
      * @throws DownloadValidationException
      * @throws FilePermissionException
      * @throws ApiResultCodeException
+     * @throws ChecksumValidationException
      */
     public function downloadRelease(Release $available): string
     {
         if (!$this->validateDownloadArchive($available)) {
             throw new DownloadValidationException('Could not validate archive');
         }
-        $url = $available->getDownloadURL();
+        $url  = $available->getDownloadURL();
+        $file = $this->downloadItemArchive($url, \basename($url));
+        if (!$this->validateChecksum($file, $available->getChecksum())) {
+            if (\file_exists($file)) {
+                \unlink($file);
+            }
+            throw new ChecksumValidationException('Archive checksum validation failed');
+        }
 
-        return $this->downloadItemArchive($url, \basename($url));
+        return $file;
     }
 
     /**
@@ -51,7 +61,6 @@ class Downloader
         if ($res->getStatusCode() !== 200) {
             throw new ApiResultCodeException('Did not get 200 OK result code form api but ' . $res->getStatusCode());
         }
-        // @todo integrity validation
 
         return $fileName;
     }
@@ -71,5 +80,15 @@ class Downloader
         }
         // @todo: signature validation
         return true;
+    }
+
+    /**
+     * @param string $file
+     * @param string $checksum
+     * @return bool
+     */
+    private function validateChecksum(string $file, string $checksum): bool
+    {
+        return \sha1_file($file) === $checksum;
     }
 }

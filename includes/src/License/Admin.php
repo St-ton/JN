@@ -14,6 +14,7 @@ use JTL\DB\DbInterface;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\License\Exception\ApiResultCodeException;
+use JTL\License\Exception\ChecksumValidationException;
 use JTL\License\Exception\DownloadValidationException;
 use JTL\License\Exception\FilePermissionException;
 use JTL\License\Installer\PluginInstaller;
@@ -82,6 +83,7 @@ class Admin
             $action = null;
         }
         if ($action === null || !$valid) {
+            $this->getLicenses(true);
             $this->getList($smarty);
             return;
         }
@@ -107,7 +109,13 @@ class Admin
                     $smarty->assign('licenseErrorMessage', $response->error)
                         ->assign('resultCode', $result);
                 }
-            } catch (ClientException | ConnectException | FilePermissionException | ApiResultCodeException $e) {
+            } catch (ClientException
+            | ConnectException
+            | FilePermissionException
+            | ApiResultCodeException
+            | ChecksumValidationException
+            | InvalidArgumentException $e
+            ) {
                 $response->status = 'FAILED';
                 $msg              = $e->getMessage();
                 if (\strpos($msg, 'response:') !== false) {
@@ -208,6 +216,7 @@ class Admin
      * @throws InvalidArgumentException
      * @throws ApiResultCodeException
      * @throws FilePermissionException
+     * @throws ChecksumValidationException
      */
     private function getDownload(string $itemID)
     {

@@ -3,6 +3,7 @@
 namespace JTL\License\Struct;
 
 use DateTime;
+use JTL\Shop;
 use stdClass;
 
 /**
@@ -50,6 +51,11 @@ class License
     private $expired = false;
 
     /**
+     * @var bool
+     */
+    private $isBound = false;
+
+    /**
      * License constructor.
      * @param stdClass|null $json
      */
@@ -71,8 +77,9 @@ class License
         $this->setKey($json->key);
         $this->setType($json->type);
         $this->setCreated($json->created);
-        $this->setValidUntil($json->validUntil);
+        $this->setValidUntil($json->valid_until);
         $this->setSubscription(new Subscription($json->subscription));
+        $this->setIsBound($json->is_bound);
         if ($this->getValidUntil() !== null) {
             $now = new DateTime();
             $this->setExpired($this->getValidUntil() < $now);
@@ -189,5 +196,21 @@ class License
     public function setExpired(bool $expired): void
     {
         $this->expired = $expired;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isBound(): bool
+    {
+        return $this->isBound;
+    }
+
+    /**
+     * @param bool $isBound
+     */
+    public function setIsBound(bool $isBound): void
+    {
+        $this->isBound = $isBound;
     }
 }

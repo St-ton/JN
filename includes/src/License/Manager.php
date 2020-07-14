@@ -5,6 +5,7 @@ namespace JTL\License;
 use DateTime;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use JTL\Backend\AuthToken;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
@@ -20,6 +21,8 @@ class Manager
     private const MAX_REQUESTS = 10;
 
     private const CHECK_INTERVAL_HOURS = 4;
+
+    private const API_URL = 'https://checkout-stage.jtl-software.com/v1/licenses';
 
     /**
      * @var DbInterface
@@ -80,10 +83,18 @@ class Manager
         }
         $res = $this->client->request(
             'POST',
-            'https://license.jtl-test.de/v1/exs',
+            self::API_URL,
             [
-                'headers' => ['Accept' => 'application/json'],
-                'verify'  => true
+                'headers' => [
+                    'Accept'        => 'application/json',
+                    'Content-Type'  => 'application/json',
+                    'Authorization' => 'Bearer ' . AuthToken::getInstance($this->db)->get()
+                ],
+                'verify'  => true,
+                'body'    => \json_encode((object)['shop' => [
+                    'domain'  => \URL_SHOP,
+                    'version' => \APPLICATION_VERSION
+                ]])
             ]
         );
         $this->housekeeping();
@@ -114,9 +125,6 @@ class Manager
      */
     public function getLicenseData(): ?stdClass
     {
-        if (true) { // @todo: remove
-            return $this->getLocalTestData();
-        }
         $data = $this->db->query(
             'SELECT * FROM licenses
                 WHERE returnCode = 200

@@ -37,9 +37,9 @@ class Subscription
      */
     public function fromJSON(stdClass $json): void
     {
-        $this->setValidUntil($json->validUntil);
+        $this->setValidUntil($json->valid_until);
         $now = new DateTime();
-        $this->setExpired($json->validUntil !== null && $this->getValidUntil() < $now);
+        $this->setExpired($json->valid_until !== null && $this->getValidUntil() < $now);
     }
 
     /**

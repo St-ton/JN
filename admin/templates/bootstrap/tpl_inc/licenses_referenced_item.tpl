@@ -5,13 +5,21 @@
         {$subscription = $licData->getSubscription()}
         {$disabled = $licData->isExpired() || $subscription->isExpired()}
         {if isset($licenseErrorMessage)}
-            <div class="alert alert-danger">{__($licenseErrorMessage)}{if isset($resultCode) && $resultCode !== 1}{__('Error code: %d', $resultCode)}{/if}</div>
+            <div class="alert alert-danger">
+                {__($licenseErrorMessage)}{if isset($resultCode) && $resultCode !== 1}{__('Error code: %d', $resultCode)}{/if}
+            </div>
         {/if}
         {$installedVersion = $referencedItem->getInstalledVersion()}
         {if $installedVersion === null}
-            <i class="far fa-circle"></i> <span class="item-available badge badge-info">
-                {__('Version %s available', $license->getReleases()->getAvailable()->getVersion())}
-            </span>
+            {$avail = $license->getReleases()->getAvailable()}
+            {if $avail === null}
+                {$disabled = true}
+                <i class="far fa-circle"></i> <span class="badge badge-danger">{__('No version available')}</span>
+            {else}
+                <i class="far fa-circle"></i> <span class="item-available badge badge-info">
+                    {__('Version %s available', $avail->getVersion())}
+                </span>
+            {/if}
             <hr>
             <form method="post"{if !$disabled} class="install-item-form"{/if}>
                 {$jtl_token}
@@ -26,7 +34,9 @@
             <i class="far fa-check-circle"></i> {$installedVersion}{if $referencedItem->isActive() === false} {__('(disabled)')}{/if}
         {/if}
         {if $referencedItem->hasUpdate()}
-            <span class="update-available badge badge-success">{__('Update to version %s available', $referencedItem->getMaxInstallableVersion())}</span>
+            <span class="update-available badge badge-success">
+                {__('Update to version %s available', $referencedItem->getMaxInstallableVersion())}
+            </span>
             <hr>
             <form method="post"{if !$disabled} class="update-item-form"{/if}>
                 {$jtl_token}

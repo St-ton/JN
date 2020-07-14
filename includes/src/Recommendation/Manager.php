@@ -3,7 +3,6 @@
 namespace JTL\Recommendation;
 
 use \Illuminate\Support\Collection;
-use JTL\Shop;
 
 /**
  * Class Manager
@@ -96,5 +95,4 @@ class Manager
     {
         return $this->scope;
     }
-
 }

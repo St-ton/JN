@@ -5,7 +5,7 @@ namespace JTL\Recommendation;
 use stdClass;
 
 /**
- * Class Manager
+ * Class Recommendation
  * @package JTL\Recommendation
  */
 class Recommendation
@@ -51,6 +51,11 @@ class Recommendation
     private $setupDescription = '';
 
     /**
+     * @var Manufacturer
+     */
+    private $manufacturer;
+
+    /**
      * Recommendation constructor.
      * @param \stdClass $recommendation
      */
@@ -64,6 +69,7 @@ class Recommendation
         $this->setSetupDescription($recommendation->installation_description);
         $this->setImages($recommendation->images);
         $this->setTeaser($recommendation->teaser);
+        $this->setManufacturer(new Manufacturer($recommendation->seller));
     }
 
     /**
@@ -192,5 +198,21 @@ class Recommendation
     public function setSetupDescription(string $setupDescription): void
     {
         $this->setupDescription = $setupDescription;
+    }
+
+    /**
+     * @return Manufacturer
+     */
+    public function getManufacturer(): Manufacturer
+    {
+        return $this->manufacturer;
+    }
+
+    /**
+     * @param Manufacturer $manufacturer
+     */
+    public function setManufacturer(Manufacturer $manufacturer): void
+    {
+        $this->manufacturer = $manufacturer;
     }
 }

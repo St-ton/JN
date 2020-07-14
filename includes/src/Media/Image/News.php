@@ -116,12 +116,12 @@ class News extends AbstractImage
     public function getPathByID($id, int $number = null): ?string
     {
         $item = $this->db->queryPrepared(
-                'SELECT cPreviewImage AS path
+            'SELECT cPreviewImage AS path
                     FROM tnews
                     WHERE kNews = :cid LIMIT 1',
-                ['cid' => $id],
-                ReturnType::SINGLE_OBJECT
-            )->path ?? null;
+            ['cid' => $id],
+            ReturnType::SINGLE_OBJECT
+        )->path ?? null;
 
         return empty($item->path)
             ? null

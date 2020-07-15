@@ -366,9 +366,6 @@ class Controller
             if (empty($post['cEmail']) || Text::filterEmailAddress($post['cEmail']) === false) {
                 $checks['cEmail'] = 1;
             }
-            if ($config['news']['news_sicherheitscode'] !== 'N' && !Form::validateCaptcha($post)) {
-                $checks['captcha'] = 2;
-            }
         }
         if ((!isset($checks['cName']) || !$checks['cName']) && SimpleMail::checkBlacklist($post['cEmail'])) {
             $checks['cEmail'] = 2;

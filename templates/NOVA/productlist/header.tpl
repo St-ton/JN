@@ -1,5 +1,6 @@
 {block name='productlist-header'}
-    {if !isset($oNavigationsinfo) || isset($Suchergebnisse) && isset($oNavigationsinfo) && empty($oNavigationsinfo->getName())}
+    {if !isset($oNavigationsinfo)
+        || (!$oNavigationsinfo->getManufacturer() && !$oNavigationsinfo->getCharacteristicValue() && !$oNavigationsinfo->getCategory())}
         {opcMountPoint id='opc_before_heading'}
         {block name='productlist-header-heading'}
             <div class="h1">{$Suchergebnisse->getSearchTermWrite()}</div>
@@ -28,61 +29,64 @@
     {/block}
 
     {block name='productlist-header-description'}
-        {if $oNavigationsinfo->hasData()}
-            <div class="desc clearfix mb-5">
-                {if $oNavigationsinfo->getImageURL() !== $smarty.const.BILD_KEIN_KATEGORIEBILD_VORHANDEN
-                    && $oNavigationsinfo->getImageURL() !== 'gfx/keinBild_kl.gif'
-                    && $oNavigationsinfo->getImageURL() !== $imageBaseURL|cat:$smarty.const.BILD_KEIN_KATEGORIEBILD_VORHANDEN}
-                    {if $oNavigationsinfo->getCategory() !== null}
-                        {$navData = $oNavigationsinfo->getCategory()}
-                    {elseif $oNavigationsinfo->getManufacturer() !== null}
-                        {$navData = $oNavigationsinfo->getManufacturer()}
-                    {elseif $oNavigationsinfo->getCharacteristicValue() !== null}
-                        {$navData = $oNavigationsinfo->getCharacteristicValue()}
-                    {/if}
-                    {if $navData->getImage(\JTL\Media\Image::SIZE_XS)|default:null !== null}
-                        {image fluid=true lazy=true webp=true
-                            src=$navData->getImage(\JTL\Media\Image::SIZE_XS)
-                            srcset="{$navData->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_kategorien_mini_breite}w,
-                                {$navData->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_kategorien_klein_breite}w,
-                                {$navData->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_kategorien_breite}w,
-                                {$navData->getImage(\JTL\Media\Image::SIZE_LG)} {$Einstellungen.bilder.bilder_kategorien_gross_breite}w"
-                            alt="{$navData->cBeschreibung|strip_tags|truncate:40|escape:'html'}"
-                            sizes="100vw"
-                            class="mb-5"
-                        }
-                    {/if}
-                {/if}
-                <div class="title mb-4">
-                    {if $oNavigationsinfo->getName()}
-                        {opcMountPoint id='opc_before_heading'}
-                        {block name='productlist-header-description-heading'}
-                            <h1 class="h2">{$oNavigationsinfo->getName()}</h1>
-                        {/block}
-                    {/if}
-                </div>
-                {if $Einstellungen.navigationsfilter.kategorie_beschreibung_anzeigen === 'Y'
-                    && $oNavigationsinfo->getCategory() !== null
-                    && $oNavigationsinfo->getCategory()->cBeschreibung|strlen > 0}
-                    {block name='productlist-header-description-category'}
-                        <p>{$oNavigationsinfo->getCategory()->cBeschreibung}</p>
-                    {/block}
-                {/if}
-                {if $Einstellungen.navigationsfilter.hersteller_beschreibung_anzeigen === 'Y'
-                    && $oNavigationsinfo->getManufacturer() !== null
-                    && $oNavigationsinfo->getManufacturer()->cBeschreibung|strlen > 0}
-                    {block name='productlist-header-description-manufacturers'}
-                        <p>{$oNavigationsinfo->getManufacturer()->cBeschreibung}</p>
-                    {/block}
-                {/if}
-                {if $Einstellungen.navigationsfilter.merkmalwert_beschreibung_anzeigen === 'Y'
-                    && $oNavigationsinfo->getCharacteristicValue() !== null
-                    && $oNavigationsinfo->getCharacteristicValue()->cBeschreibung|strlen > 0}
-                    {block name='productlist-header-description-attributes'}
-                        <p>{$oNavigationsinfo->getCharacteristicValue()->cBeschreibung}</p>
-                    {/block}
-                {/if}
+        {if $oNavigationsinfo->getImageURL() !== $smarty.const.BILD_KEIN_KATEGORIEBILD_VORHANDEN
+            && $oNavigationsinfo->getImageURL() !== 'gfx/keinBild_kl.gif'
+            && $oNavigationsinfo->getImageURL() !== $imageBaseURL|cat:$smarty.const.BILD_KEIN_KATEGORIEBILD_VORHANDEN}
+            {if $oNavigationsinfo->getCategory() !== null}
+                {$navData = $oNavigationsinfo->getCategory()}
+            {elseif $oNavigationsinfo->getManufacturer() !== null}
+                {$navData = $oNavigationsinfo->getManufacturer()}
+            {elseif $oNavigationsinfo->getCharacteristicValue() !== null}
+                {$navData = $oNavigationsinfo->getCharacteristicValue()}
+            {/if}
+            {if $navData->getImage(\JTL\Media\Image::SIZE_XS)|default:null !== null}
+                {image fluid=true lazy=true webp=true
+                    src=$navData->getImage(\JTL\Media\Image::SIZE_XS)
+                    srcset="{$navData->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_kategorien_mini_breite}w,
+                        {$navData->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_kategorien_klein_breite}w,
+                        {$navData->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_kategorien_breite}w,
+                        {$navData->getImage(\JTL\Media\Image::SIZE_LG)} {$Einstellungen.bilder.bilder_kategorien_gross_breite}w"
+                    alt="{$navData->cBeschreibung|strip_tags|truncate:40|escape:'html'}"
+                    sizes="100vw"
+                    class="mb-5"
+                }
+            {/if}
+        {/if}
+        {if $oNavigationsinfo->getName()}
+            <div class="title mb-4">
+                {opcMountPoint id='opc_before_heading'}
+                {block name='productlist-header-description-heading'}
+                    <h1 class="h2">{$oNavigationsinfo->getName()}</h1>
+                {/block}
             </div>
+        {/if}
+
+        {if $Einstellungen.navigationsfilter.kategorie_beschreibung_anzeigen === 'Y'
+            && $oNavigationsinfo->getCategory() !== null
+            && $oNavigationsinfo->getCategory()->cBeschreibung|strlen > 0}
+            {block name='productlist-header-description-category'}
+                <div class="desc clearfix mb-5">
+                    <p>{$oNavigationsinfo->getCategory()->cBeschreibung}</p>
+                </div>
+            {/block}
+        {/if}
+        {if $Einstellungen.navigationsfilter.hersteller_beschreibung_anzeigen === 'Y'
+            && $oNavigationsinfo->getManufacturer() !== null
+            && $oNavigationsinfo->getManufacturer()->cBeschreibung|strlen > 0}
+            {block name='productlist-header-description-manufacturers'}
+                <div class="desc clearfix mb-5">
+                    <p>{$oNavigationsinfo->getManufacturer()->cBeschreibung}</p>
+                </div>
+            {/block}
+        {/if}
+        {if $Einstellungen.navigationsfilter.merkmalwert_beschreibung_anzeigen === 'Y'
+            && $oNavigationsinfo->getCharacteristicValue() !== null
+            && $oNavigationsinfo->getCharacteristicValue()->cBeschreibung|strlen > 0}
+            {block name='productlist-header-description-attributes'}
+                <div class="desc clearfix mb-5">
+                    <p>{$oNavigationsinfo->getCharacteristicValue()->cBeschreibung}</p>
+                </div>
+            {/block}
         {/if}
     {/block}
 

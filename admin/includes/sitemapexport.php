@@ -320,7 +320,7 @@ function generateSitemapXML()
         // GoogleImages einbinden?
         $image = '';
         if ($conf['sitemap']['sitemap_googleimage_anzeigen'] === 'Y'
-            && ($number = Product::getPrimaryNumber(Image::TYPE_PRODUCT, $product->kArtikel)) !== null
+            && ($number = Product::getPrimaryNumber($product->kArtikel, $db)) !== null
         ) {
             $image = Product::getThumb(
                 Image::TYPE_PRODUCT,
@@ -388,7 +388,7 @@ function generateSitemapXML()
             }
             $image = '';
             if ($conf['sitemap']['sitemap_googleimage_anzeigen'] === 'Y'
-                && ($number = Product::getPrimaryNumber(Image::TYPE_PRODUCT, $product->kArtikel)) !== null
+                && ($number = Product::getPrimaryNumber($product->kArtikel, $db)) !== null
             ) {
                 $image = Product::getThumb(
                     Image::TYPE_PRODUCT,

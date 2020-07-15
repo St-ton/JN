@@ -1952,3 +1952,5 @@ msgstr "Alle Kategorien"
 msgid "filterCharacteristics"
 msgstr "Merkmale"
 
+msgid "Updates available"
+msgstr "Updates verfügbar"

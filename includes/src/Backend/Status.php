@@ -91,7 +91,7 @@ class Status
      */
     public function getImageCache(): StatsItem
     {
-        return Product::getStats();
+        return (new Product($this->db))->getStats();
     }
 
     /**

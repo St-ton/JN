@@ -27,7 +27,7 @@
                             {if $newsCategory@index === 10}{break}{/if}
                             {navitem href=$newsCategory->cURLFull title=$newsCategory->cName router-class="align-items-center d-flex"}
                                 {$newsCategory->cName}
-                                <span class="badge badge-outline-secondary ml-auto">{$newsCategory->nAnzahlNews}</span>
+                                {badge variant="outline-secondary" class="ml-auto"}{$newsCategory->nAnzahlNews}{/badge}
                             {/navitem}
                         {/foreach}
                     {/nav}

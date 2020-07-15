@@ -1277,8 +1277,9 @@ class Wishlist
             if ($product === $item->kArtikel) {
                 $variCountTMP = 0;
                 foreach ($item->CWunschlistePosEigenschaft_arr as $itemAttribute) {
-                    if ((string)$itemAttribute->kEigenschaftWert === $params[$itemAttribute->kEigenschaft]
-                        || (string)$itemAttribute->cFreifeldWert === $params[$itemAttribute->kEigenschaft]
+                    if (isset($params[$itemAttribute->kEigenschaft])
+                        && ((string)$itemAttribute->kEigenschaftWert === $params[$itemAttribute->kEigenschaft]
+                            || (string)$itemAttribute->cFreifeldWert === $params[$itemAttribute->kEigenschaft])
                     ) {
                         $variCountTMP++;
                     }

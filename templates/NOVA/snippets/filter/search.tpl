@@ -17,7 +17,7 @@
                     <div class="align-items-center d-flex">
                         <i class="far fa-{if $searchFilter->isActive()}check-{/if}square text-muted mr-2"></i>
                         <span class="word-break">{$searchFilter->getName()}</span>
-                        <span class="badge badge-outline-secondary ml-auto">{$searchFilter->getCount()}</span>
+                        {badge variant="outline-secondary" class="ml-auto"}{$searchFilter->getCount()}{/badge}
                     </div>
             {/dropdownitem}
         {/block}

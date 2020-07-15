@@ -58,6 +58,8 @@ class Subscription
     {
         if ($validUntil !== null) {
             $this->validUntil = \is_a(DateTime::class, $validUntil) ? $validUntil : new DateTime($validUntil);
+        } else {
+            $this->validUntil = null;
         }
     }
 

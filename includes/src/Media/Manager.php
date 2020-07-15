@@ -220,11 +220,12 @@ class Manager
         $instance = new $class($this->db);
         $started  = \time();
         $result   = (object)[
-            'total'          => 0,
-            'renderTime'     => 0,
-            'nextIndex'      => 0,
-            'renderedImages' => 0,
-            'images'         => []
+            'total'           => 0,
+            'renderTime'      => 0,
+            'nextIndex'       => 0,
+            'renderedImages'  => 0,
+            'lastRenderError' => null,
+            'images'          => []
         ];
 
         if ($index === 0) {
@@ -244,7 +245,16 @@ class Manager
             if ($seconds >= 10) {
                 break;
             }
-            $result->images[] = $instance->cacheImage($image);
+            $cachedImage = $instance->cacheImage($image);
+
+            foreach ($cachedImage as $size => $sizeImg) {
+                if ($sizeImg->success === false) {
+                    $result->lastRenderError = $sizeImg->error;
+                    break;
+                }
+            }
+
+            $result->images[] = $cachedImage;
             ++$index;
             ++$_SESSION['renderedImages'];
         }

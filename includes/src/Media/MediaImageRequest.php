@@ -334,9 +334,10 @@ class MediaImageRequest
         if (($path = $this->cachedPath()) !== null) {
             return $path;
         }
-        $instance = Media::getClass($this->getType());
+        $class = Media::getClass($this->getType());
         /** @var IMedia $instance */
-        $path = $instance::getPathByID($this->getID(), $this->getNumber());
+        $instance = new $class(Shop::Container()->getDB());
+        $path     = $instance->getPathByID($this->getID(), $this->getNumber());
         $this->cachedPath($path);
 
         return $path;

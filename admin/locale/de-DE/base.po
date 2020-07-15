@@ -1955,3 +1955,5 @@ msgstr "Merkmale"
 msgid "getToKnowMore"
 msgstr "Mehr erfahren"
 
+msgid "Updates available"
+msgstr "Updates verfügbar"

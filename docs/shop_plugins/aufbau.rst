@@ -448,7 +448,7 @@ Falls Sie *Custom Links* in der ``info.xml`` angegeben haben, muss in jedem ``ad
 
     <Adminmenu>
         <Customlink sort="1">
-            <Name>Statistik</name>
+            <Name>Statistik</Name>
             <Filename>stats.php</Filename>
         </Customlink>
     </Adminmenu>

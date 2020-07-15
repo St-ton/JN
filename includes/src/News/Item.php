@@ -181,7 +181,7 @@ class Item extends AbstractItem
             ReturnType::ARRAY_OF_OBJECTS
         );
         if (\count($item) === 0) {
-            throw new InvalidArgumentException('Provided new item id ' . $this->id . ' not found.');
+            throw new InvalidArgumentException('Provided news item id ' . $this->id . ' not found.');
         }
 
         return $this->map($item);
@@ -320,7 +320,7 @@ class Item extends AbstractItem
         $images = [];
         if ($this->id > 0 && \is_dir($uploadDirName . $this->id)) {
             $handle       = \opendir($uploadDirName . $this->id);
-            $imageBaseURL = Shop::getURL() . '/';
+            $imageBaseURL = Shop::getImageBaseURL();
             while (($file = \readdir($handle)) !== false) {
                 if ($file !== '.' && $file !== '..') {
                     $image           = new stdClass();

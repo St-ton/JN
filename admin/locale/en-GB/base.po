@@ -1954,3 +1954,6 @@ msgstr "Characteristics"
 
 msgid "getToKnowMore"
 msgstr "More"
+
+msgid "Updates available"
+msgstr "Updates available"

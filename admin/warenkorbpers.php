@@ -16,7 +16,6 @@ $oAccount->permission('MODULE_SAVED_BASKETS_VIEW', true, true);
 
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 $step              = 'uebersicht';
-$settingsIDs       = [540];
 $searchSQL         = new stdClass();
 $searchSQL->cJOIN  = '';
 $searchSQL->cWHERE = '';
@@ -33,14 +32,6 @@ if (mb_strlen(Request::verifyGPDataString('cSuche')) > 0) {
     }
 
     $smarty->assign('cSuche', $cSuche);
-}
-if (Request::postInt('einstellungen') === 1
-    && (isset($_POST['speichern']) || Request::postVar('a') === 'speichern')
-    && Form::validateToken()
-) {
-    $step = 'uebersicht';
-    $alertHelper->addAlert(Alert::TYPE_SUCCESS, saveAdminSettings($settingsIDs, $_POST), 'saveSettings');
-    $smarty->assign('tab', 'einstellungen');
 }
 
 if (Request::getInt('l') > 0 && Form::validateToken()) {
@@ -134,5 +125,4 @@ if (Request::getInt('a') > 0) {
 }
 
 $smarty->assign('step', $step)
-    ->assign('oConfig_arr', getAdminSectionSettings($settingsIDs))
     ->display('warenkorbpers.tpl');

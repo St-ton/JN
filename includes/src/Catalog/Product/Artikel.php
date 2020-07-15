@@ -5346,9 +5346,9 @@ class Artikel
         }));
         $cacheID = 'jtl_ola_' . \md5($shippingFreeCountries);
         if (($countries = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $countries = Shop::Container()->getCountryService()->getFilteredCountryList($codes)->map(
+            $countries = Shop::Container()->getCountryService()->getFilteredCountryList($codes)->mapWithKeys(
                 static function (Country $country) {
-                    return $country->getName();
+                    return [$country->getISO() => $country->getName()];
                 }
             )->toArray();
 

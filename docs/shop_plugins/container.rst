@@ -136,7 +136,7 @@ dieser erben. |br|
     }
 
     $container = Shop::Container();
-    $container->setFactory(HelloWorldGeneratorInterface:class, function($container) {
+    $container->setFactory(HelloWorldGeneratorInterface::class, function($container) {
         return new TrimmedHelloWorldGenerator();
     });
 
@@ -194,9 +194,9 @@ einem *Singleton* zu wählen.
     <?php
     $container = JTL\Shop::Container();
 
-    $container->setSingleton(HelloWorldGeneratorInterface::class, function() { ... });
+    $container->setSingleton(HelloWorldGeneratorInterface::class, function() { /*...*/ });
     // oder
-    $container->setFactory(HelloWorldGeneratorInterface::class, function() { ... });
+    $container->setFactory(HelloWorldGeneratorInterface::class, function() { /*...*/ });
 
 Nicht zu verwechseln ist dies mit der sogenannten "*Factory Method*"! |br|
 Sowohl ein *Singleton* als auch eine *Factory* benötigen eine *Factory Method*, welche die Erzeugung des jeweiligen

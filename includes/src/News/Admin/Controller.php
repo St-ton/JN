@@ -595,8 +595,8 @@ final class Controller
                 $this->deleteNewsImage($image->cName, $newsItemID, self::UPLOAD_DIR);
             }
         }
-        $newName    = Image::getCleanFilename(\explode('.', \basename($_FILES['previewImage']['name']))[0]
-            . '_preview.' . $extension);
+        $newName    = Image::getCleanFilename(\explode('.', \basename($_FILES['previewImage']['name']))[0])
+            . '_preview.' . $extension;
         $fileIDName = $newsItemID . '/' . $newName;
         $uploadFile = self::UPLOAD_DIR . $fileIDName;
         \move_uploaded_file($_FILES['previewImage']['tmp_name'], $uploadFile);
@@ -760,7 +760,7 @@ final class Controller
                 continue;
             }
             $image           = new stdClass();
-            $image->cName    = \mb_substr($fileName, 0, \mb_strpos($fileName, '.' . $fileinfo->getExtension()));
+            $image->cName    = $fileinfo->getBasename('.' . $fileinfo->getExtension());
             $image->cURL     = $base . $itemID . '/' . $fileName;
             $image->cURLFull = $imageBaseURL . $base . $itemID . '/' . $fileName;
             $image->cDatei   = $fileName;

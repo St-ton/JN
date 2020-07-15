@@ -496,8 +496,8 @@ class PersistentCart
         if (!Frontend::getCustomer()->isLoggedIn()) {
             return;
         }
-        $conf = Shop::getSettings([\CONF_GLOBAL]);
-        if ($conf['global']['warenkorbpers_nutzen'] !== 'Y') {
+        $conf = Shop::getSettings([\CONF_KAUFABWICKLUNG]);
+        if ($conf['kaufabwicklung']['warenkorbpers_nutzen'] !== 'Y') {
             return;
         }
         // Persistenter Warenkorb

@@ -62,7 +62,7 @@ class Queue
         foreach ($queueData as $entry) {
             $this->queueEntries[] = new QueueEntry($entry);
         }
-        $this->logger->debug('Loaded ' . \count($this->queueEntries) . ' existing job(s).');
+        $this->logger->debug(\sprintf('Loaded %d existing job(s).', \count($this->queueEntries)));
 
         return $this->queueEntries;
     }
@@ -118,12 +118,12 @@ class Queue
         $this->enqueueCronJobs($checker->check());
         $affected = $this->unStuckQueues();
         if ($affected > 0) {
-            $this->logger->debug('Unstuck ' . $affected . ' job(s).');
+            $this->logger->debug(\sprintf('Unstuck %d job(s).', $affected));
         }
         $this->loadQueueFromDB();
         foreach ($this->queueEntries as $i => $queueEntry) {
             if ($i >= \JOBQUEUE_LIMIT_JOBS) {
-                $this->logger->debug('Job limit reached after ' . \JOBQUEUE_LIMIT_JOBS . ' jobs.');
+                $this->logger->debug(\sprintf('Job limit reached after %d jobs.', \JOBQUEUE_LIMIT_JOBS));
                 break;
             }
             $job                       = $this->factory->create($queueEntry);

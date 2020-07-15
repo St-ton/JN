@@ -44,6 +44,9 @@ msgstr "Fehlerhafte Bilder sind Bilder, die zwar einen Eintrag in der Datenbank 
 msgid "successCacheReset"
 msgstr "Cache wurde erfolgreich zurückgesetzt."
 
+msgid "errorCacheReset"
+msgstr "Cache konnte nicht vollständig zurückgesetzt werden."
+
 msgid "successImageCleanup"
 msgstr "Bilder wurden erfolgreich aufgeräumt."
 

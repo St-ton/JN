@@ -282,11 +282,11 @@
         var type = (typeof param.data('type') !== 'undefined') ? param.data('type') : 'product';
         return ioCall('clearImageCache', [type, true], function (result) {
             updateStats(type);
-            showFlushNotify(result.success, '', type).update({
+            showFlushNotify(result.msg, '', type).update({
                 progress: 100,
                 message: '&nbsp;',
-                type: 'success',
-                title: result.success
+                type: result.ok == true ? 'success' :  'danger',
+                title: result.msg
             });
         }, undefined, undefined, true);
     }

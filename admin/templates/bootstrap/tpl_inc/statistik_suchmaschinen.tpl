@@ -19,7 +19,7 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link {if isset($cTab) && $cTab === 'settings'} active{/if}" data-toggle="tab" role="tab" href="#settings">
-                    {__('crawlerSettings')}
+                    {__('crawlerOverviewTitle')}
                 </a>
             </li>
         </ul>

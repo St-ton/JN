@@ -20,6 +20,9 @@
     });
     {/literal}
 </script>
+<style type="text/css">
+    .krajee-default .file-size-info, .krajee-default .file-caption-info { width: 100%; }
+</style>
 {include file='tpl_inc/seite_header.tpl' cTitel=__('news') cBeschreibung=__('newsDesc')}
 <div id="content">
     <form name="news" method="post" action="news.php" enctype="multipart/form-data">

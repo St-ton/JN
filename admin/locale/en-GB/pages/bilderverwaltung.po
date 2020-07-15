@@ -44,6 +44,9 @@ msgstr "Faulty images are images with an entry in the database for which no file
 msgid "successCacheReset"
 msgstr "Cache deleted successfully."
 
+msgid "errorCacheReset"
+msgstr "Cache could not be deleted completely."
+
 msgid "successImageCleanup"
 msgstr "Images cleared successfully."
 

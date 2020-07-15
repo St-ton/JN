@@ -60,6 +60,7 @@
                         {/if}
 
                         {block name='blog-details-comments-link'}
+                            {if $Einstellungen.news.news_kommentare_nutzen === 'Y'}
                             {link class="text-decoration-none text-nowrap" href="#comments" title="{lang key='readComments' section='news'}"}
                                 /
                                 <span class="fas fa-comments"></span>
@@ -72,6 +73,7 @@
                                 </span>
                                 <span itemprop="commentCount">{$newsItem->getCommentCount()}</span>
                             {/link}
+                            {/if}
                         {/block}
                     </div>
                 {/block}

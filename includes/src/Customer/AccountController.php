@@ -381,13 +381,13 @@ class AccountController
         $session = Frontend::getInstance();
         $session->setCustomer($customer);
         Wishlist::persistInSession();
-        $persCartLoaded = $this->config['global']['warenkorbpers_nutzen'] === 'Y'
+        $persCartLoaded = $this->config['kaufabwicklung']['warenkorbpers_nutzen'] === 'Y'
             && $this->loadPersistentCart($customer);
         $this->pruefeWarenkorbArtikelSichtbarkeit($customer->getGroupID());
         \executeHook(\HOOK_JTL_PAGE_REDIRECT);
         CartHelper::checkAdditions();
         $this->checkURLRedirect();
-        if (!$persCartLoaded && $this->config['global']['warenkorbpers_nutzen'] === 'Y') {
+        if (!$persCartLoaded && $this->config['kaufabwicklung']['warenkorbpers_nutzen'] === 'Y') {
             if ($this->config['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'Y') {
                 $this->setzeWarenkorbPersInWarenkorb($customer->getID());
             } elseif ($this->config['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'P') {

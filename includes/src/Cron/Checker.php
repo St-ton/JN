@@ -96,7 +96,7 @@ class Checker
                     AND tjobqueue.jobQueueID IS NULL",
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $this->logger->debug('Found ' . \count($jobs) . ' new cron jobs.');
+        $this->logger->debug(\sprintf('Found %d new cron jobs.', \count($jobs)));
 
         return $jobs;
     }

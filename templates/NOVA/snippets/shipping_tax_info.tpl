@@ -27,10 +27,9 @@
                     {block name='snippets-shipping-tax-info-zzgl-show-shipping-free'}
                         {if $Einstellungen.global.global_versandkostenfrei_darstellung === 'D'}
                             {block name='snippets-shipping-tax-info-zzgl-show-shipping-free-D'}
-                                {lang key='noShippingcostsTo'} {lang key='noShippingCostsAtExtended' section='basket' printf=' ::: '}
-                                {foreach item=country key=cISO from=$taxdata.countries}
-                                    <abbr title="{$country}">{$cISO}</abbr>
-                                {/foreach}, {link href="{if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}?shipping_calculator=0{/if}" rel="nofollow" class="shipment popup"}
+                                {$countries = "{foreach $taxdata.countries as $cISO => $country}<abbr title='{$country}'>{$cISO}</abbr>&nbsp;{/foreach}"}
+                                {lang key='noShippingcostsTo'} {lang key='noShippingCostsAtExtended' section='basket' printf=$countries}
+                                {link href="{if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}?shipping_calculator=0{/if}" rel="nofollow" class="d-inline-block shipment popup"}
                                     {lang key='shipping' section='basket'}{/link}
                             {/block}
                         {else}

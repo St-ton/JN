@@ -1,0 +1,9 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "yourAdvantages"
+msgstr "Your advantages"
+
+msgid "installationGuide"
+msgstr "Installation guide"

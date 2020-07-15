@@ -1952,3 +1952,5 @@ msgstr "Categories"
 msgid "filterCharacteristics"
 msgstr "Characteristics"
 
+msgid "getToKnowMore"
+msgstr "More"

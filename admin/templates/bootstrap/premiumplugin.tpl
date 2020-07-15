@@ -40,7 +40,7 @@
             <div class="col-md-6 pr-md-4 pr-0">
                 <div class="card">
                     <div class="card-header">
-                        <div class="subheading1">Ihre Vorteile</div>
+                        <div class="subheading1">{__('yourAdvantages')}</div>
                         <hr class="mb-n3">
                     </div>
                     <div class="card-body">
@@ -60,7 +60,7 @@
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <div class="subheading1">Installationsanleitung</div>
+                        <div class="subheading1">{__('installationGuide')}</div>
                         <hr class="mb-n3">
                     </div>
                     <div class="card-body">

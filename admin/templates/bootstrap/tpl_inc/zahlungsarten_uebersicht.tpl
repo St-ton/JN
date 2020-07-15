@@ -106,10 +106,10 @@
                                 <tr>
                                     <td><img src="{$recommendation->getPreviewImage()}" width="108" height="42" alt="{$recommendation->getTitle()}"></td>
                                     <td>
-                                        <p>{$recommendation->getDescription()}</p>
+                                        <p>{$recommendation->getTeaser()}</p>
                                         <a href="premiumplugin.php?scope={$recommendations->getScope()}&id={$recommendation->getId()}"
                                            class="btn btn-primary">
-                                            Mehr erfahren
+                                            {__('getToKnowMore')}
                                         </a>
                                     </td>
                                 </tr>

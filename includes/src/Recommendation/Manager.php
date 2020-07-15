@@ -3,6 +3,9 @@
 namespace JTL\Recommendation;
 
 use \Illuminate\Support\Collection;
+use JTL\Alert\Alert;
+use JTL\Services\JTL\AlertServiceInterface;
+use JTL\Shop;
 
 /**
  * Class Manager
@@ -26,12 +29,19 @@ class Manager
     private $scope;
 
     /**
+     * @var AlertServiceInterface
+     */
+    private $alertService;
+
+    /**
      * Manager constructor.
+     * @param AlertServiceInterface $alertService
      * @param string $scope
      */
-    public function __construct(string $scope)
+    public function __construct(AlertServiceInterface $alertService, string $scope)
     {
-        $this->scope = $scope;
+        $this->alertService = $alertService;
+        $this->scope        = $scope;
         $this->setRecommendations();
     }
 
@@ -58,13 +68,20 @@ class Manager
 
     /**
      * @param string $id
-     * @return Recommendation
+     * @param bool $showAlert
+     * @return Recommendation|null
      */
-    public function getRecommendationById(string $id): Recommendation
+    public function getRecommendationById(string $id, bool $showAlert = true): ?Recommendation
     {
-        return $this->recommendations->filter(static function (Recommendation $e) use ($id) {
+        $recommendation = $this->recommendations->filter(static function (Recommendation $e) use ($id) {
             return $e->getId() === $id;
         })->first();
+
+        if ($recommendation === null && $showAlert) {
+            $this->alertService->addAlert(Alert::TYPE_WARNING, __('noRecommendationFound'), 'noRecommendationFound');
+        }
+
+        return $recommendation;
     }
 
     /**

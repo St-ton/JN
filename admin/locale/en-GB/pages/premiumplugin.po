@@ -7,3 +7,6 @@ msgstr "Your advantages"
 
 msgid "installationGuide"
 msgstr "Installation guide"
+
+msgid "noRecommendationFound"
+msgstr "No recommendation for id found."

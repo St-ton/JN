@@ -7,3 +7,6 @@ msgstr "Ihre Vorteile"
 
 msgid "installationGuide"
 msgstr "Installationsanleitung"
+
+msgid "noRecommendationFound"
+msgstr "Keine zur ID passende Plugin-Empfehlung gefunden."

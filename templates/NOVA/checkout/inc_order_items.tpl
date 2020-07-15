@@ -337,7 +337,7 @@
                         {/row}
                     {/if}
                 {/block}
-                {foreach $smarty.session.Warenkorb->OrderAttributes as $attribute}
+                {foreach $smarty.session.Warenkorb->OrderAttributes|default:null as $attribute}
                     {if $attribute->cName === 'Finanzierungskosten'}
                         <hr class="my-3">
                         {row class="type-{$smarty.const.C_WARENKORBPOS_TYP_ZINSAUFSCHLAG}"}

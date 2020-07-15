@@ -1,5 +1,6 @@
 {block name='selectionwizard-question'}
-    {listgroupitem class="selection-wizard-question {if $nQuestion > $AWA->getCurQuestion()}disabled{/if}"}
+    {if $nQuestion > $AWA->getCurQuestion()} <div class="list-group-wrapper disabled">{/if}
+    {listgroupitem class="selection-wizard-question {if $nQuestion > $AWA->getCurQuestion()}disabled{else}px-0{/if}"}
         {block name='selectionwizard-question-heading'}
             <div class="h5 selection-wizard-question-heading">
                 {$oFrage->cFrage}
@@ -62,7 +63,7 @@
                         {foreach $oFrage->oWert_arr as $characteristicValue}
                             {col cols=4 sm=4 md=3 xl=2 class="mb-3"}
                                 {if $characteristicValue->getCount() > 0}
-                                    {link class="selection-wizard-answer no-deco" href="#" data=["value"=>$characteristicValue->getID()]}
+                                    {link class="selection-wizard-answer text-decoration-none" href="#" data=["value"=>$characteristicValue->getID()]}
                                         {$img = $characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)}
                                         {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['B', 'BT']:true && $img !== null}
                                         <div class="square square-image">
@@ -137,4 +138,5 @@
             {/block}
         {/if}
     {/listgroupitem}
+    {if $nQuestion > $AWA->getCurQuestion()}</div>{/if}
 {/block}

@@ -399,13 +399,16 @@ class IOMethods
         $res     = [];
         $boxData = Shop::Container()->getDB()->queryPrepared(
             'SELECT *, 0 AS nSort, \'\' AS pageIDs, \'\' AS pageVisibilities,
-                       GROUP_CONCAT(tboxensichtbar.nSort) AS sortBypageIDs
+                       GROUP_CONCAT(tboxensichtbar.nSort) AS sortBypageIDs,
+                       GROUP_CONCAT(tboxensichtbar.kSeite) AS pageIDs,
+                       GROUP_CONCAT(tboxensichtbar.bAktiv) AS pageVisibilities
                 FROM tboxen
                 LEFT JOIN tboxensichtbar
                     ON tboxen.kBox = tboxensichtbar.kBox
                 LEFT JOIN tboxvorlage
                     ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
-                WHERE tboxen.kBoxvorlage = :type',
+                WHERE tboxen.kBoxvorlage = :type
+                GROUP BY tboxen.kBox',
             ['type' => $type],
             ReturnType::ARRAY_OF_OBJECTS
         );
@@ -849,7 +852,15 @@ class IOMethods
         // Alle Variationen ohne Freifeld
         $keyValueVariations = $product->keyValueVariations($product->VariationenOhneFreifeld);
         foreach ($valueIDs as $index => $value) {
-            if (!isset($keyValueVariations[$index])) {
+            if (isset($keyValueVariations[$index])) {
+                $objResponse->callEvoProductFunction(
+                    'variationActive',
+                    $index,
+                    \addslashes($value),
+                    null,
+                    $wrapper
+                );
+            } else {
                 unset($valueIDs[$index]);
             }
         }

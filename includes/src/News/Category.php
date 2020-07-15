@@ -156,13 +156,13 @@ class Category implements CategoryInterface
 
     /**
      * @param int  $id
-     * @param bool $bActiveOnly
+     * @param bool $activeOnly
      * @return CategoryInterface
      */
-    public function load(int $id, bool $bActiveOnly = true): CategoryInterface
+    public function load(int $id, bool $activeOnly = true): CategoryInterface
     {
         $this->id          = $id;
-        $activeFilter      = $bActiveOnly ? ' AND tnewskategorie.nAktiv = 1 ' : '';
+        $activeFilter      = $activeOnly ? ' AND tnewskategorie.nAktiv = 1 ' : '';
         $categoryLanguages = $this->db->queryPrepared(
             "SELECT tnewskategorie.*, t.*, tseo.cSeo
                 FROM tnewskategorie
@@ -182,14 +182,15 @@ class Category implements CategoryInterface
             return $this;
         }
 
-        return $this->map($categoryLanguages);
+        return $this->map($categoryLanguages, $activeOnly);
     }
 
     /**
      * @param array $categoryLanguages
+     * @param bool  $activeOnly
      * @return $this|CategoryInterface
      */
-    public function map(array $categoryLanguages): CategoryInterface
+    public function map(array $categoryLanguages, bool $activeOnly = true): CategoryInterface
     {
         foreach ($categoryLanguages as $groupLanguage) {
             $langID                          = (int)$groupLanguage->languageID;
@@ -212,9 +213,11 @@ class Category implements CategoryInterface
             $this->generateAllImageSizes(true, 1, \str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $preview));
         }
         $this->items = (new ItemList($this->db))->createItems(map(flatten($this->db->queryPrepared(
-            'SELECT kNews
+            'SELECT tnewskategorienews.kNews
                 FROM tnewskategorienews
-                WHERE kNewsKategorie = :cid',
+                JOIN tnews
+                    ON tnews.kNews = tnewskategorienews.kNews 
+                WHERE kNewsKategorie = :cid' . ($activeOnly ? ' AND tnews.dGueltigVon <= NOW()' : ''),
             ['cid' => $this->id],
             ReturnType::ARRAY_OF_ASSOC_ARRAYS
         )), static function ($e) {
@@ -291,7 +294,8 @@ class Category implements CategoryInterface
                     ON tnewskategorienews.kNews = tnews.kNews 
                 JOIN tnewskategorie 
                     ON tnewskategorie.kNewsKategorie = tnewskategorienews.kNewsKategorie
-            WHERE tnewskategorie.nAktiv = 1' . $filterSQL->cNewsKatSQL . $filterSQL->cDatumSQL,
+            WHERE tnewskategorie.nAktiv = 1 AND tnews.dGueltigVon <= NOW() '
+                . $filterSQL->cNewsKatSQL . $filterSQL->cDatumSQL,
             ['cid' => $this->id],
             ReturnType::ARRAY_OF_ASSOC_ARRAYS
         )), static function ($e) {

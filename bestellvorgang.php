@@ -61,7 +61,7 @@ if ($conf['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO'
     $customerID = Frontend::getCustomer()->getID();
     $persCart   = new PersistentCart($customerID);
     if (!(Request::postInt('login') === 1
-        && $conf['global']['warenkorbpers_nutzen'] === 'Y'
+        && $conf['kaufabwicklung']['warenkorbpers_nutzen'] === 'Y'
         && $conf['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'P'
         && count($persCart->oWarenkorbPersPos_arr) > 0)
     ) {

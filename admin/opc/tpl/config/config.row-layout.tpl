@@ -25,19 +25,19 @@
         </div>
         <div class="col-2">
             <input type="text" class="form-control" id="config-{$propname}-xs" placeholder="XS"
-                   name="{$propname}[xs]" value="{$propval.xs}">
+                   name="{$propname}[xs]" value="{$propval.xs|escape:'html'}">
         </div>
         <div class="col-2">
             <input type="text" class="form-control" id="config-{$propname}-sm" placeholder="SM"
-                   name="{$propname}[sm]" value="{$propval.sm}">
+                   name="{$propname}[sm]" value="{$propval.sm|escape:'html'}">
         </div>
         <div class="col-2">
             <input type="text" class="form-control" id="config-{$propname}-md" placeholder="MD"
-                   name="{$propname}[md]" value="{$propval.md}">
+                   name="{$propname}[md]" value="{$propval.md|escape:'html'}">
         </div>
         <div class="col-2">
             <input type="text" class="form-control" id="config-{$propname}-lg" placeholder="LG"
-                   name="{$propname}[lg]" value="{$propval.lg}">
+                   name="{$propname}[lg]" value="{$propval.lg|escape:'html'}">
         </div>
     </div>
 </div>

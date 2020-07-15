@@ -19,10 +19,9 @@
     ,
         {if $Einstellungen.global.global_versandfrei_anzeigen === 'Y' && $taxdata.shippingFreeCountries}
             {if $Einstellungen.global.global_versandkostenfrei_darstellung === 'D'}
-                {lang key='noShippingcostsTo' section='global'} {lang key='noShippingCostsAtExtended' section='basket' printf=' ::: '}
-                {foreach item=country key=cISO from=$taxdata.countries}
-                    <abbr title="{$country}">{$cISO}</abbr>
-                {/foreach}, <a href="{if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}?shipping_calculator=0{/if}" rel="nofollow" class="shipment popup">
+                {$countries = "{foreach $taxdata.countries as $cISO => $country}<abbr title='{$country}'>{$cISO}</abbr>&nbsp;{/foreach}"}
+                {lang key='noShippingcostsTo' section='global'} {lang key='noShippingCostsAtExtended' section='basket' printf=$countries}
+                <a href="{if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}?shipping_calculator=0{/if}" rel="nofollow" class="shipment popup">
                     {lang key='shipping' section='basket'}</a>
             {else}
                 <a href="{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}?shipping_calculator=0"

@@ -1,4 +1,4 @@
-Datanschutz
+Datenschutz
 ===========
 
 .. |br| raw:: html

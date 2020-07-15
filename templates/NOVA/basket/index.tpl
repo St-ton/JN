@@ -53,7 +53,7 @@
                                                     {$selectedFreegift=$oPosition->Artikel->kArtikel}
                                                 {/if}
                                             {/foreach}
-                                            {row}
+                                            {row class="mb-4"}
                                                 {col cols=12}
                                                     {block name='basket-index-freegifts-heading'}
                                                         <h3 class="mb-4">{lang key='freeGiftFromOrderValueBasket'}</h3>
@@ -216,7 +216,7 @@
                                     {/if}
                                 {/block}
                                 {block name='basket-index-proceed-button'}
-                                    {link href="{get_static_route id='bestellvorgang.php'}?wk=1" class="btn btn-primary w-100 mt-3"}{lang key='nextStepCheckout' section='checkout'}{/link}
+                                    {link id="cart-checkout-btn" href="{get_static_route id='bestellvorgang.php'}?wk=1" class="btn btn-primary w-100 mt-3"}{lang key='nextStepCheckout' section='checkout'}{/link}
                                 {/block}
                             {/card}
                             {if !empty($WarenkorbVersandkostenfreiHinweis) && $Warenkorb->PositionenArr|@count > 0}

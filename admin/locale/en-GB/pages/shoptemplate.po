@@ -88,3 +88,9 @@ msgstr "Not a valid SemVer."
 
 msgid "errorUnknown"
 msgstr "Unknwon error."
+
+msgid "dangerMinShopVersion"
+msgstr "Please note that the template requires a newer version of JTL-Shop. This might lead to issues."
+
+msgid "dangerMaxShopVersion"
+msgstr "Please note that the template requires an older version of JTL-Shop. This might lead to issues."

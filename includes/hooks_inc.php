@@ -1939,6 +1939,13 @@ define('HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB_LIEFERADRESSE_ALT', 305);
 
 /**
  * @since 5.0.0
+ * @file includes/src/Link/LinkGroupList.php
+ * @param \JTL\Link\LinkGroupList list
+ */
+define('HOOK_LINKGROUPS_LOADED_PRE_CACHE', 306);
+
+/**
+ * @since 5.0.0
  * @file includes/src/Cart/Cart.php
  * @param int productID
  * @param \JTL\Cart\CartItem[] positionItems

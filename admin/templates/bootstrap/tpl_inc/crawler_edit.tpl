@@ -9,22 +9,22 @@
         <div class="settings">
             <div class="card">
                 <div class="card-header">
-                    <div class="subheading1">{if isset($crawler->getID())} {__('editCrawler')} {else} {__('createCrawler')} {/if} </div>
+                    <div class="subheading1">{if isset($crawler->getID())}{__('editCrawler')}{else}{__('createCrawler')}{/if}</div>
                     <hr class="mb-n3">
                 </div>
                 <div class="table-responsive">
                     <div class="card-body" id="formtable">
                         <div class="form-group form-row align-items-center">
-                            <label class="col col-sm-4 col-form-label text-sm-right" for="cMetaTitle_{$cISO}">{__('crawlerUserAgent')} *:</label>
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="useragent">{__('crawlerUserAgent')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <input class="form-control" name="useragent" type="text" value="{$crawler->getUserAgent()}" />
+                                <input id="useragent" class="form-control" name="useragent" type="text" value="{$crawler->getUserAgent()}"/>
                             </div>
                             <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('crawlerUserAgentHint')}</div>
                         </div>
                         <div class="form-group form-row align-items-center">
-                            <label class="col col-sm-4 col-form-label text-sm-right" for="cMetaTitle_{$cISO}">{__('crawlerDescription')} *:</label>
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="description">{__('crawlerDescription')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <input class="form-control" type="text" name="description" value="{$crawler->getDescription()}"/>
+                                <input id="description" class="form-control" type="text" name="description" value="{$crawler->getDescription()}"/>
                             </div>
                             <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('crawlerDescriptionHint')}</div>
                         </div>

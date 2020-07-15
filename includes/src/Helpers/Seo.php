@@ -58,6 +58,7 @@ class Seo
 
     /**
      * @param string $str
+     * @var mixed $convertedStr
      * @return mixed
      */
     public static function sanitizeSeoSlug(string $str): string
@@ -66,13 +67,15 @@ class Seo
         $a = ['Ä', 'Ö', 'Ü', 'ß', 'ä', 'ö', 'ü', 'æ'];
         $b = ['Ae', 'Oe', 'Ue', 'ss', 'ae', 'oe', 'ue', 'ae'];
 
-        $str = \preg_replace('/[^\pL\d\-\/_\s]+/u', '', \str_replace($a, $b, $str));
-        $str = \preg_replace('/[\/]+/u', '/', $str);
-        $str = \iconv('"UTF-8"', 'ASCII//TRANSLIT//IGNORE', \transliterator_transliterate(
+        $str          = \preg_replace('/[^\pL\d\-\/_\s]+/u', '', \str_replace($a, $b, $str));
+        $str          = \preg_replace('/[\/]+/u', '/', $str);
+        $str          = \transliterator_transliterate(
             'Any-Latin; Latin-ASCII;' . (\SEO_SLUG_LOWERCASE ? ' Lower();' : ''),
             \trim($str, ' -_')
-        ));
-        $str = \preg_replace('/[\-_\s]+/u', '-', $str);
+        );
+        $convertedStr = @iconv('"UTF-8"', 'ASCII//TRANSLIT//IGNORE', $str);
+        $str          = $convertedStr === false ? \preg_replace('/[^a-zA-Z0-9\s]/', '', $str) : $convertedStr;
+        $str          = \preg_replace('/[\-_\s]+/u', '-', \trim($str));
 
         return $str;
     }

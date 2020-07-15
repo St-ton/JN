@@ -30,8 +30,8 @@ function handleFatal(string $message): void
 if (defined('PFAD_ROOT')) {
     require_once PFAD_ROOT . 'includes/defines.php';
 } else {
-    handleFatal('Die Konfigurationsdatei des Shops konnte nicht geladen werden! ' .
-        'Bei einer Neuinstallation bitte <a href="install/">hier</a> klicken.');
+    handleFatal('Could not get configuration from config file. ' .
+        'For shop installation <a href="install/">click here</a>.');
 }
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';

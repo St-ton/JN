@@ -276,12 +276,37 @@ final class Controller
      */
     public function saveComment(int $id, array $post): bool
     {
-        $upd             = new stdClass();
-        $upd->cName      = $post['cName'];
-        $upd->cKommentar = $post['cKommentar'];
+        if ($id > 0) {
+            $upd             = new stdClass();
+            $upd->cName      = $post['cName'];
+            $upd->cKommentar = $post['cKommentar'];
+            $this->flushCache();
+            return $this->db->update('tnewskommentar', 'kNewsKommentar', $id, $upd) >= 0;
+        } else {
+            return $this->insertComment($post);
+        }
+    }
+
+    /**
+     * @param array $post
+     * @return bool
+     */
+    public function insertComment(array $post): bool
+    {
+        $adminID                 = (int)$_SESSION['AdminAccount']->kAdminlogin;
+        $insert                  = new stdClass();
+        $insert->kNews           = $post['kNews'];
+        $insert->cKommentar      = $post['cKommentar'];
+        $insert->kKunde          = $post['kKunde'] ?? 0;
+        $insert->nAktiv          = $post['nAktiv'] ?? 1;
+        $insert->cName           = $post['cName'] ?? 'Admin';
+        $insert->cEmail          = $post['cEmail'] ?? '';
+        $insert->isAdmin         = $post['isAdmin'] ?? $adminID ?? 0;
+        $insert->parentCommentID = $post['parentCommentID'] ?? 0;
+        $insert->dErstellt       = 'NOW()';
         $this->flushCache();
 
-        return $this->db->update('tnewskommentar', 'kNewsKommentar', $id, $upd) >= 0;
+        return $this->db->insert('tnewskommentar', $insert) >= 0;
     }
 
     /**
@@ -444,7 +469,7 @@ final class Controller
         $sort         = (int)$post['nSort'];
         $active       = (int)$post['nAktiv'];
         $parentID     = (int)$post['kParent'];
-        $previewImage = $post['previewImage'];
+        $previewImage = $post['previewImage'] ?? '';
         $flag         = \ENT_COMPAT | \ENT_HTML401;
         $this->db->delete('tseo', ['cKey', 'kKey'], ['kNewsKategorie', $categoryID]);
         $newsCategory                        = new stdClass();
@@ -659,7 +684,7 @@ final class Controller
         ), static function ($e) {
             return (int)$e->id;
         });
-        $itemList->createItems($ids);
+        $itemList->createItems($ids, false);
 
         return $itemList->getItems();
     }

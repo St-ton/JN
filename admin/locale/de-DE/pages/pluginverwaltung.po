@@ -180,16 +180,16 @@ msgid "sureResetLangVar"
 msgstr "Möchten Sie diese Sprachvariable wirklich wieder auf den Installationszustand zurücksetzen?<br/><br/> Dabei gehen alle geänderten Übersetzungen der Variable verloren."
 
 msgid "dangerPluginNotCompatibleShop5"
-msgstr "Bitte beachten Sie, dass das Plugin nicht vollständig mit JTL-Shop&nbsp;5 kompatibel ist. Es können daher Probleme beim Betrieb entstehen."
+msgstr "Bitte beachten Sie, dass dieses Plugin nicht vollständig mit JTL-Shop&nbsp;5 kompatibel ist. Es können daher Probleme beim Betrieb entstehen."
 
 msgid "dangerPluginNotCompatibleShop4"
-msgstr "Bitte beachten Sie, dass das Plugin nicht vollständig mit JTL-Shop&nbsp;4 kompatibel ist. Es können daher Probleme beim Betrieb entstehen."
+msgstr "Bitte beachten Sie, dass dieses Plugin nicht vollständig mit JTL-Shop&nbsp;4 kompatibel ist. Es können daher Probleme beim Betrieb entstehen."
 
 msgid "dangerMinShopVersion"
-msgstr "Bitte beachten Sie, dass das Plugin eine aktuellere Version von JTL-Shop erfordert. Es können daher Probleme beim Betrieb entstehen."
+msgstr "Bitte beachten Sie, dass dieses Plugin eine aktuellere Version von JTL-Shop erfordert. Es können daher Probleme beim Betrieb entstehen."
 
 msgid "dangerMaxShopVersion"
-msgstr "Bitte beachten Sie, dass das Plugin für eine ältere Version von JTL-Shop entwickelt wurde. Es können daher Probleme beim Betrieb entstehen."
+msgstr "Bitte beachten Sie, dass dieses Plugin für eine ältere Version von JTL-Shop entwickelt wurde. Es können daher Probleme beim Betrieb entstehen."
 
 msgid "licensePlugin"
 msgstr "Plugin-Lizenz"

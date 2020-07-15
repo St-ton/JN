@@ -661,18 +661,18 @@ class GUI
 
     selectImageProp(propName)
     {
-        this.openElFinder(url => {
-            this.imageSelectCB(url, propName);
-            this.configForm.find('[name="' + propName + '"]').val(url);
-            this.configForm.find('#preview-img-' + propName).attr('src', url);
+        this.openElFinder(file => {
+            this.imageSelectCB(file.url, propName);
+            this.configForm.find('[name="' + propName + '"]').val(file.url);
+            this.configForm.find('#preview-img-' + propName).attr('src', file.url);
         }, 'image');
     }
 
     selectVideoProp(propName)
     {
-         this.openElFinder(url => {
-             this.configForm.find('[name="' + propName + '"]').val(url);
-             this.configForm.find('#preview-vid-' + propName).attr('src', url);
+         this.openElFinder(file => {
+             this.configForm.find('[name="' + propName + '"]').val(file.url);
+             this.configForm.find('#preview-vid-' + propName).attr('src', file.url);
              this.configForm.find('#cont-preview-vid-' + propName)[0].load();
          }, 'video');
     }

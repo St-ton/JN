@@ -3,6 +3,7 @@
 namespace JTL\Template\Admin;
 
 use DirectoryIterator;
+use Exception;
 use Illuminate\Support\Collection;
 use JTL\DB\DbInterface;
 use JTL\Shop;
@@ -61,7 +62,7 @@ final class Listing
 
     /**
      * @return Model
-     * @throws \Exception
+     * @throws Exception
      */
     private function getActiveTemplate(): Model
     {
@@ -79,7 +80,12 @@ final class Listing
         if (!\is_dir($templateDir)) {
             return $this->items;
         }
-        $active  = $this->getActiveTemplate();
+        try {
+            $active = $this->getActiveTemplate();
+        } catch (Exception $e) {
+            $active = new Model($this->db);
+            $active->setTemplate('no-template');
+        }
         $gettext = Shop::Container()->getGetText();
         foreach (new DirectoryIterator($templateDir) as $fileinfo) {
             if ($fileinfo->isDot() || !$fileinfo->isDir()) {

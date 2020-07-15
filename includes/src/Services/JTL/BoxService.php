@@ -53,7 +53,7 @@ class BoxService implements BoxServiceInterface
     /**
      * @var array
      */
-    public $visibility;
+    public $visibilities;
 
     /**
      * @var Factory
@@ -158,22 +158,34 @@ class BoxService implements BoxServiceInterface
      */
     public function getVisibility(int $pageType, bool $global = true)
     {
-        if ($this->visibility !== null) {
-            return $this->visibility;
-        }
-        $this->visibility = [];
-        $boxes            = $this->db->selectAll('tboxenanzeige', 'nSeite', $pageType);
-        if (\count($boxes) > 0) {
-            foreach ($boxes as $box) {
-                $this->visibility[$box->ePosition] = (bool)$box->bAnzeigen;
-            }
-
-            return $this->visibility;
+        if ($this->visibilities === null) {
+            $this->visibilities = $this->getAllVisibilites();
         }
 
-        return $pageType !== 0 && $global
-            ? $this->getVisibility(0)
-            : false;
+        return $this->visibilities[$pageType] ?? ($pageType !== \PAGE_UNBEKANNT && $global
+                ? $this->getVisibility(\PAGE_UNBEKANNT)
+                : false);
+    }
+
+    /**
+     * all box visibilites grouped by page type
+     *
+     * @return array
+     */
+    private function getAllVisibilites(): array
+    {
+        $cacheID = 'bx_visibilities_all';
+        if (($grouped = $this->cache->get($cacheID)) === false) {
+            $grouped = \collect($this->db->selectAll('tboxenanzeige', [], []))
+                ->groupBy('nSeite')->transform(static function ($data) {
+                    return \collect($data)->mapWithKeys(static function ($item) {
+                        return [$item->ePosition => (bool)$item->bAnzeigen];
+                    });
+                })->toArray();
+            $this->cache->set($cacheID, $grouped, [\CACHING_GROUP_OBJECT, \CACHING_GROUP_BOX, 'boxes']);
+        }
+
+        return $grouped;
     }
 
     /**
@@ -337,8 +349,9 @@ class BoxService implements BoxServiceInterface
      */
     public function buildList(int $pageType = \PAGE_UNBEKANNT, bool $activeOnly = true): array
     {
-        $model            = Shop::Container()->getTemplateService()->getActiveTemplate();
-        $visiblePositions = $this->getVisiblePositions($pageType, $model->getBoxLayout());
+        $model              = Shop::Container()->getTemplateService()->getActiveTemplate();
+        $this->visibilities = $this->getAllVisibilites();
+        $visiblePositions   = $this->getVisiblePositions($pageType, $model->getBoxLayout());
         if ($activeOnly === true && \count($visiblePositions) === 0) {
             return [];
         }
@@ -417,8 +430,7 @@ class BoxService implements BoxServiceInterface
     private function getVisiblePositions(int $pageType, array $templatePositions): array
     {
         $visiblePositions = [];
-        $this->getVisibility($pageType);
-        foreach ($this->visibility as $position => $isVisible) {
+        foreach ($this->getVisibility($pageType) as $position => $isVisible) {
             if (isset($templatePositions[$position])) {
                 $isVisible = $isVisible && $templatePositions[$position];
             }

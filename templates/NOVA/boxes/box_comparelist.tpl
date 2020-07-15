@@ -27,40 +27,57 @@
                         id="crd-cllps-{$oBox->getID()}"
                         aria=["labelledby"=>"crd-hdr-{$oBox->getID()}"]}
                         {block name='boxes-box-comparelist-products'}
-                            {listgroup}
-                                {foreach $oBox->getProducts() as $oArtikel}
-                                    {if $oArtikel@iteration > $maxItems}
-                                        {break}
-                                    {/if}
-                                    {$id = '"a"'}
-                                    {listgroupitem data-id=$oArtikel->kArtikel class="border-0"}
-                                        {link href=$oArtikel->cURLDEL class="remove float-right"
-                                            title="{lang section="comparelist" key="removeFromCompareList"}"
-                                            data=["name"=>"Vergleichsliste.remove",
-                                                "toggle"=>"product-actions",
-                                                "value"=>"{ldelim}{$id|escape:'html'}:{$oArtikel->kArtikel}{rdelim}"]
-                                            aria=["label"=>{lang section="comparelist" key="removeFromCompareList"}]
-                                        }
-                                            <span class="fas fa-times"></span>
-                                        {/link}
-                                        {link href=$oArtikel->cURLFull}
-                                            {image fluid=true webp=true lazy=true
-                                                src=$oArtikel->Bilder[0]->cURLMini
-                                                srcset="{$oArtikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                        {$oArtikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                        {$oArtikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                                sizes="24px"
-                                                alt=$oArtikel->cName|strip_tags|truncate:60|escape:'html' class="img-xs mr-2"
-                                            }
-                                            {$oArtikel->cName|truncate:25:'...'}
-                                        {/link}
-                                    {/listgroupitem}
-                                {/foreach}
-                            {/listgroup}
+                            <table class="table table-vertical-middle table-striped table-img">
+                                <tbody>
+                                    {$id = '"a"'|escape:'html'}
+                                    {foreach $oBox->getProducts() as $product}
+                                        {if $product@iteration > $maxItems}
+                                            {break}
+                                        {/if}
+                                        <tr>
+                                        <td class="w-100" data-id={$product->kArtikel}>
+                                            {block name='boxes-box-comparelist-dropdown-products-image-title'}
+                                                {formrow class="align-items-center"}
+                                                    {col class="col-auto"}
+                                                        {block name='boxes-box-comparelist-dropdown-products-image'}
+                                                            {link href=$product->cURLFull}
+                                                                {image fluid=true webp=true lazy=true
+                                                                    src=$product->Bilder[0]->cURLMini
+                                                                    srcset="{$product->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                                        {$product->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                                        {$product->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                                    sizes="45px"
+                                                                    alt=$product->cName|strip_tags|escape:'html'}
+                                                            {/link}
+                                                        {/block}
+                                                    {/col}
+                                                    {col}
+                                                        {block name='boxes-box-comparelist-dropdown-products-title'}
+                                                            {link href=$product->cURLFull}{$product->cName|truncate:40:'...'}{/link}
+                                                        {/block}
+                                                    {/col}
+                                                {/formrow}
+                                            {/block}
+                                        </td>
+                                        <td class="text-right text-nowrap">
+                                            {block name='boxes-box-comparelist-dropdown-products-remove'}
+                                                {link href=$product->cURLDEL class="remove float-right"
+                                                    title="{lang section="comparelist" key="removeFromCompareList"}"
+                                                    data=["name"=>"Vergleichsliste.remove",
+                                                    "toggle"=>"product-actions",
+                                                    "value"=>"{ldelim}{$id}:{$product->kArtikel}{rdelim}"]
+                                                    aria=["label"=>{lang section="comparelist" key="removeFromCompareList"}]}
+                                                    <span class="fas fa-times"></span>
+                                                {/link}
+                                            {/block}
+                                        </td>
+                                    {/foreach}
+                                </tbody>
+                            </table>
                         {/block}
                         {if $itemCount > 1}
                             {block name='boxes-box-comparelist-link'}
-                                <hr class="my-4">
+                                <hr class="mt-n3 mb-3">
                                 {link
                                     class="btn btn-outline-primary btn-sm btn-block{if $Einstellungen.vergleichsliste.vergleichsliste_target === 'popup'} popup{/if}"
                                     href="{get_static_route id='vergleichsliste.php'}"

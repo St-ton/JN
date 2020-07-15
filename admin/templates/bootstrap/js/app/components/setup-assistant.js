@@ -1,4 +1,3 @@
-import { startSpinner, stopSpinner } from '../snippets/spinner.js'
 
 const modal					= '#modal-setup-assistant'
 const dataPrefix			= 'data-setup'

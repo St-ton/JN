@@ -35,7 +35,7 @@ final class PaymentPlugins extends AbstractStep
         $this->setDescription(sprintf(__('stepThreeDesc'), implode(', ', $paymentMethods)));
         $this->setID(3);
 
-        $recommendations = json_decode(file_get_contents(\JTLURL_GET_MP_RECOMMENDATIONS));
+//        $recommendations = json_decode(file_get_contents(\JTLURL_GET_MP_RECOMMENDATIONS));
 
         $question = new Question($db);
         $question->setID(10);

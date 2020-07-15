@@ -5,6 +5,7 @@ namespace JTL\License;
 use Exception;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use InvalidArgumentException;
 use JTL\Alert\Alert;
@@ -65,8 +66,6 @@ class Admin
 
     /**
      * @param JTLSmarty $smarty
-     * @throws DownloadValidationException
-     * @throws \SmartyException
      */
     public function handle(JTLSmarty $smarty): void
     {
@@ -74,6 +73,9 @@ class Admin
         $token  = AuthToken::getInstance($this->db);
         $action = Request::postVar('action');
         $valid  = Form::validateToken();
+        if ($action === 'setbinding' && $valid) {
+            $this->setBinding($smarty);
+        }
         if ($action === 'recheck' && $valid) {
             $this->getLicenses(true);
             $action = null;
@@ -93,42 +95,74 @@ class Admin
                 Shop::getURL(true) . $_SERVER['SCRIPT_NAME'] . '?action=code'
             );
         }
+        if ($action === 'update' || $action === 'install') {
+            $this->installUpdate($action, $smarty);
+        }
+    }
+
+    /**
+     * @param string    $action
+     * @param JTLSmarty $smarty
+     * @throws \SmartyException
+     */
+    private function installUpdate(string $action, JTLSmarty $smarty): void
+    {
         $response         = new AjaxResponse();
         $response->action = $action;
-        if ($action === 'update' || $action === 'install') {
-            $itemID       = Request::postVar('item-id', '');
-            $response->id = $itemID;
-            try {
-                $installer = $this->getInstaller($itemID);
-                $download  = $this->getDownload($itemID);
-                $result    = $action === 'update'
-                    ? $installer->update($itemID, $download, $response)
-                    : $installer->install($itemID, $download, $response);
-                $this->cache->flushTags([\CACHING_GROUP_LICENSES]);
-                if ($result !== InstallCode::OK) {
-                    $smarty->assign('licenseErrorMessage', $response->error)
-                        ->assign('resultCode', $result);
-                }
-            } catch (ClientException
-            | ConnectException
-            | FilePermissionException
-            | ApiResultCodeException
-            | ChecksumValidationException
-            | InvalidArgumentException $e
-            ) {
-                $response->status = 'FAILED';
-                $msg              = $e->getMessage();
-                if (\strpos($msg, 'response:') !== false) {
-                    $msg = \substr($msg, 0, \strpos($msg, 'response:'));
-                }
-                $smarty->assign('licenseErrorMessage', $msg);
+        $itemID           = Request::postVar('item-id', '');
+        $response->id     = $itemID;
+        try {
+            $installer = $this->getInstaller($itemID);
+            $download  = $this->getDownload($itemID);
+            $result    = $action === 'update'
+                ? $installer->update($itemID, $download, $response)
+                : $installer->install($itemID, $download, $response);
+            $this->cache->flushTags([\CACHING_GROUP_LICENSES]);
+            if ($result !== InstallCode::OK) {
+                $smarty->assign('licenseErrorMessage', $response->error)
+                    ->assign('resultCode', $result);
             }
-            $this->getList($smarty);
-            $smarty->assign('license', $this->manager->getLicenseByItemID($itemID));
-            $response->html         = $smarty->fetch('tpl_inc/licenses_referenced_item.tpl');
-            $response->notification = $smarty->fetch('tpl_inc/updates_drop.tpl');
-            $this->sendResponse($response);
+        } catch (ClientException
+        | ConnectException
+        | FilePermissionException
+        | ApiResultCodeException
+        | DownloadValidationException
+        | ChecksumValidationException
+        | InvalidArgumentException $e
+        ) {
+            $response->status = 'FAILED';
+            $msg              = $e->getMessage();
+            if (\strpos($msg, 'response:') !== false) {
+                $msg = \substr($msg, 0, \strpos($msg, 'response:'));
+            }
+            $smarty->assign('licenseErrorMessage', $msg);
         }
+        $this->getList($smarty);
+        $smarty->assign('license', $this->manager->getLicenseByItemID($itemID));
+        $response->html         = $smarty->fetch('tpl_inc/licenses_referenced_item.tpl');
+        $response->notification = $smarty->fetch('tpl_inc/updates_drop.tpl');
+        $this->sendResponse($response);
+    }
+
+    /**
+     * @param JTLSmarty $smarty
+     */
+    private function setBinding(JTLSmarty $smarty): void
+    {
+        $apiResponse      = '';
+        $response         = new AjaxResponse();
+        $response->action = 'setbinding';
+        try {
+            $apiResponse = $this->manager->setBinding(Request::postVar('url'));
+        } catch (ClientException | GuzzleException $e) {
+            $response->error = $e->getMessage();
+            $smarty->assign('bindErrorMessage', $e->getMessage());
+        }
+        $this->getList($smarty);
+        $response->replaceWith['#unbound-licenses'] = $smarty->fetch('tpl_inc/licenses_unbound.tpl');
+        $response->replaceWith['#bound-licenses']   = $smarty->fetch('tpl_inc/licenses_bound.tpl');
+        $response->html                             = $apiResponse;
+        $this->sendResponse($response);
     }
 
     /**
@@ -149,7 +183,7 @@ class Admin
     {
         try {
             $this->manager->update($force);
-        } catch (RequestException | Exception $e) {
+        } catch (RequestException | Exception | ClientException $e) {
             Shop::Container()->getAlertService()->addAlert(
                 Alert::TYPE_ERROR,
                 __('errorFetchLicenseAPI') . '' . $e->getMessage(),

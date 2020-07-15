@@ -4,6 +4,8 @@ namespace JTL\License;
 
 use DateTime;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use JTL\Backend\AuthToken;
 use JTL\Cache\JTLCacheInterface;
@@ -62,6 +64,36 @@ class Manager
     }
 
     /**
+     * @param string $url
+     * @return string
+     */
+
+    /**
+     * @param string $url
+     * @return string
+     * @throws GuzzleException
+     * @throws ClientException
+     */
+    public function setBinding(string $url): string
+    {
+        $res = $this->client->request(
+            'POST',
+            \str_replace('https:', 'http:', $url),
+            [
+                'headers' => [
+                    'Accept'        => 'application/json',
+                    'Content-Type'  => 'application/json',
+                    'Authorization' => 'Bearer ' . AuthToken::getInstance($this->db)->get()
+                ],
+                'verify'  => true,
+                'body'    => \json_encode((object)['domain' => \URL_SHOP])
+            ]
+        );
+
+        return (string)$res->getBody();
+    }
+
+    /**
      * @param bool $force
      * @return int
      * @throws RequestException $e
@@ -71,7 +103,7 @@ class Manager
         if (!$force && !$this->checkUpdate()) {
             return 0;
         }
-        if (true) { // @todo: remove
+        if (false) { // @todo: remove
             $data = $this->getLocalTestData();
             $this->housekeeping();
             $this->cache->flushTags([\CACHING_GROUP_LICENSES]);

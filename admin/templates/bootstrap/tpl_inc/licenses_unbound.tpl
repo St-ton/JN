@@ -29,6 +29,7 @@
                                 {form class='set-binding-form' style='display:inline-block'}
                                     <input type="hidden" name="action" value="setbinding">
                                     <input type="hidden" name="url" value="{$link->getHref()}">
+                                    <input type="hidden" name="method" value="{$link->getMethod()|default:'POST'}">
                                     <button type="submit" class="btn btn-default set-binding" data-link="{$link->getHref()}" href="#" title="{__($link->getRel())}">
                                         <i class="fa fa-link"></i> {__($link->getRel())}
                                     </button>

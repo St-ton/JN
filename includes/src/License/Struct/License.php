@@ -83,6 +83,10 @@ class License
             $now = new DateTime();
             $this->setExpired($this->getValidUntil() < $now);
         }
+        if ($this->getType() === self::TYPE_DEV) {
+            $this->setValidUntil(null);
+            $this->getSubscription()->setValidUntil(null);
+        }
     }
 
     /**

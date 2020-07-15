@@ -357,12 +357,16 @@ final class Link extends AbstractLink
             $this->setTitle($link->localizedTitle ?? $link->cName, $link->languageID);
             $this->setLanguageID($link->languageID, $link->languageID);
             $this->setSEO($link->localizedUrl ?? '', $link->languageID);
-            $this->setURL(
-                $this->linkType === 2
-                    ? $link->localizedUrl
-                    : (Shop::getURL(true, $link->languageID) . '/' . $link->localizedUrl),
-                $link->languageID
-            );
+            if ($this->getLinkType() === \LINKTYP_STARTSEITE && \EXPERIMENTAL_MULTILANG_SHOP === true) {
+                $this->setURL(Shop::getURL(true, $link->languageID) . '/', $link->languageID);
+            } else {
+                $this->setURL(
+                    $this->linkType === 2
+                        ? $link->localizedUrl
+                        : (Shop::getURL(true, $link->languageID) . '/' . $link->localizedUrl),
+                    $link->languageID
+                );
+            }
             $this->setHandler($link->handler ?? '');
             $this->setTemplate($link->template ?? $link->fullscreenTemplate ?? '');
             if (($this->id === null || $this->id === 0) && isset($link->kLink)) {

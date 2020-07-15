@@ -100,7 +100,7 @@ trait MultiSizeImage
         $class = Media::getClass($this->getImageType());
         /** @var IMedia $class */
         if ($source === null) {
-            $instance = new $class($this->db);
+            $instance = new $class();
             $source   = $instance->getPathByID($this->getID(), $number);
             if (empty($source)) {
                 $source = null;
@@ -122,7 +122,7 @@ trait MultiSizeImage
         $class = Media::getClass($this->getImageType());
         /** @var IMedia $class */
         if ($source === null) {
-            $instance = new $class($this->db);
+            $instance = new $class();
             $source   = $instance->getPathByID($this->getID(), $number);
         }
         $this->currentImagePath = $source;

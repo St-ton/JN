@@ -409,7 +409,13 @@ class PortletInstance implements \JsonSerializable
             if ($this->hasProperty($propname) && \strpos($propname, 'wow-') === 0 &&
                 !empty($this->getProperty($propname))
             ) {
-                $data[$propname] = \htmlspecialchars($this->getProperty($propname));
+                $value = $this->getProperty($propname);
+
+                if (\is_string($value)) {
+                    $value = \htmlspecialchars($value);
+                }
+
+                $data[$propname] = $value;
             }
         }
 

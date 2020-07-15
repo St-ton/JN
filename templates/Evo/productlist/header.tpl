@@ -1,4 +1,5 @@
-{if !isset($oNavigationsinfo) || isset($Suchergebnisse) && isset($oNavigationsinfo) && empty($oNavigationsinfo->getName())}
+{if !isset($oNavigationsinfo)
+    || (!$oNavigationsinfo->getManufacturer() && !$oNavigationsinfo->getCharacteristicValue() && !$oNavigationsinfo->getCategory())}
     {opcMountPoint id='opc_before_heading'}
     <h1>{$Suchergebnisse->getSearchTermWrite()}</h1>
 {/if}
@@ -24,13 +25,12 @@
 {include file='snippets/extension.tpl'}
 
 {block name='productlist-header-navinfo'}
-{if $oNavigationsinfo->hasData()}
-    <div class="title">
-        {if $oNavigationsinfo->getName()}
+    {if $oNavigationsinfo->getName()}
+        <div class="title">
             {opcMountPoint id='opc_before_heading'}
             <h1>{$oNavigationsinfo->getName()}</h1>
-        {/if}
-    </div>
+        </div>
+    {/if}
     <div class="desc clearfix">
         {if $oNavigationsinfo->getImageURL() !== 'gfx/keinBild.gif' && $oNavigationsinfo->getImageURL() !== 'gfx/keinBild_kl.gif'}
             <div class="img pull-left">
@@ -53,7 +53,6 @@
             <div class="item_desc custom_content">{$oNavigationsinfo->getCharacteristicValue()->cBeschreibung}</div>
         {/if}
     </div>
-{/if}
 {/block}
 
 {block name='productlist-subcategories'}

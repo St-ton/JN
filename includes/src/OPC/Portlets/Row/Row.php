@@ -93,7 +93,7 @@ class Row extends Portlet
 
         $layoutXS = \array_map('intval', $layoutXS);
         $layoutSM = \array_map('intval', $layoutSM);
-        $layoutMD = \array_map('intval', $layoutXS);
+        $layoutMD = \array_map('intval', $layoutMD);
         $layoutLG = \array_map('intval', $layoutLG);
 
         $colLayouts = \array_fill(0, $colCount, '');

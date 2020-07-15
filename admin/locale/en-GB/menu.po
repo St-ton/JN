@@ -334,6 +334,9 @@ msgstr "Plug-in marketplace"
 msgid "Plug-in manager"
 msgstr "Plug-in manager"
 
+msgid "My purchases"
+msgstr "My purchases"
+
 msgid "Plug-in profiler"
 msgstr "Plug-in profiler"
 
@@ -356,6 +359,9 @@ msgstr "System check"
 
 msgid "Rating system"
 msgstr "Review system"
+
+msgid "Consent manager"
+msgstr "Consent manager"
 
 msgid "Manage favorites"
 msgstr "Managing favourites"

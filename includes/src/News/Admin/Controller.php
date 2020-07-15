@@ -14,6 +14,8 @@ use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Helpers\Seo;
 use JTL\Language\LanguageModel;
+use JTL\Media\Image;
+use JTL\Media\MultiSizeImage;
 use JTL\News\Category;
 use JTL\News\CategoryInterface;
 use JTL\News\CategoryList;
@@ -32,6 +34,8 @@ use function Functional\map;
  */
 final class Controller
 {
+    use MultiSizeImage;
+
     public const UPLOAD_DIR = \PFAD_ROOT . \PFAD_NEWSBILDER;
 
     public const UPLOAD_DIR_CATEGORY = \PFAD_ROOT . \PFAD_NEWSKATEGORIEBILDER;
@@ -187,12 +191,12 @@ final class Controller
                         ['cKey', 'kKey', 'kSprache'],
                         ['kNewsMonatsUebersicht', (int)$monthOverview->kNewsMonatsUebersicht, $langID]
                     );
-                    $oSeo           = new stdClass();
-                    $oSeo->cSeo     = Seo::checkSeo(Seo::getSeo($prefix . '-' . $month . '-' . $year));
-                    $oSeo->cKey     = 'kNewsMonatsUebersicht';
-                    $oSeo->kKey     = $monthOverview->kNewsMonatsUebersicht;
-                    $oSeo->kSprache = $langID;
-                    $this->db->insert('tseo', $oSeo);
+                    $seo           = new stdClass();
+                    $seo->cSeo     = Seo::checkSeo(Seo::getSeo($prefix . '-' . $month . '-' . $year));
+                    $seo->cKey     = 'kNewsMonatsUebersicht';
+                    $seo->kKey     = $monthOverview->kNewsMonatsUebersicht;
+                    $seo->kSprache = $langID;
+                    $this->db->insert('tseo', $seo);
                 } else {
                     $prefix                  = $this->db->select(
                         'tnewsmonatspraefix',
@@ -212,12 +216,12 @@ final class Controller
                         ['cKey', 'kKey', 'kSprache'],
                         ['kNewsMonatsUebersicht', $kNewsMonatsUebersicht, $langID]
                     );
-                    $oSeo           = new stdClass();
-                    $oSeo->cSeo     = Seo::checkSeo(Seo::getSeo($prefix . '-' . $month . '-' . $year));
-                    $oSeo->cKey     = 'kNewsMonatsUebersicht';
-                    $oSeo->kKey     = $kNewsMonatsUebersicht;
-                    $oSeo->kSprache = $langID;
-                    $this->db->insert('tseo', $oSeo);
+                    $seo           = new stdClass();
+                    $seo->cSeo     = Seo::checkSeo(Seo::getSeo($prefix . '-' . $month . '-' . $year));
+                    $seo->cKey     = 'kNewsMonatsUebersicht';
+                    $seo->kKey     = $kNewsMonatsUebersicht;
+                    $seo->kSprache = $langID;
+                    $this->db->insert('tseo', $seo);
                 }
             }
             $dir = self::UPLOAD_DIR . $newsItemID;
@@ -253,9 +257,9 @@ final class Controller
             $newsItem   = new Item($this->db);
             $this->step = 'news_editieren';
             $this->smarty->assign('cPostVar_arr', $post)
-                         ->assign('cPlausiValue_arr', $validation)
-                         ->assign('oNewsKategorie_arr', $this->getAllNewsCategories())
-                         ->assign('oNews', $newsItem);
+                ->assign('cPlausiValue_arr', $validation)
+                ->assign('oNewsKategorie_arr', $this->getAllNewsCategories())
+                ->assign('oNews', $newsItem);
             $this->errorMsg .= __('errorFillRequired');
 
             if (isset($post['kNews']) && \is_numeric($post['kNews'])) {
@@ -276,12 +280,37 @@ final class Controller
      */
     public function saveComment(int $id, array $post): bool
     {
-        $upd             = new stdClass();
-        $upd->cName      = $post['cName'];
-        $upd->cKommentar = $post['cKommentar'];
+        if ($id > 0) {
+            $upd             = new stdClass();
+            $upd->cName      = $post['cName'];
+            $upd->cKommentar = $post['cKommentar'];
+            $this->flushCache();
+            return $this->db->update('tnewskommentar', 'kNewsKommentar', $id, $upd) >= 0;
+        }
+
+        return $this->insertComment($post);
+    }
+
+    /**
+     * @param array $post
+     * @return bool
+     */
+    public function insertComment(array $post): bool
+    {
+        $adminID                 = (int)$_SESSION['AdminAccount']->kAdminlogin;
+        $insert                  = new stdClass();
+        $insert->kNews           = $post['kNews'];
+        $insert->cKommentar      = $post['cKommentar'];
+        $insert->kKunde          = $post['kKunde'] ?? 0;
+        $insert->nAktiv          = $post['nAktiv'] ?? 1;
+        $insert->cName           = $post['cName'] ?? 'Admin';
+        $insert->cEmail          = $post['cEmail'] ?? '';
+        $insert->isAdmin         = $post['isAdmin'] ?? $adminID ?? 0;
+        $insert->parentCommentID = $post['parentCommentID'] ?? 0;
+        $insert->dErstellt       = 'NOW()';
         $this->flushCache();
 
-        return $this->db->update('tnewskommentar', 'kNewsKommentar', $id, $upd) >= 0;
+        return $this->db->insert('tnewskommentar', $insert) >= 0;
     }
 
     /**
@@ -344,7 +373,7 @@ final class Controller
     }
 
     /**
-     * @param int[] $ids
+     * @param int[]|string[] $ids
      * @return bool
      */
     public function deleteCategories(array $ids): bool
@@ -444,7 +473,8 @@ final class Controller
         $sort         = (int)$post['nSort'];
         $active       = (int)$post['nAktiv'];
         $parentID     = (int)$post['kParent'];
-        $previewImage = $post['previewImage'];
+        $previewImage = $post['previewImage'] ?? '';
+        $oldPreview   = null;
         $flag         = \ENT_COMPAT | \ENT_HTML401;
         $this->db->delete('tseo', ['cKey', 'kKey'], ['kNewsKategorie', $categoryID]);
         $newsCategory                        = new stdClass();
@@ -455,6 +485,7 @@ final class Controller
         $newsCategory->cPreviewImage         = $previewImage;
 
         if ($update === true) {
+            $oldPreview = $this->db->select('tnewskategorie', 'kNewsKategorie', $categoryID)->cPreviewImage ?? null;
             $this->db->update('tnewskategorie', 'kNewsKategorie', $categoryID, $newsCategory);
         } else {
             $categoryID = $this->db->insert('tnewskategorie', $newsCategory);
@@ -508,20 +539,7 @@ final class Controller
             $this->setErrorMsg(__('errorDirCreate') . $dir);
         }
         if (isset($_FILES['previewImage']['name']) && \mb_strlen($_FILES['previewImage']['name']) > 0) {
-            $extension = \mb_substr(
-                $_FILES['previewImage']['type'],
-                \mb_strpos($_FILES['previewImage']['type'], '/') + 1,
-                \mb_strlen($_FILES['previewImage']['type']) - \mb_strpos($_FILES['previewImage']['type'], '/') + 1
-            );
-            if ($extension === 'jpe') { // not elegant, but since it's 99% jpg..
-                $extension = 'jpg';
-            }
-            $uploadFile = self::UPLOAD_DIR_CATEGORY . $categoryID . '/preview.' . $extension;
-            \move_uploaded_file($_FILES['previewImage']['tmp_name'], $uploadFile);
-            $newsCategory->cPreviewImage = \PFAD_NEWSKATEGORIEBILDER . $categoryID . '/preview.' . $extension;
-            $upd                         = new stdClass();
-            $upd->cPreviewImage          = $newsCategory->cPreviewImage;
-            $this->db->update('tnewskategorie', 'kNewsKategorie', $categoryID, $upd);
+            $this->updateNewsCategoryPreview($_FILES['previewImage'], $oldPreview, $categoryID);
         }
         $this->rebuildCategoryTree(0, 1);
         if ($error === false) {
@@ -532,6 +550,30 @@ final class Controller
         $this->flushCache();
 
         return $newsCategory->load($categoryID);
+    }
+
+    /**
+     * @param array       $upload
+     * @param string|null $oldPreview
+     * @param int         $categoryID
+     * @return int
+     */
+    private function updateNewsCategoryPreview(array $upload, ?string $oldPreview, int $categoryID): int
+    {
+        if ($oldPreview !== null
+            && \strpos($oldPreview, \PFAD_NEWSKATEGORIEBILDER) === 0
+            && \file_exists(\PFAD_ROOT . $oldPreview)
+        ) {
+            $real = \realpath(\PFAD_ROOT . $oldPreview);
+            if (\strpos($real, self::UPLOAD_DIR_CATEGORY) === 0) {
+                \unlink($real);
+            }
+        }
+        $fileName = \basename($upload['name']);
+        \move_uploaded_file($upload['tmp_name'], self::UPLOAD_DIR_CATEGORY . $categoryID . '/' . $fileName);
+        $upd = (object)['cPreviewImage' => \PFAD_NEWSKATEGORIEBILDER . $categoryID . '/' . $fileName];
+
+        return $this->db->update('tnewskategorie', 'kNewsKategorie', $categoryID, $upd);
     }
 
     /**
@@ -553,9 +595,9 @@ final class Controller
                 $this->deleteNewsImage($image->cName, $newsItemID, self::UPLOAD_DIR);
             }
         }
-
-        $fileIDName = $newsItemID . '/' . \explode('.', \basename($_FILES['previewImage']['name']))[0]
+        $newName    = Image::getCleanFilename(\explode('.', \basename($_FILES['previewImage']['name']))[0])
             . '_preview.' . $extension;
+        $fileIDName = $newsItemID . '/' . $newName;
         $uploadFile = self::UPLOAD_DIR . $fileIDName;
         \move_uploaded_file($_FILES['previewImage']['tmp_name'], $uploadFile);
 
@@ -578,25 +620,10 @@ final class Controller
             if (!empty($_FILES['Bilder']['size'][$i - $counter])
                 && $_FILES['Bilder']['error'][$i - $counter] === \UPLOAD_ERR_OK
             ) {
-                $type      = $_FILES['Bilder']['type'][$i - $counter];
-                $extension = \mb_substr(
-                    $type,
-                    \mb_strpos($type, '/') + 1,
-                    \mb_strlen($type) - \mb_strpos($type, '/') + 1
-                );
-                // not elegant, but since it's 99% jpg..
-                if ($extension === 'jpe') {
-                    $extension = 'jpg';
-                }
-                // check if image exists and delete
-                foreach ($oldImages as $image) {
-                    if (\mb_strpos($image->cDatei, 'Bild' . ($i + 1) . '.') !== false
-                        && $_FILES['Bilder']['name'][$i - $counter] !== ''
-                    ) {
-                        $this->deleteNewsImage($image->cName, $newsItemID, self::UPLOAD_DIR);
-                    }
-                }
-                $uploadFile = self::UPLOAD_DIR . $newsItemID . '/Bild' . ($i + 1) . '.' . $extension;
+                $info       = \pathinfo($_FILES['Bilder']['name'][$i - $counter]);
+                $oldName    = $info['filename'];
+                $newName    = Image::getCleanFilename($oldName);
+                $uploadFile = self::UPLOAD_DIR . $newsItemID . '/' . $newName . '.' . $info['extension'];
                 \move_uploaded_file($_FILES['Bilder']['tmp_name'][$i - $counter], $uploadFile);
             }
         }
@@ -659,7 +686,7 @@ final class Controller
         ), static function ($e) {
             return (int)$e->id;
         });
-        $itemList->createItems($ids);
+        $itemList->createItems($ids, false);
 
         return $itemList->getItems();
     }
@@ -733,7 +760,7 @@ final class Controller
                 continue;
             }
             $image           = new stdClass();
-            $image->cName    = \mb_substr($fileName, 0, \mb_strpos($fileName, '.' . $fileinfo->getExtension()));
+            $image->cName    = $fileinfo->getBasename('.' . $fileinfo->getExtension());
             $image->cURL     = $base . $itemID . '/' . $fileName;
             $image->cURLFull = $imageBaseURL . $base . $itemID . '/' . $fileName;
             $image->cDatei   = $fileName;
@@ -753,25 +780,26 @@ final class Controller
      */
     public function deleteComments(array $items, Item $newsItem = null): void
     {
-        if (\count($items) > 0) {
-            foreach ($items as $id) {
-                $this->db->delete('tnewskommentar', 'kNewsKommentar', (int)$id);
-            }
-            $this->flushCache();
-            $this->setMsg(__('successNewsCommentDelete'));
-            $tab    = Request::verifyGPDataString('tab');
-            $params = [
-                'news'  => '1',
-                'token' => $_SESSION['jtl_token'],
-            ];
-            if ($newsItem !== null) {
-                $params['kNews'] = $newsItem->getID();
-                $params['nd']    = '1';
-            }
-            $this->newsRedirect(empty($tab) ? 'inaktiv' : $tab, $this->getMsg(), $params);
-        } else {
+        if (\count($items) === 0) {
             $this->setErrorMsg(__('errorAtLeastOneNewsComment'));
+
+            return;
         }
+        foreach ($items as $id) {
+            $this->db->delete('tnewskommentar', 'kNewsKommentar', (int)$id);
+        }
+        $this->flushCache();
+        $this->setMsg(__('successNewsCommentDelete'));
+        $tab    = Request::verifyGPDataString('tab');
+        $params = [
+            'news'  => '1',
+            'token' => $_SESSION['jtl_token'],
+        ];
+        if ($newsItem !== null) {
+            $params['kNews'] = $newsItem->getID();
+            $params['nd']    = '1';
+        }
+        $this->newsRedirect(empty($tab) ? 'inaktiv' : $tab, $this->getMsg(), $params);
     }
 
     /**
@@ -867,16 +895,24 @@ final class Controller
     }
 
     /**
+     * @return string
+     */
+    public function getImageType(): string
+    {
+        return Image::TYPE_NEWS;
+    }
+
+    /**
      * @param string $text
      * @param int    $id
      * @return string
      */
     private function parseContent(string $text, int $id): string
     {
-        $uploadDir = \PFAD_ROOT . \PFAD_NEWSBILDER;
+        $uploadDir = \PFAD_ROOT . \PFAD_NEWSBILDER . $id;
         $images    = [];
-        if (\is_dir($uploadDir . $id)) {
-            $handle = \opendir($uploadDir . $id);
+        if (\is_dir($uploadDir)) {
+            $handle = \opendir($uploadDir);
             while (($file = \readdir($handle)) !== false) {
                 if ($file !== '.' && $file !== '..') {
                     $images[] = $file;
@@ -888,17 +924,22 @@ final class Controller
         \usort($images, static function ($a, $b) {
             return \strcmp($a, $b);
         });
-
-        $shopURL = Shop::getURL() . '/';
+        $baseURL = Shop::getImageBaseURL();
         foreach ($images as $image) {
             if (\mb_strpos($image, '_preview.') !== false) {
                 $placeholder = '$#preview#$';
-            } else {
+            } elseif (\mb_strpos($image, 'Bild') === 0) {
                 $placeholder = '$#Bild' . \substr(\explode('.', $image)[0], 4) . '#$';
+            } else {
+                $info        = \pathinfo($image);
+                $placeholder = '$#' . $info['filename'] . '#$';
             }
             $text = \str_replace(
                 $placeholder,
-                '<img alt="" src="' . $shopURL . \PFAD_NEWSBILDER . $id . '/' . $image . '" />',
+                '<img alt="" src="'
+                . $baseURL
+                . $this->generateImagePath(Image::SIZE_LG, 1, $id . '/' . $image)
+                . '" />',
                 $text
             );
         }

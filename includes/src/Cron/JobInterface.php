@@ -3,6 +3,7 @@
 namespace JTL\Cron;
 
 use DateTime;
+use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use Psr\Log\LoggerInterface;
 
@@ -14,11 +15,17 @@ interface JobInterface
 {
     /**
      * JobInterface constructor.
-     * @param DbInterface     $db
-     * @param LoggerInterface $logger
-     * @param JobHydrator     $hydrator
+     * @param DbInterface       $db
+     * @param LoggerInterface   $logger
+     * @param JobHydrator       $hydrator
+     * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger, JobHydrator $hydrator);
+    public function __construct(
+        DbInterface $db,
+        LoggerInterface $logger,
+        JobHydrator $hydrator,
+        JTLCacheInterface $cache
+    );
 
     /**
      * @return int
@@ -83,12 +90,12 @@ interface JobInterface
     public function setDateLastStarted($date): void;
 
     /**
-     * @inheritdoc
+     * @return DateTime|null
      */
     public function getDateLastFinished(): ?DateTime;
 
     /**
-     * @inheritdoc
+     * @param DateTime|string $date
      */
     public function setDateLastFinished($date): void;
 

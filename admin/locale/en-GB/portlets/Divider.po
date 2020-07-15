@@ -5,6 +5,18 @@ msgstr ""
 msgid "Divider"
 msgstr "Divider"
 
+msgid "dividerTitle"
+msgstr "Label"
+
+msgid "dividerMoreLink"
+msgstr "Link URL"
+
+msgid "dividerMoreTitle"
+msgstr "Link Title"
+
+msgid "dividerElmID"
+msgstr "Element ID"
+
 msgid "dividerIdDesc"
 msgstr "Here you can enter a unique identifier (anchor). Use it to link to this position from other positions or "
 "pages (allowed characters: numbers, letters, –, _)."

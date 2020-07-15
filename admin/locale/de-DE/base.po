@@ -1969,3 +1969,7 @@ msgstr "Lastschrift"
 
 msgid "za_barzahlung_jtl"
 msgstr "Barzahlung"
+
+msgid "Updates available"
+msgstr "Updates verfügbar"
+

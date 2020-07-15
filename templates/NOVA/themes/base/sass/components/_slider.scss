@@ -29,3 +29,21 @@
     padding-top: 25px;
   }
 }
+
+// nivo
+.container-fluid .slider-wrapper {
+  margin: 0 (-($grid-gutter-width/2));
+}
+
+.nivo-caption {
+  background: $sand !important;
+  color: $gray-dark !important;
+}
+
+.nivo-controlNav {
+  .active {
+    img {
+      border: 1px solid $gray-dark;
+    }
+  }
+}

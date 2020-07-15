@@ -181,10 +181,11 @@ class Slide
     {
         if (!empty($this->image)) {
             if (Text::startsWith($this->image, 'Bilder/')) {
-                $this->thumbnail = \PFAD_MEDIAFILES . 'Bilder/.tmb/' . \basename($this->image);
+                $this->setThumbnail(\PFAD_MEDIAFILES . 'Bilder/.tmb/' . \basename($this->getThumbnail()));
             } else {
-                $this->thumbnail = \STORAGE_OPC . '.tmb/' . \basename($this->image);
+                $this->setThumbnail(\STORAGE_OPC . '.tmb/' . \basename($this->getThumbnail()));
             }
+            $this->setImage(\STORAGE_OPC . \basename($this->getImage()));
         }
 
         return $this->id === null || $this->id === 0

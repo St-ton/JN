@@ -182,7 +182,7 @@ class AdminAccount
         $now  = (new DateTime())->format('U');
         $hash = \md5($email . Shop::Container()->getCryptoService()->randomString(30));
         $upd  = (object)['cResetPasswordHash' => $now . ':' . Shop::Container()->getPasswordService()->hash($hash)];
-        $res  = Shop::Container()->getDB()->update('tadminlogin', 'cMail', $email, $upd);
+        $res  = $this->db->update('tadminlogin', 'cMail', $email, $upd);
         if ($res > 0) {
             $user                   = $this->db->select('tadminlogin', 'cMail', $email);
             $obj                    = new stdClass();
@@ -673,10 +673,18 @@ class AdminAccount
     }
 
     /**
-     * @return int|null
+     * @return int
      */
-    public function getID(): ?int
+    public function getID(): int
     {
-        return $_SESSION['AdminAccount']->kAdminlogin;
+        return (int)$_SESSION['AdminAccount']->kAdminlogin;
+    }
+
+    /**
+     * @return GetText
+     */
+    public function getGetText(): GetText
+    {
+        return $this->getText;
     }
 }

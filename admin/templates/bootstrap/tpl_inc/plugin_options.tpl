@@ -54,27 +54,10 @@
                                 {/foreach}
                             </select>
                         {elseif $confItem->inputType === JTL\Plugin\Admin\InputType::COLORPICKER}
-                            <div id="{$confItem->valueID}" style="display:inline-block">
-                                <div style="background-color: {$confItem->value}" class="colorSelector"></div>
-                            </div>
-                            <input type="hidden" name="{$confItem->valueID}" class="{$confItem->valueID}_data" value="{$confItem->value}" />
-                            <script type="text/javascript">
-                                $('#{$confItem->valueID}').ColorPicker({ldelim}
-                                    color:    '{$confItem->value}',
-                                    onShow:   function (colpkr) {ldelim}
-                                        $(colpkr).fadeIn(500);
-                                        return false;
-                                    {rdelim},
-                                    onHide:   function (colpkr) {ldelim}
-                                        $(colpkr).fadeOut(500);
-                                        return false;
-                                    {rdelim},
-                                    onChange: function (hsb, hex, rgb) {ldelim}
-                                        $('#{$confItem->valueID} div').css('backgroundColor', '#' + hex);
-                                        $('.{$confItem->valueID}_data').val('#' + hex);
-                                    {rdelim}
-                                {rdelim});
-                            </script>
+                            {include file='snippets/colorpicker.tpl'
+                                cpID=$confItem->valueID
+                                cpName=$confItem->valueID
+                                cpValue=$confItem->value}
                         {elseif $confItem->inputType === JTL\Plugin\Admin\InputType::PASSWORD}
                             <input autocomplete="off" class="form-control" id="{$confItem->valueID}" name="{$confItem->valueID}" type="password" value="{$confItem->value}" />
                         {elseif $confItem->inputType === JTL\Plugin\Admin\InputType::TEXTAREA}

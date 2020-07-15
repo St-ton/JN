@@ -2,8 +2,9 @@
 
 namespace JTL\Minify;
 
+use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use JTL\Template;
+use JTL\Template\Model;
 
 /**
  * Class MinifyService
@@ -104,14 +105,14 @@ class MinifyService
 
     /**
      * @param JTLSmarty $smarty
-     * @param Template  $template
+     * @param Model     $template
      * @param string    $themeDir
      */
-    public function buildURIs(JTLSmarty $smarty, Template $template, string $themeDir): void
+    public function buildURIs(JTLSmarty $smarty, Model $template, string $themeDir): void
     {
-        $minify      = $template->getMinifyArray();
+        $minify      = $template->getResources()->getMinifyArray();
         $tplVersion  = $template->getVersion();
-        $config      = $template->getConfig();
+        $config      = Shop::getConfig([\CONF_TEMPLATE])['template'];
         $allowStatic = isset($config['general']['use_minify']) && $config['general']['use_minify'] === 'static';
         $cacheTime   = $allowStatic ? $this->getCacheTime() : null;
         $css         = $minify[$themeDir . '.css'] ?? [];

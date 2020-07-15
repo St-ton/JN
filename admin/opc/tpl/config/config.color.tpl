@@ -10,7 +10,7 @@
         {$propdesc.label}
     </label>
     <div class="input-group" id="config-{$propid}-group">
-        <input type="text" class="form-control colorpicker-input" name="{$propname}" value="{$propval}"
+        <input type="text" class="form-control colorpicker-input" name="{$propname}" value="{$propval|escape:'html'}"
                {if $required}required{/if} id="config-{$propid}" autocomplete="off"
                placeholder="{__('Default colour')}">
         <span class="input-group-append">

@@ -320,7 +320,7 @@ function generateSitemapXML()
         // GoogleImages einbinden?
         $image = '';
         if ($conf['sitemap']['sitemap_googleimage_anzeigen'] === 'Y'
-            && ($number = Product::getPrimaryNumber(Image::TYPE_PRODUCT, $product->kArtikel)) !== null
+            && ($number = Product::getPrimaryNumber($product->kArtikel, $db)) !== null
         ) {
             $image = Product::getThumb(
                 Image::TYPE_PRODUCT,
@@ -388,7 +388,7 @@ function generateSitemapXML()
             }
             $image = '';
             if ($conf['sitemap']['sitemap_googleimage_anzeigen'] === 'Y'
-                && ($number = Product::getPrimaryNumber(Image::TYPE_PRODUCT, $product->kArtikel)) !== null
+                && ($number = Product::getPrimaryNumber($product->kArtikel, $db)) !== null
             ) {
                 $image = Product::getThumb(
                     Image::TYPE_PRODUCT,
@@ -811,14 +811,14 @@ function generateSitemapXML()
         // ping sitemap to Google and Bing
         if ($conf['sitemap']['sitemap_google_ping'] === 'Y') {
             $encodedSitemapIndexURL = urlencode(Shop::getURL() . '/sitemap_index.xml');
-            if (200 !== ($httpStatus = Request::http_get_status(
+            if (($httpStatus = Request::http_get_status(
                 'http://www.google.com/webmasters/tools/ping?sitemap=' . $encodedSitemapIndexURL
-            ))) {
+            )) !== 200) {
                 Shop::Container()->getLogService()->notice('Sitemap ping to Google failed with status ' . $httpStatus);
             }
-            if (200 !== ($httpStatus = Request::http_get_status(
+            if (($httpStatus = Request::http_get_status(
                 'http://www.bing.com/ping?sitemap=' . $encodedSitemapIndexURL
-            ))) {
+            )) !== 200) {
                 Shop::Container()->getLogService()->notice('Sitemap ping to Bing failed with status ' . $httpStatus);
             }
         }

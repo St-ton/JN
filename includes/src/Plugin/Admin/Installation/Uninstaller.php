@@ -12,6 +12,10 @@ use JTL\Plugin\InstallCode;
 use JTL\Plugin\LegacyPluginLoader;
 use JTL\Plugin\PluginInterface;
 use JTL\Plugin\PluginLoader;
+use JTL\Shop;
+use League\Flysystem\Adapter\Local;
+use League\Flysystem\Filesystem;
+use League\Flysystem\MountManager;
 
 /**
  * Class Uninstaller
@@ -47,13 +51,19 @@ final class Uninstaller
      * @param bool     $update
      * @param int|null $newID
      * @param bool     $deleteData
+     * @param bool     $deleteFiles
      * @return int
      * 1 = Alles O.K.
      * 2 = $kPlugin wurde nicht übergeben
      * 3 = SQL-Fehler
      */
-    public function uninstall(int $pluginID, bool $update = false, int $newID = null, bool $deleteData = true): int
-    {
+    public function uninstall(
+        int $pluginID,
+        bool $update = false,
+        int $newID = null,
+        bool $deleteData = true,
+        bool $deleteFiles = false
+    ): int {
         if ($pluginID <= 0) {
             return InstallCode::WRONG_PARAM;
         }
@@ -81,6 +91,15 @@ final class Uninstaller
                 }
             }
             $this->doSQLDelete($pluginID, $update, $newID, $deleteData);
+            if ($deleteFiles === true) {
+                $dir     = $plugin->getPaths()->getBaseDir();
+                $manager = new MountManager(['root' => new Filesystem(new Local(\PFAD_ROOT))]);
+                $manager->mountFilesystem('plgn', Shop::Container()->get(\JTL\Filesystem\Filesystem::class));
+                $dirName = (int)$data->bExtension === 1
+                    ? (\PLUGIN_DIR . $dir)
+                    : (\PFAD_PLUGIN . $dir);
+                @$manager->deleteDir('plgn://' . $dirName);
+            }
         }
         $this->cache->flushAll();
 
@@ -192,14 +211,13 @@ final class Uninstaller
      * @param null|int $newPluginID
      * @param bool     $deleteData
      */
-    private function doSQLDelete(int $pluginID, bool $update, int $newPluginID = null, $deleteData = true): void
+    private function doSQLDelete(int $pluginID, bool $update, int $newPluginID = null, bool $deleteData = true): void
     {
         if ($update) {
             $this->partialDelete($pluginID);
         } else {
             if ($deleteData === true) {
-                $customTables = $this->db->selectAll('tplugincustomtabelle', 'kPlugin', $pluginID);
-                foreach ($customTables as $table) {
+                foreach ($this->db->selectAll('tplugincustomtabelle', 'kPlugin', $pluginID) as $table) {
                     $this->db->query('DROP TABLE IF EXISTS ' . $table->cTabelle, ReturnType::DEFAULT);
                 }
             }

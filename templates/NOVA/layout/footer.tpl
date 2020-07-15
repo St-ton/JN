@@ -1,40 +1,45 @@
-{block name='consent-manager'}
-    {include file='snippets/consent_manager.tpl'}
-    {inline_script}
-        <script>
-            const CM = new ConsentManager({
-                version: 1
-            });
-            var trigger = document.querySelectorAll('.trigger')
-            var triggerCall = function(e) {
-                e.preventDefault();
-                let type = e.target.dataset.consent;
-                if (CM.getSettings(type) === false) {
-                    CM.openConfirmationModal(type, function() {
-                        let data = CM._getLocalData();
-                        if (data === null ) {
-                            data = { settings: {} };
-                        }
-                        data.settings[type] = true;
-                        document.dispatchEvent(new CustomEvent('consent.updated', { detail: data.settings }));
-                    });
-                }
-            }
-            for(let i = 0; i < trigger.length; ++i) {
-                trigger[i].addEventListener('click', triggerCall)
-            }
-            document.addEventListener('consent.updated', function(e) {
-                $.post('{$ShopURLSSL}/', {
-                            'action': 'updateconsent',
-                            'jtl_token': '{$smarty.session.jtl_token}',
-                            'data': e.detail
-                        }
-                );
-            });
-        </script>
-    {/inline_script}
-{/block}
 {block name='layout-footer'}
+    {block name='layout-footer-consent-manager'}
+        {if $Einstellungen.consentmanager.consent_manager_active === 'Y'}
+            {include file='snippets/consent_manager.tpl'}
+            {inline_script}
+                <script>
+                    setTimeout(function() {
+                        $('#consent-manager, #consent-settings-btn').removeClass('d-none');
+                    }, 100)
+                    const CM = new ConsentManager({
+                        version: 1
+                    });
+                    var trigger = document.querySelectorAll('.trigger')
+                    var triggerCall = function(e) {
+                        e.preventDefault();
+                        let type = e.target.dataset.consent;
+                        if (CM.getSettings(type) === false) {
+                            CM.openConfirmationModal(type, function() {
+                                let data = CM._getLocalData();
+                                if (data === null ) {
+                                    data = { settings: {} };
+                                }
+                                data.settings[type] = true;
+                                document.dispatchEvent(new CustomEvent('consent.updated', { detail: data.settings }));
+                            });
+                        }
+                    }
+                    for(let i = 0; i < trigger.length; ++i) {
+                        trigger[i].addEventListener('click', triggerCall)
+                    }
+                    document.addEventListener('consent.updated', function(e) {
+                        $.post('{$ShopURLSSL}/', {
+                                'action': 'updateconsent',
+                                'jtl_token': '{$smarty.session.jtl_token}',
+                                'data': e.detail
+                            }
+                        );
+                    });
+                </script>
+            {/inline_script}
+        {/if}
+    {/block}
     {block name='layout-footer-content-all-closingtags'}
 
         {block name='layout-footer-aside'}
@@ -127,7 +132,7 @@
                         {if isset($footerBoxes) && count($footerBoxes) > 0}
                             {row id='footer-boxes' class="{if $newsletterActive}mt-4 mt-lg-7{/if}"}
                                 {foreach $footerBoxes as $box}
-                                    {col cols=12 sm=6 md=3}
+                                    {col cols=12 sm=6 md=4 lg=3}
                                         {$box->getRenderedContent()}
                                     {/col}
                                 {/foreach}
@@ -137,11 +142,10 @@
 
                     {block name='layout-footer-additional'}
                         {if $Einstellungen.template.footer.socialmedia_footer === 'Y'}
-                            {row class="mb-3 mt-5"}
-                            {if $Einstellungen.template.footer.socialmedia_footer === 'Y'}
+                            {row class="mb-2 mt-5"}
                                 {block name='layout-footer-socialmedia'}
                                     {col cols=12 class="footer-additional-wrapper col-auto mx-auto"}
-                                        <ul class="list-unstyled d-flex flex-row flex-wrap">
+                                        <ul class="list-unstyled d-flex flex-row flex-wrap mb-0">
                                         {if !empty($Einstellungen.template.footer.facebook)}
                                             <li>
                                                 {link href="{if $Einstellungen.template.footer.facebook|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.facebook}"
@@ -217,7 +221,6 @@
                                         </ul>
                                     {/col}
                                 {/block}
-                            {/if}
                             {/row}{* /row footer-additional *}
                         {/if}
                     {/block}{* /footer-additional *}
@@ -271,6 +274,9 @@
         {/if}
     {/block}
 
+    {block name='layout-footer-io-path'}
+        <div id="jtl-io-path" data-path="{$ShopURL}" class="d-none"></div>
+    {/block}
 
     {* JavaScripts *}
     {block name='layout-footer-js'}

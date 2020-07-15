@@ -10,7 +10,7 @@
                 <div id="heading-{$groupId}">
                     <a href="#" data-toggle="collapse" data-target="#{$groupId}" class="opc-Accordion-head collapsed"
                        data-parent="#{$uid}">
-                        {$group} <i class="fas fa-chevron-up"></i>
+                        {$group|escape:'html'} <i class="fas fa-chevron-up"></i>
                     </a>
                 </div>
                 {collapse
@@ -41,7 +41,7 @@
                             data=['toggle' => 'collapse', 'target' => '#'|cat:$groupId, 'parent' => '#'|cat:$uid]
                             aria=['expanded' => $ariaExpanded, 'controls' => $groupId]
                         }
-                            {$group}
+                            {$group|escape:'html'}
                         {/button}
                     </h2>
                 {/cardheader}

@@ -6,6 +6,7 @@ use JTL\Backend\Revision;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
+use JTL\Profiler;
 use JTL\Services\JTL\CaptchaServiceInterface;
 use JTL\Services\JTL\SimpleCaptchaService;
 use JTL\Session\Backend;
@@ -52,6 +53,7 @@ if (!function_exists('Shop')) {
         return Shop::getInstance();
     }
 }
+Profiler::start();
 $db         = Shop::Container()->getDB();
 $cache      = Shop::Container()->getCache()->setJtlCacheConfig(
     $db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING)

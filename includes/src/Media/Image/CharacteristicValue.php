@@ -6,7 +6,6 @@ use Generator;
 use JTL\DB\ReturnType;
 use JTL\Media\Image;
 use JTL\Media\MediaImageRequest;
-use JTL\Shop;
 use PDO;
 use stdClass;
 
@@ -21,9 +20,9 @@ class CharacteristicValue extends AbstractImage
     /**
      * @var string
      */
-    protected $regEx = '/^media\/image\/(?P<type>characteristicvalue)' .
-    '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl|os)\/(?P<name>[a-zA-Z0-9\-_]+)' .
-    '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
+    public const REGEX = '/^media\/image\/(?P<type>characteristicvalue)'
+    . '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl)\/(?P<name>[a-zA-Z0-9\-_]+)'
+    . '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**
      * @inheritdoc
@@ -32,9 +31,9 @@ class CharacteristicValue extends AbstractImage
     {
         return (object)[
             'stmt' => 'SELECT cBildpfad, 0 AS number 
-                        FROM tmerkmalwert 
-                        WHERE kMerkmalWert = :kMerkmalWert 
-                        ORDER BY nSort ASC',
+                           FROM tmerkmalwert 
+                           WHERE kMerkmalWert = :kMerkmalWert 
+                           ORDER BY nSort ASC',
             'bind' => ['kMerkmalWert' => $id]
         ];
     }
@@ -42,9 +41,9 @@ class CharacteristicValue extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getImageNames(MediaImageRequest $req): array
+    public function getImageNames(MediaImageRequest $req): array
     {
-        return Shop::Container()->getDB()->queryPrepared(
+        return $this->db->queryPrepared(
             'SELECT a.kMerkmalWert, a.kMerkmalWert AS id, a.cBildpfad AS path, t.cWert AS val, t.cSeo AS seoPath
                 FROM tmerkmalwert AS a
                 JOIN tmerkmalwertsprache t
@@ -93,9 +92,9 @@ class CharacteristicValue extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getPathByID($id, int $number = null): ?string
+    public function getPathByID($id, int $number = null): ?string
     {
-        return Shop::Container()->getDB()->queryPrepared(
+        return $this->db->queryPrepared(
             'SELECT cBildpfad AS path
                 FROM tmerkmalwert
                 WHERE kMerkmalWert = :cid LIMIT 1',
@@ -115,9 +114,9 @@ class CharacteristicValue extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getAllImages(int $offset = null, int $limit = null): Generator
+    public function getAllImages(int $offset = null, int $limit = null): Generator
     {
-        $images = Shop::Container()->getDB()->query(
+        $images = $this->db->query(
             'SELECT A.cBildpfad AS path, A.kMerkmalwert, A.kMerkmalwert AS id, B.cWert AS val, B.cSeo AS seoPath
                 FROM tmerkmalwert A
                 JOIN tmerkmalwertsprache B
@@ -146,9 +145,9 @@ class CharacteristicValue extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getTotalImageCount(): int
+    public function getTotalImageCount(): int
     {
-        return (int)Shop::Container()->getDB()->query(
+        return (int)$this->db->query(
             'SELECT COUNT(kMerkmalWert) AS cnt
                 FROM tmerkmalwert
                 WHERE cBildpfad IS NOT NULL

@@ -3,10 +3,6 @@
 namespace JTL\Helpers;
 
 use Exception;
-use JTL\DB\ReturnType;
-use JTL\Language\LanguageHelper;
-use JTL\Shop;
-use stdClass;
 
 /**
  * Class Strings
@@ -211,7 +207,7 @@ class Text
      */
     public static function startsWith(string $haystack, string $needle)
     {
-        return \mb_substr($haystack, 0, \mb_strlen($needle)) === $needle;
+        return \mb_strpos($haystack, $needle) === 0;
     }
 
     /**

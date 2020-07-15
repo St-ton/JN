@@ -56,6 +56,9 @@ msgstr "Sprachen"
 msgid "pluginVersion"
 msgstr "Version"
 
+msgid "pluginCompatibility"
+msgstr "Onlineshop-Version"
+
 msgid "pluginInfo"
 msgstr "Info"
 
@@ -177,43 +180,25 @@ msgid "sureResetLangVar"
 msgstr "Möchten Sie diese Sprachvariable wirklich wieder auf den Installationszustand zurücksetzen?<br/><br/> Dabei gehen alle geänderten Übersetzungen der Variable verloren."
 
 msgid "dangerPluginNotCompatibleShop5"
-msgstr "Bitte beachten Sie, dass das Plugin nicht vollständig mit JTL-Shop&nbsp;5 kompatibel ist. Es können daher Probleme beim Betrieb entstehen."
+msgstr "Bitte beachten Sie, dass dieses Plugin nicht vollständig mit JTL-Shop&nbsp;5 kompatibel ist. Es können daher Probleme beim Betrieb entstehen."
 
 msgid "dangerPluginNotCompatibleShop4"
-msgstr "Bitte beachten Sie, dass das Plugin nicht vollständig mit JTL-Shop&nbsp;4 kompatibel ist. Es können daher Probleme beim Betrieb entstehen."
+msgstr "Bitte beachten Sie, dass dieses Plugin nicht vollständig mit JTL-Shop&nbsp;4 kompatibel ist. Es können daher Probleme beim Betrieb entstehen."
+
+msgid "dangerMinShopVersion"
+msgstr "Bitte beachten Sie, dass dieses Plugin eine aktuellere Version von JTL-Shop erfordert. Es können daher Probleme beim Betrieb entstehen."
+
+msgid "dangerMaxShopVersion"
+msgstr "Bitte beachten Sie, dass dieses Plugin für eine ältere Version von JTL-Shop entwickelt wurde. Es können daher Probleme beim Betrieb entstehen."
 
 msgid "licensePlugin"
 msgstr "Plugin-Lizenz"
 
-msgid "storeNotLinkedDesc"
-msgstr "Um auf Inhalte von JTL-Store zugreifen zu können, müssen Sie zunächst Ihr JTL-Konto mit dem Marktplatz verknüpfen."
-
-msgid "storeLink"
-msgstr "Konto verknüpfen"
-
-msgid "storeRevoke"
-msgstr "Verknüpfung aufheben"
-
-msgid "storeUpdatesAvailable"
-msgstr "Updates verfügbar"
-
-msgid "storeListUpdates"
-msgstr "Updates anzeigen"
-
-msgid "storePlugins"
-msgstr "Lizenzierte Plugins"
-
-msgid "storeListAll"
-msgstr "Alle anzeigen"
-
-msgid "storeLastUpdate"
-msgstr "Zuletzt aktualisiert"
-
-msgid "storeUpdateNow"
-msgstr "Aktualisieren"
-
 msgid "deletePluginData"
 msgstr "Möchten Sie das Plugin aus der Datenbank löschen?"
+
+msgid "deletePluginFilesQuestion"
+msgstr "Auch versuchen, Dateien zu löschen?"
 
 msgid "deletePluginDataYes"
 msgstr "Ja, alle Plugin-Daten löschen."

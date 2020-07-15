@@ -1,20 +1,21 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Backend;
 
 use Exception;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Checkout\ZahlungsLog;
+use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use JTL\Helpers\Template as TemplateHelper;
+use JTL\License\Manager;
+use JTL\License\Mapper;
+use JTL\License\Struct\ExsLicense;
 use JTL\Media\Image\Product;
 use JTL\Media\Image\StatsItem;
 use JTL\Plugin\Helper;
 use JTL\Plugin\State;
 use JTL\Profiler;
 use JTL\Shop;
-use JTL\SingletonTrait;
-use JTL\Template;
 use JTL\Update\Updater;
 use stdClass;
 use Systemcheck\Environment;
@@ -28,12 +29,37 @@ use function Functional\some;
  */
 class Status
 {
-    use SingletonTrait;
-
     /**
      * @var array
      */
     protected $cache = [];
+
+    /**
+     * @var DbInterface
+     */
+    protected $db;
+
+
+    private static $instance;
+
+    /**
+     * Status constructor.
+     * @param DbInterface $db
+     */
+    public function __construct(DbInterface $db)
+    {
+        $this->db       = $db;
+        self::$instance = $this;
+    }
+
+    /**
+     * @param DbInterface $db
+     * @return Status
+     */
+    public static function getInstance(DbInterface $db): self
+    {
+        return static::$instance ?? new self($db);
+    }
 
     /**
      * @param string $name
@@ -52,10 +78,10 @@ class Status
     /**
      * @return JTLCacheInterface
      */
-    protected function getObjectCache(): JTLCacheInterface
+    public function getObjectCache(): JTLCacheInterface
     {
         return Shop::Container()->getCache()->setJtlCacheConfig(
-            Shop::Container()->getDB()->selectAll('teinstellungen', 'kEinstellungenSektion', \CONF_CACHING)
+            $this->db->selectAll('teinstellungen', 'kEinstellungenSektion', \CONF_CACHING)
         );
     }
 
@@ -63,15 +89,15 @@ class Status
      * @return StatsItem
      * @throws \Exception
      */
-    protected function getImageCache(): StatsItem
+    public function getImageCache(): StatsItem
     {
-        return Product::getStats();
+        return (new Product($this->db))->getStats();
     }
 
     /**
      * @return stdClass
      */
-    protected function getSystemLogInfo(): stdClass
+    public function getSystemLogInfo(): stdClass
     {
         $conf = Shop::getConfigValue(\CONF_GLOBAL, 'systemlog_flag');
 
@@ -87,7 +113,7 @@ class Status
      *
      * @return bool  true='no errors', false='something is wrong'
      */
-    protected function validDatabaseStruct(): bool
+    public function validDatabaseStruct(): bool
     {
         require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'dbcheck_inc.php';
 
@@ -102,7 +128,7 @@ class Status
      *
      * @return bool  true='no errors', false='something is wrong'
      */
-    protected function validModifiedFileStruct(): bool
+    public function validModifiedFileStruct(): bool
     {
         $check   = new FileCheck();
         $files   = [];
@@ -119,7 +145,7 @@ class Status
      *
      * @return bool  true='no errors', false='something is wrong'
      */
-    protected function validOrphanedFilesStruct(): bool
+    public function validOrphanedFilesStruct(): bool
     {
         $check             = new FileCheck();
         $files             = [];
@@ -136,7 +162,7 @@ class Status
     /**
      * @return bool
      */
-    protected function validFolderPermissions(): bool
+    public function validFolderPermissions(): bool
     {
         $permissionStat = (new Filesystem(\PFAD_ROOT))->getFolderStats();
 
@@ -146,10 +172,10 @@ class Status
     /**
      * @return array
      */
-    protected function getPluginSharedHooks(): array
+    public function getPluginSharedHooks(): array
     {
         $sharedPlugins = [];
-        $sharedHookIds = Shop::Container()->getDB()->query(
+        $sharedHookIds = $this->db->query(
             'SELECT nHook
                 FROM tpluginhook
                 GROUP BY nHook
@@ -159,7 +185,7 @@ class Status
         foreach ($sharedHookIds as $hookData) {
             $hookID                 = (int)$hookData->nHook;
             $sharedPlugins[$hookID] = [];
-            $plugins                = Shop::Container()->getDB()->queryPrepared(
+            $plugins                = $this->db->queryPrepared(
                 'SELECT DISTINCT tpluginhook.kPlugin, tplugin.cName, tplugin.cPluginID
                     FROM tpluginhook
                     INNER JOIN tplugin
@@ -184,15 +210,15 @@ class Status
      * @return bool
      * @throws \Exception
      */
-    protected function hasPendingUpdates(): bool
+    public function hasPendingUpdates(): bool
     {
-        return (new Updater(Shop::Container()->getDB()))->hasPendingUpdates();
+        return (new Updater($this->db))->hasPendingUpdates();
     }
 
     /**
      * @return bool
      */
-    protected function hasActiveProfiler(): bool
+    public function hasActiveProfiler(): bool
     {
         return Profiler::getIsActive() !== 0;
     }
@@ -200,7 +226,7 @@ class Status
     /**
      * @return bool
      */
-    protected function hasInstallDir(): bool
+    public function hasInstallDir(): bool
     {
         return \is_dir(\PFAD_ROOT . \PFAD_INSTALL);
     }
@@ -208,31 +234,37 @@ class Status
     /**
      * @return bool
      */
-    protected function hasDifferentTemplateVersion(): bool
+    public function hasDifferentTemplateVersion(): bool
     {
-        return Template::getInstance()->getVersion() !== \APPLICATION_VERSION;
+        try {
+            $template = Shop::Container()->getTemplateService()->getActiveTemplate();
+        } catch (Exception $e) {
+            return false;
+        }
+        return $template->getVersion() !== \APPLICATION_VERSION;
     }
 
     /**
      * @return bool
      */
-    protected function hasMobileTemplateIssue(): bool
+    public function hasMobileTemplateIssue(): bool
     {
-        $template = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'standard');
-        if ($template !== null && isset($template->cTemplate)) {
-            $tplData = TemplateHelper::getInstance()->getData($template->cTemplate);
-            if ($tplData !== false && $tplData->bResponsive) {
-                $mobileTpl = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'mobil');
-                if ($mobileTpl !== null) {
-                    $xmlFile = \PFAD_ROOT . \PFAD_TEMPLATES . $mobileTpl->cTemplate .
-                        \DIRECTORY_SEPARATOR . \TEMPLATE_XML;
-                    if (\file_exists($xmlFile)) {
-                        return true;
-                    }
-                    // Wenn ein Template aktiviert aber physisch nicht vorhanden ist,
-                    // ist der DB-Eintrag falsch und wird gelöscht
-                    Shop::Container()->getDB()->delete('ttemplate', 'eTyp', 'mobil');
+        try {
+            $template = Shop::Container()->getTemplateService()->getActiveTemplate();
+        } catch (Exception $e) {
+            return false;
+        }
+        if ($template->isResponsive()) {
+            $mobileTpl = $this->db->select('ttemplate', 'eTyp', 'mobil');
+            if ($mobileTpl !== null) {
+                $xmlFile = \PFAD_ROOT . \PFAD_TEMPLATES . $mobileTpl->cTemplate .
+                    \DIRECTORY_SEPARATOR . \TEMPLATE_XML;
+                if (\file_exists($xmlFile)) {
+                    return true;
                 }
+                // Wenn ein Template aktiviert aber physisch nicht vorhanden ist,
+                // ist der DB-Eintrag falsch und wird gelöscht
+                $this->db->delete('ttemplate', 'eTyp', 'mobil');
             }
         }
 
@@ -242,15 +274,15 @@ class Status
     /**
      * @return bool
      */
-    protected function hasStandardTemplateIssue(): bool
+    public function hasStandardTemplateIssue(): bool
     {
-        return Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'standard') === null;
+        return $this->db->select('ttemplate', 'eTyp', 'standard') === null;
     }
 
     /**
      * @return bool
      */
-    protected function hasValidEnvironment(): bool
+    public function hasValidEnvironment(): bool
     {
         $systemcheck = new Environment();
         $systemcheck->executeTestGroup('Shop5');
@@ -261,7 +293,7 @@ class Status
     /**
      * @return array
      */
-    protected function getEnvironmentTests(): array
+    public function getEnvironmentTests(): array
     {
         return (new Environment())->executeTestGroup('Shop5');
     }
@@ -269,7 +301,7 @@ class Status
     /**
      * @return Hosting
      */
-    protected function getPlatform(): Hosting
+    public function getPlatform(): Hosting
     {
         return new Hosting();
     }
@@ -277,10 +309,10 @@ class Status
     /**
      * @return array
      */
-    protected function getMySQLStats(): array
+    public function getMySQLStats(): array
     {
-        $stats = Shop::Container()->getDB()->stats();
-        $info  = Shop::Container()->getDB()->info();
+        $stats = $this->db->stats();
+        $info  = $this->db->info();
         $lines = \explode('  ', $stats);
         $lines = \array_map(static function ($v) {
             [$key, $value] = \explode(':', $v, 2);
@@ -294,10 +326,10 @@ class Status
     /**
      * @return array
      */
-    protected function getPaymentMethodsWithError(): array
+    public function getPaymentMethodsWithError(): array
     {
         $incorrectPaymentMethods = [];
-        $paymentMethods          = Shop::Container()->getDB()->selectAll(
+        $paymentMethods          = $this->db->selectAll(
             'tzahlungsart',
             'nActive',
             1,
@@ -318,9 +350,9 @@ class Status
      * @param bool $has
      * @return array|bool
      */
-    protected function getOrphanedCategories(bool $has = true)
+    public function getOrphanedCategories(bool $has = true)
     {
-        $categories = Shop::Container()->getDB()->query(
+        $categories = $this->db->query(
             'SELECT kKategorie, cName
                 FROM tkategorie
                 WHERE kOberkategorie > 0
@@ -336,19 +368,19 @@ class Status
     /**
      * @return bool
      */
-    protected function hasFullTextIndexError(): bool
+    public function hasFullTextIndexError(): bool
     {
         $conf = Shop::getSettings([\CONF_ARTIKELUEBERSICHT])['artikeluebersicht'];
 
         return isset($conf['suche_fulltext'])
             && $conf['suche_fulltext'] !== 'N'
-            && (!Shop::Container()->getDB()->query(
+            && (!$this->db->query(
                 "SHOW INDEX
                     FROM tartikel
                     WHERE KEY_NAME = 'idx_tartikel_fulltext'",
                 ReturnType::SINGLE_OBJECT
             )
-                || !Shop::Container()->getDB()->query(
+                || !$this->db->query(
                     "SHOW INDEX
                     FROM tartikelsprache
                     WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'",
@@ -359,13 +391,33 @@ class Status
     /**
      * @return bool
      */
-    protected function hasNewPluginVersions(): bool
+    public function hasLicenseExpirations(): bool
+    {
+        $manager    = new Manager($this->db, Shop::Container()->getCache());
+        $mapper     = new Mapper($manager);
+        $collection = $mapper->getCollection();
+
+        return $collection->contains(static function (ExsLicense $item) {
+            $license = $item->getLicense();
+            if ($license->getValidUntil() !== null && $license->getDaysRemaining() < 28) {
+                return true;
+            }
+            $subscription = $license->getSubscription();
+
+            return $subscription->getValidUntil() !== null && $subscription->getDaysRemaining() < 28;
+        });
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasNewPluginVersions(): bool
     {
         if (\SAFE_MODE === true) {
             return false;
         }
 
-        $data = Shop::Container()->getDB()->query(
+        $data = $this->db->query(
             'SELECT `kPlugin`, `nVersion`, `bExtension`
                 FROM `tplugin`',
             ReturnType::ARRAY_OF_OBJECTS
@@ -395,7 +447,7 @@ class Status
      */
     public function hasInvalidPasswordResetMailTemplate(): bool
     {
-        $translations = Shop::Container()->getDB()->query(
+        $translations = $this->db->query(
             "SELECT lang.cContentText, lang.cContentHtml
                 FROM temailvorlagesprache lang
                 JOIN temailvorlage
@@ -430,10 +482,10 @@ class Status
      * @return bool
      * @throws \Exception
      */
-    protected function needPasswordRehash2FA(): bool
+    public function needPasswordRehash2FA(): bool
     {
         $passwordService = Shop::Container()->getPasswordService();
-        $hashes          = Shop::Container()->getDB()->query(
+        $hashes          = $this->db->query(
             'SELECT *
                 FROM tadmin2facodes
                 GROUP BY kAdminlogin',
@@ -450,7 +502,7 @@ class Status
      */
     public function getDuplicateLinkGroupTemplateNames(): array
     {
-        return Shop::Container()->getDB()->query(
+        return $this->db->query(
             'SELECT * FROM tlinkgruppe
                 GROUP BY cTemplatename
                 HAVING COUNT(*) > 1',
@@ -464,7 +516,7 @@ class Status
     public function getExportFormatErrorCount(): int
     {
         if (!isset($_SESSION['exportSyntaxErrorCount'])) {
-            $_SESSION['exportSyntaxErrorCount'] = (int)Shop::Container()->getDB()->query(
+            $_SESSION['exportSyntaxErrorCount'] = (int)$this->db->query(
                 'SELECT COUNT(*) AS cnt FROM texportformat WHERE nFehlerhaft = 1',
                 ReturnType::SINGLE_OBJECT
             )->cnt;
@@ -479,7 +531,7 @@ class Status
     public function getEmailTemplateSyntaxErrorCount(): int
     {
         if (!isset($_SESSION['emailSyntaxErrorCount'])) {
-            $_SESSION['emailSyntaxErrorCount'] = (int)Shop::Container()->getDB()->query(
+            $_SESSION['emailSyntaxErrorCount'] = (int)$this->db->query(
                 'SELECT COUNT(*) AS cnt FROM temailvorlage WHERE nFehlerhaft = 1',
                 ReturnType::SINGLE_OBJECT
             )->cnt;
@@ -491,8 +543,8 @@ class Status
     /**
      * @return bool
      */
-    protected function hasExtensionSOAP(): bool
+    public function hasExtensionSOAP(): bool
     {
-        return extension_loaded('soap');
+        return \extension_loaded('soap');
     }
 }

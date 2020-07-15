@@ -216,7 +216,8 @@ class CacheRedis implements ICachingMethod
     }
 
     /**
-     * @inheritdoc
+     * @param string|int $tagName
+     * @return string
      */
     private static function _keyFromTagName($tagName): string
     {

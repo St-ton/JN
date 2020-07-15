@@ -18,6 +18,6 @@
     </IfModule>
 </Files>
 <IfModule mod_rewrite.c>
-	RewriteEngine on
-	RewriteRule ^(.*)\.php$ index.php?id=$1 [QSA,L]
+    RewriteEngine on
+    RewriteRule ^(.*)\.php$ index.php?id=$1 [QSA,L]
 </IfModule>

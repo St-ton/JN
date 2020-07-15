@@ -261,20 +261,6 @@
                                             value="{get_static_route id='wunschliste.php'}?wlid={$CWunschliste->cURLID}"}
                                     {/block}
                                     {if $Einstellungen.global.global_wunschliste_freunde_aktiv === 'Y'}
-                                        {block name='snippets-wishlist-link-copy'}
-                                            {inputgroupaddon append=true}
-                                                {button variant="link"
-                                                    class="copyToClipboard btn-outline-secondary"
-                                                    name="copy"
-                                                    value="copyToClipboard"
-                                                    disabled=(!$hasItems)
-                                                    title="{lang key='copied'}"
-                                                    aria=["label"=>{lang key='copied'}]
-                                                    data=["clipboard-target"=>"#wishlist-url"]}
-                                                    <i class="far fa-copy"></i>
-                                                {/button}
-                                            {/inputgroupaddon}
-                                        {/block}
                                         {block name='snippets-wishlist-link-envelop'}
                                             {inputgroupaddon append=true}
                                                 {button type="submit"

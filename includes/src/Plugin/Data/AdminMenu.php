@@ -3,7 +3,6 @@
 namespace JTL\Plugin\Data;
 
 use Illuminate\Support\Collection;
-use JTL\Shop;
 use stdClass;
 
 /**

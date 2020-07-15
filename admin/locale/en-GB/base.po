@@ -1969,3 +1969,6 @@ msgstr "Direct debit"
 
 msgid "za_barzahlung_jtl"
 msgstr "Cash on Pickup"
+
+msgid "Updates available"
+msgstr "Updates available"

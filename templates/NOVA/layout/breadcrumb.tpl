@@ -20,7 +20,7 @@
                         {foreach $Brotnavi as $oItem}
                             {if $oItem@first}
                                 {block name='layout-breadcrumb-first-item'}
-                                    {breadcrumbitem class="first d-none d-md-flex"
+                                    {breadcrumbitem class="first d-none d-md-flex pl-0"
                                         router-tag-itemprop="url"
                                         href=$oItem->getURLFull()
                                         title=$oItem->getName()|escape:'html'
@@ -35,7 +35,7 @@
                                 {/block}
                             {elseif $oItem@last}
                                 {block name='layout-breadcrumb-last-item'}
-                                    {breadcrumbitem class="last d-none d-md-flex"
+                                    {breadcrumbitem class="last d-none d-md-flex active"
                                         router-tag-itemprop="url"
                                         href="{if $oItem->getHasChild() === true}{$oItem->getURLFull()}{/if}"
                                         title=$oItem->getName()|escape:'html'

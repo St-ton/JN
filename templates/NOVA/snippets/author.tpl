@@ -3,7 +3,7 @@
         <div itemprop="author" itemscope itemtype="https://schema.org/Person">
             {block name='snippets-author-title'}
                 {if $showModal|default:true}
-                    {link class="author-modal"
+                    {link class="author-modal d-inline-block"
                         itemprop="name"
                         href="#"
                         title=$oAuthor->cName

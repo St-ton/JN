@@ -32,25 +32,32 @@
                                         {block name="productlist-item-list-image"}
                                             {strip}
                                                 {$image = $Artikel->Bilder[0]}
-                                                {image alt=$image->cAltAttribut|escape:'html' fluid=true webp=true lazy=true
-                                                    src="{$image->cURLKlein}"
-                                                    srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                        {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                        {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                                    sizes="auto"
-                                                    class="{if !$isMobile && !empty($Artikel->Bilder[1])}first{/if}"
-                                                    fluid-grow=true
-                                                }
+                                                <div class="productbox-image square square-image first-wrapper">
+                                                    <div class="inner">
+                                                        {image alt=$image->cAltAttribut|escape:'html' fluid=true webp=true lazy=true
+                                                            src="{$image->cURLKlein}"
+                                                            srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                                {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                                {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                            sizes="auto"
+                                                            class="{if !$isMobile && !empty($Artikel->Bilder[1])}first{/if}"
+                                                        }
+                                                    </div>
+                                                </div>
                                                 {if !$isMobile && !empty($Artikel->Bilder[1])}
                                                     {$image = $Artikel->Bilder[1]}
-                                                    {image alt=$image->cAltAttribut|escape:'html' fluid=true webp=true lazy=true
-                                                        src="{$image->cURLKlein}"
-                                                        srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                            {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                            {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                                        sizes="auto"
-                                                        class="second"
-                                                    }
+                                                    <div class="productbox-image square square-image second-wrapper">
+                                                        <div class="inner">
+                                                            {image alt=$image->cAltAttribut|escape:'html' fluid=true webp=true lazy=true
+                                                                src="{$image->cURLKlein}"
+                                                                srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                                    {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                                    {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                                sizes="auto"
+                                                                class="second"
+                                                            }
+                                                        </div>
+                                                    </div>
                                                 {/if}
                                             {/strip}
                                         {/block}
@@ -211,13 +218,9 @@
                                         {block name='productlist-item-list-rating'}
                                             {col tag='dt' cols=6}{lang key='ratingAverage'}:{/col}
                                             {col tag='dd' cols=6}
-                                                {link href="{$Artikel->cURLFull}#tab-votes"
-                                                    class="d-print-none text-decoration-none"
-                                                    aria=["label"=>{lang key='Votes'}]}
-                                                    {block name='productlist-item-list-include-rating'}
-                                                        {include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}
-                                                    {/block}
-                                                {/link}
+                                                {block name='productlist-item-list-include-rating'}
+                                                    {include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung link=$Artikel->cURLFull}
+                                                {/block}
                                             {/col}
                                         {/block}
                                     {/if}
@@ -257,14 +260,10 @@
                                             {/if}
                                         {elseif $anzeige !== 'nichts'
                                             && $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen !== 'N'
-                                            && $Artikel->cLagerBeachten === 'Y'
+                                            && $Artikel->getBackorderString() !== ''
                                             && ($Artikel->cLagerKleinerNull === 'N'
-                                                || $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen === 'U')
-                                            && $Artikel->fLagerbestand <= 0
-                                            && $Artikel->fZulauf > 0
-                                            && isset($Artikel->dZulaufDatum_de)}
-                                            {assign var=cZulauf value=$Artikel->fZulauf|cat:':::'|cat:$Artikel->dZulaufDatum_de}
-                                            <div class="signal_image status-1"><small>{lang key='productInflowing' section='productDetails' printf=$cZulauf}</small></div>
+                                                || $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen === 'U')}
+                                            <div class="signal_image status-1"><small>{$Artikel->getBackorderString()}</small></div>
                                         {elseif $anzeige !== 'nichts'
                                             && $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen !== 'N'
                                             && $Artikel->cLagerBeachten === 'Y'

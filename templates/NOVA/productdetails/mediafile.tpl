@@ -54,7 +54,7 @@
                                                 {if $audiosrc|strlen > 1}
                                                     <audio controls controlsList="nodownload">
                                                         <source src="{$audiosrc}" type="audio/mpeg">
-                                                        Your browser does not support the audio element.
+                                                        {lang key='audioTagNotSupported' section='errorMessages'}
                                                     </audio>
                                                 {/if}
                                             {/if}
@@ -64,12 +64,22 @@
                             {/block}
                         {/if}
 
-                        {* Video *}
+                    {* Video *}
                     {elseif $oMedienDatei->nMedienTyp === 3}
                         {block name='productdetails-mediafile-video'}
-                        <!-- flash videos are not supported any more. Use html5 videos instead. -->
+                            {if ($oMedienDatei->videoType === 'mp4' 
+                            || $oMedienDatei->videoType === 'webm'
+                            || $oMedienDatei->videoType === 'ogg')}
+                                    <video class="product-detail-video mw-100" controls>
+                                        <source src="{$ShopURL}/{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" type="video/{$oMedienDatei->videoType}">
+                                        {lang key='videoTagNotSupported' section='errorMessages'}
+                                    </video>
+
+                            {else}
+                                {lang key='videoTypeNotSupported' section='errorMessages'}
+                            {/if}      
                         {/block}
-                        {* Sonstiges *}
+                    {* Sonstiges *}
                     {elseif $oMedienDatei->nMedienTyp === 4}
                         {block name='productdetails-mediafile-misc'}
                             {card title=$oMedienDatei->cName class="mb-3"}

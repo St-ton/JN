@@ -3,9 +3,7 @@
 namespace JTL\Plugin\Payment;
 
 use InvalidArgumentException;
-use JTL\Alert\Alert;
 use JTL\Cart\Cart;
-use JTL\Catalog\Product\Preise;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\ZahlungsLog;
 use JTL\Customer\Customer;

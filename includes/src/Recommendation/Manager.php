@@ -100,7 +100,7 @@ class Manager
     private function getTestJSON()
     {
         return \json_decode(
-            \file_get_contents(\PFAD_ROOT .'includes/src/Recommendation/getRecommendation.json'),
+            \file_get_contents(\PFAD_ROOT .'getRecommendation.json'),
             false
         )->extensions;
     }

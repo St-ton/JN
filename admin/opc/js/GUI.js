@@ -669,7 +669,7 @@ class GUI
     {
         this.openElFinder(file => {
             let url = file.url.slice(file.baseUrl.length);
-            this.imageSelectCB(url, propName);
+            this.imageSelectCB(url, propName, file.url);
             this.configForm.find('[name="' + propName + '"]').val(url);
             this.configForm.find('#preview-img-' + propName).attr('src', file.url);
         }, 'image');

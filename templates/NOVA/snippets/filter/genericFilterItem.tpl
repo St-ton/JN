@@ -26,7 +26,7 @@
                                 {/block}
                             {/if}
                             <span class="word-break">{$filterOption->getName()}</span>
-                            <span class="badge badge-outline-secondary ml-auto">{$filterOption->getCount()}</span>
+                            {badge variant="outline-secondary" class="ml-auto"}{$filterOption->getCount()}{/badge}
                         </div>
                     {/link}
                 {/block}

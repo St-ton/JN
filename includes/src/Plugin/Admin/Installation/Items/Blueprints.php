@@ -50,8 +50,15 @@ class Blueprints extends AbstractItem
             if (!$this->db->insert('topcblueprint', $blueprintObj)) {
                 return InstallCode::SQL_CANNOT_SAVE_BLUEPRINT;
             }
+            $this->copyBlueprintImages($blueprintData['instance']);
         }
 
         return InstallCode::OK;
+    }
+
+    protected function copyBlueprintImages($instanceData)
+    {
+        if ($instanceData['class'] === 'Image') {
+        }
     }
 }

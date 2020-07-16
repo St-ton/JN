@@ -3,7 +3,9 @@
 namespace JTL\Plugin\Payment;
 
 use InvalidArgumentException;
+use JTL\Alert\Alert;
 use JTL\Cart\Cart;
+use JTL\Catalog\Product\Preise;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\ZahlungsLog;
 use JTL\Customer\Customer;
@@ -446,8 +448,8 @@ class Method implements MethodInterface
             }
         }
 
-        $min = $this->getSetting('min');
-        if ($min > 0 && $cart->gibGesamtsummeWaren(true) <= $min) {
+        $min = (float)$this->getSetting('min');
+        if ($min > 0 && $cart->gibGesamtsummeWaren(true) < $min) {
             ZahlungsLog::add(
                 $this->moduleID,
                 'Bestellwert ' . $cart->gibGesamtsummeWaren(true) .
@@ -459,8 +461,8 @@ class Method implements MethodInterface
             return false;
         }
 
-        $max = $this->getSetting('max');
-        if ($max > 0 && $cart->gibGesamtsummeWaren(true) >= $max) {
+        $max = (float)$this->getSetting('max');
+        if ($max > 0 && $cart->gibGesamtsummeWaren(true) > $max) {
             ZahlungsLog::add(
                 $this->moduleID,
                 'Bestellwert ' . $cart->gibGesamtsummeWaren(true) .

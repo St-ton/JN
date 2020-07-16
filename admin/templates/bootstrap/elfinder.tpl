@@ -56,7 +56,7 @@
                     {if $isCKEditor}
                     window.opener.CKEDITOR.tools.callFunction({$CKEditorFuncNum}, file.url);
                     {else}
-                    window.opener.elfinder.getFileCallback(file.url);
+                    window.opener.elfinder.getFileCallback(file);
                     {/if}
                     window.close();
                 },

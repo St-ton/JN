@@ -187,16 +187,7 @@ class AdminAccountManager
         $_SESSION['Sprachen']               = LanguageHelper::getInstance()->gibInstallierteSprachen();
 
         if (!empty($_COOKIE['JTLSHOP'])) {
-            $adminLangTag = $languageTag;
-            \session_write_close();
-            \session_name('JTLSHOP');
-            \session_id($_COOKIE['JTLSHOP']);
-            \session_start();
-            $_SESSION['adminLangTag'] = $adminLangTag;
-            \session_write_close();
-            \session_name('eSIdAdm');
-            \session_id($_COOKIE['eSIdAdm']);
-            \session_start();
+            unset($_SESSION['frontendUpToDate']);
         }
 
         $this->db->update(

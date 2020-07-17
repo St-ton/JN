@@ -6,6 +6,7 @@
  * @created Fr, 17 July 2020 12:16:00 +0100
  */
 
+use JTL\DB\ReturnType;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
@@ -23,7 +24,10 @@ class Migration_20200717121600 extends Migration implements IMigration
      */
     public function up()
     {
-       $this->execute("INSERT INTO tland VALUES ('IC', 'Kanarische Inseln', 'Canary Islands', 1, 'Europa')");
+       $isSet = $this->getDB()->query("SELECT `cISO` FROM `tland` WHERE cISO = 'IC'", ReturnType::ARRAY_OF_OBJECTS);
+       if (empty($isSet)) {
+           $this->execute("INSERT INTO `tland` VALUES ('IC', 'Kanarische Inseln', 'Canary Islands', 1, 'Europa')");
+       }
     }
 
     /**
@@ -32,6 +36,6 @@ class Migration_20200717121600 extends Migration implements IMigration
      */
     public function down()
     {
-        $this->execute("DELETE FROM tland WHERE cISO = 'IC'");
+        $this->execute("DELETE FROM `tland` WHERE cISO = 'IC'");
     }
 }

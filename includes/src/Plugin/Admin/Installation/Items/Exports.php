@@ -6,6 +6,7 @@ use JTL\Customer\CustomerGroup;
 use JTL\Language\LanguageHelper;
 use JTL\Plugin\InstallCode;
 use JTL\Session\Frontend;
+use stdClass;
 
 /**
  * Class Exports
@@ -39,7 +40,7 @@ class Exports extends AbstractItem
             if (\mb_strlen($hits[0]) !== \mb_strlen($i)) {
                 continue;
             }
-            $export                   = new \stdClass();
+            $export                   = new stdClass();
             $export->kKundengruppe    = $defaultCustomerGroupID;
             $export->kSprache         = $defaultLanguageID;
             $export->kWaehrung        = $defaultCurrencyID;
@@ -71,7 +72,7 @@ class Exports extends AbstractItem
             if (!$exportID) {
                 return InstallCode::SQL_CANNOT_SAVE_EXPORT;
             }
-            $exportConf                = new \stdClass();
+            $exportConf                = new stdClass();
             $exportConf->kExportformat = $exportID;
             $exportConf->cName         = 'exportformate_lager_ueber_null';
             $exportConf->cWert         = \mb_strlen($data['OnlyStockGreaterZero']) !== 0

@@ -143,8 +143,6 @@ final class Manufacturers extends AbstractSync
         $this->db->delete('tseo', ['kKey', 'cKey'], [$id, 'kHersteller']);
         $mfSeo  = $this->mapper->mapArray($xmlLanguage, 'therstellersprache', 'mHerstellerSpracheSeo');
         $result = $slug;
-
-        /** @var LanguageModel $language */
         foreach ($languages as $language) {
             $baseSeo = $slug;
             foreach ($mfSeo as $mf) {

@@ -3,6 +3,7 @@
 namespace JTL\Optin;
 
 use JTL\DB\DbInterface;
+use stdClass;
 
 /**
  * Class OptinBase
@@ -130,7 +131,7 @@ abstract class OptinBase extends OptinFactory
     {
         $this->refData->setOptinClass(static::class); // save the caller
         $this->optCode       = $optCode;
-        $newRow              = new \stdClass();
+        $newRow              = new stdClass();
         $newRow->kOptinCode  = $this->optCode;
         $newRow->kOptinClass = static::class;
         $newRow->cMail       = $this->refData->getEmail();
@@ -144,7 +145,7 @@ abstract class OptinBase extends OptinFactory
      */
     public function activateOptin(): void
     {
-        $rowData = new \stdClass();
+        $rowData = new stdClass();
         if (empty($this->foundOptinTupel->dActivated)) {
             $rowData->dActivated = $this->nowDataTime->format('Y-m-d H:i:s');
             $this->dbHandler->update('toptin', 'kOptinCode', $this->optCode, $rowData);
@@ -167,7 +168,7 @@ abstract class OptinBase extends OptinFactory
         if (empty($this->foundOptinTupel)) {
             return;
         }
-        $newRow               = new \stdClass();
+        $newRow               = new stdClass();
         $newRow->kOptinCode   = $this->foundOptinTupel->kOptinCode;
         $newRow->kOptinClass  = $this->foundOptinTupel->kOptinClass;
         $newRow->cMail        = 'anonym'; // anonymized for history

@@ -1235,7 +1235,7 @@ function mappeWawiAnrede2ShopAnrede($cAnrede)
         return 'w';
     }
 
-    return 'm';
+    return '';
 }
 
 /**

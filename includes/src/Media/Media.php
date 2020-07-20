@@ -102,6 +102,14 @@ class Media
     }
 
     /**
+     * @return IMedia[]
+     */
+    public function getRegisteredClassNames(): array
+    {
+        return \array_values(self::$classMapper);
+    }
+
+    /**
      * @param string $requestUri
      * @return bool
      */

@@ -39,13 +39,13 @@
                                 class="vmiddle filter-img"
                             }
                             <span class="word-break">{$filterOption->getName()}</span>
-                            <span class="badge badge-outline-secondary ml-auto">{$filterOption->getCount()}</span>
+                            {badge variant="outline-secondary" class="ml-auto"}{$filterOption->getCount()}{/badge}
                         {/block}
                     {elseif $Einstellungen.navigationsfilter.hersteller_anzeigen_als === 'T'}
                         {block name='snippets-filter-manufacturer-item-text'}
                             <i class="far fa-{if $filterIsActive === true}check-{/if}square text-muted mr-2"></i>
                             <span class="word-break">{$filterOption->getName()}</span>
-                            <span class="badge badge-outline-secondary ml-auto">{$filterOption->getCount()}</span>
+                            {badge variant="outline-secondary" class="ml-auto"}{$filterOption->getCount()}{/badge}
                         {/block}
                     {/if}
                 </div>

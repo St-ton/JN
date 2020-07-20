@@ -85,7 +85,9 @@
                                             <span class="text-clamp-2">
                                                 {$characteristicValue->getValue()}
                                                 {if $AWA->getConf('auswahlassistent_anzahl_anzeigen') === 'Y'}
-                                                    <span class="badge badge-outline-secondary text-cl">{$characteristicValue->getCount()}</span>
+                                                    {badge variant="outline-secondary"}
+                                                        {$characteristicValue->getCount()}
+                                                    {/badge}
                                                 {/if}
                                             </span>
                                         {/if}

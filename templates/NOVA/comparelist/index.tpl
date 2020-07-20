@@ -10,7 +10,9 @@
             {opcMountPoint id='opc_before_heading' inContainer=false}
             {container}
                 <h1 class="h2">{lang key='compare' section='global'}</h1>
-                <hr class="mt-0 mb-3">
+                {if !$isAjax}
+                    <hr class="mt-0 mb-3">
+                {/if}
             {/container}
         {/block}
         {block name='comparelist-index-include-extension'}

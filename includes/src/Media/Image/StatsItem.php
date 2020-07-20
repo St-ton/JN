@@ -30,7 +30,6 @@ class StatsItem implements JsonSerializable
      * @var array
      */
     private $generated = [
-        Image::SIZE_ORIGINAL => 0,
         Image::SIZE_XS       => 0,
         Image::SIZE_SM       => 0,
         Image::SIZE_MD       => 0,
@@ -42,7 +41,6 @@ class StatsItem implements JsonSerializable
      * @var array
      */
     private $generatedSize = [
-        Image::SIZE_ORIGINAL => 0,
         Image::SIZE_XS       => 0,
         Image::SIZE_SM       => 0,
         Image::SIZE_MD       => 0,

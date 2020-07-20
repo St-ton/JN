@@ -18,16 +18,16 @@ class OPC extends AbstractImage
     /**
      * @var string
      */
-    protected $regEx = '/^media\/image\/'
+    public const REGEX = '/^media\/image\/'
     . '(?P<type>opc)'
-    . '\/(?P<size>xs|sm|md|lg|xl|os)'
+    . '\/(?P<size>xs|sm|md|lg|xl)'
     . '\/(?P<name>[a-zA-Z0-9\-_\. äööüÄÖÜß]+)'
     . '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**
      * @inheritdoc
      */
-    public static function getImageNames(MediaImageRequest $req): array
+    public function getImageNames(MediaImageRequest $req): array
     {
         $name = $req->getName();
         $file = $name . '.' . $req->getExt();
@@ -58,7 +58,7 @@ class OPC extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getPathByID($id, int $number = null): ?string
+    public function getPathByID($id, int $number = null): ?string
     {
         return $id;
     }
@@ -74,7 +74,7 @@ class OPC extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getTotalImageCount(): int
+    public function getTotalImageCount(): int
     {
         $iterator = new DirectoryIterator(\PFAD_ROOT . self::getStoragePath());
         $cnt      = 0;

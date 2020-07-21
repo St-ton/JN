@@ -41,8 +41,9 @@ class Blueprints extends AbstractItem
             }
             $blueprintJson = \file_get_contents($base . $blueprint['JSONFile']);
             $blueprintData = \json_decode($blueprintJson, true);
-            $instanceJson  = \json_encode($blueprintData['instance']);
-            $blueprintObj  = (object)[
+            $this->copyBlueprintImages($base, $blueprintData['instance']);
+            $instanceJson = \json_encode($blueprintData['instance']);
+            $blueprintObj = (object)[
                 'kPlugin' => $this->plugin->kPlugin,
                 'cName'   => $blueprint['Name'],
                 'cJson'   => $instanceJson,
@@ -50,15 +51,29 @@ class Blueprints extends AbstractItem
             if (!$this->db->insert('topcblueprint', $blueprintObj)) {
                 return InstallCode::SQL_CANNOT_SAVE_BLUEPRINT;
             }
-            $this->copyBlueprintImages($blueprintData['instance']);
         }
 
         return InstallCode::OK;
     }
 
-    protected function copyBlueprintImages($instanceData)
+    protected function copyBlueprintImages($base, &$instanceData)
     {
         if ($instanceData['class'] === 'Image') {
+            if (\is_file($base . $instanceData['properties']['src'])) {
+                $oldname = $instanceData['properties']['src'];
+                $newname = $this->plugin->cVerzeichnis . '_' . $oldname;
+                \copy(
+                    $base . $oldname,
+                    \PFAD_ROOT . \STORAGE_OPC . $newname
+                );
+                $instanceData['properties']['src'] = $newname;
+            }
+        } elseif (isset($instanceData['subareas'])) {
+            foreach ($instanceData['subareas'] as &$subarea) {
+                foreach ($subarea['content'] as &$subportlet) {
+                    $this->copyBlueprintImages($base, $subportlet);
+                }
+            }
         }
     }
 }

@@ -3,6 +3,7 @@
 namespace JTL\Plugin\Admin\Installation\Items;
 
 use JTL\Plugin\InstallCode;
+use JTL\Shop;
 
 /**
  * Class Blueprints
@@ -58,17 +59,27 @@ class Blueprints extends AbstractItem
 
     protected function copyBlueprintImages($base, &$instanceData)
     {
-        if ($instanceData['class'] === 'Image') {
-            if (\is_file($base . $instanceData['properties']['src'])) {
-                $oldname = $instanceData['properties']['src'];
-                $newname = $this->plugin->cVerzeichnis . '_' . $oldname;
-                \copy(
-                    $base . $oldname,
-                    \PFAD_ROOT . \STORAGE_OPC . $newname
-                );
-                $instanceData['properties']['src'] = $newname;
+        $class   = $instanceData['class'];
+        $portlet = Shop::Container()->getOPC()->createPortletInstance($class);
+        $props   = $portlet->getPortlet()->getDeepPropertyDesc();
+
+        foreach ($props as $name => $prop) {
+            if (isset($instanceData['properties'][$name], $prop['type'])
+                && $prop['type'] === \JTL\OPC\InputType::IMAGE
+            ) {
+                if (\is_file($base . $instanceData['properties'][$name])) {
+                    $oldname = $instanceData['properties'][$name];
+                    $newname = $this->plugin->cVerzeichnis . '_' . $oldname;
+                    \copy(
+                        $base . $oldname,
+                        \PFAD_ROOT . \STORAGE_OPC . $newname
+                    );
+                    $instanceData['properties'][$name] = $newname;
+                }
             }
-        } elseif (isset($instanceData['subareas'])) {
+        }
+
+        if (isset($instanceData['subareas'])) {
             foreach ($instanceData['subareas'] as &$subarea) {
                 foreach ($subarea['content'] as &$subportlet) {
                     $this->copyBlueprintImages($base, $subportlet);

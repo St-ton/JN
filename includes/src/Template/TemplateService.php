@@ -99,7 +99,7 @@ class TemplateService implements TemplateServiceInterface
         if ($dir === null || $tplXML === null) {
             return new Model($this->db);
         }
-        $template  = $this->mergeWithXML(
+        $template = $this->mergeWithXML(
             $dir,
             $tplXML,
             $parentXML

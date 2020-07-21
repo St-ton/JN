@@ -276,7 +276,8 @@ class Status
      */
     public function hasStandardTemplateIssue(): bool
     {
-        return $this->db->select('ttemplate', 'eTyp', 'standard') === null;
+        return $this->db->select('ttemplate', 'eTyp', 'standard') === null
+            || Shop::Container()->getTemplateService()->getActiveTemplate()->getTemplate() === null;
     }
 
     /**

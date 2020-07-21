@@ -355,6 +355,7 @@ $(document).ready(function() {
                 <input type="hidden" name="kAdminlogingruppe" value="1" />
             {/if}
 
+            {if $oAccount->kAdminlogin > 1}
             <div class="card">
                 <div class="card-header">
                     <div class="subheading1">{__('personalInformation')}</div>
@@ -426,10 +427,11 @@ $(document).ready(function() {
                             {/foreach}
                         </div>
                     </div>
+                    {if !empty($extContent)}
+                        {$extContent}
+                    {/if}
                 </div>
             </div>
-            {if !empty($extContent)}
-                {$extContent}
             {/if}
         </div>
         <div class="card-footer save-wrapper">

@@ -94,5 +94,8 @@
         $('#content_wrapper').on('submit', '#unbound-licenses .set-binding-form', function (e) {
             return bindCallback($(e.target).find('.set-binding'), e);
         });
+        $('#content_wrapper').on('submit', '.clear-binding-form', function (e) {
+            return bindCallback($(e.target).find('.clear-binding'), e);
+        });
     });
 </script>

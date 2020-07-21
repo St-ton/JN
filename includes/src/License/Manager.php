@@ -66,11 +66,6 @@ class Manager
     /**
      * @param string $url
      * @return string
-     */
-
-    /**
-     * @param string $url
-     * @return string
      * @throws GuzzleException
      * @throws ClientException
      */
@@ -78,7 +73,32 @@ class Manager
     {
         $res = $this->client->request(
             'POST',
-            \str_replace('https:', 'http:', $url),
+            $url,
+            [
+                'headers' => [
+                    'Accept'        => 'application/json',
+                    'Content-Type'  => 'application/json',
+                    'Authorization' => 'Bearer ' . AuthToken::getInstance($this->db)->get()
+                ],
+                'verify'  => true,
+                'body'    => \json_encode((object)['domain' => \URL_SHOP])
+            ]
+        );
+
+        return (string)$res->getBody();
+    }
+
+    /**
+     * @param string $url
+     * @return string
+     * @throws GuzzleException
+     * @throws ClientException
+     */
+    public function clearBinding(string $url): string
+    {
+        $res = $this->client->request(
+            'GET',
+            $url,
             [
                 'headers' => [
                     'Accept'        => 'application/json',

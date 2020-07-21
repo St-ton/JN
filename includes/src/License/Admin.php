@@ -76,6 +76,9 @@ class Admin
         if ($action === 'setbinding' && $valid) {
             $this->setBinding($smarty);
         }
+        if ($action === 'clearbinding' && $valid) {
+            $this->clearBinding($smarty);
+        }
         if ($action === 'recheck' && $valid) {
             $this->getLicenses(true);
             $action = null;
@@ -103,7 +106,6 @@ class Admin
     /**
      * @param string    $action
      * @param JTLSmarty $smarty
-     * @throws \SmartyException
      */
     private function installUpdate(string $action, JTLSmarty $smarty): void
     {
@@ -145,24 +147,44 @@ class Admin
     }
 
     /**
+     * @param bool      $up
      * @param JTLSmarty $smarty
      */
-    private function setBinding(JTLSmarty $smarty): void
+    private function updateBinding(bool $up, JTLSmarty $smarty)
     {
         $apiResponse      = '';
         $response         = new AjaxResponse();
-        $response->action = 'setbinding';
+        $response->action = $up === true ? 'setbinding' : 'clearbinding';
         try {
-            $apiResponse = $this->manager->setBinding(Request::postVar('url'));
+            $apiResponse = $up === true
+                ? $this->manager->setBinding(Request::postVar('url'))
+                : $this->manager->clearBinding(Request::postVar('url'));
         } catch (ClientException | GuzzleException $e) {
             $response->error = $e->getMessage();
             $smarty->assign('bindErrorMessage', $e->getMessage());
         }
+        $this->getLicenses(true);
         $this->getList($smarty);
         $response->replaceWith['#unbound-licenses'] = $smarty->fetch('tpl_inc/licenses_unbound.tpl');
         $response->replaceWith['#bound-licenses']   = $smarty->fetch('tpl_inc/licenses_bound.tpl');
         $response->html                             = $apiResponse;
         $this->sendResponse($response);
+    }
+
+    /**
+     * @param JTLSmarty $smarty
+     */
+    private function setBinding(JTLSmarty $smarty): void
+    {
+        $this->updateBinding(true, $smarty);
+    }
+
+    /**
+     * @param JTLSmarty $smarty
+     */
+    private function clearBinding(JTLSmarty $smarty): void
+    {
+        $this->updateBinding(false, $smarty);
     }
 
     /**

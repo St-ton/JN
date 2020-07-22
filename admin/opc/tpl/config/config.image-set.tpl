@@ -104,9 +104,10 @@
 
     function elfinderCallback_{$propname}(file)
     {
-        var image = $(this);
+        let url = file.url.slice(file.baseUrl.length);
+        let image = $(this);
         image.css('background-image', 'url("' + file.url + '")');
-        image.siblings('input').val(file.url);
+        image.siblings('input').val(url);
     }
 
     function addSlide_{$propname}()

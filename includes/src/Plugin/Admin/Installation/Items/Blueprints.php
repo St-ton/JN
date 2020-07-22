@@ -64,17 +64,30 @@ class Blueprints extends AbstractItem
         $props   = $portlet->getPortlet()->getDeepPropertyDesc();
 
         foreach ($props as $name => $prop) {
-            if (isset($instanceData['properties'][$name], $prop['type'])
-                && $prop['type'] === \JTL\OPC\InputType::IMAGE
-            ) {
-                if (\is_file($base . $instanceData['properties'][$name])) {
-                    $oldname = $instanceData['properties'][$name];
-                    $newname = $this->plugin->cVerzeichnis . '_' . $oldname;
-                    \copy(
-                        $base . $oldname,
-                        \PFAD_ROOT . \STORAGE_OPC . $newname
-                    );
-                    $instanceData['properties'][$name] = $newname;
+            if (isset($instanceData['properties'][$name], $prop['type'])) {
+                if ($prop['type'] === \JTL\OPC\InputType::IMAGE) {
+                    if (\is_file($base . $instanceData['properties'][$name])) {
+                        $oldname = $instanceData['properties'][$name];
+                        $newname = $this->plugin->cVerzeichnis . '_' . $oldname;
+                        \copy(
+                            $base . $oldname,
+                            \PFAD_ROOT . \STORAGE_OPC . $newname
+                        );
+                        $instanceData['properties'][$name] = $newname;
+                    }
+                } elseif ($prop['type'] === \JTL\OPC\InputType::IMAGE_SET) {
+                    foreach ($instanceData['properties'][$name] as $i => &$image) {
+                        if (\is_file($base . $image['url'])) {
+                            $oldname = $image['url'];
+                            $newname = $this->plugin->cVerzeichnis . '_' . $oldname;
+                            \copy(
+                                $base . $oldname,
+                                \PFAD_ROOT . \STORAGE_OPC . $newname
+                            );
+                            $image['url'] = $newname;
+                        }
+                    }
+                    unset($image);
                 }
             }
         }

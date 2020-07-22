@@ -9,5 +9,8 @@
     </span>
 </div>
 <script>
-    $('#{$cpID}-group').colorpicker();
+    $('#{$cpID}-group').colorpicker({
+        format: 'hex',
+        fallbackColor: '#FFF',
+    });
 </script>

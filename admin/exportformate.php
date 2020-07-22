@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Collection;
 use JTL\Alert\Alert;
 use JTL\Backend\Revision;
 use JTL\DB\ReturnType;
@@ -106,7 +107,9 @@ if (Request::postInt('neu_export') === 1 && Form::validateToken()) {
         $_POST['cKopfzeile'] = str_replace('<tab>', "\t", Request::postVar('cKopfzeile', ''));
         $_POST['cFusszeile'] = str_replace('<tab>', "\t", Request::postVar('cFusszeile', ''));
         $smarty->assign('cPlausiValue_arr', $checkResult)
-               ->assign('cPostVar_arr', Text::htmlentities(Text::filterXSS($_POST)));
+               ->assign('cPostVar_arr', Collection::make(Text::filterXSS($_POST))->map(static function ($e) {
+                    return is_string($e) ? Text::htmlentities($e) : $e;
+               })->all());
         $step = 'neuer Export';
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCheckInput'), 'errorCheckInput');
     }

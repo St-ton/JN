@@ -81,7 +81,10 @@ class Admin
         }
         if ($action === 'recheck' && $valid) {
             $this->getLicenses(true);
-            $action = null;
+            $this->getList($smarty);
+            \header('Location: ' . Shop::getAdminURL() . '/licenses.php', true, 303);
+            exit();
+
         }
         if ($action === 'revoke' && $valid) {
             $token->revoke();

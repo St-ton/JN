@@ -107,6 +107,7 @@ class InstallCommand extends Command
             ->addOption('admin-password', null, InputOption::VALUE_REQUIRED, 'Shop-Backend password', 'random')
             ->addOption('sync-user', null, InputOption::VALUE_REQUIRED, 'Wawi-Sync user', 'sync')
             ->addOption('sync-password', null, InputOption::VALUE_REQUIRED, 'Wawi-Sync password', 'random')
+            ->addOption('install-demo-data', null, InputOption::VALUE_NONE, 'Install demo data?')
             ->addOption(
                 'file-owner',
                 null,
@@ -152,6 +153,15 @@ class InstallCommand extends Command
     }
 
     /**
+     * @param int $length
+     * @return string
+     */
+    private function getRandomString(int $length = 10): string
+    {
+        return \bin2hex(\random_bytes($length));
+    }
+
+    /**
      * @inheritDoc
      */
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -169,7 +179,14 @@ class InstallCommand extends Command
         $adminPass       = $this->getOption('admin-password');
         $syncUser        = $this->getOption('sync-user');
         $syncPass        = $this->getOption('sync-password');
+        $demoData        = $this->getOption('install-demo-data');
         $localFilesystem = new Filesystem(new Local(\PFAD_ROOT, \LOCK_EX, Local::SKIP_LINKS));
+        if ($adminPass === 'random') {
+            $adminPass = $this->getRandomString();
+        }
+        if ($syncPass === 'random') {
+            $syncPass = $this->getRandomString();
+        }
 
         if ($uri !== null) {
             if ($scheme = \parse_url($uri, \PHP_URL_SCHEME)) {
@@ -238,7 +255,7 @@ class InstallCommand extends Command
 
         $dirCheck = (new VueInstaller('dircheck', [], true))->run();
 
-        if (\in_array(false, $dirCheck['testresults'])) {
+        if (\in_array(false, $dirCheck['testresults'], true)) {
             $this->printDirCheckTable($dirCheck['testresults'], $localFilesystem);
             $io->error('File permissions are incorrect.');
             return 1;
@@ -268,11 +285,18 @@ class InstallCommand extends Command
         ];
 
         $installed = (new VueInstaller('doinstall', $posts, true))->run();
-
         if ($installed['error']) {
             $io->error(\implode(' | ', $installed['msg']));
         } else {
             $io->success('Successful installed');
+            if ($demoData === true) {
+                $ok = (new VueInstaller('installdemodata', $posts, true))->run();
+                if ($ok['error'] === false) {
+                    $io->success('Successfully added demo data');
+                } else {
+                    $io->error('Could not add demo data');
+                }
+            }
         }
 
         $io->writeln('  <info>Admin-Login</info>');

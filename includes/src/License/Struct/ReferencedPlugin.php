@@ -17,16 +17,20 @@ class ReferencedPlugin extends ReferencedItem
      * ReferencedPlugin constructor.
      * @param DbInterface $db
      * @param stdClass    $license
-     * @param Release     $release
+     * @param Release|null     $release
      */
-    public function __construct(DbInterface $db, stdClass $license, Release $release)
+    public function __construct(DbInterface $db, stdClass $license, ?Release $release)
     {
         $installed = $db->select('tplugin', 'exsID', $license->exsid);
         if ($installed !== null) {
             $installedVersion = Version::parse($installed->nVersion);
             $this->setID($installed->cPluginID);
-            $this->setMaxInstallableVersion($release->getVersion());
-            $this->setHasUpdate($installedVersion->smallerThan($release->getVersion()));
+            if ($release !== null) {
+                $this->setMaxInstallableVersion($release->getVersion());
+                $this->setHasUpdate($installedVersion->smallerThan($release->getVersion()));
+            } else {
+                $this->setMaxInstallableVersion(Version::parse('0.0.0'));
+            }
             $this->setInstalled(true);
             $this->setInstalledVersion($installedVersion);
             $this->setActive((int)$installed->nStatus === State::ACTIVATED);

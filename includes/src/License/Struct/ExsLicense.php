@@ -200,6 +200,9 @@ class ExsLicense
     public function setLicense(License $license): void
     {
         $this->license = $license;
+        if ($license->isBound()) {
+            $this->setState(self::STATE_ACTIVE);
+        }
     }
 
     /**

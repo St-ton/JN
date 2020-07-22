@@ -56,6 +56,9 @@ msgstr "License expired"
 msgid "Version %s available"
 msgstr "Version %s available"
 
+msgid "No version available"
+msgstr "No version available"
+
 msgid "Subscription expired on %s"
 msgstr "Subscription expired on %s"
 
@@ -115,3 +118,9 @@ msgstr "updates available"
 
 msgid "last update"
 msgstr "Zuletzt aktualisiert"
+
+msgid "Archive checksum validation failed"
+msgstr "Archive checksum validation failed"
+
+msgid "Archive checksum validation failed"
+msgstr "Archive checksum validation failed"

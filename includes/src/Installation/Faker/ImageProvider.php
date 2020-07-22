@@ -101,9 +101,9 @@ class ImageProvider extends Base
         );
         $img             = new ImageManager(['driver' => \extension_loaded('imagick') ? 'imagick' : 'gd']);
         $canvas          = $img->canvas($width, $height, $backgroundColor);
-        $canvas->text($formattedText, 10, $height / 2, static function ($font) use ($textColor, $fontPath) {
+        $canvas->text($formattedText, 20, $height / 2, static function ($font) use ($textColor, $fontPath) {
             $font->file($fontPath);
-            $font->size(30);
+            $font->size(40);
             $font->color($textColor);
             $font->align('left');
             $font->valign('top');

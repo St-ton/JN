@@ -66,8 +66,7 @@ class ImageProvider extends Base
         $textColor = null,
         $backgroundColor = null,
         $fontPath = \PFAD_ROOT . 'install/OpenSans-Regular.ttf'
-    ): string
-    {
+    ): string {
         $dir = $dir ?? \sys_get_temp_dir(); // GNU/Linux / OS X / Windows compatible
         // Validate directory path
         if (!\is_dir($dir) || !\is_writable($dir)) {

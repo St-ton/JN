@@ -93,8 +93,8 @@ class DemoDataInstaller
             'articles'      => \max(0, (int)$this->config['articles']),
             'customers'     => \max(0, (int)$this->config['customers']),
         ];
-        $steps = count(\array_filter($config));
-        $step  = 1;
+        $steps  = count(\array_filter($config));
+        $step   = 1;
 
         $this->updateRatingsAvg()->updateGlobals();
     }
@@ -482,7 +482,7 @@ class DemoDataInstaller
                 $seoItem->kSprache = 1;
                 $this->pdo->insert('tseo', $seoItem);
 
-                $seoItem->cSeo     .= '-en';
+                $seoItem->cSeo    .= '-en';
                 $seoItem->kSprache = 2;
                 $this->pdo->insert('tseo', $seoItem);
             }
@@ -611,7 +611,7 @@ class DemoDataInstaller
                 $_name = $this->faker->unique(true)->productName . '_' . ++$name_index;
             }
 
-            $price                      = \rand(1, 2999);
+            $price                             = \rand(1, 2999);
             $product                           = new \stdClass();
             $product->kArtikel                 = $maxPk + $i;
             $product->kHersteller              = \rand(0, $manufacturesCount);
@@ -662,7 +662,7 @@ class DemoDataInstaller
             $product->dErscheinungsdatum       = 'now()';
             $product->dErstellt                = 'now()';
             $product->dLetzteAktualisierung    = 'now()';
-            $productID                          = $this->pdo->insert('tartikel', $product); //@todo!
+            $productID                         = $this->pdo->insert('tartikel', $product); //@todo!
             if ($productID > 0) {
                 $_maxImages = $this->faker->numberBetween(1, 3);
                 for ($k = 0; $k < $_maxImages; ++$k) {
@@ -701,7 +701,7 @@ class DemoDataInstaller
                 $seoItem->kSprache = 1;
                 $this->pdo->insert('tseo', $seoItem);
 
-                $seoItem->cSeo     .= '-en';
+                $seoItem->cSeo    .= '-en';
                 $seoItem->kSprache = 2;
                 $this->pdo->insert('tseo', $seoItem);
 
@@ -744,7 +744,7 @@ class DemoDataInstaller
         $fake   = $this->faker;
         $pdo    = $this->pdo;
         $secret = \BLOWFISH_KEY;
-        $oXTEA  = new \XTEA($secret);
+        $xtea   = new \XTEA($secret);
 
         for ($i = 1; $i <= $limit; ++$i) {
             if (\rand(0, 1) === 0) {
@@ -762,8 +762,8 @@ class DemoDataInstaller
             $email         = $fake->email;
             $dateofbirth   = $fake->date('Y-m-d', '1998-12-31');
             $password      = \password_hash('pass', \PASSWORD_DEFAULT);
-            $streetNameEnc = $oXTEA->encrypt($streetName);
-            $lastNameEnc   = $oXTEA->encrypt($lastName);
+            $streetNameEnc = $xtea->encrypt($streetName);
+            $lastNameEnc   = $xtea->encrypt($lastName);
             $lastName      = $fake->lastName;
 
             $insertObj = (object)[
@@ -813,35 +813,35 @@ class DemoDataInstaller
 
     /**
      * @param string      $path
-     * @param null|string $string
+     * @param null|string $text
      * @param int         $width
      * @param int         $height
      * @return bool
      */
-    private function createImage($path, $string = null, int $width = 500, int $height = 500): bool
+    private function createImage(string $path, string $text = null, int $width = 500, int $height = 500): bool
     {
         $font     = $this->getFontFile();
-        $filepath = $this->faker->imageFile(null, $width, $height, 'jpg', true, $string, null, null, $font);
+        $filepath = $this->faker->imageFile(null, $width, $height, 'jpg', true, $text, null, null, $font);
 
         return $filepath !== null && \rename($filepath, $path);
     }
 
     /**
      * @param int    $manufacturerID
-     * @param string $string
+     * @param string $text
      * @return string
      */
-    private function createManufacturerImage(int $manufacturerID, $string): string
+    private function createManufacturerImage(int $manufacturerID, string $text): string
     {
         if ($manufacturerID > 0) {
-            $file        = $this->slug($string) . '.jpg';
+            $file        = $this->slug($text) . '.jpg';
             $pathNormal  = PFAD_ROOT . 'bilder/hersteller/normal/' . $file;
             $pathSmall   = PFAD_ROOT . 'bilder/hersteller/klein/' . $file;
             $pathStorage = PFAD_ROOT . 'media/image/storage/manufacturers/' . $file;
 
-            return ($this->createImage($pathNormal, $string) === true
-                && $this->createImage($pathSmall, $string, 100, 100) === true
-                && $this->createImage($pathStorage, $string, 800, 800) === true)
+            return ($this->createImage($pathNormal, $text) === true
+                && $this->createImage($pathSmall, $text, 100, 100) === true
+                && $this->createImage($pathStorage, $text, 800, 800) === true)
                 ? $file
                 : '';
         }
@@ -851,10 +851,10 @@ class DemoDataInstaller
 
     /**
      * @param int    $productID
-     * @param string $string
+     * @param string $text
      * @param int    $imageNumber
      */
-    private function createProductImage(int $productID, $string, $imageNumber): void
+    private function createProductImage(int $productID, string $text, int $imageNumber): void
     {
         $maxPk = (int)$this->pdo->query(
             'SELECT max(kArtikelPict) AS maxPk FROM tartikelpict',
@@ -862,10 +862,10 @@ class DemoDataInstaller
         )->maxPk;
 
         if ($productID > 0) {
-            $file = '1024_1024_' . \md5($string . $productID . $imageNumber) . '.jpg';
+            $file = '1024_1024_' . \md5($text . $productID . $imageNumber) . '.jpg';
             $path = PFAD_ROOT . 'media/image/storage/' . $file;
 
-            if ($this->createImage($path, $string, 1024, 1024) === true) {
+            if ($this->createImage($path, $text, 1024, 1024) === true) {
                 $_image                   = new \stdClass();
                 $_image->cPfad            = $file;
                 $_image->kBild            = $this->pdo->insert('tbild', $_image);
@@ -880,16 +880,16 @@ class DemoDataInstaller
 
     /**
      * @param int    $categoryID
-     * @param string $string
+     * @param string $text
      */
-    private function createCategoryImage(int $categoryID, $string): void
+    private function createCategoryImage(int $categoryID, string $text): void
     {
         if ($categoryID > 0) {
-            $file = $this->slug($string) . '.jpg';
+            $file = $this->slug($text) . '.jpg';
             $path = PFAD_ROOT . 'bilder/kategorien/' . $file;
-            if ($this->createImage($path, $string, 200, 200) === true) {
+            if ($this->createImage($path, $text, 200, 200) === true) {
                 $pathStorage = PFAD_ROOT . 'media/image/storage/categories/' . $file;
-                $this->createImage($pathStorage, $string, 800, 800);
+                $this->createImage($pathStorage, $text, 800, 800);
                 $image             = new \stdClass();
                 $image->kKategorie = $categoryID;
                 $image->cPfad      = $file;
@@ -942,7 +942,7 @@ class DemoDataInstaller
             ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($result as $_res) {
-            $right = $this->rebuildCategoryTree($_res->kKategorie, $right, $level + 1);
+            $right = $this->rebuildCategoryTree((int)$_res->kKategorie, $right, $level + 1);
         }
         // we've got the left value, and now that we've processed the children of this node we also know the right value
         $this->pdo->query(
@@ -982,6 +982,6 @@ class DemoDataInstaller
      */
     private function getFontFile(): string
     {
-        return __DIR__ . '/OpenSans-Regular.ttf';
+        return \PFAD_ROOT . 'install/OpenSans-Regular.ttf';
     }
 }

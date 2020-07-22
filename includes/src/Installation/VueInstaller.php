@@ -282,7 +282,7 @@ define('ADMIN_LOG_LEVEL', E_ALL);
 define('SMARTY_LOG_LEVEL', E_ALL);
 //excplicitly show/hide errors
 ini_set('display_errors', 0);" . "\n";
-        $file        = \fopen(PFAD_ROOT . \PFAD_INCLUDES . 'config.JTL-Shop.ini.php', 'w');
+        $file   = \fopen(PFAD_ROOT . \PFAD_INCLUDES . 'config.JTL-Shop.ini.php', 'w');
         \fwrite($file, $config);
         \fclose($file);
 

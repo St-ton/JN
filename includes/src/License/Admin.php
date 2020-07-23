@@ -195,9 +195,8 @@ class Admin
      */
     private function setOverviewData(JTLSmarty $smarty): void
     {
-        $token = AuthToken::getInstance($this->db);
-        $data  = $this->manager->getLicenseData();
-        $smarty->assign('hasAuth', $token->isValid())
+        $data = $this->manager->getLicenseData();
+        $smarty->assign('hasAuth', AuthToken::getInstance($this->db)->isValid())
             ->assign('lastUpdate', $data->timestamp ?? null);
     }
 
@@ -206,6 +205,9 @@ class Admin
      */
     private function getLicenses(bool $force = false): void
     {
+        if (!AuthToken::getInstance($this->db)->isValid()) {
+            return;
+        }
         try {
             $this->manager->update($force);
         } catch (RequestException | Exception | ClientException $e) {

@@ -3,11 +3,17 @@
 <input type="hidden" id="config-{$propname}" name="{$propname}" value="{$propval|json_encode|htmlentities}"
        data-prop-type="json">
 
-<div {if empty($src)}style="display: none"{/if} id="banner-editor-{$propname}">
+{if empty($src)}
+    {$imgsrc = null}
+{else}
+    {$imgsrc = \Shop::getURL()|cat:'/'|cat:\STORAGE_OPC|cat:($src|basename)}
+{/if}
+
+<div {if empty($imgsrc)}style="display: none"{/if} id="banner-editor-{$propname}">
     <div class="form-group">
         <label for="config-{$propname}">{$propdesc.label}</label>
         <div style="position: relative">
-            <img src="{$src}" alt="Banner Zones"
+            <img src="{$imgsrc}" alt="Banner Zones"
                  id="banner-image-{$propname}" class="img-fluid">
             <div id="banner-zones-{$propname}" class="banner-zones"></div>
         </div>
@@ -280,10 +286,10 @@
             serializeZones();
         });
 
-        opc.setImageSelectCallback(function (url)
+        opc.setImageSelectCallback(function (url, propName, absUrl)
         {
             bannerEditor.show();
-            bannerImg.attr('src', url);
+            bannerImg.attr('src', absUrl);
         });
 
         $(document)

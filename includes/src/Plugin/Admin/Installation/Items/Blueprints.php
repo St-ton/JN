@@ -3,6 +3,7 @@
 namespace JTL\Plugin\Admin\Installation\Items;
 
 use JTL\Plugin\InstallCode;
+use JTL\Shop;
 
 /**
  * Class Blueprints
@@ -41,8 +42,9 @@ class Blueprints extends AbstractItem
             }
             $blueprintJson = \file_get_contents($base . $blueprint['JSONFile']);
             $blueprintData = \json_decode($blueprintJson, true);
-            $instanceJson  = \json_encode($blueprintData['instance']);
-            $blueprintObj  = (object)[
+            $this->copyBlueprintImages($base, $blueprintData['instance']);
+            $instanceJson = \json_encode($blueprintData['instance']);
+            $blueprintObj = (object)[
                 'kPlugin' => $this->plugin->kPlugin,
                 'cName'   => $blueprint['Name'],
                 'cJson'   => $instanceJson,
@@ -53,5 +55,49 @@ class Blueprints extends AbstractItem
         }
 
         return InstallCode::OK;
+    }
+
+    protected function copyBlueprintImages($base, &$instanceData)
+    {
+        $class   = $instanceData['class'];
+        $portlet = Shop::Container()->getOPC()->createPortletInstance($class);
+        $props   = $portlet->getPortlet()->getDeepPropertyDesc();
+
+        foreach ($props as $name => $prop) {
+            if (isset($instanceData['properties'][$name], $prop['type'])) {
+                if ($prop['type'] === \JTL\OPC\InputType::IMAGE) {
+                    if (\is_file($base . $instanceData['properties'][$name])) {
+                        $oldname = $instanceData['properties'][$name];
+                        $newname = $this->plugin->cVerzeichnis . '_' . $oldname;
+                        \copy(
+                            $base . $oldname,
+                            \PFAD_ROOT . \STORAGE_OPC . $newname
+                        );
+                        $instanceData['properties'][$name] = $newname;
+                    }
+                } elseif ($prop['type'] === \JTL\OPC\InputType::IMAGE_SET) {
+                    foreach ($instanceData['properties'][$name] as $i => &$image) {
+                        if (\is_file($base . $image['url'])) {
+                            $oldname = $image['url'];
+                            $newname = $this->plugin->cVerzeichnis . '_' . $oldname;
+                            \copy(
+                                $base . $oldname,
+                                \PFAD_ROOT . \STORAGE_OPC . $newname
+                            );
+                            $image['url'] = $newname;
+                        }
+                    }
+                    unset($image);
+                }
+            }
+        }
+
+        if (isset($instanceData['subareas'])) {
+            foreach ($instanceData['subareas'] as &$subarea) {
+                foreach ($subarea['content'] as &$subportlet) {
+                    $this->copyBlueprintImages($base, $subportlet);
+                }
+            }
+        }
     }
 }

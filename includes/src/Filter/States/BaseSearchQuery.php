@@ -915,7 +915,7 @@ class BaseSearchQuery extends AbstractFilter
                     IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP, '
                     . $score . ' AS score
                     FROM tartikel
-                    WHERE ' . $this->productFilter->getFilterSQL()->getStockFilterSQL() . ' ';
+                    WHERE ' . $match . $this->productFilter->getFilterSQL()->getStockFilterSQL() . ' ';
 
             if (Shop::getLanguageID() > 0 && !LanguageHelper::isDefaultLanguageActive()) {
                 $score = 'MATCH (' . \implode(', ', $langCols) . ")

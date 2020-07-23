@@ -186,6 +186,10 @@ class AdminAccountManager
         $_SESSION['AdminAccount']->language = $languageTag;
         $_SESSION['Sprachen']               = LanguageHelper::getInstance()->gibInstallierteSprachen();
 
+        if (!empty($_COOKIE['JTLSHOP'])) {
+            unset($_SESSION['frontendUpToDate']);
+        }
+
         $this->db->update(
             'tadminlogin',
             'kAdminlogin',
@@ -551,7 +555,7 @@ class AdminAccountManager
                     unset($tmpAcc->cPass);
                 }
 
-                $_SESSION['AdminAccount']->language = $tmpAcc->language;
+                $this->changeAdminUserLanguage($tmpAcc->language);
 
                 if ($this->db->update('tadminlogin', 'kAdminlogin', $tmpAcc->kAdminlogin, $tmpAcc) >= 0
                     && $this->saveAttributes($tmpAcc, $tmpAttribs, $errors)

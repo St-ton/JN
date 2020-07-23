@@ -748,3 +748,30 @@ msgstr "Invalider consent vendor ID."
 
 msgid "INVALID_CONSENT_VENDOR_COMPANY"
 msgstr "Invalider consent vendor Firma."
+
+msgid "Deaktiviert"
+msgstr "Deaktiviert"
+
+msgid "Aktiviert"
+msgstr "Aktiviert"
+
+msgid "Fehlerhaft"
+msgstr "Fehlerhaft"
+
+msgid "Update fehlgeschlagen"
+msgstr "Update fehlgeschlagen"
+
+msgid "Lizenzschlüssel fehlt"
+msgstr "Lizenzschlüssel fehlt"
+
+msgid "Lizenzschlüssel ungültig"
+msgstr "Lizenzschlüssel ungültig"
+
+msgid "Lizenz abgelaufen"
+msgstr "Lizenz abgelaufen"
+
+msgid "Subscription abgelaufen"
+msgstr "Subscription abgelaufen"
+
+msgid "Unbekannt"
+msgstr "Unbekannt"

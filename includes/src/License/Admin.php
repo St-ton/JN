@@ -49,14 +49,23 @@ class Admin
     private $cache;
 
     /**
-     * Admin constructor.
-     * @param Manager $manager
+     * @var Checker
      */
-    public function __construct(Manager $manager)
+    private $checker;
+
+    /**
+     * Admin constructor.
+     * @param Manager           $manager
+     * @param DbInterface       $db
+     * @param JTLCacheInterface $cache
+     * @param Checker           $checker
+     */
+    public function __construct(Manager $manager, DbInterface $db, JTLCacheInterface $cache, Checker $checker)
     {
         $this->manager = $manager;
-        $this->db      = $manager->getDB();
-        $this->cache   = $manager->getCache();
+        $this->db      = $db;
+        $this->cache   = $cache;
+        $this->checker = $checker;
     }
 
     public function handleAuth(): void
@@ -84,7 +93,6 @@ class Admin
             $this->getList($smarty);
             \header('Location: ' . Shop::getAdminURL() . '/licenses.php', true, 303);
             exit();
-
         }
         if ($action === 'revoke' && $valid) {
             $token->revoke();
@@ -153,7 +161,7 @@ class Admin
      * @param bool      $up
      * @param JTLSmarty $smarty
      */
-    private function updateBinding(bool $up, JTLSmarty $smarty)
+    private function updateBinding(bool $up, JTLSmarty $smarty): void
     {
         $apiResponse      = '';
         $response         = new AjaxResponse();
@@ -210,6 +218,7 @@ class Admin
         }
         try {
             $this->manager->update($force);
+            $this->checker->handleExpiredLicenses($this->manager);
         } catch (RequestException | Exception | ClientException $e) {
             Shop::Container()->getAlertService()->addAlert(
                 Alert::TYPE_ERROR,

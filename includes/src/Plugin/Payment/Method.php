@@ -446,12 +446,13 @@ class Method implements MethodInterface
             }
         }
 
-        $min = $this->getSetting('min');
-        if ($min > 0 && $cart->gibGesamtsummeWaren(true) <= $min) {
+        $cartTotal = $cart->gibGesamtsummeWarenOhne([\C_WARENKORBPOS_TYP_VERSANDPOS], true);
+        $min       = (float)$this->getSetting('min');
+        if ($min > 0 && $cartTotal < $min) {
             ZahlungsLog::add(
                 $this->moduleID,
-                'Bestellwert ' . $cart->gibGesamtsummeWaren(true) .
-                ' ist kleiner als der Mindestbestellwert von ' . $this->getSetting('min'),
+                'Bestellwert ' . $cartTotal .
+                ' ist kleiner als der Mindestbestellwert von ' . $min,
                 null,
                 \LOGLEVEL_NOTICE
             );
@@ -459,12 +460,12 @@ class Method implements MethodInterface
             return false;
         }
 
-        $max = $this->getSetting('max');
-        if ($max > 0 && $cart->gibGesamtsummeWaren(true) >= $max) {
+        $max = (float)$this->getSetting('max');
+        if ($max > 0 && $cartTotal >= $max) {
             ZahlungsLog::add(
                 $this->moduleID,
-                'Bestellwert ' . $cart->gibGesamtsummeWaren(true) .
-                ' ist groesser als der maximale Bestellwert von ' . $this->getSetting('max'),
+                'Bestellwert ' . $cartTotal .
+                ' ist groesser als der maximale Bestellwert von ' . $max,
                 null,
                 \LOGLEVEL_NOTICE
             );

@@ -6,18 +6,8 @@ use GuzzleHttp\Exception\RequestException;
 use JTL\Cron\Job;
 use JTL\Cron\JobInterface;
 use JTL\Cron\QueueEntry;
-use JTL\Events\Dispatcher;
 use JTL\License\Checker;
-use JTL\License\Collection;
 use JTL\License\Manager;
-use JTL\License\Mapper;
-use JTL\License\Struct\ExsLicense;
-use JTL\Plugin\Admin\StateChanger;
-use JTL\Plugin\Helper as PluginHelper;
-use JTL\Plugin\PluginLoader;
-use JTL\Plugin\State;
-use JTL\Shop;
-use JTL\Template\BootChecker;
 
 /**
  * Class LicenseCheck

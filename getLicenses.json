@@ -11,9 +11,7 @@
         "is_bound": true,
         "created": "2020-01-01T12:00:00.000Z",
         "valid_until": null,
-        "subscription": {
-          "valid_until": "2021-02-04T00:00:00.000Z"
-        }
+        "subscription": null
       },
       "vendor": {
         "name": "JTL-Software",
@@ -32,7 +30,7 @@
           "checksum": "123xxx",
           "version": "4.2.1",
           "type": "feature",
-          "includesSecurityFixes": "true",
+          "includes_security_fixes": true,
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Introduces new Feature XYZ",
           "download_url": "https:\/\/storage.jtl-software.com/extensions\/get\/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD"
@@ -80,16 +78,17 @@
         "available": {
           "checksum": "123xxx",
           "version": "2.0.1",
-          "type": "security",
+          "type": "feature",
           "release_date": "2020-04-06T12:12:52.620Z",
-          "short_description": "Fixes XSS-Bug in Checkout Flow",
+          "short_description": "More widgets",
+          "includes_security_fixes": false,
           "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_widgets_2.0.1.zip"
         },
         "latest": {
           "checksum": "123xxx",
           "version": "2.0.1",
           "type": "feature",
-          "includesSecurityFixes": "true",
+          "includes_security_fixes": true,
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Introduces new Feature XYZ",
           "download_url": "https:\/\/storage.jtl-software.com/extensions\/get\/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD"
@@ -138,6 +137,7 @@
           "checksum": "a50c93a6b41d04375c5b0ae79fd4ac554d31316c",
           "version": "1.0.0",
           "type": "security",
+          "includes_security_fixes": true,
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Fixes XSS-Bug in Checkout Flow",
           "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_blubb_1.0.0.zip"
@@ -146,7 +146,7 @@
           "checksum": "123xxx",
           "version": "1.0.0",
           "type": "feature",
-          "includesSecurityFixes": "true",
+          "includes_security_fixes": true,
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Introduces new Feature XYZ",
           "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_blubb_1.0.0.zip"
@@ -195,7 +195,7 @@
           "checksum": "123xxx",
           "version": "1.2.3",
           "type": "feature",
-          "includesSecurityFixes": "true",
+          "includes_security_fixes": true,
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Introduces new Feature XYZ",
           "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_foo_1.2.3.zip"
@@ -252,7 +252,7 @@
           "checksum": "123xxx",
           "version": "4.3.2",
           "type": "feature",
-          "includesSecurityFixes": "true",
+          "includes_security_fixes": true,
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Introduces new Feature XYZ",
           "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_bar_4.3.2.zip"
@@ -309,7 +309,7 @@
           "checksum": "123xxx",
           "version": "2.0.1",
           "type": "feature",
-          "includesSecurityFixes": "true",
+          "includes_security_fixes": true,
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Even faster",
           "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_test_version201.zip"
@@ -366,7 +366,7 @@
           "checksum": "123xxx",
           "version": "2.0.0",
           "type": "feature",
-          "includesSecurityFixes": "true",
+          "includes_security_fixes": true,
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Even faster",
           "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_google_recaptcha-2.0.0.zip"
@@ -423,7 +423,7 @@
           "checksum": "123xxx",
           "version": "2.0.0",
           "type": "feature",
-          "includesSecurityFixes": "true",
+          "includes_security_fixes": true,
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Even faster",
           "download_url": "https:\/\/shop5.moches.de/jtl-test-201.zip"
@@ -480,7 +480,7 @@
           "checksum": "123xxx",
           "version": "2.0.0",
           "type": "feature",
-          "includesSecurityFixes": "true",
+          "includes_security_fixes": true,
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Even faster",
           "download_url": "https:\/\/shop5.moches.de/jtl-test-201.zip"
@@ -537,7 +537,7 @@
           "checksum": "123xxx",
           "version": "2.0.1",
           "type": "feature",
-          "includesSecurityFixes": "true",
+          "includes_security_fixes": true,
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Even faster",
           "download_url": "https:\/\/shop5.moches.de/jtl-test-201.zip"
@@ -594,7 +594,7 @@
           "checksum": "123xxx",
           "version": "1.1.1",
           "type": "feature",
-          "includesSecurityFixes": "true",
+          "includes_security_fixes": true,
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Even faster",
           "download_url": "https:\/\/shop5.moches.de/jtl-test-201.zip"
@@ -631,7 +631,7 @@
         "created": "2020-05-01T12:00:00.000Z",
         "valid_until": null,
         "subscription": {
-          "valid_until": "2020-12-12T00:00:00.000Z"
+          "valid_until": "2020-06-12T00:00:00.000Z"
         }
       },
       "vendor": {
@@ -642,16 +642,16 @@
         "available": {
           "checksum": "123xxx",
           "version": "1.0.1",
-          "type": "security",
+          "type": "feature",
           "release_date": "2020-04-06T12:12:52.620Z",
-          "short_description": "Fixes XSS-Bug in Checkout Flow",
+          "short_description": "Test",
           "download_url": "https:\/\/shop5.moches.de\/downloads\/NOVA-1.0.1.zip"
         },
         "latest": {
           "checksum": "123xxx",
           "version": "1.0.1",
           "type": "feature",
-          "includesSecurityFixes": "true",
+          "includes_security_fixes": true,
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Even faster",
           "download_url": "https:\/\/shop5.moches.de\/downloads\/NOVA-1.0.1.zip"
@@ -708,7 +708,7 @@
           "checksum": "123xxx",
           "version": "1.2.0",
           "type": "feature",
-          "includesSecurityFixes": "true",
+          "includes_security_fixes": true,
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Even more beautiful",
           "download_url": "https:\/\/shop5.moches.de\/downloads\/novachild-does-not-exist.zip"

@@ -3,7 +3,7 @@
 namespace JTL\License\Struct;
 
 use JTL\DB\DbInterface;
-use JTL\Shop;
+use JTL\DB\ReturnType;
 use JTL\Template\Admin\Listing;
 use JTL\Template\Admin\ListingItem;
 use JTL\Template\Admin\Validation\TemplateValidator;
@@ -26,10 +26,10 @@ class ReferencedTemplate extends ReferencedItem
     public function __construct(DbInterface $db, stdClass $license, Release $release)
     {
         $exsid = $license->exsid;
-        $model = Shop::Container()->getTemplateService()->getActiveTemplate();
-        if ($model->getExsID() === $exsid) {
-            $installedVersion = Version::parse($model->getVersion());
-            $this->setID($model->getCTemplate());
+        $data  = $db->query('SELECT * FROM ttemplate WHERE eTyp = \'standard\'', ReturnType::SINGLE_OBJECT);
+        if ($data !== null && $data->exsID === $exsid) {
+            $installedVersion = Version::parse($data->version);
+            $this->setID($data->cTemplate);
             $this->setMaxInstallableVersion($release->getVersion());
             $this->setHasUpdate($installedVersion->smallerThan($release->getVersion()));
             $this->setInstalled(true);

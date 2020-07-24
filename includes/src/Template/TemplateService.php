@@ -5,6 +5,7 @@ namespace JTL\Template;
 use Exception;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
+use JTL\License\Manager;
 use SimpleXMLElement;
 
 /**
@@ -100,6 +101,8 @@ class TemplateService implements TemplateServiceInterface
             $tplXML,
             $parentXML
         );
+        $manager   = new Manager($this->db, $this->cache);
+        $template->setExsLicense($manager->getLicenseByItemID($template->getTemplate()));
         $template->setBoxLayout($this->getBoxLayout($tplXML, $parentXML));
         $template->setResources(new Resources($this->db, $tplXML, $parentXML));
 

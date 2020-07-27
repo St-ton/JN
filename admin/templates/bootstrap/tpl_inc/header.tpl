@@ -142,11 +142,22 @@
                                     <div class="col-md-2"><i class="fa fa-exclamation-triangle" style="font-size: 8em; padding-bottom:10px; color: red;"></i></div>
                                     <div class="col-md-10 ml-auto">
                                         <p class="alert alert-danger">{__('The following extensions do not have a valid license:')}</p>
-                                        <ul>
-                                            {foreach $expiredLicenses as $license}
-                                                <li>{$license->getName()}</li>
-                                            {/foreach}
-                                        </ul>
+                                        {form id="plugins-disable-form"}
+                                            <input type="hidden" name="action" value="disable-expired-plugins">
+                                            <ul>
+                                                {$hasPlugin = false}
+                                                {$hasTemplate = false}
+                                                {foreach $expiredLicenses as $license}
+                                                    {if $license->getType() === 'plugin'}
+                                                        {$hasPlugin = true}
+                                                    {elseif $license->getType() === 'template'}
+                                                        {$hasTemplate = true}
+                                                    {/if}
+                                                    <li>{$license->getName()}</li>
+                                                    <input type="hidden" name="pluginID[]" value="{$license->getReferencedItem()->getInternalID()}">
+                                                {/foreach}
+                                            </ul>
+                                        {/form}
                                         <p>{__('Please uninstall this extensions or purchase a valid license.')}</p>
                                     </div>
                                 </div>
@@ -155,7 +166,13 @@
                             <div class="modal-footer">
                                 <input type="checkbox" id="understood-license-notice">
                                 <label for="understood-license-notice">{__('I understood this notice.')}</label>
-                                <button type="button" class="btn btn-primary" disabled data-dismiss="modal" id="licenseUnderstood">{__('Understood')}</button>
+                                <button type="button" class="btn btn-default" disabled data-dismiss="modal" id="licenseUnderstood">{__('Understood')}</button>
+                                {if $hasPlugin === true}
+                                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="licenseDisablePlugins">{__('Disable plugins')}</button>
+                                {/if}
+                                {if $hasTemplate === true}
+                                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="licenseGotoTemplates">{__('Disable template')}</button>
+                                {/if}
                             </div>
                         </div>
                     </div>
@@ -170,6 +187,14 @@
                             var newURL = new URL(window.location.href);
                             newURL.searchParams.append('licensenoticeaccepted', 'true');
                             window.location.href = newURL.toString();
+                            return true;
+                        });
+                        $('#licenseDisablePlugins').on('click', function (e) {
+                            $('#plugins-disable-form').submit();
+                            return true;
+                        });
+                        $('#licenseGotoTemplates').on('click', function (e) {
+                            window.location.href = '{$shopURL}/{$smarty.const.PFAD_ADMIN}shoptemplate.php?licensenoticeaccepted=true';
                             return true;
                         });
                     });

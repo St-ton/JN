@@ -245,7 +245,7 @@ class Admin
             $avail         = $exsLicense->getReleases()->getAvailable();
             $item->version = $avail !== null ? (string)$avail->getVersion() : '0.0.0';
             $ref           = $exsLicense->getReferencedItem();
-            if ($ref !== null) {
+            if ($ref !== null && $ref->getInstalledVersion() !== null) {
                 $item->version = (string)$ref->getInstalledVersion();
                 if ($ref->getDateInstalled() !== null) {
                     $item->enabled = $ref->getDateInstalled();

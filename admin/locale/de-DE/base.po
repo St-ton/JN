@@ -1972,3 +1972,9 @@ msgstr "Eine weitere Nutzung stellt eine Lizenzverletzung dar und kann juristisc
 
 msgid "Understood"
 msgstr "Verstanden"
+
+msgid "Disable plugins"
+msgstr "Plugins deaktivieren"
+
+msgid "Disable template"
+msgstr "Template deaktivieren"

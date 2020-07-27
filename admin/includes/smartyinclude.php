@@ -9,6 +9,7 @@ use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
 use JTL\License\Manager;
 use JTL\License\Mapper;
+use JTL\Plugin\Admin\StateChanger;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Plugin\State;
 use JTL\Shop;
@@ -178,9 +179,15 @@ if (!$hasPendingUpdates) {
     if (Request::getVar('licensenoticeaccepted') === 'true') {
         $_SESSION['licensenoticeaccepted'] = 0;
     }
+    if (Request::postVar('action') === 'disable-expired-plugins' && Form::validateToken()) {
+        $sc = new StateChanger($db, Shop::Container()->getCache());
+        foreach ($_POST['pluginID'] as $pluginID) {
+            $sc->deactivate((int)$pluginID);
+        }
+    }
     $mapper                = new Mapper(new Manager($db, Shop::Container()->getCache()));
     $updates               = $mapper->getCollection()->getUpdateableItems();
-    $licenseNoticeAccepted = $_SESSION['licensenoticeaccepted'] ?? -1;
+    $licenseNoticeAccepted = (int)($_SESSION['licensenoticeaccepted'] ?? -1);
     if ($licenseNoticeAccepted === -1) {
         $expired = $mapper->getCollection()->getActiveExpired();
     } else {

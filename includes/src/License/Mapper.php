@@ -69,9 +69,7 @@ class Mapper
                     $license,
                     $esxLicense->getReleases()->getAvailable()
                 );
-                if ($plugin->isInitialized()) {
-                    $esxLicense->setReferencedItem($plugin);
-                }
+                $esxLicense->setReferencedItem($plugin);
                 break;
             case ExsLicense::TYPE_TEMPLATE:
                 $template = new ReferencedTemplate(
@@ -79,9 +77,7 @@ class Mapper
                     $license,
                     $esxLicense->getReleases()->getAvailable()
                 );
-                if ($template->isInitialized()) {
-                    $esxLicense->setReferencedItem($template);
-                }
+                $esxLicense->setReferencedItem($template);
                 break;
         }
     }

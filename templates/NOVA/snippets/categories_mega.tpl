@@ -112,7 +112,7 @@
                                             {block name='snippets-categories-mega-manufacturers-header'}
                                                 {link href="{$manufacturerOverview->getURL()}" class="font-size-base" rel="nofollow"}
                                                     <span class="text-truncate font-weight-bold d-block pr-3 pr-lg-0">
-                                                        {if $manufacturerOverview !== null && !empty($manufacturerOverview->getName())}
+                                                        {if !empty($manufacturerOverview->getName())}
                                                             {$manufacturerTitle = $manufacturerOverview->getName()}
                                                         {else}
                                                             {$manufacturerTitle = {lang key='manufacturers'}}

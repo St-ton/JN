@@ -9,7 +9,7 @@ rm(base, err => {
 		throw err;
 	}
 	cpx.copy(cwd + '.htaccess', base);
-	cpx.copy(cwd + '*.{php,sql}', base);
+	cpx.copy(cwd + '*.{php,sql,ttf}', base);
 	cpx.copy(cwd + 'vendor/**/*.*', base + '/vendor');
 	cpx.copy(cwd + 'lib/**/*.*', base + '/lib');
 });

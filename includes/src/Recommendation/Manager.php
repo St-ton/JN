@@ -1,11 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Recommendation;
 
+use GuzzleHttp\Client;
 use \Illuminate\Support\Collection;
 use JTL\Alert\Alert;
 use JTL\Services\JTL\AlertServiceInterface;
-use JTL\Shop;
 
 /**
  * Class Manager
@@ -17,6 +17,13 @@ class Manager
     public const SCOPE_WIZARD_LEGAL_TEXTS       = 'wizard.legal-texts';
     public const SCOPE_BACKEND_PAYMENT_PROVIDER = 'backend.payment-provider';
     public const SCOPE_BACKEND_LEGAL_TEXTS      = 'backend.legal-texts';
+
+    private const API_URL = 'https://checkout-stage.jtl-software.com/v1/recommendations';
+
+    /**
+     * @var Client
+     */
+    private $client;
 
     /**
      * @var Collection
@@ -36,12 +43,13 @@ class Manager
     /**
      * Manager constructor.
      * @param AlertServiceInterface $alertService
-     * @param string $scope
+     * @param string                $scope
      */
     public function __construct(AlertServiceInterface $alertService, string $scope)
     {
         $this->alertService = $alertService;
         $this->scope        = $scope;
+        $this->client       = new Client();
         $this->setRecommendations();
     }
 
@@ -68,7 +76,7 @@ class Manager
 
     /**
      * @param string $id
-     * @param bool $showAlert
+     * @param bool   $showAlert
      * @return Recommendation|null
      */
     public function getRecommendationById(string $id, bool $showAlert = true): ?Recommendation
@@ -90,8 +98,21 @@ class Manager
      */
     private function getJSONFromAPI(string $scope)
     {
-        return $this->getTestJSON();
-//        return json_decode(file_get_contents(\JTLURL_RECOMMENDATIONS_SCOPE . $scope));
+        $url = self::API_URL . '?scope=' . $scope;
+        $res = $this->client->request(
+            'GET',
+            $url,
+            [
+                'headers' => [
+                    'Accept'       => 'application/json',
+                    'Content-Type' => 'application/json',
+                ],
+                'verify'  => true
+            ]
+        );
+
+        return \json_decode((string)$res->getBody())->extensions;
+//        return $this->getTestJSON();
     }
 
     /**
@@ -100,7 +121,7 @@ class Manager
     private function getTestJSON()
     {
         return \json_decode(
-            \file_get_contents(\PFAD_ROOT .'getRecommendation.json'),
+            \file_get_contents(\PFAD_ROOT . 'getRecommendation.json'),
             false
         )->extensions;
     }

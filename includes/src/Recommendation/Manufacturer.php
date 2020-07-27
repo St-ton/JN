@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Recommendation;
 
@@ -46,12 +46,12 @@ class Manufacturer
      */
     public function __construct(stdClass $manufacturer)
     {
-        $this->setIso($manufacturer->country_code);
+//        $this->setIso($manufacturer->country_code);
         $this->setName($manufacturer->company_name);
-        $this->setVatID($manufacturer->vat_id);
+//        $this->setVatID($manufacturer->vat_id);
         $this->setProfileURL($manufacturer->profile_url);
-        $this->setGtcURL($manufacturer->gtc_url);
-        $this->setMetas($manufacturer->metas);
+//        $this->setGtcURL($manufacturer->gtc_url);
+//        $this->setMetas($manufacturer->metas);
     }
 
     /**

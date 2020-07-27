@@ -6,7 +6,6 @@ use DateTime;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Exception\RequestException;
 use JTL\Backend\AuthToken;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
@@ -114,16 +113,17 @@ class Manager
     }
 
     /**
-     * @param bool $force
+     * @param bool  $force
+     * @param array $installedExtensions
      * @return int
-     * @throws RequestException $e
+     * @throws GuzzleException
      */
-    public function update(bool $force = false): int
+    public function update(bool $force = false, array $installedExtensions = []): int
     {
         if (!$force && !$this->checkUpdate()) {
             return 0;
         }
-        if (false) { // @todo: remove
+        if (true) { // @todo: remove
             $data = $this->getLocalTestData();
             $this->housekeeping();
             $this->cache->flushTags([\CACHING_GROUP_LICENSES]);
@@ -145,8 +145,8 @@ class Manager
                 'verify'  => true,
                 'body'    => \json_encode((object)['shop' => [
                     'domain'  => \URL_SHOP,
-                    'version' => \APPLICATION_VERSION
-                ]])
+                    'version' => \APPLICATION_VERSION,
+                ], 'extensions' => $installedExtensions])
             ]
         );
         $this->housekeeping();

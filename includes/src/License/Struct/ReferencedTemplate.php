@@ -34,6 +34,7 @@ class ReferencedTemplate extends ReferencedItem
             $this->setInstalled(true);
             $this->setInstalledVersion($installedVersion);
             $this->setActive(true);
+            $this->setInitialized(true);
         } else {
             $lstng = new Listing($db, new TemplateValidator($db));
             foreach ($lstng->getAll() as $template) {
@@ -46,6 +47,7 @@ class ReferencedTemplate extends ReferencedItem
                     $this->setInstalled(true);
                     $this->setInstalledVersion($installedVersion);
                     $this->setActive(true);
+                    $this->setInitialized(true);
                     break;
                 }
             }

@@ -2,6 +2,8 @@
 
 namespace JTL\License\Struct;
 
+use Carbon\Carbon;
+use Exception;
 use JTL\DB\DbInterface;
 use JTL\Plugin\State;
 use JTLShop\SemVer\Version;
@@ -15,9 +17,9 @@ class ReferencedPlugin extends ReferencedItem
 {
     /**
      * ReferencedPlugin constructor.
-     * @param DbInterface $db
-     * @param stdClass    $license
-     * @param Release|null     $release
+     * @param DbInterface  $db
+     * @param stdClass     $license
+     * @param Release|null $release
      */
     public function __construct(DbInterface $db, stdClass $license, ?Release $release)
     {
@@ -35,6 +37,14 @@ class ReferencedPlugin extends ReferencedItem
             $this->setInstalledVersion($installedVersion);
             $this->setActive((int)$installed->nStatus === State::ACTIVATED);
             $this->setInternalID((int)$installed->kPlugin);
+            try {
+                $t             = new Carbon($installed->dInstalliert);
+                $dateInstalled = $t->toIso8601ZuluString();
+            } catch (Exception $e) {
+                $dateInstalled = null;
+            }
+            $this->setDateInstalled($dateInstalled);
+            $this->setInitialized(true);
         }
     }
 }

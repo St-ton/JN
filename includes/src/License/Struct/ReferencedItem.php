@@ -46,6 +46,16 @@ abstract class ReferencedItem implements ReferencedItemInterface
     private $internalID = 0;
 
     /**
+     * @var bool
+     */
+    private $initialized = false;
+
+    /**
+     * @var string|null
+     */
+    private $dateInstalled;
+
+    /**
      * @inheritDoc
      */
     public function getID(): string
@@ -155,5 +165,37 @@ abstract class ReferencedItem implements ReferencedItemInterface
     public function setInternalID(int $internalID): void
     {
         $this->internalID = $internalID;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getDateInstalled(): ?string
+    {
+        return $this->dateInstalled;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setDateInstalled(?string $dateInstalled): void
+    {
+        $this->dateInstalled = $dateInstalled;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isInitialized(): bool
+    {
+        return $this->initialized;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setInitialized(bool $initialized): void
+    {
+        $this->initialized = $initialized;
     }
 }

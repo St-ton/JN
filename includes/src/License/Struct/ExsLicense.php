@@ -95,7 +95,7 @@ class ExsLicense
         $this->setID($json->id);
         $this->setType($json->type ?? self::TYPE_PLUGIN); // @todo: this should always be provided by the api!
         $this->setName($json->name);
-        $this->setExsid($json->exsid);
+        $this->setExsID($json->exsid);
         if (isset($json->license)) {
             $this->setLicense(new License($json->license));
         }
@@ -157,7 +157,7 @@ class ExsLicense
     /**
      * @return string
      */
-    public function getExsid(): string
+    public function getExsID(): string
     {
         return $this->exsid;
     }
@@ -165,7 +165,7 @@ class ExsLicense
     /**
      * @param string $exsid
      */
-    public function setExsid(string $exsid): void
+    public function setExsID(string $exsid): void
     {
         $this->exsid = $exsid;
     }

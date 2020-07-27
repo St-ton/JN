@@ -26,6 +26,7 @@ use JTL\Session\Backend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
+use stdClass;
 
 /**
  * Class Admin
@@ -217,7 +218,7 @@ class Admin
             return;
         }
         try {
-            $this->manager->update($force);
+            $this->manager->update($force, $this->getInstalledExtensionPostData());
             $this->checker->handleExpiredLicenses($this->manager);
         } catch (RequestException | Exception | ClientException $e) {
             Shop::Container()->getAlertService()->addAlert(
@@ -226,6 +227,34 @@ class Admin
                 'errorFetchLicenseAPI'
             );
         }
+    }
+
+    /**
+     * @return array
+     */
+    private function getInstalledExtensionPostData(): array
+    {
+        $mapper     = new Mapper($this->manager);
+        $collection = $mapper->getCollection();
+        $res        = [];
+        foreach ($collection as $exsLicense) {
+            /** @var ExsLicense $exsLicense */
+            $item          = new stdClass();
+            $item->id      = $exsLicense->getID();
+            $item->exsid   = $exsLicense->getExsID();
+            $avail         = $exsLicense->getReleases()->getAvailable();
+            $item->version = $avail !== null ? (string)$avail->getVersion() : '0.0.0';
+            $ref           = $exsLicense->getReferencedItem();
+            if ($ref !== null) {
+                $item->version = (string)$ref->getInstalledVersion();
+                if ($ref->getDateInstalled() !== null) {
+                    $item->enabled = $ref->getDateInstalled();
+                }
+            }
+            $res[] = $item;
+        }
+
+        return $res;
     }
 
     /**

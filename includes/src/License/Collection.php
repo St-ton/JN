@@ -72,7 +72,7 @@ class Collection extends \Illuminate\Support\Collection
     public function getPlugins(): self
     {
         return $this->filter(static function (ExsLicense $e) {
-            return $e->getType() === ExsLicense::TYPE_PLUGIN;
+            return $e->getType() === ExsLicense::TYPE_PLUGIN || $e->getType() === ExsLicense::TYPE_PORTLET;
         });
     }
 

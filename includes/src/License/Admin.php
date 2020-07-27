@@ -297,12 +297,10 @@ class Admin
         }
         switch ($licenseData->getType()) {
             case ExsLicense::TYPE_PLUGIN:
+            case ExsLicense::TYPE_PORTLET:
                 return new PluginInstaller($this->db, $this->cache);
             case ExsLicense::TYPE_TEMPLATE:
                 return new TemplateInstaller($this->db, $this->cache);
-            case ExsLicense::TYPE_PORTLET:
-                // @todo
-                throw new InvalidArgumentException('Cannot update portlets yet');
             default:
                 throw new InvalidArgumentException('Cannot update type ' . $licenseData->getType());
         }

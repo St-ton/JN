@@ -1852,9 +1852,9 @@ class Cart
         if ($shippingFreeMinID !== null) {
             $localizedZero              = Preise::getLocalizedPriceString(0);
             $method                     = new Versandart($shippingFreeMinID);
-            $method->country            = Shop::Container()->getCountryService()->getCountry($countryCode);
             $method->cPriceLocalized[0] = $localizedZero;
             $method->cPriceLocalized[1] = $localizedZero;
+            $method->setCountryCode($countryCode);
 
             $this->oFavourableShipping = $method;
 
@@ -1916,8 +1916,8 @@ class Cart
 
         $this->oFavourableShipping = null;
         if (isset($shipping->kVersandart)) {
-            $method          = new Versandart((int)$shipping->kVersandart);
-            $method->country = Shop::Container()->getCountryService()->getCountry($countryCode);
+            $method = new Versandart((int)$shipping->kVersandart);
+            $method->setCountryCode($countryCode);
 
             if ($method->eSteuer === 'brutto') {
                 $method->cPriceLocalized[0] = Preise::getLocalizedPriceString($shipping->minPrice);

@@ -130,6 +130,51 @@
                 </div>
                 <div class="opaque-background"></div>
             </div>
+            {if $expiredLicenses->count() > 0}
+                <div class="modal fade in" id="expiredLicensesNotice" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="staticBackdropLabel">{__('Licenses expired')}</h5>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-2"><i class="fa fa-exclamation-triangle" style="font-size: 8em; padding-bottom:10px; color: red;"></i></div>
+                                    <div class="col-md-10 ml-auto">
+                                        <p class="alert alert-danger">{__('The following extensions do not have a valid license:')}</p>
+                                        <ul>
+                                            {foreach $expiredLicenses as $license}
+                                                <li>{$license->getName()}</li>
+                                            {/foreach}
+                                        </ul>
+                                        <p>{__('Please uninstall this extensions or purchase a valid license.')}</p>
+                                    </div>
+                                </div>
+                                <p><strong>{__('Further using these extensions will violate the license policy and may have legal consequences.')}</strong></p>
+                            </div>
+                            <div class="modal-footer">
+                                <input type="checkbox" id="understood-license-notice">
+                                <label for="understood-license-notice">{__('I understood this notice.')}</label>
+                                <button type="button" class="btn btn-primary" disabled data-dismiss="modal" id="licenseUnderstood">{__('Understood')}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    $(document).ready(function() {
+                        $('#expiredLicensesNotice').modal('show');
+                        $('#understood-license-notice').on('click', function (e) {
+                            $('#licenseUnderstood').attr('disabled', false);
+                        });
+                        $('#licenseUnderstood').on('click', function (e) {
+                            var newURL = new URL(window.location.href);
+                            newURL.searchParams.append('licensenoticeaccepted', 'true');
+                            window.location.href = newURL.toString();
+                            return true;
+                        });
+                    });
+                </script>
+            {/if}
             {/if}
             <div class="backend-content" id="content_wrapper">
 

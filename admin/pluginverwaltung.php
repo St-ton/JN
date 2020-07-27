@@ -232,7 +232,9 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                 }
             }
         }
-        $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN, CACHING_GROUP_BOX]);
+        $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE,
+            CACHING_GROUP_LICENSES, CACHING_GROUP_PLUGIN, CACHING_GROUP_BOX
+        ]);
     } elseif (Request::verifyGPCDataInt('updaten') === 1) {
         // Updaten
         $res       = InstallCode::INVALID_PLUGIN_ID;
@@ -248,7 +250,9 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
         if ($toInstall !== null && ($res = $updater->updateFromListingItem($toInstall)) === InstallCode::OK) {
             $notice .= __('successPluginUpdate');
             $reload  = true;
-            $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
+            $cache->flushTags(
+                [CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_LICENSES, CACHING_GROUP_PLUGIN]
+            );
         } else {
             $errorMsg = __('errorPluginUpdate') . $res;
         }
@@ -269,7 +273,7 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                 }
             }
         }
-        $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
+        $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LICENSES, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
     } else {
         $errorMsg = __('errorAtLeastOnePlugin');
     }

@@ -37,6 +37,7 @@ $currentSecondLevel = 0;
 $currentThirdLevel  = 0;
 $mainGroups         = [];
 $rootKey            = 0;
+$expired            = collect([]);
 if (!$hasPendingUpdates) {
     $jtlSearch                    = $db->query(
         "SELECT kPlugin, cName
@@ -174,8 +175,21 @@ if (!$hasPendingUpdates) {
         }
         $rootKey++;
     }
-    $mapper  = new Mapper(new Manager($db, Shop::Container()->getCache()));
-    $updates = $mapper->getCollection()->getUpdateableItems();
+    if (Request::getVar('licensenoticeaccepted') === 'true') {
+        $_SESSION['licensenoticeaccepted'] = 0;
+    }
+    $mapper                = new Mapper(new Manager($db, Shop::Container()->getCache()));
+    $updates               = $mapper->getCollection()->getUpdateableItems();
+    $licenseNoticeAccepted = $_SESSION['licensenoticeaccepted'] ?? -1;
+    if ($licenseNoticeAccepted === -1) {
+        $expired = $mapper->getCollection()->getActiveExpired();
+    } else {
+        $licenseNoticeAccepted++;
+    }
+    if ($licenseNoticeAccepted > 5) {
+        $licenseNoticeAccepted = -1;
+    }
+    $_SESSION['licensenoticeaccepted'] = $licenseNoticeAccepted;
 }
 if (empty($template->version)) {
     $adminTplVersion = '1.0.0';
@@ -185,6 +199,7 @@ if (empty($template->version)) {
 $langTag = $_SESSION['AdminAccount']->language ?? Shop::Container()->getGetText()->getLanguage();
 
 $smarty->assign('URL_SHOP', $shopURL)
+    ->assign('expiredLicenses', $expired)
     ->assign('jtl_token', Form::getTokenInput())
     ->assign('shopURL', $shopURL)
     ->assign('adminTplVersion', $adminTplVersion)

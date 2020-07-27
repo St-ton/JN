@@ -217,7 +217,7 @@ final class MigrationHelper
      * @param string $author
      * @return string
      * @throws \SmartyException
-     * @throws \Exception
+     * @throws Exception
      */
     public static function create(string $pluginDir, string $description, string $author): string
     {
@@ -234,7 +234,7 @@ final class MigrationHelper
         $fileSystem    = new Filesystem(new Local(\PFAD_ROOT));
 
         if (!$fileSystem->has($relPath)) {
-            throw new \Exception('Migrations path doesn\'t exist!');
+            throw new Exception('Migrations path doesn\'t exist!');
         }
 
         $content = Shop::Smarty()

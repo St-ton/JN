@@ -95,7 +95,6 @@ final class ImageCheck extends AbstractSync
             'cloud' => \strlen($cloudURL) > 0,
             'items' => []
         ];
-        /** @var SimpleXMLElement $child */
         foreach ($xml->children() as $child) {
             $check->items[] = (object)[
                 'id'   => (int)$child->attributes()->kBild,

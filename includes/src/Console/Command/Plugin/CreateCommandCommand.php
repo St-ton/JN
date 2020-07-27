@@ -42,7 +42,7 @@ class CreateCommandCommand extends Command
         try {
             $commandPath = $this->createFile($pluginID, $commandName, $author);
             $output->writeln("<info>Created command:</info> <comment>'" . $commandPath . "'</comment>");
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->getIO()->error($e->getMessage());
 
             return 1;
@@ -55,7 +55,7 @@ class CreateCommandCommand extends Command
      * @param string $author
      * @return string
      * @throws \SmartyException
-     * @throws \Exception
+     * @throws Exception
      */
     protected function createFile(string $pluginID, string $commandName, string $author): string
     {
@@ -68,7 +68,7 @@ class CreateCommandCommand extends Command
         $migrationPath = $relPath . '/' . $commandName . '.php';
         $fileSystem    = new Filesystem(new Local(\PFAD_ROOT));
         if (!$fileSystem->has($relPath)) {
-            throw new \Exception('Commands path doesn\'t exist!');
+            throw new Exception('Commands path doesn\'t exist!');
         }
 
         $content = Shop::Smarty()

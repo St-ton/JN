@@ -719,7 +719,7 @@ class Warehouse extends MainModel
             && $this->getBackorder() > 0
             && $this->getBackorderDate() !== null
         ) {
-            $backorder = sprintf(
+            $backorder = \sprintf(
                 Shop::Lang()->get('productInflowing', 'productDetails'),
                 $this->getBackorder(),
                 $item->cEinheit,

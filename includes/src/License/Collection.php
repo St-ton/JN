@@ -115,4 +115,33 @@ class Collection extends \Illuminate\Support\Collection
             return $e->getReferencedItem()->hasUpdate() === true;
         });
     }
+
+    /**
+     * @return $this
+     */
+    public function getExpired(): self
+    {
+        return $this->filter(static function (ExsLicense $e) {
+            return $e->getLicense()->isExpired() || $e->getLicense()->getSubscription()->isExpired();
+        });
+    }
+
+    /**
+     * @param int $days
+     * @return $this
+     */
+    public function getAboutToBeExpired(int $days = 28): self
+    {
+        return $this->filter(static function (ExsLicense $e) use ($days) {
+            $license = $e->getLicense();
+
+            return (!$license->isExpired()
+                    && $license->getDaysRemaining() > 0
+                    && $license->getDaysRemaining() < $days)
+                || (!$license->getSubscription()->isExpired()
+                    && $license->getSubscription()->getDaysRemaining() > 0
+                    && $license->getSubscription()->getDaysRemaining() < $days
+                );
+        });
+    }
 }

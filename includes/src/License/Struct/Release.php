@@ -49,6 +49,11 @@ class Release
     private $checksum;
 
     /**
+     * @var bool
+     */
+    private $includesSecurityFixes = false;
+
+    /**
      * Release constructor.
      * @param stdClass|null $json
      */
@@ -70,6 +75,7 @@ class Release
         $this->setShortDescription($json->short_description);
         $this->setDownloadURL($json->download_url);
         $this->setChecksum($json->checksum ?? '');
+        $this->setIncludesSecurityFixes($json->includes_security_fixes ?? false);
     }
 
     /**
@@ -167,5 +173,21 @@ class Release
     public function setChecksum(string $checksum): void
     {
         $this->checksum = $checksum;
+    }
+
+    /**
+     * @return bool
+     */
+    public function includesSecurityFixes(): bool
+    {
+        return $this->includesSecurityFixes;
+    }
+
+    /**
+     * @param bool $includesSecurityFixes
+     */
+    public function setIncludesSecurityFixes(bool $includesSecurityFixes): void
+    {
+        $this->includesSecurityFixes = $includesSecurityFixes;
     }
 }

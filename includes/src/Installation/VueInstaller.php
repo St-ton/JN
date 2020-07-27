@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace VueInstaller;
+namespace JTL\Installation;
 
 use Exception;
 use JTL\DB\NiceDB;
@@ -14,7 +14,7 @@ use Systemcheck\Platform\Filesystem;
 
 /**
  * Class VueInstaller
- * @package VueInstaller
+ * @package JTL\Installation
  */
 class VueInstaller
 {
@@ -205,7 +205,11 @@ class VueInstaller
     {
         if ($this->initNiceDB($this->post['db'])) {
             $this->db->query('SET FOREIGN_KEY_CHECKS=0', ReturnType::DEFAULT);
-            $this->parseMysqlDump(__DIR__ . '/initial_schema.sql');
+            $schema = \PFAD_ROOT . 'install/initial_schema.sql';
+            if (!\file_exists($schema)) {
+                $this->responseMessage[] = 'File does not exists: ' . $schema;
+            }
+            $this->parseMysqlDump($schema);
             $this->insertUsers();
             $blowfishKey = $this->getUID(30);
             $this->writeConfigFile($this->post['db'], $blowfishKey);
@@ -235,8 +239,11 @@ class VueInstaller
             $demoData->run();
             $this->responseStatus = true;
         }
-
-        $this->sendResponse();
+        if (!$this->cli) {
+            $this->sendResponse();
+        } else {
+            $this->payload['error'] = !$this->responseStatus;
+        }
 
         return $this;
     }
@@ -255,8 +262,8 @@ class VueInstaller
         if (!empty($credentials['socket'])) {
             $socket = "\ndefine('DB_SOCKET', '" . $credentials['host'] . "');";
         }
-        $rootPath = PFAD_ROOT;
-        if (\strpos(PFAD_ROOT, '\\') !== false) {
+        $rootPath = \PFAD_ROOT;
+        if (\strpos(\PFAD_ROOT, '\\') !== false) {
             $rootPath = \str_replace('\\', '\\\\', $rootPath);
         }
         $config = "<?php
@@ -282,7 +289,7 @@ define('ADMIN_LOG_LEVEL', E_ALL);
 define('SMARTY_LOG_LEVEL', E_ALL);
 //excplicitly show/hide errors
 ini_set('display_errors', 0);" . "\n";
-        $file        = \fopen(PFAD_ROOT . \PFAD_INCLUDES . 'config.JTL-Shop.ini.php', 'w');
+        $file   = \fopen(\PFAD_ROOT . \PFAD_INCLUDES . 'config.JTL-Shop.ini.php', 'w');
         \fwrite($file, $config);
         \fclose($file);
 
@@ -408,10 +415,10 @@ ini_set('display_errors', 0);" . "\n";
     private function getIsInstalled(): self
     {
         $res = false;
-        if (\file_exists(PFAD_ROOT . \PFAD_INCLUDES . 'config.JTL-Shop.ini.php')) {
+        if (\file_exists(\PFAD_ROOT . \PFAD_INCLUDES . 'config.JTL-Shop.ini.php')) {
             //use buffer to avoid redeclaring constants errors
             \ob_start();
-            require_once PFAD_ROOT . \PFAD_INCLUDES . 'config.JTL-Shop.ini.php';
+            require_once \PFAD_ROOT . \PFAD_INCLUDES . 'config.JTL-Shop.ini.php';
             \ob_end_clean();
 
             $res = \defined('BLOWFISH_KEY');
@@ -438,7 +445,7 @@ ini_set('display_errors', 0);" . "\n";
      */
     public function getDirectoryCheck(): self
     {
-        $fsCheck                      = new Filesystem(PFAD_ROOT);
+        $fsCheck                      = new Filesystem(\PFAD_ROOT);
         $this->payload['testresults'] = $fsCheck->getFoldersChecked();
 
         return $this;
@@ -466,7 +473,7 @@ ini_set('display_errors', 0);" . "\n";
             [$strings] = \explode(';', $seed);
             if (\is_array($strings) && \count($strings) > 0) {
                 foreach ($strings as $string) {
-                    $uid .= \md5($string . \md5(PFAD_ROOT . (\time() - \mt_rand())));
+                    $uid .= \md5($string . \md5(\PFAD_ROOT . (\time() - \mt_rand())));
                 }
 
                 $uid = \md5($uid . $salt);
@@ -477,7 +484,7 @@ ini_set('display_errors', 0);" . "\n";
                     if (((int)\date('w') % 2) <= \strlen($seed)) {
                         $nPos = (int)\date('w') % 2;
                     }
-                    $uid .= \md5(\substr($seed, $nPos, 1) . $salt . \md5(PFAD_ROOT . (\microtime(true) - \mt_rand())));
+                    $uid .= \md5(\substr($seed, $nPos, 1) . $salt . \md5(\PFAD_ROOT . (\microtime(true) - \mt_rand())));
                 }
             }
             $uid = $this->cryptPasswort($uid . $salt);

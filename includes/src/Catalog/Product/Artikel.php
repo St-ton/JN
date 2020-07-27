@@ -5987,7 +5987,7 @@ class Artikel
             && $this->fZulauf > 0
             && $this->dZulaufDatum_de !== null
         ) {
-            $backorder = sprintf(
+            $backorder = \sprintf(
                 Shop::Lang()->get('productInflowing', 'productDetails'),
                 $this->fZulauf,
                 $this->cEinheit,

@@ -87,7 +87,7 @@ class Status
 
     /**
      * @return StatsItem
-     * @throws \Exception
+     * @throws Exception
      */
     public function getImageCache(): StatsItem
     {
@@ -208,7 +208,7 @@ class Status
 
     /**
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function hasPendingUpdates(): bool
     {
@@ -276,7 +276,8 @@ class Status
      */
     public function hasStandardTemplateIssue(): bool
     {
-        return $this->db->select('ttemplate', 'eTyp', 'standard') === null;
+        return $this->db->select('ttemplate', 'eTyp', 'standard') === null
+            || Shop::Container()->getTemplateService()->getActiveTemplate()->getTemplate() === null;
     }
 
     /**
@@ -393,19 +394,10 @@ class Status
      */
     public function hasLicenseExpirations(): bool
     {
-        $manager    = new Manager($this->db, Shop::Container()->getCache());
-        $mapper     = new Mapper($manager);
-        $collection = $mapper->getCollection();
+        $manager = new Manager($this->db, Shop::Container()->getCache());
+        $mapper  = new Mapper($manager);
 
-        return $collection->contains(static function (ExsLicense $item) {
-            $license = $item->getLicense();
-            if ($license->getValidUntil() !== null && $license->getDaysRemaining() < 28) {
-                return true;
-            }
-            $subscription = $license->getSubscription();
-
-            return $subscription->getValidUntil() !== null && $subscription->getDaysRemaining() < 28;
-        });
+        return $mapper->getCollection()->getAboutToBeExpired(28)->count() > 0;
     }
 
     /**
@@ -480,7 +472,7 @@ class Status
 
     /**
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function needPasswordRehash2FA(): bool
     {

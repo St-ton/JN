@@ -109,7 +109,7 @@
                                         {$shippingCosts = $FavourableShipping->cPriceLocalized[$NettoPreise]}
                                     {/if}
                                     <li class="text-muted mt-2 font-size-sm">
-                                        {lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$shippingCosts:$FavourableShipping->cCountryCode key='shippingInformationSpecific' section='basket'}
+                                        {lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$shippingCosts:$FavourableShipping->country->getName() key='shippingInformationSpecific' section='basket'}
                                     </li>
                                 {elseif empty($FavourableShipping)}
                                     <li class="text-muted mt-2 font-size-sm">

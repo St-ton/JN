@@ -214,6 +214,7 @@
                     {/block}
                 {/if}
             </article>
+            {if $oNews_arr|count > 0}
             <hr class="my-6">
             {block name='blog-details-latest-news'}
                 <div class="h2">{lang key='news' section='news'}</div>
@@ -225,6 +226,7 @@
                     {include file='snippets/slider_items.tpl' items=$oNews_arr type='news'}
                 </div>
             {/block}
+            {/if}
         {/block}
     {/if}
     {/container}

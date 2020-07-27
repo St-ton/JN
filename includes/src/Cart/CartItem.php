@@ -424,7 +424,6 @@ class CartItem
                 $gross     = 0;
                 $parentIdx = null;
                 if (!empty($this->cUnique)) {
-                    /** @var CartItem $item */
                     foreach (Frontend::getCart()->PositionenArr as $idx => $item) {
                         if ($this->cUnique === $item->cUnique) {
                             $net   += $item->fPreis * $item->nAnzahl;

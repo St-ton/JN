@@ -192,9 +192,9 @@ final class Model extends DataModel
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getTemplate(): string
+    public function getTemplate(): ?string
     {
         return $this->cTemplate;
     }

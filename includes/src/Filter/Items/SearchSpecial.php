@@ -183,8 +183,7 @@ class SearchSpecial extends AbstractFilter
                         : 30;
 
                     $conditions[] = "tartikel.cNeu = 'Y' 
-                                AND DATE_SUB(NOW(),INTERVAL " . $days  . " DAY) < tartikel.dErstellt 
-                                AND tartikel.cNeu = 'Y'";
+                                AND DATE_SUB(NOW(),INTERVAL " . $days  . ' DAY) < tartikel.dErstellt';
                     break;
 
                 case \SEARCHSPECIALS_TOPOFFERS:

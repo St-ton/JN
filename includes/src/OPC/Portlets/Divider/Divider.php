@@ -3,7 +3,6 @@
 namespace JTL\OPC\Portlets\Divider;
 
 use JTL\OPC\Portlet;
-use JTL\OPC\PortletInstance;
 
 /**
  * Class Divider

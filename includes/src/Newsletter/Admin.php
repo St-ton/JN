@@ -760,7 +760,7 @@ final class Admin
             (new Optin(OptinNewsletter::class))
                 ->bulkDeleteOptins($recipients, 'cOptCode');
         } catch (EmptyResultSetException $e) {
-            // suppress exception, because a optin implementation class is not needed here
+            // suppress exception, because an optin implementation class is not needed here
         }
 
         return true;

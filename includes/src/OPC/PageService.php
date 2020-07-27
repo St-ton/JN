@@ -6,7 +6,6 @@ use Exception;
 use JTL\Backend\AdminIO;
 use JTL\Helpers\Request;
 use JTL\IO\IOResponse;
-use JTL\Language\LanguageHelper;
 use JTL\Shop;
 
 /**
@@ -81,7 +80,7 @@ class PageService
 
     /**
      * @param AdminIO $io
-     * @throws \Exception
+     * @throws Exception
      */
     public function registerAdminIOFunctions(AdminIO $io): void
     {
@@ -139,7 +138,7 @@ class PageService
     /**
      * @param int $key
      * @return Page
-     * @throws \Exception
+     * @throws Exception
      */
     public function getDraft(int $key): Page
     {
@@ -149,7 +148,7 @@ class PageService
     /**
      * @param int $revId
      * @return Page
-     * @throws \Exception
+     * @throws Exception
      */
     public function getRevision(int $revId): Page
     {
@@ -168,7 +167,7 @@ class PageService
     /**
      * @param string $id
      * @return Page|null
-     * @throws \Exception
+     * @throws Exception
      */
     public function getPublicPage(string $id): ?Page
     {
@@ -177,7 +176,7 @@ class PageService
 
     /**
      * @return Page
-     * @throws \Exception
+     * @throws Exception
      */
     public function getCurPage(): Page
     {
@@ -302,7 +301,7 @@ class PageService
     /**
      * @param string $id
      * @return Page[]
-     * @throws \Exception
+     * @throws Exception
      */
     public function getDrafts(string $id): array
     {
@@ -326,7 +325,7 @@ class PageService
     /**
      * @param int $key
      * @return string[]
-     * @throws \Exception
+     * @throws Exception
      */
     public function getDraftPreview(int $key): array
     {
@@ -336,7 +335,7 @@ class PageService
     /**
      * @param int $key
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function getDraftFinal(int $key): array
     {
@@ -346,7 +345,7 @@ class PageService
     /**
      * @param int $revId
      * @return string[]
-     * @throws \Exception
+     * @throws Exception
      */
     public function getRevisionPreview(int $revId): array
     {
@@ -355,7 +354,7 @@ class PageService
 
     /**
      * @param array $data
-     * @throws \Exception
+     * @throws Exception
      */
     public function saveDraft(array $data): void
     {
@@ -365,7 +364,7 @@ class PageService
 
     /**
      * @param array $data
-     * @throws \Exception
+     * @throws Exception
      */
     public function publicateDraft(array $data): void
     {
@@ -401,7 +400,7 @@ class PageService
      *      0 if the draft could be locked
      *      1 if it is still locked by some other user
      *      2 if the Shop has pending database updates
-     * @throws \Exception
+     * @throws Exception
      */
     public function lockDraft(int $key): int
     {
@@ -416,7 +415,7 @@ class PageService
 
     /**
      * @param int $key
-     * @throws \Exception
+     * @throws Exception
      */
     public function unlockDraft(int $key): void
     {
@@ -427,7 +426,7 @@ class PageService
     /**
      * @param array $data
      * @return Page
-     * @throws \Exception
+     * @throws Exception
      */
     public function createPageFromData(array $data): Page
     {
@@ -437,7 +436,7 @@ class PageService
     /**
      * @param array $data
      * @return string[]
-     * @throws \Exception
+     * @throws Exception
      */
     public function createPagePreview(array $data): array
     {
@@ -455,7 +454,7 @@ class PageService
     /**
      * @param int $draftKey
      * @param string $draftName
-     * @throws \Exception
+     * @throws Exception
      */
     public function changeDraftName(int $draftKey, string $draftName)
     {

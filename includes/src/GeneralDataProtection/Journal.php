@@ -4,6 +4,7 @@ namespace JTL\GeneralDataProtection;
 
 use JTL\DB\ReturnType;
 use JTL\Shop;
+use stdClass;
 
 /**
  * Class Journal
@@ -53,18 +54,18 @@ class Journal
     public const ACTION_CUSTOMER_DELETED = 'CUSTOMER_DELETED';
 
     /**
-     * @param string         $issuerType
-     * @param int            $issuerID
-     * @param string         $action
-     * @param string         $message
-     * @param \stdClass|null $detail
+     * @param string        $issuerType
+     * @param int           $issuerID
+     * @param string        $action
+     * @param string        $message
+     * @param stdClass|null $detail
      */
     public function addEntry(
         string $issuerType,
         int $issuerID,
         string $action,
         string $message = '',
-        \stdClass $detail = null
+        stdClass $detail = null
     ): void {
         Shop::Container()->getDB()->queryPrepared(
             'INSERT INTO tanondatajournal(cIssuer, iIssuerId, cAction, cDetail, cMessage, dEventTime)

@@ -14,6 +14,7 @@ use JTL\Language\LanguageHelper;
 use JTL\MagicCompatibilityTrait;
 use JTL\Session\Frontend;
 use JTL\Shop;
+use stdClass;
 use function Functional\filter;
 
 /**
@@ -475,7 +476,7 @@ class BaseSearchQuery extends AbstractFilter
         // Array mit nach Prio sort. Suchspalten holen
         $rows                   = self::getSearchRows($this->getConfig());
         $cols                   = $this->getSearchColumnClasses($rows);
-        $searchCache            = new \stdClass();
+        $searchCache            = new stdClass();
         $searchCache->kSprache  = $langID;
         $searchCache->cSuche    = $query;
         $searchCache->dErstellt = 'NOW()';
@@ -876,11 +877,11 @@ class BaseSearchQuery extends AbstractFilter
     }
 
     /**
-     * @param \stdClass $searchCache
-     * @param array     $searchCols
-     * @param array     $searchQueries
-     * @param int       $limit
-     * @param string    $fullText
+     * @param stdClass $searchCache
+     * @param array    $searchCols
+     * @param array    $searchQueries
+     * @param int      $limit
+     * @param string   $fullText
      * @return int
      * @former bearbeiteSuchCacheFulltext
      */

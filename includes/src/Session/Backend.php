@@ -6,6 +6,7 @@ use JTL\Catalog\Currency;
 use JTL\Customer\CustomerGroup;
 use JTL\Language\LanguageHelper;
 use JTL\Shop;
+use stdClass;
 
 /**
  * Class Backend
@@ -46,13 +47,13 @@ class Backend extends AbstractSession
             $_SESSION['cISOSprache'] = $lang->cISO ?? 'ger';
         }
         Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
-        if (isset($_SESSION['Kundengruppe']) && \get_class($_SESSION['Kundengruppe']) === \stdClass::class) {
+        if (isset($_SESSION['Kundengruppe']) && \get_class($_SESSION['Kundengruppe']) === stdClass::class) {
             $_SESSION['Kundengruppe'] = new CustomerGroup($_SESSION['Kundengruppe']->kKundengruppe);
         }
-        if (isset($_SESSION['Waehrung']) && \get_class($_SESSION['Waehrung']) === \stdClass::class) {
+        if (isset($_SESSION['Waehrung']) && \get_class($_SESSION['Waehrung']) === stdClass::class) {
             $_SESSION['Waehrung'] = new Currency($_SESSION['Waehrung']->kWaehrung);
         }
-        if (empty($_SESSION['Sprachen']) || \get_class($_SESSION['Sprachen'][0]) === \stdClass::class) {
+        if (empty($_SESSION['Sprachen']) || \get_class($_SESSION['Sprachen'][0]) === stdClass::class) {
             $_SESSION['Sprachen'] = LanguageHelper::getInstance()->gibInstallierteSprachen();
         }
     }

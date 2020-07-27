@@ -87,7 +87,7 @@ class Status
 
     /**
      * @return StatsItem
-     * @throws \Exception
+     * @throws Exception
      */
     public function getImageCache(): StatsItem
     {
@@ -208,7 +208,7 @@ class Status
 
     /**
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function hasPendingUpdates(): bool
     {
@@ -480,7 +480,7 @@ class Status
 
     /**
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function needPasswordRehash2FA(): bool
     {

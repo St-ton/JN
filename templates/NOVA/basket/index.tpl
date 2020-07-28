@@ -204,7 +204,7 @@
                                         {/if}
                                         {row class="shipping-costs"}
                                             {col cols=12}
-                                                <small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$shippingCosts:$FavourableShipping->cCountryCode key='shippingInformationSpecific' section='basket'}</small>
+                                                <small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$shippingCosts:$FavourableShipping->country->getName() key='shippingInformationSpecific' section='basket'}</small>
                                             {/col}
                                         {/row}
                                     {elseif empty($FavourableShipping) && empty($smarty.session.Versandart)}

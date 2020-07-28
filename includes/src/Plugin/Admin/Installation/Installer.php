@@ -4,7 +4,6 @@ namespace JTL\Plugin\Admin\Installation;
 
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use JTL\Events\Dispatcher;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Helpers\Text;

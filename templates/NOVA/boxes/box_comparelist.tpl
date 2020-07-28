@@ -77,7 +77,7 @@
                         {/block}
                         {if $itemCount > 1}
                             {block name='boxes-box-comparelist-link'}
-                                <hr class="mt-n3 mb-3">
+                                <hr class="mt-0 mb-3">
                                 {link
                                     class="btn btn-outline-primary btn-sm btn-block{if $Einstellungen.vergleichsliste.vergleichsliste_target === 'popup'} popup{/if}"
                                     href="{get_static_route id='vergleichsliste.php'}"

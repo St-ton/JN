@@ -6,7 +6,6 @@ use Illuminate\Support\Collection;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\CMS;
-use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
@@ -365,9 +364,6 @@ class Controller
             }
             if (empty($post['cEmail']) || Text::filterEmailAddress($post['cEmail']) === false) {
                 $checks['cEmail'] = 1;
-            }
-            if ($config['news']['news_sicherheitscode'] !== 'N' && !Form::validateCaptcha($post)) {
-                $checks['captcha'] = 2;
             }
         }
         if ((!isset($checks['cName']) || !$checks['cName']) && SimpleMail::checkBlacklist($post['cEmail'])) {

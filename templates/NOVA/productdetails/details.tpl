@@ -113,7 +113,7 @@
                                                 {block name='productdetails-details-product-info-manufacturer'}
                                                     <li itemprop="brand" itemscope="true" itemtype="http://schema.org/Organization">
                                                         <span class="font-weight-bold">{lang key='manufacturers'}:</span>
-                                                        <a href="{$Artikel->cHerstellerSeo}"{if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B'} data-toggle="tooltip" data-placement="left" title="{$Artikel->cHersteller}"{/if} itemprop="url">
+                                                        <a class="text-decoration-none" href="{$Artikel->cHerstellerSeo}"{if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B'} data-toggle="tooltip" data-placement="left" title="{$Artikel->cHersteller}"{/if} itemprop="url">
                                                             {if ($Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B'
                                                                 || $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'BT')
                                                                 && !empty($Artikel->cHerstellerBildURLKlein)}
@@ -121,12 +121,12 @@
                                                                     webp=true
                                                                     src=$Artikel->cHerstellerBildURLKlein
                                                                     alt=$Artikel->cHersteller
-                                                                    width="60px"
+                                                                    width="35px"
                                                                 }
                                                                 <meta itemprop="image" content="{$Artikel->cHerstellerBildURLKlein}">
                                                             {/if}
                                                             {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'B'}
-                                                                <span itemprop="name">{$Artikel->cHersteller}</span>
+                                                                <span itemprop="name" class="text-decoration-underline">{$Artikel->cHersteller}</span>
                                                             {/if}
                                                         </a>
                                                     </li>

@@ -10,9 +10,9 @@
                         title="{lang section='account data' key='billingAndDeliveryAddress'}"
                         class="text-decoration-none"}
                         <div class="step-content">
-                            <span class="badge badge-pill badge-primary mr-3 ml-md-auto">
+                            {badge variant="primary" class="badge-pill mr-3 ml-md-auto"}
                                 <span class="badge-count">1</span>
-                            </span>
+                            {/badge}
                             <span class="step-text {if !$step1_active}d-none d-md-inline-block{/if} mr-auto">
                                 {lang section='account data' key='billingAndDeliveryAddress'}
                             </span>
@@ -29,9 +29,9 @@
                         title="{lang section='account data' key='shippingAndPaymentOptions'}"
                         class="text-decoration-none"}
                         <div class="step-content">
-                            <span class="badge badge-pill badge-{if $step2_active || $step3_active}primary{else}secondary{/if} mr-3 ml-md-auto">
+                            {badge variant="{if $step2_active || $step3_active}primary{else}secondary{/if}" class="badge-pill mr-3 ml-md-auto"}
                                 <span class="badge-count">2</span>
-                            </span>
+                            {/badge}
                             <span class="step-text {if !$step2_active}d-none d-md-inline-block{/if} mr-auto">
                                 {lang section='account data' key='shippingAndPaymentOptions'}
                             </span>
@@ -45,9 +45,9 @@
             {col lg=4 class="nav-item step {if $step3_active}step-active step-current{else}col-auto{/if}"}
                 {block name='checkout-inc-steps-third'}
                     <div class="step-content">
-                        <span class="badge badge-pill badge-{if $step3_active}primary mr-3{else}secondary{/if} mr-md-3 ml-md-auto">
+                        {badge variant="{if $step3_active}primary mr-3{else}secondary{/if}" class="{if $step3_active}mr-3{/if} badge-pill mr-md-3 ml-md-auto"}
                             <span class="badge-count">3</span>
-                        </span>
+                        {/badge}
                         <span class="step-text {if !$step3_active}d-none d-md-inline-block{/if} mr-auto">
                             {lang section='checkout' key='summary'}
                         </span>

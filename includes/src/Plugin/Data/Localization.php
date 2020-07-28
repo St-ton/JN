@@ -4,6 +4,7 @@ namespace JTL\Plugin\Data;
 
 use Illuminate\Support\Collection;
 use JTL\Plugin\Admin\InputType;
+use stdClass;
 use function Functional\first;
 use function Functional\group;
 
@@ -44,7 +45,7 @@ class Localization
         });
         foreach ($grouped as $group) {
             $lv                                    = first($group);
-            $var                                   = new \stdClass();
+            $var                                   = new stdClass();
             $var->kPluginSprachvariable            = (int)$lv->kPluginSprachvariable;
             $var->id                               = $var->kPluginSprachvariable;
             $var->kPlugin                          = (int)$lv->kPlugin;

@@ -1001,13 +1001,6 @@ final class Shop
             );
             exit();
         }
-        if ((self::$kArtikel > 0 || self::$kKategorie > 0)
-            && !Frontend::getCustomerGroup()->mayViewCategories()
-        ) {
-            // falls Artikel/Kategorien nicht gesehen werden duerfen -> login
-            \header('Location: ' . LinkService::getInstance()->getStaticRoute('jtl.php') . '?li=1', true, 303);
-            exit;
-        }
         self::Container()->get(ManagerInterface::class)->initActiveItems(self::$kSprache);
         $conf = new Config();
         $conf->setLanguageID(self::$kSprache);
@@ -1017,6 +1010,15 @@ final class Shop
         $conf->setBaseURL(self::getURL() . '/');
         self::$productFilter = new ProductFilter($conf, self::Container()->getDB(), self::Container()->getCache());
         self::seoCheck();
+
+        if ((self::$kArtikel > 0 || self::$kKategorie > 0)
+            && !Frontend::getCustomerGroup()->mayViewCategories()
+        ) {
+            // falls Artikel/Kategorien nicht gesehen werden duerfen -> login
+            \header('Location: ' . LinkService::getInstance()->getStaticRoute('jtl.php') . '?li=1', true, 303);
+            exit;
+        }
+
         self::setImageBaseURL(\defined('IMAGE_BASE_URL') ? \IMAGE_BASE_URL : self::getURL());
         Dispatcher::getInstance()->fire(Event::RUN);
 
@@ -1943,37 +1945,21 @@ final class Shop
             return self::$logged;
         }
 
-        $result       = false;
-        $adminToken   = null;
-        $adminLangTag = null;
-
-        $isLogged = static function () {
-            return self::Container()->getAdminAccount()->logged();
-        };
-
-        if (isset($_COOKIE['eSIdAdm'])) {
-            if (\session_name() !== 'eSIdAdm') {
-                $oldID = \session_id();
-                \session_write_close();
-                \session_id($_COOKIE['eSIdAdm']);
-                $result       = $isLogged();
-                $adminToken   = $_SESSION['jtl_token'];
-                $adminLangTag = $_SESSION['AdminAccount']->language;
-                \session_write_close();
-                \session_id($oldID);
-                Frontend::getInstance();
-            } else {
-                $result       = $isLogged();
-                $adminToken   = $_SESSION['jtl_token'];
-                $adminLangTag = $_SESSION['AdminAccount']->language;
-            }
+        if (\session_name() === 'eSIdAdm') {
+            self::$logged       = self::Container()->getAdminAccount()->logged();
+            self::$adminToken   = $_SESSION['jtl_token'];
+            self::$adminLangTag = $_SESSION['AdminAccount']->language;
+        } elseif (!empty($_SESSION['loggedAsAdmin']) && $_SESSION['loggedAsAdmin'] === true) {
+            self::$logged       = true;
+            self::$adminToken   = $_SESSION['adminToken'];
+            self::$adminLangTag = $_SESSION['adminLangTag'];
+        } else {
+            self::$logged       = false;
+            self::$adminToken   = null;
+            self::$adminLangTag = null;
         }
 
-        self::$logged       = $result;
-        self::$adminToken   = $adminToken;
-        self::$adminLangTag = $adminLangTag;
-
-        return $result;
+        return self::$logged;
     }
 
     /**

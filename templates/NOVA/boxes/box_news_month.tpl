@@ -29,7 +29,7 @@
                                 {navitem href=$newsMonth->cURL  title=$newsMonth->cName router-class="align-items-center d-flex"}
                                     <i class="far fa-newspaper mr-2"></i>
                                     {$newsMonth->cName}
-                                    <span class="badge badge-outline-secondary ml-auto">{$newsMonth->nAnzahl}</span>
+                                    {badge variant="outline-secondary" class="ml-auto"}{$newsMonth->nAnzahl}{/badge}
                                 {/navitem}
                             {/block}
                         {/foreach}

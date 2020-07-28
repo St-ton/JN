@@ -32,12 +32,11 @@ class Image
     /**
      * Image sizes
      */
-    public const SIZE_ORIGINAL = 'os';
-    public const SIZE_XS       = 'xs';
-    public const SIZE_SM       = 'sm';
-    public const SIZE_MD       = 'md';
-    public const SIZE_LG       = 'lg';
-    public const SIZE_XL       = 'xl';
+    public const SIZE_XS = 'xs';
+    public const SIZE_SM = 'sm';
+    public const SIZE_MD = 'md';
+    public const SIZE_LG = 'lg';
+    public const SIZE_XL = 'xl';
 
     /**
      * Image size map
@@ -49,8 +48,7 @@ class Image
         self::SIZE_SM,
         self::SIZE_MD,
         self::SIZE_LG,
-        self::SIZE_XL,
-        self::SIZE_ORIGINAL
+        self::SIZE_XL
     ];
 
     /**
@@ -400,7 +398,7 @@ class Image
     {
         $branding = self::getSettings()['branding'];
         $type     = $req->getSize()->getSize();
-        if ($branding === null || !\in_array($type, [self::SIZE_LG, self::SIZE_ORIGINAL, self::SIZE_XL], true)) {
+        if ($branding === null || !\in_array($type, [self::SIZE_LG, self::SIZE_XL], true)) {
             return;
         }
         $watermark = $manager->make($branding->path);

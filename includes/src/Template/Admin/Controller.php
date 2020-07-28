@@ -332,6 +332,7 @@ class Controller
             $this->alertService->addAlert(Alert::TYPE_ERROR, __('errorTemplateSave'), 'errorTemplateSave');
         }
         $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
+        $this->cache->flushTags([\CACHING_GROUP_LICENSES]);
     }
 
     private function displayTemplateSettings(): void

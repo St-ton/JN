@@ -334,6 +334,11 @@ class Bestellung
     public $cPUIZahlungsdaten;
 
     /**
+     * @var array
+     */
+    public $OrderAttributes;
+
+    /**
      * Konstruktor
      *
      * @param int  $kBestellung Falls angegeben, wird der Bestellung mit angegebenem kBestellung aus der DB geholt
@@ -727,6 +732,30 @@ class Bestellung
 
             if (empty($this->oEstimatedDelivery->localized)) {
                 $this->berechneEstimatedDelivery();
+            }
+
+            $this->OrderAttributes = [];
+            if ((int)$this->kBestellung > 0) {
+                $OrderAttributes = Shop::DB()->selectAll(
+                    'tbestellattribut',
+                    'kbestellung',
+                    (int)$this->kBestellung
+                );
+                foreach ($OrderAttributes as $attribute) {
+                    $attr                   = new stdClass();
+                    $attr->kBestellattribut = (int)$attribute->kBestellattribut;
+                    $attr->kBestellung      = (int)$attribute->kBestellung;
+                    $attr->cName            = $attribute->cName;
+                    $attr->cValue           = $attribute->cValue;
+                    if ($attribute->cName === "Finanzierungskosten") {
+                        $attr->cValue = gibPreisStringLocalized(
+                            str_replace(',', '.', $attribute->cValue),
+                            $this->Waehrung,
+                            $htmlWaehrung
+                        );
+                    }
+                    $this->OrderAttributes[] = $attr;
+                }
             }
 
             executeHook(HOOK_BESTELLUNG_CLASS_FUELLEBESTELLUNG, [

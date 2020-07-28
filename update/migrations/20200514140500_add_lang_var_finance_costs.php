@@ -29,6 +29,6 @@ class Migration_20200514140500 extends Migration implements IMigration
      */
     public function down()
     {
-        $this->removeLocalization('financeCosts', 'order');
+        $this->removeLocalization('financeCosts');
     }
 }

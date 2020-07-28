@@ -193,13 +193,10 @@
         {foreach $Bestellung->OrderAttributes as $attribute}
             {if $attribute->cName === 'Finanzierungskosten'}
                 <tr class="type-{$smarty.const.C_WARENKORBPOS_TYP_ZINSAUFSCHLAG}">
-                    {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
-                        <td class="hidden-xs"></td>
-                    {/if}
                     <td class="text-right" colspan="2">
                         {lang key='financeCosts' section='order'}
                     </td>
-                    <td class="text-right price-col" colspan="{if $tplscope === 'cart'}4{else}3{/if}">
+                    <td class="text-right price-col" colspan="3">
                         {$attribute->cValue}
                     </td>
                 </tr>

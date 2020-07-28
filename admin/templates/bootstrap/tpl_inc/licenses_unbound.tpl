@@ -37,7 +37,7 @@
                                             <i class="fa fa-link"></i> {__($link->getRel())}
                                         </button>
                                     {/form}
-                                {else}
+                                {elseif $link->getRel() !== 'clearBinding'}
                                     <a class="btn btn-default" href="{$link->getHref()}" title="{__($link->getRel())}">
                                         {if $link->getRel() === 'itemDetails'}<i class="fa fa-info"></i> {/if}
                                         {__($link->getRel())}

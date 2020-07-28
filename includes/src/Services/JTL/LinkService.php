@@ -499,8 +499,10 @@ final class LinkService implements LinkServiceInterface
      */
     public function getAGBWRB(int $langID, int $customerGroupID)
     {
-        $linkAGB = null;
-        $linkWRB = null;
+        $linkAGB     = null;
+        $linkWRB     = null;
+        $linkWRBForm = null;
+        $conf        = Shop::getSettings([CONF_KAUFABWICKLUNG])['kaufabwicklung'];
         // kLink für AGB und WRB suchen
         foreach ($this->getSpecialPages() as $sp) {
             /** @var LinkInterface $sp */
@@ -508,6 +510,8 @@ final class LinkService implements LinkServiceInterface
                 $linkAGB = $sp;
             } elseif ($sp->getLinkType() === \LINKTYP_WRB) {
                 $linkWRB = $sp;
+            } elseif ($sp->getLinkType() === \LINKTYP_WRB_FORMULAR) {
+                $linkWRBForm = $sp;
             }
         }
         $data = $this->db->select(
@@ -523,10 +527,28 @@ final class LinkService implements LinkServiceInterface
         if (empty($data->kText)) {
             return false;
         }
-        $data->cURLAGB  = $linkAGB !== null ? $linkAGB->getURL() : '';
-        $data->cURLWRB  = $linkWRB !== null ? $linkWRB->getURL() : '';
-        $data->kLinkAGB = $linkAGB !== null ? $linkAGB->getID() : 0;
-        $data->kLinkWRB = $linkWRB !== null ? $linkWRB->getID() : 0;
+        $data->cURLAGB      = $linkAGB !== null ? $linkAGB->getURL() : '';
+        $data->cURLWRB      = $linkWRB !== null ? $linkWRB->getURL() : '';
+        $data->cURLWRBForm  = $linkWRB !== null ? $linkWRBForm->getURL() : '';
+        $data->kLinkAGB     = $linkAGB !== null ? $linkAGB->getID() : 0;
+        $data->kLinkWRB     = $linkWRB !== null ? $linkWRB->getID() : 0;
+        $data->kLinkWRBForm = $linkWRB !== null ? $linkWRBForm->getID() : 0;
+
+        $data->agbWrbNotice = $conf['bestellvorgang_wrb_anzeigen'] === '1'
+        ? sprintf(
+            Shop::Lang()->get('termsCancelationNotice', 'checkout'),
+            $data->cURLAGB,
+            $data->kLinkAGB > 0 ? 'class="popup"' : 'data-toggle="modal" data-target="#agb-modal" class="modal-popup"',
+            $data->cURLWRB,
+            $data->kLinkWRB > 0 ? 'class="popup"' : 'data-toggle="modal" data-target="#wrb-modal" class="modal-popup"',
+            $data->cURLWRBForm,
+            $data->kLinkWRBForm > 0 ? 'class="popup"' : 'data-toggle="modal" data-target="#wrb-form-modal" class="modal-popup"'
+        )
+        : sprintf(
+            Shop::Lang()->get('termsNotice', 'checkout'),
+            $data->cURLAGB,
+            $data->kLinkAGB > 0 ? 'class="popup"' : 'data-toggle="modal" data-target="#agb-modal" class="modal-popup"'
+        );
 
         return $data;
     }

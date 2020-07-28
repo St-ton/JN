@@ -303,6 +303,17 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
 
     $kBestellung = $Bestellung->insertInDB();
 
+    // OrderAttributes
+    if (!empty($_SESSION['Warenkorb']->OrderAttributes)) {
+        foreach ($_SESSION['Warenkorb']->OrderAttributes as $orderAttr) {
+            $obj              = new stdClass();
+            $obj->kBestellung = $kBestellung;
+            $obj->cName       = $orderAttr->cName;
+            $obj->cValue      = $orderAttr->cName === "Finanzierungskosten" ? (float)str_replace(',', '.', $orderAttr->cValue) : $orderAttr->cValue;
+            Shop::DB()->insert('tbestellattribut', $obj);
+        }
+    }
+
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
         Jtllog::writeLog('Bestellung gespeichert: ' . print_r($Bestellung, true), JTLLOG_LEVEL_DEBUG, false, 'kBestellung', $kBestellung);
     }

@@ -95,6 +95,15 @@ msgstr "Subscription"
 msgid "Developer"
 msgstr "Entwickler"
 
+msgid "documentation"
+msgstr "Dokumentation"
+
+msgid "extendSubscription"
+msgstr "Subscription verlängern"
+
+msgid "Clear binding"
+msgstr "Vom aktuellen Shop lösen"
+
 msgid "itemDetails"
 msgstr "Details"
 

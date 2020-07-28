@@ -236,25 +236,27 @@ class Admin
     {
         $mapper     = new Mapper($this->manager);
         $collection = $mapper->getCollection();
-        $res        = [];
+        $data       = [];
         foreach ($collection as $exsLicense) {
             /** @var ExsLicense $exsLicense */
+            $avail         = $exsLicense->getReleases()->getAvailable();
             $item          = new stdClass();
+            $item->active  = false;
             $item->id      = $exsLicense->getID();
             $item->exsid   = $exsLicense->getExsID();
-            $avail         = $exsLicense->getReleases()->getAvailable();
             $item->version = $avail !== null ? (string)$avail->getVersion() : '0.0.0';
-            $ref           = $exsLicense->getReferencedItem();
-            if ($ref !== null && $ref->getInstalledVersion() !== null) {
-                $item->version = (string)$ref->getInstalledVersion();
-                if ($ref->getDateInstalled() !== null) {
-                    $item->enabled = $ref->getDateInstalled();
+            $reference     = $exsLicense->getReferencedItem();
+            if ($reference !== null && $reference->getInstalledVersion() !== null) {
+                $item->active  = $reference->isActive();
+                $item->version = (string)$reference->getInstalledVersion();
+                if ($reference->getDateInstalled() !== null) {
+                    $item->enabled = $reference->getDateInstalled();
                 }
             }
-            $res[] = $item;
+            $data[] = $item;
         }
 
-        return $res;
+        return $data;
     }
 
     /**

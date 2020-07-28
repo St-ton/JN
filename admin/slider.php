@@ -36,6 +36,7 @@ switch ($cAction) {
             $oSlide->cText        = htmlspecialchars($aSlide['cText'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             $oSlide->cLink        = $aSlide['cLink'];
             $oSlide->nSort        = $aSlide['nSort'];
+            $oSlide->cThumbnail   = $aSlide['cThumbnail'];
             if ($aSlide['delete'] == 1) {
                 $oSlide->delete();
             } else {

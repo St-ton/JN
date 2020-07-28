@@ -37,6 +37,22 @@ class Migration_20200727150100 extends Migration implements IMigration
         $this->setLocalization('eng', 'checkout', 'termsNotice', 'The <a href="%s" %s>General Terms and Conditions</a> apply.');
         $this->setLocalization('ger', 'checkout', 'termsCancelationNotice', 'Es gelten die <a href="%s" %s>Allgemeinen Geschäftsbedingungen</a> und die <a href="%s" %s>Widerrufsbelehrung</a>. Das <a href="%s" %s>Muster-Widerrufsformular</a> habe ich zur Kenntnis genommen.');
         $this->setLocalization('eng', 'checkout', 'termsCancelationNotice', 'The <a href="%s" %s>General Terms and Conditions</a> apply. I have noted the <a href="%s" %s>withdrawal policy</a> as well as the <a href="%s" %s>model withdrawal form</a>.');
+
+        //SHOP-4260
+        $this->setLocalization(
+            'ger',
+            'productDetails',
+            'shippingInformation',
+            "Die angegebenen Lieferzeiten gelten für den Versand innerhalb von %s. Die Lieferzeiten für den " .
+            "<a href=\'%s#othercountries\'>Versand ins Ausland</a> finden Sie in unseren <a href=\'%s\'>Versandinformationen</a>."
+        );
+        $this->setLocalization(
+            'eng',
+            'productDetails',
+            'shippingInformation',
+            "The indicated delivery times refer to shipments within %s. For information on the delivery times " .
+            "for <a href=\'%s#othercountries\'>shipments to other countries</a>, please see the  <a href=\'%s\'>Shipping information</a>."
+        );
     }
 
     /**
@@ -58,5 +74,21 @@ class Migration_20200727150100 extends Migration implements IMigration
         //SHOP-4262
         $this->removeLocalization('termsNotice', 'checkout');
         $this->removeLocalization('termsCancelationNotice', 'checkout');
+
+        //SHOP-4260
+        $this->setLocalization(
+            'ger',
+            'productDetails',
+            'shippingInformation',
+            "Die angegebenen Lieferzeiten gelten für den Versand innerhalb von %s. Die Lieferzeiten für den " .
+            "Versand ins Ausland finden Sie in unseren <a href=\'%s\'>Versandinformationen</a>."
+        );
+        $this->setLocalization(
+            'eng',
+            'productDetails',
+            'shippingInformation',
+            "The indicated delivery times refer to shipments within %s. For information on the delivery times " .
+            "for shipments to other countries, please see the  <a href=\'%s\'>Shipping information</a>."
+        );
     }
 }

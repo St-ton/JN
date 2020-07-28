@@ -105,7 +105,7 @@ class TemplateService implements TemplateServiceInterface
             $tplXML,
             $parentXML
         );
-        $manager   = new Manager($this->db, $this->cache);
+        $manager  = new Manager($this->db, $this->cache);
         $template->setExsLicense($manager->getLicenseByItemID($template->getTemplate()));
         $template->setBoxLayout($this->getBoxLayout($tplXML, $parentXML));
         $template->setResources(new Resources($this->db, $tplXML, $parentXML));

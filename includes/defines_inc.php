@@ -505,13 +505,10 @@ define('JTL_GENNUMBER_ORDERNUMBER', 1);
 // JTL URLS
 define('JTLURL_BASE', 'https://ext.jtl-software.de/');
 define('JTLURL_HP', 'https://www.jtl-software.de/');
-define('JTLURL_STAGE', 'https://checkout-stage.jtl-software.com');
 define('JTLURL_GET_SHOPNEWS', 'https://feed.jtl-software.de/websitenews');
 define('JTLURL_GET_SHOPPATCH', JTLURL_BASE . 'json_patch.php');
 define('JTLURL_GET_SHOPHELP', JTLURL_BASE . 'jtlhelp.php');
 define('JTLURL_GET_SHOPVERSION', JTLURL_BASE . 'json_version.php');
-define('JTLURL_RECOMMENDATIONS', JTLURL_STAGE . '/v1/recommendations');
-define('JTLURL_RECOMMENDATIONS_SCOPE', JTLURL_RECOMMENDATIONS . '?scope=');
 // Log-Levels
 define('LOGLEVEL_ERROR', 1);
 define('LOGLEVEL_NOTICE', 2);

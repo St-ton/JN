@@ -46,7 +46,7 @@ class ReferencedTemplate extends ReferencedItem
                     $this->setHasUpdate($installedVersion->smallerThan($release->getVersion()));
                     $this->setInstalled(true);
                     $this->setInstalledVersion($installedVersion);
-                    $this->setActive(true);
+                    $this->setActive(false);
                     $this->setInitialized(true);
                     break;
                 }

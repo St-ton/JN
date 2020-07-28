@@ -30,24 +30,24 @@
                     <i class="fa fa-share"></i> {__('Install')}
                 </button>
             </form>
-            {if true}
-                {foreach $license->getLinks() as $link}
-                    {if $link->getRel() === 'clearBinding'}
-                        <br>
-                        <form method="post" class="clear-binding-form">
-                            {$jtl_token}
-                            <input type="hidden" name="action" value="clearbinding">
-                            <input type="hidden" name="url" value="{$link->getHref()}">
-                            <input type="hidden" name="method" value="{$link->getMethod()}">
-                            <button class="btn btn-default btn-sm clear-binding" name="action" value="clearbinding">
-                                <i class="fa fa-share"></i> {__('Clear binding')}
-                            </button>
-                        </form>
-                    {/if}
-                {/foreach}
-            {/if}
         {else}
             <i class="far fa-check-circle"></i> {$installedVersion}{if $referencedItem->isActive() === false} {__('(disabled)')}{/if}
+        {/if}
+        {if true}
+            {foreach $license->getLinks() as $link}
+                {if $link->getRel() === 'clearBinding'}
+                    <br>
+                    <form method="post" class="clear-binding-form">
+                        {$jtl_token}
+                        <input type="hidden" name="action" value="clearbinding">
+                        <input type="hidden" name="url" value="{$link->getHref()}">
+                        <input type="hidden" name="method" value="{$link->getMethod()}">
+                        <button class="btn btn-default btn-sm clear-binding" name="action" value="clearbinding">
+                            <i class="fa fa-share"></i> {__('Clear binding')}
+                        </button>
+                    </form>
+                {/if}
+            {/foreach}
         {/if}
         {if $referencedItem->hasUpdate()}
             <span class="update-available badge badge-success">

@@ -1,6 +1,6 @@
 <?php
 
-use VueInstaller\VueInstaller;
+use JTL\Installation\VueInstaller;
 
 define('PFAD_ROOT', dirname(__DIR__) . '/');
 ini_set('error_reporting', E_ALL);

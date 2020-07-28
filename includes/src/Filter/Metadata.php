@@ -677,12 +677,12 @@ class Metadata implements MetadataInterface
     /**
      * @inheritdoc
      */
-    public function getExtendedView(int $viewType = 0): \stdClass
+    public function getExtendedView(int $viewType = 0): stdClass
     {
         $conf = $this->conf['artikeluebersicht'];
         if (!isset($_SESSION['oErweiterteDarstellung'])) {
             $defaultViewType              = 0;
-            $extendedView                 = new \stdClass();
+            $extendedView                 = new stdClass();
             $extendedView->cURL_arr       = [];
             $extendedView->nAnzahlArtikel = \ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
 

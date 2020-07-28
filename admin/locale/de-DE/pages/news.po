@@ -169,3 +169,12 @@ msgstr "Antwort bearbeiten"
 
 msgid "displayedName"
 msgstr "Angezeigter Name"
+
+msgid "selectAuthor"
+msgstr "Autor auswählen"
+
+msgid "authorNotAvailable"
+msgstr "Nicht verfügbar"
+
+msgid "noNewsAuthor"
+msgstr "Kein Autor vorhanden. Falls Sie explizit für den Beitrag einen verantwortlichen Autoren angeben wollen, erstellen Sie bitte einen entsprechenden Benutzer mit Zugriffsrechten für das Blogsystem."

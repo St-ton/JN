@@ -832,7 +832,7 @@
                 $priceRangeFrom.val(values[0]);
                 $priceRangeTo.val(values[1]);
             });
-            $('.price-range-input').change(function () {
+            $('.price-range-input').on('change', function () {
                 let prFrom = parseInt($priceRangeFrom.val()),
                     prTo = parseInt($priceRangeTo.val());
                 $.evo.redirectToNewPriceRange(

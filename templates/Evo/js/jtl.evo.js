@@ -291,7 +291,7 @@
             var that = this;
 
             this.smoothScrollToAnchor(location.hash, false);
-            $(document).delegate('a[href^="#"]', 'click', function(e) {
+            $(document).on('click','a[href^="#"]', function(e) {
                 var elem = e.target;
                 if (!e.isDefaultPrevented()) {
                     // only runs if no other click event is fired
@@ -303,7 +303,7 @@
         },
 
         preventDropdownToggle: function() {
-            $('a.dropdown-toggle').click(function(e){
+            $('a.dropdown-toggle').on('click',function(e){
                 var elem = e.target;
                 var viewport = $('body').data('viewport');
 
@@ -322,7 +322,7 @@
             $submits.addClass('hidden');
             $submits.first().removeClass('hidden');
 
-            $('input[name="Versandart"]', '#checkout-shipping-payment').change(function() {
+            $('input[name="Versandart"]', '#checkout-shipping-payment').on('change', function() {
                 var shipmentid = parseInt($(this).val());
                 var paymentid  = $("input[id^='payment']:checked ").val();
                 var $form = $(this).closest('form');

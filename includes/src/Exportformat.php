@@ -693,6 +693,22 @@ class Exportformat
     }
 
     /**
+     * @return int
+     */
+    public function getExportProductCount(): int
+    {
+        $sql = $this->getExportSQL();
+        $cid = 'xp_' . md5($sql);
+        if (($count = Shop::Container()->getCache()->get($cid)) !== false) {
+            return $count ?? 0;
+        }
+        $count = (int)$this->db->query($this->getExportSQL(true), ReturnType::SINGLE_OBJECT)->nAnzahl;
+        Shop::Container()->getCache()->set($cid, $count, [\CACHING_GROUP_CORE], 120);
+
+        return $count;
+    }
+
+    /**
      * @param array $config
      * @return bool
      * @deprecated since 5.0.0

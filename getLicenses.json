@@ -15,7 +15,7 @@
       },
       "vendor": {
         "name": "JTL-Software",
-        "href": "https:\/\/www.jtl-software.de\/ext-store\/jtl-software-gmbh"
+        "href": "https://www.jtl-software.de/ext-store/jtl-software-gmbh"
       },
       "releases": {
         "available": {
@@ -24,7 +24,7 @@
           "type": "security",
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Fixes XSS-Bug in Checkout Flow",
-          "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_paypal_2.0.0-beta16.zip"
+          "download_url": "https://shop5.moches.de/downloads/jtl_paypal_2.0.0-beta16.zip"
         },
         "latest": {
           "checksum": "123xxx",
@@ -33,24 +33,28 @@
           "includes_security_fixes": true,
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Introduces new Feature XYZ",
-          "download_url": "https:\/\/storage.jtl-software.com/extensions\/get\/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD"
+          "download_url": "https://storage.jtl-software.com/extensions/get/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD"
         }
       },
       "links": [
         {
-          "href": "https:\/\/guide.jtl-software.com\/erweiterungen\/paypal",
+          "href": "https://guide.jtl-software.com/erweiterungen/paypal",
           "rel": "documentation"
         },
         {
-          "href": "https:\/\/www.jtl-software.com\/ext-store\/jtl_paypal",
+          "href": "https://www.jtl-software.com/ext-store/jtl_paypal",
           "rel": "itemDetails"
         },
         {
-          "href": "https:\/\/api.jtl-software.com\/ext-store\/bind/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
+          "href": "https://shop5.moches.de/unbind.php?action=bind&item=jtl_paypal",
           "rel": "setBinding"
         },
         {
-          "href": "https:\/\/checkout.jtl-software.com\/extensions\/extendsub/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
+          "href": "https://shop5.moches.de/unbind.php?action=unbind&item=jtl_paypal",
+          "rel": "clearBinding"
+        },
+        {
+          "href": "https://checkout.jtl-software.com/extensions/extendsub/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
           "rel": "extendSubscription"
         }
       ]
@@ -72,7 +76,7 @@
       },
       "vendor": {
         "name": "JTL-Software",
-        "href": "https:\/\/www.jtl-software.de\/ext-store\/jtl-software-gmbh"
+        "href": "https://www.jtl-software.de/ext-store/jtl-software-gmbh"
       },
       "releases": {
         "available": {
@@ -82,7 +86,7 @@
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "More widgets",
           "includes_security_fixes": false,
-          "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_widgets_2.0.1.zip"
+          "download_url": "https://shop5.moches.de/downloads/jtl_widgets_2.0.1.zip"
         },
         "latest": {
           "checksum": "67febab19f465d4f42082771e4d5799858ff4bc9",
@@ -96,19 +100,23 @@
       },
       "links": [
         {
-          "href": "https:\/\/guide.jtl-software.com\/erweiterungen\/paypal",
+          "href": "https://guide.jtl-software.com/erweiterungen/paypal",
           "rel": "documentation"
         },
         {
-          "href": "https:\/\/www.jtl-software.com\/ext-store\/jtl_paypal",
+          "href": "https://www.jtl-software.com/ext-store/jtl_paypal",
           "rel": "itemDetails"
         },
         {
-          "href": "https:\/\/api.jtl-software.com\/ext-store\/bind/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
+          "href": "https://shop5.moches.de/unbind.php?action=bind&item=jtl_widgets",
           "rel": "setBinding"
         },
         {
-          "href": "https:\/\/checkout.jtl-software.com\/extensions\/extendsub/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
+          "href": "https://shop5.moches.de/unbind.php?action=unbind&item=jtl_widgets",
+          "rel": "clearBinding"
+        },
+        {
+          "href": "https://checkout.jtl-software.com/extensions/extendsub/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
           "rel": "extendSubscription"
         }
       ]
@@ -130,7 +138,7 @@
       },
       "vendor": {
         "name": "JTL-Software",
-        "href": "https:\/\/www.jtl-software.de\/ext-store\/jtl-software-gmbh"
+        "href": "https://www.jtl-software.de/ext-store/jtl-software-gmbh"
       },
       "releases": {
         "available": {
@@ -140,7 +148,7 @@
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Initial release",
           "includes_security_fixes": false,
-          "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_elev8or_1.0.0.zip"
+          "download_url": "https://shop5.moches.de/downloads/jtl_elev8or_1.0.0.zip"
         },
         "latest": {
           "checksum": "123xxx",
@@ -149,24 +157,28 @@
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Initial release",
           "includes_security_fixes": false,
-          "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_elev8or_1.0.0.zip"
+          "download_url": "https://shop5.moches.de/downloads/jtl_elev8or_1.0.0.zip"
         }
       },
       "links": [
         {
-          "href": "https:\/\/guide.jtl-software.com\/erweiterungen\/paypal",
+          "href": "https://guide.jtl-software.com/erweiterungen/paypal",
           "rel": "documentation"
         },
         {
-          "href": "https:\/\/www.jtl-software.com\/ext-store\/jtl_paypal",
+          "href": "https://www.jtl-software.com/ext-store/jtl_paypal",
           "rel": "itemDetails"
         },
         {
-          "href": "https:\/\/api.jtl-software.com\/ext-store\/bind/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
+          "href": "https://shop5.moches.de/unbind.php?action=bind&item=jtl_elev8or",
           "rel": "setBinding"
         },
         {
-          "href": "https:\/\/checkout.jtl-software.com\/extensions\/extendsub/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
+          "href": "https://shop5.moches.de/unbind.php?action=unbind&item=jtl_elev8or",
+          "rel": "clearBinding"
+        },
+        {
+          "href": "https://checkout.jtl-software.com/extensions/extendsub/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
           "rel": "extendSubscription"
         }
       ]
@@ -188,7 +200,7 @@
       },
       "vendor": {
         "name": "JTL-Software",
-        "href": "https:\/\/www.jtl-software.de\/ext-store\/jtl-software-gmbh"
+        "href": "https://www.jtl-software.de/ext-store/jtl-software-gmbh"
       },
       "releases": {
         "available": {
@@ -198,7 +210,7 @@
           "includes_security_fixes": true,
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Fixes XSS-Bug in Checkout Flow",
-          "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_blubb_1.0.0.zip"
+          "download_url": "https://shop5.moches.de/downloads/jtl_blubb_1.0.0.zip"
         },
         "latest": {
           "checksum": "123xxx",
@@ -207,24 +219,28 @@
           "includes_security_fixes": true,
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Introduces new Feature XYZ",
-          "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_blubb_1.0.0.zip"
+          "download_url": "https://shop5.moches.de/downloads/jtl_blubb_1.0.0.zip"
         }
       },
       "links": [
         {
-          "href": "https:\/\/guide.jtl-software.com\/erweiterungen\/paypal",
+          "href": "https://guide.jtl-software.com/erweiterungen/paypal",
           "rel": "documentation"
         },
         {
-          "href": "https:\/\/www.jtl-software.com\/ext-store\/jtl_paypal",
+          "href": "https://www.jtl-software.com/ext-store/jtl_paypal",
           "rel": "itemDetails"
         },
         {
-          "href": "https:\/\/api.jtl-software.com\/ext-store\/bind/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
+          "href": "https://shop5.moches.de/unbind.php?action=bind&item=jtl_blubb",
           "rel": "setBinding"
         },
         {
-          "href": "https:\/\/checkout.jtl-software.com\/extensions\/extendsub/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
+          "href": "https://shop5.moches.de/unbind.php?action=unbind&item=jtl_blubb",
+          "rel": "clearBinding"
+        },
+        {
+          "href": "https://checkout.jtl-software.com/extensions/extendsub/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
           "rel": "extendSubscription"
         }
       ]
@@ -232,7 +248,7 @@
     {
       "id": "jtl_foo",
       "type": "plugin",
-      "name": "Plugin ohne verfübares Release",
+      "name": "Ein ganz einfaches Plugin mit fehlerhaften Downloadlink",
       "exsid": "jtlfoobasdfasdfasd2",
       "license": {
         "is_bound": true,
@@ -246,34 +262,47 @@
       },
       "vendor": {
         "name": "JTL-Software",
-        "href": "https:\/\/www.jtl-software.de\/ext-store\/jtl-software-gmbh"
+        "href": "https://www.jtl-software.de/ext-store/jtl-software-gmbh"
       },
       "releases": {
-        "latest": {
-          "checksum": "123xxx",
+        "available": {
+          "checksum": "6bbdc44fad1426d2a1679bc077950027a449a21a",
           "version": "1.2.3",
           "type": "feature",
           "includes_security_fixes": true,
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Introduces new Feature XYZ",
-          "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_foo_1.2.3.zip"
+          "download_url": "https://shop5.moches.de/downloads/jtl_foo_1.2.3-existiert-nicht.zip"
+        },
+        "latest": {
+          "checksum": "6bbdc44fad1426d2a1679bc077950027a449a21a",
+          "version": "1.2.3",
+          "type": "feature",
+          "includes_security_fixes": true,
+          "release_date": "2020-04-06T12:12:52.620Z",
+          "short_description": "Introduces new Feature XYZ",
+          "download_url": "https://shop5.moches.de/downloads/jtl_foo_1.2.3-existiert-nicht.zip"
         }
       },
       "links": [
         {
-          "href": "https:\/\/guide.jtl-software.com\/erweiterungen\/paypal",
+          "href": "https://guide.jtl-software.com/erweiterungen/paypal",
           "rel": "documentation"
         },
         {
-          "href": "https:\/\/www.jtl-software.com\/ext-store\/jtl_paypal",
+          "href": "https://www.jtl-software.com/ext-store/jtl_paypal",
           "rel": "itemDetails"
         },
         {
-          "href": "https:\/\/api.jtl-software.com\/ext-store\/bind/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
+          "href": "https://shop5.moches.de/unbind.php?action=bind&item=jtl_foo",
           "rel": "setBinding"
         },
         {
-          "href": "https:\/\/checkout.jtl-software.com\/extensions\/extendsub/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
+          "href": "https://shop5.moches.de/unbind.php?action=unbind&item=jtl_foo",
+          "rel": "clearBinding"
+        },
+        {
+          "href": "https://checkout.jtl-software.com/extensions/extendsub/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
           "rel": "extendSubscription"
         }
       ]
@@ -295,7 +324,7 @@
       },
       "vendor": {
         "name": "JTL-Software",
-        "href": "https:\/\/www.jtl-software.de\/ext-store\/jtl-software-gmbh"
+        "href": "https://www.jtl-software.de/ext-store/jtl-software-gmbh"
       },
       "releases": {
         "available": {
@@ -304,7 +333,7 @@
           "type": "security",
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Fixes XSS-Bug in Checkout Flow",
-          "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_bar_4.3.2.zip"
+          "download_url": "https://shop5.moches.de/downloads/jtl_bar_4.3.2.zip"
         },
         "latest": {
           "checksum": "123xxx",
@@ -313,24 +342,28 @@
           "includes_security_fixes": true,
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Introduces new Feature XYZ",
-          "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_bar_4.3.2.zip"
+          "download_url": "https://shop5.moches.de/downloads/jtl_bar_4.3.2.zip"
         }
       },
       "links": [
         {
-          "href": "https:\/\/guide.jtl-software.com\/erweiterungen\/paypal",
+          "href": "https://guide.jtl-software.com/erweiterungen/paypal",
           "rel": "documentation"
         },
         {
-          "href": "https:\/\/www.jtl-software.com\/ext-store\/jtl_paypal",
+          "href": "https://www.jtl-software.com/ext-store/jtl_paypal",
           "rel": "itemDetails"
         },
         {
-          "href": "https:\/\/api.jtl-software.com\/ext-store\/bind/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
+          "href": "https://shop5.moches.de/unbind.php?action=bind&item=jtl_bar",
           "rel": "setBinding"
         },
         {
-          "href": "https:\/\/checkout.jtl-software.com\/extensions\/extendsub/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
+          "href": "https://shop5.moches.de/unbind.php?action=unbind&item=jtl_bar",
+          "rel": "clearBinding"
+        },
+        {
+          "href": "https://checkout.jtl-software.com/extensions/extendsub/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
           "rel": "extendSubscription"
         }
       ]
@@ -352,7 +385,7 @@
       },
       "vendor": {
         "name": "JTL-Software",
-        "href": "https:\/\/www.jtl-software.de\/ext-store\/jtl-software-gmbh"
+        "href": "https://www.jtl-software.de/ext-store/jtl-software-gmbh"
       },
       "releases": {
         "available": {
@@ -362,7 +395,7 @@
           "includes_security_fixes": true,
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Fixes XSS-Bug in Checkout Flow",
-          "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_test108OK.zip"
+          "download_url": "https://shop5.moches.de/downloads/jtl_test108OK.zip"
         },
         "latest": {
           "checksum": "a91393e20eda724cd1a46a1908aa3ec9886dbbab",
@@ -371,24 +404,28 @@
           "includes_security_fixes": true,
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Fixes XSS-Bug in Checkout Flow",
-          "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_test108OK.zip"
+          "download_url": "https://shop5.moches.de/downloads/jtl_test108OK.zip"
         }
       },
       "links": [
         {
-          "href": "https:\/\/guide.jtl-software.com\/erweiterungen\/paypal",
+          "href": "https://guide.jtl-software.com/erweiterungen/paypal",
           "rel": "documentation"
         },
         {
-          "href": "https:\/\/www.jtl-software.com\/ext-store\/jtl_paypal",
+          "href": "https://www.jtl-software.com/ext-store/jtl_paypal",
           "rel": "itemDetails"
         },
         {
-          "href": "https:\/\/api.jtl-software.com/ext-store/bind/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
+          "href": "https://shop5.moches.de/unbind.php?action=bind&item=jtl_test",
           "rel": "setBinding"
         },
         {
-          "href": "https:\/\/checkout.jtl-software.com/extensions/extendsub/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
+          "href": "https://shop5.moches.de/unbind.php?action=unbind&item=jtl_test",
+          "rel": "clearBinding"
+        },
+        {
+          "href": "https://checkout.jtl-software.com/extensions/extendsub/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
           "rel": "extendSubscription"
         }
       ]
@@ -410,7 +447,7 @@
       },
       "vendor": {
         "name": "JTL-Software",
-        "href": "https:\/\/www.jtl-software.de\/ext-store\/jtl-software-gmbh"
+        "href": "https://www.jtl-software.de/ext-store/jtl-software-gmbh"
       },
       "releases": {
         "latest": {
@@ -425,19 +462,23 @@
       },
       "links": [
         {
-          "href": "https:\/\/guide.jtl-software.com\/erweiterungen\/paypal",
+          "href": "https://guide.jtl-software.com/erweiterungen/paypal",
           "rel": "documentation"
         },
         {
-          "href": "https:\/\/www.jtl-software.com\/ext-store\/jtl_paypal",
+          "href": "https://www.jtl-software.com/ext-store/jtl_paypal",
           "rel": "itemDetails"
         },
         {
-          "href": "https:\/\/api.jtl-software.com/ext-store/bind/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
+          "href": "https://shop5.moches.de/unbind.php?action=bind&item=jtl_no_release",
           "rel": "setBinding"
         },
         {
-          "href": "https:\/\/checkout.jtl-software.com/extensions/extendsub/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
+          "href": "https://shop5.moches.de/unbind.php?action=unbind&item=jtl_no_release",
+          "rel": "clearBinding"
+        },
+        {
+          "href": "https://checkout.jtl-software.com/extensions/extendsub/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
           "rel": "extendSubscription"
         }
       ]
@@ -459,7 +500,7 @@
       },
       "vendor": {
         "name": "JTL-Software",
-        "href": "https:\/\/www.jtl-software.de\/ext-store\/jtl-software-gmbh"
+        "href": "https://www.jtl-software.de/ext-store/jtl-software-gmbh"
       },
       "releases": {
         "available": {
@@ -468,7 +509,7 @@
           "type": "security",
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Fixes no bugs at all",
-          "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_google_recaptcha-1.0.0-beta.1.zip"
+          "download_url": "https://shop5.moches.de/downloads/jtl_google_recaptcha-1.0.0-beta.1.zip"
         },
         "latest": {
           "checksum": "123xxx",
@@ -477,24 +518,28 @@
           "includes_security_fixes": true,
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Even faster",
-          "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_google_recaptcha-2.0.0.zip"
+          "download_url": "https://shop5.moches.de/downloads/jtl_google_recaptcha-2.0.0.zip"
         }
       },
       "links": [
         {
-          "href": "https:\/\/guide.jtl-software.com\/erweiterungen\/paypal",
+          "href": "https://guide.jtl-software.com/erweiterungen/paypal",
           "rel": "documentation"
         },
         {
-          "href": "https:\/\/www.jtl-software.com\/ext-store\/jtl_paypal",
+          "href": "https://www.jtl-software.com/ext-store/jtl_paypal",
           "rel": "itemDetails"
         },
         {
-          "href": "https:\/\/api.jtl-software.com/ext-store/bind/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
+          "href": "https://shop5.moches.de/unbind.php?action=bind&item=jtl_google_recaptcha",
           "rel": "setBinding"
         },
         {
-          "href": "https:\/\/checkout.jtl-software.com/extensions/extendsub/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
+          "href": "https://shop5.moches.de/unbind.php?action=unbind&item=jtl_google_recaptcha",
+          "rel": "clearBinding"
+        },
+        {
+          "href": "https://checkout.jtl-software.com/extensions/extendsub/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
           "rel": "extendSubscription"
         }
       ]
@@ -516,7 +561,7 @@
       },
       "vendor": {
         "name": "JTL-Software",
-        "href": "https:\/\/www.jtl-software.de/ext-store/jtl-software-gmbh"
+        "href": "https://www.jtl-software.de/ext-store/jtl-software-gmbh"
       },
       "releases": {
         "available": {
@@ -525,7 +570,7 @@
           "type": "security",
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Fixes XSS-Bug in Checkout Flow",
-          "download_url": "https:\/\/storage.jtl-software.com/extensions/get/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD"
+          "download_url": "https://storage.jtl-software.com/extensions/get/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD"
         },
         "latest": {
           "checksum": "123xxx",
@@ -534,24 +579,28 @@
           "includes_security_fixes": true,
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Even faster",
-          "download_url": "https:\/\/shop5.moches.de/jtl-test-201.zip"
+          "download_url": "https://shop5.moches.de/jtl-test-201.zip"
         }
       },
       "links": [
         {
-          "href": "https:\/\/guide.jtl-software.com/erweiterungen/jtl_fooooobarrr",
+          "href": "https://guide.jtl-software.com/erweiterungen/jtl_fooooobarrr",
           "rel": "documentation"
         },
         {
-          "href": "https:\/\/www.jtl-software.com/ext-store/jtl_fooooobarrr",
+          "href": "https://www.jtl-software.com/ext-store/jtl_fooooobarrr",
           "rel": "itemDetails"
         },
         {
-          "href": "https:\/\/api.jtl-software.com/ext-store/bind/qq4djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
+          "href": "https://shop5.moches.de/unbind.php?action=bind&item=jtl_search",
           "rel": "setBinding"
         },
         {
-          "href": "https:\/\/checkout.jtl-software.com/extensions/extendsub/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
+          "href": "https://shop5.moches.de/unbind.php?action=unbind&item=jtl_search",
+          "rel": "clearBinding"
+        },
+        {
+          "href": "https://checkout.jtl-software.com/extensions/extendsub/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
           "rel": "extendSubscription"
         }
       ]
@@ -573,7 +622,7 @@
       },
       "vendor": {
         "name": "Felix Moche",
-        "href": "https:\/\/www.jtl-software.de/ext-store/jtl-software-gmbh"
+        "href": "https://www.jtl-software.de/ext-store/jtl-software-gmbh"
       },
       "releases": {
         "available": {
@@ -582,7 +631,7 @@
           "type": "security",
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Fixes XSS-Bug in Checkout Flow",
-          "download_url": "https:\/\/storage.jtl-software.com/extensions/get/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD"
+          "download_url": "https://storage.jtl-software.com/extensions/get/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD"
         },
         "latest": {
           "checksum": "123xxx",
@@ -591,24 +640,28 @@
           "includes_security_fixes": true,
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Even faster",
-          "download_url": "https:\/\/shop5.moches.de/jtl-test-201.zip"
+          "download_url": "https://shop5.moches.de/jtl-test-201.zip"
         }
       },
       "links": [
         {
-          "href": "https:\/\/guide.jtl-software.com/erweiterungen/jtl_fooooobarrr",
+          "href": "https://guide.jtl-software.com/erweiterungen/jtl_fooooobarrr",
           "rel": "documentation"
         },
         {
-          "href": "https:\/\/www.jtl-software.com/ext-store/jtl_fooooobarrr",
+          "href": "https://www.jtl-software.com/ext-store/jtl_fooooobarrr",
           "rel": "itemDetails"
         },
         {
-          "href": "https:\/\/api.jtl-software.com/ext-store/bind/qq4djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
+          "href": "https://shop5.moches.de/unbind.php?action=bind&item=fm_contact_forms2",
           "rel": "setBinding"
         },
         {
-          "href": "https:\/\/checkout.jtl-software.com/extensions/extendsub/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
+          "href": "https://shop5.moches.de/unbind.php?action=unbind&item=fm_contact_forms2",
+          "rel": "clearBinding"
+        },
+        {
+          "href": "https://checkout.jtl-software.com/extensions/extendsub/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
           "rel": "extendSubscription"
         }
       ]
@@ -630,7 +683,7 @@
       },
       "vendor": {
         "name": "Felix Moche",
-        "href": "https:\/\/www.jtl-software.de/ext-store/jtl-software-gmbh"
+        "href": "https://www.jtl-software.de/ext-store/jtl-software-gmbh"
       },
       "releases": {
         "available": {
@@ -639,7 +692,7 @@
           "type": "security",
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Fixes XSS-Bug in Checkout Flow",
-          "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_preloader2_2.0.1.zip"
+          "download_url": "https://shop5.moches.de/downloads/jtl_preloader2_2.0.1.zip"
         },
         "latest": {
           "checksum": "123xxx",
@@ -648,24 +701,28 @@
           "includes_security_fixes": true,
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Even faster",
-          "download_url": "https:\/\/shop5.moches.de/jtl-test-201.zip"
+          "download_url": "https://shop5.moches.de/jtl-test-201.zip"
         }
       },
       "links": [
         {
-          "href": "https:\/\/guide.jtl-software.com/erweiterungen/jtl_fooooobarrr",
+          "href": "https://guide.jtl-software.com/erweiterungen/jtl_fooooobarrr",
           "rel": "documentation"
         },
         {
-          "href": "https:\/\/www.jtl-software.com/ext-store/jtl_fooooobarrr",
+          "href": "https://www.jtl-software.com/ext-store/jtl_fooooobarrr",
           "rel": "itemDetails"
         },
         {
-          "href": "https:\/\/api.jtl-software.com/ext-store/bind/qq4djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
+          "href": "https://shop5.moches.de/unbind.php?action=bind&item=jtl_preloader2",
           "rel": "setBinding"
         },
         {
-          "href": "https:\/\/checkout.jtl-software.com/extensions/extendsub/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
+          "href": "https://shop5.moches.de/unbind.php?action=unbind&item=jtl_preloader2",
+          "rel": "clearBinding"
+        },
+        {
+          "href": "https://checkout.jtl-software.com/extensions/extendsub/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
           "rel": "extendSubscription"
         }
       ]
@@ -687,7 +744,7 @@
       },
       "vendor": {
         "name": "Felix Moche",
-        "href": "https:\/\/www.jtl-software.de/ext-store/jtl-software-gmbh"
+        "href": "https://www.jtl-software.de/ext-store/jtl-software-gmbh"
       },
       "releases": {
         "available": {
@@ -696,7 +753,7 @@
           "type": "security",
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Fixes XSS-Bug in Checkout Flow",
-          "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_theme_editor_1.1.1.zip"
+          "download_url": "https://shop5.moches.de/downloads/jtl_theme_editor_1.1.1.zip"
         },
         "latest": {
           "checksum": "123xxx",
@@ -705,24 +762,28 @@
           "includes_security_fixes": true,
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Even faster",
-          "download_url": "https:\/\/shop5.moches.de/jtl-test-201.zip"
+          "download_url": "https://shop5.moches.de/jtl-test-201.zip"
         }
       },
       "links": [
         {
-          "href": "https:\/\/guide.jtl-software.com/erweiterungen/jtl_fooooobarrr",
+          "href": "https://guide.jtl-software.com/erweiterungen/jtl_theme_editor",
           "rel": "documentation"
         },
         {
-          "href": "https:\/\/www.jtl-software.com/ext-store/jtl_fooooobarrr",
+          "href": "https://www.jtl-software.com/ext-store/jtl_theme_editor",
           "rel": "itemDetails"
         },
         {
-          "href": "https:\/\/api.jtl-software.com/ext-store/bind/qq4djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
+          "href": "https://shop5.moches.de/unbind.php?action=bind&item=jtl_theme_editor",
           "rel": "setBinding"
         },
         {
-          "href": "https:\/\/checkout.jtl-software.com/extensions/extendsub/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
+          "href": "https://shop5.moches.de/unbind.php?action=unbind&item=jtl_theme_editor",
+          "rel": "clearBinding"
+        },
+        {
+          "href": "https://checkout.jtl-software.com/extensions/extendsub/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
           "rel": "extendSubscription"
         }
       ]
@@ -744,7 +805,7 @@
       },
       "vendor": {
         "name": "JTL-Software",
-        "href": "https:\/\/www.jtl-software.de/ext-store/jtl-software-gmbh"
+        "href": "https://www.jtl-software.de/ext-store/jtl-software-gmbh"
       },
       "releases": {
         "available": {
@@ -753,7 +814,7 @@
           "type": "feature",
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Test",
-          "download_url": "https:\/\/shop5.moches.de\/downloads\/NOVA-1.0.1.zip"
+          "download_url": "https://shop5.moches.de/downloads/NOVA-1.0.1.zip"
         },
         "latest": {
           "checksum": "123xxx",
@@ -762,24 +823,28 @@
           "includes_security_fixes": true,
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Even faster",
-          "download_url": "https:\/\/shop5.moches.de\/downloads\/NOVA-1.0.1.zip"
+          "download_url": "https://shop5.moches.de/downloads/NOVA-1.0.1.zip"
         }
       },
       "links": [
         {
-          "href": "https:\/\/guide.jtl-software.com/erweiterungen/jtl_fooooobarrr",
+          "href": "https://guide.jtl-software.com/erweiterungen/jtl_fooooobarrr",
           "rel": "documentation"
         },
         {
-          "href": "https:\/\/www.jtl-software.com/ext-store/jtl_fooooobarrr",
+          "href": "https://www.jtl-software.com/ext-store/jtl_fooooobarrr",
           "rel": "itemDetails"
         },
         {
-          "href": "https:\/\/api.jtl-software.com/ext-store/bind/qq4djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
+          "href": "https://shop5.moches.de/unbind.php?action=bind&item=NOVA",
           "rel": "setBinding"
         },
         {
-          "href": "https:\/\/checkout.jtl-software.com/extensions/extendsub/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
+          "href": "https://shop5.moches.de/unbind.php?action=unbind&item=NOVA",
+          "rel": "clearBinding"
+        },
+        {
+          "href": "https://checkout.jtl-software.com/extensions/extendsub/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
           "rel": "extendSubscription"
         }
       ]
@@ -801,7 +866,7 @@
       },
       "vendor": {
         "name": "JTL-Software",
-        "href": "https:\/\/www.jtl-software.de\/ext-store\/jtl-software-gmbh"
+        "href": "https://www.jtl-software.de/ext-store/jtl-software-gmbh"
       },
       "releases": {
         "available": {
@@ -810,7 +875,7 @@
           "type": "security",
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Even more beautiful",
-          "download_url": "https:\/\/shop5.moches.de\/downloads\/novachild-does-not-exist.zip"
+          "download_url": "https://shop5.moches.de/downloads/novachild-does-not-exist.zip"
         },
         "latest": {
           "checksum": "123xxx",
@@ -819,25 +884,135 @@
           "includes_security_fixes": true,
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Even more beautiful",
-          "download_url": "https:\/\/shop5.moches.de\/downloads\/novachild-does-not-exist.zip"
+          "download_url": "https://shop5.moches.de/downloads/novachild-does-not-exist.zip"
         }
       },
       "links": [
         {
-          "href": "https:\/\/guide.jtl-software.com\/erweiterungen\/jtl_fooooobarrr",
+          "href": "https://guide.jtl-software.com/erweiterungen/jtl_fooooobarrr",
           "rel": "documentation"
         },
         {
-          "href": "https:\/\/www.jtl-software.com\/ext-store\/jtl_fooooobarrr",
+          "href": "https://www.jtl-software.com/ext-store/jtl_fooooobarrr",
           "rel": "itemDetails"
         },
         {
-          "href": "https:\/\/api.jtl-software.com\/ext-store\/bind\/qq4djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
+          "href": "https://shop5.moches.de/unbind.php?action=bind&item=novachild",
           "rel": "setBinding"
         },
         {
-          "href": "https:\/\/checkout.jtl-software.com\/extensions\/extendsub\/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
+          "href": "https://shop5.moches.de/unbind.php?action=unbind&item=novachild",
+          "rel": "clearBinding"
+        },
+        {
+          "href": "https://checkout.jtl-software.com/extensions/extendsub/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
           "rel": "extendSubscription"
+        }
+      ]
+    },
+    {
+      "id": "jtl_updateable",
+      "type": "plugin",
+      "name": "Kann aktualisiert werden",
+      "exsid": "jtlupdateable",
+      "license": {
+        "is_bound": true,
+        "key": "LIC-8337",
+        "type": "prod",
+        "created": "2020-05-01T12:00:00.000Z",
+        "valid_until": "2024-01-01T12:00:00.000Z",
+        "subscription": {
+          "valid_until": null
+        }
+      },
+      "vendor": {
+        "name": "JTL-Software",
+        "href": "https://www.jtl-software.de/ext-store/jtl-software-gmbh"
+      },
+      "releases": {
+        "available": {
+          "checksum": "673f6947081ec0cb3593576953305b92d084423a",
+          "version": "1.1.0",
+          "type": "feature",
+          "release_date": "2020-04-06T12:12:52.620Z",
+          "short_description": "Even more beautiful",
+          "download_url": "https://shop5.moches.de/downloads/jtl_updateable_1.1.0.zip"
+        },
+        "latest": {
+          "checksum": "673f6947081ec0cb3593576953305b92d084423a",
+          "version": "1.1.0",
+          "type": "feature",
+          "includes_security_fixes": true,
+          "release_date": "2020-04-06T12:12:52.620Z",
+          "short_description": "Even more beautiful",
+          "download_url": "https://shop5.moches.de/downloads/jtl_updateable_1.1.0.zip"
+        }
+      },
+      "links": [
+        {
+          "href": "https://www.jtl-software.com/ext-store/jtl_updateable",
+          "rel": "itemDetails"
+        },
+        {
+          "href": "https://shop5.moches.de/unbind.php?action=bind&item=jtl_updateable",
+          "rel": "setBinding"
+        },
+        {
+          "href": "https://shop5.moches.de/unbind.php?action=unbind&item=jtl_updateable",
+          "rel": "clearBinding"
+        }
+      ]
+    },
+    {
+      "id": "jtl_writepermissions",
+      "type": "plugin",
+      "name": "Kann nicht installiert werden",
+      "exsid": "jtlwritepermissions",
+      "license": {
+        "is_bound": true,
+        "key": "LIC-8337",
+        "type": "prod",
+        "created": "2020-05-01T12:00:00.000Z",
+        "valid_until": "2023-01-01T12:00:00.000Z",
+        "subscription": {
+          "valid_until": null
+        }
+      },
+      "vendor": {
+        "name": "JTL-Software",
+        "href": "https://www.jtl-software.de/ext-store/jtl-software-gmbh"
+      },
+      "releases": {
+        "available": {
+          "checksum": "f2ea5bf41eb013da6552d3f7a771dd3125f687fb",
+          "version": "1.0.0",
+          "type": "feature",
+          "release_date": "2020-04-06T12:12:52.620Z",
+          "short_description": "Even more beautiful",
+          "download_url": "https://shop5.moches.de/downloads/jtl_writepermissions_1.0.0.zip"
+        },
+        "latest": {
+          "checksum": "f2ea5bf41eb013da6552d3f7a771dd3125f687fb",
+          "version": "1.0.0",
+          "type": "feature",
+          "includes_security_fixes": true,
+          "release_date": "2020-04-06T12:12:52.620Z",
+          "short_description": "Even more beautiful",
+          "download_url": "https://shop5.moches.de/downloads/jtl_writepermissions_1.0.0.zip"
+        }
+      },
+      "links": [
+        {
+          "href": "https://www.jtl-software.com/ext-store/jtl_writepermissions",
+          "rel": "itemDetails"
+        },
+        {
+          "href": "https://shop5.moches.de/unbind.php?action=bind&item=jtl_writepermissions",
+          "rel": "setBinding"
+        },
+        {
+          "href": "https://shop5.moches.de/unbind.php?action=unbind&item=jtl_writepermissions",
+          "rel": "clearBinding"
         }
       ]
     },
@@ -855,7 +1030,7 @@
       },
       "vendor": {
         "name": "AG-Websolutions",
-        "href": "https:\/\/www.ag-websolutions.de"
+        "href": "https://www.ag-websolutions.de"
       },
       "releases": {
         "available": {
@@ -864,17 +1039,21 @@
           "type": "security",
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Fixes XSS-Bug in Checkout Flow",
-          "download_url": "https:\/\/storage.jtl-software.com/extensions/get/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD"
+          "download_url": "https://storage.jtl-software.com/extensions/get/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD"
         }
       },
       "links": [
         {
-          "href": "https:\/\/www.jtl-software.com/ext-store/ag_schneefall",
+          "href": "https://www.jtl-software.com/ext-store/ag_schneefall",
           "rel": "itemDetails"
         },
         {
-          "href": "https:\/\/api.jtl-software.com/ext-store/bind/s9eifzg938org23fusglf7tg37r3rasdadwd",
+          "href": "https://shop5.moches.de/unbind.php?action=bind&item=agws_schneefall",
           "rel": "setBinding"
+        },
+        {
+          "href": "https://shop5.moches.de/unbind.php?action=unbind&item=agws_schneefall",
+          "rel": "clearBinding"
         }
       ]
     },
@@ -892,7 +1071,7 @@
       },
       "vendor": {
         "name": "Felix Moche",
-        "href": "https:\/\/felix.moches.de"
+        "href": "https://felix.moches.de"
       },
       "releases": {
         "available": {
@@ -901,17 +1080,21 @@
           "type": "security",
           "release_date": "2020-04-06T12:12:52.620Z",
           "short_description": "Fixes XSS-Bug in Checkout Flow",
-          "download_url": "https:\/\/storage.jtl-software.com/extensions/get/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD"
+          "download_url": "https://storage.jtl-software.com/extensions/get/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD"
         }
       },
       "links": [
         {
-          "href": "https:\/\/www.jtl-software.com/ext-store/fm",
+          "href": "https://www.jtl-software.com/ext-store/fm",
           "rel": "itemDetails"
         },
         {
-          "href": "https:\/\/api.jtl-software.com/ext-store/bind/s9eifzg938org23fusglf7tg37r3rasdadwd",
+          "href": "https://shop5.moches.de/unbind.php?action=bind&item=fm_autolinker2",
           "rel": "setBinding"
+        },
+        {
+          "href": "https://shop5.moches.de/unbind.php?action=unbind&item=fm_autolinker2",
+          "rel": "clearBinding"
         }
       ]
     }

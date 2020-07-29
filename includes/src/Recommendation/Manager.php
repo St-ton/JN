@@ -104,24 +104,24 @@ class Manager
     private function getJSONFromAPI(string $scope): array
     {
         $url = self::API_URL . '?scope=' . $scope;
-        try {
-            $res = $this->client->request(
-                'GET',
-                $url,
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                        'Content-Type' => 'application/json',
-                    ],
-                    'verify' => true
-                ]
-            );
-        } catch (Exception $e) {
-            Shop::Container()->getLogService()->error($e->getMessage());
-        }
+//        try {
+//            $res = $this->client->request(
+//                'GET',
+//                $url,
+//                [
+//                    'headers' => [
+//                        'Accept' => 'application/json',
+//                        'Content-Type' => 'application/json',
+//                    ],
+//                    'verify' => true
+//                ]
+//            );
+//        } catch (Exception $e) {
+//            Shop::Container()->getLogService()->error($e->getMessage());
+//        }
 
-        return empty($res) ? [] : \json_decode((string)$res->getBody())->extensions;
-//        return $this->getTestJSON();
+//        return empty($res) ? [] : \json_decode((string)$res->getBody())->extensions;
+        return $this->getTestJSON();
     }
 
     /**

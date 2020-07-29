@@ -10,6 +10,7 @@ use JTL\Backend\Wizard\Steps\LegalPlugins;
 use JTL\Backend\Wizard\Steps\PaymentPlugins;
 use JTL\DB\DbInterface;
 use JTL\L10n\GetText;
+use JTL\Services\JTL\AlertServiceInterface;
 
 /**
  * Class DefaultFactory
@@ -26,18 +27,23 @@ final class DefaultFactory
      * DefaultFactory constructor.
      * @param DbInterface $db
      * @param GetText $getText
+     * @param AlertServiceInterface $alertService
      * @param AdminAccount $adminAccount
      */
-    public function __construct(DbInterface $db, GetText $getText, AdminAccount $adminAccount)
-    {
+    public function __construct(
+        DbInterface $db,
+        GetText $getText,
+        AlertServiceInterface $alertService,
+        AdminAccount $adminAccount
+    ) {
         $getText->loadConfigLocales();
         $getText->loadAdminLocale('pages/wizard');
 
         $this->steps = new Collection();
-        $this->steps->push(new GeneralSettings($db));
-        $this->steps->push(new LegalPlugins($db));
-        $this->steps->push(new PaymentPlugins($db));
-        $this->steps->push(new EmailSettings($db, $adminAccount));
+        $this->steps->push(new GeneralSettings($db, $alertService));
+        $this->steps->push(new LegalPlugins($db, $alertService));
+        $this->steps->push(new PaymentPlugins($db, $alertService));
+        $this->steps->push(new EmailSettings($db, $alertService, $adminAccount));
     }
 
     /**

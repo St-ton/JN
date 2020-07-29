@@ -8,6 +8,7 @@ use JTL\Backend\Wizard\QuestionType;
 use JTL\Backend\Wizard\QuestionValidation;
 use JTL\Backend\Wizard\SelectOption;
 use JTL\DB\DbInterface;
+use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
 
 /**
@@ -17,12 +18,13 @@ use JTL\Shop;
 final class GeneralSettings extends AbstractStep
 {
     /**
-     * ShopConfig constructor.
+     * GeneralSettings constructor.
      * @param DbInterface $db
+     * @param AlertServiceInterface $alertService
      */
-    public function __construct(DbInterface $db)
+    public function __construct(DbInterface $db, AlertServiceInterface $alertService)
     {
-        parent::__construct($db);
+        parent::__construct($db, $alertService);
         $this->setTitle(__('stepOne'));
         $this->setDescription(__('stepOneDesc'));
         $this->setID(1);

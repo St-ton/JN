@@ -7,6 +7,9 @@ use JTL\Backend\Wizard\QuestionInterface;
 use JTL\Backend\Wizard\QuestionType;
 use JTL\Backend\Wizard\SelectOption;
 use JTL\DB\DbInterface;
+use JTL\Services\JTL\AlertServiceInterface;
+use JTL\Recommendation\Manager;
+use JTL\Recommendation\Recommendation;
 
 /**
  * Class LegalPlugins
@@ -17,13 +20,16 @@ final class LegalPlugins extends AbstractStep
     /**
      * LegalPlugins constructor.
      * @param DbInterface $db
+     * @param AlertServiceInterface $alertService
      */
-    public function __construct(DbInterface $db)
+    public function __construct(DbInterface $db, AlertServiceInterface $alertService)
     {
-        parent::__construct($db);
+        parent::__construct($db, $alertService);
         $this->setTitle(__('stepTwo'));
         $this->setDescription(__('stepTwoDesc'));
         $this->setID(2);
+
+        $recommendations = new Manager($this->alertService, Manager::SCOPE_WIZARD_LEGAL_TEXTS);
 
         $question = new Question($db);
         $question->setID(9);
@@ -33,41 +39,17 @@ final class LegalPlugins extends AbstractStep
         $question->setType(QuestionType::PLUGIN);
         $question->setIsFullWidth(true);
         $question->setIsRequired(false);
-        $option = new SelectOption();
-        $option->setName(__('Klarna 1'));
-        $option->setValue('pluginid klarna 1');
-        $option->setLogoPath('templates/bootstrap/gfx/JTL-Shop-Logo-rgb.png');
-        $option->setDescription('Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod'
-            . ' tempor invidunt');
-        $question->addOption($option);
-        $option = new SelectOption();
-        $option->setName(__('Klarna 2'));
-        $option->setValue('pluginid klarna 2');
-        $option->setLogoPath('templates/bootstrap/gfx/JTL-Shop-Logo-rgb.png');
-        $option->setDescription('Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod'
-            . ' tempor invidunt');
-        $question->addOption($option);
-        $option = new SelectOption();
-        $option->setName(__('Klarna 3'));
-        $option->setValue('pluginid klarna 3');
-        $option->setLogoPath('templates/bootstrap/gfx/JTL-Shop-Logo-rgb.png');
-        $option->setDescription('Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod'
-            . ' tempor invidunt');
-        $question->addOption($option);
-        $option = new SelectOption();
-        $option->setName(__('Klarna 4'));
-        $option->setValue('pluginid klarna 4');
-        $option->setLogoPath('templates/bootstrap/gfx/JTL-Shop-Logo-rgb.png');
-        $option->setDescription('Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod'
-            . ' tempor invidunt');
-        $question->addOption($option);
-        $option = new SelectOption();
-        $option->setName(__('Klarna 5'));
-        $option->setValue('pluginid klarna 5');
-        $option->setLogoPath('templates/bootstrap/gfx/JTL-Shop-Logo-rgb.png');
-        $option->setDescription('Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod'
-            . ' tempor invidunt');
-        $question->addOption($option);
+
+        $recommendations->getRecommendations()->each(static function (Recommendation $recommendation) use ($question) {
+            $option = new SelectOption();
+            $option->setName($recommendation->getTitle());
+            $option->setValue($recommendation->getId());
+            $option->setLogoPath($recommendation->getPreviewImage());
+            $option->setDescription($recommendation->getTeaser());
+            $option->setLink($recommendation->getUrl());
+            $question->addOption($option);
+        });
+
         $question->setOnSave(function (QuestionInterface $question) {
         });
         $this->addQuestion($question);

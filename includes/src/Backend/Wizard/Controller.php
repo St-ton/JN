@@ -42,7 +42,7 @@ final class Controller
             }
         }
 
-        $this->finish();
+//        $this->finish();
     }
 
     /**

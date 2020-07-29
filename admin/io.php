@@ -33,6 +33,7 @@ $updateIO         = new UpdateIO($db, $gettext);
 $wizardFactory    = new DefaultFactory(
     Shop::Container()->getDB(),
     Shop::Container()->getGetText(),
+    Shop::Container()->getAlertService(),
     Shop::Container()->getAdminAccount()
 );
 $wizardController = new Controller($wizardFactory);

@@ -10,6 +10,7 @@ $oAccount->redirectOnFailure();
 $factory    = new DefaultFactory(
     Shop::Container()->getDB(),
     Shop::Container()->getGetText(),
+    Shop::Container()->getAlertService(),
     Shop::Container()->getAdminAccount()
 );
 $controller = new Controller($factory);

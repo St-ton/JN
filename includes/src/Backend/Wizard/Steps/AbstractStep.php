@@ -5,6 +5,7 @@ namespace JTL\Backend\Wizard\Steps;
 use Illuminate\Support\Collection;
 use JTL\Backend\Wizard\QuestionInterface;
 use JTL\DB\DbInterface;
+use JTL\Services\JTL\AlertServiceInterface;
 
 /**
  * Class AbstractStep
@@ -38,13 +39,20 @@ abstract class AbstractStep implements StepInterface
     protected $db;
 
     /**
+     * @var AlertServiceInterface
+     */
+    protected $alertService;
+
+    /**
      * AbstractStep constructor.
      * @param DbInterface $db
+     * @param AlertServiceInterface $alertService
      */
-    public function __construct(DbInterface $db)
+    public function __construct(DbInterface $db, AlertServiceInterface $alertService)
     {
-        $this->db        = $db;
-        $this->questions = new Collection();
+        $this->db           = $db;
+        $this->alertService = $alertService;
+        $this->questions    = new Collection();
     }
 
     /**

@@ -56,6 +56,11 @@ class Recommendation
     private $manufacturer;
 
     /**
+     * @var string
+     */
+    private $url;
+
+    /**
      * Recommendation constructor.
      * @param \stdClass $recommendation
      */
@@ -70,6 +75,7 @@ class Recommendation
         $this->setImages($recommendation->images);
         $this->setTeaser($recommendation->teaser);
         $this->setManufacturer(new Manufacturer($recommendation->seller));
+        $this->setUrl($recommendation->url);
     }
 
     /**
@@ -214,5 +220,21 @@ class Recommendation
     public function setManufacturer(Manufacturer $manufacturer): void
     {
         $this->manufacturer = $manufacturer;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrl(): string
+    {
+        return $this->url;
+    }
+
+    /**
+     * @param string $url
+     */
+    public function setUrl(string $url): void
+    {
+        $this->url = $url;
     }
 }

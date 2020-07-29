@@ -8,6 +8,9 @@ use JTL\Backend\Wizard\QuestionType;
 use JTL\Backend\Wizard\SelectOption;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Recommendation\Manager;
+use JTL\Recommendation\Recommendation;
+use JTL\Services\JTL\AlertServiceInterface;
 use function Functional\map;
 
 /**
@@ -19,10 +22,11 @@ final class PaymentPlugins extends AbstractStep
     /**
      * PaymentPlugins constructor.
      * @param DbInterface $db
+     * @param AlertServiceInterface $alertService
      */
-    public function __construct(DbInterface $db)
+    public function __construct(DbInterface $db, AlertServiceInterface $alertService)
     {
-        parent::__construct($db);
+        parent::__construct($db, $alertService);
         $this->setTitle(__('stepThree'));
 
         $paymentMethods = map($db->query(
@@ -35,7 +39,7 @@ final class PaymentPlugins extends AbstractStep
         $this->setDescription(sprintf(__('stepThreeDesc'), implode(', ', $paymentMethods)));
         $this->setID(3);
 
-//        $recommendations = json_decode(file_get_contents(\JTLURL_GET_MP_RECOMMENDATIONS));
+        $recommendations = new Manager($this->alertService, Manager::SCOPE_WIZARD_PAYMENT_PROVIDER);
 
         $question = new Question($db);
         $question->setID(10);
@@ -46,15 +50,15 @@ final class PaymentPlugins extends AbstractStep
         $question->setIsFullWidth(true);
         $question->setIsRequired(false);
 
-        foreach ($recommendations->extensions ?? [] as $recommendation) {
+        $recommendations->getRecommendations()->each(static function (Recommendation $recommendation) use ($question) {
             $option = new SelectOption();
-            $option->setName($recommendation->name);
-            $option->setValue($recommendation->ext_id);
-            $option->setLogoPath($recommendation->logo_url ?? $recommendation->icon_url);
-            $option->setDescription($recommendation->description);
-            $option->setLink($recommendation->store_url);
+            $option->setName($recommendation->getTitle());
+            $option->setValue($recommendation->getId());
+            $option->setLogoPath($recommendation->getPreviewImage());
+            $option->setDescription($recommendation->getTeaser());
+            $option->setLink($recommendation->getUrl());
             $question->addOption($option);
-        }
+        });
 
         $question->setOnSave(function (QuestionInterface $question) {
         });

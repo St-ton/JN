@@ -10,6 +10,7 @@ use JTL\Backend\Wizard\SelectOption;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Mail\Template\TemplateFactory;
+use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
 
 /**
@@ -19,12 +20,14 @@ use JTL\Shop;
 final class EmailSettings extends AbstractStep
 {
     /**
-     * ShopConfig constructor.
+     * EmailSettings constructor.
      * @param DbInterface $db
+     * @param AlertServiceInterface $alertService
+     * @param AdminAccount $adminAccount
      */
-    public function __construct(DbInterface $db, AdminAccount $adminAccount)
+    public function __construct(DbInterface $db, AlertServiceInterface $alertService, AdminAccount $adminAccount)
     {
-        parent::__construct($db);
+        parent::__construct($db, $alertService);
         $this->setTitle(__('stepFour'));
         $this->setDescription(__('stepFourDesc'));
         $this->setID(4);

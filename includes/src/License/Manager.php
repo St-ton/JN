@@ -123,16 +123,6 @@ class Manager
         if (!$force && !$this->checkUpdate()) {
             return 0;
         }
-        if (true) { // @todo: remove
-            $data = $this->getLocalTestData();
-            $this->housekeeping();
-            $this->cache->flushTags([\CACHING_GROUP_LICENSES]);
-
-            return $this->db->insert(
-                'licenses',
-                (object)['data' => \json_encode($data), 'returnCode' => 200]
-            );
-        }
         $res = $this->client->request(
             'POST',
             self::API_URL,
@@ -156,20 +146,6 @@ class Manager
             'licenses',
             (object)['data' => (string)$res->getBody(), 'returnCode' => $res->getStatusCode()]
         );
-    }
-
-    /**
-     * @return stdClass
-     * @todo: remove
-     */
-    private function getLocalTestData(): stdClass
-    {
-        $obj             = \json_decode(\file_get_contents(\PFAD_ROOT . 'getLicenses.json'), false);
-        $dt              = new DateTime();
-        $obj->timestamp  = $dt->format('y-m-d H:i:s');
-        $obj->returnCode = 200;
-
-        return $obj;
     }
 
     /**

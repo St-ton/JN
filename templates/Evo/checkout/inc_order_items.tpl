@@ -395,20 +395,22 @@
                 <td colspan="{$colspan}"><small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() key='shippingInformation' section='basket'}</small></td>
             </tr>
         {/if}
-        {foreach $smarty.session.Warenkorb->OrderAttributes as $attribute}
-            {if $attribute->cName === 'Finanzierungskosten'}
-                <tr class="type-{$smarty.const.C_WARENKORBPOS_TYP_ZINSAUFSCHLAG}">
-                    {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
-                        <td class="hidden-xs"></td>
-                    {/if}
-                    <td class="text-right" colspan="2">
-                        {lang key='financeCosts' section='order'}
-                    </td>
-                    <td class="text-right price-col" colspan="{if $tplscope === 'cart'}4{else}3{/if}">
-                        {$attribute->cValue}
-                    </td>
-                </tr>
-            {/if}
-        {/foreach}
+        {if !empty($smarty.session.Warenkorb->OrderAttributes)}
+            {foreach $smarty.session.Warenkorb->OrderAttributes as $attribute}
+                {if $attribute->cName === 'Finanzierungskosten'}
+                    <tr class="type-{$smarty.const.C_WARENKORBPOS_TYP_ZINSAUFSCHLAG}">
+                        {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
+                            <td class="hidden-xs"></td>
+                        {/if}
+                        <td class="text-right" colspan="2">
+                            {lang key='financeCosts' section='order'}
+                        </td>
+                        <td class="text-right price-col" colspan="{if $tplscope === 'cart'}4{else}3{/if}">
+                            {$attribute->cValue}
+                        </td>
+                    </tr>
+                {/if}
+            {/foreach}
+        {/if}
     </tfoot>
 </table>

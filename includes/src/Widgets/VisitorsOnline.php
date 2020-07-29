@@ -6,6 +6,7 @@ use JTL\Catalog\Product\Preise;
 use JTL\DB\ReturnType;
 use JTL\Shop;
 use JTL\Visitor;
+use stdClass;
 
 /**
  * Class VisitorsOnline
@@ -71,11 +72,11 @@ class VisitorsOnline extends AbstractWidget
 
     /**
      * @param array $visitors
-     * @return \stdClass
+     * @return stdClass
      */
-    public function getVisitorsInfo(array $visitors): \stdClass
+    public function getVisitorsInfo(array $visitors): stdClass
     {
-        $info            = new \stdClass();
+        $info            = new stdClass();
         $info->nCustomer = 0;
         $info->nAll      = \count($visitors);
         if ($info->nAll > 0) {

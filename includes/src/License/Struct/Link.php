@@ -21,6 +21,11 @@ class Link
     private $rel;
 
     /**
+     * @var string
+     */
+    private $method = 'GET';
+
+    /**
      * Link constructor.
      * @param stdClass|null $json
      */
@@ -38,6 +43,7 @@ class Link
     {
         $this->setHref($json->href);
         $this->setRel($json->rel);
+        $this->setMethod($json->method ?? 'GET');
     }
 
     /**
@@ -70,5 +76,21 @@ class Link
     public function setRel(string $rel): void
     {
         $this->rel = $rel;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMethod(): string
+    {
+        return $this->method;
+    }
+
+    /**
+     * @param string $method
+     */
+    public function setMethod(string $method): void
+    {
+        $this->method = $method;
     }
 }

@@ -46,6 +46,11 @@ class AjaxResponse implements JsonSerializable
     public $additional;
 
     /**
+     * @var array
+     */
+    public $replaceWith = [];
+
+    /**
      * @return array
      */
     public function jsonSerialize(): array
@@ -56,7 +61,8 @@ class AjaxResponse implements JsonSerializable
             'action'       => $this->action,
             'id'           => $this->id,
             'notification' => \trim($this->notification),
-            'html'         => \trim($this->html)
+            'html'         => \trim($this->html),
+            'replaceWith'  => $this->replaceWith
         ];
     }
 }

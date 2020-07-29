@@ -262,7 +262,7 @@ class PageDB
         }
 
         $seo = $this->shopDB->queryPrepared(
-            "SELECT cSeo FROM tseo WHERE cKey = :ckey AND kKey = :key AND kSprache = :lang",
+            'SELECT cSeo FROM tseo WHERE cKey = :ckey AND kKey = :key AND kSprache = :lang',
             ['ckey' => $cKey, 'key' => $pageIdObj->id, 'lang' => $pageIdObj->lang],
             ReturnType::SINGLE_OBJECT
         );

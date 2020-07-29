@@ -2138,6 +2138,16 @@ header .nav-right .dropdown-menu {
   border-radius: 0;
 }
 
+.square {
+  display: flex;
+  position: relative;
+}
+.square::before {
+  content: "";
+  display: inline-block;
+  padding-bottom: 100%;
+}
+
 /* spacing */
 .p-0 {
   padding: 0 !important;
@@ -2156,6 +2166,14 @@ header .nav-right .dropdown-menu {
   margin-bottom: 2rem !important;
 }
 
+.mb-6 {
+  margin-bottom: 3rem !important;
+}
+
+.mb-7 {
+  margin-bottom: 4rem !important;
+}
+
 .mt-0 {
   margin-top: 0 !important;
 }
@@ -2168,14 +2186,28 @@ header .nav-right .dropdown-menu {
   padding-top: 2rem !important;
 }
 
+.pb-6 {
+  padding-bottom: 3rem !important;
+}
+
 .px-0 {
   padding-left: 0 !important;
   padding-right: 0 !important;
 }
 
+.py-3 {
+  padding-top: 1rem !important;
+  padding-bottom: 1rem !important;
+}
+
 .my-7 {
   margin-top: 4rem !important;
   margin-bottom: 4rem !important;
+}
+
+.my-5 {
+  margin-top: 2rem !important;
+  margin-bottom: 2rem !important;
 }
 
 .mx-auto {
@@ -2209,6 +2241,11 @@ header .nav-right .dropdown-menu {
 
   .pr-lg-5 {
     padding-right: 2rem !important;
+  }
+
+  .px-lg-3 {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
   }
 
   .pb-lg-0 {

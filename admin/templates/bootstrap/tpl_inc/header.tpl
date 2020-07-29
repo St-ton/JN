@@ -42,7 +42,7 @@
                 ?token={$smarty.session.jtl_token}
                 &action=quick_change_language
                 &language=` + tag + `
-                &referer=` + window.location.href{/strip};
+                &referer=` +  encodeURIComponent(window.location.href){/strip};
         }
     </script>
 

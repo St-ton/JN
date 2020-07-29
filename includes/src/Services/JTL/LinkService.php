@@ -12,6 +12,7 @@ use JTL\Link\LinkGroupList;
 use JTL\Link\LinkGroupListInterface;
 use JTL\Link\LinkInterface;
 use JTL\Shop;
+use stdClass;
 use function Functional\first;
 use function Functional\first_index_of;
 
@@ -377,10 +378,10 @@ final class LinkService implements LinkServiceInterface
     /**
      * @inheritdoc
      */
-    public function buildSpecialPageMeta(int $type): \stdClass
+    public function buildSpecialPageMeta(int $type): stdClass
     {
         $first           = null;
-        $meta            = new \stdClass();
+        $meta            = new stdClass();
         $meta->cTitle    = '';
         $meta->cDesc     = '';
         $meta->cKeywords = '';

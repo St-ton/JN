@@ -72,7 +72,8 @@ $pluginsDisabled    = $pluginsInstalled->filter(static function (ListingItem $e)
 $pluginsProblematic = $pluginsInstalled->filter(static function (ListingItem $e) {
     return \in_array(
         $e->getState(),
-        [State::ERRONEOUS, State::UPDATE_FAILED, State::LICENSE_KEY_MISSING, State::LICENSE_KEY_INVALID],
+        [State::ERRONEOUS, State::UPDATE_FAILED, State::LICENSE_KEY_MISSING,
+            State::LICENSE_KEY_INVALID, State::ESX_LICENSE_EXPIRED, State::ESX_SUBSCRIPTION_EXPIRED],
         true
     );
 });

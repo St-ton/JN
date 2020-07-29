@@ -44,14 +44,9 @@ class Mapper
         foreach ($data->extensions as $extension) {
             $esxLicense = new ExsLicense($extension);
             $esxLicense->setQueryDate($data->timestamp);
-            $esxLicense->setState(ExsLicense::STATE_ACTIVE);
-            $this->setReference($esxLicense, $extension);
-            $collection->push($esxLicense);
-        }
-        foreach ($data->unbound as $extension) {
-            $esxLicense = new ExsLicense($extension);
-            $esxLicense->setQueryDate($data->timestamp);
-            $esxLicense->setState(ExsLicense::STATE_UNBOUND);
+            if ($esxLicense->getState() === ExsLicense::STATE_ACTIVE) {
+                $this->setReference($esxLicense, $extension);
+            }
             $collection->push($esxLicense);
         }
         $this->manager->getCache()->set($cacheID, $collection, [\CACHING_GROUP_LICENSES]);

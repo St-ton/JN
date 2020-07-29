@@ -8,11 +8,10 @@
       "license": {
         "key": "LIC-1201",
         "type": "free",
+        "is_bound": true,
         "created": "2020-01-01T12:00:00.000Z",
-        "validUntil": null,
-        "subscription": {
-          "validUntil": "2021-02-04T00:00:00.000Z"
-        }
+        "valid_until": null,
+        "subscription": null
       },
       "vendor": {
         "name": "JTL-Software",
@@ -20,19 +19,21 @@
       },
       "releases": {
         "available": {
+          "checksum": "123xxx",
           "version": "2.0.0-beta.16",
           "type": "security",
-          "releaseDate": "2020-04-06T12:12:52.620Z",
-          "shortDescription": "Fixes XSS-Bug in Checkout Flow",
-          "downloadUrl": "https:\/\/shop5.moches.de\/downloads\/jtl_paypal_2.0.0-beta16.zip"
+          "release_date": "2020-04-06T12:12:52.620Z",
+          "short_description": "Fixes XSS-Bug in Checkout Flow",
+          "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_paypal_2.0.0-beta16.zip"
         },
         "latest": {
+          "checksum": "123xxx",
           "version": "4.2.1",
           "type": "feature",
-          "includesSecurityFixes": "true",
-          "releaseDate": "2020-04-06T12:12:52.620Z",
-          "shortDescription": "Introduces new Feature XYZ",
-          "downloadUrl": "https:\/\/storage.jtl-software.com/extensions\/get\/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD"
+          "includes_security_fixes": true,
+          "release_date": "2020-04-06T12:12:52.620Z",
+          "short_description": "Introduces new Feature XYZ",
+          "download_url": "https:\/\/storage.jtl-software.com/extensions\/get\/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD"
         }
       },
       "links": [
@@ -60,12 +61,13 @@
       "name": "Widgets für JTL-Shop 5",
       "exsid": "jtlw44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
       "license": {
+        "is_bound": true,
         "key": "LIC-1201",
         "type": "free",
         "created": "2020-01-01T12:00:00.000Z",
-        "validUntil": null,
+        "valid_until": null,
         "subscription": {
-          "validUntil": "2021-02-04T00:00:00.000Z"
+          "valid_until": "2021-02-04T00:00:00.000Z"
         }
       },
       "vendor": {
@@ -74,19 +76,22 @@
       },
       "releases": {
         "available": {
-          "version": "2.0.1",
-          "type": "security",
-          "releaseDate": "2020-04-06T12:12:52.620Z",
-          "shortDescription": "Fixes XSS-Bug in Checkout Flow",
-          "downloadUrl": "https:\/\/shop5.moches.de\/downloads\/jtl_widgets_2.0.1.zip"
-        },
-        "latest": {
+          "checksum": "123xxx",
           "version": "2.0.1",
           "type": "feature",
-          "includesSecurityFixes": "true",
-          "releaseDate": "2020-04-06T12:12:52.620Z",
-          "shortDescription": "Introduces new Feature XYZ",
-          "downloadUrl": "https:\/\/storage.jtl-software.com/extensions\/get\/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD"
+          "release_date": "2020-04-06T12:12:52.620Z",
+          "short_description": "More widgets",
+          "includes_security_fixes": false,
+          "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_widgets_2.0.1.zip"
+        },
+        "latest": {
+          "checksum": "123xxx",
+          "version": "2.0.1",
+          "type": "feature",
+          "includes_security_fixes": true,
+          "release_date": "2020-04-06T12:12:52.620Z",
+          "short_description": "Introduces new Feature XYZ",
+          "download_url": "https:\/\/storage.jtl-software.com/extensions\/get\/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD"
         }
       },
       "links": [
@@ -114,12 +119,13 @@
       "name": "Macht gar nichts und ist auch nicht installiert",
       "exsid": "jtlblubbasdfasdfasd2",
       "license": {
+        "is_bound": true,
         "key": "LIC-1201",
         "type": "free",
         "created": "2020-01-01T12:00:00.000Z",
-        "validUntil": null,
+        "valid_until": null,
         "subscription": {
-          "validUntil": "2021-02-04T00:00:00.000Z"
+          "valid_until": "2021-02-04T00:00:00.000Z"
         }
       },
       "vendor": {
@@ -128,19 +134,22 @@
       },
       "releases": {
         "available": {
+          "checksum": "a50c93a6b41d04375c5b0ae79fd4ac554d31316c",
           "version": "1.0.0",
           "type": "security",
-          "releaseDate": "2020-04-06T12:12:52.620Z",
-          "shortDescription": "Fixes XSS-Bug in Checkout Flow",
-          "downloadUrl": "https:\/\/shop5.moches.de\/downloads\/jtl_blubb_1.0.0.zip"
+          "includes_security_fixes": true,
+          "release_date": "2020-04-06T12:12:52.620Z",
+          "short_description": "Fixes XSS-Bug in Checkout Flow",
+          "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_blubb_1.0.0.zip"
         },
         "latest": {
+          "checksum": "123xxx",
           "version": "1.0.0",
           "type": "feature",
-          "includesSecurityFixes": "true",
-          "releaseDate": "2020-04-06T12:12:52.620Z",
-          "shortDescription": "Introduces new Feature XYZ",
-          "downloadUrl": "https:\/\/shop5.moches.de\/downloads\/jtl_blubb_1.0.0.zip"
+          "includes_security_fixes": true,
+          "release_date": "2020-04-06T12:12:52.620Z",
+          "short_description": "Introduces new Feature XYZ",
+          "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_blubb_1.0.0.zip"
         }
       },
       "links": [
@@ -165,15 +174,16 @@
     {
       "id": "jtl_foo",
       "type": "plugin",
-      "name": "Macht gar nichts und ist auch nicht installiert2",
+      "name": "Plugin ohne verfübares Release",
       "exsid": "jtlfoobasdfasdfasd2",
       "license": {
+        "is_bound": true,
         "key": "LIC-1201",
         "type": "free",
         "created": "2020-01-01T12:00:00.000Z",
-        "validUntil": null,
+        "valid_until": null,
         "subscription": {
-          "validUntil": "2021-02-04T00:00:00.000Z"
+          "valid_until": "2021-02-04T00:00:00.000Z"
         }
       },
       "vendor": {
@@ -181,20 +191,14 @@
         "href": "https:\/\/www.jtl-software.de\/ext-store\/jtl-software-gmbh"
       },
       "releases": {
-        "available": {
-          "version": "1.2.3",
-          "type": "security",
-          "releaseDate": "2020-04-06T12:12:52.620Z",
-          "shortDescription": "Fixes XSS-Bug in Checkout Flow",
-          "downloadUrl": "https:\/\/shop5.moches.de\/downloads\/jtl_foo_1.2.3.zip"
-        },
         "latest": {
+          "checksum": "123xxx",
           "version": "1.2.3",
           "type": "feature",
-          "includesSecurityFixes": "true",
-          "releaseDate": "2020-04-06T12:12:52.620Z",
-          "shortDescription": "Introduces new Feature XYZ",
-          "downloadUrl": "https:\/\/shop5.moches.de\/downloads\/jtl_foo_1.2.3.zip"
+          "includes_security_fixes": true,
+          "release_date": "2020-04-06T12:12:52.620Z",
+          "short_description": "Introduces new Feature XYZ",
+          "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_foo_1.2.3.zip"
         }
       },
       "links": [
@@ -219,15 +223,16 @@
     {
       "id": "jtl_bar",
       "type": "plugin",
-      "name": "Macht gar nichts und ist auch nicht installiert3",
+      "name": "Hat eine ungültige Prüfsumme",
       "exsid": "jtlbarbasdfasdfasd2",
       "license": {
+        "is_bound": true,
         "key": "LIC-1201",
         "type": "free",
         "created": "2020-01-01T12:00:00.000Z",
-        "validUntil": null,
+        "valid_until": null,
         "subscription": {
-          "validUntil": "2021-02-04T00:00:00.000Z"
+          "valid_until": "2021-02-04T00:00:00.000Z"
         }
       },
       "vendor": {
@@ -236,19 +241,21 @@
       },
       "releases": {
         "available": {
+          "checksum": "123xxx",
           "version": "4.3.2",
           "type": "security",
-          "releaseDate": "2020-04-06T12:12:52.620Z",
-          "shortDescription": "Fixes XSS-Bug in Checkout Flow",
-          "downloadUrl": "https:\/\/shop5.moches.de\/downloads\/jtl_bar_4.3.2.zip"
+          "release_date": "2020-04-06T12:12:52.620Z",
+          "short_description": "Fixes XSS-Bug in Checkout Flow",
+          "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_bar_4.3.2.zip"
         },
         "latest": {
+          "checksum": "123xxx",
           "version": "4.3.2",
           "type": "feature",
-          "includesSecurityFixes": "true",
-          "releaseDate": "2020-04-06T12:12:52.620Z",
-          "shortDescription": "Introduces new Feature XYZ",
-          "downloadUrl": "https:\/\/shop5.moches.de\/downloads\/jtl_bar_4.3.2.zip"
+          "includes_security_fixes": true,
+          "release_date": "2020-04-06T12:12:52.620Z",
+          "short_description": "Introduces new Feature XYZ",
+          "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_bar_4.3.2.zip"
         }
       },
       "links": [
@@ -276,12 +283,13 @@
       "name": "Ein Demo- und Testplugin",
       "exsid": "ek44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
       "license": {
+        "is_bound": true,
         "key": "LIC-1202",
         "type": "prod",
         "created": "2020-01-01T12:00:00.000Z",
-        "validUntil": "2022-02-09T00:00:00.000Z",
+        "valid_until": "2022-02-09T00:00:00.000Z",
         "subscription": {
-          "validUntil": null
+          "valid_until": null
         }
       },
       "vendor": {
@@ -290,19 +298,21 @@
       },
       "releases": {
         "available": {
+          "checksum": "123xxx",
           "version": "1.0.8",
           "type": "security",
-          "releaseDate": "2020-04-06T12:12:52.620Z",
-          "shortDescription": "Fixes XSS-Bug in Checkout Flow",
-          "downloadUrl": "https:\/\/shop5.moches.de\/downloads\/jtl_test108OK.zip"
+          "release_date": "2020-04-06T12:12:52.620Z",
+          "short_description": "Fixes XSS-Bug in Checkout Flow",
+          "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_test108OK.zip"
         },
         "latest": {
+          "checksum": "123xxx",
           "version": "2.0.1",
           "type": "feature",
-          "includesSecurityFixes": "true",
-          "releaseDate": "2020-04-06T12:12:52.620Z",
-          "shortDescription": "Even faster",
-          "downloadUrl": "https:\/\/shop5.moches.de\/downloads\/jtl_test_version201.zip"
+          "includes_security_fixes": true,
+          "release_date": "2020-04-06T12:12:52.620Z",
+          "short_description": "Even faster",
+          "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_test_version201.zip"
         }
       },
       "links": [
@@ -330,12 +340,13 @@
       "name": "Google ReCaptcha für Shop5",
       "exsid": "jj44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
       "license": {
+        "is_bound": true,
         "key": "LIC-0202",
         "type": "prod",
         "created": "2019-01-01T12:00:00.000Z",
-        "validUntil": null,
+        "valid_until": null,
         "subscription": {
-          "validUntil": "2020-07-14T00:00:00.000Z"
+          "valid_until": "2020-07-14T00:00:00.000Z"
         }
       },
       "vendor": {
@@ -344,19 +355,21 @@
       },
       "releases": {
         "available": {
+          "checksum": "123xxx",
           "version": "1.0.0-beta.1",
           "type": "security",
-          "releaseDate": "2020-04-06T12:12:52.620Z",
-          "shortDescription": "Fixes no bugs at all",
-          "downloadUrl": "https:\/\/shop5.moches.de\/downloads\/jtl_google_recaptcha-1.0.0-beta.1.zip"
+          "release_date": "2020-04-06T12:12:52.620Z",
+          "short_description": "Fixes no bugs at all",
+          "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_google_recaptcha-1.0.0-beta.1.zip"
         },
         "latest": {
+          "checksum": "123xxx",
           "version": "2.0.0",
           "type": "feature",
-          "includesSecurityFixes": "true",
-          "releaseDate": "2020-04-06T12:12:52.620Z",
-          "shortDescription": "Even faster",
-          "downloadUrl": "https:\/\/shop5.moches.de\/downloads\/jtl_google_recaptcha-2.0.0.zip"
+          "includes_security_fixes": true,
+          "release_date": "2020-04-06T12:12:52.620Z",
+          "short_description": "Even faster",
+          "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_google_recaptcha-2.0.0.zip"
         }
       },
       "links": [
@@ -384,12 +397,13 @@
       "name": "Eine tolle Suche für Ihren Shop5",
       "exsid": "qq44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
       "license": {
+        "is_bound": true,
         "key": "LIC-1337",
         "type": "free",
         "created": "2020-04-01T12:00:00.000Z",
-        "validUntil": null,
+        "valid_until": null,
         "subscription": {
-          "validUntil": "2020-08-09T00:00:00.000Z"
+          "valid_until": "2020-08-09T00:00:00.000Z"
         }
       },
       "vendor": {
@@ -398,19 +412,21 @@
       },
       "releases": {
         "available": {
+          "checksum": "123xxx",
           "version": "1.0.0",
           "type": "security",
-          "releaseDate": "2020-04-06T12:12:52.620Z",
-          "shortDescription": "Fixes XSS-Bug in Checkout Flow",
-          "downloadUrl": "https:\/\/storage.jtl-software.com/extensions/get/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD"
+          "release_date": "2020-04-06T12:12:52.620Z",
+          "short_description": "Fixes XSS-Bug in Checkout Flow",
+          "download_url": "https:\/\/storage.jtl-software.com/extensions/get/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD"
         },
         "latest": {
+          "checksum": "123xxx",
           "version": "2.0.0",
           "type": "feature",
-          "includesSecurityFixes": "true",
-          "releaseDate": "2020-04-06T12:12:52.620Z",
-          "shortDescription": "Even faster",
-          "downloadUrl": "https:\/\/shop5.moches.de/jtl-test-201.zip"
+          "includes_security_fixes": true,
+          "release_date": "2020-04-06T12:12:52.620Z",
+          "short_description": "Even faster",
+          "download_url": "https:\/\/shop5.moches.de/jtl-test-201.zip"
         }
       },
       "links": [
@@ -438,12 +454,13 @@
       "name": "ContactForms für Shop5",
       "exsid": "xx44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD",
       "license": {
+        "is_bound": true,
         "key": "LIC-1234",
         "type": "dev",
         "created": "2020-04-01T12:00:00.000Z",
-        "validUntil": null,
+        "valid_until": null,
         "subscription": {
-          "validUntil": "2020-09-09T00:00:00.000Z"
+          "valid_until": "2020-09-09T00:00:00.000Z"
         }
       },
       "vendor": {
@@ -452,19 +469,21 @@
       },
       "releases": {
         "available": {
+          "checksum": "123xxx",
           "version": "2.0.0",
           "type": "security",
-          "releaseDate": "2020-04-06T12:12:52.620Z",
-          "shortDescription": "Fixes XSS-Bug in Checkout Flow",
-          "downloadUrl": "https:\/\/storage.jtl-software.com/extensions/get/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD"
+          "release_date": "2020-04-06T12:12:52.620Z",
+          "short_description": "Fixes XSS-Bug in Checkout Flow",
+          "download_url": "https:\/\/storage.jtl-software.com/extensions/get/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD"
         },
         "latest": {
+          "checksum": "123xxx",
           "version": "2.0.0",
           "type": "feature",
-          "includesSecurityFixes": "true",
-          "releaseDate": "2020-04-06T12:12:52.620Z",
-          "shortDescription": "Even faster",
-          "downloadUrl": "https:\/\/shop5.moches.de/jtl-test-201.zip"
+          "includes_security_fixes": true,
+          "release_date": "2020-04-06T12:12:52.620Z",
+          "short_description": "Even faster",
+          "download_url": "https:\/\/shop5.moches.de/jtl-test-201.zip"
         }
       },
       "links": [
@@ -492,12 +511,13 @@
       "name": "Preload Headers für Shop5",
       "exsid": "jtlpreloader12312412412412",
       "license": {
+        "is_bound": true,
         "key": "LIC-1234",
         "type": "prod",
         "created": "2020-04-01T12:00:00.000Z",
-        "validUntil": null,
+        "valid_until": null,
         "subscription": {
-          "validUntil": "2022-06-09T00:00:00.000Z"
+          "valid_until": "2022-06-09T00:00:00.000Z"
         }
       },
       "vendor": {
@@ -506,19 +526,21 @@
       },
       "releases": {
         "available": {
+          "checksum": "123xxx",
           "version": "2.0.1",
           "type": "security",
-          "releaseDate": "2020-04-06T12:12:52.620Z",
-          "shortDescription": "Fixes XSS-Bug in Checkout Flow",
-          "downloadUrl": "https:\/\/shop5.moches.de\/downloads\/jtl_preloader2_2.0.1.zip"
+          "release_date": "2020-04-06T12:12:52.620Z",
+          "short_description": "Fixes XSS-Bug in Checkout Flow",
+          "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_preloader2_2.0.1.zip"
         },
         "latest": {
+          "checksum": "123xxx",
           "version": "2.0.1",
           "type": "feature",
-          "includesSecurityFixes": "true",
-          "releaseDate": "2020-04-06T12:12:52.620Z",
-          "shortDescription": "Even faster",
-          "downloadUrl": "https:\/\/shop5.moches.de/jtl-test-201.zip"
+          "includes_security_fixes": true,
+          "release_date": "2020-04-06T12:12:52.620Z",
+          "short_description": "Even faster",
+          "download_url": "https:\/\/shop5.moches.de/jtl-test-201.zip"
         }
       },
       "links": [
@@ -546,12 +568,13 @@
       "name": "Theme Editor für NOVA-basierte Template in JTL-Shop5",
       "exsid": "jtlthemeeditor12312412423",
       "license": {
+        "is_bound": true,
         "key": "LIC-1234",
         "type": "prod",
         "created": "2020-04-01T12:00:00.000Z",
-        "validUntil": null,
+        "valid_until": null,
         "subscription": {
-          "validUntil": "2021-06-09T00:00:00.000Z"
+          "valid_until": "2021-06-09T00:00:00.000Z"
         }
       },
       "vendor": {
@@ -560,19 +583,21 @@
       },
       "releases": {
         "available": {
+          "checksum": "123xxx",
           "version": "1.1.1",
           "type": "security",
-          "releaseDate": "2020-04-06T12:12:52.620Z",
-          "shortDescription": "Fixes XSS-Bug in Checkout Flow",
-          "downloadUrl": "https:\/\/shop5.moches.de\/downloads\/jtl_theme_editor_1.1.1.zip"
+          "release_date": "2020-04-06T12:12:52.620Z",
+          "short_description": "Fixes XSS-Bug in Checkout Flow",
+          "download_url": "https:\/\/shop5.moches.de\/downloads\/jtl_theme_editor_1.1.1.zip"
         },
         "latest": {
+          "checksum": "123xxx",
           "version": "1.1.1",
           "type": "feature",
-          "includesSecurityFixes": "true",
-          "releaseDate": "2020-04-06T12:12:52.620Z",
-          "shortDescription": "Even faster",
-          "downloadUrl": "https:\/\/shop5.moches.de/jtl-test-201.zip"
+          "includes_security_fixes": true,
+          "release_date": "2020-04-06T12:12:52.620Z",
+          "short_description": "Even faster",
+          "download_url": "https:\/\/shop5.moches.de/jtl-test-201.zip"
         }
       },
       "links": [
@@ -600,12 +625,13 @@
       "name": "Das Standard-Template für JTL-Shop5",
       "exsid": "jtln0123456789",
       "license": {
+        "is_bound": true,
         "key": "LIC-2337",
         "type": "free",
         "created": "2020-05-01T12:00:00.000Z",
-        "validUntil": null,
+        "valid_until": null,
         "subscription": {
-          "validUntil": "2020-12-12T00:00:00.000Z"
+          "valid_until": "2020-06-12T00:00:00.000Z"
         }
       },
       "vendor": {
@@ -614,19 +640,21 @@
       },
       "releases": {
         "available": {
-          "version": "1.0.1",
-          "type": "security",
-          "releaseDate": "2020-04-06T12:12:52.620Z",
-          "shortDescription": "Fixes XSS-Bug in Checkout Flow",
-          "downloadUrl": "https:\/\/shop5.moches.de\/downloads\/NOVA-1.0.1.zip"
-        },
-        "latest": {
+          "checksum": "123xxx",
           "version": "1.0.1",
           "type": "feature",
-          "includesSecurityFixes": "true",
-          "releaseDate": "2020-04-06T12:12:52.620Z",
-          "shortDescription": "Even faster",
-          "downloadUrl": "https:\/\/shop5.moches.de\/downloads\/NOVA-1.0.1.zip"
+          "release_date": "2020-04-06T12:12:52.620Z",
+          "short_description": "Test",
+          "download_url": "https:\/\/shop5.moches.de\/downloads\/NOVA-1.0.1.zip"
+        },
+        "latest": {
+          "checksum": "123xxx",
+          "version": "1.0.1",
+          "type": "feature",
+          "includes_security_fixes": true,
+          "release_date": "2020-04-06T12:12:52.620Z",
+          "short_description": "Even faster",
+          "download_url": "https:\/\/shop5.moches.de\/downloads\/NOVA-1.0.1.zip"
         }
       },
       "links": [
@@ -654,12 +682,13 @@
       "name": "NOVA child template",
       "exsid": "jtlnc123456789",
       "license": {
+        "is_bound": true,
         "key": "LIC-8337",
         "type": "prod",
         "created": "2020-05-01T12:00:00.000Z",
-        "validUntil": "2021-01-01T12:00:00.000Z",
+        "valid_until": "2021-01-01T12:00:00.000Z",
         "subscription": {
-          "validUntil": null
+          "valid_until": null
         }
       },
       "vendor": {
@@ -668,19 +697,21 @@
       },
       "releases": {
         "available": {
+          "checksum": "123xxx",
           "version": "1.2.0",
           "type": "security",
-          "releaseDate": "2020-04-06T12:12:52.620Z",
-          "shortDescription": "Even more beautiful",
-          "downloadUrl": "https:\/\/shop5.moches.de\/downloads\/novachild-does-not-exist.zip"
+          "release_date": "2020-04-06T12:12:52.620Z",
+          "short_description": "Even more beautiful",
+          "download_url": "https:\/\/shop5.moches.de\/downloads\/novachild-does-not-exist.zip"
         },
         "latest": {
+          "checksum": "123xxx",
           "version": "1.2.0",
           "type": "feature",
-          "includesSecurityFixes": "true",
-          "releaseDate": "2020-04-06T12:12:52.620Z",
-          "shortDescription": "Even more beautiful",
-          "downloadUrl": "https:\/\/shop5.moches.de\/downloads\/novachild-does-not-exist.zip"
+          "includes_security_fixes": true,
+          "release_date": "2020-04-06T12:12:52.620Z",
+          "short_description": "Even more beautiful",
+          "download_url": "https:\/\/shop5.moches.de\/downloads\/novachild-does-not-exist.zip"
         }
       },
       "links": [
@@ -701,18 +732,17 @@
           "rel": "extendSubscription"
         }
       ]
-    }
-  ],
-  "unbound": [
+    },
     {
       "id": "agws_schneefall",
       "name": "Der Klassiker",
       "exsid": "s9eifzg938org23fusglf7tg37r3rasdadwd",
       "license": {
+        "is_bound": false,
         "key": "LIC-1204",
         "type": "free",
         "created": "2020-01-01T13:00:00.000Z",
-        "validUntil": null,
+        "valid_until": null,
         "subscription": "null"
       },
       "vendor": {
@@ -721,11 +751,12 @@
       },
       "releases": {
         "available": {
+          "checksum": "123xxx",
           "version": "1.1.0",
           "type": "security",
-          "releaseDate": "2020-04-06T12:12:52.620Z",
-          "shortDescription": "Fixes XSS-Bug in Checkout Flow",
-          "downloadUrl": "https:\/\/storage.jtl-software.com/extensions/get/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD"
+          "release_date": "2020-04-06T12:12:52.620Z",
+          "short_description": "Fixes XSS-Bug in Checkout Flow",
+          "download_url": "https:\/\/storage.jtl-software.com/extensions/get/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD"
         }
       },
       "links": [
@@ -744,10 +775,11 @@
       "name": "Schlüsselwörter automatisch verlinken",
       "exsid": "s9eifzg938org23fusglf7tg37r3rasdadwd",
       "license": {
+        "is_bound": false,
         "key": "LIC-1204",
         "type": "free",
         "created": "2020-01-01T13:00:00.000Z",
-        "validUntil": null,
+        "valid_until": null,
         "subscription": "null"
       },
       "vendor": {
@@ -756,11 +788,12 @@
       },
       "releases": {
         "available": {
+          "checksum": "123xxx",
           "version": "1.1.0",
           "type": "security",
-          "releaseDate": "2020-04-06T12:12:52.620Z",
-          "shortDescription": "Fixes XSS-Bug in Checkout Flow",
-          "downloadUrl": "https:\/\/storage.jtl-software.com/extensions/get/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD"
+          "release_date": "2020-04-06T12:12:52.620Z",
+          "short_description": "Fixes XSS-Bug in Checkout Flow",
+          "download_url": "https:\/\/storage.jtl-software.com/extensions/get/dk44djdnUm1LVlE9PSIsInZhbHVlIjoiVWZD"
         }
       },
       "links": [

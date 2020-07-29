@@ -7,7 +7,6 @@ use JTL\Alert\Alert;
 use JTL\Boxes\Factory;
 use JTL\Boxes\Renderer\DefaultRenderer;
 use JTL\Campaign;
-use JTL\Cart\Cart;
 use JTL\Cart\CartHelper;
 use JTL\Cart\PersistentCart;
 use JTL\Catalog\Category\Kategorie;
@@ -214,7 +213,6 @@ class IOMethods
         }
         $cart = Frontend::getCart();
         CartHelper::addVariationPictures($cart);
-        /** @var Cart $cart */
         $cart->fuegeEin($productID, $amount, $properties)
              ->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERSANDPOS)
              ->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
@@ -1148,7 +1146,7 @@ class IOMethods
                 }
             }
         } else {
-            throw new \Exception('Article not found ' . $parentProductID);
+            throw new Exception('Article not found ' . $parentProductID);
         }
         $objResponse->callEvoProductFunction('variationRefreshAll', $wrapper);
 

@@ -1,12 +1,12 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace VueInstaller\Faker\de_DE;
+namespace JTL\Installation\Faker\de_DE;
 
 /**
  * Class Commerce
- * @package VueInstaller\Faker\de_DE
+ * @package JTL\Installation\Faker\de_DE
  */
-class Commerce extends \VueInstaller\Faker\Commerce
+class Commerce extends \JTL\Installation\Faker\Commerce
 {
     /**
      * @var array
@@ -61,7 +61,7 @@ class Commerce extends \VueInstaller\Faker\Commerce
     /**
      * @return string
      */
-    public function productName()
+    public function productName(): string
     {
         $product = static::randomElement(static::$product);
         $suffix  = $this->adjectiveSuffix($product) ?: '';

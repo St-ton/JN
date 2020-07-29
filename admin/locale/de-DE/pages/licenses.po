@@ -59,6 +59,9 @@ msgstr "Lizenz abgelaufen am %s"
 msgid "Version %s available"
 msgstr "Version %s verfügbar"
 
+msgid "No version available"
+msgstr "Aktuell keine Version verfügbar"
+
 msgid "Valid until %s"
 msgstr "gültig bis %s"
 
@@ -118,3 +121,9 @@ msgstr "Lizenzen"
 
 msgid "last update"
 msgstr "Zuletzt aktualisiert"
+
+msgid "Archive checksum validation failed"
+msgstr "Validierung der Prüsumme fehlgeschlagen"
+
+msgid "Could not validate archive"
+msgstr "Archiv konnte nicht validiert werden"

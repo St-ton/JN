@@ -10,6 +10,7 @@ use JTL\Shop;
 use PDO;
 use PDOException;
 use PDOStatement;
+use stdClass;
 
 /**
  * Class NiceDB
@@ -268,7 +269,7 @@ class NiceDB implements DbInterface
         $backtrace = $this->getBacktrace($backtrace);
         while (($row = $res->fetchObject()) !== false) {
             if (!empty($row->table)) {
-                $tableData            = new \stdClass();
+                $tableData            = new stdClass();
                 $tableData->type      = $row->select_type ?? '???';
                 $tableData->table     = $row->table;
                 $tableData->count     = 1;
@@ -282,7 +283,7 @@ class NiceDB implements DbInterface
                 }
                 Profiler::setSQLProfile($tableData);
             } elseif ($this->debugLevel > 1 && isset($row->Extra)) {
-                $tableData            = new \stdClass();
+                $tableData            = new stdClass();
                 $tableData->type      = $row->select_type ?? '???';
                 $tableData->message   = $row->Extra;
                 $tableData->statement = \preg_replace('/\s\s+/', ' ', $stmt);

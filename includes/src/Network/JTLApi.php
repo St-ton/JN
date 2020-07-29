@@ -5,6 +5,7 @@ namespace JTL\Network;
 use JTL\Helpers\Request;
 use JTL\Nice;
 use JTLShop\SemVer\Version;
+use stdClass;
 
 /**
  * Class JTLApi
@@ -39,9 +40,9 @@ final class JTLApi
     }
 
     /**
-     * @return \stdClass|null
+     * @return stdClass|null
      */
-    public function getSubscription(): ?\stdClass
+    public function getSubscription(): ?stdClass
     {
         if (!isset($this->session['rs']['subscription'])) {
             $uri          = self::URI . '/check/subscription';

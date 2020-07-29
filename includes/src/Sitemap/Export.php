@@ -145,7 +145,6 @@ final class Export
             'instance'  => $this
         ]);
         foreach ($factories as $factory) {
-            /** @var FactoryInterface $factory */
             foreach ($factory->getCollection($languages, $customerGroupIDs) as $item) {
                 /** @var ItemInterface $item */
                 if ($item === null) {

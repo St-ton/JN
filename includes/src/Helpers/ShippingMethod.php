@@ -373,7 +373,7 @@ class ShippingMethod
             $_SESSION['shipping_count'] = 0;
         }
         if (!\is_array($products) || \count($products) === 0) {
-            return null;
+            return '';
         }
         $iso      = $_SESSION['cLieferlandISO'] ?? false;
         $cart     = Frontend::getCart();

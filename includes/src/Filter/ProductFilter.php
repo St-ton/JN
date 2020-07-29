@@ -656,8 +656,13 @@ class ProductFilter
         if ($params['kKategorieFilter'] > 0) {
             $this->addActiveFilter($this->categoryFilter, $params['kKategorieFilter']);
         }
-        if ($params['kHerstellerFilter'] > 0) {
-            $this->addActiveFilter($this->manufacturerFilter, $params['kHerstellerFilter']);
+        if ($params['kHerstellerFilter'] > 0 || \count($params['manufacturerFilters']) > 0) {
+            $this->addActiveFilter(
+                $this->manufacturerFilter,
+                \count($params['manufacturerFilters']) > 0
+                    ? $params['manufacturerFilters']
+                    : $params['kHerstellerFilter']
+            );
         }
         if ($params['nBewertungSterneFilter'] > 0) {
             $this->addActiveFilter($this->ratingFilter, $params['nBewertungSterneFilter']);

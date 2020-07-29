@@ -86,8 +86,8 @@ msgstr "Installiert"
 msgid "Type"
 msgstr "Typ"
 
-msgid "Links"
-msgstr "Links"
+msgid "Action"
+msgstr "Aktion"
 
 msgid "Subscription"
 msgstr "Subscription"
@@ -108,7 +108,7 @@ msgid "itemDetails"
 msgstr "Details"
 
 msgid "setBinding"
-msgstr "An aktuellen Shop binden"
+msgstr "An diesen Shop binden"
 
 msgid "Update to version %s available"
 msgstr "Aktualisierung auf Version %s verfügbar"

@@ -86,8 +86,8 @@ msgstr "Installed"
 msgid "Type"
 msgstr "Typ"
 
-msgid "Links"
-msgstr "Links"
+msgid "Action"
+msgstr "Action"
 
 msgid "Subscription"
 msgstr "Subscription"

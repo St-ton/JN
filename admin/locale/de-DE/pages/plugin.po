@@ -42,7 +42,7 @@ msgid "itemDetails"
 msgstr "Details"
 
 msgid "setBinding"
-msgstr "An aktuellen Shop binden"
+msgstr "An diesen Shop binden"
 
 msgid "extendSubscription"
 msgstr "Subscription verlängern"

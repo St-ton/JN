@@ -61,6 +61,7 @@ final class PaymentPlugins extends AbstractStep
         });
 
         $question->setOnSave(function (QuestionInterface $question) {
+            // TODO: install plugins
         });
         $this->addQuestion($question);
     }

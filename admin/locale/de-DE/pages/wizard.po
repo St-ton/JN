@@ -102,7 +102,7 @@ msgid "secureDefaultSettingsDesc"
 msgstr "Aktiviert permanente SSL-Verschlüsselung (https, SSL-Zertifikat bei Ihrem Hosting-Provider erforderlich), E-Mail-Verschlüsselung via TLS und die Cookie-Flags Secure/HTTPOnly."
 
 msgid "weRecommend"
-msgstr "Wir empfehlen"
+msgstr "Wir empfehlen:"
 
 msgid "weRecommendLegalDesc"
 msgstr "Um die Plugins verwenden zu können, müssen Sie mit dem jeweiligen Partner einen separaten Vertrag abschließen. Klicken Sie auf „Mehr erfahren“, um weitere Informationen zu den einzelnen Plugins zu erhalten."

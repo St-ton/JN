@@ -4,7 +4,6 @@ namespace JTL\Backend\Wizard;
 
 use JsonSerializable;
 use JTL\DB\DbInterface;
-use JTL\Shop;
 use JTL\Update\MigrationTableTrait;
 use JTL\Update\MigrationTrait;
 use stdClass;

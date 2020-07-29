@@ -33,7 +33,7 @@ final class LegalPlugins extends AbstractStep
 
         $question = new Question($db);
         $question->setID(9);
-        $question->setSubheading(__('weRecommend') . ':');
+        $question->setSubheading(__('weRecommend'));
         $question->setSubheadingDescription(__('weRecommendLegalDesc'));
         $question->setSummaryText(__('legalTexts'));
         $question->setType(QuestionType::PLUGIN);
@@ -51,6 +51,7 @@ final class LegalPlugins extends AbstractStep
         });
 
         $question->setOnSave(function (QuestionInterface $question) {
+            // TODO: install plugins
         });
         $this->addQuestion($question);
     }

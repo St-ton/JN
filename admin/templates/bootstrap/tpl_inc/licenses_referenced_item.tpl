@@ -33,7 +33,7 @@
         {else}
             <i class="far fa-check-circle"></i> {$installedVersion}{if $referencedItem->isActive() === false} {__('(disabled)')}{/if}
         {/if}
-        {if true}
+        {if false}
             {foreach $license->getLinks() as $link}
                 {if $link->getRel() === 'clearBinding'}
                     <br>

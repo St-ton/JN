@@ -180,6 +180,15 @@ class Manager
     }
 
     /**
+     * @param string $exsID
+     * @return ExsLicense|null
+     */
+    public function getLicenseByExsID(string $exsID): ?ExsLicense
+    {
+        return (new Mapper($this))->getCollection()->getForExsID($exsID);
+    }
+
+    /**
      * @return int
      */
     private function housekeeping(): int

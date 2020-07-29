@@ -43,6 +43,17 @@ class Collection extends \Illuminate\Support\Collection
     }
 
     /**
+     * @param string $exsID
+     * @return ExsLicense|null
+     */
+    public function getForExsID(string $exsID): ?ExsLicense
+    {
+        return $this->filter(static function (ExsLicense $e) use ($exsID) {
+            return $e->getExsID() === $exsID;
+        })->first();
+    }
+
+    /**
      * @return $this
      */
     public function getActiveExpired(): self

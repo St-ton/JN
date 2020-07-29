@@ -529,7 +529,7 @@ final class LinkService implements LinkServiceInterface
         }
         $data->cURLAGB      = $linkAGB !== null ? $linkAGB->getURL() : '';
         $data->cURLWRB      = $linkWRB !== null ? $linkWRB->getURL() : '';
-        $data->cURLWRBForm  = $linkWRB !== null ? $linkWRBForm->getURL() : '';
+        $data->cURLWRBForm  = $linkWRBForm !== null ? $linkWRBForm->getURL() : '';
         $data->kLinkAGB     = $linkAGB !== null ? $linkAGB->getID() : 0;
         $data->kLinkWRB     = $linkWRB !== null ? $linkWRB->getID() : 0;
         $data->kLinkWRBForm = $linkWRB !== null ? $linkWRBForm->getID() : 0;

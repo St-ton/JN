@@ -55,29 +55,31 @@
                                             </li>
                                         {/foreach}
                                     {/if}
-                                    {foreach $Bestellung->OrderAttributes as $attribute}
-                                        {if $attribute->cName === 'Finanzierungskosten'}
-                                            {row class="type-{$smarty.const.C_WARENKORBPOS_TYP_ZINSAUFSCHLAG}"}
-                                                {col}
-                                                    {row}
-                                                        {col}
-                                                            {block name='account-order-details-finance-costs'}
-                                                                {lang key='financeCosts' section='order'}
-                                                            {/block}
-                                                        {/col}
-                                                    {/row}
-                                                {/col}
-
-                                                {block name='account-order-details-finance-costs-value'}
-                                                    {col class="col-auto ml-auto text-right price-col"}
-                                                        <strong class="price_overall">
-                                                            {$attribute->cValue}
-                                                        </strong>
+                                    {if !empty($Bestellung->OrderAttributes)}
+                                        {foreach $Bestellung->OrderAttributes as $attribute}
+                                            {if $attribute->cName === 'Finanzierungskosten'}
+                                                {row class="type-{$smarty.const.C_WARENKORBPOS_TYP_ZINSAUFSCHLAG}"}
+                                                    {col}
+                                                        {row}
+                                                            {col}
+                                                                {block name='account-order-details-finance-costs'}
+                                                                    {lang key='financeCosts' section='order'}
+                                                                {/block}
+                                                            {/col}
+                                                        {/row}
                                                     {/col}
-                                                {/block}
-                                            {/row}
-                                        {/if}
-                                    {/foreach}
+
+                                                    {block name='account-order-details-finance-costs-value'}
+                                                        {col class="col-auto ml-auto text-right price-col"}
+                                                            <strong class="price_overall">
+                                                                {$attribute->cValue}
+                                                            </strong>
+                                                        {/col}
+                                                    {/block}
+                                                {/row}
+                                            {/if}
+                                        {/foreach}
+                                    {/if}
                                 </ul>
                             {/block}
                             <ul class="list-unstyled mt-lg-5">

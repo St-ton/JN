@@ -20,7 +20,12 @@ class ExpiredExsLicense extends ExsLicense
         $this->setExsID($data->exsID);
         $this->setQueryDate(new DateTime());
         $license = new License();
+        $license->setIsBound(true);
+        $license->setKey($data->cPluginID);
         $license->setExpired(true);
+        $license->setValidUntil(new DateTime('1970-01-01'));
+        $license->setCreated(new DateTime());
+        $license->setType(self::TYPE_PLUGIN);
         $this->setLicense($license);
         $this->setID($data->cPluginID);
         $this->setState(self::STATE_ACTIVE);

@@ -24,7 +24,7 @@ class Releases
      * Link constructor.
      * @param stdClass|null $json
      */
-    public function __construct(stdClass $json = null)
+    public function __construct(?stdClass $json = null)
     {
         if ($json !== null) {
             $this->fromJSON($json);

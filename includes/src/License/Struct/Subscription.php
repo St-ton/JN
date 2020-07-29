@@ -25,7 +25,7 @@ class Subscription
      * Subscription constructor.
      * @param stdClass|null $json
      */
-    public function __construct(stdClass $json = null)
+    public function __construct(?stdClass $json = null)
     {
         if ($json !== null) {
             $this->fromJSON($json);
@@ -57,7 +57,7 @@ class Subscription
     public function setValidUntil($validUntil): void
     {
         if ($validUntil !== null) {
-            $this->validUntil = \is_a(DateTime::class, $validUntil) ? $validUntil : new DateTime($validUntil);
+            $this->validUntil = \is_a($validUntil, DateTime::class) ? $validUntil : new DateTime($validUntil);
         } else {
             $this->validUntil = null;
         }

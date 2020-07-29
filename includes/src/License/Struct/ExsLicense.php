@@ -80,7 +80,7 @@ class ExsLicense
      * ExsLicenseData constructor.
      * @param stdClass|null $json
      */
-    public function __construct(stdClass $json = null)
+    public function __construct(?stdClass $json = null)
     {
         if ($json !== null) {
             $this->fromJSON($json);
@@ -93,7 +93,7 @@ class ExsLicense
     public function fromJSON(stdClass $json): void
     {
         $this->setID($json->id);
-        $this->setType($json->type ?? self::TYPE_PLUGIN); // @todo: this should always be provided by the api!
+        $this->setType($json->type ?? self::TYPE_PLUGIN);
         $this->setName($json->name);
         $this->setExsID($json->exsid);
         if (isset($json->license)) {

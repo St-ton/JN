@@ -46,9 +46,17 @@
             $('#opc-page-wrapper').removeClass('opc-shifted');
         }
 
-        function deleteOpcDraft(draftKey)
+        function opcConfirm(draftName, text, yesCB)
         {
-            if (confirm('{__('draftDeleteSure')}')) {
+            $('#opcDeleteModalTitle').text(draftName);
+            $('#opcDeleteModalText').text(text);
+            $('#opcDeleteModal').modal('show');
+            $('#opcDeleteBtnYes').on('click', yesCB);
+        }
+
+        function deleteOpcDraft(draftKey, draftName)
+        {
+            opcConfirm(draftName, '{__('draftDeleteSure')}', () => {
                 $.ajax({
                     method: 'post',
                     url: '{$opcStartUrl}',
@@ -65,7 +73,7 @@
                         }
                     }
                 });
-            }
+            });
         }
 
         function getSelectedOpcDraftkeys()
@@ -81,7 +89,7 @@
         {
             let draftKeys = getSelectedOpcDraftkeys();
 
-            if (confirm(draftKeys.length + ' {__('deleteDraftsContinue')}')) {
+            opcConfirm('{__('warning')}', draftKeys.length + ' {__('deleteDraftsContinue')}', () => {
                 $.ajax({
                     method: 'post',
                     url: '{$opcStartUrl}',
@@ -100,7 +108,7 @@
                         }
                     }
                 });
-            }
+            });
         }
 
         function filterOpcDrafts()
@@ -320,6 +328,30 @@
                         </form>
                     </div>
                 {/if}
+            </div>
+            <div class="modal fade" id="opcDeleteModal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="opcDeleteModalTitle"></h5>
+                            <button type="button" class="opc-header-btn" data-dismiss="modal">
+                                <i class="fa fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p id="opcDeleteModalText"></p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="opcDeleteBtnYes"
+                                    class="opc-btn-primary opc-small-btn" data-dismiss="modal">
+                                {__('yes')}
+                            </button>
+                            <button type="button" class="opc-btn-secondary opc-small-btn" data-dismiss="modal">
+                                {__('no')}
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         {/if}
     </div>

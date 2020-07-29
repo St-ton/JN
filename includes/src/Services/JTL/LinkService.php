@@ -532,7 +532,7 @@ final class LinkService implements LinkServiceInterface
         $data->cURLWRBForm  = $linkWRBForm !== null ? $linkWRBForm->getURL() : '';
         $data->kLinkAGB     = $linkAGB !== null ? $linkAGB->getID() : 0;
         $data->kLinkWRB     = $linkWRB !== null ? $linkWRB->getID() : 0;
-        $data->kLinkWRBForm = $linkWRB !== null ? $linkWRBForm->getID() : 0;
+        $data->kLinkWRBForm = $linkWRBForm !== null ? $linkWRBForm->getID() : 0;
 
         $data->agbWrbNotice = $conf['bestellvorgang_wrb_anzeigen'] === '1'
         ? sprintf(

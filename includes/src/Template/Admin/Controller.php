@@ -193,6 +193,9 @@ class Controller
             ? (string)$parentConfig->Version
             : (string)$tplConfig->Version;
         $model->setVersion($version);
+        if (!empty($tplConfig->Framework)) {
+            $model->setFramework((string)$tplConfig->Framework);
+        }
         $model->setBootstrap((int)\file_exists(\PFAD_ROOT . \PFAD_TEMPLATES . $dir . '/Bootstrap.php'));
         $save = $model->save();
         if ($save === true) {

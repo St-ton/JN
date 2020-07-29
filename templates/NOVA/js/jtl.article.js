@@ -173,7 +173,7 @@
             if (wrapper[0].id.indexOf(this.options.modal.wrapper_modal.substr(1)) === -1) {
                 addClickListener();
 
-                $(document).keyup(e => {
+                $(document).on('keyup', e => {
                     if (e.key === "Escape") {
                         toggleFullscreen();
                         addClickListener();

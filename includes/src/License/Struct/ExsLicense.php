@@ -80,7 +80,7 @@ class ExsLicense
      * ExsLicenseData constructor.
      * @param stdClass|null $json
      */
-    public function __construct(?stdClass $json)
+    public function __construct(stdClass $json = null)
     {
         if ($json !== null) {
             $this->fromJSON($json);
@@ -251,7 +251,7 @@ class ExsLicense
      */
     public function setQueryDate($queryDate): void
     {
-        $this->queryDate = \is_a(DateTime::class, $queryDate) ? $queryDate : new DateTime($queryDate);
+        $this->queryDate = \is_a($queryDate, DateTime::class) ? $queryDate : new DateTime($queryDate);
     }
 
     /**

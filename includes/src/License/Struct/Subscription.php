@@ -25,7 +25,7 @@ class Subscription
      * Subscription constructor.
      * @param stdClass|null $json
      */
-    public function __construct(?stdClass $json)
+    public function __construct(stdClass $json = null)
     {
         if ($json !== null) {
             $this->fromJSON($json);

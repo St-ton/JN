@@ -100,11 +100,7 @@
         </style>
     {/if}
     {block name='head-resources-jquery'}
-{*        <script src="{$ShopURL}/{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/jquery-3.3.1.min.js"></script>*}
-
-        <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-        <script src="https://code.jquery.com/jquery-migrate-3.3.1.js"></script>
-
+        <script src="{$ShopURL}/{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/jquery-3.5.1.min.js"></script>
     {/block}
     {include file='layout/header_inline_js.tpl'}
     {$dbgBarHead}

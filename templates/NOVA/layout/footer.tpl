@@ -283,9 +283,6 @@
         {$dbgBarBody}
         {captchaMarkup getBody=false}
     {/block}
-
-    <script src="test.js.php" async></script>
-
     </body>
     </html>
 {/block}

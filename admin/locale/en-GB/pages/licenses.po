@@ -114,7 +114,7 @@ msgid "Update to version %s available"
 msgstr "Update to version %s available"
 
 msgid "storeNotLinkedDesc"
-msgstr "To access contents from the JTL-Store you have to link your account first."
+msgstr "To access contents from the JTL-Extension Store you have to link your account first."
 
 msgid "storeLink"
 msgstr "Konto verknüpfen"

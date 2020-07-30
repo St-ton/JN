@@ -881,9 +881,13 @@ class Exportformat
         if ($countOnly === true) {
             $select = 'COUNT(*) AS nAnzahl';
         } else {
-            $select     = 'tartikel.kArtikel';
-            $limit      = ' ORDER BY tartikel.kArtikel LIMIT ' . $this->getQueue()->taskLimit;
-            $condition .= ' AND tartikel.kArtikel > ' . $this->getQueue()->lastProductID;
+            $queue  = $this->getQueue();
+            $select = 'tartikel.kArtikel';
+            $limit  = ' ORDER BY tartikel.kArtikel';
+            if ($queue !== null) {
+                $limit     .= ' LIMIT ' . $queue->taskLimit;
+                $condition .= ' AND tartikel.kArtikel > ' . $this->getQueue()->lastProductID;
+            }
         }
 
         return 'SELECT ' . $select . "

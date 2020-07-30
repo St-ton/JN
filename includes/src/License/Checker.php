@@ -54,9 +54,9 @@ class Checker
     {
         $mapper     = new Mapper($manager);
         $collection = $mapper->getCollection();
-        $this->handleExpiredPluginTestLicenses($collection);
         $this->notifyPlugins($collection);
         $this->notifyTemplates($collection);
+        $this->handleExpiredPluginTestLicenses($collection);
     }
 
     /**

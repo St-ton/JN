@@ -945,16 +945,9 @@
         }
     };
 
-    var ie = /(msie|trident)/i.test(navigator.userAgent) ? navigator.userAgent.match(/(msie |rv:)(\d+(.\d+)?)/i)[2] : false;
-    if (ie && parseInt(ie) <= 9) {
-        $(document).ready(function () {
-            $.evo.register();
-        });
-    } else {
-        $(window).on('load', function () {
-            $.evo.register();
-        });
-    }
+    $(document).ready(function () {
+        $.evo.register();
+    });
 
     // PLUGIN DEFINITION
     // =================

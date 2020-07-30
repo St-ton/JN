@@ -15,7 +15,7 @@ class ExpiredExsLicense extends ExsLicense
      * @param stdClass $data
      * @throws \Exception
      */
-    public function init(stdClass $data): void
+    public function initFromPluginData(stdClass $data): void
     {
         $this->setExsID($data->exsID);
         $this->setQueryDate(new DateTime());

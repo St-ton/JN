@@ -229,7 +229,7 @@ abstract class AbstractLoader implements LoaderInterface
             $exsLicense = $manager->getLicenseByExsID($data->exsID);
             if ($exsLicense === null) {
                 $exsLicense = new ExpiredExsLicense();
-                $exsLicense->init($data);
+                $exsLicense->initFromPluginData($data);
             }
             $license->setExsLicense($exsLicense);
         }

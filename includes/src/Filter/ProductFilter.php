@@ -573,7 +573,8 @@ class ProductFilter
             'nAnzahl'                => 0,
             'nSterne'                => 0,
             'customFilters'          => [],
-            'searchSpecialFilters'   => []
+            'searchSpecialFilters'   => [],
+            'manufacturerFilters'    => []
         ];
     }
 

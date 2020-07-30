@@ -1095,7 +1095,7 @@ final class Shop
             'nSterne'                => self::$nSterne,
             'customFilters'          => self::$customFilters,
             'searchSpecialFilters'   => self::$searchSpecialFilterIDs,
-            'manufacturerFilters'   => self::$manufacturerFilterIDs
+            'manufacturerFilters'    => self::$manufacturerFilterIDs
         ];
     }
 

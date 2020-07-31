@@ -193,11 +193,53 @@
                     {/block}
                 {/row}
             {/if}
-            {if !$oPosition@last}
-                {block name='account-order-item-last-hr'}
-                    <hr class="my-3">
-                {/block}
-            {/if}
+            {block name='account-order-item-last-hr'}
+                <hr class="my-3">
+            {/block}
         {/foreach}
+        {row}
+            {col xl=5 md=6 class='ml-auto pt-4 pb-3'}
+                {block name='account-order-items-total'}
+                    <ul class="list-unstyled">
+                        {if $Bestellung->GuthabenNutzen == 1}
+                            <li class="mb-2">
+                                {lang key='useCredit' section='account data'}: <span class="float-right text-nowrap">{$Bestellung->GutscheinLocalized}</span>
+                            </li>
+                        {/if}
+                        {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N'}
+                            {foreach $Bestellung->Steuerpositionen as $taxPosition}
+                                <li class="text-muted font-size-sm">
+                                    {$taxPosition->cName} <span class="float-right text-nowrap">{$taxPosition->cPreisLocalized}</span>
+                                </li>
+                            {/foreach}
+                        {/if}
+                        <li class="font-weight-bold mb-2">
+                            {lang key='totalSum' section='global'} {if $NettoPreise} {lang key='gross' section='global'}{/if}:
+                            <span class="float-right text-nowrap">{$Bestellung->WarensummeLocalized[0]}</span>
+                        </li>
+                        {if !empty($Bestellung->OrderAttributes)}
+                            {foreach $Bestellung->OrderAttributes as $attribute}
+                                {if $attribute->cName === 'Finanzierungskosten'}
+                                    {row class="type-{$smarty.const.C_WARENKORBPOS_TYP_ZINSAUFSCHLAG}"}
+                                        {block name='account-order-items-finance-costs'}
+                                            {col}
+                                                {lang key='financeCosts' section='order'}
+                                            {/col}
+                                        {/block}
+                                        {block name='account-order-items-finance-costs-value'}
+                                            {col class="col-auto ml-auto text-right price-col"}
+                                                <strong class="price_overall">
+                                                    {$attribute->cValue}
+                                                </strong>
+                                            {/col}
+                                        {/block}
+                                    {/row}
+                                {/if}
+                            {/foreach}
+                        {/if}
+                    </ul>
+                {/block}
+            {/col}
+        {/row}
     </div>
 {/block}

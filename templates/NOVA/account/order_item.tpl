@@ -1,8 +1,10 @@
 {block name='account-order-item'}
     <div class="order-items card-table">
+        {block name='account-order-item-items'}
         {foreach $Bestellung->Positionen as $oPosition}
             {if !(is_string($oPosition->cUnique) && !empty($oPosition->cUnique) && (int)$oPosition->kKonfigitem > 0)} {*!istKonfigKind()*}
                 {row class="type-{$oPosition->nPosTyp}"}
+                    {block name='account-order-item-items-data'}
                     {col cols=12 md="{if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}6{else}8{/if}"}
                         {row}
                             {col cols=3 md=4 class='pr-1'}
@@ -159,6 +161,7 @@
                             {/col}
                         {/row}
                     {/col}
+                    {/block}
 
                     {block name='account-order-item-price'}
                         {block name='account-order-item-price-qty'}
@@ -197,6 +200,8 @@
                 <hr class="my-3">
             {/block}
         {/foreach}
+        {/block}
+        {block name='account-order-items-total-wrapper'}
         {row}
             {col xl=5 md=6 class='ml-auto pt-4 pb-3'}
                 {block name='account-order-items-total'}
@@ -274,5 +279,6 @@
                 {/block}
             {/col}
         {/row}
+        {/block}
     </div>
 {/block}

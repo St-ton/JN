@@ -64,7 +64,7 @@ class Checker
      */
     private function notifyTemplates(Collection $collection): void
     {
-        foreach ($collection->getTemplates()->getActiveExpired() as $license) {
+        foreach ($collection->getTemplates()->getBoundExpired() as $license) {
             /** @var ExsLicense $license */
             $this->logger->info(\sprintf('License for template %s is expired.', $license->getID()));
             $bootstrapper = BootChecker::bootstrap($license->getID());
@@ -81,7 +81,7 @@ class Checker
     {
         $dispatcher = Dispatcher::getInstance();
         $loader     = new PluginLoader($this->db, $this->cache);
-        foreach ($collection->getPlugins()->getActiveExpired() as $license) {
+        foreach ($collection->getPlugins()->getBoundExpired() as $license) {
             /** @var ExsLicense $license */
             $this->logger->info(\sprintf('License for plugin %s is expired.', $license->getID()));
             if (($p = PluginHelper::bootstrap($license->getReferencedItem()->getInternalID(), $loader)) !== null) {
@@ -96,7 +96,7 @@ class Checker
      */
     private function handleExpiredPluginTestLicenses(Collection $collection): void
     {
-        $expired = $collection->getExpiredActiveTests()->filter(static function (ExsLicense $e) {
+        $expired = $collection->getExpiredBoundTests()->filter(static function (ExsLicense $e) {
             return $e->getType() === ExsLicense::TYPE_PLUGIN;
         });
         if ($expired->count() === 0) {

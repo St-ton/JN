@@ -1,6 +1,6 @@
 {include file='tpl_inc/header.tpl'}
 
-{include file='tpl_inc/seite_header.tpl' cTitel=__('Licenses') cBeschreibung=__('pageDesc') cDokuURL=__('https://www.jtl-software.de')}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('My purchases') cBeschreibung=__('pageDesc') cDokuURL=__('https://www.jtl-software.de')}
 
 <div id="content">
     {include file='tpl_inc/licenses_store_connection.tpl'}

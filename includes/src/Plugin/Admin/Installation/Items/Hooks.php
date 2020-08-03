@@ -3,6 +3,7 @@
 namespace JTL\Plugin\Admin\Installation\Items;
 
 use JTL\Plugin\InstallCode;
+use stdClass;
 
 /**
  * Class Hooks
@@ -40,7 +41,7 @@ class Hooks extends AbstractItem
                     $nHookID   = (int)$hook['id'];
                     $nPriority = isset($hook['priority']) ? (int)$hook['priority'] : 5;
                 } elseif (isset($hits2[0]) && \mb_strlen($hits2[0]) === \mb_strlen($i)) {
-                    $plugin             = new \stdClass();
+                    $plugin             = new stdClass();
                     $plugin->kPlugin    = $this->plugin->kPlugin;
                     $plugin->nHook      = $nHookID;
                     $plugin->nPriority  = $nPriority;
@@ -51,7 +52,7 @@ class Hooks extends AbstractItem
             }
         } elseif ($count > 1) {
             $hook               = $node[0];
-            $plugin             = new \stdClass();
+            $plugin             = new stdClass();
             $plugin->kPlugin    = $this->plugin->kPlugin;
             $plugin->nHook      = (int)$hook['Hook attr']['id'];
             $plugin->nPriority  = isset($hook['Hook attr']['priority'])

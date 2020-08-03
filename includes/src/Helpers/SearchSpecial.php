@@ -267,7 +267,6 @@ class SearchSpecial
                     AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.cNeu = 'Y'
-                    AND dErscheinungsdatum <= NOW()
                     AND DATE_SUB(NOW(), INTERVAL " . $days . ' DAY) < tartikel.dErstellt
                     ' . self::getParentSQL() . '
                     ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),

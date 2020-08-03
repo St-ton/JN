@@ -668,8 +668,9 @@ class GUI
     selectImageProp(propName)
     {
         this.openElFinder(file => {
-            this.imageSelectCB(file.url, propName);
-            this.configForm.find('[name="' + propName + '"]').val(file.url);
+            let url = file.url.slice(file.baseUrl.length);
+            this.imageSelectCB(url, propName, file.url);
+            this.configForm.find('[name="' + propName + '"]').val(url);
             this.configForm.find('#preview-img-' + propName).attr('src', file.url);
         }, 'image');
     }

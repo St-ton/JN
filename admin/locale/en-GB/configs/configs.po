@@ -1734,7 +1734,7 @@ msgid "bilder_hintergrundfarbe_name"
 msgstr "Background colour"
 
 msgid "bilder_hintergrundfarbe_desc"
-msgstr "If file format is 'JPG', please select colors without transparency, e.g.: rgb(255,0,0)."
+msgstr "Select a backgorund color for images. Only in connection with setting \"Match image size to container size - Yes\"."
 
 msgid "sonstiges_livesuche_all_top_count_name"
 msgstr "Number of top search queries to be displayed"

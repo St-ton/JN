@@ -254,7 +254,6 @@ class Template
             $xml = $this->reader->getXML($dir);
             if ($xml !== null && isset($xml->Boxes) && \count($xml->Boxes) === 1) {
                 $boxXML = $xml->Boxes[0];
-                /** @var SimpleXMLElement $ditem */
                 foreach ($boxXML as $ditem) {
                     $cPosition         = (string)$ditem->attributes()->Position;
                     $bAvailable        = (bool)(int)$ditem->attributes()->Available;

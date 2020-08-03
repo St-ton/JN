@@ -31,7 +31,7 @@
                             }
                         {/if}
                         <span class="word-break mr-3">{$attributeValue->getValue()|escape:'html'}</span>
-                        <span class="badge badge-outline-secondary ml-auto">{$attributeValue->getCount()}</span>
+                        {badge variant="outline-secondary" class="ml-auto"}{$attributeValue->getCount()}{/badge}
                     </div>
                 {/dropdownitem}
             {/block}
@@ -61,7 +61,7 @@
                                     }
                                 {/if}
                                 <span class="word-break">{$attributeValue->getValue()|escape:'html'}</span>
-                                <span class="badge badge-outline-secondary ml-auto">{$attributeValue->getCount()}</span>
+                                {badge variant="outline-secondary" class="ml-auto"}{$attributeValue->getCount()}{/badge}
                             </div>
                         {/link}
                     {/block}
@@ -98,7 +98,7 @@
                                 <span class="word-break">
                                     {$attributeValue->getValue()|escape:'html'}
                                 </span>
-                                <span class="badge badge-outline-secondary ml-auto">{$attributeValue->getCount()}</span>
+                                {badge variant="outline-secondary" class="ml-auto"}{$attributeValue->getCount()}{/badge}
                             </div>
                         {/link}
                     {/block}

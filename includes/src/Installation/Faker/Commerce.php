@@ -1,12 +1,12 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace VueInstaller\Faker;
+namespace JTL\Installation\Faker;
 
 use Faker\Provider\Base as FakerBase;
 
 /**
  * Class Commerce
- * @package VueInstaller\Faker
+ * @package JTL\Installation\Faker
  */
 class Commerce extends FakerBase
 {
@@ -44,7 +44,7 @@ class Commerce extends FakerBase
     /**
      * @return string
      */
-    public function productName()
+    public function productName(): string
     {
         return static::randomElement(static::$adjective)
             . ' ' . static::randomElement(static::$material)
@@ -54,7 +54,7 @@ class Commerce extends FakerBase
     /**
      * @return string
      */
-    public function department()
+    public function department(): string
     {
         return static::randomElement(static::$department);
     }
@@ -62,7 +62,7 @@ class Commerce extends FakerBase
     /**
      * @return string
      */
-    public function material()
+    public function material(): string
     {
         return static::randomElement(static::$material);
     }

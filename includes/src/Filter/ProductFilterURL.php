@@ -12,6 +12,7 @@ use JTL\Filter\Items\SearchSpecial;
 use JTL\Filter\States\BaseSearchQuery;
 use JTL\Session\Frontend;
 use JTL\Shop;
+use stdClass;
 use function Functional\first;
 
 /**
@@ -61,7 +62,7 @@ class ProductFilterURL
         if ($base->isInitialized()) {
             $filterSeoUrl = $base->getSeo($languageID);
             if (!empty($filterSeoUrl)) {
-                $seoParam          = new \stdClass();
+                $seoParam          = new stdClass();
                 $seoParam->value   = '';
                 $seoParam->sep     = '';
                 $seoParam->param   = '';
@@ -156,7 +157,7 @@ class ProductFilterURL
                     }
                 }
                 if ($createEntry === true) {
-                    $filterSeoData        = new \stdClass();
+                    $filterSeoData        = new stdClass();
                     $filterSeoData->value = $filterValue;
                     $filterSeoData->sep   = $filter->getUrlParamSEO();
                     $filterSeoData->seo   = $filter->getSeo($languageID);
@@ -210,8 +211,8 @@ class ProductFilterURL
     }
 
     /**
-     * @param \stdClass[] $seoParts
-     * @param array       $nonSeoParts
+     * @param stdClass[] $seoParts
+     * @param array      $nonSeoParts
      * @return string
      */
     private function buildURLString(array $seoParts, array $nonSeoParts): string
@@ -382,7 +383,7 @@ class ProductFilterURL
     /**
      * converts legacy stdClass filters to real filter instances
      *
-     * @param \stdClass|FilterInterface $extraFilter
+     * @param stdClass|FilterInterface $extraFilter
      * @return FilterInterface|null
      * @throws \InvalidArgumentException
      */

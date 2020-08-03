@@ -87,11 +87,11 @@ class Status
 
     /**
      * @return StatsItem
-     * @throws \Exception
+     * @throws Exception
      */
     public function getImageCache(): StatsItem
     {
-        return Product::getStats();
+        return (new Product($this->db))->getStats();
     }
 
     /**
@@ -208,7 +208,7 @@ class Status
 
     /**
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function hasPendingUpdates(): bool
     {
@@ -276,7 +276,8 @@ class Status
      */
     public function hasStandardTemplateIssue(): bool
     {
-        return $this->db->select('ttemplate', 'eTyp', 'standard') === null;
+        return $this->db->select('ttemplate', 'eTyp', 'standard') === null
+            || Shop::Container()->getTemplateService()->getActiveTemplate()->getTemplate() === null;
     }
 
     /**
@@ -480,7 +481,7 @@ class Status
 
     /**
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function needPasswordRehash2FA(): bool
     {

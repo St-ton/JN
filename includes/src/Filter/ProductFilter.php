@@ -915,7 +915,6 @@ class ProductFilter
         $filter = \array_filter(
             $this->filters,
             static function ($f) use ($filterClassName) {
-                /** @var FilterInterface $f */
                 return $f->getClassName() === $filterClassName;
             }
         );
@@ -932,7 +931,6 @@ class ProductFilter
         $filter = \array_filter(
             $this->activeFilters,
             static function ($f) use ($filterClassName) {
-                /** @var FilterInterface $f */
                 return $f->getClassName() === $filterClassName;
             }
         );
@@ -948,7 +946,6 @@ class ProductFilter
         return \array_filter(
             $this->filters,
             static function ($e) {
-                /** @var FilterInterface $e */
                 return $e->isCustom();
             }
         );
@@ -1844,7 +1841,6 @@ class ProductFilter
             $values        = \implode(
                 ',',
                 \array_map(static function ($f) {
-                    /** @var FilterInterface $f */
                     $val = $f->getValue();
 
                     return \is_array($val) ? \implode(',', $val) : $val;

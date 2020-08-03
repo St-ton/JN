@@ -5,6 +5,7 @@ use JTL\Catalog\Currency;
 use JTL\Cron\LegacyCron;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
+use JTL\Exportformat;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Shop;
@@ -49,7 +50,10 @@ function holeExportformatCron(): array
             ['id' => (int)$export->cronID],
             ReturnType::SINGLE_OBJECT
         );
-        $export->nAnzahlArtikel  = holeMaxExportArtikelAnzahl($export);
+        $exportFormat            = new Exportformat($export->kExportformat, $db);
+        $export->nAnzahlArtikel  = (object)[
+            'nAnzahl' => $exportFormat->getExportProductCount(),
+        ];
     }
 
     return $exports;

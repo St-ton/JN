@@ -20527,16 +20527,6 @@ aside .box-monthlynews a .value:hover {
   width: 100%;
 }
 
-.square, .productbox-image-wrapper {
-  display: flex;
-  position: relative;
-}
-.square::before, .productbox-image-wrapper::before {
-  content: "";
-  display: inline-block;
-  padding-bottom: 100%;
-}
-
 .slick-slide .square, .slick-slide .productbox-image-wrapper {
   display: flex !important;
 }
@@ -21722,6 +21712,9 @@ a[data-toggle=collapse][aria-expanded=true] i.fa-chevron-down,
   border-width: 0;
 }
 
+.table-vertical-middle {
+  margin-bottom: 0;
+}
 .table-vertical-middle th, .table-vertical-middle td {
   vertical-align: middle;
 }
@@ -21803,6 +21796,13 @@ table caption {
   left: 50%;
   color: #9b9b9b;
   z-index: 100000;
+}
+
+body > .jtl-spinner {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .modal-body.js-collapse-filter {

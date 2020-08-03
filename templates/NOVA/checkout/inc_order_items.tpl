@@ -326,7 +326,7 @@
                         {/if}
                         {row class="shipping-costs text-right"}
                            {col cols=12}
-                                <small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$shippingCosts:$FavourableShipping->cCountryCode key='shippingInformationSpecific' section='basket'}</small>
+                                <small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$shippingCosts:$FavourableShipping->country->getName() key='shippingInformationSpecific' section='basket'}</small>
                             {/col}
                         {/row}
                     {elseif empty($FavourableShipping) && empty($smarty.session.Versandart)}
@@ -337,30 +337,32 @@
                         {/row}
                     {/if}
                 {/block}
-                {foreach $smarty.session.Warenkorb->OrderAttributes|default:null as $attribute}
-                    {if $attribute->cName === 'Finanzierungskosten'}
-                        <hr class="my-3">
-                        {row class="type-{$smarty.const.C_WARENKORBPOS_TYP_ZINSAUFSCHLAG}"}
-                            {col}
-                                {row}
-                                    {col}
-                                        {block name='checkout-inc-order-items-finance-costs'}
-                                            {lang key='financeCosts' section='order'}
-                                        {/block}
-                                    {/col}
-                                {/row}
-                            {/col}
-
-                            {block name='checkout-inc-order-items-finance-costs-value'}
-                                {col class="col-auto ml-auto text-right price-col"}
-                                    <strong class="price_overall">
-                                        {$attribute->cValue}
-                                    </strong>
+                {if !empty($smarty.session.Warenkorb->OrderAttributes)}
+                    {foreach $smarty.session.Warenkorb->OrderAttributes as $attribute}
+                        {if $attribute->cName === 'Finanzierungskosten'}
+                            <hr class="my-3">
+                            {row class="type-{$smarty.const.C_WARENKORBPOS_TYP_ZINSAUFSCHLAG}"}
+                                {col}
+                                    {row}
+                                        {col}
+                                            {block name='checkout-inc-order-items-finance-costs'}
+                                                {lang key='financeCosts' section='order'}
+                                            {/block}
+                                        {/col}
+                                    {/row}
                                 {/col}
-                            {/block}
-                        {/row}
-                    {/if}
-                {/foreach}
+
+                                {block name='checkout-inc-order-items-finance-costs-value'}
+                                    {col class="col-auto ml-auto text-right price-col"}
+                                        <strong class="price_overall">
+                                            {$attribute->cValue}
+                                        </strong>
+                                    {/col}
+                                {/block}
+                            {/row}
+                        {/if}
+                    {/foreach}
+                {/if}
             {/col}
         {/row}
     {/block}

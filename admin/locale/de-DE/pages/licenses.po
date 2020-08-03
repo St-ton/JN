@@ -62,14 +62,29 @@ msgstr "Version %s verfügbar"
 msgid "No version available"
 msgstr "Aktuell keine Version verfügbar"
 
+msgid "Valid"
+msgstr "gültig"
+
 msgid "Valid until %s"
 msgstr "gültig bis %s"
+
+msgid "Subscription valid until %s"
+msgstr "Subscription gültig bis %s"
+
+msgid "License valid until %s"
+msgstr "Lizenz gültig bis %s"
+
+msgid "Warning: License only valid until %s"
+msgstr "Achtung: Lizenz nur noch gültig bis %s"
+
+msgid "Warning: Subscription only valid until %s"
+msgstr "Achtung: Subscription nur noch gültig bis %s"
 
 msgid "Warning: only valid until %s"
 msgstr "Achtung: nur noch gültig bis %s"
 
-msgid "Active licenses"
-msgstr "Aktive Lizenzen"
+msgid "Bound licenses"
+msgstr "Gebundene Lizenzen"
 
 msgid "pageDesc"
 msgstr "Hier können Sie Ihre verfügbaren und aktiven Lizenzen einsehen."
@@ -82,6 +97,9 @@ msgstr "Name"
 
 msgid "Installed"
 msgstr "Installiert"
+
+msgid "State"
+msgstr "Status"
 
 msgid "Type"
 msgstr "Typ"
@@ -121,6 +139,9 @@ msgstr "Konto verknüpfen"
 
 msgid "unlink"
 msgstr "Verknüpfung aufheben"
+
+msgid "Validity"
+msgstr "Gültigkeit"
 
 msgid "updates available"
 msgstr "Updates verfügbar"

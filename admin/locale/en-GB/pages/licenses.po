@@ -17,8 +17,8 @@ msgstr "Licenses"
 msgid "(disabled)"
 msgstr "(disabled)"
 
-msgid "Active licenses"
-msgstr "Active licenses"
+msgid "Bound licenses"
+msgstr "Bound licenses"
 
 msgid "Update"
 msgstr "Update"
@@ -65,8 +65,23 @@ msgstr "Subscription expired on %s"
 msgid "License expired on %s"
 msgstr "License expired on %s"
 
+msgid "Valid"
+msgstr "Valid"
+
 msgid "Valid until %s"
 msgstr "Valid until %s"
+
+msgid "Subscription valid until %s"
+msgstr "Subscription valid until %s"
+
+msgid "License valid until %s"
+msgstr "License valid until %s"
+
+msgid "Warning: License only valid until %s"
+msgstr "Warning: License only valid until %s"
+
+msgid "Warning: Subscription only valid until %s"
+msgstr "Warning: Subscription only valid until %s"
 
 msgid "Warning: only valid until %s"
 msgstr "Warning: only valid until %s"
@@ -82,6 +97,9 @@ msgstr "Name"
 
 msgid "Installed"
 msgstr "Installed"
+
+msgid "State"
+msgstr "State"
 
 msgid "Type"
 msgstr "Typ"
@@ -121,6 +139,9 @@ msgstr "Konto verknüpfen"
 
 msgid "unlink"
 msgstr "unlink"
+
+msgid "Validity"
+msgstr "Validity"
 
 msgid "updates available"
 msgstr "updates available"

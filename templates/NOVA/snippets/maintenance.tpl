@@ -1,15 +1,15 @@
 {block name='maintenance-page'}
-    {block name='layout-header-doctype'}<!DOCTYPE html>{/block}
-    <html {block name='layout-header-html-attributes'}lang="{$meta_language}" itemscope {if $nSeitenTyp === $smarty.const.URLART_ARTIKEL}itemtype="http://schema.org/ItemPage"
+    {block name='layout-maintenance-header-doctype'}<!DOCTYPE html>{/block}
+    <html {block name='layout-maintenance-header-html-attributes'}lang="{$meta_language}" itemscope {if $nSeitenTyp === $smarty.const.URLART_ARTIKEL}itemtype="http://schema.org/ItemPage"
           {elseif $nSeitenTyp === $smarty.const.URLART_KATEGORIE}itemtype="http://schema.org/CollectionPage"
           {else}itemtype="http://schema.org/WebPage"{/if}{/block}>
-    {block name='layout-header-head'}
+    {block name='layout-maintenance-header-head'}
         <head>
-            {block name='layout-header-head-meta'}
+            {block name='layout-maintenance-header-head-meta'}
                 <meta http-equiv="content-type" content="text/html; charset={$smarty.const.JTL_CHARSET}">
-                <meta name="description" itemprop="description" content={block name='layout-header-head-meta-description'}"{$meta_description|truncate:1000:"":true}{/block}">
+                <meta name="description" itemprop="description" content={block name='layout-maintenance-header-head-meta-description'}"{$meta_description|truncate:1000:"":true}{/block}">
                 {if !empty($meta_keywords)}
-                    <meta name="keywords" itemprop="keywords" content="{block name='layout-header-head-meta-keywords'}{$meta_keywords|truncate:255:'':true}{/block}">
+                    <meta name="keywords" itemprop="keywords" content="{block name='layout-maintenance-header-head-meta-keywords'}{$meta_keywords|truncate:255:'':true}{/block}">
                 {/if}
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -34,17 +34,17 @@
                 {/if}
 
             {/block}
-            <title itemprop="name">{block name='layout-header-head-title'}{$meta_title}{/block}</title>
+            <title itemprop="name">{block name='layout-maintenance-header-head-title'}{$meta_title}{/block}</title>
 
             {if !empty($cCanonicalURL)}
                 <link rel="canonical" href="{$cCanonicalURL}">
             {/if}
 
-            {block name='layout-header-head-icons'}
+            {block name='layout-maintenance-header-head-icons'}
                 <link type="image/x-icon" href="{$shopFaviconURL}" rel="icon">
             {/block}
 
-            {block name='layout-header-head-resources'}
+            {block name='layout-maintenance-header-head-resources'}
                 {if empty($parentTemplateDir)}
                     {$templateDir = $currentTemplateDir}
                 {else}
@@ -84,8 +84,8 @@
             {/block}
         </head>
     {/block}
-        <body id="main-wrapper" class="text-center font-size-1.5x pt-5 vh-100">
             {block name='snippets-maintenance-content'}
+            <body id="main-wrapper" class="text-center font-size-1.5x pt-5 vh-100">
                 {container class="d-flex flex-column h-100" fluid=true}
                  {row class="mb-5 h-100"}
                     {col class="my-auto" cols=12 md=6 offset-md=3}
@@ -111,7 +111,7 @@
                     {/col}
                 {/row}
                 {/container}
+            </body>
             {/block}
-        </body>
     </html>
 {/block}

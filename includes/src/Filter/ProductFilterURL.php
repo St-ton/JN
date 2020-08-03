@@ -247,7 +247,19 @@ class ProductFilterURL
         $extraFilter    = (new Category($this->productFilter))->init(null)->setDoUnset(true);
         $_categoriesURL = $this->getURL($extraFilter);
         $url->setCategories($_categoriesURL);
-        $this->productFilter->getCategoryFilter()->setUnsetFilterURL($_categoriesURL);
+        $categoryFilter       = $this->productFilter->getCategoryFilter();
+        $categoryFilterValues = $categoryFilter->getValue();
+        if (\is_array($categoryFilterValues)) {
+            $urls             = [];
+            $additionalFilter = (new Category($this->productFilter))->setDoUnset(true);
+            foreach ($categoryFilterValues as $value) {
+                $additionalFilter->init($value)->setValue($value);
+                $urls[$value] = $this->getURL($additionalFilter);
+            }
+            $categoryFilter->setUnsetFilterURL($urls);
+        } else {
+            $categoryFilter->setUnsetFilterURL($_categoriesURL);
+        }
 
         $extraFilter       = (new Manufacturer($this->productFilter))->init(null)->setDoUnset(true);
         $_manufacturersURL = $this->getURL($extraFilter);

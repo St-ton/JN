@@ -4,6 +4,7 @@ namespace JTL\Filter\Items;
 
 use JTL\Catalog\Category\Kategorie;
 use JTL\DB\ReturnType;
+use JTL\Filter\FilterInterface;
 use JTL\Filter\Join;
 use JTL\Filter\Option;
 use JTL\Filter\ProductFilter;
@@ -41,20 +42,51 @@ class Category extends BaseCategory
     /**
      * @inheritdoc
      */
+    public function setValue($value): FilterInterface
+    {
+        $this->value = \is_array($value) ? $value : [(int)$value];
+
+        return $this;
+    }
+
+    /**
+     * @param array|int|string $value
+     * @return $this
+     */
+    public function setValueCompat($value): FilterInterface
+    {
+        $this->value = [$value];
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getValueCompat()
+    {
+        return \is_array($this->value) ? $this->value[0] : $this->value;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getSQLCondition(): string
     {
+        $values = ' IN (' . \implode(', ', $this->getValue())  . ')';
+
         if ($this->getIncludeSubCategories() === true) {
             return ' tkategorieartikel.kKategorie IN (
                         SELECT tchild.kKategorie FROM tkategorie AS tparent
                             JOIN tkategorie AS tchild
                                 ON tchild.lft BETWEEN tparent.lft AND tparent.rght
-                                WHERE tparent.kKategorie = ' . $this->getValue() . ')';
+                                WHERE tparent.kKategorie ' . $values . ')';
         }
 
         return $this->getConfig('navigationsfilter')['kategoriefilter_anzeigen_als'] === 'HF'
-            ? '(tkategorieartikelgesamt.kOberKategorie = ' . $this->getValue() .
-            ' OR tkategorieartikelgesamt.kKategorie = ' . $this->getValue() . ') '
-            : ' tkategorieartikel.kKategorie = ' . $this->getValue();
+            ? '(tkategorieartikelgesamt.kOberKategorie ' . $values .
+            ' OR tkategorieartikelgesamt.kKategorie ' . $values . ') '
+            : ' tkategorieartikel.kKategorie ' . $values;
     }
 
     /**

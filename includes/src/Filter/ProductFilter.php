@@ -574,7 +574,8 @@ class ProductFilter
             'nSterne'                => 0,
             'customFilters'          => [],
             'searchSpecialFilters'   => [],
-            'manufacturerFilters'    => []
+            'manufacturerFilters'    => [],
+            'categoryFilters'        => []
         ];
     }
 
@@ -654,8 +655,12 @@ class ProductFilter
             $this->baseState = $this->searchSpecial;
         }
 
-        if ($params['kKategorieFilter'] > 0) {
-            $this->addActiveFilter($this->categoryFilter, $params['kKategorieFilter']);
+        if ($params['kKategorieFilter'] > 0 && \count($params['categoryFilters']) === 0) {
+            // backwards compatibility
+            $params['categoryFilters'][] = $params['kKategorieFilter'];
+        }
+        if (\count($params['categoryFilters']) > 0) {
+            $this->addActiveFilter($this->categoryFilter, $params['categoryFilters']);
         }
         if ($params['kHerstellerFilter'] > 0 || \count($params['manufacturerFilters']) > 0) {
             $this->addActiveFilter(

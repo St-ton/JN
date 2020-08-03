@@ -1,13 +1,15 @@
 {block name='checkout-inc-billing-address-form'}
     <fieldset>
         {block name='checkout-inc-billing-address-form-legend'}
-            <div class="h2">
-                {if isset($checkout)}
-                    {lang key='proceedNewCustomer' section='checkout'}
-                {elseif $nSeitenTyp === $smarty.const.PAGE_MEINKONTO}
-                    {lang key='myPersonalData'}
-                {/if}
-            </div>
+            {if isset($checkout) || $nSeitenTyp === $smarty.const.PAGE_MEINKONTO}
+                <div class="h2">
+                    {if isset($checkout)}
+                        {lang key='proceedNewCustomer' section='checkout'}
+                    {elseif $nSeitenTyp === $smarty.const.PAGE_MEINKONTO}
+                        {lang key='myPersonalData'}
+                    {/if}
+                </div>
+            {/if}
             {if isset($checkout) && $Einstellungen.kaufabwicklung.bestellvorgang_unregistriert === 'Y'}
                 <div>
                     {lang key='guestOrRegistered' section='checkout'}

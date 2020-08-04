@@ -67,5 +67,12 @@
         {if $inContainer === false}
             </div>
         {/if}
+    {elseif $style === 'box-slider'}
+        <div style="{$instance->getStyleString()}">
+            {include file='snippets/product_slider.tpl'
+                productlist=$productlist
+                tplscope='box'
+            }
+        </div>
     {/if}
 {/if}

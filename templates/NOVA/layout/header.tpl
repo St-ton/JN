@@ -211,7 +211,7 @@
             window.lazySizesConfig = window.lazySizesConfig || {};
             window.lazySizesConfig.expand  = 1;
         </script>
-        <script src="{$ShopURL}/{$templateDir}js/jquery-3.4.1.min.js"></script>
+        <script src="{$ShopURL}/{$templateDir}js/jquery-3.5.1.min.js"></script>
         <script src="{$ShopURL}/{$templateDir}js/lazysizes.min.js"></script>
 
         {if $Einstellungen.template.general.use_minify === 'N'}
@@ -240,6 +240,9 @@
 
         <link rel="preload" importance="low" href="{$ShopURL}/{$templateDir}themes/base/fontawesome/webfonts/fa-solid-900.woff2" as="font" crossorigin/>
         <link rel="preload" importance="low" href="{$ShopURL}/{$templateDir}themes/base/fontawesome/webfonts/fa-regular-400.woff2" as="font" crossorigin/>
+        <link rel="preload" importance="low" href="{$ShopURL}/{$templateDir}themes/base/fonts/opensans/open-sans-600.woff2" as="font" crossorigin/>
+        <link rel="preload" importance="low" href="{$ShopURL}/{$templateDir}themes/base/fonts/opensans/open-sans-regular.woff2" as="font" crossorigin/>
+        <link rel="preload" importance="low" href="{$ShopURL}/{$templateDir}themes/base/fonts/montserrat/Montserrat-SemiBold.woff2" as="font" crossorigin/>
         <link rel="preload" href="{$ShopURL}/{$templateDir}js/app/globals.js" as="script" crossorigin>
         <link rel="preload" href="{$ShopURL}/{$templateDir}js/app/snippets/form-counter.js" as="script" crossorigin>
         <link rel="preload" href="{$ShopURL}/{$templateDir}js/app/plugins/navscrollbar.js" as="script" crossorigin>

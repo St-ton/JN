@@ -2974,3 +2974,9 @@ msgstr "Enable Consent manager"
 
 msgid "consent_manager_active_desc"
 msgstr "Specify whether to enable the Consent manager."
+
+msgid "bewertung_sortierung_name"
+msgstr "Default sorting option"
+
+msgid "bewertung_sortierung_desc"
+msgstr "Specify which sorting option is selected by default."

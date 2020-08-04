@@ -77,6 +77,26 @@ class ExsLicense
     private $referencedItem;
 
     /**
+     * @var InAppParent
+     */
+    private $parent;
+
+    /**
+     * @var bool
+     */
+    private $isInApp = false;
+
+    /**
+     * @var bool
+     */
+    private $hasSubscription = false;
+
+    /**
+     * @var bool
+     */
+    private $hasLicense = false;
+
+    /**
      * ExsLicenseData constructor.
      * @param stdClass|null $json
      */
@@ -98,11 +118,17 @@ class ExsLicense
         $this->setExsID($json->exsid);
         if (isset($json->license)) {
             $this->setLicense(new License($json->license));
+            $this->setHasLicense($this->getLicense()->getValidUntil() !== null);
+            $this->setHasSubscription($this->getLicense()->getSubscription()->getValidUntil() !== null);
         }
         $this->setVendor(new Vendor($json->vendor));
         $this->releases = new Releases($json->releases);
         foreach ($json->links as $link) {
             $this->links[] = new Link($link);
+        }
+        $this->setParent(new InAppParent($json->inapp ?? null));
+        if (isset($json->inapp->parent)) {
+            $this->setIsInApp(true);
         }
     }
 
@@ -284,5 +310,69 @@ class ExsLicense
     public function setReferencedItem(?ReferencedItemInterface $referencedItem): void
     {
         $this->referencedItem = $referencedItem;
+    }
+
+    /**
+     * @return InAppParent
+     */
+    public function getParent(): InAppParent
+    {
+        return $this->parent;
+    }
+
+    /**
+     * @param InAppParent $parent
+     */
+    public function setParent(InAppParent $parent): void
+    {
+        $this->parent = $parent;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInApp(): bool
+    {
+        return $this->isInApp;
+    }
+
+    /**
+     * @param bool $isInApp
+     */
+    public function setIsInApp(bool $isInApp): void
+    {
+        $this->isInApp = $isInApp;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasSubscription(): bool
+    {
+        return $this->hasSubscription;
+    }
+
+    /**
+     * @param bool $hasSubscription
+     */
+    public function setHasSubscription(bool $hasSubscription): void
+    {
+        $this->hasSubscription = $hasSubscription;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasLicense(): bool
+    {
+        return $this->hasLicense;
+    }
+
+    /**
+     * @param bool $hasLicense
+     */
+    public function setHasLicense(bool $hasLicense): void
+    {
+        $this->hasLicense = $hasLicense;
     }
 }

@@ -8,7 +8,7 @@
             </span>
             <hr>
         {/if}
-        {__('This is managed by parent extension %s')|sprintf:$license->getParent()->getName()}
+        {__('Managed by %s')|sprintf:$license->getParent()->getName()}
     {elseif $referencedItem !== null}
         {$licData = $license->getLicense()}
         {$subscription = $licData->getSubscription()}

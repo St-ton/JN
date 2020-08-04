@@ -164,5 +164,5 @@ msgstr "Validierung der Prüfsumme fehlgeschlagen"
 msgid "Could not validate archive"
 msgstr "Archiv konnte nicht validiert werden"
 
-msgid "This is managed by parent extension %s"
-msgstr "Wird von der Extension %s verwaltet"
+msgid "Managed by %s"
+msgstr "Wird von %s verwaltet"

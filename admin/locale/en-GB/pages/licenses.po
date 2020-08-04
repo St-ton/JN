@@ -161,5 +161,5 @@ msgstr "Archive checksum validation failed"
 msgid "Could not validate archive"
 msgstr "Could not validate archive"
 
-msgid "This is managed by parent extension %s"
-msgstr "This is managed by parent extension %s"
+msgid "Managed by %s"
+msgstr "Managed by %s"

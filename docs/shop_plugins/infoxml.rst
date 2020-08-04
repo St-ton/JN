@@ -634,8 +634,8 @@ Weitere Informationen zum Caching und den vorhandenen *Tags* finden Sie im Kapit
 Boxen
 -----
 
-Dank der Boxenverwaltung von JTL-Shop kann der Onlineshopbetreiber einfach und schnell Boxen im Onlineshop
-zu verschieben, anzulegen oder zu löschen.
+Mit Boxenverwaltung von JTL-Shop kann der Onlineshopbetreiber einfach und schnell Boxen im Onlineshop
+verschieben, anlegen oder löschen.
 
 Ein Plugin ist ebenfalls in der Lage, einen neuen Boxentyp anzulegen. Wo die Templates für diese Boxen im Plugin
 zu platzieren sind, finden Sie unter "Aufbau", im Abschnitt ":ref:`label_aufbau_boxen`". |br|
@@ -941,6 +941,71 @@ Blueprint:
 Erstellt werden können die json-Datein über den Export im *OPC-Editor*. |br|
 Wie diese Struktur unterhalb Ihres Plugins aussieht, finden Sie unter "Aufbau"
 im Abschnitt ":ref:`label_aufbau_blueprints`".
+
+Consent-Manager (ab 5.0.0)
+--------------------------
+
+Ab Shop 5.0.0 können Plugins eigene Einträge für den Consent-Manager definieren. |br|
+Dies geschieht über den XML-Knoten ``<ServicesRequiringConsent>``, der seinerseits unlimitiert viele Unterknoten vom Typ ``<Vendor>``
+enthalten kann.
+
+.. code-block:: xml
+
+    <Install>
+        ...
+        <ServicesRequiringConsent>
+                <Vendor>
+                    <ID>myItemID</ID>
+                    <Company>Meine kleine Firma GmbH</Company>
+                    <Localization iso="GER">
+                        <Name>Name meines Eintrags</Name>
+                        <Purpose>Tut etwas Tollen</Purpose>
+                        <Description>Dies ist eine Beschreibung der Funktionalität, welche Consent erfordert.
+                        </Description>
+                        <PrivacyPolicy>https://www.example.com/privacy?hl=de</PrivacyPolicy>
+                    </Localization>
+                    <Localization iso="ENG">
+                        <Name>Name of my item</Name>
+                        <Purpose>Does something great</Purpose>
+                        <Description>This is a longer description.
+                        </Description>
+                        <PrivacyPolicy>https://www.example.com/privacy</PrivacyPolicy>
+                    </Localization>
+                </Vendor>
+            </ServicesRequiringConsent>
+        ...
+    </Install>
+
+``<Vendor>``:
+
++-----------------------+-------------------------------------------------------------------------------------+
+| Elementname           | Beschreibung                                                                        |
++=======================+=====================================================================================+
+| ``<ID>`` *            | ID des Elements (``[a-zA-Z0-9_]``)                                                  |
++-----------------------+-------------------------------------------------------------------------------------+
+| ``<Company>`` *       | Firmenname                                                                          |
++-----------------------+-------------------------------------------------------------------------------------+
+| ``<Localization>`` *  | Gruppe von Übersetzungen                                                            |
++-----------------------+-------------------------------------------------------------------------------------+
+
+
+``<Localization>``:
+
++------------------------+-------------------------------------------------------------------------------------+
+| Elementname            | Beschreibung                                                                        |
++========================+=====================================================================================+
+| ``<Name>`` *           | Name der Funktionalität                                                             |
++------------------------+-------------------------------------------------------------------------------------+
+| ``<Purpose>`` *        | Zweck des Cookies                                                                   |
++------------------------+-------------------------------------------------------------------------------------+
+| ``<Description>`` *    | Ausführliche Beschreibung des Zweckes und der Funktionalität                        |
++------------------------+-------------------------------------------------------------------------------------+
+| ``<PrivacyPolicy>`` *  | Externer Link zur Datenschutzerklärung                                              |
++------------------------+-------------------------------------------------------------------------------------+
+
+
+(*) Pflichtfeld
+
 
 Adminmenü
 ---------

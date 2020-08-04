@@ -654,10 +654,15 @@ class ProductFilter
             $this->searchSpecial->init($params['kSuchspecial']);
             $this->baseState = $this->searchSpecial;
         }
-
         if ($params['kKategorieFilter'] > 0 && \count($params['categoryFilters']) === 0) {
             // backwards compatibility
-            $params['categoryFilters'][] = $params['kKategorieFilter'];
+            if (\is_array($params['kKategorieFilter'])) {
+                foreach ($params['kKategorieFilter'] as $param) {
+                    $params['categoryFilters'][] = $param;
+                }
+            } else {
+                $params['categoryFilters'][] = $params['kKategorieFilter'];
+            }
         }
         if (\count($params['categoryFilters']) > 0) {
             $this->addActiveFilter($this->categoryFilter, $params['categoryFilters']);
@@ -1955,6 +1960,48 @@ class ProductFilter
             while ($i < 20) {
                 if (Request::verifyGPCDataInt('sf' . $i) > 0) {
                     $filter[] = Request::verifyGPCDataInt('sf' . $i);
+                }
+                ++$i;
+            }
+        }
+
+        return $filter;
+    }
+
+    /**
+     * @param array $filters
+     * @return array
+     */
+    public static function initCategoryFilter(array $filters = []): array
+    {
+        $filter = [];
+        if (\is_array($filters) && \count($filters) > 1) {
+            foreach ($filters as $value) {
+                if ((int)$value > 0) {
+                    $filter[] = (int)$value;
+                }
+            }
+        } elseif (isset($_GET['kf'])) {
+            if (\is_string($_GET['kf'])) {
+                $filter[] = $_GET['kf'];
+            } else {
+                foreach ($_GET['kf'] as $cf => $value) {
+                    $filter[] = $value;
+                }
+            }
+        } elseif (isset($_POST['kf'])) {
+            if (\is_string($_POST['kf'])) {
+                $filter[] = $_POST['kf'];
+            } else {
+                foreach ($_POST['kf'] as $cf => $value) {
+                    $filter[] = $value;
+                }
+            }
+        } else {
+            $i = 1;
+            while ($i < 20) {
+                if (Request::verifyGPCDataInt('kf' . $i) > 0) {
+                    $filter[] = Request::verifyGPCDataInt('kf' . $i);
                 }
                 ++$i;
             }

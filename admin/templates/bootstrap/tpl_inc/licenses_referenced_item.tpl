@@ -1,6 +1,15 @@
 {$referencedItem = $license->getReferencedItem()}
 <div id="license-item-{$license->getID()}">
-    {if $referencedItem !== null}
+    {if $license->isInApp()}
+        {$avail = $license->getReleases()->getAvailable()}
+        {if $avail !== null}
+            <span class="item-available badge badge-info">
+                {__('Version %s available', $avail->getVersion())}
+            </span>
+            <hr>
+        {/if}
+        {__('This is managed by parent extension %s')|sprintf:$license->getParent()->getName()}
+    {elseif $referencedItem !== null}
         {$licData = $license->getLicense()}
         {$subscription = $licData->getSubscription()}
         {$disabled = $licData->isExpired() || $subscription->isExpired()}

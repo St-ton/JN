@@ -119,6 +119,12 @@ msgstr "Dokumentation"
 msgid "extendSubscription"
 msgstr "Subscription verlängern"
 
+msgid "extendLicense"
+msgstr "Lizenz verlängern"
+
+msgid "extendTestLicense"
+msgstr "Testlizenz verlängern"
+
 msgid "Clear binding"
 msgstr "Vom aktuellen Shop lösen"
 
@@ -157,3 +163,6 @@ msgstr "Validierung der Prüfsumme fehlgeschlagen"
 
 msgid "Could not validate archive"
 msgstr "Archiv konnte nicht validiert werden"
+
+msgid "This is managed by parent extension %s"
+msgstr "Wird von der Extension %s verwaltet"

@@ -23,7 +23,7 @@
                     </td>
                     <td>{__($license->getLicense()->getType())}</td>
                     <td>
-                        {include file='tpl_inc/licenses_license.tpl' licData=$license->getLicense()}
+                        {include file='tpl_inc/licenses_license.tpl' license=$license}
                     </td>
                 </tr>
             {/foreach}

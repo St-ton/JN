@@ -49,6 +49,7 @@ final class PaymentPlugins extends AbstractStep
         $question->setType(QuestionType::PLUGIN);
         $question->setIsFullWidth(true);
         $question->setIsRequired(false);
+        $question->setValue(false);
 
         $recommendations->getRecommendations()->each(static function (Recommendation $recommendation) use ($question) {
             $option = new SelectOption();

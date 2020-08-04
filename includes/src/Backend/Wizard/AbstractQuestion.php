@@ -4,6 +4,7 @@ namespace JTL\Backend\Wizard;
 
 use JsonSerializable;
 use JTL\DB\DbInterface;
+use JTL\Session\Backend;
 use JTL\Update\MigrationTableTrait;
 use JTL\Update\MigrationTrait;
 use stdClass;
@@ -118,7 +119,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
         } else {
             $value = $data ?? '';
         }
-        $this->setValue($value);
+        $this->setValue($value, false);
 
         return $value;
     }
@@ -294,9 +295,14 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     /**
      * @inheritDoc
      */
-    public function setValue($value): void
+    public function setValue($value, bool $sessionFirst = true): void
     {
-        $this->value = $value;
+        $wizard = Backend::get('wizard');
+        if ($sessionFirst && isset($wizard['question-' . $this->getID()])) {
+            $this->value = $wizard['question-' . $this->getID()];
+        } else {
+            $this->value = $value;
+        }
     }
 
     /**

@@ -132,9 +132,10 @@ interface QuestionInterface
     public function getValue();
 
     /**
-     * @param mixed $value
+     * @param $value
+     * @param bool $sessionFirst
      */
-    public function setValue($value): void;
+    public function setValue($value, bool $sessionFirst): void;
 
     /**
      * @return int|null

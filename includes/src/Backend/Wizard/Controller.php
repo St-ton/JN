@@ -3,6 +3,7 @@
 namespace JTL\Backend\Wizard;
 
 use Illuminate\Support\Collection;
+use JTL\Session\Backend;
 use JTL\Shop;
 
 /**
@@ -66,6 +67,7 @@ final class Controller
                 (object)['cWert' => 'Y']
             );
             Shop::Container()->getCache()->flushAll();
+            unset($_SESSION['wizard']);
         }
     }
 
@@ -88,6 +90,7 @@ final class Controller
                 }
             }
         }
+        Backend::set('wizard', array_merge(Backend::get('wizard') ?? [], $post));
 
         return $errorMessages;
     }

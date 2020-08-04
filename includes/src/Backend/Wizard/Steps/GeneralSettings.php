@@ -86,6 +86,7 @@ final class GeneralSettings extends AbstractStep
         $question->setSummaryText(__('vatSettings'));
         $question->setType(QuestionType::BOOL);
         $question->setIsRequired(false);
+        $question->setValue(false);
         $question->setOnSave(function (QuestionInterface $question) {
             if ($question->getValue() === true) {
                 $question->updateConfig('global_ust_auszeichnung', 'endpreis');
@@ -130,6 +131,7 @@ final class GeneralSettings extends AbstractStep
         $question->setType(QuestionType::MULTI_BOOL);
         $question->setIsFullWidth(true);
         $question->setIsRequired(false);
+        $question->setValue(false);
         $option = new SelectOption();
         $option->setName(__('customerGroupB2B'));
         $option->setValue('b2b');

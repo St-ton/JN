@@ -65,7 +65,7 @@
                    name="question-{$question->getID()}"
                    data-setup-summary-id="question-{$question->getID()}"
                    data-setup-summary-text="{if $question->getText() !== null}{$question->getText()}{else}{$question->getSummaryText()}{/if}"
-                    {if $question->getValue() === true} checked{/if}
+                    {if !empty($question->getValue())} checked{/if}
                     {if $question->isRequired()}required{/if}
             >
             <label class="custom-control-label" for="question-{$question->getID()}">

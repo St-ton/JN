@@ -36,11 +36,11 @@ class ProductFilterURL
     }
 
     /**
-     * @param FilterInterface $extraFilter
-     * @param bool            $bCanonical
+     * @param FilterInterface|null $extraFilter
+     * @param bool                 $canonical
      * @return string
      */
-    public function getURL($extraFilter = null, $bCanonical = false): string
+    public function getURL($extraFilter = null, $canonical = false, bool $debug = false): string
     {
         $isSearchQuery      = false;
         $languageID         = $this->productFilter->getFilterConfig()->getLanguageID();
@@ -59,8 +59,14 @@ class ProductFilterURL
             'custom' => [],
             'misc'   => []
         ];
+        if ($debug) {
+            Shop::dbg($base->isInitialized(), false, '$base->isInitialized():');
+        }
         if ($base->isInitialized()) {
             $filterSeoUrl = $base->getSeo($languageID);
+            if ($debug) {
+                Shop::dbg($filterSeoUrl, false, '$filterSeoUrl:');
+            }
             if (!empty($filterSeoUrl)) {
                 $seoParam          = new stdClass();
                 $seoParam->value   = '';
@@ -76,7 +82,7 @@ class ProductFilterURL
                 $nonSeoFilterParams[$base->getUrlParam()] = $filterValue;
             }
         }
-        if ($bCanonical === true) {
+        if ($canonical === true) {
             return $this->productFilter->getFilterConfig()->getBaseURL() .
                 $this->buildURLString(
                     $seoFilterParams,
@@ -85,9 +91,16 @@ class ProductFilterURL
         }
         $url    = $this->productFilter->getFilterConfig()->getBaseURL();
         $active = $this->productFilter->getActiveFilters();
+        if ($debug) {
+            Shop::dbg($url, false, '$url:');
+            Shop::dbg(count($active), false, '$active count::');
+
+        }
         // we need the base state + all active filters + optionally the additional filter to generate the correct url
         if ($extraFilter !== null && !$extraFilter->getDoUnset()) {
             $active[] = $extraFilter;
+            if ($debug)
+            Shop::dbg(true, false, 'extra ok');
         }
         $ignore      = null;
         $ignoreValue = null;
@@ -96,17 +109,26 @@ class ProductFilterURL
             $ignore      = $extraFilter->getUrlParam();
             $ignoreValue = $extraFilter->getValue();
         }
+        if ($debug) {
+            Shop::dbg($ignore, false, 'ignore:');
+            Shop::dbg($ignoreValue, false, 'ignoreValue:');
+        }
         // split arrays of filters into single instances
         foreach ($active as $i => $filter) {
             /** @var FilterInterface $filter */
             $filterValue = $filter->getValue();
+            if ($debug) {
+                Shop::dbg($filterValue, false, 'active filter value:');
+            }
             if (\is_array($filterValue)) {
                 unset($active[$i]);
                 foreach ($filterValue as $singleValue) {
                     $class    = $filter->getClassName();
                     $instance = new $class($this->productFilter);
                     /** @var FilterInterface $instance */
+                    Shop::dbg($singleValue, false, 'instance of ' . $class . ' with val:');
                     $instance->init($singleValue);
+                    Shop::dbg($instance->getValue(), false, 're-getting value:');
                     $active[] = $instance;
                 }
             }
@@ -116,6 +138,10 @@ class ProductFilterURL
             /** @var FilterInterface $filter */
             $urlParam    = $filter->getUrlParam();
             $filterValue = $filter->getValue();
+            if ($debug){
+                Shop::dbg($urlParam, false, 'urlparam:');
+                Shop::dbg($filterValue, false, 'filterval:');
+            }
             if ($ignore !== null && $urlParam === $ignore) {
                 if ($ignoreValue === null || $ignoreValue === $filterValue) {
                     // unset filter was given for this whole filter or this current value
@@ -206,7 +232,9 @@ class ProductFilterURL
                 $nonSeoFilterParams['lang'] = $language->cISO;
             }
         }
-
+        if ($debug) {
+            Shop::dbg($url . $this->buildURLString($seoFilterParams, $nonSeoFilterParams), true, 'Returning url:');
+        }
         return $url . $this->buildURLString($seoFilterParams, $nonSeoFilterParams);
     }
 

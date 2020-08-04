@@ -40,22 +40,12 @@ class Category extends BaseCategory
     }
 
     /**
-     * @inheritdoc
-     */
-    public function setValue($value): FilterInterface
-    {
-        $this->value = \is_array($value) ? $value : [(int)$value];
-
-        return $this;
-    }
-
-    /**
      * @param array|int|string $value
      * @return $this
      */
     public function setValueCompat($value): FilterInterface
     {
-        $this->value = [$value];
+        $this->value = $value;
 
         return $this;
     }
@@ -73,7 +63,11 @@ class Category extends BaseCategory
      */
     public function getSQLCondition(): string
     {
-        $values = ' IN (' . \implode(', ', $this->getValue())  . ')';
+        $value  = $this->getValue();
+        if (!\is_array($value)) {
+            $value = [$value];
+        }
+        $values = ' IN (' . \implode(', ', $value)  . ')';
 
         if ($this->getIncludeSubCategories() === true) {
             return ' tkategorieartikel.kKategorie IN (
@@ -219,11 +213,11 @@ class Category extends BaseCategory
 
         $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
         $cacheID   = 'fltr_' . \str_replace('\\', '', __CLASS__) . \md5($baseQuery);
-        if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
-            $this->options = $cached;
-
-            return $this->options;
-        }
+//        if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
+//            $this->options = $cached;
+//
+//            return $this->options;
+//        }
         $categories       = $this->productFilter->getDB()->executeQuery(
             'SELECT tseo.cSeo, ssMerkmal.kKategorie, ssMerkmal.cName, 
                 ssMerkmal.nSort, COUNT(*) AS nAnzahl
@@ -239,15 +233,22 @@ class Category extends BaseCategory
         $customerGroupID  = $this->getCustomerGroupID();
         $additionalFilter = new self($this->productFilter);
         $helper           = CategoryHelper::getInstance($langID, $customerGroupID);
+        $filterURLGenerator = $this->productFilter->getFilterURL();
         foreach ($categories as $category) {
             $category->kKategorie = (int)$category->kKategorie;
             if ($categoryFilterType === 'KP') { // category path
                 $category->cName = $helper->getPath(new Kategorie($category->kKategorie, $langID, $customerGroupID));
             }
+//            if (strpos($_GET['q'], 'farben__blau') === false) {
+//            echo 'url@' . $category->cName . ', ID ' . (int)$category->kKategorie;
+//            Shop::dbg($filterURLGenerator->getURL(
+//                $additionalFilter->init((int)$category->kKategorie), false, true
+//            ), true, 'got url@' . $category->cName . ', ID ' . (int)$category->kKategorie);
+//            }
             $options[] = (new Option())
                 ->setIsActive($this->productFilter->filterOptionIsActive($this->getClassName(), $category->kKategorie))
                 ->setParam($this->getUrlParam())
-                ->setURL($this->productFilter->getFilterURL()->getURL(
+                ->setURL($filterURLGenerator->getURL(
                     $additionalFilter->init((int)$category->kKategorie)
                 ))
                 ->setType($this->getType())

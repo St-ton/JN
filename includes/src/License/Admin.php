@@ -107,7 +107,7 @@ class Admin
         if ($action === 'redirect') {
             $token->requestToken(
                 Backend::get('jtl_token'),
-                Shop::getURL(true) . $_SERVER['SCRIPT_NAME'] . '?action=code'
+                Shop::getAdminURL(true) . '/license.php?action=code'
             );
         }
         if ($action === 'update' || $action === 'install') {

@@ -101,7 +101,11 @@ final class Controller
         if (\is_array($post[0])) {
             $postTMP = [];
             foreach ($post as $postItem) {
-                $postTMP[$postItem['name']] = $postItem['value'];
+                if (\mb_strpos($postItem['name'], '[]') !== false) {
+                    $postTMP[\explode('[]', $postItem['name'])[0]][] = $postItem['value'];
+                } else {
+                    $postTMP[$postItem['name']] = $postItem['value'];
+                }
             }
             $post = $postTMP;
         }

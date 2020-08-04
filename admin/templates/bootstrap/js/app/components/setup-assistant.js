@@ -113,8 +113,14 @@ $(document).on('click', `${modal} [${Data.next}]`, () => {
         updateSummary();
         showSlide((current < last) ? current + 1 : last);
     } else {
+        let inputsTMP = [];
+         $inputs.map(function() {
+             inputsTMP.push({ name: this.name, value: this.type === 'checkbox'
+					 ? (this.checked ? this.value : '')
+					 : this.value});
+        });
         startSpinner();
-        ioCall('validateStepWizard', [$inputs.serializeArray()], function (errors) {
+        ioCall('validateStepWizard', [inputsTMP], function (errors) {
             if (errors.length !== 0) {
                 $.each(errors, (index, error) => {
                     let $question = $('#question-' + index);

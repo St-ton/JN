@@ -39,6 +39,12 @@ class Migration_20200710094300 extends Migration implements IMigration
                 'nSort'                 => 275
                 ]
             );
+        $this->getDB()->update(
+            'teinstellungen',
+            'cName',
+            'warenkorbpers_nutzen',
+            (object)['kEinstellungenSektion' => \CONF_KAUFABWICKLUNG]
+            );
     }
 
     /**
@@ -142,6 +148,12 @@ class Migration_20200710094300 extends Migration implements IMigration
                 'kEinstellungenSektion' => \CONF_GLOBAL,
                 'nSort'                 => 810
             ]
+        );
+        $this->getDB()->update(
+            'teinstellungen',
+            'cName',
+            'warenkorbpers_nutzen',
+            (object)['kEinstellungenSektion' => \CONF_GLOBAL]
         );
     }
 }

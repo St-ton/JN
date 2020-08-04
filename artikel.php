@@ -170,6 +170,7 @@ $pagination = (new Pagination('ratings'))
         ['nSterne', Shop::Lang()->get('paginationOrderByRating')],
         ['nHilfreich', Shop::Lang()->get('paginationOrderUsefulness')]
     ])
+    ->setDefaultSortByDir((int)$conf['bewertung']['bewertung_sortierung'])
     ->assemble();
 
 $AktuellerArtikel->Bewertungen->Sortierung = $sorting;

@@ -13,12 +13,11 @@ use JTL\Shop;
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->redirectOnFailure();
 
-$db      = Shop::Container()->getDB();
-$cache   = Shop::Container()->getCache();
-$checker = new Checker(Shop::Container()->getLogService(), $db, $cache);
-$manager = new Manager($db, $cache);
-$admin   = new Admin($manager, $db, $cache, $checker);
-
+$db           = Shop::Container()->getDB();
+$cache        = Shop::Container()->getCache();
+$checker      = new Checker(Shop::Container()->getLogService(), $db, $cache);
+$manager      = new Manager($db, $cache);
+$admin        = new Admin($manager, $db, $cache, $checker);
 $factory      = new DefaultFactory(
     $db,
     Shop::Container()->getGetText(),

@@ -229,3 +229,6 @@ msgstr "Bitte geben Sie eine korrekte E-Mail-Adresse an."
 
 msgid "followUs"
 msgstr "Folgen Sie uns auch auf:"
+
+msgid "validationErrorSSL"
+msgstr "SSL nicht möglich."

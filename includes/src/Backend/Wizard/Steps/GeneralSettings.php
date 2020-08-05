@@ -9,6 +9,7 @@ use JTL\Backend\Wizard\SelectOption;
 use JTL\DB\DbInterface;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
+use JTL\VerificationVAT\VATCheck;
 
 /**
  * Class GlobalSettings
@@ -49,7 +50,7 @@ final class GeneralSettings extends AbstractStep
         $question->setSummaryText(__('secureDefaultSettings'));
         $question->setType(QuestionType::BOOL);
         $question->setOnSave(function (QuestionInterface $question) {
-            if ($question->getValue() === true) {
+            if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' && $question->getValue() === true) {
                 $question->updateConfig('kaufabwicklung_ssl_nutzen', 'P');
                 $question->updateConfig('email_smtp_verschluesselung', 'tls');
                 $question->updateConfig('email_methode', 'smtp');
@@ -63,6 +64,13 @@ final class GeneralSettings extends AbstractStep
                 $question->updateConfig('global_cookie_httponly', 'S');
             }
         });
+        $question->setValidation(function (QuestionInterface $question) {
+            if ((empty($_SERVER['HTTPS']) || ($_SERVER['HTTPS'] !== 'off')) && $question->getValue()) {
+                return __('validationErrorSSL');
+            }
+
+            return  '';
+        });
         $this->addQuestion($question);
 
         $question = new Question($db);
@@ -75,6 +83,17 @@ final class GeneralSettings extends AbstractStep
         $question->setType(QuestionType::TEXT);
         $question->setOnSave(function (QuestionInterface $question) {
             $question->updateConfig('shop_ustid', $question->getValue());
+        });
+        $question->setValidation(function (QuestionInterface $question) {
+            if (!empty($question->getValue())) {
+                $vatCheck       = new VATCheck(trim($question->getValue()));
+                $resultVatCheck = $vatCheck->doCheckID();
+                if ($resultVatCheck['errortype'] !== 'core' && $resultVatCheck['success'] === false) {
+                    return 'falsche ust';
+                }
+            }
+
+            return  '';
         });
         $this->addQuestion($question);
 

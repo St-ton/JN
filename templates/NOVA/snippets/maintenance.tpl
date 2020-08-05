@@ -56,8 +56,7 @@
                 {* css *}
                 {if $Einstellungen.template.general.use_minify === 'N'}
                     {foreach $cCSS_arr as $cCSS}
-                        <link rel="preload" href="{$ShopURL}/{$cCSS}?v={$nTemplateVersion}" as="style"
-                              onload="this.onload=null;this.rel='stylesheet'">
+                        <link rel="stylesheet" href="{$ShopURL}/{$cCSS}?v={$nTemplateVersion}">
                     {/foreach}
                     <noscript>
                         {foreach $cCSS_arr as $cCSS}
@@ -70,7 +69,7 @@
                         {/if}
                     </noscript>
                 {else}
-                    <link rel="preload" href="{$ShopURL}/{$combinedCSS}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+                    <link rel="stylesheet" href="{$ShopURL}/{$combinedCSS}" type="text/css" >
                     <noscript>
                         <link href="{$ShopURL}/{$combinedCSS}" rel="stylesheet">
                     </noscript>
@@ -81,14 +80,49 @@
                         <link rel="alternate" hreflang="{$oSprache->cISO639}" href="{$oSprache->cURLFull}">
                     {/foreach}
                 {/if}
+                <script src="{$ShopURL}/{$templateDir}js/jquery-3.5.1.min.js"></script>
+                <script defer src="{$ShopURL}/{$templateDir}js/bootstrap.bundle.js"></script>
+                <script defer src="{$ShopURL}/{$templateDir}js/bootstrap-toolkit.js"></script>
             {/block}
         </head>
     {/block}
             {block name='snippets-maintenance-content'}
             <body id="main-wrapper" class="text-center font-size-1.5x pt-5 vh-100">
                 {container class="d-flex flex-column h-100" fluid=true}
-                 {row class="mb-5 h-100"}
-                    {col class="my-auto" cols=12 md=6 offset-md=3}
+                {row}
+                {col class="mb-3" cols=12 md=6 offset-md=3}
+                {strip}
+                    {nav tag='ul' class='nav-dividers'}
+                    {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
+                        {block name='layout-header-top-bar-user-settings'}
+                            {block name='layout-header-top-bar-user-settings-language'}
+                                {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
+                                    {navitemdropdown
+                                    class="language-dropdown mx-auto"
+                                    right=true
+                                    text="
+                                    {foreach $smarty.session.Sprachen as $language}
+                                        {if $language->kSprache == $smarty.session.kSprache}
+                                            {$language->iso639|upper}
+                                        {/if}
+                                    {/foreach}"
+                                    }
+                                        {foreach $smarty.session.Sprachen as $language}
+                                            {dropdownitem href="{$language->cURL}" rel="nofollow" active=($language->kSprache == $smarty.session.kSprache)}
+                                            {$language->iso639|upper}
+                                            {/dropdownitem}
+                                        {/foreach}
+                                    {/navitemdropdown}
+                                {/if}
+                            {/block}
+                        {/block}
+                    {/if}
+                    {/nav}
+                {/strip}
+                {/col}
+                {/row}
+                 {row}
+                    {col class="mb-3" cols=12 md=6 offset-md=3}
                         {if isset($ShopLogoURL)}
                             {image src=$ShopLogoURL
                             alt=$Einstellungen.global.global_shopname
@@ -104,7 +138,7 @@
                             </div>
                     {/col}
                 {/row}
-                {row id="footer"}
+                {row id="footer" class="flex-grow-1"}
                     {col cols=12 class="small" md=6 offset-md=3}
                         <h2 class="mt-2">{$oSpezialseiten_arr[$smarty.const.LINKTYP_IMPRESSUM]->getTitle()}</h2>
                         <p>{$oSpezialseiten_arr[$smarty.const.LINKTYP_IMPRESSUM]->getContent()}</p>

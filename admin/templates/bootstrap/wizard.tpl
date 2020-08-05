@@ -50,7 +50,7 @@
                         <div class="setup-slide row" data-setup-slide="{$step->getID()}">
                             <div class="col-lg-4 mb-5 mb-lg-0">
                                 <span class="setup-subheadline">{$step->getTitle()}</span>
-                                <p class="text-muted">{$step->getDescription()}</p>
+                                <p>{$step->getDescription()}</p>
                             </div>
                             <div class="col-lg-6 ml-lg-auto col-xl-7 mt-lg-n5">
                                 <div class="row">
@@ -75,7 +75,14 @@
                     <div class="setup-slide row" data-setup-slide="{$stepID + 1}">
                         <div class="col-lg-4 mb-5 mb-lg-0">
                             <span class="setup-subheadline">{__('stepFive')}</span>
-                            <p class="text-muted">{__('stepFiveDesc')}</p>
+                            <p>{__('stepFiveDesc')}</p>
+                            <p>
+                                {if $hasAuth}
+                                    <i class="fal fa-check text-success"></i> Authentifizierung erfolgreich.
+                                {else}
+                                    <i class="fal fa-exclamation-triangle text-warning"></i> Wenn Sie Plugins zur Installation vorgemerkt haben, dann werden Sie bei Klick auf "Weiter" zum "zentralen Login" von JTL weitergeleitet. Nach erfolgreicher Anmeldung werden Sie automatisch zu diesem Assistenten zurückgeleitet und können die Einrichtung abschließen.
+                                {/if}
+                            </p>
                         </div>
                         <div class="col-lg-6 ml-lg-auto col-xl-7 mt-lg-n5">
                             <div class="table-responsive">
@@ -269,6 +276,7 @@
                             <button type="button" class="btn btn-primary min-w-sm ml-sm-3 my-2 my-sm-0 w-100 w-sm-auto" data-setup-next>{__('next')}</button>
                             <button type="submit" class="btn btn-primary min-w-sm ml-sm-3 my-2 my-sm-0 w-100 w-sm-auto" data-setup-submit>{__('confirm')}</button>
                             <a href="index.php" class="btn btn-primary min-w-sm ml-sm-3 my-2 my-sm-0 w-100 w-sm-auto" data-setup-close>{__('finalize')}</a>
+                            <a id="auth-link" href="wizard.php?action=auth" class="btn btn-primary min-w-sm ml-sm-3 my-2 my-sm-0 w-100 w-sm-auto">{__('Verknüpfen')}</a>
                         </div>
                     </div>
                 </div>

@@ -113,7 +113,7 @@
                                        id="question-{$question->getID()}-{$option@index}"
                                        name="question-{$question->getID()}[]"
                                        data-setup-summary-id="question-{$question->getID()}"
-                                       data-setup-summary-text="{$option->getValue()}"
+                                       data-setup-summary-text="{$option->getName()}"
                                        value="{$option->getValue()}"
                                         {if $option->isSelected($question->getValue())} checked{/if}
                                         {if $question->isRequired()}required{/if}

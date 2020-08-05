@@ -27,16 +27,17 @@ $factory    = new DefaultFactory(
 );
 $controller = new Controller($factory);
 $conf       = Shop::getSettings([CONF_GLOBAL]);
-
+$token      = AuthToken::getInstance(Shop::Container()->getDB());
 if (Request::postVar('action') === 'code') {
 //    $admin->handleAuth();
 } elseif (Request::getVar('action') === 'auth') {
-//    $token = AuthToken::getInstance(Shop::Container()->getDB());
 //    $token->requestToken(
 //        Backend::get('jtl_token'),
 //        Shop::getAdminURL() . '/wizard.php?action=code'
 //    );
 }
+//Shop::dbg($controller->getSteps()->toArray()[2]->getQuestions());
 
 $smarty->assign('steps', $controller->getSteps())
+    ->assign('hasAuth', $token->isValid())
     ->display('wizard.tpl');

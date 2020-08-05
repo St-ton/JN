@@ -109,6 +109,7 @@ $(document).on('click', `${modal} [${Data.prev}]`, () => {
 
 $(document).on('click', `${modal} [${Data.next}]`, () => {
 	let $inputs = $currentSlide.find(`[${Data.summaryId}]`);
+	console.log($currentSlide);
 	if ($inputs.length === 0) {
         updateSummary();
         showSlide((current < last) ? current + 1 : last);
@@ -135,6 +136,7 @@ $(document).on('click', `${modal} [${Data.next}]`, () => {
             stopSpinner();
         });
     }
+
 });
 
 $(document).on('click', `${modal} input`, function() {

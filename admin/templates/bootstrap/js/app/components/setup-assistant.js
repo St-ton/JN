@@ -9,6 +9,7 @@ const Data = {
 	prev					: `${dataPrefix}-prev`,
 	next					: `${dataPrefix}-next`,
 	submit					: `${dataPrefix}-submit`,
+	auth					: `${dataPrefix}-auth`,
 	legalToggler			: `${dataPrefix}-legal-toggle`,
 	summaryPlaceholder		: `${dataPrefix}-summary-placeholder`,
 	summaryId				: `${dataPrefix}-summary-id`,
@@ -22,6 +23,7 @@ const $slides				= $(`${modal} [${Data.slides}]`)
 const $prev					= $(`${modal} [${Data.prev}]`)
 const $next					= $(`${modal} [${Data.next}]`)
 const $submit				= $(`${modal} [${Data.submit}]`)
+const $auth					= $(`${modal} [${Data.auth}]`)
 const $summaryPlaceholder	= $(`${modal} [${Data.summaryPlaceholder}]`)
 const $summaryId			= $(`${modal} [${Data.summaryId}]`)
 const $summaryText			= $(`${modal} [${Data.summaryText}]`)
@@ -31,6 +33,11 @@ const last					= $slides.length - 1
 
 let current					= 0
 let subsequent				= false
+
+let legalPluginCount		= 0;
+let paymentPluginCount		= 0;
+
+let hasAuth					= ($('#has-auth').val() === 'true');
 
 let $currentSlide			= $(`${modal} [${Data.slides}='${current}']`)
 
@@ -109,7 +116,7 @@ $(document).on('click', `${modal} [${Data.prev}]`, () => {
 
 $(document).on('click', `${modal} [${Data.next}]`, () => {
 	let $inputs = $currentSlide.find(`[${Data.summaryId}]`);
-	console.log($currentSlide);
+
 	if ($inputs.length === 0) {
         updateSummary();
         showSlide((current < last) ? current + 1 : last);
@@ -137,6 +144,20 @@ $(document).on('click', `${modal} [${Data.next}]`, () => {
         });
     }
 
+    if (!hasAuth) {
+        if ($currentSlide.prop('id') === '2') {
+            legalPluginCount = $inputs.serializeArray().length;
+        } else if ($currentSlide.prop('id') === '3') {
+            paymentPluginCount = $inputs.serializeArray().length;
+        }
+        if (legalPluginCount > 0 || paymentPluginCount > 0) {
+            $auth.removeClass('d-none');
+            $submit.addClass('d-none');
+        } else {
+            $auth.addClass('d-none');
+            $submit.removeClass('d-none');
+        }
+    }
 });
 
 $(document).on('click', `${modal} input`, function() {

@@ -13467,7 +13467,7 @@ body {
 #modal-setup-assistant[data-setup-current="6"] [data-setup-submit], #modal-setup-assistant[data-setup-current="6"] .setup-steps {
   display: none;
 }
-#modal-setup-assistant:not([data-setup-current="5"]) [data-setup-submit], #modal-setup-assistant.installed [data-setup-submit] {
+#modal-setup-assistant:not([data-setup-current="5"]) [data-setup-submit], #modal-setup-assistant:not([data-setup-current="5"]) [data-setup-auth], #modal-setup-assistant.installed [data-setup-submit], #modal-setup-assistant.installed [data-setup-auth] {
   display: none;
 }
 #modal-setup-assistant:not([data-setup-current="6"]) [data-setup-close] {

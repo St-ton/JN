@@ -40,7 +40,7 @@
 	}
 
 	&:not([data-setup-current="5"]), &.installed {
-		[data-setup-submit] { display: none; }
+		[data-setup-submit], [data-setup-auth] { display: none; }
 	}
 
 	&:not([data-setup-current="6"]) {

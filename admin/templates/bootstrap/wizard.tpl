@@ -18,6 +18,7 @@
      data-backdrop="static">
     <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
         <form method="post">
+            <input id="has-auth" type="hidden" value="{if $hasAuth}true{else}false{/if}" disabled/>
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -47,7 +48,7 @@
                         </div>
                     </div>
                     {foreach $steps as $step}
-                        <div class="setup-slide row" data-setup-slide="{$step->getID()}">
+                        <div id="{$step->getID()}" class="setup-slide row" data-setup-slide="{$step->getID()}">
                             <div class="col-lg-4 mb-5 mb-lg-0">
                                 <span class="setup-subheadline">{$step->getTitle()}</span>
                                 <p>{$step->getDescription()}</p>
@@ -276,7 +277,7 @@
                             <button type="button" class="btn btn-primary min-w-sm ml-sm-3 my-2 my-sm-0 w-100 w-sm-auto" data-setup-next>{__('next')}</button>
                             <button type="submit" class="btn btn-primary min-w-sm ml-sm-3 my-2 my-sm-0 w-100 w-sm-auto" data-setup-submit>{__('confirm')}</button>
                             <a href="index.php" class="btn btn-primary min-w-sm ml-sm-3 my-2 my-sm-0 w-100 w-sm-auto" data-setup-close>{__('finalize')}</a>
-                            <a id="auth-link" href="wizard.php?action=auth" class="btn btn-primary min-w-sm ml-sm-3 my-2 my-sm-0 w-100 w-sm-auto">{__('Verknüpfen')}</a>
+                            <a href="wizard.php?action=auth" class="btn btn-primary min-w-sm ml-sm-3 my-2 my-sm-0 w-100 w-sm-auto d-none" data-setup-auth>{__('Verknüpfen')}</a>
                         </div>
                     </div>
                 </div>

@@ -82,7 +82,6 @@
                 {/if}
                 <script src="{$ShopURL}/{$templateDir}js/jquery-3.5.1.min.js"></script>
                 <script defer src="{$ShopURL}/{$templateDir}js/bootstrap.bundle.js"></script>
-                <script defer src="{$ShopURL}/{$templateDir}js/bootstrap-toolkit.js"></script>
             {/block}
         </head>
     {/block}

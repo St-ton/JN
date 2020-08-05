@@ -19,25 +19,28 @@ $checker = new Checker(Shop::Container()->getLogService(), $db, $cache);
 $manager = new Manager($db, $cache);
 $admin   = new Admin($manager, $db, $cache, $checker);
 
-$factory    = new DefaultFactory(
+$factory      = new DefaultFactory(
     $db,
     Shop::Container()->getGetText(),
     Shop::Container()->getAlertService(),
     Shop::Container()->getAdminAccount()
 );
-$controller = new Controller($factory);
-$conf       = Shop::getSettings([CONF_GLOBAL]);
-$token      = AuthToken::getInstance(Shop::Container()->getDB());
-if (Request::postVar('action') === 'code') {
+$controller   = new Controller($factory);
+$conf         = Shop::getSettings([CONF_GLOBAL]);
+$token        = AuthToken::getInstance(Shop::Container()->getDB());
+$authRedirect = false;
+
+if (Request::verifyGPDataString('action') === 'code') {
 //    $admin->handleAuth();
+    $authRedirect = true;
 } elseif (Request::getVar('action') === 'auth') {
 //    $token->requestToken(
 //        Backend::get('jtl_token'),
 //        Shop::getAdminURL() . '/wizard.php?action=code'
 //    );
 }
-//Shop::dbg($controller->getSteps()->toArray()[2]->getQuestions());
 
 $smarty->assign('steps', $controller->getSteps())
+    ->assign('authRedirect', $authRedirect)
     ->assign('hasAuth', $token->isValid())
     ->display('wizard.tpl');

@@ -38,6 +38,7 @@ let legalPluginCount		= 0;
 let paymentPluginCount		= 0;
 
 let hasAuth					= ($('#has-auth').val() === 'true');
+let authRedirect			= ($('#auth-redirect').val() === 'true');
 
 let $currentSlide			= $(`${modal} [${Data.slides}='${current}']`)
 
@@ -99,6 +100,14 @@ const updateSummary = (slide = current) => {
 		let $placeholder = $(`[${Data.summaryPlaceholder}="${i}"]`)
 		$placeholder.html(a.join(', '))
 	})
+}
+
+const goToStep = (step) => {
+    for (let i = 0; i <= step; i++) {
+        current = i;
+        $currentSlide = $(`${modal} [${Data.slides}='${current}']`)
+        updateSummary(i);
+    }
 }
 
 /* events */
@@ -194,7 +203,10 @@ $form.on('submit', (e) => {
 
 		setTimeout(() => {
 			resolve()
-            ioCall('finishWizard', [$form.serializeArray()], function (result) {});
+            ioCall('finishWizard', [$form.serializeArray()], function (result) {
+            	// TODO: errors?
+                showSlide((current < last) ? current + 1 : last);
+			});
 		}, 3000)
 	});
 
@@ -209,6 +221,9 @@ $form.on('submit', (e) => {
 })
 
 $modal.on('show.bs.modal', () => {
+	if (authRedirect) {
+        goToStep(last - 1);
+	}
 	showSlide(current)
 	subsequent = true
 })

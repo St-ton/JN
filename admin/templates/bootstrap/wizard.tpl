@@ -19,6 +19,7 @@
     <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
         <form method="post">
             <input id="has-auth" type="hidden" value="{if $hasAuth}true{else}false{/if}" disabled/>
+            <input id="auth-redirect" type="hidden" value="{if $authRedirect}true{else}false{/if}" disabled/>
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">

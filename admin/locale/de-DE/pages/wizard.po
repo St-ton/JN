@@ -232,3 +232,6 @@ msgstr "Folgen Sie uns auch auf:"
 
 msgid "validationErrorSSL"
 msgstr "SSL nicht möglich."
+
+msgid "errorVATPattern"
+msgstr "USt-IdNr. weißt ein falsches Pattern auf."

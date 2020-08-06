@@ -10,6 +10,7 @@ use JTL\DB\DbInterface;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
 use JTL\VerificationVAT\VATCheck;
+use JTL\VerificationVAT\VATCheckInterface;
 
 /**
  * Class GlobalSettings
@@ -88,8 +89,12 @@ final class GeneralSettings extends AbstractStep
             if (!empty($question->getValue())) {
                 $vatCheck       = new VATCheck(trim($question->getValue()));
                 $resultVatCheck = $vatCheck->doCheckID();
-                if ($resultVatCheck['errortype'] !== 'core' && $resultVatCheck['success'] === false) {
-                    return 'falsche ust';
+                //only check format
+                if ($resultVatCheck['errortype'] === 'parse'
+                    && $resultVatCheck['errorcode'] !== VATCheckInterface::ERR_COUNTRY_NOT_FOUND
+                    && $resultVatCheck['success'] === false
+                ) {
+                    return __('errorVATPattern');
                 }
             }
 

@@ -1,4 +1,4 @@
-{block name='maintenance-page'}
+{block name='snippets-maintenance'}
     {block name='snippets-maintenance-header-doctype'}<!DOCTYPE html>{/block}
     <html {block name='snippets-maintenance-header-html-attributes'}lang="{$meta_language}" itemscope {if $nSeitenTyp === $smarty.const.URLART_ARTIKEL}itemtype="http://schema.org/ItemPage"
           {elseif $nSeitenTyp === $smarty.const.URLART_KATEGORIE}itemtype="http://schema.org/CollectionPage"
@@ -85,66 +85,70 @@
             {/block}
         </head>
     {/block}
-            {block name='snippets-maintenance-content'}
-            <body id="main-wrapper" class="text-center font-size-1.5x pt-5 vh-100">
-                {container class="d-flex flex-column h-100" fluid=true}
-                {row}
-                {col class="mb-3" cols=12 md=6 offset-md=3}
-                {strip}
-                    {nav tag='ul' class='nav-dividers'}
-                    {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
-                        {block name='layout-header-top-bar-user-settings'}
-                            {block name='layout-header-top-bar-user-settings-language'}
-                                {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
-                                    {navitemdropdown
-                                    class="language-dropdown mx-auto"
-                                    right=true
-                                    text="
-                                    {foreach $smarty.session.Sprachen as $language}
-                                        {if $language->kSprache == $smarty.session.kSprache}
-                                            {$language->iso639|upper}
-                                        {/if}
-                                    {/foreach}"
-                                    }
+        {block name='snippets-maintenance-content'}
+        <body id="main-wrapper" class="text-center font-size-1.5x pt-5 vh-100">
+            {container class="d-flex flex-column h-100" fluid=true}
+                {block name='snippets-maintenance-content-language'}
+                    {row}
+                        {col class="mb-3" cols=12 md=6 offset-md=3}
+                        {strip}
+                            {nav tag='ul' class='nav-dividers'}
+                            {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
+                                {block name='snippets-maintenance-content-language-dropdown'}
+                                    {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
+                                        {navitemdropdown
+                                        class="language-dropdown mx-auto"
+                                        right=true
+                                        text="
                                         {foreach $smarty.session.Sprachen as $language}
-                                            {dropdownitem href="{$language->cURL}" rel="nofollow" active=($language->kSprache == $smarty.session.kSprache)}
-                                            {$language->iso639|upper}
-                                            {/dropdownitem}
-                                        {/foreach}
-                                    {/navitemdropdown}
-                                {/if}
-                            {/block}
-                        {/block}
-                    {/if}
-                    {/nav}
-                {/strip}
-                {/col}
-                {/row}
-                 {row}
-                    {col class="mb-3" cols=12 md=6 offset-md=3}
-                        {if isset($ShopLogoURL)}
-                            {image src=$ShopLogoURL
-                            alt=$Einstellungen.global.global_shopname
-                            class="mb-3 mx-auto w-25"
-                            style="{if $ShopLogoURL|strpos:'.svg' !== false}height: 100px;{/if}"
-                            }
-                        {else}
-                            <span class="h1">{$Einstellungen.global.global_shopname}</span>
-                        {/if}
-                            <h1 class="display-5">{lang key='maintainance'}</h1>
-                            <div>
-                                <p>{lang key='maintenanceModeActive'}</p>
-                            </div>
-                    {/col}
-                {/row}
-                {row id="footer" class="flex-grow-1"}
-                    {col cols=12 class="small" md=6 offset-md=3}
-                        <h2 class="mt-2">{$oSpezialseiten_arr[$smarty.const.LINKTYP_IMPRESSUM]->getTitle()}</h2>
-                        <p>{$oSpezialseiten_arr[$smarty.const.LINKTYP_IMPRESSUM]->getContent()}</p>
-                    {/col}
-                {/row}
-                {/container}
-            </body>
-            {/block}
+                                            {if $language->kSprache == $smarty.session.kSprache}
+                                                {$language->iso639|upper}
+                                            {/if}
+                                        {/foreach}"
+                                        }
+                                            {foreach $smarty.session.Sprachen as $language}
+                                                {dropdownitem href="{$language->cURL}" rel="nofollow" active=($language->kSprache == $smarty.session.kSprache)}
+                                                {$language->iso639|upper}
+                                                {/dropdownitem}
+                                            {/foreach}
+                                        {/navitemdropdown}
+                                    {/if}
+                                {/block}
+                            {/if}
+                            {/nav}
+                        {/strip}
+                        {/col}
+                    {/row}
+                {/block}
+                {block name='snippets-maintenance-content-maintenance'}
+                     {row}
+                        {col class="mb-3" cols=12 md=6 offset-md=3}
+                            {if isset($ShopLogoURL)}
+                                {image src=$ShopLogoURL
+                                alt=$Einstellungen.global.global_shopname
+                                class="mb-3 mx-auto w-25"
+                                style="{if $ShopLogoURL|strpos:'.svg' !== false}height: 100px;{/if}"
+                                }
+                            {else}
+                                <span class="h1">{$Einstellungen.global.global_shopname}</span>
+                            {/if}
+                                <h1 class="display-5">{lang key='maintainance'}</h1>
+                                <div>
+                                    <p>{lang key='maintenanceModeActive'}</p>
+                                </div>
+                        {/col}
+                    {/row}
+                {/block}
+                {block name='snippets-maintenance-content-imprint'}
+                    {row id="footer" class="flex-grow-1"}
+                        {col cols=12 class="small" md=6 offset-md=3}
+                            <h2 class="mt-2">{$oSpezialseiten_arr[$smarty.const.LINKTYP_IMPRESSUM]->getTitle()}</h2>
+                            <p>{$oSpezialseiten_arr[$smarty.const.LINKTYP_IMPRESSUM]->getContent()}</p>
+                        {/col}
+                    {/row}
+                {/block}
+            {/container}
+        </body>
+        {/block}
     </html>
 {/block}

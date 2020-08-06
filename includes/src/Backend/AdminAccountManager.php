@@ -110,8 +110,13 @@ class AdminAccountManager
                     continue;
                 }
                 if (\is_object($secondEntry)) {
-                    $perms[$secondEntry->permissions]->name = $secondName;
-                    $permMainTMP[]                          = (object)[
+                    if (!isset($perms[$secondEntry->permissions])) {
+                        $perms[$secondEntry->permissions] = (object)['name' => $secondName];
+                    } else {
+                        $perms[$secondEntry->permissions]->name = $secondName;
+                    }
+
+                    $permMainTMP[] = (object)[
                         'name'       => $secondName,
                         'permissions' => [$perms[$secondEntry->permissions]]
                     ];
@@ -122,8 +127,12 @@ class AdminAccountManager
                         if (!empty($thirdEntry->excludeFromAccessView)) {
                             continue;
                         }
-                        $perms[$thirdEntry->permissions]->name = $thirdName;
-                        $permSecondTMP[]                       = $perms[$thirdEntry->permissions];
+                        if (!isset($perms[$secondEntry->permissions])) {
+                            $perms[$thirdEntry->permissions] = (object)['name' => $thirdName];
+                        } else {
+                            $perms[$thirdEntry->permissions]->name = $thirdName;
+                        }
+                        $permSecondTMP[] = $perms[$thirdEntry->permissions];
                         unset($perms[$thirdEntry->permissions]);
                     }
                     $permMainTMP[] = (object)[

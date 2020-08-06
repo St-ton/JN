@@ -1,6 +1,15 @@
 {$referencedItem = $license->getReferencedItem()}
 <div id="license-item-{$license->getID()}">
-    {if $referencedItem !== null}
+    {if $license->isInApp()}
+        {$avail = $license->getReleases()->getAvailable()}
+        {if $avail !== null}
+            <span class="item-available badge badge-info">
+                {__('Version %s available', $avail->getVersion())}
+            </span>
+            <hr>
+        {/if}
+        {__('Managed by %s')|sprintf:$license->getParent()->getName()}
+    {elseif $referencedItem !== null}
         {$licData = $license->getLicense()}
         {$subscription = $licData->getSubscription()}
         {$disabled = $licData->isExpired() || $subscription->isExpired()}
@@ -30,24 +39,24 @@
                     <i class="fa fa-share"></i> {__('Install')}
                 </button>
             </form>
-            {if true}
-                {foreach $license->getLinks() as $link}
-                    {if $link->getRel() === 'clearBinding'}
-                        <br>
-                        <form method="post" class="clear-binding-form">
-                            {$jtl_token}
-                            <input type="hidden" name="action" value="clearbinding">
-                            <input type="hidden" name="url" value="{$link->getHref()}">
-                            <input type="hidden" name="method" value="{$link->getMethod()}">
-                            <button class="btn btn-default btn-sm clear-binding" name="action" value="clearbinding">
-                                <i class="fa fa-share"></i> {__('Clear binding')}
-                            </button>
-                        </form>
-                    {/if}
-                {/foreach}
-            {/if}
         {else}
             <i class="far fa-check-circle"></i> {$installedVersion}{if $referencedItem->isActive() === false} {__('(disabled)')}{/if}
+        {/if}
+        {if false}
+            {foreach $license->getLinks() as $link}
+                {if $link->getRel() === 'clearBinding'}
+                    <br>
+                    <form method="post" class="clear-binding-form">
+                        {$jtl_token}
+                        <input type="hidden" name="action" value="clearbinding">
+                        <input type="hidden" name="url" value="{$link->getHref()}">
+                        <input type="hidden" name="method" value="{$link->getMethod()}">
+                        <button class="btn btn-default btn-sm clear-binding" name="action" value="clearbinding">
+                            <i class="fa fa-share"></i> {__('Clear binding')}
+                        </button>
+                    </form>
+                {/if}
+            {/foreach}
         {/if}
         {if $referencedItem->hasUpdate()}
             <span class="update-available badge badge-success">

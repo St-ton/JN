@@ -3,8 +3,10 @@
 namespace JTL\Checkout;
 
 use Illuminate\Support\Collection;
+use JTL\Country\Country;
 use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
+use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
 
 /**
@@ -13,6 +15,8 @@ use JTL\Shop;
  */
 class Versandart
 {
+    use MagicCompatibilityTrait;
+
     /**
      * @var int
      */
@@ -114,9 +118,9 @@ class Versandart
     public $eSteuer;
 
     /**
-     * @var ?string
+     * @var null|Country
      */
-    public $cCountryCode;
+    public $country;
 
     /**
      * @var ?array
@@ -127,6 +131,13 @@ class Versandart
      * @var Collection
      */
     public $shippingSurcharges;
+
+    /**
+     * @var array
+     */
+    public static $mapping = [
+        'cCountryCode' => 'CountryCode'
+    ];
 
     /**
      * Versandart constructor.
@@ -406,5 +417,21 @@ class Versandart
         $this->shippingSurcharges = $shippingSurcharges;
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCountryCode(): string
+    {
+        return $this->country !== null ? $this->country->getISO() : '';
+    }
+
+    /**
+     * @param string $countryCode
+     */
+    public function setCountryCode(string $countryCode): void
+    {
+        $this->country = Shop::Container()->getCountryService()->getCountry($countryCode);
     }
 }

@@ -1976,3 +1976,26 @@ msgstr "Mehr erfahren"
 msgid "Updates available"
 msgstr "Updates verfügbar"
 
+msgid "Licenses expired"
+msgstr "Lizenzen abgelaufen"
+
+msgid "I understood this notice."
+msgstr "Ja, ich habe diesen Hinweis zur Kenntnis genommen."
+
+msgid "The following extensions do not have a valid license:"
+msgstr "Die folgenden Extensions haben keine gültige Lizenz:"
+
+msgid "Please uninstall this extensions or purchase a valid license."
+msgstr "Bitte deinstallieren Sie diese oder erwerben Sie eine gültige Lizenz."
+
+msgid "Further using these extensions will violate the license policy and may have legal consequences."
+msgstr "Eine weitere Nutzung stellt eine Lizenzverletzung dar und kann juristische Konsequenzen haben."
+
+msgid "Understood"
+msgstr "Verstanden"
+
+msgid "Disable plugins"
+msgstr "Plugins deaktivieren"
+
+msgid "Disable template"
+msgstr "Template deaktivieren"

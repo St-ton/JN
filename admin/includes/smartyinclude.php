@@ -9,6 +9,7 @@ use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
 use JTL\License\Manager;
 use JTL\License\Mapper;
+use JTL\Plugin\Admin\StateChanger;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Plugin\State;
 use JTL\Shop;
@@ -37,6 +38,7 @@ $currentSecondLevel = 0;
 $currentThirdLevel  = 0;
 $mainGroups         = [];
 $rootKey            = 0;
+$expired            = collect([]);
 if (!$hasPendingUpdates) {
     $jtlSearch                    = $db->query(
         "SELECT kPlugin, cName
@@ -174,8 +176,27 @@ if (!$hasPendingUpdates) {
         }
         $rootKey++;
     }
-    $mapper  = new Mapper(new Manager($db, Shop::Container()->getCache()));
-    $updates = $mapper->getCollection()->getUpdateableItems();
+    if (Request::getVar('licensenoticeaccepted') === 'true') {
+        $_SESSION['licensenoticeaccepted'] = 0;
+    }
+    if (Request::postVar('action') === 'disable-expired-plugins' && Form::validateToken()) {
+        $sc = new StateChanger($db, Shop::Container()->getCache());
+        foreach ($_POST['pluginID'] as $pluginID) {
+            $sc->deactivate((int)$pluginID);
+        }
+    }
+    $mapper                = new Mapper(new Manager($db, Shop::Container()->getCache()));
+    $updates               = $mapper->getCollection()->getUpdateableItems();
+    $licenseNoticeAccepted = (int)($_SESSION['licensenoticeaccepted'] ?? -1);
+    if ($licenseNoticeAccepted === -1) {
+        $expired = $mapper->getCollection()->getBoundExpired();
+    } else {
+        $licenseNoticeAccepted++;
+    }
+    if ($licenseNoticeAccepted > 5) {
+        $licenseNoticeAccepted = -1;
+    }
+    $_SESSION['licensenoticeaccepted'] = $licenseNoticeAccepted;
 }
 if (empty($template->version)) {
     $adminTplVersion = '1.0.0';
@@ -185,6 +206,7 @@ if (empty($template->version)) {
 $langTag = $_SESSION['AdminAccount']->language ?? Shop::Container()->getGetText()->getLanguage();
 
 $smarty->assign('URL_SHOP', $shopURL)
+    ->assign('expiredLicenses', $expired)
     ->assign('jtl_token', Form::getTokenInput())
     ->assign('shopURL', $shopURL)
     ->assign('adminTplVersion', $adminTplVersion)

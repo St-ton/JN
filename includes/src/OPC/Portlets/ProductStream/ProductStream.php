@@ -44,6 +44,7 @@ class ProductStream extends Portlet
                     'list'         => __('presentationList'),
                     'simpleSlider' => __('presentationSimpleSlider'),
                     'slider'       => __('presentationSlider'),
+                    'box-slider'   => __('presentationBoxSlider'),
                 ],
                 'default' => 'gallery',
             ],

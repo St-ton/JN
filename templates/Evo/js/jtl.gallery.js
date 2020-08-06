@@ -210,7 +210,7 @@
                                 .attr('src', '#')
                                 .attr('rel', i)
                                 .addClass(gallery.getCurrentIndex() == i ? 'nivo-control active' : 'nivo-control')
-                                .click(function (e) {
+                                .on('click', function (e) {
                                     gallery.goTo(parseInt($(this).attr('rel')));
                                 })
                             );
@@ -228,7 +228,7 @@
             $(this.element).show();
 
             this.adjust();
-            $(window).resize(function () {
+            $(window).on('resize', function () {
                 self.adjust();
             });
 
@@ -238,7 +238,7 @@
             this.adjust();
 
             GalleryClass.prototype.element = this.element;
-            $(this.element).find('button[name="btnGalleryPre"]').click(function() {
+            $(this.element).find('button[name="btnGalleryPre"]').on('click', function() {
                 var el = GalleryClass.prototype;
                 if ($(el.element).find('.image-thumbs').css('position') === 'absolute') {//V
                     step = Math.ceil($(el.element).find('.thumbs-box').outerHeight(false) / $(el.element).find('.image-thumbs li').outerHeight(true));
@@ -247,7 +247,7 @@
                 }
                 el.scrollTo(-step);//step = Schrittweite
             });
-            $(this.element).find('button[name="btnGalleryNext"]').click(function() {
+            $(this.element).find('button[name="btnGalleryNext"]').on('click', function() {
                 var el = GalleryClass.prototype;
                 if ($(el.element).find('.image-thumbs').css('position') === 'absolute') {//V
                     step = Math.ceil($(el.element).find('.thumbs-box').outerHeight(false) / $(el.element).find('.image-thumbs li').outerHeight(true));

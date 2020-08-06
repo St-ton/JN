@@ -49,7 +49,6 @@
         return false;
     };
     const bindCallback = function (btn, e) {
-        console.log('bindCallback()');
         btn.attr('disabled', true);
         btn.find('i').addClass('fa-spin');
         $.ajax({

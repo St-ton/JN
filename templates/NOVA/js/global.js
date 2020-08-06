@@ -418,7 +418,7 @@ $(document).ready(function () {
     );
 
     $('.btn-offcanvas').on('click', function() {
-        $('body').click();
+        $('body').trigger('click');
     });
 
     if ("ontouchstart" in document.documentElement) {

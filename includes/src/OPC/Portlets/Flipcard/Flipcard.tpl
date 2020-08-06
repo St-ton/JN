@@ -39,12 +39,12 @@
             var flipcardInner = flipcard.find('.opc-Flipcard-inner');
 
             {if $isPreview}
-                flipcard.find('.opc-Flipcard-flip-btn').click(flipCard);
+                flipcard.find('.opc-Flipcard-flip-btn').on('click', flipCard);
             {else}
                 {if $trigger === 'click'}
-                    flipcard.click(flipCard);
+                    flipcard.on('click', flipCard);
                 {else}
-                    flipcard.hover(flipCard);
+                    flipcard.on('hover', flipCard);
                 {/if}
             {/if}
 

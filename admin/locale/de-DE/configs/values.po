@@ -2380,3 +2380,21 @@ msgstr "Nein"
 
 msgid "consent_manager_active_value(Y)"
 msgstr "Ja"
+
+msgid "bewertung_sortierung_value(0)"
+msgstr "Datum aufsteigend"
+
+msgid "bewertung_sortierung_value(1)"
+msgstr "Datum absteigend"
+
+msgid "bewertung_sortierung_value(2)"
+msgstr "Bewertung aufsteigend"
+
+msgid "bewertung_sortierung_value(3)"
+msgstr "Bewertung absteigend"
+
+msgid "bewertung_sortierung_value(4)"
+msgstr "Hilfreich aufsteigend"
+
+msgid "bewertung_sortierung_value(5)"
+msgstr "Hilfreich absteigend"

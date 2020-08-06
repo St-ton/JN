@@ -6,7 +6,6 @@ use DateTime;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Exception\RequestException;
 use JTL\Backend\AuthToken;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
@@ -114,24 +113,15 @@ class Manager
     }
 
     /**
-     * @param bool $force
+     * @param bool  $force
+     * @param array $installedExtensions
      * @return int
-     * @throws RequestException $e
+     * @throws GuzzleException
      */
-    public function update(bool $force = false): int
+    public function update(bool $force = false, array $installedExtensions = []): int
     {
         if (!$force && !$this->checkUpdate()) {
             return 0;
-        }
-        if (false) { // @todo: remove
-            $data = $this->getLocalTestData();
-            $this->housekeeping();
-            $this->cache->flushTags([\CACHING_GROUP_LICENSES]);
-
-            return $this->db->insert(
-                'licenses',
-                (object)['data' => \json_encode($data), 'returnCode' => 200]
-            );
         }
         $res = $this->client->request(
             'POST',
@@ -145,8 +135,8 @@ class Manager
                 'verify'  => true,
                 'body'    => \json_encode((object)['shop' => [
                     'domain'  => \URL_SHOP,
-                    'version' => \APPLICATION_VERSION
-                ]])
+                    'version' => \APPLICATION_VERSION,
+                ], 'extensions' => $installedExtensions])
             ]
         );
         $this->housekeeping();
@@ -156,20 +146,6 @@ class Manager
             'licenses',
             (object)['data' => (string)$res->getBody(), 'returnCode' => $res->getStatusCode()]
         );
-    }
-
-    /**
-     * @return stdClass
-     * @todo: remove
-     */
-    private function getLocalTestData(): stdClass
-    {
-        $obj             = \json_decode(\file_get_contents(\PFAD_ROOT . 'getLicenses.json'), false);
-        $dt              = new DateTime();
-        $obj->timestamp  = $dt->format('y-m-d H:i:s');
-        $obj->returnCode = 200;
-
-        return $obj;
     }
 
     /**
@@ -201,6 +177,15 @@ class Manager
     public function getLicenseByItemID(string $itemID): ?ExsLicense
     {
         return (new Mapper($this))->getCollection()->getForItemID($itemID);
+    }
+
+    /**
+     * @param string $exsID
+     * @return ExsLicense|null
+     */
+    public function getLicenseByExsID(string $exsID): ?ExsLicense
+    {
+        return (new Mapper($this))->getCollection()->getForExsID($exsID);
     }
 
     /**

@@ -26,6 +26,7 @@ use JTL\Session\Backend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
+use stdClass;
 
 /**
  * Class Admin
@@ -106,7 +107,7 @@ class Admin
         if ($action === 'redirect') {
             $token->requestToken(
                 Backend::get('jtl_token'),
-                Shop::getURL(true) . $_SERVER['SCRIPT_NAME'] . '?action=code'
+                Shop::getAdminURL(true) . '/license.php?action=code'
             );
         }
         if ($action === 'update' || $action === 'install') {
@@ -217,7 +218,7 @@ class Admin
             return;
         }
         try {
-            $this->manager->update($force);
+            $this->manager->update($force, $this->getInstalledExtensionPostData());
             $this->checker->handleExpiredLicenses($this->manager);
         } catch (RequestException | Exception | ClientException $e) {
             Shop::Container()->getAlertService()->addAlert(
@@ -226,6 +227,36 @@ class Admin
                 'errorFetchLicenseAPI'
             );
         }
+    }
+
+    /**
+     * @return array
+     */
+    private function getInstalledExtensionPostData(): array
+    {
+        $mapper     = new Mapper($this->manager);
+        $collection = $mapper->getCollection();
+        $data       = [];
+        foreach ($collection as $exsLicense) {
+            /** @var ExsLicense $exsLicense */
+            $avail         = $exsLicense->getReleases()->getAvailable();
+            $item          = new stdClass();
+            $item->active  = false;
+            $item->id      = $exsLicense->getID();
+            $item->exsid   = $exsLicense->getExsID();
+            $item->version = $avail !== null ? (string)$avail->getVersion() : '0.0.0';
+            $reference     = $exsLicense->getReferencedItem();
+            if ($reference !== null && $reference->getInstalledVersion() !== null) {
+                $item->active  = $reference->isActive();
+                $item->version = (string)$reference->getInstalledVersion();
+                if ($reference->getDateInstalled() !== null) {
+                    $item->enabled = $reference->getDateInstalled();
+                }
+            }
+            $data[] = $item;
+        }
+
+        return $data;
     }
 
     /**
@@ -268,12 +299,10 @@ class Admin
         }
         switch ($licenseData->getType()) {
             case ExsLicense::TYPE_PLUGIN:
+            case ExsLicense::TYPE_PORTLET:
                 return new PluginInstaller($this->db, $this->cache);
             case ExsLicense::TYPE_TEMPLATE:
                 return new TemplateInstaller($this->db, $this->cache);
-            case ExsLicense::TYPE_PORTLET:
-                // @todo
-                throw new InvalidArgumentException('Cannot update portlets yet');
             default:
                 throw new InvalidArgumentException('Cannot update type ' . $licenseData->getType());
         }

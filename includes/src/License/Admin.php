@@ -34,6 +34,20 @@ use stdClass;
  */
 class Admin
 {
+    public const ACTION_SET_BINDING = 'setbinding';
+
+    public const ACTION_CLEAR_BINDING = 'clearbinding';
+
+    public const ACTION_RECHECK = 'recheck';
+
+    public const ACTION_REVOKE = 'revoke';
+
+    public const ACTION_REDIRECT = 'redirect';
+
+    public const ACTION_UPDATE = 'update';
+
+    public const ACTION_INSTALL = 'install';
+
     /**
      * @var Manager
      */
@@ -53,6 +67,19 @@ class Admin
      * @var Checker
      */
     private $checker;
+
+    /**
+     * @var string[]
+     */
+    private $validActions = [
+        self::ACTION_SET_BINDING,
+        self::ACTION_CLEAR_BINDING,
+        self::ACTION_RECHECK,
+        self::ACTION_REVOKE,
+        self::ACTION_REDIRECT,
+        self::ACTION_UPDATE,
+        self::ACTION_INSTALL
+    ];
 
     /**
      * Admin constructor.
@@ -83,34 +110,34 @@ class Admin
         $token  = AuthToken::getInstance($this->db);
         $action = Request::postVar('action');
         $valid  = Form::validateToken();
-        if ($action === 'setbinding' && $valid) {
+        if ($action === self::ACTION_SET_BINDING && $valid) {
             $this->setBinding($smarty);
         }
-        if ($action === 'clearbinding' && $valid) {
+        if ($action === self::ACTION_CLEAR_BINDING && $valid) {
             $this->clearBinding($smarty);
         }
-        if ($action === 'recheck' && $valid) {
+        if ($action === self::ACTION_RECHECK && $valid) {
             $this->getLicenses(true);
             $this->getList($smarty);
             \header('Location: ' . Shop::getAdminURL() . '/licenses.php', true, 303);
             exit();
         }
-        if ($action === 'revoke' && $valid) {
+        if ($action === self::ACTION_REVOKE && $valid) {
             $token->revoke();
             $action = null;
         }
-        if ($action === null || !$valid) {
+        if ($action === null || !\in_array($action, $this->validActions, true) || !$valid) {
             $this->getLicenses(true);
             $this->getList($smarty);
             return;
         }
-        if ($action === 'redirect') {
+        if ($action === self::ACTION_REDIRECT) {
             $token->requestToken(
                 Backend::get('jtl_token'),
                 Shop::getAdminURL(true) . '/license.php?action=code'
             );
         }
-        if ($action === 'update' || $action === 'install') {
+        if ($action === self::ACTION_UPDATE || $action === self::ACTION_INSTALL) {
             $this->installUpdate($action, $smarty);
         }
     }

@@ -142,7 +142,7 @@ $(document).on('click', `${modal} [${Data.next}]`, () => {
                 $.each(errors, (index, error) => {
                     let $question = $('#question-' + index);
                     $question.parent().addClass('error').find('.js-wizard-validation-error').remove();
-                    $question.after('<div class="error js-wizard-validation-error">' + error + '</div>');
+                    $question.parent().append('<div class="error js-wizard-validation-error">' + error + '</div>');
                 });
             } else {
                 updateSummary();

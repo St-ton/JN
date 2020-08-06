@@ -8,6 +8,7 @@
 
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
+use JTL\Shopsetting;
 
 /**
  * Class Migration_20191212093000
@@ -23,23 +24,24 @@ class Migration_20191212093000 extends Migration implements IMigration
      */
     public function up()
     {
-        //TODO: default 'N' on install
-        $this->setConfig(
-            'global_wizard_done',
-            'Y',
-            \CONF_GLOBAL,
-            'Einrichtungsassistent durchlaufen',
-            'selectbox',
-            1,
-            (object)[
-                'cBeschreibung' => 'Einrichtungsassistent durchlaufen',
-                'inputOptions'  => [
-                    'Y'      => 'Ja',
-                    'N'      => 'Nein',
-                ],
-                'nStandardAnzeigen' => 0
-            ]
-        );
+        if(Shopsetting::getInstance()->getValue(\CONF_GLOBAL, 'global_wizard_done') === null) {
+            $this->setConfig(
+                'global_wizard_done',
+                'Y',
+                \CONF_GLOBAL,
+                'Einrichtungsassistent durchlaufen',
+                'selectbox',
+                1,
+                (object)[
+                    'cBeschreibung' => 'Einrichtungsassistent durchlaufen',
+                    'inputOptions'  => [
+                        'Y'      => 'Ja',
+                        'N'      => 'Nein',
+                    ],
+                    'nStandardAnzeigen' => 0
+                ]
+            );
+        }
     }
 
     /**

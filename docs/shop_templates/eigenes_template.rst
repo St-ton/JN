@@ -229,6 +229,19 @@ Dieses Beispiel würde bewirken, dass die Datei ``js/jtl.evo.js`` Ihres Child-Te
 des Evo-Templates eingebunden wird.  Ohne das **override**-Attribut würde die genannte Datei **zusätzlich**
 zur ``jtl.evo.js`` des Parent-Templates eingebunden werden.
 
+Eigene Skripte nachladen
+------------------------
+
+**Hinweis für das NOVA-Template:**
+
+Um den Ladevorgang der Shop-Seiten nicht zu stark zu verzögern, sollten Sie zusätzliche Skripte Ihres
+Child-Templates in der Templatedatei ``footer.tpl`` laden. |br|
+Hierfür ist der Block ``{block name='layout-footer-js'}`` vorgesehen.
+
+Wichtig ist, dass Sie hierbei Ihre Skripte *asynchron* laden. Fügen Sie dazu das Attribut ``async`` zu Ihren
+``<script>``-Tags hinzu. |br|
+(zum Beispiel: ``<script src="my-nscript.js" async></script>``)
+
 
 .. _label_eigenestemplate_tpldateien:
 

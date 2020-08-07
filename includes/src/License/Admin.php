@@ -34,6 +34,8 @@ use stdClass;
  */
 class Admin
 {
+    public const ACTION_EXTEND = 'extendLicense';
+
     public const ACTION_SET_BINDING = 'setbinding';
 
     public const ACTION_CLEAR_BINDING = 'clearbinding';
@@ -72,6 +74,7 @@ class Admin
      * @var string[]
      */
     private $validActions = [
+        self::ACTION_EXTEND,
         self::ACTION_SET_BINDING,
         self::ACTION_CLEAR_BINDING,
         self::ACTION_RECHECK,
@@ -110,21 +113,26 @@ class Admin
         $token  = AuthToken::getInstance($this->db);
         $action = Request::postVar('action');
         $valid  = Form::validateToken();
-        if ($action === self::ACTION_SET_BINDING && $valid) {
-            $this->setBinding($smarty);
-        }
-        if ($action === self::ACTION_CLEAR_BINDING && $valid) {
-            $this->clearBinding($smarty);
-        }
-        if ($action === self::ACTION_RECHECK && $valid) {
-            $this->getLicenses(true);
-            $this->getList($smarty);
-            \header('Location: ' . Shop::getAdminURL() . '/licenses.php', true, 303);
-            exit();
-        }
-        if ($action === self::ACTION_REVOKE && $valid) {
-            $token->revoke();
-            $action = null;
+        if ($valid) {
+            if ($action === self::ACTION_SET_BINDING) {
+                $this->setBinding($smarty);
+            }
+            if ($action === self::ACTION_CLEAR_BINDING) {
+                $this->clearBinding($smarty);
+            }
+            if ($action === self::ACTION_RECHECK) {
+                $this->getLicenses(true);
+                $this->getList($smarty);
+                \header('Location: ' . Shop::getAdminURL() . '/licenses.php', true, 303);
+                exit();
+            }
+            if ($action === self::ACTION_REVOKE) {
+                $token->revoke();
+                $action = null;
+            }
+            if ($action === self::ACTION_EXTEND) {
+                $this->extend($smarty);
+            }
         }
         if ($action === null || !\in_array($action, $this->validActions, true) || !$valid) {
             $this->getLicenses(true);
@@ -201,6 +209,33 @@ class Admin
         } catch (ClientException | GuzzleException $e) {
             $response->error = $e->getMessage();
             $smarty->assign('bindErrorMessage', $e->getMessage());
+        }
+        $this->getLicenses(true);
+        $this->getList($smarty);
+        $response->replaceWith['#unbound-licenses'] = $smarty->fetch('tpl_inc/licenses_unbound.tpl');
+        $response->replaceWith['#bound-licenses']   = $smarty->fetch('tpl_inc/licenses_bound.tpl');
+        $response->html                             = $apiResponse;
+        $this->sendResponse($response);
+    }
+
+    /**
+     * @param JTLSmarty $smarty
+     * @throws \SmartyException
+     */
+    private function extend(JTLSmarty $smarty): void
+    {
+        $apiResponse      = '';
+        $response         = new AjaxResponse();
+        $response->action = 'extendLicense';
+        try {
+            $apiResponse = $this->manager->extend(
+                Request::postVar('url'),
+                Request::postVar('exsid'),
+                Request::postVar('key')
+            );
+        } catch (ClientException | GuzzleException $e) {
+            $response->error = $e->getMessage();
+            $smarty->assign('extendErrorMessage', $e->getMessage());
         }
         $this->getLicenses(true);
         $this->getList($smarty);

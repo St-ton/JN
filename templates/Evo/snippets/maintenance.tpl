@@ -112,7 +112,7 @@
 {block name="snippets-maintenance-content"}
         <div class="container">
             <div class="row">
-                <div class="col-md-6 d-md-flex col-md-offset-3">
+                <div class="col-md-6 col-md-offset-3">
                     <div id="maintenance-notice" class="panel panel-info">
                         <div class="panel-heading">
                             <div class="row">
@@ -150,7 +150,6 @@
 
                         </div>
                         <div class="panel-body">
-                            {* include file="snippets/extension.tpl" *}
                             {lang key="maintenanceModeActive" section="global"}
                         </div>
                     </div>

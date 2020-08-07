@@ -7,7 +7,7 @@
                 data=["toggle"=>"collapse"]
                 role="button"
                 aria=["expanded"=>"false","controls"=>"crd-cllps-{$oBox->getID()}"]
-                class="text-decoration-none font-weight-bold mb-2 d-md-none dropdown-toggle"}
+                class="text-decoration-none font-weight-bold d-md-none dropdown-toggle"}
                 {$oBox->getTitle()}
             {/link}
         {/block}
@@ -22,7 +22,7 @@
                 visible=false
                 id="crd-cllps-{$oBox->getID()}"
                 aria=["labelledby"=>"crd-hdr-{$oBox->getID()}"]}
-                    <div class="nav-panel">
+                    <div class="nav-panel mt-2 mt-md-0">
                         {nav vertical=true}
                             {block name='boxes-box-linkgroups-include-linkgroups-recursive'}
                                 {include file='snippets/linkgroup_recursive.tpl' linkgroupIdentifier=$oBox->getLinkGroupTemplate() dropdownSupport=true  tplscope='box'}

@@ -686,7 +686,6 @@
     {if (!isset($smarty.session.bAnti_spam_already_checked) || $smarty.session.bAnti_spam_already_checked !== true)
     && isset($Einstellungen.kunden.registrieren_captcha) && $Einstellungen.kunden.registrieren_captcha !== 'N' && empty($Kunde->kKunde)}
         {block name='checkout-inc-billing-address-form-captcha'}
-            <hr>
             {row}
                 {col cols=8 offset=4}
                     {formgroup class="{if isset($fehlendeAngaben.captcha) && $fehlendeAngaben.captcha != false} has-error{/if}"}
@@ -694,7 +693,6 @@
                     {/formgroup}
                 {/col}
             {/row}
-            <hr>
         {/block}
     {/if}
 {/block}

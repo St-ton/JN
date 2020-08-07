@@ -6,9 +6,8 @@
             <span class="item-available badge badge-info">
                 {__('Version %s available', $avail->getVersion())}
             </span>
-            <hr>
         {/if}
-        {__('Managed by %s')|sprintf:$license->getParent()->getName()}
+        <p class="mb-0 mt-2">{__('Managed by %s')|sprintf:$license->getParent()->getName()}</p>
     {elseif $referencedItem !== null}
         {$licData = $license->getLicense()}
         {$subscription = $licData->getSubscription()}
@@ -29,8 +28,7 @@
                     {__('Version %s available', $avail->getVersion())}
                 </span>
             {/if}
-            <hr>
-            <form method="post"{if !$disabled} class="install-item-form"{/if}>
+            <form method="post"{if !$disabled} class="mt-2 install-item-form"{/if}>
                 {$jtl_token}
                 <input type="hidden" name="action" value="install">
                 <input type="hidden" name="item-type" value="{$license->getType()}">
@@ -62,8 +60,7 @@
             <span class="update-available badge badge-success">
                 {__('Update to version %s available', $referencedItem->getMaxInstallableVersion())}
             </span>
-            <hr>
-            <form method="post"{if !$disabled} class="update-item-form"{/if}>
+            <form method="post"{if !$disabled} class="mt-2 update-item-form"{/if}>
                 {$jtl_token}
                 <input type="hidden" name="action" value="update">
                 <input type="hidden" name="item-type" value="{$license->getType()}">

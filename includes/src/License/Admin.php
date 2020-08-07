@@ -142,7 +142,7 @@ class Admin
         if ($action === self::ACTION_REDIRECT) {
             $token->requestToken(
                 Backend::get('jtl_token'),
-                Shop::getAdminURL(true) . '/license.php?action=code'
+                Shop::getAdminURL(true) . '/licenses.php?action=code'
             );
         }
         if ($action === self::ACTION_UPDATE || $action === self::ACTION_INSTALL) {

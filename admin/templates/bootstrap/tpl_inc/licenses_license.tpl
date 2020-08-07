@@ -31,8 +31,8 @@
 {/if}
 {foreach $license->getLinks() as $link}
     {if $link->getRel() === 'extendLicense' && ($license->hasSubscription() || $license->hasLicense())}
-        <br>
-        {form class='set-binding-form mt-2' style='display:inline-block'}
+        <p class="mt-2 mb-0">
+        {form class='set-binding-form mt-2'}
             <input type="hidden" name="action" value="extendLicense">
             <input type="hidden" name="url" value="{$link->getHref()}">
             <input type="hidden" name="method" value="{$link->getMethod()|default:'POST'}">
@@ -45,8 +45,6 @@
                 <i class="fa fa-link"></i> {if $license->hasSubscription()}{__('extendSubscription')}{else}{__('extendLicense')}{/if}
             </button>
         {/form}
-{*        <a class="btn btn-primary btn-sm" href="{$link->getHref()}" rel="noopener" title="{__($link->getRel())}">*}
-{*            <i class="fa fa-external-link"></i> *}
-{*        </a>*}
+        </p>
     {/if}
 {/foreach}

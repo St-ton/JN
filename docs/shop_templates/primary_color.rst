@@ -22,8 +22,8 @@ Tragen Sie in dem dafür vorgesehenen Abschnitt ("eigene Variablen") Ihre neue P
 
 Speichern Sie unten links die Datei und klicken Sie oben rechts auf "Theme kompilieren".
 
-Sobald der Lade-Spinner am "Theme kompilieren"-Button aufeghört hat, sich zu drehen, ist das Theme kompiliert und Sie
-können sich ihre Änderung im Frontend ansehen.
+Sobald der Lade-Spinner am "Theme kompilieren"-Button aufgehört hat, sich zu drehen, ist das Theme kompiliert und Sie
+können sich Ihre Änderung im Frontend ansehen.
 
 Auf die gleiche Weise können Sie auch die primäre Schriftgröße an Ihre Bedürfnisse anpassen:
 

@@ -1,9 +1,5 @@
-Breaking Changes
-================
-
-.. |rarr| raw:: html
-
-   &rArr;
+Lizensierung
+============
 
 .. |br| raw:: html
 
@@ -12,18 +8,20 @@ Breaking Changes
 Plugin- und Template-Lizensierung (ab Shop 5.0.0)
 -------------------------------------------------
 
-
 **Voraussetzung:**
 
-Das Plugin muss im JTL-Kundencenter angelegt worden sein und eine exs_id wurde generiert.
+Als Erstes müssen Sie Ihr neues Plugin/Template im JTL-Kundencenter anlegen und eine ``EsxID`` für dieses
+Plugin/Template generieren.
 
 ExsID
 """""
 
-Als erstes muss die exs_id in der info.xml des Plugins bzw. der template.xml des Templates hinterlegt werden.
-Beispiel für ein Plugin:
+Die ``ExsID`` tragen Sie in der ``info.xml`` Ihres Plugins, bzw. in der ``template.xml`` Ihres Templates, ein.
 
-.. code-block:: php
+**Beispiel für ein Plugin:**
+
+.. code-block:: xml
+   :emphasize-lines: 12
 
     <?xml version="1.0" encoding="UTF-8"?>
     <jtlshopplugin>
@@ -43,9 +41,10 @@ Beispiel für ein Plugin:
     </jtlshopplugin>
 
 
-Beispiel für ein Template:
+**Beispiel für ein Template:**
 
-.. code-block:: php
+.. code-block:: xml
+   :emphasize-lines: 11
 
     <?xml version="1.0" encoding="utf-8" standalone="yes"?>
     <Template isFullResponsive="true">
@@ -66,8 +65,11 @@ Beispiel für ein Template:
         </Boxes>
     </Template>
 
-Falls das Plugin/Template stets kostenlos ist oder dem Shopbenutzer vertraut wird, müssen keine weiteren Schritte unternommen werden.
-Das Plugin ist nun über das Shopbackend installier- und updatebar. Falls Testlizenzen ausgestellt werden, werden Plugins mit abgelaufenen Testlizenzen automatisch deaktiviert.
+Falls Sie Ihr Plugin oder Template kostenlos zur Verfügung stellen wollen, sind ab hier keine weiteren Schritte
+erfoderlich. |br|
+Das Plugin ist nun über das Backend von JTL-Shop installierbar und updatebar.
+
+Falls Sie Testlizenzen ausgestellt haben, werden Plugins mit abgelaufenen Testlizenzen automatisch deaktiviert.
 
 Lizenzprüfung
 -------------
@@ -77,8 +79,10 @@ Für den Fall dass die Lizenz/Subscription manuell geprüft werden soll, bietet 
 Bootstrapping
 """""""""""""
 
-In der Bootstrap.php des Templates oder Plugins kann die Methode BootstrapperInterface::licenseExpired(ExsLicense $license): void implementiert werden.
-Diese Methode wird immer dann aufgerufen, wenn der Shop auf abgelaufene Extensions prüft. Dies findet via Cronjob alle 4 Stunden statt sowie bei jeder Aktualisierung der Lizenzübersicht im Backend.
+In der ``Bootstrap.php`` des Plugins oder Templates kann die Methode
+``BootstrapperInterface::licenseExpired(ExsLicense $license): void`` implementiert werden. Diese Methode wird immer
+dann aufgerufen, wenn JTL-Shop auf abgelaufene Extensions prüft. |br|
+Dies findet via Cronjob alle 4 Stunden statt, sowie bei jeder Aktualisierung der Lizenzübersicht im Backend.
 
 
 Getter für Plugins
@@ -87,6 +91,7 @@ Getter für Plugins
 Am License-Objekt von Plugin-Instanzen gibt es stets einen Getter für die zugehörige Lizenz.
 
 .. code-block:: php
+
     /** @var \JTL\Plugin\Plugin $plugin */
     $subscription = $plugin->getLicense()->getExsLicense()->getLicense()->getSubscription();
 
@@ -97,6 +102,7 @@ Getter für Templates
 Auch an Templatemodel-Instanzen gibt es einen entsprechenden Getter.
 
 .. code-block:: php
+
     /** @var \JTL\Template\Model $template */
     $subscription = $template->getExsLicense()->getLicense()->getSubscription()
 
@@ -104,19 +110,22 @@ Auch an Templatemodel-Instanzen gibt es einen entsprechenden Getter.
 License-Manager
 """""""""""""""
 
-Um an beliebigen Stellen die Lizenz für eine beliebige Extension zu erhalten (insbesondere hilfreich bei InApp Purchases) existiert der License-Manager.
+Um an beliebigen Stellen die Lizenz für eine beliebige Extension zu erhalten (insbesondere hilfreich bei "*InApp
+Purchases*") existiert der License-Manager.
 
 .. code-block:: php
+
     $manager      = new JTL\License\Manager(\JTL\Shop::Container()->getDB(), \JTL\Shop::Container()->getCache());
     $subscription = $manager->getLicenseByExsID('some_exs_id');
 
 
-Komplexbeispiele
-""""""""""""""""
+Komplexe Beispiele
+------------------
 
-Die verschiedenen Möglichkeiten in der Bootstrap.php eines (Child-)Templates zeigt das folgende Codebeispiel.
+Die verschiedenen Möglichkeiten in der ``Bootstrap.php`` eines (Child-)Templates zeigt das folgende Codebeispiel.
 
 .. code-block:: php
+
     <?php declare(strict_types=1);
 
     namespace Template\mychildtemplate;
@@ -144,9 +153,9 @@ Die verschiedenen Möglichkeiten in der Bootstrap.php eines (Child-)Templates ze
             } elseif ($license->getLicense()->getDaysRemaining() < 14) {
                 echo 'Achtung! Lizenz läuft bald aus!';
             } elseif ($license->getLicense()->isExpired()) {
-                die('Kauf einne neue Lizenz!');
+                die('Bitte erwerben Sie eine neue Lizenz!');
             } elseif ($license->getLicense()->getSubscription()->isExpired()) {
-                die('Kauf einne neue Subscription!');
+                die('Bitte erwerben Sie eine neue Subscription!');
             }
         }
 
@@ -169,10 +178,15 @@ Die verschiedenen Möglichkeiten in der Bootstrap.php eines (Child-)Templates ze
         }
     }
 
-Analog dazu funktionieren die Methoden aus der Bootstrap.php eines Plugins.
-Hier besteht zusätzlich die Möglichkeit, auch Plugins über den Call von JTL\Plugin\Plugin::selfDescruct() hart zu deaktivieren.
+
+Analog dazu funktionieren die Methoden aus der ``Bootstrap.php`` eines Plugins. |br|
+Hier besteht zusätzlich die Möglichkeit, auch Plugins über den Aufruf von ``JTL\Plugin\Plugin::selfDescruct()`` hart
+zu deaktivieren.
+
 
 .. code-block:: php
+   :emphasize-lines: 15,16
+
     <?php declare(strict_types=1);
 
     namespace Plugin\my_example;

@@ -6,7 +6,7 @@
     <div class="text-center opc-ImageSlider {if $slides|count > 0}opc-ImageSlider-with-image{/if}"
          style="{if $slides|count > 0}background-image: url('{$imgAttribs.src}');{/if} {$instance->getStyleString()}">
         <div>
-            {file_get_contents($portlet->getBaseUrl()|cat:'icon.svg')}
+            {file_get_contents($portlet->getBasePath()|cat:'icon.svg')}
             <span>{__('Bilder-Slider')}</span>
         </div>
     </div>

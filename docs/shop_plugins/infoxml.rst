@@ -154,7 +154,7 @@ Entwicklerzwecken Sinn (siehe z. B.: *5.0.0-beta.3*)
 MinShopVersion
 """"""""""""""
 
-*MinShopVersion* entspricht ab Shop 5.0.0 dem alten  Tag *ShopVersion*.
+*MinShopVersion* entspricht ab Shop 5.0.0 dem alten Tag *ShopVersion*.
 
 MaxShopVersion
 """"""""""""""
@@ -204,10 +204,11 @@ Ab JTL-Shop 5.x ist dies eine Pflichtangabe zur Definition des Erstellungsdatums
 Das Datum muss im Format ``YYYY-MM-DD`` angegeben werden, beispielsweise "*2019-03-21*" für den 21. März 2019.
 
 ExsID
-""""""""""
+"""""
 
-Die ExsID muss für alle Plugins ab Shop 5.0.0 angegeben werden, wenn das Plugin im JTL-Store vertrieben werden soll.
-Sie finden die ExsID im Kundencenter, nachdem dort eine Extension für den Marktplatz angelegt wurde.
+Die ``ExsID`` muss für alle Plugins ab JTL-Shop 5.0.0 angegeben werden, wenn das Plugin im JTL-Store vertrieben werden
+soll. |br|
+Sie finden die ``ExsID`` im Kundencenter, nachdem Sie dort eine Extension für den Marktplatz angelegt haben.
 
 Install-Block
 """""""""""""
@@ -634,7 +635,7 @@ Weitere Informationen zum Caching und den vorhandenen *Tags* finden Sie im Kapit
 Boxen
 -----
 
-Mit Boxenverwaltung von JTL-Shop kann der Onlineshopbetreiber einfach und schnell Boxen im Onlineshop
+Mit der *Boxenverwaltung* von JTL-Shop kann der Onlineshopbetreiber einfach und schnell Boxen im Onlineshop
 verschieben, anlegen oder löschen.
 
 Ein Plugin ist ebenfalls in der Lage, einen neuen Boxentyp anzulegen. Wo die Templates für diese Boxen im Plugin
@@ -945,36 +946,39 @@ im Abschnitt ":ref:`label_aufbau_blueprints`".
 Consent-Manager (ab 5.0.0)
 --------------------------
 
-Ab Shop 5.0.0 können Plugins eigene Einträge für den Consent-Manager definieren. |br|
-Dies geschieht über den XML-Knoten ``<ServicesRequiringConsent>``, der seinerseits unlimitiert viele Unterknoten vom Typ ``<Vendor>``
-enthalten kann.
+Ab JTL-Shop 5.0.0 können Plugins eigene Einträge im Consent-Manager definieren. |br|
+Um das zu realisieren, fügen Sie den XML-Knoten ``<ServicesRequiringConsent>`` in die ``info.xml`` Ihres Plugins
+ein. Dieser XML-Knoten kann selbst wiederum beliebig viele Unterknoten des Typs ``<Vendor>`` beinhalten.
+
+**Beispiel:**
 
 .. code-block:: xml
 
     <Install>
         ...
         <ServicesRequiringConsent>
-                <Vendor>
-                    <ID>myItemID</ID>
-                    <Company>Meine kleine Firma GmbH</Company>
-                    <Localization iso="GER">
-                        <Name>Name meines Eintrags</Name>
-                        <Purpose>Tut etwas Tollen</Purpose>
-                        <Description>Dies ist eine Beschreibung der Funktionalität, welche Consent erfordert.
-                        </Description>
-                        <PrivacyPolicy>https://www.example.com/privacy?hl=de</PrivacyPolicy>
-                    </Localization>
-                    <Localization iso="ENG">
-                        <Name>Name of my item</Name>
-                        <Purpose>Does something great</Purpose>
-                        <Description>This is a longer description.
-                        </Description>
-                        <PrivacyPolicy>https://www.example.com/privacy</PrivacyPolicy>
-                    </Localization>
-                </Vendor>
-            </ServicesRequiringConsent>
+            <Vendor>
+                <ID>myItemID</ID>
+                <Company>Meine kleine Firma GmbH</Company>
+                <Localization iso="GER">
+                    <Name>Name meines Eintrags</Name>
+                    <Purpose>Tut etwas Tollen</Purpose>
+                    <Description>Dies ist die Beschreibung einer Funktionalität, welche Consent erfordert.
+                    </Description>
+                    <PrivacyPolicy>https://www.example.com/privacy?hl=de</PrivacyPolicy>
+                </Localization>
+                <Localization iso="ENG">
+                    <Name>Name of my item</Name>
+                    <Purpose>Does something great</Purpose>
+                    <Description>This is a longer description.
+                    </Description>
+                    <PrivacyPolicy>https://www.example.com/privacy</PrivacyPolicy>
+                </Localization>
+            </Vendor>
+        </ServicesRequiringConsent>
         ...
     </Install>
+
 
 ``<Vendor>``:
 

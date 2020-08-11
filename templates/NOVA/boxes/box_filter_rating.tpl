@@ -11,10 +11,11 @@
             }
                 {lang key='Votes'}
             {/button}
-            {collapse id="cllps-box{$oBox->getID()}" visible=$oBox->getItems()->isActive()}
-            {block name='boxes-box-filter-rating-content'}
-                {include file='snippets/filter/genericFilterItem.tpl' filter=$oBox->getItems()}
-            {/block}
+            {collapse id="cllps-box{$oBox->getID()}"
+                visible=$oBox->getItems()->isActive() || $Einstellungen.template.productlist.filter_items_always_visible === 'Y'}
+                {block name='boxes-box-filter-rating-content'}
+                    {include file='snippets/filter/genericFilterItem.tpl' filter=$oBox->getItems()}
+                {/block}
             {/collapse}
             {block name='boxes-box-filter-rating-hr'}
                 <hr class="my-2">

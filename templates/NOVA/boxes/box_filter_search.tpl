@@ -11,10 +11,11 @@
             }
                 {lang key='searchFilter'}
             {/button}
-            {collapse id="cllps-box{$oBox->getID()}" visible=$NaviFilter->searchFilterCompat->isActive()}
-            {block name='boxes-box-filter-search-content'}
-                {include file='snippets/filter/search.tpl'}
-            {/block}
+            {collapse id="cllps-box{$oBox->getID()}"
+                visible=$NaviFilter->searchFilterCompat->isActive() || $Einstellungen.template.productlist.filter_items_always_visible === 'Y'}
+                {block name='boxes-box-filter-search-content'}
+                    {include file='snippets/filter/search.tpl'}
+                {/block}
             {/collapse}
             {block name='boxes-box-filter-search-hr'}
                 <hr class="my-2">

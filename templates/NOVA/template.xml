@@ -57,7 +57,7 @@
                 <Option Value="Y">Aktiv</Option>
                 <Option Value="N">Inaktiv</Option>
             </Setting>
-            <Setting Description="Seiten der Linkgruppe &quot;megamenu&quot;" Key="show_pages" Type="select" Value="Y">
+            <Setting Description="Seiten der Linkgruppe „megamenu“" Key="show_pages" Type="select" Value="Y">
                 <Option Value="Y">Aktiv</Option>
                 <Option Value="N">Inaktiv</Option>
             </Setting>
@@ -93,7 +93,7 @@
                 <Option Value="2"><![CDATA[max. 2]]></Option>
                 <Option Value="3"><![CDATA[max. 3]]></Option>
                 <Option Value="5"><![CDATA[max. 5]]></Option>
-                <Option Value="9999"><![CDATA[keine Beschr&auml;nkung]]></Option>
+                <Option Value="9999"><![CDATA[keine Beschränkung]]></Option>
             </Setting>
             <Setting Description="Anzahl der möglichen Variationswerte für Radio und Swatches" Key="variation_max_werte_productlist" Type="select" Value="3">
                 <Option Value="3"><![CDATA[max. 3]]></Option>

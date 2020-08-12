@@ -77,10 +77,30 @@ class ExsLicense
     private $referencedItem;
 
     /**
+     * @var InAppParent
+     */
+    private $parent;
+
+    /**
+     * @var bool
+     */
+    private $isInApp = false;
+
+    /**
+     * @var bool
+     */
+    private $hasSubscription = false;
+
+    /**
+     * @var bool
+     */
+    private $hasLicense = false;
+
+    /**
      * ExsLicenseData constructor.
      * @param stdClass|null $json
      */
-    public function __construct(?stdClass $json)
+    public function __construct(?stdClass $json = null)
     {
         if ($json !== null) {
             $this->fromJSON($json);
@@ -93,16 +113,22 @@ class ExsLicense
     public function fromJSON(stdClass $json): void
     {
         $this->setID($json->id);
-        $this->setType($json->type ?? self::TYPE_PLUGIN); // @todo: this should always be provided by the api!
+        $this->setType($json->type ?? self::TYPE_PLUGIN);
         $this->setName($json->name);
-        $this->setExsid($json->exsid);
+        $this->setExsID($json->exsid);
         if (isset($json->license)) {
             $this->setLicense(new License($json->license));
+            $this->setHasLicense($this->getLicense()->getValidUntil() !== null);
+            $this->setHasSubscription($this->getLicense()->getSubscription()->getValidUntil() !== null);
         }
         $this->setVendor(new Vendor($json->vendor));
         $this->releases = new Releases($json->releases);
         foreach ($json->links as $link) {
             $this->links[] = new Link($link);
+        }
+        $this->setParent(new InAppParent($json->inapp ?? null));
+        if (isset($json->inapp->parent)) {
+            $this->setIsInApp(true);
         }
     }
 
@@ -157,7 +183,7 @@ class ExsLicense
     /**
      * @return string
      */
-    public function getExsid(): string
+    public function getExsID(): string
     {
         return $this->exsid;
     }
@@ -165,7 +191,7 @@ class ExsLicense
     /**
      * @param string $exsid
      */
-    public function setExsid(string $exsid): void
+    public function setExsID(string $exsid): void
     {
         $this->exsid = $exsid;
     }
@@ -200,6 +226,9 @@ class ExsLicense
     public function setLicense(License $license): void
     {
         $this->license = $license;
+        if ($license->isBound()) {
+            $this->setState(self::STATE_ACTIVE);
+        }
     }
 
     /**
@@ -248,7 +277,7 @@ class ExsLicense
      */
     public function setQueryDate($queryDate): void
     {
-        $this->queryDate = \is_a(DateTime::class, $queryDate) ? $queryDate : new DateTime($queryDate);
+        $this->queryDate = \is_a($queryDate, DateTime::class) ? $queryDate : new DateTime($queryDate);
     }
 
     /**
@@ -281,5 +310,69 @@ class ExsLicense
     public function setReferencedItem(?ReferencedItemInterface $referencedItem): void
     {
         $this->referencedItem = $referencedItem;
+    }
+
+    /**
+     * @return InAppParent
+     */
+    public function getParent(): InAppParent
+    {
+        return $this->parent;
+    }
+
+    /**
+     * @param InAppParent $parent
+     */
+    public function setParent(InAppParent $parent): void
+    {
+        $this->parent = $parent;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInApp(): bool
+    {
+        return $this->isInApp;
+    }
+
+    /**
+     * @param bool $isInApp
+     */
+    public function setIsInApp(bool $isInApp): void
+    {
+        $this->isInApp = $isInApp;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasSubscription(): bool
+    {
+        return $this->hasSubscription;
+    }
+
+    /**
+     * @param bool $hasSubscription
+     */
+    public function setHasSubscription(bool $hasSubscription): void
+    {
+        $this->hasSubscription = $hasSubscription;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasLicense(): bool
+    {
+        return $this->hasLicense;
+    }
+
+    /**
+     * @param bool $hasLicense
+     */
+    public function setHasLicense(bool $hasLicense): void
+    {
+        $this->hasLicense = $hasLicense;
     }
 }

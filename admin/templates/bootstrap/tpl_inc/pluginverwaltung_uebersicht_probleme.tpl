@@ -42,7 +42,7 @@
                                     {elseif $plugin->getState() === \JTL\Plugin\State::DISABLED} text-warning
                                     {elseif $plugin->getState() === \JTL\Plugin\State::ERRONEOUS || $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_INVALID}} text-danger
                                     {elseif $plugin->getState() === \JTL\Plugin\State::UPDATE_FAILED || $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_MISSING} text-warning{/if}">
-                                {$mapper->map($plugin->getState())}
+                                {__($mapper->map($plugin->getState()))}
                             </span>
                         </td>
                         <td class="text-center">{(string)$plugin->getVersion()}{if $plugin->isUpdateAvailable()} <span class="error">{(string)$plugin->isUpdateAvailable()}</span>{/if}</td>

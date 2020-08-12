@@ -4,7 +4,9 @@ namespace JTL\License;
 
 use DateTime;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
+use JTL\Backend\AuthToken;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
@@ -20,6 +22,8 @@ class Manager
     private const MAX_REQUESTS = 10;
 
     private const CHECK_INTERVAL_HOURS = 4;
+
+    private const API_URL = 'https://checkout-stage.jtl-software.com/v1/licenses';
 
     /**
      * @var DbInterface
@@ -59,31 +63,80 @@ class Manager
     }
 
     /**
-     * @param bool $force
-     * @return int
-     * @throws RequestException $e
+     * @param string $url
+     * @return string
+     * @throws GuzzleException
+     * @throws ClientException
      */
-    public function update(bool $force = false): int
+    public function setBinding(string $url): string
+    {
+        $res = $this->client->request(
+            'POST',
+            $url,
+            [
+                'headers' => [
+                    'Accept'        => 'application/json',
+                    'Content-Type'  => 'application/json',
+                    'Authorization' => 'Bearer ' . AuthToken::getInstance($this->db)->get()
+                ],
+                'verify'  => true,
+                'body'    => \json_encode((object)['domain' => \URL_SHOP])
+            ]
+        );
+
+        return (string)$res->getBody();
+    }
+
+    /**
+     * @param string $url
+     * @return string
+     * @throws GuzzleException
+     * @throws ClientException
+     */
+    public function clearBinding(string $url): string
+    {
+        $res = $this->client->request(
+            'GET',
+            $url,
+            [
+                'headers' => [
+                    'Accept'        => 'application/json',
+                    'Content-Type'  => 'application/json',
+                    'Authorization' => 'Bearer ' . AuthToken::getInstance($this->db)->get()
+                ],
+                'verify'  => true,
+                'body'    => \json_encode((object)['domain' => \URL_SHOP])
+            ]
+        );
+
+        return (string)$res->getBody();
+    }
+
+    /**
+     * @param bool  $force
+     * @param array $installedExtensions
+     * @return int
+     * @throws GuzzleException
+     */
+    public function update(bool $force = false, array $installedExtensions = []): int
     {
         if (!$force && !$this->checkUpdate()) {
             return 0;
         }
-        if (true) { // @todo: remove
-            $data = $this->getLocalTestData();
-            $this->housekeeping();
-            $this->cache->flushTags([\CACHING_GROUP_LICENSES]);
-
-            return $this->db->insert(
-                'licenses',
-                (object)['data' => \json_encode($data), 'returnCode' => 200]
-            );
-        }
         $res = $this->client->request(
             'POST',
-            'https://license.jtl-test.de/v1/exs',
+            self::API_URL,
             [
-                'headers' => ['Accept' => 'application/json'],
-                'verify'  => true
+                'headers' => [
+                    'Accept'        => 'application/json',
+                    'Content-Type'  => 'application/json',
+                    'Authorization' => 'Bearer ' . AuthToken::getInstance($this->db)->get()
+                ],
+                'verify'  => true,
+                'body'    => \json_encode((object)['shop' => [
+                    'domain'  => \URL_SHOP,
+                    'version' => \APPLICATION_VERSION,
+                ], 'extensions' => $installedExtensions])
             ]
         );
         $this->housekeeping();
@@ -96,27 +149,10 @@ class Manager
     }
 
     /**
-     * @return stdClass
-     * @todo: remove
-     */
-    private function getLocalTestData(): stdClass
-    {
-        $obj             = \json_decode(\file_get_contents(\PFAD_ROOT . 'getLicenses.json'), false);
-        $dt              = new DateTime();
-        $obj->timestamp  = $dt->format('y-m-d H:i:s');
-        $obj->returnCode = 200;
-
-        return $obj;
-    }
-
-    /**
      * @return stdClass|null
      */
     public function getLicenseData(): ?stdClass
     {
-        if (true) { // @todo: remove
-            return $this->getLocalTestData();
-        }
         $data = $this->db->query(
             'SELECT * FROM licenses
                 WHERE returnCode = 200
@@ -141,6 +177,15 @@ class Manager
     public function getLicenseByItemID(string $itemID): ?ExsLicense
     {
         return (new Mapper($this))->getCollection()->getForItemID($itemID);
+    }
+
+    /**
+     * @param string $exsID
+     * @return ExsLicense|null
+     */
+    public function getLicenseByExsID(string $exsID): ?ExsLicense
+    {
+        return (new Mapper($this))->getCollection()->getForExsID($exsID);
     }
 
     /**

@@ -27,3 +27,6 @@
 
 :doc:`/shop_programming_tips/breaking_changes`
     Upgrade Guidelines
+
+:doc:`/shop_programming_tips/licensing`
+    Lizenzen

@@ -18,5 +18,6 @@ Programmier-Tipps
     botsessions
     config_tips
     breaking_changes
+    licensing
 
 .. include:: /shop_programming_tips/map.rst.inc

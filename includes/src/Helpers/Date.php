@@ -28,7 +28,7 @@ class Date
             } elseif (\is_numeric($date)) {
                 $resDate = new DateTime();
                 $resDate->setTimestamp($date);
-            } elseif (\is_object($date) && \is_a($date, 'DateTime')) {
+            } elseif (\is_object($date) && \is_a($date, DateTime::class)) {
                 /** @var DateTime $date */
                 $resDate = new DateTime($date->format(DateTime::ATOM));
             } else {

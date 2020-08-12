@@ -24,7 +24,7 @@ class Bootstrap extends Bootstrapper
         $this->registerPlugins();
     }
 
-    private function registerPlugins(): void
+    protected function registerPlugins(): void
     {
         $smarty = $this->getSmarty();
         if ($smarty === null) {
@@ -63,7 +63,6 @@ class Bootstrap extends Bootstrapper
             ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getDecimalLength', [$plugins, 'getDecimalLength'])
             ->registerPlugin(Smarty::PLUGIN_MODIFIER, 'seofy', [$plugins, 'seofy'])
             ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getUploaderLang', [$plugins, 'getUploaderLang']);
-
     }
 
     /**

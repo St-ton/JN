@@ -1,11 +1,11 @@
 {block name='productlist-item-details'}
     {formrow tag='dl' class="text-nowrap {if $small|default:false === true}formrow-small{/if}"}
-    {block name='productlist-item-list-details-product-number'}
+    {block name='productlist-item-details-product-number'}
         {col tag='dt' cols=6}{lang key='productNo'}:{/col}
         {col tag='dd' cols=6}{$Artikel->cArtNr}{/col}
     {/block}
     {if count($Artikel->Variationen) > 0}
-        {block name='productlist-item-list-details-variations'}
+        {block name='productlist-item-details-variations'}
             {col tag='dt' cols=6}{lang key='variationsIn' section='productOverview'}:{/col}
             {col tag='dd' cols=6}
                 <ul class="list-unstyled mb-0">
@@ -23,7 +23,7 @@
     {if !empty($Artikel->cBarcode)
     && ($Einstellungen.artikeldetails.gtin_display === 'lists'
     || $Einstellungen.artikeldetails.gtin_display === 'always')}
-        {block name='productlist-item-list-details-gtin'}
+        {block name='productlist-item-details-gtin'}
             {col tag='dt' cols=6}{lang key='ean'}:{/col}
             {col tag='dd' cols=6}{$Artikel->cBarcode}{/col}
         {/block}
@@ -31,7 +31,7 @@
     {if !empty($Artikel->cISBN)
     && ($Einstellungen.artikeldetails.isbn_display === 'L'
     || $Einstellungen.artikeldetails.isbn_display === 'DL')}
-        {block name='productlist-item-list-details-isbn'}
+        {block name='productlist-item-details-isbn'}
             {col tag='dt' cols=6}{lang key='isbn'}:{/col}
             {col tag='dd' cols=6}{$Artikel->cISBN}{/col}
         {/block}
@@ -39,7 +39,7 @@
 
 
     {if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen !== 'N' && !empty($Artikel->cHersteller)}
-        {block name='productlist-item-list-manufacturer'}
+        {block name='productlist-item-details-manufacturer'}
             {col tag='dt' cols=6}{lang key='manufacturer' section='productDetails'}:{/col}
             {col tag='dd' cols=6 itemprop='manufacturer' itemscope=true itemtype='http://schema.org/Organization'}
             {if !empty($Artikel->cHerstellerHomepage)}
@@ -70,7 +70,7 @@
     {if !empty($Artikel->cUNNummer) && !empty($Artikel->cGefahrnr)
     && ($Einstellungen.artikeldetails.adr_hazard_display === 'L'
     || $Einstellungen.artikeldetails.adr_hazard_display === 'DL')}
-        {block name='productlist-item-list-details-hazard'}
+        {block name='productlist-item-details-hazard'}
             {col tag='dt' cols=6}{lang key='adrHazardSign'}:{/col}
             {col tag='dd' cols=6}
                 <table class="adr-table">
@@ -85,32 +85,34 @@
         {/block}
     {/if}
     {if isset($Artikel->dMHD) && isset($Artikel->dMHD_de)}
-        {block name='productlist-item-list-details-mhd'}
+        {block name='productlist-item-details-mhd'}
             {col tag='dt' cols=6 title="{lang key='productMHDTool'}"}{lang key='productMHD'}:{/col}
             {col tag='dd' cols=6}{$Artikel->dMHD_de}{/col}
         {/block}
     {/if}
     {if $Einstellungen.artikeluebersicht.artikeluebersicht_gewicht_anzeigen === 'Y' && isset($Artikel->cGewicht) && $Artikel->fGewicht > 0}
-        {col tag='dt' cols=6}{lang key='shippingWeight'}:{/col}
-        {col tag='dd' cols=6}{$Artikel->cGewicht} {lang key='weightUnit'}{/col}
+        {block name='productlist-item-details-shipping-weight'}
+            {col tag='dt' cols=6}{lang key='shippingWeight'}:{/col}
+            {col tag='dd' cols=6}{$Artikel->cGewicht} {lang key='weightUnit'}{/col}
+        {/block}
     {/if}
     {if $Einstellungen.artikeluebersicht.artikeluebersicht_artikelgewicht_anzeigen === 'Y' && isset($Artikel->cArtikelgewicht) && $Artikel->fArtikelgewicht > 0}
-        {block name='productlist-item-list-details-weight'}
+        {block name='productlist-item-details-product-weight'}
             {col tag='dt' cols=6}{lang key='productWeight'}:{/col}
             {col tag='dd' cols=6}{$Artikel->cArtikelgewicht} {lang key='weightUnit'}{/col}
         {/block}
     {/if}
     {if $Einstellungen.artikeluebersicht.artikeluebersicht_artikelintervall_anzeigen === 'Y' && $Artikel->fAbnahmeintervall > 0}
-        {block name='productlist-item-list-details-intervall'}
+        {block name='productlist-item-details-intervall'}
             {col tag='dt' cols=6}{lang key='purchaseIntervall' section='productOverview'}:{/col}
             {col tag='dd' cols=6}{$Artikel->fAbnahmeintervall} {$Artikel->cEinheit}{/col}
         {/block}
     {/if}
     {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}
-        {block name='productlist-item-list-rating'}
+        {block name='productlist-item-details-rating'}
             {col tag='dt' cols=6}{lang key='ratingAverage'}:{/col}
             {col tag='dd' cols=6}
-            {block name='productlist-item-list-include-rating'}
+            {block name='productlist-item-details-include-rating'}
                 {include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung link=$Artikel->cURLFull}
             {/block}
             {/col}

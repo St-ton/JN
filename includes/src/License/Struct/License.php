@@ -50,10 +50,15 @@ class License
     private $expired = false;
 
     /**
+     * @var bool
+     */
+    private $isBound = false;
+
+    /**
      * License constructor.
      * @param stdClass|null $json
      */
-    public function __construct(?stdClass $json)
+    public function __construct(?stdClass $json = null)
     {
         if ($json !== null) {
             $this->fromJSON($json);
@@ -71,11 +76,16 @@ class License
         $this->setKey($json->key);
         $this->setType($json->type);
         $this->setCreated($json->created);
-        $this->setValidUntil($json->validUntil);
+        $this->setValidUntil($json->valid_until);
         $this->setSubscription(new Subscription($json->subscription));
+        $this->setIsBound($json->is_bound);
         if ($this->getValidUntil() !== null) {
             $now = new DateTime();
             $this->setExpired($this->getValidUntil() < $now);
+        }
+        if ($this->getType() === self::TYPE_DEV) {
+            $this->setValidUntil(null);
+            $this->getSubscription()->setValidUntil(null);
         }
     }
 
@@ -125,7 +135,7 @@ class License
      */
     public function setCreated($created): void
     {
-        $this->created = \is_a(DateTime::class, $created) ? $created : new DateTime($created);
+        $this->created = \is_a($created, DateTime::class) ? $created : new DateTime($created);
     }
 
     /**
@@ -159,7 +169,7 @@ class License
     public function setValidUntil($validUntil): void
     {
         if ($validUntil !== null) {
-            $this->validUntil = \is_a(DateTime::class, $validUntil) ? $validUntil : new DateTime($validUntil);
+            $this->validUntil = \is_a($validUntil, DateTime::class) ? $validUntil : new DateTime($validUntil);
         }
     }
 
@@ -189,5 +199,21 @@ class License
     public function setExpired(bool $expired): void
     {
         $this->expired = $expired;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isBound(): bool
+    {
+        return $this->isBound;
+    }
+
+    /**
+     * @param bool $isBound
+     */
+    public function setIsBound(bool $isBound): void
+    {
+        $this->isBound = $isBound;
     }
 }

@@ -24,7 +24,7 @@ class Releases
      * Link constructor.
      * @param stdClass|null $json
      */
-    public function __construct(?stdClass $json)
+    public function __construct(?stdClass $json = null)
     {
         if ($json !== null) {
             $this->fromJSON($json);
@@ -36,8 +36,21 @@ class Releases
      */
     public function fromJSON(stdClass $json): void
     {
-        $this->setAvailable(new Release($json->available ?? null));
-        $this->setLatest(new Release($json->latest ?? null));
+        $this->setAvailable($this->createRelease($json->available ?? null));
+        $this->setLatest($this->createRelease($json->latest ?? null));
+    }
+
+    /**
+     * @param stdClass|null $data
+     * @return Release|null
+     */
+    private function createRelease(stdClass $data = null): ?Release
+    {
+        if ($data === null) {
+            return null;
+        }
+
+        return new Release($data);
     }
 
     /**

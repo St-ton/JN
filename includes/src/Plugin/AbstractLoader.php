@@ -7,6 +7,7 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\License\Manager;
+use JTL\License\Struct\ExpiredExsLicense;
 use JTL\Plugin\Data\AdminMenu;
 use JTL\Plugin\Data\Cache;
 use JTL\Plugin\Data\Config;
@@ -223,8 +224,15 @@ abstract class AbstractLoader implements LoaderInterface
         $license->setClass($data->cLizenzKlasse);
         $license->setClassName($data->cLizenzKlasseName);
         $license->setKey($data->cLizenz);
-        $manager = new Manager($this->db, $this->cache);
-        $license->setExsLicense($manager->getLicenseByItemID($data->cPluginID));
+        if (!empty($data->exsID)) {
+            $manager    = new Manager($this->db, $this->cache);
+            $exsLicense = $manager->getLicenseByExsID($data->exsID);
+            if ($exsLicense === null) {
+                $exsLicense = new ExpiredExsLicense();
+                $exsLicense->initFromPluginData($data);
+            }
+            $license->setExsLicense($exsLicense);
+        }
 
         return $license;
     }

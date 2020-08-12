@@ -1,5 +1,5 @@
 {block name='consent-manager'}
-    {if $Einstellungen.consentmanager.consent_manager_active === 'Y'}
+    {if $Einstellungen.consentmanager.consent_manager_active === 'Y' && !$isAjax && $consentItems->isNotEmpty()}
         {include file='snippets/consent_manager.tpl'}
         <script>
             $(window).on('load', function () {

@@ -53,7 +53,7 @@ final class PaymentPlugins extends AbstractStep
         $question->setValue(false);
         $question->setValidation(function (QuestionInterface $question) {
             $questionValidation = new QuestionValidation($question);
-            $questionValidation->checkSSL();
+            $questionValidation->checkSSL(true);
 
             return $questionValidation->getValidationError();
         });

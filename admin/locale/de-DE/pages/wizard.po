@@ -233,5 +233,8 @@ msgstr "Folgen Sie uns auch auf:"
 msgid "validationErrorSSL"
 msgstr "SSL nicht möglich."
 
+msgid "validationErrorSSLPlugin"
+msgstr "Sie benötigen ein valides SSL-Zertifikat um Plugins über den Einrichtungsassitent zu installieren."
+
 msgid "errorVATPattern"
 msgstr "USt-IdNr. weißt ein falsches Pattern auf."

@@ -76,6 +76,9 @@
             </label>
         </div>
     {elseif $question->getType() === JTL\Backend\Wizard\QuestionType::MULTI_BOOL}
+        <div>
+            <div id="question-{$question->getID()}"></div>
+        </div>
         <div class="form-group-lg mb-4">
             <span class="form-title">
                 {$question->getText()}:
@@ -102,6 +105,9 @@
             {/foreach}
         </div>
     {elseif $question->getType() === JTL\Backend\Wizard\QuestionType::PLUGIN}
+        <div>
+            <div id="question-{$question->getID()}"></div>
+        </div>
         <div class="form-group-list">
             {foreach $question->getOptions() as $option}
                 <div class="form-group-list-item">

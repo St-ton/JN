@@ -11,7 +11,6 @@ use JTL\Session\Backend;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
-//$oAccount->redirectOnFailure();
 
 $db           = Shop::Container()->getDB();
 $cache        = Shop::Container()->getCache();
@@ -40,6 +39,7 @@ if (Request::verifyGPDataString('action') === 'code') {
 }
 
 if (Request::verifyGPDataString('action') !== 'code') {
+    $oAccount->redirectOnFailure();
     $smarty->assign('steps', $controller->getSteps())
         ->assign('authRedirect', $authRedirect)
         ->assign('hasAuth', $token->isValid())

@@ -120,8 +120,8 @@ class Manager
             Shop::Container()->getLogService()->error($e->getMessage());
         }
 
-        return empty($res) ? [] : \json_decode((string)$res->getBody())->extensions;
-//        return $this->getTestJSON();
+//        return empty($res) ? [] : \json_decode((string)$res->getBody())->extensions;
+        return $this->getTestJSON();
     }
 
     /**

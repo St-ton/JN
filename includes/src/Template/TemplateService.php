@@ -106,7 +106,7 @@ class TemplateService implements TemplateServiceInterface
             $parentXML
         );
         if ($withLicense === true) {
-            $manager  = new Manager($this->db, $this->cache);
+            $manager = new Manager($this->db, $this->cache);
             $template->setExsLicense($manager->getLicenseByItemID($template->getTemplate()));
         }
         $template->setBoxLayout($this->getBoxLayout($tplXML, $parentXML));

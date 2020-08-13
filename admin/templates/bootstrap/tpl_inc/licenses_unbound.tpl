@@ -33,7 +33,7 @@
                                 {/if}
                             {/foreach}
                             {if $textLinks|count > 0}
-                                <p class="links small">
+                                <p class="links small mb-0">
                                     {foreach $textLinks as $link}
                                         <a class="text-link" rel="noopener" href="{$link.href}" title="{__($link.rel)}">
                                             {__($link.rel)}

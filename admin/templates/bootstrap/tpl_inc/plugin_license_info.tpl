@@ -27,7 +27,8 @@
         {/if}
     </tbody>
 </table>
-<hr>
-{foreach $data->getLinks() as $link}
-    <a href="{$link->getHref()}" rel="noopener" class="btn btn-default">{__($link->getRel())}</a>
-{/foreach}
+<p class="mb-0 mt-2">
+    {foreach $data->getLinks() as $link}
+        <a href="{$link->getHref()}" rel="noopener" class="btn btn-default">{__($link->getRel())}</a>
+    {/foreach}
+</p>

@@ -1976,6 +1976,9 @@ msgstr "Mehr erfahren"
 msgid "Updates available"
 msgstr "Updates verfügbar"
 
+msgid "validationErrorIncorrectEmail"
+msgstr "Bitte geben Sie eine korrekte E-Mail-Adresse an."
+
 msgid "Licenses expired"
 msgstr "Lizenzen abgelaufen"
 

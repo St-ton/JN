@@ -32,9 +32,10 @@
 {foreach $license->getLinks() as $link}
     {if ($link->getRel() === 'extendSubscription' && $license->hasSubscription())
         || ($link->getRel() === 'extendLicense' && $license->hasLicense())}
-        <hr>
-        <a class="btn btn-primary btn-sm" href="{$link->getHref()}" rel="noopener" title="{__($link->getRel())}">
-            <i class="fa fa-external-link"></i> {__($link->getRel())}
-        </a>
+        <p class="mb-0 mt-2">
+            <a class="btn btn-primary btn-sm" href="{$link->getHref()}" rel="noopener" title="{__($link->getRel())}">
+                <i class="fa fa-external-link"></i> {__($link->getRel())}
+            </a>
+        </p>
     {/if}
 {/foreach}

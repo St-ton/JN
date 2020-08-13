@@ -2,6 +2,7 @@
 
 namespace JTL\Recommendation;
 
+use JTL\Helpers\Text;
 use stdClass;
 
 /**
@@ -56,11 +57,18 @@ class Recommendation
     private $manufacturer;
 
     /**
+     * @var \Parsedown
+     */
+    public $parseDown;
+
+    /**
      * Recommendation constructor.
      * @param \stdClass $recommendation
      */
     public function __construct(stdClass $recommendation)
     {
+        $this->parseDown = new \Parsedown();
+
         $this->setId($recommendation->id);
         $this->setDescription($recommendation->description);
         $this->setTitle($recommendation->name);
@@ -70,6 +78,18 @@ class Recommendation
         $this->setImages($recommendation->images);
         $this->setTeaser($recommendation->teaser);
         $this->setManufacturer(new Manufacturer($recommendation->seller));
+    }
+
+    /**
+     * @param string $text
+     * @return string
+     */
+    public function parseDown(string $text): string
+    {
+        return mb_convert_encoding(
+            $this->parseDown->text(Text::convertUTF8($text)),
+            'HTML-ENTITIES'
+        );
     }
 
     /**
@@ -133,7 +153,7 @@ class Recommendation
      */
     public function setDescription(string $description): void
     {
-        $this->description = $description;
+        $this->description = $this->parseDown($description);
     }
 
     /**
@@ -165,7 +185,7 @@ class Recommendation
      */
     public function setTeaser(string $teaser): void
     {
-        $this->teaser = $teaser;
+        $this->teaser = $this->parseDown($teaser);
     }
 
     /**
@@ -197,7 +217,7 @@ class Recommendation
      */
     public function setSetupDescription(string $setupDescription): void
     {
-        $this->setupDescription = $setupDescription;
+        $this->setupDescription = $this->parseDown($setupDescription);
     }
 
     /**

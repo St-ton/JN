@@ -99,9 +99,28 @@
             this.registerSimpleVariations($wrapper);
             this.registerSwitchVariations($wrapper);
             this.registerBulkPrices($wrapper);
+            this.registerAccordion();
             // this.registerImageSwitch($wrapper);
             //this.registerArticleOverlay($wrapper);
             this.registerFinish($wrapper);
+        },
+
+        registerAccordion: function() {
+            $('.is-mobile .accordion [id^="tab-"]').on('click', function () {
+                let self = $(this);
+                $.evo.destroyScrollSearchEvent();
+                setTimeout(function() {
+                    $('html').animate(
+                        {scrollTop: self.offset().top},
+                        100,
+                        'linear',
+                        function () {
+                            setTimeout(function() {
+                                $.evo.initScrollSearchEvent();
+                            }, 500);
+                        });
+                }, 400);
+            });
         },
 
         registerGallery: function(wrapper) {

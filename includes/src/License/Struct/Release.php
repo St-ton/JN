@@ -57,7 +57,7 @@ class Release
      * Release constructor.
      * @param stdClass|null $json
      */
-    public function __construct(?stdClass $json)
+    public function __construct(?stdClass $json = null)
     {
         if ($json !== null) {
             $this->fromJSON($json);
@@ -124,7 +124,7 @@ class Release
      */
     public function setReleaseDate($releaseDate): void
     {
-        $this->releaseDate = \is_a(DateTime::class, $releaseDate) ? $releaseDate : new DateTime($releaseDate);
+        $this->releaseDate = \is_a($releaseDate, DateTime::class) ? $releaseDate : new DateTime($releaseDate);
     }
 
     /**

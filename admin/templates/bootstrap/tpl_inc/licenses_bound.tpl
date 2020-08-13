@@ -1,6 +1,6 @@
 <div class="card" id="bound-licenses">
     <div class="card-header">
-        {__('Active licenses')}
+        {__('Bound licenses')}
         <hr class="mb-n3">
     </div>
     {if $licenses->getActive()->count() > 0}
@@ -9,9 +9,9 @@
             <tr>
                 <th>{__('ID')}</th>
                 <th>{__('Name')}</th>
-                <th>{__('Installed')}</th>
+                <th>{__('State')}</th>
                 <th>{__('Type')}</th>
-                <th>{__('Subscription')}</th>
+                <th>{__('Validity')}</th>
             </tr>
             </thead>
             {foreach $licenses->getActive() as $license}
@@ -23,7 +23,7 @@
                     </td>
                     <td>{__($license->getLicense()->getType())}</td>
                     <td>
-                        {include file='tpl_inc/licenses_license.tpl' licData=$license->getLicense()}
+                        {include file='tpl_inc/licenses_license.tpl' license=$license}
                     </td>
                 </tr>
             {/foreach}

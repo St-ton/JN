@@ -54,9 +54,9 @@ class Checker
     {
         $mapper     = new Mapper($manager);
         $collection = $mapper->getCollection();
-        $this->handleExpiredPluginTestLicenses($collection);
         $this->notifyPlugins($collection);
         $this->notifyTemplates($collection);
+        $this->handleExpiredPluginTestLicenses($collection);
     }
 
     /**
@@ -64,9 +64,9 @@ class Checker
      */
     private function notifyTemplates(Collection $collection): void
     {
-        foreach ($collection->getTemplates()->getActiveExpired() as $license) {
+        foreach ($collection->getTemplates()->getBoundExpired() as $license) {
             /** @var ExsLicense $license */
-            $this->logger->info('License for template ' . $license->getID() . ' is expired.');
+            $this->logger->info(\sprintf('License for template %s is expired.', $license->getID()));
             $bootstrapper = BootChecker::bootstrap($license->getID());
             if ($bootstrapper !== null) {
                 $bootstrapper->licenseExpired($license);
@@ -81,9 +81,9 @@ class Checker
     {
         $dispatcher = Dispatcher::getInstance();
         $loader     = new PluginLoader($this->db, $this->cache);
-        foreach ($collection->getPlugins()->getActiveExpired() as $license) {
+        foreach ($collection->getPlugins()->getBoundExpired() as $license) {
             /** @var ExsLicense $license */
-            $this->logger->info('License for plugin ' . $license->getID() . ' is expired.');
+            $this->logger->info(\sprintf('License for plugin %s is expired.', $license->getID()));
             if (($p = PluginHelper::bootstrap($license->getReferencedItem()->getInternalID(), $loader)) !== null) {
                 $p->boot($dispatcher);
                 $p->licenseExpired($license);
@@ -96,7 +96,7 @@ class Checker
      */
     private function handleExpiredPluginTestLicenses(Collection $collection): void
     {
-        $expired = $collection->getExpiredActiveTests()->filter(static function (ExsLicense $e) {
+        $expired = $collection->getExpiredBoundTests()->filter(static function (ExsLicense $e) {
             return $e->getType() === ExsLicense::TYPE_PLUGIN;
         });
         if ($expired->count() === 0) {
@@ -105,7 +105,7 @@ class Checker
         $stateChanger = new StateChanger($this->db, $this->cache);
         foreach ($expired as $license) {
             /** @var ExsLicense $license */
-            $this->logger->warning('Plugin ' . $license->getID() . ' disabled due to expired test license.');
+            $this->logger->warning(\sprintf('Plugin %s disabled due to expired test license.', $license->getID()));
             $stateChanger->deactivate($license->getReferencedItem()->getInternalID(), State::LICENSE_KEY_INVALID);
         }
     }

@@ -18,6 +18,12 @@ define('PFAD_ROOT', __DIR__ . '/');
 require_once __DIR__ . '/includes/defines.php';
 require_once __DIR__ . '/includes/autoload.php';
 
+
+if (file_exists(PFAD_ROOT . PFAD_INCLUDES . 'config.JTL-Shop.ini.php')) {
+    require_once PFAD_ROOT . PFAD_INCLUDES . 'config.JTL-Shop.ini.php';
+}
+require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
+
 $application = new \JTL\Console\Application();
 $application->initPluginCommands();
 $application->run();

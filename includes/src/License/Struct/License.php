@@ -58,7 +58,7 @@ class License
      * License constructor.
      * @param stdClass|null $json
      */
-    public function __construct(?stdClass $json)
+    public function __construct(?stdClass $json = null)
     {
         if ($json !== null) {
             $this->fromJSON($json);
@@ -135,7 +135,7 @@ class License
      */
     public function setCreated($created): void
     {
-        $this->created = \is_a(DateTime::class, $created) ? $created : new DateTime($created);
+        $this->created = \is_a($created, DateTime::class) ? $created : new DateTime($created);
     }
 
     /**
@@ -169,7 +169,7 @@ class License
     public function setValidUntil($validUntil): void
     {
         if ($validUntil !== null) {
-            $this->validUntil = \is_a(DateTime::class, $validUntil) ? $validUntil : new DateTime($validUntil);
+            $this->validUntil = \is_a($validUntil, DateTime::class) ? $validUntil : new DateTime($validUntil);
         }
     }
 

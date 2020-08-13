@@ -1953,6 +1953,7 @@ final class Shop
             self::$logged       = true;
             self::$adminToken   = $_SESSION['adminToken'];
             self::$adminLangTag = $_SESSION['adminLangTag'];
+            self::Container()->getGetText();
         } else {
             self::$logged       = false;
             self::$adminToken   = null;

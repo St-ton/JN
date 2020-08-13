@@ -1957,3 +1957,30 @@ msgstr "More"
 
 msgid "Updates available"
 msgstr "Updates available"
+
+msgid "validationErrorIncorrectEmail"
+msgstr "Please enter a valid email address."
+
+msgid "Licenses expired"
+msgstr "Licenses expired"
+
+msgid "I understood this notice."
+msgstr "I understood this notice."
+
+msgid "The following extensions do not have a valid license:"
+msgstr "The following extensions do not have a valid license:"
+
+msgid "Please uninstall this extensions or purchase a valid license."
+msgstr "Please uninstall this extensions or purchase a valid license."
+
+msgid "Further using these extensions will violate the license policy and may have legal consequences."
+msgstr "Further using these extensions will violate the license policy and may have legal consequences."
+
+msgid "Understood"
+msgstr "Understood"
+
+msgid "Disable plugins"
+msgstr "Disable plugins"
+
+msgid "Disable template"
+msgstr "Disable template"

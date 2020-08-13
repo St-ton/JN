@@ -173,7 +173,7 @@
             if (wrapper[0].id.indexOf(this.options.modal.wrapper_modal.substr(1)) === -1) {
                 addClickListener();
 
-                $(document).keyup(e => {
+                $(document).on('keyup', e => {
                     if (e.key === "Escape") {
                         toggleFullscreen();
                         addClickListener();
@@ -1454,19 +1454,12 @@
         }
     };
 
-    $v     = new ArticleClass();
-    var ie = /(msie|trident)/i.test(navigator.userAgent) ? navigator.userAgent.match(/(msie |rv:)(\d+(.\d+)?)/i)[2] : false;
-    if (ie && parseInt(ie) <= 9) {
-        $(document).ready(function () {
-            $v.onLoad();
-            $v.register();
-        });
-    } else {
-        $(window).on('load', function () {
-            $v.onLoad();
-            $v.register();
-        });
-    }
+    $v = new ArticleClass();
+
+    $(document).ready(function () {
+        $v.onLoad();
+        $v.register();
+    });
 
     $(window).on('resize',
         viewport.changed(function(){

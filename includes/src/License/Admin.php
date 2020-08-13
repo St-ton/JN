@@ -26,6 +26,7 @@ use JTL\Session\Backend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
+use stdClass;
 
 /**
  * Class Admin
@@ -33,6 +34,20 @@ use Psr\Http\Message\ResponseInterface;
  */
 class Admin
 {
+    public const ACTION_SET_BINDING = 'setbinding';
+
+    public const ACTION_CLEAR_BINDING = 'clearbinding';
+
+    public const ACTION_RECHECK = 'recheck';
+
+    public const ACTION_REVOKE = 'revoke';
+
+    public const ACTION_REDIRECT = 'redirect';
+
+    public const ACTION_UPDATE = 'update';
+
+    public const ACTION_INSTALL = 'install';
+
     /**
      * @var Manager
      */
@@ -52,6 +67,19 @@ class Admin
      * @var Checker
      */
     private $checker;
+
+    /**
+     * @var string[]
+     */
+    private $validActions = [
+        self::ACTION_SET_BINDING,
+        self::ACTION_CLEAR_BINDING,
+        self::ACTION_RECHECK,
+        self::ACTION_REVOKE,
+        self::ACTION_REDIRECT,
+        self::ACTION_UPDATE,
+        self::ACTION_INSTALL
+    ];
 
     /**
      * Admin constructor.
@@ -82,34 +110,34 @@ class Admin
         $token  = AuthToken::getInstance($this->db);
         $action = Request::postVar('action');
         $valid  = Form::validateToken();
-        if ($action === 'setbinding' && $valid) {
+        if ($action === self::ACTION_SET_BINDING && $valid) {
             $this->setBinding($smarty);
         }
-        if ($action === 'clearbinding' && $valid) {
+        if ($action === self::ACTION_CLEAR_BINDING && $valid) {
             $this->clearBinding($smarty);
         }
-        if ($action === 'recheck' && $valid) {
+        if ($action === self::ACTION_RECHECK && $valid) {
             $this->getLicenses(true);
             $this->getList($smarty);
             \header('Location: ' . Shop::getAdminURL() . '/licenses.php', true, 303);
             exit();
         }
-        if ($action === 'revoke' && $valid) {
+        if ($action === self::ACTION_REVOKE && $valid) {
             $token->revoke();
             $action = null;
         }
-        if ($action === null || !$valid) {
+        if ($action === null || !\in_array($action, $this->validActions, true) || !$valid) {
             $this->getLicenses(true);
             $this->getList($smarty);
             return;
         }
-        if ($action === 'redirect') {
+        if ($action === self::ACTION_REDIRECT) {
             $token->requestToken(
                 Backend::get('jtl_token'),
-                Shop::getURL(true) . $_SERVER['SCRIPT_NAME'] . '?action=code'
+                Shop::getAdminURL(true) . '/licenses.php?action=code'
             );
         }
-        if ($action === 'update' || $action === 'install') {
+        if ($action === self::ACTION_UPDATE || $action === self::ACTION_INSTALL) {
             $this->installUpdate($action, $smarty);
         }
     }
@@ -217,7 +245,7 @@ class Admin
             return;
         }
         try {
-            $this->manager->update($force);
+            $this->manager->update($force, $this->getInstalledExtensionPostData());
             $this->checker->handleExpiredLicenses($this->manager);
         } catch (RequestException | Exception | ClientException $e) {
             Shop::Container()->getAlertService()->addAlert(
@@ -226,6 +254,36 @@ class Admin
                 'errorFetchLicenseAPI'
             );
         }
+    }
+
+    /**
+     * @return array
+     */
+    private function getInstalledExtensionPostData(): array
+    {
+        $mapper     = new Mapper($this->manager);
+        $collection = $mapper->getCollection();
+        $data       = [];
+        foreach ($collection as $exsLicense) {
+            /** @var ExsLicense $exsLicense */
+            $avail         = $exsLicense->getReleases()->getAvailable();
+            $item          = new stdClass();
+            $item->active  = false;
+            $item->id      = $exsLicense->getID();
+            $item->exsid   = $exsLicense->getExsID();
+            $item->version = $avail !== null ? (string)$avail->getVersion() : '0.0.0';
+            $reference     = $exsLicense->getReferencedItem();
+            if ($reference !== null && $reference->getInstalledVersion() !== null) {
+                $item->active  = $reference->isActive();
+                $item->version = (string)$reference->getInstalledVersion();
+                if ($reference->getDateInstalled() !== null) {
+                    $item->enabled = $reference->getDateInstalled();
+                }
+            }
+            $data[] = $item;
+        }
+
+        return $data;
     }
 
     /**
@@ -268,12 +326,10 @@ class Admin
         }
         switch ($licenseData->getType()) {
             case ExsLicense::TYPE_PLUGIN:
+            case ExsLicense::TYPE_PORTLET:
                 return new PluginInstaller($this->db, $this->cache);
             case ExsLicense::TYPE_TEMPLATE:
                 return new TemplateInstaller($this->db, $this->cache);
-            case ExsLicense::TYPE_PORTLET:
-                // @todo
-                throw new InvalidArgumentException('Cannot update portlets yet');
             default:
                 throw new InvalidArgumentException('Cannot update type ' . $licenseData->getType());
         }

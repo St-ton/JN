@@ -238,3 +238,9 @@ msgstr "You must have a valid SSL-Certificat to install plugins via the setup wi
 
 msgid "errorVATPattern"
 msgstr "VAT ID pattern missmatch."
+
+msgid "oAuthValid"
+msgstr "Authentifizierung erfolgreich."
+
+msgid "oAuthInvalid"
+msgstr "Wenn Sie Plugins zur Installation vorgemerkt haben, dann werden Sie bei Klick auf \"Weiter\" zum \"zentralen Login\" von JTL weitergeleitet. Nach erfolgreicher Anmeldung werden Sie automatisch zu diesem Assistenten zurückgeleitet und können die Einrichtung abschließen."

@@ -80,9 +80,9 @@
                             <p>{__('stepFiveDesc')}</p>
                             <p>
                                 {if $hasAuth}
-                                    <i class="fal fa-check text-success"></i> Authentifizierung erfolgreich.
+                                    <i class="fal fa-check text-success"></i> {__('oAuthValid')}
                                 {else}
-                                    <i class="fal fa-exclamation-triangle text-warning"></i> Wenn Sie Plugins zur Installation vorgemerkt haben, dann werden Sie bei Klick auf "Weiter" zum "zentralen Login" von JTL weitergeleitet. Nach erfolgreicher Anmeldung werden Sie automatisch zu diesem Assistenten zurückgeleitet und können die Einrichtung abschließen.
+                                    <i class="fal fa-exclamation-triangle text-warning"></i> {__('oAuthInvalid')}
                                 {/if}
                             </p>
                         </div>

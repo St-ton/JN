@@ -5,6 +5,7 @@ namespace JTL\Backend\Wizard\Steps;
 use JTL\Backend\Wizard\Question;
 use JTL\Backend\Wizard\QuestionInterface;
 use JTL\Backend\Wizard\QuestionType;
+use JTL\Backend\Wizard\QuestionValidation;
 use JTL\Backend\Wizard\SelectOption;
 use JTL\DB\DbInterface;
 use JTL\Services\JTL\AlertServiceInterface;
@@ -66,11 +67,10 @@ final class GeneralSettings extends AbstractStep
             }
         });
         $question->setValidation(function (QuestionInterface $question) {
-            if ((empty($_SERVER['HTTPS']) || ($_SERVER['HTTPS'] !== 'off')) && $question->getValue()) {
-                return __('validationErrorSSL');
-            }
+            $questionValidation = new QuestionValidation($question);
+            $questionValidation->checkSSL();
 
-            return  '';
+            return $questionValidation->getValidationError();
         });
         $this->addQuestion($question);
 

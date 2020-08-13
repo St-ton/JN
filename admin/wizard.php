@@ -11,7 +11,7 @@ use JTL\Session\Backend;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
-$oAccount->redirectOnFailure();
+//$oAccount->redirectOnFailure();
 
 $db           = Shop::Container()->getDB();
 $cache        = Shop::Container()->getCache();
@@ -30,16 +30,18 @@ $token        = AuthToken::getInstance(Shop::Container()->getDB());
 $authRedirect = false;
 
 if (Request::verifyGPDataString('action') === 'code') {
-//    $admin->handleAuth();
+    $admin->handleAuth();
     $authRedirect = true;
 } elseif (Request::getVar('action') === 'auth') {
-//    $token->requestToken(
-//        Backend::get('jtl_token'),
-//        Shop::getAdminURL() . '/wizard.php?action=code'
-//    );
+    $token->requestToken(
+        Backend::get('jtl_token'),
+        Shop::getAdminURL() . '/wizard.php?action=code'
+    );
 }
 
-$smarty->assign('steps', $controller->getSteps())
-    ->assign('authRedirect', $authRedirect)
-    ->assign('hasAuth', $token->isValid())
-    ->display('wizard.tpl');
+if (Request::verifyGPDataString('action') !== 'code') {
+    $smarty->assign('steps', $controller->getSteps())
+        ->assign('authRedirect', $authRedirect)
+        ->assign('hasAuth', $token->isValid())
+        ->display('wizard.tpl');
+}

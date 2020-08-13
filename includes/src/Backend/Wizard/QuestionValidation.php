@@ -39,7 +39,7 @@ class QuestionValidation
      */
     public function checkRequired(): bool
     {
-        if ($this->question->isRequired() && empty($this->question->getValue())) {
+        if ($this->question->isRequired() && $this->valueIsEmpty()) {
             $this->setValidationError(__('validationErrorRequired'));
 
             return false;
@@ -63,6 +63,29 @@ class QuestionValidation
         }
 
         return true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function checkSSL(): bool
+    {
+        if ((empty($_SERVER['HTTPS']) || ($_SERVER['HTTPS'] !== 'off')) && !$this->valueIsEmpty()) {
+            $this->setValidationError(__('validationErrorSSL'));
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function valueIsEmpty(): bool
+    {
+        return empty($this->question->getValue())
+                || (\is_array($this->question->getValue()) && \count(\array_filter($this->question->getValue())) === 0);
     }
 
     /**

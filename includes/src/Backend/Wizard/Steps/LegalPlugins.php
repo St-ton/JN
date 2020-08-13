@@ -5,6 +5,7 @@ namespace JTL\Backend\Wizard\Steps;
 use JTL\Backend\Wizard\Question;
 use JTL\Backend\Wizard\QuestionInterface;
 use JTL\Backend\Wizard\QuestionType;
+use JTL\Backend\Wizard\QuestionValidation;
 use JTL\Backend\Wizard\SelectOption;
 use JTL\DB\DbInterface;
 use JTL\Services\JTL\AlertServiceInterface;
@@ -40,6 +41,12 @@ final class LegalPlugins extends AbstractStep
         $question->setIsFullWidth(true);
         $question->setIsRequired(false);
         $question->setValue(false);
+        $question->setValidation(function (QuestionInterface $question) {
+            $questionValidation = new QuestionValidation($question);
+            $questionValidation->checkSSL();
+
+            return $questionValidation->getValidationError();
+        });
 
         $recommendations->getRecommendations()->each(static function (Recommendation $recommendation) use ($question) {
             $option = new SelectOption();

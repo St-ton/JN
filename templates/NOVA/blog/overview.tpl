@@ -130,10 +130,6 @@
                                     {col sm=12}{$oNewsCat->getDescription()}{/col}
                                 {/if}
                             {/row}
-                        <hr>
-                        {/block}
-                        {block name='blog-overview-include-pagination-bottom'}
-                            {include file='snippets/pagination.tpl' oPagination=$oPagination cThisUrl='news.php' parts=['label']}
                         {/block}
                     {/if}
                     {opcMountPoint id='opc_before_news_list'}

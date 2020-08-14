@@ -53,7 +53,7 @@
                     {/card}
                 {/block}
             {/col}
-            {col cols=12 md=6 id="shipping-method" class="mb-3 border-0"}
+            {col cols=12 md=6 id="shipping-method" class="mb-0 mb-md-3 border-0"}
                 {block name='checkout-step5-confirmation-shipping-billing-method'}
                     {card no-body=true class="mb-3"}
                         {cardheader}
@@ -174,7 +174,7 @@
         {/row}
 
         {block name="checkout-step5-confirmation-pre-form-hr"}
-            <hr class="my-7">
+            <hr class="my-5 my-md-7">
         {/block}
 
         {block name='checkout-step5-confirmation-form'}

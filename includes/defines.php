@@ -236,7 +236,7 @@ ifndef('EXPORTFORMAT_ALLOW_PHP', false);
 ifndef('NEWSLETTER_USE_SECURITY', true);
 ifndef('MAILTEMPLATE_USE_SECURITY', true);
 ifndef('EXPORTFORMAT_USE_SECURITY', true);
-ifndef('EXPORTFORMAT_ALLOWED_FORMATS', 'txt,csv,xml,html,htm,json,yaml,yml');
+ifndef('EXPORTFORMAT_ALLOWED_FORMATS', 'txt,csv,xml,html,htm,json,yaml,yml,zip,gz');
 ifndef('PASSWORD_DEFAULT_LENGTH', 12);
 ifndef('SECURE_PHP_FUNCTIONS', '
     addcslashes, addslashes, bin2hex, chop, chr, chunk_split, count_chars, crypt, explode, html_entity_decode,

@@ -42,7 +42,7 @@
             <tfoot>
                 {if $NettoPreise}
                     <tr class="total total-net">
-                        <td colspan="3">{lang key='totalSum'} ({lang key='net' section='global'}):</td>
+                        <td colspan="3">{lang key='subtotal' section='account data'} ({lang key='net' section='global'}):</td>
                         <td class="text-nowrap text-right"><strong>{$WarensummeLocalized[$NettoPreise]}</strong></td>
                     </tr>
                 {/if}
@@ -55,7 +55,7 @@
                     {/foreach}
                 {/if}
                 <tr class="total">
-                    <td colspan="3">{lang key='totalSum'}:</td>
+                    <td colspan="3">{lang key='subtotal' section='account data'}:</td>
                     <td class="text-nowrap text-right total"><strong>{$WarensummeLocalized[0]}</strong></td>
                 </tr>
                 {if isset($FavourableShipping)}

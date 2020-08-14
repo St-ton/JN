@@ -82,7 +82,7 @@
                             {if $NettoPreise}
                                 {block name='basket-cart-dropdown-cart-item-net'}
                                     <li class="text-muted mb-2 font-size-sm">
-                                        {lang key='totalSum'} ({lang key='net'}) <span class="float-right text-nowrap">{$WarensummeLocalized[$NettoPreise]}</span>
+                                        {lang key='subtotal' section='account data'} ({lang key='net'}) <span class="float-right text-nowrap">{$WarensummeLocalized[$NettoPreise]}</span>
                                     </li>
                                 {/block}
                             {/if}
@@ -98,7 +98,7 @@
                             {/if}
                             {block name='basket-cart-dropdown-cart-item-total'}
                                 <li class="font-weight-bold">
-                                    {lang key='totalSum'}: <span class="float-right text-nowrap">{$WarensummeLocalized[0]}</span>
+                                    {lang key='subtotal' section='account data'}: <span class="float-right text-nowrap">{$WarensummeLocalized[0]}</span>
                                 </li>
                             {/block}
                             {block name='basket-cart-dropdown-cart-item-favourable-shipping'}

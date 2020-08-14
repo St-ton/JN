@@ -540,9 +540,7 @@ final class LinkService implements LinkServiceInterface
             $data->cURLAGB,
             $data->kLinkAGB > 0 ? 'class="popup"' : 'data-toggle="modal" data-target="#agb-modal" class="modal-popup"',
             $data->cURLWRB,
-            $data->kLinkWRB > 0 ? 'class="popup"' : 'data-toggle="modal" data-target="#wrb-modal" class="modal-popup"',
-            $data->cURLWRBForm,
-            $data->kLinkWRBForm > 0 ? 'class="popup"' : 'data-toggle="modal" data-target="#wrb-form-modal" class="modal-popup"'
+            $data->kLinkWRB > 0 ? 'class="popup"' : 'data-toggle="modal" data-target="#wrb-modal" class="modal-popup"'
         )
         : sprintf(
             Shop::Lang()->get('termsNotice', 'checkout'),

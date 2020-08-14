@@ -52,7 +52,7 @@
                             {if !isset($shippingTime)}{lang key='shippingTime'}:{/if}
                             <span class="a{$Artikel->Lageranzeige->nStatus} text-nowrap">
                                 {$Artikel->cEstimatedDelivery}
-                                <span class="fa fa-info-circle"></span>
+                                <span class="text-decoration-underline">({lang key='shippingInfoIcon' section='productDetails'})</span>
                             </span>
                         </div>
                     </li>

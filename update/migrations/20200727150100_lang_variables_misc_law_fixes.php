@@ -27,6 +27,9 @@ class Migration_20200727150100 extends Migration implements IMigration
         $this->setLocalization('ger', 'global', 'shippingTime', 'Lieferzeit');
         $this->setLocalization('eng', 'global', 'shippingTime', 'Delivery time');
 
+        $this->setLocalization('ger', 'productDetails', 'shippingInfoIcon', 'Ausland');
+        $this->setLocalization('eng', 'productDetails', 'shippingInfoIcon', 'Other countries');
+
         //SHOP-4261
         $this->setLocalization('ger', 'productDetails', 'suggestedPrice', 'Unverbindliche Preisempfehlung des Herstellers');
         $this->setLocalization('eng', 'productDetails', 'suggestedPrice', 'Manufacturers recommended retail price');
@@ -64,6 +67,8 @@ class Migration_20200727150100 extends Migration implements IMigration
         //SHOP-4259
         $this->setLocalization('ger', 'global', 'shippingTime', 'Errechnete Lieferzeit');
         $this->setLocalization('eng', 'global', 'shippingTime', 'Calculated delivery time');
+
+        $this->removeLocalization('shippingInfoIcon', 'productDetails');
 
         //SHOP-4261
         $this->setLocalization('ger', 'productDetails', 'suggestedPrice', 'UVP des Herstellers');

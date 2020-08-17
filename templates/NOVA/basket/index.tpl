@@ -196,21 +196,10 @@
                                     {/block}
                                 {/block}
                                 {block name='basket-index-shipping'}
-                                    {if isset($FavourableShipping)}
-                                        {if $NettoPreise}
-                                            {$shippingCosts = "`$FavourableShipping->cPriceLocalized[$NettoPreise]` {lang key='plus' section='basket'} {lang key='vat' section='productDetails'}"}
-                                        {else}
-                                            {$shippingCosts = $FavourableShipping->cPriceLocalized[$NettoPreise]}
-                                        {/if}
+                                    {if $favourableShippingString !== ''}
                                         {row class="shipping-costs"}
                                             {col cols=12}
-                                                <small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$shippingCosts:$FavourableShipping->country->getName() key='shippingInformationSpecific' section='basket'}</small>
-                                            {/col}
-                                        {/row}
-                                    {elseif empty($FavourableShipping) && empty($smarty.session.Versandart)}
-                                        {row class="shipping-costs"}
-                                            {col cols=12}
-                                                <small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() key='shippingInformation' section='basket'}</small>
+                                                <small>{$favourableShippingString}</small>
                                             {/col}
                                         {/row}
                                     {/if}

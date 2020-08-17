@@ -76,6 +76,11 @@ class Cart
     public $oFavourableShipping;
 
     /**
+     * @var string
+     */
+    public $favourableShippingString = '';
+
+    /**
      * @var array
      */
     public static $updatedPositions = [];
@@ -1848,19 +1853,6 @@ class Cart
             return $this->oFavourableShipping;
         }
 
-        //use previously determined shippingfree shipping method
-        if ($shippingFreeMinID !== null) {
-            $localizedZero              = Preise::getLocalizedPriceString(0);
-            $method                     = new Versandart($shippingFreeMinID);
-            $method->cPriceLocalized[0] = $localizedZero;
-            $method->cPriceLocalized[1] = $localizedZero;
-            $method->setCountryCode($countryCode);
-
-            $this->oFavourableShipping = $method;
-
-            return $this->oFavourableShipping;
-        }
-
         $maxPrices       = 0;
         $itemCount       = 0;
         $totalWeight     = 0;
@@ -1873,6 +1865,20 @@ class Cart
         ), static function ($e) {
             return $e->kVersandart;
         });
+
+        //use previously determined shippingfree shipping method
+        if ($shippingFreeMinID !== null) {
+            $localizedZero              = Preise::getLocalizedPriceString(0);
+            $method                     = new Versandart($shippingFreeMinID);
+            $method->cPriceLocalized[0] = $localizedZero;
+            $method->cPriceLocalized[1] = $localizedZero;
+            $method->setCountryCode($countryCode);
+
+            $this->oFavourableShipping = $method;
+            $this->setFavourableShippingString(\count($shippingMethods), true);
+
+            return $this->oFavourableShipping;
+        }
 
         foreach ($this->PositionenArr as $item) {
             $totalWeight += $item->fGesamtgewicht;
@@ -1938,7 +1944,55 @@ class Cart
             }
             $this->oFavourableShipping = $method;
         }
+        $this->setFavourableShippingString(\count($shippingMethods));
 
         return $this->oFavourableShipping;
+    }
+
+    /**
+     * @param int $possibleShippingMethods
+     * @param bool $shippingFree
+     */
+    public function setFavourableShippingString(int $possibleShippingMethods, bool $shippingFree = false): void
+    {
+        $isMerchant    = Frontend::getCustomerGroup()->getIsMerchant();
+        $shippingCosts = $this->oFavourableShipping->cPriceLocalized[$isMerchant];
+
+        if ($this->oFavourableShipping === null && empty(Frontend::get('Versandart'))) {
+            $this->favourableShippingString = sprintf(
+                Shop::Lang()->get('shippingInformation', 'basket'),
+                Shop::Container()->getLinkService()->getSpecialPage(LINKTYP_VERSAND)->getURL()
+            );
+            return;
+        }
+
+        if ($isMerchant) {
+            $shippingCosts = sprintf(
+                '`%s` %s %s',
+                $shippingCosts,
+                Shop::Lang()->get('plus', 'basket'),
+                Shop::Lang()->get('vat', 'productDetails')
+            );
+        }
+        if ($shippingFree) {
+            $this->favourableShippingString = sprintf(
+                Shop::Lang()->get('shippingInformationSpecificFree', 'basket'),
+                $this->oFavourableShipping->country->getName()
+            );
+        } elseif ($possibleShippingMethods === 1) {
+            $this->favourableShippingString = sprintf(
+                Shop::Lang()->get('shippingInformationSpecificSingle', 'basket'),
+                Shop::Container()->getLinkService()->getSpecialPage(LINKTYP_VERSAND)->getURL(),
+                $shippingCosts,
+                $this->oFavourableShipping->country->getName()
+            );
+        } else {
+            $this->favourableShippingString = sprintf(
+                Shop::Lang()->get('shippingInformationSpecific', 'basket'),
+                Shop::Container()->getLinkService()->getSpecialPage(LINKTYP_VERSAND)->getURL(),
+                $shippingCosts,
+                $this->oFavourableShipping->country->getName()
+            );
+        }
     }
 }

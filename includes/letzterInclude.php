@@ -168,6 +168,7 @@ $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
             ? (int)$shippingFreeMin->kVersandart
             : null
     ))
+    ->assign('favourableShippingString', $cart->favourableShippingString)
     ->assign('Einstellungen', $conf)
     ->assign('isFluidTemplate', isset($conf['template']['theme']['pagelayout'])
         && $conf['template']['theme']['pagelayout'] === 'fluid')

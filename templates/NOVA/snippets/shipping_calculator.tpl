@@ -11,16 +11,39 @@
                             {col cols=12 md=5 class="mb-3"}
                                 {select name="land" id="country" class='custom-select' placeholder="" aria=["label"=>"{lang key='country' section='account data'}"]}
                                     {foreach $laender as $land}
-                                        <option value="{$land->getISO()}" {if ($Einstellungen.kunden.kundenregistrierung_standardland === $land->getISO() && (!isset($smarty.session.Kunde->cLand) || !$smarty.session.Kunde->cLand)) || (isset($smarty.session.Kunde->cLand) && $smarty.session.Kunde->cLand==$land->getISO())}selected{/if}>{$land->getName()}</option>
+                                        <option value="{$land->getISO()}"
+                                                {if isset($Versandland)}
+                                                    {if $shippingCalculatorCountry->getISO() === $land->getISO()}
+                                                        selected
+                                                    {/if}
+                                                {elseif !empty($smarty.session.Kunde->cLand)}
+                                                    {if $smarty.session.Kunde->cLand === $land->getISO()}
+                                                        selected
+                                                    {/if}
+                                                {elseif $defaultCountry === $land->getISO()}
+                                                    selected
+                                                {/if}
+                                        >{$land->getName()}</option>
                                     {/foreach}
                                 {/select}
                             {/col}
                         {/block}
                         {block name='snippets-shipping-calculator-submit'}
                             {col cols=12 md=3}
+                                {$selectedISO = "
+                                    {if isset($VersandPLZ)}
+                                        {$VersandPLZ}
+                                    {elseif isset($smarty.session.Kunde->cPLZ)}
+                                        {$smarty.session.Kunde->cPLZ}
+                                    {/if}"|trim}
                                 {formgroup class='mb-3' label-for="plz" label="{lang key='plz' section='forgot password'}"}
-                                    {input type="text" name="plz" size="8" maxlength="8"
-                                        value="{if isset($smarty.session.Kunde->cPLZ)}{$smarty.session.Kunde->cPLZ}{elseif isset($VersandPLZ)}{$VersandPLZ}{/if}" id="plz" placeholder=" "
+                                    {input type="text"
+                                        id="plz"
+                                        name="plz"
+                                        size="8"
+                                        maxlength="8"
+                                        value=$selectedISO
+                                        placeholder=" "
                                         aria=["label"=>"{lang key='plz' section='account data'}"]
                                     }
                                 {/formgroup}

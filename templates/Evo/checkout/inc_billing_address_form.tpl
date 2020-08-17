@@ -173,12 +173,8 @@
         {assign var='cIso' value=$cPost_var['land']}
     {elseif !empty($Kunde->cLand)}
         {assign var='cIso' value=$Kunde->cLand}
-    {elseif !empty($Einstellungen.kunden.kundenregistrierung_standardland)}
-        {assign var='cIso' value=$Einstellungen.kunden.kundenregistrierung_standardland}
-    {elseif isset($laender[0]->cISO)}
-        {assign var='cIso' value=$laender[0]->cISO}
     {else}
-        {assign var='cIso' value=''}
+        {assign var='cIso' value=$defaultCountry}
     {/if}
     <div class="row">
         <div class="col-xs-12 col-md-6">

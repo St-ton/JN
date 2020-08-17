@@ -128,12 +128,8 @@
     {assign var='cIso' value=$Lieferadresse->cLand}
 {elseif !empty($Kunde->cLand)}
     {assign var='cIso' value=$Kunde->cLand}
-{elseif !empty($Einstellungen.kunden.kundenregistrierung_standardland)}
-    {assign var='cIso' value=$Einstellungen.kunden.kundenregistrierung_standardland}
-{elseif isset($laender[0]->cISO)}
-    {assign var='cIso' value=$laender[0]->cISO}
 {else}
-    {assign var='cIso' value=''}
+    {assign var='cIso' value=$defaultCountry}
 {/if}
 <div class="row">
     <div class="col-xs-12 col-md-6">
@@ -142,7 +138,7 @@
             <select name="{$prefix}[{$name}][land]" id="{$prefix}-{$name}-country" class="country-input form-control" autocomplete="shipping country">
                 <option value="" selected disabled>{lang key='country' section='account data'}*</option>
                 {foreach $LieferLaender as $land}
-                    <option value="{$land->getISO()}" {if ($Einstellungen.kunden.kundenregistrierung_standardland == $land->getISO() && empty($Lieferadresse->cLand)) || (isset($Lieferadresse->cLand) && $Lieferadresse->cLand == $land->getISO())}selected="selected"{/if}>{$land->getName()}</option>
+                    <option value="{$land->getISO()}" {if $cIso == $land->getISO()}selected="selected"{/if}>{$land->getName()}</option>
                 {/foreach}
             </select>
         </div>

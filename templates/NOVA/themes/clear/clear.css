@@ -20367,12 +20367,6 @@ aside .box-monthlynews a .value:hover {
   border-color: #525252;
 }
 
-@media (max-width: 991.98px) {
-  .slick-list {
-    padding-right: 50px;
-  }
-}
-
 .swatches {
   flex-wrap: wrap;
 }

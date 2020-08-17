@@ -15829,71 +15829,71 @@ select.selectpicker {
 }
 
 .consent-btn-secondary {
-  background-color: #f5f7fa;
-  border-color: #f5f7fa;
+  background-color: #fff;
+  border-color: #fff;
   color: #9b9b9b;
 }
 .consent-btn-secondary:hover {
-  background-color: #dce3ed;
-  border-color: #dce3ed;
+  background-color: #ececec;
+  border-color: #ececec;
   color: #9b9b9b;
 }
 .consent-btn-secondary:focus {
-  background-color: #d3dce9;
-  border-color: #d3dce9;
+  background-color: #e6e6e6;
+  border-color: #e6e6e6;
   color: #9b9b9b;
-  box-shadow: 0 0 0 0.1875rem rgba(211, 220, 233, 0.5);
+  box-shadow: 0 0 0 0.1875rem rgba(230, 230, 230, 0.5);
 }
 
 .consent-btn-outline-secondary {
   background-color: transparent;
-  border-color: #f5f7fa;
-  color: #f5f7fa;
+  border-color: #fff;
+  color: #fff;
 }
 .consent-btn-outline-secondary:hover {
-  background-color: #dce3ed;
-  border-color: #dce3ed;
+  background-color: #ececec;
+  border-color: #ececec;
   color: #9b9b9b;
 }
 .consent-btn-outline-secondary:focus {
-  background-color: #d3dce9;
-  border-color: #d3dce9;
+  background-color: #e6e6e6;
+  border-color: #e6e6e6;
   color: #9b9b9b;
-  box-shadow: 0 0 0 0.1875rem rgba(211, 220, 233, 0.5);
+  box-shadow: 0 0 0 0.1875rem rgba(230, 230, 230, 0.5);
 }
 
 .consent-btn-tertiary {
-  background-color: #5cb85c;
-  border-color: #5cb85c;
+  background-color: #3f862f;
+  border-color: #3f862f;
   color: #525252;
 }
 .consent-btn-tertiary:hover {
-  background-color: #48a648;
-  border-color: #48a648;
+  background-color: #326a25;
+  border-color: #326a25;
   color: #525252;
 }
 .consent-btn-tertiary:focus {
-  background-color: #449d44;
-  border-color: #449d44;
+  background-color: #2d6022;
+  border-color: #2d6022;
   color: #525252;
-  box-shadow: 0 0 0 0.1875rem rgba(68, 157, 68, 0.5);
+  box-shadow: 0 0 0 0.1875rem rgba(45, 96, 34, 0.5);
 }
 
 .consent-btn-outline-tertiary {
   background-color: transparent;
-  border-color: #5cb85c;
-  color: #5cb85c;
+  border-color: #3f862f;
+  color: #3f862f;
 }
 .consent-btn-outline-tertiary:hover {
-  background-color: #48a648;
-  border-color: #48a648;
+  background-color: #326a25;
+  border-color: #326a25;
   color: #525252;
 }
 .consent-btn-outline-tertiary:focus {
-  background-color: #449d44;
-  border-color: #449d44;
+  background-color: #2d6022;
+  border-color: #2d6022;
   color: #525252;
-  box-shadow: 0 0 0 0.1875rem rgba(68, 157, 68, 0.5);
+  box-shadow: 0 0 0 0.1875rem rgba(45, 96, 34, 0.5);
 }
 
 .consent-btn-helper {
@@ -16069,7 +16069,7 @@ select.selectpicker {
 .consent-modal-close {
   border: 0;
   background: transparent;
-  color: #888888;
+  color: #525252;
   position: absolute;
   right: 0;
   top: 0;
@@ -16104,7 +16104,7 @@ select.selectpicker {
 
 #consent-manager {
   font-family: "Proxima Nova", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-  color: #888888;
+  color: #525252;
   font-size: 0.875rem;
   line-height: 1.5;
   position: fixed;
@@ -16163,7 +16163,7 @@ select.selectpicker {
 }
 
 .consent-help {
-  color: #888888;
+  color: #525252;
   font-size: 0.9em;
   margin-top: 0.5rem;
   display: block;
@@ -16197,7 +16197,7 @@ select.selectpicker {
   border: 0.0625rem solid #dddddd;
   border-radius: 0.125rem;
   padding: 2rem 1rem 1rem;
-  color: #888888;
+  color: #525252;
   background-color: #343434;
   width: 100%;
   max-width: 75rem;
@@ -16325,7 +16325,7 @@ select.selectpicker {
 }
 
 .consent-more-description {
-  background: #f5f7fa;
+  background: #fff;
   padding: 1rem;
   border-radius: 0.125rem;
   margin-top: 1rem;
@@ -16645,7 +16645,7 @@ input[type=file].file-loading, .file-loading input[type=file] {
 
 .file-preview-image {
   font: 40px Impact, Charcoal, sans-serif;
-  color: #5cb85c;
+  color: #3f862f;
 }
 
 .krajee-default.file-preview-frame {
@@ -20364,12 +20364,6 @@ aside .box-monthlynews a .value:hover {
 }
 .carousel-thumbnails .slick-active .productbox-image-wrapper {
   border-color: transparent;
-}
-
-@media (max-width: 991.98px) {
-  .slick-list {
-    padding-right: 50px;
-  }
 }
 
 .swatches {

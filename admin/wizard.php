@@ -26,19 +26,19 @@ $factory      = new DefaultFactory(
 $controller   = new Controller($factory);
 $conf         = Shop::getSettings([CONF_GLOBAL]);
 $token        = AuthToken::getInstance(Shop::Container()->getDB());
-$authRedirect = false;
+$authRedirect = Backend::get('wizard-authenticated') ?? false;
 
-if (Request::verifyGPDataString('action') === 'code') {
+if (Request::postVar('action') === 'code') {
     $admin->handleAuth();
-    $authRedirect = true;
 } elseif (Request::getVar('action') === 'auth') {
+    Backend::set('wizard-authenticated', true);
     $token->requestToken(
         Backend::get('jtl_token'),
         Shop::getAdminURL() . '/wizard.php?action=code'
     );
 }
-
-if (Request::verifyGPDataString('action') !== 'code') {
+if (Request::postVar('action') !== 'code') {
+    unset($_SESSION['wizard-authenticated']);
     $oAccount->redirectOnFailure();
     $smarty->assign('steps', $controller->getSteps())
         ->assign('authRedirect', $authRedirect)

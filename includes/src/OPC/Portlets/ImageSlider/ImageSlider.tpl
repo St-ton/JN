@@ -18,13 +18,11 @@
             <div class="theme-{$instance->getProperty('slider-theme')}">
                 <div id="{$uid}" class="nivoSlider">
                     {foreach $instance->getProperty('slides') as $i => $slide}
-                        {if !empty($slide.desc)}
-                            {$slideTitle = $slide.title}
+                        {if !empty($slide.title) || !empty($slide.desc)}
+                            {$slideTitle = '#'|cat:$uid|cat:'_slide_caption_'|cat:$i}
                         {else}
                             {$slideTitle = ''}
                         {/if}
-
-                        {$slideTitle = '#'|cat:$uid|cat:'_slide_caption_'|cat:$i}
 
                         {if !empty($slide.url)}
                             {$imgAttribs = $instance->getImageAttributes($slide.url, '', '')}

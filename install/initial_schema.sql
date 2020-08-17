@@ -4609,7 +4609,7 @@ CREATE TABLE `tversandartsprache` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tversandartsprache` DISABLE KEYS */;
-INSERT INTO `tversandartsprache` VALUES (7,'eng','DHL','2-3 days','',''),(7,'ger','DHL','2-3 tage','','');
+INSERT INTO `tversandartsprache` VALUES (7,'eng','DHL','2-3 Working days','',''),(7,'ger','DHL','2-3 Werktage','','');
 /*!40000 ALTER TABLE `tversandartsprache` ENABLE KEYS */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;

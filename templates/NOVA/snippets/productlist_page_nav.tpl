@@ -8,28 +8,26 @@
             {/block}
         {/if}
         {row class="{if $navid === 'header'}mt-6{/if} no-gutters productlist-page-nav"}
-            {if count($NaviFilter->getSearchResults()->getProducts()) > 0}
+            {if count($NaviFilter->getSearchResults()->getProducts()) > 0  && $navid === 'header'}
                 {block name='snippets-productlist-page-nav-result-options-sort'}
                     {col cols=12 md="auto" class="displayoptions mb-3 mb-md-0"}
                         {block name='snippets-productlist-page-nav-include-result-options'}
                             {if count($Suchergebnisse->getProducts()) > 0}
                                 {opcMountPoint id='opc_before_result_options'}
                             {/if}
-                            {if $navid === 'header'}
-                                {$filterPlacement=''}
-                                {if $isMobile && !$isTablet}
-                                    {$filterPlacement="collapse"}
-                                {elseif $isTablet || $Einstellungen.template.productlist.filter_placement === 'modal'}
-                                    {$filterPlacement="modal"}
-                                {/if}
-                                <div id="improve_search" class="{if $filterPlacement !== 'collapse'}d-inline-block btn-group{/if} mr-2 {if $filterPlacement === ''}d-lg-none{/if}">
-                                    {include file='productlist/result_options.tpl'
-                                        itemCount=$Suchergebnisse->getProductCount()
-                                        filterPlacement=$filterPlacement}
-                                </div>
+                            {$filterPlacement=''}
+                            {if $isMobile && !$isTablet}
+                                {$filterPlacement="collapse"}
+                            {elseif $isTablet || $Einstellungen.template.productlist.filter_placement === 'modal'}
+                                {$filterPlacement="modal"}
                             {/if}
+                            <div id="improve_search" class="{if $filterPlacement !== 'collapse'}d-inline-block btn-group{/if} mr-2 {if $filterPlacement === ''}d-lg-none{/if}">
+                                {include file='productlist/result_options.tpl'
+                                    itemCount=$Suchergebnisse->getProductCount()
+                                    filterPlacement=$filterPlacement}
+                            </div>
                         {/block}
-                        {if (!$isMobile || $isTablet) && $navid === 'header'}
+                        {if !$isMobile || $isTablet}
                             {block name='snippets-productlist-page-nav-actions'}
                                 {block name='snippets-productlist-page-nav-actions-sort'}
                                     {dropdown class="filter-type-FilterItemSort btn-group" variant="outline-secondary" text="{lang key='sorting' section='productOverview'}"}

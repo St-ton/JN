@@ -56,7 +56,7 @@ class Migration_20200319145600 extends Migration implements IMigration
         $this->setLocalization('eng', 'consent', 'configure', 'Configuration');
         $this->setLocalization('ger', 'consent', 'consentDescription', 'Durch Klicken auf „Alle akzeptieren“ gestatten ' .
             'Sie den Einsatz folgender Dienste auf unserer Website: %s. Sie können die Einstellung jederzeit ändern ' .
-            '(Fingerabdruck-Icon links unten). Weitere Details finden Sie unte <i>Konfigurieren</i> und in unserer ' .
+            '(Fingerabdruck-Icon links unten). Weitere Details finden Sie unter <i>Konfigurieren</i> und in unserer ' .
             '<a href="%s" target="_blank">Datenschutzerklärung</a>.');
         $this->setLocalization('eng', 'consent', 'consentDescription', 'By selecting "Accept all", you give us permission ' .
             'to use the following services on our website: %s. You can change the settings at any time (fingerprint icon ' .

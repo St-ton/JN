@@ -60,7 +60,7 @@ msgid "hasLicenseExpirationsTitle"
 msgstr "Licenses/Subscriptions"
 
 msgid "hasLicenseExpirationsMessage"
-msgstr "At least one license will expire soon."
+msgstr "At least one subscription will expire soon."
 
 msgid "hasFullTextIndexErrorTitle"
 msgstr "Full-text search"

@@ -1,6 +1,6 @@
 {block name='layout-footer'}
     {block name='layout-footer-consent-manager'}
-        {if $Einstellungen.consentmanager.consent_manager_active === 'Y' && !$isAjax}
+        {if $Einstellungen.consentmanager.consent_manager_active === 'Y' && !$isAjax && $consentItems->isNotEmpty()}
             {include file='snippets/consent_manager.tpl'}
             {inline_script}
                 <script>

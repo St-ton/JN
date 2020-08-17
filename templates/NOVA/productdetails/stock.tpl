@@ -48,11 +48,11 @@
                         <div class="estimated-delivery cursor-pointer"
                              data-toggle="popover"
                              data-placement="top"
-                             data-content="{lang key='shippingInformation' section='productDetails' printf=$Firma->country->getName()|cat:':::'|cat:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}">
+                             data-content="{lang|sprintf:$Firma->country->getName():$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() key='shippingInformation' section='productDetails'}">
                             {if !isset($shippingTime)}{lang key='shippingTime'}:{/if}
                             <span class="a{$Artikel->Lageranzeige->nStatus} text-nowrap">
                                 {$Artikel->cEstimatedDelivery}
-                                <span class="fa fa-info-circle"></span>
+                                <span class="text-decoration-underline">({lang key='shippingInfoIcon' section='productDetails'})</span>
                             </span>
                         </div>
                     </li>

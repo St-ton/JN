@@ -23220,6 +23220,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   font-size: 0.875rem;
   font-weight: 700;
   font-family: "Open Sans", sans-serif;
+  padding-bottom: 0;
 }
 
 .modal .productlist-filter-wrapper {

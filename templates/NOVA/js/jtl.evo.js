@@ -8,7 +8,10 @@
     var EvoClass = function() {};
 
     EvoClass.prototype = {
-        options: { captcha: {} },
+        options: {
+            captcha: {},
+            scrollSearch: '.smoothscroll-top-search'
+        },
 
         constructor: EvoClass,
 
@@ -461,12 +464,12 @@
             });
         },
 
-        initScrollEvents: function() {
-            //mobile search
+        initScrollSearchEvent: function() {
+            this.destroyScrollSearchEvent();
             let lastScroll       = 0,
-                $scrollTopSearch = $('.smoothscroll-top-search');
+                $scrollTopSearch = $(this.options.scrollSearch);
             if ($scrollTopSearch.length) {
-                $(document).on('scroll', function () {
+                $(document).on('scroll.search', function () {
                     let newScroll = $(this).scrollTop();
                     if (newScroll < lastScroll) {
                         if ($(window).scrollTop() > 100) {
@@ -480,6 +483,15 @@
                     lastScroll = newScroll;
                 });
             }
+        },
+
+        destroyScrollSearchEvent: function() {
+            $(this.options.scrollSearch).addClass('d-none');
+            $(document).off('scroll.search');
+        },
+
+        initScrollEvents: function() {
+            this.initScrollSearchEvent();
 
             //scroll top button
             let toTopbuttonVisible     = false,

@@ -453,7 +453,7 @@
                                                             <p class="caption text-decoration-none">{lang key='priceOnApplication' section='global'}</p>
                                                         {else}
                                                             {block name='snippets-wishlist-form-basket-include-price'}
-                                                                {include file='productdetails/price.tpl' Artikel=$wlPosition->Artikel tplscope='wishlist'}
+                                                                {include file='productdetails/price.tpl' Artikel=$wlPosition->Artikel tplscope='detail'}
                                                             {/block}
                                                         {/if}
                                                     {/block}

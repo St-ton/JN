@@ -531,6 +531,13 @@ $(document).ready(function () {
     $('.onchangeSubmit').on('change', function(){
         this.form.submit();
     });
+
+    $('#mobile-search-dropdown').on('click', function() {
+        setTimeout(function(){
+            $('#search-header-desktop').focus();
+        },100);
+    });
+
     categoryMenu();
     regionsToState();
     compatibility();

@@ -32,7 +32,7 @@
     {/if}
 
     {block name='register-form-customer-login-submit'}
-        {formgroup}
+        {formgroup label-for=" " class="mb-0"}
             {input type="hidden" name="login" value="1"}
             {input type="hidden" name="wk" value="{if isset($one_step_wk)}{$one_step_wk}{else}0{/if}"}
             {if !empty($oRedirect->cURL)}

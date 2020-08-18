@@ -230,10 +230,12 @@ class GenericAdmin
      */
     public function deleteFromPost(array $ids): bool
     {
-        return every(map($ids, static function ($id) {
+        $self = $this;
+
+        return every(map($ids, static function ($id) use ($self) {
             try {
                 /** @var DataModelInterface $model */
-                $model = $this->modelClass::load(['id' => (int)$id], $this->db, DataModelInterface::ON_NOTEXISTS_FAIL);
+                $model = $self->modelClass::load(['id' => (int)$id], $self->db, DataModelInterface::ON_NOTEXISTS_FAIL);
             } catch (Exception $e) {
                 return false;
             }

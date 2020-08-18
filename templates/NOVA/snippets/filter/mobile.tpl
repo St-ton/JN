@@ -46,7 +46,7 @@
                                         {block name='snippets-filter-mobile-filters-collapse'}
                                             {collapse id="filter-collapse-{$subFilter->getFrontendName()|@seofy}"
                                                 class="my-2"
-                                                visible=$subFilter->isActive()}
+                                                visible=$subFilter->isActive() || $Einstellungen.template.productlist.filter_items_always_visible === 'Y'}
                                                 {if ($subFilter->getData('cTyp') === 'SELECTBOX') && $subFilter->getOptions()|@count > 0}
                                                     {dropdown variant="outline-secondary" text="{lang key='selectFilter' section='global'} " toggle-class="btn-block text-left"}
                                                         {include file='snippets/filter/characteristic.tpl' Merkmal=$subFilter sub=true}
@@ -84,7 +84,7 @@
                                         {/link}
                                         {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}"
                                             class="my-2 py-2"
-                                            visible=$filter->isActive()}
+                                            visible=$filter->isActive() || $Einstellungen.template.productlist.filter_items_always_visible === 'Y'}
                                             {block name='snippets-filter-mobile-include-search'}
                                                 {include file='snippets/filter/search.tpl'}
                                             {/block}
@@ -98,7 +98,7 @@
                                         {/link}
                                         {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}"
                                             class="my-2 py-2"
-                                            visible=$filter->isActive()}
+                                            visible=$filter->isActive() || $Einstellungen.template.productlist.filter_items_always_visible === 'Y'}
                                             {block name='snippets-filter-mobile-include-manufacturer'}
                                                 {include file='snippets/filter/manufacturer.tpl'}
                                             {/block}
@@ -111,7 +111,7 @@
                                         {/link}
                                         {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}"
                                             class="my-2"
-                                            visible=$filter->isActive()}
+                                            visible=$filter->isActive() || $Einstellungen.template.productlist.filter_items_always_visible === 'Y'}
                                             {block name='snippets-filter-mobile-include-generic-filter-item'}
                                                 {include file='snippets/filter/genericFilterItem.tpl' filter=$filter}
                                             {/block}

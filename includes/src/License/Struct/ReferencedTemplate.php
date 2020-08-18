@@ -3,7 +3,6 @@
 namespace JTL\License\Struct;
 
 use JTL\DB\DbInterface;
-use JTL\Shop;
 use JTL\Template\Admin\Listing;
 use JTL\Template\Admin\ListingItem;
 use JTL\Template\Admin\Validation\TemplateValidator;
@@ -26,15 +25,16 @@ class ReferencedTemplate extends ReferencedItem
     public function __construct(DbInterface $db, stdClass $license, Release $release)
     {
         $exsid = $license->exsid;
-        $model = Shop::Container()->getTemplateService()->getActiveTemplate();
-        if ($model->getExsID() === $exsid) {
-            $installedVersion = Version::parse($model->getVersion());
-            $this->setID($model->getCTemplate());
+        $data  = $db->select('ttemplate', 'eTyp', 'standard');
+        if ($data !== null && $data->exsID === $exsid) {
+            $installedVersion = Version::parse($data->version);
+            $this->setID($data->cTemplate);
             $this->setMaxInstallableVersion($release->getVersion());
             $this->setHasUpdate($installedVersion->smallerThan($release->getVersion()));
             $this->setInstalled(true);
             $this->setInstalledVersion($installedVersion);
             $this->setActive(true);
+            $this->setInitialized(true);
         } else {
             $lstng = new Listing($db, new TemplateValidator($db));
             foreach ($lstng->getAll() as $template) {
@@ -46,7 +46,8 @@ class ReferencedTemplate extends ReferencedItem
                     $this->setHasUpdate($installedVersion->smallerThan($release->getVersion()));
                     $this->setInstalled(true);
                     $this->setInstalledVersion($installedVersion);
-                    $this->setActive(true);
+                    $this->setActive(false);
+                    $this->setInitialized(true);
                     break;
                 }
             }

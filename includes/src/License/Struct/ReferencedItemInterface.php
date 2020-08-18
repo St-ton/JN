@@ -79,4 +79,24 @@ interface ReferencedItemInterface
      * @param int $internalID
      */
     public function setInternalID(int $internalID): void;
+
+    /**
+     * @return string|null
+     */
+    public function getDateInstalled(): ?string;
+
+    /**
+     * @param string|null $dateInstalled
+     */
+    public function setDateInstalled(?string $dateInstalled): void;
+
+    /**
+     * @return bool
+     */
+    public function isInitialized(): bool;
+
+    /**
+     * @param bool $initialized
+     */
+    public function setInitialized(bool $initialized): void;
 }

@@ -88,3 +88,6 @@ msgstr "Ihre aktuelle Version von JTL-Shop"
 
 msgid "currentTemplateVersion"
 msgstr "Ihre aktuelle Template-Version"
+
+msgid "errorMinShopVersionRequired"
+msgstr "Ihr Onlineshop verfügt nicht über die benötigte Mindestversion für das Update auf Version %s. Bitte führen Sie zunächst ein Update auf Version %s durch und aktualisieren Sie anschließend auf Version %s."

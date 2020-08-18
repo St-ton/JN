@@ -85,6 +85,7 @@ if (!empty($_COOKIE['JTLSHOP']) && empty($_SESSION['frontendUpToDate'])) {
 }
 
 if ($loggedIn
+    && !(isset($_GET['action']) && $_GET['action'] === 'quick_change_language')
     && $_SERVER['REQUEST_METHOD'] === 'GET'
     && strpos($_SERVER['SCRIPT_FILENAME'], 'dbupdater') === false
     && strpos($_SERVER['SCRIPT_FILENAME'], 'io.php') === false

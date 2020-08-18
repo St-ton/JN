@@ -153,7 +153,7 @@
         {elseif !empty($Kunde->cLand)}
             {$countryISO=$Kunde->cLand}
         {else}
-            {$countryISO=$defaultCountry}
+            {$countryISO=$shippingCountry}
         {/if}
         {block name='checkout-customer-shipping-address-country-wrap'}
             {col cols=12}

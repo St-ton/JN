@@ -174,7 +174,7 @@
     {elseif !empty($Kunde->cLand)}
         {assign var='cIso' value=$Kunde->cLand}
     {else}
-        {assign var='cIso' value=$defaultCountry}
+        {assign var='cIso' value=$shippingCountry}
     {/if}
     <div class="row">
         <div class="col-xs-12 col-md-6">

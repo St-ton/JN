@@ -102,19 +102,8 @@
                                 </li>
                             {/block}
                             {block name='basket-cart-dropdown-cart-item-favourable-shipping'}
-                                {if isset($FavourableShipping)}
-                                    {if $NettoPreise}
-                                        {$shippingCosts = "`$FavourableShipping->cPriceLocalized[$NettoPreise]` {lang key='plus' section='basket'} {lang key='vat' section='productDetails'}"}
-                                    {else}
-                                        {$shippingCosts = $FavourableShipping->cPriceLocalized[$NettoPreise]}
-                                    {/if}
-                                    <li class="text-muted mt-2 font-size-sm">
-                                        {lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$shippingCosts:$FavourableShipping->country->getName() key='shippingInformationSpecific' section='basket'}
-                                    </li>
-                                {elseif empty($FavourableShipping)}
-                                    <li class="text-muted mt-2 font-size-sm">
-                                        {lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() key='shippingInformation' section='basket'}
-                                    </li>
+                                {if $favourableShippingString !== ''}
+                                    <li class="text-muted mt-2 font-size-sm">{$favourableShippingString}</li>
                                 {/if}
                             {/block}
                         </ul>

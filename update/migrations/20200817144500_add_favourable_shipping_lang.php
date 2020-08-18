@@ -27,25 +27,13 @@ class Migration_20200817144500 extends Migration implements IMigration
             'ger',
             'basket',
             'shippingInformationSpecificSingle',
-            'Zzgl. <a href="%1$s" class="shipment popup">Versandkosten</a> von %2$s bei Lieferung nach %3$s'
+            'Zzgl. <a href="%1$s" class="shipment popup">Versandkosten</a>: %2$s bei Lieferung nach %3$s'
         );
         $this->setLocalization(
             'eng',
             'basket',
             'shippingInformationSpecificSingle',
-            'Plus <a href="%1$s" class="shipment popup">shipping costs</a> of %2$s for delivery to %3$s'
-        );
-        $this->setLocalization(
-            'ger',
-            'basket',
-            'shippingInformationSpecificFree',
-            'Versandkostenfrei lieferbar nach %s'
-        );
-        $this->setLocalization(
-            'eng',
-            'basket',
-            'shippingInformationSpecificFree',
-            'Your order can be shipped for free to %s'
+            'Plus <a href="%1$s" class="shipment popup">shipping costs</a>: %2$s for delivery to %3$s'
         );
     }
 
@@ -56,6 +44,5 @@ class Migration_20200817144500 extends Migration implements IMigration
     public function down()
     {
         $this->removeLocalization('shippingInformationSpecificSingle', 'basket');
-        $this->removeLocalization('shippingInformationSpecificFree', 'basket');
     }
 }

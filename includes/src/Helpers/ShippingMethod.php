@@ -352,7 +352,6 @@ class ShippingMethod
                     ))
                     ->assign('Versandarten', $shippingMethods)
                     ->assign('Versandland', LanguageHelper::getCountryCodeByCountryName($country))
-                    ->assign('shippingCalculatorCountry', Shop::Container()->getCountryService()->getCountry($country))
                     ->assign('VersandPLZ', Text::filterXSS($zip));
             } else {
                 $errorMsg = Shop::Lang()->get('noDispatchAvailable');

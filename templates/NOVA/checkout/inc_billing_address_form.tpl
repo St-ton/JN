@@ -233,7 +233,7 @@
                     {elseif !empty($Kunde->cLand)}
                         {$countryISO=$Kunde->cLand}
                     {else}
-                        {$countryISO=$defaultCountry}
+                        {$countryISO=$shippingCountry}
                     {/if}
                     {block name='checkout-inc-billing-address-form-country-wrap'}
                         {col cols=12}

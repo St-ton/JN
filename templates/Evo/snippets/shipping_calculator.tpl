@@ -12,19 +12,9 @@
                         <label for="country">{lang key='country' section='account data'}</label>
                         <select name="land" id="country" class="form-control">
                             {foreach $laender as $land}
-                                <option value="{$land->getISO()}"
-                                        {if isset($Versandland)}
-                                            {if $shippingCalculatorCountry->getISO() === $land->getISO()}
-                                                selected
-                                            {/if}
-                                        {elseif !empty($smarty.session.Kunde->cLand)}
-                                            {if $smarty.session.Kunde->cLand === $land->getISO()}
-                                                selected
-                                            {/if}
-                                        {elseif $defaultCountry === $land->getISO()}
-                                            selected
-                                        {/if}
-                                >{$land->getName()}</option>
+                                <option value="{$land->getISO()}" {if $shippingCountry === $land->getISO()}selected{/if}>
+                                    {$land->getName()}
+                                </option>
                             {/foreach}
                         </select>
                         &nbsp;

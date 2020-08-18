@@ -11,19 +11,9 @@
                             {col cols=12 md=5 class="mb-3"}
                                 {select name="land" id="country" class='custom-select' placeholder="" aria=["label"=>"{lang key='country' section='account data'}"]}
                                     {foreach $laender as $land}
-                                        <option value="{$land->getISO()}"
-                                                {if isset($Versandland)}
-                                                    {if $shippingCalculatorCountry->getISO() === $land->getISO()}
-                                                        selected
-                                                    {/if}
-                                                {elseif !empty($smarty.session.Kunde->cLand)}
-                                                    {if $smarty.session.Kunde->cLand === $land->getISO()}
-                                                        selected
-                                                    {/if}
-                                                {elseif $defaultCountry === $land->getISO()}
-                                                    selected
-                                                {/if}
-                                        >{$land->getName()}</option>
+                                        <option value="{$land->getISO()}" {if $shippingCountry === $land->getISO()}selected{/if}>
+                                            {$land->getName()}
+                                        </option>
                                     {/foreach}
                                 {/select}
                             {/col}

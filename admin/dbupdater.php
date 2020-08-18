@@ -23,12 +23,13 @@ $fileVersion         = $updater->getCurrentFileVersion();
 $hasMinUpdateVersion = true;
 if (!$updater->hasMinUpdateVersion()) {
     Shop::Container()->getAlertService()->addAlert(
-        Alert::TYPE_DANGER,
+        Alert::TYPE_WARNING,
         sprintf(
             __('errorMinShopVersionRequired'),
             \APPLICATION_VERSION,
             \JTL_MIN_SHOP_UPDATE_VERSION,
-            \APPLICATION_VERSION
+            \APPLICATION_VERSION,
+            __('dbupdaterURL')
         ),
         'errorMinShopVersionRequired'
     );

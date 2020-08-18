@@ -156,3 +156,12 @@
 	.productbox-image-wrapper { border: $border-width solid $border-color; border-radius: $border-radius; overflow: hidden; }
 	.slick-active .productbox-image-wrapper { border-color: $secondary; }
 }
+
+.slick-type-product ,
+.slick-type-half {
+	.slick-list {
+		@include media-breakpoint-down(md) {
+			padding-right: 50px;
+		}
+	}
+}

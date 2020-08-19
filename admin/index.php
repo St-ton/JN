@@ -16,6 +16,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Backend\AdminAccount $oAccount */
 $db          = Shop::Container()->getDB();
 $alertHelper = Shop::Container()->getAlertService();
+$cache       = Shop::Container()->getCache();
 $oUpdater    = new Updater($db);
 if (Request::postInt('adminlogin') === 1) {
     $csrfOK = true;
@@ -72,6 +73,7 @@ if (Request::postInt('adminlogin') === 1) {
                 break;
 
             case AdminLoginStatus::LOGIN_OK:
+                $cache->flush('validFolderPermissions');
                 Backend::getInstance()->reHash();
                 $_SESSION['loginIsValid'] = true; // "enable" the "header.tpl"-navigation again
                 if ($oAccount->permission('SHOP_UPDATE_VIEW') && $oUpdater->hasPendingUpdates()) {

@@ -164,10 +164,15 @@ class Status
      */
     public function validFolderPermissions(): bool
     {
-        $filesystem = new Filesystem(\PFAD_ROOT);
-        $filesystem->getFoldersChecked();
+        $cacheID = 'validFolderPermissions';
+        if (($filesystemFolderStats = Shop::Container()->getCache()->get($cacheID)) === false) {
+            $filesystem = new Filesystem(\PFAD_ROOT);
+            $filesystem->getFoldersChecked();
+            $filesystemFolderStats = $filesystem->getFolderStats();
+            Shop::Container()->getCache()->set($cacheID, $filesystemFolderStats, [\CACHING_GROUP_OBJECT]);
+        }
 
-        return $filesystem->getFolderStats()->nCountInValid === 0;
+        return $filesystemFolderStats->nCountInValid === 0;
     }
 
     /**

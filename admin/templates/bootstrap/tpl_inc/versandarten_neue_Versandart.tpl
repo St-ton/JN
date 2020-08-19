@@ -13,7 +13,7 @@
     {literal}
     function delInputRow() {
         i -= 1;
-        $('#price_range tbody tr:last').remove();
+        $('#price_range tbody tr').last().remove();
     }
 
     function addShippingCombination() {
@@ -314,7 +314,7 @@
                         <hr class="mb-3">
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right">
-                                {__('shippingPrice')} {__('amount')}:
+                                {__('amount')}:
                             </label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <input type="text" id="fPreisNetto" name="fPreis" value="{if isset($Versandart->fPreis)}{$Versandart->fPreis}{/if}" class="form-control price_large">{* onKeyUp="setzePreisAjax(false, 'ajaxfPreisNetto', this)" /> <span id="ajaxfPreisNetto"></span>*}

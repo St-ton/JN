@@ -22,7 +22,6 @@ final class Store extends Job
         if ($this->getJobData() !== null) {
             $this->setFinished(true);
         }
-
         $this->setFinished(true);
 
         return $this;

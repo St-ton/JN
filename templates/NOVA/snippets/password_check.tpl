@@ -1,4 +1,12 @@
 {block name='snippets-password-check'}
+    {if $loadScript}
+        {if empty($parentTemplateDir)}
+            {$templateDir = $currentTemplateDir}
+        {else}
+            {$templateDir = $parentTemplateDir}
+        {/if}
+        <script defer src="{$ShopURL}/{$templateDir}js/password/password.min.js"></script>
+    {/if}
     {inline_script}<script>
         $(window).on('load', function () {
             $('{$id}').password({

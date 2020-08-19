@@ -31,13 +31,13 @@
         <div class="slide-props">
             {if $useTitles}
                 <input type="text" class="form-control" placeholder="{__('title')}"
-                       name="{$propname}[#SORT#][title]" value="{$slideData.title|default:''}">
+                       name="{$propname}[#SORT#][title]" value="{$slideData.title|default:''|escape:'html'}">
             {/if}
             <input type="text" class="form-control" placeholder="{__('description')}"
-                   name="{$propname}[#SORT#][desc]" value="{$slideData.desc|default:''}"
+                   name="{$propname}[#SORT#][desc]" value="{$slideData.desc|default:''|escape:'html'}"
                    maxlength="256">
             <input type="text" class="form-control" placeholder="{__('alternativeText')}"
-                   name="{$propname}[#SORT#][alt]" value="{$slideData.alt|default:''}">
+                   name="{$propname}[#SORT#][alt]" value="{$slideData.alt|default:''|escape:'html'}">
             {if $useLinks}
                 <div class="row">
                     <div class="col-4">
@@ -60,7 +60,7 @@
                     </div>
                     <div class="col-8">
                         <input type="text" class="form-control" placeholder="{__('link')}"
-                               name="{$propname}[#SORT#][link]" value="{$slideData.link|default:''}"
+                               name="{$propname}[#SORT#][link]" value="{$slideData.link|default:''|escape:'html'}"
                                {if $slideData.action !== 'link'}disabled{/if}>
                     </div>
                 </div>
@@ -102,10 +102,11 @@
         });
     });
 
-    function elfinderCallback_{$propname}(url)
+    function elfinderCallback_{$propname}(file)
     {
-        var image = $(this);
-        image.css('background-image', 'url("' + url + '")');
+        let url = file.url.slice(file.baseUrl.length);
+        let image = $(this);
+        image.css('background-image', 'url("' + file.url + '")');
         image.siblings('input').val(url);
     }
 

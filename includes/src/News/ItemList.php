@@ -42,7 +42,7 @@ final class ItemList implements ItemListInterface
     /**
      * @inheritdoc
      */
-    public function createItems(array $itemIDs): Collection
+    public function createItems(array $itemIDs, bool $activeOnly = true): Collection
     {
         $this->itemIDs = \array_map('\intval', $itemIDs);
         if (\count($this->itemIDs) === 0) {

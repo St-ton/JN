@@ -168,4 +168,12 @@ class Config
     {
         $this->options = $options;
     }
+
+    /**
+     * @return array
+     */
+    public function getAssoc(): array
+    {
+        return $this->options->keyBy('valueID')->all();
+    }
 }

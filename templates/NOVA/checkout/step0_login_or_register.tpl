@@ -39,13 +39,20 @@
                 {form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form jtl-validate py-3" id="form-register" slide=true}
                     {block name='checkout-step0-login-or-register-include-customer-account'}
                         {include file='register/form/customer_account.tpl' checkout=1 step="formular"}
-                        <hr class="my-4">
+                        <hr>
                     {/block}
                     {block name='checkout-step0-login-or-register-include-inc-shipping-address'}
                         {include file='checkout/inc_shipping_address.tpl'}
                     {/block}
                     {block name='checkout-step0-login-or-register-form-submit'}
                         {row class='mt-5'}
+                            {col cols=12 class="text-left text-md-right mb-3"}
+                                {block name='checkout-step0-login-or-register-modal-privacy'}
+                                    {link href=$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL() class="popup"}
+                                        {lang key='privacyNotice'}
+                                    {/link}
+                                {/block}
+                            {/col}
                             {col cols=12 md=5 xl=4 class='ml-md-auto'}
                                 {input type="hidden" name="checkout" value="1"}
                                 {input type="hidden" name="form" value="1"}

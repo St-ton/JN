@@ -4,7 +4,7 @@
     {lang key='showAllUpcomingProducts' assign='moreTitle'}
     {block name='boxes-box-coming-soon-include-product-slider'}
         {include file='snippets/product_slider.tpl'
-            id='boxslider-comingsoon'
+            id="boxslider-comingsoon-{$oBox->getID()}"
             productlist=$oBox->getProducts()->elemente
             title=$slidertitle
             tplscope='box'

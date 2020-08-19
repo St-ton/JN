@@ -4,6 +4,7 @@
     <Author>JTL-Software-GmbH</Author>
     <URL>https://www.jtl-software.de</URL>
     <ShopVersion>5.0.0</ShopVersion>
+    <Version>2.0.0</Version>
     <Preview>preview.png</Preview>
     <Description>JTL-Shop Responsive-Template</Description>
     <Settings>
@@ -188,6 +189,7 @@
             <File Path="themes/base/animate.css"/>
             <File Path="themes/base/pnotify.custom.css"/>
             <File Path="themes/base/jquery-slider.css"/>
+            <File Path="themes/base/consent.css"/>
             <File Path="themes/evo/custom.css"/>
         </CSS>
         <CSS Name="bootstrap.css">
@@ -196,6 +198,7 @@
             <File Path="themes/base/animate.css"/>
             <File Path="themes/base/pnotify.custom.css"/>
             <File Path="themes/base/jquery-slider.css"/>
+            <File Path="themes/base/consent.css"/>
             <File Path="themes/bootstrap/custom.css"/>
         </CSS>
         <CSS Name="cerulean.css">
@@ -204,6 +207,7 @@
             <File Path="themes/base/animate.css"/>
             <File Path="themes/base/pnotify.custom.css"/>
             <File Path="themes/base/jquery-slider.css"/>
+            <File Path="themes/base/consent.css"/>
             <File Path="themes/cerulean/custom.css"/>
         </CSS>
         <CSS Name="cosmo.css">
@@ -212,6 +216,7 @@
             <File Path="themes/base/animate.css"/>
             <File Path="themes/base/pnotify.custom.css"/>
             <File Path="themes/base/jquery-slider.css"/>
+            <File Path="themes/base/consent.css"/>
             <File Path="themes/cosmo/custom.css"/>
         </CSS>
         <CSS Name="cyborg.css">
@@ -220,6 +225,7 @@
             <File Path="themes/base/animate.css"/>
             <File Path="themes/base/pnotify.custom.css"/>
             <File Path="themes/base/jquery-slider.css"/>
+            <File Path="themes/base/consent.css"/>
             <File Path="themes/cyborg/custom.css"/>
         </CSS>
         <CSS Name="darkly.css">
@@ -228,6 +234,7 @@
             <File Path="themes/base/animate.css"/>
             <File Path="themes/base/pnotify.custom.css"/>
             <File Path="themes/base/jquery-slider.css"/>
+            <File Path="themes/base/consent.css"/>
             <File Path="themes/darkly/custom.css"/>
         </CSS>
         <CSS Name="flatly.css">
@@ -236,6 +243,7 @@
             <File Path="themes/base/animate.css"/>
             <File Path="themes/base/pnotify.custom.css"/>
             <File Path="themes/base/jquery-slider.css"/>
+            <File Path="themes/base/consent.css"/>
             <File Path="themes/flatly/custom.css"/>
         </CSS>
         <CSS Name="journal.css">
@@ -244,6 +252,7 @@
             <File Path="themes/base/animate.css"/>
             <File Path="themes/base/pnotify.custom.css"/>
             <File Path="themes/base/jquery-slider.css"/>
+            <File Path="themes/base/consent.css"/>
             <File Path="themes/journal/custom.css"/>
         </CSS>
         <CSS Name="lumen.css">
@@ -252,6 +261,7 @@
             <File Path="themes/base/animate.css"/>
             <File Path="themes/base/pnotify.custom.css"/>
             <File Path="themes/base/jquery-slider.css"/>
+            <File Path="themes/base/consent.css"/>
             <File Path="themes/lumen/custom.css"/>
         </CSS>
         <CSS Name="paper.css">
@@ -260,6 +270,7 @@
             <File Path="themes/base/animate.css"/>
             <File Path="themes/base/pnotify.custom.css"/>
             <File Path="themes/base/jquery-slider.css"/>
+            <File Path="themes/base/consent.css"/>
             <File Path="themes/paper/custom.css"/>
         </CSS>
         <CSS Name="sandstone.css">
@@ -268,6 +279,7 @@
             <File Path="themes/base/animate.css"/>
             <File Path="themes/base/pnotify.custom.css"/>
             <File Path="themes/base/jquery-slider.css"/>
+            <File Path="themes/base/consent.css"/>
             <File Path="themes/sandstone/custom.css"/>
         </CSS>
         <CSS Name="simplex.css">
@@ -276,6 +288,7 @@
             <File Path="themes/base/animate.css"/>
             <File Path="themes/base/pnotify.custom.css"/>
             <File Path="themes/base/jquery-slider.css"/>
+            <File Path="themes/base/consent.css"/>
             <File Path="themes/simplex/custom.css"/>
         </CSS>
         <CSS Name="slate.css">
@@ -284,6 +297,7 @@
             <File Path="themes/base/animate.css"/>
             <File Path="themes/base/pnotify.custom.css"/>
             <File Path="themes/base/jquery-slider.css"/>
+            <File Path="themes/base/consent.css"/>
             <File Path="themes/slate/custom.css"/>
         </CSS>
         <CSS Name="spacelab.css">
@@ -292,6 +306,7 @@
             <File Path="themes/base/animate.css"/>
             <File Path="themes/base/pnotify.custom.css"/>
             <File Path="themes/base/jquery-slider.css"/>
+            <File Path="themes/base/consent.css"/>
             <File Path="themes/spacelab/custom.css"/>
         </CSS>
         <CSS Name="united.css">
@@ -300,6 +315,7 @@
             <File Path="themes/base/animate.css"/>
             <File Path="themes/base/pnotify.custom.css"/>
             <File Path="themes/base/jquery-slider.css"/>
+            <File Path="themes/base/consent.css"/>
             <File Path="themes/united/custom.css"/>
         </CSS>
         <CSS Name="yeti.css">
@@ -308,6 +324,7 @@
             <File Path="themes/base/animate.css"/>
             <File Path="themes/base/pnotify.custom.css"/>
             <File Path="themes/base/jquery-slider.css"/>
+            <File Path="themes/base/consent.css"/>
             <File Path="themes/yeti/custom.css"/>
         </CSS>
         <JS Name="jtl3.js">
@@ -341,6 +358,8 @@
             <File Path="js/parallax.min.js"/>
             <File Path="js/Chart.js" DependsOnSettingGroup="CONF_PREISVERLAUF" DependsOnSetting="preisverlauf.preisverlauf_anzeigen" DependsOnSettingValue="Y"/>
             <File Path="js/jqcloud.js"/>
+            <File Path="js/consent.js"/>
+            <File Path="js/consent.youtube.js"/>
         </JS>
     </Minify>
     <Boxes>

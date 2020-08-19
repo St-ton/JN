@@ -35,29 +35,10 @@
                                     </div>
                                 </div>
                             {elseif $cnf->cInputTyp === 'color'}
-                                <span class="input-group-colorpicker-wrap">
-                                <div id="{$cnf->cWertName}" style="display:inline-block">
-                                    <div style="background-color: {$cnf->gesetzterWert}" class="colorSelector"></div>
-                                </div>
-                                <input type="hidden" name="{$cnf->cWertName}" class="{$cnf->cWertName}_data" value="{$cnf->gesetzterWert}" />
-                                <script type="text/javascript">
-                                    $('#{$cnf->cWertName}').ColorPicker({ldelim}
-                                        color:    '{$cnf->gesetzterWert}',
-                                        onShow:   function (colpkr) {ldelim}
-                                            $(colpkr).fadeIn(500);
-                                            return false;
-                                        {rdelim},
-                                        onHide:   function (colpkr) {ldelim}
-                                            $(colpkr).fadeOut(500);
-                                            return false;
-                                        {rdelim},
-                                        onChange: function (hsb, hex, rgb) {ldelim}
-                                            $('#{$cnf->cWertName} div').css('backgroundColor', '#' + hex);
-                                            $('.{$cnf->cWertName}_data').val('#' + hex);
-                                        {rdelim}
-                                    {rdelim});
-                                </script>
-                                </span>
+                                {include file='snippets/colorpicker.tpl'
+                                    cpID=$cnf->cWertName
+                                    cpName=$cnf->cWertName
+                                    cpValue=$cnf->gesetzterWert}
                             {else}
                                 <input class="form-control" type="text" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{$cnf->gesetzterWert}" tabindex="1" />
                             {/if}

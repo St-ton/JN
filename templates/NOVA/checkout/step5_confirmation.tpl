@@ -20,13 +20,14 @@
                                         <span class="h3 mb-0">{lang section="account data" key='billingAndDeliveryAddress'}</span>
                                     {/col}
                                     {col class='col-auto'}
-                                        {link class="text-decoration-none"
+                                        {button variant="link"
+                                            size="sm"
                                             href="{get_static_route id='bestellvorgang.php'}?editRechnungsadresse=1"
                                             aria=['label'=>{lang key='change'}]
                                         }
                                             <span class="mr-1 d-none text-decoration-underline d-md-inline-block">{lang key='change'}</span>
                                             <span class="fa fa-pencil-alt"></span>
-                                        {/link}
+                                        {/button}
                                     {/col}
                                 {/row}
                             {/block}
@@ -52,7 +53,7 @@
                     {/card}
                 {/block}
             {/col}
-            {col cols=12 md=6 id="shipping-method" class="mb-3 border-0"}
+            {col cols=12 md=6 id="shipping-method" class="mb-0 mb-md-3 border-0"}
                 {block name='checkout-step5-confirmation-shipping-billing-method'}
                     {card no-body=true class="mb-3"}
                         {cardheader}
@@ -62,13 +63,14 @@
                                         <span class="h3 mb-0">{lang section="account data" key='shippingAndPaymentOptions'}</span>
                                     {/col}
                                     {col class='col-auto'}
-                                        {link class="text-decoration-none"
+                                        {button variant="link"
+                                            size="sm"
                                             href="{get_static_route id='bestellvorgang.php'}?editVersandart=1"
                                             aria=['label'=>{lang key='change'}]
                                         }
                                             <span class="mr-1 d-none text-decoration-underline d-md-inline-block">{lang key='change'}</span>
                                             <span class="fa fa-pencil-alt"></span>
-                                        {/link}
+                                        {/button}
                                     {/col}
                                 {/row}
                             {/block}
@@ -172,60 +174,50 @@
         {/row}
 
         {block name="checkout-step5-confirmation-pre-form-hr"}
-            <hr class="my-7">
+            <hr class="my-5 my-md-7">
         {/block}
 
         {block name='checkout-step5-confirmation-form'}
             {form method="post" name="agbform" id="complete_order" action="{get_static_route id='bestellabschluss.php'}" class="jtl-validate"}
                 {block name='checkout-step5-confirmation-form-content'}
                     {lang key='agb' assign='agb'}
-                    {if isset($AGB->kLinkAGB) && $AGB->kLinkAGB > 0}
-                        {lang key='termsAndConditionsNotice' section='checkout' printf=$AGB->cURLAGB|cat:':::class="popup"' assign='agbNotice'}
-                    {elseif !empty($AGB->cAGBContentHtml)}
+                    {if !empty($AGB->cAGBContentHtml)}
                         {block name='checkout-step5-confirmation-modal-agb-html'}
-                            {lang key='termsAndConditionsNotice' section='checkout' printf=$AGB->cURLAGB|cat:':::data-toggle="modal" data-target="#agb-html-modal" class="modal-popup" id="agb"' assign='agbNotice'}
-                            {modal id="agb-html-modal" title=$agb}
-                                {$AGB->cAGBContentHtml}
-                            {/modal}
+                            {modal id="agb-modal" title=$agb}{$AGB->cAGBContentHtml}{/modal}
                         {/block}
                     {elseif !empty($AGB->cAGBContentText)}
                         {block name='checkout-step5-confirmation-modal-agb-text'}
-                            {lang key='termsAndConditionsNotice' section='checkout' printf=$AGB->cURLAGB|cat:':::data-toggle="modal" data-target="#agb-text-modal" class="modal-popup" id="agb"' assign='agbNotice'}
-                            {modal id="agb-text-modal" title=$agb}
-                                {$AGB->cAGBContentText}
-                            {/modal}
+                            {modal id="agb-modal" title=$agb}{$AGB->cAGBContentText}{/modal}
                         {/block}
                     {/if}
-
                     {if $Einstellungen.kaufabwicklung.bestellvorgang_wrb_anzeigen == 1}
                         {lang key='wrb' section='checkout' assign='wrb'}
-                        {if isset($AGB->kLinkWRB) && $AGB->kLinkWRB > 0}
-                            {lang key='cancellationPolicyNotice' section='checkout' printf=$AGB->cURLWRB|cat:':::class="popup"' assign='wrbNotice'}
-                        {elseif !empty($AGB->cWRBContentHtml)}
+                        {lang key='wrbform' assign='wrbform'}
+                        {if !empty($AGB->cWRBContentHtml)}
                             {block name='checkout-step5-confirmation-modal-wrb-html'}
-                                {lang key='cancellationPolicyNotice' section='checkout' printf=$AGB->cURLWRB|cat:':::data-toggle="modal" data-target="#wrb-html-modal" class="modal-popup" id="wrb"' assign='wrbNotice'}
-                                {modal id="wrb-html-modal" title=$wrb}
-                                    {$AGB->cWRBContentHtml}
-                                {/modal}
+                                {modal id="wrb-modal" title=$wrb}{$AGB->cWRBContentHtml}{/modal}
                             {/block}
                         {elseif !empty($AGB->cWRBContentText)}
                             {block name='checkout-step5-confirmation-modal-wrb-text'}
-                                {lang key='cancellationPolicyNotice' section='checkout' printf=$AGB->cURLWRB|cat:':::data-toggle="modal" data-target="#wrb-text-modal" class="modal-popup" id="wrb"' assign='wrbNotice'}
-                                {modal id="wrb-text-modal" title=$wrb}
-                                    {$AGB->cWRBContentText}
-                                {/modal}
+                                {modal id="wrb-modal" title=$wrb}{$AGB->cWRBContentText}{/modal}
+                            {/block}
+                        {/if}
+                        {if !empty($AGB->cWRBFormContentHtml)}
+                            {block name='checkout-step5-confirmation-modal-wrb-form-html'}
+                                {modal id="wrb-form-modal" title=$wrbform}{$AGB->cWRBFormContentHtml}{/modal}
+                            {/block}
+                        {elseif !empty($AGB->cWRBFormContentText)}
+                            {block name='checkout-step5-confirmation-modal-wrb-form-text'}
+                                {modal id="wrb-form-modal" title=$wrbform}{$AGB->cWRBFormContentText}{/modal}
                             {/block}
                         {/if}
                     {/if}
 
-                    {if isset($wrbNotice) || isset($agbNotice)}
-                        {block name='checkout-step5-confirmation-alert-agb'}
-                            <div class="my-5">
-                                {if isset($agbNotice)}<p>{$agbNotice}</p>{/if}
-                                {if isset($wrbNotice)}<p>{$wrbNotice}</p>{/if}
-                            </div>
-                        {/block}
-                    {/if}
+                    {block name='checkout-step5-confirmation-alert-agb'}
+                        <div class="my-5">
+                            <p>{$AGB->agbWrbNotice}</p>
+                        </div>
+                    {/block}
 
                     {if !isset($smarty.session.cPlausi_arr)}
                         {assign var=plausiArr value=array()}
@@ -252,10 +244,13 @@
                                         {card no-body=true class='card-gray card-products'}
                                             {cardheader class='p-0 text-right'}
                                                 {block name='checkout-step5-confirmation-order-items-header'}
-                                                    {link class="btn btn-sm btn-link" href="{get_static_route id='warenkorb.php'}"}
+                                                    {button variant="link"
+                                                        size="sm"
+                                                        href="{get_static_route id='warenkorb.php'}"
+                                                    }
                                                         <span class="text-decoration-underline mr-2">{lang key='change'}</span>
                                                         <span class="fa fa-pencil-alt"></span>
-                                                    {/link}
+                                                    {/button}
                                                 {/block}
                                             {/cardheader}
                                             {cardbody class='pt-5'}

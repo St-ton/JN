@@ -217,7 +217,7 @@
 
                                 {if isset($oLink_arr) && $oLink_arr|@count > 0}
                                     <div class="form-group form-row align-items-center{if isset($cPlausi_arr.kLink)} form-error{/if}">
-                                        <label class="col col-sm-4 col-form-label text-sm-right" for="nLink">{__('internalLink')}:</label>
+                                        <label class="col col-sm-4 col-form-label text-sm-right" for="nLink">{__('internalLinkTitle')}:</label>
                                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                             <div class="form-row align-items-center">
                                                 <div class="col-xs-3 group-radio">

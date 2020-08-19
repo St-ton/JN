@@ -320,6 +320,7 @@ class Page implements \JsonSerializable
         $list = [];
 
         foreach ($this->areaList->getAreas() as $area) {
+            /** @noinspection AdditionOperationOnArraysInspection */
             $list = $list + $area->getCssList($preview);
         }
 

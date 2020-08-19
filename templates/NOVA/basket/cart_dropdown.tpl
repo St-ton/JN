@@ -8,24 +8,22 @@
                             {block name='basket-cart-dropdown-cart-item'}
                                 {foreach $smarty.session.Warenkorb->PositionenArr as $oPosition}
                                     {if !$oPosition->istKonfigKind()}
-                                        {if $oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL}
+                                        {if $oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL || $oPosition->nPosTyp == C_WARENKORBPOS_TYP_GRATISGESCHENK}
                                             <tr>
                                                 <td>
                                                     {formrow}
                                                         {block name='basket-cart-dropdown-cart-item-item-image'}
                                                             {col class="col-auto"}
-                                                                {if $oPosition->Artikel->Bilder[0]->cPfadMini !== $smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN}
-                                                                    {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans|escape:'html'}
-                                                                        {image lazy=true webp=true
-                                                                            src=$oPosition->Artikel->Bilder[0]->cURLMini
-                                                                            srcset="{$oPosition->Artikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                                                {$oPosition->Artikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                                                {$oPosition->Artikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                                                            sizes="45px"
-                                                                            alt=$oPosition->Artikel->cName
-                                                                            class="img-sm"}
-                                                                    {/link}
-                                                                {/if}
+                                                                {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans|escape:'html'}
+                                                                    {image lazy=true webp=true
+                                                                        src=$oPosition->Artikel->Bilder[0]->cURLMini
+                                                                        srcset="{$oPosition->Artikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                                            {$oPosition->Artikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                                            {$oPosition->Artikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                                        sizes="45px"
+                                                                        alt=$oPosition->Artikel->cName
+                                                                        class="img-sm"}
+                                                                {/link}
                                                             {/col}
                                                         {/block}
                                                         {block name='basket-cart-dropdown-cart-item-item-link'}
@@ -55,6 +53,7 @@
                                                 {block name='basket-cart-dropdown-cart-item-no-item-count'}
                                                     <td>
                                                         {formrow}
+                                                            {col class="col-auto"}{/col}
                                                             {col class="col-auto"}
                                                                 {$oPosition->nAnzahl|replace_delim}x
                                                             {/col}
@@ -110,7 +109,7 @@
                                         {$shippingCosts = $FavourableShipping->cPriceLocalized[$NettoPreise]}
                                     {/if}
                                     <li class="text-muted mt-2 font-size-sm">
-                                        {lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$shippingCosts:$FavourableShipping->cCountryCode key='shippingInformationSpecific' section='basket'}
+                                        {lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$shippingCosts:$FavourableShipping->country->getName() key='shippingInformationSpecific' section='basket'}
                                     </li>
                                 {elseif empty($FavourableShipping)}
                                     <li class="text-muted mt-2 font-size-sm">
@@ -142,7 +141,7 @@
                                     <a class="popup" href="{if !empty($oSpezialseiten_arr) && isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}{else}#{/if}" data-toggle="tooltip"  data-placement="bottom" title="{lang key='shippingInfo' section='login'}">
                                         <i class="fa fa-info-circle"></i>
                                     </a>
-                                    {$WarenkorbVersandkostenfreiHinweis|truncate:120:"..."}
+                                    {$WarenkorbVersandkostenfreiHinweis|truncate:160:"..."}
                                 </li>
                             </ul>
                         {/block}

@@ -8,7 +8,6 @@ use JTL\Helpers\Text;
 use JTL\Profiler;
 use JTL\Session\Backend;
 use JTL\Shop;
-use JTL\Template;
 use JTL\Update\Updater;
 use JTLShop\SemVer\Version;
 
@@ -87,8 +86,10 @@ if (Request::postInt('adminlogin') === 1) {
 
                 break;
         }
-    } elseif ($csrfOK !== true) {
+    } elseif (isset($_COOKIE['eSIdAdm'])) {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCSRF'), 'errorCSRF');
+    } else {
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCookieSettings'), 'errorCookieSettings');
     }
 }
 $type          = '';
@@ -147,7 +148,6 @@ function openDashboard()
 
         $smarty->assign('bDashboard', true)
                ->assign('bUpdateError', (Request::postInt('shopupdate') === 1 ? '1' : false))
-               ->assign('bTemplateDiffers', Template::getInstance()->getVersion() !== APPLICATION_VERSION)
                ->assign('oActiveWidget_arr', getWidgets())
                ->assign('oAvailableWidget_arr', getWidgets(false))
                ->assign('bInstallExists', is_dir(PFAD_ROOT . 'install'));

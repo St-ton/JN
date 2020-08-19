@@ -43,6 +43,7 @@ class Button extends Portlet
                 'type'       => InputType::CHECKBOX,
                 'label'      => __('openInNewTab'),
                 'width'      => 50,
+                'desc'       => __('openInNewTabDesc')
             ],
             'size' => [
                 'type'       => InputType::SELECT,
@@ -66,10 +67,11 @@ class Button extends Portlet
                     'block'  => __('useFullWidth'),
                     'left'   => __('left'),
                     'right'  => __('right'),
-                    'center' => __('centred'),
+                    'center' => __('centered'),
                 ],
                 'default'    => 'left',
                 'width'      => 50,
+                'desc'       => __('alignmentDesc')
             ],
             'use-icon' => [
                 'type'     => InputType::CHECKBOX,

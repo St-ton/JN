@@ -43,10 +43,11 @@ aside {
     .nav {
       flex-wrap: initial;
     }
-    > .nav > .active > a{
+    > .nav > .active > .nav-link {
       border-bottom: $highlight-border-size solid $primary;
+      cursor: pointer;
     }
-    .active > a {
+    .active > .nav-link {
       font-weight: $font-weight-bold;
     }
     .nav-link[aria-expanded=true] i.fa-chevron-down {
@@ -64,6 +65,10 @@ aside {
       text-decoration: none;
       white-space: normal;
     }
+    .nav-link {
+      padding-left: 0;
+      padding-right: 0;
+    }
   }
 
   .box-monthlynews a .value {
@@ -71,14 +76,6 @@ aside {
     &:hover {
       text-decoration: none;
     }
-  }
-  .last-seen-link {
-    text-decoration: underline;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    width: 100%;
-    overflow: hidden;
-    display: block;
   }
 }
 
@@ -107,10 +104,6 @@ aside {
       text-decoration: none;
     }
   }
-}
-.box-slider .more {
-  padding: $nav-link-padding-x;
-  margin-top: -$nav-link-padding-x;
 }
 
 //searchcloud

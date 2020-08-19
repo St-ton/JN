@@ -5,6 +5,10 @@
 	@include media-breakpoint-down(md) {
 		height: 100%;
 	}
+	.container {
+		padding-right: 0;
+		padding-left: 0;
+	}
 }
 
 .modal-title { @include font-size($font-size-base * (20 / $font-size-base)); }
@@ -28,13 +32,16 @@
 .modal-dialog {
 	margin-top: $modal-dialog-margin-y-sm-up;
 	@include media-breakpoint-down(md) {
-		height: 100%;
+		height: auto;
 	}
 }
 
 #productImagesModal {
 	.modal-dialog {
 		height: auto;
+	}
+	.square-image {
+		margin-bottom: map-get($spacers, 1);
 	}
 }
 

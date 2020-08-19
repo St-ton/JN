@@ -4,7 +4,6 @@ namespace JTL\OPC\Portlets\Text;
 
 use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
-use JTL\OPC\PortletInstance;
 
 /**
  * Class Text

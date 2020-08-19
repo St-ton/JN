@@ -4,7 +4,6 @@ namespace JTL\Cart;
 
 use JTL\Alert\Alert;
 use JTL\Campaign;
-use JTL\Catalog\ComparisonList;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\EigenschaftWert;
@@ -50,19 +49,18 @@ class CartHelper
     {
         $info            = new stdClass();
         $info->type      = Frontend::getCustomerGroup()->isMerchant() ? self::NET : self::GROSS;
-        $info->currency  = null;
+        $info->currency  = $this->getCurrency();
         $info->article   = [0, 0];
         $info->shipping  = [0, 0];
         $info->discount  = [0, 0];
         $info->surcharge = [0, 0];
         $info->total     = [0, 0];
         $info->items     = [];
-        $info->currency  = $this->getCurrency();
 
         foreach (Frontend::getCart()->PositionenArr as $item) {
             $amountItem = $item->fPreisEinzelNetto;
-            if (GeneralObject::isCountable('WarenkorbPosEigenschaftArr', $item)
-                && (!isset($item->Artikel->kVaterArtikel) || (int)$item->Artikel->kVaterArtikel === 0)
+            if ((!isset($item->Artikel->kVaterArtikel) || (int)$item->Artikel->kVaterArtikel === 0)
+                && GeneralObject::isCountable('WarenkorbPosEigenschaftArr', $item)
             ) {
                 foreach ($item->WarenkorbPosEigenschaftArr as $attr) {
                     if ($attr->fAufpreis != 0) {
@@ -605,7 +603,6 @@ class CartHelper
                 $variations = Product::getSelectedPropertiesForVarCombiArticle($productID, 1);
             }
             $compareList = Frontend::getCompareList();
-            /** @var ComparisonList $compareList */
             if ($compareList->productExists($productID)) {
                 $alertHelper->addAlert(
                     Alert::TYPE_ERROR,
@@ -736,10 +733,11 @@ class CartHelper
      * @param int            $qty
      * @param array          $attributes
      * @param int            $accuracy
+     * @param string|null    $token
      * @return array
      * @former pruefeFuegeEinInWarenkorb()
      */
-    public static function addToCartCheck($product, $qty, $attributes, int $accuracy = 2): array
+    public static function addToCartCheck($product, $qty, $attributes, int $accuracy = 2, ?string $token = null): array
     {
         $cart          = Frontend::getCart();
         $productID     = (int)$product->kArtikel; // relevant für die Berechnung von Artikelsummen im Warenkorb
@@ -867,7 +865,7 @@ class CartHelper
                 break;
             }
         }
-        if (!Form::validateToken($attributes['jtl_token'] ?? null)) {
+        if (!Form::validateToken($token)) {
             $redirectParam[] = \R_MISSING_TOKEN;
         }
         \executeHook(\HOOK_ADD_TO_CART_CHECK, [

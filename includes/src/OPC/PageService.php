@@ -80,7 +80,7 @@ class PageService
 
     /**
      * @param AdminIO $io
-     * @throws \Exception
+     * @throws Exception
      */
     public function registerAdminIOFunctions(AdminIO $io): void
     {
@@ -105,15 +105,16 @@ class PageService
      */
     public function renderMountPoint(array $params): string
     {
-        $id     = $params['id'];
-        $title  = $params['title'] ?? $id;
-        $output = '';
+        $id          = $params['id'];
+        $title       = $params['title'] ?? $id;
+        $inContainer = $params['inContainer'] ?? true;
+        $output      = '';
 
         if ($this->opc->isEditMode()) {
             $output = '<div class="opc-area opc-rootarea" data-area-id="' . $id . '" data-title="' . $title
                 . '"></div>';
         } elseif ($this->getCurPage()->getAreaList()->hasArea($id)) {
-            $output = $this->getCurPage()->getAreaList()->getArea($id)->getFinalHtml();
+            $output = $this->getCurPage()->getAreaList()->getArea($id)->getFinalHtml($inContainer);
         }
 
         Shop::fire('shop.OPC.PageService.renderMountPoint', [
@@ -137,7 +138,7 @@ class PageService
     /**
      * @param int $key
      * @return Page
-     * @throws \Exception
+     * @throws Exception
      */
     public function getDraft(int $key): Page
     {
@@ -147,7 +148,7 @@ class PageService
     /**
      * @param int $revId
      * @return Page
-     * @throws \Exception
+     * @throws Exception
      */
     public function getRevision(int $revId): Page
     {
@@ -166,7 +167,7 @@ class PageService
     /**
      * @param string $id
      * @return Page|null
-     * @throws \Exception
+     * @throws Exception
      */
     public function getPublicPage(string $id): ?Page
     {
@@ -175,7 +176,7 @@ class PageService
 
     /**
      * @return Page
-     * @throws \Exception
+     * @throws Exception
      */
     public function getCurPage(): Page
     {
@@ -235,15 +236,6 @@ class PageService
         $result = '/' . \ltrim($result, '/');
 
         return $result;
-    }
-
-    /**
-     * @param string $id
-     * @return array
-     */
-    public function getOtherLanguageDrafts(string $id): array
-    {
-        return $this->pageDB->getOtherLanguageDraftRows($id);
     }
 
     /**
@@ -309,7 +301,7 @@ class PageService
     /**
      * @param string $id
      * @return Page[]
-     * @throws \Exception
+     * @throws Exception
      */
     public function getDrafts(string $id): array
     {
@@ -333,7 +325,7 @@ class PageService
     /**
      * @param int $key
      * @return string[]
-     * @throws \Exception
+     * @throws Exception
      */
     public function getDraftPreview(int $key): array
     {
@@ -343,7 +335,7 @@ class PageService
     /**
      * @param int $key
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function getDraftFinal(int $key): array
     {
@@ -353,7 +345,7 @@ class PageService
     /**
      * @param int $revId
      * @return string[]
-     * @throws \Exception
+     * @throws Exception
      */
     public function getRevisionPreview(int $revId): array
     {
@@ -362,7 +354,7 @@ class PageService
 
     /**
      * @param array $data
-     * @throws \Exception
+     * @throws Exception
      */
     public function saveDraft(array $data): void
     {
@@ -372,7 +364,7 @@ class PageService
 
     /**
      * @param array $data
-     * @throws \Exception
+     * @throws Exception
      */
     public function publicateDraft(array $data): void
     {
@@ -408,7 +400,7 @@ class PageService
      *      0 if the draft could be locked
      *      1 if it is still locked by some other user
      *      2 if the Shop has pending database updates
-     * @throws \Exception
+     * @throws Exception
      */
     public function lockDraft(int $key): int
     {
@@ -423,7 +415,7 @@ class PageService
 
     /**
      * @param int $key
-     * @throws \Exception
+     * @throws Exception
      */
     public function unlockDraft(int $key): void
     {
@@ -434,7 +426,7 @@ class PageService
     /**
      * @param array $data
      * @return Page
-     * @throws \Exception
+     * @throws Exception
      */
     public function createPageFromData(array $data): Page
     {
@@ -444,7 +436,7 @@ class PageService
     /**
      * @param array $data
      * @return string[]
-     * @throws \Exception
+     * @throws Exception
      */
     public function createPagePreview(array $data): array
     {
@@ -462,7 +454,7 @@ class PageService
     /**
      * @param int $draftKey
      * @param string $draftName
-     * @throws \Exception
+     * @throws Exception
      */
     public function changeDraftName(int $draftKey, string $draftName)
     {
@@ -484,7 +476,7 @@ class PageService
             ->assign('page', $draft)
             ->fetch(\PFAD_ROOT . \PFAD_ADMIN . 'opc/tpl/draftstatus.tpl');
 
-        $response->assign('opcDraftStatus', 'innerHTML', $draftStatusHtml);
+        $response->assignDom('opcDraftStatus', 'innerHTML', $draftStatusHtml);
 
         return $response;
     }

@@ -62,6 +62,7 @@ ifndef('SMARTY_USE_SUB_DIRS', false);
 ifndef('JTL_INCLUDE_ONLY_DB', 0);
 ifndef('SOCKET_TIMEOUT', 30);
 ifndef('ARTICLES_PER_PAGE_HARD_LIMIT', 100);
+
 // Pfade
 ifndef('PFAD_CLASSES', 'classes/old/'); // DEPRECATED
 ifndef('PFAD_CONFIG', 'config/');
@@ -82,7 +83,7 @@ ifndef('PFAD_INCLUDES_MODULES', PFAD_INCLUDES . 'modules/');
 ifndef('PFAD_SMARTY', PFAD_INCLUDES . 'vendor/smarty/smarty/libs/');
 ifndef('SMARTY_DIR', PFAD_ROOT . PFAD_SMARTY);
 /**
- * @deprecated since Shop 5
+ * @deprecated since 5.0.0
  */
 ifndef('PFAD_PHPQUERY', PFAD_INCLUDES . 'vendor/jtlshop/phpquery/src/');
 ifndef('PFAD_PCLZIP', PFAD_INCLUDES . 'vendor/pclzip/pclzip/');
@@ -223,12 +224,19 @@ ifndef('SHOW_DEBUG_BAR', false);
 
 ifndef('ART_MATRIX_MAX', 250);
 
+ifndef('QUEUE_MAX_STUCK_HOURS', 1);
+
+// multi-domain support for different languages
+ifndef('EXPERIMENTAL_MULTILANG_SHOP', false);
+// slug language does not have to match shop base url language if enabled
+ifndef('MULTILANG_URL_FALLBACK', false);
+
 // security
 ifndef('EXPORTFORMAT_ALLOW_PHP', false);
 ifndef('NEWSLETTER_USE_SECURITY', true);
 ifndef('MAILTEMPLATE_USE_SECURITY', true);
 ifndef('EXPORTFORMAT_USE_SECURITY', true);
-ifndef('EXPORTFORMAT_ALLOWED_FORMATS', 'txt,csv,xml,html,htm,json,yaml,yml');
+ifndef('EXPORTFORMAT_ALLOWED_FORMATS', 'txt,csv,xml,html,htm,json,yaml,yml,zip,gz');
 ifndef('PASSWORD_DEFAULT_LENGTH', 12);
 ifndef('SECURE_PHP_FUNCTIONS', '
     addcslashes, addslashes, bin2hex, chop, chr, chunk_split, count_chars, crypt, explode, html_entity_decode,

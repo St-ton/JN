@@ -43,7 +43,8 @@
         "monolog/monolog": "^1.23",
         "mrclay/minify": "~3.0.0",
         "myclabs/php-enum": "^1.6",
-        "jtlshop/semver": "~0.0.5",
+        "jtlshop/semver": "~0.0.7",
+        "jtlshop/wizard": "dev-master",
         "studio-42/elfinder": "^2.1",
         "maximebf/debugbar": "^1.15",
         "gettext/gettext": "^4.6",
@@ -52,13 +53,15 @@
         "symfony/console": "^4.2",
         "symfony/finder": "^4.2",
         "mobiledetect/mobiledetectlib": "^2.8",
+        "fzaninotto/faker": "^1.6",
+        "cocur/slugify": "^2.5",
         "league/flysystem": "^1.0",
         "league/flysystem-sftp": "^1.0",
         "league/flysystem-ziparchive": "^1.0"
     },
     "require-dev": {
         "phpunit/php-token-stream": "^3.0",
-        "eloquent/pathogen": "~0.6",
+        "mschop/pathogen": "^0.6",
         "nikic/php-parser": "^2.1",
         "phpmd/phpmd": "@stable",
         "phpunit/phpunit": "^7.3",
@@ -98,13 +101,22 @@
         {
             "type": "vcs",
             "url": "https://gitlab.com/jtl-software/jtl-shop/tools/xtea.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://gitlab.com/jtl-software/jtl-shop/tools/wizard.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://gitlab.com/jtl-software/jtl-shop/tools/semver.git"
         }
 
     ],
     "autoload": {
         "psr-4": {
             "JTL\\": ["src/"],
-            "Plugin\\": ["../plugins/"]
+            "Plugin\\": ["../plugins/"],
+            "Template\\": ["../templates/"]
         }
     },
     "autoload-dev": {

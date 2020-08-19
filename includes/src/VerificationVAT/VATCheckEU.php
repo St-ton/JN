@@ -56,7 +56,7 @@ class VATCheckEU extends AbstractVATCheck
      */
     public function doCheckID(string $ustID): array
     {
-        if (!extension_loaded('soap')) {
+        if (!\extension_loaded('soap')) {
             return [
                 'success'   => false,
                 'errortype' => 'core',

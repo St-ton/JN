@@ -127,7 +127,6 @@ final class ImageLink extends AbstractSync
     private function getArray(SimpleXMLElement $xml): array
     {
         $items = [];
-        /** @var SimpleXMLElement $child */
         foreach ($xml->children() as $child) {
             $item    = (object)[
                 'cPfad'        => '',

@@ -171,6 +171,14 @@ final class Installer
             $bootstrapper       = $versionedDir . \PLUGIN_BOOTSTRAPPER;
             $plugin->bExtension = 1;
         }
+        if ($this->plugin !== null) {
+            $loader = $this->plugin->isExtension() === true
+                ? new PluginLoader($this->db, Shop::Container()->getCache())
+                : new LegacyPluginLoader($this->db, Shop::Container()->getCache());
+            if (($p = Helper::bootstrap($this->plugin->getID(), $loader)) !== null) {
+                $p->preUpdate($this->plugin->getMeta()->getVersion(), $version);
+            }
+        }
         $plugin                       = $this->addLicenseData($baseNode, $plugin);
         $plugin->cName                = $baseNode['Name'];
         $plugin->cBeschreibung        = $baseNode['Description'];
@@ -179,6 +187,7 @@ final class Installer
         $plugin->cIcon                = $baseNode['Icon'] ?? null;
         $plugin->cVerzeichnis         = $baseDir;
         $plugin->cPluginID            = $baseNode['PluginID'];
+        $plugin->exsID                = $baseNode['ExsID'] ?? '_DBNULL_';
         $plugin->cStoreID             = $baseNode['StoreID'] ?? null;
         $plugin->cFehler              = '';
         $plugin->nVersion             = $version;
@@ -199,8 +208,8 @@ final class Installer
             return InstallCode::WRONG_PARAM;
         }
         $factory = $plugin->bExtension === 0
-            ? new LegacyPluginInstallerFactory($this->db, $xml, $plugin)
-            : new PluginInstallerFactory($this->db, $xml, $plugin);
+            ? new LegacyPluginInstallerFactory($this->db, $xml, $plugin, $this->plugin)
+            : new PluginInstallerFactory($this->db, $xml, $plugin, $this->plugin);
         $res     = $factory->install();
         if ($res !== InstallCode::OK) {
             $this->uninstaller->uninstall($plugin->kPlugin);
@@ -491,14 +500,14 @@ final class Installer
      */
     public function syncPluginUpdate(int $pluginID): int
     {
-        $oldPluginID = $this->plugin->getID();
-        $res         = $this->uninstaller->uninstall($oldPluginID, true, $pluginID);
+        $newPluginID = $this->plugin->getID();
+        $res         = $this->uninstaller->uninstall($newPluginID, true, $pluginID);
         if ($res !== InstallCode::OK) {
             $this->uninstaller->uninstall($pluginID);
 
             return InstallCode::SQL_ERROR;
         }
-        $upd = (object)['kPlugin' => $oldPluginID];
+        $upd = (object)['kPlugin' => $newPluginID];
         $this->db->update('tplugin', 'kPlugin', $pluginID, $upd);
         $this->db->update('tpluginhook', 'kPlugin', $pluginID, $upd);
         $this->db->update('tpluginadminmenu', 'kPlugin', $pluginID, $upd);
@@ -511,34 +520,84 @@ final class Installer
         $this->db->update('texportformat', 'kPlugin', $pluginID, $upd);
         $this->db->update('topcportlet', 'kPlugin', $pluginID, $upd);
         $this->db->update('topcblueprint', 'kPlugin', $pluginID, $upd);
-        $this->updateLangVars($oldPluginID, $pluginID);
-        $this->updateConfig($oldPluginID, $pluginID);
+        $this->updateLangVars($newPluginID, $pluginID);
+        $this->updateConfig($newPluginID, $pluginID);
+
+        $this->updateMailTemplates($newPluginID, $pluginID);
+        $this->cleanUpMailTemplates();
+        $this->db->update('tlink', 'kPlugin', $pluginID, (object)['kPlugin' => $newPluginID]);
+        // Ausnahme: Gibt es noch eine Boxenvorlage in der Pluginversion?
+        // Falls nein -> lösche tboxen mit dem entsprechenden kPlugin
+        $this->updateBoxes($newPluginID, $pluginID);
+
+        $this->db->update('tcheckboxfunktion', 'kPlugin', $pluginID, $upd);
+        $this->db->update('tspezialseite', 'kPlugin', $pluginID, $upd);
+        $this->updatePaymentMethods($newPluginID, $pluginID);
+
+        return InstallCode::OK;
+    }
+
+    /**
+     * @param int $oldPluginID
+     * @param int $pluginID
+     */
+    private function updateBoxes(int $oldPluginID, int $pluginID): void
+    {
+        $newBoxTemplates = $this->db->queryPrepared(
+            "SELECT *
+                FROM tboxvorlage
+                WHERE kCustomID = :pid
+                AND (eTyp = 'plugin' OR eTyp = 'extension')",
+            ['pid' => $oldPluginID],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        $oldBoxTemplates = $this->db->queryPrepared(
+            "SELECT *
+                FROM tboxvorlage
+                WHERE kCustomID = :pid
+                AND (eTyp = 'plugin' OR eTyp = 'extension')",
+            ['pid' => $pluginID],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        foreach ($newBoxTemplates as $template) {
+            foreach ($oldBoxTemplates as $newBoxTemplate) {
+                if ($template->cTemplate === $newBoxTemplate->cTemplate) {
+                    $this->db->queryPrepared(
+                        'UPDATE tboxen
+                            SET kBoxvorlage = :bid, kCustomID = :pid
+                            WHERE kBoxvorlage = :oid',
+                        [
+                            'bid' => $newBoxTemplate->kBoxvorlage,
+                            'pid' => $oldPluginID,
+                            'oid' => $template->kBoxvorlage
+                        ],
+                        ReturnType::DEFAULT
+                    );
+                    break;
+                }
+            }
+        }
+        $this->db->delete('tboxvorlage', ['kCustomID', 'eTyp'], [$oldPluginID, 'plugin']);
+        $this->db->delete('tboxvorlage', ['kCustomID', 'eTyp'], [$oldPluginID, 'extension']);
         $this->db->update(
             'tboxvorlage',
             ['kCustomID', 'eTyp'],
             [$pluginID, 'plugin'],
             (object)['kCustomID' => $oldPluginID]
         );
-        $this->updateMailTemplates($oldPluginID, $pluginID);
-        $this->cleanUpMailTemplates();
-        $this->db->update('tlink', 'kPlugin', $pluginID, (object)['kPlugin' => $oldPluginID]);
-        // tboxen
-        // Ausnahme: Gibt es noch eine Boxenvorlage in der Pluginversion?
-        // Falls nein -> lösche tboxen mit dem entsprechenden kPlugin
-        $data = $this->db->select('tboxvorlage', 'kCustomID', $oldPluginID, 'eTyp', 'plugin');
-        if (isset($data->kBoxvorlage) && (int)$data->kBoxvorlage > 0) {
-            $upd              = new stdClass();
-            $upd->kBoxvorlage = $data->kBoxvorlage;
-            $this->db->update('tboxen', 'kCustomID', $oldPluginID, $upd);
-        } else {
-            $this->db->delete('tboxen', 'kCustomID', $oldPluginID);
-        }
-        $upd = (object)['kPlugin' => $oldPluginID];
-        $this->db->update('tcheckboxfunktion', 'kPlugin', $pluginID, $upd);
-        $this->db->update('tspezialseite', 'kPlugin', $pluginID, $upd);
-        $this->updatePaymentMethods($oldPluginID, $pluginID);
-
-        return InstallCode::OK;
+        $this->db->update(
+            'tboxvorlage',
+            ['kCustomID', 'eTyp'],
+            [$pluginID, 'extension'],
+            (object)['kCustomID' => $oldPluginID]
+        );
+        $this->db->queryPrepared(
+            'DELETE FROM tboxen
+                WHERE kCustomID = :pid 
+                AND kBoxvorlage NOT IN (SELECT kBoxvorlage FROM tboxvorlage WHERE kCustomID = :pid)',
+            ['pid' => $oldPluginID],
+            ReturnType::DEFAULT
+        );
     }
 
     /**
@@ -772,7 +831,7 @@ final class Installer
                 $this->db->queryPrepared(
                     'DELETE FROM tplugineinstellungen
                         WHERE kPlugin = :pid AND cName LIKE :nm',
-                    ['pid' => $oldPluginID, 'nm' => str_replace('_', '\_', $method->cModulId) . '\_%'],
+                    ['pid' => $oldPluginID, 'nm' => \str_replace('_', '\_', $method->cModulId) . '\_%'],
                     ReturnType::DEFAULT
                 );
             }

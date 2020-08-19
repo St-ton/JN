@@ -10,16 +10,15 @@
             {/block}
         {/if}
         {block name='snippets-filter-search-navitem'}
-            {dropdownitem nofollow=true
+            {link nofollow=true
                 href=$searchFilter->getURL()
-                active=$searchFilter->isActive()
-                class="filter-item"}
+                class="filter-item {if $searchFilter->isActive()}active{/if}"}
                     <div class="align-items-center d-flex">
                         <i class="far fa-{if $searchFilter->isActive()}check-{/if}square text-muted mr-2"></i>
                         <span class="word-break">{$searchFilter->getName()}</span>
-                        <span class="badge badge-outline-secondary ml-auto">{$searchFilter->getCount()}</span>
+                        {badge variant="outline-secondary" class="ml-auto"}{$searchFilter->getCount()}{/badge}
                     </div>
-            {/dropdownitem}
+            {/link}
         {/block}
     {/foreach}
     {if $limit != -1 && $NaviFilter->searchFilterCompat->getOptions()|count > $limit}

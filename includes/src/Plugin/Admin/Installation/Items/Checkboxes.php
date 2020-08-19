@@ -3,6 +3,7 @@
 namespace JTL\Plugin\Admin\Installation\Items;
 
 use JTL\Plugin\InstallCode;
+use stdClass;
 
 /**
  * Class Checkboxes
@@ -33,7 +34,7 @@ class Checkboxes extends AbstractItem
             if (\mb_strlen($hits[0]) !== \mb_strlen($i)) {
                 continue;
             }
-            $cbFunction          = new \stdClass();
+            $cbFunction          = new stdClass();
             $cbFunction->kPlugin = $this->plugin->kPlugin;
             $cbFunction->cName   = $function['Name'];
             $cbFunction->cID     = $this->plugin->cPluginID . '_' . $function['ID'];

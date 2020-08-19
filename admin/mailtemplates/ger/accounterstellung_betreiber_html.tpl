@@ -139,30 +139,6 @@ Zur Kontrolle hier noch einmal Ihre Kundendaten:<br>
 			</table>
 		</td>
 	</tr>
-	<tr>
-		<td class="column mobile-left" align="right" valign="top">
-			<table cellpadding="0" cellspacing="6">
-				<tr>
-					<td>
-						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							<strong>Passwort:</strong>
-						</font>
-					</td>
-				</tr>
-			</table>
-		</td>
-		<td class="column" align="left" valign="top" bgcolor="#ffffff">
-			<table cellpadding="0" cellspacing="6">
-				<tr>
-					<td>
-						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							{$Kunde->cPasswortKlartext}
-						</font>
-					</td>
-				</tr>
-			</table>
-		</td>
-	</tr>
 	{if $Kunde->cUSTID}
 	<tr>
 		<td class="column mobile-left" align="right" valign="top">
@@ -190,6 +166,9 @@ Zur Kontrolle hier noch einmal Ihre Kundendaten:<br>
 	</tr>
 	{/if}
 </table><br>
+Bitte setzen Sie mit Hilfe der „Passwort vergessen“-Funktion ein neues Passwort:<br>
+{$newPasswordURL|cat:"?email="|cat:$Kunde->cMail}<br>
+<br>
 Mit diesen Daten können Sie sich ab sofort in Ihrem persönlichen
 Kundenkonto anmelden und den aktuellen Status Ihrer Bestellungen
 verfolgen.<br>

@@ -3,7 +3,6 @@
 namespace JTL\Catalog\Product;
 
 use DateTime;
-use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Hersteller;
 use JTL\Catalog\Separator;
@@ -1410,8 +1409,8 @@ class Artikel
                 'height' => $height
             ],
             'type' => $type,
-            'alt'  => htmlspecialchars(
-                str_replace('"', '', $image->cAltAttribut),
+            'alt'  => \htmlspecialchars(
+                \str_replace('"', '', $image->cAltAttribut),
                 ENT_COMPAT | ENT_HTML401,
                 JTL_CHARSET
             )
@@ -1709,15 +1708,22 @@ class Artikel
 
         $this->oMedienDatei_arr = $db->query($sql, ReturnType::ARRAY_OF_OBJECTS);
         foreach ($this->oMedienDatei_arr as $mediaFile) {
+            $mediaFile->kMedienDatei             = (int)$mediaFile->kMedienDatei;
             $mediaFile->kSprache                 = (int)$mediaFile->kSprache;
             $mediaFile->nSort                    = (int)$mediaFile->nSort;
             $mediaFile->oMedienDateiAttribut_arr = [];
             $mediaFile->nErreichbar              = 1; // Beschreibt, ob eine Datei vorhanden ist
             $mediaFile->cMedienTyp               = ''; // Wird zum Aufbau der Reiter gebraucht
             if (\mb_strlen($mediaFile->cTyp) > 0) {
+                if ($mediaFile->cTyp === '.*') {
+                    $extMatch = [];
+                    \preg_match('/\.\w{3,4}($|\?)/', $mediaFile->cPfad, $extMatch);
+                    $mediaFile->cTyp = $extMatch[0] ?? '.*';
+                }
                 $mapped                = $this->mapMediaType($mediaFile->cTyp);
                 $mediaFile->cMedienTyp = $mapped->cName;
                 $mediaFile->nMedienTyp = $mapped->nTyp;
+                $mediaFile->videoType  = $mapped->videoType;
             }
             if ($mediaFile->cPfad !== '' && $mediaFile->cPfad[0] === '/') {
                 //remove double slashes
@@ -1737,9 +1743,6 @@ class Artikel
                         $mediaFile->cAttributTab = $oMedienDateiAttribut->cWert;
                     }
                 }
-            }
-            if ($mediaFile->nMedienTyp === 4) {
-                $this->buildYoutubeEmbed($mediaFile);
             }
             $mediaTypeName = \mb_strlen($mediaFile->cAttributTab) > 0
                 ? $mediaFile->cAttributTab
@@ -1782,83 +1785,10 @@ class Artikel
     /**
      * @param object $mediaFile
      * @return $this
+     * @deprecated since 5.0.0
      */
     public function buildYoutubeEmbed($mediaFile): self
     {
-        if (!isset($mediaFile->cURL)) {
-            return $this;
-        }
-        if (\mb_strpos($mediaFile->cURL, 'youtube') !== false) {
-            $mediaFile->oEmbed = new stdClass();
-            if (\mb_strpos($mediaFile->cURL, 'watch?v=') !== false) {
-                $height     = 'auto';
-                $width      = '100%';
-                $related    = '?rel=0';
-                $fullscreen = ' allowfullscreen';
-                if (isset($mediaFile->oMedienDateiAttribut_arr) && \count($mediaFile->oMedienDateiAttribut_arr) > 0) {
-                    foreach ($mediaFile->oMedienDateiAttribut_arr as $attr) {
-                        if ($attr->cName === 'related' && $attr->cWert === '1') {
-                            $related = '';
-                        } elseif ($attr->cName === 'width' && \is_numeric($attr->cWert)) {
-                            $width = $attr->cWert;
-                        } elseif ($attr->cName === 'height' && \is_numeric($attr->cWert)) {
-                            $height = $attr->cWert;
-                        } elseif ($attr->cName === 'fullscreen' && ($attr->cWert === '0' || $attr->cWert === 'false')) {
-                            $fullscreen = '';
-                        }
-                    }
-                }
-                $search                     = ['https://', 'watch?v='];
-                $replace                    = ['//', 'embed/'];
-                $embedURL                   = \str_replace($search, $replace, $mediaFile->cURL) . $related;
-                $mediaFile->oEmbed->code    = '<iframe class="youtube" width="' . $width . '" height="' . $height
-                    . '" src="' . $embedURL . '" frameborder="0"' . $fullscreen . '></iframe>';
-                $mediaFile->oEmbed->options = [
-                    'height'     => $height,
-                    'width'      => $width,
-                    'related'    => $related,
-                    'fullscreen' => $fullscreen
-                ];
-            } elseif (\mb_strpos($mediaFile->cURL, 'embed') !== false) {
-                $mediaFile->oEmbed->code = $mediaFile->cURL;
-            }
-        } elseif (\mb_strpos($mediaFile->cURL, 'youtu.be') !== false) {
-            $mediaFile->oEmbed = new stdClass();
-            if (\mb_strpos($mediaFile->cURL, 'embed') !== false) {
-                $mediaFile->oEmbed->code = $mediaFile->cURL;
-            } else {
-                $height     = 'auto';
-                $width      = '100%';
-                $related    = '?rel=0';
-                $fullscreen = ' allowfullscreen';
-                if (isset($mediaFile->oMedienDateiAttribut_arr) && \count($mediaFile->oMedienDateiAttribut_arr) > 0) {
-                    foreach ($mediaFile->oMedienDateiAttribut_arr as $attr) {
-                        if ($attr->cName === 'related' && $attr->cWert === '1') {
-                            $related = '';
-                        } elseif ($attr->cName === 'width' && \is_numeric($attr->cWert)) {
-                            $width = $attr->cWert;
-                        } elseif ($attr->cName === 'height' && \is_numeric($attr->cWert)) {
-                            $height = $attr->cWert;
-                        } elseif ($attr->cName === 'fullscreen' && ($attr->cWert === '0'
-                                || $attr->cWert === 'false')) {
-                            $fullscreen = '';
-                        }
-                    }
-                }
-                $search                     = ['https://', 'youtu.be/'];
-                $replace                    = ['//', 'youtube.com/embed/'];
-                $embedURL                   = \str_replace($search, $replace, $mediaFile->cURL) . $related;
-                $mediaFile->oEmbed->code    = '<iframe class="youtube" width="' . $width . '" height="' . $height
-                    . '" src="' . $embedURL . '" frameborder="0"' . $fullscreen . '></iframe>';
-                $mediaFile->oEmbed->options = [
-                    'height'     => $height,
-                    'width'      => $width,
-                    'related'    => $related,
-                    'fullscreen' => $fullscreen
-                ];
-            }
-        }
-
         return $this;
     }
 
@@ -2102,7 +2032,7 @@ class Artikel
                 $scoreSelect . '
                     FROM tartikel
                     JOIN teigenschaftkombiwert
-	                    ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
+                        ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
                     LEFT JOIN teigenschaft
                         ON teigenschaft.kEigenschaft = teigenschaftkombiwert.kEigenschaft
                     LEFT JOIN teigenschaftwert
@@ -2112,18 +2042,18 @@ class Artikel
                     ' . $scoreJoin . '
                     LEFT JOIN teigenschaftsichtbarkeit
                         ON teigenschaftsichtbarkeit.kEigenschaft = teigenschaftkombiwert.kEigenschaft
-	                    AND teigenschaftsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                        AND teigenschaftsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
                     LEFT JOIN teigenschaftwertsichtbarkeit
                         ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert
-	                    AND teigenschaftwertsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                        AND teigenschaftwertsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
                     LEFT JOIN teigenschaftwertpict
                         ON teigenschaftwertpict.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert
                     LEFT JOIN teigenschaftwertaufpreis
                         ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert
-	                    AND teigenschaftwertaufpreis.kKundengruppe = ' . $customerGroupID . '
+                        AND teigenschaftwertaufpreis.kKundengruppe = ' . $customerGroupID . '
                     WHERE tartikel.kVaterArtikel = ' . (int)$this->kVaterArtikel . '
-	                    AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
-	                    AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL';
+                        AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
+                        AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL';
             if ($exportWorkaround === false) {
                 /* Workaround for performance-issue in MySQL 5.5 with large varcombis */
                 $allCombinations = Shop::Container()->getDB()->query(
@@ -3225,10 +3155,7 @@ class Artikel
             return null;
         }
         // EXPERIMENTAL_MULTILANG_SHOP
-        if ($tmpProduct->cSeo === null
-            && \defined('EXPERIMENTAL_MULTILANG_SHOP')
-            && \EXPERIMENTAL_MULTILANG_SHOP === true
-        ) {
+        if ($tmpProduct->cSeo === null && \EXPERIMENTAL_MULTILANG_SHOP === true) {
             // redo the query with modified seo join - without language ID
             $productSQL = \str_replace(
                 $this->getSeoSQL()->cJOIN,
@@ -4976,7 +4903,8 @@ class Artikel
      */
     private function mapMediaType(string $type)
     {
-        $mapping = new stdClass();
+        $mapping            = new stdClass();
+        $mapping->videoType = null;
         switch ($type) {
             case '.bmp':
             case '.gif':
@@ -5006,8 +4934,9 @@ class Artikel
             case '.mp4':
             case '.flv':
             case '.3gp':
-                $mapping->cName = Shop::Lang()->get('tabVideo', 'media');
-                $mapping->nTyp  = 3;
+                $mapping->cName     = Shop::Lang()->get('tabVideo', 'media');
+                $mapping->nTyp      = 3;
+                $mapping->videoType = \strtolower(\str_replace('.', '', $type));
                 break;
             case '.pdf':
                 $mapping->cName = Shop::Lang()->get('tabPdf', 'media');
@@ -5417,9 +5346,9 @@ class Artikel
         }));
         $cacheID = 'jtl_ola_' . \md5($shippingFreeCountries);
         if (($countries = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $countries = Shop::Container()->getCountryService()->getFilteredCountryList($codes)->map(
+            $countries = Shop::Container()->getCountryService()->getFilteredCountryList($codes)->mapWithKeys(
                 static function (Country $country) {
-                    return $country->getName();
+                    return [$country->getISO() => $country->getName()];
                 }
             )->toArray();
 
@@ -6045,5 +5974,27 @@ class Artikel
             default:
                 return null;
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getBackorderString():string
+    {
+        $backorder = '';
+        if ($this->cLagerBeachten === 'Y'
+            && $this->fLagerbestand <= 0
+            && $this->fZulauf > 0
+            && $this->dZulaufDatum_de !== null
+        ) {
+            $backorder = \sprintf(
+                Shop::Lang()->get('productInflowing', 'productDetails'),
+                $this->fZulauf,
+                $this->cEinheit,
+                $this->dZulaufDatum_de
+            );
+        }
+
+        return $backorder;
     }
 }

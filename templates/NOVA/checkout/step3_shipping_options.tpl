@@ -7,19 +7,23 @@
                 {/block}
             {else}
                 {block name='checkout-step3-shipping-options-form'}
-                    {form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form jtl-validate mb-7"}
+                    {form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form jtl-validate mb-5"}
                         {block name='checkout-step3-shipping-options-fieldset-shipping-payment'}
-                            <fieldset id="checkout-shipping-payment" class="mb-7">
+                            <fieldset id="checkout-shipping-payment" class="mb-5">
                                 {block name='checkout-step3-shipping-options-legend-shipping-options'}
                                     <div class="h2">{lang key='shippingOptions'}</div>
                                 {/block}
                                 {block name='checkout-step3-shipping-options-shipping-address-link'}
                                     <div class="mb-3">
                                         {lang key='shippingTo' section='checkout'}: {$Lieferadresse->cStrasse} {$Lieferadresse->cHausnummer}, {$Lieferadresse->cPLZ} {$Lieferadresse->cOrt}, {$Lieferadresse->cLand}
-                                        {link href="{get_static_route id='bestellvorgang.php'}?editLieferadresse=1" class="ml-3"}
-                                            {lang key='edit' section='global'}
-                                        {/link}
-                                        <span class="ml-1 fa fa-pencil-alt"></span>
+                                        {button href="{get_static_route id='bestellvorgang.php'}?editLieferadresse=1"
+                                            variant="link"
+                                            size="sm"
+                                            class="font-size-sm"
+                                        }
+                                            <span class="text-decoration-underline">{lang key='change'}</span>
+                                            <span class="ml-1 fa fa-pencil-alt"></span>
+                                        {/button}
                                     </div>
                                 {/block}
                                 {block name='checkout-step3-shipping-options-shipping-address-hr'}
@@ -103,7 +107,7 @@
                             </fieldset>
                         {/block}
                         {block name='checkout-step3-shipping-options-fieldset-payment'}
-                            <fieldset id="fieldset-payment" class="mb-7">
+                            <fieldset id="fieldset-payment" class="mb-5">
                                 {block name='checkout-step3-shipping-options-legend-payment'}
                                     <div class="h2">{lang key='paymentOptions'}</div>
                                 {/block}
@@ -113,7 +117,7 @@
                         {/block}
                         {if isset($Verpackungsarten) && $Verpackungsarten|@count > 0}
                             {block name='checkout-step3-shipping-options-fieldset-packaging-types'}
-                                <fieldset class="mb-7">
+                                <fieldset class="mb-5">
                                     {block name='checkout-step3-shipping-options-legend-packaging-types'}
                                         <div class="h2">{lang section='checkout' key='additionalPackaging'}</div>
                                     {/block}

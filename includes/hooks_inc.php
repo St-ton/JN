@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Collection;
 use JTL\Cart\Cart;
 use JTL\Cart\CartItem;
 use JTL\Catalog\Category\Kategorie;
@@ -251,7 +252,7 @@ define('HOOK_NEWS_PAGE_DETAILANSICHT', 32);
  *
  * @file news.php
  * @param \JTL\News\Category category - since 5.0.0
- * @param Illuminate\Support\Collection items - since 5.0.0
+ * @param Collection items - since 5.0.0
  */
 define('HOOK_NEWS_PAGE_NEWSUEBERSICHT', 33);
 
@@ -1184,7 +1185,9 @@ define('HOOK_TOOLSGLOBAL_INC_GIBBELIEFERBARELAENDER', 157);
  * after executing job
  *
  * @file jobqueue_inc.php
- * @param oJobQueue
+ * @param JTL\Cron\QueueEntry oJobQueue
+ * @param JTL\Cron\Job job
+ * @param Psr\Log\LoggerInterface logger
  */
 define('HOOK_JOBQUEUE_INC_BEHIND_SWITCH', 158);
 
@@ -1633,7 +1636,7 @@ define('HOOK_GET_ALL_CATEGORIES', 219);
 /**
  * @since 4.04
  * @file seite_inc.php
- * @param \Illuminate\Support\Collection - oNews_arr
+ * @param Collection - oNews_arr
  * @param array - cacheTags
  * @param bool  - cached
  */
@@ -1917,7 +1920,7 @@ define('HOOK_LINKGROUP_MAPPED', 302);
 define('HOOK_LINKGROUPS_LOADED', 303);
 
 /**
- * Kurz vor dem Einfügen einer neuen / bisher unbekannten Lieferadresse in die DB, beim Einfügen einer Bestellung in die DB.
+ * Kurz vor dem Einfügen einer neuen/bisher unbekannten Lieferadresse in die DB
  *
  * @since 5.0.0
  * @file bestellabschluss_inc.php
@@ -1936,6 +1939,13 @@ define('HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB_LIEFERADRESSE_ALT', 305);
 
 /**
  * @since 5.0.0
+ * @file includes/src/Link/LinkGroupList.php
+ * @param \JTL\Link\LinkGroupList list
+ */
+define('HOOK_LINKGROUPS_LOADED_PRE_CACHE', 306);
+
+/**
+ * @since 5.0.0
  * @file includes/src/Cart/Cart.php
  * @param int productID
  * @param \JTL\Cart\CartItem[] positionItems
@@ -1950,3 +1960,10 @@ define('HOOK_WARENKORB_ERSTELLE_SPEZIAL_POS', 310);
  * @param string request
  */
 define('HOOK_IO_HANDLE_REQUEST_ADMIN', 311);
+
+/**
+ * @since 5.0.0
+ * @file Manager.php
+ * @param Collection items - collection of JTL\Consent\ConsentModel\ConsentModel
+ */
+define('CONSENT_MANAGER_GET_ACTIVE_ITEMS', 320);

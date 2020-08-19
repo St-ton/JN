@@ -68,9 +68,9 @@
     {block name='productdetails-tabs-content'}
         {if useDescription || $useDownloads || $useDescriptionWithMediaGroup || $useVotes || $useQuestionOnItem || $usePriceFlow
         || $useAvailabilityNotification || $useMediaGroup || !empty($separatedTabs)}
-            {if $tabanzeige}
+            {if $tabanzeige && !$isMobile}
                 {block name='productdetails-tabs-tabs'}
-                    {opcMountPoint id='opc_before_tabs'}
+                    {opcMountPoint id='opc_before_tabs' inContainer=false}
                     {container class="mb-7"}
                         <nav class="tab-navigation">
                         {tabs id="product-tabs"}
@@ -179,7 +179,7 @@
                                             data=["toggle" => "collapse",
                                                 "target"=>"#tab-description"
                                             ]
-                                            aria=["expanded" => $setActiveClass.description,
+                                            aria=["expanded" => "{if $setActiveClass.description}true{else}false{/if}",
                                                 "controls" => "tab-description"
                                             ]
                                         }
@@ -232,7 +232,7 @@
                                             data=["toggle" => "collapse",
                                                 "target"=>"#tab-downloads"
                                             ]
-                                            aria=["expanded" => $setActiveClass.downloads,
+                                            aria=["expanded" => "{if $setActiveClass.downloads}true{else}false{/if}",
                                                 "controls" => "tab-downloads"
                                             ]
                                         }
@@ -261,7 +261,7 @@
                                                 data=["toggle" => "collapse",
                                                     "target"=>"#tab-{$separatedTab.id}"
                                                 ]
-                                                aria=["expanded" => $setActiveClass.separatedTabs && $separatedTab@first,
+                                                aria=["expanded" => "{if $setActiveClass.separatedTabs && $separatedTab@first}true{else}false{/if}",
                                                     "controls" => "tab-{$separatedTab.id}"
                                                 ]
                                             }
@@ -288,7 +288,7 @@
                                             data=["toggle" => "collapse",
                                                 "target"=>"#tab-votes"
                                             ]
-                                            aria=["expanded" => $setActiveClass.votes,
+                                            aria=["expanded" => "{if $setActiveClass.votes}true{else}false{/if}",
                                                 "controls" => "tab-votes"
                                             ]
                                         }
@@ -316,7 +316,7 @@
                                             data=["toggle" => "collapse",
                                                 "target"=>"#tab-question"
                                             ]
-                                            aria=["expanded" => $setActiveClass.questionOnItem,
+                                            aria=["expanded" => "{if $setActiveClass.questionOnItem}true{else}false{/if}",
                                                 "controls" => "tab-question"
                                             ]
                                         }
@@ -344,7 +344,7 @@
                                             data=["toggle" => "collapse",
                                                 "target"=>"#tab-priceFlow"
                                             ]
-                                            aria=["expanded" => $setActiveClass.priceFlow,
+                                            aria=["expanded" => "{if $setActiveClass.priceFlow}true{else}false{/if}",
                                                 "controls" => "tab-priceFlow"
                                             ]
                                         }
@@ -372,7 +372,7 @@
                                             data=["toggle" => "collapse",
                                                 "target"=>"#tab-availabilityNotification"
                                             ]
-                                            aria=["expanded" => $setActiveClass.availabilityNotification,
+                                            aria=["expanded" => "{if $setActiveClass.availabilityNotification}true{else}false{/if}",
                                                 "controls" => "tab-availabilityNotification"
                                             ]
                                         }
@@ -402,7 +402,7 @@
                                                 data=["toggle" => "collapse",
                                                     "target"=>"#tab-{$cMedienTypId}"
                                                 ]
-                                                aria=["expanded" => $setActiveClass.mediaGroup && $mediaType@first,
+                                                aria=["expanded" => "{if $setActiveClass.mediaGroup && $mediaType@first}true{else}false{/if}",
                                                     "controls" => "tab-{$cMedienTypId}"
                                                 ]
                                             }

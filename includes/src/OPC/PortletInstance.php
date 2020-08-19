@@ -68,7 +68,7 @@ class PortletInstance implements \JsonSerializable
     protected $uid;
 
     /**
-     * @var null|AreaList mapping area ids to subareas
+     * @var AreaList mapping area ids to subareas
      */
     protected $subareaList;
 
@@ -116,12 +116,13 @@ class PortletInstance implements \JsonSerializable
     }
 
     /**
+     * @param bool $inContainer
      * @return string
      * @throws \Exception
      */
-    public function getFinalHtml(): string
+    public function getFinalHtml(bool $inContainer = true): string
     {
-        $result = $this->portlet->getFinalHtml($this);
+        $result = $this->portlet->getFinalHtml($this, $inContainer);
 
         Shop::fire('shop.OPC.PortletInstance.getFinalHtml', [
             'portletInstance' => $this,
@@ -195,9 +196,9 @@ class PortletInstance implements \JsonSerializable
     }
 
     /**
-     * @return null|AreaList
+     * @return AreaList
      */
-    public function getSubareaList(): ?AreaList
+    public function getSubareaList(): AreaList
     {
         return $this->subareaList;
     }
@@ -394,7 +395,7 @@ class PortletInstance implements \JsonSerializable
     {
         $style = $this->getProperty('animation-style');
 
-        return $style !== '' ? 'wow ' . $style : '';
+        return $style !== '' ? 'wow ' . \htmlspecialchars($style) : '';
     }
 
     /**
@@ -408,7 +409,13 @@ class PortletInstance implements \JsonSerializable
             if ($this->hasProperty($propname) && \strpos($propname, 'wow-') === 0 &&
                 !empty($this->getProperty($propname))
             ) {
-                $data[$propname] = $this->getProperty($propname);
+                $value = $this->getProperty($propname);
+
+                if (\is_string($value)) {
+                    $value = \htmlspecialchars($value);
+                }
+
+                $data[$propname] = $value;
             }
         }
 
@@ -511,13 +518,20 @@ class PortletInstance implements \JsonSerializable
         $srcset   = '';
         $srcsizes = '';
 
+        $filepath   = \PFAD_ROOT . \STORAGE_OPC . \basename($src);
+        $sizes      = \is_file($filepath) ? \getimagesize($filepath) : [0, 0];
+        $realWidth  = $sizes[0];
+        $realHeight = $sizes[1];
+
         if (empty($src)) {
             return [
-                'srcset'   => '',
-                'srcsizes' => '',
-                'src'      => $default ?? '',
-                'alt'      => $alt,
-                'title'    => $title,
+                'srcset'     => '',
+                'srcsizes'   => '',
+                'src'        => $default ?? '',
+                'alt'        => $alt,
+                'title'      => $title,
+                'realWidth'  => $realWidth,
+                'realHeight' => $realHeight,
             ];
         }
         $this->generateAllImageSizes(true, 1, \rawurldecode(\basename($src)));
@@ -572,6 +586,8 @@ class PortletInstance implements \JsonSerializable
             'src'      => \str_replace(' ', '%20', $this->getImage()),
             'alt'      => $alt,
             'title'    => $title,
+            'realWidth'  => $realWidth,
+            'realHeight' => $realHeight,
         ];
     }
 

@@ -13,3 +13,45 @@ msgstr "Author"
 
 msgid "pluginHomepage"
 msgstr "Website"
+
+msgid "Lizenzvereinbarungen"
+msgstr "License agreement"
+
+msgid "Lizenz"
+msgstr "License"
+
+msgid "Key"
+msgstr "Key"
+
+msgid "Vendor"
+msgstr "Vendor"
+
+msgid "Date created"
+msgstr "Date created"
+
+msgid "Valid until"
+msgstr "Valid until"
+
+msgid "License"
+msgstr "License"
+
+msgid "documentation"
+msgstr "Documentation"
+
+msgid "itemDetails"
+msgstr "Details"
+
+msgid "setBinding"
+msgstr "Bind to current shop"
+
+msgid "extendSubscription"
+msgstr "Extend subscription"
+
+msgid "extendLicense"
+msgstr "Extend license"
+
+msgid "extendTestLicense"
+msgstr "Extend test license"
+
+msgid "pluginIsDeactivated"
+msgstr "Plugin is disabled."

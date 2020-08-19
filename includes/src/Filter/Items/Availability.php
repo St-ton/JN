@@ -3,7 +3,6 @@
 namespace JTL\Filter\Items;
 
 use JTL\DB\ReturnType;
-use JTL\Shop;
 use JTL\Filter\AbstractFilter;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\InputType;
@@ -12,6 +11,7 @@ use JTL\Filter\Option;
 use JTL\Filter\ProductFilter;
 use JTL\Filter\StateSQL;
 use JTL\Filter\Type;
+use JTL\Shop;
 
 /**
  * Class Availability

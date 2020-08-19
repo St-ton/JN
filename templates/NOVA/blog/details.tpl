@@ -29,7 +29,7 @@
                         {if $newsItem->getAuthor() !== null}
                             {block name='blog-details-include-author'}
                                 {include file='snippets/author.tpl' oAuthor=$newsItem->getAuthor() dDate=$dDate cDate=$newsItem->getDateValidFrom()->format('Y-m-d H:i:s')}
-                            {/block} /
+                            {/block}
                         {else}
                             {block name='blog-details-noauthor'}
                                 <div itemprop="author publisher" itemscope itemtype="http://schema.org/Organization" class="d-none">
@@ -45,12 +45,12 @@
                         {if isset($Einstellungen.news.news_kategorie_unternewsanzeigen) && $Einstellungen.news.news_kategorie_unternewsanzeigen === 'Y' && !empty($oNewsKategorie_arr)}
                             {block name='blog-details-sub-news'}
                                 <span class="news-categorylist mb-4">
-                                    /
+                                    {if $newsItem->getAuthor() === null}/{/if}
                                     {foreach $oNewsKategorie_arr as $oNewsKategorie}
                                         {link itemprop="articleSection"
                                             href="{$oNewsKategorie->cURLFull}"
                                             title="{$oNewsKategorie->cBeschreibung|strip_tags|escape:'html'|truncate:60}"
-                                            class="mr-2"
+                                            class="{if !$oNewsKategorie@last}mr-1{/if} d-inline-block"
                                         }
                                             {$oNewsKategorie->cName}
                                         {/link}
@@ -60,7 +60,8 @@
                         {/if}
 
                         {block name='blog-details-comments-link'}
-                            {link class="no-deco text-nowrap" href="#comments" title="{lang key='readComments' section='news'}"}
+                            {if $Einstellungen.news.news_kommentare_nutzen === 'Y'}
+                            {link class="text-decoration-none text-nowrap" href="#comments" title="{lang key='readComments' section='news'}"}
                                 /
                                 <span class="fas fa-comments"></span>
                                 <span class="sr-only">
@@ -72,13 +73,14 @@
                                 </span>
                                 <span itemprop="commentCount">{$newsItem->getCommentCount()}</span>
                             {/link}
+                            {/if}
                         {/block}
                     </div>
                 {/block}
 
                 {if $newsItem->getPreviewImage() !== ''}
                     {block name='blog-details-image'}
-                        {image webp=true lazy=true fluid-grow=true
+                        {image webp=true lazy=true fluid=true
                             src=$newsItem->getImage(\JTL\Media\Image::SIZE_MD)
                             srcset="{$newsItem->getImage(\JTL\Media\Image::SIZE_XS)} 300w,
                                 {$newsItem->getImage(\JTL\Media\Image::SIZE_SM)} 600w,
@@ -185,7 +187,6 @@
                                             {/block}
                                         {/col}
                                     {/row}
-
                                     {block name='blog-details-comments'}
                                         {listgroup class="list-group-flush p-3 bg-info"}
                                             {foreach $comments as $comment}
@@ -194,6 +195,15 @@
                                                         {$comment->getName()}, {$comment->getDateCreated()->format('d.m.y H:i')}
                                                     </p>
                                                     {$comment->getText()}
+                                                     {foreach $comment->getChildComments() as $childComment}
+                                                        <div class="review-reply mt-3 ml-3">
+                                                            <span class="subheadline">{lang key='commentReply' section='news'}:</span>
+                                                            <blockquote>
+                                                                {$childComment->getText()}
+                                                                <div class="mt-3 blockquote-footer">{$childComment->getName()}, {$childComment->getDateCreated()->format('d.m.y H:i')}</div>
+                                                            </blockquote>
+                                                        </div>
+                                                     {/foreach}
                                                 {/listgroupitem}
                                             {/foreach}
                                         {/listgroup}
@@ -204,17 +214,19 @@
                     {/block}
                 {/if}
             </article>
+            {if $oNews_arr|count > 0}
             <hr class="my-6">
             {block name='blog-details-latest-news'}
                 <div class="h2">{lang key='news' section='news'}</div>
                 <div itemprop="about"
                     itemscope=true
                     itemtype="http://schema.org/Blog"
-                    class="carousel carousel-arrows-inside mx-0 slick-lazy slick-type-news"
-                    data-slick-type="news-slider">
+                    class="carousel carousel-arrows-inside mx-0 slick-lazy slick-type-half"
+                    data-slick-type="slider-half">
                     {include file='snippets/slider_items.tpl' items=$oNews_arr type='news'}
                 </div>
             {/block}
+            {/if}
         {/block}
     {/if}
     {/container}

@@ -6,7 +6,7 @@
         && (!empty($Suchergebnisse->getSearchSpecialFilterOptions()) || $ssf->isInitialized())
         && !($isMobile || $Einstellungen.template.productlist.filter_placement === 'modal')}
         {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE}
-            <div class="box box-filter-special d-none d-lg-block" id="sidebox{$oBox->getID()}">
+            <div id="sidebox{$oBox->getID()}" class="box box-filter-special d-none d-lg-block">
                 {button
                     variant="link"
                     class="text-decoration-none px-0 text-left dropdown-toggle"
@@ -16,7 +16,8 @@
                 }
                     {$ssf->getFrontendName()}
                 {/button}
-                {collapse id="cllps-box{$oBox->getID()}" visible=$ssf->isActive()}
+                {collapse id="cllps-box{$oBox->getID()}"
+                    visible=$ssf->isActive() || $Einstellungen.template.productlist.filter_items_always_visible === 'Y'}
                     {block name='boxes-box-filter-search-special-content'}
                         {include file='snippets/filter/genericFilterItem.tpl' filter=$ssf}
                     {/block}

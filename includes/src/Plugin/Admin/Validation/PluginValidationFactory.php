@@ -6,6 +6,7 @@ use JTL\Plugin\Admin\Validation\Items\Author;
 use JTL\Plugin\Admin\Validation\Items\Blueprints;
 use JTL\Plugin\Admin\Validation\Items\Boxes;
 use JTL\Plugin\Admin\Validation\Items\Checkboxes;
+use JTL\Plugin\Admin\Validation\Items\Consent;
 use JTL\Plugin\Admin\Validation\Items\DateCreated;
 use JTL\Plugin\Admin\Validation\Items\Exports;
 use JTL\Plugin\Admin\Validation\Items\ExtendedTemplates;
@@ -22,6 +23,7 @@ use JTL\Plugin\Admin\Validation\Items\NoUninstaller;
 use JTL\Plugin\Admin\Validation\Items\PaymentMethods;
 use JTL\Plugin\Admin\Validation\Items\PluginID;
 use JTL\Plugin\Admin\Validation\Items\Portlets;
+use JTL\Plugin\Admin\Validation\Items\SemVer;
 use JTL\Plugin\Admin\Validation\Items\Version;
 use JTL\Plugin\Admin\Validation\Items\WidgetsExtension;
 use JTL\Plugin\Admin\Validation\Items\XMLVersion;
@@ -49,6 +51,7 @@ class PluginValidationFactory
         $validation[] = new DateCreated($node, $dir, $version, $pluginID);
         $validation[] = new PluginID($node, $dir, $version, $pluginID);
         $validation[] = new Installation($node, $dir, $version, $pluginID);
+        $validation[] = new Consent($node, $dir, $version, $pluginID);
         $validation[] = new Author($node, $dir, $version, $pluginID);
         $validation[] = new LicenceExtension($node, $dir, $version, $pluginID);
         $validation[] = new Hooks($node, $dir, $version, $pluginID);
@@ -65,6 +68,7 @@ class PluginValidationFactory
         $validation[] = new Exports($node, $dir, $version, $pluginID);
         $validation[] = new ExtendedTemplates($node, $dir, $version, $pluginID);
         $validation[] = new NoUninstaller($node, $dir, $version, $pluginID);
+        $validation[] = new SemVer($node, $dir, $version, $pluginID);
 
         return $validation;
     }

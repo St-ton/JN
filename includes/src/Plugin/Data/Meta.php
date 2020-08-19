@@ -83,6 +83,11 @@ class Meta
     private $error;
 
     /**
+     * @var string|null
+     */
+    private $exsID;
+
+    /**
      * @param stdClass $data
      * @return $this
      */
@@ -97,6 +102,7 @@ class Meta
         $this->dateLastUpdate = new DateTime($data->dZuletztAktualisiert);
         $this->version        = $data->nVersion;
         $this->semVer         = Version::parse($this->version);
+        $this->exsID          = $data->exsID;
 
         return $this;
     }
@@ -315,5 +321,21 @@ class Meta
     public function getUpdateAvailable()
     {
         return $this->updateAvailable;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getExsID(): ?string
+    {
+        return $this->exsID;
+    }
+
+    /**
+     * @param string|null $exsID
+     */
+    public function setExsID(?string $exsID): void
+    {
+        $this->exsID = $exsID;
     }
 }

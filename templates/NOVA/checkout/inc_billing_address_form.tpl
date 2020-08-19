@@ -1,13 +1,15 @@
 {block name='checkout-inc-billing-address-form'}
     <fieldset>
         {block name='checkout-inc-billing-address-form-legend'}
-            <div class="h2">
-                {if isset($checkout)}
-                    {lang key='proceedNewCustomer' section='checkout'}
-                {elseif $nSeitenTyp === $smarty.const.PAGE_MEINKONTO}
-                    {lang key='myPersonalData'}
-                {/if}
-            </div>
+            {if isset($checkout) || $nSeitenTyp === $smarty.const.PAGE_MEINKONTO}
+                <div class="h2">
+                    {if isset($checkout)}
+                        {lang key='proceedNewCustomer' section='checkout'}
+                    {elseif $nSeitenTyp === $smarty.const.PAGE_MEINKONTO}
+                        {lang key='myPersonalData'}
+                    {/if}
+                </div>
+            {/if}
             {if isset($checkout) && $Einstellungen.kaufabwicklung.bestellvorgang_unregistriert === 'Y'}
                 <div>
                     {lang key='guestOrRegistered' section='checkout'}
@@ -245,7 +247,7 @@
                                     label-for="country"
                                     label="{lang key='country' section='account data'}"
                                 }
-                                    {select name="land" id="country" class="country-input custom-select" required=true autocomplete="billing country"}
+                                    {select name="land" id="billing_address-country" class="country-input custom-select js-country-select" required=true autocomplete="billing country"}
                                         <option value="" disabled>{lang key='country' section='account data'}</option>
                                         {foreach $laender as $land}
                                             <option value="{$land->getISO()}" {if $cIso === $land->getISO()}selected="selected"{/if}>{$land->getName()}</option>
@@ -276,10 +278,10 @@
                                     }
                                         {if !empty($oStates)}
                                             {select
-                                                title="{lang key=pleaseChoose}"
+                                                data=["defaultoption"=>{lang key=pleaseChoose}]
                                                 name="bundesland"
-                                                id="state"
-                                                class="state-input custom-select"
+                                                id="billing_address-state"
+                                                class="state-input custom-select js-state-select"
                                                 autocomplete="billing address-level1"
                                                 required=($Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y')
                                             }
@@ -291,10 +293,10 @@
                                         {else}
                                             {input
                                                 type="text"
-                                                title="{lang key=pleaseChoose}"
                                                 name="bundesland"
                                                 value=$cState
-                                                id="state"
+                                                id="billing_address-state"
+                                                data=["defaultoption"=>{lang key=pleaseChoose}]
                                                 placeholder="{lang key='state' section='account data'}"
                                                 autocomplete="billing address-level1"
                                                 required=($Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y')
@@ -684,7 +686,6 @@
     {if (!isset($smarty.session.bAnti_spam_already_checked) || $smarty.session.bAnti_spam_already_checked !== true)
     && isset($Einstellungen.kunden.registrieren_captcha) && $Einstellungen.kunden.registrieren_captcha !== 'N' && empty($Kunde->kKunde)}
         {block name='checkout-inc-billing-address-form-captcha'}
-            <hr>
             {row}
                 {col cols=8 offset=4}
                     {formgroup class="{if isset($fehlendeAngaben.captcha) && $fehlendeAngaben.captcha != false} has-error{/if}"}
@@ -692,7 +693,6 @@
                     {/formgroup}
                 {/col}
             {/row}
-            <hr>
         {/block}
     {/if}
 {/block}

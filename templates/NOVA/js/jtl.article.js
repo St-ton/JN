@@ -99,9 +99,28 @@
             this.registerSimpleVariations($wrapper);
             this.registerSwitchVariations($wrapper);
             this.registerBulkPrices($wrapper);
+            this.registerAccordion();
             // this.registerImageSwitch($wrapper);
             //this.registerArticleOverlay($wrapper);
             this.registerFinish($wrapper);
+        },
+
+        registerAccordion: function() {
+            $('.is-mobile .accordion [id^="tab-"]').on('click', function () {
+                let self = $(this);
+                $.evo.destroyScrollSearchEvent();
+                setTimeout(function() {
+                    $('html').animate(
+                        {scrollTop: self.offset().top},
+                        100,
+                        'linear',
+                        function () {
+                            setTimeout(function() {
+                                $.evo.initScrollSearchEvent();
+                            }, 500);
+                        });
+                }, 400);
+            });
         },
 
         registerGallery: function(wrapper) {
@@ -135,14 +154,29 @@
 
                     $galleryImages.removeAttr('sizes');
                     lazySizes.autoSizer.updateElem($galleryImages);
+
+                    $galleryImages.css('max-height', maxHeight-otherElemHeight);
+                    $('#gallery').css('max-height', maxHeight-otherElemHeight);
+
+                    $('body').off('click.toggleFullscreen').on('click.toggleFullscreen', function (event) {
+                        if (!($(event.target).hasClass('product-image') || $(event.target).hasClass('slick-arrow'))) {
+                            toggleFullscreen(false);
+                            $('body').off('click.toggleFullscreen');
+                        }
+                    });
                 } else {
                     $('#image_wrapper').removeClass('fullscreen');
+                    $galleryImages.css('max-height', '100%');
                 }
-
-                $galleryImages.css('max-height', maxHeight-otherElemHeight);
 
                 $('#gallery').slick('slickSetOption','initialSlide', current, true);
                 $('#gallery_preview').slick('slickGoTo', current, true);
+
+                //fix firefox height bug
+                $('.slick-slide, .slick-arrow').css({'display': 'none'});
+                setTimeout(function(){
+                    $('.slick-slide, .slick-arrow').css({'display': 'block'});
+                }, 50);
             }
 
             function addClickListener() {
@@ -158,16 +192,11 @@
             if (wrapper[0].id.indexOf(this.options.modal.wrapper_modal.substr(1)) === -1) {
                 addClickListener();
 
-                $(document).keyup(e => {
+                $(document).on('keyup', e => {
                     if (e.key === "Escape") {
                         toggleFullscreen();
                         addClickListener();
                     }
-                });
-
-                $('#image_fullscreen_close').on('click', e => {
-                    toggleFullscreen();
-                    addClickListener();
                 });
             }
         },
@@ -298,9 +327,9 @@
         registerHoverVariations: function ($wrapper) {
             $('.variations label.variation', $wrapper)
                 .on('mouseenter', function (e) {
-                    $('.variation-image-preview.vt' + $(this).data('value'))
-                        .addClass('show d-md-block')
-                        .css('top', $(this).offset().top - $(this).closest('#content').position().top - $('.js-gallery-images').innerHeight()/2 - 12);
+                    let mainImageHeight = $('.js-gallery-images').innerHeight();
+                        $('.variation-image-preview.vt' + $(this).data('value')).addClass('show d-md-block')
+                        .css('top', $(this).offset().top - $(this).closest('#content').position().top - mainImageHeight/2 -12);
                 })
                 .on('mouseleave', function (e) {
                     $('.variation-image-preview.vt' + $(this).data('value')).removeClass('show d-md-block');
@@ -310,9 +339,10 @@
                 .on('show.bs.select', function () {
                     $(this).parent().find('li .variation')
                         .on('mouseenter', function () {
+                            let mainImageHeight = $('.js-gallery-images').innerHeight();
                             $('.variation-image-preview.vt' + $(this).find('span[data-value]').data("value"))
                                 .addClass('show d-md-block')
-                                .css('top', $(this).offset().top - $(this).closest('#content').position().top - $('.js-gallery-images').innerHeight()/2 - 12);
+                                .css('top', $(this).offset().top - $(this).closest('#content').position().top - mainImageHeight/2 -12);
                         })
                         .on('mouseleave', function () {
                             $('.variation-image-preview.vt' + $(this).find('span[data-value]').data("value"))
@@ -465,6 +495,14 @@
                 }, 200);
             });
 
+            let $tabID = $('#product-tabs a[href="' + window.location.hash + '"]');
+            if ($tabID.length) {
+                $tabID.tab('show');
+                $([document.documentElement, document.body]).animate({
+                    scrollTop: $tabID.offset().top
+                }, 200);
+            }
+
             if (this.isSingleArticle()) {
                 if ($('.switch-variations .form-group', $wrapper).length === 1) {
                     var wrapper = '#' + $($wrapper).attr('id');
@@ -538,8 +576,6 @@
                 id         = wrapper.substring(1),
                 $modalBody = $('.modal-body', this.modalView);
 
-            $wrapper.addClass('loading');
-
             $.ajax(url, {data: {'isAjax':1, 'quickView':1}})
                 .done(function(data) {
                     var $html      = $('<div />').html(data);
@@ -572,8 +608,7 @@
                     if ($config.length > 0) {
                         // Configurator in child article!? Currently not supported!
                         $config.remove();
-                        $modalBody.addClass('loading');
-                        var spinner = $.evo.extended().spinner($modalBody.get(0));
+                        $.evo.extended().startSpinner($modalBody);
                         location.href = url;
                     }
                     if (title.length > 0 && title.text().length > 0) {
@@ -604,7 +639,7 @@
                     }
                 })
                 .always(function() {
-                    $wrapper.removeClass('loading');
+                    $.evo.extended().stopSpinner();
                 });
         },
 
@@ -917,7 +952,7 @@
                     return;
                 }
 
-                let $spinner = $.evo.extended().spinner(container.get(0));
+                $.evo.extended().startSpinner(container);
 
                 $('#buy_form').find('*[data-selected="true"]')
                     .attr('checked', true)
@@ -926,7 +961,6 @@
 
                 form = $.evo.io().getFormValues('buy_form');
 
-                container.addClass('loading');
                 $.evo.io().call('buildConfiguration', [form], that, function (error, data) {
                     var result,
                         i,
@@ -976,8 +1010,7 @@
                         $('#cfg-tab-summary-finish').children().addClass('disabled');
                         $('#cfg-tab-summary-finish').addClass('disabled');
                     }
-                    $spinner.stop();
-                    container.removeClass('loading');
+                    $.evo.extended().stopSpinner();
                     if (error) {
                         $.evo.error(data);
                         return;
@@ -1160,18 +1193,18 @@
 
         setArticleContent: function(id, variation, url, variations, wrapper) {
             var $wrapper  = this.getWrapper(wrapper),
-                listStyle = $('#ed_list.active').length > 0 ? 'list' : 'gallery',
-                $spinner  = $.evo.extended().spinner($wrapper.get(0));
+                listStyle = $('#ed_list.active').length > 0 ? 'list' : 'gallery';
+                $.evo.extended().startSpinner($wrapper);
 
             if (this.modalShown) {
                 this.loadModalArticle(url, wrapper,
                     function() {
                         var article = new ArticleClass();
                         article.register(wrapper);
-                        $spinner.stop();
+                        $.evo.extended().stopSpinner();
                     },
                     function() {
-                        $spinner.stop();
+                        $.evo.extended().stopSpinner();
                         $.evo.error('Error loading ' + url);
                     }
                 );
@@ -1187,13 +1220,12 @@
                     if (document.location.href !== url) {
                         history.pushState({a: id, a2: variation, url: url, variations: variations}, "", url);
                     }
-
-                    $spinner.stop();
+                    $.evo.extended().stopSpinner();
 
                     window.initNumberInput();
                 }, function () {
                     $.evo.error('Error loading ' + url);
-                    $spinner.stop();
+                    $.evo.extended().stopSpinner();
                 }, false, wrapper);
             } else {
                 $.evo.extended().loadContent(url + (url.indexOf('?') >= 0 ? '&' : '?') + 'isListStyle=' + listStyle, function (content) {
@@ -1217,7 +1249,7 @@
                     if (!$wrapper.hasClass('productbox-hover')) {
                         $.evo.extended().autoheight();
                     }
-                    $spinner.stop();
+                    $.evo.extended().stopSpinner();
 
                     window.initNumberInput();
 
@@ -1229,7 +1261,7 @@
                     });
                 }, function () {
                     $.evo.error('Error loading ' + url);
-                    $spinner.stop();
+                    $.evo.extended().stopSpinner();
                 }, false, wrapper);
             }
         },
@@ -1377,12 +1409,10 @@
                     value    = $current.data('value'),
                     io       = $.evo.io(),
                     args     = io.getFormValues(formID),
-                    $spinner = null,
                     $wrapper = this.getWrapper(wrapper);
 
                 if (animation) {
-                    $wrapper.addClass('loading');
-                    $spinner = $.evo.extended().spinner();
+                    $.evo.extended().startSpinner();
                 } else {
                     $('.updatingStockInfo', $wrapper).show();
                 }
@@ -1394,9 +1424,8 @@
                     .variationDispose(wrapper);
 
                 io.call('checkVarkombiDependencies', [args, key, value], $item, function (error, data) {
-                    $wrapper.removeClass('loading');
                     if (animation) {
-                        $spinner.stop();
+                        $.evo.extended().stopSpinner();
                     }
                     $('.updatingStockInfo', $wrapper).hide();
                     if (error) {
@@ -1410,12 +1439,10 @@
             var formID   = $item.closest('form').attr('id'),
                 $wrapper = this.getWrapper(wrapper),
                 io       = $.evo.io(),
-                args     = io.getFormValues(formID),
-                $spinner = null;
+                args     = io.getFormValues(formID);
 
             if (animation) {
-                $wrapper.addClass('loading');
-                $spinner = $.evo.extended().spinner();
+                $.evo.extended().startSpinner();
             }
 
             args.wrapper = wrapper;
@@ -1430,9 +1457,8 @@
                     $action.removeClass('on-list');
                 }
 
-                $wrapper.removeClass('loading');
                 if (animation) {
-                    $spinner.stop();
+                    $.evo.extended().stopSpinner();
                 }
                 if (error) {
                     $.evo.error('checkDependencies');
@@ -1447,19 +1473,12 @@
         }
     };
 
-    $v     = new ArticleClass();
-    var ie = /(msie|trident)/i.test(navigator.userAgent) ? navigator.userAgent.match(/(msie |rv:)(\d+(.\d+)?)/i)[2] : false;
-    if (ie && parseInt(ie) <= 9) {
-        $(document).ready(function () {
-            $v.onLoad();
-            $v.register();
-        });
-    } else {
-        $(window).on('load', function () {
-            $v.onLoad();
-            $v.register();
-        });
-    }
+    $v = new ArticleClass();
+
+    $(document).ready(function () {
+        $v.onLoad();
+        $v.register();
+    });
 
     $(window).on('resize',
         viewport.changed(function(){

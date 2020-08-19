@@ -20,5 +20,8 @@ msgstr "Simple slider with images"
 msgid "presentationSlider"
 msgstr "Slider with names and prices"
 
+msgid "presentationBoxSlider"
+msgstr "Single product slider with names and prices"
+
 msgid "itemFilter"
 msgstr "Item filters"

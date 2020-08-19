@@ -9,9 +9,7 @@ $('body').on('click', '.option li', function (e) {
 
 // prevent multiple form submit on client side
 $('.submit_once').closest('form').on('submit', function() {
-    $(this).on('submit', function() {
-        return false;
-    });
+    $(this).find('.submit_once').prop('disabled', 'true');
     return true;
 });
 
@@ -430,7 +428,7 @@ $(document).ready(function () {
         .attr('disabled', true);
 
     // temporarily save order-comment
-    $('#comment').blur(function(ev) {
+    $('#comment').on('blur',function(ev) {
         ev.preventDefault();
         sessionStorage.setItem($("[name$=jtl_token]").val()+'_comment', $('#comment').val());
     });
@@ -442,12 +440,12 @@ $(document).ready(function () {
         }
     }
     // clear the sessionStorage at logout
-    $("a[href*='logout']").click(function(ev) {
+    $("a[href*='logout']").on('click', function(ev) {
         sessionStorage.clear();
         return true;
     });
 
-    $('#complete-order-button').click(function () {
+    $('#complete-order-button').on('click', function () {
         var commentField = $('#comment'),
             commentFieldHidden = $('#comment-hidden');
         if (commentField && commentFieldHidden) {
@@ -524,13 +522,13 @@ $(document).ready(function () {
         },
         dataType: "json"
     });
-    $('.city_input').focusin(function () {
+    $('.city_input').on('focusin', function () {
         citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country-input').val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}';
     });
-    $('.postcode_input').change(function () {
+    $('.postcode_input').on('change', function () {
         citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country-input').val() + '", "' + $(this).val() + '"]}';
     });
-    $('.country-input').change(function () {
+    $('.country-input').on('change', function () {
         citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}';
     });
 
@@ -540,12 +538,13 @@ $(document).ready(function () {
             minLength: 0
         },
         {
+            limit:  50,
             name:   'cities',
             source: citySuggestion
         }
     );
 
-    $('.btn-offcanvas').click(function() {
+    $('.btn-offcanvas').on('click', function() {
         $('body').click();
     });
 
@@ -605,7 +604,7 @@ $(document).ready(function () {
         }
     });
 
-    bannerLink.mouseenter(function () {
+    bannerLink.on('mouseenter',function () {
         $(this).animate({
             borderWidth: 10,
             opacity:     0
@@ -614,7 +613,7 @@ $(document).ready(function () {
         });
     });
 
-    $('.banner').mouseenter(function () {
+    $('.banner').on('mouseenter',function () {
         $(this).children('a').animate({
             borderWidth: 10,
             opacity:     0
@@ -623,14 +622,14 @@ $(document).ready(function () {
         });
     });
 
-    $('.banner > a[href=""]').click(function () {
+    $('.banner > a[href=""]').on('click', function () {
         return false;
     });
 
     /*
      * account download collapse
      */
-    $('#account a[data-toggle="collapse"]').click(function() {
+    $('#account a[data-toggle="collapse"]').on('click', function() {
         $('i', this).toggleClass("fa-chevron-up fa-chevron-down");
     });
 
@@ -653,7 +652,7 @@ $(document).ready(function () {
     (function($, document, window, viewport){
         var $body = $('body');
 
-        $(window).resize(
+        $(window).on('resize',
             viewport.changed(function() {
                 $body.attr('data-viewport', viewport.current());
                 lazyLoadMenu(viewport);
@@ -675,7 +674,7 @@ $(document).ready(function () {
             method : 'POST',
             data   : {dropPos : 'assetToUse'}
         }).done(function(data) {
-            $('input[name="Versandart"]:checked', '#checkout-shipping-payment').change();
+            $('input[name="Versandart"]:checked', '#checkout-shipping-payment').trigger('change');
         })
     });
 

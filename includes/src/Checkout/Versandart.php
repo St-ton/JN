@@ -3,8 +3,10 @@
 namespace JTL\Checkout;
 
 use Illuminate\Support\Collection;
+use JTL\Country\Country;
 use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
+use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
 
 /**
@@ -13,6 +15,8 @@ use JTL\Shop;
  */
 class Versandart
 {
+    use MagicCompatibilityTrait;
+
     /**
      * @var int
      */
@@ -114,9 +118,9 @@ class Versandart
     public $eSteuer;
 
     /**
-     * @var ?string
+     * @var null|Country
      */
-    public $cCountryCode;
+    public $country;
 
     /**
      * @var ?array
@@ -127,6 +131,13 @@ class Versandart
      * @var Collection
      */
     public $shippingSurcharges;
+
+    /**
+     * @var array
+     */
+    public static $mapping = [
+        'cCountryCode' => 'CountryCode'
+    ];
 
     /**
      * Versandart constructor.
@@ -145,7 +156,8 @@ class Versandart
      */
     public function loadFromDB(int $id): int
     {
-        $obj = Shop::Container()->getDB()->select('tversandart', 'kVersandart', $id);
+        $db  = Shop::Container()->getDB();
+        $obj = $db->select('tversandart', 'kVersandart', $id);
         if ($obj === null || !$obj->kVersandart) {
             return 0;
         }
@@ -154,7 +166,7 @@ class Versandart
             $this->$member = $obj->$member;
         }
         $this->kVersandart = (int)$this->kVersandart;
-        $localized         = Shop::Container()->getDB()->selectAll(
+        $localized         = $db->selectAll(
             'tversandartsprache',
             'kVersandart',
             $this->kVersandart
@@ -163,7 +175,7 @@ class Versandart
             $this->oVersandartSprache_arr[$translation->cISOSprache] = $translation;
         }
         // Versandstaffel
-        $this->oVersandartStaffel_arr = Shop::Container()->getDB()->selectAll(
+        $this->oVersandartStaffel_arr = $db->selectAll(
             'tversandartstaffel',
             'kVersandart',
             (int)$this->kVersandart
@@ -216,11 +228,12 @@ class Versandart
         if ($id <= 0) {
             return false;
         }
-        Shop::Container()->getDB()->delete('tversandart', 'kVersandart', $id);
-        Shop::Container()->getDB()->delete('tversandartsprache', 'kVersandart', $id);
-        Shop::Container()->getDB()->delete('tversandartzahlungsart', 'kVersandart', $id);
-        Shop::Container()->getDB()->delete('tversandartstaffel', 'kVersandart', $id);
-        Shop::Container()->getDB()->query(
+        $db = Shop::Container()->getDB();
+        $db->delete('tversandart', 'kVersandart', $id);
+        $db->delete('tversandartsprache', 'kVersandart', $id);
+        $db->delete('tversandartzahlungsart', 'kVersandart', $id);
+        $db->delete('tversandartstaffel', 'kVersandart', $id);
+        $db->query(
             'DELETE tversandzuschlag, tversandzuschlagplz, tversandzuschlagsprache
                 FROM tversandzuschlag
                 LEFT JOIN tversandzuschlagplz 
@@ -295,6 +308,7 @@ class Versandart
     private static function cloneShippingSection(array $objects, $table, $key, int $value, $unsetKey = null): void
     {
         if ($value > 0 && \is_array($objects) && \count($objects) > 0 && \mb_strlen($key) > 0) {
+            $db = Shop::Container()->getDB();
             foreach ($objects as $item) {
                 $primary = $item->$unsetKey;
                 if ($unsetKey !== null) {
@@ -304,7 +318,7 @@ class Versandart
                 if ($table === 'tversandartzahlungsart' && empty($item->fAufpreis)) {
                     $item->fAufpreis = 0;
                 }
-                $id = Shop::Container()->getDB()->insert($table, $item);
+                $id = $db->insert($table, $item);
 
                 if ($id > 0 && $table === 'tversandzuschlag') {
                     self::cloneShippingSectionSpecial($primary, $id);
@@ -378,9 +392,11 @@ class Versandart
      */
     public function getShippingSurchargeForZip(string $zip, string $ISO): ?ShippingSurcharge
     {
-        return $this->getShippingSurchargesForCountry($ISO)->filter(static function (ShippingSurcharge $surcharge) use ($zip) {
-            return $surcharge->hasZIPCode($zip);
-        })->pop();
+        return $this->getShippingSurchargesForCountry($ISO)
+            ->filter(static function (ShippingSurcharge $surcharge) use ($zip) {
+                return $surcharge->hasZIPCode($zip);
+            })
+            ->pop();
     }
 
 
@@ -401,5 +417,21 @@ class Versandart
         $this->shippingSurcharges = $shippingSurcharges;
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCountryCode(): string
+    {
+        return $this->country !== null ? $this->country->getISO() : '';
+    }
+
+    /**
+     * @param string $countryCode
+     */
+    public function setCountryCode(string $countryCode): void
+    {
+        $this->country = Shop::Container()->getCountryService()->getCountry($countryCode);
     }
 }

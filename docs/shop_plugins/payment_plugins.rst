@@ -40,7 +40,7 @@ Implementation einer Payment-Klasse bis einschl. JTL-Shop Version 4.x
      */
     class SimplePayment extends PaymentMethod
     {
-        ...
+        // ...
     }
 
 Implementation einer Payment-Klasse ab JTL-Shop Version 5.0
@@ -64,7 +64,7 @@ Implementation einer Payment-Klasse ab JTL-Shop Version 5.0
      */
     class SimplePayment extends Method
     {
-        ...
+        // ...
     }
 
 Die Basis-Payment-Klasse ``JTL\Plugin\Payment\Method`` implementiert das benötigte Interface und stellt alle

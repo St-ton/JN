@@ -6,6 +6,8 @@ use Illuminate\Support\Collection;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\License\Manager;
+use JTL\License\Struct\ExpiredExsLicense;
 use JTL\Plugin\Data\AdminMenu;
 use JTL\Plugin\Data\Cache;
 use JTL\Plugin\Data\Config;
@@ -94,7 +96,7 @@ abstract class AbstractLoader implements LoaderInterface
         );
         $links = new Links();
 
-        return $links->load($data);
+        return $links->load($data, $this->db);
     }
 
     /**
@@ -149,9 +151,9 @@ abstract class AbstractLoader implements LoaderInterface
             c.cWertName AS confName
             FROM tplugineinstellungenconf AS c
             LEFT JOIN tplugineinstellungenconfwerte AS v
-              ON c.kPluginEinstellungenConf = v.kPluginEinstellungenConf
+                ON c.kPluginEinstellungenConf = v.kPluginEinstellungenConf
             LEFT JOIN tplugineinstellungen AS e
-			  ON e.kPlugin = c.kPlugin AND e.cName = c.cWertName
+                ON e.kPlugin = c.kPlugin AND e.cName = c.cWertName
             WHERE c.kPlugin = :pid
             GROUP BY id, confValue
             ORDER BY c.nSort',
@@ -222,6 +224,15 @@ abstract class AbstractLoader implements LoaderInterface
         $license->setClass($data->cLizenzKlasse);
         $license->setClassName($data->cLizenzKlasseName);
         $license->setKey($data->cLizenz);
+        if (!empty($data->exsID)) {
+            $manager    = new Manager($this->db, $this->cache);
+            $exsLicense = $manager->getLicenseByExsID($data->exsID);
+            if ($exsLicense === null) {
+                $exsLicense = new ExpiredExsLicense();
+                $exsLicense->initFromPluginData($data);
+            }
+            $license->setExsLicense($exsLicense);
+        }
 
         return $license;
     }
@@ -268,6 +279,7 @@ abstract class AbstractLoader implements LoaderInterface
         }, $this->db->selectAll('tpluginadminmenu', 'kPlugin', $plugin->getID(), '*', 'nSort'));
         $menus = \collect($menus);
         $this->addMarkdownToAdminMenu($plugin, $menus);
+        $this->addLicenseInfo($plugin, $menus);
 
         $adminMenu = new AdminMenu();
         $adminMenu->setItems($menus);
@@ -317,7 +329,7 @@ abstract class AbstractLoader implements LoaderInterface
             $menu->pluginID         = $menu->kPlugin;
             $menu->nSort            = $items->count() + 1;
             $menu->sort             = $menu->nSort;
-            $menu->name             = 'licsense';
+            $menu->name             = 'license';
             $menu->cName            = __('Lizenzvereinbarungen');
             $menu->displayName      = $menu->cName;
             $menu->cDateiname       = $meta->getLicenseMD();
@@ -349,6 +361,43 @@ abstract class AbstractLoader implements LoaderInterface
             $menu->configurable     = false;
             $menu->isMarkdown       = true;
             $menu->tpl              = 'tpl_inc/plugin_changelog.tpl';
+            $menu->html             = '';
+            $items->push($menu);
+        }
+
+        return $items;
+    }
+
+    /**
+     * @param PluginInterface $plugin
+     * @param Collection      $items
+     * @return Collection
+     */
+    protected function addLicenseInfo(PluginInterface $plugin, Collection $items): Collection
+    {
+        $lastItem = $items->last();
+        $lastIdx  = $lastItem->idx ?? -1;
+        $license  = $plugin->getLicense()->getExsLicense();
+        if ($license !== null) {
+            ++$lastIdx;
+            $menu                   = new stdClass();
+            $menu->data             = $license;
+            $menu->kPluginAdminMenu = -1;
+            $menu->id               = 'plugin-license-' . $lastIdx;
+            $menu->kPlugin          = $plugin->getID();
+            $menu->pluginID         = $menu->kPlugin;
+            $menu->nSort            = $items->count() + 1;
+            $menu->sort             = $menu->nSort;
+            $menu->name             = 'licenseinfo';
+            $menu->cName            = __('Lizenz');
+            $menu->displayName      = $menu->cName;
+            $menu->cDateiname       = '';
+            $menu->file             = '';
+            $menu->idx              = $lastIdx;
+            $menu->nConf            = 0;
+            $menu->configurable     = false;
+            $menu->isMarkdown       = false;
+            $menu->tpl              = 'tpl_inc/plugin_license_info.tpl';
             $menu->html             = '';
             $items->push($menu);
         }
@@ -448,7 +497,7 @@ abstract class AbstractLoader implements LoaderInterface
             "SELECT *
                 FROM tzahlungsart
                 JOIN tpluginzahlungsartklasse
-		            ON tpluginzahlungsartklasse.cModulID = tzahlungsart.cModulId
+                    ON tpluginzahlungsartklasse.cModulID = tzahlungsart.cModulId
                 WHERE tzahlungsart.cModulId LIKE 'kPlugin\_" . $plugin->getID() . "%'",
             ReturnType::ARRAY_OF_OBJECTS
         );

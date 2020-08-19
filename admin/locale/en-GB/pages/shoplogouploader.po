@@ -36,4 +36,4 @@ msgid "yourLogo"
 msgstr "Your logo"
 
 msgid "errorLogoUpload"
-msgstr "Could not upload logo. Please update only files of the types jpeg, pjpeg, gif, png, bmp, x-png, or jpg. Check whether the file has a name and review the write access of folder %s."
+msgstr "Could not upload logo. Please update only files of the types %s. Check whether the file has a name and review the write access of folder %s."

@@ -46,9 +46,9 @@ final class CommentList implements ItemListInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    public function createItems(array $itemIDs): Collection
+    public function createItems(array $itemIDs, bool $activeOnly = true): Collection
     {
         $this->itemIDs = \array_map('\intval', $itemIDs);
         if (\count($this->itemIDs) === 0) {
@@ -59,7 +59,8 @@ final class CommentList implements ItemListInterface
                 FROM tnewskommentar
                 JOIN tnewssprache t 
                     ON t.kNews = tnewskommentar.kNews
-                WHERE kNewsKommentar IN (' . \implode(',', $this->itemIDs) . ')
+                WHERE kNewsKommentar IN (' . \implode(',', $this->itemIDs) . ')'
+                . ($activeOnly ? ' AND nAktiv = 1 ' : '') . '
                 GROUP BY tnewskommentar.kNewsKommentar
                 ORDER BY tnewskommentar.dErstellt DESC',
             ['nid' => $this->newsID],
@@ -83,7 +84,8 @@ final class CommentList implements ItemListInterface
     }
 
     /**
-     * @inheritdoc
+     * @param int $newsID
+     * @return Collection
      */
     public function createItemsByNewsItem(int $newsID): Collection
     {
@@ -92,8 +94,8 @@ final class CommentList implements ItemListInterface
             'SELECT *
                 FROM tnewskommentar
                 WHERE kNews = :nid
-                AND nAktiv = 1
-                ORDER BY tnewskommentar.dErstellt DESC',
+                    AND nAktiv = 1
+                    ORDER BY tnewskommentar.dErstellt DESC',
             ['nid' => $this->newsID],
             ReturnType::ARRAY_OF_OBJECTS
         );
@@ -125,7 +127,7 @@ final class CommentList implements ItemListInterface
     }
 
     /**
-     * @return Collection
+     * @inheritDoc
      */
     public function getItems(): Collection
     {
@@ -133,7 +135,28 @@ final class CommentList implements ItemListInterface
     }
 
     /**
-     * @param Collection $items
+     * @return Collection
+     */
+    public function getThreadedItems(): Collection
+    {
+        foreach ($this->items as $comment) {
+            foreach ($this->items as $child) {
+                if ($comment->getID() === $child->getParentCommentID()) {
+                    $comment->setChildComment($child);
+                }
+            }
+        }
+        foreach ($this->items as $key => $comment) {
+            if ($comment->getParentCommentID() > 0) {
+                unset($this->items[$key]);
+            }
+        }
+
+        return $this->items;
+    }
+
+    /**
+     * @inheritDoc
      */
     public function setItems(Collection $items): void
     {
@@ -141,7 +164,7 @@ final class CommentList implements ItemListInterface
     }
 
     /**
-     * @param Comment $item
+     * @inheritDoc
      */
     public function addItem($item): void
     {

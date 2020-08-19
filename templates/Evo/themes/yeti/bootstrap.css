@@ -11878,6 +11878,12 @@ li span.value {
   width: auto;
   height: 28px;
 }
+.border-none {
+  border: none;
+}
+.product-detail-video {
+  max-width: 100%;
+}
 @font-face {
   font-family: 'Open Sans';
   font-style: italic;
@@ -12245,6 +12251,7 @@ input[type="checkbox"] {
 }
 .navbar-default .nav > li > a,
 .navbar-inverse .nav > li > a {
+  padding: 13px 15px;
   margin-top: 2.5px;
   margin-bottom: 2.5px;
 }

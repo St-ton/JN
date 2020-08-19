@@ -14,6 +14,7 @@ use ZipArchive;
 /**
  * Class Extractor
  * @package JTL\Plugin\Admin\Installation
+ * @todo: this is now used by plugins and templates - should be refactored
  */
 class Extractor
 {
@@ -59,15 +60,36 @@ class Extractor
      */
     public function extractPlugin(string $zipFile): InstallationResponse
     {
-//        \set_error_handler([$this, 'handlExtractionErrors']);
-        $this->unzip($zipFile);
-//        \restore_error_handler();
+        $dirName = $this->unzip($zipFile);
+        try {
+            $this->moveToPluginsDir($dirName);
+        } catch (InvalidArgumentException $e) {
+            $this->response->setStatus(InstallationResponse::STATUS_FAILED);
+            $this->response->addMessage($e->getMessage());
+        }
 
         return $this->response;
     }
 
     /**
-     * @param int $errno
+     * @param string $zipFile
+     * @return InstallationResponse
+     */
+    public function extractTemplate(string $zipFile): InstallationResponse
+    {
+        $dirName = $this->unzip($zipFile);
+        try {
+            $this->moveToTemplatesDir($dirName);
+        } catch (InvalidArgumentException $e) {
+            $this->response->setStatus(InstallationResponse::STATUS_FAILED);
+            $this->response->addMessage($e->getMessage());
+        }
+
+        return $this->response;
+    }
+
+    /**
+     * @param int    $errno
      * @param string $errstr
      * @return bool
      */
@@ -133,17 +155,63 @@ class Extractor
     }
 
     /**
-     * @param string $zipFile
+     * @param string $dirName
      * @return bool
+     * @throws InvalidArgumentException
      */
-    private function unzip(string $zipFile): bool
+    private function moveToTemplatesDir(string $dirName): bool
+    {
+        $info = self::UNZIP_DIR . $dirName . \TEMPLATE_XML;
+        if (!\file_exists($info)) {
+            throw new InvalidArgumentException(\TEMPLATE_XML . ' does not exist: ' . $info);
+        }
+        $base = \PFAD_TEMPLATES;
+        $this->manager->mountFilesystem('tpl', Shop::Container()->get(\JTL\Filesystem\Filesystem::class));
+        $ok = @$this->manager->createDir('tpl://' . $base . $dirName);
+        if ($ok === false) {
+            $this->handlExtractionErrors(0, 'Cannot create ' . $base . $dirName);
+
+            return false;
+        }
+        foreach ($this->manager->listContents('root://' . \PFAD_DBES_TMP . $dirName, true) as $item) {
+            $source = $item['path'];
+            $target = $base . \str_replace(\PFAD_DBES_TMP, '', $source);
+            if ($item['type'] === 'dir') {
+                $ok = $ok && ($this->manager->has('tpl://' . $target)
+                        || @$this->manager->createDir('tpl://' . $target));
+            } else {
+                try {
+                    $ok = $ok && @$this->manager->move('root://' . $source, 'tpl://' . $target);
+                } catch (FileExistsException $e) {
+                    $ok = $ok
+                        && @$this->manager->delete('tpl://' . $target)
+                        && @$this->manager->move('root://' . $source, 'tpl://' . $target);
+                }
+            }
+        }
+        $this->rootSystem->deleteDir(\PFAD_DBES_TMP . $dirName);
+        if ($ok === true) {
+            $this->response->setPath($base . $dirName);
+
+            return true;
+        }
+        $this->handlExtractionErrors(0, 'Cannot move to ' . $base . $dirName);
+
+        return false;
+    }
+
+    /**
+     * @param string $zipFile
+     * @return string - path the zip was extracted to
+     */
+    private function unzip(string $zipFile): string
     {
         $dirName = '';
         $zip     = new ZipArchive();
         if (!$zip->open($zipFile) || $zip->numFiles === 0) {
             $this->handlExtractionErrors(0, 'Cannot open archive');
 
-            return false;
+            return $dirName;
         }
         for ($i = 0; $i < $zip->numFiles; $i++) {
             if ($i === 0) {
@@ -151,7 +219,7 @@ class Extractor
                 if (\mb_strpos($dirName, '.') !== false) {
                     $this->handlExtractionErrors(0, 'Invalid archive');
 
-                    return false;
+                    return $dirName;
                 }
                 \preg_match(self::GIT_REGEX, $dirName, $hits);
                 if (\count($hits) >= 3) {
@@ -173,14 +241,7 @@ class Extractor
         }
         $zip->close();
         $this->response->setPath(self::UNZIP_DIR . $dirName);
-        try {
-            $this->moveToPluginsDir($dirName);
-        } catch (InvalidArgumentException $e) {
-            $this->response->addMessage($e->getMessage());
 
-            return false;
-        }
-
-        return true;
+        return $dirName;
     }
 }

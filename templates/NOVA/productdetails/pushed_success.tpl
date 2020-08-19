@@ -21,7 +21,7 @@
             {block name='productdetails-pushed-success-product-cell'}
                 {col cols=12 md="{if $showXSellingCart}6{else}12{/if}" class="mb-3"}
                     {block name='productdetails-pushed-success-product-cell-content'}
-                        <div class="product-cell productbox-inner{if isset($class)} {$class}{/if}">
+                        <div class="productbox-inner{if isset($class)} {$class}{/if}">
                             {row}
                                 {col cols=12}
                                     {block name='productdetails-pushed-success-product-cell-subheading'}

@@ -66,6 +66,21 @@ class Comment implements CommentInterface
     private $text;
 
     /**
+     * @var int
+     */
+    private $isAdmin;
+
+    /**
+     * @var int
+     */
+    private $parentCommentID;
+
+    /**
+     * @var array
+     */
+    private $childComments = [];
+
+    /**
      * @var \DateTime
      */
     private $dateCreated;
@@ -105,6 +120,23 @@ class Comment implements CommentInterface
     }
 
     /**
+     * @inheritDoc
+     */
+    public function loadByParentCommentID(int $parentID): ?CommentInterface
+    {
+        $this->id = $parentID;
+        $comment  = $this->db->queryPrepared(
+            'SELECT *
+                FROM tnewskommentar
+                WHERE parentCommentID = :cid',
+            ['cid' => $this->id],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+
+        return $comment !== 0 && \count($comment) > 0 ? $this->map($comment) : null;
+    }
+
+    /**
      * @inheritdoc
      */
     public function map(array $comments): CommentInterface
@@ -117,6 +149,8 @@ class Comment implements CommentInterface
             $this->setName($comment->cName);
             $this->setMail($comment->cEmail);
             $this->setText($comment->cKommentar);
+            $this->setIsAdmin((int)$comment->isAdmin);
+            $this->setParentCommentID((int)$comment->parentCommentID);
             $this->setDateCreated($comment->dErstellt);
         }
 
@@ -300,5 +334,61 @@ class Comment implements CommentInterface
         $res['db'] = '*truncated*';
 
         return $res;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getIsAdmin(): int
+    {
+        return $this->isAdmin;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setIsAdmin(int $isAdmin): void
+    {
+        $this->isAdmin = $isAdmin;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getParentCommentID(): int
+    {
+        return $this->parentCommentID;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setParentCommentID(int $parentCommentID): void
+    {
+        $this->parentCommentID = $parentCommentID;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getChildComments(): array
+    {
+        return $this->childComments;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setChildComments(array $childComments): void
+    {
+        $this->childComments = $childComments;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setChildComment(object $childComment): void
+    {
+        $this->childComments[] = $childComment;
     }
 }

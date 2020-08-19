@@ -67,7 +67,7 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
             || strpos($item, 'skalieren') !== false
             || strpos($item, 'hintergrundfarbe') !== false
         ) {
-            $cachesToClear = $media->getAllClassNames();
+            $cachesToClear = $media->getRegisteredClassNames();
             break;
         }
     }
@@ -78,13 +78,13 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
 }
 
 $indices = [
-    'kategorien'    => __('category'),
+    'kategorien'    => __('categories'),
     'variationen'   => __('variations'),
     'artikel'       => __('product'),
     'hersteller'    => __('manufacturer'),
     'merkmal'       => __('attributes'),
     'merkmalwert'   => __('attributeValues'),
-    'konfiggruppe'  => __('configGroup'),
+    'konfiggruppe'  => __('configGroups'),
     'news'          => __('news'),
     'newskategorie' => __('newscategory')
 ];

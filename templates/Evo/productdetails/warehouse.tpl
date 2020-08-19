@@ -17,14 +17,10 @@
                 <td class="name"><strong>{$oWarenlager->getName()}</strong></td>
                 <td class="delivery-status">
                 {if $anzeige !== 'nichts'
-                    && $Artikel->cLagerBeachten === 'Y'
+                    && $oWarenlager->getBackorderString($Artikel) !== ''
                     && ($Artikel->cLagerKleinerNull === 'N'
-                        || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')
-                    && $oWarenlager->getStock() <= 0
-                    && $oWarenlager->getBackorder() > 0
-                    && $oWarenlager->getBackorderDate() !== null}
-                    {assign var=cZulauf value=$oWarenlager->getBackorder()|cat:':::'|cat:$oWarenlager->getBackorderDateDE()}
-                    <span class="signal_image status-1"><span>{lang key='productInflowing' section='productDetails' printf=$cZulauf}</span></span>
+                        || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')}
+                    <span class="signal_image status-1"><span>{$oWarenlager->getBackorderString($Artikel)}</span></span>
                 {elseif $anzeige === 'verfuegbarkeit' || $anzeige === 'genau'}
                     <span class="signal_image status-{$oWarenlager->oLageranzeige->nStatus}">{$oWarenlager->oLageranzeige->cLagerhinweis[$anzeige]}</span>
                 {elseif $anzeige === 'ampel'}

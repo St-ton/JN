@@ -3,7 +3,6 @@
 namespace JTL\OPC\Portlets\Divider;
 
 use JTL\OPC\Portlet;
-use JTL\OPC\PortletInstance;
 
 /**
  * Class Divider
@@ -12,31 +11,24 @@ use JTL\OPC\PortletInstance;
 class Divider extends Portlet
 {
     /**
-     * @param PortletInstance $instance
-     * @return string
-     */
-    public function getPreviewHtml(PortletInstance $instance): string
-    {
-        return '<hr ' . $instance->getAttributeString(). '>';
-    }
-
-    /**
-     * @param PortletInstance $instance
-     * @return string
-     */
-    public function getFinalHtml(PortletInstance $instance): string
-    {
-        return '<hr class="' . $instance->getStyleClasses() . '" ' . $instance->getAttributeString(). '>';
-    }
-
-    /**
      * @return array
      */
     public function getPropertyDesc(): array
     {
         return [
+            'title' => [
+                'label' => __('dividerTitle'),
+                'default' => __('Divider'),
+            ],
+            'moreLink' => [
+                'label' => __('dividerMoreLink'),
+            ],
+            'moreTitle' => [
+                'label' => __('dividerMoreTitle'),
+            ],
             'id' => [
-                'label' => 'ID',
+                'label' => __('dividerElmID'),
+                'desc'  => __('dividerIdDesc'),
             ],
         ];
     }

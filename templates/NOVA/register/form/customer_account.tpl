@@ -10,10 +10,12 @@
                     {col cols=12 md=4}
                         {if !$smarty.session.Warenkorb->hasDigitalProducts() && isset($checkout)
                             && $Einstellungen.kaufabwicklung.bestellvorgang_unregistriert === 'Y'}
-                            <div class="form-group checkbox control-toggle">
+                            <div class="form-group checkbox control-toggle mb-3 mb-md-0">
                                 {input type="hidden" name="unreg_form" value="1"}
                                 {checkbox id="checkout_create_account_unreg"
-                                    name="unreg_form" value="0" checked=($unregForm !== 1 && !empty($fehlendeAngaben))
+                                    name="unreg_form"
+                                    value="0"
+                                    checked=($unregForm !== 1 && !empty($fehlendeAngaben))
                                     data=["toggle"=>"collapse", "target"=>"#create_account_data"]}
                                     {lang key='createNewAccount' section='account data'}
                                 {/checkbox}
@@ -31,7 +33,7 @@
                         || ($unregForm !== 1 && !empty($fehlendeAngaben))}show{else}hidden{/if}" aria-expanded="true"}
                             {block name='register-form-customer-account-password-first'}
                                 {col cols=12 md=6}
-                                    <div class="form-group d-flex flex-column {if isset($fehlendeAngaben.pass_zu_kurz) || isset($fehlendeAngaben.pass_ungleich)} has-error{/if}" role="group">
+                                    <div class="form-group mb-3 mb-md-0 d-flex flex-column {if isset($fehlendeAngaben.pass_zu_kurz) || isset($fehlendeAngaben.pass_ungleich)} has-error{/if}" role="group">
                                         {input type="password"
                                             placeholder=" "
                                             id="password"
@@ -52,14 +54,14 @@
                                         {/if}
                                     </div>
                                     {block name='account-change-password-include-password-check'}
-                                        {include file='snippets/password_check.tpl' id='#password'}
+                                        {include file='snippets/password_check.tpl' id='#password' loadScript=true}
                                     {/block}
                                 {/col}
                             {/block}
                             {block name='register-form-customer-account-password-repeat'}
                                 {col cols=12 md=6}
                                     {formgroup
-                                        class="{if isset($fehlendeAngaben.pass_zu_kurz) || isset($fehlendeAngaben.pass_ungleich)} has-error{/if}"
+                                        class="mb-0 {if isset($fehlendeAngaben.pass_zu_kurz) || isset($fehlendeAngaben.pass_ungleich)} has-error{/if}"
                                         label="{lang key='passwordRepeat' section='account data'}"
                                         label-for="password2"
                                     }

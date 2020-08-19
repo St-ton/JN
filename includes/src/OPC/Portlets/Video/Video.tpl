@@ -35,55 +35,68 @@
 {else}
     <div id="{$instance->getUid()}" {$instance->getAttributeString()} class="{$instance->getStyleClasses()}">
         {if !empty($instance->getProperty('video-title'))}
-            <label>{$instance->getProperty('video-title')}</label>
+            <label>{$instance->getProperty('video-title')|escape:'html'}</label>
         {/if}
         {if $instance->getProperty('video-vendor') === 'youtube'}
-            <div{if $instance->getProperty('video-responsive')} class="embed-responsive embed-responsive-16by9"{/if}>
-                <iframe {strip}src="https://www.youtube-nocookie.com/embed/{$instance->getProperty('video-yt-id')}
+            <div{if $instance->getProperty('video-responsive')}
+                    class="embed-responsive embed-responsive-16by9"{/if}>
+                <iframe {strip}
+                    data-src="https://www.youtube-nocookie.com/embed/{$instance->getProperty('video-yt-id')|escape:'html'}
                     ?controls={$instance->getProperty('video-yt-controls')}
                     &loop={$instance->getProperty('video-yt-loop')}
                     &rel={$instance->getProperty('video-yt-rel')}
                     &showinfo=0&color={$instance->getProperty('video-yt-color')}
                     &iv_load_policy=3
-                    &playlist={$instance->getProperty('video-yt-playlist')}
+                    &playlist={$instance->getProperty('video-yt-playlist')|escape:'html'}
                     {if !empty($instance->getProperty('video-yt-start'))}&start={$instance->getProperty('video-yt-start')}{/if}
-                    {if !empty($instance->getProperty('video-yt-end'))}&end={$instance->getProperty('video-yt-end')}{/if}"{/strip}
+                    {if !empty($instance->getProperty('video-yt-end'))}&end={$instance->getProperty('video-yt-end')}{/if}"
+                    {/strip}
                         type="text/html"
+                        class="needs-consent youtube
+                            {if $instance->getProperty('video-responsive')}embed-responsive-item{/if}"
+                        frameborder="0" allowfullscreen>
                         {if !empty($instance->getProperty('video-title'))}
-                            title="{$instance->getProperty('video-title')}"
+                            title="{$instance->getProperty('video-title')|escape:'html'}"
                         {/if}
-                        {if $instance->getProperty('video-responsive')}
-                            class="embed-responsive-item"
-                        {else}
+                        {if !$instance->getProperty('video-responsive')}
                             width="{$instance->getProperty('video-width')}"
                             height="{$instance->getProperty('video-height')}"
-                        {/if}
-                        frameborder="0" allowfullscreen></iframe>
+                        {/if}</iframe>
+                <a href="#" class="trigger give-consent"
+                   data-consent="youtube"
+                   style="position:absolute;left:16px;top:16px;">Youtube Consent geben</a>
             </div>
         {elseif $instance->getProperty('video-vendor') === 'vimeo'}
-            <div{if $instance->getProperty('video-responsive')} class="embed-responsive embed-responsive-16by9"{/if}>
-                <iframe {strip}src="https://player.vimeo.com/video/{$instance->getProperty('video-vim-id')}
+            <div{if $instance->getProperty('video-responsive')}
+                    class="embed-responsive embed-responsive-16by9"{/if}>
+                <iframe {strip}
+                    data-src="https://player.vimeo.com/video/{$instance->getProperty('video-vim-id')|escape:'html'}
                     ?color={$instance->getProperty('video-vim-color')|replace:'#':''}
                     &portrait={$instance->getProperty('video-vim-img')}
-                    &title={$instance->getProperty('video-vim-title')}
+                    &title={$instance->getProperty('video-vim-title')|escape:'html'}
                     &byline={$instance->getProperty('video-vim-byline')}
-                    &loop={$instance->getProperty('video-vim-loop')}"{/strip}
+                    &loop={$instance->getProperty('video-vim-loop')}"
+                    {/strip}
+                        class="needs-consent vimeo
+                            {if $instance->getProperty('video-responsive')}embed-responsive-item{/if}"
                         frameborder="0" allowfullscreen
                         {if !empty($instance->getProperty('video-title'))}
                             title="{$instance->getProperty('video-title')}"
                         {/if}
-                        {if $instance->getProperty('video-responsive')}
-                            class="embed-responsive-item"
-                        {else}
-                            width="{$instance->getProperty('video-width')}" height="{$instance->getProperty('video-height')}"
+                        {if !$instance->getProperty('video-responsive')}
+                            width="{$instance->getProperty('video-width')}"
+                            height="{$instance->getProperty('video-height')}"
                         {/if}></iframe>
+                <a href="#" class="trigger give-consent"
+                   data-consent="vimeo"
+                   style="position:absolute;left:16px;top:16px;">Vimeo Consent geben</a>
             </div>
         {else}
             <div{if $instance->getProperty('video-responsive')} class="embed-responsive embed-responsive-16by9"{/if}>
                 <video width="{$instance->getProperty('video-width')}"
                        height="{$instance->getProperty('video-height')}"
                        controls style="">
-                    <source src="{$instance->getProperty('video-local-url')}" type="video/mp4">
+                    <source src="{$instance->getProperty('video-local-url')|escape:'html'}" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
             </div>

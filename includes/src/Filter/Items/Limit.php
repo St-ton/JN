@@ -28,7 +28,7 @@ class Limit extends AbstractFilter
     }
 
     /**
-     * @inheritdoc
+     * @return int
      */
     public function getProductsPerPageLimit(): int
     {
@@ -41,9 +41,14 @@ class Limit extends AbstractFilter
         ) {
             $limit = $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel;
         } else {
-            $limit = ($max = $this->getConfig('artikeluebersicht')['artikeluebersicht_artikelproseite']) !== 0
-                ? $max
-                : 20;
+            $type = 'artikeluebersicht_anzahl_darstellung' .
+                $this->getConfig('artikeluebersicht')['artikeluebersicht_erw_darstellung_stdansicht'];
+
+            if (($limit = $this->getConfig('artikeluebersicht')[$type]) === 0) {
+                $limit = ($max = $this->getConfig('artikeluebersicht')['artikeluebersicht_artikelproseite']) !== 0
+                    ? $max
+                    : 20;
+            }
         }
 
         return \min((int)$limit, \ARTICLES_PER_PAGE_HARD_LIMIT);

@@ -1,6 +1,6 @@
 {block name='productdetails-price'}
     {if $smarty.session.Kundengruppe->mayViewPrices()}
-        <div class="price_wrapper mb-4">
+        <div class="price_wrapper mb-md-4">
             {block name='productdetails-price-wrapper'}
             {if $Artikel->getOption('nShowOnlyOnSEORequest', 0) === 1}
                 {block name='productdetails-price-out-of-stock'}
@@ -106,7 +106,7 @@
                             {if $Einstellungen.artikeldetails.artikeldetails_uvp_anzeigen === 'Y' && $Artikel->fUVP > 0}
                                 {block name='productdetails-price-uvp'}
                                     <div class="suggested-price">
-                                        <abbr title="{lang key='suggestedPriceExpl' section='productDetails'}">{lang key='suggestedPrice' section='productDetails'}</abbr>:
+                                        <span>{lang key='suggestedPrice' section='productDetails'}</span>:
                                         <span class="value text-nowrap">{$Artikel->cUVPLocalized}</span>
                                     </div>
                                     {* Preisersparnis zur UVP anzeigen? *}

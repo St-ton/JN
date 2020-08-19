@@ -8,7 +8,10 @@
     var EvoClass = function() {};
 
     EvoClass.prototype = {
-        options: { captcha: {} },
+        options: {
+            captcha: {},
+            scrollSearch: '.smoothscroll-top-search'
+        },
 
         constructor: EvoClass,
 
@@ -18,55 +21,46 @@
             self.initSlick($('.evo-slider-half:not(.slick-initialized)'), 'slider-half');
             self.initSlick($('.evo-slider:not(.slick-initialized)'), 'product-slider');
             self.initSlick($('.news-slider:not(.slick-initialized)'), 'news-slider');
-            self.initSlick($('.evo-box-vertical:not(.slick-initialized)'), 'box-vertical')
-                .on('afterChange', function () {
-                    var heights = [];
-                    $('.evo-box-vertical:not(.eq-height) .product-wrapper').each(function (i, element) {
-                        var $element       = $(element);
-                        var elementHeight;
-                        // Should we include the elements padding in it's height?
-                        var includePadding = ($element.css('box-sizing') === 'border-box')
-                            || ($element.css('-moz-box-sizing') === 'border-box');
-
-                        if (includePadding) {
-                            elementHeight = $element.innerHeight();
-                        } else {
-                            elementHeight = $element.height();
-                        }
-
-                        heights.push(elementHeight);
-                    });
-                    $('.evo-box-vertical.evo-box-vertical:not(.eq-height) .product-wrapper')
-                        .css('height', Math.max.apply(window, heights) + 'px');
-                    $('.evo-box-vertical.evo-box-vertical:not(.eq-height)')
-                        .addClass('eq-height');
-            });
 
             $('.slick-lazy').on('mouseenter', function (e) {
                 let mainNode = $(this);
                 mainNode.removeClass('slick-lazy');
                 if (!mainNode.hasClass('slick-initialized')) {
+                    mainNode.find('.product-wrapper').removeClass('m-auto ml-auto mr-auto');
                     self.initSlick(mainNode, mainNode.data('slick-type'));
                 }
             });
 
             document.querySelectorAll('.slick-lazy').forEach(function(slickItem) {
                 let startX;
+                let supportsPassive = false;
+                try {
+                    let opts = Object.defineProperty({}, 'passive', {
+                        get: function() {
+                            supportsPassive = true;
+                        }
+                    });
+                    window.addEventListener("testPassive", null, opts);
+                    window.removeEventListener("testPassive", null, opts);
+                } catch (e) {}
+
                 slickItem.addEventListener('touchstart', function (e) {
                     startX = e.changedTouches[0].pageX;
-                });
+
+                },supportsPassive ? { passive: true } : false);
                 slickItem.addEventListener('touchmove', function (e) {
                     let mainNode = $(this);
                     if (!mainNode.hasClass('slick-initialized')
                         && Math.abs(startX - e.changedTouches[0].pageX) > 80
                     ) {
                         mainNode.removeClass('slick-lazy');
+                        mainNode.find('.product-wrapper').removeClass('m-auto ml-auto mr-auto');
                         self.initSlick(mainNode, mainNode.data('slick-type'));
                         if(mainNode.slick('getSlick').slideCount > mainNode.slick('slickGetOption', 'slidesToShow')) {
                             mainNode.slick('slickGoTo', 1);
                         }
                     }
-                });
+                }, supportsPassive ? { passive: true } : false);
             });
         },
 
@@ -104,19 +98,6 @@
                             }
                         }
                     ]
-                },
-                'box-vertical' : {
-                    arrows:          true,
-                    vertical:        true,
-                    adaptiveHeight:  true,
-                    swipeToSlide:    true,
-                    verticalSwiping: true,
-                    prevArrow:       '<button class="slick-up" aria-label="Previous" type="button">' +
-                    '<i class="fa fa-chevron-up"></i></button>',
-                    nextArrow:       '<button class="slick-down" aria-label="Next" type="button">' +
-                    '<i class="fa fa-chevron-down"></i></button>',
-                    lazyLoad:        'progressive',
-                    slidesToShow:    1
                 },
                 'product-slider' : {
                     rows:           0,
@@ -178,7 +159,7 @@
                         {
                             breakpoint: 1300,
                             settings: {
-                                slidesToShow:4,
+                                slidesToShow:5,
                                 arrows: true
                             }
                         }
@@ -483,12 +464,12 @@
             });
         },
 
-        initScrollEvents: function() {
-            //mobile search
+        initScrollSearchEvent: function() {
+            this.destroyScrollSearchEvent();
             let lastScroll       = 0,
-                $scrollTopSearch = $('.smoothscroll-top-search');
+                $scrollTopSearch = $(this.options.scrollSearch);
             if ($scrollTopSearch.length) {
-                $(document).on('scroll', function () {
+                $(document).on('scroll.search', function () {
                     let newScroll = $(this).scrollTop();
                     if (newScroll < lastScroll) {
                         if ($(window).scrollTop() > 100) {
@@ -502,6 +483,15 @@
                     lastScroll = newScroll;
                 });
             }
+        },
+
+        destroyScrollSearchEvent: function() {
+            $(this.options.scrollSearch).addClass('d-none');
+            $(document).off('scroll.search');
+        },
+
+        initScrollEvents: function() {
+            this.initScrollSearchEvent();
 
             //scroll top button
             let toTopbuttonVisible     = false,
@@ -649,38 +639,15 @@
             });
         },
 
-        spinner: function(target) {
-            var opts = {
-              lines: 12             // The number of lines to draw
-            , length: 7             // The length of each line
-            , width: 5              // The line thickness
-            , radius: 10            // The radius of the inner circle
-            , scale: 2.0            // Scales overall size of the spinner
-            , corners: 1            // Roundness (0..1)
-            , color: '#000'         // #rgb or #rrggbb
-            , opacity: 1/4          // Opacity of the lines
-            , rotate: 0             // Rotation offset
-            , direction: 1          // 1: clockwise, -1: counterclockwise
-            , speed: 1              // Rounds per second
-            , trail: 100            // Afterglow percentage
-            , fps: 20               // Frames per second when using setTimeout()
-            , zIndex: 2e9           // Use a high z-index by default
-            , className: 'spinner'  // CSS class to assign to the element
-            , top: '50%'            // center vertically
-            , left: '50%'           // center horizontally
-            , shadow: false         // Whether to render a shadow
-            , hwaccel: false        // Whether to use hardware acceleration (might be buggy)
-            , position: 'absolute'  // Element positioning
-            };
-
-            if (typeof target === 'undefined') {
-                target = document.getElementsByClassName('product-offer')[0];
+        startSpinner: function (target) {
+            target = target || $('body');
+            if ($('.jtl-spinner').length === 0) {
+                target.append('<div class="jtl-spinner"><i class="fa fa-spinner fa-pulse"></i></div>');
             }
-            if ((typeof target !== 'undefined' && target.id === 'result-wrapper') || $(target).hasClass('product-offer')) {
-                opts.position = 'fixed';
-            }
+        },
 
-            return new Spinner(opts).spin(target);
+        stopSpinner: function () {
+            $('.jtl-spinner').remove();
         },
 
         trigger: function(event, args) {
@@ -736,10 +703,8 @@
         },
 
         updateWishlistItem: function($wrapper) {
-            let formID   = 'wl-items-form',
-                $spinner = $.evo.extended().spinner($wrapper.get(0));
-
-            $wrapper.addClass('loading');
+            let formID   = 'wl-items-form';
+            $.evo.extended().startSpinner($wrapper);
             $.evo.io().call(
                 'updateWishlistItem',
                 [
@@ -747,14 +712,9 @@
                     $.evo.io().getFormValues(formID)
                 ],
                 $(this) , function(error, data) {
-                    $spinner.stop();
+                    $.evo.extended().stopSpinner();
                     $wrapper.removeClass('loading');
                 });
-        },
-
-        setCompareListHeight: function() {
-            var h = parseInt($('.comparelist .equal-height').outerHeight());
-            $('.comparelist .equal-height').height(h);
         },
 
         fixStickyElements: function() {
@@ -829,18 +789,28 @@
                     'min': parseInt(priceRangeMin),
                     'max': parseInt(priceRangeMax)
                 },
-                step: 1
+                step: 1,
+                format: {
+                    to: function (value) {
+                        return parseInt(value);
+                    },
+                    from: function (value) {
+                        return parseInt(value);
+                    }
+                }
             });
             $priceSlider.noUiSlider.on('change', function (values, handle) {
-                $priceRangeFrom.val(values[0]);
-                $priceRangeTo.val(values[1]);
                 setTimeout(function(){
                     $.evo.redirectToNewPriceRange(values[0] + '_' + values[1], redirect, $wrapper);
                 },0);
             });
-            $('.price-range-input').change(function () {
-                let prFrom = $priceRangeFrom.val(),
-                    prTo = $priceRangeTo.val();
+            $priceSlider.noUiSlider.on('update', function (values, handle) {
+                $priceRangeFrom.val(values[0]);
+                $priceRangeTo.val(values[1]);
+            });
+            $('.price-range-input').on('change', function () {
+                let prFrom = parseInt($priceRangeFrom.val()),
+                    prTo = parseInt($priceRangeTo.val());
                 $.evo.redirectToNewPriceRange(
                     (prFrom > 0 ? prFrom : priceRangeMin) + '_' + (prTo > 0 ? prTo : priceRangeMax),
                     redirect,
@@ -851,19 +821,17 @@
 
         initFilters: function (href) {
             let $wrapper = $('.js-collapse-filter'),
-                $spinner = $.evo.extended().spinner($wrapper.get(0))
                 self=this;
+            $.evo.extended().startSpinner($wrapper);
 
-            $wrapper.addClass('loading');
             $.ajax(href, {data: {'useMobileFilters':1}})
-            .done(function(data) {
-                $wrapper.html(data);
-                self.initPriceSlider($wrapper, false);
-            })
-            .always(function() {
-                $spinner.stop();
-                $wrapper.removeClass('loading');
-            });
+                .done(function(data) {
+                    $wrapper.html(data);
+                    self.initPriceSlider($wrapper, false);
+                })
+                .always(function() {
+                    $.evo.extended().stopSpinner();
+                });
         },
 
         initFilterEvents: function() {
@@ -977,7 +945,6 @@
             if ($('body').data('page') == 3) {
                 this.addInactivityCheck('#cart-form');
             }
-            this.setCompareListHeight();
             this.fixStickyElements();
             this.setWishlistVisibilitySwitches();
             this.initEModals();
@@ -990,16 +957,9 @@
         }
     };
 
-    var ie = /(msie|trident)/i.test(navigator.userAgent) ? navigator.userAgent.match(/(msie |rv:)(\d+(.\d+)?)/i)[2] : false;
-    if (ie && parseInt(ie) <= 9) {
-        $(document).ready(function () {
-            $.evo.register();
-        });
-    } else {
-        $(window).on('load', function () {
-            $.evo.register();
-        });
-    }
+    $(document).ready(function () {
+        $.evo.register();
+    });
 
     // PLUGIN DEFINITION
     // =================

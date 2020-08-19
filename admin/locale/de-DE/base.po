@@ -48,7 +48,7 @@ msgid "showedName"
 msgstr "Angezeigter Name"
 
 msgid "multipleChoice"
-msgstr "Mehrfachauswahl möglich mit gedrückter Strg- / Umschalttaste"
+msgstr "Mehrfachauswahl möglich"
 
 msgid "save"
 msgstr "Speichern"
@@ -305,6 +305,9 @@ msgstr "Keine Berechtigungen vorhanden"
 msgid "errorCSRF"
 msgstr "Cross-Site-Request-Forgery! Sind Cookies aktiviert?"
 
+msgid "errorCookieSettings"
+msgstr "Fehlerhafte Cookie-Einstellungen: Anmeldung nicht möglich. Bitte wenden Sie sich an den Support."
+
 msgid "errorSessionExpired"
 msgstr "Ihre Sitzung wurde zurückgesetzt. Bitte melden Sie sich neu an."
 
@@ -327,7 +330,10 @@ msgid "both"
 msgstr "Beide"
 
 msgid "successEmailSend"
-msgstr "Eine E-Mail mit weiteren Anweisungen wurde an die hinterlegte Adresse, sofern vorhanden, gesendet."
+msgstr "Eine E-Mail mit weiteren Anweisungen wurde an die hinterlegte Adresse gesendet."
+
+msgid "errorEmailNotFound"
+msgstr "Die E-Mail wurde nicht gefunden."
 
 msgid "successPasswordChange"
 msgstr "Passwort wurde erfolgreich geändert."
@@ -501,7 +507,7 @@ msgid "twoFactorAuth"
 msgstr "2-Faktor-Authentifizierung"
 
 msgid "activate"
-msgstr "aktivieren"
+msgstr "Aktivieren"
 
 msgid "permissions"
 msgstr "Berechtigungen"
@@ -1272,7 +1278,7 @@ msgid "more"
 msgstr "Mehr"
 
 msgid "insert"
-msgstr "einfügen"
+msgstr "Hinzufügen"
 
 msgid "pages"
 msgstr "Seiten"
@@ -1811,18 +1817,6 @@ msgstr "Zeitraum"
 msgid "directEntry"
 msgstr "Direkter Einstieg"
 
-msgid "width"
-msgstr "Breite"
-
-msgid "height"
-msgstr "Höhe"
-
-msgid "start"
-msgstr "Start"
-
-msgid "end"
-msgstr "Ende"
-
 msgid "color"
 msgstr "Farbe"
 
@@ -1925,6 +1919,18 @@ msgstr "Schließen"
 msgid "none"
 msgstr "Keine"
 
+msgid "successSave"
+msgstr "Erfolgreich gespeichert"
+
+msgid "errorSave"
+msgstr "Konnte nicht speichern"
+
+msgid "successDelete"
+msgstr "Erfolgreich gelöscht"
+
+msgid "errorDelete"
+msgstr "Konnte nicht löschen"
+
 msgid "filterManufacturers"
 msgstr "Alle Hersteller"
 
@@ -1945,3 +1951,33 @@ msgstr "Alle Kategorien"
 
 msgid "filterCharacteristics"
 msgstr "Merkmale"
+
+msgid "Updates available"
+msgstr "Updates verfügbar"
+
+msgid "validationErrorIncorrectEmail"
+msgstr "Bitte geben Sie eine korrekte E-Mail-Adresse an."
+
+msgid "Licenses expired"
+msgstr "Lizenzen abgelaufen"
+
+msgid "I understood this notice."
+msgstr "Ja, ich habe diesen Hinweis zur Kenntnis genommen."
+
+msgid "The following extensions do not have a valid license:"
+msgstr "Die folgenden Extensions haben keine gültige Lizenz:"
+
+msgid "Please uninstall this extensions or purchase a valid license."
+msgstr "Bitte deinstallieren Sie diese oder erwerben Sie eine gültige Lizenz."
+
+msgid "Further using these extensions will violate the license policy and may have legal consequences."
+msgstr "Eine weitere Nutzung stellt eine Lizenzverletzung dar und kann juristische Konsequenzen haben."
+
+msgid "Understood"
+msgstr "Verstanden"
+
+msgid "Disable plugins"
+msgstr "Plugins deaktivieren"
+
+msgid "Disable template"
+msgstr "Template deaktivieren"

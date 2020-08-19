@@ -48,7 +48,7 @@ msgid "showedName"
 msgstr "Displayed name"
 
 msgid "multipleChoice"
-msgstr "By holding the Ctrl key, you can select multiple options."
+msgstr "Multiple selections possible."
 
 msgid "save"
 msgstr "Save"
@@ -305,6 +305,9 @@ msgstr "No permissions available"
 msgid "errorCSRF"
 msgstr "Cross-site request forgery! Are cookies enabled?"
 
+msgid "errorCookieSettings"
+msgstr "Faulty cookie settings: login not possible. Please contact the Support team."
+
 msgid "errorSessionExpired"
 msgstr "Your session has been reset. Please log in again."
 
@@ -327,7 +330,10 @@ msgid "both"
 msgstr "Both"
 
 msgid "successEmailSend"
-msgstr "An email with further instructions has been sent to the indicated email address (if applicable)."
+msgstr "An email with further instructions has been sent to the indicated email address."
+
+msgid "errorEmailNotFound"
+msgstr "Email not found."
 
 msgid "successPasswordChange"
 msgstr "Password changed successfully."
@@ -501,7 +507,7 @@ msgid "twoFactorAuth"
 msgstr "Two-factor authentication"
 
 msgid "activate"
-msgstr "enable"
+msgstr "Enable"
 
 msgid "permissions"
 msgstr "Permissions"
@@ -1272,7 +1278,7 @@ msgid "more"
 msgstr "More"
 
 msgid "insert"
-msgstr "insert"
+msgstr "Insert"
 
 msgid "pages"
 msgstr "Pages"
@@ -1811,18 +1817,6 @@ msgstr "Period"
 msgid "directEntry"
 msgstr "Direct entry"
 
-msgid "width"
-msgstr "Width"
-
-msgid "height"
-msgstr "Height"
-
-msgid "start"
-msgstr "Start"
-
-msgid "end"
-msgstr "End"
-
 msgid "color"
 msgstr "Colour"
 
@@ -1925,6 +1919,18 @@ msgstr "Close"
 msgid "none"
 msgstr "None"
 
+msgid "successSave"
+msgstr "Successfully saved"
+
+msgid "errorSave"
+msgstr "Could not save"
+
+msgid "successDelete"
+msgstr "Successfully deleted"
+
+msgid "errorDelete"
+msgstr "Could not delete"
+
 msgid "filterManufacturers"
 msgstr "Manufacturers"
 
@@ -1945,3 +1951,33 @@ msgstr "Categories"
 
 msgid "filterCharacteristics"
 msgstr "Characteristics"
+
+msgid "Updates available"
+msgstr "Updates available"
+
+msgid "validationErrorIncorrectEmail"
+msgstr "Please enter a valid email address."
+
+msgid "Licenses expired"
+msgstr "Licenses expired"
+
+msgid "I understood this notice."
+msgstr "I understood this notice."
+
+msgid "The following extensions do not have a valid license:"
+msgstr "The following extensions do not have a valid license:"
+
+msgid "Please uninstall this extensions or purchase a valid license."
+msgstr "Please uninstall this extensions or purchase a valid license."
+
+msgid "Further using these extensions will violate the license policy and may have legal consequences."
+msgstr "Further using these extensions will violate the license policy and may have legal consequences."
+
+msgid "Understood"
+msgstr "Understood"
+
+msgid "Disable plugins"
+msgstr "Disable plugins"
+
+msgid "Disable template"
+msgstr "Disable template"

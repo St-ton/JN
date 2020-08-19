@@ -4,6 +4,7 @@ namespace JTL\Session\Handler;
 
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use stdClass;
 
 /**
  * Class DB
@@ -91,7 +92,7 @@ class DB extends JTLDefault
         // if yes,
         if (!empty($res)) {
             //...update session data
-            $update                  = new \stdClass();
+            $update                  = new stdClass();
             $update->nSessionExpires = $newExp;
             $update->cSessionData    = $sessData;
             // if something happened, return true
@@ -100,7 +101,7 @@ class DB extends JTLDefault
             }
         } else {
             // if no session was found, create a new row
-            $session                  = new \stdClass();
+            $session                  = new stdClass();
             $session->cSessionId      = $sessID;
             $session->nSessionExpires = $newExp;
             $session->cSessionData    = $sessData;

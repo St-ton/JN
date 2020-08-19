@@ -2,8 +2,8 @@
 
 namespace JTL\Backend;
 
-use JTL\Helpers\Template;
 use JTL\Shop;
+use JTL\Template\XMLReader;
 use SimpleXMLElement;
 
 /**
@@ -31,11 +31,6 @@ class AdminTemplate
      * @var bool
      */
     private static $isAdmin = true;
-
-    /**
-     * @var Template
-     */
-    private static $helper;
 
     /**
      * @var string
@@ -67,7 +62,6 @@ class AdminTemplate
      */
     public function __construct()
     {
-        self::$helper = Template::getInstance(true);
         $this->init();
         self::$instance = $this;
     }
@@ -87,7 +81,7 @@ class AdminTemplate
      */
     public function getConfig()
     {
-        return self::$helper->getConfig(self::$cTemplate);
+        return false;
     }
 
     /**
@@ -142,8 +136,9 @@ class AdminTemplate
                 'admin_css' => [],
                 'admin_js'  => []
             ];
+            $reader    = new XMLReader();
             foreach ($folders as $dir) {
-                $xml = self::$helper->getXML($dir, true);
+                $xml = $reader->getXML($dir, true);
                 if ($xml === null) {
                     continue;
                 }
@@ -158,8 +153,8 @@ class AdminTemplate
                     foreach ($css->File as $cssFile) {
                         $file     = (string)$cssFile->attributes()->Path;
                         $filePath = self::$isAdmin === false
-                            ? \PFAD_ROOT . \PFAD_TEMPLATES . $xml->Ordner . '/' . $file
-                            : \PFAD_ROOT . \PFAD_ADMIN . \PFAD_TEMPLATES . $xml->Ordner . '/' . $file;
+                            ? \PFAD_ROOT . \PFAD_TEMPLATES . $xml->dir . '/' . $file
+                            : \PFAD_ROOT . \PFAD_ADMIN . \PFAD_TEMPLATES . $xml->dir . '/' . $file;
                         if (\file_exists($filePath)) {
                             $tplGroups[$name][] = ($absolute === true ? \PFAD_ROOT : '') .
                                 (self::$isAdmin === true ? \PFAD_ADMIN : '') .
@@ -177,7 +172,7 @@ class AdminTemplate
                         }
                     }
                     // assign custom.css
-                    $customFilePath = \PFAD_ROOT . 'templates/' . $xml->Ordner . '/themes/custom.css';
+                    $customFilePath = \PFAD_ROOT . 'templates/' . $xml->dir . '/themes/custom.css';
                     if (\file_exists($customFilePath)) {
                         $tplGroups[$name][] = (($absolute === true) ? \PFAD_ROOT : '') .
                             (self::$isAdmin === true ? \PFAD_ADMIN : '') .

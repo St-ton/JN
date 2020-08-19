@@ -95,7 +95,7 @@ if (Form::checkSubject()) {
     $smarty->assign('step', $step)
            ->assign('code', false)
            ->assign('betreffs', $subjects)
-           ->assign('Vorgaben', Form::baueKontaktFormularVorgaben())
+           ->assign('Vorgaben', Form::baueKontaktFormularVorgaben($step === 'nachricht versendet'))
            ->assign('fehlendeAngaben', $missingData)
            ->assign('nAnzeigeOrt', CHECKBOX_ORT_KONTAKT);
 } else {

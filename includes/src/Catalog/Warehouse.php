@@ -4,6 +4,7 @@ namespace JTL\Catalog;
 
 use DateTime;
 use Exception;
+use JTL\Catalog\Product\Artikel;
 use JTL\DB\ReturnType;
 use JTL\MainModel;
 use JTL\Shop;
@@ -704,5 +705,28 @@ class Warehouse extends MainModel
         }
 
         return $this;
+    }
+
+    /**
+     * @param Artikel $item
+     * @return string
+     */
+    public function getBackorderString(Artikel $item):string
+    {
+        $backorder = '';
+        if ($item->cLagerBeachten === 'Y'
+            && $this->getStock() <= 0
+            && $this->getBackorder() > 0
+            && $this->getBackorderDate() !== null
+        ) {
+            $backorder = \sprintf(
+                Shop::Lang()->get('productInflowing', 'productDetails'),
+                $this->getBackorder(),
+                $item->cEinheit,
+                $this->getBackorderDateDE()
+            );
+        }
+
+        return $backorder;
     }
 }

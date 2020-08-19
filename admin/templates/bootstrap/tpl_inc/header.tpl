@@ -70,7 +70,7 @@
                         <li class="nav-item dropdown mr-md-3" id="favs-drop">
                             {include file="tpl_inc/favs_drop.tpl"}
                         </li>
-                        <li class="nav-item dropdown">
+                        <li class="nav-item dropdown fa-lg">
                             <a href="#" class="nav-link text-dark-gray px-2" data-toggle="dropdown">
                                 <span class="fal fa-map-marker-question fa-fw"></span>
                             </a>
@@ -94,7 +94,8 @@
                                 </a>
                             </div>
                         </li>
-                        <li class="nav-item dropdown" id="notify-drop">{include file="tpl_inc/notify_drop.tpl"}</li>
+                        <li class="nav-item dropdown fa-lg" id="notify-drop">{include file="tpl_inc/notify_drop.tpl"}</li>
+                        <li class="nav-item dropdown fa-lg" id="updates-drop">{include file="tpl_inc/updates_drop.tpl"}</li>
                         <li class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle parent btn-toggle" data-toggle="dropdown">
                                 <i class="fal fa-language d-sm-none"></i> <span class="d-sm-block d-none">{$languageName}</span>
@@ -117,7 +118,7 @@
                             <img src="{getAvatar account=$account}" class="img-circle">
                         </button>
                         <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item link-shop" href="{$URL_SHOP}" title="Zum Shop">
+                            <a class="dropdown-item link-shop" href="{$URL_SHOP}" title="{__('goShop')}" target="_blank">
                                 <i class="fa fa-shopping-cart"></i> {__('goShop')}
                             </a>
                             <a class="dropdown-item link-logout" href="logout.php?token={$smarty.session.jtl_token}"
@@ -129,6 +130,76 @@
                 </div>
                 <div class="opaque-background"></div>
             </div>
+            {if $expiredLicenses->count() > 0}
+                <div class="modal fade in" id="expiredLicensesNotice" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="staticBackdropLabel">{__('Licenses expired')}</h5>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-2"><i class="fa fa-exclamation-triangle" style="font-size: 8em; padding-bottom:10px; color: red;"></i></div>
+                                    <div class="col-md-10 ml-auto">
+                                        <p class="alert alert-danger">{__('The following extensions do not have a valid license:')}</p>
+                                        {form id="plugins-disable-form"}
+                                            <input type="hidden" name="action" value="disable-expired-plugins">
+                                            <ul>
+                                                {$hasPlugin = false}
+                                                {$hasTemplate = false}
+                                                {foreach $expiredLicenses as $license}
+                                                    {if $license->getType() === 'plugin'}
+                                                        {$hasPlugin = true}
+                                                    {elseif $license->getType() === 'template'}
+                                                        {$hasTemplate = true}
+                                                    {/if}
+                                                    <li>{$license->getName()}</li>
+                                                    <input type="hidden" name="pluginID[]" value="{$license->getReferencedItem()->getInternalID()}">
+                                                {/foreach}
+                                            </ul>
+                                        {/form}
+                                        <p>{__('Please uninstall this extensions or purchase a valid license.')}</p>
+                                    </div>
+                                </div>
+                                <p><strong>{__('Further using these extensions will violate the license policy and may have legal consequences.')}</strong></p>
+                            </div>
+                            <div class="modal-footer">
+                                <input type="checkbox" id="understood-license-notice">
+                                <label for="understood-license-notice">{__('I understood this notice.')}</label>
+                                <button type="button" class="btn btn-default" disabled data-dismiss="modal" id="licenseUnderstood">{__('Understood')}</button>
+                                {if $hasPlugin === true}
+                                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="licenseDisablePlugins">{__('Disable plugins')}</button>
+                                {/if}
+                                {if $hasTemplate === true}
+                                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="licenseGotoTemplates">{__('Disable template')}</button>
+                                {/if}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    $(document).ready(function() {
+                        $('#expiredLicensesNotice').modal('show');
+                        $('#understood-license-notice').on('click', function (e) {
+                            $('#licenseUnderstood').attr('disabled', false);
+                        });
+                        $('#licenseUnderstood').on('click', function (e) {
+                            var newURL = new URL(window.location.href);
+                            newURL.searchParams.append('licensenoticeaccepted', 'true');
+                            window.location.href = newURL.toString();
+                            return true;
+                        });
+                        $('#licenseDisablePlugins').on('click', function (e) {
+                            $('#plugins-disable-form').submit();
+                            return true;
+                        });
+                        $('#licenseGotoTemplates').on('click', function (e) {
+                            window.location.href = '{$shopURL}/{$smarty.const.PFAD_ADMIN}shoptemplate.php?licensenoticeaccepted=true';
+                            return true;
+                        });
+                    });
+                </script>
+            {/if}
             {/if}
             <div class="backend-content" id="content_wrapper">
 

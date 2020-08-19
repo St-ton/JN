@@ -2,6 +2,8 @@
 
 namespace JTL\Plugin;
 
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
 use JTL\Plugin\Data\AdminMenu;
 use JTL\Plugin\Data\Cache;
 use JTL\Plugin\Data\Config;
@@ -216,4 +218,16 @@ interface PluginInterface
      * @return Version
      */
     public function getCurrentVersion(): Version;
+
+    /**
+     * @param int                    $newState
+     * @param DbInterface|null       $db
+     * @param JTLCacheInterface|null $cache
+     * @return int
+     */
+    public function selfDestruct(
+        int $newState = State::DISABLED,
+        DbInterface $db = null,
+        JTLCacheInterface $cache = null
+    ): int;
 }

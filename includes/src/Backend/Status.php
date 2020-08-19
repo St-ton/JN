@@ -164,9 +164,10 @@ class Status
      */
     public function validFolderPermissions(): bool
     {
-        $permissionStat = (new Filesystem(\PFAD_ROOT))->getFolderStats();
+        $filesystem = new Filesystem(\PFAD_ROOT);
+        $filesystem->getFoldersChecked();
 
-        return $permissionStat->nCountInValid === 0;
+        return $filesystem->getFolderStats()->nCountInValid === 0;
     }
 
     /**

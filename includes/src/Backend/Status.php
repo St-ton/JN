@@ -30,9 +30,9 @@ use function Functional\some;
 class Status
 {
     /**
-     * @var array
+     * @var JTLCacheInterface
      */
-    protected $cache = [];
+    protected $cache;
 
     /**
      * @var DbInterface
@@ -42,37 +42,36 @@ class Status
 
     private static $instance;
 
+    public const CACHE_ID_FOLDER_PERMISSIONS = 'validFolderPermissions';
+
     /**
      * Status constructor.
      * @param DbInterface $db
+     * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db)
+    public function __construct(DbInterface $db, JTLCacheInterface $cache)
     {
-        $this->db       = $db;
+        $this->db    = $db;
+        $this->cache = $cache;
+
         self::$instance = $this;
     }
 
     /**
      * @param DbInterface $db
+     * @param JTLCacheInterface $cache
+     * @param bool $flushCache
      * @return Status
      */
-    public static function getInstance(DbInterface $db): self
+    public static function getInstance(DbInterface $db, JTLCacheInterface $cache, bool $flushCache = false): self
     {
-        return static::$instance ?? new self($db);
-    }
+        $instance = static::$instance ?? new self($db, $cache);
 
-    /**
-     * @param string $name
-     * @param mixed  $arguments
-     * @return mixed
-     */
-    public function __call($name, $arguments)
-    {
-        if (!isset($this->cache[$name])) {
-            $this->cache[$name] = \call_user_func_array([&$this, $name], $arguments);
+        if ($flushCache) {
+            $instance->flushCache();
         }
 
-        return $this->cache[$name];
+        return $instance;
     }
 
     /**
@@ -80,7 +79,7 @@ class Status
      */
     public function getObjectCache(): JTLCacheInterface
     {
-        return Shop::Container()->getCache()->setJtlCacheConfig(
+        return $this->cache->setJtlCacheConfig(
             $this->db->selectAll('teinstellungen', 'kEinstellungenSektion', \CONF_CACHING)
         );
     }
@@ -164,15 +163,18 @@ class Status
      */
     public function validFolderPermissions(): bool
     {
-        $cacheID = 'validFolderPermissions';
-        if (($filesystemFolderStats = Shop::Container()->getCache()->get($cacheID)) === false) {
+        if (($filesystemFolders = $this->cache->get(self::CACHE_ID_FOLDER_PERMISSIONS)) === false) {
             $filesystem = new Filesystem(\PFAD_ROOT);
             $filesystem->getFoldersChecked();
-            $filesystemFolderStats = $filesystem->getFolderStats();
-            Shop::Container()->getCache()->set($cacheID, $filesystemFolderStats, [\CACHING_GROUP_OBJECT]);
+            $filesystemFolders = $filesystem->getFolderStats();
+            $this->cache->set(
+                self::CACHE_ID_FOLDER_PERMISSIONS,
+                $filesystemFolders,
+                [\CACHING_GROUP_OBJECT]
+            );
         }
 
-        return $filesystemFolderStats->nCountInValid === 0;
+        return $filesystemFolders->nCountInValid === 0;
     }
 
     /**
@@ -400,7 +402,7 @@ class Status
      */
     public function hasLicenseExpirations(): bool
     {
-        $manager = new Manager($this->db, Shop::Container()->getCache());
+        $manager = new Manager($this->db, $this->cache);
         $mapper  = new Mapper($manager);
 
         return $mapper->getCollection()->getAboutToBeExpired(28)->count() > 0;
@@ -544,5 +546,13 @@ class Status
     public function hasExtensionSOAP(): bool
     {
         return \extension_loaded('soap');
+    }
+
+    /**
+     *
+     */
+    private function flushCache(): void
+    {
+        $this->cache->flush(self::CACHE_ID_FOLDER_PERMISSIONS);
     }
 }

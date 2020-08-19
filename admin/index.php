@@ -2,6 +2,7 @@
 
 use JTL\Alert\Alert;
 use JTL\Backend\AdminLoginStatus;
+use JTL\Backend\Status;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -73,7 +74,7 @@ if (Request::postInt('adminlogin') === 1) {
                 break;
 
             case AdminLoginStatus::LOGIN_OK:
-                $cache->flush('validFolderPermissions');
+                $cache->flush(Status::CACHE_ID_FOLDER_PERMISSIONS);
                 Backend::getInstance()->reHash();
                 $_SESSION['loginIsValid'] = true; // "enable" the "header.tpl"-navigation again
                 if ($oAccount->permission('SHOP_UPDATE_VIEW') && $oUpdater->hasPendingUpdates()) {

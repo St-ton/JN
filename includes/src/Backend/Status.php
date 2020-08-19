@@ -43,6 +43,7 @@ class Status
     private static $instance;
 
     public const CACHE_ID_FOLDER_PERMISSIONS = 'validFolderPermissions';
+    public const CACHE_ID_DATABASE_STRUCT    = 'validDatabaseStruct';
 
     /**
      * Status constructor.
@@ -114,12 +115,22 @@ class Status
      */
     public function validDatabaseStruct(): bool
     {
-        require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'dbcheck_inc.php';
+        if (($dbStruct = $this->cache->get(self::CACHE_ID_DATABASE_STRUCT)) === false) {
+            require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'dbcheck_inc.php';
 
-        $current  = \getDBStruct(true);
-        $original = \getDBFileStruct();
+            $dbStruct['current']  = \getDBStruct(true);
+            $dbStruct['original'] = \getDBFileStruct();
 
-        return \is_array($current) && \is_array($original) && \count(\compareDBStruct($original, $current)) === 0;
+            $this->cache->set(
+                self::CACHE_ID_DATABASE_STRUCT,
+                $dbStruct,
+                [\CACHING_GROUP_OBJECT]
+            );
+        }
+
+        return \is_array($dbStruct['current'])
+            && \is_array($dbStruct['original'])
+            && \count(\compareDBStruct($dbStruct['original'], $dbStruct['current'])) === 0;
     }
 
     /**
@@ -281,6 +292,7 @@ class Status
 
     /**
      * @return bool
+     * @throws Exception
      */
     public function hasStandardTemplateIssue(): bool
     {
@@ -553,6 +565,15 @@ class Status
      */
     private function flushCache(): void
     {
-        $this->cache->flush(self::CACHE_ID_FOLDER_PERMISSIONS);
+        try {
+            $reflection = new \ReflectionClass(__CLASS__);
+            foreach ($reflection->getConstants() as $key => $classConst) {
+                if (\strpos($key, 'CACHE_ID') !== false) {
+                    $this->cache->flush($classConst);
+                }
+            }
+        } catch (\ReflectionException $e) {
+            Shop::Container()->getLogService()->notice($e->getMessage());
+        }
     }
 }

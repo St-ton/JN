@@ -74,7 +74,7 @@ if (Request::postInt('adminlogin') === 1) {
                 break;
 
             case AdminLoginStatus::LOGIN_OK:
-                $cache->flush(Status::CACHE_ID_FOLDER_PERMISSIONS);
+                Status::getInstance($db, $cache, true);
                 Backend::getInstance()->reHash();
                 $_SESSION['loginIsValid'] = true; // "enable" the "header.tpl"-navigation again
                 if ($oAccount->permission('SHOP_UPDATE_VIEW') && $oUpdater->hasPendingUpdates()) {

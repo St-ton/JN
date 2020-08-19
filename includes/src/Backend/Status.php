@@ -118,6 +118,7 @@ class Status
         if (($dbStruct = $this->cache->get(self::CACHE_ID_DATABASE_STRUCT)) === false) {
             require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'dbcheck_inc.php';
 
+            $dbStruct             = [];
             $dbStruct['current']  = \getDBStruct(true);
             $dbStruct['original'] = \getDBFileStruct();
 

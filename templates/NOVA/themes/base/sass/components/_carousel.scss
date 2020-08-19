@@ -158,7 +158,9 @@
 }
 
 .slick-type-product ,
-.slick-type-half {
+.slick-type-half ,
+.slick-type-news ,
+.slick-type-box {
 	.slick-list {
 		@include media-breakpoint-down(md) {
 			padding-right: 50px;

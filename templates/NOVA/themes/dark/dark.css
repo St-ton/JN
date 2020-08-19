@@ -20368,7 +20368,9 @@ aside .box-monthlynews a .value:hover {
 
 @media (max-width: 991.98px) {
   .slick-type-product .slick-list,
-.slick-type-half .slick-list {
+.slick-type-half .slick-list,
+.slick-type-news .slick-list,
+.slick-type-box .slick-list {
     padding-right: 50px;
   }
 }

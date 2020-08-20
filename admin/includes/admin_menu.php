@@ -415,7 +415,7 @@ $adminMenu = [
                 ],
                 __('Set up') => (object)[
                     'link'   => 'wizard.php',
-                    'permissions' => 'RESET_SHOP_VIEW',
+                    'permissions' => 'WIZARD_VIEW',
                     'excludeFromAccessView' => true,
                 ],
             ],

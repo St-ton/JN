@@ -42,6 +42,8 @@ class Migration_20191212093000 extends Migration implements IMigration
                 ]
             );
         }
+        $this->execute("INSERT INTO `tadminrecht` (`cRecht`, `cBeschreibung`)
+            VALUES ('WIZARD_VIEW', 'Set up wizard')");
     }
 
     /**
@@ -50,5 +52,6 @@ class Migration_20191212093000 extends Migration implements IMigration
     public function down()
     {
         $this->removeConfig('global_wizard_done');
+        $this->execute("DELETE FROM `tadminrecht` WHERE `cRecht` = 'WIZARD_VIEW'");
     }
 }

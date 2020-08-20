@@ -39,7 +39,7 @@ if (Request::postVar('action') === 'code') {
 }
 if (Request::postVar('action') !== 'code') {
     unset($_SESSION['wizard-authenticated']);
-    $oAccount->redirectOnFailure();
+    $oAccount->permission('WIZARD_VIEW', true, true);
     $smarty->assign('steps', $controller->getSteps())
         ->assign('authRedirect', $authRedirect)
         ->assign('hasAuth', $token->isValid())

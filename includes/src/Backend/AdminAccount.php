@@ -335,18 +335,24 @@ class AdminAccount
      */
     private function getAttributes(int $userID)
     {
-        $attributes = reindex($this->db->queryPrepared(
-            'SELECT cName, cAttribText, cAttribValue FROM tadminloginattribut
-                WHERE kAdminlogin = :userID',
-            ['userID' => $userID],
-            ReturnType::ARRAY_OF_OBJECTS
-        ), static function ($e) {
-            return $e->cName;
-        });
-        if (!empty($attributes) && isset($attributes['useAvatarUpload'])) {
-            $attributes['useAvatarUpload']->cAttribValue = Shop::getImageBaseURL() .
-                \ltrim($attributes['useAvatarUpload']->cAttribValue, '/');
+        // try, because of SHOP-4319
+        try {
+            $attributes = reindex($this->db->queryPrepared(
+                'SELECT cName, cAttribText, cAttribValue FROM tadminloginattribut
+                    WHERE kAdminlogin = :userID',
+                ['userID' => $userID],
+                ReturnType::ARRAY_OF_OBJECTS
+            ), static function ($e) {
+                return $e->cName;
+            });
+            if (!empty($attributes) && isset($attributes['useAvatarUpload'])) {
+                $attributes['useAvatarUpload']->cAttribValue = Shop::getImageBaseURL() .
+                    \ltrim($attributes['useAvatarUpload']->cAttribValue, '/');
+            }
+        } catch (Exception $e) {
+            $attributes = null;
         }
+
         return $attributes;
     }
 

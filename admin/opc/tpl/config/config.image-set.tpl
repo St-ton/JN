@@ -21,7 +21,11 @@
             </button>
         </div>
         <div class="slide-image-col">
-            {$imgUrl = $slideData.url|default:'opc/gfx/upload-stub.png'}
+            {if empty($slideData.url)}
+                {$imgUrl = 'opc/gfx/upload-stub.png'}
+            {else}
+                {$imgUrl = \Shop::getURL()|cat:'/'|cat:\STORAGE_OPC|cat:($slideData.url|basename)}
+            {/if}
             <div style="background-image: url('{$imgUrl}')" class="slide-image-btn"
                  onclick="opc.gui.openElFinder(elfinderCallback_{$propname}.bind(this), 'Bilder')">
 

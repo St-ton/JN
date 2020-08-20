@@ -25,7 +25,7 @@ class Migration_20170613144859 extends Migration implements IMigration
      */
     public function up()
     {
-        $template = Shop::Container()->getTemplateService()->getActiveTemplate();
+        $template = Shop::Container()->getTemplateService()->getActiveTemplate(false);
         $config   = new Config($template->getDir(), $this->getDB());
         $settings = Shop::getSettings([\CONF_TEMPLATE])['template'];
         if ($template->getName() === 'Evo' || $template->getParent() === 'Evo') {
@@ -46,7 +46,7 @@ class Migration_20170613144859 extends Migration implements IMigration
      */
     public function down()
     {
-        $currentTemplate = Shop::Container()->getTemplateService()->getActiveTemplate();
+        $currentTemplate = Shop::Container()->getTemplateService()->getActiveTemplate(false);
         $this->execute("DELETE FROM ttemplateeinstellungen
             WHERE cTemplate = '" . $currentTemplate->getDir() . "' AND cSektion = 'productlist'");
     }

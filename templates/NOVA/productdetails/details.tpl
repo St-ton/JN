@@ -159,7 +159,7 @@
                             {if $Einstellungen.artikeldetails.artikeldetails_kurzbeschreibung_anzeigen === 'Y' && $Artikel->cKurzBeschreibung}
                                 {block name='productdetails-details-info-description'}
                                     {opcMountPoint id='opc_before_short_desc'}
-                                    <div class="shortdesc mb-2 d-none d-md-block" itemprop="description">
+                                    <div class="shortdesc mb-3" itemprop="description">
                                         {$Artikel->cKurzBeschreibung}
                                     </div>
                                 {/block}

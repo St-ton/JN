@@ -87,7 +87,7 @@ final class Uninstaller
             if ($uninstaller !== null && \file_exists($uninstaller)) {
                 try {
                     include $plugin->getPaths()->getUninstaller();
-                } catch (\Exception $exc) {
+                } catch (Exception $exc) {
                 }
             }
             $this->doSQLDelete($pluginID, $update, $newID, $deleteData);

@@ -1843,7 +1843,7 @@ class Cart
         }
         // if nothing changed, return cached shipping-object
         if ($this->oFavourableShipping !== null
-            && $this->oFavourableShipping->cCountryCode === $_SESSION['cLieferlandISO']
+            && $this->oFavourableShipping->getCountryCode() === $_SESSION['cLieferlandISO']
         ) {
             return $this->oFavourableShipping;
         }
@@ -1852,9 +1852,9 @@ class Cart
         if ($shippingFreeMinID !== null) {
             $localizedZero              = Preise::getLocalizedPriceString(0);
             $method                     = new Versandart($shippingFreeMinID);
-            $method->cCountryCode       = $countryCode;
             $method->cPriceLocalized[0] = $localizedZero;
             $method->cPriceLocalized[1] = $localizedZero;
+            $method->setCountryCode($countryCode);
 
             $this->oFavourableShipping = $method;
 
@@ -1916,8 +1916,8 @@ class Cart
 
         $this->oFavourableShipping = null;
         if (isset($shipping->kVersandart)) {
-            $method               = new Versandart((int)$shipping->kVersandart);
-            $method->cCountryCode = $countryCode;
+            $method = new Versandart((int)$shipping->kVersandart);
+            $method->setCountryCode($countryCode);
 
             if ($method->eSteuer === 'brutto') {
                 $method->cPriceLocalized[0] = Preise::getLocalizedPriceString($shipping->minPrice);

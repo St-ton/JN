@@ -44,6 +44,7 @@
         "mrclay/minify": "~3.0.0",
         "myclabs/php-enum": "^1.6",
         "jtlshop/semver": "~0.0.7",
+        "jtlshop/wizard": "dev-master",
         "studio-42/elfinder": "^2.1",
         "maximebf/debugbar": "^1.15",
         "gettext/gettext": "^4.6",
@@ -52,6 +53,8 @@
         "symfony/console": "^4.2",
         "symfony/finder": "^4.2",
         "mobiledetect/mobiledetectlib": "^2.8",
+        "fzaninotto/faker": "^1.6",
+        "cocur/slugify": "^2.5",
         "league/flysystem": "^1.0",
         "league/flysystem-sftp": "^1.0",
         "league/flysystem-ziparchive": "^1.0"
@@ -98,6 +101,10 @@
         {
             "type": "vcs",
             "url": "https://gitlab.com/jtl-software/jtl-shop/tools/xtea.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://gitlab.com/jtl-software/jtl-shop/tools/wizard.git"
         },
         {
             "type": "vcs",

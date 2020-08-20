@@ -102,20 +102,10 @@
                                 </div>
                             </div>
                         {elseif $cnf->cInputTyp === 'color'}
-                            <div class="input-group" id="config-{$cnf->cWertName}-group">
-                                <input type="text" class="form-control colorpicker-input {$cnf->cWertName}_data"
-                                       name="{$cnf->cWertName}"
-                                       value="{$cnf->gesetzterWert}" >
-                                <span class="input-group-append">
-                                    <span class="input-group-text colorpicker-input-addon"><i></i></span>
-                                </span>
-                            </div>
-                            <script>
-                                $('#config-{$cnf->cWertName}-group').colorpicker({
-                                    format: 'rgba',
-                                    fallbackColor: 'rgba(0,0,0,0)',
-                                });
-                            </script>
+                            {include file='snippets/colorpicker.tpl'
+                                cpID="config-{$cnf->cWertName}"
+                                cpName=$cnf->cWertName
+                                cpValue=$cnf->gesetzterWert}
                         {else}
                             <input class="form-control" type="text" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{$cnf->gesetzterWert}" tabindex="1" />
                         {/if}

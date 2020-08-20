@@ -1734,7 +1734,7 @@ msgid "bilder_hintergrundfarbe_name"
 msgstr "Hintergrundfarbe"
 
 msgid "bilder_hintergrundfarbe_desc"
-msgstr "Geben Sie für das Dateiformat 'JPG' bitte Farben ohne Transparenz an. Bsp.: rgb(255,0,0)"
+msgstr "Geben Sie eine Hintergrundfarbe für Bilder an. Nur zu sehen, wenn \"Container-Größe vewenden - Ja\" eingestellt ist."
 
 msgid "sonstiges_livesuche_all_top_count_name"
 msgstr "Anzahl anzuzeigender TOP-Suchanfragen"
@@ -2974,3 +2974,9 @@ msgstr "Consent-Manager aktivieren"
 
 msgid "consent_manager_active_desc"
 msgstr "Hier legen Sie fest, ob der Consent-Manager genutzt werden soll."
+
+msgid "bewertung_sortierung_name"
+msgstr "Standard-Sortierung"
+
+msgid "bewertung_sortierung_desc"
+msgstr "Hier legen Sie fest, wie Bewertungen standardmäßig sortiert werden."

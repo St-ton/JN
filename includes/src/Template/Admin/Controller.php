@@ -193,6 +193,9 @@ class Controller
             ? (string)$parentConfig->Version
             : (string)$tplConfig->Version;
         $model->setVersion($version);
+        if (!empty($tplConfig->Framework)) {
+            $model->setFramework((string)$tplConfig->Framework);
+        }
         $model->setBootstrap((int)\file_exists(\PFAD_ROOT . \PFAD_TEMPLATES . $dir . '/Bootstrap.php'));
         $save = $model->save();
         if ($save === true) {
@@ -332,6 +335,7 @@ class Controller
             $this->alertService->addAlert(Alert::TYPE_ERROR, __('errorTemplateSave'), 'errorTemplateSave');
         }
         $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
+        $this->cache->flushTags([\CACHING_GROUP_LICENSES]);
     }
 
     private function displayTemplateSettings(): void

@@ -16,7 +16,8 @@
                 }
                     {$ssf->getFrontendName()}
                 {/button}
-                {collapse id="cllps-box{$oBox->getID()}" visible=$ssf->isActive()}
+                {collapse id="cllps-box{$oBox->getID()}"
+                    visible=$ssf->isActive() || $Einstellungen.template.productlist.filter_items_always_visible === 'Y'}
                     {block name='boxes-box-filter-search-special-content'}
                         {include file='snippets/filter/genericFilterItem.tpl' filter=$ssf}
                     {/block}

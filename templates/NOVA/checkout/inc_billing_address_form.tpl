@@ -1,13 +1,15 @@
 {block name='checkout-inc-billing-address-form'}
     <fieldset>
         {block name='checkout-inc-billing-address-form-legend'}
-            <div class="h2">
-                {if isset($checkout)}
-                    {lang key='proceedNewCustomer' section='checkout'}
-                {elseif $nSeitenTyp === $smarty.const.PAGE_MEINKONTO}
-                    {lang key='myPersonalData'}
-                {/if}
-            </div>
+            {if isset($checkout) || $nSeitenTyp === $smarty.const.PAGE_MEINKONTO}
+                <div class="h2">
+                    {if isset($checkout)}
+                        {lang key='proceedNewCustomer' section='checkout'}
+                    {elseif $nSeitenTyp === $smarty.const.PAGE_MEINKONTO}
+                        {lang key='myPersonalData'}
+                    {/if}
+                </div>
+            {/if}
             {if isset($checkout) && $Einstellungen.kaufabwicklung.bestellvorgang_unregistriert === 'Y'}
                 <div>
                     {lang key='guestOrRegistered' section='checkout'}
@@ -684,7 +686,6 @@
     {if (!isset($smarty.session.bAnti_spam_already_checked) || $smarty.session.bAnti_spam_already_checked !== true)
     && isset($Einstellungen.kunden.registrieren_captcha) && $Einstellungen.kunden.registrieren_captcha !== 'N' && empty($Kunde->kKunde)}
         {block name='checkout-inc-billing-address-form-captcha'}
-            <hr>
             {row}
                 {col cols=8 offset=4}
                     {formgroup class="{if isset($fehlendeAngaben.captcha) && $fehlendeAngaben.captcha != false} has-error{/if}"}
@@ -692,7 +693,6 @@
                     {/formgroup}
                 {/col}
             {/row}
-            <hr>
         {/block}
     {/if}
 {/block}

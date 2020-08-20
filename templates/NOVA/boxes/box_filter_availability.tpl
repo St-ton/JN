@@ -11,10 +11,11 @@
             }
                 {lang key='filterAvailability'}
             {/button}
-            {collapse id="cllps-box{$oBox->getID()}" visible=$oBox->getItems()->isActive()}
-            {block name='boxes-box-filter-availability-content'}
-                {include file='snippets/filter/genericFilterItem.tpl' filter=$oBox->getItems()}
-            {/block}
+            {collapse id="cllps-box{$oBox->getID()}"
+                visible=($oBox->getItems()->isActive() || $Einstellungen.template.productlist.filter_items_always_visible === 'Y')}
+                {block name='boxes-box-filter-availability-content'}
+                    {include file='snippets/filter/genericFilterItem.tpl' filter=$oBox->getItems()}
+                {/block}
             {/collapse}
             {block name='boxes-box-filter-availability-hr'}
                 <hr class="my-2">

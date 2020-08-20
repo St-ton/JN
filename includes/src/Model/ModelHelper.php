@@ -19,7 +19,7 @@ final class ModelHelper
      */
     private static function formatDateTime($value, $format = 'Y-m-d H:i:s'): ?string
     {
-        if (\is_a($value, 'DateTime')) {
+        if (\is_a($value, DateTime::class)) {
             return $value->format($format);
         }
         if (\is_string($value)) {
@@ -46,7 +46,7 @@ final class ModelHelper
      */
     public static function fromStrToDateTime($value, $default = null): ?DateTime
     {
-        if (($value === null && $default === null) || \is_a($value, 'DateTime')) {
+        if (($value === null && $default === null) || \is_a($value, DateTime::class)) {
             return $value;
         }
         if (\is_string($value)) {
@@ -66,7 +66,7 @@ final class ModelHelper
      */
     public static function fromTimeToStr($value): ?string
     {
-        if (\is_a($value, 'DateInterval')) {
+        if (\is_a($value, DateInterval::class)) {
             return $value->format('%H:%I:%S');
         }
         if (\is_string($value)) {
@@ -87,7 +87,7 @@ final class ModelHelper
         if (!isset($value) && !isset($default)) {
             return null;
         }
-        if (\is_a($value, 'DateInterval')) {
+        if (\is_a($value, DateInterval::class)) {
             return $value;
         }
         if (\is_string($value)) {

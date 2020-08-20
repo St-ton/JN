@@ -91,10 +91,10 @@ class Row extends Portlet
         $layoutLG = \explode('+', $layouts['lg']);
         $colCount = \max(\count($layoutXS), \count($layoutSM), \count($layoutMD), \count($layoutLG));
 
-        $layoutXS = \array_map('intval', $layoutXS);
-        $layoutSM = \array_map('intval', $layoutSM);
-        $layoutMD = \array_map('intval', $layoutMD);
-        $layoutLG = \array_map('intval', $layoutLG);
+        $layoutXS = \array_map('\intval', $layoutXS);
+        $layoutSM = \array_map('\intval', $layoutSM);
+        $layoutMD = \array_map('\intval', $layoutMD);
+        $layoutLG = \array_map('\intval', $layoutLG);
 
         $colLayouts = \array_fill(0, $colCount, '');
 

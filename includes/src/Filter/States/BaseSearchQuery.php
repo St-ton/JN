@@ -14,6 +14,7 @@ use JTL\Language\LanguageHelper;
 use JTL\MagicCompatibilityTrait;
 use JTL\Session\Frontend;
 use JTL\Shop;
+use stdClass;
 use function Functional\filter;
 
 /**
@@ -475,7 +476,7 @@ class BaseSearchQuery extends AbstractFilter
         // Array mit nach Prio sort. Suchspalten holen
         $rows                   = self::getSearchRows($this->getConfig());
         $cols                   = $this->getSearchColumnClasses($rows);
-        $searchCache            = new \stdClass();
+        $searchCache            = new stdClass();
         $searchCache->kSprache  = $langID;
         $searchCache->cSuche    = $query;
         $searchCache->dErstellt = 'NOW()';
@@ -876,11 +877,11 @@ class BaseSearchQuery extends AbstractFilter
     }
 
     /**
-     * @param \stdClass $searchCache
-     * @param array     $searchCols
-     * @param array     $searchQueries
-     * @param int       $limit
-     * @param string    $fullText
+     * @param stdClass $searchCache
+     * @param array    $searchCols
+     * @param array    $searchQueries
+     * @param int      $limit
+     * @param string   $fullText
      * @return int
      * @former bearbeiteSuchCacheFulltext
      */
@@ -915,7 +916,7 @@ class BaseSearchQuery extends AbstractFilter
                     IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP, '
                     . $score . ' AS score
                     FROM tartikel
-                    WHERE ' . $this->productFilter->getFilterSQL()->getStockFilterSQL() . ' ';
+                    WHERE ' . $match . $this->productFilter->getFilterSQL()->getStockFilterSQL() . ' ';
 
             if (Shop::getLanguageID() > 0 && !LanguageHelper::isDefaultLanguageActive()) {
                 $score = 'MATCH (' . \implode(', ', $langCols) . ")
@@ -938,7 +939,7 @@ class BaseSearchQuery extends AbstractFilter
             $this->productFilter->getDB()->query(
                 'INSERT INTO tsuchcachetreffer
                         SELECT kSuchCache, kArtikelTMP, ROUND(MAX(15 - score) * 10)
-                        FROM ( ' . $sql . ' AS i
+                        FROM ( ' . $sql . ' ) AS i
                         LEFT JOIN tartikelsichtbarkeit 
                             ON tartikelsichtbarkeit.kArtikel = i.kArtikelTMP
                             AND tartikelsichtbarkeit.kKundengruppe = ' . Frontend::getCustomerGroup()->getID() . '

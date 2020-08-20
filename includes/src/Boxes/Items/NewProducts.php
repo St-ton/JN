@@ -45,9 +45,8 @@ final class NewProducts extends AbstractBox
                             ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                             AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . "
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                            AND tartikel.cNeu = 'Y' " . $stockFilterSQL . $parentSQL . "
-                            AND cNeu = 'Y' 
-                            AND DATE_SUB(NOW(), INTERVAL " . $days . ' DAY) < dErstellt
+                            AND tartikel.cNeu = 'Y' " . $stockFilterSQL . $parentSQL . '
+                            AND DATE_SUB(NOW(), INTERVAL ' . $days . ' DAY) < dErstellt
                         LIMIT ' . $limit,
                     ReturnType::ARRAY_OF_OBJECTS
                 );

@@ -21,7 +21,11 @@
             </button>
         </div>
         <div class="slide-image-col">
-            {$imgUrl = $slideData.url|default:'opc/gfx/upload-stub.png'}
+            {if empty($slideData.url)}
+                {$imgUrl = 'opc/gfx/upload-stub.png'}
+            {else}
+                {$imgUrl = \Shop::getURL()|cat:'/'|cat:\STORAGE_OPC|cat:($slideData.url|basename)}
+            {/if}
             <div style="background-image: url('{$imgUrl}')" class="slide-image-btn"
                  onclick="opc.gui.openElFinder(elfinderCallback_{$propname}.bind(this), 'Bilder')">
 
@@ -104,9 +108,10 @@
 
     function elfinderCallback_{$propname}(file)
     {
-        var image = $(this);
+        let url = file.url.slice(file.baseUrl.length);
+        let image = $(this);
         image.css('background-image', 'url("' + file.url + '")');
-        image.siblings('input').val(file.url);
+        image.siblings('input').val(url);
     }
 
     function addSlide_{$propname}()

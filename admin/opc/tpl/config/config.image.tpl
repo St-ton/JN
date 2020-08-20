@@ -4,8 +4,13 @@
     </label>
 
     <input type="hidden" name="{$propname}" value="{$propval|escape:'html'}">
+    {if empty($propval)}
+        {$imgsrc = 'opc/gfx/upload-stub.png'}
+    {else}
+        {$imgsrc = \Shop::getURL()|cat:'/'|cat:\STORAGE_OPC|cat:($propval|basename)}
+    {/if}
     <button type="button" class="image-btn" onclick="opc.selectImageProp('{$propname}')">
-        <img src="{$propval|default:'opc/gfx/upload-stub.png'|escape:'html'}"
+        <img src="{$imgsrc|escape:'html'}"
              alt="Chosen image" id="preview-img-{$propname}" class="{if !empty($propdesc.thumb)}thumb{/if}">
     </button>
 </div>

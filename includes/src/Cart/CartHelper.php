@@ -4,7 +4,6 @@ namespace JTL\Cart;
 
 use JTL\Alert\Alert;
 use JTL\Campaign;
-use JTL\Catalog\ComparisonList;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\EigenschaftWert;
@@ -604,7 +603,6 @@ class CartHelper
                 $variations = Product::getSelectedPropertiesForVarCombiArticle($productID, 1);
             }
             $compareList = Frontend::getCompareList();
-            /** @var ComparisonList $compareList */
             if ($compareList->productExists($productID)) {
                 $alertHelper->addAlert(
                     Alert::TYPE_ERROR,

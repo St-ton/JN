@@ -6,7 +6,6 @@ use Illuminate\Support\Collection;
 use JTL\Alert\Alert;
 use JTL\Campaign;
 use JTL\Cart\CartHelper;
-use JTL\Cart\CartItem;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\UnitsOfMeasure;
@@ -1970,7 +1969,6 @@ class Product
             $configGroupID       = $configGroup->getKonfiggruppe();
             $configItems         = $configGroups[$configGroupID] ?? [];
             foreach ($configGroup->oItem_arr as $j => &$configItem) {
-                /** @var Item $configItem */
                 $configItemID        = $configItem->getKonfigitem();
                 $configItem->fAnzahl = (float)(
                     $configGroupAmounts[$configItem->getKonfiggruppe()] ?? $configItem->getInitial()
@@ -2034,14 +2032,11 @@ class Product
         if (!isset($cart->PositionenArr[$configID]) || !Item::checkLicense()) {
             return;
         }
-        /** @var CartItem $baseItem */
         $baseItem = $cart->PositionenArr[$configID];
-        /** @var CartItem $basePosition */
         if ($baseItem->istKonfigVater()) {
             $configItems        = [];
             $configItemAmounts  = [];
             $configGroupAmounts = [];
-            /** @var CartItem $item */
             foreach ($cart->PositionenArr as &$item) {
                 if ($item->cUnique !== $baseItem->cUnique || !$item->istKonfigKind()) {
                     continue;

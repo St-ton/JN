@@ -35,7 +35,7 @@
             <p class="estimated-delivery"
                data-toggle="popover"
                data-placement="top"
-               data-content="{lang key='shippingInformation' section='productDetails' printf=$Firma->country->getName()|cat:':::'|cat:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}">
+               data-content="{lang|sprintf:$Firma->country->getName():$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() key='shippingInformation' section='productDetails'}">
                 {if !isset($availability) && !isset($shippingTime)}<strong>{lang key='shippingTime'}: </strong>{/if}
                 <span class="a{$Artikel->Lageranzeige->nStatus} text-nowrap">
                     {$Artikel->cEstimatedDelivery}

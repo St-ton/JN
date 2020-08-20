@@ -8,7 +8,10 @@
     var EvoClass = function() {};
 
     EvoClass.prototype = {
-        options: { captcha: {} },
+        options: {
+            captcha: {},
+            scrollSearch: '.smoothscroll-top-search'
+        },
 
         constructor: EvoClass,
 
@@ -18,29 +21,6 @@
             self.initSlick($('.evo-slider-half:not(.slick-initialized)'), 'slider-half');
             self.initSlick($('.evo-slider:not(.slick-initialized)'), 'product-slider');
             self.initSlick($('.news-slider:not(.slick-initialized)'), 'news-slider');
-            self.initSlick($('.evo-box-vertical:not(.slick-initialized)'), 'box-vertical')
-                .on('afterChange', function () {
-                    var heights = [];
-                    $('.evo-box-vertical:not(.eq-height) .product-wrapper').each(function (i, element) {
-                        var $element       = $(element);
-                        var elementHeight;
-                        // Should we include the elements padding in it's height?
-                        var includePadding = ($element.css('box-sizing') === 'border-box')
-                            || ($element.css('-moz-box-sizing') === 'border-box');
-
-                        if (includePadding) {
-                            elementHeight = $element.innerHeight();
-                        } else {
-                            elementHeight = $element.height();
-                        }
-
-                        heights.push(elementHeight);
-                    });
-                    $('.evo-box-vertical.evo-box-vertical:not(.eq-height) .product-wrapper')
-                        .css('height', Math.max.apply(window, heights) + 'px');
-                    $('.evo-box-vertical.evo-box-vertical:not(.eq-height)')
-                        .addClass('eq-height');
-            });
 
             $('.slick-lazy').on('mouseenter', function (e) {
                 let mainNode = $(this);
@@ -118,19 +98,6 @@
                             }
                         }
                     ]
-                },
-                'box-vertical' : {
-                    arrows:          true,
-                    vertical:        true,
-                    adaptiveHeight:  true,
-                    swipeToSlide:    true,
-                    verticalSwiping: true,
-                    prevArrow:       '<button class="slick-up" aria-label="Previous" type="button">' +
-                    '<i class="fa fa-chevron-up"></i></button>',
-                    nextArrow:       '<button class="slick-down" aria-label="Next" type="button">' +
-                    '<i class="fa fa-chevron-down"></i></button>',
-                    lazyLoad:        'progressive',
-                    slidesToShow:    1
                 },
                 'product-slider' : {
                     rows:           0,
@@ -497,12 +464,12 @@
             });
         },
 
-        initScrollEvents: function() {
-            //mobile search
+        initScrollSearchEvent: function() {
+            this.destroyScrollSearchEvent();
             let lastScroll       = 0,
-                $scrollTopSearch = $('.smoothscroll-top-search');
+                $scrollTopSearch = $(this.options.scrollSearch);
             if ($scrollTopSearch.length) {
-                $(document).on('scroll', function () {
+                $(document).on('scroll.search', function () {
                     let newScroll = $(this).scrollTop();
                     if (newScroll < lastScroll) {
                         if ($(window).scrollTop() > 100) {
@@ -516,6 +483,15 @@
                     lastScroll = newScroll;
                 });
             }
+        },
+
+        destroyScrollSearchEvent: function() {
+            $(this.options.scrollSearch).addClass('d-none');
+            $(document).off('scroll.search');
+        },
+
+        initScrollEvents: function() {
+            this.initScrollSearchEvent();
 
             //scroll top button
             let toTopbuttonVisible     = false,
@@ -832,7 +808,7 @@
                 $priceRangeFrom.val(values[0]);
                 $priceRangeTo.val(values[1]);
             });
-            $('.price-range-input').change(function () {
+            $('.price-range-input').on('change', function () {
                 let prFrom = parseInt($priceRangeFrom.val()),
                     prTo = parseInt($priceRangeTo.val());
                 $.evo.redirectToNewPriceRange(
@@ -981,16 +957,9 @@
         }
     };
 
-    var ie = /(msie|trident)/i.test(navigator.userAgent) ? navigator.userAgent.match(/(msie |rv:)(\d+(.\d+)?)/i)[2] : false;
-    if (ie && parseInt(ie) <= 9) {
-        $(document).ready(function () {
-            $.evo.register();
-        });
-    } else {
-        $(window).on('load', function () {
-            $.evo.register();
-        });
-    }
+    $(document).ready(function () {
+        $.evo.register();
+    });
 
     // PLUGIN DEFINITION
     // =================

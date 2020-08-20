@@ -5,6 +5,7 @@ namespace JTL\Template;
 use Exception;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
+use JTL\License\Manager;
 use SimpleXMLElement;
 
 /**
@@ -66,12 +67,12 @@ class TemplateService implements TemplateServiceInterface
     /**
      * @inheritDoc
      */
-    public function getActiveTemplate(): Model
+    public function getActiveTemplate(bool $withLicense = true): Model
     {
         if ($this->activeTemplate === null) {
             $cacheID = 'active_tpl';
             if (($this->activeTemplate = $this->cache->get($cacheID)) === false) {
-                $this->activeTemplate = $this->loadFull(['type' => 'standard']);
+                $this->activeTemplate = $this->loadFull(['type' => 'standard'], $withLicense);
             } else {
                 $this->loaded = true;
             }
@@ -84,7 +85,7 @@ class TemplateService implements TemplateServiceInterface
     /**
      * @inheritDoc
      */
-    public function loadFull(array $attributes): Model
+    public function loadFull(array $attributes, bool $withLicense = true): Model
     {
         try {
             $template = Model::loadByAttributes($attributes, $this->db);
@@ -95,11 +96,19 @@ class TemplateService implements TemplateServiceInterface
         $reader    = new XMLReader();
         $tplXML    = $reader->getXML($template->getTemplate(), $template->getType() === 'admin');
         $parentXML = ($tplXML === null || empty($tplXML->Parent)) ? null : $reader->getXML((string)$tplXML->Parent);
-        $template  = $this->mergeWithXML(
-            $template->getTemplate(),
+        $dir       = $template->getTemplate();
+        if ($dir === null || $tplXML === null) {
+            return new Model($this->db);
+        }
+        $template = $this->mergeWithXML(
+            $dir,
             $tplXML,
             $parentXML
         );
+        if ($withLicense === true) {
+            $manager = new Manager($this->db, $this->cache);
+            $template->setExsLicense($manager->getLicenseByItemID($template->getTemplate()));
+        }
         $template->setBoxLayout($this->getBoxLayout($tplXML, $parentXML));
         $template->setResources(new Resources($this->db, $tplXML, $parentXML));
 

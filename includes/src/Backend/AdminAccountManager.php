@@ -135,7 +135,7 @@ class AdminAccountManager
                         if (!empty($thirdEntry->excludeFromAccessView)) {
                             continue;
                         }
-                        if (!isset($perms[$secondEntry->permissions])) {
+                        if (!isset($perms[$thirdEntry->permissions])) {
                             $perms[$thirdEntry->permissions] = (object)['name' => $thirdName];
                         } else {
                             $perms[$thirdEntry->permissions]->name = $thirdName;

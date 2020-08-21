@@ -2985,4 +2985,4 @@ msgid "direct_advertising_name"
 msgstr "Hinweis auf Direktwerbung bei Erhebung der E-Mail-Adresse anzeigen"
 
 msgid "direct_advertising_desc"
-msgstr "Der Hinweis wird bei der Registrierung unter der E-Mail angezeigt."
+msgstr "Der Hinweis wird bei der Registrierung unter dem Eingabefeld für die E-Mail-Adresse angezeigt."

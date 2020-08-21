@@ -2982,7 +2982,7 @@ msgid "bewertung_sortierung_desc"
 msgstr "Specify which sorting option is selected by default."
 
 msgid "direct_advertising_name"
-msgstr "Hinweis auf Direktwerbung anzeigen"
+msgstr "Show information on direct advertising when registering the email address"
 
 msgid "direct_advertising_desc"
-msgstr "Der Hinweis wird bei der Registrierung unter der E-Mail angezeigt."
+msgstr "The information will be displayed below the email address input field during registration."

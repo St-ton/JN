@@ -35,15 +35,11 @@
     {/if}
     {block name='snippets-wishlist-dropdown-new-wl'}
         <div class="dropdown-body">
-            {row}
-                {col class='col-lg-auto ml-auto'}
-                    {block name='snippets-wishlist-dropdown-new-wl-link'}
-                        {button variant="primary" type="link" block=true size="sm" href="{get_static_route id='wunschliste.php'}?newWL=1"}
-                            {lang key='addNew' section='wishlist'}
-                        {/button}
-                    {/block}
-                {/col}
-            {/row}
+            {block name='snippets-wishlist-dropdown-new-wl-link'}
+                {button variant="primary" type="link" block=true size="sm" href="{get_static_route id='wunschliste.php'}?newWL=1"}
+                    {lang key='addNew' section='wishlist'}
+                {/button}
+            {/block}
         </div>
     {/block}
 {/block}

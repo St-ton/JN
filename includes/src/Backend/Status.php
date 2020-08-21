@@ -64,9 +64,9 @@ class Status
      * @param bool $flushCache
      * @return Status
      */
-    public static function getInstance(DbInterface $db, JTLCacheInterface $cache, bool $flushCache = false): self
+    public static function getInstance(DbInterface $db, JTLCacheInterface $cache = null, bool $flushCache = false): self
     {
-        $instance = static::$instance ?? new self($db, $cache);
+        $instance = static::$instance ?? new self($db, $cache ?? Shop::Container()->getCache());
 
         if ($flushCache) {
             $instance->flushCache();

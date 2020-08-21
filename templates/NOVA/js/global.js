@@ -562,3 +562,8 @@ function setClickableRow ()
         window.location = $(this).data('href');
     });
 }
+
+function isMobileByBodyClass()
+{
+    return $('body').hasClass('is-mobile');
+}

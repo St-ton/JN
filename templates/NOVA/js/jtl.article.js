@@ -643,7 +643,7 @@
                 });
         },
 
-        addToComparelist: function(data) {
+        addToComparelist: function(data, $action) {
             var productId = parseInt(data[this.options.input.id]);
             var childId = parseInt(data[this.options.input.childId]);
             if (childId > 0) {
@@ -674,6 +674,8 @@
                                 window.location.href = response.cLocation;
                                 break;
                             case 2: // added to comparelist
+                                let $moveTo = isMobileByBodyClass() ? $('#burger-menu') : $('#shop-nav-compare');
+                                $.evo.article().moveItemAnimation($action, $moveTo);
                                 that.updateComparelist(response);
                                 break;
                         }
@@ -806,6 +808,8 @@
                                 window.location.href = response.cLocation;
                                 break;
                             case 2: // added to wishlist
+                                let $moveTo = isMobileByBodyClass() ? $('#burger-menu') : $('#shop-nav-wish');
+                                $.evo.article().moveItemAnimation($action, $moveTo);
                                 that.updateWishlist(response);
                                 break;
                         }
@@ -915,10 +919,10 @@
                             $action.addClass("on-list");
                             $action.next().addClass("press");
                             $action.next().next().removeClass("press");
-                            return this.addToComparelist(data);
+                            return this.addToComparelist(data, $action);
                         }
                     } else {
-                        return this.addToComparelist(data);
+                        return this.addToComparelist(data, $action);
                     }
                 case this.options.action.compareListRemove:
                     return this.removeFromCompareList(data);
@@ -1470,6 +1474,35 @@
             var $wrapper = this.getWrapper(wrapper);
 
             $('[role="tooltip"]', $wrapper).remove();
+        },
+
+        moveItemAnimation: function(item, moveTo) {
+            if (!item || $(this).hasClass('on-list')) {
+                return;
+            }
+            setTimeout(function() {
+                let itemClone = item.clone()
+                    .offset({
+                        top: item.offset().top,
+                        left: item.offset().left
+                    }).css({
+                        'opacity': '0.5',
+                        'position': 'absolute',
+                        'z-index': '10000'
+                    })
+                    .appendTo($('body'))
+                    .animate({
+                        'top': moveTo.offset().top + 5,
+                        'left': moveTo.offset().left + 5,
+                    }, 1000);
+
+                itemClone.animate({
+                    'width': 0,
+                    'height': 0
+                }, function () {
+                    $(this).detach()
+                });
+            }, 0);
         }
     };
 

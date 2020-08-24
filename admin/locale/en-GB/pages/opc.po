@@ -305,6 +305,9 @@ msgstr "Apply to other languages"
 msgid "editPage"
 msgstr "Edit page"
 
+msgid "opcNotSupportedPage"
+msgstr "Unfortunately this page can not be modified with the OnPage Composer!"
+
 msgid "newDraft"
 msgstr "New draft"
 

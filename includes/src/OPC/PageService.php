@@ -245,6 +245,15 @@ class PageService
     }
 
     /**
+     * @return bool
+     * @throws Exception
+     */
+    public function isCurPageModifiable()
+    {
+        return $this->getCurPage()->isModifiable();
+    }
+
+    /**
      * @param int $langId
      * @return string
      */

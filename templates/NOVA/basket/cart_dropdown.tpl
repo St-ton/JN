@@ -82,7 +82,11 @@
                             {if $NettoPreise}
                                 {block name='basket-cart-dropdown-cart-item-net'}
                                     <li class="text-muted mb-2 font-size-sm">
-                                        {lang key='subtotal' section='account data'} ({lang key='net'}) <span class="float-right text-nowrap">{$WarensummeLocalized[$NettoPreise]}</span>
+                                        {if empty($smarty.session.Versandart)}
+                                            {lang key='subtotal' section='account data'}
+                                        {else}
+                                            {lang key='totalSum'}
+                                        {/if} ({lang key='net'}) <span class="float-right text-nowrap">{$WarensummeLocalized[$NettoPreise]}</span>
                                     </li>
                                 {/block}
                             {/if}
@@ -98,7 +102,11 @@
                             {/if}
                             {block name='basket-cart-dropdown-cart-item-total'}
                                 <li class="font-weight-bold">
-                                    {lang key='subtotal' section='account data'}: <span class="float-right text-nowrap">{$WarensummeLocalized[0]}</span>
+                                    {if empty($smarty.session.Versandart)}
+                                        {lang key='subtotal' section='account data'}
+                                    {else}
+                                        {lang key='totalSum'}
+                                    {/if}: <span class="float-right text-nowrap">{$WarensummeLocalized[0]}</span>
                                 </li>
                             {/block}
                             {block name='basket-cart-dropdown-cart-item-favourable-shipping'}
@@ -111,7 +119,7 @@
                                     <li class="text-muted mt-2 font-size-sm">
                                         {lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$shippingCosts:$FavourableShipping->country->getName() key='shippingInformationSpecific' section='basket'}
                                     </li>
-                                {elseif empty($FavourableShipping)}
+                                {elseif empty($FavourableShipping) && empty($smarty.session.Versandart)}
                                     <li class="text-muted mt-2 font-size-sm">
                                         {lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() key='shippingInformation' section='basket'}
                                     </li>

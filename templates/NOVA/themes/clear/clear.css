@@ -20368,7 +20368,10 @@ aside .box-monthlynews a .value:hover {
 }
 
 @media (max-width: 991.98px) {
-  .slick-list {
+  .slick-type-product .slick-list,
+.slick-type-half .slick-list,
+.slick-type-news .slick-list,
+.slick-type-box .slick-list {
     padding-right: 50px;
   }
 }
@@ -23227,6 +23230,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   font-size: 0.875rem;
   font-weight: 700;
   font-family: "Open Sans", sans-serif;
+  padding-bottom: 0;
 }
 
 .modal .productlist-filter-wrapper {

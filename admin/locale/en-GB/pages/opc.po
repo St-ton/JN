@@ -306,7 +306,7 @@ msgid "editPage"
 msgstr "Edit page"
 
 msgid "opcNotSupportedPage"
-msgstr "Unfortunately this page can not be modified with the OnPage Composer!"
+msgstr "Unfortunately, you cannot edit this page with the OnPage Composer!"
 
 msgid "newDraft"
 msgstr "New draft"

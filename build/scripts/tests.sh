@@ -12,7 +12,7 @@ fi
 echo "] build components..";
 for COMPONENT in build/components/*/ ; do
     echo "] execute 'composer install' for ${COMPONENT}.."
-    ./composer install -a -o -q -d ${COMPONENT}
+    ./composer install -a -o -q -d --no-plugins ${COMPONENT}
 
     echo "] check composer packages vulnerabilities for ${COMPONENT}.."
     ./includes/vendor/bin/security-checker security:check "${COMPONENT}composer.lock"

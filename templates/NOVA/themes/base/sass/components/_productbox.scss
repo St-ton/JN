@@ -27,6 +27,10 @@
 	.form-counter {
 		.btn, .input-group-text { padding-left: map-get($spacers, 2); padding-right: map-get($spacers, 2); }
 	}
+
+	textarea {
+		height: $input-height;
+	}
 }
 
 .productbox-inner { position: relative; }
@@ -83,4 +87,10 @@
 	.productbox-quick-actions, .productbox-vat,
 	.productbox-details, .productbox-status,
 	.productbox-delivery, .productbox-actions { display: none; }
+}
+
+.formrow-small {
+	dd {
+		margin-bottom: 0;
+	}
 }

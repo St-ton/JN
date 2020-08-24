@@ -40,5 +40,5 @@ $smarty->assign('updatesAvailable', $updater->hasPendingUpdates())
     ->assign('updateError', $updater->error())
     ->assign('currentTemplateFileVersion', $template->getFileVersion())
     ->assign('currentTemplateDatabaseVersion', $template->getVersion())
-    ->assign('hasMinUpdateVersion', true)
+    ->assign('hasMinUpdateVersion', $hasMinUpdateVersion)
     ->display('dbupdater.tpl');

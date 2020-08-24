@@ -6,7 +6,7 @@
     <div class="text-center opc-ImageSlider {if $slides|count > 0}opc-ImageSlider-with-image{/if}"
          style="{if $slides|count > 0}background-image: url('{$imgAttribs.src}');{/if} {$instance->getStyleString()}">
         <div>
-            {file_get_contents($portlet->getBaseUrl()|cat:'icon.svg')}
+            {file_get_contents($portlet->getBasePath()|cat:'icon.svg')}
             <span>{__('Bilder-Slider')}</span>
         </div>
     </div>
@@ -18,13 +18,11 @@
             <div class="theme-{$instance->getProperty('slider-theme')}">
                 <div id="{$uid}" class="nivoSlider">
                     {foreach $instance->getProperty('slides') as $i => $slide}
-                        {if !empty($slide.desc)}
-                            {$slideTitle = $slide.title}
+                        {if !empty($slide.title) || !empty($slide.desc)}
+                            {$slideTitle = '#'|cat:$uid|cat:'_slide_caption_'|cat:$i}
                         {else}
                             {$slideTitle = ''}
                         {/if}
-
-                        {$slideTitle = '#'|cat:$uid|cat:'_slide_caption_'|cat:$i}
 
                         {if !empty($slide.url)}
                             {$imgAttribs = $instance->getImageAttributes($slide.url, '', '')}

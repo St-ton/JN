@@ -263,7 +263,7 @@
 
     {has_boxes position='left' assign='hasLeftPanel'}
     {block name='layout-header-body-tag'}
-        <body class="{if $Einstellungen.template.theme.button_animated === 'Y'}btn-animated{/if}"
+        <body class="{if $Einstellungen.template.theme.button_animated === 'Y'}btn-animated{/if} {if $isMobile}is-mobile{/if}"
               data-page="{$nSeitenTyp}"
               {if isset($Link) && !empty($Link->getIdentifier())} id="{$Link->getIdentifier()}"{/if}>
     {/block}

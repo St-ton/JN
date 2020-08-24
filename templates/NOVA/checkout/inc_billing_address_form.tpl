@@ -1,13 +1,15 @@
 {block name='checkout-inc-billing-address-form'}
     <fieldset>
         {block name='checkout-inc-billing-address-form-legend'}
-            <div class="h2">
-                {if isset($checkout)}
-                    {lang key='proceedNewCustomer' section='checkout'}
-                {elseif $nSeitenTyp === $smarty.const.PAGE_MEINKONTO}
-                    {lang key='myPersonalData'}
-                {/if}
-            </div>
+            {if isset($checkout) || $nSeitenTyp === $smarty.const.PAGE_MEINKONTO}
+                <div class="h2">
+                    {if isset($checkout)}
+                        {lang key='proceedNewCustomer' section='checkout'}
+                    {elseif $nSeitenTyp === $smarty.const.PAGE_MEINKONTO}
+                        {lang key='myPersonalData'}
+                    {/if}
+                </div>
+            {/if}
             {if isset($checkout) && $Einstellungen.kaufabwicklung.bestellvorgang_unregistriert === 'Y'}
                 <div>
                     {lang key='guestOrRegistered' section='checkout'}
@@ -447,6 +449,13 @@
                             }
                         {/col}
                     {/block}
+                    {if $Einstellungen.kunden.direct_advertising === 'Y'}
+                        {block name='checkout-inc-billing-address-form-direct-advertising'}
+                            {col cols=12 class="text-muted mt-n3 mb-3"}
+                                <small>{lang key="directAdvertising" section="checkout"}</small>
+                            {/col}
+                        {/block}
+                    {/if}
                     {* phone & fax *}
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_tel !== 'N' || $Einstellungen.kunden.kundenregistrierung_abfragen_fax !== 'N'
                         || $Einstellungen.kunden.kundenregistrierung_abfragen_mobil !== 'N' || $Einstellungen.kunden.kundenregistrierung_abfragen_www !== 'N'}
@@ -684,7 +693,6 @@
     {if (!isset($smarty.session.bAnti_spam_already_checked) || $smarty.session.bAnti_spam_already_checked !== true)
     && isset($Einstellungen.kunden.registrieren_captcha) && $Einstellungen.kunden.registrieren_captcha !== 'N' && empty($Kunde->kKunde)}
         {block name='checkout-inc-billing-address-form-captcha'}
-            <hr>
             {row}
                 {col cols=8 offset=4}
                     {formgroup class="{if isset($fehlendeAngaben.captcha) && $fehlendeAngaben.captcha != false} has-error{/if}"}
@@ -692,7 +700,6 @@
                     {/formgroup}
                 {/col}
             {/row}
-            <hr>
         {/block}
     {/if}
 {/block}

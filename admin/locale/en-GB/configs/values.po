@@ -2404,3 +2404,9 @@ msgstr "Helpful ascending"
 
 msgid "bewertung_sortierung_value(5)"
 msgstr "Helpful descending"
+
+msgid "direct_advertising_value(N)"
+msgstr "No"
+
+msgid "direct_advertising_value(Y)"
+msgstr "Yes"

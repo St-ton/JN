@@ -2398,3 +2398,9 @@ msgstr "Hilfreich aufsteigend"
 
 msgid "bewertung_sortierung_value(5)"
 msgstr "Hilfreich absteigend"
+
+msgid "direct_advertising_value(N)"
+msgstr "Nein"
+
+msgid "direct_advertising_value(Y)"
+msgstr "Ja"

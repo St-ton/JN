@@ -42,6 +42,7 @@ Mit Hilfe des *Templates* wird die Anordnung sämtlicher Elemente aller Shop-Sei
 
     Das *Theme* ist eine Teil des *Templates*, welches eine noch feinere Anpassung der Shop-Seiten ermöglicht.
 
+
 Der bevorzugte Weg zum eigenen Template: Child-Templates
 --------------------------------------------------------
 
@@ -90,6 +91,8 @@ Die Struktur eines Child-Templates inkl. LESS- **oder** CSS-Dateien sieht dann i
     dieser Struktur abgebildet und nicht obligatorisch. |br|
     Dies soll nur aufzeigen, dass Sie auch Funktionen überschreiben können.
 
+.. _label_eigenes_child_template:
+
 Ein neues Child-Template erstellen
 -----------------------------------
 
@@ -114,7 +117,7 @@ Vorgehen am Beispiel der "EVO-Child-Vorlage"
 """"""""""""""""""""""""""""""""""""""""""""
 
 Sie finden die Evo-Child-Vorlage auf der
-Projektseite `evo-child-vorlag <https://gitlab.com/jtl-software/jtl-shop/child-templates/evo-child-vorlage>`_.
+Projektseite `evo-child-vorlage <https://gitlab.com/jtl-software/jtl-shop/child-templates/evo-child-vorlage>`_.
 
 Für ein neues Child-Template benennen Sie zunächst den Ordner ``evo-child-vorlage/`` in den gewünschten
 Template-Namen um, z. B. ``Mein-Shop-Template/``. |br|
@@ -225,6 +228,19 @@ Unterverzeichnis ``js/``.
 Dieses Beispiel würde bewirken, dass die Datei ``js/jtl.evo.js`` Ihres Child-Templates anstelle der originalen Datei
 des Evo-Templates eingebunden wird.  Ohne das **override**-Attribut würde die genannte Datei **zusätzlich**
 zur ``jtl.evo.js`` des Parent-Templates eingebunden werden.
+
+Eigene Skripte nachladen
+------------------------
+
+**Hinweis für das NOVA-Template:**
+
+Um den Ladevorgang der Shop-Seiten nicht zu stark zu verzögern, sollten Sie zusätzliche Skripte Ihres
+Child-Templates in der Templatedatei ``footer.tpl`` laden. |br|
+Hierfür ist der Block ``{block name='layout-footer-js'}`` vorgesehen.
+
+Wichtig ist, dass Sie hierbei Ihre Skripte *asynchron* laden. Fügen Sie dazu das Attribut ``async`` zu Ihren
+``<script>``-Tags hinzu. |br|
+(zum Beispiel: ``<script src="my-nscript.js" async></script>``)
 
 
 .. _label_eigenestemplate_tpldateien:

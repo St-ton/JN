@@ -1955,6 +1955,9 @@ msgstr "Characteristics"
 msgid "Updates available"
 msgstr "Updates available"
 
+msgid "validationErrorIncorrectEmail"
+msgstr "Please enter a valid email address."
+
 msgid "Licenses expired"
 msgstr "Licenses expired"
 

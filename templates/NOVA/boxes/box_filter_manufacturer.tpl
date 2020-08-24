@@ -11,10 +11,11 @@
             }
                 {lang key='manufacturers'}
             {/button}
-            {collapse id="cllps-box{$oBox->getID()}" visible=$oBox->getItems()->isActive()}
-            {block name='boxes-box-filter-manufacturer-include-manufacturer'}
+            {collapse id="cllps-box{$oBox->getID()}"
+                visible=$oBox->getItems()->isActive() || $Einstellungen.template.productlist.filter_items_always_visible === 'Y'}
+                {block name='boxes-box-filter-manufacturer-include-manufacturer'}
                     {include file='snippets/filter/manufacturer.tpl' filter=$oBox->getItems()}
-            {/block}
+                {/block}
             {/collapse}
             {block name='boxes-box-filter-manufacturer-hr'}
                 <hr class="my-2">

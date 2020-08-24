@@ -16,24 +16,56 @@ function retCode($bOk)
 {
     die(json_encode(['status' => $bOk ? 'ok' : 'error']));
 }
+
 $session = Frontend::getInstance();
+
 if (!Form::validateToken()) {
     retCode(0);
 }
 if (!empty($_FILES)) {
+    $captchaRequestData = [$_POST['token'] ?? null => $_POST['code'] ?? null];
+
+    if (!Form::validateCaptcha($captchaRequestData)) {
+        retCode(0);
+    }
+    $whitelist = array(
+        'application/x-7z-compressed',
+        'application/x-bzip2',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'image/gif',
+        'image/jpeg',
+        'application/vnd.oasis.opendocument.text',
+        'application/pdf',
+        'image/png',
+        'application/vnd.rar',
+        'application/rtf',
+        'application/x-tar',
+        'application/tar+gzip',
+        'application/x-gzip',
+        'application/tar',
+        'text/plain',
+        'application/zip',
+    );
+    $fileData  = isset($_FILES['Filedata']['tmp_name'])
+        ? $_FILES['Filedata']
+        : $_FILES['file_data'];
+    $mime      = finfo_file(finfo_open(FILEINFO_MIME_TYPE), $fileData['tmp_name']);
+
+    if (!in_array($mime, $whitelist, true)) {
+        retCode(0);
+    }
     if (!isset($_REQUEST['uniquename'], $_REQUEST['cname'])) {
         retCode(0);
     }
     $unique     = $_REQUEST['uniquename'];
     $targetFile = PFAD_UPLOADS . $unique;
-    $fileData   = isset($_FILES['Filedata']['tmp_name'])
-        ? $_FILES['Filedata']
-        : $_FILES['file_data'];
     $tempFile   = $fileData['tmp_name'];
     $targetInfo = pathinfo($targetFile);
     $sourceInfo = pathinfo($fileData['name']);
     $realPath   = realpath($targetInfo['dirname']);
-    // legitimate uploads do not have an extension for the destination file name - but for the originally uploaded file
+
+	// legitimate uploads do not have an extension for the destination file name - but for the originally uploaded file
     if (!isset($sourceInfo['extension']) || isset($targetInfo['extension'])) {
         retCode(0);
     }

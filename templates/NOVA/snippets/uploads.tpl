@@ -29,6 +29,7 @@
                         {block name='snippets-uploads-scheme-product-data-main'}
                             {col cols=12}
                                 {block name='snippets-uploads-scheme-product-input'}
+                                    {captchaMarkup getBody=true}
                                     <div class="text-center
                                         {if isset($smarty.get.fillOut) && $smarty.get.fillOut == 12 && ($oUploadSchema->nPflicht
                                     && !$oUploadSchema->bVorhanden)} upload-error{/if}"
@@ -42,6 +43,7 @@
                                 {block name='snippets-uploads-scheme-product-script'}
                                     {inline_script}<script>
                                         $(function () {
+
                                             var $el =  $('#fileinput{$oUploadSchema@index}');
                                             $el.fileinput({
                                                 uploadUrl:             '{$ShopURL}/{$smarty.const.PFAD_UPLOAD_CALLBACK}',
@@ -58,7 +60,8 @@
                                                 language:              '{$uploaderLang}',
                                                 theme:                 'fas',
                                                 browseOnZoneClick:     true,
-                                                uploadExtraData:       {
+                                                uploadExtraData: function(previewId, index){
+                                                    var extraData = {
                                                     sid:        "{$cSessionID}",
                                                     jtl_token:  "{$smarty.session.jtl_token}",
                                                     uniquename: "{$oUploadSchema->cUnique}",
@@ -70,12 +73,20 @@
                                                     {foreach name=variationen from=$oUploadSchema->WarenkorbPosEigenschaftArr item=Variation}_{$Variation->cEigenschaftWertName|trans|replace:" ":"_"}{/foreach}
                                                         "{/strip}
                                                     {/if}
+                                                    }
+                                                    {if isset($captchaToken,$captchaCode)}
+                                                        extraData.token = "{$captchaToken}";
+                                                        extraData.code = $('input[name="{$captchaToken}"]').val();
+                                                    {/if}
+                                                    return extraData;
                                                 },
                                                 maxFileSize:           {$nMaxUploadSize/1024},
                                                 elErrorContainer:      '#kv-error-{$oUploadSchema@index}',
                                                 maxFilesNum:           1
                                             }).on("filebrowse", function(event, files) {
                                                 $el.fileinput('clear');
+                                            }).on("filebeforeload", function(event, files) {
+
                                             }).on("filebatchselected", function(event, files) {
                                                 $el.fileinput("upload");
                                             }).on('filebatchuploadsuccess', function(event, data) {

@@ -17,6 +17,7 @@ function retCode($bOk)
     die(json_encode(['status' => $bOk ? 'ok' : 'error']));
 }
 
+
 $session = Frontend::getInstance();
 
 if (!Form::validateToken()) {

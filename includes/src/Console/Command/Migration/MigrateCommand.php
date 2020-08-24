@@ -7,6 +7,7 @@ use JTL\Console\Command\Command;
 use JTL\Shop;
 use JTL\Update\IMigration;
 use JTL\Update\MigrationManager;
+use JTL\Update\Updater;
 use PDOException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -32,11 +33,23 @@ class MigrateCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $io                 = $this->getIO();
-        $manager            = new MigrationManager(Shop::Container()->getDB());
+        $db                 = Shop::Container()->getDB();
+        $updater            = new Updater($db);
+        $manager            = new MigrationManager($db);
         $migrations         = $manager->getMigrations();
         $executedMigrations = $manager->getExecutedMigrations();
         $identifier         = \max(\array_merge($executedMigrations, \array_keys($migrations)));
 
+        if (!$updater->hasMinUpdateVersion()) {
+            $io->writeln(sprintf(
+                '<error>Your online shop does not have the minimum version required to update to ' .
+                'version %s. You need at least version %s for the update to version %s.</error>',
+                \APPLICATION_VERSION,
+                \JTL_MIN_SHOP_UPDATE_VERSION,
+                \APPLICATION_VERSION
+            ));
+            return;
+        }
         if (empty($executedMigrations) && empty($migrations)) {
             $io->writeln('<info>Nothing to migrate.</info>');
             return;

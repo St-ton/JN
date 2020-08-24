@@ -377,7 +377,7 @@
                         {block name='snippets-wishlist-form-basket-products'}
                             {row class='product-list'}
                             {foreach $wishlistItems as $wlPosition}
-                                {col cols=12 sm=6 md=4 xl=3 class="mb-7"}
+                                {col cols=12 sm=6 md=4 xl=3 class="mb-8"}
                                     <div id="result-wrapper_buy_form_{$wlPosition->kWunschlistePos}" data-wrapper="true" class="productbox productbox-column productbox-hover p-2 p-xl-0">
                                         <div class="productbox-inner pos-abs">
                                             {row}
@@ -453,35 +453,51 @@
                                                             <p class="caption text-decoration-none">{lang key='priceOnApplication' section='global'}</p>
                                                         {else}
                                                             {block name='snippets-wishlist-form-basket-include-price'}
-                                                                {include file='productdetails/price.tpl' Artikel=$wlPosition->Artikel tplscope='wishlist'}
+                                                                {include file='productdetails/price.tpl' Artikel=$wlPosition->Artikel tplscope='detail'}
                                                             {/block}
                                                         {/if}
                                                     {/block}
                                                     {block name='snippets-wishlist-form-basket-characteristics'}
                                                         <div class="product-characteristics productbox-onhover">
-                                                            {foreach $wlPosition->CWunschlistePosEigenschaft_arr as $CWunschlistePosEigenschaft}
-                                                                {if $CWunschlistePosEigenschaft->cFreifeldWert}
-                                                                    <p>
-                                                                    <b>{$CWunschlistePosEigenschaft->cEigenschaftName}:</b>
-                                                                    {$CWunschlistePosEigenschaft->cFreifeldWert}{if $wlPosition->CWunschlistePosEigenschaft_arr|@count > 1 && !$CWunschlistePosEigenschaft@last}</p>{/if}
-                                                                {else}
-                                                                    <p>
-                                                                    <b>{$CWunschlistePosEigenschaft->cEigenschaftName}:</b>
-                                                                    {$CWunschlistePosEigenschaft->cEigenschaftWertName}{if $wlPosition->CWunschlistePosEigenschaft_arr|@count > 1 && !$CWunschlistePosEigenschaft@last}</p>{/if}
-                                                                {/if}
-                                                            {/foreach}
+                                                            {block name='snippets-wishlist-form-basket-characteristics-include-item-details'}
+                                                                {include file='productlist/item_details.tpl'
+                                                                    Artikel=$wlPosition->Artikel
+                                                                    tplscope='wishlist'
+                                                                    small=true}
+                                                            {/block}
+                                                            {block name='snippets-wishlist-form-basket-characteristics-selected'}
+                                                                {row tag='dl' class="text-nowrap formrow-small"}
+                                                                    {foreach $wlPosition->CWunschlistePosEigenschaft_arr as $CWunschlistePosEigenschaft}
+                                                                        {if $CWunschlistePosEigenschaft->cFreifeldWert}
+                                                                            {col tag='dt' cols=6}{$CWunschlistePosEigenschaft->cEigenschaftName}:{/col}
+                                                                            {col tag='dd' cols=6}{$CWunschlistePosEigenschaft->cFreifeldWert}{/col}
+                                                                        {else}
+                                                                            {col tag='dt' cols=6}{$CWunschlistePosEigenschaft->cEigenschaftName}:{/col}
+                                                                            {col tag='dd' cols=6}{$CWunschlistePosEigenschaft->cEigenschaftWertName}{/col}
+                                                                        {/if}
+                                                                    {/foreach}
+                                                                {/row}
+                                                            {/block}
                                                         </div>
                                                     {/block}
                                                     {block name='snippets-wishlist-form-basket-main'}
                                                         <div class="productbox-onhover productbox-options">
                                                             {block name='snippets-wishlist-form-basket-textarea'}
                                                                 {textarea
+                                                                    placeholder={lang key='yourNote'}
                                                                     readonly=($isCurrenctCustomer !== true)
                                                                     rows="5"
                                                                     name="Kommentar_{$wlPosition->kWunschlistePos}"
-                                                                    class="my-3 js-update-wl"
+                                                                    class="my-3 js-update-wl auto-expand"
                                                                     aria=["label"=>"{lang key='wishlistComment' section='login'} {$wlPosition->cArtikelName}"]
                                                                 }{$wlPosition->cKommentar}{/textarea}
+                                                            {/block}
+                                                            {block name='snippets-wishlist-form-basket-delivery-status'}
+                                                                {block name='snippets-wishlist-item-list-include-delivery-status'}
+                                                                    {include file='productlist/item_delivery_status.tpl'
+                                                                    Artikel=$wlPosition->Artikel
+                                                                    tplscope='wishlist'}
+                                                                {/block}
                                                             {/block}
                                                             {if !($wlPosition->Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N')}
                                                                 {block name='snippets-wishlist-form-basket-input-group-details'}

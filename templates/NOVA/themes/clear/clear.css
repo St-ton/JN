@@ -21069,6 +21069,9 @@ label {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
 }
+.productbox textarea {
+  height: calc(1.5em + 1.25rem + 2px);
+}
 
 .productbox-inner {
   position: relative;
@@ -21170,6 +21173,10 @@ label {
 .productbox-sidebar .productbox-details, .productbox-sidebar .productbox-status,
 .productbox-sidebar .productbox-delivery, .productbox-sidebar .productbox-actions {
   display: none;
+}
+
+.formrow-small dd {
+  margin-bottom: 0;
 }
 
 .tooltip-inner {

@@ -41,13 +41,8 @@ class MigrateCommand extends Command
         $identifier         = \max(\array_merge($executedMigrations, \array_keys($migrations)));
 
         if (!$updater->hasMinUpdateVersion()) {
-            $io->writeln(sprintf(
-                '<error>Your online shop does not have the minimum version required to update to ' .
-                'version %s. You need at least version %s for the update to version %s.</error>',
-                \APPLICATION_VERSION,
-                \JTL_MIN_SHOP_UPDATE_VERSION,
-                \APPLICATION_VERSION
-            ));
+            Shop::Container()->getGetText()->setLanguage('en-GB')->loadAdminLocale('pages/dbupdater');
+            $io->writeln('<error>' . $updater->getMinUpdateVersionError() . '</error>');
             return;
         }
         if (empty($executedMigrations) && empty($migrations)) {

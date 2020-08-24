@@ -24,13 +24,7 @@ $hasMinUpdateVersion = true;
 if (!$updater->hasMinUpdateVersion()) {
     Shop::Container()->getAlertService()->addAlert(
         Alert::TYPE_WARNING,
-        sprintf(
-            __('errorMinShopVersionRequired'),
-            \APPLICATION_VERSION,
-            \JTL_MIN_SHOP_UPDATE_VERSION,
-            \APPLICATION_VERSION,
-            __('dbupdaterURL')
-        ),
+        $updater->getMinUpdateVersionError(),
         'errorMinShopVersionRequired'
     );
     $hasMinUpdateVersion = false;
@@ -46,5 +40,5 @@ $smarty->assign('updatesAvailable', $updater->hasPendingUpdates())
     ->assign('updateError', $updater->error())
     ->assign('currentTemplateFileVersion', $template->getFileVersion())
     ->assign('currentTemplateDatabaseVersion', $template->getVersion())
-    ->assign('hasMinUpdateVersion', $hasMinUpdateVersion)
+    ->assign('hasMinUpdateVersion', true)
     ->display('dbupdater.tpl');

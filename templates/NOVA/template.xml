@@ -30,6 +30,12 @@
                 <Option Value="fixed">Suche beim Hochscrollen einblenden</Option>
                 <Option Value="dropdown">Icon mit Dropdown</Option>
             </Setting>
+            <Setting Description="Wunschzettel und Vergleichsliste - Animation anzeigen" Key="wish_compare_animation" Type="select" Value="both">
+                <Option Value="both">Auf Desktop und mobilen Geräten</Option>
+                <Option Value="mobile">Nur mobil</Option>
+                <Option Value="desktop">Nur Desktop</Option>
+                <Option Value="none">Keine</Option>
+            </Setting>
             <Setting Description="Schaltfläche „Nach oben scrollen“ anzeigen"  Key="button_scroll_top" Type="select" Value="Y">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>

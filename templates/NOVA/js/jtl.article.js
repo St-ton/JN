@@ -674,8 +674,6 @@
                                 window.location.href = response.cLocation;
                                 break;
                             case 2: // added to comparelist
-                                let $moveTo = isMobileByBodyClass() ? $('#burger-menu') : $('#shop-nav-compare');
-                                $.evo.article().moveItemAnimation($action, $moveTo);
                                 that.updateComparelist(response);
                                 break;
                         }
@@ -808,8 +806,6 @@
                                 window.location.href = response.cLocation;
                                 break;
                             case 2: // added to wishlist
-                                let $moveTo = isMobileByBodyClass() ? $('#burger-menu') : $('#shop-nav-wish');
-                                $.evo.article().moveItemAnimation($action, $moveTo);
                                 that.updateWishlist(response);
                                 break;
                         }
@@ -919,6 +915,13 @@
                             $action.addClass("on-list");
                             $action.next().addClass("press");
                             $action.next().next().removeClass("press");
+                            $(this.options.selector.navCompare).removeClass('d-none');
+
+                            let $moveTo = isMobileByBodyClass()
+                                ? $('.wish-compare-animation-mobile #burger-menu')
+                                : $('.wish-compare-animation-desktop #shop-nav-compare');
+                            $.evo.article().moveItemAnimation($action, $moveTo);
+
                             return this.addToComparelist(data, $action);
                         }
                     } else {
@@ -935,6 +938,10 @@
                         data.a = data.wlPos;
                         return this.removeFromWishList(data);
                     } else {
+                        let $moveTo = isMobileByBodyClass()
+                            ? $('.wish-compare-animation-mobile #burger-menu')
+                            : $('.wish-compare-animation-desktop #shop-nav-wish');
+                        $.evo.article().moveItemAnimation($action, $moveTo);
                         return this.addToWishlist(data, $action);
                     }
                 case this.options.action.wishListRemove:
@@ -1477,7 +1484,7 @@
         },
 
         moveItemAnimation: function(item, moveTo) {
-            if (!item || $(this).hasClass('on-list')) {
+            if (!item.length || !moveTo.length || $(this).hasClass('on-list')) {
                 return;
             }
             setTimeout(function() {
@@ -1494,7 +1501,7 @@
                     .animate({
                         'top': moveTo.offset().top + 5,
                         'left': moveTo.offset().left + 5,
-                    }, 1000);
+                    }, 700);
 
                 itemClone.animate({
                     'width': 0,

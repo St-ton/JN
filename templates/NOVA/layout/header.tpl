@@ -263,7 +263,12 @@
 
     {has_boxes position='left' assign='hasLeftPanel'}
     {block name='layout-header-body-tag'}
-        <body class="{if $Einstellungen.template.theme.button_animated === 'Y'}btn-animated{/if} {if $isMobile}is-mobile{/if}"
+        <body class="{if $Einstellungen.template.theme.button_animated === 'Y'}btn-animated{/if}
+                     {if $Einstellungen.template.theme.wish_compare_animation === 'mobile'
+                        || $Einstellungen.template.theme.wish_compare_animation === 'both'}wish-compare-animation-mobile{/if}
+                     {if $Einstellungen.template.theme.wish_compare_animation === 'desktop'
+                        || $Einstellungen.template.theme.wish_compare_animation === 'both'}wish-compare-animation-desktop{/if}
+                     {if $isMobile}is-mobile{/if}"
               data-page="{$nSeitenTyp}"
               {if isset($Link) && !empty($Link->getIdentifier())} id="{$Link->getIdentifier()}"{/if}>
     {/block}

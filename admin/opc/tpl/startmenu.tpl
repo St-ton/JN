@@ -2,13 +2,21 @@
     {$shopHasUpdates    = $opc->shopHasUpdates()}
     {$opcStartUrl       = "{$ShopURL}/admin/opc.php"}
     {$curPageUrl        = $opcPageService->getCurPageUri()}
-    {$curPageId         = $opcPageService->createCurrentPageId()}
+
+    {if $opcPageService->isCurPageModifiable()}
+        {$curPageId = $opcPageService->createCurrentPageId()}
+    {else}
+        {$curPageId = ''}
+    {/if}
+
     {$publicDraft       = $opcPageService->getPublicPage($curPageId)}
+
     {if $publicDraft === null}
         {$publicDraftKey = 0}
     {else}
         {$publicDraftKey = $publicDraft->getKey()}
     {/if}
+
     {$pageDrafts        = $opcPageService->getDrafts($curPageId)}
     {$adminSessionToken = $opc->getAdminSessionToken()}
     {$languages         = $smarty.session.Sprachen}
@@ -243,7 +251,28 @@
         }
     </script>{/inline_script}
     <div id="opc">
-        {if $pageDrafts|count === 0 && $shopHasUpdates === false}
+        {if $opcPageService->isCurPageModifiable() === false}
+            <nav id="opc-startmenu">
+                <button type="button" class="opc-btn-primary" onclick="openOpcStartMenu()">
+                    <img src="{$ShopURL}/admin/opc/gfx/icon-opc.svg" alt="OPC Start Icon" id="opc-start-icon">
+                    <span id="opc-start-label">{__('onPageComposer')}</span>
+                </button>
+            </nav>
+            <div id="opcSidebar">
+                <header id="opcHeader">
+                    <h1 id="opc-sidebar-title">
+                        {__('editPage')}
+                    </h1>
+                    <button onclick="closeOpcStartMenu()" class="opc-float-right opc-header-btn"
+                            title="{__('Close OnPage-Composer')}">
+                        <i class="fa fas fa-times"></i>
+                    </button>
+                </header>
+                {alert variant='danger'}
+                {__('opcNotSupportedPage')}
+                {/alert}
+            </div>
+        {elseif $pageDrafts|count === 0 && $shopHasUpdates === false}
             <nav id="opc-startmenu">
                 <form method="post" action="{$opcStartUrl}">
                     <input type="hidden" name="jtl_token" value="{$adminSessionToken}">

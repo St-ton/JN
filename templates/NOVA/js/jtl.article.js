@@ -938,6 +938,7 @@
                         data.a = data.wlPos;
                         return this.removeFromWishList(data);
                     } else {
+                        $action.addClass("on-list");
                         let $moveTo = isMobileByBodyClass()
                             ? $('.wish-compare-animation-mobile #burger-menu')
                             : $('.wish-compare-animation-desktop #shop-nav-wish');

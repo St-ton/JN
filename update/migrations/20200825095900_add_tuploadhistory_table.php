@@ -25,6 +25,18 @@ class Migration_20200825095900 extends Migration implements IMigration
           KEY `cIP` (`cIP`)
           );"
         );
+
+        $this->setConfig(
+            'upload_modul_limit',
+            '10',
+            \CONF_ARTIKELDETAILS,
+            'Limit für Uploads pro Stunde',
+            'number',
+            1111,
+            (object)[
+                'cBeschreibung' => 'Hier legen Sie fest, wie oft ein Benutzer bei aktiviertem Uploadmodul Dateien hochladen darf (pro Stunde).'
+            ]
+        );
     }
 
     /**

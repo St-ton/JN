@@ -20,11 +20,13 @@ function retCode($bOk)
 }
 
 $session = Frontend::getInstance();
+$conf    = Shop::getSettings([\CONF_ARTIKELDETAILS]);
+$limit   = $conf['artikeldetails']['upload_modul_limit'];
 
 if (!Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_UPLOADS)) {
     retCode(0);
 }
-if (Form::reachedUploadLimitPerHour(10)) {
+if (Form::reachedUploadLimitPerHour($limit)) {
     retCode(0);
 }
 $uploadHistory            = new stdClass();

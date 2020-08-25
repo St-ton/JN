@@ -160,7 +160,6 @@ $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
     ->assign('nSeitenTyp', $pageType)
     ->assign('bExclusive', isset($_GET['exclusive_content']))
     ->assign('bAdminWartungsmodus', isset($bAdminWartungsmodus) && $bAdminWartungsmodus)
-    ->assign('bFromAdmin', Request::verifyGPDataString('fromAdmin') === 'yes')
     ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
     ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
     ->assign('FavourableShipping', $cart->getFavourableShipping(

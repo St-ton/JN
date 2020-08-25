@@ -2000,28 +2000,6 @@ final class Shop
         return self::$logged ?? false;
     }
 
-    public static function fetchAdminInfo()
-    {
-        if (!empty($_COOKIE['eSIdAdm'])) {
-            $frontendToken  = $_SESSION['jtl_token'];
-            $frontSessionId = \session_id();
-            \session_write_close();
-            \session_name('eSIdAdm');
-            \session_id($_COOKIE['eSIdAdm']);
-            \session_start();
-            $adminToken                   = $_SESSION['jtl_token'];
-            $adminLangTag                 = $_SESSION['AdminAccount']->language;
-            $_SESSION['frontendUpToDate'] = true;
-            \session_write_close();
-            \session_name('JTLSHOP');
-            \session_id($_COOKIE['JTLSHOP']);
-            \session_start();
-            $_SESSION['loggedAsAdmin'] = true;
-            $_SESSION['adminToken']    = $adminToken;
-            $_SESSION['adminLangTag']  = $adminLangTag;
-        }
-    }
-
     /**
      * @return string|null
      * @throws Exception

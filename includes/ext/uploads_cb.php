@@ -43,12 +43,12 @@ if (!empty($_FILES)) {
         && move_uploaded_file($tempFile, $targetFile)
     ) {
         $file = new stdClass();
-        if (isset($_REQUEST['prodID'])) {
-            $file->cName = (int)$_REQUEST['prodID'] . '_' . $unique . '.' . $sourceInfo['extension'];
-        } else {
+        if (isset($_REQUEST['cname'])) {
             $file->cName = !empty($_REQUEST['variation'])
                 ? $_REQUEST['cname'] . '_' . $_REQUEST['variation'] . '_' . $fileData['name']
                 : $_REQUEST['cname'] . '_' . $fileData['name'];
+        } else {
+            $file->cName = (int)$_REQUEST['prodID'] . '_' . $unique . '.' . $sourceInfo['extension'];
         }
         $file->nBytes = $fileData['size'];
         $file->cKB    = round($fileData['size'] / 1024, 2);

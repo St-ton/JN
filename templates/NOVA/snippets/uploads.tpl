@@ -64,7 +64,7 @@
                                                     uniquename: "{$oUploadSchema->cUnique}",
                                                     uploader:   "4.00",
                                                     prodID:     "{$oUploadSchema->prodID}",
-                                                    cname:      "{$oUploadSchema->cName|replace:" ":"_"}"
+                                                    cname:      "{$Artikel->cName|replace:" ":"_"}_{$oUploadSchema->cName|replace:" ":"_"}"
                                                     {if !empty($oUploadSchema->WarenkorbPosEigenschaftArr)},
                                                     variation:  "{strip}
                                                     {foreach name=variationen from=$oUploadSchema->WarenkorbPosEigenschaftArr item=Variation}_{$Variation->cEigenschaftWertName|trans|replace:" ":"_"}{/foreach}
@@ -81,9 +81,11 @@
                                             }).on('filebatchuploadsuccess', function(event, data) {
                                                 var msgField = $('#queue{$oUploadSchema@index} .current-upload'),
                                                     uploadMsgField = $('.uploadifyMsg');
+                                                msgField.removeClass('text-danger').addClass('text-success');
                                                 if (typeof data.response !== 'undefined' && typeof data.response.cName !== 'undefined') {
                                                     msgField.html('<i class="fas fa-check" aria-hidden="true"></i>' + data.response.cName + ' (' + data.response.cKB + ' KB)');
                                                 } else {
+                                                    msgField.removeClass('text-success').addClass('text-danger');
                                                     msgField.html('{lang key='uploadError'}');
                                                 }
                                                 $('#msgWarning').hide();
@@ -215,9 +217,11 @@
                                                         }).on('filebatchuploadsuccess', function (event, data) {
                                                             var msgField       = $('#queue{$oUploadSchema@index}{$oUpload@index} .current-upload'),
                                                                 uploadMsgField = $('.uploadifyMsg');
+                                                            msgField.removeClass('text-danger').addClass('text-success');
                                                             if (typeof data.response !== 'undefined' && typeof data.response.cName !== 'undefined') {
                                                                 msgField.html('<i class="fas fa-check" aria-hidden="true"></i>' + data.response.cName + ' (' + data.response.cKB + ' KB)');
                                                             } else {
+                                                                msgField.removeClass('text-success').addClass('text-danger');
                                                                 msgField.html('{lang key='uploadError'}');
                                                             }
                                                             $('#msgWarning').hide();

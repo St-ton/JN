@@ -1950,28 +1950,76 @@ final class Shop
      * @return bool
      * @throws Exception
      */
-    public static function isAdmin(): bool
+    public static function isAdmin($sessionSwitchAllowed = false): bool
     {
         if (\is_bool(self::$logged)) {
             return self::$logged;
         }
 
         if (\session_name() === 'eSIdAdm') {
+            // admin session already active
             self::$logged       = self::Container()->getAdminAccount()->logged();
             self::$adminToken   = $_SESSION['jtl_token'];
             self::$adminLangTag = $_SESSION['AdminAccount']->language;
         } elseif (!empty($_SESSION['loggedAsAdmin']) && $_SESSION['loggedAsAdmin'] === true) {
+            // frontend session has been notified by admin session
             self::$logged       = true;
             self::$adminToken   = $_SESSION['adminToken'];
             self::$adminLangTag = $_SESSION['adminLangTag'];
             self::Container()->getGetText();
         } else {
-            self::$logged       = false;
-            self::$adminToken   = null;
-            self::$adminLangTag = null;
+            // frontend session has not been notified yet
+            if ($sessionSwitchAllowed === true
+                && Request::verifyGPDataString('fromAdmin') === 'yes'
+                && isset($_COOKIE['eSIdAdm'])
+            ) {
+                // try to fetch information autonomously
+                $frontendId = \session_id();
+                \session_write_close();
+                \session_name('eSIdAdm');
+                \session_id($_COOKIE['eSIdAdm']);
+                \session_start();
+                $adminToken                   = $_SESSION['jtl_token'];
+                $adminLangTag                 = $_SESSION['AdminAccount']->language;
+                $_SESSION['frontendUpToDate'] = true;
+                \session_write_close();
+                \session_name('JTLSHOP');
+                \session_id($frontendId);
+                \session_start();
+                self::$logged       = $_SESSION['loggedAsAdmin'] = true;
+                self::$adminToken   = $_SESSION['adminToken']    = $adminToken;
+                self::$adminLangTag = $_SESSION['adminLangTag']  = $adminLangTag;
+            } else {
+                // no information about admin session available
+                self::$logged       = null;
+                self::$adminToken   = null;
+                self::$adminLangTag = null;
+            }
         }
 
-        return self::$logged;
+        return self::$logged ?? false;
+    }
+
+    public static function fetchAdminInfo()
+    {
+        if (!empty($_COOKIE['eSIdAdm'])) {
+            $frontendToken  = $_SESSION['jtl_token'];
+            $frontSessionId = \session_id();
+            \session_write_close();
+            \session_name('eSIdAdm');
+            \session_id($_COOKIE['eSIdAdm']);
+            \session_start();
+            $adminToken                   = $_SESSION['jtl_token'];
+            $adminLangTag                 = $_SESSION['AdminAccount']->language;
+            $_SESSION['frontendUpToDate'] = true;
+            \session_write_close();
+            \session_name('JTLSHOP');
+            \session_id($_COOKIE['JTLSHOP']);
+            \session_start();
+            $_SESSION['loggedAsAdmin'] = true;
+            $_SESSION['adminToken']    = $adminToken;
+            $_SESSION['adminLangTag']  = $adminLangTag;
+        }
     }
 
     /**

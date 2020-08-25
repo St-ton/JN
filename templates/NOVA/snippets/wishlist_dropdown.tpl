@@ -5,10 +5,10 @@
                 <table class="table table-vertical-middle table-striped">
                     <tbody>
                         {foreach $wishlists as $wishlist}
-                            <tr>
+                            <tr class="clickable-row cursor-pointer" data-href="{get_static_route id='wunschliste.php'}?wl={$wishlist->kWunschliste}">
                                 <td>
                                     {block name='snippets-wishlist-dropdown-link'}
-                                        {link href="{get_static_route id='wunschliste.php'}?wl={$wishlist->kWunschliste}"}{$wishlist->cName}{/link}<br />
+                                        {$wishlist->cName}<br />
                                     {/block}
                                     {block name='snippets-wishlist-dropdown-punlic'}
                                         <span data-switch-label-state="public-{$wishlist->kWunschliste}" class="small {if $wishlist->nOeffentlich != 1}d-none{/if}">

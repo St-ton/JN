@@ -3,6 +3,7 @@
 use JTL\Extensions\Upload\File;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Nice;
 use JTL\Session\Frontend;
 use JTL\Shop;
 
@@ -20,6 +21,9 @@ function retCode($bOk)
 
 $session = Frontend::getInstance();
 
+if (!Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_UPLOADS)) {
+    retCode(0);
+}
 if (Form::reachedUploadLimitPerHour(10)) {
     retCode(0);
 }

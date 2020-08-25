@@ -353,6 +353,14 @@ class Form
             ['ip' => Request::getRealIP()],
             ReturnType::SINGLE_OBJECT
         );
+        Shop::Container()->getDB()->executeQueryPrepared(
+            'DELETE
+                FROM tuploadhistory
+                WHERE dErstellt < DATE_SUB(NOW(), INTERVAL 1 HOUR);
+                ',[],
+            ReturnType::DEFAULT
+        );
+
         return $history->nAnfragen >= $max;
     }
 

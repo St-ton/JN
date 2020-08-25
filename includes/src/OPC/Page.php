@@ -21,6 +21,11 @@ class Page implements \JsonSerializable
     protected $id = '';
 
     /**
+     * @var bool
+     */
+    protected $isModifiable = true;
+
+    /**
      * @var null|string
      */
     protected $publishFrom;
@@ -107,6 +112,25 @@ class Page implements \JsonSerializable
     public function setId(string $id): self
     {
         $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isModifiable(): bool
+    {
+        return $this->isModifiable;
+    }
+
+    /**
+     * @param bool $isModifiable
+     * @return Page
+     */
+    public function setIsModifiable(bool $isModifiable): Page
+    {
+        $this->isModifiable = $isModifiable;
 
         return $this;
     }

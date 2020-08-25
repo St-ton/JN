@@ -16,7 +16,7 @@ $admin   = new Admin($manager, $db, $cache, $checker);
 if (Request::postVar('action') === 'code') {
     $admin->handleAuth();
 } else {
-    $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
+    $oAccount->permission('LICENSE_MANAGER', true, true);
     $admin->handle($smarty);
     $smarty->display('licenses.tpl');
 }

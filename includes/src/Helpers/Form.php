@@ -357,7 +357,8 @@ class Form
             'DELETE
                 FROM tuploadhistory
                 WHERE dErstellt < DATE_SUB(NOW(), INTERVAL 1 HOUR);
-                ',[],
+                ',
+            [],
             ReturnType::DEFAULT
         );
 

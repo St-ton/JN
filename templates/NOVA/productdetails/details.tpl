@@ -113,7 +113,14 @@
                                                 {block name='productdetails-details-product-info-manufacturer'}
                                                     <li itemprop="brand" itemscope="true" itemtype="http://schema.org/Organization">
                                                         <span class="font-weight-bold">{lang key='manufacturers'}:</span>
-                                                        <a class="text-decoration-none" href="{$Artikel->cHerstellerSeo}"{if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B'} data-toggle="tooltip" data-placement="left" title="{$Artikel->cHersteller}"{/if} itemprop="url">
+                                                        <a class="text-decoration-none"
+                                                           href="{if !empty($Artikel->cHerstellerHomepage)}{$Artikel->cHerstellerHomepage}{else}{$Artikel->cHerstellerSeo}{/if}"
+                                                            {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B'}
+                                                                data-toggle="tooltip"
+                                                                data-placement="left"
+                                                                title="{$Artikel->cHersteller}"
+                                                            {/if}
+                                                           itemprop="url">
                                                             {if ($Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B'
                                                                 || $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'BT')
                                                                 && !empty($Artikel->cHerstellerBildURLKlein)}

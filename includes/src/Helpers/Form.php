@@ -338,6 +338,23 @@ class Form
 
         return isset($history->kKontaktHistory) && $history->kKontaktHistory > 0;
     }
+    public static function reachedUploadLimitPerHour($max): bool
+    {
+        if (!$max) {
+            return false;
+        }
+        $max     = (int)$max;
+        $history = Shop::Container()->getDB()->executeQueryPrepared(
+            'SELECT COUNT(kUploadHistory) AS nAnfragen
+                FROM tuploadhistory
+                WHERE cIP = :ip 
+                    AND dErstellt BETWEEN DATE_SUB(NOW(), INTERVAL 1 HOUR) AND NOW();
+                ',
+            ['ip' => Request::getRealIP()],
+            ReturnType::SINGLE_OBJECT
+        );
+        return $history->nAnfragen >= $max;
+    }
 
     /**
      * @return stdClass

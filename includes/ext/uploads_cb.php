@@ -2,6 +2,7 @@
 
 use JTL\Extensions\Upload\File;
 use JTL\Helpers\Form;
+use JTL\Helpers\Request;
 use JTL\Session\Frontend;
 use JTL\Shop;
 
@@ -17,8 +18,15 @@ function retCode($bOk)
     die(json_encode(['status' => $bOk ? 'ok' : 'error']));
 }
 
-
 $session = Frontend::getInstance();
+
+if (Form::reachedUploadLimitPerHour(10)) {
+    retCode(0);
+}
+$uploadHistory            = new stdClass();
+$uploadHistory->cIP       = Request::getRealIP();
+$uploadHistory->dErstellt = 'NOW()';
+Shop::Container()->getDB()->insert('tuploadhistory', $uploadHistory);
 
 if (!Form::validateToken()) {
     retCode(0);

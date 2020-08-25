@@ -31,6 +31,7 @@ class CleanupLogs extends Method implements MethodInterface
     {
         $this->cleanupEmailHistory();
         $this->cleanupContactHistory();
+        $this->cleanupUploadHistory();
         $this->cleanupPaymentLogEntries();
         $this->cleanupProductInquiries();
         $this->cleanupAvailabilityInquiries();
@@ -66,6 +67,25 @@ class CleanupLogs extends Method implements MethodInterface
     {
         $this->db->queryPrepared(
             'DELETE FROM tkontakthistory
+                WHERE dErstellt <= :pDateLimit
+                ORDER BY dErstellt ASC
+                LIMIT :pLimit',
+            [
+                'pDateLimit' => $this->dateLimit,
+                'pLimit'     => $this->workLimit
+            ],
+            ReturnType::DEFAULT
+        );
+    }
+
+    /**
+     * delete upload request history
+     * older than given interval
+     */
+    private function cleanupUploadHistory(): void
+    {
+        $this->db->queryPrepared(
+            'DELETE FROM tuploadhistory
                 WHERE dErstellt <= :pDateLimit
                 ORDER BY dErstellt ASC
                 LIMIT :pLimit',

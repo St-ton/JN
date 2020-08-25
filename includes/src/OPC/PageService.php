@@ -113,8 +113,8 @@ class PageService
         if ($this->opc->isEditMode()) {
             $output = '<div class="opc-area opc-rootarea" data-area-id="' . $id . '" data-title="' . $title
                 . '"></div>';
-        } elseif ($this->getCurPage()->getAreaList()->hasArea($id)) {
-            $output = $this->getCurPage()->getAreaList()->getArea($id)->getFinalHtml($inContainer);
+        } elseif (($areaList = $this->getCurPage()->getAreaList())->hasArea($id)) {
+            $output = $areaList->getArea($id)->getFinalHtml($inContainer);
         }
 
         Shop::fire('shop.OPC.PageService.renderMountPoint', [
@@ -193,11 +193,17 @@ class PageService
                 $pageData      = $this->getPreviewPageData();
                 $this->curPage = $this->createPageFromData($pageData);
             } else {
-                $curPageUrl    = $this->getCurPageUri();
-                $curPageId     = $this->createCurrentPageId();
-                $this->curPage = $this->getPublicPage($curPageId) ?? new Page();
-                $this->curPage->setId($curPageId);
-                $this->curPage->setUrl($curPageUrl);
+                $curPageUrl = $this->getCurPageUri();
+                $curPageId  = $this->createCurrentPageId();
+
+                if ($curPageId !== null) {
+                    $this->curPage = $this->getPublicPage($curPageId) ?? new Page();
+                    $this->curPage->setId($curPageId);
+                    $this->curPage->setUrl($curPageUrl);
+                } else {
+                    $this->curPage = new Page();
+                    $this->curPage->setIsModifiable(false);
+                }
             }
         }
 
@@ -239,10 +245,19 @@ class PageService
     }
 
     /**
+     * @return bool
+     * @throws Exception
+     */
+    public function isCurPageModifiable()
+    {
+        return $this->getCurPage()->isModifiable();
+    }
+
+    /**
      * @param int $langId
      * @return string
      */
-    public function createCurrentPageId(int $langId = 0): string
+    public function createCurrentPageId(int $langId = 0): ?string
     {
         if ($langId === 0) {
             $langId = Shop::getLanguageID();
@@ -261,6 +276,10 @@ class PageService
             $pageIdObj->type = 'product';
             $pageIdObj->id   = $params['kArtikel'];
         } elseif ($params['kLink'] > 0) {
+            if ($params['nLinkart'] === \LINKTYP_BESTELLVORGANG) {
+                return null;
+            }
+
             $pageIdObj->type = 'link';
             $pageIdObj->id   = $params['kLink'];
         } elseif ($params['kMerkmalWert'] > 0) {

@@ -154,6 +154,11 @@ final class Shop
     /**
      * @var int
      */
+    public static $nLinkart;
+
+    /**
+     * @var int
+     */
     public static $kHersteller;
 
     /**
@@ -944,6 +949,7 @@ final class Shop
         self::$bFileNotFound   = false;
         self::$cCanonicalURL   = '';
         self::$is404           = false;
+        self::$nLinkart        = 0;
 
         self::$nSterne = Request::verifyGPCDataInt('nSterne');
 
@@ -1054,6 +1060,7 @@ final class Shop
             'kVariKindArtikel'       => self::$kVariKindArtikel,
             'kSeite'                 => self::$kSeite,
             'kLink'                  => self::$kLink,
+            'nLinkart'               => self::$nLinkart,
             'kSuchanfrage'           => self::$kSuchanfrage,
             'kMerkmalWert'           => self::$kMerkmalWert,
             'kSuchspecial'           => self::$kSuchspecial,
@@ -1564,12 +1571,16 @@ final class Shop
         } elseif (!empty(self::$kLink)) {
             $link = self::Container()->getLinkService()->getLinkByID(self::$kLink);
             if ($link !== null && ($linkType = $link->getLinkType()) > 0) {
+                self::$nLinkart = $linkType;
+
                 if ($linkType === \LINKTYP_EXTERNE_URL) {
                     \header('Location: ' . $link->getURL(), true, 303);
                     exit;
                 }
+
                 self::$fileName = 'seite.php';
                 self::setPageType(\PAGE_EIGENE);
+
                 if ($linkType === \LINKTYP_STARTSEITE) {
                     self::setPageType(\PAGE_STARTSEITE);
                 } elseif ($linkType === \LINKTYP_DATENSCHUTZ) {

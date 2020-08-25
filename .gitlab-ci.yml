@@ -15,49 +15,6 @@ stages:
   - staging
   - stagingMarketplaceDev
 
-.codeQualityScripts: &codeQualityScripts |
-  function codeQualityCheck() {
-    export CI_CONTAINER_NAME=ci-job-$CI_PROJECT_NAME-code-quality-$CI_COMMIT_SHA
-
-    echo "Login to GitLab Container Registry with CI credentials..."
-    docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-    echo ""
-    echo "Code quality check of project in docker image codesniffer..."
-
-    docker run \
-      -v $(pwd):/code \
-      -w /code \
-      --name="$CI_CONTAINER_NAME" \
-      $GLOBAL_CI_REGISTRY_URL/codesniffer \
-      sh -c "bash build/scripts/global-codesniffer.sh /code"
-
-    docker stop "$CI_CONTAINER_NAME"
-    docker rm -fv "$CI_CONTAINER_NAME" >/dev/null
-
-    echo "Code quality check finished"
-  }
-
-.testingScript: &testingScript |
-  export CI_CONTAINER_NAME=ci-job-$CI_PROJECT_NAME-testing-$CI_COMMIT_SHA-php$PHP_VERSION_TEST_STEP
-
-  function testing() {
-    echo "Login to GitLab Container Registry with CI credentials..."
-    docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-    echo ""
-    echo "Testing project in PHP $PHP_VERSION_TEST_STEP docker image..."
-
-    docker run \
-      -w '/creation' \
-      --volume $(pwd):/dockerBuild \
-      --name="$CI_CONTAINER_NAME" \
-      $GLOBAL_CI_REGISTRY_URL/testing-php$PHP_VERSION_TEST_STEP \
-      sh -c "cp -r /dockerBuild/. /creation; bash build/scripts/tests.sh"
-
-    docker stop "$CI_CONTAINER_NAME"
-    docker rm -fv "$CI_CONTAINER_NAME" >/dev/null
-
-    echo "Tests finished"
-  }
 
 .cleanUpTesting: &cleanUpTesting |
   function failedCodeQuality() {
@@ -252,19 +209,42 @@ workflow:
     - when: always
 
 
+.ComposerInstall: &ComposerInstall |
+  # COMPOSER INSTALLATION
+  echo "] installing composer.."
+  php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+  php -r "if (hash_file('sha384', 'composer-setup.php') === file_get_contents('https://composer.github.io/installer.sig')) { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+  php composer-setup.php && rm composer-setup.php
+  mv composer.phar composer
+
+
+.CodeSnifferInstallScript: &CodeSnifferInstallScript |
+  # CODESNIFFER INSTALLATION
+  echo "] remove default composer files.."
+  rm includes/composer.json includes/composer.lock
+  echo "] runing phpcs install.."
+  ./composer -q require squizlabs/php_codesniffer -d includes/
+
+.CodeSnifferRunScript: &CodeSnifferRunScript |
+  # CODESNIFFER RUN
+  echo "] writing phpcs config.."
+  php -r '$conf=["show_progress"=>"1","colors"=>"1","report_width"=>"90","encoding"=>"utf-8"];file_put_contents("includes/vendor/squizlabs/php_codesniffer/CodeSniffer.conf","<?php \$phpCodeSnifferConfig=".var_export($conf,true)."; ?>");'
+  echo "] create file list.."
+  find . -iname '*.php' >filelisting.txt
+  echo "] starting check script.."
+  build/scripts/codesniffer.sh .
+
+
 code_quality:
   stage: codeQuality
-  image: docker:19.03.1
-  services:
-    - docker:19.03.1-dind
-  variables:
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: "/certs"
+  image: php:7.3-alpine
+  before_script:
+    - *ComposerInstall
+    - *CodeSnifferInstallScript
   script:
-    - *codeQualityScripts
-    - codeQualityCheck
-#  <<: *debugging
+    - *CodeSnifferRunScript
   artifacts:
+    when: always
     paths: [code-quality-report.txt]
   rules:
     - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
@@ -272,7 +252,7 @@ code_quality:
         && $CI_COMMIT_TAG == null
       when: always
 
-removeContainerCodeQuality:
+.removeContainerCodeQuality:
   stage: cleanUpCodeQuality
   image: docker:19.03.1
   services:
@@ -291,47 +271,78 @@ removeContainerCodeQuality:
         && $CI_COMMIT_TAG == null
       when: on_failure
 
+.unitTestsInstallScript: &unitTestsInstallScript |
+  # INSTALLING SYSTEM DEPENDENCIES
+  apk update
+  echo -n "] system package install.."
+  apk add --no-cache freetype-dev g++ git gnupg icu-dev libjpeg-turbo-dev libpng-dev libxml2-dev libzip-dev php7-bcmath php7-gd php7-intl php7-soap php7-zip unzip zip zlib-dev >/dev/null
+  apk add --update nodejs nodejs-npm >/dev/null
+  if [ $? -gt 0 ] ; then echo -e "\e[1;31m run with ERRORs\e[0m"; else echo -e "\e[1;32m OK\e[0m"; fi
+  echo "] installing PHP extensions:"
+  echo -n "] bcmath.."
+  docker-php-ext-install -j$(nproc) bcmath &>/dev/null; if [ $? -gt 0 ] ; then echo -e "\e[1;31m run with ERRORs\e[0m"; else echo -e "\e[1;32m OK\e[0m"; fi
+  echo -n "] gd.."
+  docker-php-ext-install -j$(nproc) gd &>/dev/null; if [ $? -gt 0 ] ; then echo -e "\e[1;31m run with ERRORs\e[0m"; else echo -e "\e[1;32m OK\e[0m"; fi
+  echo -n "] intl.."
+  docker-php-ext-install -j$(nproc) intl &>/dev/null; if [ $? -gt 0 ] ; then echo -e "\e[1;31m run with ERRORs\e[0m"; else echo -e "\e[1;32m OK\e[0m"; fi
+  echo -n "] soap.."
+  docker-php-ext-install -j$(nproc) soap &>/dev/null; if [ $? -gt 0 ] ; then echo -e "\e[1;31m run with ERRORs\e[0m"; else echo -e "\e[1;32m OK\e[0m"; fi
+  echo -n "] zip.."
+  docker-php-ext-install -j$(nproc) zip &>/dev/null; if [ $? -gt 0 ] ; then echo -e "\e[1;31m run with ERRORs\e[0m"; else echo -e "\e[1;32m OK\e[0m"; fi
+
+.unitTestsRunScript: &unitTestsRunScript |
+  # RUNNING UNIT TESTS
+  echo "] start test script.."
+  build/scripts/tests.sh
 
 
 test_PHP_7.2:
   stage: test
-  image: docker:19.03.1
-  services:
-    - docker:19.03.1-dind
-  variables:
-    PHP_VERSION_TEST_STEP: '7.2'
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: "/certs"
+  image: php:7.2-alpine
+  before_script:
+    - *unitTestsInstallScript
   script:
-    - *testingScript
-    - testing
+    - *ComposerInstall
+    - *unitTestsRunScript
 #  <<: *debugging
   rules:
     - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
         && $CI_COMMIT_REF_NAME !~ /^release\/.*$/
         && $CI_COMMIT_TAG == null
-      when: always
+      when: on_success
 
 test_PHP_7.3:
   stage: test
-  image: docker:19.03.1
-  services:
-    - docker:19.03.1-dind
-  variables:
-    PHP_VERSION_TEST_STEP: '7.3'
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: "/certs"
+  image: php:7.3-alpine
+  before_script:
+    - *unitTestsInstallScript
   script:
-    - *testingScript
-    - testing
+    - *ComposerInstall
+    - *unitTestsRunScript
 #  <<: *debugging
   rules:
     - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
         && $CI_COMMIT_REF_NAME !~ /^release\/.*$/
         && $CI_COMMIT_TAG == null
-      when: always
+      when: on_success
 
-removeContainerPHP7.2:
+test_PHP_7.4:
+  stage: test
+  image: php:7.4-alpine
+  before_script:
+    - *unitTestsInstallScript
+  script:
+    - *ComposerInstall
+    - *unitTestsRunScript
+#  <<: *debugging
+  rules:
+    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
+        && $CI_COMMIT_REF_NAME !~ /^release\/.*$/
+        && $CI_COMMIT_TAG == null
+      when: on_success
+
+
+.removeContainerPHP7.2:
   stage: cleanUpTest
   image: docker:19.03.1
   services:
@@ -351,7 +362,7 @@ removeContainerPHP7.2:
         && $CI_COMMIT_TAG == null
       when: on_failure
 
-removeContainerPHP7.3:
+.removeContainerPHP7.3:
   stage: cleanUpTest
   image: docker:19.03.1
   services:

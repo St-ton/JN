@@ -345,8 +345,8 @@ class Form
         }
         $max     = (int)$max;
         $history = Shop::Container()->getDB()->executeQueryPrepared(
-            'SELECT COUNT(kUploadHistory) AS nAnfragen
-                FROM tuploadhistory
+            'SELECT COUNT(kUploadFloodProtect) AS nAnfragen
+                FROM tuploadfloodprotect
                 WHERE cIP = :ip 
                     AND dErstellt BETWEEN DATE_SUB(NOW(), INTERVAL 1 HOUR) AND NOW();
                 ',
@@ -355,7 +355,7 @@ class Form
         );
         Shop::Container()->getDB()->executeQueryPrepared(
             'DELETE
-                FROM tuploadhistory
+                FROM tuploadfloodprotect
                 WHERE dErstellt < DATE_SUB(NOW(), INTERVAL 1 HOUR);
                 ',
             [],

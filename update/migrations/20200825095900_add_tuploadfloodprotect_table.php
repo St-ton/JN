@@ -9,7 +9,7 @@ use JTL\Update\Migration;
 class Migration_20200825095900 extends Migration implements IMigration
 {
     protected $author      = 'je';
-    protected $description = 'Add tuploadhistory table';
+    protected $description = 'Add tuploadfloodprotect table';
 
     /**
      * @inheritDoc
@@ -17,11 +17,11 @@ class Migration_20200825095900 extends Migration implements IMigration
     public function up()
     {
         $this->execute(
-            "CREATE TABLE IF NOT EXISTS `tuploadhistory` (
-          `kUploadHistory` int(10) unsigned NOT NULL AUTO_INCREMENT,
+            "CREATE TABLE IF NOT EXISTS `tuploadfloodprotect` (
+          `kUploadFloodProtect` int(10) unsigned NOT NULL AUTO_INCREMENT,
           `cIP` varchar(255) NULL,
           `dErstellt` datetime NULL,
-          PRIMARY KEY (`kUploadHistory`),
+          PRIMARY KEY (`kUploadFloodProtect`),
           KEY `cIP` (`cIP`)
           );"
         );
@@ -44,6 +44,7 @@ class Migration_20200825095900 extends Migration implements IMigration
      */
     public function down()
     {
-        $this->execute('DROP TABLE IF EXISTS `tuploadhistory`');
+        $this->execute('DROP TABLE IF EXISTS `kuploadfloodprotect`');
+        $this->removeConfig('upload_modul_limit');
     }
 }

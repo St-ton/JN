@@ -38,11 +38,6 @@ if (!Form::validateToken()) {
     retCode(0);
 }
 if (!empty($_FILES)) {
-    $captchaRequestData = [$_POST['token'] ?? null => $_POST['code'] ?? null];
-
-    if (!Form::validateCaptcha($captchaRequestData)) {
-        retCode(0);
-    }
     $whitelist = array(
         'application/x-7z-compressed',
         'application/x-bzip2',

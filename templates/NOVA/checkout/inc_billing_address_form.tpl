@@ -449,6 +449,13 @@
                             }
                         {/col}
                     {/block}
+                    {if $Einstellungen.kunden.direct_advertising === 'Y'}
+                        {block name='checkout-inc-billing-address-form-direct-advertising'}
+                            {col cols=12 class="text-muted mt-n3 mb-3"}
+                                <small>{lang key="directAdvertising" section="checkout"}</small>
+                            {/col}
+                        {/block}
+                    {/if}
                     {* phone & fax *}
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_tel !== 'N' || $Einstellungen.kunden.kundenregistrierung_abfragen_fax !== 'N'
                         || $Einstellungen.kunden.kundenregistrierung_abfragen_mobil !== 'N' || $Einstellungen.kunden.kundenregistrierung_abfragen_www !== 'N'}

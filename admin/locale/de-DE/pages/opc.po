@@ -306,6 +306,9 @@ msgstr "Für andere Sprachen übernehmen"
 msgid "editPage"
 msgstr "Seite bearbeiten"
 
+msgid "opcNotSupportedPage"
+msgstr "Leider kann diese Seite nicht mit dem OnPage Composer bearbeitet werden!"
+
 msgid "newDraft"
 msgstr "Neuer Entwurf"
 

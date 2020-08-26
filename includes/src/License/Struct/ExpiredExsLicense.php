@@ -29,5 +29,10 @@ class ExpiredExsLicense extends ExsLicense
         $this->setLicense($license);
         $this->setID($data->cPluginID);
         $this->setState(self::STATE_ACTIVE);
+        $vendor = new Vendor();
+        $vendor->setName($data->cAutor);
+        $vendor->setHref($data->cURL);
+        $this->setVendor($vendor);
+        $this->setLinks([]);
     }
 }

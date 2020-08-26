@@ -568,6 +568,10 @@ function setClickableRow()
     });
 }
 
+function isMobileByBodyClass() {
+    return $('body').hasClass('is-mobile');
+}
+
 function autoExpand(field)
 {
     field.style.height = 'inherit';

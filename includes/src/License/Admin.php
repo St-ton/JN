@@ -234,12 +234,12 @@ class Admin
      */
     private function extend(JTLSmarty $smarty): void
     {
-        $responseData             = null;
+        $responseData     = null;
         $apiResponse      = '';
         $response         = new AjaxResponse();
         $response->action = 'extendLicense';
         try {
-            $apiResponse = $this->manager->extend(
+            $apiResponse  = $this->manager->extend(
                 Request::postVar('url'),
                 Request::postVar('exsid'),
                 Request::postVar('key')
@@ -266,8 +266,8 @@ class Admin
         }
         $this->getLicenses(true);
         $this->getList($smarty);
-        $response->replaceWith['#bound-licenses']   = $smarty->fetch('tpl_inc/licenses_bound.tpl');
-        $response->html                             = $apiResponse;
+        $response->replaceWith['#bound-licenses'] = $smarty->fetch('tpl_inc/licenses_bound.tpl');
+        $response->html                           = $apiResponse;
         $this->sendResponse($response);
     }
 

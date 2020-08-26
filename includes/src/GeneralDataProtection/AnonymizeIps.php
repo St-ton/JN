@@ -82,7 +82,7 @@ class AnonymizeIps extends Method implements MethodInterface
             'ColCreated' => 'dDate',
             'ColType'    => 'DATETIME'
         ],
-        'tuploadFloodProtect'                  => [
+        'tuploadfloodprotect'                  => [
             'ColKey'     => 'kUploadFloodProtect',
             'ColIp'      => 'cIP',
             'ColCreated' => 'dErstellt',

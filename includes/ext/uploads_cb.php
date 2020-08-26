@@ -60,7 +60,7 @@ if (!empty($_FILES)) {
     $fileData  = isset($_FILES['Filedata']['tmp_name'])
         ? $_FILES['Filedata']
         : $_FILES['file_data'];
-    $mime      = finfo_file(finfo_open(FILEINFO_MIME_TYPE), $fileData['tmp_name']);
+    $mime      = finfo_file(finfo_open(\FILEINFO_MIME_TYPE), $fileData['tmp_name']);
 
     if (!in_array($mime, $whitelist, true)) {
         retCode(0);

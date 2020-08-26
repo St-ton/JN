@@ -24,7 +24,7 @@
         btn.find('i').addClass('fa-spin');
         $.ajax({
             method: 'POST',
-            url: '{$shopURL}/admin/licenses.php',
+            url: '{$adminURL}/licenses.php',
             data: $(e.target).serialize()
         }).done(function (r) {
             const result = JSON.parse(r);
@@ -53,7 +53,7 @@
         btn.find('i').addClass('fa-spin');
         $.ajax({
             method: 'POST',
-            url: '{$shopURL}/admin/licenses.php',
+            url: '{$adminURL}/licenses.php',
             data: $(e.target).serialize()
         }).done(function (r) {
             const result = JSON.parse(r);
@@ -95,6 +95,9 @@
         });
         $('#content_wrapper').on('submit', '.clear-binding-form', function (e) {
             return bindCallback($(e.target).find('.clear-binding'), e);
+        });
+        $('#content_wrapper').on('submit', '.extend-license-form', function (e) {
+            return bindCallback($(e.target).find('.extend-license'), e);
         });
     });
 </script>

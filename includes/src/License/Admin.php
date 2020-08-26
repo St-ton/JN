@@ -50,6 +50,12 @@ class Admin
 
     public const ACTION_INSTALL = 'install';
 
+    public const STATE_APPROVED = 'approved';
+
+    public const STATE_CREATED = 'created';
+
+    public const STATE_FAILED = 'failed';
+
     /**
      * @var Manager
      */
@@ -156,10 +162,14 @@ class Admin
      */
     private function installUpdate(string $action, JTLSmarty $smarty): void
     {
+        $itemID           = Request::postVar('item-id', '');
+        $type             = Request::postVar('license-type', '');
         $response         = new AjaxResponse();
         $response->action = $action;
-        $itemID           = Request::postVar('item-id', '');
         $response->id     = $itemID;
+        if ($type !== '') {
+            $response->id .= '-' . $type;
+        }
         try {
             $installer = $this->getInstaller($itemID);
             $download  = $this->getDownload($itemID);
@@ -224,6 +234,7 @@ class Admin
      */
     private function extend(JTLSmarty $smarty): void
     {
+        $responseData             = null;
         $apiResponse      = '';
         $response         = new AjaxResponse();
         $response->action = 'extendLicense';
@@ -233,13 +244,28 @@ class Admin
                 Request::postVar('exsid'),
                 Request::postVar('key')
             );
+            $responseData = \json_decode($apiResponse);
         } catch (ClientException | GuzzleException $e) {
             $response->error = $e->getMessage();
             $smarty->assign('extendErrorMessage', $e->getMessage());
         }
+        if (isset($responseData->state)) {
+            if ($responseData->state === self::STATE_APPROVED) {
+                $smarty->assign('extendSuccessMessage', 'Successfully extended.');
+            } elseif ($responseData->state === self::STATE_FAILED && isset($responseData->failure_reason)) {
+                $smarty->assign('extendErrorMessage', $responseData->failure_reason);
+            } elseif ($responseData->state === self::STATE_CREATED && isset($responseData->links)) {
+                foreach ($responseData->links as $link) {
+                    if ($link->rel === 'redirect_url') {
+                        \http_response_code(301);
+                        \header('Location: ' . $link->href);
+                        exit();
+                    }
+                }
+            }
+        }
         $this->getLicenses(true);
         $this->getList($smarty);
-        $response->replaceWith['#unbound-licenses'] = $smarty->fetch('tpl_inc/licenses_unbound.tpl');
         $response->replaceWith['#bound-licenses']   = $smarty->fetch('tpl_inc/licenses_bound.tpl');
         $response->html                             = $apiResponse;
         $this->sendResponse($response);

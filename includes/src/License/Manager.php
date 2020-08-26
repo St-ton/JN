@@ -27,6 +27,11 @@ class Manager
     private const API_URL = 'https://checkout-stage.jtl-software.com/v1/licenses';
 
     /**
+     * @var string
+     */
+    private $domain;
+
+    /**
      * @var DbInterface
      */
     private $db;
@@ -51,6 +56,7 @@ class Manager
         $this->db     = $db;
         $this->cache  = $cache;
         $this->client = new Client();
+        $this->domain = \parse_url(\URL_SHOP)['host'];
     }
 
     /**
@@ -81,7 +87,7 @@ class Manager
                     'Authorization' => 'Bearer ' . AuthToken::getInstance($this->db)->get()
                 ],
                 'verify'  => true,
-                'body'    => \json_encode((object)['domain' => \URL_SHOP])
+                'body'    => \json_encode((object)['domain' => $this->domain])
             ]
         );
 
@@ -106,7 +112,7 @@ class Manager
                     'Authorization' => 'Bearer ' . AuthToken::getInstance($this->db)->get()
                 ],
                 'verify'  => true,
-                'body'    => \json_encode((object)['domain' => \URL_SHOP])
+                'body'    => \json_encode((object)['domain' => $this->domain])
             ]
         );
 
@@ -138,7 +144,7 @@ class Manager
                     'exsid'         => $exsID,
                     'reference'     => (object)[
                         'license' => $key,
-                        'domain'  => \URL_SHOP
+                        'domain'  => $this->domain
                     ],
                     'redirect_urls' => (object)[
                         'return_url' => Shop::getAdminURL() . '/licenses.php?extend=success',
@@ -162,16 +168,6 @@ class Manager
         if (!$force && !$this->checkUpdate()) {
             return 0;
         }
-        if (true) { // @todo: remove
-            $data = $this->getLocalTestData();
-            $this->housekeeping();
-            $this->cache->flushTags([\CACHING_GROUP_LICENSES]);
-
-            return $this->db->insert(
-                'licenses',
-                (object)['data' => \json_encode($data), 'returnCode' => 200]
-            );
-        }
         $res = $this->client->request(
             'POST',
             self::API_URL,
@@ -183,7 +179,7 @@ class Manager
                 ],
                 'verify'  => true,
                 'body'    => \json_encode((object)['shop' => [
-                    'domain'  => \URL_SHOP,
+                    'domain'  => $this->domain,
                     'version' => \APPLICATION_VERSION,
                 ], 'extensions'                           => $installedExtensions])
             ]
@@ -195,25 +191,6 @@ class Manager
             'licenses',
             (object)['data' => (string)$res->getBody(), 'returnCode' => $res->getStatusCode()]
         );
-    }
-
-    /**
-     * @return stdClass
-     * @todo: remove
-     */
-    private function getLocalTestData(): stdClass
-    {
-        $obj  = \json_decode(\file_get_contents(\PFAD_ROOT . 'getLicenses.json'), false);
-        $file = PFAD_ROOT . 'bindings.txt';
-        $data = \explode(\PHP_EOL, \file_get_contents($file));
-        foreach ($obj->extensions as $extension) {
-            $extension->license->is_bound = \in_array($extension->id, $data, true);
-        }
-        $dt              = new DateTime();
-        $obj->timestamp  = $dt->format('y-m-d H:i:s');
-        $obj->returnCode = 200;
-
-        return $obj;
     }
 
     /**

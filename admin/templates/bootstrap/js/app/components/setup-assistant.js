@@ -13,7 +13,8 @@ const Data = {
 	legalToggler			: `${dataPrefix}-legal-toggle`,
 	summaryPlaceholder		: `${dataPrefix}-summary-placeholder`,
 	summaryId				: `${dataPrefix}-summary-id`,
-	summaryText				: `${dataPrefix}-summary-text`
+	summaryText				: `${dataPrefix}-summary-text`,
+    summaryPluginNote		: `#summary-plugin-note`
 }
 
 const $modal				= $(modal)
@@ -27,6 +28,7 @@ const $auth					= $(`${modal} [${Data.auth}]`)
 const $summaryPlaceholder	= $(`${modal} [${Data.summaryPlaceholder}]`)
 const $summaryId			= $(`${modal} [${Data.summaryId}]`)
 const $summaryText			= $(`${modal} [${Data.summaryText}]`)
+const $summaryPluginNote	= $(`${modal} ${Data.summaryPluginNote}`)
 
 const last					= $slides.length - 1
 
@@ -38,7 +40,7 @@ let legalPluginCount		= 0;
 let paymentPluginCount		= 0;
 
 let hasAuth					= ($('#has-auth').val() === 'true');
-let authRedirect			= ($('#auth-redirect').val() === 'true');
+let authRedirect			= $('#auth-redirect').val();
 
 let $currentSlide			= $(`${modal} [${Data.slides}='${current}']`)
 
@@ -161,9 +163,11 @@ $(document).on('click', `${modal} [${Data.next}]`, () => {
         }
         if (legalPluginCount > 0 || paymentPluginCount > 0) {
             $auth.removeClass('d-none');
+            $summaryPluginNote.removeClass('d-none');
             $submit.addClass('d-none');
         } else {
             $auth.addClass('d-none');
+            $summaryPluginNote.addClass('d-none');
             $submit.removeClass('d-none');
         }
     }
@@ -222,7 +226,7 @@ $form.on('submit', (e) => {
 
 $modal.on('show.bs.modal', () => {
 	if (authRedirect) {
-        goToStep(last - 1);
+        goToStep(authRedirect);
 	}
 	showSlide(current)
 	subsequent = true

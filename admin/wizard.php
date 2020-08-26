@@ -31,7 +31,7 @@ $authRedirect = Backend::get('wizard-authenticated') ?? false;
 if (Request::postVar('action') === 'code') {
     $admin->handleAuth();
 } elseif (Request::getVar('action') === 'auth') {
-    Backend::set('wizard-authenticated', true);
+    Backend::set('wizard-authenticated', Request::getVar('wizard-authenticated'));
     $token->requestToken(
         Backend::get('jtl_token'),
         Shop::getAdminURL() . '/wizard.php?action=code'

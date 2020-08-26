@@ -243,4 +243,14 @@ msgid "oAuthValid"
 msgstr "Authentifizierung erfolgreich."
 
 msgid "oAuthInvalid"
-msgstr "Wenn Sie Plugins zur Installation vorgemerkt haben, dann werden Sie bei Klick auf \"Weiter\" zum \"zentralen Login\" von JTL weitergeleitet. Nach erfolgreicher Anmeldung werden Sie automatisch zu diesem Assistenten zurückgeleitet und können die Einrichtung abschließen."
+msgstr "Sie haben Plugins zur Installation vorgemerkt. Über den Button \"Verknüpfen\" werden Sie zur einmaligen Authentifizierung zum \"Zentralen Login\" weitergeleitet. Nach erfolgreicher Anmeldung werden Sie automatisch zu diesem Einrichtungsassistenten zurückgeleitet und können die Einrichtung abschließen."
+
+msgid "oAuthInformation"
+msgstr "Eines der wichtigstens Features des JTL-Shops, ist seine direkte Schnittstelle zum JTL-Extension Store, über welchen Plugins und Templates direkt im Shop-Backend installierbar sind. Um von diesem Feature zu profitieren, muss Ihr Onlineshop einmalig über den \"Zentralen Login\" authentifiziert werden."
+
+msgid "beginAuth"
+msgstr "Shop Authentifizieren und Assistenten starten"
+
+msgid "beginNoAuth"
+msgstr "Assistenten ohne Authentifizierung starten (nicht empfohlen)"
+

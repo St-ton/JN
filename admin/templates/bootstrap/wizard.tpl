@@ -19,7 +19,7 @@
     <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
         <form method="post">
             <input id="has-auth" type="hidden" value="{if $hasAuth}true{else}false{/if}" disabled/>
-            <input id="auth-redirect" type="hidden" value="{if $authRedirect}true{else}false{/if}" disabled/>
+            <input id="auth-redirect" type="hidden" value="{$authRedirect|default:false}" disabled/>
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -38,11 +38,23 @@
                         <div class="step" data-setup-step="{$stepID + 1}">{$stepID + 1}</div>
                     </div>
 
-                    <div class="setup-slide row align-items-center mt-lg-7" data-setup-slide="0">
+                    <div class="setup-slide row align-items-center" data-setup-slide="0">
                         <div class="col-md-6 col-lg-4">
                             <span class="setup-subheadline">{__('welcome')}</span>
                             <p>{__('welcomeDesc')}</p>
-                            <button type="button" class="btn btn-primary min-w-sm mt-5 mt-lg-7" data-setup-next>{__('beginSetup')}</button>
+                            {if !$hasAuth}
+                                <p>{__('oAuthInformation')}</p>
+                                <a href="wizard.php?action=auth&wizard-authenticated=1" class="btn btn-primary min-w-sm my-2 w-100">
+                                    {__('beginAuth')}
+                                </a>
+                                <button type="button" class="btn btn-outline-primary min-w-sm" data-setup-next>
+                                    {__('beginNoAuth')}
+                                </button>
+                            {else}
+                                <button type="button" class="btn btn-primary min-w-sm mt-5 mt-lg-7" data-setup-next>
+                                   {__('beginSetup')}
+                                </button>
+                            {/if}
                         </div>
                         <div class="col-md-6 mx-md-auto col-xl-5 d-none d-md-block text-center">
                             <img class="img-fluid" src="{$templateBaseURL}img/setup-assistant-roboter.svg" width="416" height="216" alt="{__('setupAssistant')}">
@@ -78,13 +90,11 @@
                         <div class="col-lg-4 mb-5 mb-lg-0">
                             <span class="setup-subheadline">{__('stepFive')}</span>
                             <p>{__('stepFiveDesc')}</p>
-                            <p>
-                                {if $hasAuth}
-                                    <i class="fal fa-check text-success"></i> {__('oAuthValid')}
-                                {else}
+                            {if !$hasAuth}
+                                <p id="summary-plugin-note">
                                     <i class="fal fa-exclamation-triangle text-warning"></i> {__('oAuthInvalid')}
-                                {/if}
-                            </p>
+                                </p>
+                            {/if}
                         </div>
                         <div class="col-lg-6 ml-lg-auto col-xl-7 mt-lg-n5">
                             <div class="table-responsive">
@@ -278,7 +288,7 @@
                             <button type="button" class="btn btn-primary min-w-sm ml-sm-3 my-2 my-sm-0 w-100 w-sm-auto" data-setup-next>{__('next')}</button>
                             <button type="submit" class="btn btn-primary min-w-sm ml-sm-3 my-2 my-sm-0 w-100 w-sm-auto" data-setup-submit>{__('confirm')}</button>
                             <a href="index.php" class="btn btn-primary min-w-sm ml-sm-3 my-2 my-sm-0 w-100 w-sm-auto" data-setup-close>{__('finalize')}</a>
-                            <a href="wizard.php?action=auth" class="btn btn-primary min-w-sm ml-sm-3 my-2 my-sm-0 w-100 w-sm-auto d-none" data-setup-auth>{__('Verknüpfen')}</a>
+                            <a href="wizard.php?action=auth&wizard-authenticated={$steps|count + 1}" class="btn btn-primary min-w-sm ml-sm-3 my-2 my-sm-0 w-100 w-sm-auto d-none" data-setup-auth>{__('Verknüpfen')}</a>
                         </div>
                     </div>
                 </div>

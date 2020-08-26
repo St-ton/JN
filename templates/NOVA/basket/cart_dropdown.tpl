@@ -82,7 +82,11 @@
                             {if $NettoPreise}
                                 {block name='basket-cart-dropdown-cart-item-net'}
                                     <li class="text-muted mb-2 font-size-sm">
-                                        {lang key='totalSum'} ({lang key='net'}) <span class="float-right text-nowrap">{$WarensummeLocalized[$NettoPreise]}</span>
+                                        {if empty($smarty.session.Versandart)}
+                                            {lang key='subtotal' section='account data'}
+                                        {else}
+                                            {lang key='totalSum'}
+                                        {/if} ({lang key='net'}) <span class="float-right text-nowrap">{$WarensummeLocalized[$NettoPreise]}</span>
                                     </li>
                                 {/block}
                             {/if}
@@ -98,11 +102,15 @@
                             {/if}
                             {block name='basket-cart-dropdown-cart-item-total'}
                                 <li class="font-weight-bold">
-                                    {lang key='totalSum'}: <span class="float-right text-nowrap">{$WarensummeLocalized[0]}</span>
+                                    {if empty($smarty.session.Versandart)}
+                                        {lang key='subtotal' section='account data'}
+                                    {else}
+                                        {lang key='totalSum'}
+                                    {/if}: <span class="float-right text-nowrap">{$WarensummeLocalized[0]}</span>
                                 </li>
                             {/block}
                             {block name='basket-cart-dropdown-cart-item-favourable-shipping'}
-                                {if $favourableShippingString !== ''}
+                                {if $favourableShippingString !== '' && empty($smarty.session.Versandart)}
                                     <li class="text-muted mt-2 font-size-sm">{$favourableShippingString}</li>
                                 {/if}
                             {/block}

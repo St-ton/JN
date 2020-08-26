@@ -4,7 +4,7 @@
 {if $isPreview && empty($images)}
     <div class="opc-Gallery-preview" style="{$instance->getStyleString()}">
         <div>
-            {file_get_contents($portlet->getBaseUrl()|cat:'icon.svg')}
+            {file_get_contents($portlet->getBasePath()|cat:'icon.svg')}
             <span>{__('Gallery')}</span>
         </div>
     </div>

@@ -25,7 +25,6 @@ class Migration_20200825095900 extends Migration implements IMigration
           KEY `cIP` (`cIP`)
           );"
         );
-
         $this->setConfig(
             'upload_modul_limit',
             '10',
@@ -44,7 +43,7 @@ class Migration_20200825095900 extends Migration implements IMigration
      */
     public function down()
     {
-        $this->execute('DROP TABLE IF EXISTS `kuploadfloodprotect`');
+        $this->execute('DROP TABLE IF EXISTS `tuploadfloodprotect`');
         $this->removeConfig('upload_modul_limit');
     }
 }

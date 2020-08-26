@@ -34,7 +34,7 @@
                                     && !$oUploadSchema->bVorhanden)} upload-error{/if}"
                                          id="upload-{$oUploadSchema@index}">
                                         <input id="fileinput{$oUploadSchema@index}"
-                                               type="file" multiple class="file-upload file-loading" />
+                                               type="file" class="file-upload file-loading" />
                                         <div id="kv-error-{$oUploadSchema@index}"
                                              style="margin-top:10px; display:none;"></div>
                                     </div>
@@ -42,7 +42,6 @@
                                 {block name='snippets-uploads-scheme-product-script'}
                                     {inline_script}<script>
                                         $(function () {
-
                                             var $el =  $('#fileinput{$oUploadSchema@index}');
                                             $el.fileinput({
                                                 uploadUrl:             '{$ShopURL}/{$smarty.const.PFAD_UPLOAD_CALLBACK}',
@@ -59,7 +58,7 @@
                                                 language:              '{$uploaderLang}',
                                                 theme:                 'fas',
                                                 browseOnZoneClick:     true,
-                                                uploadExtraData: {
+                                                uploadExtraData:       {
                                                     sid:        "{$cSessionID}",
                                                     jtl_token:  "{$smarty.session.jtl_token}",
                                                     uniquename: "{$oUploadSchema->cUnique}",

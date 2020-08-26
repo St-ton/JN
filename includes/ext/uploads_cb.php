@@ -29,10 +29,10 @@ if (!Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_UPLOADS)) {
 if (Form::reachedUploadLimitPerHour($limit)) {
     retCode(0);
 }
-$uploadHistory            = new stdClass();
-$uploadHistory->cIP       = Request::getRealIP();
-$uploadHistory->dErstellt = 'NOW()';
-Shop::Container()->getDB()->insert('tuploadhistory', $uploadHistory);
+$uploadProtect            = new stdClass();
+$uploadProtect->cIP       = Request::getRealIP();
+$uploadProtect->dErstellt = 'NOW()';
+Shop::Container()->getDB()->insert('tuploadfloodprotect', $uploadProtect);
 
 if (!Form::validateToken()) {
     retCode(0);

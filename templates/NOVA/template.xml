@@ -30,7 +30,7 @@
                 <Option Value="fixed">Suche beim Hochscrollen einblenden</Option>
                 <Option Value="dropdown">Icon mit Dropdown</Option>
             </Setting>
-            <Setting Description="Wunschzettel und Vergleichsliste - Animation anzeigen" Key="wish_compare_animation" Type="select" Value="both">
+            <Setting Description="Wunschzettel und Vergleichsliste - Animation anzeigen" Key="wish_compare_animation" Type="select" Value="mobile">
                 <Option Value="both">Auf Desktop und mobilen Geräten</Option>
                 <Option Value="mobile">Nur mobil</Option>
                 <Option Value="desktop">Nur Desktop</Option>

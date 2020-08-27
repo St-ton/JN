@@ -20,10 +20,10 @@ function retCode($bOk)
 }
 
 $session = Frontend::getInstance();
-$conf    = Shop::getSettings([\CONF_ARTIKELDETAILS]);
+$conf    = Shop::getSettings([CONF_ARTIKELDETAILS]);
 $limit   = (int)$conf['artikeldetails']['upload_modul_limit'];
 
-if (!Form::validateToken() || Form::reachedUploadLimitPerHour($limit) || !Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_UPLOADS)) {
+if (!Form::validateToken() || Form::reachedUploadLimitPerHour($limit) || !Nice::getInstance()->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
     retCode(0);
 }
 
@@ -55,9 +55,9 @@ if (!empty($_FILES)) {
     $fileData  = isset($_FILES['Filedata']['tmp_name'])
         ? $_FILES['Filedata']
         : $_FILES['file_data'];
-    $mime      = \finfo_file(\finfo_open(\FILEINFO_MIME_TYPE), $fileData['tmp_name']);
+    $mime      = finfo_file(finfo_open(FILEINFO_MIME_TYPE), $fileData['tmp_name']);
 
-    if (!isset($_REQUEST['uniquename'], $_REQUEST['cname']) || !\in_array($mime, $whitelist, true)) {
+    if (!isset($_REQUEST['uniquename'], $_REQUEST['cname']) || !in_array($mime, $whitelist, true)) {
         retCode(0);
     }
     $unique     = $_REQUEST['uniquename'];

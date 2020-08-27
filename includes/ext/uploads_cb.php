@@ -16,7 +16,7 @@ function retCode($bOk)
     die(json_encode(['status' => $bOk ? 'ok' : 'error']));
 }
 $session = Session::getInstance();
-if (!validateToken()) {
+if (!validateToken() || !Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_UPLOADS)) {
     retCode(0);
 }
 // upload file

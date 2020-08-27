@@ -3,24 +3,23 @@
 namespace JTL\Console\Command\Cache;
 
 use JTL\Console\Command\Command;
-use JTL\Filesystem\Filesystem;
-use League\Flysystem\Adapter\Local;
+use JTL\Shop;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class DbesTmpCommand
+ * Class ClearObjectCacheCommand
  * @package JTL\Console\Command\Cache
  */
-class DbesTmpCommand extends Command
+class ClearObjectCacheCommand extends Command
 {
     /**
      * @inheritDoc
      */
     protected function configure(): void
     {
-        $this->setName('cache:dbes:delete')
-            ->setDescription('Delete dbeS cache');
+        $this->setName('cache:clear')
+            ->setDescription('Clear object cache');
     }
 
     /**
@@ -29,11 +28,10 @@ class DbesTmpCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $io = $this->getIO();
-        $fs = new Filesystem(new Local(\PFAD_ROOT));
-        if ($fs->deleteDir('dbeS/tmp/')) {
-            $io->success('dbeS tmp cache deleted.');
+        if (Shop::Container()->getCache()->flushAll()) {
+            $io->success('Object cache cleared.');
         } else {
-            $io->warning('Nothing to delete.');
+            $io->warning('Could not clear object cache.');
         }
     }
 }

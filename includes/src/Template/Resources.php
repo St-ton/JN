@@ -52,7 +52,7 @@ class Resources
     public function __construct(DbInterface $db, SimpleXMLElement $xml, ?SimpleXMLElement $parentXML = null)
     {
         $this->db      = $db;
-        $this->xmlList = [$xml, $parentXML];
+        $this->xmlList = [$parentXML, $xml];
     }
 
     public function __sleep(): array

@@ -31,7 +31,7 @@ class Migration_20200825095900 extends Migration implements IMigration
             \CONF_ARTIKELDETAILS,
             'Limit für Uploads pro Stunde',
             'number',
-            1111,
+            499,
             (object)[
                 'cBeschreibung' => 'Hier legen Sie fest, wie oft ein Benutzer bei aktiviertem Uploadmodul Dateien hochladen darf (pro Stunde).'
             ]

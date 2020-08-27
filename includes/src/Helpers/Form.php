@@ -338,12 +338,18 @@ class Form
 
         return isset($history->kKontaktHistory) && $history->kKontaktHistory > 0;
     }
-    public static function reachedUploadLimitPerHour($max): bool
+
+    /**
+     * @param int $max
+     * @return bool
+     * @since 5.0.0
+     */
+    public static function reachedUploadLimitPerHour(int $max): bool
     {
         if (!$max) {
             return false;
         }
-        $max     = (int)$max;
+
         $history = Shop::Container()->getDB()->executeQueryPrepared(
             'SELECT COUNT(kUploadFloodProtect) AS nAnfragen
                 FROM tuploadfloodprotect

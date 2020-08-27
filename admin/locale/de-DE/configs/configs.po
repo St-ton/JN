@@ -2988,7 +2988,7 @@ msgid "direct_advertising_desc"
 msgstr "Der Hinweis wird bei der Registrierung unter dem Eingabefeld für die E-Mail-Adresse angezeigt."
 
 msgid "upload_modul_limit_name"
-msgstr "Limit für Uploads pro Stunde"
+msgstr "Erlaubte Datei-Uploads pro Stunde"
 
 msgid "upload_modul_limit_desc"
-msgstr "Hier legen Sie fest, wie oft ein Benutzer bei aktiviertem Uploadmodul Dateien hochladen darf (pro Stunde)."
+msgstr "Hier legen Sie fest, wie viele Dateien ein Benutzer bei aktiviertem Uploadmodul pro Stunde maximal hochladen darf."

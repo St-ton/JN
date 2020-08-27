@@ -2988,7 +2988,7 @@ msgid "direct_advertising_desc"
 msgstr "The information will be displayed below the email address input field during registration."
 
 msgid "upload_modul_limit_name"
-msgstr "Set upload limit per hour"
+msgstr "Allowed file uploads per hour"
 
 msgid "upload_modul_limit_desc"
-msgstr "Specify how often a user can upload media per hour (if the uploadmodul is active)"
+msgstr "Specify the maximum number of files that a user can upload per hour when the Upload Module is activated."

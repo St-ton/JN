@@ -21,22 +21,17 @@ function retCode($bOk)
 
 $session = Frontend::getInstance();
 $conf    = Shop::getSettings([\CONF_ARTIKELDETAILS]);
-$limit   = $conf['artikeldetails']['upload_modul_limit'];
+$limit   = (int)$conf['artikeldetails']['upload_modul_limit'];
 
-if (!Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_UPLOADS)) {
+if (!Form::validateToken() || Form::reachedUploadLimitPerHour($limit) || !Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_UPLOADS)) {
     retCode(0);
 }
-if (Form::reachedUploadLimitPerHour($limit)) {
-    retCode(0);
-}
+
 $uploadProtect            = new stdClass();
 $uploadProtect->cIP       = Request::getRealIP();
 $uploadProtect->dErstellt = 'NOW()';
 Shop::Container()->getDB()->insert('tuploadfloodprotect', $uploadProtect);
 
-if (!Form::validateToken()) {
-    retCode(0);
-}
 if (!empty($_FILES)) {
     $whitelist = array(
         'application/x-7z-compressed',
@@ -60,12 +55,9 @@ if (!empty($_FILES)) {
     $fileData  = isset($_FILES['Filedata']['tmp_name'])
         ? $_FILES['Filedata']
         : $_FILES['file_data'];
-    $mime      = finfo_file(finfo_open(\FILEINFO_MIME_TYPE), $fileData['tmp_name']);
+    $mime      = \finfo_file(\finfo_open(\FILEINFO_MIME_TYPE), $fileData['tmp_name']);
 
-    if (!in_array($mime, $whitelist, true)) {
-        retCode(0);
-    }
-    if (!isset($_REQUEST['uniquename'], $_REQUEST['cname'])) {
+    if (!isset($_REQUEST['uniquename'], $_REQUEST['cname']) || !\in_array($mime, $whitelist, true)) {
         retCode(0);
     }
     $unique     = $_REQUEST['uniquename'];

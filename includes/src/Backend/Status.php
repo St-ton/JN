@@ -42,8 +42,10 @@ class Status
 
     private static $instance;
 
-    public const CACHE_ID_FOLDER_PERMISSIONS = 'validFolderPermissions';
-    public const CACHE_ID_DATABASE_STRUCT    = 'validDatabaseStruct';
+    public const CACHE_ID_FOLDER_PERMISSIONS   = 'validFolderPermissions';
+    public const CACHE_ID_DATABASE_STRUCT      = 'validDatabaseStruct';
+    public const CACHE_ID_MODIFIED_FILE_STRUCT = 'validModifiedFileStruct';
+    public const CACHE_ID_ORPHANED_FILE_STRUCT = 'validOrphanedFilesStruct';
 
     /**
      * Status constructor.
@@ -144,14 +146,24 @@ class Status
      */
     public function validModifiedFileStruct(): bool
     {
-        $check   = new FileCheck();
-        $files   = [];
-        $stats   = 0;
-        $md5file = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . \PFAD_SHOPMD5 . $check->getVersionString() . '.csv';
+        if (($validModifiedFileStruct = $this->cache->get(self::CACHE_ID_MODIFIED_FILE_STRUCT)) === false) {
+            $check   = new FileCheck();
+            $files   = [];
+            $stats   = 0;
+            $md5file = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . \PFAD_SHOPMD5 . $check->getVersionString() . '.csv';
 
-        return $check->validateCsvFile($md5file, $files, $stats) === FileCheck::OK
-            ? $stats === 0
-            : false;
+            $validModifiedFileStruct = $check->validateCsvFile($md5file, $files, $stats) === FileCheck::OK
+                ? $stats
+                : 1;
+
+            $this->cache->set(
+                self::CACHE_ID_MODIFIED_FILE_STRUCT,
+                $validModifiedFileStruct,
+                [\CACHING_GROUP_STATUS]
+            );
+        }
+
+        return $validModifiedFileStruct === 0;
     }
 
     /**
@@ -161,16 +173,26 @@ class Status
      */
     public function validOrphanedFilesStruct(): bool
     {
-        $check             = new FileCheck();
-        $files             = [];
-        $stats             = 0;
-        $orphanedFilesFile = \PFAD_ROOT . \PFAD_ADMIN .
-            \PFAD_INCLUDES . \PFAD_SHOPMD5
-            . 'deleted_files_' . $check->getVersionString() . '.csv';
+        if (($validOrphanedFilesStruct = $this->cache->get(self::CACHE_ID_ORPHANED_FILE_STRUCT)) === false) {
+            $check             = new FileCheck();
+            $files             = [];
+            $stats             = 0;
+            $orphanedFilesFile = \PFAD_ROOT . \PFAD_ADMIN .
+                \PFAD_INCLUDES . \PFAD_SHOPMD5
+                . 'deleted_files_' . $check->getVersionString() . '.csv';
 
-        return $check->validateCsvFile($orphanedFilesFile, $files, $stats) === FileCheck::OK
-            ? $stats === 0
-            : false;
+            $validOrphanedFilesStruct = $check->validateCsvFile($orphanedFilesFile, $files, $stats) === FileCheck::OK
+                ? $stats
+                : 1;
+
+            $this->cache->set(
+                self::CACHE_ID_ORPHANED_FILE_STRUCT,
+                $validOrphanedFilesStruct,
+                [\CACHING_GROUP_STATUS]
+            );
+        }
+
+        return $validOrphanedFilesStruct === 0;
     }
 
     /**

@@ -71,7 +71,7 @@ class QuestionValidation
      */
     public function checkSSL(bool $pluginMsg = false): bool
     {
-        if (empty($_SERVER['HTTPS']) || ($_SERVER['HTTPS'] === 'off' && !$this->valueIsEmpty())) {
+        if ((empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === 'off') && !$this->valueIsEmpty()) {
             $pluginMsg
                 ? $this->setValidationError(__('validationErrorSSLPlugin'))
                 : $this->setValidationError(__('validationErrorSSL'));

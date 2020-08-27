@@ -13349,6 +13349,11 @@ body {
   color: #ffffff;
 }
 
+.object-fit-cover {
+  object-fit: cover;
+  width: 100%;
+}
+
 #content_wrapper {
   padding-top: 0.5rem;
 }

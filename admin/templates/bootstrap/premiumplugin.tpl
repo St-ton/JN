@@ -31,8 +31,8 @@
         </div>
         <div class="row mb-5">
             {foreach $recommendation->getImages() as $image}
-                <div class="col-md text-center {if $image@last}pr-4{/if}">
-                    <img src="{$image}" class="mb-md-0 mb-2">
+                <div class="col-md text-center pr-md-4 pr-0">
+                    <img src="{$image}" class="object-fit-cover mb-md-0 mb-2">
                 </div>
             {/foreach}
         </div>

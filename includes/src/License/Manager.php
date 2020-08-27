@@ -2,7 +2,6 @@
 
 namespace JTL\License;
 
-use DateTime;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;

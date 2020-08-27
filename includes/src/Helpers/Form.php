@@ -350,7 +350,7 @@ class Form
             return false;
         }
 
-        $history = Shop::Container()->getDB()->executeQueryPrepared(
+        $result = Shop::Container()->getDB()->executeQueryPrepared(
             'SELECT COUNT(kUploadFloodProtect) AS nAnfragen
                 FROM tuploadfloodprotect
                 WHERE cIP = :ip 
@@ -368,7 +368,7 @@ class Form
             ReturnType::DEFAULT
         );
 
-        return $history->nAnfragen >= $max;
+        return $result->nAnfragen >= $max;
     }
 
     /**

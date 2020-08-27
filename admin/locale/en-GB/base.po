@@ -2002,3 +2002,6 @@ msgstr "Disable plugins"
 
 msgid "Disable template"
 msgstr "Disable template"
+
+msgid "weRecommend"
+msgstr "We recommend:"

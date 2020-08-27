@@ -59,17 +59,16 @@
         {if !$hasPendingUpdates && $wizardDone}
             {include file='tpl_inc/backend_sidebar.tpl'}
         {/if}
-        <div class="backend-main {if $wizardDone}sidebar-offset{/if}">
-            {if !$hasPendingUpdates}
+        <div class="backend-main {if !$hasPendingUpdates && $wizardDone}sidebar-offset{/if}">
             <div id="topbar" class="backend-navbar row mx-0 align-items-center topbar flex-nowrap">
+                {if !$hasPendingUpdates && $wizardDone}
                 <div class="col search px-0 px-md-3">
-                    {if $wizardDone}
-                        {include file='tpl_inc/backend_search.tpl'}
-                    {/if}
+                    {include file='tpl_inc/backend_search.tpl'}
                 </div>
+                {/if}
                 <div class="col-auto ml-auto px-2">
                     <ul class="nav align-items-center">
-                        {if $wizardDone}
+                        {if !$hasPendingUpdates && $wizardDone}
                             <li class="nav-item dropdown mr-md-3" id="favs-drop">
                                 {include file="tpl_inc/favs_drop.tpl"}
                             </li>
@@ -134,7 +133,7 @@
                 </div>
                 <div class="opaque-background"></div>
             </div>
-            {if $expiredLicenses->count() > 0}
+            {if !$hasPendingUpdates && $expiredLicenses->count() > 0}
                 <div class="modal fade in" id="expiredLicensesNotice" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
@@ -203,7 +202,6 @@
                         });
                     });
                 </script>
-            {/if}
             {/if}
             <div class="backend-content" id="content_wrapper">
 

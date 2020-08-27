@@ -2002,3 +2002,6 @@ msgstr "Plugins deaktivieren"
 
 msgid "Disable template"
 msgstr "Template deaktivieren"
+
+msgid "weRecommend"
+msgstr "Wir empfehlen:"

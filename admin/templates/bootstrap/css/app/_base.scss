@@ -64,3 +64,8 @@ body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; 
 .alert-info a {
 	color: $white;
 }
+
+.object-fit-cover {
+	object-fit: cover;
+	width: 100%;
+}

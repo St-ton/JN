@@ -87,6 +87,8 @@ if (!empty($_COOKIE['JTLSHOP']) && empty($_SESSION['frontendUpToDate'])) {
 
 if ($loggedIn
     && $_SERVER['REQUEST_METHOD'] === 'GET'
+    && Request::verifyGPDataString('action') !== 'quick_change_language'
+    && strpos($_SERVER['SCRIPT_FILENAME'], 'logout') === false
     && strpos($_SERVER['SCRIPT_FILENAME'], 'dbupdater') === false
     && strpos($_SERVER['SCRIPT_FILENAME'], 'io.php') === false
     && $updater->hasPendingUpdates()

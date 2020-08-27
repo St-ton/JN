@@ -178,10 +178,6 @@ $adminMenu = [
                     'link'        => 'consent.php',
                     'permissions' => 'CONSENT_MANAGER'
                 ],
-                __('Consent manager')            => (object)[
-                    'link'   => 'consent.php',
-                    'permissions' => 'CONTENT_PAGE_VIEW',
-                ],
             ],
             __('Custom contents')  => [
                 __('Pages')                  => (object)[
@@ -245,7 +241,7 @@ $adminMenu = [
             ],
             __('My purchases')       => (object)[
                 'link'        => 'licenses.php',
-                'permissions' => 'PLUGIN_ADMIN_VIEW',
+                'permissions' => 'LICENSE_MANAGER',
             ],
             //        __('Plug-in marketplace') => (object)[
             //            'link' => 'marktplatz.php',

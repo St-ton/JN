@@ -523,7 +523,7 @@ class Updater
      */
     public function getMinUpdateVersionError(): string
     {
-        return sprintf(
+        return \sprintf(
             __('errorMinShopVersionRequired'),
             \APPLICATION_VERSION,
             \JTL_MIN_SHOP_UPDATE_VERSION,

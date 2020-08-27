@@ -60,16 +60,19 @@ class Status
 
     /**
      * @param DbInterface $db
-     * @param JTLCacheInterface $cache
+     * @param JTLCacheInterface|null $cache
      * @param bool $flushCache
      * @return Status
      */
-    public static function getInstance(DbInterface $db, JTLCacheInterface $cache = null, bool $flushCache = false): self
-    {
+    public static function getInstance(
+        DbInterface $db,
+        ?JTLCacheInterface $cache = null,
+        bool $flushCache = false
+    ): self {
         $instance = static::$instance ?? new self($db, $cache ?? Shop::Container()->getCache());
 
         if ($flushCache) {
-            $instance->flushCache();
+            $instance->cache->flushTags([\CACHING_GROUP_STATUS]);
         }
 
         return $instance;
@@ -115,9 +118,9 @@ class Status
      */
     public function validDatabaseStruct(): bool
     {
-        if (($dbStruct = $this->cache->get(self::CACHE_ID_DATABASE_STRUCT)) === false) {
-            require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'dbcheck_inc.php';
+        require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'dbcheck_inc.php';
 
+        if (($dbStruct = $this->cache->get(self::CACHE_ID_DATABASE_STRUCT)) === false) {
             $dbStruct             = [];
             $dbStruct['current']  = \getDBStruct(true);
             $dbStruct['original'] = \getDBFileStruct();
@@ -125,7 +128,7 @@ class Status
             $this->cache->set(
                 self::CACHE_ID_DATABASE_STRUCT,
                 $dbStruct,
-                [\CACHING_GROUP_OBJECT]
+                [\CACHING_GROUP_STATUS]
             );
         }
 
@@ -182,7 +185,7 @@ class Status
             $this->cache->set(
                 self::CACHE_ID_FOLDER_PERMISSIONS,
                 $filesystemFolders,
-                [\CACHING_GROUP_OBJECT]
+                [\CACHING_GROUP_STATUS]
             );
         }
 
@@ -559,22 +562,5 @@ class Status
     public function hasExtensionSOAP(): bool
     {
         return \extension_loaded('soap');
-    }
-
-    /**
-     *
-     */
-    private function flushCache(): void
-    {
-        try {
-            $reflection = new \ReflectionClass(__CLASS__);
-            foreach ($reflection->getConstants() as $key => $classConst) {
-                if (\strpos($key, 'CACHE_ID') !== false) {
-                    $this->cache->flush($classConst);
-                }
-            }
-        } catch (\ReflectionException $e) {
-            Shop::Container()->getLogService()->notice($e->getMessage());
-        }
     }
 }

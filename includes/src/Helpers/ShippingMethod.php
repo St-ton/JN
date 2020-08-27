@@ -343,6 +343,8 @@ class ShippingMethod
                 $cgroupID
             );
             if (\count($shippingMethods) > 0) {
+                Frontend::set('cLieferlandISO', $country);
+
                 Shop::Smarty()
                     ->assign('ArtikelabhaengigeVersandarten', self::gibArtikelabhaengigeVersandkostenImWK(
                         $country,

@@ -59,14 +59,17 @@
         {if !$hasPendingUpdates}
         {include file='tpl_inc/backend_sidebar.tpl'}
         {/if}
-        <div class="backend-main sidebar-offset">
-            {if !$hasPendingUpdates}
+        <div class="backend-main {if !$hasPendingUpdates}sidebar-offset{/if}">
+
             <div id="topbar" class="backend-navbar row mx-0 align-items-center topbar flex-nowrap">
+                {if !$hasPendingUpdates}
                 <div class="col search px-0 px-md-3">
                     {include file='tpl_inc/backend_search.tpl'}
                 </div>
+                {/if}
                 <div class="col-auto ml-auto px-2">
                     <ul class="nav align-items-center">
+                        {if !$hasPendingUpdates}
                         <li class="nav-item dropdown mr-md-3" id="favs-drop">
                             {include file="tpl_inc/favs_drop.tpl"}
                         </li>
@@ -96,6 +99,7 @@
                         </li>
                         <li class="nav-item dropdown fa-lg" id="notify-drop">{include file="tpl_inc/notify_drop.tpl"}</li>
                         <li class="nav-item dropdown fa-lg" id="updates-drop">{include file="tpl_inc/updates_drop.tpl"}</li>
+                        {/if}
                         <li class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle parent btn-toggle" data-toggle="dropdown">
                                 <i class="fal fa-language d-sm-none"></i> <span class="d-sm-block d-none">{$languageName}</span>
@@ -130,7 +134,7 @@
                 </div>
                 <div class="opaque-background"></div>
             </div>
-            {if $expiredLicenses->count() > 0}
+            {if !$hasPendingUpdates && $expiredLicenses->count() > 0}
                 <div class="modal fade in" id="expiredLicensesNotice" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
@@ -199,7 +203,6 @@
                         });
                     });
                 </script>
-            {/if}
             {/if}
             <div class="backend-content" id="content_wrapper">
 

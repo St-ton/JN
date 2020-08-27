@@ -653,7 +653,7 @@ function ioCall(name, args = [], success = ()=>{}, error = ()=>{}, context = {},
         error: function (jqXHR, textStatus, errorThrown) {
             error(jqXHR.responseJSON);
         }
-    }).done(function () {
+    }).always(function () {
         if (disableSpinner === false) {
             stopSpinner();
         }
@@ -835,7 +835,7 @@ function simpleAjaxCall(url, data, success, error, context, disableSpinner)
         error: function (data) {
             error(data, context);
         }
-    }).done(function () {
+    }).always(function () {
         if (disableSpinner === false) {
             stopSpinner();
         }

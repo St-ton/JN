@@ -41,8 +41,8 @@
             <button type="submit" class="btn btn-sm btn-primary extend-license"
                     data-link="{$link->getHref()}"
                     href="#"
-                    title="{if $license->hasSubscription()}{__('extendSubscription')}{else}{__('extendLicense')}{/if}">
-                <i class="fa fa-link"></i> {if $license->hasSubscription()}{__('extendSubscription')}{else}{__('extendLicense')}{/if}
+                    title="{if $licData->getType() === 'test'}{__('extendTestLicense')}{elseif $license->hasSubscription()}{__('extendSubscription')}{else}{__('extendLicense')}{/if}">
+                <i class="fa fa-link"></i> {if $licData->getType() === 'test'}{__('extendTestLicense')}{elseif $license->hasSubscription()}{__('extendSubscription')}{else}{__('extendLicense')}{/if}
             </button>
         {/form}
         </p>

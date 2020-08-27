@@ -1,5 +1,6 @@
 <?php declare(strict_types=1);
 
+use JTL\Alert\Alert;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use JTL\Update\MigrationManager;
@@ -15,11 +16,19 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('SHOP_UPDATE_VIEW', true, true);
 
 $smarty->clearCompiledTemplate();
-$db          = Shop::Container()->getDB();
-$updater     = new Updater($db);
-$template    = Shop::Container()->getTemplateService()->getActiveTemplate(false);
-$fileVersion = $updater->getCurrentFileVersion();
-
+$db                  = Shop::Container()->getDB();
+$updater             = new Updater($db);
+$template            = Shop::Container()->getTemplateService()->getActiveTemplate(false);
+$fileVersion         = $updater->getCurrentFileVersion();
+$hasMinUpdateVersion = true;
+if (!$updater->hasMinUpdateVersion()) {
+    Shop::Container()->getAlertService()->addAlert(
+        Alert::TYPE_WARNING,
+        $updater->getMinUpdateVersionError(),
+        'errorMinShopVersionRequired'
+    );
+    $hasMinUpdateVersion = false;
+}
 $smarty->assign('updatesAvailable', $updater->hasPendingUpdates())
     ->assign('manager', ADMIN_MIGRATION ? new MigrationManager($db) : null)
     ->assign('isPluginManager', false)
@@ -31,4 +40,5 @@ $smarty->assign('updatesAvailable', $updater->hasPendingUpdates())
     ->assign('updateError', $updater->error())
     ->assign('currentTemplateFileVersion', $template->getFileVersion())
     ->assign('currentTemplateDatabaseVersion', $template->getVersion())
+    ->assign('hasMinUpdateVersion', $hasMinUpdateVersion)
     ->display('dbupdater.tpl');

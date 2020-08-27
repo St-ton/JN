@@ -33,7 +33,7 @@ class DeleteFileCacheCommand extends Command
         if ($fs->deleteDir('/templates_c/filecache/')) {
             $io->success('File cache deleted.');
         } else {
-            $io->warning('Nothind to delete.');
+            $io->warning('Nothing to delete.');
         }
     }
 }

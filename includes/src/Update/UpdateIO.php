@@ -175,6 +175,9 @@ class UpdateIO
     {
         try {
             $updater    = new Updater($this->db);
+            if (!$updater->hasMinUpdateVersion()) {
+                throw new Exception($updater->getMinUpdateVersionError());
+            }
             $hasAlready = $updater->hasPendingUpdates();
             if ($pluginID !== null && \is_numeric($pluginID)) {
                 $loader  = new PluginLoader($this->db, Shop::Container()->getCache());

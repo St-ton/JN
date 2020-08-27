@@ -157,8 +157,13 @@
 	.slick-active .productbox-image-wrapper { border-color: $secondary; }
 }
 
-.slick-list {
-	@include media-breakpoint-down(md) {
-		padding-right: 50px;
+.slick-type-product ,
+.slick-type-half ,
+.slick-type-news ,
+.slick-type-box {
+	.slick-list {
+		@include media-breakpoint-down(md) {
+			padding-right: 50px;
+		}
 	}
 }

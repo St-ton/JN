@@ -229,15 +229,11 @@
                     {/if}
                     {* country *}
                     {if isset($cPost_var['land'])}
-                        {assign var=cIso value=$cPost_var['land']}
+                        {$countryISO=$cPost_var['land']}
                     {elseif !empty($Kunde->cLand)}
-                        {assign var=cIso value=$Kunde->cLand}
-                    {elseif !empty($Einstellungen.kunden.kundenregistrierung_standardland)}
-                        {assign var=cIso value=$Einstellungen.kunden.kundenregistrierung_standardland}
-                    {elseif isset($laender[0]->cISO)}
-                        {assign var=cIso value=$laender[0]->cISO}
+                        {$countryISO=$Kunde->cLand}
                     {else}
-                        {assign var=cIso value=''}
+                        {$countryISO=$shippingCountry}
                     {/if}
                     {block name='checkout-inc-billing-address-form-country-wrap'}
                         {col cols=12}
@@ -250,7 +246,7 @@
                                     {select name="land" id="billing_address-country" class="country-input custom-select js-country-select" required=true autocomplete="billing country"}
                                         <option value="" disabled>{lang key='country' section='account data'}</option>
                                         {foreach $laender as $land}
-                                            <option value="{$land->getISO()}" {if $cIso === $land->getISO()}selected="selected"{/if}>{$land->getName()}</option>
+                                            <option value="{$land->getISO()}" {if $countryISO === $land->getISO()}selected="selected"{/if}>{$land->getName()}</option>
                                         {/foreach}
                                     {/select}
                                     {if isset($fehlendeAngaben.land)}
@@ -262,7 +258,7 @@
                             {/block}
                         {/col}
                         {if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland !== 'N'}
-                            {getStates cIso=$cIso assign='oStates'}
+                            {getStates cIso=$countryISO assign='oStates'}
                             {if isset($cPost_var['bundesland'])}
                                 {assign var=cState value=$cPost_var['bundesland']}
                             {elseif !empty($Kunde->cBundesland)}
@@ -449,6 +445,13 @@
                             }
                         {/col}
                     {/block}
+                    {if $Einstellungen.kunden.direct_advertising === 'Y'}
+                        {block name='checkout-inc-billing-address-form-direct-advertising'}
+                            {col cols=12 class="text-muted mt-n3 mb-3"}
+                                <small>{lang key="directAdvertising" section="checkout"}</small>
+                            {/col}
+                        {/block}
+                    {/if}
                     {* phone & fax *}
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_tel !== 'N' || $Einstellungen.kunden.kundenregistrierung_abfragen_fax !== 'N'
                         || $Einstellungen.kunden.kundenregistrierung_abfragen_mobil !== 'N' || $Einstellungen.kunden.kundenregistrierung_abfragen_www !== 'N'}

@@ -508,4 +508,27 @@ class Updater
 
         return $directories;
     }
+
+    /**
+     * @return bool
+     * @throws Exception
+     */
+    public function hasMinUpdateVersion(): bool
+    {
+        return !Version::parse(\JTL_MIN_SHOP_UPDATE_VERSION)->greaterThan($this->getCurrentDatabaseVersion());
+    }
+
+    /**
+     * @return string
+     */
+    public function getMinUpdateVersionError(): string
+    {
+        return \sprintf(
+            __('errorMinShopVersionRequired'),
+            \APPLICATION_VERSION,
+            \JTL_MIN_SHOP_UPDATE_VERSION,
+            \APPLICATION_VERSION,
+            __('dbupdaterURL')
+        );
+    }
 }

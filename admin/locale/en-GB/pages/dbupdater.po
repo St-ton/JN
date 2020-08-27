@@ -82,3 +82,6 @@ msgstr "Database update"
 
 msgid "required"
 msgstr "required"
+
+msgid "errorMinShopVersionRequired"
+msgstr "Your online shop does not have the minimum version required to update to version %s. You need at least version %s for the update to version %s. Please follow all necessary update-steps in our <a href=\"%s\" target=\"_blank\">guide</a>."

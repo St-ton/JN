@@ -254,9 +254,12 @@ class Admin
                 $smarty->assign('extendSuccessMessage', 'Successfully extended.');
             } elseif ($responseData->state === self::STATE_FAILED && isset($responseData->failure_reason)) {
                 $smarty->assign('extendErrorMessage', $responseData->failure_reason);
-            } elseif ($responseData->state === self::STATE_CREATED && isset($responseData->links)) {
+            } elseif ($responseData->state === self::STATE_CREATED
+                && isset($responseData->links)
+                && \is_array($responseData->links)
+            ) {
                 foreach ($responseData->links as $link) {
-                    if ($link->rel === 'redirect_url') {
+                    if (isset($link->rel) && $link->rel === 'redirect_url') {
                         \http_response_code(301);
                         \header('Location: ' . $link->href);
                         exit();

@@ -1967,8 +1967,7 @@ final class Shop
             self::$adminToken   = $_SESSION['adminToken'];
             self::$adminLangTag = $_SESSION['adminLangTag'];
             self::Container()->getGetText();
-        } elseif (
-            $sessionSwitchAllowed === true
+        } elseif ($sessionSwitchAllowed === true
             && isset($_COOKIE['eSIdAdm'])
             && Request::verifyGPDataString('fromAdmin') === 'yes'
         ) {

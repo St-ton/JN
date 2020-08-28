@@ -250,7 +250,7 @@ class ListingItem
         $this->setPath($plugin->getPaths()->getVersionedPath());
         $this->setDir($plugin->getPaths()->getBaseDir());
         $this->setIsLegacy($plugin->isLegacy());
-        $this->setIcon($meta->getIcon());
+        $this->setIcon($meta->getIcon() ?? '');
         $this->setVersion($meta->getSemVer());
         $this->setState($plugin->getState());
         $this->setDateInstalled($meta->getDateInstalled());

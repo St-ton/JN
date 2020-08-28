@@ -34,14 +34,14 @@ class DeleteTemplateCacheCommand extends Command
         $io             = $this->getIO();
         $adminTpl       = $this->getOption('admin');
         $filesystem     = new Filesystem(new Local(\PFAD_ROOT));
-        $activeTemplate = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'standard');
+        $activeTemplate = Shop::Container()->getTemplateService()->getActiveTemplate(false);
         if ($adminTpl) {
             $filesystem->deleteDir('/admin/templates_c/');
         }
-        if ($filesystem->deleteDir('/templates_c/' . $activeTemplate->name)) {
+        if ($filesystem->deleteDir('/templates_c/' . $activeTemplate->getDir())) {
             $io->success('Template cache deleted.');
         } else {
-            $io->warning('Nothind to delete.');
+            $io->warning('Nothing to delete.');
         }
     }
 }

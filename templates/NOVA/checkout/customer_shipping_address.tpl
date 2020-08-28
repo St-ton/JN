@@ -149,15 +149,11 @@
 
         {* country *}
         {if isset($Lieferadresse->cLand)}
-            {assign var=cIso value=$Lieferadresse->cLand}
+            {$countryISO=$Lieferadresse->cLand}
         {elseif !empty($Kunde->cLand)}
-            {assign var=cIso value=$Kunde->cLand}
-        {elseif !empty($Einstellungen.kunden.kundenregistrierung_standardland)}
-            {assign var=cIso value=$Einstellungen.kunden.kundenregistrierung_standardland}
-        {elseif isset($laender[0]->cISO)}
-            {assign var=cIso value=$laender[0]->cISO}
+            {$countryISO=$Kunde->cLand}
         {else}
-            {assign var=cIso value=''}
+            {$countryISO=$shippingCountry}
         {/if}
         {block name='checkout-customer-shipping-address-country-wrap'}
             {col cols=12}
@@ -166,14 +162,14 @@
                         {select name="{$prefix}[{$name}][land]" id="{$prefix}-{$name}-country" class="country-input custom-select js-country-select" autocomplete="shipping country"}
                             <option value="" selected disabled>{lang key='country' section='account data'}</option>
                             {foreach $LieferLaender as $land}
-                                <option value="{$land->getISO()}" {if ($Einstellungen.kunden.kundenregistrierung_standardland == $land->getISO() && empty($Lieferadresse->cLand)) || (isset($Lieferadresse->cLand) && $Lieferadresse->cLand == $land->getISO())}selected="selected"{/if}>{$land->getName()}</option>
+                                <option value="{$land->getISO()}" {if $countryISO === $land->getISO()}selected="selected"{/if}>{$land->getName()}</option>
                             {/foreach}
                         {/select}
                     {/formgroup}
                 {/block}
             {/col}
             {if $Einstellungen.kunden.lieferadresse_abfragen_bundesland !== 'N'}
-                {getStates cIso=$cIso assign='oShippingStates'}
+                {getStates cIso=$countryISO assign='oShippingStates'}
                 {if isset($Lieferadresse->cBundesland)}
                     {assign var=cState value=$Lieferadresse->cBundesland}
                 {elseif !empty($Kunde->cBundesland)}

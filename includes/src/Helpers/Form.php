@@ -353,8 +353,7 @@ class Form
             'DELETE
                 FROM tfloodprotect
                 WHERE dErstellt < DATE_SUB(NOW(), INTERVAL 1 HOUR);
-                AND cTyp ="upload"
-                ',
+                AND cTyp ="upload"',
             [],
             ReturnType::DEFAULT
         );
@@ -363,8 +362,7 @@ class Form
             'SELECT COUNT(kFloodProtect) AS nAnfragen
                 FROM tfloodprotect
                 WHERE cIP = :ip
-                AND cTyp ="upload"
-                ',
+                AND cTyp ="upload"',
             ['ip' => Request::getRealIP()],
             ReturnType::SINGLE_OBJECT
         );

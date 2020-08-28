@@ -1190,19 +1190,12 @@
         }
     };
 
-    $v     = new ArticleClass();
-    var ie = /(msie|trident)/i.test(navigator.userAgent) ? navigator.userAgent.match(/(msie |rv:)(\d+(.\d+)?)/i)[2] : false;
-    if (ie && parseInt(ie) <= 9) {
-        $(document).ready(function () {
-            $v.onLoad();
-            $v.register();
-        });
-    } else {
-        $(window).on('load', function () {
-            $v.onLoad();
-            $v.register();
-        });
-    }
+    $v = new ArticleClass();
+
+    $(document).ready(function () {
+        $v.onLoad();
+        $v.register();
+    });
 
     $(window).resize(
         viewport.changed(function(){

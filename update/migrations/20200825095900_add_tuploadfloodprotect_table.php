@@ -9,7 +9,7 @@ use JTL\Update\Migration;
 class Migration_20200825095900 extends Migration implements IMigration
 {
     protected $author      = 'je';
-    protected $description = 'Add tuploadfloodprotect table';
+    protected $description = 'Add tfloodprotect table';
 
     /**
      * @inheritDoc
@@ -17,23 +17,24 @@ class Migration_20200825095900 extends Migration implements IMigration
     public function up()
     {
         $this->execute(
-            "CREATE TABLE IF NOT EXISTS `tuploadfloodprotect` (
-          `kUploadFloodProtect` int(10) unsigned NOT NULL AUTO_INCREMENT,
-          `cIP` varchar(255) NULL,
-          `dErstellt` datetime NULL,
-          PRIMARY KEY (`kUploadFloodProtect`),
-          KEY `cIP` (`cIP`)
-          );"
-        );
+            'CREATE TABLE IF NOT EXISTS tfloodprotect (
+            kFloodProtect int(10) unsigned NOT NULL AUTO_INCREMENT,
+            cIP varchar(255) NULL COMMENT "the user ip",
+            cTyp varchar(255) NULL COMMENT "defines where the protection was used",
+            dErstellt datetime NULL COMMENT "the request date",
+            PRIMARY KEY (kFloodProtect),
+            KEY cIP (cIP)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;');
+
         $this->setConfig(
             'upload_modul_limit',
             '10',
             \CONF_ARTIKELDETAILS,
-            'Limit für Uploads pro Stunde',
+            'Erlaubte Datei-Uploads pro Stunde',
             'number',
             499,
             (object)[
-                'cBeschreibung' => 'Hier legen Sie fest, wie oft ein Benutzer bei aktiviertem Uploadmodul Dateien hochladen darf (pro Stunde).'
+                'cBeschreibung' => 'Hier legen Sie fest, wie viele Dateien ein Benutzer bei aktiviertem Uploadmodul pro Stunde maximal hochladen darf.'
             ]
         );
     }
@@ -43,7 +44,7 @@ class Migration_20200825095900 extends Migration implements IMigration
      */
     public function down()
     {
-        $this->execute('DROP TABLE IF EXISTS `tuploadfloodprotect`');
+        $this->execute('DROP TABLE IF EXISTS `tfloodprotect`');
         $this->removeConfig('upload_modul_limit');
     }
 }

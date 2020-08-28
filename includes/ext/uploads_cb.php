@@ -23,48 +23,56 @@ $session = Frontend::getInstance();
 $conf    = Shop::getSettings([CONF_ARTIKELDETAILS]);
 $limit   = (int)$conf['artikeldetails']['upload_modul_limit'];
 
-if (!Form::validateToken() || Form::reachedUploadLimitPerHour($limit) || !Nice::getInstance()->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
+
+if (!Form::validateToken()
+    || Form::reachedUploadLimitPerHour($limit)
+    || !Nice::getInstance()->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
     retCode(0);
 }
 
 $uploadProtect            = new stdClass();
 $uploadProtect->cIP       = Request::getRealIP();
 $uploadProtect->dErstellt = 'NOW()';
-Shop::Container()->getDB()->insert('tuploadfloodprotect', $uploadProtect);
+$uploadProtect->cTyp      = 'upload';
+Shop::Container()->getDB()->insert('tfloodprotect', $uploadProtect);
 
 if (!empty($_FILES)) {
-    $whitelist = array(
-        'application/x-7z-compressed',
-        'application/x-bzip2',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'image/gif',
-        'image/jpeg',
-        'application/vnd.oasis.opendocument.text',
-        'application/pdf',
-        'image/png',
-        'application/vnd.rar',
-        'application/rtf',
-        'application/x-tar',
-        'application/tar+gzip',
-        'application/x-gzip',
-        'application/tar',
-        'text/plain',
-        'application/zip',
-    );
-    $fileData  = isset($_FILES['Filedata']['tmp_name'])
+    $blacklist = [
+        'application/x-httpd-php-source',
+        'application/x-httpd-php',
+        'application/x-php',
+        'application/php',
+        'text/x-php',
+        'text/php',
+        'application/x-sh',
+        'application/x-csh',
+        'application/x-httpd-cgi',
+        'application/x-httpd-perl',
+        'application/sql',
+        'text/x-sql',
+        'text/sql',
+    ];
+
+    $fileData       = isset($_FILES['Filedata']['tmp_name'])
         ? $_FILES['Filedata']
         : $_FILES['file_data'];
-    $mime      = finfo_file(finfo_open(FILEINFO_MIME_TYPE), $fileData['tmp_name']);
+    $sourceInfo     = pathinfo($fileData['name']);
+    $mime           = finfo_file(finfo_open(FILEINFO_MIME_TYPE), $fileData['tmp_name']);
+    $uploadFileInfo = Upload::gibArtikelUploads($_REQUEST['prodID']);
 
-    if (!isset($_REQUEST['uniquename'], $_REQUEST['cname']) || !in_array($mime, $whitelist, true)) {
+    if (!isset($_REQUEST['uniquename'], $_REQUEST['cname'])
+        || empty($uploadFileInfo)
+        || empty($uploadFileInfo[0]->cDateiTyp_arr)
+        || in_array($mime, $blacklist, true)
+        || !in_array('*.' . strtolower($sourceInfo['extension']), $uploadFileInfo[0]->cDateiTyp_arr, true)
+    ) {
         retCode(0);
     }
+
     $unique     = $_REQUEST['uniquename'];
     $targetFile = PFAD_UPLOADS . $unique;
     $tempFile   = $fileData['tmp_name'];
     $targetInfo = pathinfo($targetFile);
-    $sourceInfo = pathinfo($fileData['name']);
     $realPath   = realpath($targetInfo['dirname']);
 
     // legitimate uploads do not have an extension for the destination file name - but for the originally uploaded file

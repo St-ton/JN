@@ -687,7 +687,7 @@ body {
 }
 .widget-head .options {
   float: right;
-  visibility: hidden;
+  display: none;
   padding: 0;
 }
 .widget-head .options a {
@@ -699,10 +699,10 @@ body {
 .widget-head:hover .options,
 .widget-head:hover .collapse,
 .widget-head:hover .remove {
-  visibility: visible;
+  display: inline;
 }
 .column_wrapper .widget .widget-head p {
-  visibility: hidden;
+  display: none;
 }
 .column_wrapper .widget:hover .widget-head p {
   display: block;
@@ -1392,6 +1392,9 @@ span.success {
   content: "\f188";
 }
 /* Widgets */
+#widget-Clock .widget-head {
+  display: none;
+}
 .clock {
   text-align: center;
 }
@@ -2126,7 +2129,12 @@ td.nowrap {
 }
 .panel-danger {
   background-color: #C82E29;
-  color: #ffffff;
+  color: #ffffff !important;
+}
+.panel-danger a,
+.panel-danger table,
+.panel-danger .btn-link {
+  color: #fff;
 }
 .border-right {
   border-right-style: solid !important;

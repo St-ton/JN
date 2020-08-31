@@ -85,7 +85,7 @@
                 </noscript>
             {/if}
 
-            {if \JTL\Shop::isAdmin() && $opc->isEditMode() === false && $opc->isPreviewMode() === false}
+            {if $opc->isEditMode() === false && $opc->isPreviewMode() === false && \JTL\Shop::isAdmin(true)}
                 <link rel="preload" href="{$ShopURL}/admin/opc/css/startmenu.css" as="style"
                       onload="this.onload=null;this.rel='stylesheet'">
                 <noscript>

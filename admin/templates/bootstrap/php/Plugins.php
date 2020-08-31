@@ -99,15 +99,17 @@ class Plugins
      */
     public function getHelpDesc(array $params, $smarty): string
     {
-        $placement   = $params['placement'] ?? 'left';
-        $cID         = !empty($params['cID']) ? $params['cID'] : null;
-        $description = isset($params['cDesc'])
+        $placement    = $params['placement'] ?? 'left';
+        $cID          = !empty($params['cID']) ? $params['cID'] : null;
+        $iconQuestion = !empty($params['iconQuestion']);
+        $description  = isset($params['cDesc'])
             ? \str_replace('"', '\'', $params['cDesc'])
             : null;
 
         return $smarty->assign('placement', $placement)
                       ->assign('cID', $cID)
                       ->assign('description', $description)
+                      ->assign('iconQuestion', $iconQuestion)
                       ->fetch('tpl_inc/help_description.tpl');
     }
 

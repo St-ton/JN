@@ -43,13 +43,16 @@
                             <span class="setup-subheadline">{__('welcome')}</span>
                             <p>{__('welcomeDesc')}</p>
                             {if !$hasAuth}
-                                <p>{__('oAuthInformation')}</p>
-                                <a href="wizard.php?action=auth&wizard-authenticated=1" class="btn btn-primary min-w-sm my-2 w-100">
+                                <a href="wizard.php?action=auth&wizard-authenticated=1" class="btn btn-primary mt-5 mb-3 px-3 w-100">
                                     {__('beginAuth')}
                                 </a>
-                                <button type="button" class="btn btn-outline-primary min-w-sm" data-setup-next>
+                                <button type="button" class="btn btn-outline-primary px-3 w-100" data-setup-next>
                                     {__('beginNoAuth')}
                                 </button>
+                                <p class="subheading1 mt-4">
+                                    {__('oAuthInformation')}
+                                    {getHelpDesc cDesc=__('oAuthDesc') iconQuestion=true}
+                                </p>
                             {else}
                                 <button type="button" class="btn btn-primary min-w-sm mt-5 mt-lg-7" data-setup-next>
                                    {__('beginSetup')}
@@ -63,6 +66,17 @@
                     {foreach $steps as $step}
                         <div id="{$step->getID()}" class="setup-slide row" data-setup-slide="{$step->getID()}">
                             <div class="col-lg-4 mb-5 mb-lg-0">
+                                {if $hasAuth && $step->getID() === 1}
+                                    <div class="mt-6 mb-lg-n5">
+                                        <div class="icon-in-border">
+                                            <div class="subheading1">{__('oAuthValid')}</div>
+                                            <span class="text-success">
+                                                <i class="fas fa-user"></i>
+                                                <i class="fas fa-check font-size-sm"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                {/if}
                                 <span class="setup-subheadline">{$step->getTitle()}</span>
                                 <p>{$step->getDescription()}</p>
                             </div>
@@ -89,7 +103,6 @@
                     <div class="setup-slide row" data-setup-slide="{$stepID + 1}">
                         <div class="col-lg-4 mb-5 mb-lg-0">
                             <span class="setup-subheadline">{__('stepFive')}</span>
-                            <p>{__('stepFiveDesc')}</p>
                             {if !$hasAuth}
                                 <p id="summary-plugin-note">
                                     <i class="fal fa-exclamation-triangle text-warning"></i> {__('oAuthInvalid')}

@@ -240,17 +240,19 @@ msgid "errorVATPattern"
 msgstr "USt-IdNr. weißt ein falsches Pattern auf."
 
 msgid "oAuthValid"
-msgstr "Authentifizierung erfolgreich."
+msgstr "Authentifizierung des Shops erfolgreich."
 
 msgid "oAuthInvalid"
 msgstr "Sie haben Plugins zur Installation vorgemerkt. Über den Button \"Verknüpfen\" werden Sie zur einmaligen Authentifizierung zum \"Zentralen Login\" weitergeleitet. Nach erfolgreicher Anmeldung werden Sie automatisch zu diesem Einrichtungsassistenten zurückgeleitet und können die Einrichtung abschließen."
 
 msgid "oAuthInformation"
-msgstr "Eines der wichtigstens Features des JTL-Shops, ist seine direkte Schnittstelle zum JTL-Extension Store, über welchen Plugins und Templates direkt im Shop-Backend installierbar sind. Um von diesem Feature zu profitieren, muss Ihr Onlineshop einmalig über den \"Zentralen Login\" authentifiziert werden."
+msgstr "Was ist der Sinn der Authentifizierung"
 
 msgid "beginAuth"
 msgstr "Shop Authentifizieren und Assistenten starten"
 
 msgid "beginNoAuth"
-msgstr "Assistenten ohne Authentifizierung starten (nicht empfohlen)"
+msgstr "Assistenten ohne Authentifizierung starten"
 
+msgid "oAuthDesc"
+msgstr "Um Plugins die im Extension Store erworben wurden, bequem und direkt im Backend installieren und verwalten zu können, muss Ihr Shop einmalig über den zentralen Login authentifiziert werden. Wir empfehlen Ihnen, die Verknüpfung jetzt vorzunehmen. Sie haben jeden auch die Möglichkeit, diesen Schritt später nachzuholen."

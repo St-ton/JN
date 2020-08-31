@@ -13354,6 +13354,25 @@ body {
   width: 100%;
 }
 
+.icon-in-border {
+  border: solid 1px #435a6b;
+  padding: 10px;
+  border-radius: 10px;
+  position: relative;
+}
+.icon-in-border span {
+  display: block;
+  background: #F5F7FA;
+  position: absolute;
+  top: -15px;
+  margin: 0;
+  padding: 0 0.3125rem;
+  z-index: 10;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
 #content_wrapper {
   padding-top: 0.5rem;
 }

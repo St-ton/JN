@@ -26,7 +26,10 @@ $factory      = new DefaultFactory(
 $controller   = new Controller($factory);
 $conf         = Shop::getSettings([CONF_GLOBAL]);
 $token        = AuthToken::getInstance(Shop::Container()->getDB());
-$authRedirect = Backend::get('wizard-authenticated') ?? false;
+$valid        = $token->isValid();
+$authRedirect = Backend::get('wizard-authenticated') && $valid
+    ? Backend::get('wizard-authenticated')
+    : false;
 
 if (Request::postVar('action') === 'code') {
     $admin->handleAuth();
@@ -42,6 +45,6 @@ if (Request::postVar('action') !== 'code') {
     $oAccount->permission('WIZARD_VIEW', true, true);
     $smarty->assign('steps', $controller->getSteps())
         ->assign('authRedirect', $authRedirect)
-        ->assign('hasAuth', $token->isValid())
+        ->assign('hasAuth', $valid)
         ->display('wizard.tpl');
 }

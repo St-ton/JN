@@ -66,7 +66,7 @@
                     {foreach $steps as $step}
                         <div id="{$step->getID()}" class="setup-slide row" data-setup-slide="{$step->getID()}">
                             <div class="col-lg-4 mb-5 mb-lg-0">
-                                {if $hasAuth && $step->getID() === 1}
+                                {if $authRedirect && $step->getID() === 1}
                                     <div class="mt-6 mb-lg-n5">
                                         <div class="icon-in-border">
                                             <div class="subheading1">{__('oAuthValid')}</div>
@@ -102,12 +102,24 @@
 
                     <div class="setup-slide row" data-setup-slide="{$stepID + 1}">
                         <div class="col-lg-4 mb-5 mb-lg-0">
+                            {if $authRedirect}
+                                <div class="mt-6 mb-lg-n5">
+                                    <div class="icon-in-border">
+                                        <div class="subheading1">{__('oAuthValid')}</div>
+                                        <span class="text-success">
+                                            <i class="fas fa-user"></i>
+                                            <i class="fas fa-check font-size-sm"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            {/if}
                             <span class="setup-subheadline">{__('stepFive')}</span>
                             {if !$hasAuth}
-                                <p id="summary-plugin-note">
+                                <div id="summary-plugin-note">
                                     <i class="fal fa-exclamation-triangle text-warning"></i> {__('oAuthInvalid')}
-                                </p>
+                                </div>
                             {/if}
+                            <p>{__('stepFiveDesc')}</p>
                         </div>
                         <div class="col-lg-6 ml-lg-auto col-xl-7 mt-lg-n5">
                             <div class="table-responsive">

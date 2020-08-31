@@ -164,10 +164,12 @@ $(document).on('click', `${modal} [${Data.next}]`, () => {
         if (legalPluginCount > 0 || paymentPluginCount > 0) {
             $auth.removeClass('d-none');
             $summaryPluginNote.removeClass('d-none');
+            $summaryPluginNote.next().addClass('d-none');
             $submit.addClass('d-none');
         } else {
             $auth.addClass('d-none');
             $summaryPluginNote.addClass('d-none');
+            $summaryPluginNote.next().removeClass('d-none');
             $submit.removeClass('d-none');
         }
     }

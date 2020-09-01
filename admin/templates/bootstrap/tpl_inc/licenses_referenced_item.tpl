@@ -14,7 +14,7 @@
         {$disabled = $licData->isExpired() || $subscription->isExpired()}
         {if isset($licenseErrorMessage)}
             <div class="alert alert-danger">
-                {__($licenseErrorMessage)}{if isset($resultCode) && $resultCode !== 1}{__('Error code: %d', $resultCode)}{/if}
+                {__($licenseErrorMessage)}{if isset($resultCode) && $resultCode !== 1} {__('Error code: %d', $resultCode)}{/if}
             </div>
         {/if}
         {$installedVersion = $referencedItem->getInstalledVersion()}

@@ -17,14 +17,14 @@ class Migration_20200825095900 extends Migration implements IMigration
     public function up()
     {
         $this->execute(
-            'CREATE TABLE IF NOT EXISTS tfloodprotect (
-            kFloodProtect int(10) unsigned NOT NULL AUTO_INCREMENT,
-            cIP varchar(255) NULL COMMENT "the user ip",
-            cTyp varchar(255) NULL COMMENT "defines where the protection was used",
-            dErstellt datetime NULL COMMENT "the request date",
-            PRIMARY KEY (kFloodProtect),
-            KEY cIP (cIP)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;');
+            "CREATE TABLE IF NOT EXISTS tfloodprotect (
+                kFloodProtect int(10) unsigned NOT NULL AUTO_INCREMENT,
+                cIP varchar(255) NULL COMMENT 'the user ip',
+                cTyp varchar(255) NULL COMMENT 'defines where the protection was used',
+                dErstellt datetime NULL COMMENT 'the request date',
+                PRIMARY KEY (kFloodProtect),
+                KEY cIP (cTyp, cIP)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci");
 
         $this->setConfig(
             'upload_modul_limit',

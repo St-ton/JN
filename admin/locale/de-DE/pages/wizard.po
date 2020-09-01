@@ -69,7 +69,7 @@ msgid "vatSmallEntrepreneurTitle"
 msgstr "Wenn Sie diese Option aktivieren, wird in Ihrem Onlineshop keine Umsatzsteuer ausgewiesen."
 
 msgid "customerGroupDesc"
-msgstr "Der Onlineshop richtet sich an:"
+msgstr "Der Onlineshop richtet sich an"
 
 msgid "customerGroupDescTitle"
 msgstr "B2B aktiviert die verpflichtende Abfrage von Firma und USt-IdNr. im Kundenformular und deaktiviert die Widerrufsbelehrung im Bestellvorgang. B2C deaktiviert die Abfrage von Firma und USt-IdNr. im Kundenformular. B2B und B2C aktiviert die optionale Abfrage von Firma und USt-IdNr. im Kundenformular."

@@ -69,7 +69,7 @@ msgid "vatSmallEntrepreneurTitle"
 msgstr "If you activate this option, your online shop will not state VAT."
 
 msgid "customerGroupDesc"
-msgstr "The online shop addresses:"
+msgstr "The online shop addresses"
 
 msgid "customerGroupDescTitle"
 msgstr "B2B activates the mandatory fields Company and VAT ID in the customer registration form and deactivates the withdrawal instructions in the order process. B2C deactivates the fields Company and VAT ID in the customer registration form. B2B and B2C activates the optional fields Company and VAT ID in the customer registration form."

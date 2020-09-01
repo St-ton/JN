@@ -110,7 +110,7 @@ class Extractor
     {
         $info = self::UNZIP_DIR . $dirName . \PLUGIN_INFO_FILE;
         if (!\file_exists($info)) {
-            throw new InvalidArgumentException('info.xml does not exist: ' . $info);
+            throw new InvalidArgumentException('info.xml does not exist: ' . $dirName . \PLUGIN_INFO_FILE);
         }
         $parsed = $this->parser->parse($info);
         if (isset($parsed['jtlshopplugin']) && \is_array($parsed['jtlshopplugin'])) {

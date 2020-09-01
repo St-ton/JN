@@ -57,7 +57,7 @@ if (!empty($_FILES)) {
         ? $_FILES['Filedata']
         : $_FILES['file_data'];
     $sourceInfo     = pathinfo($fileData['name']);
-    $mime           = finfo_file(finfo_open(FILEINFO_MIME_TYPE), $fileData['tmp_name']);
+    $mime           = mime_content_type($fileData['tmp_name']);
     $uploadFileInfo = Upload::gibArtikelUploads($_REQUEST['prodID']);
 
     if (!isset($_REQUEST['uniquename'], $_REQUEST['cname'])

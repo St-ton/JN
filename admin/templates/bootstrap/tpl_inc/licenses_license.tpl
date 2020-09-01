@@ -30,12 +30,21 @@
     <span class="badge badge-success">{__('Valid')}</span>
 {/if}
 {foreach $license->getLinks() as $link}
-    {if ($link->getRel() === 'extendSubscription' && $license->hasSubscription())
-        || ($link->getRel() === 'extendLicense' && $license->hasLicense())}
-        <p class="mb-0 mt-2">
-            <a class="btn btn-primary btn-sm" href="{$link->getHref()}" rel="noopener" title="{__($link->getRel())}">
-                <i class="fa fa-external-link"></i> {__($link->getRel())}
-            </a>
+    {if $link->getRel() === 'extendLicense' && ($license->hasSubscription() || $license->hasLicense())}
+        <p class="mt-2 mb-0">
+        {form class='extend-license-form mt-2'}
+            <input type="hidden" name="action" value="extendLicense">
+            <input type="hidden" name="url" value="{$link->getHref()}">
+            <input type="hidden" name="method" value="{$link->getMethod()|default:'POST'}">
+            <input type="hidden" name="exsid" value="{$license->getExsID()}">
+            <input type="hidden" name="key" value="{$license->getLicense()->getKey()}">
+            <button type="submit" class="btn btn-sm btn-primary extend-license"
+                    data-link="{$link->getHref()}"
+                    href="#"
+                    title="{if $licData->getType() === 'test'}{__('extendTestLicense')}{elseif $license->hasSubscription()}{__('extendSubscription')}{else}{__('extendLicense')}{/if}">
+                <i class="fa fa-link"></i> {if $licData->getType() === 'test'}{__('extendTestLicense')}{elseif $license->hasSubscription()}{__('extendSubscription')}{else}{__('extendLicense')}{/if}
+            </button>
+        {/form}
         </p>
     {/if}
 {/foreach}

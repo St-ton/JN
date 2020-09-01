@@ -2,7 +2,6 @@
 
 namespace JTL\License;
 
-use DateTime;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
@@ -11,6 +10,7 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\License\Struct\ExsLicense;
+use JTL\Shop;
 use stdClass;
 
 /**
@@ -24,6 +24,11 @@ class Manager
     private const CHECK_INTERVAL_HOURS = 4;
 
     private const API_URL = 'https://checkout-stage.jtl-software.com/v1/licenses';
+
+    /**
+     * @var string
+     */
+    private $domain;
 
     /**
      * @var DbInterface
@@ -50,6 +55,7 @@ class Manager
         $this->db     = $db;
         $this->cache  = $cache;
         $this->client = new Client();
+        $this->domain = \parse_url(\URL_SHOP)['host'];
     }
 
     /**
@@ -80,7 +86,7 @@ class Manager
                     'Authorization' => 'Bearer ' . AuthToken::getInstance($this->db)->get()
                 ],
                 'verify'  => true,
-                'body'    => \json_encode((object)['domain' => \URL_SHOP])
+                'body'    => \json_encode((object)['domain' => $this->domain])
             ]
         );
 
@@ -105,7 +111,45 @@ class Manager
                     'Authorization' => 'Bearer ' . AuthToken::getInstance($this->db)->get()
                 ],
                 'verify'  => true,
-                'body'    => \json_encode((object)['domain' => \URL_SHOP])
+                'body'    => \json_encode((object)['domain' => $this->domain])
+            ]
+        );
+
+        return (string)$res->getBody();
+    }
+
+    /**
+     * @param string $url
+     * @param string $exsID
+     * @param string $key
+     * @return string
+     * @throws GuzzleException
+     * @throws ClientException
+     */
+    public function extend(string $url, string $exsID, string $key): string
+    {
+        $res = $this->client->request(
+            'POST',
+            $url,
+            [
+                'headers' => [
+                    'Accept'        => 'application/json',
+                    'Content-Type'  => 'application/json',
+                    'Authorization' => 'Bearer ' . AuthToken::getInstance($this->db)->get()
+                ],
+                'verify'  => true,
+                'body'    => \json_encode((object)[
+                    'intent'        => 'extend',
+                    'exsid'         => $exsID,
+                    'reference'     => (object)[
+                        'license' => $key,
+                        'domain'  => $this->domain
+                    ],
+                    'redirect_urls' => (object)[
+                        'return_url' => Shop::getAdminURL() . '/licenses.php?extend=success',
+                        'cancel_url' => Shop::getAdminURL() . '/licenses.php?extend=fail'
+                    ],
+                ])
             ]
         );
 
@@ -134,9 +178,9 @@ class Manager
                 ],
                 'verify'  => true,
                 'body'    => \json_encode((object)['shop' => [
-                    'domain'  => \URL_SHOP,
+                    'domain'  => $this->domain,
                     'version' => \APPLICATION_VERSION,
-                ], 'extensions' => $installedExtensions])
+                ], 'extensions'                           => $installedExtensions])
             ]
         );
         $this->housekeeping();

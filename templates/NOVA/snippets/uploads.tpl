@@ -41,6 +41,7 @@
                                 {/block}
                                 {block name='snippets-uploads-scheme-product-script'}
                                     {inline_script}<script>
+                                        var clientUploadErrorIsActive = false;
                                         $(function () {
                                             var $el =  $('#fileinput{$oUploadSchema@index}');
                                             $el.fileinput({
@@ -73,14 +74,16 @@
                                                     {/if}
                                                 },
                                                 maxFileSize:           {$nMaxUploadSize/1024},
-                                                elErrorContainer:      '#kv-error-{$oUploadSchema@index}',
+                                                elErrorContainer:      false,
                                                 maxFilesNum:           1
                                             }).on("filebrowse", function(event, files) {
+                                                clientUploadErrorIsActive = false;
                                                 $el.fileinput('clear');
                                             }).on("filebatchselected", function(event, files) {
                                                 $el.fileinput("upload");
                                             }).on('filebatchuploadsuccess', function(event, data) {
-                                                var msgField = $('#queue{$oUploadSchema@index} .current-upload'),
+                                                clientUploadErrorIsActive = false;
+                                                let msgField = $('#queue{$oUploadSchema@index} .current-upload'),
                                                     uploadMsgField = $('.uploadifyMsg');
                                                 if (typeof data.response !== 'undefined' && typeof data.response.cName !== 'undefined') {
                                                     msgField.removeClass('text-danger').addClass('text-success');
@@ -93,7 +96,38 @@
                                                 $('#msgWarning').hide();
                                                 uploadMsgField.find('.alert-danger').hide();
                                                 $('#buy-form').find('.upload-error').removeClass('upload-error');
-                                            }).on('fileuploaderror', function() {
+                                            }).on('filebatchuploaderror', function(event, data, msg) {
+                                                if(clientUploadErrorIsActive === false){
+                                                    let msgField = $('#queue{$oUploadSchema@index} .current-upload');;
+                                                    let message  = '{lang key='uploadError'}';
+                                                    let status;
+                                                    try{
+                                                        let response =JSON.parse(msg);
+                                                        status = response.status;
+                                                    }catch(e){
+                                                        status = 'response_error';
+                                                    }
+                                                    switch(status){
+                                                        case 'reached_limit_per_hour':
+                                                            message = '{lang key='uploadErrorReachedLimitPerHour'}';
+                                                            break;
+                                                        case 'filetype_forbidden':
+                                                            message = '{lang key='uploadErrorFiletypeForbidden'}';
+                                                            break;
+                                                        case 'extension_not_listed':
+                                                            message = '{lang key='uploadErrorExtensionNotListed'}';
+                                                            break;
+                                                    }
+                                                    msgField.html(message);
+                                                    msgField.removeClass('text-success').addClass('text-danger');
+                                                    $el.fileinput('clear');
+                                                }
+                                            }).on('fileuploaderror', function(event, data, msg) {
+                                                clientUploadErrorIsActive = true;
+                                                let msgField = $('#queue{$oUploadSchema@index} .current-upload');
+                                                msgField.html(msg);
+                                                msgField.removeClass('text-success').addClass('text-danger');
+                                                $el.fileinput('clear');
                                                 $('#upload-{$oUploadSchema@index} .fileinput-upload').addClass('disabled');
                                             }).on('fileloaded', function() {
                                                 $('#upload-{$oUploadSchema@index} .fileinput-upload').removeClass('disabled');
@@ -177,6 +211,7 @@
                                             {/block}
                                             {block name='snippets-uploads-scheme-script'}
                                                 {inline_script}<script>
+                                                    var clientUploadErrorIsActive = false;
                                                     $(function () {
                                                         var $el   = $('#fileinput{$oUploadSchema@index}{$oUpload@index}');
                                                         var $url1 = '{$ShopURL}/uploads/{$oUpload->cUnique}';
@@ -214,6 +249,7 @@
                                                             elErrorContainer:      '#kv-error-{$oUploadSchema@index}{$oUpload@index}',
                                                             maxFilesNum:           1
                                                         }).on("filebrowse", function (event, files) {
+                                                            clientUploadErrorIsActive = false;
                                                             $el.fileinput('clear');
                                                         }).on("filebatchselected", function (event, files) {
                                                             $el.fileinput("upload");
@@ -230,8 +266,43 @@
                                                             $('#msgWarning').hide();
                                                             uploadMsgField.find('.alert-danger').hide();
                                                             $('#buy-form').find('.upload-error').removeClass('upload-error');
+
                                                         }).on('fileuploaderror', function () {
                                                             $('#upload-{$oUploadSchema@index}{$oUpload@index} .fileinput-upload').addClass('disabled');
+                                                            clientUploadErrorIsActive = true;
+                                                            let msgField = $('#queue{$oUploadSchema@index}{$oUpload@index} .current-upload');
+                                                            msgField.html(msg);
+                                                            msgField.removeClass('text-success').addClass('text-danger');
+                                                            $el.fileinput('clear');
+                                                            $('#upload-{$oUploadSchema@index}{$oUpload@index} .fileinput-upload').addClass('disabled');
+
+                                                        }).on('filebatchuploaderror', function(event, data, msg) {
+                                                            if(clientUploadErrorIsActive === false){
+                                                                let msgField = $('#queue{$oUploadSchema@index}{$oUpload@index} .current-upload');;
+                                                                let message  = '{lang key='uploadError'}';
+                                                                let status;
+                                                                try{
+                                                                    let response =JSON.parse(msg);
+                                                                    status = response.status;
+                                                                }catch(e){
+                                                                    status = 'response_error';
+                                                                }
+
+                                                                switch(status){
+                                                                    case 'reached_limit_per_hour':
+                                                                        message = '{lang key='uploadErrorReachedLimitPerHour'}';
+                                                                        break;
+                                                                    case 'filetype_forbidden':
+                                                                        message = '{lang key='uploadErrorFiletypeForbidden'}';
+                                                                        break;
+                                                                    case 'extension_not_listed':
+                                                                        message = '{lang key='uploadErrorExtensionNotListed'}';
+                                                                        break;
+                                                                }
+                                                                msgField.html(message);
+                                                                msgField.removeClass('text-success').addClass('text-danger');
+                                                                $el.fileinput('clear');
+                                                            }
                                                         }).on('fileloaded', function () {
                                                             $('#upload-{$oUploadSchema@index}{$oUpload@index} .fileinput-upload').removeClass('disabled');
                                                         });

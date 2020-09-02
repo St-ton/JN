@@ -37,6 +37,15 @@ class Migration_20200825095900 extends Migration implements IMigration
                 'cBeschreibung' => 'Hier legen Sie fest, wie viele Dateien ein Benutzer bei aktiviertem Uploadmodul pro Stunde maximal hochladen darf.'
             ]
         );
+
+        $this->setLocalization('ger', 'global', 'uploadErrorReachedLimitPerHour', 'Das Uploadlimit pro Stunde wurde erreicht. Bitte versuchen Sie es später noch einmal.');
+        $this->setLocalization('eng', 'global', 'uploadErrorReachedLimitPerHour', 'You have reached the upload limit per hour. Please try again later.');
+
+        $this->setLocalization('ger', 'global', 'uploadErrorFiletypeForbidden', 'Dieser Dateityp ist nicht erlaubt.');
+        $this->setLocalization('eng', 'global', 'uploadErrorFiletypeForbidden', 'This Filetype is forbidden.');
+
+        $this->setLocalization('ger', 'global', 'uploadErrorExtensionNotListed', 'Dieser Dateityp wird nicht unterstützt.');
+        $this->setLocalization('eng', 'global', 'uploadErrorExtensionNotListed', 'This file extension is not supported.');
     }
 
     /**
@@ -46,5 +55,8 @@ class Migration_20200825095900 extends Migration implements IMigration
     {
         $this->execute('DROP TABLE IF EXISTS `tfloodprotect`');
         $this->removeConfig('upload_modul_limit');
+        $this->removeLocalization('uploadErrorReachedLimitPerHour');
+        $this->removeLocalization('uploadErrorFiletypeForbidden');
+        $this->removeLocalization('uploadErrorExtensionNotListed');
     }
 }

@@ -2,8 +2,9 @@
 {$moreTitle = $instance->getProperty('moreTitle')}
 {$title = $instance->getProperty('title')}
 {$id = $instance->getProperty('id')}
+{$withoutTitle = empty($title)}
 
-<div class="opc-Divider {$instance->getAnimationClass()}"
+<div class="opc-Divider {$instance->getAnimationClass()} {if $withoutTitle}opc-Divider-empty{/if}"
      {$instance->getAnimationDataAttributeString()}
      {if $isPreview}{$instance->getDataAttributeString()}{/if} {if !empty($id)}id="{$id}"{/if}
      {$instance->getAttributeString()}>

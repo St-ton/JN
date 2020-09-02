@@ -167,9 +167,11 @@
                             <p>{__('thankYouTextDesc')}</p>
 
                             <div class="note small mt-5">
-                                <span class="fal fa-exclamation-triangle text-warning mr-2"></span>
-                                {__('thankYouTextPluginsInstalled')}
-                                <span class="form-title mb-0 mt-4">{__('installedPlugins')}:</span>
+                                <p class="form-title">{__('installedPlugins')}:</p>
+                                <p>
+                                    <span class="fal fa-exclamation-triangle text-warning mr-2"></span>
+                                    {__('thankYouTextPluginsInstalled')}
+                                </p>
                             </div>
                         </div>
                         <div class="col-lg-6 ml-lg-auto col-xl-7 mt-lg-n5">

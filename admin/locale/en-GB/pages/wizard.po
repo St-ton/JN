@@ -126,7 +126,7 @@ msgid "thankYouTextDesc"
 msgstr "You have completed the most important settings of JTL-Shop."
 
 msgid "thankYouTextPluginsInstalled"
-msgstr "The following plug-ins have been successfully installed and are now ready to be set up under <span class=\"text-primary font-weight-bold\">Administration > Payments > Payment methods</span>."
+msgstr "Bitte beachten Sie, dass Sie die Plugins im Bereich <span class=\"text-primary font-weight-bold\">Installierte Plugins</span> zunächst aktivieren und einrichten müssen, bevor Sie sie nutzen können."
 
 msgid "installedPlugins"
 msgstr "Installed plug-ins"

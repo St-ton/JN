@@ -350,19 +350,19 @@ class Form
             return false;
         }
         Shop::Container()->getDB()->executeQueryPrepared(
-            'DELETE
+            "DELETE
                 FROM tfloodprotect
-                WHERE dErstellt < DATE_SUB(NOW(), INTERVAL 1 HOUR);
-                AND cTyp ="upload"',
+                WHERE dErstellt < DATE_SUB(NOW(), INTERVAL 1 HOUR)
+                    AND cTyp = 'upload'",
             [],
             ReturnType::DEFAULT
         );
 
         $result = Shop::Container()->getDB()->executeQueryPrepared(
-            'SELECT COUNT(kFloodProtect) AS nAnfragen
+            "SELECT COUNT(kFloodProtect) AS nAnfragen
                 FROM tfloodprotect
-                WHERE cIP = :ip
-                AND cTyp ="upload"',
+                WHERE cTyp = 'upload'
+                    AND cIP = :ip",
             ['ip' => Request::getRealIP()],
             ReturnType::SINGLE_OBJECT
         );

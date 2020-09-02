@@ -60,6 +60,7 @@
                                                 browseOnZoneClick:     true,
                                                 uploadExtraData:       {
                                                     sid:        "{$cSessionID}",
+                                                    kUploadSchema:"{$oUploadSchema->kUploadSchema}",
                                                     jtl_token:  "{$smarty.session.jtl_token}",
                                                     uniquename: "{$oUploadSchema->cUnique}",
                                                     uploader:   "4.00",
@@ -82,9 +83,12 @@
                                                 var msgField = $('#queue{$oUploadSchema@index} .current-upload'),
                                                     uploadMsgField = $('.uploadifyMsg');
                                                 if (typeof data.response !== 'undefined' && typeof data.response.cName !== 'undefined') {
+                                                    msgField.removeClass('text-danger').addClass('text-success');
                                                     msgField.html('<i class="fas fa-check" aria-hidden="true"></i>' + data.response.cName + ' (' + data.response.cKB + ' KB)');
                                                 } else {
                                                     msgField.html('{lang key='uploadError'}');
+                                                    msgField.removeClass('text-success').addClass('text-danger');
+                                                    $el.fileinput('clear');
                                                 }
                                                 $('#msgWarning').hide();
                                                 uploadMsgField.find('.alert-danger').hide();
@@ -166,7 +170,7 @@
                                                 && !$oUpload->bVorhanden)} upload-error{/if}"
                                                      id="upload-{$oUploadSchema@index}{$oUpload@index}">
                                                     <input id="fileinput{$oUploadSchema@index}{$oUpload@index}"
-                                                           type="file" multiple class="file-upload file-loading"/>
+                                                           type="file" class="file-upload file-loading"/>
                                                     <div id="kv-error-{$oUploadSchema@index}{$oUpload@index}"
                                                          style="margin-top:10px; display:none;"></div>
                                                 </div>
@@ -197,6 +201,7 @@
                                                                 jtl_token:  "{$smarty.session.jtl_token}",
                                                                 uniquename: "{$oUpload->cUnique}",
                                                                 uploader:   "4.00",
+                                                                kUploadSchema:"{$oUploadSchema->kUploadSchema}",
                                                                 prodID:     "{$oUploadSchema->prodID}",
                                                                 cname:      "{$oUploadSchema->cName|replace:" ":"_"}"
                                                                 {if !empty($oUploadSchema->WarenkorbPosEigenschaftArr)},
@@ -219,6 +224,8 @@
                                                                 msgField.html('<i class="fas fa-check" aria-hidden="true"></i>' + data.response.cName + ' (' + data.response.cKB + ' KB)');
                                                             } else {
                                                                 msgField.html('{lang key='uploadError'}');
+                                                                msgField.removeClass('text-success').addClass('text-danger');
+                                                                $el.fileinput('clear');
                                                             }
                                                             $('#msgWarning').hide();
                                                             uploadMsgField.find('.alert-danger').hide();

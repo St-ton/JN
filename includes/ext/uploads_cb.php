@@ -53,18 +53,23 @@ if (!empty($_FILES)) {
         'text/sql',
     ];
 
-    $fileData       = isset($_FILES['Filedata']['tmp_name'])
+    $fileData          = isset($_FILES['Filedata']['tmp_name'])
         ? $_FILES['Filedata']
         : $_FILES['file_data'];
-    $sourceInfo     = pathinfo($fileData['name']);
-    $mime           = mime_content_type($fileData['tmp_name']);
-    $uploadFileInfo = Upload::gibArtikelUploads($_REQUEST['prodID']);
+    $sourceInfo        = pathinfo($fileData['name']);
+    $mime              = mime_content_type($fileData['tmp_name']);
+    $allowedExtensions = [];
+
+    foreach (Upload::gibArtikelUploads($_REQUEST['prodID']) as $scheme) {
+        if ($scheme->kUploadSchema === $_REQUEST['kUploadSchema']) {
+            $allowedExtensions = $scheme->cDateiTyp_arr;
+        }
+    }
 
     if (!isset($_REQUEST['uniquename'], $_REQUEST['cname'])
-        || empty($uploadFileInfo)
-        || empty($uploadFileInfo[0]->cDateiTyp_arr)
+        || empty($allowedExtensions)
         || in_array($mime, $blacklist, true)
-        || !in_array('*.' . strtolower($sourceInfo['extension']), $uploadFileInfo[0]->cDateiTyp_arr, true)
+        || !in_array('*.' . strtolower($sourceInfo['extension']), $allowedExtensions, true)
     ) {
         retCode(0);
     }

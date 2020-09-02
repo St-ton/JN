@@ -412,7 +412,6 @@ $adminMenu = [
                 __('Set up') => (object)[
                     'link'   => 'wizard.php',
                     'permissions' => 'WIZARD_VIEW',
-                    'excludeFromAccessView' => true,
                 ],
             ],
         ]

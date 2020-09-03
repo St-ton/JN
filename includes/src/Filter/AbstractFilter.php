@@ -152,6 +152,11 @@ abstract class AbstractFilter implements FilterInterface
     protected $isActive = false;
 
     /**
+     * @var bool
+     */
+    protected $paramExclusive = false;
+
+    /**
      * AbstractFilter constructor.
      * @param ProductFilter|null $productFilter
      */
@@ -797,6 +802,24 @@ abstract class AbstractFilter implements FilterInterface
         if ($this->value > 0) {
             $this->productFilter->enableFilter($this);
         }
+
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isParamExclusive(): bool
+    {
+        return $this->paramExclusive;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setParamExclusive(bool $paramExclusive): FilterInterface
+    {
+        $this->paramExclusive = $paramExclusive;
 
         return $this;
     }

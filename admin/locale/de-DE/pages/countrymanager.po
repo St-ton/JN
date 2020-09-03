@@ -1,0 +1,12 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "countryManager"
+msgstr "Länderverwaltung"
+
+msgid "countryManagerURL"
+msgstr ""
+
+msgid "countryManagerDesc"
+msgstr "Hier können sie alle Länder verwalten"

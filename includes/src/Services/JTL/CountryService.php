@@ -7,6 +7,7 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\Country\Country;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Shop;
 
 /**
  * Class CountryService
@@ -203,5 +204,23 @@ class CountryService implements CountryServiceInterface
             default:
                 return 0;
         }
+    }
+
+    /**
+     * @return array
+     * @throws \JTL\Exceptions\CircularReferenceException
+     * @throws \JTL\Exceptions\ServiceNotFoundException
+     */
+    public function getContinents(): array
+    {
+        $continents = [];
+        try {
+            $reflection = new \ReflectionClass(\JTL\Country\Continent::class);
+            $continents = $reflection->getConstants();
+        } catch (\ReflectionException $e) {
+            Shop::Container()->getLogService()->notice($e->getMessage());
+        }
+
+        return $continents;
     }
 }

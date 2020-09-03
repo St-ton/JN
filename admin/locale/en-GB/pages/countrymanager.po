@@ -1,0 +1,12 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "countryManager"
+msgstr "Country manager"
+
+msgid "countryManagerURL"
+msgstr ""
+
+msgid "countryManagerDesc"
+msgstr "Manage the countries for your shipping methods"

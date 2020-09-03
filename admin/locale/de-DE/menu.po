@@ -523,3 +523,6 @@ msgstr "Global"
 
 msgid "Availability notifications"
 msgstr "Verfügbarkeitsanfragen"
+
+msgid "Country manager"
+msgstr "Länderverwaltung"

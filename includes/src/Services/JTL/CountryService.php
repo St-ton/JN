@@ -30,6 +30,8 @@ class CountryService implements CountryServiceInterface
      */
     private $cache;
 
+    public const CACHE_ID = 'serviceCountryList';
+
     /**
      * CountryService constructor.
      * @param DbInterface $db
@@ -45,8 +47,7 @@ class CountryService implements CountryServiceInterface
 
     public function init(): void
     {
-        $cacheID = 'serviceCountryList';
-        if (($countries = $this->cache->get($cacheID)) !== false) {
+        if (($countries = $this->cache->get(self::CACHE_ID)) !== false) {
             $this->countryList = $countries;
 
             return;
@@ -66,7 +67,7 @@ class CountryService implements CountryServiceInterface
             return $country->getName();
         });
 
-        $this->cache->set($cacheID, $this->countryList, [\CACHING_GROUP_OBJECT]);
+        $this->cache->set(self::CACHE_ID, $this->countryList, [\CACHING_GROUP_OBJECT]);
     }
 
     /**

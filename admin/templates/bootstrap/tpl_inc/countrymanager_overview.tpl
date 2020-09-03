@@ -35,11 +35,12 @@
                             {$country->getContinent()}
                         </td>
                         <td>
-                            <form method="post" action="countrymanager.php">
+                            <form method="post">
                                 {$jtl_token}
+                                <input type="hidden" name="cISO" value="{$country->getISO()}">
                                 <div class="btn-group">
-                                    <button name="del"
-                                            value="1"
+                                    <button name="action"
+                                            value="delete"
                                             class="btn btn-link px-2"
                                             onclick="return confirmDelete('1');"
                                             title="{__('delete')}"
@@ -49,8 +50,8 @@
                                             <span class="fas fa-trash-alt"></span>
                                         </span>
                                     </button>
-                                    <button name="edit"
-                                            value="1"
+                                    <button name="action"
+                                            value="update"
                                             class="btn btn-link px-2"
                                             title="{__('edit')}"
                                             data-toggle="tooltip">

@@ -2,11 +2,14 @@
 
 namespace JTL\Country;
 
+use JTL\Alert\Alert;
+use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Services\JTL\AlertServiceInterface;
+use JTL\Services\JTL\CountryService;
 use JTL\Services\JTL\CountryServiceInterface;
-use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 
 /**
@@ -31,16 +34,35 @@ class Manager
     protected $countryService;
 
     /**
+     * @var JTLCacheInterface
+     */
+    protected $cache;
+
+    /**
+     * @var AlertServiceInterface
+     */
+    protected $alertService;
+
+    /**
      * Manager constructor.
      * @param DbInterface $db
      * @param JTLSmarty $smarty
      * @param CountryServiceInterface $countryService
+     * @param JTLCacheInterface $cache
+     * @param AlertServiceInterface $alertService
      */
-    public function __construct(DbInterface $db, JTLSmarty $smarty, CountryServiceInterface $countryService)
-    {
+    public function __construct(
+        DbInterface $db,
+        JTLSmarty $smarty,
+        CountryServiceInterface $countryService,
+        JTLCacheInterface $cache,
+        AlertServiceInterface $alertService
+    ) {
         $this->db             = $db;
         $this->smarty         = $smarty;
         $this->countryService = $countryService;
+        $this->cache          = $cache;
+        $this->alertService   = $alertService;
     }
 
     /**
@@ -52,13 +74,19 @@ class Manager
         switch ($step) {
             case 'add':
                 break;
+            case 'update':
+                $this->smarty->assign(
+                    'country',
+                    $this->countryService->getCountry(Request::verifyGPDataString('cISO'))
+                );
+                break;
             default:
-                $this->smarty->assign('countries', $this->countryService->getCountrylist())
-                    ->assign('continents', $this->countryService->getContinents());
                 break;
         }
 
         $this->smarty->assign('step', $step)
+            ->assign('countries', $this->countryService->getCountrylist())
+            ->assign('continents', $this->countryService->getContinents())
             ->display('countrymanager.tpl');
     }
 
@@ -68,15 +96,15 @@ class Manager
     public function getAction(): string
     {
         $action = 'overview';
-        if (isset($_REQUEST['action']) && Form::validateToken()) {
-            $action = $_REQUEST['action'];
+        if (Request::verifyGPDataString('action') !== '' && Form::validateToken()) {
+            $action = Request::verifyGPDataString('action');
         }
         switch ($action) {
             case 'add':
                 $action = $this->addCountry();
                 break;
-            case 'remove':
-                $action = $this->removeCountry();
+            case 'delete':
+                $action = $this->deleteCountry();
                 break;
             case 'update':
                 $action = $this->updateCountry();
@@ -93,15 +121,24 @@ class Manager
      */
     private function addCountry(): string
     {
-        if (Request::postInt('save') !== 0) {
+        if (Request::postInt('save') === 1) {
             $country             = new \stdClass();
-            $country->cISO       = Request::verifyGPDataString('ISO');
-            $country->cDeustch   = Request::verifyGPDataString('cDeustch');
+            $country->cISO       = Request::verifyGPDataString('cISO');
+            $country->cDeutsch   = Request::verifyGPDataString('cDeutsch');
             $country->cEnglisch  = Request::verifyGPDataString('cEnglisch');
             $country->nEU        = Request::verifyGPDataString('nEU');
             $country->cKontinent = Request::verifyGPDataString('cKontinent');
 
             $this->db->insert('tland', $country);
+            $this->cache->flush(CountryService::CACHE_ID);
+            $this->alertService->addAlert(
+                Alert::TYPE_SUCCESS,
+                __('successCountryAdd'),
+                'successCountryAdd',
+                ['saveInSession' => true]
+            );
+
+            $this->refreshPage();
         }
 
         return 'add';
@@ -110,11 +147,21 @@ class Manager
     /**
      * @return string
      */
-    private function removeCountry(): string
+    private function deleteCountry(): string
     {
-        $this->db->delete('tland', 'cISO', $_REQUEST['action']);
+        if ($this->db->delete('tland', 'cISO', Request::verifyGPDataString('cISO')) === 1) {
+            $this->cache->flush(CountryService::CACHE_ID);
+            $this->alertService->addAlert(
+                Alert::TYPE_SUCCESS,
+                __('successCountryDelete'),
+                'successCountryDelete',
+                ['saveInSession' => true]
+            );
 
-        return 'remove';
+            $this->refreshPage();
+        }
+
+        return 'delete';
     }
 
     /**
@@ -122,9 +169,9 @@ class Manager
      */
     private function updateCountry(): string
     {
-        if (Request::postInt('save') !== 0) {
+        if (Request::postInt('save') === 1) {
             $country             = new \stdClass();
-            $country->cDeustch   = Request::verifyGPDataString('cDeustch');
+            $country->cDeutsch   = Request::verifyGPDataString('cDeutsch');
             $country->cEnglisch  = Request::verifyGPDataString('cEnglisch');
             $country->nEU        = Request::verifyGPDataString('nEU');
             $country->cKontinent = Request::verifyGPDataString('cKontinent');
@@ -132,11 +179,29 @@ class Manager
             $this->db->update(
                 'tland',
                 'cISO',
-                Request::verifyGPDataString('ISO'),
+                Request::verifyGPDataString('cISO'),
                 $country
             );
+            $this->cache->flush(CountryService::CACHE_ID);
+            $this->alertService->addAlert(
+                Alert::TYPE_SUCCESS,
+                __('successCountryUpdate'),
+                'successCountryUpdate',
+                ['saveInSession' => true]
+            );
+
+            $this->refreshPage();
         }
 
         return 'update';
+    }
+
+    /**
+     * refresh for CountryService
+     */
+    private function refreshPage(): void
+    {
+        header('Refresh:0');
+        exit;
     }
 }

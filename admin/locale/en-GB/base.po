@@ -1981,3 +1981,6 @@ msgstr "Disable plugins"
 
 msgid "Disable template"
 msgstr "Disable template"
+
+msgid "Smarty syntax error"
+msgstr "Smarty syntax error"

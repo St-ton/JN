@@ -16,12 +16,14 @@ use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageModel;
+use JTL\Network\Communication;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Session\Frontend;
 use JTL\Smarty\ExportSmarty;
 use JTL\Smarty\JTLSmarty;
 use Psr\Log\LoggerInterface;
 use stdClass;
+use Symfony\Component\Process\PhpProcess;
 use function Functional\first;
 
 /**
@@ -1566,9 +1568,114 @@ class Exportformat
     }
 
     /**
+     * @param int $id
+     * @return stdClass
+     */
+    public static function ioCheckSyntax(int $id): stdClass
+    {
+        \ini_set('html_errors', '0');
+        \ini_set('display_errors', '1');
+        \ini_set('log_errors', '0');
+        \error_reporting(\E_ALL & ~\E_NOTICE & ~\E_STRICT & ~\E_DEPRECATED);
+
+        $ef    = new self($id, Shop::Container()->getDB());
+        $check = $ef->doCheckSyntax();
+        $res   = new stdClass();
+        if ($check === false) {
+            $res->result = 'ok';
+        } else {
+            $res->result  = 'failure';
+            $res->message = $check;
+        }
+
+        return $res;
+    }
+
+    /**
+     * @param string $text
+     * @return string|boolean
+     */
+    private function finishSyntaxcheck(string $text)
+    {
+        $result = \json_decode($text, false);
+        if (\json_last_error() !== \JSON_ERROR_NONE) {
+            $result = (object)[
+                'result'  => 'failure',
+                'message' => \trim($text, "\r\n\t; "),
+            ];
+        }
+        if ($result->result !== 'ok') {
+            $error  = '<strong>' . __('Smarty syntax error') . ':</strong><br />';
+            $error .= '<pre class="alert-danger">' . $result->message . '</pre>';
+            $this->updateError(1);
+
+            return $error;
+        }
+
+        return false;
+    }
+
+    /**
      * @return bool|string
      */
     public function checkSyntax()
+    {
+        if (\PHP_SAPI !== 'cli') {
+            $testUrl = Shop::getAdminURL() . '/io.php?io=' .
+                \urlencode(
+                    \json_encode([
+                        'name'   => 'exportformatSyntaxCheck',
+                        'params' => [$this->kExportformat],
+                    ])
+                ) . '&token=' . Text::filterXSS($_SESSION['jtl_token']);
+            try {
+                \session_write_close();
+                $res = Communication::getContent($testUrl, null, $_COOKIE);
+                \session_start();
+            } catch (Exception $e) {
+                return '<pre class="alert-danger">' . $e->getMessage() . '</pre>';
+            }
+
+            return $this->finishSyntaxcheck($res);
+        }
+
+        $phpProcess = new PhpProcess(
+            '<?php declare(strict_types=1);
+
+            use JTL\Exportformat;
+            use JTL\Helpers\Request;
+
+            require __DIR__ . \'/includes/globalinclude.php\';
+            \ini_set(\'html_errors\', \'0\');
+            \ini_set(\'display_errors\', \'1\');
+            \ini_set(\'log_errors\', \'0\');
+            \error_reporting(\E_ALL & ~\E_NOTICE & ~\E_STRICT & ~\E_DEPRECATED);
+
+            $kExportformat = ' . $this->kExportformat . ';
+
+            $ef    = new Exportformat($kExportformat, Shop::Container()->getDB());
+            $check = $ef->doCheckSyntax();
+            $res   = new stdClass();
+            if ($check === false) {
+                $res->result = \'ok\';
+            } else {
+                $res->result  = \'failure\';
+                $res->message = $check;
+            }
+
+            echo json_encode($res);',
+            \PFAD_ROOT
+        );
+        $phpProcess->run();
+        $res = $phpProcess->getOutput();
+
+        return $this->finishSyntaxcheck($res);
+    }
+
+    /**
+     * @return bool|string
+     */
+    public function doCheckSyntax()
     {
         $this->initSession()->initSmarty();
         $error       = false;
@@ -1598,8 +1705,7 @@ class Exportformat
             $this->smarty->assign('Artikel', $product)
                          ->fetch('db:' . $this->kExportformat);
         } catch (Exception $e) {
-            $error  = '<strong>Smarty-Syntaxfehler:</strong><br />';
-            $error .= '<pre>' . $e->getMessage() . '</pre>';
+            $error = $e->getMessage();
         }
         $this->updateError($error ? 1 : 0);
 

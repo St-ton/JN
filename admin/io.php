@@ -100,7 +100,8 @@ try {
        ->register('deleteShippingSurcharge', 'deleteShippingSurcharge', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
        ->register('deleteShippingSurchargeZIP', 'deleteShippingSurchargeZIP', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
        ->register('createShippingSurchargeZIP', 'createShippingSurchargeZIP', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
-       ->register('getShippingSurcharge', 'getShippingSurcharge', $versandartenInc, 'ORDER_SHIPMENT_VIEW');
+       ->register('getShippingSurcharge', 'getShippingSurcharge', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
+       ->register('exportformatSyntaxCheck', [JTL\Exportformat::class, 'ioCheckSyntax'], null, 'EXPORT_FORMATS_VIEW');
 } catch (Exception $e) {
     $io->respondAndExit(new IOError($e->getMessage(), $e->getCode()));
 }

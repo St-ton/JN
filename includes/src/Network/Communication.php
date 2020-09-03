@@ -13,12 +13,13 @@ final class Communication
 {
     /**
      * @param string $cURL
-     * @param array  $postData
-     * @param bool   $bPost
+     * @param array $postData
+     * @param array|null $cookieData
+     * @param bool $bPost
      * @return mixed
      * @throws Exception
      */
-    private static function doCall(string $cURL, array $postData, bool $bPost = true)
+    private static function doCall(string $cURL, array $postData, ?array $cookieData = null, bool $bPost = true)
     {
         if (\function_exists('curl_init')) {
             $ch = \curl_init();
@@ -35,6 +36,12 @@ final class Communication
             \curl_setopt($ch, \CURLOPT_RETURNTRANSFER, true);
             \curl_setopt($ch, \CURLOPT_CONNECTTIMEOUT, 60);
             \curl_setopt($ch, \CURLOPT_TIMEOUT, 60);
+            \curl_setopt($ch, \CURLOPT_SSL_VERIFYPEER, \DEFAULT_CURL_OPT_VERIFYPEER);
+            \curl_setopt($ch, \CURLOPT_SSL_VERIFYHOST, \DEFAULT_CURL_OPT_VERIFYHOST);
+            if ($cookieData !== null) {
+                $cookie = \str_replace('&', ';', \http_build_query($cookieData));
+                \curl_setopt($ch, \CURLOPT_HTTPHEADER, ['Cookie: ' . $cookie]);
+            }
 
             $content = Request::curl_exec_follow($ch);
 
@@ -56,8 +63,22 @@ final class Communication
     public static function postData(string $url, $data = [], bool $bPost = true): ?string
     {
         return \is_array($data)
-            ? self::doCall($url, $data, $bPost)
+            ? self::doCall($url, $data, null, $bPost)
             : '';
+    }
+
+    /**
+     * @param string $url
+     * @param array|null $data
+     * @param array|null $cookies
+     * @return string|null
+     * @throws Exception
+     */
+    public static function getContent(string $url, ?array $data = null, ?array $cookies = null): ?string
+    {
+        $res = self::doCall($url, $data ?? [], $cookies, $data !== null);
+
+        return \is_string($res) ? $res : null;
     }
 
     /**

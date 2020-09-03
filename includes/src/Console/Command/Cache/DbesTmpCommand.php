@@ -33,7 +33,7 @@ class DbesTmpCommand extends Command
         if ($fs->deleteDir('dbeS/tmp/')) {
             $io->success('dbeS tmp cache deleted.');
         } else {
-            $io->warning('Nothind to delete.');
+            $io->warning('Nothing to delete.');
         }
     }
 }

@@ -4,6 +4,7 @@
 define('APPLICATION_VERSION', '5.0.0');
 define('APPLICATION_BUILD_SHA', '#DEV#');
 define('JTL_MIN_WAWI_VERSION', 100000);
+define('JTL_MIN_SHOP_UPDATE_VERSION', '4.2.0');
 // Einstellungssektionen
 define('CONF_GLOBAL', 1);
 define('CONF_STARTSEITE', 2);
@@ -570,3 +571,4 @@ define('CACHING_GROUP_ATTRIBUTE', 'attr');
 define('CACHING_GROUP_MANUFACTURER', 'mnf');
 define('CACHING_GROUP_FILTER', 'fltr');
 define('CACHING_GROUP_FILTER_CHARACTERISTIC', 'fltrchr');
+define('CACHING_GROUP_STATUS', 'status');

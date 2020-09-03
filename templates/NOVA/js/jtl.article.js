@@ -99,9 +99,28 @@
             this.registerSimpleVariations($wrapper);
             this.registerSwitchVariations($wrapper);
             this.registerBulkPrices($wrapper);
+            this.registerAccordion();
             // this.registerImageSwitch($wrapper);
             //this.registerArticleOverlay($wrapper);
             this.registerFinish($wrapper);
+        },
+
+        registerAccordion: function() {
+            $('.is-mobile .accordion [id^="tab-"]').on('click', function () {
+                let self = $(this);
+                $.evo.destroyScrollSearchEvent();
+                setTimeout(function() {
+                    $('html').animate(
+                        {scrollTop: self.offset().top},
+                        100,
+                        'linear',
+                        function () {
+                            setTimeout(function() {
+                                $.evo.initScrollSearchEvent();
+                            }, 500);
+                        });
+                }, 400);
+            });
         },
 
         registerGallery: function(wrapper) {
@@ -173,7 +192,7 @@
             if (wrapper[0].id.indexOf(this.options.modal.wrapper_modal.substr(1)) === -1) {
                 addClickListener();
 
-                $(document).keyup(e => {
+                $(document).on('keyup', e => {
                     if (e.key === "Escape") {
                         toggleFullscreen();
                         addClickListener();
@@ -624,7 +643,7 @@
                 });
         },
 
-        addToComparelist: function(data) {
+        addToComparelist: function(data, $action) {
             var productId = parseInt(data[this.options.input.id]);
             var childId = parseInt(data[this.options.input.childId]);
             if (childId > 0) {
@@ -896,10 +915,17 @@
                             $action.addClass("on-list");
                             $action.next().addClass("press");
                             $action.next().next().removeClass("press");
-                            return this.addToComparelist(data);
+                            $(this.options.selector.navCompare).removeClass('d-none');
+
+                            let $moveTo = isMobileByBodyClass()
+                                ? $('.wish-compare-animation-mobile #burger-menu')
+                                : $('.wish-compare-animation-desktop #shop-nav-compare');
+                            $.evo.article().moveItemAnimation($action, $moveTo);
+
+                            return this.addToComparelist(data, $action);
                         }
                     } else {
-                        return this.addToComparelist(data);
+                        return this.addToComparelist(data, $action);
                     }
                 case this.options.action.compareListRemove:
                     return this.removeFromCompareList(data);
@@ -912,6 +938,11 @@
                         data.a = data.wlPos;
                         return this.removeFromWishList(data);
                     } else {
+                        $action.addClass("on-list");
+                        let $moveTo = isMobileByBodyClass()
+                            ? $('.wish-compare-animation-mobile #burger-menu')
+                            : $('.wish-compare-animation-desktop #shop-nav-wish');
+                        $.evo.article().moveItemAnimation($action, $moveTo);
                         return this.addToWishlist(data, $action);
                     }
                 case this.options.action.wishListRemove:
@@ -1451,22 +1482,44 @@
             var $wrapper = this.getWrapper(wrapper);
 
             $('[role="tooltip"]', $wrapper).remove();
+        },
+
+        moveItemAnimation: function(item, moveTo) {
+            if (!item.length || !moveTo.length || $(this).hasClass('on-list')) {
+                return;
+            }
+            setTimeout(function() {
+                let itemClone = item.clone()
+                    .offset({
+                        top: item.offset().top,
+                        left: item.offset().left
+                    }).css({
+                        'opacity': '0.5',
+                        'position': 'absolute',
+                        'z-index': '10000'
+                    })
+                    .appendTo($('body'))
+                    .animate({
+                        'top': moveTo.offset().top + 5,
+                        'left': moveTo.offset().left + 5,
+                    }, 700);
+
+                itemClone.animate({
+                    'width': 0,
+                    'height': 0
+                }, function () {
+                    $(this).detach()
+                });
+            }, 0);
         }
     };
 
-    $v     = new ArticleClass();
-    var ie = /(msie|trident)/i.test(navigator.userAgent) ? navigator.userAgent.match(/(msie |rv:)(\d+(.\d+)?)/i)[2] : false;
-    if (ie && parseInt(ie) <= 9) {
-        $(document).ready(function () {
-            $v.onLoad();
-            $v.register();
-        });
-    } else {
-        $(window).on('load', function () {
-            $v.onLoad();
-            $v.register();
-        });
-    }
+    $v = new ArticleClass();
+
+    $(document).ready(function () {
+        $v.onLoad();
+        $v.register();
+    });
 
     $(window).on('resize',
         viewport.changed(function(){

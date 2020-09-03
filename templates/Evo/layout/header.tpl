@@ -66,7 +66,7 @@
         {else}
             <link type="text/css" href="{$ShopURL}/asset/{$Einstellungen.template.theme.theme_default}.css{if isset($cPluginCss_arr) && $cPluginCss_arr|@count > 0},plugin_css{/if}?v={$nTemplateVersion}" rel="stylesheet">
         {/if}
-        {if \JTL\Shop::isAdmin() && $opc->isEditMode() === false && $opc->isPreviewMode() === false}
+        {if $opc->isEditMode() === false && $opc->isPreviewMode() === false && \JTL\Shop::isAdmin(true)}
             <link type="text/css" href="{$ShopURL}/admin/opc/css/startmenu.css" rel="stylesheet">
         {/if}
         {foreach $opcPageService->getCurPage()->getCssList($opc->isEditMode()) as $cssFile => $cssTrue}
@@ -100,7 +100,7 @@
         </style>
     {/if}
     {block name='head-resources-jquery'}
-        <script src="{$ShopURL}/{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/jquery-3.3.1.min.js"></script>
+        <script src="{$ShopURL}/{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/jquery-3.5.1.min.js"></script>
     {/block}
     {include file='layout/header_inline_js.tpl'}
     {$dbgBarHead}

@@ -1,19 +1,50 @@
+{$licData = $license->getLicense()}
 {$subscription = $licData->getSubscription()}
 {if $licData->isExpired()}
     <span class="badge badge-danger">{__('License expired on %s', $licData->getValidUntil()->format('d.m.Y'))}</span>
 {elseif $subscription->isExpired() && $subscription->getValidUntil() !== null}
-    <span class="badge badge-danger">{__('Subscription expired on %s', $subscription->getValidUntil()->format('d.m.Y'))}</span>
+    <span class="badge badge-danger">
+        {__('Subscription expired on %s', $subscription->getValidUntil()->format('d.m.Y'))}
+    </span>
 {elseif $subscription->isExpired() === false && $subscription->getValidUntil() !== null}
     {if $subscription->getDaysRemaining() < 28}
-        <span class="badge badge-warning">{__('Warning: only valid until %s', $subscription->getValidUntil()->format('d.m.Y'))}</span>
+        <span class="badge badge-warning">
+            {__('Warning: Subscription only valid until %s', $subscription->getValidUntil()->format('d.m.Y'))}
+        </span>
     {else}
-        <span class="badge badge-success">{__('Valid until %s', $subscription->getValidUntil()->format('d.m.Y'))}</span>
+        <span class="badge badge-success">
+            {__('Subscription valid until %s', $subscription->getValidUntil()->format('d.m.Y'))}
+        </span>
     {/if}
 {elseif $licData->getValidUntil() !== null}
     {if $licData->getDaysRemaining() < 28}
-        <span class="badge badge-warning">{__('Warning: only valid until %s', $licData->getValidUntil()->format('d.m.Y'))}</span>
+        <span class="badge badge-warning">
+            {__('Warning: License only valid until %s', $licData->getValidUntil()->format('d.m.Y'))}
+        </span>
     {else}
-        <span class="badge badge-success">{__('Valid until %s', $licData->getValidUntil()->format('d.m.Y'))}</span>
+        <span class="badge badge-success">
+            {__('License valid until %s', $licData->getValidUntil()->format('d.m.Y'))}
+        </span>
     {/if}
-{else}&dash;
+{else}
+    <span class="badge badge-success">{__('Valid')}</span>
 {/if}
+{foreach $license->getLinks() as $link}
+    {if $link->getRel() === 'extendLicense' && ($license->hasSubscription() || $license->hasLicense())}
+        <p class="mt-2 mb-0">
+        {form class='extend-license-form mt-2'}
+            <input type="hidden" name="action" value="extendLicense">
+            <input type="hidden" name="url" value="{$link->getHref()}">
+            <input type="hidden" name="method" value="{$link->getMethod()|default:'POST'}">
+            <input type="hidden" name="exsid" value="{$license->getExsID()}">
+            <input type="hidden" name="key" value="{$license->getLicense()->getKey()}">
+            <button type="submit" class="btn btn-sm btn-primary extend-license"
+                    data-link="{$link->getHref()}"
+                    href="#"
+                    title="{if $licData->getType() === 'test'}{__('extendTestLicense')}{elseif $license->hasSubscription()}{__('extendSubscription')}{else}{__('extendLicense')}{/if}">
+                <i class="fa fa-link"></i> {if $licData->getType() === 'test'}{__('extendTestLicense')}{elseif $license->hasSubscription()}{__('extendSubscription')}{else}{__('extendLicense')}{/if}
+            </button>
+        {/form}
+        </p>
+    {/if}
+{/foreach}

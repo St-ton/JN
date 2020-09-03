@@ -33,54 +33,7 @@
                 {block name='account-order-details-order-body'}
                     {row}
                         {col cols=12 lg=3 class='border-lg-right'}
-                            {block name='account-order-details-total'}
-                                <span class="subheadline">{lang key='orderOverview' section='account data'}</span>
-                                <ul class="list-unstyled mt-lg-5 border-bottom pb-3 pb-lg-5">
-                                    <li class="mb-2">
-                                        {lang key='subtotal' section='account data'}: <span class="float-right text-nowrap">{$Bestellung->WarensummeLocalized[1]}</span>
-                                    </li>
-                                    {if $Bestellung->GuthabenNutzen == 1}
-                                    <li class="mb-2">
-                                        {lang key='useCredit' section='account data'}: <span class="float-right text-nowrap">{$Bestellung->GutscheinLocalized}</span>
-                                    </li>
-                                    {/if}
-                                    <li class="font-weight-bold mb-2">
-                                        {lang key='totalSum' section='global'} {if $NettoPreise} {lang key='gross' section='global'}{/if}:
-                                        <span class="float-right text-nowrap">{$Bestellung->WarensummeLocalized[0]}</span>
-                                    </li>
-                                    {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N'}
-                                        {foreach $Bestellung->Steuerpositionen as $taxPosition}
-                                            <li class="text-muted font-size-sm">
-                                                {$taxPosition->cName} <span class="float-right text-nowrap">{$taxPosition->cPreisLocalized}</span>
-                                            </li>
-                                        {/foreach}
-                                    {/if}
-                                    {foreach $Bestellung->OrderAttributes as $attribute}
-                                        {if $attribute->cName === 'Finanzierungskosten'}
-                                            {row class="type-{$smarty.const.C_WARENKORBPOS_TYP_ZINSAUFSCHLAG}"}
-                                                {col}
-                                                    {row}
-                                                        {col}
-                                                            {block name='account-order-details-finance-costs'}
-                                                                {lang key='financeCosts' section='order'}
-                                                            {/block}
-                                                        {/col}
-                                                    {/row}
-                                                {/col}
-
-                                                {block name='account-order-details-finance-costs-value'}
-                                                    {col class="col-auto ml-auto text-right price-col"}
-                                                        <strong class="price_overall">
-                                                            {$attribute->cValue}
-                                                        </strong>
-                                                    {/col}
-                                                {/block}
-                                            {/row}
-                                        {/if}
-                                    {/foreach}
-                                </ul>
-                            {/block}
-                            <ul class="list-unstyled mt-lg-5">
+                            <ul class="list-unstyled">
                                 <li class="mb-4">
                                     {block name='account-order-details-payment'}
                                         {lang key='paymentOptions' section='global'}:

@@ -11,6 +11,7 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
+use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use stdClass;
@@ -34,6 +35,11 @@ class AdminAccountManager
     private $smarty;
 
     /**
+     * @var JTLSmarty
+     */
+    private $alertService;
+
+    /**
      * @var array
      */
     private $messages = [
@@ -46,11 +52,13 @@ class AdminAccountManager
      *
      * @param JTLSmarty $smarty
      * @param DbInterface $db
+     * @param AlertServiceInterface $alertService
      */
-    public function __construct(JTLSmarty $smarty, DbInterface $db)
+    public function __construct(JTLSmarty $smarty, DbInterface $db, AlertServiceInterface $alertService)
     {
-        $this->smarty = $smarty;
-        $this->db     = $db;
+        $this->smarty       = $smarty;
+        $this->db           = $db;
+        $this->alertService = $alertService;
     }
 
     /**
@@ -127,7 +135,7 @@ class AdminAccountManager
                         if (!empty($thirdEntry->excludeFromAccessView)) {
                             continue;
                         }
-                        if (!isset($perms[$secondEntry->permissions])) {
+                        if (!isset($perms[$thirdEntry->permissions])) {
                             $perms[$thirdEntry->permissions] = (object)['name' => $thirdName];
                         } else {
                             $perms[$thirdEntry->permissions]->name = $thirdName;
@@ -511,6 +519,13 @@ class AdminAccountManager
             }
             if (\mb_strlen($tmpAcc->cMail) === 0) {
                 $errors['cMail'] = 1;
+            } elseif (Text::filterEmailAddress($tmpAcc->cMail) === false) {
+                $errors['cMail'] = 2;
+                $this->alertService->addAlert(
+                    Alert::TYPE_DANGER,
+                    __('validationErrorIncorrectEmail'),
+                    'validationErrorIncorrectEmail'
+                );
             }
             if (\mb_strlen($tmpAcc->cPass) === 0 && $tmpAcc->kAdminlogin === 0) {
                 $errors['cPass'] = 1;
@@ -937,8 +952,8 @@ class AdminAccountManager
                 break;
         }
 
-        Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $this->getNotice(), 'userManagementNote');
-        Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $this->getError(), 'userManagementError');
+        $this->alertService->addAlert(Alert::TYPE_NOTE, $this->getNotice(), 'userManagementNote');
+        $this->alertService->addAlert(Alert::TYPE_ERROR, $this->getError(), 'userManagementError');
 
         $this->smarty->assign('action', $step)
             ->assign('cTab', Text::filterXSS(Request::verifyGPDataString('tab')))

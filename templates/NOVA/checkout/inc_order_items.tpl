@@ -337,30 +337,29 @@
                         {/row}
                     {/if}
                 {/block}
-                {foreach $smarty.session.Warenkorb->OrderAttributes|default:null as $attribute}
-                    {if $attribute->cName === 'Finanzierungskosten'}
-                        <hr class="my-3">
-                        {row class="type-{$smarty.const.C_WARENKORBPOS_TYP_ZINSAUFSCHLAG}"}
-                            {col}
-                                {row}
-                                    {col}
-                                        {block name='checkout-inc-order-items-finance-costs'}
+                {if !empty($smarty.session.Warenkorb->OrderAttributes)}
+                    {block name='checkout-inc-order-items-finance'}
+                        {foreach $smarty.session.Warenkorb->OrderAttributes as $attribute}
+                            {if $attribute->cName === 'Finanzierungskosten'}
+                                <hr class="my-3">
+                                {row class="type-{$smarty.const.C_WARENKORBPOS_TYP_ZINSAUFSCHLAG}"}
+                                    {block name='checkout-inc-order-items-finance-costs'}
+                                        {col}
                                             {lang key='financeCosts' section='order'}
-                                        {/block}
-                                    {/col}
+                                        {/col}
+                                    {/block}
+                                    {block name='checkout-inc-order-items-finance-costs-value'}
+                                        {col class="col-auto ml-auto text-right price-col"}
+                                            <strong class="price_overall">
+                                                {$attribute->cValue}
+                                            </strong>
+                                        {/col}
+                                    {/block}
                                 {/row}
-                            {/col}
-
-                            {block name='checkout-inc-order-items-finance-costs-value'}
-                                {col class="col-auto ml-auto text-right price-col"}
-                                    <strong class="price_overall">
-                                        {$attribute->cValue}
-                                    </strong>
-                                {/col}
-                            {/block}
-                        {/row}
-                    {/if}
-                {/foreach}
+                            {/if}
+                        {/foreach}
+                    {/block}
+                {/if}
             {/col}
         {/row}
     {/block}

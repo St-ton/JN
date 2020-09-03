@@ -3,6 +3,7 @@
 namespace JTL\Template;
 
 use Exception;
+use JTL\License\Struct\ExsLicense;
 use JTL\Model\DataAttribute;
 use JTL\Model\DataModel;
 
@@ -11,6 +12,7 @@ use JTL\Model\DataModel;
  *
  * @package JTL\Template
  * @property string $cTemplate
+ * @property ExsLicense|null $license
  * @method string getCTemplate()
  * @method void setCTemplate(string $value)
  * @property string $type
@@ -206,6 +208,22 @@ final class Model extends DataModel
     }
 
     /**
+     * @return ExsLicense|null
+     */
+    public function getExsLicense(): ?ExsLicense
+    {
+        return $this->license;
+    }
+
+    /**
+     * @param ExsLicense|null $license
+     */
+    public function setExsLicense(?ExsLicense $license): void
+    {
+        $this->license = $license;
+    }
+
+    /**
      * @inheritdoc
      */
     public function getAttributes(): array
@@ -331,6 +349,14 @@ final class Model extends DataModel
                 ->setNullable(false)
                 ->setDynamic(true);
             $attributes['isActive'] = $isActive;
+
+            $license = new DataAttribute();
+            $license->setName('license')
+                ->setDataType('object')
+                ->setDefault(null)
+                ->setNullable(true)
+                ->setDynamic(true);
+            $attributes['license'] = $license;
         }
 
         return $attributes;

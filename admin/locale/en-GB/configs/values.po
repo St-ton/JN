@@ -2386,3 +2386,27 @@ msgstr "No"
 
 msgid "consent_manager_active_value(Y)"
 msgstr "Yes"
+
+msgid "bewertung_sortierung_value(0)"
+msgstr "Date ascending"
+
+msgid "bewertung_sortierung_value(1)"
+msgstr "Date descending"
+
+msgid "bewertung_sortierung_value(2)"
+msgstr "Review ascending"
+
+msgid "bewertung_sortierung_value(3)"
+msgstr "Review descending"
+
+msgid "bewertung_sortierung_value(4)"
+msgstr "Helpful ascending"
+
+msgid "bewertung_sortierung_value(5)"
+msgstr "Helpful descending"
+
+msgid "direct_advertising_value(N)"
+msgstr "No"
+
+msgid "direct_advertising_value(Y)"
+msgstr "Yes"

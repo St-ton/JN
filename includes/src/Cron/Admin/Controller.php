@@ -63,29 +63,29 @@ final class Controller
     }
 
     /**
-     * @param int $id
+     * @param int $jobQueueId
      * @return int
      */
-    public function resetQueueEntry(int $id): int
+    public function resetQueueEntry(int $jobQueueId): int
     {
-        return $this->db->update('tjobqueue', 'id', $id, (object)['isRunning' => 0]);
+        return $this->db->update('tjobqueue', 'jobQueueID', $jobQueueId, (object)['isRunning' => 0]);
     }
 
     /**
-     * @param int $id
+     * @param int $cronId
      * @return int
      */
-    public function deleteQueueEntry(int $id): int
+    public function deleteQueueEntry(int $cronId): int
     {
-        $affected = $this->db->queryPrepared(
+        $affected = (int)$this->db->queryPrepared(
             'DELETE FROM tjobqueue WHERE cronID = :id',
-            ['id' => $id],
+            ['id' => $cronId],
             ReturnType::AFFECTED_ROWS
         );
 
-        return $affected + $this->db->queryPrepared(
+        return $affected + (int)$this->db->queryPrepared(
             'DELETE FROM tcron WHERE cronID = :id',
-            ['id' => $id],
+            ['id' => $cronId],
             ReturnType::AFFECTED_ROWS
         );
     }

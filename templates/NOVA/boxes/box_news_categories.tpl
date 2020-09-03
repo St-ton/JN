@@ -7,7 +7,7 @@
                     data=["toggle"=>"collapse"]
                     role="button"
                     aria=["expanded"=>"false","controls"=>"crd-cllps-{$oBox->getID()}"]
-                    class="text-decoration-none font-weight-bold mb-2 d-md-none dropdown-toggle"}
+                    class="text-decoration-none font-weight-bold d-md-none dropdown-toggle"}
                     {lang key='newsBoxCatOverview'}
                 {/link}
             {/block}
@@ -22,7 +22,7 @@
                     visible=false
                     id="crd-cllps-{$oBox->getID()}"
                     aria=["labelledby"=>"crd-hdr-{$oBox->getID()}"]}
-                    {nav vertical=true}
+                    {nav vertical=true class="mt-2 mt-md-0"}
                         {foreach $oBox->getItems() as $newsCategory}
                             {if $newsCategory@index === 10}{break}{/if}
                             {navitem href=$newsCategory->cURLFull title=$newsCategory->cName router-class="align-items-center d-flex"}

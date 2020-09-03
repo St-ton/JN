@@ -19,16 +19,20 @@ class Divider extends Portlet
             'title' => [
                 'label' => __('dividerTitle'),
                 'default' => __('Divider'),
-            ],
-            'moreLink' => [
-                'label' => __('dividerMoreLink'),
-            ],
-            'moreTitle' => [
-                'label' => __('dividerMoreTitle'),
+                'width' => 50,
             ],
             'id' => [
                 'label' => __('dividerElmID'),
                 'desc'  => __('dividerIdDesc'),
+                'width' => 50,
+            ],
+            'moreLink' => [
+                'label' => __('dividerMoreLink'),
+                'width' => 50,
+            ],
+            'moreTitle' => [
+                'label' => __('dividerMoreTitle'),
+                'width' => 50,
             ],
         ];
     }

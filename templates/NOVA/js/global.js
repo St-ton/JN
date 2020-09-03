@@ -418,7 +418,7 @@ $(document).ready(function () {
     );
 
     $('.btn-offcanvas').on('click', function() {
-        $('body').click();
+        $('body').trigger('click');
     });
 
     if ("ontouchstart" in document.documentElement) {
@@ -531,6 +531,13 @@ $(document).ready(function () {
     $('.onchangeSubmit').on('change', function(){
         this.form.submit();
     });
+
+    $('#mobile-search-dropdown').on('click', function() {
+        setTimeout(function(){
+            $('#search-header-desktop').focus();
+        },100);
+    });
+
     categoryMenu();
     regionsToState();
     compatibility();
@@ -547,11 +554,34 @@ $(document).ready(function () {
         }
         e.detail.width = parent.offsetWidth || e.detail.width;
     });
+
+    // init auto expand for textareas
+    $('textarea.auto-expand').on('input click', function (event) {
+        autoExpand(event.target);
+    });
 });
 
-function setClickableRow ()
+function setClickableRow()
 {
     $('.clickable-row').on('click', function() {
         window.location = $(this).data('href');
     });
+}
+
+function isMobileByBodyClass() {
+    return $('body').hasClass('is-mobile');
+}
+
+function autoExpand(field)
+{
+    field.style.height = 'inherit';
+
+    let computed = window.getComputedStyle(field),
+        height   = parseInt(computed.getPropertyValue('border-top-width'), 10)
+            + parseInt(computed.getPropertyValue('padding-top'), 10)
+            + field.scrollHeight
+            + parseInt(computed.getPropertyValue('padding-bottom'), 10)
+            + parseInt(computed.getPropertyValue('border-bottom-width'), 10);
+
+    field.style.height = height + 'px';
 }

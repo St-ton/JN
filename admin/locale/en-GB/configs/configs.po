@@ -2974,3 +2974,15 @@ msgstr "Enable Consent manager"
 
 msgid "consent_manager_active_desc"
 msgstr "Specify whether to enable the Consent manager."
+
+msgid "bewertung_sortierung_name"
+msgstr "Default sorting option"
+
+msgid "bewertung_sortierung_desc"
+msgstr "Specify which sorting option is selected by default."
+
+msgid "direct_advertising_name"
+msgstr "Show information on direct advertising when registering the email address"
+
+msgid "direct_advertising_desc"
+msgstr "The information will be displayed below the email address input field during registration."

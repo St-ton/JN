@@ -4,12 +4,14 @@ namespace JTL\Console;
 
 use JTL\Console\Command\Backup\DatabaseCommand;
 use JTL\Console\Command\Backup\FilesCommand;
+use JTL\Console\Command\Cache\ClearObjectCacheCommand;
 use JTL\Console\Command\Cache\DbesTmpCommand;
 use JTL\Console\Command\Cache\DeleteFileCacheCommand;
 use JTL\Console\Command\Cache\DeleteTemplateCacheCommand;
 use JTL\Console\Command\Command;
 use JTL\Console\Command\InstallCommand;
 use JTL\Console\Command\Migration\CreateCommand;
+use JTL\Console\Command\Migration\InnodbUtf8Command;
 use JTL\Console\Command\Migration\MigrateCommand;
 use JTL\Console\Command\Migration\StatusCommand;
 use JTL\Console\Command\Model\CreateCommand as CreateModelCommand;
@@ -76,7 +78,7 @@ class Application extends BaseApplication
      */
     public function initPluginCommands(): void
     {
-        if (!$this->isInstalled) {
+        if (!$this->isInstalled || SAFE_MODE === true) {
             return;
         }
         $db              = Shop::Container()->getDB();
@@ -148,11 +150,13 @@ class Application extends BaseApplication
         if ($this->isInstalled) {
             $cmds[] = new MigrateCommand();
             $cmds[] = new StatusCommand();
+            $cmds[] = new InnodbUtf8Command();
             $cmds[] = new DatabaseCommand();
             $cmds[] = new FilesCommand();
             $cmds[] = new DeleteTemplateCacheCommand();
             $cmds[] = new DeleteFileCacheCommand();
             $cmds[] = new DbesTmpCommand();
+            $cmds[] = new ClearObjectCacheCommand();
             $cmds[] = new CreateModelCommand();
 
             if ($this->devMode) {

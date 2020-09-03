@@ -3,10 +3,12 @@
 use JTL\Backend\AdminIO;
 use JTL\Backend\JSONAPI;
 use JTL\Backend\TwoFA;
+use JTL\Exportformat;
 use JTL\Helpers\Form;
 use JTL\IO\IOError;
 use JTL\Jtllog;
 use JTL\Link\Admin\LinkAdmin;
+use JTL\Mail\Validator\SyntaxChecker;
 use JTL\Media\Manager;
 use JTL\Shop;
 use JTL\Update\UpdateIO;
@@ -101,7 +103,8 @@ try {
        ->register('deleteShippingSurchargeZIP', 'deleteShippingSurchargeZIP', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
        ->register('createShippingSurchargeZIP', 'createShippingSurchargeZIP', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
        ->register('getShippingSurcharge', 'getShippingSurcharge', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
-       ->register('exportformatSyntaxCheck', [JTL\Exportformat::class, 'ioCheckSyntax'], null, 'EXPORT_FORMATS_VIEW');
+       ->register('exportformatSyntaxCheck', [Exportformat::class, 'ioCheckSyntax'], null, 'EXPORT_FORMATS_VIEW')
+       ->register('mailvorlageSyntaxCheck', [SyntaxChecker::class, 'ioCheckSyntax'], null, 'CONTENT_EMAIL_TEMPLATE_VIEW');
 } catch (Exception $e) {
     $io->respondAndExit(new IOError($e->getMessage(), $e->getCode()));
 }

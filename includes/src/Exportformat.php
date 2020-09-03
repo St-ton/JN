@@ -1599,9 +1599,20 @@ class Exportformat
     {
         $result = \json_decode($text, false);
         if (\json_last_error() !== \JSON_ERROR_NONE) {
+            $text = \strip_tags($text);
+            // strip smarty output if fatal error occurs
+            $fatalPos = \strpos($text, 'Fatal error:');
+            if ($fatalPos !== false) {
+                $text = \substr($text, $fatalPos);
+            }
+            // strip possible call stack
+            $callstackPos = \strpos($text, 'Call Stack:');
+            if ($callstackPos !== false) {
+                $text = \substr($text, 0, $callstackPos);
+            }
             $result = (object)[
                 'result'  => 'failure',
-                'message' => \trim($text, "\r\n\t; "),
+                'message' => $text,
             ];
         }
         if ($result->result !== 'ok') {
@@ -1633,7 +1644,7 @@ class Exportformat
                 $res = Communication::getContent($testUrl, null, $_COOKIE);
                 \session_start();
             } catch (Exception $e) {
-                return '<pre class="alert-danger">' . $e->getMessage() . '</pre>';
+                return $this->finishSyntaxcheck($e->getMessage());
             }
 
             return $this->finishSyntaxcheck($res);
@@ -1646,10 +1657,10 @@ class Exportformat
             use JTL\Helpers\Request;
 
             require __DIR__ . \'/includes/globalinclude.php\';
-            \ini_set(\'html_errors\', \'0\');
-            \ini_set(\'display_errors\', \'1\');
-            \ini_set(\'log_errors\', \'0\');
-            \error_reporting(\E_ALL & ~\E_NOTICE & ~\E_STRICT & ~\E_DEPRECATED);
+            ini_set(\'html_errors\', \'0\');
+            ini_set(\'display_errors\', \'1\');
+            ini_set(\'log_errors\', \'0\');
+            error_reporting(\E_ALL & ~\E_NOTICE & ~\E_STRICT & ~\E_DEPRECATED);
 
             $kExportformat = ' . $this->kExportformat . ';
 

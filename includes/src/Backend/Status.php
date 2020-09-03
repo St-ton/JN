@@ -12,6 +12,7 @@ use JTL\License\Mapper;
 use JTL\License\Struct\ExsLicense;
 use JTL\Media\Image\Product;
 use JTL\Media\Image\StatsItem;
+use JTL\Nice;
 use JTL\Plugin\Helper;
 use JTL\Plugin\State;
 use JTL\Profiler;
@@ -584,5 +585,19 @@ class Status
     public function hasExtensionSOAP(): bool
     {
         return \extension_loaded('soap');
+    }
+
+    /**
+     * @return array
+     */
+    public function getExtensions(): array
+    {
+        $nice       = Nice::getInstance();
+        $extensions = $nice->gibAlleMoeglichenModule();
+        foreach ($extensions as $extension) {
+            $extension->bActive = $nice->checkErweiterung($extension->kModulId);
+        }
+
+        return $extensions;
     }
 }

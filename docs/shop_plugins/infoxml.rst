@@ -471,7 +471,7 @@ Die entsprechende Lizenzprüfungsklasse mit *namespace* würde dann so aussehen:
 
     use JTL\Plugin\LicenseInterface;
 
-    class PluginLicense implements LicenseInterface
+    class PluginLicence implements LicenseInterface
     {
         /**
          + @param string $cLicence

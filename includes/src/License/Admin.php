@@ -21,6 +21,7 @@ use JTL\License\Exception\FilePermissionException;
 use JTL\License\Installer\PluginInstaller;
 use JTL\License\Installer\TemplateInstaller;
 use JTL\License\Struct\ExsLicense;
+use JTL\Mapper\PluginValidation;
 use JTL\Plugin\InstallCode;
 use JTL\Session\Backend;
 use JTL\Shop;
@@ -178,7 +179,14 @@ class Admin
                 : $installer->install($itemID, $download, $response);
             $this->cache->flushTags([\CACHING_GROUP_LICENSES]);
             if ($result !== InstallCode::OK) {
+                $mapper         = new PluginValidation();
+                $errorCode      = $result;
+                $mappedErrorMsg = $mapper->map($result);
+                if (empty($response->error)) {
+                    $response->error = __('Error code: %d', $errorCode) . ' - ' . $mappedErrorMsg;
+                }
                 $smarty->assign('licenseErrorMessage', $response->error)
+                    ->assign('mappedErrorMessage', $mappedErrorMsg)
                     ->assign('resultCode', $result);
             }
         } catch (ClientException
@@ -197,9 +205,12 @@ class Admin
             $smarty->assign('licenseErrorMessage', $msg);
         }
         $this->getList($smarty);
-        $smarty->assign('license', $this->manager->getLicenseByItemID($itemID));
-        $response->html         = $smarty->fetch('tpl_inc/licenses_referenced_item.tpl');
-        $response->notification = $smarty->fetch('tpl_inc/updates_drop.tpl');
+        $license = $this->manager->getLicenseByItemID($itemID);
+        $smarty->assign('license', $license);
+        if ($license !== null && $license->getReferencedItem() !== null) {
+            $response->html         = $smarty->fetch('tpl_inc/licenses_referenced_item.tpl');
+            $response->notification = $smarty->fetch('tpl_inc/updates_drop.tpl');
+        }
         $this->sendResponse($response);
     }
 

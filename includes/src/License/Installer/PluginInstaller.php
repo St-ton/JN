@@ -87,6 +87,6 @@ class PluginInstaller implements InstallerInterface
             return 0;
         }
 
-        return $installer->prepare();
+        return $installer->prepare(\rtrim($installResponse->getDirName(), '/'));
     }
 }

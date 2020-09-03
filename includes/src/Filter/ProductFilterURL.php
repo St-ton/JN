@@ -36,11 +36,11 @@ class ProductFilterURL
     }
 
     /**
-     * @param FilterInterface $extraFilter
-     * @param bool            $bCanonical
+     * @param FilterInterface|stdClass|null $extraFilter
+     * @param bool                          $canonical
      * @return string
      */
-    public function getURL($extraFilter = null, $bCanonical = false): string
+    public function getURL($extraFilter = null, $canonical = false): string
     {
         $isSearchQuery      = false;
         $languageID         = $this->productFilter->getFilterConfig()->getLanguageID();
@@ -63,7 +63,7 @@ class ProductFilterURL
             $filterSeoUrl = $base->getSeo($languageID);
             if (!empty($filterSeoUrl)) {
                 $seoParam          = new stdClass();
-                $seoParam->value   = '';
+                $seoParam->value   = $base->getValue();
                 $seoParam->sep     = '';
                 $seoParam->param   = '';
                 $seoParam->seo     = $filterSeoUrl;
@@ -76,7 +76,7 @@ class ProductFilterURL
                 $nonSeoFilterParams[$base->getUrlParam()] = $filterValue;
             }
         }
-        if ($bCanonical === true) {
+        if ($canonical === true) {
             return $this->productFilter->getFilterConfig()->getBaseURL() .
                 $this->buildURLString(
                     $seoFilterParams,
@@ -184,6 +184,18 @@ class ProductFilterURL
                 }
             }
         }
+        if ($extraFilter !== null && $extraFilter->isParamExclusive() === true) {
+            // some filters (like rating filter) must only have one exclusive param (?bf=1 etc.) - no array of params
+            foreach ($urlParams as $param => $value) {
+                if ($param === $extraFilter->getUrlParam() && \is_array($value)) {
+                    foreach ($value as $index => $val) {
+                        if (isset($val->value) && $val->value !== $extraFilter->getValue()) {
+                            unset($urlParams[$param][$index]);
+                        }
+                    }
+                }
+            }
+        }
         foreach ($urlParams as $filterID => $filters) {
             foreach ($filters as $f) {
                 if (!$isSearchQuery && !empty($f->seo) && !empty($f->sep)) {
@@ -207,7 +219,22 @@ class ProductFilterURL
             }
         }
 
-        return $url . $this->buildURLString($seoFilterParams, $nonSeoFilterParams);
+        return $url . $this->buildURLString($seoFilterParams, $this->collapse($nonSeoFilterParams));
+    }
+
+    /**
+     * @param array $params
+     * @return array
+     */
+    private function collapse(array $params): array
+    {
+        foreach ($params as $param => $value) {
+            if (\is_array($value) && \count($value) === 1) {
+                $params[$param] = first($value);
+            }
+        }
+
+        return $params;
     }
 
     /**

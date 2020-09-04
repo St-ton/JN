@@ -153,10 +153,13 @@ final class Controller
     {
         $jobs = [];
         $all  = $this->db->query(
-            'SELECT tcron.*, tjobqueue.isRunning, tjobqueue.jobQueueID
+            'SELECT tcron.*, tjobqueue.isRunning, tjobqueue.jobQueueID, texportformat.cName AS exportName
                 FROM tcron
                 LEFT JOIN tjobqueue
-                    ON tcron.cronID = tjobqueue.cronID',
+                    ON tcron.cronID = tjobqueue.cronID
+                LEFT JOIN texportformat
+                    ON texportformat.kExportformat = tcron.foreignKeyID
+                    AND tcron.tableName = \'texportformat\'',
             ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($all as $cron) {

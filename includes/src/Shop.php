@@ -693,8 +693,8 @@ final class Shop
     }
 
     /**
-     * @param bool   $fast
-     * @param string $context
+     * @param bool        $fast
+     * @param string|null $context
      * @return JTLSmarty
      */
     public function _Smarty(bool $fast = false, string $context = null): JTLSmarty
@@ -780,7 +780,7 @@ final class Shop
      * @var bool $iso
      * @return int|string
      */
-    public static function getLanguage($iso = false)
+    public static function getLanguage(bool $iso = false)
     {
         return $iso === false ? (int)self::$kSprache : self::$cISO;
     }
@@ -810,14 +810,14 @@ final class Shop
     /**
      * set language/language ISO
      *
-     * @param int    $languageID
-     * @param string $cISO
+     * @param int         $languageID
+     * @param string|null $iso
      */
-    public static function setLanguage(int $languageID, string $cISO = null): void
+    public static function setLanguage(int $languageID, string $iso = null): void
     {
         self::$kSprache = $languageID;
-        if ($cISO !== null) {
-            self::$cISO = $cISO;
+        if ($iso !== null) {
+            self::$cISO = $iso;
         }
     }
 
@@ -1384,7 +1384,7 @@ final class Shop
                             $seoString
                         );
                         if (isset($seoData->kKey) && \strcasecmp($seoData->cSeo, $seoString) === 0) {
-                            //haenge an GET, damit baueMerkmalFilter die Merkmalfilter setzen kann - @todo?
+                            // haenge an GET, damit baueMerkmalFilter die Merkmalfilter setzen kann - @todo?
                             $_GET['mf'][] = (int)$seoData->kKey;
                         } else {
                             self::$bSEOMerkmalNotFound = true;
@@ -1933,12 +1933,12 @@ final class Shop
     }
 
     /**
-     * @param bool $bForceSSL
+     * @param bool $forceSSL
      * @return string - the shop Admin URL without trailing slash
      */
-    public static function getAdminURL(bool $bForceSSL = false): string
+    public static function getAdminURL(bool $forceSSL = false): string
     {
-        return \rtrim(static::getURL($bForceSSL, false) . '/' . \PFAD_ADMIN, '/');
+        return \rtrim(static::getURL($forceSSL, false) . '/' . \PFAD_ADMIN, '/');
     }
 
     /**

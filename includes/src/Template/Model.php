@@ -148,7 +148,7 @@ final class Model extends DataModel
      */
     public function getName(): string
     {
-        return $this->cName;
+        return $this->cName ?? $this->getTemplate();
     }
 
     /**

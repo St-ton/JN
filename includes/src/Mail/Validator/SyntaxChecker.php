@@ -190,7 +190,7 @@ final class SyntaxChecker
                     $res = $this->finishSyntaxcheck($e->getMessage(), $model);
                 }
 
-                $error = $this->finishSyntaxcheck($res, $model);
+                $error = $this->finishSyntaxcheck(\is_string($res) ? $res : __('somethingHappend'), $model);
                 if ($error !== '') {
                     $result[] = $error;
                 }

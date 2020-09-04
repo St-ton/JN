@@ -36,8 +36,8 @@ class ProductFilterURL
     }
 
     /**
-     * @param FilterInterface|stdClass|null $extraFilter
-     * @param bool                          $canonical
+     * @param FilterInterface|null $extraFilter
+     * @param bool                 $canonical
      * @return string
      */
     public function getURL($extraFilter = null, $canonical = false): string
@@ -116,6 +116,9 @@ class ProductFilterURL
             /** @var FilterInterface $filter */
             $urlParam    = $filter->getUrlParam();
             $filterValue = $filter->getValue();
+            if (\is_array($filterValue)) {
+                $filterValue = first($filterValue);
+            }
             if ($ignore !== null && $urlParam === $ignore) {
                 if ($ignoreValue === null || $ignoreValue === $filterValue) {
                     // unset filter was given for this whole filter or this current value

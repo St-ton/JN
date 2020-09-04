@@ -441,11 +441,11 @@ class Characteristic extends BaseCharacteristic
         $state   = $this->getState($data['oAktuelleKategorie'] ?? null);
         $baseQry = $this->productFilter->getFilterSQL()->getBaseQuery($state);
         $cacheID = 'fltr_' . \str_replace('\\', '', __CLASS__) . \md5($baseQry);
-        if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
-            $this->options = $cached;
-
-            return $this->options;
-        }
+//        if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
+//            $this->options = $cached;
+//
+//            return $this->options;
+//        }
         $qryRes           = $this->productFilter->getDB()->executeQuery(
             'SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
             ssMerkmal.nMehrfachauswahl, ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, 

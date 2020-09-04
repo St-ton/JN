@@ -1312,21 +1312,21 @@ final class Shop
             }
             // custom filter
             foreach ($customSeo as $className => $data) {
-                $oSeo = self::Container()->getDB()->select($data['table'], 'cSeo', $data['cSeo']);
-                if (isset($oSeo->filterval)) {
-                    self::$customFilters[$className] = (int)$oSeo->filterval;
+                $seoData = self::Container()->getDB()->select($data['table'], 'cSeo', $data['cSeo']);
+                if (isset($seoData->filterval)) {
+                    self::$customFilters[$className] = (int)$seoData->filterval;
                 } else {
                     self::$bKatFilterNotFound = true;
                 }
-                if (isset($oSeo->kSprache) && $oSeo->kSprache > 0) {
-                    self::updateLanguage((int)$oSeo->kSprache);
+                if (isset($seoData->kSprache) && $seoData->kSprache > 0) {
+                    self::updateLanguage((int)$seoData->kSprache);
                 }
             }
             // category filter
             if (\mb_strlen($categorySeo) > 0) {
-                $oSeo = self::Container()->getDB()->select('tseo', 'cKey', 'kKategorie', 'cSeo', $categorySeo);
-                if (isset($oSeo->kKey) && \strcasecmp($oSeo->cSeo, $categorySeo) === 0) {
-                    self::$kKategorieFilter = (int)$oSeo->kKey;
+                $seoData = self::Container()->getDB()->select('tseo', 'cKey', 'kKategorie', 'cSeo', $categorySeo);
+                if (isset($seoData->kKey) && \strcasecmp($seoData->cSeo, $categorySeo) === 0) {
+                    self::$kKategorieFilter = (int)$seoData->kKey;
                 } else {
                     self::$bKatFilterNotFound = true;
                 }
@@ -1374,18 +1374,42 @@ final class Shop
                     $_GET['mf'] = [(int)$_GET['mf']];
                 }
                 self::$bSEOMerkmalNotFound = false;
-                foreach ($seoAttributes as $i => $cSEOMerkmal) {
-                    if ($i > 0 && \mb_strlen($cSEOMerkmal) > 0) {
-                        $oSeo = self::Container()->getDB()->select(
+                foreach ($seoAttributes as $i => $seoString) {
+                    if ($i > 0 && \mb_strlen($seoString) > 0) {
+                        $seoData = self::Container()->getDB()->select(
                             'tseo',
                             'cKey',
                             'kMerkmalWert',
                             'cSeo',
-                            $cSEOMerkmal
+                            $seoString
                         );
-                        if (isset($oSeo->kKey) && \strcasecmp($oSeo->cSeo, $cSEOMerkmal) === 0) {
+                        if (isset($seoData->kKey) && \strcasecmp($seoData->cSeo, $seoString) === 0) {
                             //haenge an GET, damit baueMerkmalFilter die Merkmalfilter setzen kann - @todo?
-                            $_GET['mf'][] = (int)$oSeo->kKey;
+                            $_GET['mf'][] = (int)$seoData->kKey;
+                        } else {
+                            self::$bSEOMerkmalNotFound = true;
+                        }
+                    }
+                }
+            }
+            if (\count($categories) > 1) {
+                if (!isset($_GET['kf'])) {
+                    $_GET['kf'] = [];
+                } elseif (!\is_array($_GET['kf'])) {
+                    $_GET['kf'] = [(int)$_GET['kf']];
+                }
+                self::$bSEOMerkmalNotFound = false;
+                foreach ($categories as $i => $seoString) {
+                    if ($i > 0 && \mb_strlen($seoString) > 0) {
+                        $seoData = self::Container()->getDB()->select(
+                            'tseo',
+                            'cKey',
+                            'kKategorie',
+                            'cSeo',
+                            $seoString
+                        );
+                        if (isset($seoData->kKey) && \strcasecmp($seoData->cSeo, $seoString) === 0) {
+                            $_GET['kf'][] = (int)$seoData->kKey;
                         } else {
                             self::$bSEOMerkmalNotFound = true;
                         }
@@ -1468,8 +1492,9 @@ final class Shop
                 self::updateLanguage((int)$oSeo->kSprache);
             }
         }
-        self::$MerkmalFilter = ProductFilter::initCharacteristicFilter();
-        self::$SuchFilter    = ProductFilter::initSearchFilter();
+        self::$MerkmalFilter    = ProductFilter::initCharacteristicFilter();
+        self::$SuchFilter       = ProductFilter::initSearchFilter();
+        self::$kKategorieFilter = ProductFilter::initCategoryFilter();
 
         \executeHook(\HOOK_SEOCHECK_ENDE);
     }

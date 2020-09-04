@@ -40,11 +40,11 @@ class Category extends BaseCategory
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function setValue($value): FilterInterface
     {
-        $this->value = \is_array($value) ? $value : [(int)$value];
+        $this->value = \is_array($value) ? \array_map('\intval', $value) : $value;
 
         return $this;
     }
@@ -55,7 +55,7 @@ class Category extends BaseCategory
      */
     public function setValueCompat($value): FilterInterface
     {
-        $this->value = [$value];
+        $this->value = $value;
 
         return $this;
     }
@@ -73,7 +73,11 @@ class Category extends BaseCategory
      */
     public function getSQLCondition(): string
     {
-        $values = ' IN (' . \implode(', ', $this->getValue())  . ')';
+        $value = $this->getValue();
+        if (!\is_array($value)) {
+            $value = [$value];
+        }
+        $values = ' IN (' . \implode(', ', $value)  . ')';
 
         if ($this->getIncludeSubCategories() === true) {
             return ' tkategorieartikel.kKategorie IN (
@@ -224,7 +228,7 @@ class Category extends BaseCategory
 
             return $this->options;
         }
-        $categories       = $this->productFilter->getDB()->executeQuery(
+        $categories         = $this->productFilter->getDB()->executeQuery(
             'SELECT tseo.cSeo, ssMerkmal.kKategorie, ssMerkmal.cName, 
                 ssMerkmal.nSort, COUNT(*) AS nAnzahl
                 FROM (' . $baseQuery . " ) AS ssMerkmal
@@ -235,10 +239,11 @@ class Category extends BaseCategory
                     ORDER BY ssMerkmal.nSort, ssMerkmal.cName',
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $langID           = $this->getLanguageID();
-        $customerGroupID  = $this->getCustomerGroupID();
-        $additionalFilter = new self($this->productFilter);
-        $helper           = CategoryHelper::getInstance($langID, $customerGroupID);
+        $langID             = $this->getLanguageID();
+        $customerGroupID    = $this->getCustomerGroupID();
+        $additionalFilter   = new self($this->productFilter);
+        $helper             = CategoryHelper::getInstance($langID, $customerGroupID);
+        $filterURLGenerator = $this->productFilter->getFilterURL();
         foreach ($categories as $category) {
             $category->kKategorie = (int)$category->kKategorie;
             if ($categoryFilterType === 'KP') { // category path
@@ -247,7 +252,7 @@ class Category extends BaseCategory
             $options[] = (new Option())
                 ->setIsActive($this->productFilter->filterOptionIsActive($this->getClassName(), $category->kKategorie))
                 ->setParam($this->getUrlParam())
-                ->setURL($this->productFilter->getFilterURL()->getURL(
+                ->setURL($filterURLGenerator->getURL(
                     $additionalFilter->init((int)$category->kKategorie)
                 ))
                 ->setType($this->getType())

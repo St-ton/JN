@@ -1,5 +1,5 @@
 {$referencedItem = $license->getReferencedItem()}
-<div id="license-item-{$license->getID()}">
+<div id="license-item-{$license->getID()}-{$license->getLicense()->getType()}">
     {if $license->isInApp()}
         {$avail = $license->getReleases()->getAvailable()}
         {if $avail !== null}
@@ -28,47 +28,31 @@
                     {__('Version %s available', $avail->getVersion())}
                 </span>
             {/if}
-            <form method="post"{if !$disabled} class="mt-2 install-item-form"{/if}>
-                {$jtl_token}
+            {form method="post" class="mt-2{if !$disabled} install-item-form{/if}"}
                 <input type="hidden" name="action" value="install">
                 <input type="hidden" name="item-type" value="{$license->getType()}">
                 <input type="hidden" name="item-id" value="{$license->getID()}">
+                <input type="hidden" name="license-type" value="{$license->getLicense()->getType()}">
                 <button{if $disabled} disabled{/if} class="btn btn-default btn-sm install-item" name="action" value="install">
                     <i class="fa fa-share"></i> {__('Install')}
                 </button>
-            </form>
+            {/form}
         {else}
             <i class="far fa-check-circle"></i> {$installedVersion}{if $referencedItem->isActive() === false} {__('(disabled)')}{/if}
-        {/if}
-        {if false}
-            {foreach $license->getLinks() as $link}
-                {if $link->getRel() === 'clearBinding'}
-                    <br>
-                    <form method="post" class="clear-binding-form">
-                        {$jtl_token}
-                        <input type="hidden" name="action" value="clearbinding">
-                        <input type="hidden" name="url" value="{$link->getHref()}">
-                        <input type="hidden" name="method" value="{$link->getMethod()}">
-                        <button class="btn btn-default btn-sm clear-binding" name="action" value="clearbinding">
-                            <i class="fa fa-share"></i> {__('Clear binding')}
-                        </button>
-                    </form>
-                {/if}
-            {/foreach}
         {/if}
         {if $referencedItem->hasUpdate()}
             <span class="update-available badge badge-success">
                 {__('Update to version %s available', $referencedItem->getMaxInstallableVersion())}
             </span>
-            <form method="post"{if !$disabled} class="mt-2 update-item-form"{/if}>
-                {$jtl_token}
+            {form method="post" class="mt-2{if !$disabled} update-item-form{/if}"}
                 <input type="hidden" name="action" value="update">
                 <input type="hidden" name="item-type" value="{$license->getType()}">
+                <input type="hidden" name="license-type" value="{$license->getLicense()->getType()}">
                 <input type="hidden" name="item-id" value="{$license->getID()}">
                 <button{if $disabled} disabled{/if} class="btn btn-default btn-sm update-item" name="action" value="update">
                     <i class="fas fa-refresh"></i> {__('Update')}
                 </button>
-            </form>
+            {/form}
         {/if}
     {else}
         <i class="far fa-circle"></i>

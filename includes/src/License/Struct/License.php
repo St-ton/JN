@@ -70,7 +70,7 @@ class License
      */
     public function fromJSON(stdClass $json): void
     {
-        if ($json->subscription === 'null') {
+        if (!isset($json->subscription) || $json->subscription === 'null') {
             $json->subscription = null;
         }
         $this->setKey($json->key);

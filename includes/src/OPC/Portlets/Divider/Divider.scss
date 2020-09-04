@@ -20,8 +20,8 @@ $font-weight-bold:                  600;
   font-size: $h2-font-size;
   font-family: $headings-font-family;
 
-  &::before,
-  &::after {
+  &:before,
+  &:after {
     content: "";
     flex-grow: 1;
     background: $sand;
@@ -36,6 +36,15 @@ $font-weight-bold:                  600;
     font-weight: $font-weight-bold;
     &:hover {
       border-color: $primary;
+    }
+  }
+
+  &.opc-Divider-empty {
+    &:before {
+      margin-right: 0;
+    }
+    &:after {
+      margin-left: 0;
     }
   }
 }

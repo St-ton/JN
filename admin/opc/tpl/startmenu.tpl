@@ -1,4 +1,4 @@
-{if \JTL\Shop::isAdmin() && $opc->isEditMode() === false && $opc->isPreviewMode() === false}
+{if $opc->isEditMode() === false && $opc->isPreviewMode() === false && \JTL\Shop::isAdmin(true)}
     {$shopHasUpdates    = $opc->shopHasUpdates()}
     {$opcStartUrl       = "{$ShopURL}/admin/opc.php"}
     {$curPageUrl        = $opcPageService->getCurPageUri()}

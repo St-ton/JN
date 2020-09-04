@@ -7,7 +7,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->redirectOnFailure();
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 
-$status             = Status::getInstance(Shop::Container()->getDB());
+$status             = Status::getInstance(Shop::Container()->getDB(), Shop::Container()->getCache());
 $orphanedCategories = $status->getOrphanedCategories(false);
 
 $smarty->assign('passed', count($orphanedCategories) === 0)

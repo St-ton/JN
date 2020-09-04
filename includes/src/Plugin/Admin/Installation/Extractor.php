@@ -56,9 +56,10 @@ class Extractor
 
     /**
      * @param string $zipFile
+     * @param bool   $deleteSource
      * @return InstallationResponse
      */
-    public function extractPlugin(string $zipFile): InstallationResponse
+    public function extractPlugin(string $zipFile, bool $deleteSource = true): InstallationResponse
     {
         $dirName = $this->unzip($zipFile);
         try {
@@ -66,6 +67,9 @@ class Extractor
         } catch (InvalidArgumentException $e) {
             $this->response->setStatus(InstallationResponse::STATUS_FAILED);
             $this->response->addMessage($e->getMessage());
+        }
+        if ($deleteSource === true) {
+            \unlink($zipFile);
         }
 
         return $this->response;

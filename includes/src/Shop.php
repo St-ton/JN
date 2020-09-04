@@ -1492,9 +1492,9 @@ final class Shop
                 self::updateLanguage((int)$oSeo->kSprache);
             }
         }
-        self::$MerkmalFilter    = ProductFilter::initCharacteristicFilter();
-        self::$SuchFilter       = ProductFilter::initSearchFilter();
-        self::$kKategorieFilter = ProductFilter::initCategoryFilter();
+        self::$MerkmalFilter     = ProductFilter::initCharacteristicFilter();
+        self::$SuchFilter        = ProductFilter::initSearchFilter();
+        self::$categoryFilterIDs = ProductFilter::initCategoryFilter();
 
         \executeHook(\HOOK_SEOCHECK_ENDE);
     }
@@ -1504,10 +1504,9 @@ final class Shop
      */
     private static function updateLanguage(int $languageID): void
     {
-        $spr   = self::Lang()->getIsoFromLangID($languageID);
-        $cLang = $spr->cISO ?? null;
-        if ($cLang !== $_SESSION['cISOSprache']) {
-            Frontend::checkReset($cLang);
+        $iso = self::Lang()->getIsoFromLangID($languageID)->cISO ?? null;
+        if ($iso !== $_SESSION['cISOSprache']) {
+            Frontend::checkReset($iso);
             Tax::setTaxRates();
         }
         if (self::$productFilter->getFilterConfig()->getLanguageID() !== $languageID) {
@@ -1529,7 +1528,7 @@ final class Shop
             $parentID = Product::getParent(self::$kArtikel);
             if ($parentID > 0) {
                 $productID = $parentID;
-                //save data from child article POST and add to redirect
+                // save data from child article POST and add to redirect
                 $cRP = '';
                 if (\is_array($_POST) && \count($_POST) > 0) {
                     foreach (\array_keys($_POST) as $key) {

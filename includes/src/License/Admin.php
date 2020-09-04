@@ -164,6 +164,7 @@ class Admin
     private function installUpdate(string $action, JTLSmarty $smarty): void
     {
         $itemID           = Request::postVar('item-id', '');
+        $exsID            = Request::postVar('exs-id', '');
         $type             = Request::postVar('license-type', '');
         $response         = new AjaxResponse();
         $response->action = $action;
@@ -175,7 +176,7 @@ class Admin
             $installer = $this->getInstaller($itemID);
             $download  = $this->getDownload($itemID);
             $result    = $action === 'update'
-                ? $installer->update($itemID, $download, $response)
+                ? $installer->update($exsID, $download, $response)
                 : $installer->install($itemID, $download, $response);
             $this->cache->flushTags([\CACHING_GROUP_LICENSES]);
             if ($result !== InstallCode::OK) {
@@ -206,8 +207,11 @@ class Admin
         }
         $this->getList($smarty);
         $license = $this->manager->getLicenseByItemID($itemID);
-        $smarty->assign('license', $license);
+        if ($license === null || $license->getReferencedItem() === null) {
+            $license = $this->manager->getLicenseByExsID($exsID);
+        }
         if ($license !== null && $license->getReferencedItem() !== null) {
+            $smarty->assign('license', $license);
             $response->html         = $smarty->fetch('tpl_inc/licenses_referenced_item.tpl');
             $response->notification = $smarty->fetch('tpl_inc/updates_drop.tpl');
         }

@@ -45,7 +45,7 @@ class PluginInstaller implements InstallerInterface
     /**
      * @inheritDoc
      */
-    public function update(string $itemID, string $downloadedArchive, AjaxResponse $response): int
+    public function update(string $exsID, string $downloadedArchive, AjaxResponse $response): int
     {
         $parser           = new XMLParser();
         $uninstaller      = new Uninstaller($this->db, $this->cache);
@@ -63,7 +63,7 @@ class PluginInstaller implements InstallerInterface
             return 0;
         }
 
-        return $updater->update(Helper::getIDByPluginID($itemID));
+        return $updater->update(Helper::getIDByExsID($exsID));
     }
 
     /**

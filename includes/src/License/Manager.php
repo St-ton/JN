@@ -220,7 +220,7 @@ class Manager
      */
     public function getLicenseByItemID(string $itemID): ?ExsLicense
     {
-        return (new Mapper($this))->getCollection()->getForItemID($itemID);
+        return (new Mapper($this))->getCollection()->getBound()->getForItemID($itemID);
     }
 
     /**
@@ -229,7 +229,7 @@ class Manager
      */
     public function getLicenseByExsID(string $exsID): ?ExsLicense
     {
-        return (new Mapper($this))->getCollection()->getForExsID($exsID);
+        return (new Mapper($this))->getCollection()->getBound()->getForExsID($exsID);
     }
 
     /**

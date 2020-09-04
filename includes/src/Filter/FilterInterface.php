@@ -406,4 +406,15 @@ interface FilterInterface
      * @return bool
      */
     public function isHidden(): bool;
+
+    /**
+     * @return bool
+     */
+    public function isParamExclusive(): bool;
+
+    /**
+     * @param bool $paramExclusive
+     * @return $this|FilterInterface
+     */
+    public function setParamExclusive(bool $paramExclusive): FilterInterface;
 }

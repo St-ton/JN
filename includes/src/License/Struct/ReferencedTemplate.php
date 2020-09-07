@@ -17,9 +17,7 @@ class ReferencedTemplate extends ReferencedItem
 {
     /**
      * ReferencedTemplate constructor.
-     * @param DbInterface  $db
-     * @param stdClass     $license
-     * @param Release|null $release
+     * @inheritDoc
      * @throws \Exception
      */
     public function __construct(DbInterface $db, stdClass $license, ?Release $release)

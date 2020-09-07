@@ -18,7 +18,7 @@ msgid "welcome"
 msgstr "Welcome!"
 
 msgid "welcomeDesc"
-msgstr "In this Setup wizard, we guide you through the most important steps to configure JTL-Shop."
+msgstr "In this Setup wizard, we guide you through the most important steps of the configuration of JTL-Shop."
 
 msgid "beginSetup"
 msgstr "Start"
@@ -33,25 +33,25 @@ msgid "stepTwo"
 msgstr "Step 2 – Legal texts"
 
 msgid "stepTwoDesc"
-msgstr "We offer plug-ins by JTL-Partners for the creation of legally relevant texts. With these plug-ins, you can easily add legally sound texts such as terms and conditions and withdrawals to your online shop. You can also write and add your own legal texts. Please see the <a href=\"https://jtl-url.de/09qo2\" target=\"_blank\">JTL-Guide</a> for further instructions."
+msgstr "We offer plug-ins by our partners for the creation of legally relevant texts. With these plug-ins, you can easily add legally sound texts such as terms and conditions and withdrawals to your online shop. You can also write your own legal texts and use them in your shop. Please see the <a href=\"https://jtl-url.de/15ge9\" target=\"_blank\">JTL-Guide</a> for further instructions."
 
 msgid "stepThree"
 msgstr "Step 3 – Payment methods"
 
 msgid "stepThreeDesc"
-msgstr "Get suitable plug-ins to offer a broad selection of payment methods to your customers. You can specify when customers see which payment method in each shipping method. For more information, please see the <a href=\"https://jtl-url.de/kbw2p\" target=\"_blank\">JTL-Guide</a>. By default, JTL-Shop offers the following payment methods: %s"
+msgstr "Get suitable plug-ins to offer a broad selection of payment methods to your customers. You can specify when customers see which payment method in the settings for each shipping method. For more information, please see the <a href=\"https://jtl-url.de/dlkpz\" target=\"_blank\">JTL-Guide</a>. By default, JTL-Shop offers the following payment methods: %s."
 
 msgid "stepFour"
 msgstr "Step 4 – Email settings"
 
 msgid "stepFourDesc"
-msgstr "These are the most important email settings. Adjust the other email server settings as soon as possible after the initial setup under „Administration > Email > Server“. For more information, please see the <a href=\"https://jtl-url.de/hj1pz\" target=\"_blank\">JTL-Guide</a>."
+msgstr "These are the most important email settings. Adjust the other email server settings as soon as possible after the initial setup under \"Administration > Email > Server\". For more information, please see the <a href=\"https://jtl-url.de/jnw83\" target=\"_blank\">JTL-Guide</a>."
 
 msgid "stepFive"
 msgstr "Step 5 – Overview and confirmation"
 
 msgid "stepFiveDesc"
-msgstr "This is an overview of all the settings you have made. You can still edit each setting, if required. Then click on \"Confirm\"."
+msgstr "This is an overview of all the settings you have made. You can still edit each setting, if required. Then click \"Confirm\"."
 
 msgid "legalTexts"
 msgstr "Legal texts"
@@ -66,7 +66,7 @@ msgid "vatSmallEntrepreneur"
 msgstr "Use small-business regulation (Art. 19 German VAT Act)"
 
 msgid "vatSmallEntrepreneurTitle"
-msgstr "If you activate this option, your online shop will not state VAT."
+msgstr "If you activate this option, your online shop will note state VAT."
 
 msgid "customerGroupDesc"
 msgstr "The online shop addresses"
@@ -126,7 +126,7 @@ msgid "thankYouTextDesc"
 msgstr "You have completed the most important settings of JTL-Shop."
 
 msgid "thankYouTextPluginsInstalled"
-msgstr "Bitte beachten Sie, dass Sie die Plugins im Bereich <span class=\"text-primary font-weight-bold\">Installierte Plugins</span> zunächst aktivieren und einrichten müssen, bevor Sie sie nutzen können."
+msgstr "Please note that you need to activate the plug-ins under <span class=\"text-primary font-weight-bold\">Installed plug-ins</span> before you can use them."
 
 msgid "installedPlugins"
 msgstr "Installed plug-ins"
@@ -156,10 +156,10 @@ msgid "recommendationExtensionStoreLink"
 msgstr "https://www.jtl-software.de/jtl-store/marktplatz"
 
 msgid "recommendationExtensionStore"
-msgstr "Extension Store"
+msgstr "JTL-Extension&nbsp;Store"
 
 msgid "recommendationExtensionStoreDesc"
-msgstr "Here you can find many plug-ins to customise your online shop according to your wishes."
+msgstr "Here you can find many plug-ins to customise your online shop as needed."
 
 msgid "recommendationIssuetrackerLink"
 msgstr "https://issues.jtl-software.de/issues?project=shop"
@@ -183,10 +183,10 @@ msgid "recommendationReleaseForumLink"
 msgstr "https://forum.jtl-software.de/forums/releaseforum.36/"
 
 msgid "recommendationReleaseForum"
-msgstr "JTL-Releaseforum"
+msgstr "JTL release forum"
 
 msgid "recommendationReleaseForumDesc"
-msgstr "Subscribe to the JTL-ReleaseForum to receive information about new software versions via email."
+msgstr "Subscribe to the release forum to receive information about new software versions via email."
 
 msgid "recommendationBlogLink"
 msgstr "https://www.jtl-software.de/blog"
@@ -204,7 +204,7 @@ msgid "recommendationJTLSearch"
 msgstr "JTL-Search"
 
 msgid "recommendationJTLSearchDesc"
-msgstr "JTL-Search is a fee-based add-on module for JTL-Shop and allows your customers to do error-tolerant searches."
+msgstr "JTL-Search is a fee-based add-on module for JTL-Shop and allows your customers to perform error-tolerant searches."
 
 msgid "orderNumberSettings"
 msgstr "Order ID settings"
@@ -234,28 +234,25 @@ msgid "validationErrorSSL"
 msgstr "SSL not possible."
 
 msgid "validationErrorSSLPlugin"
-msgstr "You must have a valid SSL-Certificat to install plugins via the setup wizard."
+msgstr "You need a valid SSL certificate to install plug-ins using the Setup wizard."
 
 msgid "errorVATPattern"
-msgstr "VAT ID pattern missmatch."
+msgstr "Invalid VAT ID. Please enter a valid VAT ID."
 
 msgid "oAuthValid"
-msgstr "Authentifizierung des Shops erfolgreich."
+msgstr "Your online shop has been authenticated successfully."
 
 msgid "oAuthInvalid"
-msgstr "Sie haben Plugins zur Installation vorgemerkt. Über den Button \"Verknüpfen\" werden Sie zur einmaligen Authentifizierung zum \"Zentralen Login\" weitergeleitet. Nach erfolgreicher Anmeldung werden Sie automatisch zu diesem Einrichtungsassistenten zurückgeleitet und können die Einrichtung abschließen."
+msgstr "You have selected some plug-ins for installation. To install them, an initial authentication of your online shop is required. To do this, click \"Go to central login\". Once you have logged in with your user account data, you will automatically be taken back to this Setup wizard to complete the setup."
 
 msgid "oAuthInformation"
-msgstr "Was ist der Sinn der Authentifizierung"
+msgstr "Why should I log in"
 
 msgid "beginAuth"
-msgstr "Shop Authentifizieren und Assistenten starten"
+msgstr "Log in now via central login"
 
 msgid "beginNoAuth"
-msgstr "Assistenten ohne Authentifizierung starten"
+msgstr "Start wizard without login"
 
 msgid "oAuthDesc"
-msgstr "Eines der wichtigstens Features des JTL-Shops, ist seine direkte Schnittstelle zum JTL-Extension Store, über welchen Plugins und Templates direkt im Shop-Backend installierbar sind. Um von diesem Feature zu profitieren, muss Ihr Onlineshop einmalig über den \"Zentralen Login\" authentifiziert werden."
-
-msgid "authButton"
-msgstr "Go to central login"
+msgstr "You can directly install and manage plug-ins bought in the JTL-Extension&nbsp;Store in the back end of JTL-Shop&nbsp;5. To do this, you need to authenticate your online shop by logging in via the central JTL login once. Simply log in with your user account data and that's it! If you do not want to log in now, you can do so later in the back end under \"My purchases\"."

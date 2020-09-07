@@ -271,4 +271,4 @@ msgid "templateTypeExtension"
 msgstr "Plug-in"
 
 msgid "warningNovaSidebar"
-msgstr "Boxen in der linken Seitenleiste werden im Nova-Template nur für den Seitentyp \"Artikelliste\" unterstützt. Auf anderen Seiten werden Boxen sichtbar für die linke Seitenleiste nur angezeigt, wenn entweder das Evo-Template oder ein dafür individuell angepasstes Template genutzt wird."
+msgstr "The NOVA template only supports boxes in the left side bar for the page type \"Item overview\". Please use a personalised template if you also want to display boxes in the left side bar on other pages."

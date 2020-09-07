@@ -27,13 +27,12 @@ final class EmailSettings extends AbstractStep
     public function __construct(DbInterface $db, AlertServiceInterface $alertService, AdminAccount $adminAccount)
     {
         parent::__construct($db, $alertService);
-        $this->setTitle(__('stepFour'));
-        $this->setDescription(__('stepFourDesc'));
-        $this->setID(4);
+        $this->setTitle(__('stepTwo'));
+        $this->setDescription(__('stepTwoDesc'));
+        $this->setID(2);
 
         $question = new Question($db);
         $question->setID(11);
-        $question->setSubheading(__('stepFour'));
         $question->setText(__('email_master_absender_name'));
         $question->setDescription(__('email_master_absender_desc'));
         $question->setType(QuestionType::EMAIL);

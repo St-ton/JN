@@ -390,7 +390,7 @@ msgid "email_master_absender_name_name"
 msgstr "Sender for master email address"
 
 msgid "email_master_absender_name_desc"
-msgstr "Specify which sender is to be used for emails."
+msgstr "Instead of the master email address, email recipients will see the information entered here. Please note: some providers (e.g. Office365) do not allow any deviations and require the input of the exact master email address."
 
 msgid "suche_fulltext_name"
 msgstr "Use full-text search"

@@ -256,3 +256,6 @@ msgstr "Assistenten ohne Authentifizierung starten"
 
 msgid "oAuthDesc"
 msgstr "Eines der wichtigstens Features des JTL-Shops, ist seine direkte Schnittstelle zum JTL-Extension Store, über welchen Plugins und Templates direkt im Shop-Backend installierbar sind. Um von diesem Feature zu profitieren, muss Ihr Onlineshop einmalig über den \"Zentralen Login\" authentifiziert werden."
+
+msgid "authButton"
+msgstr "Go to central login"

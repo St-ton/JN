@@ -29,29 +29,29 @@ msgstr "Schritt 1 – Grundeinstellungen"
 msgid "stepOneDesc"
 msgstr "Hier legen Sie die wichtigsten Grundeinstellungen für Ihren Onlineshop fest. Sie können jederzeit alle Einstellungen im Backend von JTL-Shop ändern."
 
-msgid "stepTwo"
-msgstr "Schritt 2 – Rechtstexte"
-
-msgid "stepTwoDesc"
-msgstr "Für rechtliche relevante Texte bieten wir passende Plugins von JTL-Partnern an. Diese Plugins erleichtern es Ihnen, rechtssichere Texte wie AGB, Widerrufsbelehrung usw. in Ihren Onlineshop einzupflegen. Sie können Ihre Rechtstexte auch selbst formulieren und einrichten. Die Anleitung dazu finden Sie in unserem <a href=\"https://jtl-url.de/15ge9\" target=\"_blank\">JTL-Guide</a>."
-
 msgid "stepThree"
-msgstr "Schritt 3 – Zahlungsarten"
+msgstr "Schritt 3 – Rechtstexte"
 
 msgid "stepThreeDesc"
-msgstr "Wählen Sie passende Plugins, um Ihren Kunden diverse Zahlungsarten anzubieten. Welche Zahlungsarten Ihren Kunden wann angeboten werden, legen Sie in den einzelnen Versandarten fest. Weitere Informationen dazu finden Sie im <a href=\"https://jtl-url.de/dlkpz\" target=\"_blank\">JTL-Guide</a>. Standardmäßig bietet JTL-Shop folgende Zahlungsarten: %s"
+msgstr "Für rechtlich relevante Texte bieten wir passende Plugins von JTL-Partnern an. Diese Plugins erleichtern es Ihnen, rechtssichere Texte wie AGB, Widerrufsbelehrung usw. in Ihren Onlineshop einzupflegen. <br> Sie können Ihre Rechtstexte auch selbst formulieren und einrichten. Die Anleitung dazu finden Sie in unserem <a href=\"https://jtl-url.de/15ge9\" target=\"_blank\">JTL-Guide</a>."
 
 msgid "stepFour"
-msgstr "Schritt 4 – E-Mail-Einstellungen"
+msgstr "Schritt 4 – Zahlungsarten"
 
 msgid "stepFourDesc"
-msgstr "Hier sehen Sie die wichtigsten E-Mail-Einstellungen. Nehmen Sie die übrigen Einstellungen zum E-Mail-Server möglichst zeitnah nach dieser Ersteinrichtung unter „Administration > E-Mail > Server“ vor. Weitere Informationen dazu finden Sie im <a href=\"https://jtl-url.de/jnw83\" target=\"_blank\">JTL-Guide</a>."
+msgstr "Wählen Sie passende Plugins, um Ihren Kunden diverse Zahlungsarten anzubieten. Welche Zahlungsarten Ihren Kunden wann angeboten werden, legen Sie in den einzelnen Versandarten fest. <br> Weitere Informationen dazu finden Sie im <a href=\"https://jtl-url.de/dlkpz\" target=\"_blank\">JTL-Guide</a>. Standardmäßig bietet JTL-Shop folgende Zahlungsarten: %s."
+
+msgid "stepTwo"
+msgstr "Schritt 2 – E-Mail-Einstellungen"
+
+msgid "stepTwoDesc"
+msgstr "Hier sehen Sie die wichtigsten E-Mail-Einstellungen. Nehmen Sie die übrigen Einstellungen zum E-Mail-Server möglichst zeitnah nach dieser Ersteinrichtung unter „Administration &gt; E-Mail &gt; Server“ vor. Weitere Informationen dazu finden Sie im <a href=\"https://jtl-url.de/jnw83\" target=\"_blank\">JTL-Guide</a>."
 
 msgid "stepFive"
-msgstr "Schritt 5 – Übersicht & Bestätigung"
+msgstr "Schritt 5 – Übersicht &amp; Bestätigung"
 
 msgid "stepFiveDesc"
-msgstr "Hier sehen Sie noch einmal einen Überblick der gerade vorgenommenen Einstellungen. Sie können jeden Punkt noch einmal bearbeiten. Klicken Sie anschließend auf „Bestätigen“."
+msgstr "Hier sehen Sie einen Überblick der gerade vorgenommenen Einstellungen. Sie können jeden Punkt noch einmal bearbeiten. Klicken Sie anschließend auf „Bestätigen“."
 
 msgid "legalTexts"
 msgstr "Rechtstexte"
@@ -126,7 +126,7 @@ msgid "thankYouTextDesc"
 msgstr "Sie haben nun die wichtigsten Einstellungen für JTL-Shop getroffen."
 
 msgid "thankYouTextPluginsInstalled"
-msgstr "Bitte beachten Sie, dass Sie die Plugins im Bereich <span class=\"text-primary font-weight-bold\">Installierte Plugins</span> zunächst aktivieren und einrichten müssen, bevor Sie sie nutzen können."
+msgstr "Bitte beachten Sie, dass Sie die Plugins zunächst unter <span class=\"text-primary font-weight-bold\">Installierte Plugins</span> aktivieren müssen, bevor Sie sie nutzen können."
 
 msgid "installedPlugins"
 msgstr "Installierte Plugins"
@@ -141,7 +141,7 @@ msgid "recommendationGuide"
 msgstr "JTL-Guide"
 
 msgid "recommendationGuideDesc"
-msgstr "Wie Sie JTL-Shop über die Grundkonfiguration hinaus individuell auf Ihre Bedürfnisse anpassen, erfahren Sie im JTL-Guide."
+msgstr "Wie Sie JTL-Shop über die Grundkonfiguration hinaus individuell an Ihre Bedürfnisse anpassen, erfahren Sie im JTL-Guide."
 
 msgid "recommendationSupportLink"
 msgstr "https://www.jtl-software.de/hilfecenter/support#preisuebersicht"
@@ -156,7 +156,7 @@ msgid "recommendationExtensionStoreLink"
 msgstr "https://www.jtl-software.de/jtl-store/marktplatz"
 
 msgid "recommendationExtensionStore"
-msgstr "Extension Store"
+msgstr "JTL-Extension Store"
 
 msgid "recommendationExtensionStoreDesc"
 msgstr "Hier finden Sie viele Plugins, um Ihren JTL-Shop individuell nach Ihren Wünschen anzupassen."
@@ -234,25 +234,28 @@ msgid "validationErrorSSL"
 msgstr "SSL nicht möglich."
 
 msgid "validationErrorSSLPlugin"
-msgstr "Sie benötigen ein valides SSL-Zertifikat um Plugins über den Einrichtungsassitent zu installieren."
+msgstr "Sie benötigen ein gültiges SSL-Zertifikat, um Plugins über den Einrichtungsassistenten zu installieren."
 
 msgid "errorVATPattern"
-msgstr "USt-IdNr. weißt ein falsches Pattern auf."
+msgstr "Ungültige USt-IdNr. Bitte geben Sie eine gültige USt-IdNr. ein."
 
 msgid "oAuthValid"
-msgstr "Authentifizierung des Shops erfolgreich."
+msgstr "Der Onlineshop wurde erfolgreich authentifiziert."
 
 msgid "oAuthInvalid"
-msgstr "Sie haben Plugins zur Installation vorgemerkt. Über den Button \"Verknüpfen\" werden Sie zur einmaligen Authentifizierung zum \"Zentralen Login\" weitergeleitet. Nach erfolgreicher Anmeldung werden Sie automatisch zu diesem Einrichtungsassistenten zurückgeleitet und können die Einrichtung abschließen."
+msgstr "Sie haben Plugins zur Installation vorgemerkt. Damit diese installiert werden, muss Ihr Onlineshop einmalig authentifiziert werden. Klicken Sie dazu auf „Zum zentralen Login“. Nach erfolgreicher Anmeldung mit den Daten Ihres Benutzerkontos werden Sie automatisch zu diesem Einrichtungsassistenten zurückgeleitet und können die Einrichtung abschließen."
 
 msgid "oAuthInformation"
-msgstr "Was ist der Sinn der Authentifizierung"
+msgstr "Warum sollte ich mich anmelden"
 
 msgid "beginAuth"
-msgstr "Shop Authentifizieren und Assistenten starten"
+msgstr "Jetzt über zentralen Login anmelden"
 
 msgid "beginNoAuth"
-msgstr "Assistenten ohne Authentifizierung starten"
+msgstr "Assistenten ohne Anmeldung starten"
 
 msgid "oAuthDesc"
-msgstr "Um Plugins die im Extension Store erworben wurden, bequem und direkt im Backend installieren und verwalten zu können, muss Ihr Shop einmalig über den zentralen Login authentifiziert werden. Wir empfehlen Ihnen, die Verknüpfung jetzt vorzunehmen. Sie haben jeden auch die Möglichkeit, diesen Schritt später nachzuholen."
+msgstr "Mit JTL-Shop 5 können Sie im JTL-Extension Store erworbene Plugins bequem direkt im Backend installieren und verwalten. Dazu muss Ihr Onlineshop einmalig über den zentralen Login von JTL authentifiziert werden. Eine einfache Anmeldung mit den Daten Ihres Benutzerkontos genügt. Sollten Sie diesen Schritt erst später durchführen wollen, können Sie ihn jederzeit im Backend unter „Meine Käufe“ nachholen."
+
+msgid "authButton"
+msgstr "Zum zentralen Login"

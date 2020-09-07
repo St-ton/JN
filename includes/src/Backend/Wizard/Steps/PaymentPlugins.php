@@ -28,7 +28,7 @@ final class PaymentPlugins extends AbstractStep
     public function __construct(DbInterface $db, AlertServiceInterface $alertService)
     {
         parent::__construct($db, $alertService);
-        $this->setTitle(__('stepThree'));
+        $this->setTitle(__('stepFour'));
 
         $paymentMethods = map($db->query(
             "SELECT cModulId FROM tzahlungsart WHERE nNutzbar = 1 AND cModulId LIKE 'za_%'",
@@ -37,8 +37,8 @@ final class PaymentPlugins extends AbstractStep
             return __($e->cModulId);
         });
 
-        $this->setDescription(sprintf(__('stepThreeDesc'), implode(', ', $paymentMethods)));
-        $this->setID(3);
+        $this->setDescription(sprintf(__('stepFourDesc'), implode(', ', $paymentMethods)));
+        $this->setID(4);
 
         $recommendations = new Manager($this->alertService, Manager::SCOPE_WIZARD_PAYMENT_PROVIDER);
 

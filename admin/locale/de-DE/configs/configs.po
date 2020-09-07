@@ -390,7 +390,7 @@ msgid "email_master_absender_name_name"
 msgstr "Absender für Master-E-Mail-Adresse"
 
 msgid "email_master_absender_name_desc"
-msgstr "Hier legen Sie fest, welcher Absender bei E-Mails verwendet werden soll."
+msgstr "Abweichend von der Master-E-Mail-Adresse wird den Empfängern Ihrer E-Mails diese Angabe als Absender angezeigt. Achtung: Manche Anbieter (z. B. Office365) erlauben keine abweichende Angabe und es muss die exakte Master-E-Mail-Adresse eingetragen werden."
 
 msgid "suche_fulltext_name"
 msgstr "Volltextsuche verwenden"

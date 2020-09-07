@@ -26,9 +26,9 @@ final class LegalPlugins extends AbstractStep
     public function __construct(DbInterface $db, AlertServiceInterface $alertService)
     {
         parent::__construct($db, $alertService);
-        $this->setTitle(__('stepTwo'));
-        $this->setDescription(__('stepTwoDesc'));
-        $this->setID(2);
+        $this->setTitle(__('stepThree'));
+        $this->setDescription(__('stepThreeDesc'));
+        $this->setID(3);
 
         $recommendations = new Manager($this->alertService, Manager::SCOPE_WIZARD_LEGAL_TEXTS);
 

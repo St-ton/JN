@@ -166,3 +166,6 @@ msgstr "Archiv konnte nicht validiert werden"
 
 msgid "Managed by %s"
 msgstr "Wird von %s verwaltet"
+
+msgid "Successfully extended."
+msgstr "Erfolgreich verlängert."

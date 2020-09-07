@@ -170,6 +170,16 @@ final class Shopsetting implements ArrayAccess
                     $this->container[$offset][$templateSection] = $templateSetting;
                 }
             }
+        } elseif ($section === \CONF_BRANDING) {
+            return Shop::Container()->getCache()->get(
+                $cacheID,
+                function ($cache, $id, &$content, &$tags) {
+                    $content = $this->getBrandingConfig(Shop::Container()->getDB());
+                    $tags    = [\CACHING_GROUP_OPTION];
+
+                    return true;
+                }
+            );
         } else {
             $settings = Shop::Container()->getCache()->get(
                 $cacheID,

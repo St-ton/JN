@@ -24,7 +24,7 @@
         btn.find('i').addClass('fa-spin');
         $.ajax({
             method: 'POST',
-            url: '{$shopURL}/admin/licenses.php',
+            url: '{$adminURL}/licenses.php',
             data: $(e.target).serialize()
         }).done(function (r) {
             const result = JSON.parse(r);
@@ -53,7 +53,7 @@
         btn.find('i').addClass('fa-spin');
         $.ajax({
             method: 'POST',
-            url: '{$shopURL}/admin/licenses.php',
+            url: '{$adminURL}/licenses.php',
             data: $(e.target).serialize()
         }).done(function (r) {
             const result = JSON.parse(r);
@@ -77,16 +77,22 @@
             return dlCallback($(e.target).find('.install-item'), e);
         });
         $('#content_wrapper').on('click', '#bound-licenses #update-all', function (e) {
+            const forms = $('#bound-licenses .update-item-form');
+            if (forms.length === 0) {
+                return false;
+            }
             hideUpdateAll();
             done = 0;
-            const forms = $('#bound-licenses .update-item-form');
             formCount = forms.length;
             forms.submit();
         });
         $('#content_wrapper').on('click', '#bound-licenses #install-all', function (e) {
+            const forms = $('#bound-licenses .install-item-form');
+            if (forms.length === 0) {
+                return false;
+            }
             hideInstallAll();
             done = 0;
-            const forms = $('#bound-licenses .install-item-form');
             formCount = forms.length;
             forms.submit();
         });
@@ -95,6 +101,9 @@
         });
         $('#content_wrapper').on('submit', '.clear-binding-form', function (e) {
             return bindCallback($(e.target).find('.clear-binding'), e);
+        });
+        $('#content_wrapper').on('submit', '.extend-license-form', function (e) {
+            return bindCallback($(e.target).find('.extend-license'), e);
         });
     });
 </script>

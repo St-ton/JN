@@ -3,7 +3,7 @@
 export REPO_DIR=$1
 
 
-if [[ -f ${REPO_DIR}/includes/vendor/bin/phpcs ]]; then
+if [ -f ${REPO_DIR}/includes/vendor/bin/phpcs ]; then
     echo "] start code quality test.."
     ${REPO_DIR}/includes/vendor/bin/phpcs -n\
         --extensions=php \

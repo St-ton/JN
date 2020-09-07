@@ -10,6 +10,7 @@ use JTL\Helpers\Request;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Services\JTL\CountryService;
 use JTL\Services\JTL\CountryServiceInterface;
+use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 
 /**
@@ -122,12 +123,14 @@ class Manager
     private function addCountry(): string
     {
         if (Request::postInt('save') === 1) {
-            $country             = new \stdClass();
-            $country->cISO       = Request::verifyGPDataString('cISO');
-            $country->cDeutsch   = Request::verifyGPDataString('cDeutsch');
-            $country->cEnglisch  = Request::verifyGPDataString('cEnglisch');
-            $country->nEU        = Request::verifyGPDataString('nEU');
-            $country->cKontinent = Request::verifyGPDataString('cKontinent');
+            $country                          = new \stdClass();
+            $country->cISO                    = Request::verifyGPDataString('cISO');
+            $country->cDeutsch                = Request::verifyGPDataString('cDeutsch');
+            $country->cEnglisch               = Request::verifyGPDataString('cEnglisch');
+            $country->nEU                     = Request::verifyGPDataString('nEU');
+            $country->cKontinent              = Request::verifyGPDataString('cKontinent');
+            $country->bPermitRegistration     = Request::verifyGPDataString('bPermitRegistration');
+            $country->bRequireStateDefinition = Request::verifyGPDataString('bRequireStateDefinition');
 
             $this->db->insert('tland', $country);
             $this->cache->flush(CountryService::CACHE_ID);
@@ -170,11 +173,13 @@ class Manager
     private function updateCountry(): string
     {
         if (Request::postInt('save') === 1) {
-            $country             = new \stdClass();
-            $country->cDeutsch   = Request::verifyGPDataString('cDeutsch');
-            $country->cEnglisch  = Request::verifyGPDataString('cEnglisch');
-            $country->nEU        = Request::verifyGPDataString('nEU');
-            $country->cKontinent = Request::verifyGPDataString('cKontinent');
+            $country                          = new \stdClass();
+            $country->cDeutsch                = Request::verifyGPDataString('cDeutsch');
+            $country->cEnglisch               = Request::verifyGPDataString('cEnglisch');
+            $country->nEU                     = Request::verifyGPDataString('nEU');
+            $country->cKontinent              = Request::verifyGPDataString('cKontinent');
+            $country->bPermitRegistration     = Request::verifyGPDataString('bPermitRegistration') === '' ? 0 : 1;
+            $country->bRequireStateDefinition = Request::verifyGPDataString('bRequireStateDefinition') === '' ? 0 : 1;
 
             $this->db->update(
                 'tland',

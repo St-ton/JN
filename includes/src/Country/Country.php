@@ -2,6 +2,7 @@
 
 namespace JTL\Country;
 
+use JTL\DB\ReturnType;
 use JTL\Language\LanguageModel;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
@@ -59,6 +60,21 @@ class Country
     private $nameEN;
 
     /**
+     * @var bool
+     */
+    private $shippingAvailable = false;
+
+    /**
+     * @var bool
+     */
+    private $permitRegistration;
+
+    /**
+     * @var bool
+     */
+    private $requireStateDefinition;
+
+    /**
      * Country constructor.
      * @param string $ISO
      * @param bool $initFromDB
@@ -81,10 +97,27 @@ class Country
     {
         $countryData = Shop::Container()->getDB()->select('tland', 'cISO', $this->getISO());
         if ($countryData !== null) {
+            $shippingMethods      = Shop::Container()->getDB()->query(
+                'SELECT cLaender FROM tversandart',
+                ReturnType::ARRAY_OF_OBJECTS
+            );
+            $deliverableCountries = [];
+            foreach ($shippingMethods as $shippingMethod) {
+                $deliverableCountries = \array_unique(\array_merge(
+                    $deliverableCountries,
+                    \explode(' ', $shippingMethod->cLaender)
+                ));
+            }
             $this->setContinent($countryData->cKontinent)
                  ->setEU($countryData->nEU)
                  ->setNameDE($countryData->cDeutsch)
-                 ->setNameEN($countryData->cEnglisch);
+                 ->setNameEN($countryData->cEnglisch)
+                 ->setPermitRegistration($countryData->bPermitRegistration === '1')
+                 ->setRequireStateDefinition($countryData->bRequireStateDefinition === '1');
+
+            if (\in_array($this->getISO(), $deliverableCountries, true)) {
+                $this->setShippingAvailable(true);
+            }
         }
     }
 
@@ -239,6 +272,63 @@ class Country
     public function setNameEN(string $nameEN): self
     {
         $this->nameEN = $nameEN;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isShippingAvailable(): bool
+    {
+        return $this->shippingAvailable;
+    }
+
+    /**
+     * @param bool $shippingAvailable
+     * @return Country
+     */
+    public function setShippingAvailable(bool $shippingAvailable): self
+    {
+        $this->shippingAvailable = $shippingAvailable;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPermitRegistration(): bool
+    {
+        return $this->permitRegistration;
+    }
+
+    /**
+     * @param bool $permitRegistration
+     * @return Country
+     */
+    public function setPermitRegistration(bool $permitRegistration): self
+    {
+        $this->permitRegistration = $permitRegistration;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRequireStateDefinition(): bool
+    {
+        return $this->requireStateDefinition;
+    }
+
+    /**
+     * @param bool $requireStateDefinition
+     * @return Country
+     */
+    public function setRequireStateDefinition(bool $requireStateDefinition): self
+    {
+        $this->requireStateDefinition = $requireStateDefinition;
 
         return $this;
     }

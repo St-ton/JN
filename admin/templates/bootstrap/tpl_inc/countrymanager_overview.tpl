@@ -10,6 +10,9 @@
                     <th>{__('Englisch')}</th>
                     <th>{__('EU')}</th>
                     <th>{__('Continent')}</th>
+                    <th>{__('isShippingAvailable')}</th>
+                    <th>{__('isPermitRegistration')}</th>
+                    <th>{__('isRequireStateDefinition')}</th>
                     <th></th>
                 </tr>
                 </thead>
@@ -33,6 +36,20 @@
                         </td>
                         <td>
                             {$country->getContinent()}
+                        </td>
+                        <td class="text-center">
+                            {if $country->isShippingAvailable()}
+                                <i class="fa fa-check-circle text-success"></i>
+                            {else}
+                                <i class="fa fa-times-circle text-danger"></i>
+                            {/if}
+                        </td>
+                        <td class="text-center">
+                            {if $country->isPermitRegistration()}{__('yes')}{else}{__('no')}{/if}
+                        </td>
+
+                        <td class="text-center">
+                            {if $country->isRequireStateDefinition()}{__('yes')}{else}{__('no')}{/if}
                         </td>
                         <td>
                             <form method="post">

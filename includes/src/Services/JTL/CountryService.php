@@ -52,14 +52,26 @@ class CountryService implements CountryServiceInterface
 
             return;
         }
-        $countries = $this->db->query('SELECT * FROM tland', ReturnType::ARRAY_OF_OBJECTS);
+        $countries            = $this->db->query('SELECT * FROM tland', ReturnType::ARRAY_OF_OBJECTS);
+        $shippingMethods      = $this->db->query('SELECT cLaender FROM tversandart', ReturnType::ARRAY_OF_OBJECTS);
+        $deliverableCountries = [];
+        foreach ($shippingMethods as $shippingMethod) {
+            $deliverableCountries = \array_unique(\array_merge(
+                $deliverableCountries,
+                \explode(' ', $shippingMethod->cLaender)
+            ));
+        }
         foreach ($countries as $country) {
             $countryTMP = new Country($country->cISO);
             $countryTMP->setEU((int)$country->nEU)
                        ->setContinent($country->cKontinent)
                        ->setNameDE($country->cDeutsch)
-                       ->setNameEN($country->cEnglisch);
-
+                       ->setNameEN($country->cEnglisch)
+                       ->setPermitRegistration($country->bPermitRegistration === '1')
+                       ->setRequireStateDefinition($country->bRequireStateDefinition === '1');
+            if (\in_array($countryTMP->getISO(), $deliverableCountries, true)) {
+                $countryTMP->setShippingAvailable(true);
+            }
             $this->getCountryList()->push($countryTMP);
         }
 

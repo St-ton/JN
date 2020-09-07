@@ -52,6 +52,28 @@
                         </select>
                     </div>
                 </div>
+                <div class="form-group form-row align-items-center">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="bPermitRegistration">{__('isPermitRegistration')}:</label>
+                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <div class="custom-control custom-checkbox">
+                            <input class="custom-control-input" type="checkbox" name="bPermitRegistration"
+                                   id="bPermitRegistration"
+                                   {if !empty($country) && $country->isPermitRegistration()}checked{/if}>
+                            <label class="custom-control-label" for="bPermitRegistration"></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group form-row align-items-center">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="bRequireStateDefinition">{__('isRequireStateDefinition')}:</label>
+                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <div class="custom-control custom-checkbox">
+                            <input class="custom-control-input" type="checkbox" name="bRequireStateDefinition"
+                                   id="bRequireStateDefinition"
+                                   {if !empty($country) && $country->isRequireStateDefinition()}checked{/if}>
+                            <label class="custom-control-label" for="bRequireStateDefinition"></label>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="card-footer save-wrapper">
                 <div class="row">

@@ -215,6 +215,14 @@ $filterMapping = reindex($filterMapping, static function ($e) {
 $filterMapping = map($filterMapping, static function ($e) {
     return $e->name;
 });
+
+$alertHelper->addAlert(
+    Alert::TYPE_WARNING,
+    __('warningNovaSidebar'),
+    'warningNovaSidebar',
+    ['dismissable' => false]
+);
+
 $smarty->assign('filterMapping', $filterMapping)
     ->assign('validPageTypes', $boxAdmin->getMappedValidPageTypes())
     ->assign('bBoxenAnzeigen', $boxAdmin->getVisibility($pageID))

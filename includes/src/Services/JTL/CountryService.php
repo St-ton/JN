@@ -5,6 +5,7 @@ namespace JTL\Services\JTL;
 use Illuminate\Support\Collection;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Country\Country;
+use JTL\Country\State;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Shop;
@@ -54,6 +55,8 @@ class CountryService implements CountryServiceInterface
         }
         $countries            = $this->db->query('SELECT * FROM tland', ReturnType::ARRAY_OF_OBJECTS);
         $shippingMethods      = $this->db->query('SELECT cLaender FROM tversandart', ReturnType::ARRAY_OF_OBJECTS);
+        $possibleStates       = $this->db->query('SELECT DISTINCT cLandIso FROM tstaat', ReturnType::COLLECTION)
+            ->pluck('cLandIso')->toArray();
         $deliverableCountries = [];
         foreach ($shippingMethods as $shippingMethod) {
             $deliverableCountries = \array_unique(\array_merge(
@@ -69,6 +72,9 @@ class CountryService implements CountryServiceInterface
                        ->setNameEN($country->cEnglisch)
                        ->setPermitRegistration($country->bPermitRegistration === '1')
                        ->setRequireStateDefinition($country->bRequireStateDefinition === '1');
+            if (\in_array($countryTMP->getISO(), $possibleStates, true)) {
+                $countryTMP->setStates($this->getStates($countryTMP->getISO()));
+            }
             if (\in_array($countryTMP->getISO(), $deliverableCountries, true)) {
                 $countryTMP->setShippingAvailable(true);
             }
@@ -235,5 +241,27 @@ class CountryService implements CountryServiceInterface
         }
 
         return $continents;
+    }
+
+    /**
+     * @param $iso
+     * @return array
+     */
+    private function getStates($iso): array
+    {
+        $states    = [];
+        $countries = Shop::Container()->getDB()->selectAll('tstaat', 'cLandIso', $iso, '*', 'cName');
+        if (\is_array($countries) && \count($countries) > 0) {
+            foreach ($countries as $country) {
+                $state = new State();
+                $state->setId((int)$country->kStaat)
+                    ->setIso($country->cCode)
+                    ->setName($country->cName)
+                    ->setCountryISO($country->cLandIso);
+                $states[] = $state;
+            }
+        }
+
+        return $states;
     }
 }

@@ -11,9 +11,11 @@
                             {col cols=12 md=5 class="mb-3"}
                                 {select name="land" id="country" class='custom-select' placeholder="" aria=["label"=>"{lang key='country' section='account data'}"]}
                                     {foreach $laender as $land}
-                                        <option value="{$land->getISO()}" {if $shippingCountry === $land->getISO()}selected{/if}>
-                                            {$land->getName()}
-                                        </option>
+                                        {if $land->isPermitRegistration() && $land->isShippingAvailable()}
+                                            <option value="{$land->getISO()}" {if $shippingCountry === $land->getISO()}selected{/if}>
+                                                {$land->getName()}
+                                            </option>
+                                        {/if}
                                     {/foreach}
                                 {/select}
                             {/col}

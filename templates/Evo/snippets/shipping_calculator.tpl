@@ -12,9 +12,11 @@
                         <label for="country">{lang key='country' section='account data'}</label>
                         <select name="land" id="country" class="form-control">
                             {foreach $laender as $land}
-                                <option value="{$land->getISO()}" {if $shippingCountry === $land->getISO()}selected{/if}>
-                                    {$land->getName()}
-                                </option>
+                                {if $land->isPermitRegistration() && $land->isShippingAvailable()}
+                                    <option value="{$land->getISO()}" {if $shippingCountry === $land->getISO()}selected{/if}>
+                                        {$land->getName()}
+                                    </option>
+                                {/if}
                             {/foreach}
                         </select>
                         &nbsp;

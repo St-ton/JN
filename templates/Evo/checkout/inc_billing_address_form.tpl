@@ -183,7 +183,9 @@
                 <select name="land" id="country" class="country-input form-control" required autocomplete="billing country">
                     <option value="" disabled>{lang key='country' section='account data'}</option>
                     {foreach $laender as $land}
-                        <option value="{$land->getISO()}" {if $cIso === $land->getISO()}selected="selected"{/if}>{$land->getName()}</option>
+                        {if $land->isPermitRegistration() && $land->isShippingAvailable()}
+                            <option value="{$land->getISO()}" {if $cIso === $land->getISO()}selected="selected"{/if}>{$land->getName()}</option>
+                        {/if}
                     {/foreach}
                 </select>
                 {if isset($fehlendeAngaben.land)}

@@ -235,6 +235,7 @@
                     {else}
                         {$countryISO=$shippingCountry}
                     {/if}
+                    {$selectedCountry=$countryService->getCountry($countryISO)}
                     {block name='checkout-inc-billing-address-form-country-wrap'}
                         {col cols=12}
                             {block name='checkout-inc-billing-address-form-country'}
@@ -245,8 +246,10 @@
                                 }
                                     {select name="land" id="billing_address-country" class="country-input custom-select js-country-select" required=true autocomplete="billing country"}
                                         <option value="" disabled>{lang key='country' section='account data'}</option>
-                                        {foreach $laender as $land}
-                                            <option value="{$land->getISO()}" {if $countryISO === $land->getISO()}selected="selected"{/if}>{$land->getName()}</option>
+                                        {foreach $countryService->getCountryList() as $country}
+                                            {if $country->isPermitRegistration() && $country->isShippingAvailable()}
+                                                <option value="{$country->getISO()}" {if $selectedCountry->getISO() === $country->getISO()}selected="selected"{/if}>{$country->getName()}</option>
+                                            {/if}
                                         {/foreach}
                                     {/select}
                                     {if isset($fehlendeAngaben.land)}
@@ -258,13 +261,12 @@
                             {/block}
                         {/col}
                         {if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland !== 'N'}
-                            {getStates cIso=$countryISO assign='oStates'}
                             {if isset($cPost_var['bundesland'])}
-                                {assign var=cState value=$cPost_var['bundesland']}
+                                {assign var=selectedState value=$cPost_var['bundesland']}
                             {elseif !empty($Kunde->cBundesland)}
-                                {assign var=cState value=$Kunde->cBundesland}
+                                {assign var=selectedState value=$Kunde->cBundesland}
                             {else}
-                                {assign var=cState value=''}
+                                {assign var=selectedState value=''}
                             {/if}
                             {col cols=12}
                                 {block name='checkout-inc-billing-address-form-state'}
@@ -272,7 +274,7 @@
                                         label-for="state"
                                         label="{lang key='state' section='account data'}{if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland !== 'Y'}<span class='optional'> - {lang key='optional'}</span>{/if}"
                                     }
-                                        {if !empty($oStates)}
+                                        {if !empty($selectedCountry)}
                                             {select
                                                 data=["defaultoption"=>{lang key=pleaseChoose}]
                                                 name="bundesland"
@@ -282,15 +284,15 @@
                                                 required=($Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y')
                                             }
                                                 <option value="" selected disabled>{lang key='pleaseChoose'}</option>
-                                                {foreach $oStates as $oState}
-                                                    <option value="{$oState->cCode}" {if $cState === $oState->cName || $cState === $oState->cCode}selected{/if}>{$oState->cName}</option>
+                                                {foreach $selectedCountry->getStates() as $state}
+                                                    <option value="{$state->getIso()}" {if $selectedState === $state->getName() || $selectedState === $state->getIso()}selected{/if}>{$state->getName()}</option>
                                                 {/foreach}
                                             {/select}
                                         {else}
                                             {input
                                                 type="text"
                                                 name="bundesland"
-                                                value=$cState
+                                                value=$selectedState
                                                 id="billing_address-state"
                                                 data=["defaultoption"=>{lang key=pleaseChoose}]
                                                 placeholder="{lang key='state' section='account data'}"

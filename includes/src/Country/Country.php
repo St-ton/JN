@@ -75,6 +75,11 @@ class Country
     private $requireStateDefinition;
 
     /**
+     * @var array
+     */
+    private $states;
+
+    /**
      * Country constructor.
      * @param string $ISO
      * @param bool $initFromDB
@@ -329,6 +334,25 @@ class Country
     public function setRequireStateDefinition(bool $requireStateDefinition): self
     {
         $this->requireStateDefinition = $requireStateDefinition;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getStates(): array
+    {
+        return $this->states;
+    }
+
+    /**
+     * @param array $states
+     * @return Country
+     */
+    public function setStates(array $states): self
+    {
+        $this->states = $states;
 
         return $this;
     }

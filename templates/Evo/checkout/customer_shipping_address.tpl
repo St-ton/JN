@@ -138,7 +138,9 @@
             <select name="{$prefix}[{$name}][land]" id="{$prefix}-{$name}-country" class="country-input form-control" autocomplete="shipping country">
                 <option value="" selected disabled>{lang key='country' section='account data'}*</option>
                 {foreach $LieferLaender as $land}
-                    <option value="{$land->getISO()}" {if $cIso == $land->getISO()}selected="selected"{/if}>{$land->getName()}</option>
+                    {if $land->isPermitRegistration() && $land->isShippingAvailable()}
+                        <option value="{$land->getISO()}" {if $cIso == $land->getISO()}selected="selected"{/if}>{$land->getName()}</option>
+                    {/if}
                 {/foreach}
             </select>
         </div>

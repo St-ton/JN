@@ -156,9 +156,9 @@ $(document).on('click', `${modal} [${Data.next}]`, () => {
     }
 
     if (!hasAuth) {
-        if ($currentSlide.prop('id') === '2') {
+        if ($currentSlide.prop('id') === '3') {
             legalPluginCount = $inputs.serializeArray().length;
-        } else if ($currentSlide.prop('id') === '3') {
+        } else if ($currentSlide.prop('id') === '4') {
             paymentPluginCount = $inputs.serializeArray().length;
         }
         if (legalPluginCount > 0 || paymentPluginCount > 0) {

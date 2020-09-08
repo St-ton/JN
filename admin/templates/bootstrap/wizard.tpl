@@ -185,9 +185,9 @@
                                             <span class="setup-subheadline mt-0 mb-2">{__('recommendationGuide')}</span>
                                             <p class="text-muted small m-0">{__('recommendationGuideDesc')}</p>
                                             <span class="icon-hover text-primary icon-more">
-												<span class="fal fa-long-arrow-right"></span>
-												<span class="fas fa-long-arrow-right"></span>
-											</span>
+                                                <span class="fal fa-long-arrow-right"></span>
+                                                <span class="fas fa-long-arrow-right"></span>
+                                            </span>
                                         </div>
                                     </a>
                                 </div>
@@ -197,9 +197,9 @@
                                             <span class="setup-subheadline mt-0 mb-2">{__('recommendationSupport')}</span>
                                             <p class="text-muted small m-0">{__('recommendationSupportDesc')}</p>
                                             <span class="icon-hover text-primary icon-more">
-												<span class="fal fa-long-arrow-right"></span>
-												<span class="fas fa-long-arrow-right"></span>
-											</span>
+                                                <span class="fal fa-long-arrow-right"></span>
+                                                <span class="fas fa-long-arrow-right"></span>
+                                            </span>
                                         </div>
                                     </a>
                                 </div>
@@ -209,9 +209,9 @@
                                             <span class="setup-subheadline mt-0 mb-2">{__('recommendationExtensionStore')}</span>
                                             <p class="text-muted small m-0">{__('recommendationExtensionStoreDesc')}</p>
                                             <span class="icon-hover text-primary icon-more">
-												<span class="fal fa-long-arrow-right"></span>
-												<span class="fas fa-long-arrow-right"></span>
-											</span>
+                                                <span class="fal fa-long-arrow-right"></span>
+                                                <span class="fas fa-long-arrow-right"></span>
+                                            </span>
                                         </div>
                                     </a>
                                 </div>
@@ -221,9 +221,9 @@
                                             <span class="setup-subheadline mt-0 mb-2">{__('recommendationIssuetracker')}</span>
                                             <p class="text-muted small m-0">{__('recommendationIssuetrackerDesc')}</p>
                                             <span class="icon-hover text-primary icon-more">
-												<span class="fal fa-long-arrow-right"></span>
-												<span class="fas fa-long-arrow-right"></span>
-											</span>
+                                                <span class="fal fa-long-arrow-right"></span>
+                                                <span class="fas fa-long-arrow-right"></span>
+                                            </span>
                                         </div>
                                     </a>
                                 </div>
@@ -233,9 +233,9 @@
                                             <span class="setup-subheadline mt-0 mb-2">{__('recommendationForum')}</span>
                                             <p class="text-muted small m-0">{__('recommendationForumDesc')}</p>
                                             <span class="icon-hover text-primary icon-more">
-												<span class="fal fa-long-arrow-right"></span>
-												<span class="fas fa-long-arrow-right"></span>
-											</span>
+                                                <span class="fal fa-long-arrow-right"></span>
+                                                <span class="fas fa-long-arrow-right"></span>
+                                            </span>
                                         </div>
                                     </a>
                                 </div>
@@ -245,9 +245,9 @@
                                             <span class="setup-subheadline mt-0 mb-2">{__('recommendationReleaseForum')}</span>
                                             <p class="text-muted small m-0">{__('recommendationReleaseForumDesc')}</p>
                                             <span class="icon-hover text-primary icon-more">
-												<span class="fal fa-long-arrow-right"></span>
-												<span class="fas fa-long-arrow-right"></span>
-											</span>
+                                                <span class="fal fa-long-arrow-right"></span>
+                                                <span class="fas fa-long-arrow-right"></span>
+                                            </span>
                                         </div>
                                     </a>
                                 </div>
@@ -257,9 +257,9 @@
                                             <span class="setup-subheadline mt-0 mb-2">{__('recommendationBlog')}</span>
                                             <p class="text-muted small m-0">{__('recommendationBlogDesc')}</p>
                                             <span class="icon-hover text-primary icon-more">
-												<span class="fal fa-long-arrow-right"></span>
-												<span class="fas fa-long-arrow-right"></span>
-											</span>
+                                                <span class="fal fa-long-arrow-right"></span>
+                                                <span class="fas fa-long-arrow-right"></span>
+                                            </span>
                                         </div>
                                     </a>
                                 </div>
@@ -269,9 +269,9 @@
                                             <span class="setup-subheadline mt-0 mb-2">{__('recommendationJTLSearch')}</span>
                                             <p class="text-muted small m-0">{__('recommendationJTLSearchDesc')}</p>
                                             <span class="icon-hover text-primary icon-more">
-												<span class="fal fa-long-arrow-right"></span>
-												<span class="fas fa-long-arrow-right"></span>
-											</span>
+                                                <span class="fal fa-long-arrow-right"></span>
+                                                <span class="fas fa-long-arrow-right"></span>
+                                            </span>
                                         </div>
                                     </a>
                                 </div>

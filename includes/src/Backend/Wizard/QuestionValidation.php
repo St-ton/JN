@@ -23,7 +23,7 @@ class QuestionValidation
     /**
      * QuestionValidation constructor.
      * @param QuestionInterface $question
-     * @param bool $defaultValidation
+     * @param bool              $defaultValidation
      */
     public function __construct(QuestionInterface $question, bool $defaultValidation = true)
     {
@@ -88,7 +88,7 @@ class QuestionValidation
     public function valueIsEmpty(): bool
     {
         return empty($this->question->getValue())
-                || (\is_array($this->question->getValue()) && \count(\array_filter($this->question->getValue())) === 0);
+            || (\is_array($this->question->getValue()) && \count(\array_filter($this->question->getValue())) === 0);
     }
 
     /**

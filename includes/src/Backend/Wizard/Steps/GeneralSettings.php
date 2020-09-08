@@ -21,7 +21,7 @@ final class GeneralSettings extends AbstractStep
 {
     /**
      * GeneralSettings constructor.
-     * @param DbInterface $db
+     * @param DbInterface           $db
      * @param AlertServiceInterface $alertService
      */
     public function __construct(DbInterface $db, AlertServiceInterface $alertService)
@@ -98,7 +98,7 @@ final class GeneralSettings extends AbstractStep
                 }
             }
 
-            return  '';
+            return '';
         });
         $this->addQuestion($question);
 

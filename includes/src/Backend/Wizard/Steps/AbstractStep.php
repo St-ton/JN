@@ -45,7 +45,7 @@ abstract class AbstractStep implements StepInterface
 
     /**
      * AbstractStep constructor.
-     * @param DbInterface $db
+     * @param DbInterface           $db
      * @param AlertServiceInterface $alertService
      */
     public function __construct(DbInterface $db, AlertServiceInterface $alertService)

@@ -22,7 +22,7 @@ final class PaymentPlugins extends AbstractStep
 {
     /**
      * PaymentPlugins constructor.
-     * @param DbInterface $db
+     * @param DbInterface           $db
      * @param AlertServiceInterface $alertService
      */
     public function __construct(DbInterface $db, AlertServiceInterface $alertService)
@@ -37,7 +37,7 @@ final class PaymentPlugins extends AbstractStep
             return __($e->cModulId);
         });
 
-        $this->setDescription(sprintf(__('stepFourDesc'), implode(', ', $paymentMethods)));
+        $this->setDescription(\sprintf(__('stepFourDesc'), \implode(', ', $paymentMethods)));
         $this->setID(4);
 
         $recommendations = new Manager($this->alertService, Manager::SCOPE_WIZARD_PAYMENT_PROVIDER);
@@ -51,7 +51,7 @@ final class PaymentPlugins extends AbstractStep
         $question->setIsFullWidth(true);
         $question->setIsRequired(false);
         $question->setValue(false);
-        $question->setValidation(function (QuestionInterface $question) {
+        $question->setValidation(static function (QuestionInterface $question) {
             $questionValidation = new QuestionValidation($question);
             $questionValidation->checkSSL(true);
 

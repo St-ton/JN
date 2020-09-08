@@ -252,7 +252,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
         $this->summaryText = $summaryText;
     }
 
-   /**
+    /**
      * @inheritDoc
      */
     public function getLabel(): ?string
@@ -298,8 +298,9 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     public function setValue($value, bool $sessionFirst = true): void
     {
         $wizard = Backend::get('wizard');
-        if ($sessionFirst && isset($wizard['question-' . $this->getID()])) {
-            $this->value = $wizard['question-' . $this->getID()];
+        $idx    = 'question-' . $this->getID();
+        if ($sessionFirst && isset($wizard[$idx])) {
+            $this->value = $wizard[$idx];
         } else {
             $this->value = $value;
         }
@@ -415,7 +416,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     public function setValidation(?callable $validation = null): void
     {
         $this->validation = $validation ?? function (QuestionInterface $question) {
-            return (new QuestionValidation($question))->getValidationError();
+                return (new QuestionValidation($question))->getValidationError();
         };
     }
 

@@ -20,7 +20,7 @@ final class LegalPlugins extends AbstractStep
 {
     /**
      * LegalPlugins constructor.
-     * @param DbInterface $db
+     * @param DbInterface           $db
      * @param AlertServiceInterface $alertService
      */
     public function __construct(DbInterface $db, AlertServiceInterface $alertService)
@@ -41,7 +41,7 @@ final class LegalPlugins extends AbstractStep
         $question->setIsFullWidth(true);
         $question->setIsRequired(false);
         $question->setValue(false);
-        $question->setValidation(function (QuestionInterface $question) {
+        $question->setValidation(static function (QuestionInterface $question) {
             $questionValidation = new QuestionValidation($question);
             $questionValidation->checkSSL(true);
 

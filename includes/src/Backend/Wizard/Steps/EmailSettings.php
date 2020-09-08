@@ -20,9 +20,9 @@ final class EmailSettings extends AbstractStep
 {
     /**
      * EmailSettings constructor.
-     * @param DbInterface $db
+     * @param DbInterface           $db
      * @param AlertServiceInterface $alertService
-     * @param AdminAccount $adminAccount
+     * @param AdminAccount          $adminAccount
      */
     public function __construct(DbInterface $db, AlertServiceInterface $alertService, AdminAccount $adminAccount)
     {

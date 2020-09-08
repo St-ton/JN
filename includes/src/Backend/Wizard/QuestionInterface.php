@@ -32,11 +32,11 @@ interface QuestionInterface
     /**
      * Add or update a row in tsprachwerte
      *
-     * @param string $locale  locale iso code e.g. "ger"
+     * @param string $locale locale iso code e.g. "ger"
      * @param string $section section e.g. "global". See tsprachsektion for all sections
-     * @param string $key     unique name to identify localization
-     * @param string $value   localized text
-     * @param bool   $system  optional flag for system-default.
+     * @param string $key unique name to identify localization
+     * @param string $value localized text
+     * @param bool   $system optional flag for system-default.
      * @throws Exception if locale key or section is wrong
      */
     public function setLocalization($locale, $section, $key, $value, $system = true): void;
@@ -132,7 +132,7 @@ interface QuestionInterface
     public function getValue();
 
     /**
-     * @param $value
+     * @param      $value
      * @param bool $sessionFirst
      */
     public function setValue($value, bool $sessionFirst): void;

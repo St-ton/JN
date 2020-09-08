@@ -119,6 +119,6 @@ final class SelectOption
      */
     public function isSelected($val): bool
     {
-        return  $val === $this->getValue() || (\is_array($val) && \in_array($this->getValue(), $val, true));
+        return $val === $this->getValue() || (\is_array($val) && \in_array($this->getValue(), $val, true));
     }
 }

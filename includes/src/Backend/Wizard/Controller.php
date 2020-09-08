@@ -3,6 +3,9 @@
 namespace JTL\Backend\Wizard;
 
 use Illuminate\Support\Collection;
+use JTL\Cache\JTLCache;
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
 use JTL\Session\Backend;
 use JTL\Shop;
 
@@ -18,12 +21,26 @@ final class Controller
     private $steps;
 
     /**
-     * Controller constructor.
-     * @param DefaultFactory $factory
+     * @var DbInterface
      */
-    public function __construct(DefaultFactory $factory)
+    private $db;
+
+    /**
+     * @var JTLCacheInterface
+     */
+    private $cache;
+
+    /**
+     * Controller constructor.
+     * @param DefaultFactory    $factory
+     * @param DbInterface       $db
+     * @param JTLCacheInterface $cache
+     */
+    public function __construct(DefaultFactory $factory, DbInterface $db, JTLCacheInterface $cache)
     {
         $this->steps = $factory->getSteps();
+        $this->db    = $db;
+        $this->cache = $cache;
     }
 
     /**
@@ -60,13 +77,13 @@ final class Controller
             }
         }
         if (!$errors) {
-            Shop::Container()->getDB()->update(
+            $this->db->update(
                 'teinstellungen',
                 'cName',
                 'global_wizard_done',
                 (object)['cWert' => 'Y']
             );
-            Shop::Container()->getCache()->flushAll();
+            $this->cache->flushAll();
             unset($_SESSION['wizard']);
         }
     }
@@ -90,7 +107,7 @@ final class Controller
                 }
             }
         }
-        Backend::set('wizard', array_merge(Backend::get('wizard') ?? [], $post));
+        Backend::set('wizard', \array_merge(Backend::get('wizard') ?? [], $post));
 
         return $errorMessages;
     }

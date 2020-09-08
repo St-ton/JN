@@ -25,10 +25,10 @@ final class DefaultFactory
 
     /**
      * DefaultFactory constructor.
-     * @param DbInterface $db
-     * @param GetText $getText
+     * @param DbInterface           $db
+     * @param GetText               $getText
      * @param AlertServiceInterface $alertService
-     * @param AdminAccount $adminAccount
+     * @param AdminAccount          $adminAccount
      */
     public function __construct(
         DbInterface $db,

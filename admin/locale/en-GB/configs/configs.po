@@ -2986,3 +2986,9 @@ msgstr "Show information on direct advertising when registering the email addres
 
 msgid "direct_advertising_desc"
 msgstr "The information will be displayed below the email address input field during registration."
+
+msgid "upload_modul_limit_name"
+msgstr "Allowed file uploads per hour"
+
+msgid "upload_modul_limit_desc"
+msgstr "Specify the maximum number of files that a user can upload per hour when the Upload Module is activated."

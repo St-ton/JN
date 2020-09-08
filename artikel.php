@@ -199,11 +199,15 @@ $nav = $conf['artikeldetails']['artikeldetails_navi_blaettern'] === 'Y'
     ? Product::getProductNavigation($AktuellerArtikel->kArtikel ?? 0, $AktuelleKategorie->kKategorie ?? 0)
     : null;
 
-$maxSize = Upload::uploadMax();
-$smarty->assign('nMaxUploadSize', $maxSize)
-       ->assign('cMaxUploadSize', Upload::formatGroesse($maxSize))
-       ->assign('oUploadSchema_arr', Upload::gibArtikelUploads($AktuellerArtikel->kArtikel))
-       ->assign('showMatrix', $AktuellerArtikel->showMatrix())
+if ($AktuellerArtikel->kVariKindArtikel === 0 && $AktuellerArtikel->nIstVater === 0 && Upload::checkLicense()) {
+    $maxSize = Upload::uploadMax();
+    $smarty->assign('nMaxUploadSize', $maxSize)
+           ->assign('cMaxUploadSize', Upload::formatGroesse($maxSize))
+           ->assign('oUploadSchema_arr', Upload::gibArtikelUploads(!empty($AktuellerArtikel->kVariKindArtikel)
+               ? $AktuellerArtikel->kVariKindArtikel
+               : $AktuellerArtikel->kArtikel));
+}
+$smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())
        ->assign('arNichtErlaubteEigenschaftswerte', $nonAllowed)
        ->assign('oAehnlicheArtikel_arr', $similarProducts)
        ->assign('UVPlocalized', $AktuellerArtikel->cUVPLocalized)

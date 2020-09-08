@@ -1,4 +1,7 @@
-<?php
+<?php declare(strict_types=1);
+
+/** @global \JTL\Smarty\JTLSmarty $smarty */
+/** @global \JTL\Backend\AdminAccount $oAccount */
 
 use JTL\Backend\AuthToken;
 use JTL\Backend\Wizard\DefaultFactory;
@@ -23,11 +26,11 @@ $factory      = new DefaultFactory(
     Shop::Container()->getAlertService(),
     Shop::Container()->getAdminAccount()
 );
-$controller   = new Controller($factory);
+$controller   = new Controller($factory, $db, $cache);
 $conf         = Shop::getSettings([CONF_GLOBAL]);
-$token        = AuthToken::getInstance(Shop::Container()->getDB());
+$token        = AuthToken::getInstance($db);
 $valid        = $token->isValid();
-$authRedirect = Backend::get('wizard-authenticated') && $valid
+$authRedirect = $valid && Backend::get('wizard-authenticated')
     ? Backend::get('wizard-authenticated')
     : false;
 

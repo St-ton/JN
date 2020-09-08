@@ -32,12 +32,12 @@ $io               = AdminIO::getInstance()->setAccount($oAccount);
 $images           = new Manager($db, $gettext);
 $updateIO         = new UpdateIO($db, $gettext);
 $wizardFactory    = new DefaultFactory(
-    Shop::Container()->getDB(),
-    Shop::Container()->getGetText(),
+    $db,
+    $gettext,
     Shop::Container()->getAlertService(),
     Shop::Container()->getAdminAccount()
 );
-$wizardController = new Controller($wizardFactory);
+$wizardController = new Controller($wizardFactory, $db, Shop::Container()->getCache());
 
 try {
     Shop::Container()->getOPC()->registerAdminIOFunctions($io);

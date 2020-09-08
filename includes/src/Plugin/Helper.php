@@ -297,7 +297,20 @@ class Helper
     {
         $plugin = Shop::Container()->getDB()->select('tplugin', 'cPluginID', $pluginID);
 
-        return isset($plugin->kPlugin) ? (int)$plugin->kPlugin : 0;
+        return (int)($plugin->kPlugin ?? 0);
+    }
+
+    /**
+     * @param string $exsID
+     * @return int
+     * @former gibkPluginAuscPluginID()
+     * @since 5.0.0
+     */
+    public static function getIDByExsID(string $exsID): int
+    {
+        $plugin = Shop::Container()->getDB()->select('tplugin', 'exsID', $exsID);
+
+        return (int)($plugin->kPlugin ?? 0);
     }
 
     /**

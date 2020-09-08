@@ -800,8 +800,8 @@ final class Shop
     /**
      * set language/language ISO
      *
-     * @param int    $languageID
-     * @param string $cISO
+     * @param int         $languageID
+     * @param string|null $cISO
      */
     public static function setLanguage(int $languageID, string $cISO = null): void
     {

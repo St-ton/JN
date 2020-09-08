@@ -14,7 +14,7 @@
         {$disabled = $licData->isExpired() || $subscription->isExpired()}
         {if isset($licenseErrorMessage)}
             <div class="alert alert-danger">
-                {__($licenseErrorMessage)}{if isset($resultCode) && $resultCode !== 1}{__('Error code: %d', $resultCode)}{/if}
+                {__($licenseErrorMessage)}
             </div>
         {/if}
         {$installedVersion = $referencedItem->getInstalledVersion()}
@@ -49,6 +49,7 @@
                 <input type="hidden" name="item-type" value="{$license->getType()}">
                 <input type="hidden" name="license-type" value="{$license->getLicense()->getType()}">
                 <input type="hidden" name="item-id" value="{$license->getID()}">
+                <input type="hidden" name="exs-id" value="{$license->getExsID()}">
                 <button{if $disabled} disabled{/if} class="btn btn-default btn-sm update-item" name="action" value="update">
                     <i class="fas fa-refresh"></i> {__('Update')}
                 </button>

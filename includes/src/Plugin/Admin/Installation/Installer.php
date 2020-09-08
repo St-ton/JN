@@ -109,10 +109,11 @@ final class Installer
     }
 
     /**
+     * @param string|null $dir
      * @return int
      * @former installierePluginVorbereitung()
      */
-    public function prepare(): int
+    public function prepare(string $dir = null): int
     {
         if (empty($this->dir)) {
             return InstallCode::WRONG_PARAM;
@@ -123,6 +124,13 @@ final class Installer
             $pluginPath = \PFAD_ROOT . \PFAD_PLUGIN . \basename($this->dir);
             $validator  = $this->legacyValidator;
             if (!\file_exists($pluginPath . '/' . \PLUGIN_INFO_FILE)) {
+                if ($dir !== null && $dir !== $this->dir) {
+                    // special case for EXS api
+                    $this->dir = $dir;
+
+                    return $this->prepare();
+                }
+
                 return InstallCode::INFO_XML_MISSING;
             }
         }

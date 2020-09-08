@@ -56,9 +56,10 @@ class Extractor
 
     /**
      * @param string $zipFile
+     * @param bool   $deleteSource
      * @return InstallationResponse
      */
-    public function extractPlugin(string $zipFile): InstallationResponse
+    public function extractPlugin(string $zipFile, bool $deleteSource = true): InstallationResponse
     {
         $dirName = $this->unzip($zipFile);
         try {
@@ -66,6 +67,9 @@ class Extractor
         } catch (InvalidArgumentException $e) {
             $this->response->setStatus(InstallationResponse::STATUS_FAILED);
             $this->response->addMessage($e->getMessage());
+        }
+        if ($deleteSource === true) {
+            \unlink($zipFile);
         }
 
         return $this->response;
@@ -110,7 +114,7 @@ class Extractor
     {
         $info = self::UNZIP_DIR . $dirName . \PLUGIN_INFO_FILE;
         if (!\file_exists($info)) {
-            throw new InvalidArgumentException('info.xml does not exist: ' . $info);
+            throw new InvalidArgumentException('info.xml does not exist: ' . $dirName . \PLUGIN_INFO_FILE);
         }
         $parsed = $this->parser->parse($info);
         if (isset($parsed['jtlshopplugin']) && \is_array($parsed['jtlshopplugin'])) {

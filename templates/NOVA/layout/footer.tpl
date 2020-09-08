@@ -95,7 +95,7 @@
                                     {/block}
                                     {block name='layout-footer-newsletter-info'}
                                         <p class="info">
-                                            {lang key='unsubscribeAnytime' section='newsletter' printf=$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL()}
+                                            {lang key='newsletterInformedConsent' section='newsletter' printf=$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL()}
                                         </p>
                                     {/block}
                                 {/col}

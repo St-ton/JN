@@ -2,6 +2,8 @@
 
 namespace JTL\Backend\Wizard\Steps;
 
+use Illuminate\Support\Collection;
+use JTL\Backend\Wizard\ExtensionInstaller;
 use JTL\Backend\Wizard\Question;
 use JTL\Backend\Wizard\QuestionInterface;
 use JTL\Backend\Wizard\QuestionType;
@@ -28,6 +30,7 @@ final class PaymentPlugins extends AbstractStep
     public function __construct(DbInterface $db, AlertServiceInterface $alertService)
     {
         parent::__construct($db, $alertService);
+        $collection = new Collection();
         $this->setTitle(__('stepFour'));
 
         $paymentMethods = map($db->query(
@@ -58,18 +61,27 @@ final class PaymentPlugins extends AbstractStep
             return $questionValidation->getValidationError();
         });
 
-        $recommendations->getRecommendations()->each(static function (Recommendation $recommendation) use ($question) {
-            $option = new SelectOption();
-            $option->setName($recommendation->getTitle());
-            $option->setValue($recommendation->getId());
-            $option->setLogoPath($recommendation->getPreviewImage());
-            $option->setDescription($recommendation->getTeaser());
-            $option->setLink($recommendation->getUrl());
-            $question->addOption($option);
-        });
+        $recommendations->getRecommendations()->each(
+            static function (Recommendation $recommendation) use ($question, $collection) {
+                $option = new SelectOption();
+                $option->setName($recommendation->getTitle());
+                $option->setValue($recommendation->getId());
+                $option->setLogoPath($recommendation->getPreviewImage());
+                $option->setDescription($recommendation->getTeaser());
+                $option->setLink($recommendation->getUrl());
+                $question->addOption($option);
+                $collection->push($recommendation);
+            }
+        );
 
-        $question->setOnSave(function (QuestionInterface $question) {
-            // TODO: install plugins
+        $question->setOnSave(function (QuestionInterface $question) use ($collection) {
+            $requested = $question->getValue();
+            if (!\is_array($requested) || \count($requested) === 0) {
+                return;
+            }
+            $installer = new ExtensionInstaller($this->db);
+            $installer->setRecommendations($collection);
+            $installer->onSaveStep($requested);
         });
         $this->addQuestion($question);
     }

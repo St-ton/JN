@@ -3,6 +3,8 @@
 namespace JTL\Recommendation;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
 use \Illuminate\Support\Collection;
 use Exception;
 use JTL\Alert\Alert;
@@ -15,12 +17,17 @@ use JTL\Shop;
  */
 class Manager
 {
-    public const SCOPE_WIZARD_PAYMENT_PROVIDER  = 'wizard.payment-provider';
-    public const SCOPE_WIZARD_LEGAL_TEXTS       = 'wizard.legal-texts';
+    public const SCOPE_WIZARD_PAYMENT_PROVIDER = 'wizard.payment-provider';
+    public const SCOPE_WIZARD_LEGAL_TEXTS = 'wizard.legal-texts';
     public const SCOPE_BACKEND_PAYMENT_PROVIDER = 'backend.payment-provider';
-    public const SCOPE_BACKEND_LEGAL_TEXTS      = 'backend.legal-texts';
+    public const SCOPE_BACKEND_LEGAL_TEXTS = 'backend.legal-texts';
 
     private const API_URL = 'https://checkout-stage.jtl-software.com/v1/recommendations';
+
+    /**
+     * @var string
+     */
+    private $domain;
 
     /**
      * @var Client
@@ -52,6 +59,7 @@ class Manager
         $this->alertService = $alertService;
         $this->scope        = $scope;
         $this->client       = new Client();
+        $this->domain       = \parse_url(\URL_SHOP)['host'];
         $this->setRecommendations();
     }
 
@@ -97,31 +105,30 @@ class Manager
     /**
      * @param string $scope
      * @return array
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     * @throws \JTL\Exceptions\CircularReferenceException
-     * @throws \JTL\Exceptions\ServiceNotFoundException
+     * @throws GuzzleException
+     * @throws ClientException
      */
     private function getJSONFromAPI(string $scope): array
     {
         $url = self::API_URL . '?scope=' . $scope;
-//        try {
-//            $res = $this->client->request(
-//                'GET',
-//                $url,
-//                [
-//                    'headers' => [
-//                        'Accept' => 'application/json',
-//                        'Content-Type' => 'application/json',
-//                    ],
-//                    'verify' => true
-//                ]
-//            );
-//        } catch (Exception $e) {
-//            Shop::Container()->getLogService()->error($e->getMessage());
-//        }
+        try {
+            $res = $this->client->request(
+                'GET',
+                $url,
+                [
+                    'headers' => [
+                        'Accept'       => 'application/json',
+                        'Content-Type' => 'application/json',
+                    ],
+                    'verify'  => true
+                ]
+            );
+        } catch (Exception $e) {
+            Shop::Container()->getLogService()->error($e->getMessage());
+        }
 
-//        return empty($res) ? [] : \json_decode((string)$res->getBody())->extensions;
-        return $this->getTestJSON();
+        return \json_decode((string)$res->getBody())->extensions;
+//        return $this->getTestJSON();
     }
 
     /**

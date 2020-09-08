@@ -3,6 +3,7 @@
 namespace JTL\Recommendation;
 
 use JTL\Helpers\Text;
+use JTL\License\Struct\Link;
 use stdClass;
 
 /**
@@ -62,6 +63,11 @@ class Recommendation
     private $url;
 
     /**
+     * @var Link[]
+     */
+    private $links = [];
+
+    /**
      * @var \Parsedown
      */
     public $parseDown;
@@ -84,6 +90,7 @@ class Recommendation
         $this->setTeaser($recommendation->teaser);
         $this->setManufacturer(new Manufacturer($recommendation->seller));
         $this->setUrl($recommendation->url);
+        $this->setLinks($recommendation->links);
     }
 
     /**
@@ -256,5 +263,23 @@ class Recommendation
     public function setUrl(string $url): void
     {
         $this->url = $url;
+    }
+
+    /**
+     * @return array
+     */
+    public function getLinks(): array
+    {
+        return $this->links;
+    }
+
+    /**
+     * @param array $links
+     */
+    public function setLinks(array $links): void
+    {
+        foreach ($links as $link) {
+            $this->links[] = new Link($link);
+        }
     }
 }

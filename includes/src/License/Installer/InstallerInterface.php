@@ -11,12 +11,12 @@ use JTL\License\AjaxResponse;
 interface InstallerInterface
 {
     /**
-     * @param string       $itemID
+     * @param string       $exsID
      * @param string       $downloadedArchive
      * @param AjaxResponse $response
      * @return int
      */
-    public function update(string $itemID, string $downloadedArchive, AjaxResponse $response): int;
+    public function update(string $exsID, string $downloadedArchive, AjaxResponse $response): int;
 
     /**
      * @param string       $itemID

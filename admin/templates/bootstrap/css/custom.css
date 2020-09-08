@@ -2126,7 +2126,12 @@ td.nowrap {
 }
 .panel-danger {
   background-color: #C82E29;
-  color: #ffffff;
+  color: #ffffff !important;
+}
+.panel-danger a,
+.panel-danger table,
+.panel-danger .btn-link {
+  color: #fff;
 }
 .border-right {
   border-right-style: solid !important;

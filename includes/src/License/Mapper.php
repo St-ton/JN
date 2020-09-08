@@ -42,12 +42,12 @@ class Mapper
             return $collection;
         }
         foreach ($data->extensions as $extension) {
-            $esxLicense = new ExsLicense($extension);
-            $esxLicense->setQueryDate($data->timestamp);
-            if ($esxLicense->getState() === ExsLicense::STATE_ACTIVE) {
-                $this->setReference($esxLicense, $extension);
+            $exsLicense = new ExsLicense($extension);
+            $exsLicense->setQueryDate($data->timestamp);
+            if ($exsLicense->getState() === ExsLicense::STATE_ACTIVE) {
+                $this->setReference($exsLicense, $extension);
             }
-            $collection->push($esxLicense);
+            $collection->push($exsLicense);
         }
         $this->manager->getCache()->set($cacheID, $collection, [\CACHING_GROUP_LICENSES]);
 

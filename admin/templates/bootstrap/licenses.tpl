@@ -3,6 +3,7 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('My purchases') cBeschreibung=__('pageDesc') cDokuURL=__('https://www.jtl-software.de')}
 
 <div id="content">
+    <div id="error-placeholder" class="alert alert-danger d-none"></div>
     {include file='tpl_inc/licenses_store_connection.tpl'}
     {if $hasAuth}
         {include file='tpl_inc/licenses_bound.tpl' licenses=$licenses}

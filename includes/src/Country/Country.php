@@ -77,7 +77,7 @@ class Country
     /**
      * @var array
      */
-    private $states;
+    private $states = [];
 
     /**
      * Country constructor.

@@ -121,8 +121,8 @@ function regionsToState(){
                         state.append('<option value="">' + title + '</option>');
                         $(data).each(function(idx, item) {
                             state.append(
-                                $('<option></option>').val(item.cCode).html(item.cName)
-                                    .attr('selected', item.cCode == def || item.cName == def ? 'selected' : false)
+                                $('<option></option>').val(item.iso).html(item.name)
+                                    .attr('selected', item.iso == def || item.name == def ? 'selected' : false)
                             );
                         });
                         $('#'+state_id).replaceWith(state);

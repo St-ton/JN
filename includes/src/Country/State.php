@@ -2,12 +2,26 @@
 
 namespace JTL\Country;
 
+use JTL\MagicCompatibilityTrait;
+
 /**
  * Class State
  * @package JTL
  */
 class State
 {
+    use MagicCompatibilityTrait;
+
+    /**
+     * @var array
+     */
+    protected static $mapping = [
+        'kStaat'   => 'Id',
+        'cLandIso' => 'CountryISO',
+        'cName'    => 'Name',
+        'cCode'    => 'Iso'
+    ];
+
     /**
      * @var int
      */

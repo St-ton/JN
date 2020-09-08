@@ -1261,7 +1261,7 @@ class IOMethods
     {
         $response = new IOResponse();
         if (\mb_strlen($country) === 2) {
-            $regions = Staat::getRegions($country);
+            $regions = Shop::Container()->getCountryService()->getCountry($country)->getStates();
             $response->assignVar('response', $regions);
         }
 

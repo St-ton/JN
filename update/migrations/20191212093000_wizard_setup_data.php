@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Wizard setup data
  *
@@ -19,12 +19,11 @@ class Migration_20191212093000 extends Migration implements IMigration
     protected $description = 'Wizard setup data';
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
-        if(Shopsetting::getInstance()->getValue(\CONF_GLOBAL, 'global_wizard_done') === null) {
+        if (Shopsetting::getInstance()->getValue(\CONF_GLOBAL, 'global_wizard_done') === null) {
             $this->setConfig(
                 'global_wizard_done',
                 'Y',
@@ -42,12 +41,11 @@ class Migration_20191212093000 extends Migration implements IMigration
                 ]
             );
         }
-        $this->execute("INSERT INTO `tadminrecht` (`cRecht`, `cBeschreibung`)
-            VALUES ('WIZARD_VIEW', 'Set up wizard')");
+        $this->execute("INSERT INTO `tadminrecht` (`cRecht`, `cBeschreibung`) VALUES ('WIZARD_VIEW', 'Set up wizard')");
     }
 
     /**
-     * @return mixed|void
+     * @inheritDoc
      */
     public function down()
     {

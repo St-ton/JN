@@ -21,6 +21,7 @@ use JTL\License\Exception\FilePermissionException;
 use JTL\License\Installer\PluginInstaller;
 use JTL\License\Installer\TemplateInstaller;
 use JTL\License\Struct\ExsLicense;
+use JTL\Mapper\PluginValidation;
 use JTL\Plugin\InstallCode;
 use JTL\Session\Backend;
 use JTL\Shop;
@@ -34,6 +35,8 @@ use stdClass;
  */
 class Admin
 {
+    public const ACTION_EXTEND = 'extendLicense';
+
     public const ACTION_SET_BINDING = 'setbinding';
 
     public const ACTION_CLEAR_BINDING = 'clearbinding';
@@ -47,6 +50,12 @@ class Admin
     public const ACTION_UPDATE = 'update';
 
     public const ACTION_INSTALL = 'install';
+
+    public const STATE_APPROVED = 'approved';
+
+    public const STATE_CREATED = 'created';
+
+    public const STATE_FAILED = 'failed';
 
     /**
      * @var Manager
@@ -72,6 +81,7 @@ class Admin
      * @var string[]
      */
     private $validActions = [
+        self::ACTION_EXTEND,
         self::ACTION_SET_BINDING,
         self::ACTION_CLEAR_BINDING,
         self::ACTION_RECHECK,
@@ -110,21 +120,26 @@ class Admin
         $token  = AuthToken::getInstance($this->db);
         $action = Request::postVar('action');
         $valid  = Form::validateToken();
-        if ($action === self::ACTION_SET_BINDING && $valid) {
-            $this->setBinding($smarty);
-        }
-        if ($action === self::ACTION_CLEAR_BINDING && $valid) {
-            $this->clearBinding($smarty);
-        }
-        if ($action === self::ACTION_RECHECK && $valid) {
-            $this->getLicenses(true);
-            $this->getList($smarty);
-            \header('Location: ' . Shop::getAdminURL() . '/licenses.php', true, 303);
-            exit();
-        }
-        if ($action === self::ACTION_REVOKE && $valid) {
-            $token->revoke();
-            $action = null;
+        if ($valid) {
+            if ($action === self::ACTION_SET_BINDING) {
+                $this->setBinding($smarty);
+            }
+            if ($action === self::ACTION_CLEAR_BINDING) {
+                $this->clearBinding($smarty);
+            }
+            if ($action === self::ACTION_RECHECK) {
+                $this->getLicenses(true);
+                $this->getList($smarty);
+                \header('Location: ' . Shop::getAdminURL() . '/licenses.php', true, 303);
+                exit();
+            }
+            if ($action === self::ACTION_REVOKE) {
+                $token->revoke();
+                $action = null;
+            }
+            if ($action === self::ACTION_EXTEND) {
+                $this->extend($smarty);
+            }
         }
         if ($action === null || !\in_array($action, $this->validActions, true) || !$valid) {
             $this->getLicenses(true);
@@ -148,19 +163,31 @@ class Admin
      */
     private function installUpdate(string $action, JTLSmarty $smarty): void
     {
+        $itemID           = Request::postVar('item-id', '');
+        $exsID            = Request::postVar('exs-id', '');
+        $type             = Request::postVar('license-type', '');
         $response         = new AjaxResponse();
         $response->action = $action;
-        $itemID           = Request::postVar('item-id', '');
         $response->id     = $itemID;
+        if ($type !== '') {
+            $response->id .= '-' . $type;
+        }
         try {
             $installer = $this->getInstaller($itemID);
             $download  = $this->getDownload($itemID);
             $result    = $action === 'update'
-                ? $installer->update($itemID, $download, $response)
+                ? $installer->update($exsID, $download, $response)
                 : $installer->install($itemID, $download, $response);
             $this->cache->flushTags([\CACHING_GROUP_LICENSES]);
             if ($result !== InstallCode::OK) {
+                $mapper         = new PluginValidation();
+                $errorCode      = $result;
+                $mappedErrorMsg = $mapper->map($result);
+                if (empty($response->error)) {
+                    $response->error = __('Error code: %d', $errorCode) . ' - ' . $mappedErrorMsg;
+                }
                 $smarty->assign('licenseErrorMessage', $response->error)
+                    ->assign('mappedErrorMessage', $mappedErrorMsg)
                     ->assign('resultCode', $result);
             }
         } catch (ClientException
@@ -179,9 +206,15 @@ class Admin
             $smarty->assign('licenseErrorMessage', $msg);
         }
         $this->getList($smarty);
-        $smarty->assign('license', $this->manager->getLicenseByItemID($itemID));
-        $response->html         = $smarty->fetch('tpl_inc/licenses_referenced_item.tpl');
-        $response->notification = $smarty->fetch('tpl_inc/updates_drop.tpl');
+        $license = $this->manager->getLicenseByItemID($itemID);
+        if ($license === null || $license->getReferencedItem() === null) {
+            $license = $this->manager->getLicenseByExsID($exsID);
+        }
+        if ($license !== null && $license->getReferencedItem() !== null) {
+            $smarty->assign('license', $license);
+            $response->html         = $smarty->fetch('tpl_inc/licenses_referenced_item.tpl');
+            $response->notification = $smarty->fetch('tpl_inc/updates_drop.tpl');
+        }
         $this->sendResponse($response);
     }
 
@@ -207,6 +240,52 @@ class Admin
         $response->replaceWith['#unbound-licenses'] = $smarty->fetch('tpl_inc/licenses_unbound.tpl');
         $response->replaceWith['#bound-licenses']   = $smarty->fetch('tpl_inc/licenses_bound.tpl');
         $response->html                             = $apiResponse;
+        $this->sendResponse($response);
+    }
+
+    /**
+     * @param JTLSmarty $smarty
+     * @throws \SmartyException
+     */
+    private function extend(JTLSmarty $smarty): void
+    {
+        $responseData     = null;
+        $apiResponse      = '';
+        $response         = new AjaxResponse();
+        $response->action = 'extendLicense';
+        try {
+            $apiResponse  = $this->manager->extend(
+                Request::postVar('url'),
+                Request::postVar('exsid'),
+                Request::postVar('key')
+            );
+            $responseData = \json_decode($apiResponse);
+        } catch (ClientException | GuzzleException $e) {
+            $response->error = $e->getMessage();
+            $smarty->assign('extendErrorMessage', $e->getMessage());
+        }
+        if (isset($responseData->state)) {
+            if ($responseData->state === self::STATE_APPROVED) {
+                $smarty->assign('extendSuccessMessage', 'Successfully extended.');
+            } elseif ($responseData->state === self::STATE_FAILED && isset($responseData->failure_reason)) {
+                $smarty->assign('extendErrorMessage', $responseData->failure_reason);
+            } elseif ($responseData->state === self::STATE_CREATED
+                && isset($responseData->links)
+                && \is_array($responseData->links)
+            ) {
+                foreach ($responseData->links as $link) {
+                    if (isset($link->rel) && $link->rel === 'redirect_url') {
+                        \http_response_code(301);
+                        \header('Location: ' . $link->href);
+                        exit();
+                    }
+                }
+            }
+        }
+        $this->getLicenses(true);
+        $this->getList($smarty);
+        $response->replaceWith['#bound-licenses'] = $smarty->fetch('tpl_inc/licenses_bound.tpl');
+        $response->html                           = $apiResponse;
         $this->sendResponse($response);
     }
 

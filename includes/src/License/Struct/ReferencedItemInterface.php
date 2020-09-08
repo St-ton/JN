@@ -2,7 +2,9 @@
 
 namespace JTL\License\Struct;
 
+use JTL\DB\DbInterface;
 use JTLShop\SemVer\Version;
+use stdClass;
 
 /**
  * Class Plugin
@@ -10,6 +12,14 @@ use JTLShop\SemVer\Version;
  */
 interface ReferencedItemInterface
 {
+    /**
+     * ReferencedItemInterface constructor.
+     * @param DbInterface  $db
+     * @param stdClass     $license
+     * @param Release|null $release
+     */
+    public function __construct(DbInterface $db, stdClass $license, ?Release $release);
+
     /**
      * @return string
      */

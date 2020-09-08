@@ -154,6 +154,11 @@ final class Shop
     /**
      * @var int
      */
+    public static $nLinkart;
+
+    /**
+     * @var int
+     */
     public static $kHersteller;
 
     /**
@@ -795,8 +800,8 @@ final class Shop
     /**
      * set language/language ISO
      *
-     * @param int    $languageID
-     * @param string $cISO
+     * @param int         $languageID
+     * @param string|null $cISO
      */
     public static function setLanguage(int $languageID, string $cISO = null): void
     {
@@ -944,6 +949,7 @@ final class Shop
         self::$bFileNotFound   = false;
         self::$cCanonicalURL   = '';
         self::$is404           = false;
+        self::$nLinkart        = 0;
 
         self::$nSterne = Request::verifyGPCDataInt('nSterne');
 
@@ -1054,6 +1060,7 @@ final class Shop
             'kVariKindArtikel'       => self::$kVariKindArtikel,
             'kSeite'                 => self::$kSeite,
             'kLink'                  => self::$kLink,
+            'nLinkart'               => self::$nLinkart,
             'kSuchanfrage'           => self::$kSuchanfrage,
             'kMerkmalWert'           => self::$kMerkmalWert,
             'kSuchspecial'           => self::$kSuchspecial,
@@ -1564,12 +1571,16 @@ final class Shop
         } elseif (!empty(self::$kLink)) {
             $link = self::Container()->getLinkService()->getLinkByID(self::$kLink);
             if ($link !== null && ($linkType = $link->getLinkType()) > 0) {
+                self::$nLinkart = $linkType;
+
                 if ($linkType === \LINKTYP_EXTERNE_URL) {
                     \header('Location: ' . $link->getURL(), true, 303);
                     exit;
                 }
+
                 self::$fileName = 'seite.php';
                 self::setPageType(\PAGE_EIGENE);
+
                 if ($linkType === \LINKTYP_STARTSEITE) {
                     self::setPageType(\PAGE_STARTSEITE);
                 } elseif ($linkType === \LINKTYP_DATENSCHUTZ) {
@@ -1936,31 +1947,55 @@ final class Shop
     }
 
     /**
+     * @param bool $sessionSwitchAllowed
      * @return bool
-     * @throws Exception
      */
-    public static function isAdmin(): bool
+    public static function isAdmin(bool $sessionSwitchAllowed = false): bool
     {
         if (\is_bool(self::$logged)) {
             return self::$logged;
         }
 
         if (\session_name() === 'eSIdAdm') {
+            // admin session already active
             self::$logged       = self::Container()->getAdminAccount()->logged();
             self::$adminToken   = $_SESSION['jtl_token'];
             self::$adminLangTag = $_SESSION['AdminAccount']->language;
         } elseif (!empty($_SESSION['loggedAsAdmin']) && $_SESSION['loggedAsAdmin'] === true) {
+            // frontend session has been notified by admin session
             self::$logged       = true;
             self::$adminToken   = $_SESSION['adminToken'];
             self::$adminLangTag = $_SESSION['adminLangTag'];
             self::Container()->getGetText();
+        } elseif ($sessionSwitchAllowed === true
+            && isset($_COOKIE['eSIdAdm'])
+            && Request::verifyGPDataString('fromAdmin') === 'yes'
+        ) {
+            // frontend session has not been notified yet
+            // try to fetch information autonomously
+            $frontendId = \session_id();
+            \session_write_close();
+            \session_name('eSIdAdm');
+            \session_id($_COOKIE['eSIdAdm']);
+            \session_start();
+            $adminToken                   = $_SESSION['jtl_token'];
+            $adminLangTag                 = $_SESSION['AdminAccount']->language;
+            $_SESSION['frontendUpToDate'] = true;
+            \session_write_close();
+            \session_name('JTLSHOP');
+            \session_id($frontendId);
+            \session_start();
+            self::$logged       = $_SESSION['loggedAsAdmin'] = true;
+            self::$adminToken   = $_SESSION['adminToken']    = $adminToken;
+            self::$adminLangTag = $_SESSION['adminLangTag']  = $adminLangTag;
         } else {
-            self::$logged       = false;
+            // no information about admin session available
+            self::$logged       = null;
             self::$adminToken   = null;
             self::$adminLangTag = null;
         }
 
-        return self::$logged;
+        return self::$logged ?? false;
     }
 
     /**

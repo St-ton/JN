@@ -119,12 +119,6 @@
                     </div>
                     <div class="item">
                         <div class="custom-control custom-checkbox">
-                            <input class="custom-control-input" type="checkbox" name="cOption_arr[]" value="tags" tabindex="12" id="Tags" />
-                            <label class="custom-control-label" for="Tags">{__('deleteTags')}</label>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <div class="custom-control custom-checkbox">
                             <input class="custom-control-input" type="checkbox" name="cOption_arr[]" value="bewertungen" tabindex="13" id="Bewertungen" />
                             <label class="custom-control-label" for="Bewertungen">{__('deleteRatings')}</label>
                         </div>

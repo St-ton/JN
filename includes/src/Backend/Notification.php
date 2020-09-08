@@ -90,7 +90,7 @@ class Notification implements IteratorAggregate, Countable
     {
         $db        = Shop::Container()->getDB();
         $cache     = Shop::Container()->getCache();
-        $status    = Status::getInstance($db);
+        $status    = Status::getInstance($db, $cache);
         $linkAdmin = new LinkAdmin($db, $cache);
 
         Shop::Container()->getGetText()->loadAdminLocale('notifications');

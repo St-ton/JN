@@ -165,3 +165,18 @@ msgstr "im Contentbereich"
 
 msgid "zwischen Header und Content"
 msgstr "zwischen Header und Content"
+
+msgid "Wunschzettel und Vergleichsliste - Animation anzeigen"
+msgstr "Wunschzettel und Vergleichsliste - Animation anzeigen"
+
+msgid "Auf Desktop und mobilen Geräten"
+msgstr "Auf Desktop und mobilen Geräten"
+
+msgid "Nur mobil"
+msgstr "Nur mobil"
+
+msgid "Nur Desktop"
+msgstr "Nur Desktop"
+
+msgid "Keine"
+msgstr "Keine"

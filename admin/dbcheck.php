@@ -5,6 +5,7 @@
  */
 
 use JTL\Alert\Alert;
+use JTL\Backend\Status;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -14,6 +15,7 @@ use JTL\Update\DBMigrationHelper;
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('DBCHECK_VIEW', true, true);
+$cache->flush(Status::CACHE_ID_DATABASE_STRUCT);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php';
 

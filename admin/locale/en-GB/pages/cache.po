@@ -50,6 +50,9 @@ msgstr "Contains manufacturer data"
 msgid "cg_filter_description"
 msgstr "Contains filter data"
 
+msgid "cg_status_description"
+msgstr "Contains status data for notifications"
+
 msgid "cg_article_nicename"
 msgstr "Item"
 
@@ -88,6 +91,9 @@ msgstr "Manufacturer"
 
 msgid "cg_filter_nicename"
 msgstr "Item filters"
+
+msgid "cg_status_nicename"
+msgstr "Status"
 
 msgid "entries"
 msgstr "Entries"

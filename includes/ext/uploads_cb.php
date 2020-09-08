@@ -3,6 +3,7 @@
 use JTL\Extensions\Upload\File;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Helpers\Seo;
 use JTL\Nice;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -12,11 +13,11 @@ require_once __DIR__ . '/../globalinclude.php';
 /**
  * output
  *
- * @param int $bOk
+ * @param bool $bOk
  * @param int $responseCode
  * @param string $responseErrMsg
  */
-function retCode($bOk, $responseCode = 200, $responseErrMsg = 'error')
+function retCode(bool $bOk, int $responseCode = 200, string $responseErrMsg = 'error')
 {
     http_response_code($responseCode);
     die(json_encode(['status' => $bOk ? 'ok' : $responseErrMsg]));
@@ -29,10 +30,10 @@ $limit   = (int)$conf['artikeldetails']['upload_modul_limit'];
 
 if (!Form::validateToken()
     || !Nice::getInstance()->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
-    retCode(0, 403);
+    retCode(false, 403);
 }
 if (Form::reachedUploadLimitPerHour($limit)) {
-    retCode(0, 403, 'reached_limit_per_hour');
+    retCode(false, 403, 'reached_limit_per_hour');
 }
 
 $uploadProtect            = new stdClass();
@@ -72,15 +73,15 @@ if (!empty($_FILES)) {
     }
 
     if (!isset($_REQUEST['uniquename'], $_REQUEST['cname'])) {
-        retCode(0);
+        retCode(false);
     }
     if (empty($allowedExtensions)
         || !in_array('*.' . strtolower($sourceInfo['extension']), $allowedExtensions, true)
     ) {
-        retCode(0, 400, 'extension_not_listed');
+        retCode(false, 400, 'extension_not_listed');
     }
     if (in_array($mime, $blacklist, true)) {
-        retCode(0, 403, 'filetype_forbidden');
+        retCode(false, 403, 'filetype_forbidden');
     }
 
     $unique     = $_REQUEST['uniquename'];
@@ -91,7 +92,7 @@ if (!empty($_FILES)) {
 
     // legitimate uploads do not have an extension for the destination file name - but for the originally uploaded file
     if (!isset($sourceInfo['extension']) || isset($targetInfo['extension'])) {
-        retCode(0);
+        retCode(false);
     }
     if (isset($fileData['error'], $fileData['name'])
         && (int)$fileData['error'] === UPLOAD_ERR_OK
@@ -100,11 +101,16 @@ if (!empty($_FILES)) {
     ) {
         $file = new stdClass();
         if (isset($_REQUEST['prodID'])) {
-            $file->cName = (int)$_REQUEST['prodID'] . '_' . $unique . '.' . $sourceInfo['extension'];
+            $file->cName = (int)$_REQUEST['prodID']
+                . '_' . Seo::sanitizeSeoSlug(Seo::getFlatSeoPath($_REQUEST['cname']))
+                . '_' . $unique . '.' . $sourceInfo['extension'];
         } else {
             $file->cName = !empty($_REQUEST['variation'])
-                ? $_REQUEST['cname'] . '_' . $_REQUEST['variation'] . '_' . $fileData['name']
-                : $_REQUEST['cname'] . '_' . $fileData['name'];
+                ? Seo::sanitizeSeoSlug(Seo::getFlatSeoPath($_REQUEST['cname']
+                    . '_' . $_REQUEST['variation']
+                    . '_' . $fileData['name']))
+                : Seo::sanitizeSeoSlug(Seo::getFlatSeoPath($_REQUEST['cname']
+                    . '_' . $fileData['name']));
         }
         $file->nBytes = $fileData['size'];
         $file->cKB    = round($fileData['size'] / 1024, 2);
@@ -116,9 +122,9 @@ if (!empty($_FILES)) {
         if (isset($_REQUEST['uploader'])) {
             die(json_encode($file));
         }
-        retCode(1);
+        retCode(true);
     }
-    retCode(0);
+    retCode(false);
 }
 if (!empty($_REQUEST['action'])) {
     switch ($_REQUEST['action']) {
@@ -136,7 +142,7 @@ if (!empty($_REQUEST['action'])) {
                     retCode(@unlink($filePath));
                 }
             } else {
-                retCode(0);
+                retCode(false);
             }
             break;
 
@@ -168,4 +174,4 @@ if (!empty($_REQUEST['action'])) {
     }
 }
 
-retCode(0, 400);
+retCode(false, 400);

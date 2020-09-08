@@ -1,5 +1,5 @@
 {block name='snippets-uploads'}
-    {if !empty($oUploadSchema_arr)}
+    {if !empty($oUploadSchema_arr) && !($Artikel->nIstVater || $Artikel->kVaterArtikel > 0)}
         {getUploaderLang iso=$smarty.session.currentLanguage->cISO639|default:'' assign='uploaderLang'}
         {if $tplscope === 'product'}
             {block name='snippets-uploads-subheading-product'}
@@ -98,7 +98,7 @@
                                                 $('#buy-form').find('.upload-error').removeClass('upload-error');
                                             }).on('filebatchuploaderror', function(event, data, msg) {
                                                 if(clientUploadErrorIsActive === false){
-                                                    let msgField = $('#queue{$oUploadSchema@index} .current-upload');;
+                                                    let msgField = $('#queue{$oUploadSchema@index} .current-upload');
                                                     let message  = '{lang key='uploadError'}';
                                                     let status;
                                                     try{
@@ -213,8 +213,7 @@
                                                 {inline_script}<script>
                                                     var clientUploadErrorIsActive = false;
                                                     $(function () {
-                                                        var $el   = $('#fileinput{$oUploadSchema@index}{$oUpload@index}');
-                                                        var $url1 = '{$ShopURL}/uploads/{$oUpload->cUnique}';
+                                                        var $el = $('#fileinput{$oUploadSchema@index}{$oUpload@index}');
                                                         $el.fileinput({
                                                             uploadUrl:             '{$ShopURL}/{$smarty.const.PFAD_UPLOAD_CALLBACK}',
                                                             uploadAsync:           false,
@@ -236,9 +235,9 @@
                                                                 jtl_token:  "{$smarty.session.jtl_token}",
                                                                 uniquename: "{$oUpload->cUnique}",
                                                                 uploader:   "4.00",
-                                                                kUploadSchema:"{$oUploadSchema->kUploadSchema}",
-                                                                prodID:     "{$oUploadSchema->prodID}",
-                                                                cname:      "{$oUploadSchema->cName|replace:" ":"_"}"
+                                                                kUploadSchema:"{$oUpload->kUploadSchema}",
+                                                                prodID:     "{$oUpload->prodID}",
+                                                                cname:      "{$oUpload->cName|replace:" ":"_"}"
                                                                 {if !empty($oUploadSchema->WarenkorbPosEigenschaftArr)},
                                                                 variation: "{strip}
                                                                 {foreach name=variationen from=$oUploadSchema->WarenkorbPosEigenschaftArr item=Variation}_{$Variation->cEigenschaftWertName|trans|replace:" ":"_"}{/foreach}
@@ -257,6 +256,7 @@
                                                             var msgField       = $('#queue{$oUploadSchema@index}{$oUpload@index} .current-upload'),
                                                                 uploadMsgField = $('.uploadifyMsg');
                                                             if (typeof data.response !== 'undefined' && typeof data.response.cName !== 'undefined') {
+                                                                msgField.removeClass('text-danger').addClass('text-success');
                                                                 msgField.html('<i class="fas fa-check" aria-hidden="true"></i>' + data.response.cName + ' (' + data.response.cKB + ' KB)');
                                                             } else {
                                                                 msgField.html('{lang key='uploadError'}');

@@ -39,6 +39,11 @@
                 $(itemID).replaceWith(result.html);
                 btn.attr('disabled', false);
                 btn.find('i').removeClass('fa-spin');
+            } else if (result.error) {
+                const errorItem = document.getElementById('error-placeholder');
+                errorItem.innerHTML = result.error;
+                errorItem.classList.remove('d-none');
+                errorItem.scrollIntoView(false);
             }
             ++done;
             if (formCount > 0 && formCount === done) {

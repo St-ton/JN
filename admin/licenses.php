@@ -8,6 +8,7 @@ use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
+Shop::Container()->getGetText()->loadAdminLocale('pages/pluginverwaltung');
 $db      = Shop::Container()->getDB();
 $cache   = Shop::Container()->getCache();
 $checker = new Checker(Shop::Container()->getLogService(), $db, $cache);

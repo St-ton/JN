@@ -40,7 +40,7 @@ class TemplateInstaller implements InstallerInterface
     /**
      * @inheritDoc
      */
-    public function update(string $itemID, string $downloadedArchive, AjaxResponse $response): int
+    public function update(string $exsID, string $downloadedArchive, AjaxResponse $response): int
     {
         $extractor        = new Extractor(new XMLParser());
         $installResponse  = $extractor->extractTemplate($downloadedArchive);

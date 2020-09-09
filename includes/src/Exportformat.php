@@ -1647,7 +1647,7 @@ class Exportformat
                 return $this->finishSyntaxcheck($e->getMessage());
             }
 
-            return $this->finishSyntaxcheck($res);
+            return $this->finishSyntaxcheck(\is_string($res) ? $res : __('somethingHappend'));
         }
 
         $phpProcess = new PhpProcess(
@@ -1678,9 +1678,8 @@ class Exportformat
             \PFAD_ROOT
         );
         $phpProcess->run();
-        $res = $phpProcess->getOutput();
 
-        return $this->finishSyntaxcheck($res);
+        return $this->finishSyntaxcheck($phpProcess->getOutput());
     }
 
     /**

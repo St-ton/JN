@@ -125,7 +125,7 @@ class Rating extends AbstractFilter
         $sql->addJoin($this->getSQLJoin());
 
         $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
-        $cacheID   = $this->getCacheId($baseQuery);
+        $cacheID   = $this->getCacheID($baseQuery);
         if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
             $this->options = $cached;
 

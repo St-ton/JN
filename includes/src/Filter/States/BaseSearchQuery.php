@@ -307,7 +307,7 @@ class BaseSearchQuery extends AbstractFilter
         $sql->addCondition('tsuchanfrage.nAktiv = 1');
 
         $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
-        $cacheID   = $this->getCacheId($baseQuery);
+        $cacheID   = $this->getCacheID($baseQuery);
         if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
             $this->options = $cached;
 
@@ -1042,7 +1042,7 @@ class BaseSearchQuery extends AbstractFilter
     }
 
     /**
-     * @param array $config
+     * @param array|null $config
      * @return array
      * @former gibSuchSpalten()
      */
@@ -1060,8 +1060,8 @@ class BaseSearchQuery extends AbstractFilter
     }
 
     /**
-     * @param array $exclude
-     * @param array $conf
+     * @param array      $exclude
+     * @param array|null $conf
      * @return string
      * @former gibMaxPrioSpalte()
      */

@@ -1565,7 +1565,8 @@ class ProductFilter
     public function getSearchSpecialConfigMapping(): array
     {
         $config  = $this->getFilterConfig()->getConfig('suchspecials');
-        $mapping = [
+
+        return [
             \SEARCHSPECIALS_BESTSELLER       => $config['suchspecials_sortierung_bestseller'],
             \SEARCHSPECIALS_SPECIALOFFERS    => $config['suchspecials_sortierung_sonderangebote'],
             \SEARCHSPECIALS_NEWPRODUCTS      => $config['suchspecials_sortierung_neuimsortiment'],
@@ -1573,8 +1574,6 @@ class ProductFilter
             \SEARCHSPECIALS_UPCOMINGPRODUCTS => $config['suchspecials_sortierung_inkuerzeverfuegbar'],
             \SEARCHSPECIALS_TOPREVIEWS       => $config['suchspecials_sortierung_topbewertet'],
         ];
-
-        return $mapping;
     }
 
     /**

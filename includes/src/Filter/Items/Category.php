@@ -204,7 +204,9 @@ class Category extends BaseCategory
             $sql->addCondition('tkategoriesichtbarkeit.kKategorie IS NULL');
         }
         $select = ['tkategorie.kKategorie', 'tkategorie.nSort'];
-        if (!LanguageHelper::isDefaultLanguageActive()) {
+        if (LanguageHelper::isDefaultLanguageActive()) {
+            $select[] = 'tkategorie.cName';
+        } else {
             $select[] = "IF(tkategoriesprache.cName = '', tkategorie.cName, tkategoriesprache.cName) AS cName";
             $sql->addJoin((new Join())
                 ->setComment('join5 from ' . __METHOD__)
@@ -213,8 +215,6 @@ class Category extends BaseCategory
                 ->setOn('tkategoriesprache.kKategorie = tkategorie.kKategorie 
                             AND tkategoriesprache.kSprache = ' . $this->getLanguageID())
                 ->setOrigin(__CLASS__));
-        } else {
-            $select[] = 'tkategorie.cName';
         }
         $sql->setSelect($select);
         $sql->setOrderBy(null);
@@ -222,7 +222,7 @@ class Category extends BaseCategory
         $sql->setGroupBy(['tkategorie.kKategorie', 'tartikel.kArtikel']);
 
         $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
-        $cacheID   = $this->getCacheId($baseQuery);
+        $cacheID   = $this->getCacheID($baseQuery);
         if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
             $this->options = $cached;
 

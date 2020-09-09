@@ -94,7 +94,7 @@ interface FilterInterface
     /**
      * get the filter's SEO url for a language
      *
-     * @param int $idx - usually the language ID
+     * @param int|null $idx - usually the language ID
      * @return string|null|array
      */
     public function getSeo($idx = null);
@@ -422,5 +422,5 @@ interface FilterInterface
      * @param string $query
      * @return string
      */
-    public function getCacheId(string $query): string;
+    public function getCacheID(string $query): string;
 }

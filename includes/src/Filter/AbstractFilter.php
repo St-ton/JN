@@ -840,8 +840,11 @@ abstract class AbstractFilter implements FilterInterface
      * @param string $query
      * @return string
      */
-    public function getCacheId(string $query): string
+    public function getCacheID(string $query): string
     {
-        return 'fltr_' . \str_replace('\\', '', static::class) . \md5($query) . \json_encode($this->getValue() ?? '');
+        $value     = $this->getValue();
+        $valuePart = $value === null ? '' : \json_encode($value);
+
+        return 'fltr_' . \str_replace('\\', '', static::class) . \md5($query) . $valuePart;
     }
 }

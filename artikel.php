@@ -199,7 +199,7 @@ $nav = $conf['artikeldetails']['artikeldetails_navi_blaettern'] === 'Y'
     ? Product::getProductNavigation($AktuellerArtikel->kArtikel ?? 0, $AktuelleKategorie->kKategorie ?? 0)
     : null;
 
-if ($AktuellerArtikel->kVariKindArtikel === 0 && $AktuellerArtikel->nIstVater === 0 && Upload::checkLicense()) {
+if (($AktuellerArtikel->kVariKindArtikel ?? 0) === 0 && $AktuellerArtikel->nIstVater === 0 && Upload::checkLicense()) {
     $maxSize = Upload::uploadMax();
     $smarty->assign('nMaxUploadSize', $maxSize)
            ->assign('cMaxUploadSize', Upload::formatGroesse($maxSize))

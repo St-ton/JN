@@ -1541,7 +1541,6 @@ class ProductFilter
         }
         // search special sorting
         if ($this->hasSearchSpecial()) {
-            //@todo
             $mapping = $this->getSearchSpecialConfigMapping();
             $idx     = $this->getSearchSpecial()->getValue();
             $ssConf  = isset($mapping[$idx]) ?: null;
@@ -1648,7 +1647,7 @@ class ProductFilter
     /**
      * @param Kategorie|null $category
      * @param bool           $fill - if true, return Artikel class instances, otherwise keys only
-     * @param int            $limit
+     * @param int|null       $limit
      * @return SearchResultsInterface
      */
     public function generateSearchResults(

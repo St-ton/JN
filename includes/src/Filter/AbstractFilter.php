@@ -835,4 +835,13 @@ abstract class AbstractFilter implements FilterInterface
 
         return $res;
     }
+
+    /**
+     * @param string $query
+     * @return string
+     */
+    public function getCacheId(string $query): string
+    {
+        return 'fltr_' . \str_replace('\\', '', __CLASS__) . \md5($query) . json_encode($this->getValue() ?? '');
+    }
 }

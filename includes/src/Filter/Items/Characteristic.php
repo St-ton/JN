@@ -438,19 +438,19 @@ class Characteristic extends BaseCharacteristic
         if (!$force && !$useCharacteristicFilter) {
             return $characteristicFilters;
         }
-        $state   = $this->getState($data['oAktuelleKategorie'] ?? null);
-        $baseQry = $this->productFilter->getFilterSQL()->getBaseQuery($state);
-        $cacheID = 'fltr_' . \str_replace('\\', '', __CLASS__) . \md5($baseQry);
-//        if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
-//            $this->options = $cached;
-//
-//            return $this->options;
-//        }
+        $state     = $this->getState($data['oAktuelleKategorie'] ?? null);
+        $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($state);
+        $cacheID   = $this->getCacheId($baseQuery);
+        if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
+            $this->options = $cached;
+
+            return $this->options;
+        }
         $qryRes           = $this->productFilter->getDB()->executeQuery(
             'SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
             ssMerkmal.nMehrfachauswahl, ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, 
             ssMerkmal.cMMBildPfad, COUNT(DISTINCT ssMerkmal.kArtikel) AS nAnzahl
-                FROM (' . $baseQry . ') AS ssMerkmal
+                FROM (' . $baseQuery . ') AS ssMerkmal
                 GROUP BY ssMerkmal.kMerkmalWert
                 ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert',
             ReturnType::ARRAY_OF_OBJECTS

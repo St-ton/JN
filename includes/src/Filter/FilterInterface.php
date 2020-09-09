@@ -417,4 +417,10 @@ interface FilterInterface
      * @return $this|FilterInterface
      */
     public function setParamExclusive(bool $paramExclusive): FilterInterface;
+
+    /**
+     * @param string $query
+     * @return string
+     */
+    public function getCacheId(string $query): string;
 }

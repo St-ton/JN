@@ -1447,7 +1447,14 @@ final class Shop
                 }
             }
             if (isset($oSeo->kSprache) && $oSeo->kSprache > 0) {
-                self::updateLanguage((int)$oSeo->kSprache);
+                $newLangID = (int)$oSeo->kSprache;
+                self::updateLanguage($newLangID);
+                $customer     = Frontend::getCustomer();
+                $customerLang = $customer->getLanguageID();
+                if ($customerLang > 0 && $customerLang !== $newLangID) {
+                    $customer->setLanguageID($newLangID);
+                    $customer->updateInDB();
+                }
             }
         }
         self::$MerkmalFilter = ProductFilter::initCharacteristicFilter();

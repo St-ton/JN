@@ -104,6 +104,12 @@ class ExtensionInstaller
                             }
                         } catch (ClientException | GuzzleException $e) {
                             // @todo
+                            Shop::dbg($e->getMessage(), false, 'exception:');
+                            // possible error:
+                            // "Server error:
+                            // `POST https://checkout-stage.jtl-software.com/v1/license/recommendation/create/foo`
+                            // resulted in a `500 Internal Server Error` response:
+                            //{"code":0,"message":"Extension doesn't provide a free of charge license"}
                         }
                     }
                 }
@@ -113,7 +119,6 @@ class ExtensionInstaller
 
         foreach ($createdLicenseKeys as $key) {
             $ajaxResponse = new AjaxResponse();
-            $key          = 'LIC-123456789';
             $license      = $this->manager->getLicenseByLicenseKey($key);
             if ($license !== null) {
                 $itemID    = $license->getID();

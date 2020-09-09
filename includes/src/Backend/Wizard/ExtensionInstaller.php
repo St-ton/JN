@@ -14,6 +14,7 @@ use JTL\License\Exception\DownloadValidationException;
 use JTL\License\Exception\FilePermissionException;
 use JTL\License\Installer\Helper;
 use JTL\License\Manager as LicenseManager;
+use JTL\Mapper\PluginValidation;
 use JTL\Plugin\InstallCode;
 use JTL\Recommendation\Recommendation;
 use JTL\Shop;
@@ -80,13 +81,14 @@ class ExtensionInstaller
 
     /**
      * @param array $requested
-     * @throws GuzzleException
+     * @return string
      * @throws ApiResultCodeException
      * @throws ChecksumValidationException
      * @throws DownloadValidationException
      * @throws FilePermissionException
+     * @throws GuzzleException
      */
-    public function onSaveStep(array $requested): void
+    public function onSaveStep(array $requested): string
     {
         $createdLicenseKeys = [];
         foreach ($requested as $id) {
@@ -110,6 +112,7 @@ class ExtensionInstaller
                             // `POST https://checkout-stage.jtl-software.com/v1/license/recommendation/create/foo`
                             // resulted in a `500 Internal Server Error` response:
                             //{"code":0,"message":"Extension doesn't provide a free of charge license"}
+                            return $recom->getTitle() . ': ' . $e->getMessage();
                         }
                     }
                 }
@@ -127,16 +130,16 @@ class ExtensionInstaller
                     $download    = $this->helper->getDownload($itemID);
                     $installCode = $installer->install($itemID, $download, $ajaxResponse);
                 } catch (InvalidArgumentException $e) {
-                    // @todo catch: throw new InvalidArgumentException('Could not find item with ID ' . $itemID);
-                    // @todo catch: throw new InvalidArgumentException('Could not find update for item with ID ' . $itemID)
-                    $installCode = 0;
+                    return $e->getMessage();
                 }
                 Shop::dbg($installCode, false, 'RETURNCODE:');
                 if ($installCode !== InstallCode::OK) {
-                    // @todo: fail
+                    $mapper = new PluginValidation();
+                    return $license->getID() . ': ' .$mapper->map($installCode);
                 }
             }
         }
-        die('DONE.');
+
+        return '';
     }
 }

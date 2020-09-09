@@ -187,7 +187,7 @@ $form.on('submit', (e) => {
     $prev.addClass('disabled').attr('disabled', true)
 
     let callback = new Promise((resolve, reject) => {
-        // simulate success
+        startSpinner();
 
         let checkmark = `<span class="fal fa-check text-success fa-fw"></span>`
 
@@ -213,7 +213,7 @@ $form.on('submit', (e) => {
                     $.each(errors, (index, error) => {
                         let $question = $(`[${Data.summaryPlaceholder}="question-${index}"]`)
                         $question.prev().remove();
-                        $question.before('<span class="fa fa-times-circle text-danger" data-toggle="tooltip" title="' + error + '"></span>');
+                        $question.before('<span class="fa fa-times-circle text-danger mr-2" data-toggle="tooltip" title="' + error + '"></span>');
                     });
                     $submit.removeClass('disabled').attr('disabled', false)
                     $prev.removeClass('disabled').attr('disabled', false)

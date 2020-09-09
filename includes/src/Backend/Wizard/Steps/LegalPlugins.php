@@ -71,7 +71,7 @@ final class LegalPlugins extends AbstractStep
             }
             $installer = new ExtensionInstaller($this->db);
             $installer->setRecommendations($collection);
-            return $installer->onSaveStep($requested) ?? '';
+            return $installer->onSaveStep($requested);
         });
         $this->addQuestion($question);
     }

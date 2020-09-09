@@ -1564,7 +1564,7 @@ class ProductFilter
      */
     public function getSearchSpecialConfigMapping(): array
     {
-        $config  = $this->getFilterConfig()->getConfig('suchspecials');
+        $config = $this->getFilterConfig()->getConfig('suchspecials');
 
         return [
             \SEARCHSPECIALS_BESTSELLER       => $config['suchspecials_sortierung_bestseller'],

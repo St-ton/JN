@@ -137,12 +137,17 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     /**
      * @inheritDoc
      */
-    public function save(): void
+    public function save(): string
     {
+        if (($validationError = $this->validate()) !== '') {
+            return $validationError;
+        }
         $cb = $this->getOnSave();
         if (\is_callable($cb)) {
-            $cb($this);
+            return $cb($this) ?? '';
         }
+
+        return '';
     }
 
     /**

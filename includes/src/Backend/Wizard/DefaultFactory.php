@@ -41,9 +41,9 @@ final class DefaultFactory
 
         $this->steps = new Collection();
         $this->steps->push(new GeneralSettings($db, $alertService));
+        $this->steps->push(new EmailSettings($db, $alertService, $adminAccount));
         $this->steps->push(new LegalPlugins($db, $alertService));
         $this->steps->push(new PaymentPlugins($db, $alertService));
-        $this->steps->push(new EmailSettings($db, $alertService, $adminAccount));
     }
 
     /**

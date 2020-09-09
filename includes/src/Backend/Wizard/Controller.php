@@ -45,11 +45,12 @@ final class Controller
 
     /**
      * @param array $post
+     * @return array
      */
-    public function answerQuestions(array $post): void
+    public function answerQuestions(array $post): array
     {
         if (empty($post)) {
-            return;
+            return [];
         }
         $post = $this->serializeToArray($post);
 
@@ -60,23 +61,24 @@ final class Controller
             }
         }
 
-        $this->finish();
+        return $this->finish();
     }
 
     /**
-     *
+     * @return array
      */
-    private function finish(): void
+    private function finish(): array
     {
-        //TODO: errors?
-        $errors = false;
+        $errorMessages = [];
         foreach ($this->getSteps() as $step) {
             foreach ($step->getQuestions() as $question) {
                 /** @var QuestionInterface $question */
-                $question->save();
+                if (($validationError = $question->save()) !== '') {
+                    $errorMessages[$question->getID()] = $validationError;
+                }
             }
         }
-        if (!$errors) {
+        if (empty($errorMessages)) {
             $this->db->update(
                 'teinstellungen',
                 'cName',
@@ -86,6 +88,8 @@ final class Controller
             $this->cache->flushAll();
             unset($_SESSION['wizard']);
         }
+
+        return $errorMessages;
     }
 
     /**

@@ -75,13 +75,14 @@ final class PaymentPlugins extends AbstractStep
         );
 
         $question->setOnSave(function (QuestionInterface $question) use ($collection) {
+            return 'testError';
             $requested = $question->getValue();
             if (!\is_array($requested) || \count($requested) === 0) {
-                return;
+                return '';
             }
             $installer = new ExtensionInstaller($this->db);
             $installer->setRecommendations($collection);
-            $installer->onSaveStep($requested);
+            return $installer->onSaveStep($requested) ?? '';
         });
         $this->addQuestion($question);
     }

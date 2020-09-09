@@ -208,10 +208,19 @@ $form.on('submit', (e) => {
         }, 2000)
 
         setTimeout(() => {
-            resolve()
-            ioCall('finishWizard', [$form.serializeArray()], function (result) {
-                // TODO: errors?
-                showSlide((current < last) ? current + 1 : last);
+            ioCall('finishWizard', [$form.serializeArray()], function (errors) {
+                if (errors.length !== 0) {
+                    $.each(errors, (index, error) => {
+                        let $question = $(`[${Data.summaryPlaceholder}="question-${index}"]`)
+                        $question.prev().remove();
+                        $question.before('<span class="fa fa-times-circle text-danger" data-toggle="tooltip" title="' + error + '"></span>');
+                    });
+                    $submit.removeClass('disabled').attr('disabled', false)
+                    $prev.removeClass('disabled').attr('disabled', false)
+                } else {
+                    resolve();
+                    showSlide((current < last) ? current + 1 : last);
+                }
             });
         }, 3000)
     });

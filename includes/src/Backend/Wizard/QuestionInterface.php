@@ -42,9 +42,9 @@ interface QuestionInterface
     public function setLocalization($locale, $section, $key, $value, $system = true): void;
 
     /**
-     *
+     * @return string
      */
-    public function save(): void;
+    public function save(): string;
 
     /**
      * @return int

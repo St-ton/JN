@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 namespace JTL\Filter;
+use JTL\Shop;
 
 /**
  * Class AbstractFilter
@@ -842,6 +843,6 @@ abstract class AbstractFilter implements FilterInterface
      */
     public function getCacheId(string $query): string
     {
-        return 'fltr_' . \str_replace('\\', '', __CLASS__) . \md5($query) . json_encode($this->getValue() ?? '');
+        return 'fltr_' . \str_replace('\\', '', static::class) . \md5($query) . \json_encode($this->getValue() ?? '');
     }
 }

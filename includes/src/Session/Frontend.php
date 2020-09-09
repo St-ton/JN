@@ -356,49 +356,6 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @param array  $allowed
-     * @param string $default
-     * @return string
-     */
-    private function getBrowserLanguage(array $allowed, string $default): string
-    {
-        $acceptLanguage = $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? null;
-        if (empty($acceptLanguage)) {
-            return $default;
-        }
-        $accepted = \preg_split('/,\s*/', $acceptLanguage);
-        $current  = $default;
-        $quality  = 0;
-        foreach ($accepted as $lang) {
-            $res = \preg_match(
-                '/^([a-z]{1,8}(?:-[a-z]{1,8})*)' .
-                '(?:;\s*q=(0(?:\.[0-9]{1,3})?|1(?:\.0{1,3})?))?$/i',
-                $lang,
-                $matches
-            );
-            if (!$res) {
-                continue;
-            }
-            $codes       = \explode('-', $matches[1]);
-            $langQuality = isset($matches[2])
-                ? (float)$matches[2]
-                : 1.0;
-            while (\count($codes)) {
-                if ($langQuality > $quality
-                    && \in_array(\mb_convert_case(\implode('-', $codes), \MB_CASE_LOWER), $allowed, true)
-                ) {
-                    $current = \mb_convert_case(\implode('-', $codes), \MB_CASE_LOWER);
-                    $quality = $langQuality;
-                    break;
-                }
-                \array_pop($codes);
-            }
-        }
-
-        return $current;
-    }
-
-    /**
      * @return $this
      */
     public function cleanUp(): self

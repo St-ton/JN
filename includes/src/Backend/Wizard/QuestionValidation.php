@@ -16,9 +16,9 @@ class QuestionValidation
     private $question;
 
     /**
-     * @var string
+     * @var int
      */
-    private $validationError = '';
+    private $validationError;
 
     /**
      * QuestionValidation constructor.
@@ -40,7 +40,7 @@ class QuestionValidation
     public function checkRequired(): bool
     {
         if ($this->question->isRequired() && $this->valueIsEmpty()) {
-            $this->setValidationError(__('validationErrorRequired'));
+            $this->setValidationError(QuestionValidationCode::ERROR_REQUIRED);
 
             return false;
         }
@@ -57,7 +57,7 @@ class QuestionValidation
             && !empty($this->question->getValue())
             && Text::filterEmailAddress($this->question->getValue()) === false
         ) {
-            $this->setValidationError(__('validationErrorIncorrectEmail'));
+            $this->setValidationError(QuestionValidationCode::INVALID_EMAIL);
 
             return false;
         }
@@ -73,8 +73,8 @@ class QuestionValidation
     {
         if ((empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === 'off') && !$this->valueIsEmpty()) {
             $pluginMsg
-                ? $this->setValidationError(__('validationErrorSSLPlugin'))
-                : $this->setValidationError(__('validationErrorSSL'));
+                ? $this->setValidationError(QuestionValidationCode::ERROR_SSL_PLUGIN)
+                : $this->setValidationError(QuestionValidationCode::ERROR_SSL);
 
             return false;
         }
@@ -106,14 +106,44 @@ class QuestionValidation
      */
     public function getValidationError(): string
     {
-        return $this->validationError;
+        return $this->mapCode($this->validationError ?? QuestionValidationCode::OK);
     }
 
     /**
-     * @param $validationError
+     * @param int $validationError
      */
-    private function setValidationError($validationError): void
+    private function setValidationError(int $validationError): void
     {
         $this->validationError = $validationError;
+    }
+
+    /**
+     * @param int $code
+     * @return string
+     */
+    private function mapCode(int $code):string
+    {
+        switch ($code) {
+            case QuestionValidationCode::OK:
+                $error = '';
+                break;
+            case QuestionValidationCode::ERROR_REQUIRED:
+                $error = __('validationErrorRequired');
+                break;
+            case QuestionValidationCode::INVALID_EMAIL:
+                $error = __('validationErrorIncorrectEmail');
+                break;
+            case QuestionValidationCode::ERROR_SSL_PLUGIN:
+                $error = __('validationErrorSSLPlugin');
+                break;
+            case QuestionValidationCode::ERROR_SSL:
+                $error = __('validationErrorSSL');
+                break;
+            default:
+                $error = '';
+                break;
+        }
+
+        return $error;
     }
 }

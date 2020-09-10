@@ -27,6 +27,7 @@ if (!Form::validateToken()) {
 
 $db               = Shop::Container()->getDB();
 $gettext          = Shop::Container()->getGetText();
+$cache            = Shop::Container()->getCache();
 $jsonApi          = JSONAPI::getInstance();
 $io               = AdminIO::getInstance()->setAccount($oAccount);
 $images           = new Manager($db, $gettext);
@@ -37,7 +38,7 @@ $wizardFactory    = new DefaultFactory(
     Shop::Container()->getAlertService(),
     Shop::Container()->getAdminAccount()
 );
-$wizardController = new Controller($wizardFactory, $db, Shop::Container()->getCache());
+$wizardController = new Controller($wizardFactory, $db, $cache, $gettext);
 
 try {
     Shop::Container()->getOPC()->registerAdminIOFunctions($io);

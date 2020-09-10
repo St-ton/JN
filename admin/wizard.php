@@ -17,6 +17,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $db           = Shop::Container()->getDB();
 $cache        = Shop::Container()->getCache();
+$getText      = Shop::Container()->getGetText();
 $checker      = new Checker(Shop::Container()->getLogService(), $db, $cache);
 $manager      = new Manager($db, $cache);
 $admin        = new Admin($manager, $db, $cache, $checker);
@@ -26,7 +27,7 @@ $factory      = new DefaultFactory(
     Shop::Container()->getAlertService(),
     Shop::Container()->getAdminAccount()
 );
-$controller   = new Controller($factory, $db, $cache);
+$controller   = new Controller($factory, $db, $cache, $getText);
 $conf         = Shop::getSettings([CONF_GLOBAL]);
 $token        = AuthToken::getInstance($db);
 $valid        = $token->isValid();

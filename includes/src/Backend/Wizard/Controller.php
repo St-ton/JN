@@ -3,11 +3,10 @@
 namespace JTL\Backend\Wizard;
 
 use Illuminate\Support\Collection;
-use JTL\Cache\JTLCache;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
+use JTL\L10n\GetText;
 use JTL\Session\Backend;
-use JTL\Shop;
 
 /**
  * Class Controller
@@ -32,12 +31,15 @@ final class Controller
 
     /**
      * Controller constructor.
-     * @param DefaultFactory    $factory
-     * @param DbInterface       $db
+     * @param DefaultFactory $factory
+     * @param DbInterface $db
      * @param JTLCacheInterface $cache
+     * @param GetText $getText
      */
-    public function __construct(DefaultFactory $factory, DbInterface $db, JTLCacheInterface $cache)
+    public function __construct(DefaultFactory $factory, DbInterface $db, JTLCacheInterface $cache, GetText $getText)
     {
+        $getText->loadAdminLocale('pages/pluginverwaltung');
+
         $this->steps = $factory->getSteps();
         $this->db    = $db;
         $this->cache = $cache;

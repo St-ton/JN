@@ -135,7 +135,7 @@ class ExtensionInstaller
                 Shop::dbg($installCode, false, 'RETURNCODE:');
                 if ($installCode !== InstallCode::OK) {
                     $mapper = new PluginValidation();
-                    return $license->getID() . ': ' .$mapper->map($installCode);
+                    return $license->getID() . ': ' . $mapper->map($installCode);
                 }
             }
         }

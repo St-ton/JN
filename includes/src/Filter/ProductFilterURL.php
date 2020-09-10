@@ -36,11 +36,11 @@ class ProductFilterURL
     }
 
     /**
-     * @param FilterInterface $extraFilter
-     * @param bool            $bCanonical
+     * @param FilterInterface|null $extraFilter
+     * @param bool                 $canonical
      * @return string
      */
-    public function getURL($extraFilter = null, $bCanonical = false): string
+    public function getURL($extraFilter = null, $canonical = false): string
     {
         $isSearchQuery      = false;
         $languageID         = $this->productFilter->getFilterConfig()->getLanguageID();
@@ -63,7 +63,7 @@ class ProductFilterURL
             $filterSeoUrl = $base->getSeo($languageID);
             if (!empty($filterSeoUrl)) {
                 $seoParam          = new stdClass();
-                $seoParam->value   = '';
+                $seoParam->value   = $base->getValue();
                 $seoParam->sep     = '';
                 $seoParam->param   = '';
                 $seoParam->seo     = $filterSeoUrl;
@@ -76,7 +76,7 @@ class ProductFilterURL
                 $nonSeoFilterParams[$base->getUrlParam()] = $filterValue;
             }
         }
-        if ($bCanonical === true) {
+        if ($canonical === true) {
             return $this->productFilter->getFilterConfig()->getBaseURL() .
                 $this->buildURLString(
                     $seoFilterParams,
@@ -116,6 +116,9 @@ class ProductFilterURL
             /** @var FilterInterface $filter */
             $urlParam    = $filter->getUrlParam();
             $filterValue = $filter->getValue();
+            if (\is_array($filterValue)) {
+                $filterValue = first($filterValue);
+            }
             if ($ignore !== null && $urlParam === $ignore) {
                 if ($ignoreValue === null || $ignoreValue === $filterValue) {
                     // unset filter was given for this whole filter or this current value
@@ -135,10 +138,10 @@ class ProductFilterURL
                 $added      = true;
                 $valueToAdd = \is_array($filterValue) ? $filterValue : [$filterValue];
                 foreach ($valueToAdd as $v) {
-                    if (!\in_array($v, $urlParams[$urlParam][0]->value, true)) {
-                        $urlParams[$urlParam][0]->value[] = $v;
-                    } else {
+                    if (\in_array($v, $urlParams[$urlParam][0]->value, true)) {
                         $added = false;
+                    } else {
+                        $urlParams[$urlParam][0]->value[] = $v;
                     }
                 }
                 if ($added === true) {
@@ -184,6 +187,18 @@ class ProductFilterURL
                 }
             }
         }
+        if ($extraFilter !== null && $extraFilter->isParamExclusive() === true) {
+            // some filters (like rating filter) must only have one exclusive param (?bf=1 etc.) - no array of params
+            foreach ($urlParams as $param => $value) {
+                if ($param === $extraFilter->getUrlParam() && \is_array($value)) {
+                    foreach ($value as $index => $val) {
+                        if (isset($val->value) && $val->value !== $extraFilter->getValue()) {
+                            unset($urlParams[$param][$index]);
+                        }
+                    }
+                }
+            }
+        }
         foreach ($urlParams as $filterID => $filters) {
             foreach ($filters as $f) {
                 if (!$isSearchQuery && !empty($f->seo) && !empty($f->sep)) {
@@ -207,7 +222,22 @@ class ProductFilterURL
             }
         }
 
-        return $url . $this->buildURLString($seoFilterParams, $nonSeoFilterParams);
+        return $url . $this->buildURLString($seoFilterParams, $this->collapse($nonSeoFilterParams));
+    }
+
+    /**
+     * @param array $params
+     * @return array
+     */
+    private function collapse(array $params): array
+    {
+        foreach ($params as $param => $value) {
+            if (\is_array($value) && \count($value) === 1) {
+                $params[$param] = first($value);
+            }
+        }
+
+        return $params;
     }
 
     /**
@@ -235,8 +265,8 @@ class ProductFilterURL
     /**
      * URLs generieren, die Filter lösen
      *
-     * @param NavigationURLsInterface $url
-     * @param SearchResultsInterface  $searchResults
+     * @param NavigationURLsInterface      $url
+     * @param SearchResultsInterface|null  $searchResults
      * @return NavigationURLsInterface
      */
     public function createUnsetFilterURLs($url, $searchResults = null): NavigationURLsInterface
@@ -244,19 +274,29 @@ class ProductFilterURL
         if ($searchResults === null) {
             $searchResults = $this->productFilter->getSearchResults();
         }
-        $extraFilter    = (new Category($this->productFilter))->init(null)->setDoUnset(true);
-        $_categoriesURL = $this->getURL($extraFilter);
-        $url->setCategories($_categoriesURL);
-        $this->productFilter->getCategoryFilter()->setUnsetFilterURL($_categoriesURL);
+        $extraFilter   = (new Category($this->productFilter))->init(null)->setDoUnset(true);
+        $categoriesURL = $this->getURL($extraFilter);
+        $url->setCategories($categoriesURL);
+        $categoryFilter       = $this->productFilter->getCategoryFilter();
+        $categoryFilterValues = $categoryFilter->getValue();
+        if (\is_array($categoryFilterValues)) {
+            $urls             = [];
+            $additionalFilter = (new Category($this->productFilter))->setDoUnset(true);
+            foreach ($categoryFilterValues as $value) {
+                $additionalFilter->init($value)->setValue($value);
+                $urls[$value] = $this->getURL($additionalFilter);
+            }
+            $categoryFilter->setUnsetFilterURL($urls);
+        } else {
+            $categoryFilter->setUnsetFilterURL($categoriesURL);
+        }
 
-        $extraFilter       = (new Manufacturer($this->productFilter))->init(null)->setDoUnset(true);
-        $_manufacturersURL = $this->getURL($extraFilter);
-        $url->setManufacturers($_manufacturersURL);
+        $extraFilter      = (new Manufacturer($this->productFilter))->init(null)->setDoUnset(true);
+        $manufacturersURL = $this->getURL($extraFilter);
+        $url->setManufacturers($manufacturersURL);
         $manufacturerFilter       = $this->productFilter->getManufacturerFilter();
         $manufacturerFilterValues = $manufacturerFilter->getValue();
-        if (!\is_array($manufacturerFilterValues)) {
-            $manufacturerFilter->setUnsetFilterURL($_manufacturersURL);
-        } else {
+        if (\is_array($manufacturerFilterValues)) {
             $urls             = [];
             $additionalFilter = (new Manufacturer($this->productFilter))->setDoUnset(true);
             foreach ($manufacturerFilterValues as $value) {
@@ -264,6 +304,8 @@ class ProductFilterURL
                 $urls[$value] = $this->getURL($additionalFilter);
             }
             $manufacturerFilter->setUnsetFilterURL($urls);
+        } else {
+            $manufacturerFilter->setUnsetFilterURL($manufacturersURL);
         }
 
         $additionalFilter = (new Characteristic($this->productFilter))->setDoUnset(true);
@@ -299,35 +341,33 @@ class ProductFilterURL
             && !isset($url->getCharacteristicValues()[$this->productFilter->getCharacteristicValue()->getValue()])
         ) {
             // the url should be <shop>/<merkmalwert-url>__<merkmalfilter>[__<merkmalfilter>]
-            $_mmwSeo = \str_replace(
+            $charValSeo = \str_replace(
                 $this->productFilter->getCharacteristicValue()
                                     ->getSeo($this->productFilter->getFilterConfig()->getLanguageID()) . \SEP_MERKMAL,
                 '',
                 $url->getCategories()
             );
-            if ($_mmwSeo !== $url->getCategories()) {
-                $url->addCharacteristicValue($this->productFilter->getCharacteristicValue()->getValue(), $_mmwSeo);
-                $this->productFilter->getCharacteristicValue()->setUnsetFilterURL($_mmwSeo);
+            if ($charValSeo !== $url->getCategories()) {
+                $url->addCharacteristicValue($this->productFilter->getCharacteristicValue()->getValue(), $charValSeo);
+                $this->productFilter->getCharacteristicValue()->setUnsetFilterURL($charValSeo);
             }
         }
-        $extraFilter    = (new PriceRange($this->productFilter))->setDoUnset(true);
-        $_priceRangeURL = $this->getURL($extraFilter);
-        $url->setPriceRanges($_priceRangeURL);
-        $this->productFilter->getPriceRangeFilter()->setUnsetFilterURL($_priceRangeURL);
+        $extraFilter   = (new PriceRange($this->productFilter))->setDoUnset(true);
+        $priceRangeURL = $this->getURL($extraFilter);
+        $url->setPriceRanges($priceRangeURL);
+        $this->productFilter->getPriceRangeFilter()->setUnsetFilterURL($priceRangeURL);
 
         $extraFilter = (new Rating($this->productFilter))->init(null)->setDoUnset(true);
-        $_ratingURL  = $this->getURL($extraFilter);
-        $url->setRatings($_ratingURL);
-        $this->productFilter->getRatingFilter()->setUnsetFilterURL($_ratingURL);
+        $ratingURL   = $this->getURL($extraFilter);
+        $url->setRatings($ratingURL);
+        $this->productFilter->getRatingFilter()->setUnsetFilterURL($ratingURL);
 
-        $extraFilter        = (new SearchSpecial($this->productFilter))->init(null)->setDoUnset(true);
-        $_searchSpecialsURL = $this->getURL($extraFilter);
-        $url->setSearchSpecials($_searchSpecialsURL);
+        $extraFilter       = (new SearchSpecial($this->productFilter))->init(null)->setDoUnset(true);
+        $searchSpecialsURL = $this->getURL($extraFilter);
+        $url->setSearchSpecials($searchSpecialsURL);
         $searchSpecialFilter       = $this->productFilter->getSearchSpecialFilter();
         $searchSpecialFilterValues = $searchSpecialFilter->getValue();
-        if (!\is_array($searchSpecialFilterValues)) {
-            $searchSpecialFilter->setUnsetFilterURL($_searchSpecialsURL);
-        } else {
+        if (\is_array($searchSpecialFilterValues)) {
             $urls             = [];
             $additionalFilter = (new SearchSpecial($this->productFilter))->setDoUnset(true);
             foreach ($searchSpecialFilterValues as $value) {
@@ -335,6 +375,8 @@ class ProductFilterURL
                 $urls[$value] = $this->getURL($additionalFilter);
             }
             $searchSpecialFilter->setUnsetFilterURL($urls);
+        } else {
+            $searchSpecialFilter->setUnsetFilterURL($searchSpecialsURL);
         }
 
         $extraFilter = (new Search($this->productFilter))->init(null)->setDoUnset(true);
@@ -383,7 +425,7 @@ class ProductFilterURL
     /**
      * converts legacy stdClass filters to real filter instances
      *
-     * @param stdClass|FilterInterface $extraFilter
+     * @param stdClass|FilterInterface|null $extraFilter
      * @return FilterInterface|null
      * @throws \InvalidArgumentException
      */

@@ -207,6 +207,16 @@ final class Shop
     public static $kHerstellerFilter;
 
     /**
+     * @var array
+     */
+    public static $manufacturerFilterIDs;
+
+    /**
+     * @var array
+     */
+    public static $categoryFilterIDs;
+
+    /**
      * @var int
      */
     public static $kKategorieFilter;
@@ -683,8 +693,8 @@ final class Shop
     }
 
     /**
-     * @param bool   $fast
-     * @param string $context
+     * @param bool        $fast
+     * @param string|null $context
      * @return JTLSmarty
      */
     public function _Smarty(bool $fast = false, string $context = null): JTLSmarty
@@ -770,7 +780,7 @@ final class Shop
      * @var bool $iso
      * @return int|string
      */
-    public static function getLanguage($iso = false)
+    public static function getLanguage(bool $iso = false)
     {
         return $iso === false ? (int)self::$kSprache : self::$cISO;
     }
@@ -801,13 +811,13 @@ final class Shop
      * set language/language ISO
      *
      * @param int         $languageID
-     * @param string|null $cISO
+     * @param string|null $iso
      */
-    public static function setLanguage(int $languageID, string $cISO = null): void
+    public static function setLanguage(int $languageID, string $iso = null): void
     {
         self::$kSprache = $languageID;
-        if ($cISO !== null) {
-            self::$cISO = $cISO;
+        if ($iso !== null) {
+            self::$cISO = $iso;
         }
     }
 
@@ -932,8 +942,14 @@ final class Shop
         self::$kNewsKategorie         = Request::verifyGPCDataInt('nk');
         self::$nBewertungSterneFilter = Request::verifyGPCDataInt('bf');
         self::$cPreisspannenFilter    = Request::verifyGPDataString('pf');
-        self::$kHerstellerFilter      = Request::verifyGPCDataInt('hf');
-        self::$kKategorieFilter       = Request::verifyGPCDataInt('kf');
+        self::$manufacturerFilterIDs  = Request::verifyGPDataIntegerArray('hf');
+        self::$kHerstellerFilter      = \count(self::$manufacturerFilterIDs) > 0
+            ? self::$manufacturerFilterIDs[0]
+            : 0;
+        self::$categoryFilterIDs      = Request::verifyGPDataIntegerArray('kf');
+        self::$kKategorieFilter       = \count(self::$categoryFilterIDs) > 0
+            ? self::$categoryFilterIDs[0]
+            : 0;
         self::$searchSpecialFilterIDs = Request::verifyGPDataIntegerArray('qf');
         self::$kSuchFilter            = Request::verifyGPCDataInt('sf');
         self::$kSuchspecialFilter     = \count(self::$searchSpecialFilterIDs) > 0
@@ -1093,7 +1109,9 @@ final class Shop
             'nAnzahl'                => self::$nAnzahl,
             'nSterne'                => self::$nSterne,
             'customFilters'          => self::$customFilters,
-            'searchSpecialFilters'   => self::$searchSpecialFilterIDs
+            'searchSpecialFilters'   => self::$searchSpecialFilterIDs,
+            'manufacturerFilters'    => self::$manufacturerFilterIDs,
+            'categoryFilters'        => self::$categoryFilterIDs
         ];
     }
 
@@ -1294,21 +1312,21 @@ final class Shop
             }
             // custom filter
             foreach ($customSeo as $className => $data) {
-                $oSeo = self::Container()->getDB()->select($data['table'], 'cSeo', $data['cSeo']);
-                if (isset($oSeo->filterval)) {
-                    self::$customFilters[$className] = (int)$oSeo->filterval;
+                $seoData = self::Container()->getDB()->select($data['table'], 'cSeo', $data['cSeo']);
+                if (isset($seoData->filterval)) {
+                    self::$customFilters[$className] = (int)$seoData->filterval;
                 } else {
                     self::$bKatFilterNotFound = true;
                 }
-                if (isset($oSeo->kSprache) && $oSeo->kSprache > 0) {
-                    self::updateLanguage((int)$oSeo->kSprache);
+                if (isset($seoData->kSprache) && $seoData->kSprache > 0) {
+                    self::updateLanguage((int)$seoData->kSprache);
                 }
             }
             // category filter
             if (\mb_strlen($categorySeo) > 0) {
-                $oSeo = self::Container()->getDB()->select('tseo', 'cKey', 'kKategorie', 'cSeo', $categorySeo);
-                if (isset($oSeo->kKey) && \strcasecmp($oSeo->cSeo, $categorySeo) === 0) {
-                    self::$kKategorieFilter = (int)$oSeo->kKey;
+                $seoData = self::Container()->getDB()->select('tseo', 'cKey', 'kKategorie', 'cSeo', $categorySeo);
+                if (isset($seoData->kKey) && \strcasecmp($seoData->cSeo, $categorySeo) === 0) {
+                    self::$kKategorieFilter = (int)$seoData->kKey;
                 } else {
                     self::$bKatFilterNotFound = true;
                 }
@@ -1356,18 +1374,42 @@ final class Shop
                     $_GET['mf'] = [(int)$_GET['mf']];
                 }
                 self::$bSEOMerkmalNotFound = false;
-                foreach ($seoAttributes as $i => $cSEOMerkmal) {
-                    if ($i > 0 && \mb_strlen($cSEOMerkmal) > 0) {
-                        $oSeo = self::Container()->getDB()->select(
+                foreach ($seoAttributes as $i => $seoString) {
+                    if ($i > 0 && \mb_strlen($seoString) > 0) {
+                        $seoData = self::Container()->getDB()->select(
                             'tseo',
                             'cKey',
                             'kMerkmalWert',
                             'cSeo',
-                            $cSEOMerkmal
+                            $seoString
                         );
-                        if (isset($oSeo->kKey) && \strcasecmp($oSeo->cSeo, $cSEOMerkmal) === 0) {
-                            //haenge an GET, damit baueMerkmalFilter die Merkmalfilter setzen kann - @todo?
-                            $_GET['mf'][] = (int)$oSeo->kKey;
+                        if (isset($seoData->kKey) && \strcasecmp($seoData->cSeo, $seoString) === 0) {
+                            // haenge an GET, damit baueMerkmalFilter die Merkmalfilter setzen kann - @todo?
+                            $_GET['mf'][] = (int)$seoData->kKey;
+                        } else {
+                            self::$bSEOMerkmalNotFound = true;
+                        }
+                    }
+                }
+            }
+            if (\count($categories) > 1) {
+                if (!isset($_GET['kf'])) {
+                    $_GET['kf'] = [];
+                } elseif (!\is_array($_GET['kf'])) {
+                    $_GET['kf'] = [(int)$_GET['kf']];
+                }
+                self::$bSEOMerkmalNotFound = false;
+                foreach ($categories as $i => $seoString) {
+                    if ($i > 0 && \mb_strlen($seoString) > 0) {
+                        $seoData = self::Container()->getDB()->select(
+                            'tseo',
+                            'cKey',
+                            'kKategorie',
+                            'cSeo',
+                            $seoString
+                        );
+                        if (isset($seoData->kKey) && \strcasecmp($seoData->cSeo, $seoString) === 0) {
+                            $_GET['kf'][] = (int)$seoData->kKey;
                         } else {
                             self::$bSEOMerkmalNotFound = true;
                         }
@@ -1450,8 +1492,9 @@ final class Shop
                 self::updateLanguage((int)$oSeo->kSprache);
             }
         }
-        self::$MerkmalFilter = ProductFilter::initCharacteristicFilter();
-        self::$SuchFilter    = ProductFilter::initSearchFilter();
+        self::$MerkmalFilter     = ProductFilter::initCharacteristicFilter();
+        self::$SuchFilter        = ProductFilter::initSearchFilter();
+        self::$categoryFilterIDs = ProductFilter::initCategoryFilter();
 
         \executeHook(\HOOK_SEOCHECK_ENDE);
     }
@@ -1491,7 +1534,7 @@ final class Shop
             $parentID = Product::getParent(self::$kArtikel);
             if ($parentID > 0) {
                 $productID = $parentID;
-                //save data from child article POST and add to redirect
+                // save data from child article POST and add to redirect
                 $cRP = '';
                 if (\is_array($_POST) && \count($_POST) > 0) {
                     foreach (\array_keys($_POST) as $key) {
@@ -1896,12 +1939,12 @@ final class Shop
     }
 
     /**
-     * @param bool $bForceSSL
+     * @param bool $forceSSL
      * @return string - the shop Admin URL without trailing slash
      */
-    public static function getAdminURL(bool $bForceSSL = false): string
+    public static function getAdminURL(bool $forceSSL = false): string
     {
-        return \rtrim(static::getURL($bForceSSL, false) . '/' . \PFAD_ADMIN, '/');
+        return \rtrim(static::getURL($forceSSL, false) . '/' . \PFAD_ADMIN, '/');
     }
 
     /**

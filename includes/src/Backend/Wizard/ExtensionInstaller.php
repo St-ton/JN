@@ -7,6 +7,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use JTL\DB\DbInterface;
+use JTL\Helpers\Text;
 use JTL\License\AjaxResponse;
 use JTL\License\Exception\ApiResultCodeException;
 use JTL\License\Exception\ChecksumValidationException;
@@ -108,7 +109,7 @@ class ExtensionInstaller
                             // `POST https://checkout-stage.jtl-software.com/v1/license/recommendation/create/foo`
                             // resulted in a `500 Internal Server Error` response:
                             //{"code":0,"message":"Extension doesn't provide a free of charge license"}
-                            return $recom->getTitle() . ': ' . $e->getMessage();
+                            return $recom->getTitle() . ': ' . Text::htmlentities($e->getMessage());
                         }
                     }
                 }

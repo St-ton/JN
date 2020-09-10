@@ -4,6 +4,7 @@ namespace JTL\Network;
 
 use Exception;
 use JTL\Helpers\Request;
+use JTL\Shop;
 
 /**
  * Class Communication
@@ -21,8 +22,14 @@ final class Communication
      */
     private static function doCall(string $cURL, array $postData, ?array $cookieData = null, bool $bPost = true)
     {
+        $logger = Shop::Container()->getLogService();
         if (\function_exists('curl_init')) {
-            $ch = \curl_init();
+            $logger->debug('curl_init(' . $cURL . ')');
+            $ch    = \curl_init();
+            $errNo = \curl_errno($ch);
+            if ($errNo !== 0) {
+                $logger->error('curl error(' . $errNo . '): ' . \curl_error($ch));
+            }
             \curl_setopt($ch, \CURLOPT_POST, $bPost);
             \curl_setopt($ch, \CURLOPT_POSTFIELDS, $postData);
             \curl_setopt(
@@ -41,10 +48,19 @@ final class Communication
             if ($cookieData !== null) {
                 $cookie = \str_replace('&', ';', \http_build_query($cookieData));
                 \curl_setopt($ch, \CURLOPT_HTTPHEADER, ['Cookie: ' . $cookie]);
+                $logger->debug('curl set cookie data: ' . \var_export($cookie, true));
             }
-
+            $errNo = \curl_errno($ch);
+            if ($errNo !== 0) {
+                $logger->error('curl error(' . $errNo . '): ' . \curl_error($ch));
+            }
+            $logger->debug('call Request::curl_exec_follow');
             $content = Request::curl_exec_follow($ch);
-
+            $errNo   = \curl_errno($ch);
+            if ($errNo !== 0) {
+                $logger->error('curl error(' . $errNo . '): ' . \curl_error($ch));
+            }
+            $logger->debug('curl content: ' . \var_export($content, true));
             \curl_close($ch);
         } else {
             throw new Exception('Die PHP Funktion curl_init existiert nicht!');

@@ -122,19 +122,31 @@ final class SyntaxChecker
         $result = \json_decode($text, false);
         if (\json_last_error() !== \JSON_ERROR_NONE) {
             $text = \strip_tags($text);
-            // strip smarty output if fatal error occurs
-            $fatalPos = \strpos($text, 'Fatal error:');
-            if ($fatalPos !== false) {
-                $text = \substr($text, $fatalPos);
-            }
             // strip possible call stack
-            $callstackPos = \strpos($text, 'Call Stack:');
-            if ($callstackPos !== false) {
-                $text = \substr($text, 0, $callstackPos);
+            if (\preg_match('/(Stack trace|Call Stack):/', $text, $hits)) {
+                $callstackPos = \mb_strpos($text, 'Call Stack:');
+                if ($callstackPos !== false) {
+                    $text = \mb_substr($text, 0, $callstackPos);
+                }
+            }
+            $errText  = '';
+            $fatalPos = \mb_strlen($text);
+            // strip smarty output if fatal error occurs
+            if (\preg_match('/((Recoverable )?Fatal error):/ui', $text, $hits)) {
+                $fatalPos = \mb_strpos($text, $hits[1]);
+                if ($fatalPos !== false) {
+                    $errText = \mb_substr($text, $fatalPos);
+                }
+            }
+            // strip possible error position from smarty output
+            $text = \mb_substr($text, 0, $fatalPos);
+            $len  = \mb_strlen($text);
+            if ($len > 75) {
+                $text = '...' . \mb_substr($text, $len - 75);
             }
             $result = (object)[
                 'result'  => 'failure',
-                'message' => $text,
+                'message' => \htmlentities($errText) . ($len > 0 ? '<br/>on line: ' . \htmlentities($text) : ''),
             ];
         }
         if ($result->result !== 'ok') {
@@ -254,6 +266,7 @@ final class SyntaxChecker
     public function doCheckSyntax(LanguageModel $lang, string $templateID, string $moduleID): string
     {
         try {
+            $this->hydrator->getSmarty()->setErrorReporting(\E_ALL & ~\E_NOTICE & ~\E_STRICT & ~\E_DEPRECATED);
             $this->hydrator->hydrate(null, $lang);
             $html = $this->renderer->renderHTML($templateID);
             $text = $this->renderer->renderText($templateID);

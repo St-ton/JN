@@ -35,6 +35,8 @@ $authRedirect = $valid && Backend::get('wizard-authenticated')
     ? Backend::get('wizard-authenticated')
     : false;
 
+Backend::set('redirectedToWizard', true);
+
 if (Request::postVar('action') === 'code') {
     $admin->handleAuth();
 } elseif (Request::getVar('action') === 'auth') {

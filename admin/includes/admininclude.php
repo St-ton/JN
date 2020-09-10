@@ -96,6 +96,14 @@ if ($loggedIn
     \header('Location: ' . Shop::getURL(true) . '/' . \PFAD_ADMIN . 'dbupdater.php');
     exit;
 }
+if (($conf['global']['global_wizard_done'] ?? 'Y') === 'N'
+    && strpos($_SERVER['SCRIPT_FILENAME'], 'wizard') === false
+    && !$updater->hasPendingUpdates()
+    && !Backend::get('redirectedToWizard')
+) {
+    \header('Location: ' . Shop::getURL(true) . '/' . \PFAD_ADMIN . 'wizard.php');
+    exit;
+}
 
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'smartyinclude.php';
 

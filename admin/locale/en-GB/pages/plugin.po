@@ -55,3 +55,6 @@ msgstr "Extend test license"
 
 msgid "pluginIsDeactivated"
 msgstr "Plugin is disabled."
+
+msgid "pluginNotFound"
+msgstr "Plugin not found."

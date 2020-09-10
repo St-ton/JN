@@ -800,8 +800,8 @@ final class Shop
     /**
      * set language/language ISO
      *
-     * @param int    $languageID
-     * @param string $cISO
+     * @param int         $languageID
+     * @param string|null $cISO
      */
     public static function setLanguage(int $languageID, string $cISO = null): void
     {
@@ -1461,15 +1461,20 @@ final class Shop
      */
     private static function updateLanguage(int $languageID): void
     {
-        $spr   = self::Lang()->getIsoFromLangID($languageID);
-        $cLang = $spr->cISO ?? null;
-        if ($cLang !== $_SESSION['cISOSprache']) {
-            Frontend::checkReset($cLang);
+        $iso = self::Lang()->getIsoFromLangID($languageID)->cISO ?? null;
+        if ($iso !== $_SESSION['cISOSprache']) {
+            Frontend::checkReset($iso);
             Tax::setTaxRates();
         }
         if (self::$productFilter->getFilterConfig()->getLanguageID() !== $languageID) {
             self::$productFilter->getFilterConfig()->setLanguageID($languageID);
             self::$productFilter->initBaseStates();
+        }
+        $customer     = Frontend::getCustomer();
+        $customerLang = $customer->getLanguageID();
+        if ($customerLang > 0 && $customerLang !== $languageID) {
+            $customer->setLanguageID($languageID);
+            $customer->updateInDB();
         }
     }
 

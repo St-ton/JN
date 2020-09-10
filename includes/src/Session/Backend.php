@@ -4,9 +4,13 @@ namespace JTL\Session;
 
 use JTL\Catalog\Currency;
 use JTL\Customer\CustomerGroup;
+use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
+use JTL\Language\LanguageModel;
 use JTL\Shop;
 use stdClass;
+use function Functional\first;
+use function Functional\map;
 
 /**
  * Class Backend
@@ -42,9 +46,31 @@ class Backend extends AbstractSession
         self::$instance        = $this;
         $_SESSION['jtl_token'] = $_SESSION['jtl_token'] ?? Shop::Container()->getCryptoService()->randomString(32);
         if (!isset($_SESSION['kSprache'], $_SESSION['cISOSprache'])) {
-            $lang                    = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
-            $_SESSION['kSprache']    = isset($lang->kSprache) ? (int)$lang->kSprache : 1;
-            $_SESSION['cISOSprache'] = $lang->cISO ?? 'ger';
+            $languages    = LanguageHelper::getInstance()->gibInstallierteSprachen();
+            $lang         = first($languages, static function (LanguageModel $e) {
+                return $e->isShopDefault() === true;
+            });
+            $allowed      = map($languages, static function (LanguageModel $e) {
+                return $e->getIso639();
+            });
+            $adminLocales = Shop::Container()->getGetText()->getAdminLanguages();
+            if ($lang !== null) {
+                $default = Text::convertISO6392ISO($this->getBrowserLanguage($allowed, $lang->cISO));
+                foreach ($languages as $language) {
+                    if ($language->cISO === $default) {
+                        foreach ($adminLocales as $tag => $adminLocale) {
+                            if ($adminLocale === $language->getNameDE() || $adminLocale === $language->getNameEN()) {
+                                $_SESSION['kSprache']    = (int)$language->kSprache;
+                                $_SESSION['cISOSprache'] = $language->cISO;
+                                Shop::Container()->getGetText()->setLanguage($tag);
+                                break 2;
+                            }
+                        }
+                    }
+                }
+            }
+            $_SESSION['kSprache']    = $_SESSION['kSprache'] ?? 1;
+            $_SESSION['cISOSprache'] = $_SESSION['cISOSprache'] ?? 'ger';
         }
         Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
         if (isset($_SESSION['Kundengruppe']) && \get_class($_SESSION['Kundengruppe']) === stdClass::class) {

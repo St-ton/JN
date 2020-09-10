@@ -92,7 +92,6 @@ class ExtensionInstaller
     {
         $createdLicenseKeys = [];
         foreach ($requested as $id) {
-            Shop::dbg($id, false, 'requested ID:');
             $recom = $this->getRecommendationByID($id);
             if ($recom !== null) {
                 foreach ($recom->getLinks() as $link) {
@@ -100,13 +99,10 @@ class ExtensionInstaller
                         try {
                             $res  = $this->manager->createLicense($link->getHref());
                             $data = \json_decode($res);
-                            Shop::dbg($res, false, 'created:');
                             if (isset($data->meta)) {
                                 $createdLicenseKeys[] = $data->meta->exs_key;
                             }
                         } catch (ClientException | GuzzleException $e) {
-                            // @todo
-                            Shop::dbg($e->getMessage(), false, 'exception:');
                             // possible error:
                             // "Server error:
                             // `POST https://checkout-stage.jtl-software.com/v1/license/recommendation/create/foo`
@@ -130,12 +126,12 @@ class ExtensionInstaller
                     $download    = $this->helper->getDownload($itemID);
                     $installCode = $installer->install($itemID, $download, $ajaxResponse);
                 } catch (InvalidArgumentException $e) {
-                    return $e->getMessage();
+                    return \sprintf('%s: %s', $license->getName(), $e->getMessage());
                 }
-                Shop::dbg($installCode, false, 'RETURNCODE:');
                 if ($installCode !== InstallCode::OK) {
                     $mapper = new PluginValidation();
-                    return $license->getID() . ': ' . $mapper->map($installCode);
+                    $license->getName();
+                    return \sprintf('%s: %s', $license->getName(), $mapper->map($installCode));
                 }
             }
         }

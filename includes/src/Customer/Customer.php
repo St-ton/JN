@@ -882,6 +882,14 @@ class Customer
     }
 
     /**
+     * @param int $languageID
+     */
+    public function setLanguageID(int $languageID): void
+    {
+        $this->kSprache = $languageID;
+    }
+
+    /**
      * @return bool
      */
     public function isLoggedIn(): bool

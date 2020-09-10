@@ -192,7 +192,7 @@ code_quality:
 test_PHP_7.2:
   stage: test
   script:
-    - docker run --rm -v $CI_PROJECT_DIR:/repofolder $GLOBAL_CI_REGISTRY_URL/ci-tests:php72 /repofolder/build/scripts/tests.sh
+    - docker run --rm --name ci_unittests_$CI_RUNNER_SHORT_TOKEN -v $CI_PROJECT_DIR:/repofolder $GLOBAL_CI_REGISTRY_URL/ci-tests:php72 /repofolder/build/scripts/tests.sh
 #  <<: *debugging
   rules:
     - if: $CI_PROJECT_PATH =~ /^jtl-software\/.*$/
@@ -206,7 +206,7 @@ test_PHP_7.2:
 test_PHP_7.3:
   stage: test
   script:
-    - docker run --rm -v $CI_PROJECT_DIR:/repofolder $GLOBAL_CI_REGISTRY_URL/ci-tests:php73 /repofolder/build/scripts/tests.sh
+    - docker run --rm --name ci_unittests_$CI_RUNNER_SHORT_TOKEN -v $CI_PROJECT_DIR:/repofolder $GLOBAL_CI_REGISTRY_URL/ci-tests:php73 /repofolder/build/scripts/tests.sh
 #  <<: *debugging
   rules:
     - if: $CI_PROJECT_PATH =~ /^jtl-software\/.*$/
@@ -220,7 +220,7 @@ test_PHP_7.3:
 test_PHP_7.4:
   stage: test
   script:
-    - docker run --rm -v $CI_PROJECT_DIR:/repofolder $GLOBAL_CI_REGISTRY_URL/ci-tests:php74 /repofolder/build/scripts/tests.sh
+    - docker run --rm --name ci_unittests_$CI_RUNNER_SHORT_TOKEN -v $CI_PROJECT_DIR:/repofolder $GLOBAL_CI_REGISTRY_URL/ci-tests:php74 /repofolder/build/scripts/tests.sh
 #  <<: *debugging
   rules:
     - if: $CI_PROJECT_PATH =~ /^jtl-software\/.*$/

@@ -117,7 +117,6 @@ try {
     $io->respondAndExit(new IOError($e->getMessage(), $e->getCode()));
 }
 
-
 $request = $_REQUEST['io'];
 
 executeHook(HOOK_IO_HANDLE_REQUEST_ADMIN, [

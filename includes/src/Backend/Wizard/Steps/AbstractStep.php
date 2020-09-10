@@ -145,15 +145,6 @@ abstract class AbstractStep implements StepInterface
      */
     public function getFilteredQuestions(): array
     {
-//        $questions = $this->questions->filter(function (QuestionInterface $question) {
-//            $test = $question->getDependency();
-//            if ($test === null) {
-//                return true;
-//            }
-//            foreach ($this->questions as $q) {
-//                if ($q->getID() === $test)
-//            }
-//        })
         return \array_filter($this->questions->toArray(), function (QuestionInterface $question) {
             $test = $question->getDependency();
             if ($test === null) {

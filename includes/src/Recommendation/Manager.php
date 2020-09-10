@@ -70,7 +70,6 @@ class Manager
     {
         $this->recommendations = new Collection();
 
-//        //TODO: Cache?
         foreach ($this->getJSONFromAPI($this->getScope()) as $recommendation) {
             $this->recommendations->push(new Recommendation($recommendation));
         }
@@ -106,7 +105,8 @@ class Manager
      * @param string $scope
      * @return array
      * @throws GuzzleException
-     * @throws ClientException
+     * @throws \JTL\Exceptions\CircularReferenceException
+     * @throws \JTL\Exceptions\ServiceNotFoundException
      */
     private function getJSONFromAPI(string $scope): array
     {

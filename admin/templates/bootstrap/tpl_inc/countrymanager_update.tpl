@@ -17,21 +17,21 @@
                 </div>
 
                 <div class="form-group form-row align-items-center">
-                    <label class="col col-sm-4 col-form-label text-sm-right" for="cDeutsch">{__('cDeutsch')}:</label>
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="cDeutsch">{__('DBcDeutsch')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <input class="form-control" type="text" id="cDeutsch" name="cDeutsch" value="{if !empty($country)}{$country->getNameDE()}{/if}" tabindex="1" required/>
                     </div>
                 </div>
 
                 <div class="form-group form-row align-items-center">
-                    <label class="col col-sm-4 col-form-label text-sm-right" for="cEnglisch">{__('cEnglisch')}:</label>
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="cEnglisch">{__('DBcEnglisch')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <input class="form-control" type="text" id="cEnglisch" name="cEnglisch" value="{if !empty($country)}{$country->getNameEN()}{/if}" tabindex="1" required/>
                     </div>
                 </div>
 
                 <div class="form-group form-row align-items-center">
-                    <label class="col col-sm-4 col-form-label text-sm-right" for="nEU">{__('nEU')}:</label>
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="nEU">{__('isEU')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <select name="nEU" id="nEU" class="custom-select">
                                 <option value="0" {if !empty($country) && !$country->isEU()}selected{/if}>{__('no')}</option>
@@ -41,7 +41,7 @@
                 </div>
 
                 <div class="form-group form-row align-items-center">
-                    <label class="col col-sm-4 col-form-label text-sm-right" for="cKontinent">{__('cKontinent')}:</label>
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="cKontinent">{__('Continent')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <select name="cKontinent" id="cKontinent" class="custom-select">
                             {foreach $continents as $continent}
@@ -78,9 +78,9 @@
             <div class="card-footer save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-lg-auto mb-2">
-                        <button type="button" class="btn btn-outline-primary btn-block" data-dismiss="modal">
+                        <a class="btn btn-outline-primary btn-block" href="countrymanager.php">
                             {__('cancelWithIcon')}
-                        </button>
+                        </a>
                     </div>
                     <div class="col-sm-6 col-lg-auto ">
                         <button type="submit" class="btn btn-primary btn-block">

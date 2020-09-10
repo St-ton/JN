@@ -6,9 +6,9 @@
                 <tr>
                     <th>{__('ISO')}</th>
                     <th>{__('Name')}</th>
-                    <th>{__('Deutsch')}</th>
-                    <th>{__('Englisch')}</th>
-                    <th>{__('EU')}</th>
+                    <th>{__('DBcDeutsch')}</th>
+                    <th>{__('DBcEnglisch')}</th>
+                    <th>{__('isEU')}</th>
                     <th>{__('Continent')}</th>
                     <th>{__('isShippingAvailable')}</th>
                     <th>{__('isPermitRegistration')}</th>

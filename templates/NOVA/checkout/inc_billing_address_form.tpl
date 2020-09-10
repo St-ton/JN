@@ -285,7 +285,7 @@
                                             }
                                                 <option value="" selected disabled>{lang key='pleaseChoose'}</option>
                                                 {foreach $selectedCountry->getStates() as $state}
-                                                    <option value="{$state->getIso()}" {if $selectedState === $state->getName() || $selectedState === $state->getIso()}selected{/if}>{$state->getName()}</option>
+                                                    <option value="{$state->getISO()}" {if $selectedState === $state->getName() || $selectedState === $state->getISO()}selected{/if}>{$state->getName()}</option>
                                                 {/foreach}
                                             {/select}
                                         {else}

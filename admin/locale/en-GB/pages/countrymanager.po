@@ -9,4 +9,37 @@ msgid "countryManagerURL"
 msgstr ""
 
 msgid "countryManagerDesc"
-msgstr "Manage the countries for your shipping methods"
+msgstr "Hier können sie alle Länder verwalten. Der \"Name\" der Länder wird mit dem ISO-Code, automatisch, mithilfe einer PHP-Funktion, in der entsprechenden Sprache (Frontend sowie Backend) generiert und ist daher nicht änderbar."
+
+msgid "ISO"
+msgstr "ISO"
+
+msgid "Name"
+msgstr "Name"
+
+msgid "DBcDeutsch"
+msgstr "Deutsch"
+
+msgid "DBcEnglisch"
+msgstr "Englisch"
+
+msgid "isEU"
+msgstr "EU"
+
+msgid "Continent"
+msgstr "Kontinent"
+
+msgid "isShippingAvailable"
+msgstr "In Versandart vorhanden"
+
+msgid "isPermitRegistration"
+msgstr "Für Registrierung erlaubt"
+
+msgid "isRequireStateDefinition"
+msgstr "Staat als Pflichtfeld"
+
+msgid "updateCountry"
+msgstr "Land bearbeiten"
+
+msgid "addCountry"
+msgstr "Land hinzufügen"

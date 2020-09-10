@@ -16,10 +16,10 @@ class State
      * @var array
      */
     protected static $mapping = [
-        'kStaat'   => 'Id',
+        'kStaat'   => 'ID',
         'cLandIso' => 'CountryISO',
         'cName'    => 'Name',
-        'cCode'    => 'Iso'
+        'cCode'    => 'ISO'
     ];
 
     /**
@@ -47,13 +47,12 @@ class State
      */
     public function __construct()
     {
-
     }
 
     /**
      * @return int
      */
-    public function getId(): int
+    public function getID(): int
     {
         return $this->id;
     }
@@ -62,7 +61,7 @@ class State
      * @param int $id
      * @return State
      */
-    public function setId(int $id): self
+    public function setID(int $id): self
     {
         $this->id = $id;
 
@@ -110,7 +109,7 @@ class State
     /**
      * @return string
      */
-    public function getIso(): string
+    public function getISO(): string
     {
         return $this->iso;
     }
@@ -119,7 +118,7 @@ class State
      * @param string $iso
      * @return State
      */
-    public function setIso(string $iso): self
+    public function setISO(string $iso): self
     {
         $this->iso = $iso;
 

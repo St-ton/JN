@@ -254,8 +254,8 @@ class CountryService implements CountryServiceInterface
         if (\is_array($countries) && \count($countries) > 0) {
             foreach ($countries as $country) {
                 $state = new State();
-                $state->setId((int)$country->kStaat)
-                    ->setIso($country->cCode)
+                $state->setID((int)$country->kStaat)
+                    ->setISO($country->cCode)
                     ->setName($country->cName)
                     ->setCountryISO($country->cLandIso);
                 $states[] = $state;

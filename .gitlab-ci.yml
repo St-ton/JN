@@ -216,48 +216,58 @@ code_quality:
 
 test_PHP_7.2:
   stage: test
-  image: php:7.2-alpine
+  #image: php:7.2-alpine
   before_script:
-    - *unitTestsInstallScript
+    #- *unitTestsInstallScript
+    - echo "CI_PROJECT_PATH :" $CI_PROJECT_PATH               # for prevent runs on forks
   script:
-    - *ComposerInstall
-    - *unitTestsRunScript
+    #- *ComposerInstall
+    #- *unitTestsRunScript
+    - docker run --rm -v $CI_PROJECT_DIR:/repofolder registry.gitlab.com/jtl-software/jtl-shop/core/ci-tests:php72 /repofolder/build/scripts/tests.sh
 #  <<: *debugging
   rules:
     - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
         && $CI_COMMIT_REF_NAME !~ /^release\/.*$/
         && $CI_COMMIT_TAG == null
       when: on_success
+  tags:
+    - tests-run-72
 
 test_PHP_7.3:
   stage: test
-  image: php:7.3-alpine
+  #image: php:7.3-alpine
   before_script:
-    - *unitTestsInstallScript
+    #- *unitTestsInstallScript
   script:
-    - *ComposerInstall
-    - *unitTestsRunScript
+    #- *ComposerInstall
+    #- *unitTestsRunScript
+    - docker run --rm -v $CI_PROJECT_DIR:/repofolder registry.gitlab.com/jtl-software/jtl-shop/core/ci-tests:php73 /repofolder/build/scripts/tests.sh
 #  <<: *debugging
   rules:
     - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
         && $CI_COMMIT_REF_NAME !~ /^release\/.*$/
         && $CI_COMMIT_TAG == null
       when: on_success
+  tags:
+    - tests-run-73
 
 test_PHP_7.4:
   stage: test
-  image: php:7.4-alpine
+  #image: php:7.4-alpine
   before_script:
-    - *unitTestsInstallScript
+    #- *unitTestsInstallScript
   script:
-    - *ComposerInstall
-    - *unitTestsRunScript
+    #- *ComposerInstall
+    #- *unitTestsRunScript
+    - docker run --rm -v $CI_PROJECT_DIR:/repofolder registry.gitlab.com/jtl-software/jtl-shop/core/ci-tests:php74 /repofolder/build/scripts/tests.sh
 #  <<: *debugging
   rules:
     - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
         && $CI_COMMIT_REF_NAME !~ /^release\/.*$/
         && $CI_COMMIT_TAG == null
       when: on_success
+  tags:
+    - tests-run-74
 
 
 

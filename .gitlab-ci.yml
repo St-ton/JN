@@ -219,14 +219,14 @@ test_PHP_7.2:
   #image: php:7.2-alpine
   before_script:
     #- *unitTestsInstallScript
-    - echo "CI_PROJECT_PATH :" $CI_PROJECT_PATH               # for prevent runs on forks
   script:
     #- *ComposerInstall
     #- *unitTestsRunScript
     - docker run --rm -v $CI_PROJECT_DIR:/repofolder registry.gitlab.com/jtl-software/jtl-shop/core/ci-tests:php72 /repofolder/build/scripts/tests.sh
 #  <<: *debugging
   rules:
-    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
+    - if: $CI_PROJECT_PATH =~ /^jtl-software\/.*$/
+        && $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
         && $CI_COMMIT_REF_NAME !~ /^release\/.*$/
         && $CI_COMMIT_TAG == null
       when: on_success
@@ -244,7 +244,8 @@ test_PHP_7.3:
     - docker run --rm -v $CI_PROJECT_DIR:/repofolder registry.gitlab.com/jtl-software/jtl-shop/core/ci-tests:php73 /repofolder/build/scripts/tests.sh
 #  <<: *debugging
   rules:
-    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
+    - if: $CI_PROJECT_PATH =~ /^jtl-software\/.*$/
+        && $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
         && $CI_COMMIT_REF_NAME !~ /^release\/.*$/
         && $CI_COMMIT_TAG == null
       when: on_success
@@ -262,7 +263,8 @@ test_PHP_7.4:
     - docker run --rm -v $CI_PROJECT_DIR:/repofolder registry.gitlab.com/jtl-software/jtl-shop/core/ci-tests:php74 /repofolder/build/scripts/tests.sh
 #  <<: *debugging
   rules:
-    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
+    - if: $CI_PROJECT_PATH =~ /^jtl-software\/.*$/
+        && $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
         && $CI_COMMIT_REF_NAME !~ /^release\/.*$/
         && $CI_COMMIT_TAG == null
       when: on_success

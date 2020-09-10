@@ -573,7 +573,9 @@ class ProductFilter
             'nAnzahl'                => 0,
             'nSterne'                => 0,
             'customFilters'          => [],
-            'searchSpecialFilters'   => []
+            'searchSpecialFilters'   => [],
+            'manufacturerFilters'    => [],
+            'categoryFilters'        => []
         ];
     }
 
@@ -652,12 +654,26 @@ class ProductFilter
             $this->searchSpecial->init($params['kSuchspecial']);
             $this->baseState = $this->searchSpecial;
         }
-
-        if ($params['kKategorieFilter'] > 0) {
-            $this->addActiveFilter($this->categoryFilter, $params['kKategorieFilter']);
+        if ($params['kKategorieFilter'] > 0 && \count($params['categoryFilters']) === 0) {
+            // backwards compatibility
+            if (\is_array($params['kKategorieFilter'])) {
+                foreach ($params['kKategorieFilter'] as $param) {
+                    $params['categoryFilters'][] = $param;
+                }
+            } else {
+                $params['categoryFilters'][] = $params['kKategorieFilter'];
+            }
         }
-        if ($params['kHerstellerFilter'] > 0) {
-            $this->addActiveFilter($this->manufacturerFilter, $params['kHerstellerFilter']);
+        if (\count($params['categoryFilters']) > 0) {
+            $this->addActiveFilter($this->categoryFilter, $params['categoryFilters']);
+        }
+        if ($params['kHerstellerFilter'] > 0 || \count($params['manufacturerFilters']) > 0) {
+            $this->addActiveFilter(
+                $this->manufacturerFilter,
+                \count($params['manufacturerFilters']) > 0
+                    ? $params['manufacturerFilters']
+                    : $params['kHerstellerFilter']
+            );
         }
         if ($params['nBewertungSterneFilter'] > 0) {
             $this->addActiveFilter($this->ratingFilter, $params['nBewertungSterneFilter']);
@@ -1525,7 +1541,6 @@ class ProductFilter
         }
         // search special sorting
         if ($this->hasSearchSpecial()) {
-            //@todo
             $mapping = $this->getSearchSpecialConfigMapping();
             $idx     = $this->getSearchSpecial()->getValue();
             $ssConf  = isset($mapping[$idx]) ?: null;
@@ -1549,8 +1564,9 @@ class ProductFilter
      */
     public function getSearchSpecialConfigMapping(): array
     {
-        $config  = $this->getFilterConfig()->getConfig('suchspecials');
-        $mapping = [
+        $config = $this->getFilterConfig()->getConfig('suchspecials');
+
+        return [
             \SEARCHSPECIALS_BESTSELLER       => $config['suchspecials_sortierung_bestseller'],
             \SEARCHSPECIALS_SPECIALOFFERS    => $config['suchspecials_sortierung_sonderangebote'],
             \SEARCHSPECIALS_NEWPRODUCTS      => $config['suchspecials_sortierung_neuimsortiment'],
@@ -1558,8 +1574,6 @@ class ProductFilter
             \SEARCHSPECIALS_UPCOMINGPRODUCTS => $config['suchspecials_sortierung_inkuerzeverfuegbar'],
             \SEARCHSPECIALS_TOPREVIEWS       => $config['suchspecials_sortierung_topbewertet'],
         ];
-
-        return $mapping;
     }
 
     /**
@@ -1632,7 +1646,7 @@ class ProductFilter
     /**
      * @param Kategorie|null $category
      * @param bool           $fill - if true, return Artikel class instances, otherwise keys only
-     * @param int            $limit
+     * @param int|null       $limit
      * @return SearchResultsInterface
      */
     public function generateSearchResults(
@@ -1944,6 +1958,48 @@ class ProductFilter
             while ($i < 20) {
                 if (Request::verifyGPCDataInt('sf' . $i) > 0) {
                     $filter[] = Request::verifyGPCDataInt('sf' . $i);
+                }
+                ++$i;
+            }
+        }
+
+        return $filter;
+    }
+
+    /**
+     * @param array $filters
+     * @return array
+     */
+    public static function initCategoryFilter(array $filters = []): array
+    {
+        $filter = [];
+        if (\is_array($filters) && \count($filters) > 1) {
+            foreach ($filters as $value) {
+                if ((int)$value > 0) {
+                    $filter[] = (int)$value;
+                }
+            }
+        } elseif (isset($_GET['kf'])) {
+            if (\is_string($_GET['kf'])) {
+                $filter[] = $_GET['kf'];
+            } else {
+                foreach ($_GET['kf'] as $cf => $value) {
+                    $filter[] = $value;
+                }
+            }
+        } elseif (isset($_POST['kf'])) {
+            if (\is_string($_POST['kf'])) {
+                $filter[] = $_POST['kf'];
+            } else {
+                foreach ($_POST['kf'] as $cf => $value) {
+                    $filter[] = $value;
+                }
+            }
+        } else {
+            $i = 1;
+            while ($i < 20) {
+                if (Request::verifyGPCDataInt('kf' . $i) > 0) {
+                    $filter[] = Request::verifyGPCDataInt('kf' . $i);
                 }
                 ++$i;
             }

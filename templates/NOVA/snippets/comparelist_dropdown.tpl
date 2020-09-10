@@ -59,16 +59,12 @@
                 {/block}
             {else}
                 {block name='snippets-comparelist-dropdown-hint-to-compare'}
-                    {row}
-                        {col class='col-lg-auto ml-auto'}
-                            {link class="btn btn-block btn-primary btn-sm"
-                                id='nav-comparelist-goto'
-                                href="{get_static_route id='vergleichsliste.php'}"
-                            }
-                                {lang key='gotToCompare'}
-                            {/link}
-                        {/col}
-                    {/row}
+                    {link class="btn btn-block btn-primary btn-sm"
+                        id='nav-comparelist-goto'
+                        href="{get_static_route id='vergleichsliste.php'}"
+                    }
+                        {lang key='gotToCompare'}
+                    {/link}
                 {/block}
             {/if}
         </div>

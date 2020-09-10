@@ -451,7 +451,7 @@ class Search extends AbstractFilter
         $sql->addCondition('tsuchanfrage.nAktiv = 1');
 
         $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
-        $cacheID   = 'fltr_' . \str_replace('\\', '', __CLASS__) . \md5($baseQuery);
+        $cacheID   = $this->getCacheID($baseQuery);
         if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
             $this->options = $cached;
 

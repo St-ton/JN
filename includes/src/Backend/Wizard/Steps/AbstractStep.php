@@ -44,6 +44,11 @@ abstract class AbstractStep implements StepInterface
     protected $alertService;
 
     /**
+     * @var Collection
+     */
+    protected $errors;
+
+    /**
      * AbstractStep constructor.
      * @param DbInterface           $db
      * @param AlertServiceInterface $alertService
@@ -53,6 +58,7 @@ abstract class AbstractStep implements StepInterface
         $this->db           = $db;
         $this->alertService = $alertService;
         $this->questions    = new Collection();
+        $this->errors       = new Collection();
     }
 
     /**
@@ -158,5 +164,29 @@ abstract class AbstractStep implements StepInterface
 
             return false;
         });
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getErrors(): Collection
+    {
+        return $this->errors;
+    }
+
+    /**
+     * @param Collection $errors
+     */
+    public function setErrors(Collection $errors): void
+    {
+        $this->errors = $errors;
+    }
+
+    /**
+     * @param Error $error
+     */
+    public function addError(Error $error): void
+    {
+        $this->errors->push($error);
     }
 }

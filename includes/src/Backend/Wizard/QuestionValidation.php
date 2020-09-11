@@ -2,6 +2,7 @@
 
 namespace JTL\Backend\Wizard;
 
+use JTL\Backend\Wizard\Steps\ErrorCode;
 use JTL\Helpers\Text;
 
 /**
@@ -40,7 +41,7 @@ class QuestionValidation
     public function checkRequired(): bool
     {
         if ($this->question->isRequired() && $this->valueIsEmpty()) {
-            $this->setValidationError(QuestionValidationCode::ERROR_REQUIRED);
+            $this->setValidationError(ErrorCode::ERROR_REQUIRED);
 
             return false;
         }
@@ -57,7 +58,7 @@ class QuestionValidation
             && !empty($this->question->getValue())
             && Text::filterEmailAddress($this->question->getValue()) === false
         ) {
-            $this->setValidationError(QuestionValidationCode::INVALID_EMAIL);
+            $this->setValidationError(ErrorCode::INVALID_EMAIL);
 
             return false;
         }
@@ -71,10 +72,11 @@ class QuestionValidation
      */
     public function checkSSL(bool $pluginMsg = false): bool
     {
+        return true;
         if ((empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === 'off') && !$this->valueIsEmpty()) {
             $pluginMsg
-                ? $this->setValidationError(QuestionValidationCode::ERROR_SSL_PLUGIN)
-                : $this->setValidationError(QuestionValidationCode::ERROR_SSL);
+                ? $this->setValidationError(ErrorCode::ERROR_SSL_PLUGIN)
+                : $this->setValidationError(ErrorCode::ERROR_SSL);
 
             return false;
         }
@@ -102,11 +104,11 @@ class QuestionValidation
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getValidationError(): string
+    public function getValidationError(): int
     {
-        return $this->mapCode($this->validationError ?? QuestionValidationCode::OK);
+        return $this->validationError ?? ErrorCode::OK;
     }
 
     /**
@@ -115,35 +117,5 @@ class QuestionValidation
     private function setValidationError(int $validationError): void
     {
         $this->validationError = $validationError;
-    }
-
-    /**
-     * @param int $code
-     * @return string
-     */
-    private function mapCode(int $code):string
-    {
-        switch ($code) {
-            case QuestionValidationCode::OK:
-                $error = '';
-                break;
-            case QuestionValidationCode::ERROR_REQUIRED:
-                $error = __('validationErrorRequired');
-                break;
-            case QuestionValidationCode::INVALID_EMAIL:
-                $error = __('validationErrorIncorrectEmail');
-                break;
-            case QuestionValidationCode::ERROR_SSL_PLUGIN:
-                $error = __('validationErrorSSLPlugin');
-                break;
-            case QuestionValidationCode::ERROR_SSL:
-                $error = __('validationErrorSSL');
-                break;
-            default:
-                $error = '';
-                break;
-        }
-
-        return $error;
     }
 }

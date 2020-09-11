@@ -139,9 +139,9 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
      */
     public function save(): string
     {
-        if (($validationError = $this->validate()) !== '') {
-            return $validationError;
-        }
+//        if (($validationError = $this->validate()) !== '') {
+//            return $validationError;
+//        }
         $cb = $this->getOnSave();
         if (\is_callable($cb)) {
             return $cb($this) ?? '';
@@ -436,14 +436,14 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     /**
      * @inheritDoc
      */
-    public function validate(): string
+    public function validate(): int
     {
         $cb = $this->getValidation();
         if (\is_callable($cb)) {
             return $cb($this);
         }
 
-        return '';
+        return 1;
     }
 
     /**

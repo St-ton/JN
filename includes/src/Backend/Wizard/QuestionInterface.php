@@ -205,7 +205,7 @@ interface QuestionInterface
     /**
      *
      */
-    public function validate(): string;
+    public function validate(): int;
 
     /**
      * @param callable|null $validation

@@ -86,19 +86,19 @@ final class GeneralSettings extends AbstractStep
             $question->updateConfig('shop_ustid', $question->getValue());
         });
         $question->setValidation(function (QuestionInterface $question) {
-            if (!empty($question->getValue())) {
-                $vatCheck       = new VATCheck(trim($question->getValue()));
-                $resultVatCheck = $vatCheck->doCheckID();
-                //only check format
-                if ($resultVatCheck['errortype'] === 'parse'
-                    && $resultVatCheck['errorcode'] !== VATCheckInterface::ERR_COUNTRY_NOT_FOUND
-                    && $resultVatCheck['success'] === false
-                ) {
-                    return __('errorVATPattern');
-                }
-            }
+//            if (!empty($question->getValue())) {
+//                $vatCheck       = new VATCheck(trim($question->getValue()));
+//                $resultVatCheck = $vatCheck->doCheckID();
+//                //only check format
+//                if ($resultVatCheck['errortype'] === 'parse'
+//                    && $resultVatCheck['errorcode'] !== VATCheckInterface::ERR_COUNTRY_NOT_FOUND
+//                    && $resultVatCheck['success'] === false
+//                ) {
+//                    return __('errorVATPattern');
+//                }
+//            }
 
-            return '';
+            return 1;
         });
         $this->addQuestion($question);
 

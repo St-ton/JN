@@ -92,6 +92,7 @@ class ExtensionInstaller
     public function onSaveStep(array $requested): string
     {
         $createdLicenseKeys = [];
+        $errorMsg           = '';
         foreach ($requested as $id) {
             $recom = $this->getRecommendationByID($id);
             if ($recom !== null) {
@@ -109,34 +110,40 @@ class ExtensionInstaller
                             // `POST https://checkout-stage.jtl-software.com/v1/license/recommendation/create/foo`
                             // resulted in a `500 Internal Server Error` response:
                             //{"code":0,"message":"Extension doesn't provide a free of charge license"}
-                            return $recom->getTitle() . ': ' . Text::htmlentities($e->getMessage());
+                            $errorMsg .= \sprintf(
+                                '%s: %s <br>',
+                                $recom->getTitle(),
+                                Text::htmlentities($e->getMessage())
+                            );
                         }
                     }
                 }
             }
         }
-        $this->manager->update(true);
+        if (!empty($createdLicenseKeys)) {
+            $this->manager->update(true);
 
-        foreach ($createdLicenseKeys as $key) {
-            $ajaxResponse = new AjaxResponse();
-            $license      = $this->manager->getLicenseByLicenseKey($key);
-            if ($license !== null) {
-                $itemID    = $license->getID();
-                $installer = $this->helper->getInstaller($itemID);
-                try {
-                    $download    = $this->helper->getDownload($itemID);
-                    $installCode = $installer->install($itemID, $download, $ajaxResponse);
-                } catch (InvalidArgumentException $e) {
-                    return \sprintf('%s: %s', $license->getName(), $e->getMessage());
-                }
-                if ($installCode !== InstallCode::OK) {
-                    $mapper = new PluginValidation();
-                    $license->getName();
-                    return \sprintf('%s: %s', $license->getName(), $mapper->map($installCode));
+            foreach ($createdLicenseKeys as $key) {
+                $ajaxResponse = new AjaxResponse();
+                $license      = $this->manager->getLicenseByLicenseKey($key);
+                if ($license !== null) {
+                    $itemID    = $license->getID();
+                    $installer = $this->helper->getInstaller($itemID);
+                    try {
+                        $download    = $this->helper->getDownload($itemID);
+                        $installCode = $installer->install($itemID, $download, $ajaxResponse);
+                    } catch (InvalidArgumentException $e) {
+                        $errorMsg .= \sprintf('%s: %s <br>', $license->getName(), $e->getMessage());
+                    }
+                    if ($installCode !== InstallCode::OK) {
+                        $mapper = new PluginValidation();
+                        $license->getName();
+                        $errorMsg .= \sprintf('%s: %s <br>', $license->getName(), $mapper->map($installCode));
+                    }
                 }
             }
         }
 
-        return '';
+        return $errorMsg;
     }
 }

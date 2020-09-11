@@ -67,11 +67,16 @@ final class LegalPlugins extends AbstractStep
         $question->setOnSave(function (QuestionInterface $question) use ($collection) {
             $requested = $question->getValue();
             if (!\is_array($requested) || \count($requested) === 0) {
-                return '';
+                return;
             }
             $installer = new ExtensionInstaller($this->db);
             $installer->setRecommendations($collection);
-            return $installer->onSaveStep($requested);
+            $errorMsg = $installer->onSaveStep($requested);
+            if ($errorMsg !== '') {
+                $error = new Error($this->getID(), $question->getID(), ErrorCode::ERROR_PLUGIN);
+                $error->setMessage($errorMsg);
+                $this->addError($error);
+            }
         });
         $this->addQuestion($question);
     }

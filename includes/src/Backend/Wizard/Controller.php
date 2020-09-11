@@ -3,6 +3,9 @@
 namespace JTL\Backend\Wizard;
 
 use Illuminate\Support\Collection;
+use JTL\Backend\Wizard\Steps\ErrorCode;
+use JTL\Backend\Wizard\Steps\Error;
+use JTL\Backend\Wizard\Steps\Step;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\L10n\GetText;
@@ -72,13 +75,13 @@ final class Controller
     private function finish(): array
     {
         $errorMessages = [];
+        /** @var Step $step*/
         foreach ($this->getSteps() as $step) {
             foreach ($step->getQuestions() as $question) {
                 /** @var QuestionInterface $question */
-                if (($validationError = $question->save()) !== '') {
-                    $errorMessages[$question->getID()] = $validationError;
-                }
+                $question->save();
             }
+            $errorMessages = \array_merge($errorMessages, $step->getErrors()->toArray());
         }
         if (empty($errorMessages)) {
             $this->db->update(
@@ -102,16 +105,18 @@ final class Controller
     {
         $post          = $this->serializeToArray($post);
         $errorMessages = [];
+        /** @var Step $step*/
         foreach ($this->getSteps() as $step) {
             foreach ($step->getQuestions() as $question) {
                 if (isset($post['question-' . $question->getID()])) {
                     /** @var QuestionInterface $question */
                     $question->answerFromPost($post);
-                    if (($validationError = $question->validate()) !== '') {
-                        $errorMessages[$question->getID()] = $validationError;
+                    if (($errorCode = $question->validate()) !== ErrorCode::OK) {
+                        $step->addError(new Error($step->getID(), $question->getID(), $errorCode));
                     }
                 }
             }
+            $errorMessages = \array_merge($errorMessages, $step->getErrors()->toArray());
         }
         Backend::set('wizard', \array_merge(Backend::get('wizard') ?? [], $post));
 

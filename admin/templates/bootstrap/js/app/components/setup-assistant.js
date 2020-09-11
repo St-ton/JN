@@ -100,7 +100,8 @@ const updateSummary = (slide = current) => {
 
     $.each(summaries, (i, a) => {
         let $placeholder = $(`[${Data.summaryPlaceholder}="${i}"]`)
-        $placeholder.html(a.join(', '))
+        $placeholder.prev().remove();
+        $placeholder.html(a.join(', '));
     })
 }
 
@@ -140,8 +141,11 @@ $(document).on('click', `${modal} [${Data.next}]`, () => {
         });
         startSpinner();
         ioCall('validateStepWizard', [inputsTMP], function (errors) {
+            console.log(errors);
             if (errors.length !== 0) {
                 $.each(errors, (index, error) => {
+                    console.log(error);
+                    console.log(error.message);
                     let $question = $('#question-' + index);
                     $question.parent().addClass('error').find('.js-wizard-validation-error').remove();
                     $question.parent().append('<div class="error js-wizard-validation-error">' + error + '</div>');
@@ -161,17 +165,17 @@ $(document).on('click', `${modal} [${Data.next}]`, () => {
         } else if ($currentSlide.prop('id') === '4') {
             paymentPluginCount = $inputs.serializeArray().length;
         }
-        if (legalPluginCount > 0 || paymentPluginCount > 0) {
-            $auth.removeClass('d-none');
-            $summaryPluginNote.removeClass('d-none');
-            $summaryPluginNote.next().addClass('d-none');
-            $submit.addClass('d-none');
-        } else {
-            $auth.addClass('d-none');
-            $summaryPluginNote.addClass('d-none');
-            $summaryPluginNote.next().removeClass('d-none');
-            $submit.removeClass('d-none');
-        }
+        // if (legalPluginCount > 0 || paymentPluginCount > 0) {
+        //     $auth.removeClass('d-none');
+        //     $summaryPluginNote.removeClass('d-none');
+        //     $summaryPluginNote.next().addClass('d-none');
+        //     $submit.addClass('d-none');
+        // } else {
+        //     $auth.addClass('d-none');
+        //     $summaryPluginNote.addClass('d-none');
+        //     $summaryPluginNote.next().removeClass('d-none');
+        //     $submit.removeClass('d-none');
+        // }
     }
 });
 
@@ -213,7 +217,7 @@ $form.on('submit', (e) => {
                     $.each(errors, (index, error) => {
                         let $question = $(`[${Data.summaryPlaceholder}="question-${index}"]`)
                         $question.prev().remove();
-                        $question.before('<span class="fa fa-times-circle text-danger mr-2" data-toggle="tooltip" title="' + error + '"></span>');
+                        $question.before('<span class="fa fa-times-circle text-danger mr-2" data-toggle="tooltip" data-html="true" title="' + error + '"></span>');
                     });
                     $submit.removeClass('disabled').attr('disabled', false)
                     $prev.removeClass('disabled').attr('disabled', false)

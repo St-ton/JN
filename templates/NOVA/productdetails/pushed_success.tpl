@@ -98,7 +98,7 @@
                         {row}
                             {col cols=12 md=6}
                                 {link href=$pushedArtikel->cURLFull
-                                    class="btn btn-outline-primary btn-block"
+                                    class="btn btn-outline-primary btn-block mb-3"
                                     data=["dismiss"=>"{if !$card}modal{else}alert{/if}"]
                                     aria=["label"=>"Close"]}
                                     <i class="fa fa-arrow-circle-right"></i> {lang key='continueShopping' section='checkout'}
@@ -106,7 +106,7 @@
                             {/col}
                             {col cols=12 md=6}
                                 {link href="{get_static_route id='warenkorb.php'}"
-                                    class="btn btn-primary btn-basket btn-block mb-3"}
+                                    class="btn btn-primary btn-basket btn-block"}
                                     <i class="fas fa-shopping-cart"></i> {lang key='gotoBasket'}
                                 {/link}
                             {/col}

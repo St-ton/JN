@@ -476,7 +476,7 @@ msgid "Server"
 msgstr "Server"
 
 msgid "Accounts"
-msgstr "Users &amp; rights"
+msgstr "Users & rights"
 
 msgid "Troubleshooting"
 msgstr "Troubleshooting"

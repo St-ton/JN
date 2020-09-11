@@ -30,22 +30,22 @@ msgid "stepOneDesc"
 msgstr "Here you can specify the most important settings of your online shop. You can edit all settings in the back end of JTL-Shop at any time."
 
 msgid "stepTwo"
-msgstr "Step 2 – Legal texts"
+msgstr "Step 2 – Email settings"
 
 msgid "stepTwoDesc"
-msgstr "We offer plug-ins by our partners for the creation of legally relevant texts. With these plug-ins, you can easily add legally sound texts such as terms and conditions and withdrawals to your online shop. You can also write your own legal texts and use them in your shop. Please see the <a href=\"https://jtl-url.de/15ge9\" target=\"_blank\">JTL-Guide</a> for further instructions."
+msgstr "These are the most important email settings. Adjust the other email server settings as soon as possible after the initial setup under \"Administration > Email > Server\". For more information, please see the <a href=\"https://jtl-url.de/jnw83\" target=\"_blank\">JTL-Guide</a>."
 
 msgid "stepThree"
-msgstr "Step 3 – Payment methods"
+msgstr "Step 3 – Legal texts"
 
 msgid "stepThreeDesc"
-msgstr "Get suitable plug-ins to offer a broad selection of payment methods to your customers. You can specify when customers see which payment method in the settings for each shipping method. For more information, please see the <a href=\"https://jtl-url.de/dlkpz\" target=\"_blank\">JTL-Guide</a>. By default, JTL-Shop offers the following payment methods: %s."
+msgstr "We offer plug-ins by our partners for the creation of legally relevant texts. With these plug-ins, you can easily add legally sound texts such as terms and conditions and withdrawals to your online shop. You can also write your own legal texts and use them in your shop. Please see the <a href=\"https://jtl-url.de/15ge9\" target=\"_blank\">JTL-Guide</a> for further instructions."
 
 msgid "stepFour"
-msgstr "Step 4 – Email settings"
+msgstr "Step 4 – Payment methods"
 
 msgid "stepFourDesc"
-msgstr "These are the most important email settings. Adjust the other email server settings as soon as possible after the initial setup under \"Administration > Email > Server\". For more information, please see the <a href=\"https://jtl-url.de/jnw83\" target=\"_blank\">JTL-Guide</a>."
+msgstr "Get suitable plug-ins to offer a broad selection of payment methods to your customers. You can specify when customers see which payment method in the settings for each shipping method. For more information, please see the <a href=\"https://jtl-url.de/dlkpz\" target=\"_blank\">JTL-Guide</a>. By default, JTL-Shop offers the following payment methods: %s."
 
 msgid "stepFive"
 msgstr "Step 5 – Overview and confirmation"
@@ -102,13 +102,13 @@ msgid "secureDefaultSettingsDesc"
 msgstr "Activates permanent SSL encryption (https; SSL certificate needs to be provided by hosting provider), email encryption and the cookie flags Secure/HTTPOnly."
 
 msgid "weRecommend"
-msgstr "Our recommendation:"
+msgstr "Our recommendation"
 
 msgid "weRecommendLegalDesc"
-msgstr "To use a plug-in, you need to make a separate contract with the respective partner. Click \"Learn more\" to get more information on the plug-ins of interest."
+msgstr "To use a plug-in, you need to make a separate contract with the respective partner. Click &quot;Learn more&quot; to get more information on the plug-ins of interest."
 
 msgid "weRecommendPaymentDesc"
-msgstr "To use a plug-in, you need to make a separate contract with the respective payment provider. Click \"Learn more\" to get more information on the plug-ins of interest."
+msgstr "To use a plug-in, you need to make a separate contract with the respective payment provider. Click &quot;Learn more&quot;to get more information on the plug-ins of interest."
 
 msgid "getToKnowMore"
 msgstr "Learn more"

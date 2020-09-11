@@ -168,6 +168,7 @@
 
                             <div class="note small mt-5">
                                 <p class="form-title">{__('installedPlugins')}:</p>
+                                <p id="installed-plugins"></p>
                                 <p>
                                     <span class="fal fa-exclamation-triangle text-warning mr-2"></span>
                                     {__('thankYouTextPluginsInstalled')}

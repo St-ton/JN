@@ -168,7 +168,15 @@
 
                             <div class="note small mt-5">
                                 <p class="form-title">{__('installedPlugins')}:</p>
-                                <p id="installed-plugins"></p>
+                                <p id="installed-plugins">
+                                    {foreach $steps as $step}
+                                        {if $step->getID() === 3 || $step->getID() === 4}
+                                            {foreach $step->getQuestions() as $question}
+                                                <span data-setup-summary-placeholder="question-{$question->getID()}">-</span>
+                                            {/foreach}
+                                        {/if}
+                                    {/foreach}
+                                </p>
                                 <p>
                                     <span class="fal fa-exclamation-triangle text-warning mr-2"></span>
                                     {__('thankYouTextPluginsInstalled')}

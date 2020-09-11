@@ -189,10 +189,20 @@ code_quality:
       when: always
 
 
+.runUnitTestDocker: &runUnitTestDocker |
+  # RUNNING DOCKER FOR UNIT TESTS
+  docker run \
+    --rm \
+    --name ci_unittests_${CI_RUNNER_SHORT_TOKEN}_${CI_COMMIT_SHORT_SHA} \
+    -v ${CI_PROJECT_DIR}:/repofolder \
+    ${GLOBAL_CI_REGISTRY_URL}/${IMAGE_NAME} \
+
+
 test_PHP_7.2:
   stage: test
   script:
-    - docker run --rm --name ci_unittests_${CI_RUNNER_SHORT_TOKEN}_${CI_COMMIT_SHORT_SHA} -v $CI_PROJECT_DIR:/repofolder $GLOBAL_CI_REGISTRY_URL/ci-tests:php72 /repofolder/build/scripts/tests.sh
+    - IMAGE_NAME=ci-tests:php72
+    - *runUnitTestDocker
 #  <<: *debugging
   rules:
     - if: $CI_PROJECT_PATH =~ /^jtl-software\/.*$/
@@ -206,7 +216,8 @@ test_PHP_7.2:
 test_PHP_7.3:
   stage: test
   script:
-    - docker run --rm --name ci_unittests_${CI_RUNNER_SHORT_TOKEN_}${CI_COMMIT_SHORT_SHA} -v $CI_PROJECT_DIR:/repofolder $GLOBAL_CI_REGISTRY_URL/ci-tests:php73 /repofolder/build/scripts/tests.sh
+    - IMAGE_NAME=ci-tests:php73
+    - *runUnitTestDocker
 #  <<: *debugging
   rules:
     - if: $CI_PROJECT_PATH =~ /^jtl-software\/.*$/
@@ -220,7 +231,8 @@ test_PHP_7.3:
 test_PHP_7.4:
   stage: test
   script:
-    - docker run --rm --name ci_unittests_${CI_RUNNER_SHORT_TOKEN}_${CI_COMMIT_SHORT_SHA} -v $CI_PROJECT_DIR:/repofolder $GLOBAL_CI_REGISTRY_URL/ci-tests:php74 /repofolder/build/scripts/tests.sh
+    - IMAGE_NAME=ci-tests:php74
+    - *runUnitTestDocker
 #  <<: *debugging
   rules:
     - if: $CI_PROJECT_PATH =~ /^jtl-software\/.*$/

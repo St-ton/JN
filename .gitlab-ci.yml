@@ -191,6 +191,7 @@ code_quality:
 
 .runUnitTestDocker: &runUnitTestDocker |
   # RUNNING DOCKER FOR UNIT TESTS
+  echo "IMAGE_NAME:" $IMAGE_NAME
   docker run \
     --rm \
     --name ci_unittests_${CI_RUNNER_SHORT_TOKEN}_${CI_COMMIT_SHORT_SHA} \

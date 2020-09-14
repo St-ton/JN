@@ -96,7 +96,8 @@ if ($loggedIn
     \header('Location: ' . Shop::getURL(true) . '/' . \PFAD_ADMIN . 'dbupdater.php');
     exit;
 }
-if (($conf['global']['global_wizard_done'] ?? 'Y') === 'N'
+if ($loggedIn
+    && ($conf['global']['global_wizard_done'] ?? 'Y') === 'N'
     && strpos($_SERVER['SCRIPT_FILENAME'], 'wizard') === false
     && !$updater->hasPendingUpdates()
     && !Backend::get('redirectedToWizard')

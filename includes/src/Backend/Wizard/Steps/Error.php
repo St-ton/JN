@@ -31,7 +31,7 @@ class Error
     /**
      * @var bool
      */
-    public $critical;
+    public $critical = false;
 
     /**
      * Error constructor.

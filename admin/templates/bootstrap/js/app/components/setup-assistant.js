@@ -69,6 +69,7 @@ const showSlide = slide => {
 const updateSummary = (slide = current) => {
     let summaries = {}
     let $summaries = $currentSlide.find(`[${Data.summaryId}]`)
+    criticalErrors= true;
 
     $.each($summaries, (index, summary) => {
         let $summary = $(summary)

@@ -140,7 +140,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
      */
     public function save(): int
     {
-        if (($validationError = $this->validate()) !== '') {
+        if (($validationError = $this->validate()) !== ErrorCode::OK) {
             return $validationError;
         }
         $cb = $this->getOnSave();
@@ -444,7 +444,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
             return $cb($this);
         }
 
-        return 1;
+        return ErrorCode::OK;
     }
 
     /**

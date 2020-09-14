@@ -81,7 +81,12 @@ final class PaymentPlugins extends AbstractStep
             }
             $installer = new ExtensionInstaller($this->db);
             $installer->setRecommendations($collection);
-            $installer->onSaveStep($requested, $this);
+            $errorMsg = $installer->onSaveStep($requested);
+            if ($errorMsg !== '') {
+                $error = new Error($this->getID(), $question->getID(), ErrorCode::ERROR_PLUGIN);
+                $error->setMessage($errorMsg);
+                $this->addError($error);
+            }
         });
         $this->addQuestion($question);
     }

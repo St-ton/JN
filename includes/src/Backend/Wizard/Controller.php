@@ -79,7 +79,9 @@ final class Controller
         foreach ($this->getSteps() as $step) {
             foreach ($step->getQuestions() as $question) {
                 /** @var QuestionInterface $question */
-                $question->save();
+                if (($errorCode = $question->save()) !== ErrorCode::OK) {
+                    $step->addError(new Error($step->getID(), $question->getID(), $errorCode));
+                }
             }
             $errorMessages = \array_merge($errorMessages, $step->getErrors()->toArray());
         }

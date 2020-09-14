@@ -10,8 +10,6 @@ use JTL\Backend\Wizard\SelectOption;
 use JTL\DB\DbInterface;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
-use JTL\VerificationVAT\VATCheck;
-use JTL\VerificationVAT\VATCheckInterface;
 
 /**
  * Class GlobalSettings
@@ -86,19 +84,10 @@ final class GeneralSettings extends AbstractStep
             $question->updateConfig('shop_ustid', $question->getValue());
         });
         $question->setValidation(function (QuestionInterface $question) {
-//            if (!empty($question->getValue())) {
-//                $vatCheck       = new VATCheck(trim($question->getValue()));
-//                $resultVatCheck = $vatCheck->doCheckID();
-//                //only check format
-//                if ($resultVatCheck['errortype'] === 'parse'
-//                    && $resultVatCheck['errorcode'] !== VATCheckInterface::ERR_COUNTRY_NOT_FOUND
-//                    && $resultVatCheck['success'] === false
-//                ) {
-//                    return __('errorVATPattern');
-//                }
-//            }
+            $questionValidation = new QuestionValidation($question);
+            $questionValidation->checkVAT();
 
-            return 1;
+            return $questionValidation->getValidationError();
         });
         $this->addQuestion($question);
 

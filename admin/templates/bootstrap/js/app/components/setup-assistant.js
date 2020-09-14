@@ -44,6 +44,8 @@ let authRedirect			= $('#auth-redirect').val();
 
 let $currentSlide			= $(`${modal} [${Data.slides}='${current}']`)
 
+let criticalErrors			= true;
+
 
 const showSlide = slide => {
     if (slide === current && subsequent) {
@@ -141,14 +143,11 @@ $(document).on('click', `${modal} [${Data.next}]`, () => {
         });
         startSpinner();
         ioCall('validateStepWizard', [inputsTMP], function (errors) {
-            console.log(errors);
             if (errors.length !== 0) {
                 $.each(errors, (index, error) => {
-                    console.log(error);
-                    console.log(error.message);
-                    let $question = $('#question-' + index);
+                    let $question = $('#question-' + error.questionID);
                     $question.parent().addClass('error').find('.js-wizard-validation-error').remove();
-                    $question.parent().append('<div class="error js-wizard-validation-error">' + error + '</div>');
+                    $question.parent().append('<div class="error js-wizard-validation-error">' + error.message + '</div>');
                 });
             } else {
                 updateSummary();
@@ -165,17 +164,17 @@ $(document).on('click', `${modal} [${Data.next}]`, () => {
         } else if ($currentSlide.prop('id') === '4') {
             paymentPluginCount = $inputs.serializeArray().length;
         }
-        // if (legalPluginCount > 0 || paymentPluginCount > 0) {
-        //     $auth.removeClass('d-none');
-        //     $summaryPluginNote.removeClass('d-none');
-        //     $summaryPluginNote.next().addClass('d-none');
-        //     $submit.addClass('d-none');
-        // } else {
-        //     $auth.addClass('d-none');
-        //     $summaryPluginNote.addClass('d-none');
-        //     $summaryPluginNote.next().removeClass('d-none');
-        //     $submit.removeClass('d-none');
-        // }
+        if (legalPluginCount > 0 || paymentPluginCount > 0) {
+            $auth.removeClass('d-none');
+            $summaryPluginNote.removeClass('d-none');
+            $summaryPluginNote.next().addClass('d-none');
+            $submit.addClass('d-none');
+        } else {
+            $auth.addClass('d-none');
+            $summaryPluginNote.addClass('d-none');
+            $summaryPluginNote.next().removeClass('d-none');
+            $submit.removeClass('d-none');
+        }
     }
 });
 
@@ -185,7 +184,11 @@ $(document).on('click', `${modal} input`, function() {
 });
 
 $form.on('submit', (e) => {
-    e.preventDefault()
+    e.preventDefault();
+    if (!criticalErrors) {
+        showSlide((current < last) ? current + 1 : last);
+        return;
+    }
 
     $submit.addClass('disabled').attr('disabled', true)
     $prev.addClass('disabled').attr('disabled', true)
@@ -213,11 +216,15 @@ $form.on('submit', (e) => {
 
         setTimeout(() => {
             ioCall('finishWizard', [$form.serializeArray()], function (errors) {
+                criticalErrors = false;
                 if (errors.length !== 0) {
                     $.each(errors, (index, error) => {
-                        let $question = $(`[${Data.summaryPlaceholder}="question-${index}"]`)
+                        let $question = $(`[${Data.summaryPlaceholder}="question-${error.questionID}"]`)
                         $question.prev().remove();
-                        $question.before('<span class="fa fa-times-circle text-danger mr-2" data-toggle="tooltip" data-html="true" title="' + error + '"></span>');
+                        $question.before('<span class="fa fa-times-circle text-danger mr-2" data-toggle="tooltip" data-html="true" title="' + error.message + '"></span>');
+                        if (error.critical) {
+                            criticalErrors = true;
+                        }
                     });
                     $submit.removeClass('disabled').attr('disabled', false)
                     $prev.removeClass('disabled').attr('disabled', false)

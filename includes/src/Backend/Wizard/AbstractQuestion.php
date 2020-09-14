@@ -3,6 +3,7 @@
 namespace JTL\Backend\Wizard;
 
 use JsonSerializable;
+use JTL\Backend\Wizard\Steps\ErrorCode;
 use JTL\DB\DbInterface;
 use JTL\Session\Backend;
 use JTL\Update\MigrationTableTrait;
@@ -137,17 +138,17 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     /**
      * @inheritDoc
      */
-    public function save(): string
+    public function save(): int
     {
-//        if (($validationError = $this->validate()) !== '') {
-//            return $validationError;
-//        }
+        if (($validationError = $this->validate()) !== '') {
+            return $validationError;
+        }
         $cb = $this->getOnSave();
         if (\is_callable($cb)) {
-            return $cb($this) ?? '';
+            $cb($this);
         }
 
-        return '';
+        return ErrorCode::OK;
     }
 
     /**

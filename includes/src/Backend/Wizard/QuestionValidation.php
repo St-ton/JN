@@ -4,6 +4,8 @@ namespace JTL\Backend\Wizard;
 
 use JTL\Backend\Wizard\Steps\ErrorCode;
 use JTL\Helpers\Text;
+use JTL\VerificationVAT\VATCheck;
+use JTL\VerificationVAT\VATCheckInterface;
 
 /**
  * Class QuestionValidation
@@ -72,11 +74,33 @@ class QuestionValidation
      */
     public function checkSSL(bool $pluginMsg = false): bool
     {
-        return true;
         if ((empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === 'off') && !$this->valueIsEmpty()) {
             $pluginMsg
                 ? $this->setValidationError(ErrorCode::ERROR_SSL_PLUGIN)
                 : $this->setValidationError(ErrorCode::ERROR_SSL);
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function checkVAT(): bool
+    {
+        if ($this->valueIsEmpty()) {
+            return true;
+        }
+        $vatCheck       = new VATCheck(trim($this->question->getValue()));
+        $resultVatCheck = $vatCheck->doCheckID();
+        //only check format
+        if ($resultVatCheck['errortype'] === 'parse'
+            && $resultVatCheck['errorcode'] !== VATCheckInterface::ERR_COUNTRY_NOT_FOUND
+            && $resultVatCheck['success'] === false
+        ) {
+            $this->setValidationError(ErrorCode::ERROR_VAT);
 
             return false;
         }

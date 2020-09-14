@@ -11,27 +11,27 @@ class Error
     /**
      * @var int
      */
-    protected $questionID;
+    public $questionID;
 
     /**
      * @var int
      */
-    protected $stepID;
+    public $stepID;
 
     /**
      * @var int
      */
-    protected $code;
+    public $code;
 
     /**
      * @var string
      */
-    protected $message;
+    public $message;
 
     /**
      * @var bool
      */
-    protected $critical;
+    public $critical;
 
     /**
      * Error constructor.
@@ -134,6 +134,10 @@ class Error
                 break;
             case ErrorCode::ERROR_SSL:
                 $error = __('validationErrorSSL');
+                $this->setCritical(true);
+                break;
+            case ErrorCode::ERROR_VAT:
+                $error = __('errorVATPattern');
                 $this->setCritical(true);
                 break;
             default:

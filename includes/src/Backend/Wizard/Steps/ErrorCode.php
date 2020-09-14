@@ -21,4 +21,6 @@ class ErrorCode extends Enum
     public const ERROR_SSL_PLUGIN = 5;
 
     public const ERROR_PLUGIN = 6;
+
+    public const ERROR_VAT = 7;
 }

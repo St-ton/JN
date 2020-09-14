@@ -698,7 +698,7 @@ class Exportformat
     public function getExportProductCount(): int
     {
         $sql = $this->getExportSQL();
-        $cid = 'xp_' . md5($sql);
+        $cid = 'xp_' . \md5($sql);
         if (($count = Shop::Container()->getCache()->get($cid)) !== false) {
             return $count ?? 0;
         }

@@ -34,9 +34,9 @@ class Controller
 
     /**
      * Crawler constructor.
-     * @param DbInterface           $db
-     * @param JTLCacheInterface     $cache
-     * @param AlertServiceInterface $alertService
+     * @param DbInterface                $db
+     * @param JTLCacheInterface          $cache
+     * @param AlertServiceInterface|null $alertService
      */
     public function __construct(DbInterface $db, JTLCacheInterface $cache, AlertServiceInterface $alertService = null)
     {

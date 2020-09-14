@@ -4,6 +4,7 @@ namespace JTL\Installation;
 
 use Cocur\Slugify\Slugify;
 use Faker\Factory as Fake;
+use Faker\Generator;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Installation\Faker\de_DE\Commerce;
@@ -42,12 +43,12 @@ class DemoDataInstaller
     protected $config;
 
     /**
-     * @var \Faker\Generator
+     * @var Generator
      */
     private $faker;
 
     /**
-     * @var \Cocur\Slugify\Slugify
+     * @var Slugify
      */
     private $slugify;
 
@@ -457,7 +458,7 @@ class DemoDataInstaller
                 $_name = $this->faker->unique(true)->company . '_' . ++$name_index;
             }
 
-            $_manufacturer              = new \stdClass();
+            $_manufacturer              = new stdClass();
             $_manufacturer->kHersteller = $maxPk + $i;
             $_manufacturer->cName       = $_name;
             $_manufacturer->cSeo        = $this->slug($_name);
@@ -466,7 +467,7 @@ class DemoDataInstaller
             $_manufacturer->cBildpfad   = $this->createManufacturerImage($_manufacturer->kHersteller, $_name);
             $res                        = $this->pdo->insert('thersteller', $_manufacturer);
             if ($res > 0) {
-                $seoItem       = new \stdClass();
+                $seoItem       = new stdClass();
                 $seoItem->cKey = 'kHersteller';
                 $seoItem->cSeo = $_manufacturer->cSeo;
 
@@ -518,7 +519,7 @@ class DemoDataInstaller
             } catch (\OverflowException $e) {
                 $_name = $this->faker->unique(true)->department . '_' . ++$name_index;
             }
-            $_category                        = new \stdClass();
+            $_category                        = new stdClass();
             $_category->kKategorie            = $maxPk + $i;
             $_category->cName                 = $_name;
             $_category->cSeo                  = $this->slug($_name);
@@ -530,7 +531,7 @@ class DemoDataInstaller
             $_category->rght                  = 0;
             $res                              = $this->pdo->insert('tkategorie', $_category);
             if ($res > 0) {
-                $_seoEntry       = new \stdClass();
+                $_seoEntry       = new stdClass();
                 $_seoEntry->cKey = 'kKategorie';
                 $_seoEntry->cSeo = $_category->cSeo;
 
@@ -612,12 +613,12 @@ class DemoDataInstaller
             }
 
             $price                             = \rand(1, 2999);
-            $product                           = new \stdClass();
+            $product                           = new stdClass();
             $product->kArtikel                 = $maxPk + $i;
             $product->kHersteller              = \rand(0, $manufacturesCount);
             $product->kLieferstatus            = 0;
             $product->kSteuerklasse            = 1;
-            $product->kEinheit                 = (10 === \rand(0, 10)) && $unitCount > 0 ? \rand(1, $unitCount) : 0;
+            $product->kEinheit                 = (\rand(0, 10) === 10) && $unitCount > 0 ? \rand(1, $unitCount) : 0;
             $product->kVersandklasse           = 1;
             $product->kEigenschaftKombi        = 0;
             $product->kVaterArtikel            = 0;
@@ -638,7 +639,7 @@ class DemoDataInstaller
             $product->fLieferantenlagerbestand = 0;
             $product->fLieferzeit              = 0;
             $product->cBarcode                 = $this->faker->ean13;
-            $product->cTopArtikel              = (10 === \rand(0, 10)) ? 'Y' : 'N';
+            $product->cTopArtikel              = (\rand(0, 10) === 10) ? 'Y' : 'N';
             $product->fGewicht                 = (float)\rand(0, 10);
             $product->fArtikelgewicht          = $product->fGewicht;
             $product->fMassMenge               = 0; //@todo?
@@ -646,14 +647,14 @@ class DemoDataInstaller
             $product->fBreite                  = 0;
             $product->fHoehe                   = 0;
             $product->fLaenge                  = 0;
-            $product->cNeu                     = (10 === \rand(0, 10)) ? 'Y' : 'N';
+            $product->cNeu                     = (\rand(0, 10) === 10) ? 'Y' : 'N';
             $product->cKurzBeschreibung        = $this->faker->text(50);
-            $product->fUVP                     = (10 === \rand(0, 10)) ? ($price / 2) : 0;
-            $product->cLagerBeachten           = (10 === \rand(0, 10)) ? 'Y' : 'N';
+            $product->fUVP                     = (\rand(0, 10) === 10) ? ($price / 2) : 0;
+            $product->cLagerBeachten           = (\rand(0, 10) === 10) ? 'Y' : 'N';
             $product->cLagerKleinerNull        = $product->cLagerBeachten;
             $product->cLagerVariation          = 'N';
             $product->cTeilbar                 = 'N';
-            $product->fPackeinheit             = (10 === \rand(0, 10)) ? \rand(1, 12) : 1;
+            $product->fPackeinheit             = (\rand(0, 10) === 10) ? \rand(1, 12) : 1;
             $product->fAbnahmeintervall        = 0;
             $product->fZulauf                  = 0;
             $product->cVPE                     = 'N';
@@ -673,13 +674,13 @@ class DemoDataInstaller
                     $this->createRating($product->kArtikel);
                 }
 
-                $productCategory                    = new \stdClass();
+                $productCategory                    = new stdClass();
                 $productCategory->kKategorieArtikel = $product->kArtikel;
                 $productCategory->kArtikel          = $product->kArtikel;
                 $productCategory->kKategorie        = \rand(1, $categoryCount);
                 $this->pdo->insert('tkategorieartikel', $productCategory);
 
-                $seoItem       = new \stdClass();
+                $seoItem       = new stdClass();
                 $seoItem->cKey = 'kArtikel';
                 $seoItem->cSeo = $product->cSeo;
 
@@ -705,12 +706,12 @@ class DemoDataInstaller
                 $seoItem->kSprache = 2;
                 $this->pdo->insert('tseo', $seoItem);
 
-                $_price2                = new \stdClass();
+                $_price2                = new stdClass();
                 $_price2->kArtikel      = $product->kArtikel;
                 $_price2->kKundengruppe = 1;
                 $idxKg1                 = $this->pdo->insert('tpreis', $_price2);
                 if ($idxKg1 > 0) {
-                    $_price3            = new \stdClass();
+                    $_price3            = new stdClass();
                     $_price3->kPreis    = $idxKg1;
                     $_price3->nAnzahlAb = 0;
                     $_price3->fVKNetto  = $price / 19.00;
@@ -720,7 +721,7 @@ class DemoDataInstaller
                 $_price2->kKundengruppe = 2;
                 $idxKg2                 = $this->pdo->insert('tpreis', $_price2);
                 if ($idxKg2 > 0) {
-                    $_price3            = new \stdClass();
+                    $_price3            = new stdClass();
                     $_price3->kPreis    = $idxKg2;
                     $_price3->nAnzahlAb = 0;
                     $_price3->fVKNetto  = $price / 19.00;
@@ -866,7 +867,7 @@ class DemoDataInstaller
             $path = PFAD_ROOT . 'media/image/storage/' . $file;
 
             if ($this->createImage($path, $text, 1024, 1024) === true) {
-                $_image                   = new \stdClass();
+                $_image                   = new stdClass();
                 $_image->cPfad            = $file;
                 $_image->kBild            = $this->pdo->insert('tbild', $_image);
                 $_image->kArtikelPict     = $maxPk + 1;
@@ -890,7 +891,7 @@ class DemoDataInstaller
             if ($this->createImage($path, $text, 200, 200) === true) {
                 $pathStorage = PFAD_ROOT . 'media/image/storage/categories/' . $file;
                 $this->createImage($pathStorage, $text, 800, 800);
-                $image             = new \stdClass();
+                $image             = new stdClass();
                 $image->kKategorie = $categoryID;
                 $image->cPfad      = $file;
                 $this->pdo->insert('tkategoriepict', $image);
@@ -905,7 +906,7 @@ class DemoDataInstaller
     private function createRating(int $productID): bool
     {
         if ($productID > 0) {
-            $rating                  = new \stdClass();
+            $rating                  = new stdClass();
             $rating->kArtikel        = $productID;
             $rating->kKunde          = 0;
             $rating->kSprache        = 1; //@todo: rand(0, 1)?

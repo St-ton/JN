@@ -309,7 +309,7 @@ abstract class Job implements JobInterface
     }
 
     /**
-     * @param string $date
+     * @param string|null $date
      */
     public function setLastStarted(?string $date): void
     {

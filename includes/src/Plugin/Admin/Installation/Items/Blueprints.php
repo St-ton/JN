@@ -2,6 +2,7 @@
 
 namespace JTL\Plugin\Admin\Installation\Items;
 
+use JTL\OPC\InputType;
 use JTL\Plugin\InstallCode;
 use JTL\Shop;
 
@@ -57,6 +58,11 @@ class Blueprints extends AbstractItem
         return InstallCode::OK;
     }
 
+    /**
+     * @param string $base
+     * @param array  $instanceData
+     * @throws \Exception
+     */
     protected function copyBlueprintImages($base, &$instanceData)
     {
         $class   = $instanceData['class'];
@@ -65,7 +71,7 @@ class Blueprints extends AbstractItem
 
         foreach ($props as $name => $prop) {
             if (isset($instanceData['properties'][$name], $prop['type'])) {
-                if ($prop['type'] === \JTL\OPC\InputType::IMAGE) {
+                if ($prop['type'] === InputType::IMAGE) {
                     if (\is_file($base . $instanceData['properties'][$name])) {
                         $oldname = $instanceData['properties'][$name];
                         $newname = $this->plugin->cVerzeichnis . '_' . $oldname;
@@ -75,7 +81,7 @@ class Blueprints extends AbstractItem
                         );
                         $instanceData['properties'][$name] = $newname;
                     }
-                } elseif ($prop['type'] === \JTL\OPC\InputType::IMAGE_SET) {
+                } elseif ($prop['type'] === InputType::IMAGE_SET) {
                     foreach ($instanceData['properties'][$name] as $i => &$image) {
                         if (\is_file($base . $image['url'])) {
                             $oldname = $image['url'];

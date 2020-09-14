@@ -30,4 +30,4 @@ echo "] unit tests finished."
 
 echo "] prepare changed stuff for re-use.."
 #chmod -R o+w ./install ./build/ ./includes/vendor/
-chown -R XUID.XGID .
+chown -R ${XUID}.${XGID} .

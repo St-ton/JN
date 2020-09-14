@@ -28,5 +28,5 @@ echo "] execute tests..";
 ./includes/vendor/bin/phpunit tests;
 echo "] unit tests finished."
 
-echo "] prepare changed stuff for re-use.."
+echo "] prepare all sources for re-use.."
 chown -R ${XUID}.${XGID} .

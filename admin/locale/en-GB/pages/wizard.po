@@ -126,7 +126,7 @@ msgid "thankYouTextDesc"
 msgstr "You have completed the most important settings of JTL-Shop."
 
 msgid "thankYouTextPluginsInstalled"
-msgstr "Please note that you need to activate the plug-ins under <span class=\"text-primary font-weight-bold\">Installed plug-ins</span> before you can use them."
+msgstr "Please note that you may need to configure the plug-ins under <span class=\"text-primary font-weight-bold\">Installed plug-ins</span> before you can use them."
 
 msgid "installedPlugins"
 msgstr "Installed plug-ins"

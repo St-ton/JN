@@ -1,5 +1,8 @@
 #!/usr/bin/env sh
 
+XUID=$1
+XGID=$2
+
 echo "] execute 'composer install'.."
 composer install -o -q -d includes/
 
@@ -26,4 +29,5 @@ echo "] execute tests..";
 echo "] unit tests finished."
 
 echo "] prepare changed stuff for re-use.."
-chmod -R o+w ./install ./build/ ./includes/vendor/
+#chmod -R o+w ./install ./build/ ./includes/vendor/
+chown -R XUID.XGID .

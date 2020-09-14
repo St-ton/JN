@@ -713,7 +713,7 @@ class SearchResults implements SearchResultsInterface
         $categoryOptions             = $productFilter->getCategoryFilter()->getOptions();
         $priceRangeOptions           = $productFilter->getPriceRangeFilter()->getOptions($this->getProductCount());
         $searchSpecialFilters        = $productFilter->getSearchSpecialFilter()->getOptions();
-        $availabilityOptions         = $productFilter->getAvailabilitylFilter()->getOptions();
+        $availabilityOptions         = $productFilter->getAvailabilityFilter()->getOptions();
         $characteristicFilterOptions = $productFilter->getCharacteristicFilterCollection()->getOptions([
             'oAktuelleKategorie' => $currentCategory,
             'bForce'             => $selectionWizard === true

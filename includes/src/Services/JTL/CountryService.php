@@ -83,9 +83,9 @@ class CountryService implements CountryServiceInterface
      */
     public function getCountry(string $ISO): ?Country
     {
-        return $this->getCountryList()->filter(static function (Country $country) use ($ISO) {
+        return $this->getCountryList()->first(static function (Country $country) use ($ISO) {
             return $country->getISO() === \strtoupper($ISO);
-        })->pop();
+        });
     }
 
     /**

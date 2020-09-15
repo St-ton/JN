@@ -393,10 +393,9 @@ class Versandart
     public function getShippingSurchargeForZip(string $zip, string $ISO): ?ShippingSurcharge
     {
         return $this->getShippingSurchargesForCountry($ISO)
-            ->filter(static function (ShippingSurcharge $surcharge) use ($zip) {
+            ->first(static function (ShippingSurcharge $surcharge) use ($zip) {
                 return $surcharge->hasZIPCode($zip);
-            })
-            ->pop();
+            });
     }
 
 

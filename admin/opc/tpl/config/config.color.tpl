@@ -8,6 +8,9 @@
                 data-placement="auto"
             {/if}>
         {$propdesc.label}
+        {if !empty($propdesc.desc) || !empty($propdesc.hint)}
+            <i class="fas fa-info-circle fa-fw"></i>
+        {/if}
     </label>
     <div class="input-group" id="config-{$propid}-group">
         <input type="text" class="form-control colorpicker-input" name="{$propname}" value="{$propval|escape:'html'}"

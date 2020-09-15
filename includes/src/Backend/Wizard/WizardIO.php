@@ -77,7 +77,7 @@ class WizardIO
     {
         $this->init();
 
-        return $this->wizardController->validateStep($post);
+        return $this->wizardController->answerQuestions($post);
     }
 
     private function init(): void

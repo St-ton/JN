@@ -172,7 +172,7 @@
                                     {foreach $steps as $step}
                                         {if $step->getID() === 3 || $step->getID() === 4}
                                             {foreach $step->getQuestions() as $question}
-                                                <span data-setup-summary-placeholder="question-{$question->getID()}">-</span>
+                                                <span data-setup-summary-placeholder="question-{$question->getID()}"></span>
                                             {/foreach}
                                         {/if}
                                     {/foreach}

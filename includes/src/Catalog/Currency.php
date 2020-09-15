@@ -440,11 +440,11 @@ class Currency
     /**
      * Converts price into given currency
      *
-     * @param float  $price
-     * @param string $iso - EUR / USD
-     * @param int    $id - kWaehrung
-     * @param bool   $round
-     * @param int    $precision
+     * @param float       $price
+     * @param string|null $iso - EUR / USD
+     * @param int|null    $id - kWaehrung
+     * @param bool        $round
+     * @param int         $precision
      * @return float|bool
      */
     public static function convertCurrency(

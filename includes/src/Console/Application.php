@@ -78,7 +78,7 @@ class Application extends BaseApplication
      */
     public function initPluginCommands(): void
     {
-        if (!$this->isInstalled || SAFE_MODE === true) {
+        if (!$this->isInstalled || \SAFE_MODE === true) {
             return;
         }
         $db              = Shop::Container()->getDB();

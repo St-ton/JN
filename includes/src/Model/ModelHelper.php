@@ -40,8 +40,8 @@ final class ModelHelper
     }
 
     /**
-     * @param string|DateTime $value
-     * @param string|DateTime $default
+     * @param string|DateTime      $value
+     * @param string|DateTime|null $default
      * @return DateTime|null
      */
     public static function fromStrToDateTime($value, $default = null): ?DateTime
@@ -77,8 +77,8 @@ final class ModelHelper
     }
 
     /**
-     * @param string|DateInterval $value
-     * @param string|DateInterval $default
+     * @param string|DateInterval      $value
+     * @param string|DateInterval|null $default
      *
      * @return DateInterval|null
      */
@@ -132,8 +132,8 @@ final class ModelHelper
     }
 
     /**
-     * @param string|DateTime $value
-     * @param string|DateTime $default
+     * @param string|DateTime      $value
+     * @param string|DateTime|null $default
      * @return DateTime|null
      */
     public static function fromStrToDate($value, $default = null): ?DateTime
@@ -157,8 +157,8 @@ final class ModelHelper
     }
 
     /**
-     * @param string|DateTime $value
-     * @param string|DateTime $default
+     * @param string|DateTime      $value
+     * @param string|DateTime|null $default
      * @return DateTime|null
      */
     public static function fromStrToTimestamp($value, $default = null): ?DateTime

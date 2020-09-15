@@ -5,7 +5,7 @@
             {$wlCount = $smarty.session.Wunschliste->CWunschlistePos_arr|count}
         {/if}
         <li id='shop-nav-wish'
-            class="nav-item dropdown d-none d-md-flex{if $nSeitenTyp === $smarty.const.PAGE_WUNSCHLISTE} active{/if}">
+            class="nav-item dropdown {if $nSeitenTyp === $smarty.const.PAGE_WUNSCHLISTE} active{/if}">
             {block name='layout-header-shop-nav-wish-link'}
                 {link class='nav-link' aria=['expanded' => 'false', 'label' => {lang key='wishlist'}] data=['toggle' => 'dropdown']}
                     <i class="fas fa-heart position-relative">

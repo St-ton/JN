@@ -46,11 +46,14 @@ msgstr "Megamenu"
 msgid "Kategoriebilder für erste Unterkategorie"
 msgstr "Category images for first sub category"
 
+msgid "Kategorien (anstelle einer Kategoriebox / Boxenverwaltung)"
+msgstr "Category images for first sub category"
+
 msgid "Unterkategorien"
 msgstr "Sub categories"
 
-msgid "Seiten der Linkgruppe 'megamenu'"
-msgstr "Pages within the link group ”megamenu”"
+msgid "Seiten der Linkgruppe “megamenu”"
+msgstr "Pages within the link group „megamenu“"
 
 msgid "Hersteller-Dropdown"
 msgstr "Manufacturer dropdown"
@@ -66,6 +69,9 @@ msgstr "Select options on “Show filter in (Desktop)”"
 
 msgid "Schaltfläche “Warenkorb” in Artikelübersicht (Listenansicht) anzeigen"
 msgstr "Show button “Cart” in product list view"
+
+msgid "Filter immer ausgeklappt"
+msgstr "Always show filter items"
 
 msgid "Zusatzinfos zu Artikeln beim Hovern/Antippen anzeigen"
 msgstr "Show additional product information on hover"
@@ -159,3 +165,18 @@ msgstr "content"
 
 msgid "zwischen Header und Content"
 msgstr "between header and content"
+
+msgid "Wunschzettel und Vergleichsliste - Animation anzeigen"
+msgstr "Wish list and comparison list - show animation"
+
+msgid "Auf Desktop und mobilen Geräten"
+msgstr "Desktop and mobile"
+
+msgid "Nur mobil"
+msgstr "Mobile only"
+
+msgid "Nur Desktop"
+msgstr "Desktop only"
+
+msgid "Keine"
+msgstr "None"

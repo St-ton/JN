@@ -81,8 +81,9 @@ export default {
         this.$i18n.add('de', messages.de);
         return {
             admin: {
-                name: 'admin',
-                pass: this.generatePassword()
+                name:   'admin',
+                pass:   this.generatePassword(),
+                locale: this.$i18n.locale()
             },
             wawi:  {
                 name: 'sync',
@@ -108,8 +109,8 @@ export default {
                 : '';
         },
         checkPassword(pass) {
-            let matches_array = pass.match(/[^A-Za-z0-9\!"\#\$%&\'\(\)\*\+,-\.\/:;\=\>\?@\[\\\\\]\^_`\|\}~]/);
-            return !(matches_array !== null && matches_array.length > 0);
+            let matches = pass.match(/[^A-Za-z0-9\!"\#\$%&\'\(\)\*\+,-\.\/:;\=\>\?@\[\\\\\]\^_`\|\}~]/);
+            return !(matches !== null && matches.length > 0);
         }
     }
 };

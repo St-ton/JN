@@ -38,6 +38,7 @@ class Rating extends AbstractFilter
         $this->setIsCustom(false)
              ->setUrlParam('bf')
              ->setVisibility($this->getConfig('navigationsfilter')['bewertungsfilter_benutzen'])
+             ->setParamExclusive(true)
              ->setFrontendName(Shop::isAdmin() ? __('filterRatings') : Shop::Lang()->get('Votes'));
     }
 
@@ -124,28 +125,28 @@ class Rating extends AbstractFilter
         $sql->addJoin($this->getSQLJoin());
 
         $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
-        $cacheID   = 'fltr_' . \str_replace('\\', '', __CLASS__) . \md5($baseQuery);
+        $cacheID   = $this->getCacheID($baseQuery);
         if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
             $this->options = $cached;
 
             return $this->options;
         }
-        $res              = $this->productFilter->getDB()->query(
+        $res         = $this->productFilter->getDB()->query(
             'SELECT ssMerkmal.nSterne, COUNT(*) AS nAnzahl
                 FROM (' . $baseQuery . ' ) AS ssMerkmal
                 GROUP BY ssMerkmal.nSterne
                 ORDER BY ssMerkmal.nSterne DESC',
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $stars            = 0;
-        $additionalFilter = new self($this->getProductFilter());
+        $stars       = 0;
+        $extraFilter = new self($this->getProductFilter());
         foreach ($res as $row) {
             $stars += (int)$row->nAnzahl;
 
             $options[] = (new Option())
                 ->setParam($this->getUrlParam())
                 ->setURL($this->productFilter->getFilterURL()->getURL(
-                    $additionalFilter->init((int)$row->nSterne)
+                    $extraFilter->init((int)$row->nSterne)
                 ))
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())

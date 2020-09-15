@@ -11,6 +11,7 @@ use JTL\Mail\Hydrator\TestHydrator;
 use JTL\Mail\Renderer\SmartyRenderer;
 use JTL\Mail\Template\TemplateFactory;
 use JTL\Mail\Validator\SyntaxChecker;
+use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\MailSmarty;
 use JTL\Update\IMigration;
@@ -26,6 +27,9 @@ class Migration_20200522000000 extends Migration implements IMigration
 
     public function up()
     {
+        // fix for cli: SHOP-4321
+        Shop::Container()->getGetText();
+
         unset($_SESSION['emailSyntaxErrorCount'], $_SESSION['exportSyntaxErrorCount']);
         $smarty   = new MailSmarty($this->getDB());
         $renderer = new SmartyRenderer($smarty);

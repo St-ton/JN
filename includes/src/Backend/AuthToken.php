@@ -44,6 +44,7 @@ class AuthToken
     {
         $this->db = $db;
         $this->load();
+        self::$instance = $this;
     }
 
     /**
@@ -60,6 +61,11 @@ class AuthToken
      */
     private function load(): void
     {
+        $this->authCode = null;
+        $this->token    = null;
+        $this->hash     = null;
+        $this->verified = null;
+
         $token = $this->db->query(
             'SELECT tstoreauth.auth_code, tstoreauth.access_token,
                 tadminlogin.cPass AS hash, tstoreauth.verified
@@ -69,17 +75,11 @@ class AuthToken
                 LIMIT 1',
             ReturnType::SINGLE_OBJECT
         );
-
         if ($token) {
             $this->authCode = $token->auth_code;
             $this->token    = $token->access_token;
             $this->hash     = \sha1($token->hash);
             $this->verified = $token->verified;
-        } else {
-            $this->authCode = null;
-            $this->token    = null;
-            $this->hash     = null;
-            $this->verified = null;
         }
     }
 

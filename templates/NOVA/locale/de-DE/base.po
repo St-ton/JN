@@ -43,14 +43,17 @@ msgstr "Favicon"
 msgid "Megamenu"
 msgstr "Megamenu"
 
+msgid "Kategorien (anstelle einer Kategoriebox / Boxenverwaltung)"
+msgstr "Kategorien (anstelle einer Kategoriebox / Boxenverwaltung)"
+
 msgid "Kategoriebilder für erste Unterkategorie"
 msgstr "Kategoriebilder für erste Unterkategorie"
 
 msgid "Unterkategorien"
 msgstr "Unterkategorien"
 
-msgid "Seiten der Linkgruppe 'megamenu'"
-msgstr "Seiten der Linkgruppe \"megamenu\""
+msgid "Seiten der Linkgruppe „megamenu“"
+msgstr "Seiten der Linkgruppe „megamenu“"
 
 msgid "Hersteller-Dropdown"
 msgstr "Hersteller-Dropdown"
@@ -66,6 +69,9 @@ msgstr "Auswahloptionen bei „Filter anzeigen in (Desktop)“"
 
 msgid "Schaltfläche „Warenkorb“ in Artikelübersicht (Listenansicht) anzeigen"
 msgstr "Schaltfläche „Warenkorb“ in Artikelübersicht (Listenansicht) anzeigen"
+
+msgid "Filter immer ausgeklappt"
+msgstr "Filter immer ausgeklappt"
 
 msgid "Zusatzinfos zu Artikeln beim Hovern/Antippen anzeigen"
 msgstr "Zusatzinfos zu Artikeln beim Hovern/Antippen anzeigen"
@@ -159,3 +165,18 @@ msgstr "im Contentbereich"
 
 msgid "zwischen Header und Content"
 msgstr "zwischen Header und Content"
+
+msgid "Wunschzettel und Vergleichsliste - Animation anzeigen"
+msgstr "Wunschzettel und Vergleichsliste - Animation anzeigen"
+
+msgid "Auf Desktop und mobilen Geräten"
+msgstr "Auf Desktop und mobilen Geräten"
+
+msgid "Nur mobil"
+msgstr "Nur mobil"
+
+msgid "Nur Desktop"
+msgstr "Nur Desktop"
+
+msgid "Keine"
+msgstr "Keine"

@@ -23,6 +23,9 @@ final class Export extends Job
         if (\JOBQUEUE_LIMIT_M_EXPORTE > 0) {
             $this->setLimit((int)\JOBQUEUE_LIMIT_M_EXPORTE);
         }
+        if ($this->getName() === null && \is_a($data, stdClass::class) && !empty($data->exportName)) {
+            $this->setName($data->exportName);
+        }
 
         return $this;
     }

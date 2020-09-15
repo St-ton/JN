@@ -7,9 +7,9 @@
                 {/block}
             {else}
                 {block name='checkout-step3-shipping-options-form'}
-                    {form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form jtl-validate mb-7"}
+                    {form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form jtl-validate mb-5"}
                         {block name='checkout-step3-shipping-options-fieldset-shipping-payment'}
-                            <fieldset id="checkout-shipping-payment" class="mb-7">
+                            <fieldset id="checkout-shipping-payment" class="mb-5">
                                 {block name='checkout-step3-shipping-options-legend-shipping-options'}
                                     <div class="h2">{lang key='shippingOptions'}</div>
                                 {/block}
@@ -107,7 +107,7 @@
                             </fieldset>
                         {/block}
                         {block name='checkout-step3-shipping-options-fieldset-payment'}
-                            <fieldset id="fieldset-payment" class="mb-7">
+                            <fieldset id="fieldset-payment" class="mb-5">
                                 {block name='checkout-step3-shipping-options-legend-payment'}
                                     <div class="h2">{lang key='paymentOptions'}</div>
                                 {/block}
@@ -117,7 +117,7 @@
                         {/block}
                         {if isset($Verpackungsarten) && $Verpackungsarten|@count > 0}
                             {block name='checkout-step3-shipping-options-fieldset-packaging-types'}
-                                <fieldset class="mb-7">
+                                <fieldset class="mb-5">
                                     {block name='checkout-step3-shipping-options-legend-packaging-types'}
                                         <div class="h2">{lang section='checkout' key='additionalPackaging'}</div>
                                     {/block}

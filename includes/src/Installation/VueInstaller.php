@@ -345,6 +345,9 @@ ini_set('display_errors', 0);" . "\n";
         $adminLogin->kAdminlogingruppe = 1;
         $adminLogin->nLoginVersuch     = 0;
         $adminLogin->bAktiv            = 1;
+        if (isset($this->post['admin']['locale']) && $this->post['admin']['locale'] === 'en') {
+            $adminLogin->language = 'en-GB';
+        }
 
         if (!$this->db->insertRow('tadminlogin', $adminLogin)) {
             $error                   = $this->db->getError();

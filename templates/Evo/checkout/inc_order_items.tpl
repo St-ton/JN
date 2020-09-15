@@ -373,7 +373,11 @@
             {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
                 <td class="hidden-xs"></td>
             {/if}
-            <td class="text-right" colspan="2"><span class="price_label"><strong>{lang key='totalSum' section='global'}:</strong></span></td>
+            <td class="text-right" colspan="2">
+                <span class="price_label">
+                    <strong>{if $tplscope === 'cart'}{lang key='subtotal' section='account data'}{else}{lang key='totalSum' section='global'}{/if}:</strong>
+                </span>
+            </td>
             <td class="text-right price-col" colspan="{if $tplscope === 'cart'}4{else}3{/if}"><strong class="price total-sum">{$WarensummeLocalized[0]}</strong></td>
         </tr>
         {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}

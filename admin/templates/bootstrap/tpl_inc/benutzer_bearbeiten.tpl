@@ -111,7 +111,7 @@ $(document).ready(function() {
                         <div class="form-group form-row align-items-center{if isset($cError_arr.cMail)} form-error{/if}">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="cMail">{__('emailAddress')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <input id="cMail" class="form-control" type="text" name="cMail" value="{if isset($oAccount->cMail)}{$oAccount->cMail}{/if}" />
+                                <input id="cMail" class="form-control" type="email" name="cMail" value="{if isset($oAccount->cMail)}{$oAccount->cMail}{/if}" />
                             </div>
                         </div>
                     </div>
@@ -355,7 +355,7 @@ $(document).ready(function() {
                 <input type="hidden" name="kAdminlogingruppe" value="1" />
             {/if}
 
-            {if $oAccount->kAdminlogin > 1}
+            {if isset($oAccount->kAdminlogin) && $oAccount->kAdminlogin > 1}
             <div class="card">
                 <div class="card-header">
                     <div class="subheading1">{__('personalInformation')}</div>

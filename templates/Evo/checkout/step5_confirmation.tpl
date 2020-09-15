@@ -140,44 +140,44 @@
     </div>
     <form method="post" name="agbform" id="complete_order" action="{get_static_route id='bestellabschluss.php'}" class="evo-validate">
         {$jtl_token}
-        {lang key='agb' section='global' assign='agb'}
-        {if isset($AGB->kLinkAGB) && $AGB->kLinkAGB > 0}
-            {lang key='termsAndConditionsNotice' section='checkout' printf=$AGB->cURLAGB|cat:':::class="popup"' assign='agbNotice'}
-        {elseif !empty($AGB->cAGBContentHtml)}
+        {lang key='agb' assign='agb'}
+        {if !empty($AGB->cAGBContentHtml)}
             {block name='checkout-confirmation-modal-agb-html'}
-                {lang key='termsAndConditionsNotice' section='checkout' printf=$AGB->cURLAGB|cat:':::data-toggle="modal" data-target="#agb-html-modal" class="modal-popup" id="agb"' assign='agbNotice'}
-                {include file='snippets/modal_general.tpl' modalTitle=$agb modalID='agb-html' modalBody=$AGB->cAGBContentHtml}
+                {include file='snippets/modal_general.tpl' modalTitle=$agb modalID='agb-modal' modalBody=$AGB->cAGBContentHtml}
             {/block}
         {elseif !empty($AGB->cAGBContentText)}
             {block name='checkout-confirmation-modal-agb-text'}
-                {lang key='termsAndConditionsNotice' section='checkout' printf=$AGB->cURLAGB|cat:':::data-toggle="modal" data-target="#agb-text-modal" class="modal-popup" id="agb"' assign='agbNotice'}
-                {include file='snippets/modal_general.tpl' modalTitle=$agb modalID='agb-text' modalBody=$AGB->cAGBContentText}
+                {include file='snippets/modal_general.tpl' modalTitle=$agb modalID='agb-modal' modalBody=$AGB->cAGBContentText}
             {/block}
         {/if}
-
         {if $Einstellungen.kaufabwicklung.bestellvorgang_wrb_anzeigen == 1}
             {lang key='wrb' section='checkout' assign='wrb'}
-            {if isset($AGB->kLinkWRB) && $AGB->kLinkWRB > 0}
-                {lang key='cancellationPolicyNotice' section='checkout' printf=$AGB->cURLWRB|cat:':::class="popup"' assign='wrbNotice'}
-            {elseif !empty($AGB->cWRBContentHtml)}
+            {lang key='wrbform' assign='wrbform'}
+            {if !empty($AGB->cWRBContentHtml)}
                 {block name='checkout-confirmation-modal-wrb-html'}
-                    {lang key='cancellationPolicyNotice' section='checkout' printf=$AGB->cURLWRB|cat:':::data-toggle="modal" data-target="#wrb-html-modal" class="modal-popup" id="wrb"' assign='wrbNotice'}
-                    {include file='snippets/modal_general.tpl' modalTitle=$wrb modalID='wrb-html' modalBody=$AGB->cWRBContentHtml}
+                    {include file='snippets/modal_general.tpl' modalTitle=$wrb modalID='wrb-modal' modalBody=$AGB->cWRBContentHtml}
                 {/block}
             {elseif !empty($AGB->cWRBContentText)}
                 {block name='checkout-confirmation-modal-wrb-text'}
-                    {lang key='cancellationPolicyNotice' section='checkout' printf=$AGB->cURLWRB|cat:':::data-toggle="modal" data-target="#wrb-text-modal" class="modal-popup" id="wrb"' assign='wrbNotice'}
-                    {include file='snippets/modal_general.tpl' modalTitle=$wrb modalID='wrb-text' modalBody=$AGB->cWRBContentText}
+                    {include file='snippets/modal_general.tpl' modalTitle=$wrb modalID='wrb-modal' modalBody=$AGB->cWRBContentText}
+                {/block}
+            {/if}
+            {if !empty($AGB->cWRBFormContentHtml)}
+                {block name='checkout-confirmation-modal-wrb-form-html'}
+                    {include file='snippets/modal_general.tpl' modalTitle=$wrbform modalID='wrb-form-modal' modalBody=$AGB->cWRBFormContentHtml}
+                {/block}
+            {elseif !empty($AGB->cWRBFormContentText)}
+                {block name='checkout-confirmation-modal-wrb-form-text'}
+                    {include file='snippets/modal_general.tpl' modalTitle=$wrbform modalID='wrb-form-modal' modalBody=$AGB->cWRBFormContentText}
                 {/block}
             {/if}
         {/if}
 
-        {if isset($wrbNotice) || isset($agbNotice)}
+        {block name='checkout-step5-confirmation-alert-agb'}
             <div class="alert alert-info">
-                {if isset($agbNotice)}<p>{$agbNotice}</p>{/if}
-                {if isset($wrbNotice)}<p>{$wrbNotice}</p>{/if}
+                <p>{$AGB->agbWrbNotice}</p>
             </div>
-        {/if}
+        {/block}
 
         {if !isset($smarty.session.cPlausi_arr)}
             {assign var=plausiArr value=array()}

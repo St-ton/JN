@@ -7,7 +7,7 @@
   font-size: 1.425rem;
   font-family: "Montserrat", Helvetica, Arial, sans-serif;
 }
-.opc-Divider::before, .opc-Divider::after {
+.opc-Divider:before, .opc-Divider:after {
   content: "";
   flex-grow: 1;
   background: #ebebeb;
@@ -23,6 +23,12 @@
 }
 .opc-Divider a:hover {
   border-color: #F8BF00;
+}
+.opc-Divider.opc-Divider-empty:before {
+  margin-right: 0;
+}
+.opc-Divider.opc-Divider-empty:after {
+  margin-left: 0;
 }
 
 /*# sourceMappingURL=Divider.css.map */

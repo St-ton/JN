@@ -42,17 +42,12 @@ class Mapper
             return $collection;
         }
         foreach ($data->extensions as $extension) {
-            $esxLicense = new ExsLicense($extension);
-            $esxLicense->setQueryDate($data->timestamp);
-            $esxLicense->setState(ExsLicense::STATE_ACTIVE);
-            $this->setReference($esxLicense, $extension);
-            $collection->push($esxLicense);
-        }
-        foreach ($data->unbound as $extension) {
-            $esxLicense = new ExsLicense($extension);
-            $esxLicense->setQueryDate($data->timestamp);
-            $esxLicense->setState(ExsLicense::STATE_UNBOUND);
-            $collection->push($esxLicense);
+            $exsLicense = new ExsLicense($extension);
+            $exsLicense->setQueryDate($data->timestamp);
+            if ($exsLicense->getState() === ExsLicense::STATE_ACTIVE) {
+                $this->setReference($exsLicense, $extension);
+            }
+            $collection->push($exsLicense);
         }
         $this->manager->getCache()->set($cacheID, $collection, [\CACHING_GROUP_LICENSES]);
 
@@ -68,6 +63,7 @@ class Mapper
     {
         switch ($esxLicense->getType()) {
             case ExsLicense::TYPE_PLUGIN:
+            case ExsLicense::TYPE_PORTLET:
                 $plugin = new ReferencedPlugin(
                     $this->manager->getDB(),
                     $license,
@@ -82,9 +78,6 @@ class Mapper
                     $esxLicense->getReleases()->getAvailable()
                 );
                 $esxLicense->setReferencedItem($template);
-                break;
-            case ExsLicense::TYPE_PORTLET:
-                // @todo
                 break;
         }
     }

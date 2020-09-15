@@ -476,7 +476,7 @@ msgid "Server"
 msgstr "Server"
 
 msgid "Accounts"
-msgstr "Users &amp; rights"
+msgstr "Users & rights"
 
 msgid "Troubleshooting"
 msgstr "Troubleshooting"
@@ -492,6 +492,3 @@ msgstr "Global"
 
 msgid "Availability notifications"
 msgstr "Availability requests"
-
-msgid "Consent manager"
-msgstr "Consent manager"

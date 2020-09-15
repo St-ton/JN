@@ -173,12 +173,8 @@
         {assign var='cIso' value=$cPost_var['land']}
     {elseif !empty($Kunde->cLand)}
         {assign var='cIso' value=$Kunde->cLand}
-    {elseif !empty($Einstellungen.kunden.kundenregistrierung_standardland)}
-        {assign var='cIso' value=$Einstellungen.kunden.kundenregistrierung_standardland}
-    {elseif isset($laender[0]->cISO)}
-        {assign var='cIso' value=$laender[0]->cISO}
     {else}
-        {assign var='cIso' value=''}
+        {assign var='cIso' value=$shippingCountry}
     {/if}
     <div class="row">
         <div class="col-xs-12 col-md-6">
@@ -354,7 +350,7 @@
    <legend>{lang key='contactInformation' section='account data'}</legend>
     {* E-Mail *}
     <div class="row">
-        <div class="col-xs-12 col-md-6">
+        <div class="col-xs-12 {if $Einstellungen.kunden.direct_advertising !== 'Y'}col-md-6{/if}">
             {if isset($cPost_var['email'])}
                 {assign var='inputVal_email' value=$cPost_var['email']}
             {elseif isset($Kunde->cMail)}
@@ -368,6 +364,13 @@
                 ]
             }
         </div>
+        {if $Einstellungen.kunden.direct_advertising === 'Y'}
+            {block name='checkout-inc-billing-address-form-direct-advertising'}
+                <div class="col-xs-12 text-muted bottom15">
+                    <small>{lang key="directAdvertising" section="checkout"}</small>
+                </div>
+            {/block}
+        {/if}
     </div>
     {* phone & fax *}
     {if $Einstellungen.kunden.kundenregistrierung_abfragen_tel !== 'N' || $Einstellungen.kunden.kundenregistrierung_abfragen_fax !== 'N'}

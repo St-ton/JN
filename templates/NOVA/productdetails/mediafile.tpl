@@ -120,17 +120,18 @@
                                     {/col}
                                     {col md=6}
                                         {if !empty($oMedienDatei->cPfad)}
-                                            {link href="{$ShopURL}/{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" target="_blank"}
+                                            {link class="text-decoration-none"
+                                                href="{$ShopURL}/{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}"
+                                                target="_blank"
+                                            }
                                                 {image alt="PDF" src="{$smarty.const.PFAD_BILDER}intern/file-pdf.png"}
-                                            {/link}
-                                            <br />
-                                            {link href="{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" target="_blank"}
-                                                {$oMedienDatei->cName}
+                                                <span class="text-decoration-underline" >{$oMedienDatei->cName}</span>
                                             {/link}
                                         {elseif !empty($oMedienDatei->cURL)}
-                                            {link href=$oMedienDatei->cURL target="_blank"}{image alt="PDF" src="{$smarty.const.PFAD_BILDER}intern/file-pdf.png"}{/link}
-                                            <br />
-                                            {link href=$oMedienDatei->cURL target="_blank"}{$oMedienDatei->cName}{/link}
+                                            {link class="text-decoration-none" href=$oMedienDatei->cURL target="_blank"}
+                                                {image alt="PDF" src="{$smarty.const.PFAD_BILDER}intern/file-pdf.png"}
+                                                <span class="text-decoration-underline">{$oMedienDatei->cName}</span>
+                                            {/link}
                                         {/if}
                                     {/col}
                                 {/row}

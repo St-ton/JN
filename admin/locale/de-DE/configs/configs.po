@@ -2980,3 +2980,15 @@ msgstr "Standard-Sortierung"
 
 msgid "bewertung_sortierung_desc"
 msgstr "Hier legen Sie fest, wie Bewertungen standardmäßig sortiert werden."
+
+msgid "direct_advertising_name"
+msgstr "Hinweis auf Direktwerbung bei Erhebung der E-Mail-Adresse anzeigen"
+
+msgid "direct_advertising_desc"
+msgstr "Der Hinweis wird bei der Registrierung unter dem Eingabefeld für die E-Mail-Adresse angezeigt."
+
+msgid "upload_modul_limit_name"
+msgstr "Erlaubte Datei-Uploads pro Stunde"
+
+msgid "upload_modul_limit_desc"
+msgstr "Hier legen Sie fest, wie viele Dateien ein Benutzer bei aktiviertem Uploadmodul pro Stunde maximal hochladen darf."

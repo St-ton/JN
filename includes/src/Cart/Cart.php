@@ -76,6 +76,11 @@ class Cart
     public $oFavourableShipping;
 
     /**
+     * @var string
+     */
+    public $favourableShippingString = '';
+
+    /**
      * @var array
      */
     public static $updatedPositions = [];
@@ -1832,15 +1837,12 @@ class Cart
             return null;
         }
 
-        $customerGroupSQL = '';
-        $customerGroupID  = $_SESSION['Kunde']->kKundengruppe ?? 0;
 
-        if ($customerGroupID > 0) {
-            $countryCode      = $_SESSION['Kunde']->cLand;
-            $customerGroupSQL = " OR FIND_IN_SET('" . $customerGroupID . "', REPLACE(va.cKundengruppen, ';', ',')) > 0";
-        } else {
-            $countryCode = $_SESSION['cLieferlandISO'];
-        }
+        $customerGroupID  = $_SESSION['Kunde']->kKundengruppe ?? 0;
+        $customerGroupSQL = $customerGroupID > 0
+            ? " OR FIND_IN_SET('" . $customerGroupID . "', REPLACE(va.cKundengruppen, ';', ',')) > 0"
+            : '';
+        $countryCode      = $this->getShippingCountry();
         // if nothing changed, return cached shipping-object
         if ($this->oFavourableShipping !== null
             && $this->oFavourableShipping->getCountryCode() === $_SESSION['cLieferlandISO']
@@ -1848,6 +1850,23 @@ class Cart
             return $this->oFavourableShipping;
         }
 
+        $maxPrices       = 0;
+        $itemCount       = 0;
+        $totalWeight     = 0;
+        $shippingClasses = ShippingMethod::getShippingClasses(Frontend::getCart());
+        $shippingMethods = map(ShippingMethod::getPossibleShippingMethods(
+            $countryCode,
+            $_SESSION['Lieferadresse']->cPLZ ?? Frontend::getCustomer()->cPLZ,
+            $shippingClasses,
+            $customerGroupID
+        ), static function ($e) {
+            return $e->kVersandart;
+        });
+
+        $this->oFavourableShipping = null;
+        if (empty($shippingMethods)) {
+            return null;
+        }
         //use previously determined shippingfree shipping method
         if ($shippingFreeMinID !== null) {
             $localizedZero              = Preise::getLocalizedPriceString(0);
@@ -1857,22 +1876,10 @@ class Cart
             $method->setCountryCode($countryCode);
 
             $this->oFavourableShipping = $method;
+            $this->setFavourableShippingString(\count($shippingMethods));
 
             return $this->oFavourableShipping;
         }
-
-        $maxPrices       = 0;
-        $itemCount       = 0;
-        $totalWeight     = 0;
-        $shippingClasses = ShippingMethod::getShippingClasses(Frontend::getCart());
-        $shippingMethods = map(ShippingMethod::getPossibleShippingMethods(
-            $_SESSION['Lieferadresse']->cLand ?? Frontend::getCustomer()->cLand ?? $_SESSION['cLieferlandISO'],
-            $_SESSION['Lieferadresse']->cPLZ ?? Frontend::getCustomer()->cPLZ,
-            $shippingClasses,
-            $customerGroupID
-        ), static function ($e) {
-            return $e->kVersandart;
-        });
 
         foreach ($this->PositionenArr as $item) {
             $totalWeight += $item->fGesamtgewicht;
@@ -1914,7 +1921,6 @@ class Cart
             ReturnType::SINGLE_OBJECT
         );
 
-        $this->oFavourableShipping = null;
         if (isset($shipping->kVersandart)) {
             $method = new Versandart((int)$shipping->kVersandart);
             $method->setCountryCode($countryCode);
@@ -1938,7 +1944,59 @@ class Cart
             }
             $this->oFavourableShipping = $method;
         }
+        $this->setFavourableShippingString(\count($shippingMethods));
 
         return $this->oFavourableShipping;
+    }
+
+    /**
+     * @param int $possibleShippingMethods
+     */
+    public function setFavourableShippingString(int $possibleShippingMethods): void
+    {
+        if ($this->oFavourableShipping === null && empty(Frontend::get('Versandart'))) {
+            $this->favourableShippingString = sprintf(
+                Shop::Lang()->get('shippingInformation', 'basket'),
+                Shop::Container()->getLinkService()->getSpecialPage(LINKTYP_VERSAND)->getURL()
+            );
+            return;
+        }
+        $isMerchant    = Frontend::getCustomerGroup()->getIsMerchant();
+        $shippingCosts = $this->oFavourableShipping->cPriceLocalized[$isMerchant];
+
+        if ($isMerchant) {
+            $shippingCosts = sprintf(
+                '`%s` %s %s',
+                $shippingCosts,
+                Shop::Lang()->get('plus', 'basket'),
+                Shop::Lang()->get('vat', 'productDetails')
+            );
+        }
+        if ($possibleShippingMethods === 1) {
+            $this->favourableShippingString = sprintf(
+                Shop::Lang()->get('shippingInformationSpecificSingle', 'basket'),
+                Shop::Container()->getLinkService()->getSpecialPage(LINKTYP_VERSAND)->getURL(),
+                $shippingCosts,
+                $this->oFavourableShipping->country->getName()
+            );
+        } else {
+            $this->favourableShippingString = sprintf(
+                Shop::Lang()->get('shippingInformationSpecific', 'basket'),
+                Shop::Container()->getLinkService()->getSpecialPage(LINKTYP_VERSAND)->getURL(),
+                $shippingCosts,
+                $this->oFavourableShipping->country->getName()
+            );
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public function getShippingCountry(): string
+    {
+        return Request::postVar('land')
+            ?? Frontend::get('Lieferadresse')->cLand
+            ?? Frontend::getCustomer()->cLand
+            ?? Frontend::get('cLieferlandISO');
     }
 }

@@ -1,6 +1,6 @@
 {block name='layout-footer'}
     {block name='layout-footer-consent-manager'}
-        {if $Einstellungen.consentmanager.consent_manager_active === 'Y' && !$isAjax}
+        {if $Einstellungen.consentmanager.consent_manager_active === 'Y' && !$isAjax && $consentItems->isNotEmpty()}
             {include file='snippets/consent_manager.tpl'}
             {inline_script}
                 <script>
@@ -95,7 +95,7 @@
                                     {/block}
                                     {block name='layout-footer-newsletter-info'}
                                         <p class="info">
-                                            {lang key='unsubscribeAnytime' section='newsletter' printf=$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL()}
+                                            {lang key='newsletterInformedConsent' section='newsletter' printf=$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL()}
                                         </p>
                                     {/block}
                                 {/col}

@@ -21,6 +21,7 @@ use JTL\DB\ReturnType;
  * `tjtllog`
  * `tzahlungseingang`
  * `tkundendatenhistory`
+ * `tfloodprotect`
  */
 class CleanupLogs extends Method implements MethodInterface
 {
@@ -31,6 +32,7 @@ class CleanupLogs extends Method implements MethodInterface
     {
         $this->cleanupEmailHistory();
         $this->cleanupContactHistory();
+        $this->cleanupFloodProtect();
         $this->cleanupPaymentLogEntries();
         $this->cleanupProductInquiries();
         $this->cleanupAvailabilityInquiries();
@@ -66,6 +68,25 @@ class CleanupLogs extends Method implements MethodInterface
     {
         $this->db->queryPrepared(
             'DELETE FROM tkontakthistory
+                WHERE dErstellt <= :pDateLimit
+                ORDER BY dErstellt ASC
+                LIMIT :pLimit',
+            [
+                'pDateLimit' => $this->dateLimit,
+                'pLimit'     => $this->workLimit
+            ],
+            ReturnType::DEFAULT
+        );
+    }
+
+    /**
+     * delete upload request history
+     * older than given interval
+     */
+    private function cleanupFloodProtect(): void
+    {
+        $this->db->queryPrepared(
+            'DELETE FROM tfloodprotect
                 WHERE dErstellt <= :pDateLimit
                 ORDER BY dErstellt ASC
                 LIMIT :pLimit',

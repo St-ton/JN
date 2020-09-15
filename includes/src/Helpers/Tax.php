@@ -48,6 +48,7 @@ class Tax
         $billingCountryCode     = null;
         $merchantCountryCode    = 'DE';
         $db                     = Shop::Container()->getDB();
+        $conf                   = Shop::getSettings([\CONF_KUNDEN])['kunden'];
         $Firma                  = $db->query(
             'SELECT cLand FROM tfirma',
             ReturnType::SINGLE_OBJECT
@@ -57,6 +58,9 @@ class Tax
         }
         if (\defined('STEUERSATZ_STANDARD_LAND')) {
             $merchantCountryCode = STEUERSATZ_STANDARD_LAND;
+        }
+        if ($conf['kundenregistrierung_standardland'] !== '') {
+            $merchantCountryCode = $conf['kundenregistrierung_standardland'];
         }
         $deliveryCountryCode = $merchantCountryCode;
         if ($countryCode) {

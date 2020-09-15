@@ -9,7 +9,9 @@
                 role="button"
                 data=["toggle"=> "collapse", "target"=>"#cllps-box{$oBox->getID()}"]
             }
-                {lang key='searchFilter'}
+                <span class="text-truncate">
+                    {lang key='searchFilter'}
+                </span>
             {/button}
             {collapse id="cllps-box{$oBox->getID()}"
                 visible=$NaviFilter->searchFilterCompat->isActive() || $Einstellungen.template.productlist.filter_items_always_visible === 'Y'}

@@ -90,9 +90,9 @@ class Manager
      */
     public function getRecommendationById(string $id, bool $showAlert = true): ?Recommendation
     {
-        $recommendation = $this->recommendations->filter(static function (Recommendation $e) use ($id) {
+        $recommendation = $this->recommendations->first(static function (Recommendation $e) use ($id) {
             return $e->getId() === $id;
-        })->first();
+        });
 
         if ($recommendation === null && $showAlert) {
             $this->alertService->addAlert(Alert::TYPE_WARNING, __('noRecommendationFound'), 'noRecommendationFound');

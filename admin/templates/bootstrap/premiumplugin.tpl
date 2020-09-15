@@ -11,7 +11,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col">
-                                <img width="160" height="160" src="{$recommendation->getPreviewImage()}">
+                                <img width="160" height="160" src="{$recommendation->getPreviewImage()}" loading="lazy">
                             </div>
                             <div class="col-auto align-self-end">
                                 <div><a href="{$recommendation->getManufacturer()->getProfileURL()}">{$recommendation->getTitle()}</a></div>
@@ -32,7 +32,7 @@
         <div class="row mb-5">
             {foreach $recommendation->getImages() as $image}
                 <div class="col-md text-center pr-md-4 pr-0">
-                    <img src="{$image}" class="object-fit-cover mb-md-0 mb-2">
+                    <img src="{$image}" class="object-fit-cover mb-md-0 mb-2" loading="lazy">
                 </div>
             {/foreach}
         </div>

@@ -105,7 +105,7 @@
                         <tbody>
                             {foreach $recommendations->getRecommendations() as $recommendation}
                                 <tr>
-                                    <td><img src="{$recommendation->getPreviewImage()}" width="108" height="42" alt="{$recommendation->getTitle()}"></td>
+                                    <td><img src="{$recommendation->getPreviewImage()}" width="108" height="42" alt="{$recommendation->getTitle()}" loading="lazy"></td>
                                     <td>
                                         <p>{$recommendation->getTeaser()}</p>
                                         <a href="premiumplugin.php?scope={$recommendations->getScope()}&id={$recommendation->getId()}"

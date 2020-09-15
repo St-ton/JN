@@ -66,9 +66,9 @@ class Collection extends \Illuminate\Support\Collection
      */
     public function getForLicenseKey(string $licenseKey): ?ExsLicense
     {
-        return $this->filter(static function (ExsLicense $e) use ($licenseKey) {
+        return $this->first(static function (ExsLicense $e) use ($licenseKey) {
             return $e->getLicense()->getKey() === $licenseKey;
-        })->first();
+        });
     }
 
     /**

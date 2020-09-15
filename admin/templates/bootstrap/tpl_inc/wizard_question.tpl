@@ -125,7 +125,7 @@
                                         {if $question->isRequired()}required{/if}
                                 >
                                 <label class="custom-control-label" for="question-{$question->getID()}-{$option@index}">
-                                    <img src="{$option->getLogoPath()}" width="108" height="42" alt="{$option->getName()}">
+                                    <img src="{$option->getLogoPath()}" width="108" height="42" loading="lazy" alt="{$option->getName()}">
                                 </label>
                             </div>
                         </div>

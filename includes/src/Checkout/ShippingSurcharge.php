@@ -368,7 +368,7 @@ class ShippingSurcharge
 
 
     /**
-     * @param int $idx
+     * @param int|null $idx
      * @return string
      */
     public function getName(int $idx = null): string
@@ -412,7 +412,7 @@ class ShippingSurcharge
     }
 
     /**
-     * @param string $priceLocalized
+     * @param string|null $priceLocalized
      * @return ShippingSurcharge
      */
     public function setPriceLocalized(string $priceLocalized = null): self

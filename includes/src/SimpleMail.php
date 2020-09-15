@@ -479,7 +479,7 @@ class SimpleMail
      * Prüft ob eine die angegebende Email in temailblacklist vorhanden ist
      * Gibt true zurück, falls Email geblockt, ansonsten false
      *
-     * @param string $mail
+     * @param string|null $mail
      * @return bool
      */
     public static function checkBlacklist(?string $mail): bool

@@ -244,7 +244,7 @@ class AdminAccountManager
             $result = true;
             $this->validateAccount($extAttribs);
 
-            \executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
+            \executeHook(\HOOK_BACKEND_ACCOUNT_EDIT, [
                 'oAccount' => $account,
                 'type'     => 'VALIDATE',
                 'attribs'  => &$extAttribs,
@@ -410,12 +410,12 @@ class AdminAccountManager
         ) {
             $this->addError(__('errorSelfLock'));
         } elseif (\is_object($account)) {
-            if ((int)$account->kAdminlogingruppe === ADMINGROUP) {
+            if ((int)$account->kAdminlogingruppe === \ADMINGROUP) {
                 $this->addError(__('errorLockAdmin'));
             } else {
                 $result = true;
                 $this->db->update('tadminlogin', 'kAdminlogin', $adminID, (object)['bAktiv' => 0]);
-                \executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
+                \executeHook(\HOOK_BACKEND_ACCOUNT_EDIT, [
                     'oAccount' => $account,
                     'type'     => 'LOCK',
                     'attribs'  => null,
@@ -443,7 +443,7 @@ class AdminAccountManager
         if (\is_object($account)) {
             $result = true;
             $this->db->update('tadminlogin', 'kAdminlogin', $adminID, (object)['bAktiv' => 1]);
-            \executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
+            \executeHook(\HOOK_BACKEND_ACCOUNT_EDIT, [
                 'oAccount' => $account,
                 'type'     => 'UNLOCK',
                 'attribs'  => null,
@@ -535,7 +535,7 @@ class AdminAccountManager
             } elseif ($tmpAcc->kAdminlogin === 0 && $this->getInfoInUse('cLogin', $tmpAcc->cLogin)) {
                 $errors['cLogin'] = 2;
             }
-            if ($validUntil && $tmpAcc->kAdminlogingruppe !== ADMINGROUP && \mb_strlen($tmpAcc->dGueltigBis) === 0) {
+            if ($validUntil && $tmpAcc->kAdminlogingruppe !== \ADMINGROUP && \mb_strlen($tmpAcc->dGueltigBis) === 0) {
                 $errors['dGueltigBis'] = 1;
             }
             if ($tmpAcc->kAdminlogin > 0) {
@@ -547,8 +547,8 @@ class AdminAccountManager
                     ReturnType::SINGLE_OBJECT
                 )->nCount;
                 if ($oldAcc !== null
-                    && (int)$oldAcc->kAdminlogingruppe === ADMINGROUP
-                    && (int)$tmpAcc->kAdminlogingruppe !== ADMINGROUP
+                    && (int)$oldAcc->kAdminlogingruppe === \ADMINGROUP
+                    && (int)$tmpAcc->kAdminlogingruppe !== \ADMINGROUP
                     && $groupCount <= 1
                 ) {
                     $errors['bMinAdmin'] = 1;
@@ -697,12 +697,12 @@ class AdminAccountManager
         ) {
             $this->addError(__('errorSelfDelete'));
         } elseif (\is_object($account)) {
-            if ((int)$account->kAdminlogingruppe === ADMINGROUP && $groupCount <= 1) {
+            if ((int)$account->kAdminlogingruppe === \ADMINGROUP && $groupCount <= 1) {
                 $this->addError(__('errorAtLeastOneAdmin'));
             } elseif ($this->deleteAttributes($account) &&
                 $this->db->delete('tadminlogin', 'kAdminlogin', $adminID)) {
                 $result = true;
-                \executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
+                \executeHook(\HOOK_BACKEND_ACCOUNT_EDIT, [
                     'oAccount' => $account,
                     'type'     => 'DELETE',
                     'attribs'  => null,
@@ -735,13 +735,13 @@ class AdminAccountManager
             $adminGroup->kAdminlogingruppe = Request::postInt('kAdminlogingruppe');
             $adminGroup->cGruppe           = \htmlspecialchars(
                 \trim($_POST['cGruppe']),
-                ENT_COMPAT | ENT_HTML401,
-                JTL_CHARSET
+                \ENT_COMPAT | \ENT_HTML401,
+                \JTL_CHARSET
             );
             $adminGroup->cBeschreibung     = \htmlspecialchars(
                 \trim($_POST['cBeschreibung']),
-                ENT_COMPAT | ENT_HTML401,
-                JTL_CHARSET
+                \ENT_COMPAT | \ENT_HTML401,
+                \JTL_CHARSET
             );
             $groupPermissions              = $_POST['perm'];
 
@@ -831,7 +831,7 @@ class AdminAccountManager
             return 'group_redirect';
         }
 
-        if ($groupID !== ADMINGROUP) {
+        if ($groupID !== \ADMINGROUP) {
             $this->db->delete('tadminlogingruppe', 'kAdminlogingruppe', $groupID);
             $this->db->delete('tadminrechtegruppe', 'kAdminlogingruppe', $groupID);
             $this->addNotice(__('successGroupDelete'));

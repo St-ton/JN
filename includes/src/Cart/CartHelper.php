@@ -948,8 +948,8 @@ class CartHelper
     }
 
     /**
-     * @param float    $total
-     * @param Currency $currency
+     * @param float         $total
+     * @param Currency|null $currency
      * @return float
      * @since 5.0.0
      */

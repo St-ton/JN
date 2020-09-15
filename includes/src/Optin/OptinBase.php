@@ -101,9 +101,7 @@ abstract class OptinBase extends OptinFactory
      */
     protected function loadOptinsByImplementation(string $implementationClass): array
     {
-        $optins = $this->dbHandler->selectArray('toptin', 'kOptinClass', $implementationClass);
-
-        return $optins;
+        return $this->dbHandler->selectArray('toptin', 'kOptinClass', $implementationClass);
     }
 
     /**

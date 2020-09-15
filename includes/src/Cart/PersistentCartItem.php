@@ -184,19 +184,17 @@ class PersistentCartItem
     }
 
     /**
-     * @param int    $propertyID
-     * @param int    $propertyValueID
-     * @param string $freeText
+     * @param int      $propertyID
+     * @param int|null $propertyValueID
+     * @param string   $freeText
      * @return bool
      */
     public function istEigenschaftEnthalten(int $propertyID, ?int $propertyValueID, string $freeText = ''): bool
     {
-        foreach ($this->oWarenkorbPersPosEigenschaft_arr as $oWarenkorbPersPosEigenschaft) {
-            if ((int)$oWarenkorbPersPosEigenschaft->kEigenschaft === $propertyID
-                && ((!empty($oWarenkorbPersPosEigenschaft->kEigenschaftWert)
-                        && $oWarenkorbPersPosEigenschaft->kEigenschaftWert === $propertyValueID)
-                    || ($oWarenkorbPersPosEigenschaft->kEigenschaftWert === 0
-                        && $oWarenkorbPersPosEigenschaft->cFreifeldWert === $freeText))
+        foreach ($this->oWarenkorbPersPosEigenschaft_arr as $attr) {
+            if ((int)$attr->kEigenschaft === $propertyID
+                && ((!empty($attr->kEigenschaftWert) && $attr->kEigenschaftWert === $propertyValueID)
+                    || ($attr->kEigenschaftWert === 0 && $attr->cFreifeldWert === $freeText))
             ) {
                 return true;
             }

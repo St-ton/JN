@@ -121,7 +121,7 @@ class CustomerAttribute
     }
 
     /**
-     * @param int $id
+     * @param int|null $id
      */
     public function setID(?int $id): void
     {
@@ -137,7 +137,7 @@ class CustomerAttribute
     }
 
     /**
-     * @param int $customerID
+     * @param int|null $customerID
      */
     public function setCustomerID(?int $customerID): void
     {

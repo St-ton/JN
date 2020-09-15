@@ -428,7 +428,7 @@ final class Controller
     /**
      * @param array           $post
      * @param LanguageModel[] $languages
-     * @param string          $iso
+     * @param string|null     $iso
      * @return null|string
      */
     private function getSeo(array $post, array $languages, string $iso = null): ?string
@@ -858,9 +858,9 @@ final class Controller
 
 
     /**
-     * @param string $tab
-     * @param string $msg
-     * @param array  $urlParams
+     * @param string     $tab
+     * @param string     $msg
+     * @param array|null $urlParams
      */
     public function newsRedirect($tab = '', $msg = '', $urlParams = null): void
     {

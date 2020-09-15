@@ -179,6 +179,7 @@ class Template
     public function getPluginResources(): array
     {
         // @todo
+        return [];
     }
 
     /**
@@ -190,6 +191,7 @@ class Template
     public function getMinifyArray($absolute = false)
     {
         // @todo
+        return [];
     }
 
     /**
@@ -215,7 +217,7 @@ class Template
      */
     public function getSkin(): ?string
     {
-        return Shop::getSettings([CONF_TEMPLATE])['template']['theme']['theme_default'] ?? null;
+        return Shop::getSettings([\CONF_TEMPLATE])['template']['theme']['theme_default'] ?? null;
     }
 
     /**

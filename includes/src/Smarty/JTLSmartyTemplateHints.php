@@ -9,10 +9,10 @@ namespace JTL\Smarty;
 class JTLSmartyTemplateHints extends JTLSmartyTemplateClass
 {
     /**
-     * @param string $template
-     * @param null $cache_id
-     * @param null $compile_id
-     * @param null $parent
+     * @param string|null $template
+     * @param string|null $cache_id
+     * @param string|null $compile_id
+     * @param object|null $parent
      * @return string
      * @throws \SmartyException
      */
@@ -41,16 +41,16 @@ class JTLSmartyTemplateHints extends JTLSmartyTemplateClass
     /**
      * Runtime function to render sub-template
      *
-     * @param string  $template template name
-     * @param mixed   $cache_id cache id
-     * @param mixed   $compile_id compile id
-     * @param integer $caching cache mode
-     * @param integer $cache_lifetime life time of cache data
-     * @param array   $data passed parameter template variables
-     * @param int     $scope scope in which {include} should execute
-     * @param bool    $forceTplCache cache template object
-     * @param string  $uid file dependency uid
-     * @param string  $content_func function name
+     * @param string      $template template name
+     * @param mixed       $cache_id cache id
+     * @param mixed       $compile_id compile id
+     * @param integer     $caching cache mode
+     * @param integer     $cache_lifetime life time of cache data
+     * @param array       $data passed parameter template variables
+     * @param int         $scope scope in which {include} should execute
+     * @param bool        $forceTplCache cache template object
+     * @param string|null $uid file dependency uid
+     * @param string|null $content_func function name
      *
      */
     public function _subTemplateRender(

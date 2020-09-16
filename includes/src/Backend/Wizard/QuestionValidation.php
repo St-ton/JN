@@ -93,7 +93,7 @@ class QuestionValidation
         if ($this->valueIsEmpty()) {
             return true;
         }
-        $vatCheck       = new VATCheck(trim($this->question->getValue()));
+        $vatCheck       = new VATCheck(\trim($this->question->getValue()));
         $resultVatCheck = $vatCheck->doCheckID();
         //only check format
         if ($resultVatCheck['errortype'] === 'parse'

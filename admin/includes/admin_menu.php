@@ -410,7 +410,7 @@ $adminMenu = [
                     'permissions' => 'RESET_SHOP_VIEW',
                 ],
                 __('Set up') => (object)[
-                    'link'   => 'wizard.php',
+                    'link'        => 'wizard.php',
                     'permissions' => 'WIZARD_VIEW',
                 ],
             ],

@@ -23,7 +23,7 @@ $manager      = new Manager($db, $cache);
 $admin        = new Admin($manager, $db, $cache, $checker);
 $factory      = new DefaultFactory(
     $db,
-    Shop::Container()->getGetText(),
+    $getText,
     Shop::Container()->getAlertService(),
     Shop::Container()->getAdminAccount()
 );

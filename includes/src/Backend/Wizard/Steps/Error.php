@@ -117,9 +117,6 @@ class Error
     private function setMessageByCode(): void
     {
         switch ($this->getCode()) {
-            case ErrorCode::OK:
-                $error = '';
-                break;
             case ErrorCode::ERROR_REQUIRED:
                 $error = __('validationErrorRequired');
                 $this->setCritical(true);
@@ -140,6 +137,7 @@ class Error
                 $error = __('errorVATPattern');
                 $this->setCritical(true);
                 break;
+            case ErrorCode::OK:
             default:
                 $error = '';
                 break;

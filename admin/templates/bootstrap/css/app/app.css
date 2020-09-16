@@ -13501,6 +13501,9 @@ body {
   color: #e10505;
   border-color: #e10505;
 }
+#modal-setup-assistant .custom-checkbox-centered .custom-control-label:before, #modal-setup-assistant .custom-checkbox-centered .custom-control-label:after {
+  top: 39%;
+}
 
 #sidebar .submenu > .nav-item.active, #sidebar .nav-link:hover, #sidebar .navigation [data-toggle=collapse]:not(.collapsed) + .submenu, #sidebar .navigation [data-toggle=collapse]:not(.collapsed) {
   background-color: #0b6aa2;

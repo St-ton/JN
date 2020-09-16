@@ -52,4 +52,11 @@
 			border-color: $danger;
 		}
 	}
+	.custom-checkbox-centered {
+		.custom-control-label {
+			&:before, &:after {
+				top: 39%;
+			}
+		}
+	}
 }

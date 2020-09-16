@@ -113,7 +113,7 @@
                 <div class="form-group-list-item">
                     <div class="form-row">
                         <div class="col-xl-3">
-                            <div class="custom-control custom-checkbox">
+                            <div class="custom-control custom-checkbox custom-checkbox-centered">
                                 <input type="checkbox"
                                        class="custom-control-input"
                                        id="question-{$question->getID()}-{$option@index}"
@@ -125,7 +125,7 @@
                                         {if $question->isRequired()}required{/if}
                                 >
                                 <label class="custom-control-label" for="question-{$question->getID()}-{$option@index}">
-                                    <img src="{$option->getLogoPath()}" width="108" height="42" loading="lazy" alt="{$option->getName()}">
+                                    <img src="{$option->getLogoPath()}" width="80" height="80" loading="lazy" alt="{$option->getName()}">
                                 </label>
                             </div>
                         </div>

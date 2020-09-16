@@ -189,4 +189,12 @@ abstract class AbstractStep implements StepInterface
     {
         $this->errors->push($error);
     }
+
+    /**
+     * @return bool
+     */
+    public function hasCriticalError(): bool
+    {
+        return $this->errors->firstWhere('critical', true) !== null;
+    }
 }

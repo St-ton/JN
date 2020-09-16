@@ -85,7 +85,7 @@ final class Controller
             }
             $errorMessages = \array_merge($errorMessages, $step->getErrors()->toArray());
         }
-        if (empty($errorMessages)) {
+        if (!$this->hasCriticalError()) {
             $this->db->update(
                 'teinstellungen',
                 'cName',
@@ -160,5 +160,20 @@ final class Controller
     public function setSteps(Collection $steps): void
     {
         $this->steps = $steps;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasCriticalError(): bool
+    {
+        /** @var Step $step*/
+        foreach ($this->getSteps() as $step) {
+            if ($step->hasCriticalError()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

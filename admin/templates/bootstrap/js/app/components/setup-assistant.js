@@ -103,7 +103,7 @@ const updateSummary = (slide = current) => {
 
     $.each(summaries, (i, a) => {
         let $placeholder = $(`[${Data.summaryPlaceholder}="${i}"]`)
-        $placeholder.prev().remove();
+        removeErrors($placeholder);
         $placeholder.html(a.join(', '));
     })
 }
@@ -114,6 +114,10 @@ const goToStep = (step) => {
         $currentSlide = $(`${modal} [${Data.slides}='${current}']`)
         updateSummary(i);
     }
+}
+
+const removeErrors = (node) => {
+    node.parent().find('.js-wizard-validation-error').remove();
 }
 
 /* events */
@@ -147,7 +151,8 @@ $(document).on('click', `${modal} [${Data.next}]`, () => {
             if (errors.length !== 0) {
                 $.each(errors, (index, error) => {
                     let $question = $('#question-' + error.questionID);
-                    $question.parent().addClass('error').find('.js-wizard-validation-error').remove();
+                    removeErrors($question);
+                    $question.parent().addClass('error');
                     $question.parent().append('<div class="error js-wizard-validation-error">' + error.message + '</div>');
                 });
             } else {
@@ -181,7 +186,7 @@ $(document).on('click', `${modal} [${Data.next}]`, () => {
 
 $(document).on('click', `${modal} input`, function() {
     $(this).parent().removeClass('error');
-    $(this).parent().find('.js-wizard-validation-error').remove();
+    removeErrors($(this));
 });
 
 $form.on('submit', (e) => {
@@ -221,8 +226,8 @@ $form.on('submit', (e) => {
                 if (errors.length !== 0) {
                     $.each(errors, (index, error) => {
                         let $question = $(`[${Data.summaryPlaceholder}="question-${error.questionID}"]`)
-                        $question.prev().remove();
-                        $question.before('<span class="fa fa-times-circle text-danger mr-2" data-toggle="tooltip" data-html="true" title="' + error.message + '"></span>');
+                        removeErrors($question);
+                        $question.before('<span class="fa fa-times-circle text-danger mr-2 js-wizard-validation-error" data-toggle="tooltip" data-html="true" title="' + error.message + '"></span>');
                         if (error.critical) {
                             criticalErrors = true;
                         }

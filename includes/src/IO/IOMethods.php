@@ -600,7 +600,7 @@ class IOMethods
                 }
 
                 $shippingFreeMin = ShippingMethod::getFreeShippingMinimum($customerGroupID, $country);
-                $cartValue       = $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true, true, $country);
+                $cartValue       = $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true, true, $country);
 
                 $smarty->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
                        ->assign('Warensumme', $cart->gibGesamtsummeWaren())

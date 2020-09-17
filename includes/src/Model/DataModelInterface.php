@@ -100,7 +100,7 @@ interface DataModelInterface
     /**
      * Save the model to database and return true if successful - false otherwise
      *
-     * @param array $partial - if specified, save only this partiell attributes
+     * @param array|null $partial - if specified, save only this partiell attributes
      * @return bool
      */
     public function save(array $partial = null): bool;

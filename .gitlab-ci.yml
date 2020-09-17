@@ -189,75 +189,61 @@ code_quality:
       when: always
 
 
-.unitTestsInstallScript: &unitTestsInstallScript |
-  # INSTALLING SYSTEM DEPENDENCIES
-  apk update
-  echo -n "] system package install.."
-  apk add --no-cache freetype-dev g++ git gnupg icu-dev libjpeg-turbo-dev libpng-dev libxml2-dev libzip-dev php7-bcmath php7-gd php7-intl php7-soap php7-zip unzip zip zlib-dev >/dev/null
-  apk add --update nodejs nodejs-npm >/dev/null
-  if [ $? -gt 0 ] ; then echo -e "\e[1;31m run with ERRORs\e[0m"; else echo -e "\e[1;32m OK\e[0m"; fi
-  echo "] installing PHP extensions:"
-  echo -n "] bcmath.."
-  docker-php-ext-install -j$(nproc) bcmath &>/dev/null; if [ $? -gt 0 ] ; then echo -e "\e[1;31m run with ERRORs\e[0m"; else echo -e "\e[1;32m OK\e[0m"; fi
-  echo -n "] gd.."
-  docker-php-ext-install -j$(nproc) gd &>/dev/null; if [ $? -gt 0 ] ; then echo -e "\e[1;31m run with ERRORs\e[0m"; else echo -e "\e[1;32m OK\e[0m"; fi
-  echo -n "] intl.."
-  docker-php-ext-install -j$(nproc) intl &>/dev/null; if [ $? -gt 0 ] ; then echo -e "\e[1;31m run with ERRORs\e[0m"; else echo -e "\e[1;32m OK\e[0m"; fi
-  echo -n "] soap.."
-  docker-php-ext-install -j$(nproc) soap &>/dev/null; if [ $? -gt 0 ] ; then echo -e "\e[1;31m run with ERRORs\e[0m"; else echo -e "\e[1;32m OK\e[0m"; fi
-  echo -n "] zip.."
-  docker-php-ext-install -j$(nproc) zip &>/dev/null; if [ $? -gt 0 ] ; then echo -e "\e[1;31m run with ERRORs\e[0m"; else echo -e "\e[1;32m OK\e[0m"; fi
-
-.unitTestsRunScript: &unitTestsRunScript |
-  # RUNNING UNIT TESTS
-  echo "] start test script.."
-  build/scripts/tests.sh
+.runUnitTestDocker: &runUnitTestDocker |
+  # RUNNING DOCKER FOR UNIT TESTS
+  echo "] running with image:" $IMAGE_NAME
+  docker run \
+    --rm \
+    --name ci_unittests_${CI_RUNNER_SHORT_TOKEN}_${CI_COMMIT_SHORT_SHA} \
+    -v ${CI_PROJECT_DIR}:/repofolder \
+    ${GLOBAL_CI_REGISTRY_URL}/${IMAGE_NAME} \
+    /repofolder/build/scripts/tests.sh `id -u` `id -g`
 
 
 test_PHP_7.2:
   stage: test
-  image: php:7.2-alpine
-  before_script:
-    - *unitTestsInstallScript
   script:
-    - *ComposerInstall
-    - *unitTestsRunScript
+    - IMAGE_NAME=ci-tests:php72
+    - *runUnitTestDocker
 #  <<: *debugging
   rules:
-    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
+    - if: $CI_PROJECT_PATH =~ /^jtl-software\/.*$/
+        && $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
         && $CI_COMMIT_REF_NAME !~ /^release\/.*$/
         && $CI_COMMIT_TAG == null
       when: on_success
+  tags:
+    - tests-run-72
 
 test_PHP_7.3:
   stage: test
-  image: php:7.3-alpine
-  before_script:
-    - *unitTestsInstallScript
   script:
-    - *ComposerInstall
-    - *unitTestsRunScript
+    - IMAGE_NAME=ci-tests:php73
+    - *runUnitTestDocker
 #  <<: *debugging
   rules:
-    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
+    - if: $CI_PROJECT_PATH =~ /^jtl-software\/.*$/
+        && $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
         && $CI_COMMIT_REF_NAME !~ /^release\/.*$/
         && $CI_COMMIT_TAG == null
       when: on_success
+  tags:
+    - tests-run-73
 
 test_PHP_7.4:
   stage: test
-  image: php:7.4-alpine
-  before_script:
-    - *unitTestsInstallScript
   script:
-    - *ComposerInstall
-    - *unitTestsRunScript
+    - IMAGE_NAME=ci-tests:php74
+    - *runUnitTestDocker
 #  <<: *debugging
   rules:
-    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
+    - if: $CI_PROJECT_PATH =~ /^jtl-software\/.*$/
+        && $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
         && $CI_COMMIT_REF_NAME !~ /^release\/.*$/
         && $CI_COMMIT_TAG == null
       when: on_success
+  tags:
+    - tests-run-74
 
 
 

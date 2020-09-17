@@ -90,9 +90,9 @@ class BaseCategory extends AbstractFilter
                             ON tkategoriesprache.kKategorie = tkategorie.kKategorie
                             AND tkategoriesprache.kSprache = tseo.kSprache
                     WHERE cKey = 'kKategorie' 
-                        AND kKey = :val
+                        AND kKey IN( :val )
                     ORDER BY tseo.kSprache",
-                ['val' => $this->getValue()],
+                ['val' => \is_array($this->getValue()) ? \implode(', ', $this->getValue()) : $this->getValue()],
                 ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($languages as $language) {

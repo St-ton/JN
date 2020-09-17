@@ -121,9 +121,9 @@ interface DbInterface extends \Serializable
      * @param string|array     $keyname - Name of Key which should be compared
      * @param string|int|array $keyvalue - Value of Key which should be compared
      * @param string|null      $keyname1 - Name of Key which should be compared
-     * @param string|int       $keyvalue1 - Value of Key which should be compared
+     * @param string|int|null  $keyvalue1 - Value of Key which should be compared
      * @param string|null      $keyname2 - Name of Key which should be compared
-     * @param string|int       $keyvalue2 - Value of Key which should be compared
+     * @param string|int|null  $keyvalue2 - Value of Key which should be compared
      * @param bool             $echo - true -> print statement
      * @param string           $select - the key to select
      * @return null|object - null if fails, resultObject if successful
@@ -204,8 +204,8 @@ interface DbInterface extends \Serializable
     /**
      * executes query and returns misc data
      *
-     * @param string   $stmt - Statement to be executed
-     * @param int      $return - what should be returned.
+     * @param string        $stmt - Statement to be executed
+     * @param int           $return - what should be returned.
      * 1  - single fetched object
      * 2  - array of fetched objects
      * 3  - affected rows
@@ -214,8 +214,8 @@ interface DbInterface extends \Serializable
      * 9  - array of fetched assoc arrays
      * 10 - result of querysingle
      * 11 - fetch both arrays
-     * @param int|bool $echo print current stmt
-     * @param callable $fnInfo statistic callback
+     * @param int|bool      $echo print current stmt
+     * @param callable|null $fnInfo statistic callback
      * @return array|object|int - 0 if fails, 1 if successful or LastInsertID if specified
      * @throws \InvalidArgumentException
      */
@@ -232,10 +232,10 @@ interface DbInterface extends \Serializable
     /**
      * executes query and returns misc data
      *
-     * @param string   $stmt - Statement to be executed
-     * @param array    $params - An array of values with as many elements as there
+     * @param string        $stmt - Statement to be executed
+     * @param array         $params - An array of values with as many elements as there
      * are bound parameters in the SQL statement being executed
-     * @param int      $return - what should be returned.
+     * @param int           $return - what should be returned.
      * 1  - single fetched object
      * 2  - array of fetched objects
      * 3  - affected rows
@@ -244,8 +244,8 @@ interface DbInterface extends \Serializable
      * 9  - array of fetched assoc arrays
      * 10 - result of querysingle
      * 11 - fetch both arrays
-     * @param int|bool $echo print current stmt
-     * @param callable $fnInfo statistic callback
+     * @param int|bool      $echo print current stmt
+     * @param callable|null $fnInfo statistic callback
      * @return array|object|int|bool - 0 if fails, 1 if successful or LastInsertID if specified
      * @throws \InvalidArgumentException
      */

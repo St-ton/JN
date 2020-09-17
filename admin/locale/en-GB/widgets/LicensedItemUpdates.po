@@ -1,0 +1,72 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "LicensedItemUpdates_title"
+msgstr "My purchases (Extension Store)"
+
+msgid "LicensedItemUpdates_desc"
+msgstr "Information about your purchases licenses"
+
+msgid "Updates"
+msgstr "Updates"
+
+msgid "bound"
+msgstr "bound"
+
+msgid "unbound"
+msgstr "unbound"
+
+msgid "Security update"
+msgstr "Security update"
+
+msgid "Test licenses"
+msgstr "Test licenses"
+
+msgid "Expiration"
+msgstr "Ablaufdatum"
+
+msgid "Update available"
+msgid_plural "Updates available"
+msgstr[0] "Update available"
+msgstr[1] "Updates available"
+
+msgid "Licensed item"
+msgid_plural "Licensed items"
+msgstr[0] "Licensed item"
+msgstr[1] "Licensed items"
+
+msgid "Expired subscription"
+msgid_plural "Expired subscriptions"
+msgstr[0] "Expired subscription"
+msgstr[1] "Expired subscriptions"
+
+msgid "last update"
+msgstr "last update"
+
+msgid "Refresh"
+msgstr "Refresh"
+
+msgid "Last purchases"
+msgstr "Letzte Käufe"
+
+msgid "Go to overview"
+msgstr "Go to overview"
+
+msgid "Includes %d security fix"
+msgid_plural "Includes %d security fixes"
+msgstr[0] "Includes %d security fix"
+msgstr[1] "Includes %d security fixes"
+
+msgid "%d license about to expire"
+msgid_plural "%d licenses about to expire"
+msgstr[0] "%d license about to expire"
+msgstr[1] "%d licenses about to expire"
+
+msgid "%d day remaining"
+msgid_plural "%d days remaining"
+msgstr[0] "%d day remaining"
+msgstr[1] "%d days remaining"
+
+msgid "storeNotLinkedDesc"
+msgstr "To access contents from the JTL-Store you have to link your account first."

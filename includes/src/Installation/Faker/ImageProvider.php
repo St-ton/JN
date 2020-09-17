@@ -44,16 +44,16 @@ class ImageProvider extends Base
     /**
      * Generate a new image to disk and return its location.
      *
-     * @param string $dir Path of the generated file, if null will use the system temp dir
-     * @param int    $width Width of the picture in pixels
-     * @param int    $height Height of the picture in pixels
-     * @param string $format Image format, jpg or png
-     * @param bool   $fullPath If true, returns the full path of the file generated, otherwise will only return the
+     * @param string|null $dir Path of the generated file, if null will use the system temp dir
+     * @param int         $width Width of the picture in pixels
+     * @param int         $height Height of the picture in pixels
+     * @param string      $format Image format, jpg or png
+     * @param bool        $fullPath If true, returns the full path of the file generated, otherwise will only return the
      *     filename, default to true
-     * @param string $text Text to generate on the picture
-     * @param string $textColor Text color in hexadecimal format
-     * @param string $backgroundColor Background color in hexadecimal format
-     * @param string $fontPath The name/path to the font
+     * @param string|null $text Text to generate on the picture
+     * @param string|null $textColor Text color in hexadecimal format
+     * @param string|null $backgroundColor Background color in hexadecimal format
+     * @param string      $fontPath The name/path to the font
      * @return string
      */
     public static function imageFile(

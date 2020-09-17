@@ -1952,6 +1952,27 @@ msgstr "Alle Kategorien"
 msgid "filterCharacteristics"
 msgstr "Merkmale"
 
+msgid "za_ueberweisung_jtl"
+msgstr "Überweisung"
+
+msgid "za_nachnahme_jtl"
+msgstr "Nachnahme"
+
+msgid "za_kreditkarte_jtl"
+msgstr "Kreditkarte"
+
+msgid "za_rechnung_jtl"
+msgstr "Rechnung"
+
+msgid "za_lastschrift_jtl"
+msgstr "Lastschrift"
+
+msgid "za_barzahlung_jtl"
+msgstr "Barzahlung"
+
+msgid "getToKnowMore"
+msgstr "Mehr erfahren"
+
 msgid "Updates available"
 msgstr "Updates verfügbar"
 
@@ -1984,3 +2005,6 @@ msgstr "Template deaktivieren"
 
 msgid "Smarty syntax error"
 msgstr "Smarty Syntax-Fehler"
+
+msgid "weRecommend"
+msgstr "Wir empfehlen:"

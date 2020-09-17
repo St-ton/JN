@@ -13,6 +13,7 @@ use JTL\Plugin\Admin\Updater;
 use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
 use JTL\Plugin\Admin\Validation\PluginValidator;
 use JTL\Plugin\Helper;
+use JTL\Plugin\InstallCode;
 use JTL\XMLParser;
 
 /**
@@ -110,7 +111,13 @@ class PluginInstaller implements InstallerInterface
 
             return 0;
         }
+        $pluginID = Helper::getIDByPluginID(\rtrim($installResponse->getDirName(), '/'));
+        $check = $this->db->select('tplugin', 'kPlugin', $pluginID);
+        if ($check === null || !empty($check->exsID)) {
+            // this method only updates old plugins without an exsID!
+            return InstallCode::DUPLICATE_PLUGIN_ID;
+        }
 
-        return $updater->update(Helper::getIDByPluginID(\rtrim($installResponse->getDirName(), '/')));
+        return $updater->update($pluginID);
     }
 }

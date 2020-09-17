@@ -18,15 +18,13 @@ use JTL\License\Exception\ApiResultCodeException;
 use JTL\License\Exception\ChecksumValidationException;
 use JTL\License\Exception\DownloadValidationException;
 use JTL\License\Exception\FilePermissionException;
-use JTL\License\Installer\PluginInstaller;
-use JTL\License\Installer\TemplateInstaller;
+use JTL\License\Installer\Helper;
 use JTL\License\Struct\ExsLicense;
 use JTL\Mapper\PluginValidation;
 use JTL\Plugin\InstallCode;
 use JTL\Session\Backend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use Psr\Http\Message\ResponseInterface;
 use stdClass;
 
 /**
@@ -173,8 +171,9 @@ class Admin
             $response->id .= '-' . $type;
         }
         try {
-            $installer = $this->getInstaller($itemID);
-            $download  = $this->getDownload($itemID);
+            $helper    = new Helper($this->manager, $this->db, $this->cache);
+            $installer = $helper->getInstaller($itemID);
+            $download  = $helper->getDownload($itemID);
             $result    = $action === 'update'
                 ? $installer->update($exsID, $download, $response)
                 : $installer->install($itemID, $download, $response);
@@ -387,54 +386,5 @@ class Admin
         echo \json_encode($response);
         echo \ob_get_clean();
         exit;
-    }
-
-    /**
-     * @param string $itemID
-     * @return PluginInstaller|TemplateInstaller
-     */
-    private function getInstaller(string $itemID)
-    {
-        $licenseData = $this->manager->getLicenseByItemID($itemID);
-        if ($licenseData === null) {
-            throw new InvalidArgumentException('Could not find item with ID ' . $itemID);
-        }
-        $available = $licenseData->getReleases()->getAvailable();
-        if ($available === null) {
-            throw new InvalidArgumentException('Could not find update for item with ID ' . $itemID);
-        }
-        switch ($licenseData->getType()) {
-            case ExsLicense::TYPE_PLUGIN:
-            case ExsLicense::TYPE_PORTLET:
-                return new PluginInstaller($this->db, $this->cache);
-            case ExsLicense::TYPE_TEMPLATE:
-                return new TemplateInstaller($this->db, $this->cache);
-            default:
-                throw new InvalidArgumentException('Cannot update type ' . $licenseData->getType());
-        }
-    }
-
-    /**
-     * @param string $itemID
-     * @return ResponseInterface|string
-     * @throws DownloadValidationException
-     * @throws InvalidArgumentException
-     * @throws ApiResultCodeException
-     * @throws FilePermissionException
-     * @throws ChecksumValidationException
-     */
-    private function getDownload(string $itemID)
-    {
-        $licenseData = $this->manager->getLicenseByItemID($itemID);
-        if ($licenseData === null) {
-            throw new InvalidArgumentException('Could not find item with ID ' . $itemID);
-        }
-        $available = $licenseData->getReleases()->getAvailable();
-        if ($available === null) {
-            throw new InvalidArgumentException('Could not find update for item with ID ' . $itemID);
-        }
-        $downloader = new Downloader();
-
-        return $downloader->downloadRelease($available);
     }
 }

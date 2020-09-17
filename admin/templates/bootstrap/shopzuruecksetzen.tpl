@@ -8,7 +8,11 @@
                 $('input[type="checkbox"]:checked').next().each(function(i){
                     itemsChecked += $(this).prev().val();
                 });
-                if (itemsChecked === 'artikel' || itemsChecked === 'steuern' || itemsChecked === '') {
+                if (itemsChecked === 'artikel'
+                    || itemsChecked === 'steuern'
+                    || itemsChecked === 'artikelsteuern'
+                    || itemsChecked === ''
+                ) {
                     $('#warningZuruecksetzen, #messageDataGetsLost').addClass('d-none');
                     $('button[data-target=".zuruecksetzen-modal"]').prop('disabled', itemsChecked === '');
                     $('#backupDone').closest('div.checkbox').addClass('d-none');

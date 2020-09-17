@@ -112,7 +112,7 @@ class PluginInstaller implements InstallerInterface
             return 0;
         }
         $pluginID = Helper::getIDByPluginID(\rtrim($installResponse->getDirName(), '/'));
-        $check = $this->db->select('tplugin', 'kPlugin', $pluginID);
+        $check    = $this->db->select('tplugin', 'kPlugin', $pluginID);
         if ($check === null || !empty($check->exsID)) {
             // this method only updates old plugins without an exsID!
             return InstallCode::DUPLICATE_PLUGIN_ID;

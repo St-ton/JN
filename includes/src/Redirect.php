@@ -707,13 +707,13 @@ class Redirect
     }
 
     /**
-     * @param array $hookInfos
-     * @param bool  $forceExit
+     * @param array|null $hookInfos
+     * @param bool       $forceExit
      * @return array
      */
     public static function urlNotFoundRedirect(array $hookInfos = null, bool $forceExit = false): array
     {
-        $shopSubPath = \parse_url(Shop::getURL(), PHP_URL_PATH);
+        $shopSubPath = \parse_url(Shop::getURL(), \PHP_URL_PATH);
         $url         = \preg_replace('/^' . \preg_quote($shopSubPath, '/') . '/', '', $_SERVER['REQUEST_URI'], 1);
         $redirect    = new self;
         $redirectUrl = $redirect->test($url);

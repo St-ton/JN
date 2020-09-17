@@ -44,7 +44,7 @@ class MigrationManager
     /**
      * Migrate the specified identifier.
      *
-     * @param int $identifier
+     * @param int|null $identifier
      * @return array
      * @throws Exception
      */

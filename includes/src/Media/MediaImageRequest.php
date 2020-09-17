@@ -278,8 +278,8 @@ class MediaImageRequest
     }
 
     /**
-     * @param string|MediaImageSize $size
-     * @param bool                  $absolute
+     * @param string|MediaImageSize|null $size
+     * @param bool                       $absolute
      * @return string
      */
     public function getThumb($size = null, bool $absolute = false): string

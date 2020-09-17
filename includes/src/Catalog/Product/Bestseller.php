@@ -34,7 +34,7 @@ class Bestseller
     protected $minsales = 10;
 
     /**
-     * @param array $options
+     * @param array|null $options
      */
     public function __construct(array $options = null)
     {

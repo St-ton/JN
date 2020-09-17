@@ -40,9 +40,9 @@ interface LoaderInterface
     public function setCache(JTLCacheInterface $cache): void;
 
     /**
-     * @param int  $id
-     * @param bool $invalidateCache
-     * @param int  $languageID
+     * @param int      $id
+     * @param bool     $invalidateCache
+     * @param int|null $languageID
      * @return PluginInterface
      * @throws \InvalidArgumentException
      */

@@ -528,14 +528,13 @@ function createShippingSurchargeZIP(array $data): object
     }
 
     $zipMatchSurcharge = $shippingMethod->getShippingSurchargesForCountry($surcharge->getISO())
-        ->filter(static function (ShippingSurcharge $surchargeTMP) use ($ZuschlagPLZ) {
+        ->first(static function (ShippingSurcharge $surchargeTMP) use ($ZuschlagPLZ) {
             return ($surchargeTMP->hasZIPCode($ZuschlagPLZ->cPLZ)
                 || $surchargeTMP->hasZIPCode($ZuschlagPLZ->cPLZAb)
                 || $surchargeTMP->hasZIPCode($ZuschlagPLZ->cPLZBis)
                 || $surchargeTMP->areaOverlapsWithZIPCode($ZuschlagPLZ->cPLZAb, $ZuschlagPLZ->cPLZBis)
             );
-        })->pop();
-
+        });
     if (empty($ZuschlagPLZ->cPLZ) && empty($ZuschlagPLZ->cPLZAb)) {
         $szErrorString = $oZipValidator->getError();
         if ($szErrorString !== '') {

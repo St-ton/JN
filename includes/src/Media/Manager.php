@@ -205,8 +205,8 @@ class Manager
     }
 
     /**
-     * @param string $type
-     * @param int    $index
+     * @param string|null $type
+     * @param int|null    $index
      * @return IOError|object
      * @throws Exception
      */

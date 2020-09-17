@@ -162,8 +162,8 @@ class LanguageHelper
     ];
 
     /**
-     * @param DbInterface|null  $db
-     * @param JTLCacheInterface $cache
+     * @param DbInterface|null       $db
+     * @param JTLCacheInterface|null $cache
      * @return $this
      */
     public static function getInstance(DbInterface $db = null, JTLCacheInterface $cache = null): self

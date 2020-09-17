@@ -191,6 +191,9 @@ msgstr "Datenbankprüfung"
 msgid "permission_PERMISSIONCHECK_VIEW"
 msgstr "Verzeichnisprüfung"
 
+msgid "permission_WIZARD_VIEW"
+msgstr "Einrichten"
+
 msgid "permission_IMAGE_UPLOAD"
 msgstr "Bild-Upload"
 

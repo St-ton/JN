@@ -77,6 +77,10 @@ if (Request::postInt('adminlogin') === 1) {
                 Status::getInstance($db, $cache, true);
                 Backend::getInstance()->reHash();
                 $_SESSION['loginIsValid'] = true; // "enable" the "header.tpl"-navigation again
+                if (($conf['global']['global_wizard_done'] ?? 'Y') === 'N') {
+                    \header('Location: ' . Shop::getURL(true) . '/' . \PFAD_ADMIN . 'wizard.php');
+                    exit;
+                }
                 if ($oAccount->permission('SHOP_UPDATE_VIEW') && $oUpdater->hasPendingUpdates()) {
                     header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . 'dbupdater.php');
                     exit;

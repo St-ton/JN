@@ -2,7 +2,7 @@
 /* paths */
 
 $font-path					: '../fonts';
-$image-path					: 'images';
+$image-path					: '../images';
 $logo-path					: '#{$image-path}/logos';
 $fa-font-path				: '#{$font-path}/fontawesome';
 
@@ -38,7 +38,7 @@ $primary-palette : (
 );
 
 $primary					: map-get($primary-palette, 'base');
-$secondary					: map-get($primary-palette, 'darker');;
+$secondary					: map-get($primary-palette, 'darker');
 $success					: #0f9d48;
 $info						: #9cadbc;
 $warning					: $wawi;

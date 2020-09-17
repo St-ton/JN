@@ -191,6 +191,9 @@ msgstr "Check database"
 msgid "permission_PERMISSIONCHECK_VIEW"
 msgstr "Check directory"
 
+msgid "permission_WIZARD_VIEW"
+msgstr "Set up"
+
 msgid "permission_IMAGE_UPLOAD"
 msgstr "Image upload"
 

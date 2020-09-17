@@ -127,7 +127,7 @@ class PluginCollection
     }
 
     /**
-     * @param string $text
+     * @param string|null $text
      * @return int
      */
     public function countCharacters(?string $text): int

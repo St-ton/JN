@@ -1955,9 +1955,9 @@ class Cart
     public function setFavourableShippingString(int $possibleShippingMethods): void
     {
         if ($this->oFavourableShipping === null && empty(Frontend::get('Versandart'))) {
-            $this->favourableShippingString = sprintf(
+            $this->favourableShippingString = \sprintf(
                 Shop::Lang()->get('shippingInformation', 'basket'),
-                Shop::Container()->getLinkService()->getSpecialPage(LINKTYP_VERSAND)->getURL()
+                Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_VERSAND)->getURL()
             );
             return;
         }
@@ -1965,7 +1965,7 @@ class Cart
         $shippingCosts = $this->oFavourableShipping->cPriceLocalized[$isMerchant];
 
         if ($isMerchant) {
-            $shippingCosts = sprintf(
+            $shippingCosts = \sprintf(
                 '`%s` %s %s',
                 $shippingCosts,
                 Shop::Lang()->get('plus', 'basket'),
@@ -1973,16 +1973,16 @@ class Cart
             );
         }
         if ($possibleShippingMethods === 1) {
-            $this->favourableShippingString = sprintf(
+            $this->favourableShippingString = \sprintf(
                 Shop::Lang()->get('shippingInformationSpecificSingle', 'basket'),
-                Shop::Container()->getLinkService()->getSpecialPage(LINKTYP_VERSAND)->getURL(),
+                Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_VERSAND)->getURL(),
                 $shippingCosts,
                 $this->oFavourableShipping->country->getName()
             );
         } else {
-            $this->favourableShippingString = sprintf(
+            $this->favourableShippingString = \sprintf(
                 Shop::Lang()->get('shippingInformationSpecific', 'basket'),
-                Shop::Container()->getLinkService()->getSpecialPage(LINKTYP_VERSAND)->getURL(),
+                Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_VERSAND)->getURL(),
                 $shippingCosts,
                 $this->oFavourableShipping->country->getName()
             );

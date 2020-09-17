@@ -264,7 +264,7 @@ class JSONAPI
     /**
      * @param string               $table
      * @param string[]             $columns
-     * @param string               $addCacheTag
+     * @param string|null          $addCacheTag
      * @param string[]|string|null $searchIn
      * @param string|string[]|null $searchFor
      * @param int                  $limit

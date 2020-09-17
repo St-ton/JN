@@ -17,8 +17,8 @@ interface FactoryInterface
     public function __construct(array $config);
 
     /**
-     * @param int    $baseType
-     * @param string $type
+     * @param int         $baseType
+     * @param string|null $type
      * @return boxInterface
      */
     public function getBoxByBaseType(int $baseType, string $type = null): BoxInterface;

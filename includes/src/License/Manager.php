@@ -99,6 +99,31 @@ class Manager
      * @throws GuzzleException
      * @throws ClientException
      */
+    public function createLicense(string $url): string
+    {
+        $res = $this->client->request(
+            'POST',
+            $url,
+            [
+                'headers' => [
+                    'Accept'        => 'application/json',
+                    'Content-Type'  => 'application/json',
+                    'Authorization' => 'Bearer ' . AuthToken::getInstance($this->db)->get()
+                ],
+                'verify'  => true,
+                'body'    => \json_encode((object)['domain' => $this->domain])
+            ]
+        );
+
+        return (string)$res->getBody();
+    }
+
+    /**
+     * @param string $url
+     * @return string
+     * @throws GuzzleException
+     * @throws ClientException
+     */
     public function clearBinding(string $url): string
     {
         $res = $this->client->request(
@@ -230,6 +255,15 @@ class Manager
     public function getLicenseByExsID(string $exsID): ?ExsLicense
     {
         return (new Mapper($this))->getCollection()->getBound()->getForExsID($exsID);
+    }
+
+    /**
+     * @param string $key
+     * @return ExsLicense|null
+     */
+    public function getLicenseByLicenseKey(string $key): ?ExsLicense
+    {
+        return (new Mapper($this))->getCollection()->getBound()->getForLicenseKey($key);
     }
 
     /**

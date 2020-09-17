@@ -25,15 +25,6 @@ class FallbackMethod extends Method
     /**
      * @inheritDoc
      */
-    public function isValidIntern(array $args_arr = []): bool
-    {
-        // this payment-method is always valid
-        return true;
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function isValid(object $customer, Cart $cart): bool
     {
         // this payment-method is always valid
@@ -47,14 +38,5 @@ class FallbackMethod extends Method
     {
         // this payment-method is always selectable
         return true;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function canPayAgain(): bool
-    {
-        // the "payNow"-link (there's no reason for that)
-        return false;
     }
 }

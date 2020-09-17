@@ -1,6 +1,6 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('paymentmethods') cBeschreibung=__('installedPaymentmethods') cDokuURL=__('paymentmethodsURL')}
 <div id="content" class="row">
-    <div class="col-md-7">
+    <div class="{if $recommendations->getRecommendations()->isNotEmpty()}col-md-7{else}col-lg-9 col-xl-7{/if}">
         <div class="card">
             <div class="card-body table-responsive">
                 <table class="table table-content-center">
@@ -91,51 +91,35 @@
             </div>
         </div>
     </div>
+    {if $recommendations->getRecommendations()->isNotEmpty()}
     <div class="col-md-5">
-        {*<div class="card">*}
-            {*<div class="card-body">*}
-                {*<div class="table-responsive">*}
-                    {*<table class="table">*}
-                        {*<thead>*}
-                        {*<tr>*}
-                            {*<th colspan="2">Wir empfehlen:</th>*}
-                        {*</tr>*}
-                        {*</thead>*}
-                        {*<tbody>*}
-                        {*<tr>*}
-                            {*<td><img src="placeholder/klarna-logo.png" width="108" height="42" alt="Klarna"></td>*}
-                            {*<td>*}
-                                {*<p>Klarna wurde 2005 in Stockholm mit der Idee gegründet, das Einkaufen zu*}
-                                    {*vereinfachen. Dies erreichen wir, indem wir es den Verbrauchern ermöglichen,*}
-                                    {*erst nach Warenerhalt zu bezahlen, und gleichzeitig das Kredit- und*}
-                                    {*Betrugsrisiko für die Händler übernehmen.</p>*}
-                                {*<a href="#" class="btn btn-primary">Mehr erfahren</a>*}
-                            {*</td>*}
-                        {*</tr>*}
-                        {*<tr>*}
-                            {*<td><img src="placeholder/klarna-logo.png" width="108" height="42" alt="Klarna"></td>*}
-                            {*<td>*}
-                                {*<p>Klarna wurde 2005 in Stockholm mit der Idee gegründet, das Einkaufen zu*}
-                                    {*vereinfachen. Dies erreichen wir, indem wir es den Verbrauchern ermöglichen,*}
-                                    {*erst nach Warenerhalt zu bezahlen, und gleichzeitig das Kredit- und*}
-                                    {*Betrugsrisiko für die Händler übernehmen.</p>*}
-                                {*<a href="#" class="btn btn-primary">Mehr erfahren</a>*}
-                            {*</td>*}
-                        {*</tr>*}
-                        {*<tr>*}
-                            {*<td><img src="placeholder/klarna-logo.png" width="108" height="42" alt="Klarna"></td>*}
-                            {*<td>*}
-                                {*<p>Klarna wurde 2005 in Stockholm mit der Idee gegründet, das Einkaufen zu*}
-                                    {*vereinfachen. Dies erreichen wir, indem wir es den Verbrauchern ermöglichen,*}
-                                    {*erst nach Warenerhalt zu bezahlen, und gleichzeitig das Kredit- und*}
-                                    {*Betrugsrisiko für die Händler übernehmen.</p>*}
-                                {*<a href="#" class="btn btn-primary">Mehr erfahren</a>*}
-                            {*</td>*}
-                        {*</tr>*}
-                        {*</tbody>*}
-                    {*</table>*}
-                {*</div>*}
-            {*</div>*}
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th colspan="2">{__('weRecommend')}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {foreach $recommendations->getRecommendations() as $recommendation}
+                                <tr>
+                                    <td><img src="{$recommendation->getPreviewImage()}" width="160" height="160" alt="{$recommendation->getTitle()}" loading="lazy"></td>
+                                    <td>
+                                        <p>{$recommendation->getTeaser()}</p>
+                                        <a href="premiumplugin.php?scope={$recommendations->getScope()}&id={$recommendation->getId()}"
+                                           class="btn btn-primary">
+                                            {__('getToKnowMore')}
+                                        </a>
+                                    </td>
+                                </tr>
+                            {/foreach}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
+    {/if}
 </div>

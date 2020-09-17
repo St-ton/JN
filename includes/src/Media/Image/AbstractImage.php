@@ -427,7 +427,7 @@ abstract class AbstractImage implements IMedia
     }
 
     /**
-     * @param string $request
+     * @param string|null $request
      * @return array|null
      */
     protected static function parse(?string $request): ?array
@@ -454,7 +454,7 @@ abstract class AbstractImage implements IMedia
     }
 
     /**
-     * @param string $request
+     * @param string|null $request
      * @return MediaImageRequest
      */
     protected function create(?string $request): MediaImageRequest

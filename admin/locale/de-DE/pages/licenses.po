@@ -169,3 +169,9 @@ msgstr "Wird von %s verwaltet"
 
 msgid "Successfully extended."
 msgstr "Erfolgreich verlängert."
+
+msgid "Enter token"
+msgstr "Token hinzufügen"
+
+msgid "Manually enter token"
+msgstr "Token manuell eingeben"

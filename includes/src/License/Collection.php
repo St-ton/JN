@@ -76,7 +76,11 @@ class Collection extends \Illuminate\Support\Collection
      */
     public function getActiveExpired(): self
     {
-        return $this->getBoundExpired();
+        return $this->getBoundExpired()->filter(static function (ExsLicense  $e) {
+            $ref = $e->getReferencedItem();
+
+            return $ref !== null && $ref->isActive();
+        });
     }
 
     /**
@@ -88,7 +92,6 @@ class Collection extends \Illuminate\Support\Collection
             $ref = $e->getReferencedItem();
 
             return $ref !== null
-                && $ref->isActive()
                 && ($e->getLicense()->isExpired() || $e->getLicense()->getSubscription()->isExpired());
         });
     }

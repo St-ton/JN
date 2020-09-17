@@ -484,6 +484,9 @@ msgstr "Troubleshooting"
 msgid "System diagnostics"
 msgstr "Diagnostics"
 
+msgid "Set up"
+msgstr "Set up"
+
 msgid "Email templates"
 msgstr "Template"
 

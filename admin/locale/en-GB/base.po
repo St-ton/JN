@@ -1952,6 +1952,27 @@ msgstr "Categories"
 msgid "filterCharacteristics"
 msgstr "Characteristics"
 
+msgid "za_ueberweisung_jtl"
+msgstr "Bank transfer"
+
+msgid "za_nachnahme_jtl"
+msgstr "Cash on Delivery"
+
+msgid "za_kreditkarte_jtl"
+msgstr "Creditcard"
+
+msgid "za_rechnung_jtl"
+msgstr "Invoice Payment"
+
+msgid "za_lastschrift_jtl"
+msgstr "Direct debit"
+
+msgid "za_barzahlung_jtl"
+msgstr "Cash on Pickup"
+
+msgid "getToKnowMore"
+msgstr "More"
+
 msgid "Updates available"
 msgstr "Updates available"
 
@@ -1981,3 +2002,6 @@ msgstr "Disable plugins"
 
 msgid "Disable template"
 msgstr "Disable template"
+
+msgid "weRecommend"
+msgstr "We recommend:"

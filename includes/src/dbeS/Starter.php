@@ -344,12 +344,14 @@ class Starter
                 echo $return;
                 exit();
             }
-            $serializedXML = $this->getWawiVersion() === 'unknown'
-                ? Text::convertISO(XML::serialize($res))
-                : XML::serialize($res);
-            echo \is_array($res)
-                ? $return . ";\n" . $serializedXML
-                : $return . ';' . $res;
+            if (\is_array($res)) {
+                $serializedXML = $this->getWawiVersion() === 'unknown'
+                    ? Text::convertISO(XML::serialize($res))
+                    : XML::serialize($res);
+                echo $return . ";\n" . $serializedXML;
+            } else {
+                echo $return . ';' . $res;
+            }
         } else {
             $this->init($post, [], false);
             /** @var AbstractPush $pusher */

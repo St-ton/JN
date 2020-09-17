@@ -45,7 +45,7 @@ class PluginInstaller implements InstallerInterface
     /**
      * @inheritDoc
      */
-    public function update(string $exsID, string $downloadedArchive, AjaxResponse $response): int
+    public function update(string $exsID, string $zip, AjaxResponse $response): int
     {
         $parser           = new XMLParser();
         $uninstaller      = new Uninstaller($this->db, $this->cache);
@@ -54,7 +54,7 @@ class PluginInstaller implements InstallerInterface
         $installer        = new Installer($this->db, $uninstaller, $legacyValidator, $pluginValidator);
         $updater          = new Updater($this->db, $installer);
         $extractor        = new Extractor($parser);
-        $installResponse  = $extractor->extractPlugin($downloadedArchive);
+        $installResponse  = $extractor->extractPlugin($zip);
         $response->status = $installResponse->getStatus();
         if ($response->status === InstallationResponse::STATUS_FAILED) {
             $response->error      = $installResponse->getError() ?? \implode(', ', $installResponse->getMessages());
@@ -69,7 +69,7 @@ class PluginInstaller implements InstallerInterface
     /**
      * @inheritDoc
      */
-    public function install(string $itemID, string $downloadedArchive, AjaxResponse $response): int
+    public function install(string $itemID, string $zip, AjaxResponse $response): int
     {
         $parser          = new XMLParser();
         $uninstaller     = new Uninstaller($this->db, $this->cache);
@@ -78,7 +78,7 @@ class PluginInstaller implements InstallerInterface
         $installer       = new Installer($this->db, $uninstaller, $legacyValidator, $pluginValidator);
         $installer->setDir($itemID);
         $extractor        = new Extractor($parser);
-        $installResponse  = $extractor->extractPlugin($downloadedArchive);
+        $installResponse  = $extractor->extractPlugin($zip);
         $response->status = $installResponse->getStatus();
         if ($response->status === InstallationResponse::STATUS_FAILED) {
             $response->error      = $installResponse->getError() ?? \implode(', ', $installResponse->getMessages());
@@ -88,5 +88,29 @@ class PluginInstaller implements InstallerInterface
         }
 
         return $installer->prepare(\rtrim($installResponse->getDirName(), '/'));
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function forceUpdate(string $zip, AjaxResponse $response): int
+    {
+        $parser           = new XMLParser();
+        $uninstaller      = new Uninstaller($this->db, $this->cache);
+        $legacyValidator  = new LegacyPluginValidator($this->db, $parser);
+        $pluginValidator  = new PluginValidator($this->db, $parser);
+        $installer        = new Installer($this->db, $uninstaller, $legacyValidator, $pluginValidator);
+        $updater          = new Updater($this->db, $installer);
+        $extractor        = new Extractor($parser);
+        $installResponse  = $extractor->extractPlugin($zip);
+        $response->status = $installResponse->getStatus();
+        if ($response->status === InstallationResponse::STATUS_FAILED) {
+            $response->error      = $installResponse->getError() ?? \implode(', ', $installResponse->getMessages());
+            $response->additional = $installResponse;
+
+            return 0;
+        }
+
+        return $updater->update(Helper::getIDByPluginID(\rtrim($installResponse->getDirName(), '/')));
     }
 }

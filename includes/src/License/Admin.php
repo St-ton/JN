@@ -174,9 +174,13 @@ class Admin
             $helper    = new Helper($this->manager, $this->db, $this->cache);
             $installer = $helper->getInstaller($itemID);
             $download  = $helper->getDownload($itemID);
-            $result    = $action === 'update'
+            $result    = $action === self::ACTION_UPDATE
                 ? $installer->update($exsID, $download, $response)
-                : $installer->install($itemID, $download, $response);
+                : $installer->install($itemID, $download, $response, true);
+            if ($result === InstallCode::DUPLICATE_PLUGIN_ID && $action !== self::ACTION_UPDATE) {
+                $download = $helper->getDownload($itemID);
+                $result   = $installer->forceUpdate($download, $response);
+            }
             $this->cache->flushTags([\CACHING_GROUP_LICENSES]);
             if ($result !== InstallCode::OK) {
                 $mapper         = new PluginValidation();

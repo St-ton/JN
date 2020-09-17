@@ -39,6 +39,10 @@ class Admin
 
     public const ACTION_CLEAR_BINDING = 'clearbinding';
 
+    public const ACTION_ENTER_TOKEN = 'entertoken';
+
+    public const ACTION_SAVE_TOKEN = 'savetoken';
+
     public const ACTION_RECHECK = 'recheck';
 
     public const ACTION_REVOKE = 'revoke';
@@ -76,6 +80,11 @@ class Admin
     private $checker;
 
     /**
+     * @var AuthToken
+     */
+    private $auth;
+
+    /**
      * @var string[]
      */
     private $validActions = [
@@ -86,6 +95,8 @@ class Admin
         self::ACTION_REVOKE,
         self::ACTION_REDIRECT,
         self::ACTION_UPDATE,
+        self::ACTION_ENTER_TOKEN,
+        self::ACTION_SAVE_TOKEN,
         self::ACTION_INSTALL
     ];
 
@@ -102,11 +113,12 @@ class Admin
         $this->db      = $db;
         $this->cache   = $cache;
         $this->checker = $checker;
+        $this->auth    = AuthToken::getInstance($this->db);
     }
 
     public function handleAuth(): void
     {
-        AuthToken::getInstance($this->db)->responseToken();
+        $this->auth->responseToken();
     }
 
     /**
@@ -115,10 +127,17 @@ class Admin
     public function handle(JTLSmarty $smarty): void
     {
         \ob_start();
-        $token  = AuthToken::getInstance($this->db);
         $action = Request::postVar('action');
         $valid  = Form::validateToken();
         if ($valid) {
+            if ($action === self::ACTION_SAVE_TOKEN) {
+                $this->saveToken($smarty);
+                $action = null;
+            }
+            if ($action === self::ACTION_ENTER_TOKEN) {
+                $this->setToken($smarty);
+                return;
+            }
             if ($action === self::ACTION_SET_BINDING) {
                 $this->setBinding($smarty);
             }
@@ -132,7 +151,7 @@ class Admin
                 exit();
             }
             if ($action === self::ACTION_REVOKE) {
-                $token->revoke();
+                $this->auth->revoke();
                 $action = null;
             }
             if ($action === self::ACTION_EXTEND) {
@@ -145,7 +164,7 @@ class Admin
             return;
         }
         if ($action === self::ACTION_REDIRECT) {
-            $token->requestToken(
+            $this->auth->requestToken(
                 Backend::get('jtl_token'),
                 Shop::getAdminURL(true) . '/licenses.php?action=code'
             );
@@ -291,6 +310,26 @@ class Admin
     /**
      * @param JTLSmarty $smarty
      */
+    private function setToken(JTLSmarty $smarty): void
+    {
+        $smarty->assign('setToken', true)
+            ->assign('hasAuth', false);
+    }
+
+    /**
+     * @param JTLSmarty $smarty
+     */
+    private function saveToken(JTLSmarty $smarty): void
+    {
+        $code  = \trim(Request::postVar('code', ''));
+        $token = \trim(Request::postVar('token', ''));
+        $this->auth->reset($code);
+        AuthToken::getInstance($this->db)->set($code, $token);
+    }
+
+    /**
+     * @param JTLSmarty $smarty
+     */
     private function setBinding(JTLSmarty $smarty): void
     {
         $this->updateBinding(true, $smarty);
@@ -310,7 +349,7 @@ class Admin
     private function setOverviewData(JTLSmarty $smarty): void
     {
         $data = $this->manager->getLicenseData();
-        $smarty->assign('hasAuth', AuthToken::getInstance($this->db)->isValid())
+        $smarty->assign('hasAuth', $this->auth->isValid())
             ->assign('lastUpdate', $data->timestamp ?? null);
     }
 
@@ -319,7 +358,7 @@ class Admin
      */
     private function getLicenses(bool $force = false): void
     {
-        if (!AuthToken::getInstance($this->db)->isValid()) {
+        if (!$this->auth->isValid()) {
             return;
         }
         try {

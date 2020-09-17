@@ -132,7 +132,6 @@ class Admin
         $action = Request::postVar('action');
         $valid  = Form::validateToken();
         if ($valid) {
-
             if ($action === self::ACTION_SAVE_TOKEN) {
                 $this->saveToken($smarty);
                 $action = null;

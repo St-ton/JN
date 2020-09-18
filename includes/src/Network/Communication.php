@@ -4,7 +4,6 @@ namespace JTL\Network;
 
 use Exception;
 use JTL\Helpers\Request;
-use JTL\Shop;
 
 /**
  * Class Communication
@@ -14,22 +13,15 @@ final class Communication
 {
     /**
      * @param string $cURL
-     * @param array $postData
-     * @param array|null $cookieData
-     * @param bool $bPost
+     * @param array  $postData
+     * @param bool   $bPost
      * @return mixed
      * @throws Exception
      */
-    private static function doCall(string $cURL, array $postData, ?array $cookieData = null, bool $bPost = true)
+    private static function doCall(string $cURL, array $postData, bool $bPost = true)
     {
-        $logger = Shop::Container()->getLogService();
         if (\function_exists('curl_init')) {
-            $logger->debug('curl_init(' . $cURL . ')');
-            $ch    = \curl_init();
-            $errNo = \curl_errno($ch);
-            if ($errNo !== 0) {
-                $logger->error('curl error(' . $errNo . '): ' . \curl_error($ch));
-            }
+            $ch = \curl_init();
             \curl_setopt($ch, \CURLOPT_POST, $bPost);
             \curl_setopt($ch, \CURLOPT_POSTFIELDS, $postData);
             \curl_setopt(
@@ -43,24 +35,9 @@ final class Communication
             \curl_setopt($ch, \CURLOPT_RETURNTRANSFER, true);
             \curl_setopt($ch, \CURLOPT_CONNECTTIMEOUT, 60);
             \curl_setopt($ch, \CURLOPT_TIMEOUT, 60);
-            \curl_setopt($ch, \CURLOPT_SSL_VERIFYPEER, \DEFAULT_CURL_OPT_VERIFYPEER);
-            \curl_setopt($ch, \CURLOPT_SSL_VERIFYHOST, \DEFAULT_CURL_OPT_VERIFYHOST);
-            if ($cookieData !== null) {
-                $cookie = \str_replace('&', ';', \http_build_query($cookieData));
-                \curl_setopt($ch, \CURLOPT_HTTPHEADER, ['Cookie: ' . $cookie]);
-                $logger->debug('curl set cookie data: ' . \var_export($cookie, true));
-            }
-            $errNo = \curl_errno($ch);
-            if ($errNo !== 0) {
-                $logger->error('curl error(' . $errNo . '): ' . \curl_error($ch));
-            }
-            $logger->debug('call Request::curl_exec_follow');
+
             $content = Request::curl_exec_follow($ch);
-            $errNo   = \curl_errno($ch);
-            if ($errNo !== 0) {
-                $logger->error('curl error(' . $errNo . '): ' . \curl_error($ch));
-            }
-            $logger->debug('curl content: ' . \var_export($content, true));
+
             \curl_close($ch);
         } else {
             throw new Exception('Die PHP Funktion curl_init existiert nicht!');
@@ -79,22 +56,8 @@ final class Communication
     public static function postData(string $url, $data = [], bool $bPost = true): ?string
     {
         return \is_array($data)
-            ? self::doCall($url, $data, null, $bPost)
+            ? self::doCall($url, $data, $bPost)
             : '';
-    }
-
-    /**
-     * @param string $url
-     * @param array|null $data
-     * @param array|null $cookies
-     * @return string|null
-     * @throws Exception
-     */
-    public static function getContent(string $url, ?array $data = null, ?array $cookies = null): ?string
-    {
-        $res = self::doCall($url, $data ?? [], $cookies, $data !== null);
-
-        return \is_string($res) ? $res : null;
     }
 
     /**

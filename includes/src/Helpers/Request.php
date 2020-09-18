@@ -224,8 +224,7 @@ class Request
      */
     public static function curl_exec_follow($ch, int $maxredirect = 5)
     {
-        $logger = Shop::Container()->getLogService();
-        $mr     = $maxredirect <= 0 ? 5 : $maxredirect;
+        $mr = $maxredirect <= 0 ? 5 : $maxredirect;
         if (\ini_get('open_basedir') === '') {
             \curl_setopt($ch, \CURLOPT_FOLLOWLOCATION, $mr > 0);
             \curl_setopt($ch, \CURLOPT_MAXREDIRS, $mr);
@@ -249,7 +248,6 @@ class Request
                         if ($code === 301 || $code === 302) {
                             \preg_match('/Location:(.*?)\n/', $header, $matches);
                             $newurl = \trim(\array_pop($matches));
-                            $logger->debug('curl redirect to: ' . $newurl);
                         } else {
                             $code = 0;
                         }
@@ -258,7 +256,6 @@ class Request
                 \curl_close($rch);
                 if (!$mr) {
                     if ($maxredirect === null) {
-                        $logger->error('curl too many redirects(' . $maxredirect . ')');
                         \trigger_error(
                             'Too many redirects. When following redirects, libcurl hit the maximum amount.',
                             \E_USER_WARNING

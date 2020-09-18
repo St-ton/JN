@@ -3,6 +3,9 @@
 namespace JTL\Mail\Validator;
 
 use Exception;
+use GuzzleHttp\Client;
+use GuzzleHttp\Cookie\CookieJar;
+use GuzzleHttp\Exception\GuzzleException;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
@@ -14,7 +17,6 @@ use JTL\Mail\Renderer\RendererInterface;
 use JTL\Mail\Renderer\SmartyRenderer;
 use JTL\Mail\Template\Model;
 use JTL\Mail\Template\TemplateFactory;
-use JTL\Network\Communication;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\MailSmarty;
@@ -139,7 +141,7 @@ final class SyntaxChecker
                 }
             }
             // strip possible error position from smarty output
-            $text = \mb_substr($text, 0, $fatalPos);
+            $text = (string)\preg_replace('/[\t\n]/', ' ', \mb_substr($text, 0, $fatalPos));
             $len  = \mb_strlen($text);
             if ($len > 75) {
                 $text = '...' . \mb_substr($text, $len - 75);
@@ -194,12 +196,15 @@ final class SyntaxChecker
                             'params' => [$lang->getId(), $id, $model->getModuleID()],
                         ])
                     ) . '&token=' . Text::filterXSS($_SESSION['jtl_token']);
+                \session_write_close();
+                $client = new Client(['verify' => \DEFAULT_CURL_OPT_VERIFYPEER]);
+                $jar    = CookieJar::fromArray($_COOKIE, '.' . \parse_url(\URL_SHOP)['host']);
                 try {
-                    \session_write_close();
-                    $res = Communication::getContent($testUrl, null, $_COOKIE);
-                    \session_start();
-                } catch (Exception $e) {
+                    $res = (string)$client->request('POST', $testUrl, ['cookies' => $jar])->getBody();
+                } catch (Exception | GuzzleException $e) {
                     $res = $this->finishSyntaxcheck($e->getMessage(), $model);
+                } finally {
+                    \session_start();
                 }
 
                 $error = $this->finishSyntaxcheck(\is_string($res) ? $res : __('somethingHappend'), $model);

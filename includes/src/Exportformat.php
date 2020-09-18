@@ -3,6 +3,9 @@
 namespace JTL;
 
 use Exception;
+use GuzzleHttp\Client;
+use GuzzleHttp\Cookie\CookieJar;
+use GuzzleHttp\Exception\GuzzleException;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
@@ -16,7 +19,6 @@ use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageModel;
-use JTL\Network\Communication;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Session\Frontend;
 use JTL\Smarty\ExportSmarty;
@@ -1617,7 +1619,7 @@ class Exportformat
                 }
             }
             // strip possible error position from smarty output
-            $text = \mb_substr($text, 0, $fatalPos);
+            $text = (string)\preg_replace('/[\t\n]/', ' ', \mb_substr($text, 0, $fatalPos));
             $len  = \mb_strlen($text);
             if ($len > 75) {
                 $text = '...' . \mb_substr($text, $len - 75);
@@ -1651,12 +1653,15 @@ class Exportformat
                         'params' => [$this->kExportformat],
                     ])
                 ) . '&token=' . Text::filterXSS($_SESSION['jtl_token']);
+            \session_write_close();
+            $client = new Client(['verify' => \DEFAULT_CURL_OPT_VERIFYPEER]);
+            $jar    = CookieJar::fromArray($_COOKIE, '.' . \parse_url(\URL_SHOP)['host']);
             try {
-                \session_write_close();
-                $res = Communication::getContent($testUrl, null, $_COOKIE);
+                $res = (string)$client->request('POST', $testUrl, ['cookies' => $jar])->getBody();
+            } catch (Exception | GuzzleException $e) {
+                $res = $e->getMessage();
+            } finally {
                 \session_start();
-            } catch (Exception $e) {
-                return $this->finishSyntaxcheck($e->getMessage());
             }
 
             return $this->finishSyntaxcheck(\is_string($res) ? $res : __('somethingHappend'));

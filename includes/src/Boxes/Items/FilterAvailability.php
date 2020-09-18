@@ -18,7 +18,7 @@ final class FilterAvailability extends AbstractBox
     public function __construct(array $config)
     {
         parent::__construct($config);
-        $filter        = Shop::getProductFilter()->getAvailabilitylFilter();
+        $filter        = Shop::getProductFilter()->getAvailabilityFilter();
         $searchResults = Shop::getProductFilter()->getSearchResults();
         $show          = $filter->getVisibility() !== Visibility::SHOW_NEVER
             && $filter->getVisibility() !== Visibility::SHOW_CONTENT

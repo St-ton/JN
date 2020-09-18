@@ -882,6 +882,14 @@ class Customer
     }
 
     /**
+     * @param int $languageID
+     */
+    public function setLanguageID(int $languageID): void
+    {
+        $this->kSprache = $languageID;
+    }
+
+    /**
      * @return bool
      */
     public function isLoggedIn(): bool
@@ -1115,8 +1123,8 @@ class Customer
             'cLoeschCode'  => '',
             'cAktion'      => 'Geloescht',
             'dAusgetragen' => 'NOW()',
-            'dEingetragen' => '',
-            'dOptCode'     => '',
+            'dEingetragen' => '_DBNULL_',
+            'dOptCode'     => '_DBNULL_'
         ]);
         $db->queryPrepared(
             'DELETE twunschliste, twunschlistepos, twunschlisteposeigenschaft, twunschlisteversand

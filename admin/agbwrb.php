@@ -4,15 +4,16 @@ use JTL\Alert\Alert;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Recommendation\Manager;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'agbwrb_inc.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 $oAccount->permission('ORDER_AGB_WRB_VIEW', true, true);
-$step        = 'agbwrb_uebersicht';
-$alertHelper = Shop::Container()->getAlertService();
-
+$step            = 'agbwrb_uebersicht';
+$alertHelper     = Shop::Container()->getAlertService();
+$recommendations = new Manager($alertHelper, Manager::SCOPE_BACKEND_LEGAL_TEXTS);
 setzeSprache();
 
 if (Request::verifyGPCDataInt('agbwrb') === 1 && Form::validateToken()) {
@@ -60,4 +61,5 @@ if ($step === 'agbwrb_uebersicht') {
 
 $smarty->assign('step', $step)
     ->assign('kSprache', $_SESSION['kSprache'])
+    ->assign('recommendations', $recommendations)
     ->display('agbwrb.tpl');

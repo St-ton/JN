@@ -14,7 +14,9 @@
                     role="button"
                     data=["toggle"=> "collapse", "target"=>"#cllps-box{$oBox->getID()}"]
                 }
-                    {$ssf->getFrontendName()}
+                    <span class="text-truncate">
+                        {$ssf->getFrontendName()}
+                    </span>
                 {/button}
                 {collapse id="cllps-box{$oBox->getID()}"
                     visible=$ssf->isActive() || $Einstellungen.template.productlist.filter_items_always_visible === 'Y'}

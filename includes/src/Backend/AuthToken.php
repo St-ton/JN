@@ -103,7 +103,7 @@ class AuthToken
      * @param string $authCode
      * @param string $token
      */
-    private function set(string $authCode, string $token): void
+    public function set(string $authCode, string $token): void
     {
         $this->db->queryPrepared(
             'UPDATE tstoreauth SET

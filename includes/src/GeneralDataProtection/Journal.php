@@ -2,6 +2,7 @@
 
 namespace JTL\GeneralDataProtection;
 
+use DateTime;
 use JTL\DB\ReturnType;
 use JTL\Shop;
 use stdClass;
@@ -28,17 +29,6 @@ class Journal
      */
     protected $now;
 
-    /**
-     * @param \DateTime $now
-     */
-    public function __construct(\DateTime $now = null)
-    {
-        if ($now === null) {
-            $now = new \DateTime();
-        }
-        $this->now = $now;
-    }
-
     public const ISSUER_TYPE_CUSTOMER = 'CUSTOMER';
 
     public const ISSUER_TYPE_APPLICATION = 'APPLICATION';
@@ -52,6 +42,14 @@ class Journal
     public const ACTION_CUSTOMER_DEACTIVATED = 'CUSTOMER_DEACTIVATED';
 
     public const ACTION_CUSTOMER_DELETED = 'CUSTOMER_DELETED';
+
+    /**
+     * @param DateTime|null $now
+     */
+    public function __construct(DateTime $now = null)
+    {
+        $this->now = $now ?? new DateTime();
+    }
 
     /**
      * @param string        $issuerType

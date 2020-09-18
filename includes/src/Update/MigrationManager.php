@@ -4,6 +4,7 @@ namespace JTL\Update;
 
 use DateTime;
 use Exception;
+use Gettext\Translator;
 use InvalidArgumentException;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
@@ -43,7 +44,7 @@ class MigrationManager
     /**
      * Migrate the specified identifier.
      *
-     * @param int $identifier
+     * @param int|null $identifier
      * @return array
      * @throws Exception
      */
@@ -63,6 +64,10 @@ class MigrationManager
 
         $direction = $identifier > $currentId ? IMigration::UP : IMigration::DOWN;
         $executed  = [];
+
+        if (Translator::$current === null) {
+            (new Translator())->register();
+        }
 
         try {
             if ($direction === IMigration::DOWN) {

@@ -148,7 +148,7 @@
                                         {block name='basket-index-price-net'}
                                             {row class="total-net"}
                                                 {col class="text-left" cols=7}
-                                                    <span class="price_label"><strong>{lang key='totalSum'} ({lang key='net'}):</strong></span>
+                                                    <span class="price_label"><strong>{lang key='subtotal' section='account data'} ({lang key='net'}):</strong></span>
                                                 {/col}
                                                 {col class="text-right price-col" cols=5}
                                                     <strong class="price total-sum">{$WarensummeLocalized[$NettoPreise]}</strong>
@@ -187,7 +187,7 @@
                                     {block name='basket-index-price-sticky'}
                                         {row class="total border-top mt-3 pt-3 font-size-lg"}
                                             {col class="text-left" cols=7}
-                                                <span class="price_label">{lang key='totalSum'}:</span>
+                                                <span class="price_label">{lang key='subtotal' section='account data'}:</span>
                                             {/col}
                                             {col class="text-right price-col" cols=5}
                                                 <strong class="total-sum">{$WarensummeLocalized[0]}</strong>
@@ -196,21 +196,10 @@
                                     {/block}
                                 {/block}
                                 {block name='basket-index-shipping'}
-                                    {if isset($FavourableShipping)}
-                                        {if $NettoPreise}
-                                            {$shippingCosts = "`$FavourableShipping->cPriceLocalized[$NettoPreise]` {lang key='plus' section='basket'} {lang key='vat' section='productDetails'}"}
-                                        {else}
-                                            {$shippingCosts = $FavourableShipping->cPriceLocalized[$NettoPreise]}
-                                        {/if}
+                                    {if $favourableShippingString !== ''}
                                         {row class="shipping-costs"}
                                             {col cols=12}
-                                                <small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$shippingCosts:$FavourableShipping->country->getName() key='shippingInformationSpecific' section='basket'}</small>
-                                            {/col}
-                                        {/row}
-                                    {elseif empty($FavourableShipping) && empty($smarty.session.Versandart)}
-                                        {row class="shipping-costs"}
-                                            {col cols=12}
-                                                <small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() key='shippingInformation' section='basket'}</small>
+                                                <small>{$favourableShippingString}</small>
                                             {/col}
                                         {/row}
                                     {/if}

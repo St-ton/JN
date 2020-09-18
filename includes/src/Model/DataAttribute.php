@@ -239,7 +239,7 @@ class DataAttribute
      * @param null|mixed  $default - default value of the attribute
      * @param bool        $nullable - true if the attribute is nullable, false otherwise
      * @param bool        $isPrimaryKey - true if the attribute is the primary key, false otherwise
-     * @param string      $foreignKey
+     * @param string|null $foreignKey
      * @param string|null $foreignKeyChild
      * @param bool        $dynamic
      * @return self

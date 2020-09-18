@@ -298,17 +298,17 @@ class JobQueue
     }
 
     /**
-     * @param int|null $kJobQueue
-     * @param int      $kCron
-     * @param int      $kKey
-     * @param int      $nLimitN
-     * @param int      $nLimitM
-     * @param int      $nInArbeit
-     * @param string   $cJobArt
-     * @param string   $cTabelle
-     * @param string   $cKey
-     * @param string   $dStartZeit
-     * @param string   $dZuletztGelaufen
+     * @param int|null    $kJobQueue
+     * @param int         $kCron
+     * @param int         $kKey
+     * @param int         $nLimitN
+     * @param int         $nLimitM
+     * @param int         $nInArbeit
+     * @param string      $cJobArt
+     * @param string      $cTabelle
+     * @param string      $cKey
+     * @param string      $dStartZeit
+     * @param string|null $dZuletztGelaufen
      */
     public function __construct(
         int $kJobQueue = null,

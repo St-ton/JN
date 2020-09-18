@@ -7,6 +7,7 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\Country\Country;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Shop;
 
 /**
  * Class CountryService
@@ -82,9 +83,9 @@ class CountryService implements CountryServiceInterface
      */
     public function getCountry(string $ISO): ?Country
     {
-        return $this->getCountryList()->filter(static function (Country $country) use ($ISO) {
+        return $this->getCountryList()->first(static function (Country $country) use ($ISO) {
             return $country->getISO() === \strtoupper($ISO);
-        })->pop();
+        });
     }
 
     /**
@@ -110,23 +111,18 @@ class CountryService implements CountryServiceInterface
      */
     public function getIsoByCountryName(string $countryName): ?string
     {
-        $countryName  = \strtolower($countryName);
-        $countryMatch = $this->getCountryList()->filter(static function (Country $country) use ($countryName) {
-            if (\strtolower($country->getNameDE()) === $countryName
-                || \strtolower($country->getNameEN()) === $countryName
-            ) {
-                return true;
-            }
-            foreach ($country->getNames() as $countryNameTMP) {
-                if (\strtolower($countryNameTMP) === $countryName) {
+        $name  = \strtolower($countryName);
+        $match = $this->getCountryList()->first(static function (Country $country) use ($name) {
+            foreach ($country->getNames() as $tmpName) {
+                if (\strtolower($tmpName) === $name) {
                     return true;
                 }
             }
 
             return false;
-        })->pop();
+        });
 
-        return $countryMatch ? $countryMatch->getISO() : null;
+        return $match ? $match->getISO() : null;
     }
 
     /**

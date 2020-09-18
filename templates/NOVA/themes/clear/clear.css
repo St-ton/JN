@@ -23315,6 +23315,9 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 .filter-item.dropdown-item {
   padding: 0.25rem 1.5rem;
 }
+.filter-item .badge {
+  word-break: keep-all;
+}
 
 .productlist-filter-categories > .nav-item > .nav-link {
   padding-left: 0;

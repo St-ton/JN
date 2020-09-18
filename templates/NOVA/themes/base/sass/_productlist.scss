@@ -63,6 +63,9 @@
 	&.dropdown-item {
 		padding: map-get($spacers, 1) map-get($spacers, 4);
 	}
+	.badge {
+		word-break: keep-all;
+	}
 }
 
 .productlist-filter-categories {

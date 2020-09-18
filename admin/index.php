@@ -2,6 +2,7 @@
 
 use JTL\Alert\Alert;
 use JTL\Backend\AdminLoginStatus;
+use JTL\Backend\Status;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -16,6 +17,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Backend\AdminAccount $oAccount */
 $db          = Shop::Container()->getDB();
 $alertHelper = Shop::Container()->getAlertService();
+$cache       = Shop::Container()->getCache();
 $oUpdater    = new Updater($db);
 if (Request::postInt('adminlogin') === 1) {
     $csrfOK = true;
@@ -72,8 +74,13 @@ if (Request::postInt('adminlogin') === 1) {
                 break;
 
             case AdminLoginStatus::LOGIN_OK:
+                Status::getInstance($db, $cache, true);
                 Backend::getInstance()->reHash();
                 $_SESSION['loginIsValid'] = true; // "enable" the "header.tpl"-navigation again
+                if (($conf['global']['global_wizard_done'] ?? 'Y') === 'N') {
+                    \header('Location: ' . Shop::getURL(true) . '/' . \PFAD_ADMIN . 'wizard.php');
+                    exit;
+                }
                 if ($oAccount->permission('SHOP_UPDATE_VIEW') && $oUpdater->hasPendingUpdates()) {
                     header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . 'dbupdater.php');
                     exit;

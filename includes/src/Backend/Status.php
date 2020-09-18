@@ -9,9 +9,9 @@ use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\License\Manager;
 use JTL\License\Mapper;
-use JTL\License\Struct\ExsLicense;
 use JTL\Media\Image\Product;
 use JTL\Media\Image\StatsItem;
+use JTL\Nice;
 use JTL\Plugin\Helper;
 use JTL\Plugin\State;
 use JTL\Profiler;
@@ -30,9 +30,9 @@ use function Functional\some;
 class Status
 {
     /**
-     * @var array
+     * @var JTLCacheInterface
      */
-    protected $cache = [];
+    protected $cache;
 
     /**
      * @var DbInterface
@@ -42,37 +42,42 @@ class Status
 
     private static $instance;
 
+    public const CACHE_ID_FOLDER_PERMISSIONS   = 'validFolderPermissions';
+    public const CACHE_ID_DATABASE_STRUCT      = 'validDatabaseStruct';
+    public const CACHE_ID_MODIFIED_FILE_STRUCT = 'validModifiedFileStruct';
+    public const CACHE_ID_ORPHANED_FILE_STRUCT = 'validOrphanedFilesStruct';
+
     /**
      * Status constructor.
      * @param DbInterface $db
+     * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db)
+    public function __construct(DbInterface $db, JTLCacheInterface $cache)
     {
-        $this->db       = $db;
+        $this->db    = $db;
+        $this->cache = $cache;
+
         self::$instance = $this;
     }
 
     /**
      * @param DbInterface $db
+     * @param JTLCacheInterface|null $cache
+     * @param bool $flushCache
      * @return Status
      */
-    public static function getInstance(DbInterface $db): self
-    {
-        return static::$instance ?? new self($db);
-    }
+    public static function getInstance(
+        DbInterface $db,
+        ?JTLCacheInterface $cache = null,
+        bool $flushCache = false
+    ): self {
+        $instance = static::$instance ?? new self($db, $cache ?? Shop::Container()->getCache());
 
-    /**
-     * @param string $name
-     * @param mixed  $arguments
-     * @return mixed
-     */
-    public function __call($name, $arguments)
-    {
-        if (!isset($this->cache[$name])) {
-            $this->cache[$name] = \call_user_func_array([&$this, $name], $arguments);
+        if ($flushCache) {
+            $instance->cache->flushTags([\CACHING_GROUP_STATUS]);
         }
 
-        return $this->cache[$name];
+        return $instance;
     }
 
     /**
@@ -80,7 +85,7 @@ class Status
      */
     public function getObjectCache(): JTLCacheInterface
     {
-        return Shop::Container()->getCache()->setJtlCacheConfig(
+        return $this->cache->setJtlCacheConfig(
             $this->db->selectAll('teinstellungen', 'kEinstellungenSektion', \CONF_CACHING)
         );
     }
@@ -117,10 +122,21 @@ class Status
     {
         require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'dbcheck_inc.php';
 
-        $current  = \getDBStruct(true);
-        $original = \getDBFileStruct();
+        if (($dbStruct = $this->cache->get(self::CACHE_ID_DATABASE_STRUCT)) === false) {
+            $dbStruct             = [];
+            $dbStruct['current']  = \getDBStruct(true);
+            $dbStruct['original'] = \getDBFileStruct();
 
-        return \is_array($current) && \is_array($original) && \count(\compareDBStruct($original, $current)) === 0;
+            $this->cache->set(
+                self::CACHE_ID_DATABASE_STRUCT,
+                $dbStruct,
+                [\CACHING_GROUP_STATUS]
+            );
+        }
+
+        return \is_array($dbStruct['current'])
+            && \is_array($dbStruct['original'])
+            && \count(\compareDBStruct($dbStruct['original'], $dbStruct['current'])) === 0;
     }
 
     /**
@@ -130,14 +146,24 @@ class Status
      */
     public function validModifiedFileStruct(): bool
     {
-        $check   = new FileCheck();
-        $files   = [];
-        $stats   = 0;
-        $md5file = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . \PFAD_SHOPMD5 . $check->getVersionString() . '.csv';
+        if (($validModifiedFileStruct = $this->cache->get(self::CACHE_ID_MODIFIED_FILE_STRUCT)) === false) {
+            $check   = new FileCheck();
+            $files   = [];
+            $stats   = 0;
+            $md5file = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . \PFAD_SHOPMD5 . $check->getVersionString() . '.csv';
 
-        return $check->validateCsvFile($md5file, $files, $stats) === FileCheck::OK
-            ? $stats === 0
-            : false;
+            $validModifiedFileStruct = $check->validateCsvFile($md5file, $files, $stats) === FileCheck::OK
+                ? $stats
+                : 1;
+
+            $this->cache->set(
+                self::CACHE_ID_MODIFIED_FILE_STRUCT,
+                $validModifiedFileStruct,
+                [\CACHING_GROUP_STATUS]
+            );
+        }
+
+        return $validModifiedFileStruct === 0;
     }
 
     /**
@@ -147,16 +173,26 @@ class Status
      */
     public function validOrphanedFilesStruct(): bool
     {
-        $check             = new FileCheck();
-        $files             = [];
-        $stats             = 0;
-        $orphanedFilesFile = \PFAD_ROOT . \PFAD_ADMIN .
-            \PFAD_INCLUDES . \PFAD_SHOPMD5
-            . 'deleted_files_' . $check->getVersionString() . '.csv';
+        if (($validOrphanedFilesStruct = $this->cache->get(self::CACHE_ID_ORPHANED_FILE_STRUCT)) === false) {
+            $check             = new FileCheck();
+            $files             = [];
+            $stats             = 0;
+            $orphanedFilesFile = \PFAD_ROOT . \PFAD_ADMIN .
+                \PFAD_INCLUDES . \PFAD_SHOPMD5
+                . 'deleted_files_' . $check->getVersionString() . '.csv';
 
-        return $check->validateCsvFile($orphanedFilesFile, $files, $stats) === FileCheck::OK
-            ? $stats === 0
-            : false;
+            $validOrphanedFilesStruct = $check->validateCsvFile($orphanedFilesFile, $files, $stats) === FileCheck::OK
+                ? $stats
+                : 1;
+
+            $this->cache->set(
+                self::CACHE_ID_ORPHANED_FILE_STRUCT,
+                $validOrphanedFilesStruct,
+                [\CACHING_GROUP_STATUS]
+            );
+        }
+
+        return $validOrphanedFilesStruct === 0;
     }
 
     /**
@@ -164,9 +200,18 @@ class Status
      */
     public function validFolderPermissions(): bool
     {
-        $permissionStat = (new Filesystem(\PFAD_ROOT))->getFolderStats();
+        if (($filesystemFolders = $this->cache->get(self::CACHE_ID_FOLDER_PERMISSIONS)) === false) {
+            $filesystem = new Filesystem(\PFAD_ROOT);
+            $filesystem->getFoldersChecked();
+            $filesystemFolders = $filesystem->getFolderStats();
+            $this->cache->set(
+                self::CACHE_ID_FOLDER_PERMISSIONS,
+                $filesystemFolders,
+                [\CACHING_GROUP_STATUS]
+            );
+        }
 
-        return $permissionStat->nCountInValid === 0;
+        return $filesystemFolders->nCountInValid === 0;
     }
 
     /**
@@ -273,6 +318,7 @@ class Status
 
     /**
      * @return bool
+     * @throws Exception
      */
     public function hasStandardTemplateIssue(): bool
     {
@@ -394,10 +440,11 @@ class Status
      */
     public function hasLicenseExpirations(): bool
     {
-        $manager = new Manager($this->db, Shop::Container()->getCache());
+        $manager = new Manager($this->db, $this->cache);
         $mapper  = new Mapper($manager);
 
-        return $mapper->getCollection()->getAboutToBeExpired(28)->count() > 0;
+        return $mapper->getCollection()->getAboutToBeExpired(28)->count() > 0
+            || $mapper->getCollection()->getBoundExpired()->count() > 0;
     }
 
     /**
@@ -538,5 +585,19 @@ class Status
     public function hasExtensionSOAP(): bool
     {
         return \extension_loaded('soap');
+    }
+
+    /**
+     * @return array
+     */
+    public function getExtensions(): array
+    {
+        $nice       = Nice::getInstance();
+        $extensions = $nice->gibAlleMoeglichenModule();
+        foreach ($extensions as $extension) {
+            $extension->bActive = $nice->checkErweiterung($extension->kModulId);
+        }
+
+        return $extensions;
     }
 }

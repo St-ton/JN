@@ -4,6 +4,7 @@ namespace JTL\Console;
 
 use JTL\Console\Command\Backup\DatabaseCommand;
 use JTL\Console\Command\Backup\FilesCommand;
+use JTL\Console\Command\Cache\ClearObjectCacheCommand;
 use JTL\Console\Command\Cache\DbesTmpCommand;
 use JTL\Console\Command\Cache\DeleteFileCacheCommand;
 use JTL\Console\Command\Cache\DeleteTemplateCacheCommand;
@@ -77,7 +78,7 @@ class Application extends BaseApplication
      */
     public function initPluginCommands(): void
     {
-        if (!$this->isInstalled || SAFE_MODE === true) {
+        if (!$this->isInstalled || \SAFE_MODE === true) {
             return;
         }
         $db              = Shop::Container()->getDB();
@@ -155,6 +156,7 @@ class Application extends BaseApplication
             $cmds[] = new DeleteTemplateCacheCommand();
             $cmds[] = new DeleteFileCacheCommand();
             $cmds[] = new DbesTmpCommand();
+            $cmds[] = new ClearObjectCacheCommand();
             $cmds[] = new CreateModelCommand();
 
             if ($this->devMode) {

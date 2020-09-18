@@ -869,7 +869,6 @@ class Statusmail
                 break;
             default:
                 throw new InvalidArgumentException('Invalid interval type: ' . $intervall);
-                break;
         }
         $data = $this->generate($statusMail, $startDate, $endDate);
         if ($data) {

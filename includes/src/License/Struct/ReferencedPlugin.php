@@ -17,9 +17,7 @@ class ReferencedPlugin extends ReferencedItem
 {
     /**
      * ReferencedPlugin constructor.
-     * @param DbInterface  $db
-     * @param stdClass     $license
-     * @param Release|null $release
+     * @inheritDoc
      */
     public function __construct(DbInterface $db, stdClass $license, ?Release $release)
     {
@@ -38,8 +36,8 @@ class ReferencedPlugin extends ReferencedItem
             $this->setActive((int)$installed->nStatus === State::ACTIVATED);
             $this->setInternalID((int)$installed->kPlugin);
             try {
-                $t             = new Carbon($installed->dInstalliert);
-                $dateInstalled = $t->toIso8601ZuluString();
+                $carbon        = new Carbon($installed->dInstalliert);
+                $dateInstalled = $carbon->toIso8601ZuluString();
             } catch (Exception $e) {
                 $dateInstalled = null;
             }

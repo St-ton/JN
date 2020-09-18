@@ -163,3 +163,12 @@ msgstr "Could not validate archive"
 
 msgid "Managed by %s"
 msgstr "Managed by %s"
+
+msgid "Successfully extended."
+msgstr "Successfully extended."
+
+msgid "Enter token"
+msgstr "Enter token"
+
+msgid "Manually enter token"
+msgstr "Manually enter token"

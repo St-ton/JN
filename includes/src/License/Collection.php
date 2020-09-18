@@ -61,11 +61,26 @@ class Collection extends \Illuminate\Support\Collection
     }
 
     /**
+     * @param string $licenseKey
+     * @return ExsLicense|null
+     */
+    public function getForLicenseKey(string $licenseKey): ?ExsLicense
+    {
+        return $this->first(static function (ExsLicense $e) use ($licenseKey) {
+            return $e->getLicense()->getKey() === $licenseKey;
+        });
+    }
+
+    /**
      * @return $this
      */
     public function getActiveExpired(): self
     {
-        return $this->getBoundExpired();
+        return $this->getBoundExpired()->filter(static function (ExsLicense  $e) {
+            $ref = $e->getReferencedItem();
+
+            return $ref !== null && $ref->isActive();
+        });
     }
 
     /**
@@ -77,7 +92,6 @@ class Collection extends \Illuminate\Support\Collection
             $ref = $e->getReferencedItem();
 
             return $ref !== null
-                && $ref->isActive()
                 && ($e->getLicense()->isExpired() || $e->getLicense()->getSubscription()->isExpired());
         });
     }

@@ -61,9 +61,9 @@ class AlertService implements AlertServiceInterface
      */
     public function getAlert(string $key): ?Alert
     {
-        return $this->getAlertList()->filter(static function (Alert $alert) use ($key) {
+        return $this->getAlertList()->first(static function (Alert $alert) use ($key) {
             return $alert->getKey() === $key;
-        })->pop();
+        });
     }
 
     /**

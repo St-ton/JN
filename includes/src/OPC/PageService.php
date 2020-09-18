@@ -276,7 +276,9 @@ class PageService
             $pageIdObj->type = 'product';
             $pageIdObj->id   = $params['kArtikel'];
         } elseif ($params['kLink'] > 0) {
-            if ($params['nLinkart'] === \LINKTYP_BESTELLVORGANG) {
+            if ($params['nLinkart'] === \LINKTYP_BESTELLVORGANG
+                || $params['nLinkart'] === \LINKTYP_BESTELLABSCHLUSS
+            ) {
                 return null;
             }
 

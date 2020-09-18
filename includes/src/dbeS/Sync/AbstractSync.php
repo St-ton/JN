@@ -651,7 +651,7 @@ abstract class AbstractSync
     /**
      * @param object $object
      */
-    protected function extractStreet(&$object): void
+    protected function extractStreet($object): void
     {
         $data  = \explode(' ', $object->cStrasse);
         $parts = \count($data);

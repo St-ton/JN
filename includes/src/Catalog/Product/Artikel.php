@@ -1411,8 +1411,8 @@ class Artikel
             'type' => $type,
             'alt'  => \htmlspecialchars(
                 \str_replace('"', '', $image->cAltAttribut),
-                ENT_COMPAT | ENT_HTML401,
-                JTL_CHARSET
+                \ENT_COMPAT | \ENT_HTML401,
+                \JTL_CHARSET
             )
         ];
     }
@@ -3089,11 +3089,11 @@ class Artikel
     }
 
     /**
-     * @param int      $productID
-     * @param stdClass $options @see Artikel::getAllOptions()
-     * @param int      $customerGroupID
-     * @param int      $langID
-     * @param bool     $noCache
+     * @param int           $productID
+     * @param stdClass|null $options @see Artikel::getAllOptions()
+     * @param int           $customerGroupID
+     * @param int           $langID
+     * @param bool          $noCache
      * @return null|$this
      * @throws CircularReferenceException
      * @throws ServiceNotFoundException
@@ -4619,8 +4619,8 @@ class Artikel
     }
 
     /**
-     * @param string $countryCode ISO Alpha-2 Country-Code e.g. DE
-     * @param int    $shippingID special shippingID, if null will select cheapest
+     * @param string|null $countryCode ISO Alpha-2 Country-Code e.g. DE
+     * @param int|null    $shippingID special shippingID, if null will select cheapest
      * @return Versandart|object|null - cheapest shipping except shippings that offer cash payment or that are excluded
      */
     public function getFavourableShipping(string $countryCode = null, int $shippingID = null)
@@ -4692,7 +4692,7 @@ class Artikel
      * @param null|int|float $purchaseQuantity
      * @param null|int|float $stockLevel
      * @param null|string    $languageISO
-     * @param int            $shippingID gets DeliveryTime for a special shipping
+     * @param int|null       $shippingID gets DeliveryTime for a special shipping
      * @return mixed|string
      * @throws \Exception
      */

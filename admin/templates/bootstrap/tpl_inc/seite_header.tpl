@@ -4,9 +4,11 @@
             <h1 class="content-header-headline {if isset($cBeschreibung) && $cBeschreibung|@strlen == 0}nospacing{/if}">{if $cTitel|@strlen > 0}{$cTitel}{else}{__('unknown')}{/if}</h1>
         </div>
         <div class="col-auto ml-auto">
-            <a href="favs.php" class="btn btn-link btn-lg" data-toggle="tooltip" data-container="body" data-placement="left" title="{__('addToFavourites')}" id="fav-add">
-                <span class="fal fa-star"></span>
-            </a>
+            {if $wizardDone}
+                <a href="favs.php" class="btn btn-link btn-lg" data-toggle="tooltip" data-container="body" data-placement="left" title="{__('addToFavourites')}" id="fav-add">
+                    <span class="fal fa-star"></span>
+                </a>
+            {/if}
             {if isset($cDokuURL) && $cDokuURL|@strlen > 0}
                 <a href="{$cDokuURL}" target="_blank" class="btn btn-link btn-lg" data-toggle="tooltip"
                    data-container="body" data-placement="left" title="{__('goToDocu')}">

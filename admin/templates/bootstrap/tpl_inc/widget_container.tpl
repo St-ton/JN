@@ -7,10 +7,7 @@
                     <span class="options"></span>
                     <hr class="mb-n3">
                 </div>
-                <div class="widget-content
-                            {if $oWidget->hasBody === true}card-body{/if}
-                            {if !$oWidget->bExpanded}widget-hidden{/if}
-                ">
+                <div class="widget-content{if $oWidget->hasBody === true} card-body{/if}{if !$oWidget->bExpanded} widget-hidden{/if}">
                     {$oWidget->cContent}
                 </div>
             </li>

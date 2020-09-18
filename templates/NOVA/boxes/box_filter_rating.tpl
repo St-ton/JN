@@ -9,7 +9,9 @@
                 role="button"
                 data=["toggle"=> "collapse", "target"=>"#cllps-box{$oBox->getID()}"]
             }
-                {lang key='Votes'}
+                <span class="text-truncate">
+                    {lang key='Votes'}
+                </span>
             {/button}
             {collapse id="cllps-box{$oBox->getID()}"
                 visible=$oBox->getItems()->isActive() || $Einstellungen.template.productlist.filter_items_always_visible === 'Y'}

@@ -679,6 +679,14 @@ class AdminAccount
     }
 
     /**
+     * @return int
+     */
+    public function getID(): int
+    {
+        return (int)$_SESSION['AdminAccount']->kAdminlogin;
+    }
+
+    /**
      * @return GetText
      */
     public function getGetText(): GetText

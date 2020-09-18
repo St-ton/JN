@@ -55,3 +55,6 @@ msgstr "Testlizenz verlängern"
 
 msgid "pluginIsDeactivated"
 msgstr "Plugin ist deaktiviert."
+
+msgid "pluginNotFound"
+msgstr "Plugin wurde nicht gefunden."

@@ -103,10 +103,8 @@ class Visitor
      */
     public static function dbLookup($userAgent, $ip): ?stdClass
     {
-        $visitor = Shop::Container()->getDB()->select('tbesucher', 'cSessID', \session_id())
+        return Shop::Container()->getDB()->select('tbesucher', 'cSessID', \session_id())
             ?? Shop::Container()->getDB()->select('tbesucher', 'cID', \md5($userAgent . $ip));
-
-        return $visitor;
     }
 
     /**

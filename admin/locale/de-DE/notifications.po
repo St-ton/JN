@@ -60,7 +60,7 @@ msgid "hasLicenseExpirationsTitle"
 msgstr "Lizenzen/Subscriptions"
 
 msgid "hasLicenseExpirationsMessage"
-msgstr "Mindestens eine Subscription läuft in Kürze ab."
+msgstr "Mindestens eine Subscription läuft in Kürze ab oder ist bereits abgelaufen."
 
 msgid "hasFullTextIndexErrorTitle"
 msgstr "Volltextsuche"

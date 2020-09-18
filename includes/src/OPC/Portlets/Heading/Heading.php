@@ -44,7 +44,19 @@ class Heading extends Portlet
                 'label'      => __('Text'),
                 'type'       => InputType::TEXT,
                 'default'    => __('Heading'),
-                'width'      => 84,
+                'width'      => 58,
+            ],
+            'align' => [
+                'label'      => __('alignment'),
+                'type'       => InputType::SELECT,
+                'default'    => 'left',
+                'options'    => [
+                    'left'   => __('left'),
+                    'center' => __('centered'),
+                    'right'  => __('right'),
+                ],
+                'desc'       => __('alignmentDesc'),
+                'width'      => 25,
             ],
         ];
     }

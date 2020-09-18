@@ -1,7 +1,8 @@
 {block name='snippets-uploads'}
-    {if !empty($oUploadSchema_arr) && !($Artikel->nIstVater || $Artikel->kVaterArtikel > 0)}
+    {if !empty($oUploadSchema_arr)}
+
         {getUploaderLang iso=$smarty.session.currentLanguage->cISO639|default:'' assign='uploaderLang'}
-        {if $tplscope === 'product'}
+        {if $tplscope === 'product' && !empty($Artikel) && !($Artikel->nIstVater || $Artikel->kVaterArtikel > 0)}
             {block name='snippets-uploads-subheading-product'}
                 <div class="h3 section-heading">{lang key='uploadHeadline'}</div>
             {/block}

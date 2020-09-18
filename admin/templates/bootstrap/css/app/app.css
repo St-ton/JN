@@ -13373,6 +13373,11 @@ body {
   overflow: hidden;
 }
 
+.shipping-method-country a {
+  text-decoration: underline dotted;
+  display: inline-block;
+}
+
 #content_wrapper {
   padding-top: 0.5rem;
 }

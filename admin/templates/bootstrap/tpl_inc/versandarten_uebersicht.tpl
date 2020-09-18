@@ -45,7 +45,7 @@
                         <td>
                             {$versandart->cName}
                             <hr class="my-1">
-                            <span class="d-block">
+                            <span class="d-block shipping-method-country">
                                 {foreach $versandart->countries as $country}
                                     {if $country@iteration == 20}
                                         <span class="collapse" aria-expanded="false" id="show-all-countries-{$versandart->kVersandart}">
@@ -61,8 +61,7 @@
                                                 {$country->getName()}
                                             {/if}
                                         </span>
-                                        {if !$country@last},{/if}
-                                    </a>
+                                    </a>{if !$country@last},{/if}
                                     {if $country@iteration > 20 && $country@last}
                                         </span>
                                         <button class="btn btn-link float-right" data-toggle="collapse" data-target="#show-all-countries-{$versandart->kVersandart}">

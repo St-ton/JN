@@ -2008,3 +2008,6 @@ msgstr "Smarty syntax error"
 
 msgid "weRecommend"
 msgstr "We recommend:"
+
+msgid "somethingHappend"
+msgstr "An unknown error occurred."

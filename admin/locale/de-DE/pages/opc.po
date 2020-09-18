@@ -153,9 +153,6 @@ msgstr "OnPage Composer"
 msgid "toggleNavigation"
 msgstr "Navigation ein-/ausschalten"
 
-msgid "somethingHappend"
-msgstr "Es ist ein unbekannter Fehler aufgetreten."
-
 msgid "noteInfoInGuide"
 msgstr "Sie finden neben den nachfolgend aufgelisteten Touren auch ausführliche Informationen in unserem <a href=\"https://guide.jtl-software.de\" target=\"_blank\"><i class=\"fa fa-external-link\"></i> Guide</a>."
 

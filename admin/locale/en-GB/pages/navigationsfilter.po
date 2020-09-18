@@ -16,3 +16,6 @@ msgstr "Invalid price range."
 
 msgid "thePriceRangeOverlapps"
 msgstr "The price range overlaps with other price ranges."
+
+msgid "addPriceRange"
+msgstr "Add price range"

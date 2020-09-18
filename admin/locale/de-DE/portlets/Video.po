@@ -45,6 +45,12 @@ msgstr "Die Video-ID finden Sie in der Vimeo-URL als letzten Teil nach dem „/�
 msgid "repeatVideo"
 msgstr "Video nach dem Abspielen wiederholen"
 
+msgid "muteVideo"
+msgstr "Tonausgabe unterdrücken"
+
+msgid "autoplayVideo"
+msgstr "automatisch abspielen"
+
 msgid "showImage"
 msgstr "Bild anzeigen"
 

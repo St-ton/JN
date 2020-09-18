@@ -95,27 +95,23 @@ class ExtensionInstaller
         $errorMsg           = '';
         foreach ($requested as $id) {
             $recom = $this->getRecommendationByID($id);
-            if ($recom !== null) {
-                foreach ($recom->getLinks() as $link) {
-                    if ($link->getRel() === 'createLicense') {
-                        try {
-                            $res  = $this->manager->createLicense($link->getHref());
-                            $data = \json_decode($res);
-                            if (isset($data->meta)) {
-                                $createdLicenseKeys[] = $data->meta->exs_key;
-                            }
-                        } catch (ClientException | GuzzleException $e) {
-                            // possible error:
-                            // "Server error:
-                            // `POST https://checkout-stage.jtl-software.com/v1/license/recommendation/create/foo`
-                            // resulted in a `500 Internal Server Error` response:
-                            //{"code":0,"message":"Extension doesn't provide a free of charge license"}
-                            $errorMsg .= \sprintf(
-                                '%s: %s <br>',
-                                $recom->getTitle(),
-                                Text::htmlentities($e->getMessage())
-                            );
+            if ($recom === null) {
+                continue;
+            }
+            foreach ($recom->getLinks() as $link) {
+                if ($link->getRel() === 'createLicense') {
+                    try {
+                        $res  = $this->manager->createLicense($link->getHref());
+                        $data = \json_decode($res);
+                        if (isset($data->meta)) {
+                            $createdLicenseKeys[] = $data->meta->exs_key;
                         }
+                    } catch (ClientException | GuzzleException $e) {
+                        $errorMsg .= \sprintf(
+                            '%s: %s <br>',
+                            $recom->getTitle(),
+                            Text::htmlentities($e->getMessage())
+                        );
                     }
                 }
             }
@@ -126,20 +122,25 @@ class ExtensionInstaller
             foreach ($createdLicenseKeys as $key) {
                 $ajaxResponse = new AjaxResponse();
                 $license      = $this->manager->getLicenseByLicenseKey($key);
-                if ($license !== null) {
-                    $itemID    = $license->getID();
-                    $installer = $this->helper->getInstaller($itemID);
-                    try {
+                if ($license === null) {
+                    continue;
+                }
+                $itemID    = $license->getID();
+                $installer = $this->helper->getInstaller($itemID);
+                try {
+                    $download    = $this->helper->getDownload($itemID);
+                    $installCode = $installer->install($itemID, $download, $ajaxResponse);
+                    if ($installCode === InstallCode::DUPLICATE_PLUGIN_ID) {
                         $download    = $this->helper->getDownload($itemID);
-                        $installCode = $installer->install($itemID, $download, $ajaxResponse);
-                    } catch (InvalidArgumentException $e) {
-                        $errorMsg .= \sprintf('%s: %s <br>', $license->getName(), $e->getMessage());
+                        $installCode = $installer->forceUpdate($download, $ajaxResponse);
                     }
-                    if (isset($installCode) && $installCode !== InstallCode::OK) {
-                        $mapper = new PluginValidation();
-                        $license->getName();
-                        $errorMsg .= \sprintf('%s: %s <br>', $license->getName(), $mapper->map($installCode));
-                    }
+                } catch (InvalidArgumentException $e) {
+                    $errorMsg .= \sprintf('%s: %s <br>', $license->getName(), $e->getMessage());
+                }
+                if (isset($installCode) && $installCode !== InstallCode::OK) {
+                    $mapper = new PluginValidation();
+                    $license->getName();
+                    $errorMsg .= \sprintf('%s: %s <br>', $license->getName(), $mapper->map($installCode));
                 }
             }
         }

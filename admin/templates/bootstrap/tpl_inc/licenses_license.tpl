@@ -9,7 +9,11 @@
 {elseif $subscription->isExpired() === false && $subscription->getValidUntil() !== null}
     {if $subscription->getDaysRemaining() < 28}
         <span class="badge badge-warning">
-            {__('Warning: Subscription only valid until %s', $subscription->getValidUntil()->format('d.m.Y'))}
+            {if $licData->getType() === 'test'}
+                {__('Warning: License only valid until %s', $licData->getValidUntil()->format('d.m.Y'))}
+            {else}
+                {__('Warning: Subscription only valid until %s', $subscription->getValidUntil()->format('d.m.Y'))}
+            {/if}
         </span>
     {else}
         <span class="badge badge-success">

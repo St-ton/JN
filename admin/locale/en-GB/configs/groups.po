@@ -235,3 +235,18 @@ msgstr "General"
 
 msgid "configgroup_110_manufacturer_filter"
 msgstr "Manufacturer filter"
+
+msgid "configgroup_129_consentmanager"
+msgstr "Consent manager"
+
+msgid "configgroup_124_cache"
+msgstr "Cache"
+
+msgid "configgroup_128_cron"
+msgstr "Cron"
+
+msgid "configgroup_121_selectionwizard"
+msgstr "Selection wizard"
+
+msgid "configgroup_127_filesystem"
+msgstr "File system"

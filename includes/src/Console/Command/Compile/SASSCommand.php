@@ -88,8 +88,7 @@ class SASSCommand extends Command
                 } else {
                     $io->error('Theme scss file does not exist. ');
                 }
-            }
-            else {
+            } else {
                 $io->error('Theme does not exist. ');
             }
         }

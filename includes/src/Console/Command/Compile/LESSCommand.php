@@ -51,8 +51,8 @@ class LESSCommand extends Command
             $io->writeln('...');
             $io->writeln('<info>Theme ' . $themeParam . ' was compiled successfully.</info>');
         }
-
     }
+
     private function compileLess($path, $themeName, $io): void
     {
         $parser = new Less_Parser();

@@ -8,6 +8,12 @@
     {if $hasAuth}
         {include file='tpl_inc/licenses_bound.tpl' licenses=$licenses}
         {include file='tpl_inc/licenses_unbound.tpl' licenses=$licenses}
+        {if isset($smarty.get.debug)}
+            <h3>AuthToken</h3>
+            <pre>{$authToken}</pre>
+            <h3>License data</h3>
+            {$licenses|dump}
+        {/if}
     {/if}
 </div>
 

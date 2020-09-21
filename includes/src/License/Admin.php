@@ -416,6 +416,7 @@ class Admin
         $mapper     = new Mapper($this->manager);
         $collection = $mapper->getCollection();
         $smarty->assign('licenses', $collection)
+            ->assign('authToken', $this->auth->get())
             ->assign('licenseItemUpdates', $collection->getUpdateableItems());
     }
 

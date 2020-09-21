@@ -73,3 +73,12 @@ msgstr "https://jtl-url.de/sdka5"
 
 msgid "prefDesc5ProductQuestion"
 msgstr "Hier können Sie Einstellungen bezüglich Fragen von Kunden zu bestimmten Artikeln vornehmen. Der Kunde ruft das zugehörige Fenster über die jeweilige Artikeldetailseite auf."
+
+msgid "searchForID"
+msgstr "Suche nach ID: %s"
+
+msgid "searchForIDRange"
+msgstr "Suche nach ID Range: %s"
+
+msgid "searchForName"
+msgstr "Suche nach Name: %s"

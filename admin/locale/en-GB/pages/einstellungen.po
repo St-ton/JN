@@ -73,3 +73,12 @@ msgstr "https://jtl-url.de/8qj9i"
 
 msgid "prefDesc5ProductQuestion"
 msgstr "Here you can adjust the settings regarding questions that customers ask about specific items. Customers can open the respective window via the item detail page."
+
+msgid "searchForID"
+msgstr "Search for ID: %s"
+
+msgid "searchForIDRange"
+msgstr "Search for ID Range: %s"
+
+msgid "searchForName"
+msgstr "Search for Name: %s"

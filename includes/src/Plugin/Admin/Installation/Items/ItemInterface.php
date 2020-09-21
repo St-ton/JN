@@ -14,7 +14,7 @@ interface ItemInterface
 {
     /**
      * ItemInterface constructor.
-     * @param DbInterface          $db
+     * @param DbInterface|null     $db
      * @param array|null           $baseNode
      * @param stdClass|null        $plugin
      * @param PluginInterface|null $oldPlugin

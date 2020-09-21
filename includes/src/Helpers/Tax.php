@@ -39,7 +39,7 @@ class Tax
     }
 
     /**
-     * @param string $countryCode
+     * @param string|null $countryCode
      * @since since 5.0.0
      */
     public static function setTaxRates($countryCode = null): void
@@ -181,10 +181,10 @@ class Tax
     }
 
     /**
-     * @param array             $items
-     * @param int|bool          $net
-     * @param true              $html
-     * @param Currency|stdClass $currency
+     * @param array                  $items
+     * @param int|bool               $net
+     * @param true                   $html
+     * @param Currency|stdClass|null $currency
      * @return array
      * @former gibAlteSteuerpositionen()
      * @since since 5.0.0

@@ -198,16 +198,16 @@ class DBMigrationHelper
     }
 
     /**
-     * @param string $cTable
+     * @param string|null $table
      * @return stdClass[]
      */
-    public static function getFulltextIndizes($cTable = null): array
+    public static function getFulltextIndizes($table = null): array
     {
         $params = ['schema' => Shop::Container()->getDB()->getConfig()['database']];
         $filter = "AND `INDEX_NAME` NOT IN ('idx_tartikel_fulltext', 'idx_tartikelsprache_fulltext')";
 
-        if (!empty($cTable)) {
-            $params['table'] = $cTable;
+        if (!empty($table)) {
+            $params['table'] = $table;
             $filter          = 'AND `TABLE_NAME` = :table';
         }
 

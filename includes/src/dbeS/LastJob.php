@@ -149,8 +149,8 @@ final class LastJob
     }
 
     /**
-     * @param int    $jobID
-     * @param string $name
+     * @param int         $jobID
+     * @param string|null $name
      * @return stdClass
      */
     public function run(int $jobID, $name = null): stdClass

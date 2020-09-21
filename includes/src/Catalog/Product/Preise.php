@@ -541,9 +541,9 @@ class Preise
     }
 
     /**
-     * @param float    $preis
-     * @param Currency $waehrung
-     * @param bool     $html
+     * @param float         $preis
+     * @param Currency|null $waehrung
+     * @param bool          $html
      * @return string
      * @former gibPreisLocalizedOhneFaktor()
      */
@@ -553,12 +553,12 @@ class Preise
         if ($currency !== null && \get_class($currency) === 'stdClass') {
             $currency = new Currency($currency->kWaehrung);
         }
-        $localized    = \number_format($preis, 2, $currency->getDecimalSeparator(), $currency->getThousandsSeparator());
-        $waherungname = $html ? $currency->getHtmlEntity() : $currency->getName();
+        $localized = \number_format($preis, 2, $currency->getDecimalSeparator(), $currency->getThousandsSeparator());
+        $name      = $html ? $currency->getHtmlEntity() : $currency->getName();
 
         return $currency->getForcePlacementBeforeNumber()
-            ? $waherungname . ' ' . $localized
-            : $localized . ' ' . $waherungname;
+            ? $name . ' ' . $localized
+            : $localized . ' ' . $name;
     }
 
     /**

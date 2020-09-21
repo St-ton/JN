@@ -34,10 +34,10 @@ class MinifyService
     /**
      * Build a URI for the static cache
      *
-     * @param string $urlPrefix E.g. "/min/static"
-     * @param string $query E.g. "b=scripts&f=1.js,2.js"
-     * @param string $type "css" or "js"
-     * @param string $cacheTime
+     * @param string      $urlPrefix E.g. "/min/static"
+     * @param string      $query E.g. "b=scripts&f=1.js,2.js"
+     * @param string      $type "css" or "js"
+     * @param string|null $cacheTime
      * @return string
      */
     public function buildURI($urlPrefix, $query, $type, string $cacheTime = null): string
@@ -96,7 +96,7 @@ class MinifyService
     protected function removeTree(string $dir): bool
     {
         foreach (\array_diff(\scandir($dir), ['.', '..']) as $file) {
-            $path = $dir . DIRECTORY_SEPARATOR . $file;
+            $path = $dir . \DIRECTORY_SEPARATOR . $file;
             \is_dir($path) ? $this->removeTree($path) : \unlink($path);
         }
 

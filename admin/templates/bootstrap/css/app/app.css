@@ -13349,6 +13349,35 @@ body {
   color: #ffffff;
 }
 
+.object-fit-cover {
+  object-fit: cover;
+  width: 100%;
+}
+
+.icon-in-border {
+  border: solid 1px #435a6b;
+  padding: 10px;
+  border-radius: 10px;
+  position: relative;
+}
+.icon-in-border span {
+  display: block;
+  background: #F5F7FA;
+  position: absolute;
+  top: -15px;
+  margin: 0;
+  padding: 0 0.3125rem;
+  z-index: 10;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.shipping-method-country a {
+  text-decoration: underline dotted;
+  display: inline-block;
+}
+
 #content_wrapper {
   padding-top: 0.5rem;
 }
@@ -13416,6 +13445,9 @@ body {
 #modal-setup-assistant .step.active ~ .step {
   cursor: auto;
 }
+#modal-setup-assistant .modal-body {
+  border: 0;
+}
 #modal-setup-assistant .img-setup-guide {
   float: left;
   margin-left: -12.1875rem;
@@ -13424,7 +13456,7 @@ body {
 @media (min-width: 992px) {
   #modal-setup-assistant .modal-content {
     min-height: 43.75rem;
-    background: #ffffff url("images/setup-assistant-bg.svg") no-repeat left top/auto 43.75rem;
+    background: #ffffff url("../images/setup-assistant-bg.svg") no-repeat left top/auto 43.75rem;
   }
 }
 #modal-setup-assistant .setup-slide:not(.active) {
@@ -13464,11 +13496,18 @@ body {
 #modal-setup-assistant[data-setup-current="6"] [data-setup-submit], #modal-setup-assistant[data-setup-current="6"] .setup-steps {
   display: none;
 }
-#modal-setup-assistant:not([data-setup-current="5"]) [data-setup-submit], #modal-setup-assistant.installed [data-setup-submit] {
+#modal-setup-assistant:not([data-setup-current="5"]) [data-setup-submit], #modal-setup-assistant:not([data-setup-current="5"]) [data-setup-auth], #modal-setup-assistant.installed [data-setup-submit], #modal-setup-assistant.installed [data-setup-auth] {
   display: none;
 }
 #modal-setup-assistant:not([data-setup-current="6"]) [data-setup-close] {
   display: none;
+}
+#modal-setup-assistant .error input {
+  color: #e10505;
+  border-color: #e10505;
+}
+#modal-setup-assistant .custom-checkbox-centered .custom-control-label:before, #modal-setup-assistant .custom-checkbox-centered .custom-control-label:after {
+  top: 39%;
 }
 
 #sidebar .submenu > .nav-item.active, #sidebar .nav-link:hover, #sidebar .navigation [data-toggle=collapse]:not(.collapsed) + .submenu, #sidebar .navigation [data-toggle=collapse]:not(.collapsed) {

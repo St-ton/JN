@@ -1,0 +1,12 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "yourAdvantages"
+msgstr "Your advantages"
+
+msgid "installationGuide"
+msgstr "Installation guide"
+
+msgid "noRecommendationFound"
+msgstr "No recommendation for id found."

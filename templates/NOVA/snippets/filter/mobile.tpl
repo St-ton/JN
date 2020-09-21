@@ -40,7 +40,7 @@
                                         {block name='snippets-filter-mobile-filters-button'}
                                             {link class="collapsed"
                                                 data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$subFilter->getFrontendName()|@seofy}"]}
-                                                {$subFilter->getFrontendName()}
+                                                <span class="text-truncate">{$subFilter->getFrontendName()}</span>
                                             {/link}
                                         {/block}
                                         {block name='snippets-filter-mobile-filters-collapse'}
@@ -94,7 +94,7 @@
                                     {block name='snippets-filter-mobile-filters-manufacturer'}
                                         {link class="collapsed"
                                             data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$filter->getFrontendName()|@seofy}"]}
-                                            {$filter->getFrontendName()}
+                                            <span class="text-truncate">{$filter->getFrontendName()}</span>
                                         {/link}
                                         {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}"
                                             class="my-2 py-2"
@@ -107,7 +107,7 @@
                                 {elseif $filter->getOptions()|count > 0}
                                     {block name='snippets-filter-mobile-filters-generic'}
                                         {link data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$filter->getFrontendName()|@seofy}"]}
-                                            {$filter->getFrontendName()}
+                                            <span class="text-truncate">{$filter->getFrontendName()}</span>
                                         {/link}
                                         {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}"
                                             class="my-2"

@@ -102,7 +102,7 @@ class BoxService implements BoxServiceInterface
     /**
      * BoxService constructor.
      *
-     * @inheritdoc
+     * @inheritDoc
      */
     public function __construct(
         array $config,
@@ -122,8 +122,7 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @param int $productID
-     * @param int $limit
+     * @inheritDoc
      */
     public function addRecentlyViewed(int $productID, int $limit = null): void
     {
@@ -152,9 +151,7 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @param int  $pageType
-     * @param bool $global
-     * @return array|bool
+     * @inheritDoc
      */
     public function getVisibility(int $pageType, bool $global = true)
     {
@@ -189,10 +186,7 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @param int          $boxID
-     * @param int          $pageType
-     * @param string|array $filter
-     * @return int
+     * @inheritDoc
      */
     public function filterBoxVisibility(int $boxID, int $pageType, $filter = ''): int
     {
@@ -209,8 +203,7 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @param ProductFilter $pf
-     * @return bool
+     * @inheritDoc
      */
     public function showBoxes(ProductFilter $pf): bool
     {
@@ -236,10 +229,7 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * get raw data from visible boxes
-     * to allow custom renderes
-     *
-     * @return array
+     * @inheritDoc
      */
     public function getRawData(): array
     {
@@ -247,7 +237,7 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @return array
+     * @inheritDoc
      */
     public function getBoxes(): array
     {
@@ -255,9 +245,7 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * compatibility layer for gibBoxen() which returns unrendered content
-     *
-     * @return array
+     * @inheritDoc
      */
     public function compatGet(): array
     {
@@ -293,10 +281,7 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @param array $positionedBoxes
-     * @param int   $pageType
-     * @return array
-     * @throws \Exception
+     * @inheritDoc
      */
     public function render(array $positionedBoxes, int $pageType): array
     {
@@ -343,9 +328,7 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @param int  $pageType
-     * @param bool $activeOnly
-     * @return array
+     * @inheritDoc
      */
     public function buildList(int $pageType = \PAGE_UNBEKANNT, bool $activeOnly = true): array
     {

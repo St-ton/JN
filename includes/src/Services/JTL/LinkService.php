@@ -101,6 +101,9 @@ final class LinkService implements LinkServiceInterface
      */
     public function getLinkByID(int $id): ?LinkInterface
     {
+        if ($id === 0) {
+            return null;
+        }
         foreach ($this->linkGroupList->getLinkGroups() as $linkGroup) {
             /** @var LinkGroupInterface $linkGroup */
             $first = first($linkGroup->getLinks(), static function (LinkInterface $link) use ($id) {
@@ -119,6 +122,9 @@ final class LinkService implements LinkServiceInterface
      */
     public function getParentForID(int $id): ?LinkInterface
     {
+        if ($id === 0) {
+            return null;
+        }
         foreach ($this->linkGroupList->getLinkGroups() as $linkGroup) {
             /** @var LinkGroupInterface $linkGroup */
             $first = first($linkGroup->getLinks(), static function (LinkInterface $link) use ($id) {
@@ -502,7 +508,7 @@ final class LinkService implements LinkServiceInterface
         $linkAGB     = null;
         $linkWRB     = null;
         $linkWRBForm = null;
-        $conf        = Shop::getSettings([CONF_KAUFABWICKLUNG])['kaufabwicklung'];
+        $conf        = Shop::getSettings([\CONF_KAUFABWICKLUNG])['kaufabwicklung'];
         // kLink für AGB und WRB suchen
         foreach ($this->getSpecialPages() as $sp) {
             /** @var LinkInterface $sp */
@@ -535,14 +541,14 @@ final class LinkService implements LinkServiceInterface
         $data->kLinkWRBForm = $linkWRBForm !== null ? $linkWRBForm->getID() : 0;
 
         $data->agbWrbNotice = $conf['bestellvorgang_wrb_anzeigen'] === '1'
-        ? sprintf(
+        ? \sprintf(
             Shop::Lang()->get('termsCancelationNotice', 'checkout'),
             $data->cURLAGB,
             $data->kLinkAGB > 0 ? 'class="popup"' : 'data-toggle="modal" data-target="#agb-modal" class="modal-popup"',
             $data->cURLWRB,
             $data->kLinkWRB > 0 ? 'class="popup"' : 'data-toggle="modal" data-target="#wrb-modal" class="modal-popup"'
         )
-        : sprintf(
+        : \sprintf(
             Shop::Lang()->get('termsNotice', 'checkout'),
             $data->cURLAGB,
             $data->kLinkAGB > 0 ? 'class="popup"' : 'data-toggle="modal" data-target="#agb-modal" class="modal-popup"'

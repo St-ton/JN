@@ -1364,7 +1364,7 @@ class ProductFilter
     /**
      * @return SearchSpecial
      */
-    public function getAvailabilitylFilter(): FilterInterface
+    public function getAvailabilityFilter(): FilterInterface
     {
         return $this->availabilityFilter;
     }

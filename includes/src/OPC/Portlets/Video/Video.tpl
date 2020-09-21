@@ -95,7 +95,10 @@
             <div{if $instance->getProperty('video-responsive')} class="embed-responsive embed-responsive-16by9"{/if}>
                 <video width="{$instance->getProperty('video-width')}"
                        height="{$instance->getProperty('video-height')}"
-                       controls style="">
+                       {if $instance->getProperty('video-local-autoplay')} autoplay{/if}
+                       {if $instance->getProperty('video-local-mute')} muted{/if}
+                       {if $instance->getProperty('video-local-loop')} loop{/if}
+                       {if $instance->getProperty('video-local-controls')} controls{/if} style="">
                     <source src="{$instance->getProperty('video-local-url')|escape:'html'}" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>

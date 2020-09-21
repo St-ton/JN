@@ -25,7 +25,9 @@
                         }
                     {/if}
                     {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'B'}
-                        {$characteristic->cName}
+                        <span class="text-truncate">
+                            {$characteristic->cName}
+                        </span>
                     {/if}
                 {/button}
                 {collapse

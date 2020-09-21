@@ -253,7 +253,7 @@ class Download
                     ORDER BY tdownload.nSort, tdownload.dErstellt DESC',
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            foreach ($items as $i => &$download) {
+            foreach ($items as $i => $download) {
                 $download->kDownload = (int)$download->kDownload;
                 $downloads[$i]       = new self(
                     $download->kDownload,
@@ -364,8 +364,8 @@ class Download
             if (!\is_array($download->oArtikelDownload_arr) || \count($download->oArtikelDownload_arr) === 0) {
                 return self::ERROR_PRODUCT_NOT_FOUND;
             }
-            foreach ($order->Positionen as &$item) {
-                foreach ($download->oArtikelDownload_arr as &$donwloadItem) {
+            foreach ($order->Positionen as $item) {
+                foreach ($download->oArtikelDownload_arr as $donwloadItem) {
                     if ($item->kArtikel != $donwloadItem->kArtikel) {
                         continue;
                     }

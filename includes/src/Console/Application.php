@@ -9,6 +9,8 @@ use JTL\Console\Command\Cache\DbesTmpCommand;
 use JTL\Console\Command\Cache\DeleteFileCacheCommand;
 use JTL\Console\Command\Cache\DeleteTemplateCacheCommand;
 use JTL\Console\Command\Command;
+use JTL\Console\Command\Compile\LESSCommand;
+use JTL\Console\Command\Compile\SASSCommand;
 use JTL\Console\Command\InstallCommand;
 use JTL\Console\Command\Migration\CreateCommand;
 use JTL\Console\Command\Migration\InnodbUtf8Command;
@@ -158,6 +160,8 @@ class Application extends BaseApplication
             $cmds[] = new DbesTmpCommand();
             $cmds[] = new ClearObjectCacheCommand();
             $cmds[] = new CreateModelCommand();
+            $cmds[] = new LESSCommand();
+            $cmds[] = new SASSCommand();
 
             if ($this->devMode) {
                 $cmds[] = new CreateCommand();

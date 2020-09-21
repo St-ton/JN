@@ -3,7 +3,10 @@
     <a href="#" class="nav-link text-primary px-2" data-toggle="dropdown">
         <span class="fa-layers fa-fw has-notify-icon">
             <span class="fas fa-bell"></span>
-            <span class="fas fa-circle text-{$notifyTypes[$notifications->getHighestType()]}"></span>
+            <span class="fa-stack">
+                <span class="fas fa-circle fa-stack-2x text-{$notifyTypes[$notifications->getHighestType()]}"></span>
+                <strong class="fa-stack-1x">{$notifications->count()}</strong>
+            </span>
         </span>
     </a>
     <div class="dropdown-menu dropdown-menu-right dropdown-menu-lg" role="main">

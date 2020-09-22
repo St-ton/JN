@@ -67,6 +67,9 @@ build_create()
 
     echo "Writing config.JTL-Shop.ini.initial.php";
     build_create_config_file;
+	
+	echo "Compile css from less and scss files";
+	build_compile_css_files;
 
     echo "Executing migrations";
     build_migrate;
@@ -371,6 +374,13 @@ build_add_files_to_patch_dir()
             fi
         done< <(diff -rq /tmp_composer-${PATCH_VERSION}/includes/vendor includes/vendor);
     fi
+}
+
+build_compile_css_files()
+{
+	cd ${REPOSITORY_DIR};
+	php cli compile:less;
+	php cli compile:sass;
 }
 
 

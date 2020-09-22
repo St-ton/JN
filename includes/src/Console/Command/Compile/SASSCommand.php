@@ -3,6 +3,7 @@
 namespace JTL\Console\Command\Compile;
 
 use JTL\Console\Command\Command;
+use JTL\Console\ConsoleIO;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
 use Symfony\Component\Console\Input\InputInterface;
@@ -49,20 +50,19 @@ class SASSCommand extends Command
             $this->compile($themeParam, $templateDir, $cacheDir, $io);
         }
     }
-    private function compile($themeFolderName, $templateDir, $cacheDir, $io): void
+
+    /**
+     * @param string $themeFolderName
+     * @param string $templateDir
+     * @param string $cacheDir
+     * @param ConsoleIO $io
+     */
+    private function compile(string $themeFolderName, string $templateDir, string $cacheDir, ConsoleIO $io): void
     {
         if ($themeFolderName !== 'base') {
-            $theme             = $themeFolderName;
-            $directory         = $templateDir . $theme;
-            $directory         = \realpath($directory) . '/';
-            $sourceMapFilename = 'sourcemap.map';
-            $options           = [
-                'sourceMap' => true,
-                'sourceMapWriteTo' => $directory . $sourceMapFilename,
-                'sourceMapURL' => $sourceMapFilename,
-                'sourceMapRootpath' => '/',
-                'sourceMapBasepath' => \PFAD_ROOT,
-            ];
+            $theme     = $themeFolderName;
+            $directory = $templateDir . $theme;
+            $directory = \realpath($directory) . '/';
 
             if (\strpos($directory, \PFAD_ROOT . \PFAD_TEMPLATES) === 0) {
                 if (\defined('THEME_COMPILE_CACHE') && \THEME_COMPILE_CACHE === true) {
@@ -94,7 +94,12 @@ class SASSCommand extends Command
         }
     }
 
-    private function compileSass(string $file, string $target, string $directory)
+    /**
+     * @param string $file
+     * @param string $target
+     * @param string $directory
+     */
+    private function compileSass(string $file, string $target, string $directory): void
     {
         $baseDir  = $directory . 'sass/';
         $compiler = new Compiler();

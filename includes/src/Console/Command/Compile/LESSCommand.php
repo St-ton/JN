@@ -3,6 +3,7 @@
 namespace JTL\Console\Command\Compile;
 
 use JTL\Console\Command\Command;
+use JTL\Console\ConsoleIO;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
 use Less_Parser;
@@ -37,7 +38,6 @@ class LESSCommand extends Command
         $fileSystem   = new Filesystem(new Local('/'));
         $themeFolders = $fileSystem->listContents($directory, false);
 
-
         if (!isset($themeParam)) {
             foreach ($themeFolders as $themeFolder) {
                 if ($themeFolder['basename'] !== 'base') {
@@ -53,7 +53,12 @@ class LESSCommand extends Command
         }
     }
 
-    private function compileLess($path, $themeName, $io): void
+    /**
+     * @param string $path
+     * @param string $themeName
+     * @param ConsoleIO $io
+     */
+    private function compileLess(string $path, string $themeName, ConsoleIO $io): void
     {
         $parser = new Less_Parser();
         try {

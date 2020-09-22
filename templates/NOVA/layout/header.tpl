@@ -16,6 +16,7 @@
             <meta name="robots" content="{if $robotsContent}{$robotsContent}{elseif $bNoIndex === true  || (isset($Link) && $Link->getNoFollow() === true)}noindex{else}index, follow{/if}">
 
             <meta itemprop="url" content="{$cCanonicalURL}"/>
+            <meta name="theme-color" content="#f8bf00">
             <meta property="og:type" content="website" />
             <meta property="og:site_name" content="{$meta_title}" />
             <meta property="og:title" content="{$meta_title}" />

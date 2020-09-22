@@ -5,6 +5,9 @@
                 data-placement="auto"
             {/if}>
         {$propdesc.label}
+        {if !empty($propdesc.desc) || !empty($propdesc.hint)}
+            <i class="fas fa-info-circle fa-fw"></i>
+        {/if}
     </label>
     <div class="row">
         <div class="col-4">

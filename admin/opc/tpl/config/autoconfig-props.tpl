@@ -26,6 +26,9 @@
                             data-placement="auto"
                         {/if}>
                     {$propdesc.label}
+                    {if !empty($propdesc.desc) || !empty($propdesc.hint)}
+                        <i class="fas fa-info-circle fa-fw"></i>
+                    {/if}
                 </label>
                 <input type="{$type}" class="form-control" id="config-{$propname}" name="{$propname}"
                        value="{$propval|escape:'html'}"

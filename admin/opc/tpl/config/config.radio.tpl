@@ -3,7 +3,11 @@
             {if !empty($propdesc.desc) || !empty($propdesc.hint)}
                 data-toggle="tooltip" title="{$propdesc.desc|default:''} - {$propdesc.hint|default:''}" data-placement="auto"
             {/if}>
-        {$propdesc.label}</label>
+        {$propdesc.label}
+        {if !empty($propdesc.desc) || !empty($propdesc.hint)}
+            <i class="fas fa-info-circle fa-fw"></i>
+        {/if}
+    </label>
     <div class="radio" id="config-{$propname}">
         {foreach $propdesc.options as $value => $name}
             <div>

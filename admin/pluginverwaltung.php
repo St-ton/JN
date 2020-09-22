@@ -347,7 +347,7 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                         continue;
                     }
                     if ($match === null) {
-                        $pluginLang = new stdClass();
+                        $pluginLang                        = new stdClass();
                         $pluginLang->kPluginSprachvariable = $kPluginSprachvariable;
                         $pluginLang->cISO                  = $iso;
                         $pluginLang->cName                 = '';

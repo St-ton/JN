@@ -16,7 +16,7 @@
                                     {formgroup label-for="email_quick" label={lang key='emailadress'}}
                                         {input type="email" name="email" id="email_quick" size="sm"
                                                placeholder=" " required=true
-                                               autocomplete="username"}
+                                               autocomplete="email"}
                                     {/formgroup}
                                 {/block}
                                 {block name='layout-header-nav-account-form-password'}

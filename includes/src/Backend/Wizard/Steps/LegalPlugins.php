@@ -33,7 +33,8 @@ final class LegalPlugins extends AbstractStep
         $this->setDescription(__('stepThreeDesc'));
         $this->setID(3);
 
-        $recommendations = new Manager($this->alertService, Manager::SCOPE_WIZARD_LEGAL_TEXTS);
+        $scope           = Manager::SCOPE_WIZARD_LEGAL_TEXTS;
+        $recommendations = new Manager($this->alertService, $scope);
 
         $question = new Question($db);
         $question->setID(9);
@@ -44,6 +45,7 @@ final class LegalPlugins extends AbstractStep
         $question->setIsFullWidth(true);
         $question->setIsRequired(false);
         $question->setValue(false);
+        $question->setScope($scope);
         $question->setValidation(static function (QuestionInterface $question) {
             $questionValidation = new QuestionValidation($question);
             $questionValidation->checkSSL(true);

@@ -324,7 +324,7 @@ $ribbon-bg-colors: map-merge((
 
 $nav-tabs-border-radius					: 0 !default;
 
-$nav-tabs-link-hover-border-color		: 0 !default;
+$nav-tabs-link-hover-border-color		: transparent !default;
 $nav-tabs-link-active-color				: $link-color !default;
 $nav-tabs-link-active-bg				: transparent !default;
 $nav-tabs-link-active-border-color		: $primary !default;
@@ -332,15 +332,6 @@ $nav-tabs-link-active-border-color		: $primary !default;
 $navbar-nav-link-padding-x: map-get($spacers, 4) !default;
 $navbar-nav-link-padding-y: map-get($spacers, 4) !default;
 $nav-link-padding-x: 1rem !default;
-
-/* navs */
-
-$nav-tabs-border-radius					: 0 !default;
-
-$nav-tabs-link-hover-border-color		: 0 !default;
-$nav-tabs-link-active-color				: $link-color !default;
-$nav-tabs-link-active-bg				: transparent !default;
-$nav-tabs-link-active-border-color		: $primary !default;
 
 /* modals */
 

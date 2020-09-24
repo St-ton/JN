@@ -761,7 +761,11 @@ function baueArtikelhinweise($cRedirectParam = null, $bRenew = false, $oArtikel 
                 case R_EMPTY_VARIBOX:
                     $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('artikelVariBoxEmpty', 'messages');
                     break;
+                case R_MISSING_TOKEN:
+                    $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('missingToken', 'messages');
+                    break;
                 default:
+                    $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('unknownError', 'messages');
                     break;
             }
             executeHook(HOOK_ARTIKEL_INC_ARTIKELHINWEISSWITCH);

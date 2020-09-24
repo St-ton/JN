@@ -1,4 +1,4 @@
-{if $notifications->count() > 0}
+{if $notifications->totalCount() > 0}
     {$notifyTypes = [0 => 'info', 1 => 'warning', 2 => 'danger']}
     <a href="#" class="nav-link text-primary px-2" data-toggle="dropdown">
         <span class="fa-layers fa-fw has-notify-icon">
@@ -13,15 +13,46 @@
         <span class="dropdown-header">{__('notificationsHeader')}</span>
         <div class="dropdown-divider"></div>
         {foreach $notifications as $notify}
-            <div class="dropdown-item-text">
-                <span class="icon-text-indent">
-                    <div><i class="fa fa-circle text-{$notifyTypes[$notify->getType()]}" aria-hidden="true"></i></div>
-                    {if $notify->getUrl() !== null}<a href="{$notify->getUrl()}">{/if}
-                        <div class="font-weight-bold">{$notify->getTitle()}: </div>
-                        {$notify->getDescription()}
-                    {if $notify->getUrl() !== null}</a>{/if}
-                </span>
-            </div>
+            {if !$notify->isIgnored()}
+                <div class="dropdown-item-text">
+                    <div class="dropdown-header">
+                        {if $notify->getHash() !== null}
+                            <button type="button" class="close pull-right close-notify" aria-label="Close" data-hash="{$notify->getHash()}">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        {/if}
+                        <i class="fa fa-circle text-{$notifyTypes[$notify->getType()]}" aria-hidden="true"></i>
+                        {$notify->getTitle()}
+                    </div>
+                    <div class="dropdown-item-text">
+                        {if $notify->getUrl() !== null}<a href="{$notify->getUrl()}">{/if}
+                            {$notify->getDescription()}
+                        {if $notify->getUrl() !== null}</a>{/if}
+                    </div>
+                </div>
+                {if !$notify@last}
+                <div class="dropdown-divider"></div>
+                {/if}
+            {/if}
         {/foreach}
+        {if $notifications->count() != $notifications->totalCount()}
+            {if $notifications->count() > 0}
+                <div class="dropdown-divider"></div>
+            {/if}
+            <div class="dropdown-item-text">
+                <a href="#" class="showall-notify">{__('showAll')}</a>
+            </div>
+        {/if}
     </div>
 {/if}
+<script>
+    {literal}
+    $('#notify-drop')
+        .on('click', '.close-notify', function () {
+            ioCall('ignoreNotification', [$(this).data('hash')]);
+        })
+        .on('click', '.showall-notify', function () {
+            ioCall('resetNotifications', []);
+        });
+    {/literal}
+</script>

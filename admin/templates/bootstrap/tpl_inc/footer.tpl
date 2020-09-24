@@ -40,6 +40,9 @@
         });
     }
     $('.select2').select2();
+    $(function() {
+        ioCall('updateNotifications', []);
+    });
 </script>
 
 {/if}

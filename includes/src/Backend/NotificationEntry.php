@@ -54,18 +54,35 @@ class NotificationEntry
     protected $url;
 
     /**
+     * @var string
+     */
+    protected $hash;
+
+    /**
+     * @var bool
+     */
+    protected $ignored = false;
+
+    /**
      * NotificationEntry constructor.
      * @param int         $type
      * @param string      $title
-     * @param null|string $description
-     * @param null|string $url
+     * @param string|null $description
+     * @param string|null $url
+     * @param string|null $hash
      */
-    public function __construct($type, $title, $description = null, $url = null)
-    {
+    public function __construct(
+        int $type,
+        string $title,
+        ?string $description = null,
+        ?string $url = null,
+        ?string $hash = null
+    ) {
         $this->setType($type)
             ->setTitle($title)
             ->setDescription($description)
-            ->setUrl($url);
+            ->setUrl($url)
+            ->setHash($hash);
     }
 
     /**
@@ -78,9 +95,9 @@ class NotificationEntry
 
     /**
      * @param string $pluginId
-     * @return $this
+     * @return static
      */
-    public function setPluginId($pluginId): self
+    public function setPluginId(string $pluginId): self
     {
         $this->pluginId = $pluginId;
 
@@ -97,7 +114,7 @@ class NotificationEntry
 
     /**
      * @param int $type
-     * @return $this
+     * @return static
      */
     public function setType(int $type): self
     {
@@ -116,9 +133,9 @@ class NotificationEntry
 
     /**
      * @param string $title
-     * @return $this
+     * @return static
      */
-    public function setTitle($title): self
+    public function setTitle(string $title): self
     {
         $this->title = $title;
 
@@ -134,10 +151,10 @@ class NotificationEntry
     }
 
     /**
-     * @param string $description
-     * @return $this
+     * @param string|null $description
+     * @return static
      */
-    public function setDescription($description): self
+    public function setDescription(?string $description): self
     {
         $this->description = $description;
 
@@ -161,10 +178,10 @@ class NotificationEntry
     }
 
     /**
-     * @param string $url
-     * @return $this
+     * @param string|null $url
+     * @return static
      */
-    public function setUrl($url): self
+    public function setUrl(?string $url): self
     {
         $this->url = $url;
 
@@ -177,5 +194,43 @@ class NotificationEntry
     public function hasUrl(): bool
     {
         return $this->url !== null && \mb_strlen($this->url) > 0;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getHash(): ?string
+    {
+        return $this->hash;
+    }
+
+    /**
+     * @param string|null $hash
+     * @return static
+     */
+    public function setHash(?string $hash): self
+    {
+        $this->hash = $hash;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isIgnored(): bool
+    {
+        return $this->ignored;
+    }
+
+    /**
+     * @param bool $ignored
+     * @return NotificationEntry
+     */
+    public function setIgnored(bool $ignored): self
+    {
+        $this->ignored = $ignored;
+
+        return $this;
     }
 }

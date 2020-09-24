@@ -120,7 +120,6 @@ if ($loggedIn) {
         $oAccount->redirectOnFailure(AdminLoginStatus::ERROR_SESSION_INVALID);
     }
 
-    Shop::fire('backend.notification', Notification::getInstance()->buildDefault());
     if (isset($_POST['revision-action'], $_POST['revision-type'], $_POST['revision-id']) && Form::validateToken()) {
         $revision = new Revision($db);
         if ($_POST['revision-action'] === 'restore') {

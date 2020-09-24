@@ -5,7 +5,10 @@ namespace JTL\Backend;
 use ArrayIterator;
 use Countable;
 use Exception;
+use Illuminate\Support\Collection;
 use IteratorAggregate;
+use JTL\DB\ReturnType;
+use JTL\IO\IOResponse;
 use JTL\Link\Admin\LinkAdmin;
 use JTL\Shop;
 use JTL\SingletonTrait;
@@ -29,29 +32,36 @@ class Notification implements IteratorAggregate, Countable
      * @param string      $title
      * @param string|null $description
      * @param string|null $url
+     * @param string|null $hash
      */
-    public function add(int $type, string $title, string $description = null, string $url = null)
-    {
-        $this->addNotify(new NotificationEntry($type, $title, $description, $url));
+    public function add(
+        int $type,
+        string $title,
+        ?string $description = null,
+        ?string $url = null,
+        ?string $hash = null
+    ): void {
+        $this->addNotify(new NotificationEntry($type, $title, $description, $url, $hash));
     }
 
     /**
      * @param NotificationEntry $notify
      */
-    public function addNotify(NotificationEntry $notify)
+    public function addNotify(NotificationEntry $notify): void
     {
         $this->array[] = $notify;
     }
 
     /**
+     * @param bool $withIgnored
      * @return int - highest type in record
      */
-    public function getHighestType(): int
+    public function getHighestType(bool $withIgnored = false): int
     {
         $type = NotificationEntry::TYPE_NONE;
         foreach ($this as $notify) {
             /** @var NotificationEntry $notify */
-            if ($notify->getType() > $type) {
+            if (($withIgnored || !$notify->isIgnored()) && $notify->getType() > $type) {
                 $type = $notify->getType();
             }
         }
@@ -63,6 +73,16 @@ class Notification implements IteratorAggregate, Countable
      * @return int
      */
     public function count(): int
+    {
+        return \count(\array_filter($this->array, static function ($item) {
+            return !$item->isIgnored();
+        }));
+    }
+
+    /**
+     * @return int
+     */
+    public function totalCount(): int
     {
         return \count($this->array);
     }
@@ -105,12 +125,14 @@ class Notification implements IteratorAggregate, Countable
             return $this;
         }
 
-        if (!$status->validFolderPermissions()) {
+        $hash = 'validFolderPermissions';
+        if (!$status->validFolderPermissions($hash)) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,
                 __('validFolderPermissionsTitle'),
                 __('validFolderPermissionsMessage'),
-                'permissioncheck.php'
+                'permissioncheck.php',
+                $hash
             );
         }
 
@@ -131,12 +153,14 @@ class Notification implements IteratorAggregate, Countable
             );
         }
 
-        if (!$status->validModifiedFileStruct() || !$status->validOrphanedFilesStruct()) {
+        $hash = 'validModifiedFileStruct';
+        if (!$status->validModifiedFileStruct($hash) || !$status->validOrphanedFilesStruct($hash)) {
             $this->add(
                 NotificationEntry::TYPE_WARNING,
                 __('validModifiedFileStructTitle'),
                 __('validModifiedFileStructMessage'),
-                'filecheck.php'
+                'filecheck.php',
+                $hash
             );
         }
 
@@ -175,12 +199,14 @@ class Notification implements IteratorAggregate, Countable
             );
         }
 
-        if ($status->hasLicenseExpirations()) {
+        $hash = 'hasLicenseExpirations';
+        if ($status->hasLicenseExpirations($hash)) {
             $this->add(
                 NotificationEntry::TYPE_WARNING,
                 __('hasLicenseExpirationsTitle'),
                 __('hasLicenseExpirationsMessage'),
-                'licenses.php'
+                'licenses.php',
+                $hash
             );
         }
 
@@ -223,12 +249,14 @@ class Notification implements IteratorAggregate, Countable
             );
         }
 
-        if ($status->hasInsecureMailConfig()) {
+        $hash = 'hasInsecureMailConfig';
+        if ($status->hasInsecureMailConfig($hash)) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,
                 __('hasInsecureMailConfigTitle'),
                 __('hasInsecureMailConfigMessage'),
-                Shop::getURL() . '/' . \PFAD_ADMIN . 'einstellungen.php?kSektion=3'
+                Shop::getURL() . '/' . \PFAD_ADMIN . 'einstellungen.php?kSektion=3',
+                $hash
             );
         }
 
@@ -299,5 +327,102 @@ class Notification implements IteratorAggregate, Countable
         }
 
         return $this;
+    }
+
+    /**
+     * @param string $hash
+     */
+    protected function ignoreNotification(string $hash): void
+    {
+        Shop::Container()->getDB()->upsert('tnotificationsignore', (object)[
+           'user_id'           => Shop::Container()->getAdminAccount()->getID(),
+           'notification_hash' => $hash,
+           'created'           => 'NOW()',
+        ], ['created']);
+    }
+
+    /**
+     * @return void
+     */
+    public function resetIgnoredNotifications(): void
+    {
+        Shop::Container()->getDB()->delete(
+            'tnotificationsignore',
+            'user_id',
+            Shop::Container()->getAdminAccount()->getID()
+        );
+    }
+
+    /**
+     * @return $this
+     */
+    public function updateIgnoredNotifications(): self
+    {
+        $db = Shop::Container()->getDB();
+        /** @var Collection $res */
+        $res = $db->queryPrepared(
+            'SELECT notification_hash
+                FROM tnotificationsignore
+                WHERE user_id = :userID', // AND NOW() < DATE_ADD(created, INTERVAL 7 DAY)',
+            [
+                'userID' => Shop::Container()->getAdminAccount()->getID(),
+            ],
+            ReturnType::COLLECTION
+        );
+
+        $hashes = $res->keyBy('notification_hash');
+        foreach ($this->array as $notificationEntry) {
+            if (($hash = $notificationEntry->getHash()) !== null && $hashes->has($hash)) {
+                $notificationEntry->setIgnored(true);
+                $hashes->forget($hash);
+            }
+        }
+        if ($hashes->count() > 0) {
+            $db->query(
+                "DELETE FROM tnotificationsignore
+                    WHERE notification_hash IN ('" . $hashes->implode('notification_hash', "', '") . "')",
+                ReturnType::DEFAULT
+            );
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string $hash
+     * @return IOResponse
+     * @throws Exception
+     */
+    public static function ioIgnoreNotification(string $hash): IOResponse
+    {
+        self::getInstance()->ignoreNotification($hash);
+
+        return self::ioUpdateNotifications();
+    }
+
+    /**
+     * @return IOResponse
+     * @throws Exception
+     */
+    public static function ioResetIgnoredNotifications(): IOResponse
+    {
+        self::getInstance()->resetIgnoredNotifications();
+
+        return self::ioUpdateNotifications();
+    }
+
+    /**
+     * @return IOResponse
+     * @throws Exception
+     */
+    public static function ioUpdateNotifications(): IOResponse
+    {
+        $response      = new IOResponse();
+        $notifications = self::getInstance();
+        Shop::fire('backend.notification', $notifications->buildDefault());
+        $notifications->updateIgnoredNotifications();
+        $response->assignDom('notify-drop', 'innerHTML', \getNotifyDropIO()['tpl']);
+
+        return $response;
     }
 }

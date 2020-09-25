@@ -3355,7 +3355,7 @@ class Artikel
         foreach (\get_object_vars($product) as $k => $v) {
             $this->$k = $v;
         }
-        $maxDiscount = $this->getDiscount($customerGroupID, $productID);
+        $maxDiscount = $this->getDiscount($customerGroupID, $this->kArtikel);
         if ($this->Preise === null || !\method_exists($this->Preise, 'rabbatierePreise')) {
             $this->holPreise($customerGroupID, $this);
         }

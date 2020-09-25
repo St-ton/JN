@@ -240,7 +240,7 @@ class SearchSpecial
                         AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND tbestseller.kArtikel = tartikel.kArtikel
-                        AND round(tbestseller.fAnzahl) >= ' . $minAmount . '
+                        AND ROUND(tbestseller.fAnzahl) >= ' . $minAmount . '
                         ' . self::getParentSQL() . '
                         ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . '
                     ORDER BY fAnzahl DESC',
@@ -292,7 +292,7 @@ class SearchSpecial
             ), static function ($e) {
                 return (int)$e->kArtikel;
             });
-            $this->cache->set($cacheID, $specialOffers, $this->getCacheTags($specialOffers));
+            $this->cache->set($cacheID, $specialOffers, $this->getCacheTags($specialOffers), 3600);
         }
 
         return self::randomizeAndLimit($specialOffers, \min(\count($specialOffers), $limit));
@@ -335,7 +335,7 @@ class SearchSpecial
             ), static function ($e) {
                 return (int)$e->kArtikel;
             });
-            $this->cache->set($cacheID, $new, $this->getCacheTags($new));
+            $this->cache->set($cacheID, $new, $this->getCacheTags($new), 3600);
         }
 
         return self::randomizeAndLimit($new, \min(\count($new), $limit));

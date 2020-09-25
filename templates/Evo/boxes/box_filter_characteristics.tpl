@@ -22,7 +22,7 @@
             <div class="panel-heading">
                 <div class="panel-title">
                 {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'T' && $Merkmal->getData('cBildpfadKlein') !== $smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN}
-                    <img src="{$Merkmal->getData('cBildURLKlein')}" alt="" class="vmiddle" />
+                    <img src="{$Merkmal->getData('cBildURLKlein')}" alt="" class="vmiddle filter-img" />
                 {/if}
                 {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'B'}
                     &nbsp;{$Merkmal->cName}

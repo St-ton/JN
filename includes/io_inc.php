@@ -119,8 +119,8 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
     $objResponse = new IOResponse();
 
     $GLOBALS['oSprache'] = Sprache::getInstance();
-
-    $kArtikel = (int)$kArtikel;
+    $token               = $oEigenschaftwerte_arr['jtl_token'];
+    $kArtikel            = (int)$kArtikel;
     if ($anzahl > 0 && $kArtikel > 0) {
         $Artikel                             = new Artikel();
         $oArtikelOptionen                    = new stdClass();
@@ -144,7 +144,7 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
             $anzahl = max((int)$anzahl, 1);
         }
         // Prüfung
-        $errors = pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr);
+        $errors = pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, 2, $token);
 
         if (count($errors) > 0) {
             $localizedErrors = baueArtikelhinweise($errors, true, $Artikel, $anzahl);

@@ -48,14 +48,24 @@ class HookManager
 
     /**
      * HookManager constructor.
+     * @param DbInterface       $db
+     * @param JTLCacheInterface $cache
+     * @param TimeDataCollector $timer
+     * @param Dispatcher        $dispatcher
+     * @param array             $hookList
      */
-    public function __construct()
-    {
-        $this->db         = Shop::Container()->getDB();
-        $this->cache      = Shop::Container()->getCache();
-        $this->timer      = Shop::Container()->getDebugBar()->getTimer();
-        $this->dispatcher = Dispatcher::getInstance();
-        $this->hookList   = Helper::getHookList();
+    public function __construct(
+        DbInterface $db,
+        JTLCacheInterface $cache,
+        TimeDataCollector $timer,
+        Dispatcher $dispatcher,
+        array $hookList
+    ) {
+        $this->db         = $db;
+        $this->cache      = $cache;
+        $this->timer      = $timer;
+        $this->dispatcher = $dispatcher;
+        $this->hookList   = $hookList;
         self::$instance   = $this;
     }
 
@@ -64,7 +74,13 @@ class HookManager
      */
     public static function getInstance(): self
     {
-        return self::$instance ?? new self();
+        return self::$instance ?? new self(
+            Shop::Container()->getDB(),
+            Shop::Container()->getCache(),
+            Shop::Container()->getDebugBar()->getTimer(),
+            Dispatcher::getInstance(),
+            Helper::getHookList()
+        );
     }
 
     /**

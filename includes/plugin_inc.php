@@ -15,66 +15,7 @@ use JTL\Shop;
  */
 function executeHook(int $hookID, $args_arr = [])
 {
-    if (SAFE_MODE === true) {
-        return;
-    }
     HookManager::getInstance()->executeHook($hookID, $args_arr);
-    return;
-    global $smarty;
-    $timer = Shop::Container()->getDebugBar()->getTimer();
-    $timer->startMeasure('shop.hook.' . $hookID);
-    Dispatcher::getInstance()->fire('shop.hook.' . $hookID, array_merge((array)$hookID, $args_arr));
-
-    $hookList = Helper::getHookList();
-    if (empty($hookList[$hookID]) || !is_array($hookList[$hookID])) {
-        $timer->stopMeasure('shop.hook.' . $hookID);
-        return;
-    }
-    $db    = Shop::Container()->getDB();
-    $cache = Shop::Container()->getCache();
-    foreach ($hookList[$hookID] as $item) {
-        $oPlugin = Shop::get('oplugin_' . $item->kPlugin);
-        if ($oPlugin === null) {
-            $loader  = Helper::getLoaderByPluginID((int)$item->kPlugin, $db, $cache);
-            $oPlugin = $loader->init((int)$item->kPlugin);
-            if ($oPlugin === null) {
-                continue;
-            }
-            if (!Helper::licenseCheck($oPlugin)) {
-                continue;
-            }
-            Shop::set('oplugin_' . $item->kPlugin, $oPlugin);
-        }
-        if ($smarty !== null) {
-            $smarty->assign('oPlugin_' . $oPlugin->getPluginID(), $oPlugin);
-        }
-        $file                 = $item->cDateiname;
-        $oPlugin->nCalledHook = $hookID;
-        if ($hookID === HOOK_SEITE_PAGE_IF_LINKART && $file === PLUGIN_SEITENHANDLER) {
-            include PFAD_ROOT . PFAD_INCLUDES . PLUGIN_SEITENHANDLER;
-        } elseif ($hookID === HOOK_CHECKBOX_CLASS_TRIGGERSPECIALFUNCTION) {
-            if ($oPlugin->getID() === (int)$args_arr['oCheckBox']->oCheckBoxFunktion->kPlugin) {
-                include $oPlugin->getPaths()->getFrontendPath() . $file;
-            }
-        } elseif (is_file($oPlugin->getPaths()->getFrontendPath() . $file)) {
-            $start = microtime(true);
-            include $oPlugin->getPaths()->getFrontendPath() . $file;
-            if (PROFILE_PLUGINS === true) {
-                $runData = [
-                    'runtime'   => microtime(true) - $start,
-                    'timestamp' => microtime(true),
-                    'hookID'    => $hookID,
-                    'runcount'  => 1,
-                    'file'      => $oPlugin->getPaths()->getFrontendPath() . $file
-                ];
-                Profiler::setPluginProfile($runData);
-            }
-        }
-        if ($smarty !== null) {
-            $smarty->clearAssign('oPlugin_' . $oPlugin->getPluginID());
-        }
-    }
-    $timer->stopMeasure('shop.hook.' . $hookID);
 }
 
 /**

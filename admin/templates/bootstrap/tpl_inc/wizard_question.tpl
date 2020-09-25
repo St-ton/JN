@@ -131,7 +131,7 @@
                         </div>
                         <div class="col-xl">
                             {$option->getDescription()}
-                            <a href="{$option->getLink()}" target="_blank">{__('getToKnowMore')}</a>
+                            <a href="premiumplugin.php?scope={$question->getScope()}&id={$option->getValue()}&fromWizard=true" target="_blank">{__('getToKnowMore')}</a>
                         </div>
                     </div>
                 </div>

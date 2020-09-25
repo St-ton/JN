@@ -21,7 +21,9 @@ function gibVaterSQL()
 function gibTopAngebote(int $limit = 20, int $customerGroupID = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return SearchSpecial::getTopOffers($limit, $customerGroupID);
+    $searchSpecial = new SearchSpecial(Shop::Container()->getDB(), Shop::Container()->getCache());
+
+    return $searchSpecial->getTopOffers($limit, $customerGroupID);
 }
 
 /**
@@ -45,7 +47,9 @@ function randomizeAndLimit(array $arr, int $limit = 1)
 function gibBestseller(int $limit = 20, int $customerGroupID = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return SearchSpecial::getBestsellers($limit, $customerGroupID);
+    $searchSpecial = new SearchSpecial(Shop::Container()->getDB(), Shop::Container()->getCache());
+
+    return $searchSpecial->getBestsellers($limit, $customerGroupID);
 }
 
 /**
@@ -57,7 +61,9 @@ function gibBestseller(int $limit = 20, int $customerGroupID = 0)
 function gibSonderangebote(int $limit = 20, int $customerGroupID = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return SearchSpecial::getSpecialOffers($limit, $customerGroupID);
+    $searchSpecial = new SearchSpecial(Shop::Container()->getDB(), Shop::Container()->getCache());
+
+    return $searchSpecial->getSpecialOffers($limit, $customerGroupID);
 }
 
 /**
@@ -69,5 +75,7 @@ function gibSonderangebote(int $limit = 20, int $customerGroupID = 0)
 function gibNeuImSortiment(int $limit, int $customerGroupID = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return SearchSpecial::getNewProducts($limit, $customerGroupID);
+    $searchSpecial = new SearchSpecial(Shop::Container()->getDB(), Shop::Container()->getCache());
+
+    return $searchSpecial->getNewProducts($limit, $customerGroupID);
 }

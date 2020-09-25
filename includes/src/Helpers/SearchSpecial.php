@@ -1,12 +1,15 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Helpers;
 
+use JTL\Cache\JTLCacheInterface;
 use JTL\Customer\CustomerGroup;
+use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Media\Image\Overlay;
 use JTL\Shop;
 use stdClass;
+use function Functional\map;
 
 /**
  * Class SearchSpecial
@@ -15,6 +18,27 @@ use stdClass;
  */
 class SearchSpecial
 {
+    /**
+     * @var JTLCacheInterface
+     */
+    private $cache;
+
+    /**
+     * @var DbInterface
+     */
+    private $db;
+
+    /**
+     * SearchSpecial constructor.
+     * @param DbInterface       $db
+     * @param JTLCacheInterface $cache
+     */
+    public function __construct(DbInterface $db, JTLCacheInterface $cache)
+    {
+        $this->db    = $db;
+        $this->cache = $cache;
+    }
+
     /**
      * @param int $langID
      * @return Overlay[]
@@ -55,29 +79,30 @@ class SearchSpecial
     public static function buildAllURLs(): array
     {
         $overlays = [];
+        $lang     = Shop::Lang();
 
         $overlays[\SEARCHSPECIALS_BESTSELLER]        = new stdClass();
-        $overlays[\SEARCHSPECIALS_BESTSELLER]->cName = Shop::Lang()->get('bestseller');
+        $overlays[\SEARCHSPECIALS_BESTSELLER]->cName = $lang->get('bestseller');
         $overlays[\SEARCHSPECIALS_BESTSELLER]->cURL  = self::buildURL(\SEARCHSPECIALS_BESTSELLER);
 
         $overlays[\SEARCHSPECIALS_SPECIALOFFERS]        = new stdClass();
-        $overlays[\SEARCHSPECIALS_SPECIALOFFERS]->cName = Shop::Lang()->get('specialOffers');
+        $overlays[\SEARCHSPECIALS_SPECIALOFFERS]->cName = $lang->get('specialOffers');
         $overlays[\SEARCHSPECIALS_SPECIALOFFERS]->cURL  = self::buildURL(\SEARCHSPECIALS_SPECIALOFFERS);
 
         $overlays[\SEARCHSPECIALS_NEWPRODUCTS]        = new stdClass();
-        $overlays[\SEARCHSPECIALS_NEWPRODUCTS]->cName = Shop::Lang()->get('newProducts');
+        $overlays[\SEARCHSPECIALS_NEWPRODUCTS]->cName = $lang->get('newProducts');
         $overlays[\SEARCHSPECIALS_NEWPRODUCTS]->cURL  = self::buildURL(\SEARCHSPECIALS_NEWPRODUCTS);
 
         $overlays[\SEARCHSPECIALS_TOPOFFERS]        = new stdClass();
-        $overlays[\SEARCHSPECIALS_TOPOFFERS]->cName = Shop::Lang()->get('topOffers');
+        $overlays[\SEARCHSPECIALS_TOPOFFERS]->cName = $lang->get('topOffers');
         $overlays[\SEARCHSPECIALS_TOPOFFERS]->cURL  = self::buildURL(\SEARCHSPECIALS_TOPOFFERS);
 
         $overlays[\SEARCHSPECIALS_UPCOMINGPRODUCTS]        = new stdClass();
-        $overlays[\SEARCHSPECIALS_UPCOMINGPRODUCTS]->cName = Shop::Lang()->get('upcomingProducts');
+        $overlays[\SEARCHSPECIALS_UPCOMINGPRODUCTS]->cName = $lang->get('upcomingProducts');
         $overlays[\SEARCHSPECIALS_UPCOMINGPRODUCTS]->cURL  = self::buildURL(\SEARCHSPECIALS_UPCOMINGPRODUCTS);
 
         $overlays[\SEARCHSPECIALS_TOPREVIEWS]        = new stdClass();
-        $overlays[\SEARCHSPECIALS_TOPREVIEWS]->cName = Shop::Lang()->get('topReviews');
+        $overlays[\SEARCHSPECIALS_TOPREVIEWS]->cName = $lang->get('topReviews');
         $overlays[\SEARCHSPECIALS_TOPREVIEWS]->cURL  = self::buildURL(\SEARCHSPECIALS_TOPREVIEWS);
 
         return $overlays;
@@ -98,16 +123,16 @@ class SearchSpecial
             return $url;
         }
         $oSeo = Shop::Container()->getDB()->select(
-            'tseo',
-            'kSprache',
-            Shop::getLanguageID(),
-            'cKey',
-            'suchspecial',
-            'kKey',
-            $key,
-            false,
-            'cSeo'
-        ) ?? new stdClass();
+                'tseo',
+                'kSprache',
+                Shop::getLanguageID(),
+                'cKey',
+                'suchspecial',
+                'kKey',
+                $key,
+                false,
+                'cSeo'
+            ) ?? new stdClass();
 
         $oSeo->kSuchspecial = $key;
         \executeHook(\HOOK_BOXEN_INC_SUCHSPECIALURL);
@@ -144,27 +169,36 @@ class SearchSpecial
     /**
      * @param int $limit
      * @param int $customerGroupID
-     * @return array
+     * @return int[]
      * @former gibTopAngebote()
      * @since 5.0.0
      */
-    public static function getTopOffers(int $limit = 20, int $customerGroupID = 0): array
+    public function getTopOffers(int $limit = 20, int $customerGroupID = 0): array
     {
         if (!$customerGroupID) {
             $customerGroupID = CustomerGroup::getDefaultGroupID();
         }
-        $top = Shop::Container()->getDB()->query(
-            'SELECT tartikel.kArtikel
-                FROM tartikel
-                LEFT JOIN tartikelsichtbarkeit 
-                    ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . "
-                WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                    AND tartikel.cTopArtikel = 'Y'
-                    " . self::getParentSQL() . '
-                    ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),
-            ReturnType::ARRAY_OF_OBJECTS
-        );
+        $cacheID = 'ssp_top_offers_' . $customerGroupID;
+        $top     = $this->cache->get($cacheID);
+        if ($top === false || !\is_countable($top)) {
+            $top = map($this->db->query(
+                'SELECT tartikel.kArtikel
+                    FROM tartikel
+                    LEFT JOIN tartikelsichtbarkeit 
+                        ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                        AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . "
+                    WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                        AND tartikel.cTopArtikel = 'Y'
+                        " . self::getParentSQL() . '
+                        ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),
+                ReturnType::ARRAY_OF_OBJECTS
+            ), static function ($e) {
+                return (int)$e->kArtikel;
+            });
+            $this->cache->set($cacheID, $top, map($top, static function (int $id) {
+                return \CACHING_GROUP_PRODUCT . '_' . $id;
+            }));
+        }
 
         return self::randomizeAndLimit($top, \min(\count($top), $limit));
     }
@@ -172,11 +206,11 @@ class SearchSpecial
     /**
      * @param int $limit
      * @param int $customerGroupID
-     * @return array
+     * @return int[]
      * @former gibBestseller()
      * @since 5.0.0
      */
-    public static function getBestsellers(int $limit = 20, int $customerGroupID = 0): array
+    public function getBestsellers(int $limit = 20, int $customerGroupID = 0): array
     {
         if (!$customerGroupID) {
             $customerGroupID = CustomerGroup::getDefaultGroupID();
@@ -185,20 +219,29 @@ class SearchSpecial
         $minAmount   = isset($config['global']['global_bestseller_minanzahl'])
             ? (float)$config['global']['global_bestseller_minanzahl']
             : 10;
-        $bestsellers = Shop::Container()->getDB()->query(
-            'SELECT tartikel.kArtikel, tbestseller.fAnzahl
-                FROM tbestseller, tartikel
-                LEFT JOIN tartikelsichtbarkeit 
-                    ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
-                WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                    AND tbestseller.kArtikel = tartikel.kArtikel
-                    AND round(tbestseller.fAnzahl) >= ' . $minAmount . '
-                    ' . self::getParentSQL() . '
-                    ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . '
-                ORDER BY fAnzahl DESC',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
+        $cacheID     = 'ssp_bestsellers_' . $customerGroupID . '_' . $minAmount;
+        $bestsellers = $this->cache->get($cacheID);
+        if ($bestsellers === false || !\is_countable($bestsellers)) {
+            $bestsellers = map($this->db->query(
+                'SELECT tartikel.kArtikel, tbestseller.fAnzahl
+                    FROM tbestseller, tartikel
+                    LEFT JOIN tartikelsichtbarkeit 
+                        ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                        AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                    WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                        AND tbestseller.kArtikel = tartikel.kArtikel
+                        AND round(tbestseller.fAnzahl) >= ' . $minAmount . '
+                        ' . self::getParentSQL() . '
+                        ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . '
+                    ORDER BY fAnzahl DESC',
+                ReturnType::ARRAY_OF_OBJECTS
+            ), static function ($e) {
+                return (int)$e->kArtikel;
+            });
+            $this->cache->set($cacheID, $bestsellers, map($bestsellers, static function (int $id) {
+                return \CACHING_GROUP_PRODUCT . '_' . $id;
+            }));
+        }
 
         return self::randomizeAndLimit($bestsellers, \min(\count($bestsellers), $limit));
     }
@@ -206,36 +249,45 @@ class SearchSpecial
     /**
      * @param int $limit
      * @param int $customerGroupID
-     * @return array
+     * @return int[]
      * @former gibSonderangebote()
      * @since 5.0.0
      */
-    public static function getSpecialOffers(int $limit = 20, int $customerGroupID = 0): array
+    public function getSpecialOffers(int $limit = 20, int $customerGroupID = 0): array
     {
         if (!$customerGroupID) {
             $customerGroupID = CustomerGroup::getDefaultGroupID();
         }
-        $specialOffers = Shop::Container()->getDB()->query(
-            'SELECT tartikel.kArtikel, tsonderpreise.fNettoPreis
-                FROM tartikel
-                JOIN tartikelsonderpreis 
-                    ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
-                JOIN tsonderpreise 
-                    ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis
-                LEFT JOIN tartikelsichtbarkeit 
-                    ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
-                WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                    AND tartikelsonderpreis.kArtikel = tartikel.kArtikel
-                    AND tsonderpreise.kKundengruppe = ' . $customerGroupID . "
-                    AND tartikelsonderpreis.cAktiv = 'Y'
-                    AND tartikelsonderpreis.dStart <= NOW()
-                    AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE())
-                    AND (tartikelsonderpreis.nAnzahl < tartikel.fLagerbestand OR tartikelsonderpreis.nIstAnzahl = 0)
-                    " . self::getParentSQL() . '
-                    ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),
-            ReturnType::ARRAY_OF_OBJECTS
-        );
+        $cacheID       = 'ssp_special_offers_' . $customerGroupID;
+        $specialOffers = $this->cache->get($cacheID);
+        if ($specialOffers === false || !\is_countable($specialOffers)) {
+            $specialOffers = map($this->db->query(
+                'SELECT tartikel.kArtikel, tsonderpreise.fNettoPreis
+                    FROM tartikel
+                    JOIN tartikelsonderpreis 
+                        ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
+                    JOIN tsonderpreise 
+                        ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis
+                    LEFT JOIN tartikelsichtbarkeit 
+                        ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                        AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                    WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                        AND tartikelsonderpreis.kArtikel = tartikel.kArtikel
+                        AND tsonderpreise.kKundengruppe = ' . $customerGroupID . "
+                        AND tartikelsonderpreis.cAktiv = 'Y'
+                        AND tartikelsonderpreis.dStart <= NOW()
+                        AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE())
+                        AND (tartikelsonderpreis.nAnzahl < tartikel.fLagerbestand OR tartikelsonderpreis.nIstAnzahl = 0)
+                        " . self::getParentSQL() . '
+                        ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),
+                ReturnType::ARRAY_OF_OBJECTS
+            ), static function ($e) {
+                return (int)$e->kArtikel;
+            });
+            $this->cache->set($cacheID, $specialOffers, map($specialOffers, static function (int $id) {
+                return \CACHING_GROUP_PRODUCT . '_' . $id;
+            }));
+        }
 
         return self::randomizeAndLimit($specialOffers, \min(\count($specialOffers), $limit));
     }
@@ -243,11 +295,11 @@ class SearchSpecial
     /**
      * @param int $limit
      * @param int $customerGroupID
-     * @return array
+     * @return int[]
      * @former gibNeuImSortiment()
      * @since 5.0.0
      */
-    public static function getNewProducts(int $limit, int $customerGroupID = 0): array
+    public function getNewProducts(int $limit, int $customerGroupID = 0): array
     {
         if (!$limit) {
             $limit = 20;
@@ -255,23 +307,32 @@ class SearchSpecial
         if (!$customerGroupID) {
             $customerGroupID = CustomerGroup::getDefaultGroupID();
         }
-        $config = Shop::getSettings([\CONF_BOXEN]);
-        $days   = ($config['boxen']['box_neuimsortiment_alter_tage'] > 0)
+        $config  = Shop::getSettings([\CONF_BOXEN]);
+        $days    = ($config['boxen']['box_neuimsortiment_alter_tage'] > 0)
             ? (int)$config['boxen']['box_neuimsortiment_alter_tage']
             : 30;
-        $new    = Shop::Container()->getDB()->query(
-            'SELECT tartikel.kArtikel
-                FROM tartikel
-                LEFT JOIN tartikelsichtbarkeit 
-                    ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . "
-                WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                    AND tartikel.cNeu = 'Y'
-                    AND DATE_SUB(NOW(), INTERVAL " . $days . ' DAY) < tartikel.dErstellt
-                    ' . self::getParentSQL() . '
-                    ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),
-            ReturnType::ARRAY_OF_OBJECTS
-        );
+        $cacheID = 'ssp_new_' . $customerGroupID . '_days';
+        $new     = $this->cache->get($cacheID);
+        if ($new === false || !\is_countable($new)) {
+            $new = map($this->db->query(
+                'SELECT tartikel.kArtikel
+                    FROM tartikel
+                    LEFT JOIN tartikelsichtbarkeit 
+                        ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                        AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . "
+                    WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                        AND tartikel.cNeu = 'Y'
+                        AND DATE_SUB(NOW(), INTERVAL " . $days . ' DAY) < tartikel.dErstellt
+                        ' . self::getParentSQL() . '
+                        ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),
+                ReturnType::ARRAY_OF_OBJECTS
+            ), static function ($e) {
+                return (int)$e->kArtikel;
+            });
+            $this->cache->set($cacheID, $new, map($new, static function (int $id) {
+                return \CACHING_GROUP_PRODUCT . '_' . $id;
+            }));
+        }
 
         return self::randomizeAndLimit($new, \min(\count($new), $limit));
     }

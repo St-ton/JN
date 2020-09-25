@@ -3,6 +3,7 @@
 use JTL\DB\ReturnType;
 use JTL\Events\Dispatcher;
 use JTL\Plugin\Helper;
+use JTL\Plugin\HookManager;
 use JTL\Plugin\LegacyPlugin;
 use JTL\Plugin\State;
 use JTL\Profiler;
@@ -17,6 +18,8 @@ function executeHook(int $hookID, $args_arr = [])
     if (SAFE_MODE === true) {
         return;
     }
+    HookManager::getInstance()->executeHook($hookID, $args_arr);
+    return;
     global $smarty;
     $timer = Shop::Container()->getDebugBar()->getTimer();
     $timer->startMeasure('shop.hook.' . $hookID);

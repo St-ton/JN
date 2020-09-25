@@ -351,6 +351,7 @@ class SearchSpecial
             return \CACHING_GROUP_PRODUCT . '_' . $id;
         });
         $tags[] = \CACHING_GROUP_PRODUCT;
+        $tags[] = 'jtl_ssp';
 
         return $tags;
     }

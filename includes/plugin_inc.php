@@ -1,19 +1,17 @@
 <?php
 
 use JTL\DB\ReturnType;
-use JTL\Events\Dispatcher;
 use JTL\Plugin\Helper;
 use JTL\Plugin\HookManager;
 use JTL\Plugin\LegacyPlugin;
 use JTL\Plugin\State;
-use JTL\Profiler;
 use JTL\Shop;
 
 /**
  * @param int   $hookID
  * @param array $args_arr
  */
-function executeHook(int $hookID, $args_arr = [])
+function executeHook(int $hookID, array $args_arr = [])
 {
     HookManager::getInstance()->executeHook($hookID, $args_arr);
 }

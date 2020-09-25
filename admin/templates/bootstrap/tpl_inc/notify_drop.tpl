@@ -10,7 +10,10 @@
         </span>
     </a>
     <div class="dropdown-menu dropdown-menu-right dropdown-menu-lg" role="main">
-        <span class="dropdown-header">{__('notificationsHeader')}</span>
+        <div class="dropdown-header">
+            <a href="#"><i class="fa fa-refresh pull-right refresh-notify" aria-hidden="true"></i></a>
+            {__('notificationsHeader')}
+        </div>
         <div class="dropdown-divider"></div>
         {foreach $notifications as $notify}
             {if !$notify->isIgnored()}
@@ -49,10 +52,13 @@
     {literal}
     $('#notify-drop')
         .on('click', '.close-notify', function () {
-            ioCall('ignoreNotification', [$(this).data('hash')]);
+            ioCall('notificationAction', ['dismiss', $(this).data('hash')]);
+        })
+        .on('click', '.refresh-notify', function () {
+            ioCall('notificationAction', ['refresh']);
         })
         .on('click', '.showall-notify', function () {
-            ioCall('resetNotifications', []);
+            ioCall('notificationAction', ['reset']);
         });
     {/literal}
 </script>

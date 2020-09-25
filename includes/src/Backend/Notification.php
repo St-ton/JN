@@ -102,15 +102,16 @@ class Notification implements IteratorAggregate, Countable
     /**
      * Build default system notifications.
      *
-     * @todo Remove translated messages
+     * @param bool $flushCache
      * @return $this
      * @throws Exception
+     * @todo Remove translated messages
      */
-    public function buildDefault(): self
+    public function buildDefault(bool $flushCache = false): self
     {
         $db        = Shop::Container()->getDB();
         $cache     = Shop::Container()->getCache();
-        $status    = Status::getInstance($db, $cache);
+        $status    = Status::getInstance($db, $cache, $flushCache);
         $linkAdmin = new LinkAdmin($db, $cache);
 
         Shop::Container()->getGetText()->loadAdminLocale('notifications');
@@ -330,34 +331,47 @@ class Notification implements IteratorAggregate, Countable
     }
 
     /**
-     * @param string $hash
+     * @param IOResponse $response
+     * @param string     $hash
+     * @return void
+     * @throws Exception
      */
-    protected function ignoreNotification(string $hash): void
+    protected function ignoreNotification(IOResponse $response, string $hash): void
     {
         Shop::Container()->getDB()->upsert('tnotificationsignore', (object)[
-           'user_id'           => Shop::Container()->getAdminAccount()->getID(),
-           'notification_hash' => $hash,
-           'created'           => 'NOW()',
+            'user_id'           => Shop::Container()->getAdminAccount()->getID(),
+            'notification_hash' => $hash,
+            'created'           => 'NOW()',
         ], ['created']);
+
+        $this->updateNotifications($response);
     }
 
     /**
+     * @param IOResponse $response
      * @return void
+     * @throws Exception
      */
-    public function resetIgnoredNotifications(): void
+    protected function resetIgnoredNotifications(IOResponse $response): void
     {
         Shop::Container()->getDB()->delete(
             'tnotificationsignore',
             'user_id',
             Shop::Container()->getAdminAccount()->getID()
         );
+
+        $this->updateNotifications($response, true);
     }
 
     /**
-     * @return $this
+     * @param IOResponse $response
+     * @param bool       $flushCache
+     * @return void
+     * @throws Exception
      */
-    public function updateIgnoredNotifications(): self
+    protected function updateNotifications(IOResponse $response, bool $flushCache = false): void
     {
+        Shop::fire('backend.notification', $this->buildDefault($flushCache));
         $db = Shop::Container()->getDB();
         /** @var Collection $res */
         $res = $db->queryPrepared(
@@ -385,43 +399,34 @@ class Notification implements IteratorAggregate, Countable
             );
         }
 
-        return $this;
+        $response->assignDom('notify-drop', 'innerHTML', \getNotifyDropIO()['tpl']);
     }
 
     /**
-     * @param string $hash
+     * @param string     $action
+     * @param mixed|null $data
      * @return IOResponse
      * @throws Exception
      */
-    public static function ioIgnoreNotification(string $hash): IOResponse
-    {
-        self::getInstance()->ignoreNotification($hash);
-
-        return self::ioUpdateNotifications();
-    }
-
-    /**
-     * @return IOResponse
-     * @throws Exception
-     */
-    public static function ioResetIgnoredNotifications(): IOResponse
-    {
-        self::getInstance()->resetIgnoredNotifications();
-
-        return self::ioUpdateNotifications();
-    }
-
-    /**
-     * @return IOResponse
-     * @throws Exception
-     */
-    public static function ioUpdateNotifications(): IOResponse
+    public static function ioNotification(string $action, $data = null): IOResponse
     {
         $response      = new IOResponse();
         $notifications = self::getInstance();
-        Shop::fire('backend.notification', $notifications->buildDefault());
-        $notifications->updateIgnoredNotifications();
-        $response->assignDom('notify-drop', 'innerHTML', \getNotifyDropIO()['tpl']);
+
+        switch ($action) {
+            case 'update':
+                $notifications->updateNotifications($response);
+                break;
+            case 'refresh':
+                $notifications->updateNotifications($response, true);
+                break;
+            case 'dismiss':
+                $notifications->ignoreNotification($response, (string)$data);
+                break;
+            case 'reset':
+                $notifications->resetIgnoredNotifications($response);
+                break;
+        }
 
         return $response;
     }

@@ -41,7 +41,7 @@
     }
     $('.select2').select2();
     $(function() {
-        ioCall('updateNotifications', []);
+        ioCall('notificationAction', ['update']);
     });
 </script>
 

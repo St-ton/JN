@@ -836,9 +836,9 @@ class DemoDataInstaller
     {
         if ($manufacturerID > 0) {
             $file        = $this->slug($text) . '.jpg';
-            $pathNormal  = PFAD_ROOT . 'bilder/hersteller/normal/' . $file;
-            $pathSmall   = PFAD_ROOT . 'bilder/hersteller/klein/' . $file;
-            $pathStorage = PFAD_ROOT . 'media/image/storage/manufacturers/' . $file;
+            $pathNormal  = \PFAD_ROOT . 'bilder/hersteller/normal/' . $file;
+            $pathSmall   = \PFAD_ROOT . 'bilder/hersteller/klein/' . $file;
+            $pathStorage = \PFAD_ROOT . 'media/image/storage/manufacturers/' . $file;
 
             return ($this->createImage($pathNormal, $text) === true
                 && $this->createImage($pathSmall, $text, 100, 100) === true
@@ -864,7 +864,7 @@ class DemoDataInstaller
 
         if ($productID > 0) {
             $file = '1024_1024_' . \md5($text . $productID . $imageNumber) . '.jpg';
-            $path = PFAD_ROOT . 'media/image/storage/' . $file;
+            $path = \PFAD_ROOT . 'media/image/storage/' . $file;
 
             if ($this->createImage($path, $text, 1024, 1024) === true) {
                 $_image                   = new stdClass();
@@ -887,9 +887,9 @@ class DemoDataInstaller
     {
         if ($categoryID > 0) {
             $file = $this->slug($text) . '.jpg';
-            $path = PFAD_ROOT . 'bilder/kategorien/' . $file;
+            $path = \PFAD_ROOT . 'bilder/kategorien/' . $file;
             if ($this->createImage($path, $text, 200, 200) === true) {
-                $pathStorage = PFAD_ROOT . 'media/image/storage/categories/' . $file;
+                $pathStorage = \PFAD_ROOT . 'media/image/storage/categories/' . $file;
                 $this->createImage($pathStorage, $text, 800, 800);
                 $image             = new stdClass();
                 $image->kKategorie = $categoryID;

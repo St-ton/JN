@@ -10,28 +10,26 @@
         </span>
     </a>
     <div class="dropdown-menu dropdown-menu-right dropdown-menu-lg" role="main">
-        <div class="dropdown-header">
+        <div class="dropdown-header subheading1">
             <a href="#"><i class="fa fa-refresh pull-right refresh-notify" aria-hidden="true"></i></a>
             {__('notificationsHeader')}
         </div>
         <div class="dropdown-divider"></div>
         {foreach $notifications as $notify}
             {if !$notify->isIgnored()}
+                <div class="dropdown-header">
+                    {if $notify->getHash() !== null}
+                        <button type="button" class="close pull-right close-notify" aria-label="Close" data-hash="{$notify->getHash()}">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    {/if}
+                    <i class="fa fa-circle text-{$notifyTypes[$notify->getType()]}" aria-hidden="true"></i>
+                    {$notify->getTitle()}
+                </div>
                 <div class="dropdown-item-text">
-                    <div class="dropdown-header">
-                        {if $notify->getHash() !== null}
-                            <button type="button" class="close pull-right close-notify" aria-label="Close" data-hash="{$notify->getHash()}">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        {/if}
-                        <i class="fa fa-circle text-{$notifyTypes[$notify->getType()]}" aria-hidden="true"></i>
-                        {$notify->getTitle()}
-                    </div>
-                    <div class="dropdown-item-text">
-                        {if $notify->getUrl() !== null}<a href="{$notify->getUrl()}">{/if}
-                            {$notify->getDescription()}
-                        {if $notify->getUrl() !== null}</a>{/if}
-                    </div>
+                    {if $notify->getUrl() !== null}<a href="{$notify->getUrl()}">{/if}
+                        {$notify->getDescription()}
+                    {if $notify->getUrl() !== null}</a>{/if}
                 </div>
                 {if !$notify@last}
                 <div class="dropdown-divider"></div>

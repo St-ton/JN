@@ -107,8 +107,7 @@ class ImageSlider extends Portlet
             'slider-kenburns'             => [
                 'label'      => __('useKenBurnsEffect'),
                 'type'       => InputType::CHECKBOX,
-                'hint'       => __('overridesOtherSettings'),
-                'desc'       => __('kenBurnsDesc')
+                'desc'       => __('kenBurnsDesc') . ' - ' . __('overridesOtherSettings')
             ],
             'slider-effects-random'       => [
                 'label'   => __('randomEffects'),

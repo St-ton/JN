@@ -52,13 +52,13 @@
     {literal}
     $('#notify-drop')
         .on('click', '.close-notify', function () {
-            ioCall('notificationAction', ['dismiss', $(this).data('hash')]);
+            ioCall('notificationAction', ['dismiss', $(this).data('hash')], undefined, undefined, undefined, true);
         })
         .on('click', '.refresh-notify', function () {
-            ioCall('notificationAction', ['refresh']);
+            ioCall('notificationAction', ['refresh'], undefined, undefined, undefined, true);
         })
         .on('click', '.showall-notify', function () {
-            ioCall('notificationAction', ['reset']);
+            ioCall('notificationAction', ['reset'], undefined, undefined, undefined, true);
         });
     {/literal}
 </script>

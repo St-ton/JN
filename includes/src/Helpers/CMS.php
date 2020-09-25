@@ -33,33 +33,33 @@ class CMS
         $boxes         = self::getHomeBoxList(Shop::getSettings([\CONF_STARTSEITE])['startseite']);
         $searchSpecial = new SearchSpecial(Shop::Container()->getDB(), Shop::Container()->getCache());
         foreach ($boxes as $box) {
-            $url      = '';
-            $products = [];
+            $type       = 0;
+            $productIDs = [];
             switch ($box->name) {
                 case 'TopAngebot':
-                    $products = $searchSpecial->getTopOffers($box->anzahl, $customerGroupID);
-                    $url      = \SEARCHSPECIALS_TOPOFFERS;
+                    $productIDs = $searchSpecial->getTopOffers($box->anzahl, $customerGroupID);
+                    $type       = \SEARCHSPECIALS_TOPOFFERS;
                     break;
 
                 case 'Bestseller':
-                    $products = $searchSpecial->getBestsellers($box->anzahl, $customerGroupID);
-                    $url      = \SEARCHSPECIALS_BESTSELLER;
+                    $productIDs = $searchSpecial->getBestsellers($box->anzahl, $customerGroupID);
+                    $type       = \SEARCHSPECIALS_BESTSELLER;
                     break;
 
                 case 'Sonderangebote':
-                    $products = $searchSpecial->getSpecialOffers($box->anzahl, $customerGroupID);
-                    $url      = \SEARCHSPECIALS_SPECIALOFFERS;
+                    $productIDs = $searchSpecial->getSpecialOffers($box->anzahl, $customerGroupID);
+                    $type       = \SEARCHSPECIALS_SPECIALOFFERS;
                     break;
 
                 case 'NeuImSortiment':
-                    $products = $searchSpecial->getNewProducts($box->anzahl, $customerGroupID);
-                    $url      = \SEARCHSPECIALS_NEWPRODUCTS;
+                    $productIDs = $searchSpecial->getNewProducts($box->anzahl, $customerGroupID);
+                    $type       = \SEARCHSPECIALS_NEWPRODUCTS;
                     break;
             }
-            if (\count($products) > 0) {
-                $box->cURL    = SearchSpecial::buildURL($url);
+            if (\count($productIDs) > 0) {
+                $box->cURL    = $searchSpecial->getURL($type);
                 $box->Artikel = new ArtikelListe();
-                $box->Artikel->getArtikelByKeys($products, 0, \count($products));
+                $box->Artikel->getArtikelByKeys($productIDs, 0, \count($productIDs));
             }
         }
         \executeHook(\HOOK_BOXEN_HOME, ['boxes' => &$boxes]);

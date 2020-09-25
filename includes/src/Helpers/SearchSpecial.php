@@ -80,30 +80,31 @@ class SearchSpecial
     {
         $overlays = [];
         $lang     = Shop::Lang();
+        $self     = new self(Shop::Container()->getDB(), Shop::Container()->getCache());
 
         $overlays[\SEARCHSPECIALS_BESTSELLER]        = new stdClass();
         $overlays[\SEARCHSPECIALS_BESTSELLER]->cName = $lang->get('bestseller');
-        $overlays[\SEARCHSPECIALS_BESTSELLER]->cURL  = self::buildURL(\SEARCHSPECIALS_BESTSELLER);
+        $overlays[\SEARCHSPECIALS_BESTSELLER]->cURL  = $self->getURL(\SEARCHSPECIALS_BESTSELLER);
 
         $overlays[\SEARCHSPECIALS_SPECIALOFFERS]        = new stdClass();
         $overlays[\SEARCHSPECIALS_SPECIALOFFERS]->cName = $lang->get('specialOffers');
-        $overlays[\SEARCHSPECIALS_SPECIALOFFERS]->cURL  = self::buildURL(\SEARCHSPECIALS_SPECIALOFFERS);
+        $overlays[\SEARCHSPECIALS_SPECIALOFFERS]->cURL  = $self->getURL(\SEARCHSPECIALS_SPECIALOFFERS);
 
         $overlays[\SEARCHSPECIALS_NEWPRODUCTS]        = new stdClass();
         $overlays[\SEARCHSPECIALS_NEWPRODUCTS]->cName = $lang->get('newProducts');
-        $overlays[\SEARCHSPECIALS_NEWPRODUCTS]->cURL  = self::buildURL(\SEARCHSPECIALS_NEWPRODUCTS);
+        $overlays[\SEARCHSPECIALS_NEWPRODUCTS]->cURL  = $self->getURL(\SEARCHSPECIALS_NEWPRODUCTS);
 
         $overlays[\SEARCHSPECIALS_TOPOFFERS]        = new stdClass();
         $overlays[\SEARCHSPECIALS_TOPOFFERS]->cName = $lang->get('topOffers');
-        $overlays[\SEARCHSPECIALS_TOPOFFERS]->cURL  = self::buildURL(\SEARCHSPECIALS_TOPOFFERS);
+        $overlays[\SEARCHSPECIALS_TOPOFFERS]->cURL  = $self->getURL(\SEARCHSPECIALS_TOPOFFERS);
 
         $overlays[\SEARCHSPECIALS_UPCOMINGPRODUCTS]        = new stdClass();
         $overlays[\SEARCHSPECIALS_UPCOMINGPRODUCTS]->cName = $lang->get('upcomingProducts');
-        $overlays[\SEARCHSPECIALS_UPCOMINGPRODUCTS]->cURL  = self::buildURL(\SEARCHSPECIALS_UPCOMINGPRODUCTS);
+        $overlays[\SEARCHSPECIALS_UPCOMINGPRODUCTS]->cURL  = $self->getURL(\SEARCHSPECIALS_UPCOMINGPRODUCTS);
 
         $overlays[\SEARCHSPECIALS_TOPREVIEWS]        = new stdClass();
         $overlays[\SEARCHSPECIALS_TOPREVIEWS]->cName = $lang->get('topReviews');
-        $overlays[\SEARCHSPECIALS_TOPREVIEWS]->cURL  = self::buildURL(\SEARCHSPECIALS_TOPREVIEWS);
+        $overlays[\SEARCHSPECIALS_TOPREVIEWS]->cURL  = $self->getURL(\SEARCHSPECIALS_TOPREVIEWS);
 
         return $overlays;
     }
@@ -116,28 +117,39 @@ class SearchSpecial
      */
     public static function buildURL(int $key)
     {
-        $cacheID = 'bsurl_' . $key . '_' . Shop::getLanguageID();
-        if (($url = Shop::Container()->getCache()->get($cacheID)) !== false) {
+        $self = new self(Shop::Container()->getDB(), Shop::Container()->getCache());
+
+        return $self->getURL($key);
+    }
+
+    /**
+     * @param int $type
+     * @return string
+     */
+    public function getURL(int $type): string
+    {
+        $cacheID = 'bsurl_' . $type . '_' . Shop::getLanguageID();
+        if (($url = $this->cache->get($cacheID)) !== false) {
             \executeHook(\HOOK_BOXEN_INC_SUCHSPECIALURL);
 
             return $url;
         }
-        $oSeo = Shop::Container()->getDB()->select(
-                'tseo',
-                'kSprache',
-                Shop::getLanguageID(),
-                'cKey',
-                'suchspecial',
-                'kKey',
-                $key,
-                false,
-                'cSeo'
-            ) ?? new stdClass();
+        $seo = $this->db->select(
+            'tseo',
+            'kSprache',
+            Shop::getLanguageID(),
+            'cKey',
+            'suchspecial',
+            'kKey',
+            $type,
+            false,
+            'cSeo'
+        ) ?? new stdClass();
 
-        $oSeo->kSuchspecial = $key;
+        $seo->kSuchspecial = $type;
         \executeHook(\HOOK_BOXEN_INC_SUCHSPECIALURL);
-        $url = URL::buildURL($oSeo, \URLART_SEARCHSPECIALS);
-        Shop::Container()->getCache()->set($cacheID, $url, [\CACHING_GROUP_CATEGORY]);
+        $url = URL::buildURL($seo, \URLART_SEARCHSPECIALS);
+        $this->cache->set($cacheID, $url, [\CACHING_GROUP_CATEGORY]);
 
         return $url;
     }
@@ -195,9 +207,7 @@ class SearchSpecial
             ), static function ($e) {
                 return (int)$e->kArtikel;
             });
-            $this->cache->set($cacheID, $top, map($top, static function (int $id) {
-                return \CACHING_GROUP_PRODUCT . '_' . $id;
-            }));
+            $this->cache->set($cacheID, $top, $this->getCacheTags($top));
         }
 
         return self::randomizeAndLimit($top, \min(\count($top), $limit));
@@ -238,9 +248,7 @@ class SearchSpecial
             ), static function ($e) {
                 return (int)$e->kArtikel;
             });
-            $this->cache->set($cacheID, $bestsellers, map($bestsellers, static function (int $id) {
-                return \CACHING_GROUP_PRODUCT . '_' . $id;
-            }));
+            $this->cache->set($cacheID, $bestsellers, $this->getCacheTags($bestsellers));
         }
 
         return self::randomizeAndLimit($bestsellers, \min(\count($bestsellers), $limit));
@@ -284,9 +292,7 @@ class SearchSpecial
             ), static function ($e) {
                 return (int)$e->kArtikel;
             });
-            $this->cache->set($cacheID, $specialOffers, map($specialOffers, static function (int $id) {
-                return \CACHING_GROUP_PRODUCT . '_' . $id;
-            }));
+            $this->cache->set($cacheID, $specialOffers, $this->getCacheTags($specialOffers));
         }
 
         return self::randomizeAndLimit($specialOffers, \min(\count($specialOffers), $limit));
@@ -329,11 +335,23 @@ class SearchSpecial
             ), static function ($e) {
                 return (int)$e->kArtikel;
             });
-            $this->cache->set($cacheID, $new, map($new, static function (int $id) {
-                return \CACHING_GROUP_PRODUCT . '_' . $id;
-            }));
+            $this->cache->set($cacheID, $new, $this->getCacheTags($new));
         }
 
         return self::randomizeAndLimit($new, \min(\count($new), $limit));
+    }
+
+    /**
+     * @param int[] $productIDs
+     * @return string[]
+     */
+    private function getCacheTags(array $productIDs): array
+    {
+        $tags   = map($productIDs, static function (int $id) {
+            return \CACHING_GROUP_PRODUCT . '_' . $id;
+        });
+        $tags[] = \CACHING_GROUP_PRODUCT;
+
+        return $tags;
     }
 }

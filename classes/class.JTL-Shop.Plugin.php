@@ -490,7 +490,7 @@ class Plugin
         $oZahlungsmethode_arr      = Shop::DB()->query(
             "SELECT *
                 FROM tzahlungsart
-                WHERE cModulId LIKE 'kPlugin\_" . (int)$this->kPlugin . "%'", 2
+                WHERE cModulId LIKE 'kPlugin\_" . (int)$this->kPlugin . "\_%'", 2
         );
 
         if (is_array($oZahlungsmethode_arr) && count($oZahlungsmethode_arr) > 0) {
@@ -513,7 +513,7 @@ class Plugin
                 $oZahlungsmethode_arr[$i]->oZahlungsmethodeEinstellung_arr = Shop::DB()->query(
                     "SELECT *
                         FROM tplugineinstellungenconf
-                        WHERE cWertName LIKE '" . $cModulId . "_%'
+                        WHERE cWertName LIKE '" . $cModulId . "\_%'
                             AND cConf = 'Y'
                         ORDER BY nSort", 2
                 );

@@ -1,5 +1,6 @@
 {block name='snippets-product-slider'}
     {strip}
+    {$isOPC=$isOPC|default:false}
     {if $productlist|@count > 0}
         {if !isset($tplscope)}
             {assign var=tplscope value='slider'}
@@ -30,7 +31,7 @@
             {/block}
         {else}
             {block name='snippets-product-slider-other'}
-                <div class="mb-5{if isset($class) && $class|strlen > 0} {$class}{/if}"{if isset($id) && $id|strlen > 0} id="{$id}"{/if}>
+                <div class="{if !$isOPC}mb-5{/if}{if isset($class) && $class|strlen > 0} {$class}{/if}"{if isset($id) && $id|strlen > 0} id="{$id}"{/if}>
                     {if !empty($title)}
                         {block name='snippets-product-slider-other-title'}
                             {if $titleContainer|default:false}<div class="container px-0 px-md-3">{/if}
@@ -47,7 +48,7 @@
                         {/block}
                     {/if}
                     {block name='snippets-product-slider-other-products'}
-                        {row class="mb-4 slick-lazy slick-smooth-loading carousel carousel-arrows-inside {if $tplscope === 'half'}slick-type-half{else}slick-type-product{/if}"
+                        {row class="{if !$isOPC}mb-4{/if} slick-lazy slick-smooth-loading carousel carousel-arrows-inside {if $tplscope === 'half'}slick-type-half{else}slick-type-product{/if}"
                             data=["slick-type"=>"{block name='product-slider-class'}{if $tplscope === 'half'}slider-half{else}product-slider{/if}{/block}"]}
                             {include file='snippets/slider_items.tpl' items=$productlist type='product'}
                         {/row}

@@ -18,7 +18,7 @@ msgid "hasInstallDirTitle"
 msgstr "System"
 
 msgid "hasInstallDirMessage"
-msgstr "Please delete the installation directory \"/install/\" in the root directory of your online shop."
+msgstr "Please delete the installation directory \"/install\" in the root directory of your JTL-Shop."
 
 msgid "validDatabaseStructTitle"
 msgstr "Database structure"
@@ -126,4 +126,4 @@ msgid "ustIdMiasCheckTitle"
 msgstr "VAT-ID Check"
 
 msgid "ustIdMiasCheckMessage"
-msgstr "If you want to use the european VAT tax check through the EU MIAS system, please install the PHP module 'php_soap'."
+msgstr "If you want to use the european VAT tax check through the EU MIAS system, please install the PHP module \"php_soap\"."

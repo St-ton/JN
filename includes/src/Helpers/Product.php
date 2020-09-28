@@ -1564,7 +1564,11 @@ class Product
                     case \R_EMPTY_VARIBOX:
                         $notices[] = Shop::Lang()->get('artikelVariBoxEmpty', 'messages');
                         break;
+                    case \R_MISSING_TOKEN:
+                        $notices[] = Shop::Lang()->get('missingToken', 'messages');
+                        break;
                     default:
+                        $notices[] = Shop::Lang()->get('unknownError', 'messages');
                         break;
                 }
                 \executeHook(\HOOK_ARTIKEL_INC_ARTIKELHINWEISSWITCH);

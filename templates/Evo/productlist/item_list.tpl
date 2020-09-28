@@ -221,6 +221,7 @@
                     </form>
                     <div class="expandable">
                         <form id="buy_form_{$Artikel->kArtikel}" action="{$ShopURL}" method="post" class="form form-basket evo-validate" data-toggle="basket-add">
+                            {$jtl_token}
                             {block name='form-expandable'}
                             {if $hasOnlyListableVariations > 0 && !$Artikel->bHasKonfig && $Artikel->kEigenschaftKombi === 0}
                                 <div class="hidden-xs basket-variations">

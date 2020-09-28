@@ -26,7 +26,7 @@
                     <span class="value">
                         <i class="fa {if $attributeValue->isActive()}fa-check-square-o{else}fa-square-o{/if} text-muted"></i>
                         {if !empty($attributeImageURL)}
-                            <img src="{$attributeImageURL}" alt="{$attributeValue->getValue()|escape:'html'}" class="vmiddle" />
+                            <img src="{$attributeImageURL}" alt="{$attributeValue->getValue()|escape:'html'}" class="vmiddle filter-img" />
                         {/if}
                     </span>
                 </a>
@@ -38,7 +38,7 @@
                     <span class="value">
                         <i class="fa {if $attributeValue->isActive()}fa-check-square-o{else}fa-square-o{/if} text-muted"></i>
                         {if !empty($attributeImageURL)}
-                            <img src="{$attributeImageURL}" alt="{$attributeValue->getValue()|escape:'html'}" class="vmiddle" />
+                            <img src="{$attributeImageURL}" alt="{$attributeValue->getValue()|escape:'html'}" class="vmiddle filter-img" />
                         {/if}
                         <span class="word-break">{$attributeValue->getValue()|escape:'html'}</span>
                     </span>

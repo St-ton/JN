@@ -14,6 +14,7 @@ use JTL\Mail\Mailer;
 use JTL\Mail\Template\Model;
 use JTL\Mail\Template\TemplateFactory;
 use JTL\Mail\Template\TemplateInterface;
+use JTL\Mail\Validator\SyntaxChecker;
 use PHPMailer\PHPMailer\Exception;
 use stdClass;
 
@@ -238,48 +239,46 @@ final class Controller
     public function updateTemplate(int $templateID, array $post, array $files): int
     {
         $this->model = $this->getTemplateByID($templateID);
-        if ($this->model === null) {
+        $tmpModel    = $this->getTemplateByID($templateID);
+        if ($tmpModel === null) {
             throw new InvalidArgumentException('Cannot find model with ID ' . $templateID);
         }
         $languages = LanguageHelper::getAllLanguages();
         foreach ($languages as $lang) {
             $langID = $lang->getId();
-            foreach ($this->model->getMapping() as $field => $method) {
+            foreach ($tmpModel->getMapping() as $field => $method) {
                 $method         = 'set' . $method;
                 $localizedIndex = $field . '_' . $langID;
                 if (isset($post[$field])) {
-                    $this->model->$method($post[$field]);
+                    $tmpModel->$method($post[$field]);
                 } elseif (isset($post[$localizedIndex])) {
-                    $this->model->$method($post[$localizedIndex], $langID);
+                    $tmpModel->$method($post[$localizedIndex], $langID);
                 }
             }
         }
-        $res = $this->updateUploads($this->model, $languages, $post, $files);
+        $res = $this->updateUploads($tmpModel, $languages, $post, $files);
         if ($res !== self::OK) {
             return $res;
         }
-        $smarty = $this->mailer->getRenderer()->getSmarty();
-        foreach ($languages as $lang) {
-            try {
-                $this->mailer->getHydrator()->hydrate(null, $lang);
-                $html = $this->model->getHTML($lang->getId());
-                $text = $this->model->getText($lang->getId());
-                $smarty->fetch('string:' . $html);
-                $smarty->fetch('string:' . $text);
-                $this->model->setHasError(false);
-                if ((\mb_strlen($html) === 0 || \mb_strlen($text) === 0)
-                    && !\in_array($this->model->getModuleID(), ['core_jtl_footer', 'core_jtl_header'], true)
-                ) {
-                    throw new \Exception(__('Empty mail body'));
-                }
-            } catch (\Exception $e) {
-                $this->setErrorMessages([$e->getMessage()]);
-                $this->model->setHasError(true);
+        $checker = new SyntaxChecker(
+            $this->db,
+            $this->factory,
+            $this->mailer->getRenderer(),
+            $this->mailer->getHydrator()
+        );
+        $tmpModel->setHasError(false);
+        $tmpModel->save();
+        $check = $checker->checkSyntax($tmpModel->getModuleID());
+        if (count($check) > 0) {
+            $this->setErrorMessages($check);
+            $tmpModel->setHasError(true);
+            $this->model->save();
+            $this->model = $tmpModel;
 
-                return self::ERROR_SMARTY;
-            }
+            return self::ERROR_SMARTY;
         }
-        $this->model->save();
+
+        $this->model = $tmpModel;
         unset($_SESSION['emailSyntaxErrorCount']);
 
         return self::OK;

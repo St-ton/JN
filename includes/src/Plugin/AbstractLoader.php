@@ -498,7 +498,7 @@ abstract class AbstractLoader implements LoaderInterface
                 FROM tzahlungsart
                 JOIN tpluginzahlungsartklasse
                     ON tpluginzahlungsartklasse.cModulID = tzahlungsart.cModulId
-                WHERE tzahlungsart.cModulId LIKE 'kPlugin\_" . $plugin->getID() . "%'",
+                WHERE tzahlungsart.cModulId LIKE 'kPlugin\_" . $plugin->getID() . "\_%'",
             ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($methods as $method) {
@@ -509,7 +509,7 @@ abstract class AbstractLoader implements LoaderInterface
             $method->oZahlungsmethodeEinstellung_arr = $this->db->query(
                 "SELECT *
                     FROM tplugineinstellungenconf
-                    WHERE cWertName LIKE '" . $moduleID . "_%'
+                    WHERE cWertName LIKE '" . $moduleID . "\_%'
                         AND cConf = 'Y'
                     ORDER BY nSort",
                 ReturnType::ARRAY_OF_OBJECTS

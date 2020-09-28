@@ -16,7 +16,13 @@ $oAccount->permission('MODULE_LIVESEARCH_VIEW', true, true);
 
 setzeSprache();
 
-$settingsIDs = [423, 425, 422, 437, 438];
+$settingsIDs = [
+    'livesuche_max_ip_count',
+    'sonstiges_livesuche_all_top_count',
+    'sonstiges_livesuche_all_last_count',
+    'boxen_livesuche_count',
+    'boxen_livesuche_anzeigen'
+];
 $db          = Shop::Container()->getDB();
 $alertHelper = Shop::Container()->getAlertService();
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
@@ -38,7 +44,7 @@ if (mb_strlen(Request::verifyGPDataString('cSuche')) > 0) {
 if (Request::verifyGPCDataInt('einstellungen') === 1) {
     $alertHelper->addAlert(
         Alert::TYPE_SUCCESS,
-        saveAdminSettings($settingsIDs, $_POST),
+        saveAdminSettings($settingsIDs, $_POST, [CACHING_GROUP_OPTION], true),
         'saveSettings'
     );
     $smarty->assign('tab', 'einstellungen');
@@ -570,7 +576,7 @@ $queryMapping   = $db->query(
         LIMIT ' . $paginationMapping->getLimitSQL(),
     ReturnType::ARRAY_OF_OBJECTS
 );
-$smarty->assign('oConfig_arr', getAdminSectionSettings($settingsIDs))
+$smarty->assign('oConfig_arr', getAdminSectionSettings($settingsIDs, true))
     ->assign('Suchanfragen', $searchQueries)
     ->assign('Suchanfragenerfolglos', $failedQueries)
     ->assign('Suchanfragenblacklist', $queryBlacklist)

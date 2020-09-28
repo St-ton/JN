@@ -11,7 +11,7 @@
     </a>
     <div class="dropdown-menu dropdown-menu-right dropdown-menu-lg" role="main">
         <div class="dropdown-header subheading1">
-            <a href="#"><i class="fa fa-refresh pull-right refresh-notify" aria-hidden="true"></i></a>
+            <a href="#"><i data-toggle="tooltip" title="{__('Refresh all notifications')}" class="fa fa-refresh pull-right refresh-notify" aria-hidden="true"></i></a>
             {__('notificationsHeader')}
         </div>
         <div class="dropdown-divider"></div>
@@ -20,7 +20,7 @@
                 <div class="dropdown-header">
                     {if $notify->getHash() !== null}
                         <button type="button" class="close pull-right close-notify" aria-label="Close" data-hash="{$notify->getHash()}">
-                            <span aria-hidden="true">&times;</span>
+                            <span aria-hidden="true"  data-toggle="tooltip" title="{__('Mark notification as read')}">&times;</span>
                         </button>
                     {/if}
                     <i class="fa fa-circle text-{$notifyTypes[$notify->getType()]}" aria-hidden="true"></i>
@@ -41,7 +41,7 @@
                 <div class="dropdown-divider"></div>
             {/if}
             <div class="dropdown-item-text">
-                <a href="#" class="showall-notify">{__('showAll')}</a>
+                <a href="#" class="showall-notify" data-toggle="tooltip" title="{__('Mark all notifications as unread')}">{__('showAll')}</a>
             </div>
         {/if}
     </div>

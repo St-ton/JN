@@ -63,7 +63,7 @@
             <div class="container-fluid">
         {/if}
         <div style="{$instance->getStyleString()}">
-            {include file='snippets/product_slider.tpl' productlist=$productlist}
+            {include file='snippets/product_slider.tpl' productlist=$productlist isOPC=true}
         </div>
         {if $inContainer === false}
             </div>
@@ -73,6 +73,7 @@
             {include file='snippets/product_slider.tpl'
                 productlist=$productlist
                 tplscope='box'
+                isOPC=true
             }
         </div>
     {/if}

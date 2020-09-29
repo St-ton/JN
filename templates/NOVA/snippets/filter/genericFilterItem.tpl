@@ -5,7 +5,7 @@
             {foreach $filter->getOptions() as $filterOption}
                 {if $limit != -1 && $filterOption@iteration > $limit && !$collapseInit}
                     {block name='snippets-filter-genericFilterItem-more-top'}
-                        <div class="collapse {if $filter->isActive()} show{/if}" id="box-collps-filter{$filter->getNiceName()}" aria-expanded="false">
+                        <div class="collapse {if $filter->isActive()} show{/if}" id="box-collps-filter{$filter->getNiceName()}" aria-expanded="false" role="button">
                             {$collapseInit = true}
                     {/block}
                 {/if}

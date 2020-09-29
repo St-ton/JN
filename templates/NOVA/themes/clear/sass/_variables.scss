@@ -181,7 +181,9 @@ $progress-bar-color:                $gray !default;
 $table-accent-bg:                   $gray-lighter !default;
 $table-hover-bg:                    $gray-lighter !default;
 
-$table-cell-padding:               (map-get($spacers, 1) * 3) $spacer !default;
+$table-cell-padding:                (map-get($spacers, 1) * 3) !default;
+$table-cell-padding-x:              $spacer !default;
+$table-cell-padding-y:              (map-get($spacers, 1) * 3) !default;
 $table-cell-padding-sm:             map-get($spacers, 2) $spacer !default;
 
 $table-striped-order:               even !default;
@@ -324,7 +326,7 @@ $ribbon-bg-colors: map-merge((
 
 $nav-tabs-border-radius					: 0 !default;
 
-$nav-tabs-link-hover-border-color		: 0 !default;
+$nav-tabs-link-hover-border-color		: transparent !default;
 $nav-tabs-link-active-color				: $link-color !default;
 $nav-tabs-link-active-bg				: transparent !default;
 $nav-tabs-link-active-border-color		: $primary !default;
@@ -332,15 +334,6 @@ $nav-tabs-link-active-border-color		: $primary !default;
 $navbar-nav-link-padding-x: map-get($spacers, 4) !default;
 $navbar-nav-link-padding-y: map-get($spacers, 4) !default;
 $nav-link-padding-x: 1rem !default;
-
-/* navs */
-
-$nav-tabs-border-radius					: 0 !default;
-
-$nav-tabs-link-hover-border-color		: 0 !default;
-$nav-tabs-link-active-color				: $link-color !default;
-$nav-tabs-link-active-bg				: transparent !default;
-$nav-tabs-link-active-border-color		: $primary !default;
 
 /* modals */
 

@@ -14,17 +14,16 @@
                             <fieldset id="quick-login">
                                 {block name='layout-header-nav-account-form-email'}
                                     {formgroup label-for="email_quick" label={lang key='emailadress'}}
-                                        {input type="email" name="email" id="email_quick" size="sm"
+                                        {input type="email" name="email" id="email_quick" size-class="sm"
                                                placeholder=" " required=true
-                                               autocomplete="quick-login username"}
-
+                                               autocomplete="email"}
                                     {/formgroup}
                                 {/block}
                                 {block name='layout-header-nav-account-form-password'}
                                     {formgroup label-for="password_quick" label={lang key='password'} class="mb-5"}
-                                        {input type="password" name="passwort" id="password_quick" size="sm"
+                                        {input type="password" name="passwort" id="password_quick" size-class="sm"
                                                required=true placeholder=" "
-                                               autocomplete="quick-login current-password"}
+                                               autocomplete="current-password"}
                                     {/formgroup}
                                 {/block}
                                 {block name='layout-header-nav-account-form-captcha'}

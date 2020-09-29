@@ -17,13 +17,13 @@ use JTL\Shop;
  */
 class Manager
 {
-    public const SCOPE_WIZARD_PAYMENT_PROVIDER  = 'wizard.payment-provider';
+    public const SCOPE_WIZARD_PAYMENT_PROVIDER = 'wizard.payment-provider';
 
-    public const SCOPE_WIZARD_LEGAL_TEXTS       = 'wizard.legal-texts';
+    public const SCOPE_WIZARD_LEGAL_TEXTS = 'wizard.legal-texts';
 
     public const SCOPE_BACKEND_PAYMENT_PROVIDER = 'backend.payment-provider';
 
-    public const SCOPE_BACKEND_LEGAL_TEXTS      = 'backend.legal-texts';
+    public const SCOPE_BACKEND_LEGAL_TEXTS = 'backend.legal-texts';
 
     private const API_URL = 'https://checkout-stage.jtl-software.com/v1/recommendations';
 

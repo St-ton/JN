@@ -74,7 +74,9 @@
                                             jtl_token:  "{$smarty.session.jtl_token}",
                                             uniquename: "{$oUpload->cUnique}",
                                             uploader:   "4.00",
-                                            cname:      "{$oUploadSchema->cName|replace:" ":"_"}"
+                                            cname:      "{$oUploadSchema->cName|replace:" ":"_"}",
+                                            kUploadSchema:"{$oUpload->kUploadSchema}",
+                                            prodID:     "{$oUpload->prodID}",
                                             {if !empty($oUploadSchema->WarenkorbPosEigenschaftArr)},
                                             variation:  "{strip}
                                             {foreach name=variationen from=$oUploadSchema->WarenkorbPosEigenschaftArr item=Variation}_{$Variation->cEigenschaftWertName|trans|replace:" ":"_"}{/foreach}

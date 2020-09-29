@@ -149,6 +149,11 @@ class Warenkorb
                 } else {
                     $delete = (Shop::DB()->select('tartikel', 'kArtikel', $Position->kArtikel) === null);
                 }
+
+                executeHook(HOOK_WARENKORB_CLASS_LOESCHEDEAKTIVIERTEPOS, [
+                    'oPosition' => $Position,
+                    'delete'    => &$delete
+                ]);
             }
             if ($delete) {
                 self::addDeletedPosition($Position);

@@ -661,24 +661,33 @@
             }
         },
 
-        addInactivityCheck: function(wrapper) {
+        addInactivityCheck: function(wrapper, timeoutMS, stopEnter) {
             var timeoutID,
                 that = this,
                 currentBox;
+            timeoutMS = timeoutMS || 500;
+            stopEnter = stopEnter || false;
 
             setup();
 
             function setup() {
-                $(wrapper + ' .form-counter input').on('change',resetTimer);
-                $(wrapper + ' .choose_quantity input').on('change',resetTimer);
-                $(wrapper + ' .form-counter .btn-decrement, ' + wrapper + ' .form-counter .btn-increment').on('click',resetTimer);
-                $(wrapper + ' .form-counter .btn-decrement, ' + wrapper + ' .form-counter .btn-increment').on('touchstart',resetTimer,{passive: true});
-                $(wrapper + ' .form-counter .btn-decrement, ' + wrapper + ' .form-counter .btn-increment').on('keydown',resetTimer);
+                $(wrapper + ' .form-counter input, ' + wrapper + ' .choose_quantity input').on('change',resetTimer);
+                $(wrapper + ' .form-counter .btn-decrement, ' + wrapper + ' .form-counter .btn-increment')
+                    .on('click keydown',resetTimer)
+                    .on('touchstart',resetTimer,{passive: true});
+                if (stopEnter) {
+                    $(wrapper + ' input.quantity').on('keypress', function (e) {
+                        if (e.which === 13) {
+                            return false;
+                        } else {
+                            resetTimer(e);
+                        }
+                    });
+                }
             }
 
             function startTimer() {
-                // wait 0.5 seconds before calling goInactive
-                timeoutID = window.setTimeout(goInactive, 500);
+                timeoutID = window.setTimeout(goInactive, timeoutMS);
             }
 
             function resetTimer(e) {
@@ -911,7 +920,7 @@
         initWishlist: function() {
             let wlFormID = '#wl-items-form';
             if ($(wlFormID).length) {
-                $.evo.extended().addInactivityCheck(wlFormID);
+                $.evo.extended().addInactivityCheck(wlFormID, 300, true);
                 $('.js-update-wl').on('change', function () {
                     $.evo.extended().updateWishlistItem($(this).closest('.productbox-inner'));
                 });

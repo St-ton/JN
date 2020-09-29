@@ -349,29 +349,8 @@
                             {else}
                                 {block name='layout-header-branding-shop-nav'}
                                     {nav id="shop-nav" right=true class="nav-right ml-auto order-lg-last align-items-center flex-shrink-0"}
-                                        {block name='layout-header-branding-shop-nav-language'}
-                                            {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
-                                                {navitemdropdown
-                                                class="language-dropdown d-flex d-lg-none"
-                                                right=true
-                                                text="
-                                                    {foreach $smarty.session.Sprachen as $language}
-                                                        {if $language->kSprache == $smarty.session.kSprache}
-                                                            {$language->iso639|upper}
-                                                        {/if}
-                                                    {/foreach}"
-                                                }
-                                                    {foreach $smarty.session.Sprachen as $language}
-                                                        {dropdownitem href="{$language->cURL}"
-                                                            class="link-lang"
-                                                            data=["iso"=>$language->cISO]
-                                                            rel="nofollow"
-                                                            active=($language->kSprache == $smarty.session.kSprache)}
-                                                            {$language->iso639|upper}
-                                                        {/dropdownitem}
-                                                    {/foreach}
-                                                {/navitemdropdown}
-                                            {/if}
+                                        {block name='layout-header-branding-shop-nav-include-language-dropdown'}
+                                            {include file='snippets/language_dropdown.tpl' dropdownClass='d-flex d-lg-none'}
                                         {/block}
                                         {include file='layout/header_nav_icons.tpl'}
                                     {/nav}

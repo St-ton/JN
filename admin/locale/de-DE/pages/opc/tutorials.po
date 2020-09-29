@@ -4,153 +4,133 @@ msgid "tutStepTitle_0_0"
 msgstr "Willkommen"
 
 msgid "tutStepText_0_0"
-msgstr "In dieser kurzen Einführung wollen wir dir einen Überblick vom "
-"<em>OnPage Composer</em> geben, ein Editor mit dem schnell neue Inhalte auf deiner Shop-Seite "
-"entstehen können."
+msgstr "In dieser kurzen Einführung erhalten Sie einen Überblick über den <em>OnPage Composer</em>, der Ihnen dabei hilft, schnell neue Inhalte auf Ihrer Onlineshop-Seite entstehen zu lassen."
 
 msgid "tutStepTitle_0_1"
 msgstr "Aufteilung"
 
 msgid "tutStepText_0_1"
-msgstr "<p>Grundsätzlich ist der Editor in die zwei Bereich aufgeteilt.</p><p>Hier links "
-"siehst du die Sidebar.</p>"
+msgstr "<p>Grundsätzlich ist der Editor in zwei Bereiche aufgeteilt.</p><p>Links befindet sich die Sidebar."
 
 msgid "tutStepTitle_0_2"
 msgstr "Aufteilung"
 
 msgid "tutStepText_0_2"
-msgstr "Im rechten Fenster siehst du die Seite die du gerade bearbeitest."
+msgstr "Rechts sehen Sie die Seite, die Sie gerade bearbeiten."
 
 msgid "tutStepTitle_0_3"
 msgstr "Portlets"
 
 msgid "tutStepText_0_3"
-msgstr "Das sind unsere <em>Portlets</em>, fertige Bausteine um deine Seiten mit neuen "
-"Inhalten zu ergänzen."
+msgstr "<em>Portlets</em> sind fertige Bausteine, mit denen Sie neue Inhalte auf Ihren Seiten hinzufügen können."
 
 msgid "tutStepTitle_0_4"
 msgstr "Portlets"
 
 msgid "tutStepText_0_4"
-msgstr "Die hellblauen Bereiche auf der Seite zeigen dir wo du Portlets ablegen kannst."
+msgstr "Die hellblauen Bereiche auf der Seite zeigen an, wo Sie die Portlets ablegen können."
 
 msgid "tutStepTitle_0_5"
 msgstr "Portlets"
 
 msgid "tutStepText_0_5"
-msgstr "Ziehe nun das Portlet <em>Überschrift</em> in einen der hellblauen Bereiche und "
-"schau was passiert!"
+msgstr "Ziehen Sie das Portlet <em>Überschrift</em> in einen der hellblauen Bereiche, um es einzufügen."
 
 msgid "tutStepTitle_0_6"
 msgstr "Portlets"
 
 msgid "tutStepText_0_6"
-msgstr "Alle Portlets bieten verschiedene Einstellungen. In diesem Fenster kannst du dein "
-"Portlet konfigurieren."
+msgstr "Alle Portlets bieten verschiedene Einstellungen. In diesem Fenster können Sie das Portlet weiter konfigurieren."
 
 msgid "tutStepTitle_0_7"
 msgstr "Einstellungen"
 
 msgid "tutStepText_0_7"
-msgstr "Gib einen eigenen Text für die Überschrift ein und klicke auf <em>Speichern</em>!"
+msgstr "Geben Sie einen eigenen Text für die Überschrift ein und klicken Sie auf <em>Speichern</em>."
 
 msgid "tutStepTitle_0_8"
 msgstr "Einstellungen"
 
 msgid "tutStepText_0_8"
-msgstr "An dem neuen Portlet siehst du eine Leiste mit verschiedenen Buttons. Über den Stift "
-"kannst du das Portlet jederzeit erneut bearbeiten."
+msgstr "Am neuen Portlet befindet sich eine Leiste mit verschiedenen Schaltflächen. Über das Stift-Symbol können Sie das Portlet jederzeit bearbeiten."
 
 msgid "tutStepTitle_0_9"
 msgstr "Seite Veröffentlichen"
 
 msgid "tutStepText_0_9"
-msgstr "<p>Nur veröffentlichte Entwürfe sind für deine Shop-Besucher sichtbar.</p>"
-"<p>Um deinen Entwurf jetzt zu veröffentlichen klicke auf diesen Button.</p>"
+msgstr "<p>Damit den Besuchern Ihres Onlineshops die Seite angezeigt wird, muss sie veröffentlicht werden. Klicken Sie dazu auf diese Schaltfläche.</p>"
 
 msgid "tutStepTitle_0_10"
 msgstr "Seite Veröffentlichen"
 
 msgid "tutStepText_0_10"
-msgstr "Für jede Seite kannst mehrere Entwürfe pflegen, deren Sichtbarkeit du "
-"außerdem zeitlich planen kannst. (Z.B. einen allgemeinen und einen Entwurf für die Weihnachtszeit)"
+msgstr "Für jede Seite können Sie mehrere Entwürfe pflegen, deren Sichtbarkeit Sie auch zeitlich planen können. Sie können z. B einen allgemeinen Entwurf und einen für die Weihnachtszeit anlegen."
 
 msgid "tutStepTitle_0_11"
 msgstr "Seite Veröffentlichen"
 
 msgid "tutStepText_0_11"
-msgstr "<p>Die Voreinstellung macht den Entwurf ab sofort und bis auf unbestimmte Zeit sichtbar. "
-"Ein Klick auf <em>Übernehmen</em> und der Entwurf ist online! Diesen Schritt lassen wir jetzt aber aus.</p>"
-"<p>Verlasse das Fenster wieder mit <em>Abbrechen</em>!</p>"
+msgstr "<p>Die Voreinstellung macht den Entwurf ab sofort und auf unbestimmte Zeit sichtbar. Mit einem Klick auf Übernehmen wird die Seite online gestellt. Diesen Schritt überspringen wir im Tutorial. Verlassen Sie das Fenster mit Abbrechen.</p> "
 
 msgid "tutStepTitle_0_12"
 msgstr "Fertig!"
 
 msgid "tutStepText_0_12"
-msgstr "<p>Du kannst den Editor nun beenden und deine Seite anschauen.</p>"
-"<p>Das waren die Basics. Wir wünschen dir weiterhin viel Spaß mit dem OnPage Composer!</p>"
+msgstr "<p>Sie können den Editor nun beenden und sich die Seite über die Vorschau ansehen.</p><p>Das waren die Basics zum OnPage Composer. Wir wünschen Ihnen viel Spaß beim Ausprobieren!</p>"
 
 msgid "tutStepTitle_1_0"
 msgstr "Animationen"
 
 msgid "tutStepText_1_0"
-msgstr "Einige Portlets verfügen über Einstellungen, um <em>Animationen</em> zu erstellen. "
-"Hier lernst du, wie du diese nutzt."
+msgstr "Einige Portlets verfügen über Einstellungen, um <em>Animationen</em> zu erstellen. Hier lernen Sie, diese richtig zu nutzen."
 
 msgid "tutStepTitle_1_1"
 msgstr "Animationen"
 
 msgid "tutStepText_1_1"
-msgstr "Ziehe zunächst einen <em>Button</em> in deine Seite!"
+msgstr "Ziehen Sie zunächst eine <em>Schaltfläche</em> auf die Seite."
 
 msgid "tutStepTitle_1_2"
 msgstr "Animationen"
 
 msgid "tutStepText_1_2"
-msgstr "Wechsel nun zu dem Reiter <em>Animation</em>."
+msgstr "Wechseln Sie nun in den Reiter <em>Animation</em>."
 
 msgid "tutStepTitle_1_3"
 msgstr "Animationen"
 
 msgid "tutStepText_1_3"
-msgstr "<p>Unter <em>Animationstyp</em> kannst du einen von verschiedenen Animations-Stilen "
-"auswählen. (z.B. <em>\"bounce\"</em> lässt das Portlet hüpfen)</p>"
-"<p>Speichere dann die Einstellungen!</p>"
+msgstr "<p>Unter <em>Animationstyp</em> können Sie einen der verschiedenen Animationsstile auswählen. <em>„bounce“</em> zum Beispiel lässt das Portlet hüpfen.</p><p>Speichern Sie dann die Einstellungen.</p>"
 
 msgid "tutStepTitle_1_4"
 msgstr "Animationen"
 
 msgid "tutStepText_1_4"
-msgstr "<p>Sofort siehst du deine erste Animation im Editorfenster.</p>"
-"<p>Versuchen wir nun was komplexeres!</p>"
+msgstr "<p>Die erste Animation erscheint im Editorfenster.</p><p>Versuchen wir nun etwas Komplexeres.</p>"
 
 msgid "tutStepTitle_1_5"
 msgstr "Animation"
 
 msgid "tutStepText_1_5"
-msgstr "Öffne erneut die Einstellungen des Buttons. (Doppelklick auf das Portlet oder "
-"klicke den Stift-Button)"
+msgstr "Öffnen Sie erneut die Einstellungen der Schaltfläche. Dazu können Sie doppelt auf das Portlet oder einfach auf das Stiftsymbol klicken."
 
 msgid "tutStepTitle_1_6"
 msgstr "Animationen"
 
 msgid "tutStepText_1_6"
-msgstr "Hier im Reiter \"Stile\" kannst du dem Button einen unteren Abstand von 350 (Pixeln) "
-"zuweisen. Wechsle dann noch mal zum Animations-Reiter!"
+msgstr "Im Reiter „Layout“ können Sie dem Button einen unteren Abstand von 350 Pixeln zuweisen. Wechseln Sie dann wieder in den Animationsreiter."
 
 msgid "tutStepTitle_1_7"
 msgstr "Animationen"
 
 msgid "tutStepText_1_7"
-msgstr "Als Animationstyp eignet sich <em>\"fade-in\"</em> ganz gut. Gib außerdem bei "
-"<em>Abstand</em> 350 ein! Nun Kannst du die Einstellungen speichern!"
+msgstr "Ein geeigneter Animationstyp ist zum Beispiel <em>„fade in“</em>. Geben Sie außerdem für den <em>Abstand</em> „350“ ein. Speichern Sie dann die Einstellungen."
 
 msgid "tutStepTitle_1_8"
 msgstr "Animationen"
 
 msgid "tutStepText_1_8"
-msgstr "Um zu sehen wie sich die Einstellung auswirkt, lass uns den Button, so wie er ist "
-"ein paar mal klonen. Klicke dazu auf den <em>Kopieren</em>-Button!"
+msgstr "Um zu sehen, wie sich die Einstellung auswirkt, klonen wir die Schaltfläche einige Male. Klicken Sie dazu auf <em>Kopieren</em>."
 
 msgid "tutStepTitle_1_9"
 msgstr "Animationen"
@@ -162,80 +142,64 @@ msgid "tutStepTitle_1_10"
 msgstr "Animationen"
 
 msgid "tutStepText_1_10"
-msgstr "Und noch ein letztes mal, so dass wir 4 Exemplare des Buttons "
-"untereinander haben!"
+msgstr "Klicken Sie ein letztes Mal auf <em>Kopieren</em>, sodass 4 Exemplare der Schaltfläche untereinander angezeigt werden. untereinander haben!"
 
 msgid "tutStepTitle_1_11"
 msgstr "Animationen"
 
 msgid "tutStepText_1_11"
-msgstr "Mit dem <em>Vorschau</em>-Schalter kannst du das Ergebnis gleich mal testen!"
+msgstr "Mit dem <em>Vorschau</em>-Schalter können Sie das Ergebnis gleich testen."
 
 msgid "tutStepTitle_1_12"
 msgstr "Animationen"
 
 msgid "tutStepText_1_12"
-msgstr "<p>Scroll die Seite nach unten und beachte dabei, dass die Animation nicht eher "
-"startet, ehe der Button mindesten 350 Pixel über die Viewport-Untergrenze gescrollt wurde.</p>"
-"<p>Man kann dieses Konzept auch weiter ausbauen und die Bereiche z.B. abwechselnd von rechts und links "
-"in die Seite einfahren lassen.</p>"
+msgstr "<p>Scrollen Sie nach unten. Wie Sie sehen, startet die Animation nicht, bis sich die Schaltfläche mindestens 350 Pixel oberhalb der Viewport-Untergrenze befindet.</p><p>Sie können dieses Konzept auch weiter ausbauen und z. B. Bereiche abwechselnd von links und rechts auf der Seite erscheinen lassen."
 
 msgid "tutStepTitle_1_13"
 msgstr "Animationen"
 
 msgid "tutStepText_1_13"
-msgstr "<p>Bedenke aber bitte, dass \"weniger oft mehr ist\". Soll heißen: geh sparsam mit "
-"Animationen um, damit deine Kunden nicht abgelenkt oder gar verschreckt werden.</p>"
-"<p>Damit sind wir mit dem Tutorial \"Animationen\" durch. Wir wünschen dir weiterhin viel Spaß mit dem "
-"<em>OnPage Composer</em>!</p>"
+msgstr "<p>Denken Sie aber daran, dass „weniger oft mehr ist“. Gehen Sie sparsam mit Animationen um, da Kunden sonst leicht abgelenkt oder gar verschreckt werden.</p><p>Dies war das Tutorial zu Animationen. Wir wünschen Ihnen weiterhin viel Spaß mit dem OnPage Composer!"
 
 msgid "tutStepTitle_2_0"
 msgstr "Vorlagen"
 
 msgid "tutStepText_2_0"
-msgstr "<p>Lerne hier wie du Vorlagen anlegst und wiederverwendest.</p>"
-"<p>Ziehe zunächst ein <em>Grid-Layout</em> in die Seite und fülle die Spalten nach Herzenslust mit "
-"beliebigen Inhalten.</p>"
+msgstr "<p>Lernen Sie hier, wie Sie Vorlagen anlegen und diese wiederverwenden.</p><p>Ziehen Sie zunächst ein <em>Grid-Layout</em> in die Seite und füllen Sie die Spalten mit beliebigen Inhalten.</p>"
 
 msgid "tutStepTitle_2_1"
 msgstr "Vorlagen anlegen"
 
 msgid "tutStepText_2_1"
-msgstr "Willst du deine Kreation zu einem späteren Zeitpunkt wiederverwenden, so kannst du "
-"einfach eine <em>Vorlage</em> daraus machen. Wähle das gesamte Grid-Layout mit einem Klick aus!"
+msgstr "Wenn Sie erstellte Inhalte zu einem späteren Zeitpunkt wiederverwenden wollen, können Sie dafür eine Vorlage erstellen. Wählen Sie dazu das gesamte Grid-Layout mit einem Klick aus."
 
 msgid "tutStepTitle_2_2"
 msgstr "Vorlagen anlegen"
 
 msgid "tutStepText_2_2"
-msgstr "Klicke jetzt in der Toolbar auf den <em>Stern</em>-Button!"
+msgstr "Klicken Sie jetzt in der Toolbar auf die <em>Stern</em>-Schaltfläche."
 
 msgid "tutStepTitle_2_3"
 msgstr "Vorlagen anlegen"
 
 msgid "tutStepText_2_3"
-msgstr "Trage hier einen aussagekräftigen Namen ein! Mit diesem Namen findest du später "
-"deine Vorlage schneller wieder.<br>"
-"(Gute Beispiele sind <em>\"Produkttabelle\", \"Video mit Beschreibungstext\"</em> oder "
-"<em>\"3-spaltiger Text\"</em>)"
+msgstr "Geben Sie der Vorlage einen aussagekräftigen Namen. Mit diesem Namen finden Sie später die Vorlage besser wieder. Gute Beispiele wären <em>„Produkttabelle“</em>, <em>„Video mit Beschreibungstext“</em> oder <em>„3-spaltiger Text“</em>."
 
 msgid "tutStepTitle_2_4"
 msgstr "Vorlagen wiederverwenden"
 
 msgid "tutStepText_2_4"
-msgstr "Alle gespeicherten Vorlagen findest du über den entsprechenden Tab in der Sidebar."
+msgstr "Alle gespeicherten Vorlagen finden Sie im entsprechenden Reiter in der Sidebar."
 
 msgid "tutStepTitle_2_5"
 msgstr "Vorlagen wiederverwenden"
 
 msgid "tutStepText_2_5"
-msgstr "Du kannst jede Vorlage wie ein normales Portlet einfach in die Seite ziehen."
+msgstr "Sie können jede Vorlage wie ein normales Portlet einfach auf die Seite ziehen."
 
 msgid "tutStepTitle_2_6"
 msgstr "Vorlagen wiederverwenden"
 
 msgid "tutStepText_2_6"
-msgstr "<p>Das Plugin <em>\"JTL-Portlets\"</em> bietet übrigens eine kleine Auswahl an "
-"Vorlagen, die, wenn installiert, hier mit zur Verfügung gestellt werden.</p>"
-"<p>Das war es auch schon mit den <em>Vorlagen</em>. Wir wünschen dir weiterhin viel Spaß mit dem "
-"<em>OnPage Composer</em>!</p>"
+msgstr "<p>Das Plugin <em>„JTL-Portlets“</em> bietet übrigens eine kleine Auswahl an Vorlagen. Diese werden ebenfalls hier zur Verfügung gestellt, sofern Sie das Plugin installiert haben.</p><p>Dies war das Tutorial zu den <em>Vorlagen</em>. Wir wünschen Ihnen weiterhin viel Spaß mit dem OnPage Composer!</p>"

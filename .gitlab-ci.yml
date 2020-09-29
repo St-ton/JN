@@ -200,21 +200,6 @@ code_quality:
     /repofolder/build/scripts/tests.sh `id -u` `id -g`
 
 
-test_PHP_7.2:
-  stage: test
-  script:
-    - IMAGE_NAME=ci-tests:php72
-    - *runUnitTestDocker
-#  <<: *debugging
-  rules:
-    - if: $CI_PROJECT_PATH =~ /^jtl-software\/.*$/
-        && $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
-        && $CI_COMMIT_REF_NAME !~ /^release\/.*$/
-        && $CI_COMMIT_TAG == null
-      when: on_success
-  tags:
-    - tests-run-72
-
 test_PHP_7.3:
   stage: test
   script:
@@ -329,23 +314,6 @@ stagingPreDeploy:
     - *devCheckoutScripts
     - downloadProcess
 #  <<: *debugging
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-        || $CI_COMMIT_REF_NAME =~ /^release\/.*$/
-  tags:
-    - dev-checkout
-
-stagingDevPhp72:
-  stage: staging
-  variables:
-    GIT_STRATEGY: none
-  script:
-    - *devCheckoutScripts
-    - deployProcess 72
-#  <<: *debugging
-  environment:
-    name: staging master php 7.2
-    url: https://$STAGING_USER-72-master.$STAGING_DOMAIN
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
         || $CI_COMMIT_REF_NAME =~ /^release\/.*$/

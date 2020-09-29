@@ -924,6 +924,9 @@
                 $('.js-update-wl').on('change', function () {
                     $.evo.extended().updateWishlistItem($(this).closest('.productbox-inner'));
                 });
+                $('.product-list').children().each(function() {
+                    $(this).css('height', $(this).height());
+                });
             }
         },
 

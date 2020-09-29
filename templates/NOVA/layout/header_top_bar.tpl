@@ -31,7 +31,11 @@
                                 {/foreach}"
                         }
                             {foreach $smarty.session.Sprachen as $language}
-                                {dropdownitem href="{$language->cURL}" rel="nofollow" active=($language->kSprache == $smarty.session.kSprache)}
+                                {dropdownitem href="{$language->cURL}"
+                                    class="link-lang"
+                                    data=["iso"=>$language->cISO]
+                                    rel="nofollow"
+                                    active=($language->kSprache == $smarty.session.kSprache)}
                                     {$language->iso639|upper}
                                 {/dropdownitem}
                             {/foreach}

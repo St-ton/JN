@@ -222,6 +222,8 @@ ifndef('MAX_REVISIONS', 5);
 
 ifndef('SHOW_DEBUG_BAR', false);
 
+ifndef('EXS_LIVE', true);
+
 ifndef('ART_MATRIX_MAX', 250);
 
 ifndef('QUEUE_MAX_STUCK_HOURS', 1);

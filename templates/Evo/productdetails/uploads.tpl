@@ -74,7 +74,9 @@
                                             jtl_token:  "{$smarty.session.jtl_token}",
                                             uniquename: "{$oUpload->cUnique}",
                                             uploader:   "4.00",
-                                            cname:      "{$oUploadSchema->cName|replace:" ":"_"}"
+                                            cname:      "{$oUploadSchema->cName|replace:" ":"_"}",
+                                            kUploadSchema:"{$oUpload->kUploadSchema}",
+                                            prodID:     "{$oUpload->prodID}"
                                             {if !empty($oUploadSchema->WarenkorbPosEigenschaftArr)},
                                             variation:  "{strip}
                                             {foreach name=variationen from=$oUploadSchema->WarenkorbPosEigenschaftArr item=Variation}_{$Variation->cEigenschaftWertName|trans|replace:" ":"_"}{/foreach}
@@ -100,8 +102,24 @@
                                         ip.fileinput('refresh');
                                         ip.fileinput('clear');
                                         ip.fileinput('enable');
-                                    }).on('fileuploaderror', function() {
+                                    }).on('fileuploaderror', function(event, data, msg) {
                                         $('#upload-{$oUploadSchema@index}{$oUpload@index} .fileinput-upload').addClass('disabled');
+                                        if(Object.keys(data.jqXHR).length > 0){
+                                            let message  = '{lang key='uploadError'}';
+                                            switch(data.jqXHR.responseJSON.status){
+                                                case 'reached_limit_per_hour':
+                                                    message = '{lang key='uploadErrorReachedLimitPerHour'}';
+                                                    break;
+                                                case 'filetype_forbidden':
+                                                    message = '{lang key='uploadErrorFiletypeForbidden'}';
+                                                    break;
+                                                case 'extension_not_listed':
+                                                    message = '{lang key='uploadErrorExtensionNotListed'}';
+                                                    break;
+                                            }
+                                            let errorOutput = $('#kv-error-{$oUploadSchema@index}{$oUpload@index} ul li');
+                                            errorOutput.html(message);
+                                        }
                                     }).on('fileloaded', function() {
                                         $('#upload-{$oUploadSchema@index}{$oUpload@index} .fileinput-upload').removeClass('disabled');
                                     });

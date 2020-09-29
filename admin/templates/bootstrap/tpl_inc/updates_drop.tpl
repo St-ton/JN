@@ -4,7 +4,7 @@
         <span class="fa-layers fa-fw has-notify-icon stack-refresh">
             <span class="fas fa-refresh"></span>
             <span class="fa-stack">
-                <span class="fas fa-circle fa-stack-2x text-info"></span>
+                <span class="fas fa-circle fa-stack-2x text-warning"></span>
                 <strong class="fa-stack-1x">{$licenseItemUpdates->count()}</strong>
             </span>
         </span>

@@ -24,6 +24,8 @@ class Migration_20200923090629 extends Migration implements IMigration
 
     public function down()
     {
+        $this->execute('TRUNCATE TABLE tsuchcachetreffer');
+        $this->execute('TRUNCATE TABLE tsuchcache');
         $this->execute('ALTER TABLE tsuchcachetreffer MODIFY nSort tinyint unsigned DEFAULT 0 NOT NULL');
     }
 }

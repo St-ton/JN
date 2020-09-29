@@ -105,6 +105,7 @@
                                     }).on('fileuploaderror', function(event, data, msg) {
                                         $('#upload-{$oUploadSchema@index}{$oUpload@index} .fileinput-upload').addClass('disabled');
                                         if(Object.keys(data.jqXHR).length > 0){
+                                            let message  = '{lang key='uploadError'}';
                                             switch(data.jqXHR.responseJSON.status){
                                                 case 'reached_limit_per_hour':
                                                     message = '{lang key='uploadErrorReachedLimitPerHour'}';

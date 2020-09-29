@@ -54,6 +54,7 @@ if (!empty($_FILES)) {
         'application/x-csh',
         'application/x-httpd-cgi',
         'application/x-httpd-perl',
+		'application/octet-stream',
         'application/sql',
         'text/x-sql',
         'text/sql',

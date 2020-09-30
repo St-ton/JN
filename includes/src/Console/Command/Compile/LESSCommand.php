@@ -34,12 +34,10 @@ class LESSCommand extends Command
     {
         $io           = $this->getIO();
         $themeParam   = $this->getOption('theme');
-        $directory    = PFAD_ROOT . PFAD_TEMPLATES .'Evo/themes/';
-        $fileSystem   = new Filesystem(new Local('/'));
-        $themeFolders = $fileSystem->listContents($directory, false);
-
-        if (!isset($themeParam)) {
-            foreach ($themeFolders as $themeFolder) {
+        $directory    = \PFAD_ROOT . \PFAD_TEMPLATES . 'Evo/themes/';
+        if ($themeParam === null) {
+            $fileSystem = new Filesystem(new Local('/'));
+            foreach ($fileSystem->listContents($directory) as $themeFolder) {
                 if ($themeFolder['basename'] !== 'base') {
                     $this->compileLess('/' . $themeFolder['path'], $themeFolder['basename'], $io);
                 }
@@ -54,8 +52,8 @@ class LESSCommand extends Command
     }
 
     /**
-     * @param string $path
-     * @param string $themeName
+     * @param string    $path
+     * @param string    $themeName
      * @param ConsoleIO $io
      */
     private function compileLess(string $path, string $themeName, ConsoleIO $io): void
@@ -64,7 +62,7 @@ class LESSCommand extends Command
         try {
             $parser->parseFile($path . '/less/theme.less', '/');
             $css = $parser->getCss();
-            file_put_contents($path . '/bootstrap.css', $css);
+            \file_put_contents($path . '/bootstrap.css', $css);
             $io->writeln('<info>compiled ' . $themeName . ' theme </info>');
             unset($parser);
         } catch (\Exception $e) {

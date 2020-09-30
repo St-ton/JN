@@ -72,7 +72,7 @@ class Command extends BaseCommand
 
     /**
      * @param string $name
-     * @return string|array
+     * @return string|array|null
      */
     public function getOption($name)
     {

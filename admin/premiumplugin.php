@@ -10,9 +10,8 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 $recommendationID = Request::verifyGPDataString('id');
-$recommendations  = new Manager(Shop::Container()->getAlertService(), Request::verifyGPDataString('scope'));
-$recommendation   = $recommendations->getRecommendationById($recommendationID);
 $alertHelper      = Shop::Container()->getAlertService();
+$recommendations  = new Manager($alertHelper, Request::verifyGPDataString('scope'));
 
 if (Request::verifyGPDataString('action') === 'install') {
     Shop::Container()->getGetText()->loadAdminLocale('pages/pluginverwaltung');
@@ -36,5 +35,5 @@ if (Request::verifyGPDataString('action') === 'install') {
     $alertHelper->addAlert(Alert::TYPE_WARNING, $errorMsg, 'errorInstall');
 }
 
-$smarty->assign('recommendation', $recommendation)
+$smarty->assign('recommendation', $recommendations->getRecommendationById($recommendationID))
        ->display('premiumplugin.tpl');

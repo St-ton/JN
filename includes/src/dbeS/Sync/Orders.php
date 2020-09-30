@@ -16,6 +16,7 @@ use JTL\Mail\Mailer;
 use JTL\Plugin\Payment\LegacyMethod;
 use JTL\Shop;
 use stdClass;
+use DateTime;
 
 /**
  * Class Orders
@@ -687,8 +688,13 @@ final class Orders extends AbstractSync
                 break;
             }
         }
+        $earlier = new DateTime(\date('Y-m-d', \strtotime($updatedOrder->dVersandDatum)));
+        $now     = new DateTime(\date('Y-m-d'));
+        $diff    = $now->diff($earlier)->format('%a');
+
         if (($state === \BESTELLUNG_STATUS_VERSANDT && $shopOrder->cStatus !== \BESTELLUNG_STATUS_VERSANDT)
-            || ($state === \BESTELLUNG_STATUS_TEILVERSANDT && $doSend === true)
+            || ($state === \BESTELLUNG_STATUS_TEILVERSANDT && $doSend === true
+            && $diff < \BESTELLUNG_VERSANDBESTAETIGUNG_MAX_TAGE)
         ) {
             $mailType = $state === \BESTELLUNG_STATUS_VERSANDT
                 ? \MAILTEMPLATE_BESTELLUNG_VERSANDT

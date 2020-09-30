@@ -32,9 +32,9 @@ class LESSCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $io           = $this->getIO();
-        $themeParam   = $this->getOption('theme');
-        $directory    = \PFAD_ROOT . \PFAD_TEMPLATES . 'Evo/themes/';
+        $io         = $this->getIO();
+        $themeParam = $this->getOption('theme');
+        $directory  = \PFAD_ROOT . \PFAD_TEMPLATES . 'Evo/themes/';
         if ($themeParam === null) {
             $fileSystem = new Filesystem(new Local('/'));
             foreach ($fileSystem->listContents($directory) as $themeFolder) {

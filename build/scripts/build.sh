@@ -91,7 +91,7 @@ build_create()
 
 build_composer_execute()
 {
-    composer install --no-dev -o -q -d ${REPOSITORY_DIR}/includes;
+    composer install --no-dev -o -d ${REPOSITORY_DIR}/includes;
 }
 
 build_create_deleted_files_csv()

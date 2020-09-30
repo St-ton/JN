@@ -23,7 +23,7 @@
                 {/foreach}
             </ul>
             <hr>
-            <a href="{get_static_route id='jtl.php'}?wl={$oBox->getWishListID()}" class="btn btn-default btn-block btn-sm">
+            <a href="{get_static_route id='wunschliste.php'}?wl={$oBox->getWishListID()}" class="btn btn-default btn-block btn-sm">
                 {lang key='goToWishlist'}
             </a>
         </div>

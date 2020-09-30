@@ -93,28 +93,9 @@
                         {col class="mb-3" cols=12 md=6 offset-md=3}
                         {strip}
                             {nav tag='ul' class='nav-dividers'}
-                            {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
-                                {block name='snippets-maintenance-content-language-dropdown'}
-                                    {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
-                                        {navitemdropdown
-                                        class="language-dropdown mx-auto"
-                                        right=true
-                                        text="
-                                        {foreach $smarty.session.Sprachen as $language}
-                                            {if $language->kSprache == $smarty.session.kSprache}
-                                                {$language->iso639|upper}
-                                            {/if}
-                                        {/foreach}"
-                                        }
-                                            {foreach $smarty.session.Sprachen as $language}
-                                                {dropdownitem href="{$language->cURL}" rel="nofollow" active=($language->kSprache == $smarty.session.kSprache)}
-                                                {$language->iso639|upper}
-                                                {/dropdownitem}
-                                            {/foreach}
-                                        {/navitemdropdown}
-                                    {/if}
+                                {block name='snippets-maintenance-content-include-language-dropdown'}
+                                    {include file='snippets/language_dropdown.tpl' dropdownClass='mx-auto'}
                                 {/block}
-                            {/if}
                             {/nav}
                         {/strip}
                         {/col}

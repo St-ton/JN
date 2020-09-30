@@ -53,11 +53,11 @@
                                     </a>
                                     <a {if $zahlungsart->nEingangAnzahl > 0}href="zahlungsarten.php?a=payments&kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"{/if}
                                        class="btn btn-link sx-2 {if $zahlungsart->nEingangAnzahl === 0}disabled{/if}"
-                                       title="Zahlungseingänge"
+                                       title="{__('paymentsReceived')}"
                                        data-toggle="tooltip">
                                         <span class="icon-hover">
-                                            <span class="fal fa-hand-holding-us"></span>
-                                            <span class="fas fa-hand-holding-us"></span>
+                                            <span class="fal fa-hand-holding-usd"></span>
+                                            <span class="fas fa-hand-holding-usd"></span>
                                         </span>
                                     </a>
                                     <a href="zahlungsarten.php?kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"

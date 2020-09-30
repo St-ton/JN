@@ -1,7 +1,5 @@
 <?php declare(strict_types=1);
 
-# test change
-
 use JTL\Cart\CartHelper;
 use JTL\Shop;
 

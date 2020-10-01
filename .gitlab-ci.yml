@@ -5,7 +5,8 @@ variables:
 stages:
   - codeQuality
   - test
-  - runtest
+  - runtest_build
+  - runtest_deploy
   - build
   - deploy
   - cleanUp
@@ -289,7 +290,7 @@ test_PHP_7.4:
     - build
     
 build_test:
-  stage: runtest
+  stage: runtest_build
   before_script:
     - *preBuildDeployScripts
     - dockerLogin
@@ -303,7 +304,7 @@ build_test:
     - build
 
 deploy_test:
-  stage: runtest
+  stage: runtest_deploy
   variables:
     GIT_STRATEGY: none
   before_script:

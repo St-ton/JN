@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=plain}
 
-Hello Qualto,
+Hello,
 Take a look at my wish list at {$Firma->cName}.
 
 {foreach $Wunschliste->CWunschlistePos_arr as $CWunschlistePos}

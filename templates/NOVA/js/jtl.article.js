@@ -227,8 +227,8 @@
                 config.on('change', function() {
                     that.configurator();
                 })
-                    .keypress(function (e) {
-                        if (e.which === 13) {
+                    .on('keypress', function (e) {
+                        if (e.key === 'Enter') {
                             return false;
                         }
                     });

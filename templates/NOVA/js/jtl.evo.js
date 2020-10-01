@@ -661,12 +661,10 @@
             }
         },
 
-        addInactivityCheck: function(wrapper, timeoutMS, stopEnter) {
+        addInactivityCheck: function(wrapper, timeoutMS = 500, stopEnter = false) {
             var timeoutID,
                 that = this,
                 currentBox;
-            timeoutMS = timeoutMS || 500;
-            stopEnter = stopEnter || false;
 
             setup();
 
@@ -677,7 +675,7 @@
                     .on('touchstart',resetTimer,{passive: true});
                 if (stopEnter) {
                     $(wrapper + ' input.quantity').on('keypress', function (e) {
-                        if (e.which === 13) {
+                        if (e.key === 'Enter') {
                             return false;
                         } else {
                             resetTimer(e);

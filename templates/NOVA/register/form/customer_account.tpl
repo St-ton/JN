@@ -44,7 +44,7 @@
                                             autocomplete="new-password"
                                             disabled=($unregForm === 1)
                                         }
-                                        <label for="pass" class="col-form-label pt-0">
+                                        <label for="password" class="col-form-label pt-0">
                                             {lang key='password' section='account data'}
                                         </label>
                                         {if isset($fehlendeAngaben.pass_zu_kurz)}

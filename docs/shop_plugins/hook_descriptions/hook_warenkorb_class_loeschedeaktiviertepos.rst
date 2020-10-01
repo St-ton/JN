@@ -1,5 +1,5 @@
-HOOK_WARENKORB_CLASS_LOESCHEDEAKTIVIERTEPOS (ab Version 5.0) (230)
-==================================================================
+HOOK_WARENKORB_CLASS_LOESCHEDEAKTIVIERTEPOS (ab Version 4.06.18) (230)
+======================================================================
 
 Triggerpunkt
 """"""""""""

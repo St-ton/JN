@@ -15,7 +15,6 @@
         <div class="product-gallery {if $hasLeftBox}col-sm-5{else}col-sm-6{/if}">
             {opcMountPoint id='opc_before_gallery'}
             {include file='productdetails/image.tpl'}
-            {opcMountPoint id='opc_after_gallery'}
         </div>
         <div class="product-info {if $hasLeftBox}col-sm-7{else}col-sm-6{/if}">
             {block name='productdetails-info'}

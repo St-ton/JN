@@ -518,7 +518,7 @@ class PortletInstance implements \JsonSerializable
         $srcset   = '';
         $srcsizes = '';
 
-        $filepath   = \PFAD_ROOT . \STORAGE_OPC . \basename($src);
+        $filepath   = \PFAD_ROOT . \STORAGE_OPC . \basename(\urldecode($src));
         $sizes      = \is_file($filepath) ? \getimagesize($filepath) : [0, 0];
         $realWidth  = $sizes[0];
         $realHeight = $sizes[1];

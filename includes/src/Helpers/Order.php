@@ -50,15 +50,6 @@ class Order extends CartHelper
     }
 
     /**
-     * @inheritDoc
-     */
-    protected function calculateTotal(stdClass $cartInfo): void
-    {
-        $cartInfo->total[self::NET]   = (float)$this->order->fGesamtsummeNetto;
-        $cartInfo->total[self::GROSS] = (float)$this->order->fGesamtsumme;
-    }
-
-    /**
      * @return Cart|Bestellung|null
      */
     public function getObject()

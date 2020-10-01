@@ -70,6 +70,9 @@ build_create()
 
     echo "Executing migrations";
     build_migrate;
+	
+    echo "Reset mailtemplates";
+    build_reset_mailtemplates;
 
     echo "Creating database struct";
     build_create_db_struct;
@@ -372,6 +375,11 @@ build_add_files_to_patch_dir()
             fi
         done< <(diff -rq /tmp_composer-${PATCH_VERSION}/includes/vendor includes/vendor);
     fi
+}
+
+build_reset_mailtemplates()
+{
+    php ${REPOSITORY_DIR}/cli mailtemplates:reset
 }
 
 

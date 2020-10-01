@@ -3,7 +3,6 @@
 namespace JTL\Catalog\Product;
 
 use DateTime;
-use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Hersteller;
 use JTL\Catalog\Separator;
@@ -1410,10 +1409,10 @@ class Artikel
                 'height' => $height
             ],
             'type' => $type,
-            'alt'  => htmlspecialchars(
-                str_replace('"', '', $image->cAltAttribut),
-                ENT_COMPAT | ENT_HTML401,
-                JTL_CHARSET
+            'alt'  => \htmlspecialchars(
+                \str_replace('"', '', $image->cAltAttribut),
+                \ENT_COMPAT | \ENT_HTML401,
+                \JTL_CHARSET
             )
         ];
     }
@@ -1716,9 +1715,15 @@ class Artikel
             $mediaFile->nErreichbar              = 1; // Beschreibt, ob eine Datei vorhanden ist
             $mediaFile->cMedienTyp               = ''; // Wird zum Aufbau der Reiter gebraucht
             if (\mb_strlen($mediaFile->cTyp) > 0) {
+                if ($mediaFile->cTyp === '.*') {
+                    $extMatch = [];
+                    \preg_match('/\.\w{3,4}($|\?)/', $mediaFile->cPfad, $extMatch);
+                    $mediaFile->cTyp = $extMatch[0] ?? '.*';
+                }
                 $mapped                = $this->mapMediaType($mediaFile->cTyp);
                 $mediaFile->cMedienTyp = $mapped->cName;
                 $mediaFile->nMedienTyp = $mapped->nTyp;
+                $mediaFile->videoType  = $mapped->videoType;
             }
             if ($mediaFile->cPfad !== '' && $mediaFile->cPfad[0] === '/') {
                 //remove double slashes
@@ -2027,7 +2032,7 @@ class Artikel
                 $scoreSelect . '
                     FROM tartikel
                     JOIN teigenschaftkombiwert
-	                    ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
+                        ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
                     LEFT JOIN teigenschaft
                         ON teigenschaft.kEigenschaft = teigenschaftkombiwert.kEigenschaft
                     LEFT JOIN teigenschaftwert
@@ -2037,18 +2042,18 @@ class Artikel
                     ' . $scoreJoin . '
                     LEFT JOIN teigenschaftsichtbarkeit
                         ON teigenschaftsichtbarkeit.kEigenschaft = teigenschaftkombiwert.kEigenschaft
-	                    AND teigenschaftsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                        AND teigenschaftsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
                     LEFT JOIN teigenschaftwertsichtbarkeit
                         ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert
-	                    AND teigenschaftwertsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                        AND teigenschaftwertsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
                     LEFT JOIN teigenschaftwertpict
                         ON teigenschaftwertpict.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert
                     LEFT JOIN teigenschaftwertaufpreis
                         ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert
-	                    AND teigenschaftwertaufpreis.kKundengruppe = ' . $customerGroupID . '
+                        AND teigenschaftwertaufpreis.kKundengruppe = ' . $customerGroupID . '
                     WHERE tartikel.kVaterArtikel = ' . (int)$this->kVaterArtikel . '
-	                    AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
-	                    AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL';
+                        AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
+                        AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL';
             if ($exportWorkaround === false) {
                 /* Workaround for performance-issue in MySQL 5.5 with large varcombis */
                 $allCombinations = Shop::Container()->getDB()->query(
@@ -3084,11 +3089,11 @@ class Artikel
     }
 
     /**
-     * @param int      $productID
-     * @param stdClass $options @see Artikel::getAllOptions()
-     * @param int      $customerGroupID
-     * @param int      $langID
-     * @param bool     $noCache
+     * @param int           $productID
+     * @param stdClass|null $options @see Artikel::getAllOptions()
+     * @param int           $customerGroupID
+     * @param int           $langID
+     * @param bool          $noCache
      * @return null|$this
      * @throws CircularReferenceException
      * @throws ServiceNotFoundException
@@ -3150,10 +3155,7 @@ class Artikel
             return null;
         }
         // EXPERIMENTAL_MULTILANG_SHOP
-        if ($tmpProduct->cSeo === null
-            && \defined('EXPERIMENTAL_MULTILANG_SHOP')
-            && \EXPERIMENTAL_MULTILANG_SHOP === true
-        ) {
+        if ($tmpProduct->cSeo === null && \EXPERIMENTAL_MULTILANG_SHOP === true) {
             // redo the query with modified seo join - without language ID
             $productSQL = \str_replace(
                 $this->getSeoSQL()->cJOIN,
@@ -4617,8 +4619,8 @@ class Artikel
     }
 
     /**
-     * @param string $countryCode ISO Alpha-2 Country-Code e.g. DE
-     * @param int    $shippingID special shippingID, if null will select cheapest
+     * @param string|null $countryCode ISO Alpha-2 Country-Code e.g. DE
+     * @param int|null    $shippingID special shippingID, if null will select cheapest
      * @return Versandart|object|null - cheapest shipping except shippings that offer cash payment or that are excluded
      */
     public function getFavourableShipping(string $countryCode = null, int $shippingID = null)
@@ -4690,7 +4692,7 @@ class Artikel
      * @param null|int|float $purchaseQuantity
      * @param null|int|float $stockLevel
      * @param null|string    $languageISO
-     * @param int            $shippingID gets DeliveryTime for a special shipping
+     * @param int|null       $shippingID gets DeliveryTime for a special shipping
      * @return mixed|string
      * @throws \Exception
      */
@@ -4901,7 +4903,8 @@ class Artikel
      */
     private function mapMediaType(string $type)
     {
-        $mapping = new stdClass();
+        $mapping            = new stdClass();
+        $mapping->videoType = null;
         switch ($type) {
             case '.bmp':
             case '.gif':
@@ -4931,8 +4934,9 @@ class Artikel
             case '.mp4':
             case '.flv':
             case '.3gp':
-                $mapping->cName = Shop::Lang()->get('tabVideo', 'media');
-                $mapping->nTyp  = 3;
+                $mapping->cName     = Shop::Lang()->get('tabVideo', 'media');
+                $mapping->nTyp      = 3;
+                $mapping->videoType = \strtolower(\str_replace('.', '', $type));
                 break;
             case '.pdf':
                 $mapping->cName = Shop::Lang()->get('tabPdf', 'media');
@@ -5342,9 +5346,9 @@ class Artikel
         }));
         $cacheID = 'jtl_ola_' . \md5($shippingFreeCountries);
         if (($countries = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $countries = Shop::Container()->getCountryService()->getFilteredCountryList($codes)->map(
+            $countries = Shop::Container()->getCountryService()->getFilteredCountryList($codes)->mapWithKeys(
                 static function (Country $country) {
-                    return $country->getName();
+                    return [$country->getISO() => $country->getName()];
                 }
             )->toArray();
 
@@ -5970,5 +5974,27 @@ class Artikel
             default:
                 return null;
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getBackorderString():string
+    {
+        $backorder = '';
+        if ($this->cLagerBeachten === 'Y'
+            && $this->fLagerbestand <= 0
+            && $this->fZulauf > 0
+            && $this->dZulaufDatum_de !== null
+        ) {
+            $backorder = \sprintf(
+                Shop::Lang()->get('productInflowing', 'productDetails'),
+                $this->fZulauf,
+                $this->cEinheit,
+                $this->dZulaufDatum_de
+            );
+        }
+
+        return $backorder;
     }
 }

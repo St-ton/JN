@@ -7,17 +7,17 @@
 ## System Requirements
 
 **Webserver**
-* Version 2.2 or 2.4
+* Apache Version 2.2 or 2.4
 	* mod_rewrite module activated
 	* .htaccess support (allowed to override options)
 * nginx
   
 **Database** 
-* MySQL >= 5.6
+* MySQL 5 >= 5.6
 * MariaDB >= 10.1
 
 **PHP**
-* PHP 7.2 or greater
+* PHP 7.3 or greater
 * PHP-Modules: 
 	* [SimpleXML](https://php.net/manual/en/book.simplexml.php)
 	* [ImageMagick + Imagick](https://php.net/manual/en/book.imagick.php)
@@ -25,6 +25,7 @@
 	* [Iconv](https://php.net/manual/en/book.iconv.php)
 	* [MBString](https://php.net/manual/en/book.mbstring.php)
 	* [Tokenizer](https://php.net/manual/en/book.tokenizer.php)
+	* [Intl](https://www.php.net/manual/de/book.intl.php)
 	* [PDO (MySQL)](https://php.net/manual/en/book.pdo.php)
 	* Optional: [IonCube Loader](https://www.ioncube.com/loaders.php) for some third-party plug-ins
 * PHP Settings

@@ -68,7 +68,7 @@ class PortletInstance implements \JsonSerializable
     protected $uid;
 
     /**
-     * @var null|AreaList mapping area ids to subareas
+     * @var AreaList mapping area ids to subareas
      */
     protected $subareaList;
 
@@ -196,9 +196,9 @@ class PortletInstance implements \JsonSerializable
     }
 
     /**
-     * @return null|AreaList
+     * @return AreaList
      */
-    public function getSubareaList(): ?AreaList
+    public function getSubareaList(): AreaList
     {
         return $this->subareaList;
     }
@@ -395,7 +395,7 @@ class PortletInstance implements \JsonSerializable
     {
         $style = $this->getProperty('animation-style');
 
-        return $style !== '' ? 'wow ' . $style : '';
+        return $style !== '' ? 'wow ' . \htmlspecialchars($style) : '';
     }
 
     /**
@@ -409,7 +409,13 @@ class PortletInstance implements \JsonSerializable
             if ($this->hasProperty($propname) && \strpos($propname, 'wow-') === 0 &&
                 !empty($this->getProperty($propname))
             ) {
-                $data[$propname] = $this->getProperty($propname);
+                $value = $this->getProperty($propname);
+
+                if (\is_string($value)) {
+                    $value = \htmlspecialchars($value);
+                }
+
+                $data[$propname] = $value;
             }
         }
 
@@ -497,11 +503,11 @@ class PortletInstance implements \JsonSerializable
     }
 
     /**
-     * @param string    $src
-     * @param string    $alt
-     * @param string    $title
-     * @param int|array $divisor
-     * @param string    $default
+     * @param string|null $src
+     * @param string|null $alt
+     * @param string|null $title
+     * @param int|array   $divisor
+     * @param string|null $default
      * @return array
      */
     public function getImageAttributes($src = null, $alt = null, $title = null, $divisor = 1, $default = null): array
@@ -512,13 +518,20 @@ class PortletInstance implements \JsonSerializable
         $srcset   = '';
         $srcsizes = '';
 
+        $filepath   = \PFAD_ROOT . \STORAGE_OPC . \basename($src);
+        $sizes      = \is_file($filepath) ? \getimagesize($filepath) : [0, 0];
+        $realWidth  = $sizes[0];
+        $realHeight = $sizes[1];
+
         if (empty($src)) {
             return [
-                'srcset'   => '',
-                'srcsizes' => '',
-                'src'      => $default ?? '',
-                'alt'      => $alt,
-                'title'    => $title,
+                'srcset'     => '',
+                'srcsizes'   => '',
+                'src'        => $default ?? '',
+                'alt'        => $alt,
+                'title'      => $title,
+                'realWidth'  => $realWidth,
+                'realHeight' => $realHeight,
             ];
         }
         $this->generateAllImageSizes(true, 1, \rawurldecode(\basename($src)));
@@ -573,6 +586,8 @@ class PortletInstance implements \JsonSerializable
             'src'      => \str_replace(' ', '%20', $this->getImage()),
             'alt'      => $alt,
             'title'    => $title,
+            'realWidth'  => $realWidth,
+            'realHeight' => $realHeight,
         ];
     }
 
@@ -598,11 +613,11 @@ class PortletInstance implements \JsonSerializable
     }
 
     /**
-     * @param string $src
-     * @param string $alt
-     * @param string $title
-     * @param int    $divisor
-     * @param null   $default
+     * @param string|null $src
+     * @param string|null $alt
+     * @param string|null $title
+     * @param int         $divisor
+     * @param string|null $default
      * @return $this
      */
     public function setImageAttributes($src = null, $alt = null, $title = null, $divisor = 1, $default = null): self
@@ -651,15 +666,13 @@ class PortletInstance implements \JsonSerializable
      */
     public function jsonSerializeShort()
     {
-        $result = [
+        return [
             'id'              => $this->portlet->getId(),
             'class'           => $this->portlet->getClass(),
             'title'           => $this->portlet->getTitle(),
             'properties'      => $this->properties,
             'widthHeuristics' => $this->widthHeuristics,
         ];
-
-        return $result;
     }
 
     /**

@@ -79,28 +79,28 @@ function getAdminSectionSettings($configSectionID)
         }
 
         if ($conf->cInputTyp === 'listbox') {
-            $oSetValue = $db->selectAll(
+            $setValue = $db->selectAll(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
                 [$conf->kEinstellungenSektion, $conf->cWertName],
                 'cWert'
             );
 
-            $conf->gesetzterWert = $oSetValue;
+            $conf->gesetzterWert = $setValue;
         } elseif ($conf->cInputTyp === 'selectkdngrp') {
-            $oSetValue           = $db->selectAll(
+            $setValue            = $db->selectAll(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
                 [$conf->kEinstellungenSektion, $conf->cWertName]
             );
-            $conf->gesetzterWert = $oSetValue;
+            $conf->gesetzterWert = $setValue;
         } else {
-            $oSetValue           = $db->select(
+            $setValue            = $db->select(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
                 [$conf->kEinstellungenSektion, $conf->cWertName]
             );
-            $conf->gesetzterWert = $oSetValue->cWert ?? null;
+            $conf->gesetzterWert = $setValue->cWert ?? null;
         }
     }
 
@@ -115,7 +115,8 @@ function getAdminSectionSettings($configSectionID)
  */
 function saveAdminSettings(array $settingsIDs, array &$post, $tags = [CACHING_GROUP_OPTION])
 {
-    $confData = Shop::Container()->getDB()->query(
+    $db       = Shop::Container()->getDB();
+    $confData = $db->query(
         'SELECT *
             FROM teinstellungenconf
             WHERE kEinstellungenConf IN (' . implode(',', \array_map('\intval', $settingsIDs)) . ')
@@ -146,12 +147,12 @@ function saveAdminSettings(array $settingsIDs, array &$post, $tags = [CACHING_GR
                 break;
         }
         if ($config->cInputTyp !== 'listbox') {
-            Shop::Container()->getDB()->delete(
+            $db->delete(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
                 [(int)$config->kEinstellungenSektion, $config->cWertName]
             );
-            Shop::Container()->getDB()->insert('teinstellungen', $val);
+            $db->insert('teinstellungen', $val);
         }
     }
     Shop::Container()->getCache()->flushTags($tags);
@@ -161,38 +162,38 @@ function saveAdminSettings(array $settingsIDs, array &$post, $tags = [CACHING_GR
 
 /**
  * @param array  $listBoxes
- * @param string $cWertName
+ * @param string $valueName
  * @param int    $configSectionID
  */
-function bearbeiteListBox($listBoxes, $cWertName, int $configSectionID)
+function bearbeiteListBox($listBoxes, $valueName, int $configSectionID)
 {
     $db = Shop::Container()->getDB();
     if (is_array($listBoxes) && count($listBoxes) > 0) {
         $db->delete(
             'teinstellungen',
             ['kEinstellungenSektion', 'cName'],
-            [$configSectionID, $cWertName]
+            [$configSectionID, $valueName]
         );
         foreach ($listBoxes as $listBox) {
             $newConf                        = new stdClass();
             $newConf->cWert                 = $listBox;
-            $newConf->cName                 = $cWertName;
+            $newConf->cName                 = $valueName;
             $newConf->kEinstellungenSektion = $configSectionID;
 
             $db->insert('teinstellungen', $newConf);
         }
-    } elseif ($cWertName === 'bewertungserinnerung_kundengruppen') {
+    } elseif ($valueName === 'bewertungserinnerung_kundengruppen') {
         // Leere Kundengruppen Work Around
         $customerGroup = $db->select('tkundengruppe', 'cStandard', 'Y');
         if ($customerGroup->kKundengruppe > 0) {
             $db->delete(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
-                [$configSectionID, $cWertName]
+                [$configSectionID, $valueName]
             );
             $newConf                        = new stdClass();
             $newConf->cWert                 = $customerGroup->kKundengruppe;
-            $newConf->cName                 = $cWertName;
+            $newConf->cName                 = $valueName;
             $newConf->kEinstellungenSektion = CONF_BEWERTUNG;
 
             $db->insert('teinstellungen', $newConf);
@@ -433,13 +434,13 @@ function ermittleDatumWoche(string $dateString)
 /**
  * Return version of files
  *
- * @param bool $bDate
+ * @param bool $date
  * @return int|string
  */
-function getJTLVersionDB(bool $bDate = false)
+function getJTLVersionDB(bool $date = false)
 {
     $ret = 0;
-    if ($bDate) {
+    if ($date) {
         $latestUpdate = Shop::Container()->getDB()->query(
             'SELECT max(dExecuted) as date FROM tmigration',
             ReturnType::SINGLE_OBJECT
@@ -480,31 +481,29 @@ function getMaxFileSize($size)
 }
 
 /**
- * @param float  $fPreisNetto
- * @param float  $fPreisBrutto
- * @param string $cTargetID
+ * @param float  $netPrice
+ * @param float  $grossPrice
+ * @param string $targetID
  * @return IOResponse
  */
-function getCurrencyConversionIO($fPreisNetto, $fPreisBrutto, $cTargetID)
+function getCurrencyConversionIO($netPrice, $grossPrice, $targetID)
 {
     $response = new IOResponse();
-    $cString  = Currency::getCurrencyConversion($fPreisNetto, $fPreisBrutto);
-    $response->assign($cTargetID, 'innerHTML', $cString);
+    $response->assignDom($targetID, 'innerHTML', Currency::getCurrencyConversion($netPrice, $grossPrice));
 
     return $response;
 }
 
 /**
- * @param float  $fPreisNetto
- * @param float  $fPreisBrutto
- * @param string $cTooltipID
+ * @param float  $netPrice
+ * @param float  $grossPrice
+ * @param string $tooltipID
  * @return IOResponse
  */
-function setCurrencyConversionTooltipIO($fPreisNetto, $fPreisBrutto, $cTooltipID)
+function setCurrencyConversionTooltipIO($netPrice, $grossPrice, $tooltipID)
 {
     $response = new IOResponse();
-    $cString  = Currency::getCurrencyConversion($fPreisNetto, $fPreisBrutto);
-    $response->assign($cTooltipID, 'dataset.originalTitle', $cString);
+    $response->assignVar('originalTilte', Currency::getCurrencyConversion($netPrice, $grossPrice));
 
     return $response;
 }
@@ -517,7 +516,7 @@ function setCurrencyConversionTooltipIO($fPreisNetto, $fPreisBrutto, $cTooltipID
 function addFav($title, $url)
 {
     $success     = false;
-    $kAdminlogin = (int)$_SESSION['AdminAccount']->kAdminlogin;
+    $kAdminlogin = Shop::Container()->getAdminAccount()->getID();
 
     if (!empty($title) && !empty($url)) {
         $success = AdminFavorite::add($kAdminlogin, $title, $url);

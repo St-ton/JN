@@ -85,7 +85,7 @@
                 </noscript>
             {/if}
 
-            {if \JTL\Shop::isAdmin() && $opc->isEditMode() === false && $opc->isPreviewMode() === false}
+            {if $opc->isEditMode() === false && $opc->isPreviewMode() === false && \JTL\Shop::isAdmin(true)}
                 <link rel="preload" href="{$ShopURL}/admin/opc/css/startmenu.css" as="style"
                       onload="this.onload=null;this.rel='stylesheet'">
                 <noscript>
@@ -207,11 +207,13 @@
         {/if}
         {$dbgBarHead}
 
-        <script src="{$ShopURL}/{$templateDir}js/jquery-3.4.1.min.js"></script>
         <script>
             window.lazySizesConfig = window.lazySizesConfig || {};
             window.lazySizesConfig.expand  = 1;
         </script>
+        <script src="{$ShopURL}/{$templateDir}js/jquery-3.5.1.min.js"></script>
+        <script src="{$ShopURL}/{$templateDir}js/lazysizes.min.js"></script>
+
         {if $Einstellungen.template.general.use_minify === 'N'}
             {if isset($cPluginJsHead_arr)}
                 {foreach $cPluginJsHead_arr as $cJS}
@@ -230,27 +232,46 @@
             {/foreach}
         {/if}
 
-        {$customJSPath = $currentTemplateDir|cat:'/js/custom.js'}
-        {if file_exists($customJSPath)}
-            <script defer src="{$ShopURL}/{$customJSPath}?v={$nTemplateVersion}"></script>
+        {if file_exists($currentTemplateDirFullPath|cat:'js/custom.js')}
+            <script defer src="{$ShopURL}/{$currentTemplateDir}js/custom.js?v={$nTemplateVersion}"></script>
         {/if}
 
         {getUploaderLang iso=$smarty.session.currentLanguage->cISO639|default:'' assign='uploaderLang'}
 
-        <script defer src="{$ShopURL}/{$templateDir}js/fileinput/fileinput.min.js"></script>
-        <script defer src="{$ShopURL}/{$templateDir}js/fileinput/themes/fas/theme.min.js"></script>
-        <script defer src="{$ShopURL}/{$templateDir}js/fileinput/locales/{$uploaderLang}.js"></script>
-        <script defer type="module" src="{$ShopURL}/{$templateDir}js/app/app.js"></script>
+        <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fontawesome/webfonts/fa-solid-900.woff2" as="font" crossorigin/>
+        <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fontawesome/webfonts/fa-regular-400.woff2" as="font" crossorigin/>
+        <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/opensans/open-sans-600.woff2" as="font" crossorigin/>
+        <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/opensans/open-sans-regular.woff2" as="font" crossorigin/>
+        <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/montserrat/Montserrat-SemiBold.woff2" as="font" crossorigin/>
+        <link rel="preload" href="{$ShopURL}/{$templateDir}js/app/globals.js" as="script" crossorigin>
+        <link rel="preload" href="{$ShopURL}/{$templateDir}js/app/snippets/form-counter.js" as="script" crossorigin>
+        <link rel="preload" href="{$ShopURL}/{$templateDir}js/app/plugins/navscrollbar.js" as="script" crossorigin>
+        <link rel="preload" href="{$ShopURL}/{$templateDir}js/app/plugins/tabdrop.js" as="script" crossorigin>
+        <link rel="preload" href="{$ShopURL}/{$templateDir}js/app/views/header.js" as="script" crossorigin>
+        <link rel="preload" href="{$ShopURL}/{$templateDir}js/app/views/productdetails.js" as="script" crossorigin>
+        {if !empty($oUploadSchema_arr)}
+            <script defer src="{$ShopURL}/{$templateDir}js/fileinput/fileinput.min.js"></script>
+            <script defer src="{$ShopURL}/{$templateDir}js/fileinput/themes/fas/theme.min.js"></script>
+            <script defer src="{$ShopURL}/{$templateDir}js/fileinput/locales/{$uploaderLang}.js"></script>
+        {/if}
+        {if $Einstellungen.preisverlauf.preisverlauf_anzeigen === 'Y' && !empty($bPreisverlauf)}
+            <script defer src="{$ShopURL}/{$templateDir}js/Chart.bundle.min.js"></script>
+        {/if}
+        <script type="module" src="{$ShopURL}/{$templateDir}js/app/app.js"></script>
     </head>
     {/block}
 
     {has_boxes position='left' assign='hasLeftPanel'}
     {block name='layout-header-body-tag'}
-        <body class="{if $Einstellungen.template.theme.button_animated === 'Y'}btn-animated{/if}"
+        <body class="{if $Einstellungen.template.theme.button_animated === 'Y'}btn-animated{/if}
+                     {if $Einstellungen.template.theme.wish_compare_animation === 'mobile'
+                        || $Einstellungen.template.theme.wish_compare_animation === 'both'}wish-compare-animation-mobile{/if}
+                     {if $Einstellungen.template.theme.wish_compare_animation === 'desktop'
+                        || $Einstellungen.template.theme.wish_compare_animation === 'both'}wish-compare-animation-desktop{/if}
+                     {if $isMobile}is-mobile{/if}"
               data-page="{$nSeitenTyp}"
               {if isset($Link) && !empty($Link->getIdentifier())} id="{$Link->getIdentifier()}"{/if}>
     {/block}
-
     {if !$bExclusive}
         {include file=$opcDir|cat:'tpl/startmenu.tpl'}
 
@@ -281,7 +302,7 @@
                     {block name='layout-header-category-nav'}
                         {navbar toggleable=true fill=true type="expand-lg" class="justify-content-start {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}align-items-center{else}align-items-lg-end{/if} pt-0 px-0 pb-lg-0"}
                             {block name='layout-header-navbar-toggle'}
-                                <button class="navbar-toggler mr-3 collapsed {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}" type="button" data-toggle="collapse" data-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">
+                                <button id="burger-menu" class="navbar-toggler mr-3 collapsed {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}" type="button" data-toggle="collapse" data-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">
                                     <span class="navbar-toggler-icon"></span>
                                 </button>
                             {/block}
@@ -328,6 +349,9 @@
                             {else}
                                 {block name='layout-header-branding-shop-nav'}
                                     {nav id="shop-nav" right=true class="nav-right ml-auto order-lg-last align-items-center flex-shrink-0"}
+                                        {block name='layout-header-branding-shop-nav-include-language-dropdown'}
+                                            {include file='snippets/language_dropdown.tpl' dropdownClass='d-flex d-lg-none'}
+                                        {/block}
                                         {include file='layout/header_nav_icons.tpl'}
                                     {/nav}
                                 {/block}

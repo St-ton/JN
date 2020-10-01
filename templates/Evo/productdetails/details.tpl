@@ -15,7 +15,6 @@
         <div class="product-gallery {if $hasLeftBox}col-sm-5{else}col-sm-6{/if}">
             {opcMountPoint id='opc_before_gallery'}
             {include file='productdetails/image.tpl'}
-            {opcMountPoint id='opc_after_gallery'}
         </div>
         <div class="product-info {if $hasLeftBox}col-sm-7{else}col-sm-6{/if}">
             {block name='productdetails-info'}
@@ -121,11 +120,11 @@
                 {/block}
 
                 {block name='productdetails-info-category-wrapper'}
-                {if $Einstellungen.artikeldetails.artikeldetails_kategorie_anzeigen === 'Y'}
+                {assign var=i_kat value=($Brotnavi|@count)-2}
+                {if $Einstellungen.artikeldetails.artikeldetails_kategorie_anzeigen === 'Y' && isset($Brotnavi[$i_kat])}
                     {block name='productdetails-info-category'}
                     <p class="product-category word-break">
                         <span class="text-muted">{lang key='category'}: </span>
-                        {assign var=i_kat value=$Brotnavi|@count}{assign var=i_kat value=$i_kat-2}
                         <a href="{$Brotnavi[$i_kat]->getURLFull()}" itemprop="category">{$Brotnavi[$i_kat]->getName()}</a>
                     </p>
                     {/block}

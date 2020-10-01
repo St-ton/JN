@@ -50,7 +50,7 @@
                                         {foreach $Bestellungen as $order}
                                             {if $order@index === 5}{break}{/if}
                                             <tr title="{lang key='showOrder' section='login'}: {lang key='orderNo' section='login'} {$order->cBestellNr}"
-                                                class="clickable-row"
+                                                class="clickable-row cursor-pointer"
                                                 data-toggle="tooltip"
                                                 data-placement="top"
                                                 data-boundary="window"

@@ -4,13 +4,13 @@ use JTL\Helpers\Request;
 use JTL\Media\Media;
 
 require_once __DIR__ . '/includes/globalinclude.php';
-set_exception_handler(function ($e) {
+set_exception_handler(static function ($e) {
     header(Request::makeHTTPHeader(404));
     echo $e->getMessage();
     exit;
 });
 
-set_error_handler(function ($code, $message, $file, $line) {
+set_error_handler(static function ($code, $message, $file, $line) {
     throw new Exception(sprintf('%s in file "%s" on line %d', $message, $file, $line));
 }, E_ALL & ~(E_STRICT | E_NOTICE));
 

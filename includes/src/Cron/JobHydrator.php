@@ -8,6 +8,9 @@ namespace JTL\Cron;
  */
 final class JobHydrator
 {
+    /**
+     * @var string[]
+     */
     private static $mapping = [
         'cronID'        => 'CronID',
         'jobType'       => 'Type',

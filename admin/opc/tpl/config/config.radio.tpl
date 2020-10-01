@@ -1,5 +1,13 @@
 <div class="form-group">
-    <label for="config-{$propname}">{$propdesc.label}</label>
+    <label for="config-{$propname}"
+            {if !empty($propdesc.desc)}
+                data-toggle="tooltip" title="{$propdesc.desc|default:''}" data-placement="auto"
+            {/if}>
+        {$propdesc.label}
+        {if !empty($propdesc.desc)}
+            <i class="fas fa-info-circle fa-fw"></i>
+        {/if}
+    </label>
     <div class="radio" id="config-{$propname}">
         {foreach $propdesc.options as $value => $name}
             <div>

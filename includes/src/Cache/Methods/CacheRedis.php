@@ -69,20 +69,31 @@ class CacheRedis implements ICachingMethod
             try {
                 $res = ($port !== null && $host[0] !== '/')
                     ? $redis->$connect($host, (int)$port, \REDIS_CONNECT_TIMEOUT)
-                    : $redis->$connect($host); //for connecting to socket
+                    : $redis->$connect($host); // for connecting to socket
             } catch (RedisException $e) {
                 $this->setError($e->getMessage());
                 $res = false;
             }
-            if ($res !== false && $pass !== null && $pass !== '') {
-                $res = $redis->auth($pass);
+            if ($pass !== null && $pass !== '') {
+                try {
+                    $res = $redis->auth($pass);
+                } catch (RedisException $e) {
+                    $this->setError($e->getMessage());
+                    $res = false;
+                }
             }
-            if ($res !== false && $database !== null && $database !== '') {
-                $res = $redis->select((int)$database);
+            if ($database !== null && $database !== '') {
+                try {
+                    $res = $redis->select((int)$database);
+                } catch (RedisException $e) {
+                    $this->setError($e->getMessage());
+                    $res = false;
+                }
             }
             if ($res === false) {
                 return false;
             }
+            $this->setError('');
             // set custom prefix
             $redis->setOption(Redis::OPT_PREFIX, $this->options['prefix']);
             // set php serializer for objects and arrays
@@ -216,7 +227,8 @@ class CacheRedis implements ICachingMethod
     }
 
     /**
-     * @inheritdoc
+     * @param string|int $tagName
+     * @return string
      */
     private static function _keyFromTagName($tagName): string
     {

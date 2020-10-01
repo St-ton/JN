@@ -6,6 +6,7 @@ use JTL\Catalog\Product\Preise;
 use JTL\DB\ReturnType;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
+use stdClass;
 
 /**
  * Class Surcharge
@@ -143,7 +144,7 @@ class ShippingSurcharge
     public function save(): void
     {
         $db                          = Shop::Container()->getDB();
-        $surcharge                   = new \stdClass();
+        $surcharge                   = new stdClass();
         $surcharge->cName            = $this->getTitle();
         $surcharge->kVersandart      = $this->getShippingMethod();
         $surcharge->cIso             = $this->getISO();
@@ -155,7 +156,7 @@ class ShippingSurcharge
         }
         if ($this->getID() > 0) {
             foreach ($this->getNames() as $key => $name) {
-                $surchargeLang                   = new \stdClass();
+                $surchargeLang                   = new stdClass();
                 $surchargeLang->cName            = $name;
                 $surchargeLang->cISOSprache      = Shop::Lang()->getIsoFromLangID($key)->cISO;
                 $surchargeLang->kVersandzuschlag = $this->getID();
@@ -367,7 +368,7 @@ class ShippingSurcharge
 
 
     /**
-     * @param int $idx
+     * @param int|null $idx
      * @return string
      */
     public function getName(int $idx = null): string
@@ -411,7 +412,7 @@ class ShippingSurcharge
     }
 
     /**
-     * @param string $priceLocalized
+     * @param string|null $priceLocalized
      * @return ShippingSurcharge
      */
     public function setPriceLocalized(string $priceLocalized = null): self

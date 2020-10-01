@@ -1,7 +1,7 @@
 {block name='selectionwizard-form'}
     {if isset($AWA)}
         {block name='selectionwizard-form-heading'}
-            <div class="h3 selection-wizard-desc">
+            <div class="h3 selection-wizard-desc mb-0">
                 {$AWA->getDescription()}
             </div>
         {/block}

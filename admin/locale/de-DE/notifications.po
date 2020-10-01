@@ -56,6 +56,12 @@ msgstr "Plugin"
 msgid "hasNewPluginVersionsMessage"
 msgstr "Es sind neue Plugin-Versionen verfügbar."
 
+msgid "hasLicenseExpirationsTitle"
+msgstr "Lizenzen/Subscriptions"
+
+msgid "hasLicenseExpirationsMessage"
+msgstr "Mindestens eine Subscription läuft in Kürze ab oder ist bereits abgelaufen."
+
 msgid "hasFullTextIndexErrorTitle"
 msgstr "Volltextsuche"
 

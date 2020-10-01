@@ -27,18 +27,16 @@
                     {block name='snippets-shipping-tax-info-zzgl-show-shipping-free'}
                         {if $Einstellungen.global.global_versandkostenfrei_darstellung === 'D'}
                             {block name='snippets-shipping-tax-info-zzgl-show-shipping-free-D'}
-                                {lang key='noShippingcostsTo'} {lang key='noShippingCostsAtExtended' section='basket' printf=' ::: '}
-                                {foreach item=country key=cISO from=$taxdata.countries}
-                                    <abbr title="{$country}">{$cISO}</abbr>
-                                {/foreach}, {link href="{if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}?shipping_calculator=0{/if}" rel="nofollow" class="shipment popup"}
+                                {$countries = "{foreach $taxdata.countries as $cISO => $country}<abbr title='{$country}'>{$cISO}</abbr>&nbsp;{/foreach}"}
+                                {lang key='noShippingcostsTo'} {lang key='noShippingCostsAtExtended' section='basket' printf=$countries}
+                                {link href="{if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}?shipping_calculator=0{/if}" rel="nofollow" class="d-inline-block shipment popup"}
                                     {lang key='shipping' section='basket'}{/link}
                             {/block}
                         {else}
                             {block name='snippets-shipping-tax-info-zzgl-show-shipping-free-free-link'}
-                                {link
-                                    href="{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}?shipping_calculator=0"
+                                {link href="{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}?shipping_calculator=0"
                                     rel="nofollow"
-                                    class="shipment popup"
+                                    class="shipment popup d-inline-block"
                                     data-toggle="tooltip"
                                     data-placement="left"
                                     title="{$taxdata.shippingFreeCountries}, {lang key='else'} {lang key='plus' section='basket'} {lang key='shipping' section='basket'}"
@@ -51,7 +49,9 @@
                 {elseif isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}
                     {block name='snippets-shipping-tax-info-zzgl-special-page'}
                         {lang key='plus' section='basket'}
-                        {link href="{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}?shipping_calculator=0" rel="nofollow" class="shipment popup"}
+                        {link href="{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}?shipping_calculator=0"
+                            rel="nofollow"
+                            class="shipment popup d-inline-block"}
                             {lang key='shipping' section='basket'}
                         {/link}
                     {/block}
@@ -59,7 +59,7 @@
             {/block}
         {elseif $Einstellungen.global.global_versandhinweis === 'inkl'}
             {block name='snippets-shipping-tax-info-inkl'}
-                , {lang key='incl' section='productDetails'} {link href="{if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}{/if}" rel="nofollow" class="shipment"}{lang key='shipping' section='basket'}{/link}
+                , {lang key='incl' section='productDetails'} {link href="{if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}{/if}" rel="nofollow" class="shipment d-inline-block"}{lang key='shipping' section='basket'}{/link}
             {/block}
         {/if}
     {/block}

@@ -25,30 +25,31 @@
                         }
                     {/if}
                     {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'B'}
-                        {$characteristic->cName}
+                        <span class="text-truncate">
+                            {$characteristic->cName}
+                        </span>
                     {/if}
                 {/button}
                 {collapse
                     id="cllps-box{$oBox->getID()}-{$characteristic->getID()}"
-                    visible=$characteristic->isActive()
-                }
-                {block name='boxes-box-filter-characteristics-characteristics'}
-                    {if ($characteristic->getData('cTyp') === 'SELECTBOX') && $characteristic->getOptions()|@count > 0}
-                        {block name='boxes-box-filter-characteristics-select'}
-                            {dropdown variant="outline-secondary" text="{lang key='selectFilter' section='global'} " toggle-class="btn-block text-left"}
-                            {block name='boxes-box-filter-characteristics-include-characteristics-dropdown'}
-                                {include file='snippets/filter/characteristic.tpl' Merkmal=$characteristic}
+                    visible=$characteristic->isActive() || $Einstellungen.template.productlist.filter_items_always_visible === 'Y'}
+                    {block name='boxes-box-filter-characteristics-characteristics'}
+                        {if ($characteristic->getData('cTyp') === 'SELECTBOX') && $characteristic->getOptions()|@count > 0}
+                            {block name='boxes-box-filter-characteristics-select'}
+                                {dropdown variant="outline-secondary" text="{lang key='selectFilter' section='global'} " toggle-class="btn-block text-left"}
+                                {block name='boxes-box-filter-characteristics-include-characteristics-dropdown'}
+                                    {include file='snippets/filter/characteristic.tpl' Merkmal=$characteristic}
+                                {/block}
+                                {/dropdown}
                             {/block}
-                            {/dropdown}
-                        {/block}
-                    {else}
-                        {block name='boxes-box-filter-characteristics-link'}
-                            {block name='boxes-box-filter-characteristics-include-characteristics-link'}
-                                {include file='snippets/filter/characteristic.tpl' Merkmal=$characteristic}
+                        {else}
+                            {block name='boxes-box-filter-characteristics-link'}
+                                {block name='boxes-box-filter-characteristics-include-characteristics-link'}
+                                    {include file='snippets/filter/characteristic.tpl' Merkmal=$characteristic}
+                                {/block}
                             {/block}
-                        {/block}
-                    {/if}
-                {/block}
+                        {/if}
+                    {/block}
                 {/collapse}
                 {block name='boxes-box-filter-characteristics-hr'}
                     <hr class="my-2">

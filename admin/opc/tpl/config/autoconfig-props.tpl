@@ -20,9 +20,18 @@
         {if $type === 'text' || $type === 'email' || $type === 'password' || $type === 'number'
                 || $type === 'date' || $type === 'time'}
             <div class="form-group">
-                <label for="config-{$propname}">{$propdesc.label}</label>
+                <label for="config-{$propname}"
+                        {if !empty($propdesc.desc)}
+                            data-toggle="tooltip" title="{$propdesc.desc|default:''}"
+                            data-placement="auto"
+                        {/if}>
+                    {$propdesc.label}
+                    {if !empty($propdesc.desc)}
+                        <i class="fas fa-info-circle fa-fw"></i>
+                    {/if}
+                </label>
                 <input type="{$type}" class="form-control" id="config-{$propname}" name="{$propname}"
-                       value="{$propval}"
+                       value="{$propval|escape:'html'}"
                        {if !empty($propdesc.placeholder)}placeholder="{$propdesc.placeholder}"{/if}
                        {if $required === true}required{/if}>
                 {if isset($propdesc.help)}

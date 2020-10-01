@@ -14,7 +14,7 @@
         {/if}
     {/if}
     {block name='productdetails-question-on-item-form'}
-    {form action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'Y'}#tab-productquestion{/if}{else}{$ShopURL}/{/if}"
+    {form action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'Y'}#tab-questionOnItem{/if}{else}{$ShopURL}/{/if}"
         method="post"
         id="article_question"
         class="jtl-validate"
@@ -181,7 +181,7 @@
             {block name='productdetails-question-on-item-form-privacy'}
                 <p class="privacy text-muted small">
                     {link href=$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL() class="popup"}
-                        {$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getName()}
+                        {lang key='privacyNotice'}
                     {/link}
                 </p>
             {/block}

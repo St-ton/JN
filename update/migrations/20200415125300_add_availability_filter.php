@@ -7,6 +7,7 @@
  */
 
 use JTL\Boxes\Admin\BoxAdmin;
+use JTL\DB\ReturnType;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
@@ -24,6 +25,31 @@ class Migration_20200415125300 extends Migration implements IMigration
      */
     public function up()
     {
+        $this->execute(
+            "DELETE `tboxvorlage`, `tboxen`, `tboxensichtbar`
+                  FROM `tboxvorlage`
+                  LEFT JOIN `tboxen`
+                    ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
+                  LEFT JOIN `tboxensichtbar`
+                    ON tboxen.kBox = tboxensichtbar.kBox
+                  WHERE tboxvorlage.cTemplate = 'box_filter_availability.tpl'"
+        );
+        $oldBoxID = $this->getDB()->query(
+            'INSERT INTO `tboxvorlage` (kCustomID, eTyp, cName, cVerfuegbar, cTemplate)
+                SELECT kCustomID, eTyp, cName, cVerfuegbar, cTemplate
+                  FROM `tboxvorlage`
+                  WHERE kBoxvorlage = 103',
+            ReturnType::LAST_INSERTED_ID
+        );
+        $this->getDB()->queryPrepared(
+            'UPDATE `tboxen`
+              SET kBoxvorlage = :oldBoxID
+              WHERE kBoxvorlage = 103',
+            ['oldBoxID' => $oldBoxID],
+            ReturnType::DEFAULT
+        );
+        $this->getDB()->delete('tboxvorlage', 'kBoxvorlage', 103);
+
         $this->execute(
             "INSERT INTO `tboxvorlage`
                 VALUES (103, 0, 'tpl', 'Filter (Verfügbarkeit)', '2', 'box_filter_availability.tpl')"
@@ -67,7 +93,6 @@ class Migration_20200415125300 extends Migration implements IMigration
             115,
             (object)['cConf' => 'N']
         );
-
 
         $this->setLocalization('ger', 'global', 'filterAvailability', 'Verfügbarkeit');
         $this->setLocalization('eng', 'global', 'filterAvailability', 'Availability');

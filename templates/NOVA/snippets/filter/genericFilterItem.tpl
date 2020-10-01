@@ -5,7 +5,7 @@
             {foreach $filter->getOptions() as $filterOption}
                 {if $limit != -1 && $filterOption@iteration > $limit && !$collapseInit}
                     {block name='snippets-filter-genericFilterItem-more-top'}
-                        <div class="collapse {if $filter->isActive()} show{/if}" id="box-collps-filter{$filter->getNiceName()}" aria-expanded="false">
+                        <div class="collapse {if $filter->isActive()} show{/if}" id="box-collps-filter{$filter->getNiceName()}" aria-expanded="false" role="button">
                             {$collapseInit = true}
                     {/block}
                 {/if}
@@ -26,7 +26,7 @@
                                 {/block}
                             {/if}
                             <span class="word-break">{$filterOption->getName()}</span>
-                            <span class="badge badge-outline-secondary ml-auto">{$filterOption->getCount()}</span>
+                            {badge variant="outline-secondary" class="ml-auto"}{$filterOption->getCount()}{/badge}
                         </div>
                     {/link}
                 {/block}

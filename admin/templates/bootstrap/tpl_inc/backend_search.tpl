@@ -21,6 +21,7 @@
         var searchInput         = $('#backend-search-input');
         var searchSubmit        = $('#backend-search-submit');
         var lastSearchTerm      = '';
+        var searchInputTimeout  = null;
 
         searchSubmit.on('click', function () {
             window.location.href = 'searchresults.php?cSuche=' + searchInput.val();
@@ -36,23 +37,37 @@
                         lastIoSearchCall = null;
                     }
 
-                    lastIoSearchCall = ioCall('adminSearch', [lastSearchTerm], function (html) {
-                        if (html) {
-                            searchDropdown.html(html).addClass('show');
-                            $('a.dropdown-item').on('click', function () {
-                                window.location = $(this).attr('href');
-                            });
-                            $('.dropdown-item form').on('click', function () {
-                                    $(this).submit();
-                            });
-                        } else {
-                            searchDropdown.removeClass('show');
-                        }
+                    if(searchInputTimeout) {
+                        clearTimeout(searchInputTimeout);
+                    }
 
-                        searchItems         = null;
-                        selectedSearchIndex = null;
-                        selectedSearchItem  = null;
-                    });
+                    searchInputTimeout = setTimeout(() => {
+                        lastIoSearchCall = ioCall(
+                            'adminSearch',
+                            [lastSearchTerm],
+                            function (html) {
+                                if (html) {
+                                    searchDropdown.html(html).addClass('show');
+                                    $('a.dropdown-item').on('click', function () {
+                                        window.location = $(this).attr('href');
+                                    });
+                                    $('.dropdown-item form').on('click', function () {
+                                        $(this).submit();
+                                    });
+                                } else {
+                                    searchDropdown.removeClass('show');
+                                }
+
+                                searchItems = null;
+                                selectedSearchIndex = null;
+                                selectedSearchItem = null;
+                            },
+                            undefined,
+                            undefined,
+                            true
+                        );
+                        searchInputTimeout = null;
+                    }, 345);
                 } else {
                     searchDropdown.html('');
                     searchDropdown.removeClass('show');

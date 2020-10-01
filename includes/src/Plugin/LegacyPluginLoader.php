@@ -88,9 +88,9 @@ class LegacyPluginLoader extends AbstractLoader
     protected function loadLicense($data): License
     {
         $license = new License();
-        $license->setClass($data->cLizenzKlasse);
-        $license->setClassName($data->cLizenzKlasseName);
-        $license->setKey($data->cLizenz);
+        $license->setClass($data->cLizenzKlasse ?? '');
+        $license->setClassName($data->cLizenzKlasseName ?? '');
+        $license->setKey($data->cLizenz ?? '');
 
         return $license;
     }

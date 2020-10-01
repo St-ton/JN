@@ -309,10 +309,10 @@ msgid "artikeluebersicht_lagerbestandanzeige_anzeigen_value(N)"
 msgstr "Nein"
 
 msgid "artikeluebersicht_lagerbestandanzeige_anzeigen_value(U)"
-msgstr "Ja, wenn Artikel ausverkauft und Überverkäufe möglich sind."
+msgstr "Ja, wenn Artikel ausverkauft und Überverkäufe möglich sind"
 
 msgid "artikeluebersicht_lagerbestandanzeige_anzeigen_value(I)"
-msgstr "Ja, wenn Artikel ausverkauft und keine Überverkäufe möglich sind."
+msgstr "Ja, wenn Artikel ausverkauft und keine Überverkäufe möglich sind"
 
 msgid "artikeluebersicht_hersteller_anzeigen_value(Y)"
 msgstr "Ja, als Text"
@@ -446,15 +446,6 @@ msgstr "Ja"
 msgid "artikeluebersicht_wunschzettel_anzeigen_value(N)"
 msgstr "Nein"
 
-msgid "artikeluebersicht_anzahl_pfeile_value(Y)"
-msgstr "Immer"
-
-msgid "artikeluebersicht_anzahl_pfeile_value(I)"
-msgstr "Wenn Abnahmeintervall vorhanden"
-
-msgid "artikeluebersicht_anzahl_pfeile_value(N)"
-msgstr "Nicht anzeigen"
-
 msgid "artikeluebersicht_artikelintervall_anzeigen_value(Y)"
 msgstr "Ja"
 
@@ -516,10 +507,10 @@ msgid "artikeldetails_lieferantenbestand_anzeigen_value(N)"
 msgstr "Nein"
 
 msgid "artikeldetails_lieferantenbestand_anzeigen_value(U)"
-msgstr "Ja, wenn Artikel ausverkauft und Überverkäufe möglich sind."
+msgstr "Ja, wenn Artikel ausverkauft und Überverkäufe möglich sind"
 
 msgid "artikeldetails_lieferantenbestand_anzeigen_value(I)"
-msgstr "Ja, wenn Artikel ausverkauft und keine Überverkäufe möglich sind."
+msgstr "Ja, wenn Artikel ausverkauft und keine Überverkäufe möglich sind"
 
 msgid "artikeldetails_kurzbeschreibung_anzeigen_value(Y)"
 msgstr "Ja"
@@ -610,15 +601,6 @@ msgstr "Ja"
 
 msgid "sie_sparen_x_anzeigen_value(0)"
 msgstr "Nein"
-
-msgid "artikeldetails_anzahl_pfeile_value(Y)"
-msgstr "Immer"
-
-msgid "artikeldetails_anzahl_pfeile_value(I)"
-msgstr "Wenn Abnahmeintervall vorhanden"
-
-msgid "artikeldetails_anzahl_pfeile_value(N)"
-msgstr "Nicht anzeigen"
 
 msgid "artikeldetails_canonicalurl_varkombikind_value(Y)"
 msgstr "Ja"
@@ -1583,6 +1565,12 @@ msgstr "Ja"
 msgid "bewertung_artikel_gekauft_value(N)"
 msgstr "Nein"
 
+msgid "newsletter_active_value(N)"
+msgstr "Nein"
+
+msgid "newsletter_active_value(Y)"
+msgstr "Ja"
+
 msgid "newsletter_emailmethode_value(mail)"
 msgstr "PHP mail()"
 
@@ -1818,7 +1806,7 @@ msgid "kategorie_bild_anzeigen_value(B)"
 msgstr "Ja, als Bild"
 
 msgid "kategorie_bild_anzeigen_value(N)"
-msgstr "Kein Kategoriebild, keine Kategoriebeschreibung"
+msgstr "Nein"
 
 msgid "kategorie_beschreibung_anzeigen_value(Y)"
 msgstr "Ja"
@@ -1892,18 +1880,6 @@ msgstr "Ja"
 msgid "news_kategorie_unternewsanzeigen_value(N)"
 msgstr "Nein"
 
-msgid "news_kategorie_boxanzeigen_value(Y)"
-msgstr "Ja"
-
-msgid "news_kategorie_boxanzeigen_value(N)"
-msgstr "Nein"
-
-msgid "news_sicherheitscode_value(Y)"
-msgstr "Ja"
-
-msgid "news_sicherheitscode_value(N)"
-msgstr "Nein"
-
 msgid "sitemap_seiten_anzeigen_value(Y)"
 msgstr "Ja"
 
@@ -1932,12 +1908,6 @@ msgid "sitemap_newskategorien_anzeigen_value(Y)"
 msgstr "Ja"
 
 msgid "sitemap_newskategorien_anzeigen_value(N)"
-msgstr "Nein"
-
-msgid "sitemap_weitereseiten_artikeluebersicht_value(Y)"
-msgstr "Ja"
-
-msgid "sitemap_weitereseiten_artikeluebersicht_value(N)"
 msgstr "Nein"
 
 msgid "sitemap_livesuche_anzeigen_value(Y)"
@@ -2404,3 +2374,33 @@ msgstr "Ja, in Listen"
 
 msgid "gtin_display_value(always)"
 msgstr "Ja, auf der Artikeldetailseite und in den Listen"
+
+msgid "consent_manager_active_value(N)"
+msgstr "Nein"
+
+msgid "consent_manager_active_value(Y)"
+msgstr "Ja"
+
+msgid "bewertung_sortierung_value(0)"
+msgstr "Datum aufsteigend"
+
+msgid "bewertung_sortierung_value(1)"
+msgstr "Datum absteigend"
+
+msgid "bewertung_sortierung_value(2)"
+msgstr "Bewertung aufsteigend"
+
+msgid "bewertung_sortierung_value(3)"
+msgstr "Bewertung absteigend"
+
+msgid "bewertung_sortierung_value(4)"
+msgstr "Hilfreich aufsteigend"
+
+msgid "bewertung_sortierung_value(5)"
+msgstr "Hilfreich absteigend"
+
+msgid "direct_advertising_value(N)"
+msgstr "Nein"
+
+msgid "direct_advertising_value(Y)"
+msgstr "Ja"

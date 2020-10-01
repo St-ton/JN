@@ -3,6 +3,9 @@
 namespace JTL;
 
 use Exception;
+use GuzzleHttp\Client;
+use GuzzleHttp\Cookie\CookieJar;
+use GuzzleHttp\Exception\GuzzleException;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
@@ -22,6 +25,7 @@ use JTL\Smarty\ExportSmarty;
 use JTL\Smarty\JTLSmarty;
 use Psr\Log\LoggerInterface;
 use stdClass;
+use Symfony\Component\Process\PhpProcess;
 use function Functional\first;
 
 /**
@@ -693,6 +697,22 @@ class Exportformat
     }
 
     /**
+     * @return int
+     */
+    public function getExportProductCount(): int
+    {
+        $sql = $this->getExportSQL();
+        $cid = 'xp_' . \md5($sql);
+        if (($count = Shop::Container()->getCache()->get($cid)) !== false) {
+            return $count ?? 0;
+        }
+        $count = (int)$this->db->query($this->getExportSQL(true), ReturnType::SINGLE_OBJECT)->nAnzahl;
+        Shop::Container()->getCache()->set($cid, $count, [\CACHING_GROUP_CORE], 120);
+
+        return $count;
+    }
+
+    /**
      * @param array $config
      * @return bool
      * @deprecated since 5.0.0
@@ -865,9 +885,13 @@ class Exportformat
         if ($countOnly === true) {
             $select = 'COUNT(*) AS nAnzahl';
         } else {
-            $select     = 'tartikel.kArtikel';
-            $limit      = ' ORDER BY tartikel.kArtikel LIMIT ' . $this->getQueue()->taskLimit;
-            $condition .= ' AND tartikel.kArtikel > ' . $this->getQueue()->lastProductID;
+            $queue  = $this->getQueue();
+            $select = 'tartikel.kArtikel';
+            $limit  = ' ORDER BY tartikel.kArtikel';
+            if ($queue !== null) {
+                $limit     .= ' LIMIT ' . $queue->taskLimit;
+                $condition .= ' AND tartikel.kArtikel > ' . $this->getQueue()->lastProductID;
+            }
         }
 
         return 'SELECT ' . $select . "
@@ -1546,9 +1570,139 @@ class Exportformat
     }
 
     /**
+     * @param int $id
+     * @return stdClass
+     */
+    public static function ioCheckSyntax(int $id): stdClass
+    {
+        \ini_set('html_errors', '0');
+        \ini_set('display_errors', '1');
+        \ini_set('log_errors', '0');
+        \error_reporting(\E_ALL & ~\E_NOTICE & ~\E_STRICT & ~\E_DEPRECATED);
+
+        $ef    = new self($id, Shop::Container()->getDB());
+        $check = $ef->doCheckSyntax();
+        $res   = new stdClass();
+        if ($check === false) {
+            $res->result = 'ok';
+        } else {
+            $res->result  = 'failure';
+            $res->message = $check;
+        }
+
+        return $res;
+    }
+
+    /**
+     * @param string $text
+     * @return string|boolean
+     */
+    private function finishSyntaxcheck(string $text)
+    {
+        $result = \json_decode($text, false);
+        if (\json_last_error() !== \JSON_ERROR_NONE) {
+            $text = \strip_tags($text);
+            // strip possible call stack
+            if (\preg_match('/(Stack trace|Call Stack):/ui', $text, $hits)) {
+                $callstackPos = \mb_strpos($text, $hits[1]);
+                if ($callstackPos !== false) {
+                    $text = \mb_substr($text, 0, $callstackPos);
+                }
+            }
+            $errText  = '';
+            $fatalPos = \mb_strlen($text);
+            // strip smarty output if fatal error occurs
+            if (\preg_match('/((Recoverable )?Fatal error):/ui', $text, $hits)) {
+                $fatalPos = \mb_strpos($text, $hits[1]);
+                if ($fatalPos !== false) {
+                    $errText = \mb_substr($text, $fatalPos);
+                }
+            }
+            // strip possible error position from smarty output
+            $text = (string)\preg_replace('/[\t\n]/', ' ', \mb_substr($text, 0, $fatalPos));
+            $len  = \mb_strlen($text);
+            if ($len > 75) {
+                $text = '...' . \mb_substr($text, $len - 75);
+            }
+            $result = (object)[
+                'result'  => 'failure',
+                'message' => \htmlentities($errText) . ($len > 0 ? '<br/>on line: ' . \htmlentities($text) : ''),
+            ];
+        }
+        if ($result->result !== 'ok') {
+            $error  = '<strong>' . __('Smarty syntax error') . ':</strong><br />';
+            $error .= '<pre class="alert-danger">' . $result->message . '</pre>';
+            $this->updateError(1);
+
+            return $error;
+        }
+
+        return false;
+    }
+
+    /**
      * @return bool|string
      */
     public function checkSyntax()
+    {
+        if (\PHP_SAPI !== 'cli') {
+            $testUrl = Shop::getAdminURL() . '/io.php?io=' .
+                \urlencode(
+                    \json_encode([
+                        'name'   => 'exportformatSyntaxCheck',
+                        'params' => [$this->kExportformat],
+                    ])
+                ) . '&token=' . Text::filterXSS($_SESSION['jtl_token']);
+            \session_write_close();
+            $client = new Client(['verify' => \DEFAULT_CURL_OPT_VERIFYPEER]);
+            $jar    = CookieJar::fromArray($_COOKIE, '.' . \parse_url(\URL_SHOP)['host']);
+            try {
+                $res = (string)$client->request('POST', $testUrl, ['cookies' => $jar])->getBody();
+            } catch (Exception | GuzzleException $e) {
+                $res = $e->getMessage();
+            } finally {
+                \session_start();
+            }
+
+            return $this->finishSyntaxcheck(\is_string($res) ? $res : __('somethingHappend'));
+        }
+
+        $phpProcess = new PhpProcess(
+            '<?php declare(strict_types=1);
+
+            use JTL\Exportformat;
+            use JTL\Helpers\Request;
+
+            require __DIR__ . \'/includes/globalinclude.php\';
+            ini_set(\'html_errors\', \'0\');
+            ini_set(\'display_errors\', \'1\');
+            ini_set(\'log_errors\', \'0\');
+            error_reporting(\E_ALL & ~\E_NOTICE & ~\E_STRICT & ~\E_DEPRECATED);
+
+            $kExportformat = ' . $this->kExportformat . ';
+
+            $ef    = new Exportformat($kExportformat, Shop::Container()->getDB());
+            $check = $ef->doCheckSyntax();
+            $res   = new stdClass();
+            if ($check === false) {
+                $res->result = \'ok\';
+            } else {
+                $res->result  = \'failure\';
+                $res->message = $check;
+            }
+
+            echo json_encode($res);',
+            \PFAD_ROOT
+        );
+        $phpProcess->run();
+
+        return $this->finishSyntaxcheck($phpProcess->getOutput());
+    }
+
+    /**
+     * @return bool|string
+     */
+    public function doCheckSyntax()
     {
         $this->initSession()->initSmarty();
         $error       = false;
@@ -1575,11 +1729,11 @@ class Exportformat
             $product->Versandkosten         = -1;
         }
         try {
+            $this->smarty->setErrorReporting(\E_ALL & ~\E_NOTICE & ~\E_STRICT & ~\E_DEPRECATED);
             $this->smarty->assign('Artikel', $product)
                          ->fetch('db:' . $this->kExportformat);
         } catch (Exception $e) {
-            $error  = '<strong>Smarty-Syntaxfehler:</strong><br />';
-            $error .= '<pre>' . $e->getMessage() . '</pre>';
+            $error = $e->getMessage();
         }
         $this->updateError($error ? 1 : 0);
 

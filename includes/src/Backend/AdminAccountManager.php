@@ -11,6 +11,7 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
+use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use stdClass;
@@ -34,6 +35,11 @@ class AdminAccountManager
     private $smarty;
 
     /**
+     * @var JTLSmarty
+     */
+    private $alertService;
+
+    /**
      * @var array
      */
     private $messages = [
@@ -46,11 +52,13 @@ class AdminAccountManager
      *
      * @param JTLSmarty $smarty
      * @param DbInterface $db
+     * @param AlertServiceInterface $alertService
      */
-    public function __construct(JTLSmarty $smarty, DbInterface $db)
+    public function __construct(JTLSmarty $smarty, DbInterface $db, AlertServiceInterface $alertService)
     {
-        $this->smarty = $smarty;
-        $this->db     = $db;
+        $this->smarty       = $smarty;
+        $this->db           = $db;
+        $this->alertService = $alertService;
     }
 
     /**
@@ -110,8 +118,13 @@ class AdminAccountManager
                     continue;
                 }
                 if (\is_object($secondEntry)) {
-                    $perms[$secondEntry->permissions]->name = $secondName;
-                    $permMainTMP[]                          = (object)[
+                    if (!isset($perms[$secondEntry->permissions])) {
+                        $perms[$secondEntry->permissions] = (object)['name' => $secondName];
+                    } else {
+                        $perms[$secondEntry->permissions]->name = $secondName;
+                    }
+
+                    $permMainTMP[] = (object)[
                         'name'       => $secondName,
                         'permissions' => [$perms[$secondEntry->permissions]]
                     ];
@@ -122,8 +135,12 @@ class AdminAccountManager
                         if (!empty($thirdEntry->excludeFromAccessView)) {
                             continue;
                         }
-                        $perms[$thirdEntry->permissions]->name = $thirdName;
-                        $permSecondTMP[]                       = $perms[$thirdEntry->permissions];
+                        if (!isset($perms[$thirdEntry->permissions])) {
+                            $perms[$thirdEntry->permissions] = (object)['name' => $thirdName];
+                        } else {
+                            $perms[$thirdEntry->permissions]->name = $thirdName;
+                        }
+                        $permSecondTMP[] = $perms[$thirdEntry->permissions];
                         unset($perms[$thirdEntry->permissions]);
                     }
                     $permMainTMP[] = (object)[
@@ -186,6 +203,10 @@ class AdminAccountManager
         $_SESSION['AdminAccount']->language = $languageTag;
         $_SESSION['Sprachen']               = LanguageHelper::getInstance()->gibInstallierteSprachen();
 
+        if (!empty($_COOKIE['JTLSHOP'])) {
+            unset($_SESSION['frontendUpToDate']);
+        }
+
         $this->db->update(
             'tadminlogin',
             'kAdminlogin',
@@ -223,7 +244,7 @@ class AdminAccountManager
             $result = true;
             $this->validateAccount($extAttribs);
 
-            \executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
+            \executeHook(\HOOK_BACKEND_ACCOUNT_EDIT, [
                 'oAccount' => $account,
                 'type'     => 'VALIDATE',
                 'attribs'  => &$extAttribs,
@@ -389,12 +410,12 @@ class AdminAccountManager
         ) {
             $this->addError(__('errorSelfLock'));
         } elseif (\is_object($account)) {
-            if ((int)$account->kAdminlogingruppe === ADMINGROUP) {
+            if ((int)$account->kAdminlogingruppe === \ADMINGROUP) {
                 $this->addError(__('errorLockAdmin'));
             } else {
                 $result = true;
                 $this->db->update('tadminlogin', 'kAdminlogin', $adminID, (object)['bAktiv' => 0]);
-                \executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
+                \executeHook(\HOOK_BACKEND_ACCOUNT_EDIT, [
                     'oAccount' => $account,
                     'type'     => 'LOCK',
                     'attribs'  => null,
@@ -422,7 +443,7 @@ class AdminAccountManager
         if (\is_object($account)) {
             $result = true;
             $this->db->update('tadminlogin', 'kAdminlogin', $adminID, (object)['bAktiv' => 1]);
-            \executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
+            \executeHook(\HOOK_BACKEND_ACCOUNT_EDIT, [
                 'oAccount' => $account,
                 'type'     => 'UNLOCK',
                 'attribs'  => null,
@@ -498,6 +519,13 @@ class AdminAccountManager
             }
             if (\mb_strlen($tmpAcc->cMail) === 0) {
                 $errors['cMail'] = 1;
+            } elseif (Text::filterEmailAddress($tmpAcc->cMail) === false) {
+                $errors['cMail'] = 2;
+                $this->alertService->addAlert(
+                    Alert::TYPE_DANGER,
+                    __('validationErrorIncorrectEmail'),
+                    'validationErrorIncorrectEmail'
+                );
             }
             if (\mb_strlen($tmpAcc->cPass) === 0 && $tmpAcc->kAdminlogin === 0) {
                 $errors['cPass'] = 1;
@@ -507,7 +535,7 @@ class AdminAccountManager
             } elseif ($tmpAcc->kAdminlogin === 0 && $this->getInfoInUse('cLogin', $tmpAcc->cLogin)) {
                 $errors['cLogin'] = 2;
             }
-            if ($validUntil && $tmpAcc->kAdminlogingruppe !== ADMINGROUP && \mb_strlen($tmpAcc->dGueltigBis) === 0) {
+            if ($validUntil && $tmpAcc->kAdminlogingruppe !== \ADMINGROUP && \mb_strlen($tmpAcc->dGueltigBis) === 0) {
                 $errors['dGueltigBis'] = 1;
             }
             if ($tmpAcc->kAdminlogin > 0) {
@@ -519,8 +547,8 @@ class AdminAccountManager
                     ReturnType::SINGLE_OBJECT
                 )->nCount;
                 if ($oldAcc !== null
-                    && (int)$oldAcc->kAdminlogingruppe === ADMINGROUP
-                    && (int)$tmpAcc->kAdminlogingruppe !== ADMINGROUP
+                    && (int)$oldAcc->kAdminlogingruppe === \ADMINGROUP
+                    && (int)$tmpAcc->kAdminlogingruppe !== \ADMINGROUP
                     && $groupCount <= 1
                 ) {
                     $errors['bMinAdmin'] = 1;
@@ -551,7 +579,7 @@ class AdminAccountManager
                     unset($tmpAcc->cPass);
                 }
 
-                $_SESSION['AdminAccount']->language = $tmpAcc->language;
+                $this->changeAdminUserLanguage($tmpAcc->language);
 
                 if ($this->db->update('tadminlogin', 'kAdminlogin', $tmpAcc->kAdminlogin, $tmpAcc) >= 0
                     && $this->saveAttributes($tmpAcc, $tmpAttribs, $errors)
@@ -669,12 +697,12 @@ class AdminAccountManager
         ) {
             $this->addError(__('errorSelfDelete'));
         } elseif (\is_object($account)) {
-            if ((int)$account->kAdminlogingruppe === ADMINGROUP && $groupCount <= 1) {
+            if ((int)$account->kAdminlogingruppe === \ADMINGROUP && $groupCount <= 1) {
                 $this->addError(__('errorAtLeastOneAdmin'));
             } elseif ($this->deleteAttributes($account) &&
                 $this->db->delete('tadminlogin', 'kAdminlogin', $adminID)) {
                 $result = true;
-                \executeHook(HOOK_BACKEND_ACCOUNT_EDIT, [
+                \executeHook(\HOOK_BACKEND_ACCOUNT_EDIT, [
                     'oAccount' => $account,
                     'type'     => 'DELETE',
                     'attribs'  => null,
@@ -707,13 +735,13 @@ class AdminAccountManager
             $adminGroup->kAdminlogingruppe = Request::postInt('kAdminlogingruppe');
             $adminGroup->cGruppe           = \htmlspecialchars(
                 \trim($_POST['cGruppe']),
-                ENT_COMPAT | ENT_HTML401,
-                JTL_CHARSET
+                \ENT_COMPAT | \ENT_HTML401,
+                \JTL_CHARSET
             );
             $adminGroup->cBeschreibung     = \htmlspecialchars(
                 \trim($_POST['cBeschreibung']),
-                ENT_COMPAT | ENT_HTML401,
-                JTL_CHARSET
+                \ENT_COMPAT | \ENT_HTML401,
+                \JTL_CHARSET
             );
             $groupPermissions              = $_POST['perm'];
 
@@ -803,7 +831,7 @@ class AdminAccountManager
             return 'group_redirect';
         }
 
-        if ($groupID !== ADMINGROUP) {
+        if ($groupID !== \ADMINGROUP) {
             $this->db->delete('tadminlogingruppe', 'kAdminlogingruppe', $groupID);
             $this->db->delete('tadminrechtegruppe', 'kAdminlogingruppe', $groupID);
             $this->addNotice(__('successGroupDelete'));
@@ -924,8 +952,8 @@ class AdminAccountManager
                 break;
         }
 
-        Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $this->getNotice(), 'userManagementNote');
-        Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $this->getError(), 'userManagementError');
+        $this->alertService->addAlert(Alert::TYPE_NOTE, $this->getNotice(), 'userManagementNote');
+        $this->alertService->addAlert(Alert::TYPE_ERROR, $this->getError(), 'userManagementError');
 
         $this->smarty->assign('action', $step)
             ->assign('cTab', Text::filterXSS(Request::verifyGPDataString('tab')))

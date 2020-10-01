@@ -1,40 +1,45 @@
-{block name='consent-manager'}
-    {include file='snippets/consent_manager.tpl'}
-    {inline_script}
-        <script>
-            const CM = new ConsentManager({
-                version: 1
-            });
-            var trigger = document.querySelectorAll('.trigger')
-            var triggerCall = function(e) {
-                e.preventDefault();
-                let type = e.target.dataset.consent;
-                if (CM.getSettings(type) === false) {
-                    CM.openConfirmationModal(type, function() {
-                        let data = CM._getLocalData();
-                        if (data === null ) {
-                            data = { settings: {} };
-                        }
-                        data.settings[type] = true;
-                        document.dispatchEvent(new CustomEvent('consent.updated', { detail: data.settings }));
-                    });
-                }
-            }
-            for(let i = 0; i < trigger.length; ++i) {
-                trigger[i].addEventListener('click', triggerCall)
-            }
-            document.addEventListener('consent.updated', function(e) {
-                $.post('{$ShopURLSSL}/', {
-                            'action': 'updateconsent',
-                            'jtl_token': '{$smarty.session.jtl_token}',
-                            'data': e.detail
-                        }
-                );
-            });
-        </script>
-    {/inline_script}
-{/block}
 {block name='layout-footer'}
+    {block name='layout-footer-consent-manager'}
+        {if $Einstellungen.consentmanager.consent_manager_active === 'Y' && !$isAjax && $consentItems->isNotEmpty()}
+            {include file='snippets/consent_manager.tpl'}
+            {inline_script}
+                <script>
+                    setTimeout(function() {
+                        $('#consent-manager, #consent-settings-btn').removeClass('d-none');
+                    }, 100)
+                    const CM = new ConsentManager({
+                        version: 1
+                    });
+                    var trigger = document.querySelectorAll('.trigger')
+                    var triggerCall = function(e) {
+                        e.preventDefault();
+                        let type = e.target.dataset.consent;
+                        if (CM.getSettings(type) === false) {
+                            CM.openConfirmationModal(type, function() {
+                                let data = CM._getLocalData();
+                                if (data === null ) {
+                                    data = { settings: {} };
+                                }
+                                data.settings[type] = true;
+                                document.dispatchEvent(new CustomEvent('consent.updated', { detail: data.settings }));
+                            });
+                        }
+                    }
+                    for(let i = 0; i < trigger.length; ++i) {
+                        trigger[i].addEventListener('click', triggerCall)
+                    }
+                    document.addEventListener('consent.updated', function(e) {
+                        $.post('{$ShopURLSSL}/', {
+                                'action': 'updateconsent',
+                                'jtl_token': '{$smarty.session.jtl_token}',
+                                'data': e.detail
+                            }
+                        );
+                    });
+                </script>
+            {/inline_script}
+        {/if}
+    {/block}
     {block name='layout-footer-content-all-closingtags'}
 
         {block name='layout-footer-aside'}
@@ -75,9 +80,11 @@
 
     {block name='layout-footer-content'}
         {if !$bExclusive}
+            {$newsletterActive = $Einstellungen.template.footer.newsletter_footer === 'Y'
+                && $Einstellungen.newsletter.newsletter_active === 'Y'}
             <footer id="footer">
                 {container class="d-print-none pt-4"}
-                    {if $Einstellungen.template.footer.newsletter_footer === 'Y'}
+                    {if $newsletterActive}
                         {block name='layout-footer-newsletter'}
                             {row class="newsletter-footer" class="text-center text-md-left align-items-center"}
                                 {col cols=12 lg=6}
@@ -88,7 +95,7 @@
                                     {/block}
                                     {block name='layout-footer-newsletter-info'}
                                         <p class="info">
-                                            {lang key='unsubscribeAnytime' section='newsletter' printf=$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL()}
+                                            {lang key='newsletterInformedConsent' section='newsletter' printf=$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL()}
                                         </p>
                                     {/block}
                                 {/col}
@@ -123,9 +130,9 @@
                     {block name='layout-footer-boxes'}
                         {getBoxesByPosition position='bottom' assign='footerBoxes'}
                         {if isset($footerBoxes) && count($footerBoxes) > 0}
-                            {row id='footer-boxes' class='mt-4 mt-lg-7'}
+                            {row id='footer-boxes' class="{if $newsletterActive}mt-4 mt-lg-7{/if}"}
                                 {foreach $footerBoxes as $box}
-                                    {col cols=12 sm=6 md=3}
+                                    {col cols=12 sm=6 md=4 lg=3}
                                         {$box->getRenderedContent()}
                                     {/col}
                                 {/foreach}
@@ -134,12 +141,11 @@
                     {/block}
 
                     {block name='layout-footer-additional'}
-                        {if $Einstellungen.template.footer.socialmedia_footer === 'Y' || $Einstellungen.template.footer.newsletter_footer === 'Y'}
-                            {row class="mb-3 mt-5"}
-                            {if $Einstellungen.template.footer.socialmedia_footer === 'Y'}
+                        {if $Einstellungen.template.footer.socialmedia_footer === 'Y'}
+                            {row class="mb-2 mt-5"}
                                 {block name='layout-footer-socialmedia'}
                                     {col cols=12 class="footer-additional-wrapper col-auto mx-auto"}
-                                        <ul class="list-unstyled d-flex flex-row flex-wrap">
+                                        <ul class="list-unstyled d-flex flex-row flex-wrap mb-0">
                                         {if !empty($Einstellungen.template.footer.facebook)}
                                             <li>
                                                 {link href="{if $Einstellungen.template.footer.facebook|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.facebook}"
@@ -215,7 +221,6 @@
                                         </ul>
                                     {/col}
                                 {/block}
-                            {/if}
                             {/row}{* /row footer-additional *}
                         {/if}
                     {/block}{* /footer-additional *}
@@ -237,7 +242,7 @@
                 {/container}
                 {block name='layout-footer-copyright'}
                     <div id="copyright" class="mt-3">
-                        {container fluid=true class='py-3 font-size-sm text-center"'}
+                        {container fluid=true class='py-3 font-size-sm text-center'}
                             {row}
                                 {assign var=isBrandFree value=JTL\Shop::isBrandfree()}
                                 {col}
@@ -269,6 +274,9 @@
         {/if}
     {/block}
 
+    {block name='layout-footer-io-path'}
+        <div id="jtl-io-path" data-path="{$ShopURL}" class="d-none"></div>
+    {/block}
 
     {* JavaScripts *}
     {block name='layout-footer-js'}

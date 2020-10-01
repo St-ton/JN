@@ -109,10 +109,11 @@ final class Installer
     }
 
     /**
+     * @param string|null $dir
      * @return int
      * @former installierePluginVorbereitung()
      */
-    public function prepare(): int
+    public function prepare(string $dir = null): int
     {
         if (empty($this->dir)) {
             return InstallCode::WRONG_PARAM;
@@ -123,6 +124,13 @@ final class Installer
             $pluginPath = \PFAD_ROOT . \PFAD_PLUGIN . \basename($this->dir);
             $validator  = $this->legacyValidator;
             if (!\file_exists($pluginPath . '/' . \PLUGIN_INFO_FILE)) {
+                if ($dir !== null && $dir !== $this->dir) {
+                    // special case for EXS api
+                    $this->dir = $dir;
+
+                    return $this->prepare();
+                }
+
                 return InstallCode::INFO_XML_MISSING;
             }
         }
@@ -171,6 +179,14 @@ final class Installer
             $bootstrapper       = $versionedDir . \PLUGIN_BOOTSTRAPPER;
             $plugin->bExtension = 1;
         }
+        if ($this->plugin !== null) {
+            $loader = $this->plugin->isExtension() === true
+                ? new PluginLoader($this->db, Shop::Container()->getCache())
+                : new LegacyPluginLoader($this->db, Shop::Container()->getCache());
+            if (($p = Helper::bootstrap($this->plugin->getID(), $loader)) !== null) {
+                $p->preUpdate($this->plugin->getMeta()->getVersion(), $version);
+            }
+        }
         $plugin                       = $this->addLicenseData($baseNode, $plugin);
         $plugin->cName                = $baseNode['Name'];
         $plugin->cBeschreibung        = $baseNode['Description'];
@@ -179,6 +195,7 @@ final class Installer
         $plugin->cIcon                = $baseNode['Icon'] ?? null;
         $plugin->cVerzeichnis         = $baseDir;
         $plugin->cPluginID            = $baseNode['PluginID'];
+        $plugin->exsID                = $baseNode['ExsID'] ?? '_DBNULL_';
         $plugin->cStoreID             = $baseNode['StoreID'] ?? null;
         $plugin->cFehler              = '';
         $plugin->nVersion             = $version;
@@ -199,8 +216,8 @@ final class Installer
             return InstallCode::WRONG_PARAM;
         }
         $factory = $plugin->bExtension === 0
-            ? new LegacyPluginInstallerFactory($this->db, $xml, $plugin)
-            : new PluginInstallerFactory($this->db, $xml, $plugin);
+            ? new LegacyPluginInstallerFactory($this->db, $xml, $plugin, $this->plugin)
+            : new PluginInstallerFactory($this->db, $xml, $plugin, $this->plugin);
         $res     = $factory->install();
         if ($res !== InstallCode::OK) {
             $this->uninstaller->uninstall($plugin->kPlugin);
@@ -529,17 +546,17 @@ final class Installer
     }
 
     /**
-     * @param int $newPluginID
+     * @param int $oldPluginID
      * @param int $pluginID
      */
-    private function updateBoxes(int $newPluginID, int $pluginID): void
+    private function updateBoxes(int $oldPluginID, int $pluginID): void
     {
         $newBoxTemplates = $this->db->queryPrepared(
             "SELECT *
                 FROM tboxvorlage
                 WHERE kCustomID = :pid
                 AND (eTyp = 'plugin' OR eTyp = 'extension')",
-            ['pid' => $newPluginID],
+            ['pid' => $oldPluginID],
             ReturnType::ARRAY_OF_OBJECTS
         );
         $oldBoxTemplates = $this->db->queryPrepared(
@@ -559,7 +576,7 @@ final class Installer
                             WHERE kBoxvorlage = :oid',
                         [
                             'bid' => $newBoxTemplate->kBoxvorlage,
-                            'pid' => $newPluginID,
+                            'pid' => $oldPluginID,
                             'oid' => $template->kBoxvorlage
                         ],
                         ReturnType::DEFAULT
@@ -568,40 +585,40 @@ final class Installer
                 }
             }
         }
-        $this->db->delete('tboxvorlage', ['kCustomID', 'eTyp'], [$newPluginID, 'plugin']);
-        $this->db->delete('tboxvorlage', ['kCustomID', 'eTyp'], [$newPluginID, 'extension']);
+        $this->db->delete('tboxvorlage', ['kCustomID', 'eTyp'], [$oldPluginID, 'plugin']);
+        $this->db->delete('tboxvorlage', ['kCustomID', 'eTyp'], [$oldPluginID, 'extension']);
         $this->db->update(
             'tboxvorlage',
             ['kCustomID', 'eTyp'],
             [$pluginID, 'plugin'],
-            (object)['kCustomID' => $newPluginID]
+            (object)['kCustomID' => $oldPluginID]
         );
         $this->db->update(
             'tboxvorlage',
             ['kCustomID', 'eTyp'],
             [$pluginID, 'extension'],
-            (object)['kCustomID' => $newPluginID]
+            (object)['kCustomID' => $oldPluginID]
         );
         $this->db->queryPrepared(
             'DELETE FROM tboxen
                 WHERE kCustomID = :pid 
                 AND kBoxvorlage NOT IN (SELECT kBoxvorlage FROM tboxvorlage WHERE kCustomID = :pid)',
-            ['pid' => $newPluginID],
+            ['pid' => $oldPluginID],
             ReturnType::DEFAULT
         );
     }
 
     /**
-     * @param int $newPluginID
+     * @param int $oldPluginID
      * @param int $pluginID
      */
-    private function updateLangVars(int $newPluginID, int $pluginID): void
+    private function updateLangVars(int $oldPluginID, int $pluginID): void
     {
         $this->db->update(
             'tpluginsprachvariablecustomsprache',
             'kPlugin',
             $pluginID,
-            (object)['kPlugin' => $newPluginID]
+            (object)['kPlugin' => $oldPluginID]
         );
         $customLangVars = $this->db->queryPrepared(
             'SELECT DISTINCT tpluginsprachvariable.kPluginSprachvariable AS newID,
@@ -610,14 +627,14 @@ final class Installer
                 JOIN tpluginsprachvariable
                     ON tpluginsprachvariable.cName =  tpluginsprachvariablecustomsprache.cSprachvariable
                 WHERE tpluginsprachvariablecustomsprache.kPlugin = :pid',
-            ['pid' => $newPluginID],
+            ['pid' => $oldPluginID],
             ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($customLangVars as $langVar) {
             $this->db->update(
                 'tpluginsprachvariablecustomsprache',
                 ['kPlugin', 'kPluginSprachvariable'],
-                [$newPluginID, $langVar->oldID],
+                [$oldPluginID, $langVar->oldID],
                 (object)['kPluginSprachvariable' => $langVar->newID]
             );
         }
@@ -822,7 +839,7 @@ final class Installer
                 $this->db->queryPrepared(
                     'DELETE FROM tplugineinstellungen
                         WHERE kPlugin = :pid AND cName LIKE :nm',
-                    ['pid' => $oldPluginID, 'nm' => str_replace('_', '\_', $method->cModulId) . '\_%'],
+                    ['pid' => $oldPluginID, 'nm' => \str_replace('_', '\_', $method->cModulId) . '\_%'],
                     ReturnType::DEFAULT
                 );
             }

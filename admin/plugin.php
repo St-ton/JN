@@ -11,6 +11,7 @@ use JTL\Plugin\Data\Config;
 use JTL\Plugin\Helper;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Plugin\Plugin;
+use \JTL\Plugin\State;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -25,6 +26,7 @@ $step            = 'plugin_uebersicht';
 $invalidateCache = false;
 $hasError        = false;
 $updated         = false;
+$pluginNotFound  = false;
 $pluginID        = Request::verifyGPCDataInt('kPlugin');
 $db              = Shop::Container()->getDB();
 $cache           = Shop::Container()->getCache();
@@ -107,7 +109,11 @@ if ($step === 'plugin_uebersicht' && $pluginID > 0) {
     $smarty->assign('defaultTabbertab', $activeTab);
     $loader = $loader ?? Helper::getLoaderByPluginID($pluginID, $db, $cache);
     if ($loader !== null) {
-        $plugin = $loader->init($pluginID, $invalidateCache);
+        try {
+            $plugin = $loader->init($pluginID, $invalidateCache);
+        } catch (InvalidArgumentException $e) {
+            $pluginNotFound = true;
+        }
     }
     if ($plugin !== null) {
         $oPlugin = $plugin;
@@ -145,6 +151,11 @@ if ($step === 'plugin_uebersicht' && $pluginID > 0) {
                     ob_start();
                     require $plugin->getPaths()->getAdminPath() . $menu->file;
                     $menu->html = ob_get_clean();
+                } elseif (!empty($menu->tpl) && $menu->kPluginAdminMenu === -1) {
+                    if (isset($menu->data)) {
+                        $smarty->assign('data', $menu->data);
+                    }
+                    $menu->html = $smarty->fetch($menu->tpl);
                 } elseif ($plugin->isBootstrap() === true) {
                     $menu->html = PluginHelper::bootstrap($pluginID, $loader)
                         ->renderAdminMenuTab($menu->name, $menu->id, $smarty);
@@ -174,9 +185,13 @@ if (SAFE_MODE) {
 
 $alertHelper->addAlert(Alert::TYPE_NOTE, $notice, 'pluginNotice');
 $alertHelper->addAlert(Alert::TYPE_ERROR, $errorMsg, 'pluginError');
+if ($plugin !== null && $plugin->getState() === State::DISABLED) {
+    $alertHelper->addAlert(Alert::TYPE_WARNING, __('pluginIsDeactivated'), 'pluginIsDeactivated');
+}
 
 $smarty->assign('oPlugin', $plugin)
     ->assign('step', $step)
+    ->assign('pluginNotFound', $pluginNotFound)
     ->assign('hasDifferentVersions', false)
     ->assign('currentDatabaseVersion', 0)
     ->assign('currentFileVersion', 0)

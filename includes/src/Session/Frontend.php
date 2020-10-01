@@ -120,7 +120,7 @@ class Frontend extends AbstractSession
      */
     private function initLanguageURLs(): void
     {
-        if (!\defined('EXPERIMENTAL_MULTILANG_SHOP') || \EXPERIMENTAL_MULTILANG_SHOP !== true) {
+        if (\EXPERIMENTAL_MULTILANG_SHOP !== true) {
             return;
         }
         $urls      = [];
@@ -222,7 +222,7 @@ class Frontend extends AbstractSession
      */
     private function updateGlobals(): void
     {
-        unset($_SESSION['cTemplate'], $_SESSION['template'], $_SESSION['oKategorie_arr_new']);
+        unset($_SESSION['oKategorie_arr_new']);
         $_SESSION['ks']       = [];
         $_SESSION['Sprachen'] = LanguageHelper::getInstance()->gibInstallierteSprachen();
         Currency::setCurrencies(true);
@@ -271,7 +271,7 @@ class Frontend extends AbstractSession
             }
         } else {
             foreach ($_SESSION['Waehrungen'] as $currency) {
-                /** @var $currency Currency */
+                /** @var Currency $currency */
                 if ($currency->isDefault()) {
                     $_SESSION['Waehrung']      = $currency;
                     $_SESSION['cWaehrungName'] = $currency->getName();
@@ -353,49 +353,6 @@ class Frontend extends AbstractSession
         }
 
         return $this;
-    }
-
-    /**
-     * @param array  $allowed
-     * @param string $default
-     * @return string
-     */
-    private function getBrowserLanguage(array $allowed, string $default): string
-    {
-        $acceptLanguage = $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? null;
-        if (empty($acceptLanguage)) {
-            return $default;
-        }
-        $accepted = \preg_split('/,\s*/', $acceptLanguage);
-        $current  = $default;
-        $quality  = 0;
-        foreach ($accepted as $lang) {
-            $res = \preg_match(
-                '/^([a-z]{1,8}(?:-[a-z]{1,8})*)' .
-                '(?:;\s*q=(0(?:\.[0-9]{1,3})?|1(?:\.0{1,3})?))?$/i',
-                $lang,
-                $matches
-            );
-            if (!$res) {
-                continue;
-            }
-            $codes       = \explode('-', $matches[1]);
-            $langQuality = isset($matches[2])
-                ? (float)$matches[2]
-                : 1.0;
-            while (\count($codes)) {
-                if ($langQuality > $quality
-                    && \in_array(\mb_convert_case(\implode('-', $codes), \MB_CASE_LOWER), $allowed, true)
-                ) {
-                    $current = \mb_convert_case(\implode('-', $codes), \MB_CASE_LOWER);
-                    $quality = $langQuality;
-                    break;
-                }
-                \array_pop($codes);
-            }
-        }
-
-        return $current;
     }
 
     /**

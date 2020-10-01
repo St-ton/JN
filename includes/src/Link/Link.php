@@ -6,9 +6,9 @@ use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use JTL\Helpers\Text;
 use JTL\Plugin\State;
 use JTL\Shop;
+use JTL\Shopsetting;
 use stdClass;
 
 /**
@@ -262,7 +262,7 @@ final class Link extends AbstractLink
                     AND tseo.kKey = loc.kLink
                     AND tseo.kSprache = tsprache.kSprache
                 LEFT JOIN tlinkgroupassociations assoc
-					ON assoc.linkID = loc.kLink
+                    ON assoc.linkID = loc.kLink
                 LEFT JOIN tplugin
                     ON tplugin.kPlugin = tlink.kPlugin
                 LEFT JOIN tpluginlinkdatei pld
@@ -345,7 +345,7 @@ final class Link extends AbstractLink
             $this->setReference($link->reference);
             $this->setSSL((bool)$link->bSSL);
             $this->setIsFluid((bool)$link->bIsFluid);
-            $this->setIsEnabled((bool)$link->bIsActive);
+            $this->setIsEnabled($this->checkActivationSetting((bool)$link->bIsActive));
             $this->setFileName($link->cDateiname ?? '');
             $this->setLanguageCode($link->cISOSprache, $link->languageID);
             $this->setContent($link->content ?? '', $link->languageID);
@@ -357,12 +357,16 @@ final class Link extends AbstractLink
             $this->setTitle($link->localizedTitle ?? $link->cName, $link->languageID);
             $this->setLanguageID($link->languageID, $link->languageID);
             $this->setSEO($link->localizedUrl ?? '', $link->languageID);
-            $this->setURL(
-                $this->linkType === 2
-                    ? $link->localizedUrl
-                    : (Shop::getURL(true, $link->languageID) . '/' . $link->localizedUrl),
-                $link->languageID
-            );
+            if ($this->getLinkType() === \LINKTYP_STARTSEITE && \EXPERIMENTAL_MULTILANG_SHOP === true) {
+                $this->setURL(Shop::getURL(true, $link->languageID) . '/', $link->languageID);
+            } else {
+                $this->setURL(
+                    $this->linkType === 2
+                        ? $link->localizedUrl
+                        : (Shop::getURL(true, $link->languageID) . '/' . $link->localizedUrl),
+                    $link->languageID
+                );
+            }
             $this->setHandler($link->handler ?? '');
             $this->setTemplate($link->template ?? $link->fullscreenTemplate ?? '');
             if (($this->id === null || $this->id === 0) && isset($link->kLink)) {
@@ -758,7 +762,7 @@ final class Link extends AbstractLink
     }
 
     /**
-     * @inheritdoc
+     * @return bool
      */
     public function getPrintButton(): bool
     {
@@ -838,7 +842,7 @@ final class Link extends AbstractLink
     }
 
     /**
-     * @inheritdoc
+     * @return array|int[]
      */
     public function getLanguageIDs(): array
     {
@@ -846,7 +850,7 @@ final class Link extends AbstractLink
     }
 
     /**
-     * @inheritdoc
+     * @param array $ids
      */
     public function setLanguageIDs(array $ids): void
     {
@@ -1211,5 +1215,25 @@ final class Link extends AbstractLink
         $res['db'] = '*truncated*';
 
         return $res;
+    }
+
+    /**
+     * @param bool $isActive
+     * @return bool
+     */
+    private function checkActivationSetting(bool $isActive): bool
+    {
+        if (!$isActive) {
+            return false;
+        }
+        $conf = Shopsetting::getInstance()->getAll();
+
+        switch ($this->getLinkType()) {
+            case \LINKTYP_NEWSLETTER:
+            case \LINKTYP_NEWSLETTERARCHIV:
+                return $conf['newsletter']['newsletter_active'] === 'Y';
+            default:
+                return true;
+        }
     }
 }

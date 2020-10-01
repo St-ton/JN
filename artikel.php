@@ -146,7 +146,7 @@ if (isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreic
 ) {
     $ratings = array_filter(
         $AktuellerArtikel->Bewertungen->oBewertung_arr,
-        function ($oBewertung) use (&$AktuellerArtikel) {
+        static function ($oBewertung) use (&$AktuellerArtikel) {
             return (int)$AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung
                 !== (int)$oBewertung->kBewertung;
         }
@@ -170,6 +170,7 @@ $pagination = (new Pagination('ratings'))
         ['nSterne', Shop::Lang()->get('paginationOrderByRating')],
         ['nHilfreich', Shop::Lang()->get('paginationOrderUsefulness')]
     ])
+    ->setDefaultSortByDir((int)$conf['bewertung']['bewertung_sortierung'])
     ->assemble();
 
 $AktuellerArtikel->Bewertungen->Sortierung = $sorting;
@@ -198,11 +199,15 @@ $nav = $conf['artikeldetails']['artikeldetails_navi_blaettern'] === 'Y'
     ? Product::getProductNavigation($AktuellerArtikel->kArtikel ?? 0, $AktuelleKategorie->kKategorie ?? 0)
     : null;
 
-$maxSize = Upload::uploadMax();
-$smarty->assign('nMaxUploadSize', $maxSize)
-       ->assign('cMaxUploadSize', Upload::formatGroesse($maxSize))
-       ->assign('oUploadSchema_arr', Upload::gibArtikelUploads($AktuellerArtikel->kArtikel))
-       ->assign('showMatrix', $AktuellerArtikel->showMatrix())
+if (($AktuellerArtikel->kVariKindArtikel ?? 0) === 0 && $AktuellerArtikel->nIstVater === 0 && Upload::checkLicense()) {
+    $maxSize = Upload::uploadMax();
+    $smarty->assign('nMaxUploadSize', $maxSize)
+           ->assign('cMaxUploadSize', Upload::formatGroesse($maxSize))
+           ->assign('oUploadSchema_arr', Upload::gibArtikelUploads(!empty($AktuellerArtikel->kVariKindArtikel)
+               ? $AktuellerArtikel->kVariKindArtikel
+               : $AktuellerArtikel->kArtikel));
+}
+$smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())
        ->assign('arNichtErlaubteEigenschaftswerte', $nonAllowed)
        ->assign('oAehnlicheArtikel_arr', $similarProducts)
        ->assign('UVPlocalized', $AktuellerArtikel->cUVPLocalized)

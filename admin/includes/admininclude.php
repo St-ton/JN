@@ -6,6 +6,7 @@ use JTL\Backend\Revision;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
+use JTL\Profiler;
 use JTL\Services\JTL\CaptchaServiceInterface;
 use JTL\Services\JTL\SimpleCaptchaService;
 use JTL\Session\Backend;
@@ -52,6 +53,7 @@ if (!function_exists('Shop')) {
         return Shop::getInstance();
     }
 }
+Profiler::start();
 $db         = Shop::Container()->getDB();
 $cache      = Shop::Container()->getCache()->setJtlCacheConfig(
     $db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING)
@@ -62,14 +64,45 @@ $oAccount   = Shop::Container()->getAdminAccount();
 $loggedIn   = $oAccount->logged();
 $updater    = new Updater($db);
 $hasUpdates = $updater->hasPendingUpdates();
+$conf       = Shop::getSettings([CONF_GLOBAL]);
 Shop::setIsFrontend(false);
+
+if (!empty($_COOKIE['JTLSHOP']) && empty($_SESSION['frontendUpToDate'])) {
+    $adminToken   = $_SESSION['jtl_token'];
+    $adminLangTag = $_SESSION['AdminAccount']->language;
+    $eSIdAdm      = \session_id();
+    \session_write_close();
+    \session_name('JTLSHOP');
+    \session_id($_COOKIE['JTLSHOP']);
+    \session_start();
+    $_SESSION['loggedAsAdmin'] = $loggedIn;
+    $_SESSION['adminToken']    = $adminToken;
+    $_SESSION['adminLangTag']  = $adminLangTag;
+    \session_write_close();
+    \session_name('eSIdAdm');
+    \session_id($eSIdAdm);
+    \session_start();
+    $_SESSION['frontendUpToDate'] = true;
+}
+
 if ($loggedIn
     && $_SERVER['REQUEST_METHOD'] === 'GET'
+    && Request::verifyGPDataString('action') !== 'quick_change_language'
+    && strpos($_SERVER['SCRIPT_FILENAME'], 'logout') === false
     && strpos($_SERVER['SCRIPT_FILENAME'], 'dbupdater') === false
     && strpos($_SERVER['SCRIPT_FILENAME'], 'io.php') === false
     && $updater->hasPendingUpdates()
 ) {
     \header('Location: ' . Shop::getURL(true) . '/' . \PFAD_ADMIN . 'dbupdater.php');
+    exit;
+}
+if ($loggedIn
+    && ($conf['global']['global_wizard_done'] ?? 'Y') === 'N'
+    && strpos($_SERVER['SCRIPT_FILENAME'], 'wizard') === false
+    && !$updater->hasPendingUpdates()
+    && !Backend::get('redirectedToWizard')
+) {
+    \header('Location: ' . Shop::getURL(true) . '/' . \PFAD_ADMIN . 'wizard.php');
     exit;
 }
 

@@ -4,10 +4,10 @@ namespace JTL\Update;
 
 use DateTime;
 use Exception;
+use Gettext\Translator;
 use InvalidArgumentException;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use JTL\Shop;
 use JTLShop\SemVer\Version;
 use PDOException;
 
@@ -44,7 +44,7 @@ class MigrationManager
     /**
      * Migrate the specified identifier.
      *
-     * @param int $identifier
+     * @param int|null $identifier
      * @return array
      * @throws Exception
      */
@@ -64,6 +64,10 @@ class MigrationManager
 
         $direction = $identifier > $currentId ? IMigration::UP : IMigration::DOWN;
         $executed  = [];
+
+        if (Translator::$current === null) {
+            (new Translator())->register();
+        }
 
         try {
             if ($direction === IMigration::DOWN) {
@@ -145,12 +149,12 @@ class MigrationManager
         $this->executedMigrations = null;
         $start                    = new DateTime('now');
         try {
-            Shop::Container()->getDB()->beginTransaction();
+            $this->db->beginTransaction();
             $migration->$direction();
-            Shop::Container()->getDB()->commit();
+            $this->db->commit();
             $this->migrated($migration, $direction, $start);
         } catch (Exception $e) {
-            Shop::Container()->getDB()->rollback();
+            $this->db->rollback();
             $migrationFile = new \ReflectionClass($migration->getName());
 
             throw new Exception(
@@ -243,14 +247,12 @@ class MigrationManager
      */
     public function getCurrentId(): int
     {
-        $oVersion = Shop::Container()->getDB()->query(
+        return (int)($this->db->query(
             'SELECT kMigration 
                 FROM tmigration 
                 ORDER BY kMigration DESC',
             ReturnType::SINGLE_OBJECT
-        );
-
-        return $oVersion ? (int)$oVersion->kMigration : 0;
+        )->kMigration ?? 0);
     }
 
     /**
@@ -294,7 +296,7 @@ class MigrationManager
     protected function _getExecutedMigrations()
     {
         if ($this->executedMigrations === null) {
-            $migrations = Shop::Container()->getDB()->executeQuery(
+            $migrations = $this->db->executeQuery(
                 'SELECT * 
                     FROM tmigration 
                     ORDER BY kMigration ASC',
@@ -318,14 +320,15 @@ class MigrationManager
     public function log(IMigration $migration, $direction, $state, $message): void
     {
         $sql = \sprintf(
-            "INSERT INTO tmigrationlog (kMigration, cDir, cState, cLog, dCreated) VALUES ('%s', '%s', '%s', '%s', '%s');",
+            "INSERT INTO tmigrationlog (kMigration, cDir, cState, cLog, dCreated) 
+                VALUES ('%s', '%s', '%s', '%s', '%s');",
             $migration->getId(),
-            Shop::Container()->getDB()->pdoEscape($direction),
-            Shop::Container()->getDB()->pdoEscape($state),
-            Shop::Container()->getDB()->pdoEscape($message),
+            $this->db->pdoEscape($direction),
+            $this->db->pdoEscape($state),
+            $this->db->pdoEscape($message),
             (new DateTime('now'))->format('Y-m-d H:i:s')
         );
-        Shop::Container()->getDB()->executeQuery($sql, ReturnType::AFFECTED_ROWS);
+        $this->db->executeQuery($sql, ReturnType::AFFECTED_ROWS);
     }
 
     /**
@@ -344,10 +347,10 @@ class MigrationManager
                 \sprintf('%d%02d', $version->getMajor(), $version->getMinor()),
                 $executed->format('Y-m-d H:i:s')
             );
-            Shop::Container()->getDB()->executeQuery($sql, ReturnType::AFFECTED_ROWS);
+            $this->db->executeQuery($sql, ReturnType::AFFECTED_ROWS);
         } else {
             $sql = \sprintf("DELETE FROM tmigration WHERE kMigration = '%s'", $migration->getId());
-            Shop::Container()->getDB()->executeQuery($sql, ReturnType::AFFECTED_ROWS);
+            $this->db->executeQuery($sql, ReturnType::AFFECTED_ROWS);
         }
 
         return $this;

@@ -74,7 +74,7 @@ class CookieConfig
         if (($config['global_cookie_samesite'] ?? '') !== 'S') {
             $this->sameSite = $config['global_cookie_samesite'] ?? 'S';
         }
-        if ($config['global_cookie_domain'] !== '') {
+        if (($config['global_cookie_domain'] ?? '') !== '') {
             $this->domain = $this->experimentalMultiLangDomain($config['global_cookie_domain']);
         }
         if (\is_numeric($config['global_cookie_lifetime']) && (int)$config['global_cookie_lifetime'] > 0) {
@@ -93,7 +93,7 @@ class CookieConfig
      */
     private function experimentalMultiLangDomain(string $domain)
     {
-        if (!\defined('EXPERIMENTAL_MULTILANG_SHOP')) {
+        if (\EXPERIMENTAL_MULTILANG_SHOP !== true) {
             return $domain;
         }
         foreach (LanguageHelper::getAllLanguages() as $language) {

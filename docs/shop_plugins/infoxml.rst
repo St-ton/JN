@@ -73,32 +73,38 @@ Nach dem Rumpf der XML-Datei folgen allgemeine Informationen, die als Kindelemen
  </jtlshop3plugin>
 
 
-+--------------------+-----------------------------------------------------+
-| Elementname        | Funktion                                            |
-+====================+=====================================================+
-| ``<Name>`` *       | Name des Plugins (``[a-zA-Z0-9_]``)                 |
-+--------------------+-----------------------------------------------------+
-| ``<Description>``  | Plugin-Beschreibung                                 |
-+--------------------+-----------------------------------------------------+
-| ``<Author>``       | Herausgeber eines Plugins                           |
-+--------------------+-----------------------------------------------------+
-| ``<URL>``          | Link zum Pluginherausgeber                          |
-+--------------------+-----------------------------------------------------+
-| ``<XMLVersion>`` * | Version der ``info.xml`` (``[0-9]{3}``)             |
-+--------------------+-----------------------------------------------------+
-| ``<ShopVersion>``  | Mindestversion von JTL-Shop |br|                    |
-|                    | (>= 300, < 400, >= 500 oder auch *5.0.0-beta.3*)    |
-+--------------------+-----------------------------------------------------+
-| ``<Shop4Version>`` | Mindestversion von JTL-Shop 4 (>= 400)              |
-+--------------------+-----------------------------------------------------+
-| ``<PluginID>`` *   | Plugin-Identifikator (``[a-zA-Z0-9_]``)             |
-+--------------------+-----------------------------------------------------+
-| ``<Icon>``         | Dateiname zu einem Icon                             |
-+--------------------+-----------------------------------------------------+
-| ``<Version>``      | ab JTL-Shop 5.0.0 - die Plugin-Version (``[0-9]+``) |
-+--------------------+-----------------------------------------------------+
-| ``<CreateDate>``   | ab 5.0.0 - Erstellungsdatum (YYYY-MM-DD)            |
-+--------------------+-----------------------------------------------------+
++----------------------+-----------------------------------------------------+
+| Elementname          | Funktion                                            |
++======================+=====================================================+
+| ``<Name>`` *         | Name des Plugins (``[a-zA-Z0-9_]``)                 |
++----------------------+-----------------------------------------------------+
+| ``<Description>``    | Plugin-Beschreibung                                 |
++----------------------+-----------------------------------------------------+
+| ``<Author>``         | Herausgeber eines Plugins                           |
++----------------------+-----------------------------------------------------+
+| ``<URL>``            | Link zum Pluginherausgeber                          |
++----------------------+-----------------------------------------------------+
+| ``<XMLVersion>`` *   | Version der ``info.xml`` (``[0-9]{3}``)             |
++----------------------+-----------------------------------------------------+
+| ``<ShopVersion>``    | Mindestversion von JTL-Shop |br|                    |
+|                      | (>= 300, < 400, >= 500 oder auch *5.0.0-beta.3*)    |
++----------------------+-----------------------------------------------------+
+| ``<MinShopVersion>`` | ab 5.0.0 - Mindestversion von JTL-Shop 5            |
++----------------------+-----------------------------------------------------+
+| ``<MaxShopVersion>`` | ab 5.0.0 - Maximalversion von JTL-Shop 5            |
++----------------------+-----------------------------------------------------+
+| ``<Shop4Version>``   | Mindestversion von JTL-Shop 4 (>= 400)              |
++----------------------+-----------------------------------------------------+
+| ``<PluginID>`` *     | Plugin-Identifikator (``[a-zA-Z0-9_]``)             |
++----------------------+-----------------------------------------------------+
+| ``<Icon>``           | Dateiname zu einem Icon                             |
++----------------------+-----------------------------------------------------+
+| ``<Version>``        | ab JTL-Shop 5.0.0 - die Plugin-Version (``[0-9]+``) |
++----------------------+-----------------------------------------------------+
+| ``<CreateDate>``     | ab 5.0.0 - Erstellungsdatum (YYYY-MM-DD)            |
++----------------------+-----------------------------------------------------+
+| ``<ExsID>``          | ab 5.0.0 - ExtensionStore-ID                        |
++----------------------+-----------------------------------------------------+
 
 (*)Pflichtfelder
 
@@ -136,13 +142,25 @@ für das eigene Plugin zur Verfügung zu haben.
 ShopVersion
 """""""""""
 
-*ShopVersion* gibt die Version von JTL-Shop 3 an, die mindestens benötigt wird. Ist sie höher als die aktuell
+*ShopVersion* gibt die Version von JTL-Shop an, die mindestens benötigt wird. Ist sie höher als die aktuell
 installierte Version des Onlineshops, wird eine Fehlermeldung im Backend angezeigt und das Plugin kann nicht
 installiert werden. Falls nur dieser Wert, nicht aber ``Shop4Version``, konfiguriert wurde, erscheint in JTL-Shop 4.00+
 der Hinweis, dass das Plugin möglicherweise in dieser Version nicht funktioniert. Es kann jedoch trotzdem installiert
 werden. |br|
 Das explizite Angeben einer einzelnen Versionsnummer ist ebenfalls möglich, ergibt allerdings nur temporär zu
 Entwicklerzwecken Sinn (siehe z. B.: *5.0.0-beta.3*)
+**Ab JTL-Shop 5.0.0 sollte dieser Tag durch <MinShopVersion> ersetzt werden**
+
+MinShopVersion
+""""""""""""""
+
+*MinShopVersion* entspricht ab Shop 5.0.0 dem alten Tag *ShopVersion*.
+
+MaxShopVersion
+""""""""""""""
+
+*MaxShopVersion* gibt die Version von JTL-Shop an, die höchstens unterstützt wird. Ist die tatsächlich installierte
+Version von JTL-Shop höher, wird im Backend eine Warnung angezeigt.
 
 Shop4Version
 """"""""""""
@@ -184,6 +202,13 @@ CreateDate
 
 Ab JTL-Shop 5.x ist dies eine Pflichtangabe zur Definition des Erstellungsdatums der jeweiligen Pluginversion. |br|
 Das Datum muss im Format ``YYYY-MM-DD`` angegeben werden, beispielsweise "*2019-03-21*" für den 21. März 2019.
+
+ExsID
+"""""
+
+Die ``ExsID`` muss für alle Plugins ab JTL-Shop 5.0.0 angegeben werden, wenn das Plugin im JTL-Store vertrieben werden
+soll. |br|
+Sie finden die ``ExsID`` im Kundencenter, nachdem Sie dort eine Extension für den Marktplatz angelegt haben.
 
 Install-Block
 """""""""""""
@@ -268,6 +293,7 @@ Es befindet sich in der ``info.xml`` lediglich die wesentlich vereinfachtere Str
         <CreateDate>2018-11-13</CreateDate>
         <Version>1.0.0</Version>
         ...
+    </jtlshopplugin>
 
 
 .. _label_infoxml_hooks:
@@ -445,7 +471,7 @@ Die entsprechende Lizenzprüfungsklasse mit *namespace* würde dann so aussehen:
 
     use JTL\Plugin\LicenseInterface;
 
-    class PluginLicense implements LicenseInterface
+    class PluginLicence implements LicenseInterface
     {
         /**
          + @param string $cLicence
@@ -609,8 +635,8 @@ Weitere Informationen zum Caching und den vorhandenen *Tags* finden Sie im Kapit
 Boxen
 -----
 
-Dank der Boxenverwaltung von JTL-Shop kann der Onlineshopbetreiber einfach und schnell Boxen im Onlineshop
-zu verschieben, anzulegen oder zu löschen.
+Mit der *Boxenverwaltung* von JTL-Shop kann der Onlineshopbetreiber einfach und schnell Boxen im Onlineshop
+verschieben, anlegen oder löschen.
 
 Ein Plugin ist ebenfalls in der Lage, einen neuen Boxentyp anzulegen. Wo die Templates für diese Boxen im Plugin
 zu platzieren sind, finden Sie unter "Aufbau", im Abschnitt ":ref:`label_aufbau_boxen`". |br|
@@ -705,7 +731,7 @@ in Ihrer ``info.xml`` einfügen:
            ...
        </AdminWidget>
        ...
-   <Install>
+   </Install>
 
 In diesem XML-Container können sich beliebig viele Unterelemente vom Typ ``<Widget>`` befinden.
 Das heißt, ein Plugin kann beliebig viele *AdminWidgets* anlegen.
@@ -917,6 +943,74 @@ Erstellt werden können die json-Datein über den Export im *OPC-Editor*. |br|
 Wie diese Struktur unterhalb Ihres Plugins aussieht, finden Sie unter "Aufbau"
 im Abschnitt ":ref:`label_aufbau_blueprints`".
 
+Consent-Manager (ab 5.0.0)
+--------------------------
+
+Ab JTL-Shop 5.0.0 können Plugins eigene Einträge im Consent-Manager definieren. |br|
+Um das zu realisieren, fügen Sie den XML-Knoten ``<ServicesRequiringConsent>`` in die ``info.xml`` Ihres Plugins
+ein. Dieser XML-Knoten kann selbst wiederum beliebig viele Unterknoten des Typs ``<Vendor>`` beinhalten.
+
+**Beispiel:**
+
+.. code-block:: xml
+
+    <Install>
+        ...
+        <ServicesRequiringConsent>
+            <Vendor>
+                <ID>myItemID</ID>
+                <Company>Meine kleine Firma GmbH</Company>
+                <Localization iso="GER">
+                    <Name>Name meines Eintrags</Name>
+                    <Purpose>Tut etwas Tollen</Purpose>
+                    <Description>Dies ist die Beschreibung einer Funktionalität, welche Consent erfordert.
+                    </Description>
+                    <PrivacyPolicy>https://www.example.com/privacy?hl=de</PrivacyPolicy>
+                </Localization>
+                <Localization iso="ENG">
+                    <Name>Name of my item</Name>
+                    <Purpose>Does something great</Purpose>
+                    <Description>This is a longer description.
+                    </Description>
+                    <PrivacyPolicy>https://www.example.com/privacy</PrivacyPolicy>
+                </Localization>
+            </Vendor>
+        </ServicesRequiringConsent>
+        ...
+    </Install>
+
+
+``<Vendor>``:
+
++-----------------------+-------------------------------------------------------------------------------------+
+| Elementname           | Beschreibung                                                                        |
++=======================+=====================================================================================+
+| ``<ID>`` *            | ID des Elements (``[a-zA-Z0-9_]``)                                                  |
++-----------------------+-------------------------------------------------------------------------------------+
+| ``<Company>`` *       | Firmenname                                                                          |
++-----------------------+-------------------------------------------------------------------------------------+
+| ``<Localization>`` *  | Gruppe von Übersetzungen                                                            |
++-----------------------+-------------------------------------------------------------------------------------+
+
+
+``<Localization>``:
+
++------------------------+-------------------------------------------------------------------------------------+
+| Elementname            | Beschreibung                                                                        |
++========================+=====================================================================================+
+| ``<Name>`` *           | Name der Funktionalität                                                             |
++------------------------+-------------------------------------------------------------------------------------+
+| ``<Purpose>`` *        | Zweck des Cookies                                                                   |
++------------------------+-------------------------------------------------------------------------------------+
+| ``<Description>`` *    | Ausführliche Beschreibung des Zweckes und der Funktionalität                        |
++------------------------+-------------------------------------------------------------------------------------+
+| ``<PrivacyPolicy>`` *  | Externer Link zur Datenschutzerklärung                                              |
++------------------------+-------------------------------------------------------------------------------------+
+
+
+(*) Pflichtfeld
+
+
 Adminmenü
 ---------
 
@@ -986,7 +1080,7 @@ Backend konfiguriert und dann im eigenen Plugin-Code abgefragt werden.
             <Description>Online Watcher</Description>
             <ValueName>onlinewatcher</ValueName>
         </Setting>
-    <Settingslink>
+    </Settingslink>
 
 ``<Settinglink>``:
 
@@ -1367,7 +1461,7 @@ Falls das Plugin keine Zahlungsmethode implementieren soll, wird der ``<PaymentM
             ...
         </PaymentMethod>
         ...
-    <Install>
+    </Install>
 
 +----------------+-----------------+
 | Elementname    | Funktion        |

@@ -21,7 +21,6 @@ use JTL\Plugin\State;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use JTL\Template;
 use function Functional\first;
 use function Functional\group;
 use function Functional\map;
@@ -54,7 +53,7 @@ class BoxService implements BoxServiceInterface
     /**
      * @var array
      */
-    public $visibility;
+    public $visibilities;
 
     /**
      * @var Factory
@@ -103,7 +102,7 @@ class BoxService implements BoxServiceInterface
     /**
      * BoxService constructor.
      *
-     * @inheritdoc
+     * @inheritDoc
      */
     public function __construct(
         array $config,
@@ -123,8 +122,7 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @param int $productID
-     * @param int $limit
+     * @inheritDoc
      */
     public function addRecentlyViewed(int $productID, int $limit = null): void
     {
@@ -153,35 +151,42 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @param int  $pageType
-     * @param bool $global
-     * @return array|bool
+     * @inheritDoc
      */
     public function getVisibility(int $pageType, bool $global = true)
     {
-        if ($this->visibility !== null) {
-            return $this->visibility;
-        }
-        $this->visibility = [];
-        $boxes            = $this->db->selectAll('tboxenanzeige', 'nSeite', $pageType);
-        if (\count($boxes) > 0) {
-            foreach ($boxes as $box) {
-                $this->visibility[$box->ePosition] = (bool)$box->bAnzeigen;
-            }
-
-            return $this->visibility;
+        if ($this->visibilities === null) {
+            $this->visibilities = $this->getAllVisibilites();
         }
 
-        return $pageType !== 0 && $global
-            ? $this->getVisibility(0)
-            : false;
+        return $this->visibilities[$pageType] ?? ($pageType !== \PAGE_UNBEKANNT && $global
+                ? $this->getVisibility(\PAGE_UNBEKANNT)
+                : false);
     }
 
     /**
-     * @param int          $boxID
-     * @param int          $pageType
-     * @param string|array $filter
-     * @return int
+     * all box visibilites grouped by page type
+     *
+     * @return array
+     */
+    private function getAllVisibilites(): array
+    {
+        $cacheID = 'bx_visibilities_all';
+        if (($grouped = $this->cache->get($cacheID)) === false) {
+            $grouped = \collect($this->db->selectAll('tboxenanzeige', [], []))
+                ->groupBy('nSeite')->transform(static function ($data) {
+                    return \collect($data)->mapWithKeys(static function ($item) {
+                        return [$item->ePosition => (bool)$item->bAnzeigen];
+                    });
+                })->toArray();
+            $this->cache->set($cacheID, $grouped, [\CACHING_GROUP_OBJECT, \CACHING_GROUP_BOX, 'boxes']);
+        }
+
+        return $grouped;
+    }
+
+    /**
+     * @inheritDoc
      */
     public function filterBoxVisibility(int $boxID, int $pageType, $filter = ''): int
     {
@@ -198,8 +203,7 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @param ProductFilter $pf
-     * @return bool
+     * @inheritDoc
      */
     public function showBoxes(ProductFilter $pf): bool
     {
@@ -225,10 +229,7 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * get raw data from visible boxes
-     * to allow custom renderes
-     *
-     * @return array
+     * @inheritDoc
      */
     public function getRawData(): array
     {
@@ -236,7 +237,7 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @return array
+     * @inheritDoc
      */
     public function getBoxes(): array
     {
@@ -244,9 +245,7 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * compatibility layer for gibBoxen() which returns unrendered content
-     *
-     * @return array
+     * @inheritDoc
      */
     public function compatGet(): array
     {
@@ -282,10 +281,7 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @param array $positionedBoxes
-     * @param int   $pageType
-     * @return array
-     * @throws \Exception
+     * @inheritDoc
      */
     public function render(array $positionedBoxes, int $pageType): array
     {
@@ -332,13 +328,13 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @param int  $pageType
-     * @param bool $activeOnly
-     * @return array
+     * @inheritDoc
      */
     public function buildList(int $pageType = \PAGE_UNBEKANNT, bool $activeOnly = true): array
     {
-        $visiblePositions = $this->getVisiblePositions($pageType, Template::getInstance()->getBoxLayoutXML());
+        $model              = Shop::Container()->getTemplateService()->getActiveTemplate();
+        $this->visibilities = $this->getAllVisibilites();
+        $visiblePositions   = $this->getVisiblePositions($pageType, $model->getBoxLayout());
         if ($activeOnly === true && \count($visiblePositions) === 0) {
             return [];
         }
@@ -417,8 +413,7 @@ class BoxService implements BoxServiceInterface
     private function getVisiblePositions(int $pageType, array $templatePositions): array
     {
         $visiblePositions = [];
-        $this->getVisibility($pageType);
-        foreach ($this->visibility as $position => $isVisible) {
+        foreach ($this->getVisibility($pageType) as $position => $isVisible) {
             if (isset($templatePositions[$position])) {
                 $isVisible = $isVisible && $templatePositions[$position];
             }
@@ -469,6 +464,7 @@ class BoxService implements BoxServiceInterface
                 $plugin = $loader->init($box->getCustomID());
                 $box->setTemplateFile($plugin->getPaths()->getFrontendPath() . $box->getTemplateFile());
                 $box->setExtension($plugin);
+                $box->setPlugin($plugin);
             } elseif ($box->getType() === Type::CONTAINER) {
                 $box->setChildren($children);
             }

@@ -30,7 +30,6 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\MagicCompatibilityTrait;
 use JTL\Mapper\SortingType;
-use JTL\Template;
 use stdClass;
 use function Functional\first;
 use function Functional\flatten;
@@ -194,7 +193,12 @@ class ProductFilter
     /**
      * @var bool
      */
-    private $bExtendedJTLSearch;
+    private $bExtendedJTLSearch = false;
+
+    /**
+     * @var stdClass|null
+     */
+    private $oExtendedJTLSearchResponse;
 
     /**
      * @var int
@@ -569,7 +573,9 @@ class ProductFilter
             'nAnzahl'                => 0,
             'nSterne'                => 0,
             'customFilters'          => [],
-            'searchSpecialFilters'   => []
+            'searchSpecialFilters'   => [],
+            'manufacturerFilters'    => [],
+            'categoryFilters'        => []
         ];
     }
 
@@ -648,12 +654,26 @@ class ProductFilter
             $this->searchSpecial->init($params['kSuchspecial']);
             $this->baseState = $this->searchSpecial;
         }
-
-        if ($params['kKategorieFilter'] > 0) {
-            $this->addActiveFilter($this->categoryFilter, $params['kKategorieFilter']);
+        if ($params['kKategorieFilter'] > 0 && \count($params['categoryFilters']) === 0) {
+            // backwards compatibility
+            if (\is_array($params['kKategorieFilter'])) {
+                foreach ($params['kKategorieFilter'] as $param) {
+                    $params['categoryFilters'][] = $param;
+                }
+            } else {
+                $params['categoryFilters'][] = $params['kKategorieFilter'];
+            }
         }
-        if ($params['kHerstellerFilter'] > 0) {
-            $this->addActiveFilter($this->manufacturerFilter, $params['kHerstellerFilter']);
+        if (\count($params['categoryFilters']) > 0) {
+            $this->addActiveFilter($this->categoryFilter, $params['categoryFilters']);
+        }
+        if ($params['kHerstellerFilter'] > 0 || \count($params['manufacturerFilters']) > 0) {
+            $this->addActiveFilter(
+                $this->manufacturerFilter,
+                \count($params['manufacturerFilters']) > 0
+                    ? $params['manufacturerFilters']
+                    : $params['kHerstellerFilter']
+            );
         }
         if ($params['nBewertungSterneFilter'] > 0) {
             $this->addActiveFilter($this->ratingFilter, $params['nBewertungSterneFilter']);
@@ -729,9 +749,9 @@ class ProductFilter
             if (!$this->baseState->isInitialized()) {
                 $this->baseState = $this->searchQuery;
             }
-            $limit                      = $this->limits->getProductsPerPageLimit();
-            $oExtendedJTLSearchResponse = null;
-            $this->bExtendedJTLSearch   = false;
+            $limit                            = $this->limits->getProductsPerPageLimit();
+            $this->oExtendedJTLSearchResponse = null;
+            $this->bExtendedJTLSearch         = false;
 
             \executeHook(\HOOK_NAVI_PRESUCHE, [
                 'cValue'             => &$this->EchteSuche->cSuche,
@@ -740,11 +760,9 @@ class ProductFilter
             if (empty($params['cSuche'])) {
                 $this->bExtendedJTLSearch = false;
             }
-            $this->search->bExtendedJTLSearch = $this->bExtendedJTLSearch;
-
             \executeHook(\HOOK_NAVI_SUCHE, [
-                'bExtendedJTLSearch'         => $this->bExtendedJTLSearch,
-                'oExtendedJTLSearchResponse' => &$oExtendedJTLSearchResponse,
+                'bExtendedJTLSearch'         => &$this->bExtendedJTLSearch,
+                'oExtendedJTLSearchResponse' => &$this->oExtendedJTLSearchResponse,
                 'cValue'                     => &$this->EchteSuche->cSuche,
                 'nArtikelProSeite'           => &$limit,
                 'nSeite'                     => &$this->nSeite,
@@ -752,6 +770,7 @@ class ProductFilter
                 'bLagerbeachten'             => (int)$this->getFilterConfig()->getConfig('global')
                     ['artikel_artikelanzeigefilter'] === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
             ]);
+            $this->search->bExtendedJTLSearch = $this->bExtendedJTLSearch;
         }
         $this->nSeite = \max(1, Request::verifyGPCDataInt('seite'));
         foreach ($this->getCustomFilters() as $filter) {
@@ -912,7 +931,6 @@ class ProductFilter
         $filter = \array_filter(
             $this->filters,
             static function ($f) use ($filterClassName) {
-                /** @var FilterInterface $f */
                 return $f->getClassName() === $filterClassName;
             }
         );
@@ -929,7 +947,6 @@ class ProductFilter
         $filter = \array_filter(
             $this->activeFilters,
             static function ($f) use ($filterClassName) {
-                /** @var FilterInterface $f */
                 return $f->getClassName() === $filterClassName;
             }
         );
@@ -945,7 +962,6 @@ class ProductFilter
         return \array_filter(
             $this->filters,
             static function ($e) {
-                /** @var FilterInterface $e */
                 return $e->isCustom();
             }
         );
@@ -977,16 +993,20 @@ class ProductFilter
      */
     public function getAvailableContentFilters(): array
     {
+        if ($this->bExtendedJTLSearch === true) {
+            return [];
+        }
+        $templateSettings = $this->filterConfig->getConfig('template');
+
         return \array_filter(
             $this->filters,
-            static function ($f) {
-                $templateSettings = Template::getInstance()->getConfig();
+            static function ($f) use ($templateSettings) {
                 /** @var FilterInterface $f */
                 return $f->getVisibility() === Visibility::SHOW_ALWAYS
                     || $f->getVisibility() === Visibility::SHOW_CONTENT
                     || ($f->getClassName() === PriceRange::class
-                        && isset($templateSettings['sidebar_settings'])
-                        && $templateSettings['sidebar_settings']['always_show_price_range'] ?? 'N' === 'Y');
+                        && ($templateSettings['productlist']['always_show_price_range'] ?? 'N') === 'Y'
+                    );
             }
         );
     }
@@ -1344,7 +1364,7 @@ class ProductFilter
     /**
      * @return SearchSpecial
      */
-    public function getAvailabilitylFilter(): FilterInterface
+    public function getAvailabilityFilter(): FilterInterface
     {
         return $this->availabilityFilter;
     }
@@ -1521,7 +1541,6 @@ class ProductFilter
         }
         // search special sorting
         if ($this->hasSearchSpecial()) {
-            //@todo
             $mapping = $this->getSearchSpecialConfigMapping();
             $idx     = $this->getSearchSpecial()->getValue();
             $ssConf  = isset($mapping[$idx]) ?: null;
@@ -1545,8 +1564,9 @@ class ProductFilter
      */
     public function getSearchSpecialConfigMapping(): array
     {
-        $config  = $this->getFilterConfig()->getConfig('suchspecials');
-        $mapping = [
+        $config = $this->getFilterConfig()->getConfig('suchspecials');
+
+        return [
             \SEARCHSPECIALS_BESTSELLER       => $config['suchspecials_sortierung_bestseller'],
             \SEARCHSPECIALS_SPECIALOFFERS    => $config['suchspecials_sortierung_sonderangebote'],
             \SEARCHSPECIALS_NEWPRODUCTS      => $config['suchspecials_sortierung_neuimsortiment'],
@@ -1554,8 +1574,6 @@ class ProductFilter
             \SEARCHSPECIALS_UPCOMINGPRODUCTS => $config['suchspecials_sortierung_inkuerzeverfuegbar'],
             \SEARCHSPECIALS_TOPREVIEWS       => $config['suchspecials_sortierung_topbewertet'],
         ];
-
-        return $mapping;
     }
 
     /**
@@ -1585,10 +1603,12 @@ class ProductFilter
         $orderData->cOrder = $sorting->getOrderBy();
 
         \executeHook(\HOOK_FILTER_INC_GIBARTIKELKEYS, [
-            'oArtikelKey_arr' => &$productKeys,
-            'FilterSQL'       => new stdClass(),
-            'NaviFilter'      => $this,
-            'SortierungsSQL'  => &$orderData
+            'oArtikelKey_arr'            => &$productKeys,
+            'FilterSQL'                  => new stdClass(),
+            'NaviFilter'                 => $this,
+            'SortierungsSQL'             => &$orderData,
+            'bExtendedJTLSearch'         => $this->bExtendedJTLSearch,
+            'oExtendedJTLSearchResponse' => $this->oExtendedJTLSearchResponse
         ]);
 
         return $productKeys;
@@ -1626,7 +1646,7 @@ class ProductFilter
     /**
      * @param Kategorie|null $category
      * @param bool           $fill - if true, return Artikel class instances, otherwise keys only
-     * @param int            $limit
+     * @param int|null       $limit
      * @return SearchResultsInterface
      */
     public function generateSearchResults(
@@ -1835,7 +1855,6 @@ class ProductFilter
             $values        = \implode(
                 ',',
                 \array_map(static function ($f) {
-                    /** @var FilterInterface $f */
                     $val = $f->getValue();
 
                     return \is_array($val) ? \implode(',', $val) : $val;
@@ -1948,6 +1967,48 @@ class ProductFilter
     }
 
     /**
+     * @param array $filters
+     * @return array
+     */
+    public static function initCategoryFilter(array $filters = []): array
+    {
+        $filter = [];
+        if (\is_array($filters) && \count($filters) > 1) {
+            foreach ($filters as $value) {
+                if ((int)$value > 0) {
+                    $filter[] = (int)$value;
+                }
+            }
+        } elseif (isset($_GET['kf'])) {
+            if (\is_string($_GET['kf'])) {
+                $filter[] = $_GET['kf'];
+            } else {
+                foreach ($_GET['kf'] as $cf => $value) {
+                    $filter[] = $value;
+                }
+            }
+        } elseif (isset($_POST['kf'])) {
+            if (\is_string($_POST['kf'])) {
+                $filter[] = $_POST['kf'];
+            } else {
+                foreach ($_POST['kf'] as $cf => $value) {
+                    $filter[] = $value;
+                }
+            }
+        } else {
+            $i = 1;
+            while ($i < 20) {
+                if (Request::verifyGPCDataInt('kf' . $i) > 0) {
+                    $filter[] = Request::verifyGPCDataInt('kf' . $i);
+                }
+                ++$i;
+            }
+        }
+
+        return $filter;
+    }
+
+    /**
      * @return DbInterface
      */
     public function getDB(): DbInterface
@@ -1993,6 +2054,22 @@ class ProductFilter
     public function setFilterConfig(Config $filterConfig): void
     {
         $this->filterConfig = $filterConfig;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isExtendedJTLSearch(): bool
+    {
+        return $this->bExtendedJTLSearch;
+    }
+
+    /**
+     * @param bool $isSearch
+     */
+    public function setExtendedJTLSearch(bool $isSearch): void
+    {
+        $this->bExtendedJTLSearch = $isSearch;
     }
 
     /**

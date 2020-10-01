@@ -29,6 +29,8 @@ $controller     = new Controller($db, $smarty, Shop::Container()->getCache());
 $newsCategory   = new Category($db);
 $languages      = LanguageHelper::getAllLanguages();
 $defaultLang    = LanguageHelper::getDefaultLanguage();
+$adminID        = (int)$_SESSION['AdminAccount']->kAdminlogin;
+$adminName      = $db->select('tadminlogin', 'kAdminlogin', $adminID)->cName;
 
 $_SESSION['kSprache'] = $defaultLang->kSprache;
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
@@ -137,6 +139,22 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
                 $smarty->assign('nFZ', 1);
             }
         }
+    } elseif (Request::verifyGPCDataInt('nkanswer') === 1 && Request::verifyGPCDataInt('kNews') > 0) {
+        $controller->setStep('news_kommentar_antwort_editieren');
+        $comment         = new Comment($db);
+        $parentCommentID = Request::verifyGPCDataInt('parentCommentID');
+        if (empty($comment->loadByParentCommentID($parentCommentID))) {
+            $comment->setID(0);
+            $comment->setNewsID(Request::verifyGPCDataInt('kNews'));
+            $comment->setCustomerID(0);
+            $comment->setIsActive(1);
+            $comment->setName($adminName);
+            $comment->setMail('');
+            $comment->setText('');
+            $comment->setIsAdmin($adminID);
+            $comment->setParentCommentID($parentCommentID);
+        }
+        $smarty->assign('oNewsKommentar', $comment);
     } elseif (Request::postInt('news_speichern') === 1) {
         $controller->createOrUpdateNewsItem($_POST, $languages, $author);
     } elseif (Request::postInt('news_loeschen') === 1) {
@@ -192,6 +210,7 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
             $controller->newsRedirect(empty($tab) ? 'inaktiv' : $tab, $controller->getMsg());
         } else {
             $controller->setErrorMsg(__('errorAtLeastOneNewsComment'));
+            $controller->newsRedirect('', $controller->getErrorMsg());
         }
     } elseif (isset(
         $_POST['newskommentar_freischalten'],
@@ -242,7 +261,7 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
             }
             $smarty->assign('oNews', $newsItem)
                    ->assign('files', $controller->getNewsImages($newsItem->getID(), $uploadDir))
-                   ->assign('comments', $newsItem->getComments()->getItems());
+                   ->assign('comments', $newsItem->getComments()->getThreadedItems());
         }
     }
 }

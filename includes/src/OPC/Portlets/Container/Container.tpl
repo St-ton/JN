@@ -1,4 +1,4 @@
-{$style = "{$instance->getStyleString()};min-height:{$instance->getProperty('min-height')}px; position:relative;"}
+{$style = "{$instance->getStyleString()};{if $instance->getProperty('min-height')}min-height:{$instance->getProperty('min-height')}px;{/if} position:relative;"}
 {$class = 'opc-Container '|cat:$instance->getAnimationClass()|cat:' '|cat:$instance->getStyleClasses()}
 {$data  = $instance->getAnimationData()}
 {$fluid = $instance->getProperty('boxed') === false}

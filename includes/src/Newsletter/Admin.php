@@ -309,12 +309,12 @@ final class Admin
             && \is_array($defaultTpl->oNewslettervorlageStdVar_arr)
             && \count($defaultTpl->oNewslettervorlageStdVar_arr) > 0
         ) {
-            foreach ($defaultTpl->oNewslettervorlageStdVar_arr as $i => $nlTplStdVar) {
-                if ($nlTplStdVar->cTyp === 'TEXT') {
+            foreach ($defaultTpl->oNewslettervorlageStdVar_arr as $i => $tplVar) {
+                if ($tplVar->cTyp === 'TEXT') {
                     $defaultTpl->oNewslettervorlageStdVar_arr[$i]->cInhalt =
-                        $post['kNewslettervorlageStdVar_' . $nlTplStdVar->kNewslettervorlageStdVar];
+                        $post['kNewslettervorlageStdVar_' . $tplVar->kNewslettervorlageStdVar];
                 }
-                if ($nlTplStdVar->cTyp === 'BILD') {
+                if ($tplVar->cTyp === 'BILD') {
                     $defaultTpl->oNewslettervorlageStdVar_arr[$i]->cLinkURL = $post['cLinkURL'];
                     $defaultTpl->oNewslettervorlageStdVar_arr[$i]->cAltTag  = $post['cAltTag'];
                 }
@@ -385,23 +385,23 @@ final class Admin
                 $templateID
             );
             $uploadDir = \PFAD_ROOT . \PFAD_BILDER . \PFAD_NEWSLETTERBILDER;
-            foreach ($defaultTpl->oNewslettervorlageStdVar_arr as $i => $nlTplStdVar) {
+            foreach ($defaultTpl->oNewslettervorlageStdVar_arr as $i => $tplVar) {
                 $imageExists = false;
-                if ($nlTplStdVar->cTyp === 'BILD') {
+                if ($tplVar->cTyp === 'BILD') {
                     if (!\is_dir($uploadDir . $templateID)) {
                         \mkdir($uploadDir . $templateID);
                     }
-                    $idx = 'kNewslettervorlageStdVar_' . $nlTplStdVar->kNewslettervorlageStdVar;
+                    $idx = 'kNewslettervorlageStdVar_' . $tplVar->kNewslettervorlageStdVar;
                     if (isset($_FILES[$idx]['name']) && \mb_strlen($_FILES[$idx]['name']) > 0) {
                         $file = $uploadDir . $templateID .
-                            '/kNewslettervorlageStdVar_' . $nlTplStdVar->kNewslettervorlageStdVar .
+                            '/kNewslettervorlageStdVar_' . $tplVar->kNewslettervorlageStdVar .
                             $this->mapFileType($_FILES['kNewslettervorlageStdVar_' .
-                            $nlTplStdVar->kNewslettervorlageStdVar]['type']);
+                            $tplVar->kNewslettervorlageStdVar]['type']);
                         if (\file_exists($file)) {
                             \unlink($file);
                         }
                         \move_uploaded_file(
-                            $_FILES['kNewslettervorlageStdVar_' . $nlTplStdVar->kNewslettervorlageStdVar]['tmp_name'],
+                            $_FILES['kNewslettervorlageStdVar_' . $tplVar->kNewslettervorlageStdVar]['tmp_name'],
                             $file
                         );
                         if (isset($post['cLinkURL']) && \mb_strlen($post['cLinkURL']) > 0) {
@@ -412,10 +412,10 @@ final class Admin
                         }
                         $defaultTpl->oNewslettervorlageStdVar_arr[$i]->cInhalt =
                             Shop::getURL() . '/' . \PFAD_BILDER . \PFAD_NEWSLETTERBILDER . $templateID .
-                            '/kNewslettervorlageStdVar_' . $nlTplStdVar->kNewslettervorlageStdVar .
+                            '/kNewslettervorlageStdVar_' . $tplVar->kNewslettervorlageStdVar .
                             $this->mapFileType(
                                 $_FILES['kNewslettervorlageStdVar_' .
-                                $nlTplStdVar->kNewslettervorlageStdVar]['type']
+                                $tplVar->kNewslettervorlageStdVar]['type']
                             );
 
                         $imageExists = true;
@@ -423,11 +423,11 @@ final class Admin
                 }
 
                 $nlTplContent                           = new stdClass();
-                $nlTplContent->kNewslettervorlageStdVar = $nlTplStdVar->kNewslettervorlageStdVar;
+                $nlTplContent->kNewslettervorlageStdVar = $tplVar->kNewslettervorlageStdVar;
                 $nlTplContent->kNewslettervorlage       = $templateID;
-                if ($nlTplStdVar->cTyp === 'TEXT') {
-                    $nlTplContent->cInhalt = $nlTplStdVar->cInhalt;
-                } elseif ($nlTplStdVar->cTyp === 'BILD') {
+                if ($tplVar->cTyp === 'TEXT') {
+                    $nlTplContent->cInhalt = $tplVar->cInhalt;
+                } elseif ($tplVar->cTyp === 'BILD') {
                     if ($imageExists) {
                         $nlTplContent->cInhalt = $defaultTpl->oNewslettervorlageStdVar_arr[$i]->cInhalt;
                         if (isset($post['cLinkURL']) && \mb_strlen($post['cLinkURL']) > 0) {
@@ -453,7 +453,7 @@ final class Admin
                             $upd
                         );
                     } else {
-                        $nlTplContent->cInhalt = $nlTplStdVar->cInhalt;
+                        $nlTplContent->cInhalt = $tplVar->cInhalt;
                         if (isset($post['cLinkURL']) && \mb_strlen($post['cLinkURL']) > 0) {
                             $nlTplContent->cLinkURL = $post['cLinkURL'];
                         }
@@ -533,7 +533,7 @@ final class Admin
                 ? $dt->format('Y-m-d H:i:s')
                 : $now->format('Y-m-d H:i:s');
             if (isset($post['kNewsletterVorlage']) && (int)$post['kNewsletterVorlage'] > 0) {
-                $revision = new Revision(Shop::Container()->getDB());
+                $revision = new Revision($this->db);
                 $revision->addRevision('newsletter', $templateID, true);
                 $upd                = new stdClass();
                 $upd->cName         = $tpl->cName;
@@ -760,7 +760,7 @@ final class Admin
             (new Optin(OptinNewsletter::class))
                 ->bulkDeleteOptins($recipients, 'cOptCode');
         } catch (EmptyResultSetException $e) {
-            // suppress exception, because a optin implementation class is not needed here
+            // suppress exception, because an optin implementation class is not needed here
         }
 
         return true;
@@ -772,7 +772,7 @@ final class Admin
      */
     public function getSubscriberCount($searchSQL): int
     {
-        return (int)Shop::Container()->getDB()->query(
+        return (int)$this->db->query(
             'SELECT COUNT(*) AS cnt
                 FROM tnewsletterempfaenger
                 WHERE kSprache = ' . (int)$_SESSION['kSprache'] . $searchSQL->cWHERE,
@@ -815,5 +815,25 @@ final class Admin
         }
 
         return $result;
+    }
+
+    /**
+     * @return void
+     */
+    public function setNewsletterCheckboxStatus(): void
+    {
+        $active = $_POST['newsletter_active'] === 'Y' ? 1 : 0;
+
+        $this->db->queryPrepared(
+            'UPDATE tcheckbox
+                LEFT JOIN tcheckboxfunktion USING(kCheckBoxFunktion)
+                SET nAktiv = :active
+                  WHERE tcheckboxfunktion.cID = :newsletterID',
+            [
+                'active'       => $active,
+                'newsletterID' => 'jtl_newsletter'
+            ],
+            ReturnType::DEFAULT
+        );
     }
 }

@@ -5,6 +5,7 @@ namespace JTL\Customer;
 use JTL\DB\ReturnType;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
+use stdClass;
 
 /**
  * Class CustomerAttribute
@@ -120,7 +121,7 @@ class CustomerAttribute
     }
 
     /**
-     * @param int $id
+     * @param int|null $id
      */
     public function setID(?int $id): void
     {
@@ -136,7 +137,7 @@ class CustomerAttribute
     }
 
     /**
-     * @param int $customerID
+     * @param int|null $customerID
      */
     public function setCustomerID(?int $customerID): void
     {
@@ -282,7 +283,7 @@ class CustomerAttribute
      */
     public function getRecord(): object
     {
-        $result = new \stdClass();
+        $result = new stdClass();
 
         foreach (self::$mapping as $item => $mapped) {
             $method        = 'get' . $mapped;

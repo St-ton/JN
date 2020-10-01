@@ -7,6 +7,7 @@ use JTL\Boxes\Items\AbstractBox;
 use JTL\Filter\Pagination\Info;
 use JTL\Helpers\Text;
 use JTL\MagicCompatibilityTrait;
+use stdClass;
 use function Functional\every;
 use function Functional\filter;
 use function Functional\invoke;
@@ -50,7 +51,7 @@ class SearchResults implements SearchResultsInterface
     private $offsetEnd = 0;
 
     /**
-     * @var \stdClass
+     * @var stdClass
      * @former Seitenzahlen
      */
     private $pages;
@@ -200,9 +201,9 @@ class SearchResults implements SearchResultsInterface
     /**
      * @inheritdoc
      */
-    public function getProductsCompat(): \stdClass
+    public function getProductsCompat(): stdClass
     {
-        $compat              = new \stdClass();
+        $compat              = new stdClass();
         $compat->elemente    = $this->getProducts();
         $compat->productKeys = $this->getProductKeys();
 
@@ -702,6 +703,9 @@ class SearchResults implements SearchResultsInterface
         $currentCategory = null,
         $selectionWizard = false
     ): SearchResultsInterface {
+        if ($productFilter->isExtendedJTLSearch()) {
+            return $this;
+        }
         // @todo: make option
         $hideActiveOnly              = true;
         $manufacturerOptions         = $productFilter->getManufacturerFilter()->getOptions();
@@ -709,7 +713,7 @@ class SearchResults implements SearchResultsInterface
         $categoryOptions             = $productFilter->getCategoryFilter()->getOptions();
         $priceRangeOptions           = $productFilter->getPriceRangeFilter()->getOptions($this->getProductCount());
         $searchSpecialFilters        = $productFilter->getSearchSpecialFilter()->getOptions();
-        $availabilityOptions         = $productFilter->getAvailabilitylFilter()->getOptions();
+        $availabilityOptions         = $productFilter->getAvailabilityFilter()->getOptions();
         $characteristicFilterOptions = $productFilter->getCharacteristicFilterCollection()->getOptions([
             'oAktuelleKategorie' => $currentCategory,
             'bForce'             => $selectionWizard === true
@@ -795,7 +799,6 @@ class SearchResults implements SearchResultsInterface
             $productFilter->getCharacteristicFilterCollection()->hide();
         } elseif ($hideActiveOnly === true) {
             foreach ($characteristicFilterOptions as $af) {
-                /** @var Option $af */
                 $options = $af->getOptions();
                 if (\is_array($options)
                     && $af->getVisibility() !== Visibility::SHOW_NEVER

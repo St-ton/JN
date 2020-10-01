@@ -1,13 +1,15 @@
 <?php declare(strict_types=1);
 
 use JTL\Backend\AdminAccountManager;
-use JTL\Helpers\Form;
-use JTL\Helpers\Text;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ACCOUNT_VIEW', true, true);
 
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-$adminAccountManager = new AdminAccountManager($smarty, Shop::Container()->getDB());
+$adminAccountManager = new AdminAccountManager(
+    $smarty,
+    Shop::Container()->getDB(),
+    Shop::Container()->getAlertService()
+);
 $adminAccountManager->finalize($adminAccountManager->getNextAction());

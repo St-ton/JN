@@ -98,11 +98,11 @@
                                             {/if}
                                         {/block}
                                         {block name='productdetails-details-info-category-wrapper'}
-                                            {if $Einstellungen.artikeldetails.artikeldetails_kategorie_anzeigen === 'Y'}
+                                            {assign var=cidx value=($Brotnavi|@count)-2}
+                                            {if $Einstellungen.artikeldetails.artikeldetails_kategorie_anzeigen === 'Y' && isset($Brotnavi[$cidx])}
                                                 {block name='productdetails-details-info-category'}
                                                     <li class="product-category word-break">
                                                         <span class="font-weight-bold">{lang key='category'}: </span>
-                                                        {assign var=cidx value=($Brotnavi|@count)-2}
                                                         <a href="{$Brotnavi[$cidx]->getURLFull()}" itemprop="category">{$Brotnavi[$cidx]->getName()}</a>
                                                     </li>
                                                 {/block}
@@ -113,7 +113,14 @@
                                                 {block name='productdetails-details-product-info-manufacturer'}
                                                     <li itemprop="brand" itemscope="true" itemtype="http://schema.org/Organization">
                                                         <span class="font-weight-bold">{lang key='manufacturers'}:</span>
-                                                        <a href="{$Artikel->cHerstellerSeo}"{if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B'} data-toggle="tooltip" data-placement="left" title="{$Artikel->cHersteller}"{/if} itemprop="url">
+                                                        <a class="text-decoration-none"
+                                                           href="{if !empty($Artikel->cHerstellerHomepage)}{$Artikel->cHerstellerHomepage}{else}{$Artikel->cHerstellerSeo}{/if}"
+                                                            {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B'}
+                                                                data-toggle="tooltip"
+                                                                data-placement="left"
+                                                                title="{$Artikel->cHersteller}"
+                                                            {/if}
+                                                           itemprop="url">
                                                             {if ($Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B'
                                                                 || $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'BT')
                                                                 && !empty($Artikel->cHerstellerBildURLKlein)}
@@ -121,12 +128,12 @@
                                                                     webp=true
                                                                     src=$Artikel->cHerstellerBildURLKlein
                                                                     alt=$Artikel->cHersteller
-                                                                    width="60px"
+                                                                    width="35px"
                                                                 }
                                                                 <meta itemprop="image" content="{$Artikel->cHerstellerBildURLKlein}">
                                                             {/if}
                                                             {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'B'}
-                                                                <span itemprop="name">{$Artikel->cHersteller}</span>
+                                                                <span itemprop="name" class="text-decoration-underline">{$Artikel->cHersteller}</span>
                                                             {/if}
                                                         </a>
                                                     </li>
@@ -159,7 +166,7 @@
                             {if $Einstellungen.artikeldetails.artikeldetails_kurzbeschreibung_anzeigen === 'Y' && $Artikel->cKurzBeschreibung}
                                 {block name='productdetails-details-info-description'}
                                     {opcMountPoint id='opc_before_short_desc'}
-                                    <div class="shortdesc mb-2 d-none d-md-block" itemprop="description">
+                                    <div class="shortdesc mb-3" itemprop="description">
                                         {$Artikel->cKurzBeschreibung}
                                     </div>
                                 {/block}

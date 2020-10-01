@@ -11,7 +11,6 @@ use JTL\Plugin\Admin\Installation\MigrationManager as PluginMigrationManager;
 use JTL\Plugin\PluginLoader;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
-use JTL\Template;
 use JTLShop\SemVer\Version;
 use JTLSmarty;
 use SmartyException;
@@ -44,30 +43,15 @@ class UpdateIO
      */
     public function update()
     {
-        $template = Template::getInstance();
-        $updater  = new Updater($this->db);
-
+        $updater = new Updater($this->db);
         try {
-            if ((int)$template->version === 5) {
-                $templateVersion = '5.0.0';
-            } elseif ((int)$template->version === 4) {
-                $templateVersion = '4.0.0';
-            } else {
-                $templateVersion = $template->version;
-            }
-            if ($template->xmlData === false
-                || (!Version::parse($template->xmlData->cVersion)->equals($templateVersion)
-                    && $template->setTemplate($template->xmlData->cName, $template->xmlData->eTyp))
-            ) {
-                unset($_SESSION['cTemplate'], $_SESSION['template']);
-            }
             $dbVersion       = $updater->getCurrentDatabaseVersion();
             $updateResult    = $updater->update();
             $availableUpdate = $updater->hasPendingUpdates();
             if ($updateResult instanceof IMigration) {
                 $updateResult = \sprintf('Migration: %s', $updateResult->getDescription());
             } elseif ($updateResult instanceof Version) {
-                $updateResult = \sprintf('Version: %d.%02d', $updateResult->getMajor(), $updateResult->getMinor());
+                $updateResult = \sprintf('Version: %s', $updateResult->__toString());
             } else {
                 $updateResult = \sprintf('Version: %.2f', $updateResult / 100);
             }
@@ -121,7 +105,7 @@ class UpdateIO
         if (!\preg_match('/^([0-9_a-z]+).sql.gz$/', $file, $m)) {
             return new IOError('Wrong download request');
         }
-        $filePath = PFAD_ROOT . PFAD_EXPORT_BACKUP . $file;
+        $filePath = PFAD_ROOT . \PFAD_EXPORT_BACKUP . $file;
 
         return \file_exists($filePath)
             ? new IOFile($filePath, 'application/x-gzip')
@@ -138,7 +122,7 @@ class UpdateIO
     {
         $smarty                 = JTLSmarty::getInstance(false, ContextType::BACKEND);
         $updater                = new Updater($this->db);
-        $template               = Template::getInstance();
+        $template               = Shop::Container()->getTemplateService()->getActiveTemplate();
         $manager                = null;
         $currentFileVersion     = $updater->getCurrentFileVersion();
         $currentDatabaseVersion = $updater->getCurrentDatabaseVersion();
@@ -151,7 +135,7 @@ class UpdateIO
                 $plugin           = $loader->init($pluginID);
                 $manager          = new PluginMigrationManager(
                     $this->db,
-                    $plugin->getPaths()->getBasePath() . PFAD_PLUGIN_MIGRATIONS,
+                    $plugin->getPaths()->getBasePath() . \PFAD_PLUGIN_MIGRATIONS,
                     $plugin->getPluginID(),
                     $plugin->getMeta()->getSemVer()
                 );
@@ -171,8 +155,8 @@ class UpdateIO
                 ->equals(Version::parse($currentFileVersion)))
             ->assign('version', $version)
             ->assign('updateError', $updateError)
-            ->assign('currentTemplateFileVersion', $template->xmlData->cVersion ?? '1.0.0')
-            ->assign('currentTemplateDatabaseVersion', $template->version);
+            ->assign('currentTemplateFileVersion', $template->getFileVersion() ?? '1.0.0')
+            ->assign('currentTemplateDatabaseVersion', $template->getVersion());
 
         return [
             'tpl'  => $smarty->fetch('tpl_inc/dbupdater_status.tpl'),
@@ -191,13 +175,16 @@ class UpdateIO
     {
         try {
             $updater    = new Updater($this->db);
+            if (!$updater->hasMinUpdateVersion()) {
+                throw new Exception($updater->getMinUpdateVersionError());
+            }
             $hasAlready = $updater->hasPendingUpdates();
             if ($pluginID !== null && \is_numeric($pluginID)) {
                 $loader  = new PluginLoader($this->db, Shop::Container()->getCache());
                 $plugin  = $loader->init($pluginID);
                 $manager = new PluginMigrationManager(
                     $this->db,
-                    $plugin->getPaths()->getBasePath() . PFAD_PLUGIN_MIGRATIONS,
+                    $plugin->getPaths()->getBasePath() . \PFAD_PLUGIN_MIGRATIONS,
                     $plugin->getPluginID(),
                     $plugin->getMeta()->getSemVer()
                 );

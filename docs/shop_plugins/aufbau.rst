@@ -448,7 +448,7 @@ Falls Sie *Custom Links* in der ``info.xml`` angegeben haben, muss in jedem ``ad
 
     <Adminmenu>
         <Customlink sort="1">
-            <Name>Statistik</name>
+            <Name>Statistik</Name>
             <Filename>stats.php</Filename>
         </Customlink>
     </Adminmenu>
@@ -640,7 +640,7 @@ Die hier verwendete ``info.xml`` konfiguriert nur den Rumpf eines Plugins:
         <URL>https://www.jtl-software.de</URL>
         <PluginID>[PluginID]</PluginID>
         <XMLVersion>100</XMLVersion>
-        <ShopVersion>500</ShopVersion>
+        <MinShopVersion>5.0.0</MinShopVersion>
         <CreateDate>2019-12-03</CreateDate>
         <Version>1.0.0</Version>
         <Install>

@@ -26,12 +26,6 @@ msgstr "Could not edit template or settings. If the template is a child template
 msgid "errorFileUpload"
 msgstr "Could not upload file. Please check the write access of folder \"%s\"."
 
-msgid "successLayoutReset"
-msgstr "Layout reset successfully."
-
-msgid "errorLayoutReset"
-msgstr "Could not reset layout. File %s does not exist or does not have sufficient write access."
-
 msgid "errorStyleFilePermission"
 msgstr "Could not write style file. File %s does not exist or does not have sufficient write access."
 
@@ -64,3 +58,39 @@ msgstr "Missing parent template"
 
 msgid "errorOverlayWritePermissions"
 msgstr "Could not create item badges. Please check the write access of the folder \"%s\" and re-enable the template."
+
+msgid "successTemplateUpload"
+msgstr "Template uploaded successfully."
+
+msgid "uploadTemplateHeading"
+msgstr "Upload template"
+
+msgid "errorTemplateUpload"
+msgstr "Could not upload template. Please contact the Support team."
+
+msgid "errorParentNotFound"
+msgstr "Parent template not found."
+
+msgid "errorShopVersionNotFound"
+msgstr "XML node \"ShopVersion\"/\"MinShopVersion\" not found."
+
+msgid "errorXmlNotFound"
+msgstr "template.xml not found."
+
+msgid "errorXmlParse"
+msgstr "XML could not be parsed."
+
+msgid "errorNameNotFound"
+msgstr "XML node \"Name\" not found."
+
+msgid "errorInvalidVersion"
+msgstr "Not a valid SemVer."
+
+msgid "errorUnknown"
+msgstr "Unknwon error."
+
+msgid "dangerMinShopVersion"
+msgstr "Please note that the template requires a newer version of JTL-Shop. This might lead to issues."
+
+msgid "dangerMaxShopVersion"
+msgstr "Please note that the template requires an older version of JTL-Shop. This might lead to issues."

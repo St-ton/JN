@@ -4,18 +4,21 @@ namespace JTL\Cart;
 
 use JTL\Alert\Alert;
 use JTL\Campaign;
-use JTL\Catalog\ComparisonList;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\EigenschaftWert;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\Product\VariationValue;
 use JTL\Catalog\Wishlist\Wishlist;
+use JTL\Checkout\Bestellung;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Rechnungsadresse;
 use JTL\Customer\Customer;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
+use JTL\Exceptions\CircularReferenceException;
+use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Extensions\Config\Configurator;
 use JTL\Extensions\Config\Item;
 use JTL\Extensions\Upload\Upload;
@@ -43,36 +46,78 @@ class CartHelper
     public const GROSS = 1;
 
     /**
+     * @return stdClass
+     */
+    protected function initCartInfo(): stdClass
+    {
+        return (object)[
+            'type'      => $this->getCustomerGroup()->isMerchant() ? self::NET : self::GROSS,
+            'currency'  => $this->getCurrency(),
+            'article'   => [0, 0],
+            'shipping'  => [0, 0],
+            'discount'  => [0, 0],
+            'surcharge' => [0, 0],
+            'total'     => [0, 0],
+            'items'     => [],
+        ];
+    }
+
+    /**
+     * @param stdClass $cartInfo
+     */
+    protected function calculateCredit(stdClass $cartInfo): void
+    {
+        if (isset($_SESSION['Bestellung'], $_SESSION['Bestellung']->GuthabenNutzen)
+            && $_SESSION['Bestellung']->GuthabenNutzen === 1
+        ) {
+            $amountGross = $_SESSION['Bestellung']->fGuthabenGenutzt * -1;
+
+            $cartInfo->discount[self::NET]   += $amountGross;
+            $cartInfo->discount[self::GROSS] += $amountGross;
+        }
+        // positive discount
+        $cartInfo->discount[self::NET]   *= -1;
+        $cartInfo->discount[self::GROSS] *= -1;
+    }
+
+    /**
+     * @param stdClass $cartInfo
+     */
+    protected function calculateTotal(stdClass $cartInfo): void
+    {
+        $cartInfo->total[self::NET]   = $cartInfo->article[self::NET] +
+            $cartInfo->shipping[self::NET] -
+            $cartInfo->discount[self::NET] +
+            $cartInfo->surcharge[self::NET];
+        $cartInfo->total[self::GROSS] = $cartInfo->article[self::GROSS] +
+            $cartInfo->shipping[self::GROSS] -
+            $cartInfo->discount[self::GROSS] +
+            $cartInfo->surcharge[self::GROSS];
+    }
+
+    /**
      * @param int $decimals
      * @return stdClass
      */
     public function getTotal(int $decimals = 0): stdClass
     {
-        $info            = new stdClass();
-        $info->type      = Frontend::getCustomerGroup()->isMerchant() ? self::NET : self::GROSS;
-        $info->currency  = $this->getCurrency();
-        $info->article   = [0, 0];
-        $info->shipping  = [0, 0];
-        $info->discount  = [0, 0];
-        $info->surcharge = [0, 0];
-        $info->total     = [0, 0];
-        $info->items     = [];
+        $info = $this->initCartInfo();
 
-        foreach (Frontend::getCart()->PositionenArr as $item) {
+        foreach ($this->getPositions() as $item) {
             $amountItem = $item->fPreisEinzelNetto;
             if ((!isset($item->Artikel->kVaterArtikel) || (int)$item->Artikel->kVaterArtikel === 0)
                 && GeneralObject::isCountable('WarenkorbPosEigenschaftArr', $item)
             ) {
                 foreach ($item->WarenkorbPosEigenschaftArr as $attr) {
-                    if ($attr->fAufpreis != 0) {
+                    if ((float)$attr->fAufpreis !== 0.0) {
                         $amountItem += $attr->fAufpreis;
                     }
                 }
             }
             $amount      = $amountItem * $info->currency->getConversionFactor();
-            $amountGross = $amount * ((100 + Tax::getSalesTax($item->kSteuerklasse)) / 100);
+            $amountGross = Tax::getGross($amount, Tax::getSalesTax((int)$item->kSteuerklasse));
 
-            switch ($item->nPosTyp) {
+            switch ((int)$item->nPosTyp) {
                 case \C_WARENKORBPOS_TYP_ARTIKEL:
                 case \C_WARENKORBPOS_TYP_GRATISGESCHENK:
                     $data = (object)[
@@ -94,9 +139,9 @@ class CartHelper
                         self::GROSS => $amountGross
                     ];
 
-                    if ((int)$item->nAnzahl != $item->nAnzahl) {
-                        $data->amount[self::NET]   *= $item->nAnzahl;
-                        $data->amount[self::GROSS] *= $item->nAnzahl;
+                    if ($item->Artikel->cTeilbar === 'Y' && (int)$item->nAnzahl !== $item->nAnzahl) {
+                        $data->amount[self::NET]   *= (float)$item->nAnzahl;
+                        $data->amount[self::GROSS] *= (float)$item->nAnzahl;
 
                         $data->name = \sprintf(
                             '%g %s %s',
@@ -149,29 +194,8 @@ class CartHelper
             }
         }
 
-        if (isset($_SESSION['Bestellung'], $_SESSION['Bestellung']->GuthabenNutzen)
-            && $_SESSION['Bestellung']->GuthabenNutzen === 1
-        ) {
-            $amountGross = $_SESSION['Bestellung']->fGuthabenGenutzt * -1;
-            $amount      = $amountGross;
-
-            $info->discount[self::NET]   += $amount;
-            $info->discount[self::GROSS] += $amountGross;
-        }
-
-        // positive discount
-        $info->discount[self::NET]   *= -1;
-        $info->discount[self::GROSS] *= -1;
-
-        // total
-        $info->total[self::NET]   = $info->article[self::NET] +
-            $info->shipping[self::NET] -
-            $info->discount[self::NET] +
-            $info->surcharge[self::NET];
-        $info->total[self::GROSS] = $info->article[self::GROSS] +
-            $info->shipping[self::GROSS] -
-            $info->discount[self::GROSS] +
-            $info->surcharge[self::GROSS];
+        $this->calculateCredit($info);
+        $this->calculateTotal($info);
 
         $formatter = static function ($prop) use ($decimals) {
             return [
@@ -187,7 +211,7 @@ class CartHelper
             $info->surcharge = $formatter($info->surcharge);
             $info->total     = $formatter($info->total);
 
-            foreach ($info->items as &$item) {
+            foreach ($info->items as $item) {
                 $item->amount = $formatter($item->amount);
             }
         }
@@ -196,7 +220,7 @@ class CartHelper
     }
 
     /**
-     * @return Cart|null
+     * @return Cart|Bestellung|null
      */
     public function getObject()
     {
@@ -220,11 +244,27 @@ class CartHelper
     }
 
     /**
+     * @return CartItem[]
+     */
+    public function getPositions(): array
+    {
+        return Frontend::getCart()->PositionenArr;
+    }
+
+    /**
      * @return Customer
      */
     public function getCustomer(): ?Customer
     {
-        return $_SESSION['Kunde'];
+        return Frontend::getCustomer();
+    }
+
+    /**
+     * @return CustomerGroup
+     */
+    public function getCustomerGroup(): CustomerGroup
+    {
+        return Frontend::getCustomerGroup();
     }
 
     /**
@@ -244,11 +284,11 @@ class CartHelper
     }
 
     /**
-     * @return null
+     * @return string
      */
-    public function getInvoiceID()
+    public function getInvoiceID(): string
     {
-        return null;
+        return '';
     }
 
     /**
@@ -307,6 +347,8 @@ class CartHelper
     /**
      * @former checkeWarenkorbEingang()
      * @return bool
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
      */
     public static function checkAdditions(): bool
     {
@@ -344,9 +386,9 @@ class CartHelper
             return self::checkCompareList($productID, (int)$conf['vergleichsliste']['vergleichsliste_anzahl']);
         }
         if ($productID > 0
-            && Request::postInt('wke') === 1
             && !isset($_POST['Vergleichsliste'])
             && !isset($_POST['Wunschliste'])
+            && Request::postInt('wke') === 1
         ) { //warenkorbeingang?
             return self::checkCart($productID, $fAnzahl);
         }
@@ -355,11 +397,13 @@ class CartHelper
     }
 
     /**
-     * @param int       $productID
+     * @param int $productID
      * @param int|float $count
      * @return bool
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
      */
-    private static function checkCart(int $productID, $count)
+    private static function checkCart(int $productID, $count): bool
     {
         // VariationsBox ist vorhanden => Prüfen ob Anzahl gesetzt wurde
         if (Request::postInt('variBox') === 1) {
@@ -453,8 +497,8 @@ class CartHelper
                         $configItem->oEigenschaftwerte_arr =
                             Product::getVarCombiAttributeValues($tmpProduct->kArtikel, false);
                     }
-                    if ($tmpProduct->cTeilbar !== 'Y' && (int)$count != $count) {
-                        $count = (int)$count;
+                    if ($tmpProduct->cTeilbar !== 'Y' && (int)$count !== $count) {
+                        $count = \max((int)$count, 1);
                     }
                     $tmpProduct->isKonfigItem = true;
                     $redirectParam            = self::addToCartCheck(
@@ -541,6 +585,7 @@ class CartHelper
 
         $itemList = [];
         foreach ($configGroups as $item) {
+            /** @noinspection SlowArrayOperationsInLoopInspection */
             $itemList = \array_merge($itemList, $item);
         }
         Shop::Smarty()->assign('fAnzahl', $count)
@@ -604,7 +649,6 @@ class CartHelper
                 $variations = Product::getSelectedPropertiesForVarCombiArticle($productID, 1);
             }
             $compareList = Frontend::getCompareList();
-            /** @var ComparisonList $compareList */
             if ($compareList->productExists($productID)) {
                 $alertHelper->addAlert(
                     Alert::TYPE_ERROR,
@@ -687,6 +731,7 @@ class CartHelper
                     } else {
                         $attributes = Product::getSelectedPropertiesForArticle($productID);
                     }
+                    /** @noinspection NotOptimalIfConditionsInspection */
                     if ($productID > 0) {
                         if (empty($_SESSION['Wunschliste']->kWunschliste)) {
                             $_SESSION['Wunschliste'] = new Wishlist();
@@ -732,11 +777,13 @@ class CartHelper
 
     /**
      * @param Artikel|object $product
-     * @param int            $qty
-     * @param array          $attributes
-     * @param int            $accuracy
-     * @param string|null    $token
+     * @param int $qty
+     * @param array $attributes
+     * @param int $accuracy
+     * @param string|null $token
      * @return array
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
      * @former pruefeFuegeEinInWarenkorb()
      */
     public static function addToCartCheck($product, $qty, $attributes, int $accuracy = 2, ?string $token = null): array
@@ -748,7 +795,7 @@ class CartHelper
         if ($product->fAbnahmeintervall > 0 && !self::isMultiple($qty, (float)$product->fAbnahmeintervall)) {
             $redirectParam[] = \R_ARTIKELABNAHMEINTERVALL;
         }
-        if ((int)$qty != $qty && $product->cTeilbar !== 'Y') {
+        if ((int)$qty !== $qty && $product->cTeilbar !== 'Y') {
             $qty = \max((int)$qty, 1);
         }
         if ($product->fMindestbestellmenge > $qty + $cart->gibAnzahlEinesArtikels($productID)) {
@@ -792,21 +839,23 @@ class CartHelper
         }
         // Der Artikel ist unverkäuflich
         if (isset($product->FunktionsAttribute[\FKT_ATTRIBUT_UNVERKAEUFLICH])
-            && $product->FunktionsAttribute[\FKT_ATTRIBUT_UNVERKAEUFLICH] == 1
+            && (int)$product->FunktionsAttribute[\FKT_ATTRIBUT_UNVERKAEUFLICH] === 1
         ) {
             $redirectParam[] = \R_UNVERKAEUFLICH;
         }
         // Preis auf Anfrage
         // verhindert, dass Konfigitems mit Preis=0 aus der Artikelkonfiguration fallen
         // wenn 'Preis auf Anfrage' eingestellt ist
+        /** @noinspection MissingIssetImplementationInspection */
         if ($product->bHasKonfig === false
             && !empty($product->isKonfigItem)
             && $product->inWarenkorbLegbar === \INWKNICHTLEGBAR_PREISAUFANFRAGE
         ) {
             $product->inWarenkorbLegbar = 1;
         }
+        /** @noinspection MissingIssetImplementationInspection */
         if (($product->bHasKonfig === false && empty($product->isKonfigItem))
-            && (!isset($product->Preise->fVKNetto) || $product->Preise->fVKNetto == 0)
+            && (!isset($product->Preise->fVKNetto) || (float)$product->Preise->fVKNetto === 0)
             && $conf['global']['global_preis0'] === 'N'
         ) {
             $redirectParam[] = \R_AUFANFRAGE;
@@ -822,16 +871,17 @@ class CartHelper
             $exists = false;
             foreach ($attributes as $oEigenschaftwerte) {
                 $oEigenschaftwerte->kEigenschaft = (int)$oEigenschaftwerte->kEigenschaft;
-                if ($var->cTyp === 'PFLICHT-FREIFELD' && $oEigenschaftwerte->kEigenschaft === $var->kEigenschaft) {
-                    if (\mb_strlen($oEigenschaftwerte->cFreifeldWert) > 0) {
+                if ($oEigenschaftwerte->kEigenschaft === $var->kEigenschaft) {
+                    continue;
+                }
+                if ($var->cTyp === 'PFLICHT-FREIFELD') {
+                    if ($oEigenschaftwerte->cFreifeldWert !== '') {
                         $exists = true;
                     } else {
                         $redirectParam[] = \R_VARWAEHLEN;
                         break;
                     }
-                } elseif ($var->cTyp !== 'PFLICHT-FREIFELD'
-                    && $oEigenschaftwerte->kEigenschaft === $var->kEigenschaft
-                ) {
+                } else {
                     $exists = true;
                     //schau, ob auch genug davon auf Lager
                     $attrValue = new EigenschaftWert($oEigenschaftwerte->kEigenschaftWert);
@@ -845,7 +895,7 @@ class CartHelper
                         && $product->cLagerVariation === 'Y'
                         && $product->cLagerKleinerNull !== 'Y'
                     ) {
-                        if ($attrValue->fPackeinheit == 0) {
+                        if ((float)$attrValue->fPackeinheit === 0) {
                             $attrValue->fPackeinheit = 1;
                         }
                         if ($attrValue->fPackeinheit *
@@ -898,8 +948,8 @@ class CartHelper
     }
 
     /**
-     * @param float    $total
-     * @param Currency $currency
+     * @param float         $total
+     * @param Currency|null $currency
      * @return float
      * @since 5.0.0
      */
@@ -1202,9 +1252,11 @@ class CartHelper
 
     /**
      * @param array $variBoxCounts
-     * @param int   $productID
-     * @param bool  $isParent
-     * @param bool  $isVariMatrix
+     * @param int $productID
+     * @param bool $isParent
+     * @param bool $isVariMatrix
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
      * @former fuegeVariBoxInWK()
      * @since 5.0.0
      */
@@ -1332,16 +1384,18 @@ class CartHelper
     }
 
     /**
-     * @param int           $productID
-     * @param int           $qty
-     * @param array         $attrValues
-     * @param int           $redirect
-     * @param string        $unique
-     * @param int           $configItemID
+     * @param int $productID
+     * @param int $qty
+     * @param array $attrValues
+     * @param int $redirect
+     * @param string $unique
+     * @param int $configItemID
      * @param stdClass|null $options
-     * @param bool          $setzePositionsPreise
-     * @param string        $responsibility
+     * @param bool $setzePositionsPreise
+     * @param string $responsibility
      * @return bool
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
      * @former fuegeEinInWarenkorb()
      * @since 5.0.0
      */
@@ -1356,13 +1410,13 @@ class CartHelper
         bool $setzePositionsPreise = true,
         string $responsibility = 'core'
     ): bool {
-        if (!($qty > 0 && ($productID > 0 || $productID === 0 && !empty($configItemID) && !empty($unique)))) {
+        if (!($qty > 0 && ($productID > 0 || ($productID === 0 && !empty($configItemID) && !empty($unique))))) {
             return false;
         }
         $product = new Artikel();
         $options = $options ?? Artikel::getDefaultOptions();
         $product->fuelleArtikel($productID, $options);
-        if ((int)$qty != $qty && $product->cTeilbar !== 'Y') {
+        if ((int)$qty !== $qty && $product->cTeilbar !== 'Y') {
             $qty = \max((int)$qty, 1);
         }
         $redirectParam = self::addToCartCheck($product, $qty, $attrValues);
@@ -1481,6 +1535,7 @@ class CartHelper
                 continue;
             }
             $itemCount = \count($cart->PositionenArr);
+            /** @noinspection ForeachInvariantsInspection */
             for ($i = 0; $i < $itemCount; $i++) {
                 if (isset($cart->PositionenArr[$i]->cUnique) && $cart->PositionenArr[$i]->cUnique === $unique) {
                     unset($cart->PositionenArr[$i]);
@@ -1564,8 +1619,9 @@ class CartHelper
         $freeGiftID  = 0;
         $cartNotices = $_SESSION['Warenkorbhinweise'] ?? [];
         foreach ($cart->PositionenArr as $i => $item) {
+            $item->kArtikel = (int)$item->kArtikel;
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
-                if ((int)$item->kArtikel === 0) {
+                if ($item->kArtikel === 0) {
                     continue;
                 }
                 //stückzahlen verändert?
@@ -1574,8 +1630,8 @@ class CartHelper
                     $valid   = true;
                     $product->fuelleArtikel($item->kArtikel, Artikel::getDefaultOptions());
                     $quantity = (float)\str_replace(',', '.', $_POST['anzahl'][$i]);
-                    if ($product->cTeilbar !== 'Y' && \ceil($quantity) !== $quantity) {
-                        $quantity = \ceil($quantity);
+                    if ($product->cTeilbar !== 'Y' && (int)$quantity !== $quantity) {
+                        $quantity = \max((int)$quantity, 1);
                     }
                     if ($product->fAbnahmeintervall > 0 && !self::isMultiple($quantity, $product->fAbnahmeintervall)) {
                         $valid         = false;
@@ -1687,7 +1743,6 @@ class CartHelper
             }
         }
         $_SESSION['Warenkorbhinweise'] = $cartNotices;
-        $freeGiftID                    = (int)$freeGiftID;
         //positionen mit nAnzahl = 0 müssen gelöscht werden
         $cart->loescheNullPositionen();
         if (!$cart->posTypEnthalten(\C_WARENKORBPOS_TYP_ARTIKEL)) {
@@ -1699,7 +1754,7 @@ class CartHelper
             //existiert ein proz. Kupon, der auf die neu eingefügte Pos greift?
             if (isset($_SESSION['Kupon'])
                 && $_SESSION['Kupon']->cWertTyp === 'prozent'
-                && $_SESSION['Kupon']->nGanzenWKRabattieren == 0
+                && (int)$_SESSION['Kupon']->nGanzenWKRabattieren === 0
                 && $cart->gibGesamtsummeWarenExt(
                     [\C_WARENKORBPOS_TYP_ARTIKEL],
                     true
@@ -1708,6 +1763,7 @@ class CartHelper
                 $tmpCoupon = $_SESSION['Kupon'];
             }
             self::deleteAllSpecialItems();
+            /** @noinspection MissingIssetImplementationInspection */
             if (isset($tmpCoupon->kKupon) && $tmpCoupon->kKupon > 0) {
                 $_SESSION['Kupon'] = $tmpCoupon;
                 foreach ($cart->PositionenArr as $i => $oWKPosition) {
@@ -1746,13 +1802,15 @@ class CartHelper
 
     /**
      * @return string
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
      * @former checkeSchnellkauf()
      * @since 5.0.0
      */
     public static function checkQuickBuy(): string
     {
         $msg = '';
-        if (Request::postInt('schnellkauf') <= 0 || empty($_POST['ean'])) {
+        if (empty($_POST['ean']) || Request::postInt('schnellkauf') <= 0) {
             return $msg;
         }
         $msg = Shop::Lang()->get('eanNotExist') . ' ' .
@@ -1825,6 +1883,8 @@ class CartHelper
 
     /**
      * @return stdClass
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
      * @former gibXSelling()
      * @since 5.0.0
      */
@@ -1850,11 +1910,10 @@ class CartHelper
         if (\count($productIDs) > 0) {
             $productIDs = \implode(', ', $productIDs);
             $xsellData  = Shop::Container()->getDB()->query(
-                'SELECT *
+                'SELECT DISTINCT kXSellArtikel
                     FROM txsellkauf
                     WHERE kArtikel IN (' . $productIDs . ')
                         AND kXSellArtikel NOT IN (' . $productIDs .')
-                    GROUP BY kXSellArtikel
                     ORDER BY nAnzahl DESC
                     LIMIT ' . (int)$conf['kaufabwicklung']['warenkorb_xselling_anzahl'],
                 ReturnType::ARRAY_OF_OBJECTS
@@ -1880,6 +1939,8 @@ class CartHelper
     /**
      * @param array $conf
      * @return array
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
      * @former gibGratisGeschenke()
      * @since 5.0.0
      */

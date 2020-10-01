@@ -446,15 +446,6 @@ msgstr "Yes"
 msgid "artikeluebersicht_wunschzettel_anzeigen_value(N)"
 msgstr "No"
 
-msgid "artikeluebersicht_anzahl_pfeile_value(Y)"
-msgstr "Always"
-
-msgid "artikeluebersicht_anzahl_pfeile_value(I)"
-msgstr "If permissible order quantity exists"
-
-msgid "artikeluebersicht_anzahl_pfeile_value(N)"
-msgstr "Hide"
-
 msgid "artikeluebersicht_artikelintervall_anzeigen_value(Y)"
 msgstr "Yes"
 
@@ -610,15 +601,6 @@ msgstr "Yes"
 
 msgid "sie_sparen_x_anzeigen_value(0)"
 msgstr "No"
-
-msgid "artikeldetails_anzahl_pfeile_value(Y)"
-msgstr "Always"
-
-msgid "artikeldetails_anzahl_pfeile_value(I)"
-msgstr "If permissible order quantity exists"
-
-msgid "artikeldetails_anzahl_pfeile_value(N)"
-msgstr "Hide"
 
 msgid "artikeldetails_canonicalurl_varkombikind_value(Y)"
 msgstr "Yes"
@@ -1583,6 +1565,12 @@ msgstr "Yes"
 msgid "bewertung_artikel_gekauft_value(N)"
 msgstr "No"
 
+msgid "newsletter_active_value(N)"
+msgstr "No"
+
+msgid "newsletter_active_value(Y)"
+msgstr "Yes"
+
 msgid "newsletter_emailmethode_value(mail)"
 msgstr "PHP mail()"
 
@@ -1818,7 +1806,7 @@ msgid "kategorie_bild_anzeigen_value(B)"
 msgstr "Yes, as image"
 
 msgid "kategorie_bild_anzeigen_value(N)"
-msgstr "No category image, no category description"
+msgstr "No"
 
 msgid "kategorie_beschreibung_anzeigen_value(Y)"
 msgstr "Yes"
@@ -1898,18 +1886,6 @@ msgstr "Yes"
 msgid "news_kategorie_unternewsanzeigen_value(N)"
 msgstr "No"
 
-msgid "news_kategorie_boxanzeigen_value(Y)"
-msgstr "Yes"
-
-msgid "news_kategorie_boxanzeigen_value(N)"
-msgstr "No"
-
-msgid "news_sicherheitscode_value(Y)"
-msgstr "Yes"
-
-msgid "news_sicherheitscode_value(N)"
-msgstr "No"
-
 msgid "sitemap_seiten_anzeigen_value(Y)"
 msgstr "Yes"
 
@@ -1938,12 +1914,6 @@ msgid "sitemap_newskategorien_anzeigen_value(Y)"
 msgstr "Yes"
 
 msgid "sitemap_newskategorien_anzeigen_value(N)"
-msgstr "No"
-
-msgid "sitemap_weitereseiten_artikeluebersicht_value(Y)"
-msgstr "Yes"
-
-msgid "sitemap_weitereseiten_artikeluebersicht_value(N)"
 msgstr "No"
 
 msgid "sitemap_livesuche_anzeigen_value(Y)"
@@ -2410,3 +2380,33 @@ msgstr "Yes, in lists"
 
 msgid "gtin_display_value(always)"
 msgstr "Yes, on item detail page and in lists"
+
+msgid "consent_manager_active_value(N)"
+msgstr "No"
+
+msgid "consent_manager_active_value(Y)"
+msgstr "Yes"
+
+msgid "bewertung_sortierung_value(0)"
+msgstr "Date ascending"
+
+msgid "bewertung_sortierung_value(1)"
+msgstr "Date descending"
+
+msgid "bewertung_sortierung_value(2)"
+msgstr "Review ascending"
+
+msgid "bewertung_sortierung_value(3)"
+msgstr "Review descending"
+
+msgid "bewertung_sortierung_value(4)"
+msgstr "Helpful ascending"
+
+msgid "bewertung_sortierung_value(5)"
+msgstr "Helpful descending"
+
+msgid "direct_advertising_value(N)"
+msgstr "No"
+
+msgid "direct_advertising_value(Y)"
+msgstr "Yes"

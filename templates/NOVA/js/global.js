@@ -9,9 +9,7 @@ $('body').on('click', '.option li', function (e) {
 
 // prevent multiple form submit on client side
 $('.submit_once').closest('form').on('submit', function() {
-    $(this).on('submit', function() {
-        return false;
-    });
+    $(this).find('.submit_once').prop('disabled', 'true');
     return true;
 });
 
@@ -157,8 +155,12 @@ function loadContent(url)
             addValidationListener();
         }
 
+        let topbarHeight      = $('#header-top-bar').outerHeight() || 0,
+            wrapperHeight     = $('#jtl-nav-wrapper').outerHeight() || 0,
+            productListHeight = $('#product-list').offset().top || 0,
+            pageNavHeight     = $('.productlist-page-nav').outerHeight() || 0;
         $('html,body').animate({
-            scrollTop: $('.list-pageinfo').offset().top - $('#main-nav-wrapper').outerHeight() - 10
+            scrollTop: productListHeight - wrapperHeight - topbarHeight - pageNavHeight - 20
         }, 100);
     });
 }
@@ -262,20 +264,6 @@ function captcha_filled() {
 
 function isTouchCapable() {
     return 'ontouchstart' in window || (window.DocumentTouch && document instanceof window.DocumentTouch);
-}
-
-function addCopyToClipboardListener() {
-    var clipboard = new ClipboardJS('.btn.copyToClipboard');
-
-    clipboard.on('success', function(e) {
-        $(e.trigger).tooltip({title: 'copied'});
-        e.clearSelection();
-    });
-
-    clipboard.on('error', function(e) {
-        console.error('Action:', e.action);
-        console.error('Trigger:', e.trigger);
-    });
 }
 
 function initWow()
@@ -423,13 +411,14 @@ $(document).ready(function () {
             minLength: 0
         },
         {
+            limit:  50,
             name:   'cities',
             source: citySuggestion
         }
     );
 
     $('.btn-offcanvas').on('click', function() {
-        $('body').click();
+        $('body').trigger('click');
     });
 
     if ("ontouchstart" in document.documentElement) {
@@ -465,7 +454,7 @@ $(document).ready(function () {
     /*
      * Banner
      */
-    var bannerLink = $('.banner > a');
+    var bannerLink = $('.banner > a:not(.empty-popover)');
     bannerLink.popover({
         html:      true,
         placement: 'bottom',
@@ -542,11 +531,17 @@ $(document).ready(function () {
     $('.onchangeSubmit').on('change', function(){
         this.form.submit();
     });
+
+    $('#mobile-search-dropdown').on('click', function() {
+        setTimeout(function(){
+            $('#search-header-desktop').focus();
+        },100);
+    });
+
     categoryMenu();
     regionsToState();
     compatibility();
     addValidationListener();
-    addCopyToClipboardListener();
     initWow();
     setClickableRow();
 
@@ -559,11 +554,34 @@ $(document).ready(function () {
         }
         e.detail.width = parent.offsetWidth || e.detail.width;
     });
+
+    // init auto expand for textareas
+    $('textarea.auto-expand').on('input click', function (event) {
+        autoExpand(event.target);
+    });
 });
 
-function setClickableRow ()
+function setClickableRow()
 {
     $('.clickable-row').on('click', function() {
         window.location = $(this).data('href');
     });
+}
+
+function isMobileByBodyClass() {
+    return $('body').hasClass('is-mobile');
+}
+
+function autoExpand(field)
+{
+    field.style.height = 'inherit';
+
+    let computed = window.getComputedStyle(field),
+        height   = parseInt(computed.getPropertyValue('border-top-width'), 10)
+            + parseInt(computed.getPropertyValue('padding-top'), 10)
+            + field.scrollHeight
+            + parseInt(computed.getPropertyValue('padding-bottom'), 10)
+            + parseInt(computed.getPropertyValue('border-bottom-width'), 10);
+
+    field.style.height = height + 'px';
 }

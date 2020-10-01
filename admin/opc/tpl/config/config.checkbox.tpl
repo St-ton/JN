@@ -2,8 +2,15 @@
     <input type="hidden" value="0" name="{$propname}">
     <input type="checkbox" id="config-{$propname}" value="1" name="{$propname}"
            {if $propval == '1'}checked{/if} {if $required === true}required{/if}>
-    <label for="config-{$propname}">
+    <label for="config-{$propname}"
+            {if !empty($propdesc.desc)}
+                data-toggle="tooltip" title="{$propdesc.desc|default:''}"
+                data-placement="auto"
+            {/if}>
         {$propdesc.label}
+        {if !empty($propdesc.desc)}
+            <i class="fas fa-info-circle fa-fw"></i>
+        {/if}
     </label>
 </div>
 

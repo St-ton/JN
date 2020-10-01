@@ -12,6 +12,7 @@ use JTL\Language\LanguageHelper;
 use JTL\Pagination\Filter;
 use JTL\Pagination\Pagination;
 use JTL\Plugin\Helper as PluginHelper;
+use JTL\Recommendation\Manager;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -28,6 +29,7 @@ $db              = Shop::Container()->getDB();
 $defaultCurrency = $db->select('twaehrung', 'cStandard', 'Y');
 $step            = 'uebersicht';
 $alertHelper     = Shop::Container()->getAlertService();
+$recommendations = new Manager($alertHelper, Manager::SCOPE_BACKEND_PAYMENT_PROVIDER);
 if (Request::verifyGPCDataInt('checkNutzbar') === 1) {
     PaymentMethod::checkPaymentMethodAvailability();
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successPaymentMethodCheck'), 'successPaymentMethodCheck');
@@ -383,9 +385,9 @@ if ($step === 'uebersicht') {
         }
         $method->nEingangAnzahl = (int)$db->executeQueryPrepared(
             'SELECT COUNT(*) AS `cnt`
-            FROM `tzahlungseingang` AS ze
-                JOIN `tbestellung` AS b ON ze.`kBestellung` = b.`kBestellung`
-            WHERE b.`kZahlungsart` = :kzahlungsart',
+                FROM `tzahlungseingang` AS ze
+                    JOIN `tbestellung` AS b ON ze.`kBestellung` = b.`kBestellung`
+                WHERE b.`kZahlungsart` = :kzahlungsart',
             ['kzahlungsart' => $method->kZahlungsart],
             ReturnType::SINGLE_OBJECT
         )->cnt;
@@ -398,4 +400,5 @@ if ($step === 'uebersicht') {
 }
 $smarty->assign('step', $step)
        ->assign('waehrung', $defaultCurrency->cName)
+       ->assign('recommendations', $recommendations)
        ->display('zahlungsarten.tpl');

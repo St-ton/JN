@@ -14,6 +14,7 @@ use JTL\Language\LanguageHelper;
 use JTL\MagicCompatibilityTrait;
 use JTL\Session\Frontend;
 use JTL\Shop;
+use stdClass;
 use function Functional\filter;
 
 /**
@@ -60,8 +61,8 @@ class BaseSearchQuery extends AbstractFilter
     {
         parent::__construct($productFilter);
         $this->setIsCustom(false)
-             ->setUrlParam('suche')
-             ->setUrlParamSEO(null);
+            ->setUrlParam('suche')
+            ->setUrlParamSEO(null);
     }
 
     /**
@@ -276,10 +277,9 @@ class BaseSearchQuery extends AbstractFilter
         if ($naviConf['suchtrefferfilter_nutzen'] === 'N') {
             return $options;
         }
-        $limit     = (isset($naviConf['suchtrefferfilter_anzahl'])
-            && ($n = (int)$naviConf['suchtrefferfilter_anzahl']) > 0)
-            ? ' LIMIT ' . $n
-            : '';
+        $max   = (int)($naviConf['suchtrefferfilter_anzahl'] ?? 0);
+        $limit = $max > 0 ? (' LIMIT ' . $max) : '';
+
         $sql = (new StateSQL())->from($this->productFilter->getCurrentStateData());
         $sql->setSelect(['tsuchanfrage.kSuchanfrage', 'tsuchanfrage.cSuche', 'tartikel.kArtikel']);
         $sql->setOrderBy(null);
@@ -307,7 +307,7 @@ class BaseSearchQuery extends AbstractFilter
         $sql->addCondition('tsuchanfrage.nAktiv = 1');
 
         $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
-        $cacheID   = 'fltr_' . \str_replace('\\', '', __CLASS__) . \md5($baseQuery);
+        $cacheID   = $this->getCacheID($baseQuery);
         if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
             $this->options = $cached;
 
@@ -365,10 +365,10 @@ class BaseSearchQuery extends AbstractFilter
                 ->setCount((int)$searchFilter->nAnzahl);
             if (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0 && $nPrioStep > 0) {
                 $fo->setClass(
-                    (string)\round(
+                    (string)(\round(
                         ($searchFilter->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) /
                         $nPrioStep
-                    ) + 1
+                    ) + 1)
                 );
             }
             $options[] = $fo;
@@ -425,10 +425,9 @@ class BaseSearchQuery extends AbstractFilter
      */
     public function editSearchCache($langIDExt = 0): int
     {
-        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'suche_inc.php';
         // Mapping beachten
-        $cSuche = $this->getQueryMapping($this->getName() ?? '', $langIDExt);
-        $this->setName($cSuche);
+        $query = $this->getQueryMapping($this->getName() ?? '', $langIDExt);
+        $this->setName($query);
         $langID = $langIDExt > 0
             ? (int)$langIDExt
             : $this->getLanguageID();
@@ -442,7 +441,6 @@ class BaseSearchQuery extends AbstractFilter
                     AND DATE_ADD(tsuchcache.dGueltigBis, INTERVAL 5 MINUTE) < NOW()',
             ReturnType::AFFECTED_ROWS
         );
-
         // Suchcache checken, ob bereits vorhanden
         $searchCache = $this->productFilter->getDB()->executeQueryPrepared(
             'SELECT kSuchCache
@@ -452,26 +450,25 @@ class BaseSearchQuery extends AbstractFilter
                     AND (dGueltigBis > NOW() OR dGueltigBis IS NULL)',
             [
                 'lang'   => $langID,
-                'search' => $cSuche
+                'search' => $query
             ],
             ReturnType::SINGLE_OBJECT
         );
-
         if (isset($searchCache->kSuchCache) && $searchCache->kSuchCache > 0) {
             return (int)$searchCache->kSuchCache; // Gib gültigen Suchcache zurück
         }
         // wenn kein Suchcache vorhanden
-        $nMindestzeichen = ($min = (int)$this->getConfig('artikeluebersicht')['suche_min_zeichen']) > 0
+        $minChars = ($min = (int)$this->getConfig('artikeluebersicht')['suche_min_zeichen']) > 0
             ? $min
             : 3;
-        if (\mb_strlen($cSuche) < $nMindestzeichen) {
+        if (\mb_strlen($query) < $minChars) {
             require_once \PFAD_ROOT . \PFAD_INCLUDES . 'sprachfunktionen.php';
-            $this->error = \lang_suche_mindestanzahl($cSuche, $nMindestzeichen);
+            $this->error = \lang_suche_mindestanzahl($query, $minChars);
 
             return 0;
         }
         // Suchausdruck aufbereiten
-        $search = $this->prepareSearchQuery($cSuche);
+        $search = $this->prepareSearchQuery($query);
         $tmp    = $search;
         if (\count($search) === 0) {
             return 0;
@@ -479,9 +476,9 @@ class BaseSearchQuery extends AbstractFilter
         // Array mit nach Prio sort. Suchspalten holen
         $rows                   = self::getSearchRows($this->getConfig());
         $cols                   = $this->getSearchColumnClasses($rows);
-        $searchCache            = new \stdClass();
+        $searchCache            = new stdClass();
         $searchCache->kSprache  = $langID;
-        $searchCache->cSuche    = $cSuche;
+        $searchCache->cSuche    = $query;
         $searchCache->dErstellt = 'NOW()';
         $kSuchCache             = $this->productFilter->getDB()->insert('tsuchcache', $searchCache);
 
@@ -880,11 +877,11 @@ class BaseSearchQuery extends AbstractFilter
     }
 
     /**
-     * @param \stdClass $searchCache
-     * @param array     $searchCols
-     * @param array     $searchQueries
-     * @param int       $limit
-     * @param string    $fullText
+     * @param stdClass $searchCache
+     * @param array    $searchCols
+     * @param array    $searchQueries
+     * @param int      $limit
+     * @param string   $fullText
      * @return int
      * @former bearbeiteSuchCacheFulltext
      */
@@ -907,19 +904,19 @@ class BaseSearchQuery extends AbstractFilter
             });
 
             $score = 'MATCH (' . \implode(', ', $productCols) . ")
-                        AGAINST ('" . \implode(' ', $searchQueries) . "' IN NATURAL LANGUAGE MODE)";
+                        AGAINST ('" . \implode(' ', $searchQueries) . "' IN NATURAL LANGUAGE MODE) ";
             if ($fullText === 'B') {
                 $match = 'MATCH (' . \implode(', ', $productCols) . ")
-                        AGAINST ('" . \implode('* ', $searchQueries) . "*' IN BOOLEAN MODE)";
+                        AGAINST ('" . \implode('* ', $searchQueries) . "*' IN BOOLEAN MODE) ";
             } else {
                 $match = $score;
             }
 
-            $sql = "SELECT {$searchCache->kSuchCache} AS kSuchCache,
-                    IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP,
-                    $score AS score
+            $sql = 'SELECT ' . $searchCache->kSuchCache . ' AS kSuchCache,
+                    IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP, '
+                    . $score . ' AS score
                     FROM tartikel
-                    WHERE $match " . $this->productFilter->getFilterSQL()->getStockFilterSQL() . ' ';
+                    WHERE ' . $match . $this->productFilter->getFilterSQL()->getStockFilterSQL() . ' ';
 
             if (Shop::getLanguageID() > 0 && !LanguageHelper::isDefaultLanguageActive()) {
                 $score = 'MATCH (' . \implode(', ', $langCols) . ")
@@ -930,22 +927,22 @@ class BaseSearchQuery extends AbstractFilter
                 } else {
                     $match = $score;
                 }
-                $sql .= "UNION DISTINCT
-                SELECT {$searchCache->kSuchCache} AS kSuchCache,
-                    IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP,
-                    $score AS score
+                $sql .= 'UNION DISTINCT
+                SELECT ' . $searchCache->kSuchCache . ' AS kSuchCache,
+                    IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP, '
+                    . $score . ' AS score
                     FROM tartikel
                     INNER JOIN tartikelsprache ON tartikelsprache.kArtikel = tartikel.kArtikel
-                    WHERE $match " . $this->productFilter->getFilterSQL()->getStockFilterSQL() . ' ';
+                    WHERE ' . $match . $this->productFilter->getFilterSQL()->getStockFilterSQL() . ' ';
             }
 
             $this->productFilter->getDB()->query(
-                "INSERT INTO tsuchcachetreffer
-                        SELECT kSuchCache, kArtikelTMP, ROUND(MAX(15 - score) * 10)
-                        FROM ($sql) AS i
+                'INSERT INTO tsuchcachetreffer
+                        SELECT kSuchCache, kArtikelTMP, ROUND(MAX(score) * -10)
+                        FROM ( ' . $sql . ' ) AS i
                         LEFT JOIN tartikelsichtbarkeit 
                             ON tartikelsichtbarkeit.kArtikel = i.kArtikelTMP
-                            AND tartikelsichtbarkeit.kKundengruppe = " . Frontend::getCustomerGroup()->getID() . '
+                            AND tartikelsichtbarkeit.kKundengruppe = ' . Frontend::getCustomerGroup()->getID() . '
                         WHERE tartikelsichtbarkeit.kKundengruppe IS NULL
                         GROUP BY kSuchCache, kArtikelTMP' . ($limit > 0 ? ' LIMIT ' . $limit : ''),
                 ReturnType::AFFECTED_ROWS
@@ -1045,7 +1042,7 @@ class BaseSearchQuery extends AbstractFilter
     }
 
     /**
-     * @param array $config
+     * @param array|null $config
      * @return array
      * @former gibSuchSpalten()
      */
@@ -1063,8 +1060,8 @@ class BaseSearchQuery extends AbstractFilter
     }
 
     /**
-     * @param array $exclude
-     * @param array $conf
+     * @param array      $exclude
+     * @param array|null $conf
      * @return string
      * @former gibMaxPrioSpalte()
      */

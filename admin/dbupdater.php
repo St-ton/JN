@@ -1,8 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
+use JTL\Alert\Alert;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use JTL\Template;
 use JTL\Update\MigrationManager;
 use JTL\Update\Updater;
 use JTLShop\SemVer\Version;
@@ -16,24 +16,29 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('SHOP_UPDATE_VIEW', true, true);
 
 $smarty->clearCompiledTemplate();
-$db               = Shop::Container()->getDB();
-$updater          = new Updater($db);
-$template         = Template::getInstance();
-$fileVersion      = $updater->getCurrentFileVersion();
-$dbVersion        = $updater->getCurrentDatabaseVersion();
-$version          = $updater->getVersion();
-$updatesAvailable = $updater->hasPendingUpdates();
-$updateError      = $updater->error();
-
-$smarty->assign('updatesAvailable', $updatesAvailable)
+$db                  = Shop::Container()->getDB();
+$updater             = new Updater($db);
+$template            = Shop::Container()->getTemplateService()->getActiveTemplate(false);
+$fileVersion         = $updater->getCurrentFileVersion();
+$hasMinUpdateVersion = true;
+if (!$updater->hasMinUpdateVersion()) {
+    Shop::Container()->getAlertService()->addAlert(
+        Alert::TYPE_WARNING,
+        $updater->getMinUpdateVersionError(),
+        'errorMinShopVersionRequired'
+    );
+    $hasMinUpdateVersion = false;
+}
+$smarty->assign('updatesAvailable', $updater->hasPendingUpdates())
     ->assign('manager', ADMIN_MIGRATION ? new MigrationManager($db) : null)
     ->assign('isPluginManager', false)
     ->assign('migrationURL', 'dbupdater.php')
     ->assign('currentFileVersion', $fileVersion)
-    ->assign('currentDatabaseVersion', $dbVersion)
+    ->assign('currentDatabaseVersion', $updater->getCurrentDatabaseVersion())
     ->assign('hasDifferentVersions', !Version::parse($fileVersion)->equals(Version::parse($fileVersion)))
-    ->assign('version', $version)
-    ->assign('updateError', $updateError)
-    ->assign('currentTemplateFileVersion', $template->xmlData->cVersion ?? '1.0.0')
-    ->assign('currentTemplateDatabaseVersion', $template->version)
+    ->assign('version', $updater->getVersion())
+    ->assign('updateError', $updater->error())
+    ->assign('currentTemplateFileVersion', $template->getFileVersion())
+    ->assign('currentTemplateDatabaseVersion', $template->getVersion())
+    ->assign('hasMinUpdateVersion', $hasMinUpdateVersion)
     ->display('dbupdater.tpl');

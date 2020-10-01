@@ -245,7 +245,7 @@ class CustomerGroup
      */
     public function setName(string $name): self
     {
-        $this->name = Shop::Container()->getDB()->escape($name);
+        $this->name = $name;
 
         return $this;
     }
@@ -299,7 +299,7 @@ class CustomerGroup
      */
     public function setDefault($default): self
     {
-        $this->default = Shop::Container()->getDB()->escape($default);
+        $this->default = $default;
 
         return $this;
     }
@@ -310,7 +310,7 @@ class CustomerGroup
      */
     public function setShopLogin($cShopLogin): self
     {
-        $this->cShopLogin = Shop::Container()->getDB()->escape($cShopLogin);
+        $this->cShopLogin = $cShopLogin;
 
         return $this;
     }

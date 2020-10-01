@@ -88,9 +88,9 @@ class Notification implements IteratorAggregate, Countable
      */
     public function buildDefault(): self
     {
-        $status    = Status::getInstance();
         $db        = Shop::Container()->getDB();
         $cache     = Shop::Container()->getCache();
+        $status    = Status::getInstance($db, $cache);
         $linkAdmin = new LinkAdmin($db, $cache);
 
         Shop::Container()->getGetText()->loadAdminLocale('notifications');
@@ -172,6 +172,15 @@ class Notification implements IteratorAggregate, Countable
                 __('hasNewPluginVersionsTitle'),
                 __('hasNewPluginVersionsMessage'),
                 'pluginverwaltung.php'
+            );
+        }
+
+        if ($status->hasLicenseExpirations()) {
+            $this->add(
+                NotificationEntry::TYPE_WARNING,
+                __('hasLicenseExpirationsTitle'),
+                __('hasLicenseExpirationsMessage'),
+                'licenses.php'
             );
         }
 

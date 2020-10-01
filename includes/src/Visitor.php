@@ -103,10 +103,8 @@ class Visitor
      */
     public static function dbLookup($userAgent, $ip): ?stdClass
     {
-        $visitor = Shop::Container()->getDB()->select('tbesucher', 'cSessID', \session_id())
+        return Shop::Container()->getDB()->select('tbesucher', 'cSessID', \session_id())
             ?? Shop::Container()->getDB()->select('tbesucher', 'cID', \md5($userAgent . $ip));
-
-        return $visitor;
     }
 
     /**
@@ -236,7 +234,7 @@ class Visitor
         if (\mb_stripos($agent, 'vivaldi') !== false) {
             return 'Vivaldi' . $mobile;
         }
-        if (\mb_strpos($agent, 'safari') !== false) {
+        if (\mb_strpos($agent, 'safari') !== false && \mb_strpos($agent, 'chrome') === false) {
             return 'Safari' . $mobile;
         }
         if (\mb_strpos($agent, 'firefox') !== false) {

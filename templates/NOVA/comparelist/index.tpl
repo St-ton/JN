@@ -10,7 +10,9 @@
             {opcMountPoint id='opc_before_heading' inContainer=false}
             {container}
                 <h1 class="h2">{lang key='compare' section='global'}</h1>
-                <hr class="mt-0 mb-3">
+                {if !$isAjax}
+                    <hr class="mt-0 mb-3">
+                {/if}
             {/container}
         {/block}
         {block name='comparelist-index-include-extension'}
@@ -123,7 +125,7 @@
                                                     </span>
                                                 {/block}
                                                 {block name='comparelist-index-include-rating'}
-                                                    {include file='productdetails/rating.tpl' stars=$oArtikel->fDurchschnittsBewertung}
+                                                    {include file='productdetails/rating.tpl' stars=$oArtikel->fDurchschnittsBewertung link=$oArtikel->cURLFull}
                                                 {/block}
                                                 {block name='comparelist-index-products-header-availability'}
                                                     {if $oArtikel->getOption('nShowOnlyOnSEORequest', 0) === 1}
@@ -192,12 +194,12 @@
                                                                     <span>
                                                                         {$oArtikel->$row['key']|substr:0:$descriptionLength}
                                                                     </span>
-                                                                    {collapse tag='span' id="read-more-{$oArtikel->kArtikel}"}
+                                                                    {collapse tag='span' id="read-more-{$oArtikel->kArtikel}-"|cat:$row['key']}
                                                                         {$oArtikel->$row['key']|substr:$descriptionLength}
                                                                     {/collapse}
                                                                 </div>
                                                                 {block name='comparelist-index-products-row-description-more'}
-                                                                    {button variant='link' data=['toggle' => 'collapse', 'target' => "#read-more-{$oArtikel->kArtikel}"]}
+                                                                    {button class='pl-0' variant='link' data=['toggle' => 'collapse', 'target' => "#read-more-{$oArtikel->kArtikel}-"|cat:$row['key']]}
                                                                         {lang key='more'}
                                                                     {/button}
                                                                 {/block}

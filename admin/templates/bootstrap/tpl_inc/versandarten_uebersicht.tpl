@@ -45,24 +45,26 @@
                         <td>
                             {$versandart->cName}
                             <hr class="my-1">
-                            <span class="d-block">
+                            <span class="d-block shipping-method-country">
                                 {foreach $versandart->countries as $country}
                                     {if $country@iteration == 20}
                                         <span class="collapse" aria-expanded="false" id="show-all-countries-{$versandart->kVersandart}">
                                         {$collapse=1}
                                     {/if}
-                                    <a href="versandarten.php?zuschlag=1&kVersandart={$versandart->kVersandart}&cISO={$country->getISO()}&token={$smarty.session.jtl_token}"
-                                        data-toggle="tooltip"
-                                        title="{__('isleListsDesc')}">
-                                        <span class="small">
-                                            {if in_array($country->getISO(), $versandart->shippingSurchargeCountries)}
-                                                <u>{$country->getName()}*</u>
-                                            {else}
-                                                {$country->getName()}
-                                            {/if}
-                                        </span>
-                                        {if !$country@last},{/if}
-                                    </a>
+                                    {strip}
+                                        <a href="versandarten.php?zuschlag=1&kVersandart={$versandart->kVersandart}&cISO={$country->getISO()}&token={$smarty.session.jtl_token}"
+                                            data-toggle="tooltip"
+                                            title="{__('isleListsDesc')}">
+                                            <i class="fas fa-plus-circle"></i>
+                                            <span class="small">
+                                                {if in_array($country->getISO(), $versandart->shippingSurchargeCountries)}
+                                                    <u>{$country->getName()}*</u>
+                                                {else}
+                                                    {$country->getName()}
+                                                {/if}
+                                            </span>
+                                        </a>
+                                    {/strip}{if !$country@last},{/if}
                                     {if $country@iteration > 20 && $country@last}
                                         </span>
                                         <button class="btn btn-link float-right" data-toggle="collapse" data-target="#show-all-countries-{$versandart->kVersandart}">
@@ -111,7 +113,9 @@
                         </td>
                         <td class="text-center">
                             <ul class="list-unstyled">
-                            {if $versandart->versandberechnung->cModulId === 'vm_versandberechnung_gewicht_jtl' || $versandart->versandberechnung->cModulId === 'vm_versandberechnung_warenwert_jtl' || $versandart->versandberechnung->cModulId === 'vm_versandberechnung_artikelanzahl_jtl'}
+                            {if $versandart->versandberechnung->cModulId === 'vm_versandberechnung_gewicht_jtl'
+                            || $versandart->versandberechnung->cModulId === 'vm_versandberechnung_warenwert_jtl'
+                            || $versandart->versandberechnung->cModulId === 'vm_versandberechnung_artikelanzahl_jtl'}
                                 {foreach $versandart->versandartstaffeln as $versandartstaffel}
                                     {if $versandartstaffel->fBis != 999999999}
                                         <li>
@@ -138,30 +142,30 @@
                                             onclick="return confirmDelete('{$versandart->cName}');"
                                             title="{__('delete')}"
                                             data-toggle="tooltip">
-										<span class="icon-hover">
-											<span class="fal fa-trash-alt"></span>
-											<span class="fas fa-trash-alt"></span>
-										</span>
+                                        <span class="icon-hover">
+                                            <span class="fal fa-trash-alt"></span>
+                                            <span class="fas fa-trash-alt"></span>
+                                        </span>
                                     </button>
                                     <button name="clone"
                                             value="{$versandart->kVersandart}"
                                             class="btn btn-link px-2"
                                             title="{__('duplicate')}"
                                             data-toggle="tooltip">
-										<span class="icon-hover">
-											<span class="fal fa-clone"></span>
-											<span class="fas fa-clone"></span>
-										</span>
+                                        <span class="icon-hover">
+                                            <span class="fal fa-clone"></span>
+                                            <span class="fas fa-clone"></span>
+                                        </span>
                                     </button>
                                     <button name="edit"
                                             value="{$versandart->kVersandart}"
                                             class="btn btn-link px-2"
                                             title="{__('edit')}"
                                             data-toggle="tooltip">
-										<span class="icon-hover">
-											<span class="fal fa-edit"></span>
-											<span class="fas fa-edit"></span>
-										</span>
+                                        <span class="icon-hover">
+                                            <span class="fal fa-edit"></span>
+                                            <span class="fas fa-edit"></span>
+                                        </span>
                                     </button>
                                 </div>
                             </form>

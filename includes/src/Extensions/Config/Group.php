@@ -303,7 +303,7 @@ class Group implements JsonSerializable
             if ($item->getMin() === $item->getMax()) {
                 $equal = true;
                 $nKey  = $item->getMin();
-                foreach ($this->oItem_arr as &$item) {
+                foreach ($this->oItem_arr as $item) {
                     if (!($item->getMin() === $item->getMax() && $item->getMin() === $nKey)) {
                         $equal = false;
                     }
@@ -320,7 +320,7 @@ class Group implements JsonSerializable
     public function getInitQuantity()
     {
         $qty = 1;
-        foreach ($this->oItem_arr as &$item) {
+        foreach ($this->oItem_arr as $item) {
             if ($item->getSelektiert()) {
                 $qty = $item->getInitial();
             }

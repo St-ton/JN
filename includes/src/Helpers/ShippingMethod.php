@@ -343,6 +343,8 @@ class ShippingMethod
                 $cgroupID
             );
             if (\count($shippingMethods) > 0) {
+                Frontend::set('cLieferlandISO', $country);
+
                 Shop::Smarty()
                     ->assign('ArtikelabhaengigeVersandarten', self::gibArtikelabhaengigeVersandkostenImWK(
                         $country,
@@ -373,7 +375,7 @@ class ShippingMethod
             $_SESSION['shipping_count'] = 0;
         }
         if (!\is_array($products) || \count($products) === 0) {
-            return null;
+            return '';
         }
         $iso      = $_SESSION['cLieferlandISO'] ?? false;
         $cart     = Frontend::getCart();
@@ -1276,26 +1278,11 @@ class ShippingMethod
         ) {
             return '';
         }
-        $db         = Shop::Container()->getDB();
-        $fSummeDiff = (float)$method->fVersandkostenfreiAbX - (float)$cartSum;
-        // check if vkfreiabx is calculated net or gross
-        if ($method->eSteuer === 'netto') {
-            // calculate net with default tax class
-            $defaultTaxClass = $db->select('tsteuerklasse', 'cStandard', 'Y');
-            if ($defaultTaxClass !== null && isset($defaultTaxClass->kSteuerklasse)) {
-                $taxClasss  = (int)$defaultTaxClass->kSteuerklasse;
-                $defaultTax = $db->select('tsteuersatz', 'kSteuerklasse', $taxClasss);
-                if ($defaultTax !== null) {
-                    $defaultTaxValue = $defaultTax->fSteuersatz;
-                    $fSummeDiff      = (float)$method->fVersandkostenfreiAbX -
-                        Tax::getNet((float)$cartSum, $defaultTaxValue);
-                }
-            }
-        }
+
         if (isset($method->cNameLocalized)) {
             $name = $method->cNameLocalized;
         } else {
-            $localized = $db->select(
+            $localized = Shop::Container()->getDB()->select(
                 'tversandartsprache',
                 'kVersandart',
                 $method->kVersandart,
@@ -1306,21 +1293,48 @@ class ShippingMethod
                 ? $localized->cName
                 : $method->cName;
         }
-        if ($fSummeDiff <= 0) {
+        $shippingFreeDifference = self::getShippingFreeDifference($method, $cartSum);
+        if ($shippingFreeDifference <= 0) {
             return \sprintf(
                 Shop::Lang()->get('noShippingCostsReached', 'basket'),
                 $name,
-                self::getShippingFreeCountriesString($method),
-                (string)$method->cLaender
+                self::getShippingFreeCountriesString($method)
             );
         }
 
         return \sprintf(
             Shop::Lang()->get('noShippingCostsAt', 'basket'),
-            Preise::getLocalizedPriceString($fSummeDiff),
+            Preise::getLocalizedPriceString($shippingFreeDifference),
             $name,
             self::getShippingFreeCountriesString($method)
         );
+    }
+
+    /**
+     * @param $method
+     * @param $cartSum
+     * @return float
+     */
+    public static function getShippingFreeDifference($method, $cartSum): float
+    {
+        $db                     = Shop::Container()->getDB();
+        $shippingFreeDifference = (float)$method->fVersandkostenfreiAbX - (float)$cartSum;
+        // check if vkfreiabx is calculated net or gross
+        if ($method->eSteuer === 'netto') {
+            // calculate net with default tax class
+            $defaultTaxClass = $db->select('tsteuerklasse', 'cStandard', 'Y');
+            if ($defaultTaxClass !== null && isset($defaultTaxClass->kSteuerklasse)) {
+                $taxClasss  = (int)$defaultTaxClass->kSteuerklasse;
+                $defaultTax = $db->select('tsteuersatz', 'kSteuerklasse', $taxClasss);
+                if ($defaultTax !== null) {
+                    $defaultTaxValue        = $defaultTax->fSteuersatz;
+                    $shippingFreeDifference = (float)$method->fVersandkostenfreiAbX -
+                        Tax::getNet((float)$cartSum, $defaultTaxValue);
+                }
+            }
+        }
+
+        return $shippingFreeDifference;
     }
 
     /**
@@ -1333,24 +1347,19 @@ class ShippingMethod
         if (!\is_object($shippingMethod) || (float)$shippingMethod->fVersandkostenfreiAbX <= 0) {
             return '';
         }
-        $cacheID = 'bvkfls_' .
-            $shippingMethod->fVersandkostenfreiAbX .
-            \mb_strlen($shippingMethod->cLaender) . '_' .
+        $cacheID = 'bvkfls_' . $shippingMethod->fVersandkostenfreiAbX . \mb_strlen($shippingMethod->cLaender) . '_' .
             Shop::getLanguageID();
-        if (($vkfls = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $countries = Shop::Container()->getCountryService()->getFilteredCountryList(
-                \array_filter(\explode(' ', $shippingMethod->cLaender))
-            )->toArray();
-            // re-concatinate isos with "," for the final output
-            $resultString = \implode(', ', \array_map(static function (Country $e) {
+        if (($shippingFreeCountries = Shop::Container()->getCache()->get($cacheID)) === false) {
+            $shippingFreeCountries = \implode(', ', \array_map(static function (Country $e) {
                 return $e->getName();
-            }, $countries));
+            }, Shop::Container()->getCountryService()->getFilteredCountryList(
+                \array_filter(\explode(' ', $shippingMethod->cLaender))
+            )->toArray()));
 
-            $vkfls = \sprintf(Shop::Lang()->get('noShippingCostsAtExtended', 'basket'), $resultString);
-            Shop::Container()->getCache()->set($cacheID, $vkfls, [\CACHING_GROUP_OPTION]);
+            Shop::Container()->getCache()->set($cacheID, $shippingFreeCountries, [\CACHING_GROUP_OPTION]);
         }
 
-        return $vkfls;
+        return $shippingFreeCountries;
     }
 
     /**

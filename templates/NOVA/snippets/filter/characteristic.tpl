@@ -31,14 +31,14 @@
                             }
                         {/if}
                         <span class="word-break mr-3">{$attributeValue->getValue()|escape:'html'}</span>
-                        <span class="badge badge-outline-secondary ml-auto">{$attributeValue->getCount()}</span>
+                        {badge variant="outline-secondary" class="ml-auto"}{$attributeValue->getCount()}{/badge}
                     </div>
                 {/dropdownitem}
             {/block}
         {else}
             {if $limit != -1 && $attributeValue@iteration > $limit && !$collapseInit}
                 {block name='snippets-filter-characteristics-more-top'}
-                    <div class="collapse {if $Merkmal->isActive()} show{/if}" id="box-collps-filter-attribute-{$Merkmal->getValue()}" aria-expanded="false">
+                    <div class="collapse {if $Merkmal->isActive()} show{/if}" id="box-collps-filter-attribute-{$Merkmal->getValue()}" aria-expanded="false" role="button">
                         <ul class="nav {if $Merkmal->getData('cTyp') !== 'BILD'}flex-column{/if}">
                     {$collapseInit = true}
                 {/block}
@@ -61,7 +61,7 @@
                                     }
                                 {/if}
                                 <span class="word-break">{$attributeValue->getValue()|escape:'html'}</span>
-                                <span class="badge badge-outline-secondary ml-auto">{$attributeValue->getCount()}</span>
+                                {badge variant="outline-secondary" class="ml-auto"}{$attributeValue->getCount()}{/badge}
                             </div>
                         {/link}
                     {/block}
@@ -98,7 +98,7 @@
                                 <span class="word-break">
                                     {$attributeValue->getValue()|escape:'html'}
                                 </span>
-                                <span class="badge badge-outline-secondary ml-auto">{$attributeValue->getCount()}</span>
+                                {badge variant="outline-secondary" class="ml-auto"}{$attributeValue->getCount()}{/badge}
                             </div>
                         {/link}
                     {/block}

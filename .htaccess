@@ -80,6 +80,27 @@
   </FilesMatch>
 </IfModule>
 
+<Files dbeS/*>
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order Deny,Allow
+        Deny from all
+    </IfModule>
+</Files>
+
+<Files dbeS/*.php>
+    <IfModule mod_authz_core.c>
+        Require all granted
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order Allow,Deny
+        Allow from all
+    </IfModule>
+</Files>
+
+
 <IfModule mod_rewrite.c>
   RewriteEngine on
 
@@ -111,10 +132,17 @@
   RewriteRule ^export/((sitemap_).*\.(xml|txt)(\.gz)?)$ $1 [L]
   RewriteRule ^asset/(.*)$ includes/libs/minify/?g=$1 [QSA,L]
   RewriteRule ^static/(.*)$ templates_c/min/$1 [QSA,L]
+  RewriteRule ^dbeS/(.*)\.php$ dbeS/index.php?id=$1 [QSA,L]
   RewriteRule ^robots.txt$ robots.php [L]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_URI} !^/favicon.ico
   RewriteRule ^. index.php [L]
+  
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_URI} ^/favicon.ico
+  RewriteRule ^. favicon-default.ico [L]
 </IfModule>
 
 FileETag None

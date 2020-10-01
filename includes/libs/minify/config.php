@@ -81,7 +81,8 @@ $min_envArgs   = null;
  * If /min/ is directly inside your document root, just uncomment the
  * second line. The third line might work on some Apache servers.
  */
-$min_documentRoot = PFAD_ROOT;
+$min_documentRoot = '';
+//$min_documentRoot = PFAD_ROOT;
 //$min_documentRoot = dirname(dirname(__DIR__));
 //$min_documentRoot = substr(__FILE__, 0, -15);
 //$min_documentRoot = $_SERVER['SUBDOMAIN_DOCUMENT_ROOT'];
@@ -199,3 +200,20 @@ $min_uploaderHoursBehind = 0;
  */
 //$min_factories['minify'] = ... a callable accepting a Minify\App object
 //$min_factories['controller'] = ... a callable accepting a Minify\App object
+
+/**
+ * @param string $content
+ * @param string $type
+ * @return string
+ */
+function removeSourceMaps($content, $type) {
+    if ($type === Minify::TYPE_JS || $type === Minify::TYPE_CSS) {
+        $regex = '~//[#@]\s(source(?:Mapping)?URL)=\s*(\S+)~';
+
+        return preg_replace($regex, '', $content);
+    }
+
+    return $content;
+}
+
+$min_serveOptions['postprocessor'] = 'removeSourceMaps';

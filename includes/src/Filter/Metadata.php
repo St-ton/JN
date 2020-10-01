@@ -17,7 +17,6 @@ use stdClass;
 use function Functional\group;
 use function Functional\map;
 use function Functional\reduce_left;
-use function Functional\reindex;
 
 /**
  * Class Metadata
@@ -678,12 +677,12 @@ class Metadata implements MetadataInterface
     /**
      * @inheritdoc
      */
-    public function getExtendedView(int $viewType = 0): \stdClass
+    public function getExtendedView(int $viewType = 0): stdClass
     {
         $conf = $this->conf['artikeluebersicht'];
         if (!isset($_SESSION['oErweiterteDarstellung'])) {
             $defaultViewType              = 0;
-            $extendedView                 = new \stdClass();
+            $extendedView                 = new stdClass();
             $extendedView->cURL_arr       = [];
             $extendedView->nAnzahlArtikel = \ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
 
@@ -826,9 +825,9 @@ class Metadata implements MetadataInterface
     }
 
     /**
-     * @param string $metaProposal the proposed meta text value.
-     * @param string $metaSuffix append suffix to meta value that wont be shortened
-     * @param int    $maxLength $metaProposal will be truncated to $maxlength - \mb_strlen($metaSuffix) characters
+     * @param string      $metaProposal the proposed meta text value.
+     * @param string|null $metaSuffix append suffix to meta value that wont be shortened
+     * @param int|null    $maxLength $metaProposal will be truncated to $maxlength - \mb_strlen($metaSuffix) characters
      * @return string truncated meta value with optional suffix (always appended if set)
      */
     public static function prepareMeta(string $metaProposal, ?string $metaSuffix = null, ?int $maxLength = null): string

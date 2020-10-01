@@ -75,7 +75,7 @@ class Preisverlauf
             );
             $currency = Frontend::getCurrency();
             $dt       = new DateTime();
-            foreach ($data as &$pv) {
+            foreach ($data as $pv) {
                 if (isset($pv->timestamp)) {
                     $dt->setTimestamp((int)$pv->timestamp);
                     $pv->date     = $dt->format('d.m.Y');
@@ -85,7 +85,6 @@ class Preisverlauf
                     $pv->currency = $currency->getCode();
                 }
             }
-            unset($pv);
             Shop::Container()->getCache()->set(
                 $cacheID,
                 $data,

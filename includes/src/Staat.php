@@ -29,7 +29,8 @@ class Staat
     public $cCode;
 
     /**
-     * @param array $options
+     * Staat constructor.
+     * @param array|null $options
      */
     public function __construct(array $options = null)
     {

@@ -9,6 +9,7 @@ use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Services\JTL\AlertServiceInterface;
+use stdClass;
 
 /**
  * Class Controller
@@ -33,9 +34,9 @@ class Controller
 
     /**
      * Crawler constructor.
-     * @param DbInterface           $db
-     * @param JTLCacheInterface     $cache
-     * @param AlertServiceInterface $alertService
+     * @param DbInterface                $db
+     * @param JTLCacheInterface          $cache
+     * @param AlertServiceInterface|null $alertService
      */
     public function __construct(DbInterface $db, JTLCacheInterface $cache, AlertServiceInterface $alertService = null)
     {
@@ -153,7 +154,7 @@ class Controller
         }
         if (Request::postInt('save_crawler') === 1) {
             if (!empty(Request::postVar('useragent')) && !empty(Request::postVar('description'))) {
-                $item                = new \stdClass();
+                $item                = new stdClass();
                 $item->kBesucherBot  = (int)Request::postInt('id');
                 $item->cUserAgent    = Request::postVar('useragent');
                 $item->cBeschreibung = Request::postVar('description');

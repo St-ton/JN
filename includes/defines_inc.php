@@ -4,6 +4,7 @@
 define('APPLICATION_VERSION', '5.0.0');
 define('APPLICATION_BUILD_SHA', '#DEV#');
 define('JTL_MIN_WAWI_VERSION', 100000);
+define('JTL_MIN_SHOP_UPDATE_VERSION', '4.2.0');
 // Einstellungssektionen
 define('CONF_GLOBAL', 1);
 define('CONF_STARTSEITE', 2);
@@ -16,6 +17,7 @@ define('CONF_BOXEN', 8);
 define('CONF_BILDER', 9);
 define('CONF_SONSTIGES', 10);
 define('CONF_TEMPLATE', 11);
+define('CONF_BRANDING', 12);
 //
 define('CONF_ZAHLUNGSARTEN', 100);
 define('CONF_EXPORTFORMATE', 101);
@@ -44,6 +46,7 @@ define('CONF_LOGO', 125);
 define('CONF_PLUGINZAHLUNGSARTEN', 126);
 define('CONF_FS', 127);
 define('CONF_CRON', 128);
+define('CONF_CONSENTMANAGER', 129);
 //
 define('C_WARENKORBPOS_TYP_ARTIKEL', 1);
 define('C_WARENKORBPOS_TYP_VERSANDPOS', 2);
@@ -560,6 +563,7 @@ define('CACHING_GROUP_TEMPLATE', 'tpl');
 define('CACHING_GROUP_OPTION', 'opt');
 define('CACHING_GROUP_PLUGIN', 'plgn');
 define('CACHING_GROUP_CORE', 'core');
+define('CACHING_GROUP_LICENSES', 'lic');
 define('CACHING_GROUP_OBJECT', 'obj');
 define('CACHING_GROUP_BOX', 'bx');
 define('CACHING_GROUP_NEWS', 'nws');
@@ -567,3 +571,4 @@ define('CACHING_GROUP_ATTRIBUTE', 'attr');
 define('CACHING_GROUP_MANUFACTURER', 'mnf');
 define('CACHING_GROUP_FILTER', 'fltr');
 define('CACHING_GROUP_FILTER_CHARACTERISTIC', 'fltrchr');
+define('CACHING_GROUP_STATUS', 'status');

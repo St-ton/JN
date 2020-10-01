@@ -21,6 +21,7 @@ use JTL\DB\ReturnType;
  * `tsuchanfragencache`
  * `tverfuegbarkeitsbenachrichtigung`
  * `tvergleichsliste`
+ * `tfloodprotect`
  */
 class AnonymizeIps extends Method implements MethodInterface
 {
@@ -80,6 +81,12 @@ class AnonymizeIps extends Method implements MethodInterface
             'ColKey'     => 'kVergleichsliste',
             'ColIp'      => 'cIP',
             'ColCreated' => 'dDate',
+            'ColType'    => 'DATETIME'
+        ],
+        'tfloodprotect'                  => [
+            'ColKey'     => 'kFloodProtect',
+            'ColIp'      => 'cIP',
+            'ColCreated' => 'dErstellt',
             'ColType'    => 'DATETIME'
         ]
     ];

@@ -84,6 +84,8 @@ use JTL\Session\Frontend;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
 use JTL\Smarty\MailSmarty;
+use JTL\Template\TemplateService;
+use JTL\Template\TemplateServiceInterface;
 use JTLShop\SemVer\Version;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
@@ -152,6 +154,11 @@ final class Shop
     /**
      * @var int
      */
+    public static $nLinkart;
+
+    /**
+     * @var int
+     */
     public static $kHersteller;
 
     /**
@@ -198,6 +205,16 @@ final class Shop
      * @var int
      */
     public static $kHerstellerFilter;
+
+    /**
+     * @var array
+     */
+    public static $manufacturerFilterIDs;
+
+    /**
+     * @var array
+     */
+    public static $categoryFilterIDs;
 
     /**
      * @var int
@@ -676,8 +693,8 @@ final class Shop
     }
 
     /**
-     * @param bool   $fast
-     * @param string $context
+     * @param bool        $fast
+     * @param string|null $context
      * @return JTLSmarty
      */
     public function _Smarty(bool $fast = false, string $context = null): JTLSmarty
@@ -763,7 +780,7 @@ final class Shop
      * @var bool $iso
      * @return int|string
      */
-    public static function getLanguage($iso = false)
+    public static function getLanguage(bool $iso = false)
     {
         return $iso === false ? (int)self::$kSprache : self::$cISO;
     }
@@ -793,14 +810,14 @@ final class Shop
     /**
      * set language/language ISO
      *
-     * @param int    $languageID
-     * @param string $cISO
+     * @param int         $languageID
+     * @param string|null $iso
      */
-    public static function setLanguage(int $languageID, string $cISO = null): void
+    public static function setLanguage(int $languageID, string $iso = null): void
     {
         self::$kSprache = $languageID;
-        if ($cISO !== null) {
-            self::$cISO = $cISO;
+        if ($iso !== null) {
+            self::$cISO = $iso;
         }
     }
 
@@ -907,7 +924,7 @@ final class Shop
     public static function run(): ProductFilter
     {
         if (Request::postVar('action') === 'updateconsent' && Form::validateToken()) {
-            $manager = new Manager();
+            $manager = new Manager(self::Container()->getDB());
             die(\json_encode((object)['status' => 'OK', 'data' => $manager->save(Request::postVar('data'))]));
         }
         self::$kKonfigPos             = Request::verifyGPCDataInt('ek');
@@ -925,8 +942,14 @@ final class Shop
         self::$kNewsKategorie         = Request::verifyGPCDataInt('nk');
         self::$nBewertungSterneFilter = Request::verifyGPCDataInt('bf');
         self::$cPreisspannenFilter    = Request::verifyGPDataString('pf');
-        self::$kHerstellerFilter      = Request::verifyGPCDataInt('hf');
-        self::$kKategorieFilter       = Request::verifyGPCDataInt('kf');
+        self::$manufacturerFilterIDs  = Request::verifyGPDataIntegerArray('hf');
+        self::$kHerstellerFilter      = \count(self::$manufacturerFilterIDs) > 0
+            ? self::$manufacturerFilterIDs[0]
+            : 0;
+        self::$categoryFilterIDs      = Request::verifyGPDataIntegerArray('kf');
+        self::$kKategorieFilter       = \count(self::$categoryFilterIDs) > 0
+            ? self::$categoryFilterIDs[0]
+            : 0;
         self::$searchSpecialFilterIDs = Request::verifyGPDataIntegerArray('qf');
         self::$kSuchFilter            = Request::verifyGPCDataInt('sf');
         self::$kSuchspecialFilter     = \count(self::$searchSpecialFilterIDs) > 0
@@ -942,6 +965,7 @@ final class Shop
         self::$bFileNotFound   = false;
         self::$cCanonicalURL   = '';
         self::$is404           = false;
+        self::$nLinkart        = 0;
 
         self::$nSterne = Request::verifyGPCDataInt('nSterne');
 
@@ -987,8 +1011,6 @@ final class Shop
                 self::$kArtikel = 0;
             }
         }
-        $_SESSION['cTemplate'] = Template::$cTemplate;
-
         if (self::$kWunschliste === 0
             && Request::verifyGPDataString('error') === ''
             && \mb_strlen(Request::verifyGPDataString('wlid')) > 0
@@ -1001,13 +1023,6 @@ final class Shop
             );
             exit();
         }
-        if ((self::$kArtikel > 0 || self::$kKategorie > 0)
-            && !Frontend::getCustomerGroup()->mayViewCategories()
-        ) {
-            // falls Artikel/Kategorien nicht gesehen werden duerfen -> login
-            \header('Location: ' . LinkService::getInstance()->getStaticRoute('jtl.php') . '?li=1', true, 303);
-            exit;
-        }
         self::Container()->get(ManagerInterface::class)->initActiveItems(self::$kSprache);
         $conf = new Config();
         $conf->setLanguageID(self::$kSprache);
@@ -1017,6 +1032,15 @@ final class Shop
         $conf->setBaseURL(self::getURL() . '/');
         self::$productFilter = new ProductFilter($conf, self::Container()->getDB(), self::Container()->getCache());
         self::seoCheck();
+
+        if ((self::$kArtikel > 0 || self::$kKategorie > 0)
+            && !Frontend::getCustomerGroup()->mayViewCategories()
+        ) {
+            // falls Artikel/Kategorien nicht gesehen werden duerfen -> login
+            \header('Location: ' . LinkService::getInstance()->getStaticRoute('jtl.php') . '?li=1', true, 303);
+            exit;
+        }
+
         self::setImageBaseURL(\defined('IMAGE_BASE_URL') ? \IMAGE_BASE_URL : self::getURL());
         Dispatcher::getInstance()->fire(Event::RUN);
 
@@ -1052,6 +1076,7 @@ final class Shop
             'kVariKindArtikel'       => self::$kVariKindArtikel,
             'kSeite'                 => self::$kSeite,
             'kLink'                  => self::$kLink,
+            'nLinkart'               => self::$nLinkart,
             'kSuchanfrage'           => self::$kSuchanfrage,
             'kMerkmalWert'           => self::$kMerkmalWert,
             'kSuchspecial'           => self::$kSuchspecial,
@@ -1084,13 +1109,15 @@ final class Shop
             'nAnzahl'                => self::$nAnzahl,
             'nSterne'                => self::$nSterne,
             'customFilters'          => self::$customFilters,
-            'searchSpecialFilters'   => self::$searchSpecialFilterIDs
+            'searchSpecialFilters'   => self::$searchSpecialFilterIDs,
+            'manufacturerFilters'    => self::$manufacturerFilterIDs,
+            'categoryFilters'        => self::$categoryFilterIDs
         ];
     }
 
     private static function getLanguageFromServerName(): void
     {
-        if (!\defined('EXPERIMENTAL_MULTILANG_SHOP') || \EXPERIMENTAL_MULTILANG_SHOP !== true) {
+        if (\EXPERIMENTAL_MULTILANG_SHOP !== true) {
             return;
         }
         foreach ($_SESSION['Sprachen'] ?? [] as $language) {
@@ -1285,21 +1312,21 @@ final class Shop
             }
             // custom filter
             foreach ($customSeo as $className => $data) {
-                $oSeo = self::Container()->getDB()->select($data['table'], 'cSeo', $data['cSeo']);
-                if (isset($oSeo->filterval)) {
-                    self::$customFilters[$className] = (int)$oSeo->filterval;
+                $seoData = self::Container()->getDB()->select($data['table'], 'cSeo', $data['cSeo']);
+                if (isset($seoData->filterval)) {
+                    self::$customFilters[$className] = (int)$seoData->filterval;
                 } else {
                     self::$bKatFilterNotFound = true;
                 }
-                if (isset($oSeo->kSprache) && $oSeo->kSprache > 0) {
-                    self::updateLanguage((int)$oSeo->kSprache);
+                if (isset($seoData->kSprache) && $seoData->kSprache > 0) {
+                    self::updateLanguage((int)$seoData->kSprache);
                 }
             }
             // category filter
             if (\mb_strlen($categorySeo) > 0) {
-                $oSeo = self::Container()->getDB()->select('tseo', 'cKey', 'kKategorie', 'cSeo', $categorySeo);
-                if (isset($oSeo->kKey) && \strcasecmp($oSeo->cSeo, $categorySeo) === 0) {
-                    self::$kKategorieFilter = (int)$oSeo->kKey;
+                $seoData = self::Container()->getDB()->select('tseo', 'cKey', 'kKategorie', 'cSeo', $categorySeo);
+                if (isset($seoData->kKey) && \strcasecmp($seoData->cSeo, $categorySeo) === 0) {
+                    self::$kKategorieFilter = (int)$seoData->kKey;
                 } else {
                     self::$bKatFilterNotFound = true;
                 }
@@ -1347,18 +1374,42 @@ final class Shop
                     $_GET['mf'] = [(int)$_GET['mf']];
                 }
                 self::$bSEOMerkmalNotFound = false;
-                foreach ($seoAttributes as $i => $cSEOMerkmal) {
-                    if ($i > 0 && \mb_strlen($cSEOMerkmal) > 0) {
-                        $oSeo = self::Container()->getDB()->select(
+                foreach ($seoAttributes as $i => $seoString) {
+                    if ($i > 0 && \mb_strlen($seoString) > 0) {
+                        $seoData = self::Container()->getDB()->select(
                             'tseo',
                             'cKey',
                             'kMerkmalWert',
                             'cSeo',
-                            $cSEOMerkmal
+                            $seoString
                         );
-                        if (isset($oSeo->kKey) && \strcasecmp($oSeo->cSeo, $cSEOMerkmal) === 0) {
-                            //haenge an GET, damit baueMerkmalFilter die Merkmalfilter setzen kann - @todo?
-                            $_GET['mf'][] = (int)$oSeo->kKey;
+                        if (isset($seoData->kKey) && \strcasecmp($seoData->cSeo, $seoString) === 0) {
+                            // haenge an GET, damit baueMerkmalFilter die Merkmalfilter setzen kann - @todo?
+                            $_GET['mf'][] = (int)$seoData->kKey;
+                        } else {
+                            self::$bSEOMerkmalNotFound = true;
+                        }
+                    }
+                }
+            }
+            if (\count($categories) > 1) {
+                if (!isset($_GET['kf'])) {
+                    $_GET['kf'] = [];
+                } elseif (!\is_array($_GET['kf'])) {
+                    $_GET['kf'] = [(int)$_GET['kf']];
+                }
+                self::$bSEOMerkmalNotFound = false;
+                foreach ($categories as $i => $seoString) {
+                    if ($i > 0 && \mb_strlen($seoString) > 0) {
+                        $seoData = self::Container()->getDB()->select(
+                            'tseo',
+                            'cKey',
+                            'kKategorie',
+                            'cSeo',
+                            $seoString
+                        );
+                        if (isset($seoData->kKey) && \strcasecmp($seoData->cSeo, $seoString) === 0) {
+                            $_GET['kf'][] = (int)$seoData->kKey;
                         } else {
                             self::$bSEOMerkmalNotFound = true;
                         }
@@ -1368,11 +1419,15 @@ final class Shop
             $oSeo = self::Container()->getDB()->select('tseo', 'cSeo', $seo);
             // EXPERIMENTAL_MULTILANG_SHOP
             if (isset($oSeo->kSprache)
-                && self::$kSprache !== $oSeo->kSprache
-                && \defined('EXPERIMENTAL_MULTILANG_SHOP')
+                && self::$kSprache !== (int)$oSeo->kSprache
                 && \EXPERIMENTAL_MULTILANG_SHOP === true
             ) {
-                $oSeo->kSprache = self::$kSprache;
+                if (\MULTILANG_URL_FALLBACK === true) {
+                    $oSeo->kSprache = self::$kSprache;
+                } else {
+                    // slug language id and shop language id have to match - 404 otherwise
+                    $oSeo = null;
+                }
             }
             // EXPERIMENTAL_MULTILANG_SHOP END
             // Link active?
@@ -1437,8 +1492,9 @@ final class Shop
                 self::updateLanguage((int)$oSeo->kSprache);
             }
         }
-        self::$MerkmalFilter = ProductFilter::initCharacteristicFilter();
-        self::$SuchFilter    = ProductFilter::initSearchFilter();
+        self::$MerkmalFilter     = ProductFilter::initCharacteristicFilter();
+        self::$SuchFilter        = ProductFilter::initSearchFilter();
+        self::$categoryFilterIDs = ProductFilter::initCategoryFilter();
 
         \executeHook(\HOOK_SEOCHECK_ENDE);
     }
@@ -1448,15 +1504,20 @@ final class Shop
      */
     private static function updateLanguage(int $languageID): void
     {
-        $spr   = self::Lang()->getIsoFromLangID($languageID);
-        $cLang = $spr->cISO ?? null;
-        if ($cLang !== $_SESSION['cISOSprache']) {
-            Frontend::checkReset($cLang);
+        $iso = self::Lang()->getIsoFromLangID($languageID)->cISO ?? null;
+        if ($iso !== $_SESSION['cISOSprache']) {
+            Frontend::checkReset($iso);
             Tax::setTaxRates();
         }
         if (self::$productFilter->getFilterConfig()->getLanguageID() !== $languageID) {
             self::$productFilter->getFilterConfig()->setLanguageID($languageID);
             self::$productFilter->initBaseStates();
+        }
+        $customer     = Frontend::getCustomer();
+        $customerLang = $customer->getLanguageID();
+        if ($customerLang > 0 && $customerLang !== $languageID) {
+            $customer->setLanguageID($languageID);
+            $customer->updateInDB();
         }
     }
 
@@ -1473,7 +1534,7 @@ final class Shop
             $parentID = Product::getParent(self::$kArtikel);
             if ($parentID > 0) {
                 $productID = $parentID;
-                //save data from child article POST and add to redirect
+                // save data from child article POST and add to redirect
                 $cRP = '';
                 if (\is_array($_POST) && \count($_POST) > 0) {
                     foreach (\array_keys($_POST) as $key) {
@@ -1558,12 +1619,16 @@ final class Shop
         } elseif (!empty(self::$kLink)) {
             $link = self::Container()->getLinkService()->getLinkByID(self::$kLink);
             if ($link !== null && ($linkType = $link->getLinkType()) > 0) {
+                self::$nLinkart = $linkType;
+
                 if ($linkType === \LINKTYP_EXTERNE_URL) {
                     \header('Location: ' . $link->getURL(), true, 303);
                     exit;
                 }
+
                 self::$fileName = 'seite.php';
                 self::setPageType(\PAGE_EIGENE);
+
                 if ($linkType === \LINKTYP_STARTSEITE) {
                     self::setPageType(\PAGE_STARTSEITE);
                 } elseif ($linkType === \LINKTYP_DATENSCHUTZ) {
@@ -1874,12 +1939,12 @@ final class Shop
     }
 
     /**
-     * @param bool $bForceSSL
+     * @param bool $forceSSL
      * @return string - the shop Admin URL without trailing slash
      */
-    public static function getAdminURL(bool $bForceSSL = false): string
+    public static function getAdminURL(bool $forceSSL = false): string
     {
-        return \rtrim(static::getURL($bForceSSL, false) . '/' . \PFAD_ADMIN, '/');
+        return \rtrim(static::getURL($forceSSL, false) . '/' . \PFAD_ADMIN, '/');
     }
 
     /**
@@ -1930,46 +1995,55 @@ final class Shop
     }
 
     /**
+     * @param bool $sessionSwitchAllowed
      * @return bool
-     * @throws Exception
      */
-    public static function isAdmin(): bool
+    public static function isAdmin(bool $sessionSwitchAllowed = false): bool
     {
         if (\is_bool(self::$logged)) {
             return self::$logged;
         }
 
-        $result       = false;
-        $adminToken   = null;
-        $adminLangTag = null;
-
-        $isLogged = static function () {
-            return self::Container()->getAdminAccount()->logged();
-        };
-
-        if (isset($_COOKIE['eSIdAdm'])) {
-            if (\session_name() !== 'eSIdAdm') {
-                $oldID = \session_id();
-                \session_write_close();
-                \session_id($_COOKIE['eSIdAdm']);
-                $result       = $isLogged();
-                $adminToken   = $_SESSION['jtl_token'];
-                $adminLangTag = $_SESSION['AdminAccount']->language;
-                \session_write_close();
-                \session_id($oldID);
-                Frontend::getInstance();
-            } else {
-                $result       = $isLogged();
-                $adminToken   = $_SESSION['jtl_token'];
-                $adminLangTag = $_SESSION['AdminAccount']->language;
-            }
+        if (\session_name() === 'eSIdAdm') {
+            // admin session already active
+            self::$logged       = self::Container()->getAdminAccount()->logged();
+            self::$adminToken   = $_SESSION['jtl_token'];
+            self::$adminLangTag = $_SESSION['AdminAccount']->language;
+        } elseif (!empty($_SESSION['loggedAsAdmin']) && $_SESSION['loggedAsAdmin'] === true) {
+            // frontend session has been notified by admin session
+            self::$logged       = true;
+            self::$adminToken   = $_SESSION['adminToken'];
+            self::$adminLangTag = $_SESSION['adminLangTag'];
+            self::Container()->getGetText();
+        } elseif ($sessionSwitchAllowed === true
+            && isset($_COOKIE['eSIdAdm'])
+            && Request::verifyGPDataString('fromAdmin') === 'yes'
+        ) {
+            // frontend session has not been notified yet
+            // try to fetch information autonomously
+            $frontendId = \session_id();
+            \session_write_close();
+            \session_name('eSIdAdm');
+            \session_id($_COOKIE['eSIdAdm']);
+            \session_start();
+            $adminToken                   = $_SESSION['jtl_token'];
+            $adminLangTag                 = $_SESSION['AdminAccount']->language;
+            $_SESSION['frontendUpToDate'] = true;
+            \session_write_close();
+            \session_name('JTLSHOP');
+            \session_id($frontendId);
+            \session_start();
+            self::$logged       = $_SESSION['loggedAsAdmin'] = true;
+            self::$adminToken   = $_SESSION['adminToken']    = $adminToken;
+            self::$adminLangTag = $_SESSION['adminLangTag']  = $adminLangTag;
+        } else {
+            // no information about admin session available
+            self::$logged       = null;
+            self::$adminToken   = null;
+            self::$adminLangTag = null;
         }
 
-        self::$logged       = $result;
-        self::$adminToken   = $adminToken;
-        self::$adminLangTag = $adminLangTag;
-
-        return $result;
+        return self::$logged ?? false;
     }
 
     /**
@@ -2140,7 +2214,8 @@ final class Shop
                 $container->getBackendLogService(),
                 new AdminLoginStatusMessageMapper(),
                 new AdminLoginStatusToLogLevel(),
-                $container->getGetText()
+                $container->getGetText(),
+                $container->getAlertService()
             );
         });
 
@@ -2160,8 +2235,12 @@ final class Shop
             return new Mailer($hydrator, $smarty, $settings, $validator);
         });
 
-        $container->singleton(ManagerInterface::class, static function () {
-            return new Manager();
+        $container->singleton(ManagerInterface::class, static function (Container $container) {
+            return new Manager($container->getDB());
+        });
+
+        $container->singleton(TemplateServiceInterface::class, static function (Container $container) {
+            return new TemplateService($container->getDB(), $container->getCache());
         });
 
         $container->bind(CronController::class);

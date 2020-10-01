@@ -9,7 +9,7 @@
     {/if}
     {block name='boxes-box-special-offer-include-product-slider'}
         {include file='snippets/product_slider.tpl'
-            id='boxslider-special-offer'
+            id="boxslider-special-offer-{$oBox->getID()}"
             productlist=$specialOfferArticles
             title=$slidertitle
             tplscope='box'

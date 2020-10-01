@@ -8,7 +8,6 @@ use JTL\Checkout\Bestellung;
 use JTL\DB\ReturnType;
 use JTL\Nice;
 use JTL\Shop;
-use stdClass;
 
 /**
  * Class Download
@@ -254,7 +253,7 @@ class Download
                     ORDER BY tdownload.nSort, tdownload.dErstellt DESC',
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            foreach ($items as $i => &$download) {
+            foreach ($items as $i => $download) {
                 $download->kDownload = (int)$download->kDownload;
                 $downloads[$i]       = new self(
                     $download->kDownload,
@@ -365,8 +364,8 @@ class Download
             if (!\is_array($download->oArtikelDownload_arr) || \count($download->oArtikelDownload_arr) === 0) {
                 return self::ERROR_PRODUCT_NOT_FOUND;
             }
-            foreach ($order->Positionen as &$item) {
-                foreach ($download->oArtikelDownload_arr as &$donwloadItem) {
+            foreach ($order->Positionen as $item) {
+                foreach ($download->oArtikelDownload_arr as $donwloadItem) {
                     if ($item->kArtikel != $donwloadItem->kArtikel) {
                         continue;
                     }
@@ -653,22 +652,6 @@ class Download
     public function getErstellt()
     {
         return $this->dErstellt;
-    }
-
-    /**
-     * @return mixed
-     */
-    private function kopiereMembers()
-    {
-        $obj     = new stdClass();
-        $members = \array_keys(\get_object_vars($this));
-        if (\is_array($members) && \count($members) > 0) {
-            foreach ($members as &$member) {
-                $obj->$member = $this->$member;
-            }
-        }
-
-        return $obj;
     }
 
     /**

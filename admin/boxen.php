@@ -9,7 +9,6 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Link\LinkGroupInterface;
 use JTL\Shop;
-use JTL\Template;
 use function Functional\map;
 use function Functional\reindex;
 
@@ -185,7 +184,8 @@ if (Request::postInt('einstellungen') > 0) {
 }
 $boxList       = $boxService->buildList($pageID, false);
 $boxTemplates  = $boxAdmin->getTemplates($pageID);
-$boxContainer  = Template::getInstance()->getBoxLayoutXML();
+$model         = Shop::Container()->getTemplateService()->getActiveTemplate();
+$boxContainer  = $model->getBoxLayout();
 $filterMapping = [];
 if ($pageID === PAGE_ARTIKELLISTE) { //map category name
     $filterMapping = Shop::Container()->getDB()->query(
@@ -215,6 +215,14 @@ $filterMapping = reindex($filterMapping, static function ($e) {
 $filterMapping = map($filterMapping, static function ($e) {
     return $e->name;
 });
+
+$alertHelper->addAlert(
+    Alert::TYPE_WARNING,
+    __('warningNovaSidebar'),
+    'warningNovaSidebar',
+    ['dismissable' => false]
+);
+
 $smarty->assign('filterMapping', $filterMapping)
     ->assign('validPageTypes', $boxAdmin->getMappedValidPageTypes())
     ->assign('bBoxenAnzeigen', $boxAdmin->getVisibility($pageID))

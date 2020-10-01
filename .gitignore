@@ -1,6 +1,7 @@
 # files
 /includes/config.JTL-Shop.ini.php
 /includes/plugins/*
+/plugins/*
 /rss.xml
 /shopinfo.xml
 /.idea
@@ -42,7 +43,9 @@
 /media/image/news/*
 /media/image/newscategory/*
 /media/image/opc/*
+/media/image/variation/*
 /media/video/*
+!/media/video/open_opc.mp4
 
 # mediafiles
 /mediafiles/Bilder/*
@@ -53,6 +56,7 @@
 /mediafiles/.thumbs
 
 # other
+/templates/NOVA/images/overlay/*
 /admin/templates_c/*
 /templates_c/*
 /export/*
@@ -83,6 +87,8 @@
 !/mediafiles/Bilder/.md/.gitkeep
 !/mediafiles/Bilder/.lg/.gitkeep
 !/mediafiles/Bilder/.xl/.gitkeep
+!/plugins/.gitkeep
+!/plugins/.htaccess
 bootstrap/*
 node_modules/
 /uploads/*

@@ -360,6 +360,9 @@ msgstr "Plugin-Marktplatz"
 msgid "Plug-in manager"
 msgstr "Plugin-Manager"
 
+msgid "My purchases"
+msgstr "Meine Käufe"
+
 msgid "Plug-in profiler"
 msgstr "Plugin-Profiler"
 
@@ -387,6 +390,9 @@ msgstr "Systemprüfung"
 
 msgid "Rating system"
 msgstr "Bewertungssystem"
+
+msgid "Consent manager"
+msgstr "Consent-Manager"
 
 msgid "Manage favorites"
 msgstr "Favoriten verwalten"
@@ -508,6 +514,9 @@ msgstr "Fehlerbehebung"
 
 msgid "System diagnostics"
 msgstr "Diagnose"
+
+msgid "Set up"
+msgstr "Einrichten"
 
 msgid "Email templates"
 msgstr "Vorlagen"

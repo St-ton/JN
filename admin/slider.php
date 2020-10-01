@@ -11,7 +11,6 @@ use JTL\Slide;
 use JTL\Slider;
 
 require_once __DIR__ . '/includes/admininclude.php';
-require_once PFAD_ROOT . PFAD_ADMIN . 'toolsajax.server.php';
 $oAccount->permission('SLIDER_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'slider_inc.php';
@@ -39,6 +38,7 @@ switch ($action) {
             $slide->setSliderID($kSlider);
             $slide->setTitle(htmlspecialchars($aSlide['cTitel'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET));
             $slide->setImage($aSlide['cBild']);
+            $slide->setThumbnail($aSlide['cThumbnail']);
             $slide->setText($aSlide['cText']);
             $slide->setLink($aSlide['cLink']);
             $slide->setSort((int)$aSlide['nSort']);

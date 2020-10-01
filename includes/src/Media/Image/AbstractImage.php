@@ -28,12 +28,42 @@ abstract class AbstractImage implements IMedia
     /**
      * @var string
      */
-    protected $regEx = '';
+    public const REGEX = '';
 
     /**
      * @var array
      */
     protected static $imageExtensions = ['jpg', 'jpeg', 'webp', 'gif', 'png', 'bmp'];
+
+    /**
+     * @var DbInterface
+     */
+    protected $db;
+
+    /**
+     * AbstractImage constructor.
+     * @param DbInterface|null $db
+     */
+    public function __construct(DbInterface $db = null)
+    {
+        $this->db = $db ?? Shop::Container()->getDB();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getDB(): DbInterface
+    {
+        return $this->db;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setDB(DbInterface $db): void
+    {
+        $this->db = $db;
+    }
 
     /**
      * @inheritdoc
@@ -43,7 +73,7 @@ abstract class AbstractImage implements IMedia
         try {
             $request      = '/' . \ltrim($request, '/');
             $mediaReq     = $this->create($request);
-            $allowedNames = static::getImageNames($mediaReq);
+            $allowedNames = $this->getImageNames($mediaReq);
             if (\count($allowedNames) === 0) {
                 throw new Exception('No such image id: ' . (int)$mediaReq->id);
             }
@@ -141,13 +171,15 @@ abstract class AbstractImage implements IMedia
     /**
      * @inheritdoc
      */
-    public function isValid(string $request): bool
+    public static function isValid(string $request): bool
     {
-        return $this->parse($request) !== null;
+        return self::parse($request) !== null;
     }
 
     /**
-     * @inheritdoc
+     * @param string $type
+     * @param int    $id
+     * @return stdClass|null
      */
     public static function getImageStmt(string $type, int $id): ?stdClass
     {
@@ -157,7 +189,7 @@ abstract class AbstractImage implements IMedia
     /**
      * @inheritdoc
      */
-    public static function getImageNames(MediaImageRequest $req): array
+    public function getImageNames(MediaImageRequest $req): array
     {
         return [];
     }
@@ -165,7 +197,7 @@ abstract class AbstractImage implements IMedia
     /**
      * @inheritdoc
      */
-    public static function getPathByID($id, int $number = null): ?string
+    public function getPathByID($id, int $number = null): ?string
     {
         return null;
     }
@@ -181,10 +213,10 @@ abstract class AbstractImage implements IMedia
     /**
      * @inheritdoc
      */
-    public static function getStats(bool $filesize = false): StatsItem
+    public function getStats(bool $filesize = false): StatsItem
     {
         $result = new StatsItem();
-        foreach (static::getAllImages() as $image) {
+        foreach ($this->getAllImages() as $image) {
             if ($image === null) {
                 continue;
             }
@@ -221,9 +253,9 @@ abstract class AbstractImage implements IMedia
         if ($limit !== null) {
             $limitStmt = ' LIMIT ';
             if ($offset !== null) {
-                $limitStmt .= (int)$offset . ', ';
+                $limitStmt .= $offset . ', ';
             }
-            $limitStmt .= (int)$limit;
+            $limitStmt .= $limit;
         }
 
         return $limitStmt;
@@ -233,11 +265,11 @@ abstract class AbstractImage implements IMedia
      * @inheritdoc
      * @throws Exception
      */
-    public static function getImages(bool $notCached = false, int $offset = null, int $limit = null): array
+    public function getImages(bool $notCached = false, int $offset = null, int $limit = null): array
     {
         $requests = [];
-        foreach (static::getAllImages($offset, $limit) as $req) {
-            if ($notCached && static::isCached($req)) {
+        foreach ($this->getAllImages($offset, $limit) as $req) {
+            if ($notCached && $this->isCached($req)) {
                 continue;
             }
             $requests[] = $req;
@@ -249,7 +281,7 @@ abstract class AbstractImage implements IMedia
     /**
      * @inheritdoc
      */
-    public static function getAllImages(int $offset = null, int $limit = null): Generator
+    public function getAllImages(int $offset = null, int $limit = null): Generator
     {
         yield from [];
     }
@@ -257,17 +289,17 @@ abstract class AbstractImage implements IMedia
     /**
      * @inheritdoc
      */
-    public static function getUncachedImageCount(): int
+    public function getUncachedImageCount(): int
     {
-        return \count(select(static::getAllImages(), static function (MediaImageRequest $e) {
-            return !static::isCached($e) && ($file = $e->getRaw()) !== null && \file_exists($file);
+        return \count(select($this->getAllImages(), function (MediaImageRequest $e) {
+            return !$this->isCached($e) && ($file = $e->getRaw()) !== null && \file_exists($file);
         }));
     }
 
     /**
      * @inheritDoc
      */
-    public static function cacheImage(MediaImageRequest $req, bool $overwrite = false): array
+    public function cacheImage(MediaImageRequest $req, bool $overwrite = false): array
     {
         $result     = [];
         $rawImage   = null;
@@ -294,7 +326,7 @@ abstract class AbstractImage implements IMedia
                     $res->cached = \is_file($thumbPath);
                     if ($res->cached === false) {
                         $renderStart = \microtime(true);
-                        if ($rawImage === null && ($rawPath !== null && !\is_file($rawPath))) {
+                        if ($rawImage === null && $rawPath !== null && !\is_file($rawPath)) {
                             throw new Exception(\sprintf('Image source "%s" does not exist', $rawPath));
                         }
                         Image::render($req);
@@ -315,7 +347,7 @@ abstract class AbstractImage implements IMedia
     /**
      * @inheritdoc
      */
-    public static function clearCache($id = null): void
+    public static function clearCache($id = null): bool
     {
         $baseDir     = \realpath(\PFAD_ROOT . MediaImageRequest::getCachePath(static::getType()));
         $ids         = \is_array($id) ? $id : [$id];
@@ -328,29 +360,36 @@ abstract class AbstractImage implements IMedia
             }
         );
         try {
+            $res    = true;
             $finder = new Finder();
             $finder->ignoreUnreadableDirs()->in($directories);
             foreach ($finder->files() as $file) {
                 /** @var SplFileInfo $file */
-                \unlink($file->getRealPath());
+                $loop = \unlink($file->getRealPath());
+                $res  = $res && $loop;
             }
             foreach (\array_reverse(\iterator_to_array($finder->directories(), true)) as $directory) {
                 /** @var SplFileInfo $directory */
-                \rmdir($directory->getRealPath());
+                $loop = \rmdir($directory->getRealPath());
+                $res  = $res && $loop;
             }
             foreach ($directories as $directory) {
                 if ($directory !== $baseDir) {
-                    \rmdir($directory);
+                    $loop = \rmdir($directory);
+                    $res  = $res && $loop;
                 }
             }
         } catch (Exception $e) {
+            $res = false;
         }
+
+        return $res;
     }
 
     /**
      * @inheritdoc
      */
-    public static function imageIsUsed(DbInterface $db, string $path): bool
+    public function imageIsUsed(string $path): bool
     {
         return true;
     }
@@ -358,7 +397,7 @@ abstract class AbstractImage implements IMedia
     /**
      * @inheritdoc
      */
-    public static function getTotalImageCount(): int
+    public function getTotalImageCount(): int
     {
         return 0;
     }
@@ -367,7 +406,7 @@ abstract class AbstractImage implements IMedia
      * @param MediaImageRequest $req
      * @return bool
      */
-    protected static function isCached(MediaImageRequest $req): bool
+    protected function isCached(MediaImageRequest $req): bool
     {
         return every(Image::getAllSizes(), static function ($e) use ($req) {
             return \file_exists($req->getThumb($e, true));
@@ -388,10 +427,10 @@ abstract class AbstractImage implements IMedia
     }
 
     /**
-     * @param string $request
+     * @param string|null $request
      * @return array|null
      */
-    protected function parse(?string $request): ?array
+    protected static function parse(?string $request): ?array
     {
         if (!\is_string($request) || \mb_strlen($request) === 0) {
             return null;
@@ -400,7 +439,7 @@ abstract class AbstractImage implements IMedia
             $request = \mb_substr($request, 1);
         }
 
-        return \preg_match($this->regEx, $request, $matches)
+        return \preg_match(static::REGEX, $request, $matches)
             ? \array_intersect_key($matches, \array_flip(\array_filter(\array_keys($matches), '\is_string')))
             : null;
     }
@@ -415,12 +454,12 @@ abstract class AbstractImage implements IMedia
     }
 
     /**
-     * @param string $request
+     * @param string|null $request
      * @return MediaImageRequest
      */
     protected function create(?string $request): MediaImageRequest
     {
-        return MediaImageRequest::create($this->parse($request));
+        return MediaImageRequest::create(self::parse($request));
     }
 
     /**

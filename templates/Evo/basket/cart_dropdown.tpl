@@ -42,7 +42,13 @@
             <tfoot>
                 {if $NettoPreise}
                     <tr class="total total-net">
-                        <td colspan="3">{lang key='totalSum'} ({lang key='net' section='global'}):</td>
+                        <td colspan="3">
+                            {if empty($smarty.session.Versandart)}
+                                {lang key='subtotal' section='account data'}
+                            {else}
+                                {lang key='totalSum'}
+                            {/if} ({lang key='net' section='global'}):
+                        </td>
                         <td class="text-nowrap text-right"><strong>{$WarensummeLocalized[$NettoPreise]}</strong></td>
                     </tr>
                 {/if}
@@ -55,7 +61,13 @@
                     {/foreach}
                 {/if}
                 <tr class="total">
-                    <td colspan="3">{lang key='totalSum'}:</td>
+                    <td colspan="3">
+                        {if empty($smarty.session.Versandart)}
+                            {lang key='subtotal' section='account data'}
+                        {else}
+                            {lang key='totalSum'}
+                        {/if}:
+                    </td>
                     <td class="text-nowrap text-right total"><strong>{$WarensummeLocalized[0]}</strong></td>
                 </tr>
                 {if isset($FavourableShipping)}
@@ -65,7 +77,7 @@
                         {$shippingCosts = $FavourableShipping->cPriceLocalized[$NettoPreise]}
                     {/if}
                     <tr class="shipping-costs">
-                        <td colspan="4"><small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$shippingCosts:$FavourableShipping->cCountryCode key='shippingInformationSpecific' section='basket'}</small></td>
+                        <td colspan="4"><small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$shippingCosts:$FavourableShipping->country->getName() key='shippingInformationSpecific' section='basket'}</small></td>
                     </tr>
                 {elseif empty($FavourableShipping) && empty($smarty.session.Versandart)}
                     <tr class="shipping-costs text-right">

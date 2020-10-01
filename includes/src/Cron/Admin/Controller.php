@@ -4,6 +4,7 @@ namespace JTL\Cron\Admin;
 
 use DateTime;
 use InvalidArgumentException;
+use JTL\Cache\JTLCacheInterface;
 use JTL\Cron\Job\Statusmail;
 use JTL\Cron\JobHydrator;
 use JTL\Cron\JobInterface;
@@ -38,42 +39,53 @@ final class Controller
     private $hydrator;
 
     /**
-     * Listing constructor.
-     * @param DbInterface     $db
-     * @param LoggerInterface $logger
-     * @param JobHydrator     $hydrator
+     * @var JTLCacheInterface
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger, JobHydrator $hydrator)
-    {
+    private $cache;
+
+    /**
+     * Controller constructor.
+     * @param DbInterface       $db
+     * @param LoggerInterface   $logger
+     * @param JobHydrator       $hydrator
+     * @param JTLCacheInterface $cache
+     */
+    public function __construct(
+        DbInterface $db,
+        LoggerInterface $logger,
+        JobHydrator $hydrator,
+        JTLCacheInterface $cache
+    ) {
         $this->db       = $db;
         $this->logger   = $logger;
         $this->hydrator = $hydrator;
+        $this->cache    = $cache;
     }
 
     /**
-     * @param int $id
+     * @param int $jobQueueId
      * @return int
      */
-    public function resetQueueEntry(int $id): int
+    public function resetQueueEntry(int $jobQueueId): int
     {
-        return $this->db->update('tjobqueue', 'id', $id, (object)['isRunning' => 0]);
+        return $this->db->update('tjobqueue', 'jobQueueID', $jobQueueId, (object)['isRunning' => 0]);
     }
 
     /**
-     * @param int $id
+     * @param int $cronId
      * @return int
      */
-    public function deleteQueueEntry(int $id): int
+    public function deleteQueueEntry(int $cronId): int
     {
-        $affected = $this->db->queryPrepared(
+        $affected = (int)$this->db->queryPrepared(
             'DELETE FROM tjobqueue WHERE cronID = :id',
-            ['id' => $id],
+            ['id' => $cronId],
             ReturnType::AFFECTED_ROWS
         );
 
-        return $affected + $this->db->queryPrepared(
+        return $affected + (int)$this->db->queryPrepared(
             'DELETE FROM tcron WHERE cronID = :id',
-            ['id' => $id],
+            ['id' => $cronId],
             ReturnType::AFFECTED_ROWS
         );
     }
@@ -141,10 +153,13 @@ final class Controller
     {
         $jobs = [];
         $all  = $this->db->query(
-            'SELECT tcron.*, tjobqueue.isRunning, tjobqueue.jobQueueID
+            'SELECT tcron.*, tjobqueue.isRunning, tjobqueue.jobQueueID, texportformat.cName AS exportName
                 FROM tcron
                 LEFT JOIN tjobqueue
-                    ON tcron.cronID = tjobqueue.cronID',
+                    ON tcron.cronID = tjobqueue.cronID
+                LEFT JOIN texportformat
+                    ON texportformat.kExportformat = tcron.foreignKeyID
+                    AND tcron.tableName = \'texportformat\'',
             ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($all as $cron) {
@@ -158,7 +173,7 @@ final class Controller
             $mapper          = new JobTypeToJob();
             try {
                 $class = $mapper->map($cron->jobType);
-                $job   = new $class($this->db, $this->logger, $this->hydrator);
+                $job   = new $class($this->db, $this->logger, $this->hydrator, $this->cache);
                 /** @var JobInterface $job */
                 $jobs[] = $job->hydrate($cron);
             } catch (InvalidArgumentException $e) {

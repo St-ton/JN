@@ -5,6 +5,7 @@ use JTL\Catalog\Currency;
 use JTL\Cron\LegacyCron;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
+use JTL\Exportformat;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Shop;
@@ -30,7 +31,7 @@ function holeExportformatCron(): array
         ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($exports as $export) {
-        $export->cAlleXStdToDays = rechneUmAlleXStunden($export->frequency);
+        $export->cAlleXStdToDays = rechneUmAlleXStunden((int)$export->frequency);
         $export->Sprache         = Shop::Lang()->getLanguageByID((int)$export->kSprache);
         $export->Waehrung        = $db->select(
             'twaehrung',
@@ -49,7 +50,10 @@ function holeExportformatCron(): array
             ['id' => (int)$export->cronID],
             ReturnType::SINGLE_OBJECT
         );
-        $export->nAnzahlArtikel  = holeMaxExportArtikelAnzahl($export);
+        $exportFormat            = new Exportformat($export->kExportformat, $db);
+        $export->nAnzahlArtikel  = (object)[
+            'nAnzahl' => $exportFormat->getExportProductCount(),
+        ];
     }
 
     return $exports;
@@ -84,7 +88,7 @@ function holeCron(int $cronID)
  * @param int $hours
  * @return bool|string
  */
-function rechneUmAlleXStunden($hours)
+function rechneUmAlleXStunden(int $hours)
 {
     if ($hours <= 0) {
         return false;

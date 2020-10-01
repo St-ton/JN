@@ -41,3 +41,16 @@
 
 	&.disabled { pointer-events: none; opacity: 0; }
 }
+
+#shop-nav {
+	.nav-link {
+		@include media-breakpoint-down(sm) {
+			padding-left:	map_get($spacers, 3) * 0.75;
+			padding-right: map_get($spacers, 3) * 0.75
+		}
+	}
+}
+
+.nav-panel .nav .nav {
+	padding-left: map-get($spacers, 2);
+}

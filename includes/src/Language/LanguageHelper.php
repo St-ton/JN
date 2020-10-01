@@ -162,8 +162,8 @@ class LanguageHelper
     ];
 
     /**
-     * @param DbInterface|null  $db
-     * @param JTLCacheInterface $cache
+     * @param DbInterface|null       $db
+     * @param JTLCacheInterface|null $cache
      * @return $this
      */
     public static function getInstance(DbInterface $db = null, JTLCacheInterface $cache = null): self
@@ -365,7 +365,9 @@ class LanguageHelper
             }
         }
         $this->currentLanguageID = $this->mappekISO($this->currentISOCode);
-        $_SESSION['kSprachISO']  = $this->currentLanguageID;
+        if (isset($_SESSION)) {
+            $_SESSION['kSprachISO'] = $this->currentLanguageID;
+        }
 
         return $this;
     }

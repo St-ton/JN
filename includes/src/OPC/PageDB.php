@@ -154,27 +154,6 @@ class PageDB
     }
 
     /**
-     * @param string $id
-     * @return array
-     */
-    public function getOtherLanguageDraftRows(string $id): array
-    {
-        $pageIdFields       = \explode(';', $id);
-        $langField          = \array_pop($pageIdFields);
-        $languageKey        = \explode(':', $langField);
-        $languageKey        = (int)$languageKey[1];
-        $pageIdSearchPrefix = \implode(';', $pageIdFields) . ';lang:';
-
-        return $this->shopDB->query(
-            "SELECT o.*, s.kSprache, s.cNameEnglisch
-                FROM topcpage AS o
-                    JOIN tsprache AS s ON CONCAT('$pageIdSearchPrefix', s.kSprache) = o.cPageId
-                WHERE kSprache != $languageKey",
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-    }
-
-    /**
      * @param int $key
      * @return Page
      * @throws Exception
@@ -182,6 +161,11 @@ class PageDB
     public function getDraft(int $key) : Page
     {
         $draftRow = $this->getDraftRow($key);
+        $seo      = $this->getPageSeo($draftRow->cPageId);
+
+        if (!empty($seo)) {
+            $draftRow->cPageUrl = $seo;
+        }
 
         return $this->getPageFromRow($draftRow);
     }
@@ -229,6 +213,105 @@ class PageDB
         ]);
 
         return $page;
+    }
+
+    /**
+     * @param string $pageId
+     * @return string|null
+     */
+    public function getPageSeo(string $pageId): ?string
+    {
+        $pageIdObj = \json_decode($pageId);
+
+        if (empty($pageIdObj)) {
+            return null;
+        }
+
+        switch ($pageIdObj->type) {
+            case 'product':
+                $cKey = 'kArtikel';
+                break;
+            case 'category':
+                $cKey = 'kKategorie';
+                break;
+            case 'manufacturer':
+                $cKey = 'kHersteller';
+                break;
+            case 'link':
+                $cKey = 'kLink';
+                break;
+            case 'attrib':
+                $cKey = 'kMerkmalWert';
+                break;
+            case 'special':
+                $cKey = 'suchspecial';
+                break;
+            case 'news':
+                $cKey = 'kNews';
+                break;
+            case 'newscat':
+                $cKey = 'kNewsKategorie';
+                break;
+            default:
+                $cKey = null;
+                break;
+        }
+
+        if (empty($cKey)) {
+            return null;
+        }
+
+        $seo = $this->shopDB->queryPrepared(
+            'SELECT cSeo FROM tseo WHERE cKey = :ckey AND kKey = :key AND kSprache = :lang',
+            ['ckey' => $cKey, 'key' => $pageIdObj->id, 'lang' => $pageIdObj->lang],
+            ReturnType::SINGLE_OBJECT
+        );
+
+        if (empty($seo)) {
+            return null;
+        }
+
+        if (!empty($pageIdObj->attribs)) {
+            $attribSeos = $this->shopDB->queryPrepared(
+                "SELECT cSeo FROM tseo WHERE cKey = 'kMerkmalWert'
+                     AND kKey IN (" . \implode(',', $pageIdObj->attribs) . ")
+                     AND kSprache = :lang",
+                ['lang' => $pageIdObj->lang],
+                ReturnType::ARRAY_OF_OBJECTS
+            );
+
+            if (\count($attribSeos) !== \count($pageIdObj->attribs)) {
+                return null;
+            }
+        }
+
+        if (!empty($pageIdObj->manufacturerFilter)) {
+            $manufacturerSeo = $this->shopDB->queryPrepared(
+                "SELECT cSeo FROM tseo WHERE cKey = 'kHersteller'
+                     AND kKey = :kKey
+                     AND kSprache = :lang",
+                ['kKey' => $pageIdObj->manufacturerFilter, 'lang' => $pageIdObj->lang],
+                ReturnType::SINGLE_OBJECT
+            );
+
+            if (empty($manufacturerSeo)) {
+                return null;
+            }
+        }
+
+        $result = '/' . $seo->cSeo;
+
+        if (!empty($attribSeos)) {
+            foreach ($attribSeos as $seo) {
+                $result .= '__' . $seo->cSeo;
+            }
+        }
+
+        if (!empty($manufacturerSeo)) {
+            $result .= '::' . $manufacturerSeo->cSeo;
+        }
+
+        return $result;
     }
 
     /**

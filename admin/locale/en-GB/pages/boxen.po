@@ -3,7 +3,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "boxen"
-msgstr "Boxes/Footer"
+msgstr "Footers/Boxes"
 
 msgid "boxenURL"
 msgstr "https://jtl-url.de/li846"
@@ -269,3 +269,6 @@ msgstr "Category"
 
 msgid "templateTypeExtension"
 msgstr "Plug-in"
+
+msgid "warningNovaSidebar"
+msgstr "The NOVA template only supports boxes in the left side bar for the page type \"Item overview\". Please use a personalised template if you also want to display boxes in the left side bar on other pages."

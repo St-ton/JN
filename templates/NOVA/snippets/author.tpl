@@ -3,13 +3,14 @@
         <div itemprop="author" itemscope itemtype="https://schema.org/Person">
             {block name='snippets-author-title'}
                 {if $showModal|default:true}
-                    {link class="author-modal"
-                        itemprop="name"
+                    {link class="author-modal d-inline-block"
                         href="#"
                         title=$oAuthor->cName
                         data=["target"=>"#author-{$oAuthor->kContentAuthor}"]
                     }
-                        {$oAuthor->cName}
+                        <span itemprop="name">
+                            {$oAuthor->cName}
+                        </span>
                     {/link}
                 {else}
                     <span itemprop="name">

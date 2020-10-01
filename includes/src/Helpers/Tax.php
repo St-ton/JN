@@ -39,7 +39,7 @@ class Tax
     }
 
     /**
-     * @param string $countryCode
+     * @param string|null $countryCode
      * @since since 5.0.0
      */
     public static function setTaxRates($countryCode = null): void
@@ -48,6 +48,7 @@ class Tax
         $billingCountryCode     = null;
         $merchantCountryCode    = 'DE';
         $db                     = Shop::Container()->getDB();
+        $conf                   = Shop::getSettings([\CONF_KUNDEN])['kunden'];
         $Firma                  = $db->query(
             'SELECT cLand FROM tfirma',
             ReturnType::SINGLE_OBJECT
@@ -57,6 +58,9 @@ class Tax
         }
         if (\defined('STEUERSATZ_STANDARD_LAND')) {
             $merchantCountryCode = STEUERSATZ_STANDARD_LAND;
+        }
+        if ($conf['kundenregistrierung_standardland'] !== '') {
+            $merchantCountryCode = $conf['kundenregistrierung_standardland'];
         }
         $deliveryCountryCode = $merchantCountryCode;
         if ($countryCode) {
@@ -177,10 +181,10 @@ class Tax
     }
 
     /**
-     * @param array             $items
-     * @param int|bool          $net
-     * @param true              $html
-     * @param Currency|stdClass $currency
+     * @param array                  $items
+     * @param int|bool               $net
+     * @param true                   $html
+     * @param Currency|stdClass|null $currency
      * @return array
      * @former gibAlteSteuerpositionen()
      * @since since 5.0.0

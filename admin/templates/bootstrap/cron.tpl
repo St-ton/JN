@@ -51,7 +51,7 @@
                                 <tbody>
                                     {foreach $jobs as $job}
                                         <tr>
-                                            <td>{__($job->getType())}</td>
+                                            <td>{__($job->getType())}{if $job->getName() !== null} {$job->getName()}{/if}</td>
                                             <td class="text-center">{$job->getStartTime()->format('H:i')}</td>
                                             <td class="text-center">{if $job->getDateLastStarted() === null}&dash;{else}{$job->getDateLastStarted()->format('d.m.Y H:i')}{/if}</td>
                                             <td class="text-center">{$job->getFrequency()}h</td>

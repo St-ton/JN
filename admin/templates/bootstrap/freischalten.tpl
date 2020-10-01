@@ -4,14 +4,14 @@
     <div class="card">
         <div class="card-body">
             <div class="row">
-                <div class="col-sm-6 col-xl-auto mb-3">
+                <div class="col-sm-6 col-xl-auto mb-sm-0 mb-3">
                     {include file='tpl_inc/language_switcher.tpl' id='formSprachwechselSelect' action='freischalten.php"'}
                 </div>
                 <div class="ml-auto col-sm-6 col-xl-auto">
                     <form name="suche" method="post" action="freischalten.php">
                         <div class="row">
                             {$jtl_token}
-                            <div class="col-sm-6 col-xl-auto mb-3 mb-3">
+                            <div class="col-sm-6 col-xl-auto mb-sm-0 mb-3">
                                 <div class="form-row">
                                     <label class="col-sm-auto col-form-label" for="search_type">{__('freischaltenSearchType')}:</label>
                                     <span class="col-sm-auto">
@@ -24,11 +24,11 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="col-sm-6 col-xl-auto mb-3">
+                            <div class="col-sm-6 col-xl-auto mb-sm-0 mb-3">
                                 <input type="hidden" name="Suche" value="1" />
                                 <div class="form-row">
                                     <label for="search_key" class="col-sm-auto col-form-label sr-only">{__('freischaltenSearchItem')}</label>
-                                    <span class="col-sm-auto mb-3">
+                                    <span class="col-sm-auto mb-sm-0 mb-3">
                                         <input class="form-control" name="cSuche" type="text" value="{if isset($cSuche)}{$cSuche}{/if}"
                                                id="search_key" placeholder="{__('freischaltenSearchItem')}">
                                     </span>

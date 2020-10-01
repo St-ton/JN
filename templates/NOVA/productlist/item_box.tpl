@@ -100,7 +100,7 @@
                         {/block}
                         {block name='productlist-index-include-rating'}
                             {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}
-                                {include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}<br>
+                                {include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung link=$Artikel->cURLFull}<br>
                             {/if}
                         {/block}
                         {block name='productlist-index-include-price'}

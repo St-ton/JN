@@ -114,6 +114,9 @@ msgstr "Hidden on MD"
 msgid "Hidden on LG"
 msgstr "Hidden on LG"
 
+msgid "cssNumericDesc"
+msgstr "Enter the desired value without spaces and use a decimal point as separator (e.g. 5px, 0.5em, 50%)."
+
 # Animations tab
 
 msgid "Animation style"
@@ -148,9 +151,6 @@ msgstr "OnPage Composer"
 
 msgid "toggleNavigation"
 msgstr "Toggle navigation"
-
-msgid "somethingHappend"
-msgstr "An unknown error occurred."
 
 msgid "noteInfoInGuide"
 msgstr "Aside from the guided tours listed below, you can also find a lot of information in the <a href=\"https://guide.jtl-software.com\" target=\"_blank\"><i class=\"fa fa-external-link\"></i> JTL-Guide</a>."
@@ -302,6 +302,9 @@ msgstr "Apply to other languages"
 msgid "editPage"
 msgstr "Edit page"
 
+msgid "opcNotSupportedPage"
+msgstr "Unfortunately, you cannot edit this page with the OnPage Composer!"
+
 msgid "newDraft"
 msgstr "New draft"
 
@@ -451,3 +454,11 @@ msgstr "Back"
 
 msgid "Done"
 msgstr "Done"
+
+# MISC
+
+msgid "alignment"
+msgstr "Alignment"
+
+msgid "targetBlank"
+msgstr "Open link in new tab"

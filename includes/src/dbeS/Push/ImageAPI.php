@@ -36,10 +36,11 @@ final class ImageAPI extends AbstractPush
         } catch (InvalidArgumentException $e) {
             return;
         }
-        $instance = Media::getClass($this->imageType);
+        $class = Media::getClass($this->imageType);
         /** @var IMedia $instance */
-        $imageNo = Request::getInt('n', 1);
-        $path    = $instance::getPathByID($this->imageID, $imageNo);
+        $instance = new $class($this->db);
+        $imageNo  = Request::getInt('n', 1);
+        $path     = $instance->getPathByID($this->imageID, $imageNo);
         if ($path === null) {
             return;
         }
@@ -51,14 +52,14 @@ final class ImageAPI extends AbstractPush
             'ext'        => \pathinfo($path)['extension'],
             'sourcePath' => $path
         ]);
-        $names = $instance::getImageNames($req);
+        $names = $instance->getImageNames($req);
         if (\count($names) === 0) {
             return;
         }
         $req->setName($names[0]);
         $thumb = $req->getThumb();
         if (!\file_exists(\PFAD_ROOT . $thumb)) {
-            $instance::cacheImage($req);
+            $instance->cacheImage($req);
         }
         if (Request::verifyGPCDataInt('url') === 1) {
             echo Shop::getURL() . '/' . $thumb;
@@ -152,11 +153,8 @@ final class ImageAPI extends AbstractPush
                 $res = Image::SIZE_XS;
                 break;
             case 5:
-                $res = Image::SIZE_XL;
-                break;
-            case 6:
             default:
-                $res = Image::SIZE_ORIGINAL;
+                $res = Image::SIZE_XL;
                 break;
         }
 

@@ -42,7 +42,7 @@ final class CategoryList implements ItemListInterface
     /**
      * @inheritdoc
      */
-    public function createItems(array $itemIDs): Collection
+    public function createItems(array $itemIDs, bool $activeOnly = true): Collection
     {
         $this->itemIDs = \array_map('\intval', $itemIDs);
         if (\count($this->itemIDs) === 0) {
@@ -63,10 +63,10 @@ final class CategoryList implements ItemListInterface
         );
         $items         = map(group($itemLanguages, static function ($e) {
             return (int)$e->kNewsKategorie;
-        }), function ($e, $newsID) {
+        }), function ($e, $newsID) use ($activeOnly) {
             $c = new Category($this->db);
             $c->setID($newsID);
-            $c->map($e);
+            $c->map($e, $activeOnly);
 
             return $c;
         });

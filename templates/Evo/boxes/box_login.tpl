@@ -2,7 +2,7 @@
     <div class="panel-heading">
         <div class="panel-title">{if empty($smarty.session.Kunde)}{lang key='login'}{else}{lang key='hello'}, {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}{/if}</div>
     </div>
-    <div class="box-body panel-body">
+    <div class="panel-body">
         {if empty($smarty.session.Kunde->kKunde)}
             <form action="{get_static_route id='jtl.php' secure=true}" method="post" class="form box_login evo-validate">
                 <input type="hidden" name="login" value="1" />

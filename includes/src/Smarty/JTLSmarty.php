@@ -92,8 +92,8 @@ class JTLSmarty extends SmartyBC
     {
         $parent = null;
         if ($this->context !== ContextType::BACKEND) {
-            $container  = Shop::Container();
-            $model      = $container->getTemplateService()->getActiveTemplate();
+            $container = Shop::Container();
+            $model     = $container->getTemplateService()->getActiveTemplate();
             if ($model->getTemplate() === null) {
                 throw new RuntimeException('Cannot load template ' . ($model->getName() ?? ''));
             }

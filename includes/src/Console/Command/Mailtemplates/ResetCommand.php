@@ -53,9 +53,12 @@ class ResetCommand extends Command
             [],
             ReturnType::ARRAY_OF_OBJECTS
         );
+
+        $count = 0;
         foreach ($templates as $template) {
             $controller->resetTemplate((int)$template->kEmailVorlage);
-            $io->writeln('<info> Template-ID : ' . $template->kEmailVorlage. ' reset successful.</info>');
+            $count++;
         }
+        $io->writeln('<info>' . $count. ' templates has been reset.</info>');
     }
 }

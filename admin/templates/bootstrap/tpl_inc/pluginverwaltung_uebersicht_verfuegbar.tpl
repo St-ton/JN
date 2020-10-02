@@ -48,7 +48,7 @@
 
 <div id="verfuegbar" class="tab-pane fade {if isset($cTab) && $cTab === 'verfuegbar'} active show{/if}">
     {if $pluginsAvailable->count() > 0}
-        <form name="pluginverwaltung" method="post" action="pluginverwaltung.php">
+        <form name="pluginverwaltung" method="post" action="pluginverwaltung.php" id="available-plugins">
             {$jtl_token}
             <input type="hidden" name="pluginverwaltung_uebersicht" value="1" />
             <div>
@@ -102,6 +102,7 @@
                                 <td class="check">
                                     <div class="custom-control custom-checkbox">
                                         <input class="custom-control-input" type="checkbox" name="cVerzeichnis[]" id="plugin-check-{$listingItem->getDir()}" value="{$listingItem->getDir()}" />
+                                        {* TODO: kPlugin statt cVerzeichnis *}
                                         <label class="custom-control-label" for="plugin-check-{$listingItem->getDir()}"></label>
                                     </div>
                                     {if $listingItem->isShop5Compatible() === false}
@@ -146,6 +147,11 @@
                             </div>
                         </div>
                         <div class="ml-auto col-sm-6 col-xl-auto">
+                            <button name="deinstallieren" id="uninstall-available-plugin" type="submit" class="btn btn-danger btn-block">
+                                <i class="fas fa-trash-alt"></i> {__('pluginBtnDeInstall')}
+                            </button>
+                        </div>
+                        <div class="col-sm-6 col-xl-auto">
                             <button name="installieren" type="submit" class="btn btn-primary btn-block">
                                 <i class="fa fa-share"></i> {__('pluginBtnInstall')}
                             </button>
@@ -154,6 +160,7 @@
                 </div>
             </div>
         </form>
+        {include file='tpl_inc/pluginverwaltung_uninstall_modal.tpl' context='available' selector='#available-plugins' button='#uninstall-available-plugin'}
     {else}
         <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
     {/if}

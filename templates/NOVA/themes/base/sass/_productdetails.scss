@@ -20,15 +20,6 @@
 		outline: none !important;
 	}
 
-	.slick-slide:not(.slick-current) img{
-		-webkit-filter: opacity(.4);
-		filter: opacity(.4);
-		&:hover {
-			-webkit-filter: opacity(1);
-			filter: opacity(1);
-		}
-	}
-
 	.product-detail-image-topbar {
 		display: none;
 	}

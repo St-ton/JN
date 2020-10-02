@@ -68,8 +68,8 @@
                         <div class="row">
                             <div class="col-sm-6 col-xl-auto">
                                 <form method="post">
-                                    <button type="submit" name="action" value="install" class="btn btn-primary btn-block">
-                                        {__('installPlugin')}
+                                    <button type="submit" name="action" value="install" class="btn btn-primary btn-block" {if $hasLicense}disabled{/if}>
+                                        {if $hasLicense}{__('pluginHasLicense')}{else}{__('installPlugin')}{/if}
                                     </button>
                                 </form>
                             </div>

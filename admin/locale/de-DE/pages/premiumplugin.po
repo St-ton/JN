@@ -19,3 +19,6 @@ msgstr "Das Plugin wurde erfolgreich installiert. Sie müssen es nun noch unter 
 
 msgid "installPlugin"
 msgstr "Plugin installieren"
+
+msgid "pluginHasLicense"
+msgstr "Lizenz vorhanden"

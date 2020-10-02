@@ -19,3 +19,6 @@ msgstr "The plug-in has been successfully installed and is now ready to be set u
 
 msgid "installPlugin"
 msgstr "Install plugin"
+
+msgid "pluginHasLicense"
+msgstr "License available"

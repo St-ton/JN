@@ -126,7 +126,7 @@ abstract class Bootstrapper implements BootstrapperInterface
     /**
      * @inheritdoc
      */
-    public function getPlugin(): PluginInterface
+    public function getPlugin()
     {
         return $this->plugin;
     }

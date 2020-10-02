@@ -126,9 +126,11 @@ class ExsLicense
         foreach ($json->links as $link) {
             $this->links[] = new Link($link);
         }
-        $this->setParent(new InAppParent($json->inapp ?? null));
-        if (isset($json->inapp->parent)) {
+        if (isset($json->license->metas->in_app)) {
+            $this->setParent(new InAppParent($json->license->metas->in_app));
             $this->setIsInApp(true);
+        } else {
+            $this->setParent(new InAppParent());
         }
     }
 

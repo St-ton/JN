@@ -1,6 +1,8 @@
 <?php
 
 use JTL\Alert\Alert;
+use JTL\Session\Backend;
+use JTL\Backend\AuthToken;
 use JTL\Backend\Wizard\ExtensionInstaller;
 use JTL\Helpers\Request;
 use JTL\License\Admin;
@@ -22,8 +24,9 @@ $manager          = new LicenseManager($db, $cache);
 $admin            = new Admin($manager, $db, $cache, $checker);
 $recommendations  = new Manager($alertHelper, Request::verifyGPDataString('scope'));
 $hasLicense       = $manager->getLicenseByExsID($recommendationID) !== null;
-
-if (Request::verifyGPDataString('action') === 'install') {
+$token            = AuthToken::getInstance($db);
+$action           = Request::verifyGPDataString('action');
+if ($action === 'install') {
     Shop::Container()->getGetText()->loadAdminLocale('pages/pluginverwaltung');
 
     $installer = new ExtensionInstaller(Shop::Container()->getDB());
@@ -43,8 +46,14 @@ if (Request::verifyGPDataString('action') === 'install') {
         exit;
     }
     $alertHelper->addAlert(Alert::TYPE_WARNING, $errorMsg, 'errorInstall');
+} elseif ($action === 'auth') {
+    $token->requestToken(
+        Backend::get('jtl_token'),
+        Shop::getAdminURL() . '/licenses.php?action=code'
+    );
 }
 
 $smarty->assign('recommendation', $recommendations->getRecommendationById($recommendationID))
+       ->assign('hasAuth', $token->isValid())
        ->assign('hasLicense', $hasLicense)
        ->display('premiumplugin.tpl');

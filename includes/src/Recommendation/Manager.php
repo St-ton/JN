@@ -25,7 +25,7 @@ class Manager
 
     public const SCOPE_BACKEND_LEGAL_TEXTS = 'backend.legal-texts';
 
-    private const API_URL = 'https://checkout-stage.jtl-software.com/v1/recommendations';
+    private const API_DEV_URL = 'https://checkout-stage.jtl-software.com/v1/recommendations';
 
     private const API_LIVE_URL = 'https://checkout-stage.jtl-software.com/v1/recommendations';
 
@@ -109,7 +109,7 @@ class Manager
      */
     private function getJSONFromAPI(string $scope): array
     {
-        $url = (\EXS_LIVE === true ? self::API_LIVE_URL : self::API_URL) . '?scope=' . $scope;
+        $url = (\EXS_LIVE === true ? self::API_LIVE_URL : self::API_DEV_URL) . '?scope=' . $scope;
         try {
             $res = $this->client->request(
                 'GET',

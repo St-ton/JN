@@ -146,6 +146,10 @@ class ExsLicense
         $licenseExpired      = $license->isExpired();
         $subscriptionExpired = $license->getSubscription()->isExpired();
         if ($licenseExpired || $subscriptionExpired) {
+            if ($license->getType() === License::TYPE_TEST) {
+                $this->canBeUsed = false;
+                return;
+            }
             $release = $this->getReleases()->getAvailable();
             if ($release === null) {
                 return;

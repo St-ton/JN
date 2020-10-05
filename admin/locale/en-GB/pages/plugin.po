@@ -58,3 +58,6 @@ msgstr "Plugin is disabled."
 
 msgid "pluginNotFound"
 msgstr "Plugin not found."
+
+msgid "No license found."
+msgstr "No license found."

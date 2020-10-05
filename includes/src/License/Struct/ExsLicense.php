@@ -152,6 +152,7 @@ class ExsLicense
             }
             $release = $this->getReleases()->getAvailable();
             if ($release === null) {
+                $this->canBeUsed = false;
                 return;
             }
             if ($licenseExpired) {

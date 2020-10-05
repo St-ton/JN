@@ -55,7 +55,7 @@ class Collection extends \Illuminate\Support\Collection
      */
     public function getForExsID(string $exsID): ?ExsLicense
     {
-        $matches = $this->filter(static function (ExsLicense $e) use ($exsID) {
+        $matches = $this->getBound()->filter(static function (ExsLicense $e) use ($exsID) {
             return $e->getExsID() === $exsID;
         });
         if ($matches->count() > 1) {

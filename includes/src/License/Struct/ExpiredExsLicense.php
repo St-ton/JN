@@ -3,6 +3,7 @@
 namespace JTL\License\Struct;
 
 use DateTime;
+use JTLShop\SemVer\Version;
 use stdClass;
 
 /**
@@ -17,6 +18,7 @@ class ExpiredExsLicense extends ExsLicense
      */
     public function initFromPluginData(stdClass $data): void
     {
+        $this->setName($data->cName);
         $this->setExsID($data->exsID);
         $this->setQueryDate(new DateTime());
         $license = new License();
@@ -24,7 +26,8 @@ class ExpiredExsLicense extends ExsLicense
         $license->setKey($data->cPluginID);
         $license->setExpired(true);
         $license->setCreated(new DateTime());
-        $license->setType(self::TYPE_PLUGIN);
+        $license->setType(License::TYPE_NONE);
+        $this->setType(self::TYPE_PLUGIN);
         $this->setLicense($license);
         $this->setID($data->cPluginID);
         $this->setState(self::STATE_ACTIVE);
@@ -36,5 +39,11 @@ class ExpiredExsLicense extends ExsLicense
         $vendor->setHref($data->cURL);
         $this->setVendor($vendor);
         $this->setLinks([]);
+        $ref = new ReferencedPlugin();
+        $ref->setInternalID((int)$data->kPlugin);
+        $ref->setInstalled(true);
+        $ref->setInstalledVersion(Version::parse($data->nVersion));
+        $ref->setDateInstalled($data->dInstalliert);
+        $this->setReferencedItem($ref);
     }
 }

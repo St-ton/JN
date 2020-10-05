@@ -120,7 +120,7 @@ class Collection extends \Illuminate\Support\Collection
     /**
      * @return $this
      */
-    public function getExpiredReleases(): self
+    public function getLicenseViolations(): self
     {
         return $this->getDedupedActiveExpired()->filter(static function (ExsLicense $e) {
             return !$e->canBeUsed();

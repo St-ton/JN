@@ -19,6 +19,8 @@ class License
 
     public const TYPE_TEST = 'test';
 
+    public const TYPE_NONE = 'none';
+
     /**
      * @var string
      */

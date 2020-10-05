@@ -55,9 +55,20 @@ class Collection extends \Illuminate\Support\Collection
      */
     public function getForExsID(string $exsID): ?ExsLicense
     {
-        return $this->filter(static function (ExsLicense $e) use ($exsID) {
+        $matches = $this->filter(static function (ExsLicense $e) use ($exsID) {
             return $e->getExsID() === $exsID;
-        })->first();
+        });
+        if ($matches->count() > 1) {
+            // when there are multiple bound exs licenses, try to choose one that isn't expired yet
+            foreach ($matches as $exs) {
+                $license = $exs->getLicense();
+                if ($license->isExpired() === false && $license->getSubscription()->isExpired() === false) {
+                    return $exs;
+                }
+            }
+        }
+
+        return $matches->first();
     }
 
     /**
@@ -80,6 +91,16 @@ class Collection extends \Illuminate\Support\Collection
             $ref = $e->getReferencedItem();
 
             return $ref !== null && $ref->isActive();
+        });
+    }
+
+    /**
+     * @return $this
+     */
+    public function getDedupedActiveExpired(): self
+    {
+        return $this->getActiveExpired()->filter(function (ExsLicense $e) {
+            return $e === $this->getForExsID($e->getExsID());
         });
     }
 

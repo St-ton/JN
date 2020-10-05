@@ -110,7 +110,7 @@ class TemplateService implements TemplateServiceInterface
             $parentXML
         );
         if ($withLicense === true) {
-            $manager = new Manager($this->db, $this->cache);
+            $manager    = new Manager($this->db, $this->cache);
             $exsLicense = $manager->getLicenseByItemID($template->getTemplate());
             if ($exsLicense === null && $template->getExsID() !== null) {
                 $exsLicense = new ExpiredExsLicense();

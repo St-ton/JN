@@ -153,7 +153,7 @@ msgid "recommendationSupportDesc"
 msgstr "Haben Sie weitere Fragen, bieten wir Ihnen verschiedene Supportmodelle (ab Lizenzkauf für 12 Monate inklusive; wird nicht benötigt, wenn Sie bei JTL hosten)."
 
 msgid "recommendationExtensionStoreLink"
-msgstr "https://www.jtl-software.de/jtl-store/marktplatz"
+msgstr "https://jtl-url.de/exs"
 
 msgid "recommendationExtensionStore"
 msgstr "JTL-Extension Store"

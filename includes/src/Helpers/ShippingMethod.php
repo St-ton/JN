@@ -1113,6 +1113,13 @@ class ShippingMethod
                 // bearbeite fremdmodule
                 break;
         }
+        \executeHook(\HOOK_CALCULATESHIPPINGFEES, [
+            'price'             => &$price,
+            'shippingMethod'    => $shippingMethod,
+            'iso'               => $iso,
+            'additionalProduct' => $additionalProduct,
+            'product'           => $product,
+        ]);
         if ($shippingMethod->cNurAbhaengigeVersandart === 'Y'
             && (!empty($product->FunktionsAttribute[\FKT_ATTRIBUT_VERSANDKOSTEN])
                 || !empty($product->FunktionsAttribute[\FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT]))

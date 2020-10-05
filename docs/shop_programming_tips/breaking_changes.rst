@@ -13,9 +13,9 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
 --------------------------------
 
 
-- **Systemvoraussetzung auf PHP 7.2 angehoben**
+- **Systemvoraussetzung auf PHP 7.3 angehoben**
 
-    Für den Betrieb von JTL-Shop 5.x ist PHP 7.2 Voraussetzung.
+    Für den Betrieb von JTL-Shop 5.x ist PHP 7.3 Voraussetzung.
 
 - **jQuery Version auf 3.0 angehoben**
 

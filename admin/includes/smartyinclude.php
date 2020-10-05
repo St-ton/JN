@@ -189,7 +189,7 @@ if (!$hasPendingUpdates) {
     $updates               = $mapper->getCollection()->getUpdateableItems();
     $licenseNoticeAccepted = (int)($_SESSION['licensenoticeaccepted'] ?? -1);
     if ($licenseNoticeAccepted === -1) {
-        $expired = $mapper->getCollection()->getDedupedActiveExpired();
+        $expired = $mapper->getCollection()->getExpiredReleases();
     } else {
         $licenseNoticeAccepted++;
     }

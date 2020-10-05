@@ -120,6 +120,16 @@ class Collection extends \Illuminate\Support\Collection
     /**
      * @return $this
      */
+    public function getExpiredReleases(): self
+    {
+        return $this->getDedupedActiveExpired()->filter(static function (ExsLicense $e) {
+            return !$e->canBeUsed();
+        });
+    }
+
+    /**
+     * @return $this
+     */
     public function getExpiredActiveTests(): self
     {
         return $this->getExpiredBoundTests();
@@ -132,6 +142,16 @@ class Collection extends \Illuminate\Support\Collection
     {
         return $this->getBoundExpired()->filter(static function (ExsLicense $e) {
             return $e->getLicense()->getType() === License::TYPE_TEST;
+        });
+    }
+
+    /**
+     * @return $this
+     */
+    public function getDedupedExpiredBoundTests(): self
+    {
+        return $this->getExpiredBoundTests()->filter(function (ExsLicense $e) {
+            return $e === $this->getForExsID($e->getExsID());
         });
     }
 

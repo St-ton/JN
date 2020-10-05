@@ -97,6 +97,11 @@ class ExsLicense
     private $hasLicense = false;
 
     /**
+     * @var bool
+     */
+    private $canBeUsed = true;
+
+    /**
      * ExsLicenseData constructor.
      * @param stdClass|null $json
      */
@@ -131,6 +136,25 @@ class ExsLicense
             $this->setIsInApp(true);
         } else {
             $this->setParent(new InAppParent());
+        }
+        $this->check();
+    }
+
+    private function check(): void
+    {
+        $license             = $this->getLicense();
+        $licenseExpired      = $license->isExpired();
+        $subscriptionExpired = $license->getSubscription()->isExpired();
+        if ($licenseExpired || $subscriptionExpired) {
+            $release = $this->getReleases()->getAvailable();
+            if ($release === null) {
+                return;
+            }
+            if ($licenseExpired) {
+                $this->canBeUsed = $license->getValidUntil() >= $release->getReleaseDate();
+            } elseif ($subscriptionExpired) {
+                $this->canBeUsed = $license->getSubscription()->getValidUntil() >= $release->getReleaseDate();
+            }
         }
     }
 
@@ -376,5 +400,21 @@ class ExsLicense
     public function setHasLicense(bool $hasLicense): void
     {
         $this->hasLicense = $hasLicense;
+    }
+
+    /**
+     * @return bool
+     */
+    public function canBeUsed(): bool
+    {
+        return $this->canBeUsed;
+    }
+
+    /**
+     * @param bool $canBeUsed
+     */
+    public function setCanBeUsed(bool $canBeUsed): void
+    {
+        $this->canBeUsed = $canBeUsed;
     }
 }

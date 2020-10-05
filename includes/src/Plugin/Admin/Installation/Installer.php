@@ -845,7 +845,14 @@ final class Installer
             }
         }
         $this->db->query(
-            'DELETE FROM tzahlungsartsprache 
+            'DELETE FROM tzahlungsartsprache
+                WHERE kZahlungsart NOT IN (
+                    SELECT kZahlungsart FROM tzahlungsart
+                )',
+            ReturnType::DEFAULT
+        );
+        $this->db->query(
+            'DELETE FROM tversandartzahlungsart
                 WHERE kZahlungsart NOT IN (
                     SELECT kZahlungsart FROM tzahlungsart
                 )',

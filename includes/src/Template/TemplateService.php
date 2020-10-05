@@ -98,7 +98,10 @@ class TemplateService implements TemplateServiceInterface
         $parentXML = ($tplXML === null || empty($tplXML->Parent)) ? null : $reader->getXML((string)$tplXML->Parent);
         $dir       = $template->getTemplate();
         if ($dir === null || $tplXML === null) {
-            return new Model($this->db);
+            $model = new Model($this->db);
+            $model->setName($template->cTemplate ?? 'undefined');
+
+            return $model;
         }
         $template = $this->mergeWithXML(
             $dir,

@@ -5,7 +5,7 @@
     "type": "project",
     "homepage": "https://www.jtl-software.de",
     "require": {
-        "php": ">=7.2",
+        "php": ">=7.3",
         "ext-bcmath": "*",
         "ext-curl": "*",
         "ext-dom": "*",

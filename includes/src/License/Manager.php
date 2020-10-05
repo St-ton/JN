@@ -23,7 +23,9 @@ class Manager
 
     private const CHECK_INTERVAL_HOURS = 4;
 
-    private const API_URL = 'https://checkout-stage.jtl-software.com/v1/licenses';
+    private const API_LIVE_URL = 'https://checkout.jtl-software.com/v1/licenses';
+
+    private const API_DEV_URL = 'https://checkout-stage.jtl-software.com/v1/licenses';
 
     /**
      * @var string
@@ -194,7 +196,7 @@ class Manager
         }
         $res = $this->client->request(
             'POST',
-            self::API_URL,
+            \EXS_LIVE === true ? self::API_LIVE_URL : self::API_DEV_URL,
             [
                 'headers' => [
                     'Accept'        => 'application/json',

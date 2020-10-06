@@ -1692,7 +1692,9 @@ class Exportformat
             }
 
             echo json_encode($res);',
-            \PFAD_ROOT
+            \PFAD_ROOT,
+            null,
+            600
         );
         $phpProcess->run();
 

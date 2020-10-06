@@ -1,5 +1,6 @@
 <?php
 
+use JTL\Catalog\Product\Artikel;
 use JTL\Extensions\Upload\File;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -54,6 +55,7 @@ if (!empty($_FILES)) {
         'application/x-csh',
         'application/x-httpd-cgi',
         'application/x-httpd-perl',
+        'application/octet-stream',
         'application/sql',
         'text/x-sql',
         'text/sql',
@@ -99,19 +101,25 @@ if (!empty($_FILES)) {
         && mb_strpos($realPath, PFAD_UPLOADS) === 0
         && move_uploaded_file($tempFile, $targetFile)
     ) {
-        $file = new stdClass();
+        $file    = new stdClass();
+        $product = (new Artikel())->fuelleArtikel((int)$_REQUEST['prodID']);
         if (isset($_REQUEST['cname'])) {
-            $file->cName = (int)$_REQUEST['prodID']
-                . '_' . Seo::sanitizeSeoSlug(Seo::getFlatSeoPath($_REQUEST['cname']))
-                . '_' . $unique . '.' . $sourceInfo['extension'];
+            $preName = (int)$_REQUEST['prodID']
+                . '_' . $product->cArtNr
+                . '_' . Seo::sanitizeSeoSlug(Seo::getFlatSeoPath($_REQUEST['cname']));
         } else {
-            $file->cName = !empty($_REQUEST['variation'])
-                ? Seo::sanitizeSeoSlug(Seo::getFlatSeoPath($_REQUEST['cname']
-                    . '_' . $_REQUEST['variation']
-                    . '_' . $fileData['name']))
-                : Seo::sanitizeSeoSlug(Seo::getFlatSeoPath($_REQUEST['cname']
-                    . '_' . $fileData['name']));
+            $preName = (int)$_REQUEST['prodID']
+                . '_' . $product->cArtNr
+                . '_' . Seo::sanitizeSeoSlug(Seo::getFlatSeoPath($product->cName));
         }
+        if (empty($_REQUEST['variation'])) {
+            $postName = '_' . $unique . '.' . $sourceInfo['extension'];
+        } else {
+            $postName = '_' . Seo::sanitizeSeoSlug(Seo::getFlatSeoPath($_REQUEST['variation']))
+                . '_' . $unique . '.' . $sourceInfo['extension'];
+        }
+
+        $file->cName  = mb_substr($preName, 0, 200 - mb_strlen($postName)) . $postName;
         $file->nBytes = $fileData['size'];
         $file->cKB    = round($fileData['size'] / 1024, 2);
 

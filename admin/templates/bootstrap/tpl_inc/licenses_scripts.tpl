@@ -94,6 +94,7 @@
             done = 0;
             formCount = forms.length;
             forms.submit();
+            return false;
         });
         $('#content_wrapper').on('click', '#bound-licenses #install-all', function (e) {
             const forms = $('#bound-licenses .install-item-form');
@@ -104,6 +105,7 @@
             done = 0;
             formCount = forms.length;
             forms.submit();
+            return false;
         });
         $('#content_wrapper').on('submit', '#unbound-licenses .set-binding-form', function (e) {
             return bindCallback($(e.target).find('.set-binding'), e);

@@ -205,9 +205,9 @@ class Manager
                 ],
                 'verify'  => true,
                 'body'    => \json_encode((object)['shop' => [
-                    'domain'  => $this->domain,
-                    'version' => \APPLICATION_VERSION,
-                ], 'extensions'                           => $installedExtensions])
+                    'domain'    => $this->domain,
+                    'version'   => \APPLICATION_VERSION,
+                ], 'extensions' => $installedExtensions])
             ]
         );
         $this->housekeeping();

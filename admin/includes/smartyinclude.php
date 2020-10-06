@@ -7,6 +7,7 @@ use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
+use JTL\License\Checker;
 use JTL\License\Manager;
 use JTL\License\Mapper;
 use JTL\Plugin\Admin\StateChanger;
@@ -185,11 +186,13 @@ if (!$hasPendingUpdates) {
             $sc->deactivate((int)$pluginID);
         }
     }
-    $mapper                = new Mapper(new Manager($db, Shop::Container()->getCache()));
-    $updates               = $mapper->getCollection()->getUpdateableItems();
+    $cache                 = Shop::Container()->getCache();
+    $mapper                = new Mapper(new Manager($db, $cache));
+    $checker               = new Checker(Shop::Container()->getBackendLogService(), $db, $cache);
+    $updates               = $checker->getUpdates($mapper);
     $licenseNoticeAccepted = (int)($_SESSION['licensenoticeaccepted'] ?? -1);
     if ($licenseNoticeAccepted === -1) {
-        $expired = $mapper->getCollection()->getActiveExpired();
+        $expired = $checker->getLicenseViolations($mapper);
     } else {
         $licenseNoticeAccepted++;
     }

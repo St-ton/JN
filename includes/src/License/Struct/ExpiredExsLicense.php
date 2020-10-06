@@ -3,6 +3,9 @@
 namespace JTL\License\Struct;
 
 use DateTime;
+use JTL\Shop;
+use JTL\Template\Model;
+use JTLShop\SemVer\Version;
 use stdClass;
 
 /**
@@ -17,6 +20,8 @@ class ExpiredExsLicense extends ExsLicense
      */
     public function initFromPluginData(stdClass $data): void
     {
+        $this->setType(self::TYPE_PLUGIN);
+        $this->setName($data->cName);
         $this->setExsID($data->exsID);
         $this->setQueryDate(new DateTime());
         $license = new License();
@@ -24,7 +29,7 @@ class ExpiredExsLicense extends ExsLicense
         $license->setKey($data->cPluginID);
         $license->setExpired(true);
         $license->setCreated(new DateTime());
-        $license->setType(self::TYPE_PLUGIN);
+        $license->setType(License::TYPE_NONE);
         $this->setLicense($license);
         $this->setID($data->cPluginID);
         $this->setState(self::STATE_ACTIVE);
@@ -36,5 +41,45 @@ class ExpiredExsLicense extends ExsLicense
         $vendor->setHref($data->cURL);
         $this->setVendor($vendor);
         $this->setLinks([]);
+        $ref = new ReferencedPlugin();
+        $ref->setInternalID((int)$data->kPlugin);
+        $ref->setInstalled(true);
+        $ref->setInstalledVersion(Version::parse($data->nVersion));
+        $ref->setDateInstalled($data->dInstalliert);
+        $this->setReferencedItem($ref);
+    }
+
+    /**
+     * @param Model $data
+     * @throws \Exception
+     */
+    public function initFromTemplateData(Model $data): void
+    {
+        $this->setType(self::TYPE_TEMPLATE);
+        $this->setName($data->cTemplate);
+        $this->setExsID($data->getExsID());
+        $this->setQueryDate(new DateTime());
+        $license = new License();
+        $license->setIsBound(true);
+        $license->setKey($data->cTemplate);
+        $license->setExpired(true);
+        $license->setCreated(new DateTime());
+        $license->setType(License::TYPE_NONE);
+        $this->setLicense($license);
+        $this->setID($data->cTemplate);
+        $this->setState(self::STATE_ACTIVE);
+        $subscription = new Subscription();
+        $subscription->setExpired(true);
+        $license->setSubscription($subscription);
+        $vendor = new Vendor();
+        $vendor->setName($data->getUrl());
+        $vendor->setHref($data->getUrl());
+        $this->setVendor($vendor);
+        $this->setLinks([]);
+        $ref = new ReferencedTemplate();
+        $ref->setInternalID($data->getTemplateID());
+        $ref->setInstalled(true);
+        $ref->setInstalledVersion(Version::parse($data->getVersion()));
+        $this->setReferencedItem($ref);
     }
 }

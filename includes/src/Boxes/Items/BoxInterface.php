@@ -225,7 +225,7 @@ interface BoxInterface
     public function setItems($items): void;
 
     /**
-     * @param int $idx
+     * @param int|null $idx
      * @return array|bool
      */
     public function getFilter(int $idx = null);

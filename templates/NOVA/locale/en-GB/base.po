@@ -28,8 +28,8 @@ msgstr "Animation on hover"
 msgid "Anzeige der Suche auf mobilen Geräten"
 msgstr "Show search bar on mobile devices"
 
-msgid "Schaltfläche „Nach oben scrollen“ anzeigen"
-msgstr "Show button „scroll to top“"
+msgid "Schaltfläche “Nach oben scrollen” anzeigen"
+msgstr "Show button “scroll to top”"
 
 msgid "Sliderposition"
 msgstr "Slider position"
@@ -52,7 +52,7 @@ msgstr "Category images for first sub category"
 msgid "Unterkategorien"
 msgstr "Sub categories"
 
-msgid "Seiten der Linkgruppe „megamenu“"
+msgid "Seiten der Linkgruppe “megamenu”"
 msgstr "Pages within the link group „megamenu“"
 
 msgid "Hersteller-Dropdown"
@@ -64,11 +64,11 @@ msgstr "Manufacturer images"
 msgid "Listen- und Gallerieansicht"
 msgstr "List and gallery view"
 
-msgid "Auswahloptionen bei „Filter anzeigen in (Desktop)“"
-msgstr "Select options on „Show filter in (Desktop)“"
+msgid "Auswahloptionen bei “Filter anzeigen in (Desktop)”"
+msgstr "Select options on “Show filter in (Desktop)”"
 
-msgid "Schaltfläche „Warenkorb“ in Artikelübersicht (Listenansicht) anzeigen"
-msgstr "Show button „Cart“ in product list view"
+msgid "Schaltfläche “Warenkorb” in Artikelübersicht (Listenansicht) anzeigen"
+msgstr "Show button “Cart” in product list view"
 
 msgid "Filter immer ausgeklappt"
 msgstr "Always show filter items"
@@ -125,7 +125,7 @@ msgid "Anzahl der sichtbaren Filteroptionen in Boxen"
 msgstr "Number of visible filter options in boxes <span data-html=\"true\" data-toggle=\"tooltip\" title=\"more options can be toggled\"><span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "Anzahl der möglichen Variationswerte für Radio und Swatches"
-msgstr "Number of possible values for radio buttons and swatches <span data-html=\"true\" data-toggle=\"tooltip\" title=\"only when combined with nur in Verbindung mit „Show variation selection“\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Number of possible values for radio buttons and swatches <span data-html=\"true\" data-toggle=\"tooltip\" title=\"only when combined with nur in Verbindung mit “Show variation selection”\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "keine Beschränkung"
 msgstr "no limitation"
@@ -148,10 +148,10 @@ msgstr "max. 9"
 msgid "max. 12"
 msgstr "max. 12"
 
-msgid "Seitenleiste (Einstellung einzelner Filter unter „Standardelemente > Footer /Boxen“ und „Standardansichten > Artikelübersicht“)"
+msgid "Seitenleiste (Einstellung einzelner Filter unter “Standardelemente > Footer /Boxen” und “Standardansichten > Artikelübersicht”)"
 msgstr "Sidebar"
 
-msgid "Eigenes Fenster (Einstellung einzelner Filter unter „Standardansichten > Artikelübersicht“)"
+msgid "Eigenes Fenster (Einstellung einzelner Filter unter “Standardansichten > Artikelübersicht”)"
 msgstr "New window"
 
 msgid "Suche beim Hochscrollen einblenden"

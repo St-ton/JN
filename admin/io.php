@@ -3,10 +3,13 @@
 use JTL\Backend\AdminIO;
 use JTL\Backend\JSONAPI;
 use JTL\Backend\TwoFA;
+use JTL\Backend\Wizard\WizardIO;
+use JTL\Exportformat;
 use JTL\Helpers\Form;
 use JTL\IO\IOError;
 use JTL\Jtllog;
 use JTL\Link\Admin\LinkAdmin;
+use JTL\Mail\Validator\SyntaxChecker;
 use JTL\Media\Manager;
 use JTL\Shop;
 use JTL\Update\UpdateIO;
@@ -23,12 +26,15 @@ if (!Form::validateToken()) {
     AdminIO::getInstance()->respondAndExit(new IOError('CSRF validation failed.', 403));
 }
 
-$db       = Shop::Container()->getDB();
-$gettext  = Shop::Container()->getGetText();
-$jsonApi  = JSONAPI::getInstance();
-$io       = AdminIO::getInstance()->setAccount($oAccount);
-$images   = new Manager($db, $gettext);
-$updateIO = new UpdateIO($db, $gettext);
+$db           = Shop::Container()->getDB();
+$gettext      = Shop::Container()->getGetText();
+$cache        = Shop::Container()->getCache();
+$alertService = Shop::Container()->getAlertService();
+$jsonApi      = JSONAPI::getInstance();
+$io           = AdminIO::getInstance()->setAccount($oAccount);
+$images       = new Manager($db, $gettext);
+$updateIO     = new UpdateIO($db, $gettext);
+$wizardIO     = new WizardIO($db, $cache, $alertService, $gettext);
 
 try {
     Shop::Container()->getOPC()->registerAdminIOFunctions($io);
@@ -88,6 +94,8 @@ try {
        ->register('dbupdaterDownload', [$updateIO, 'download'], null, 'SHOP_UPDATE_VIEW')
        ->register('dbupdaterStatusTpl', [$updateIO, 'getStatus'], null, 'SHOP_UPDATE_VIEW')
        ->register('dbupdaterMigration', [$updateIO, 'executeMigration'], null, 'SHOP_UPDATE_VIEW')
+       ->register('finishWizard', [$wizardIO, 'answerQuestions'], null, 'WIZARD_VIEW')
+       ->register('validateStepWizard', [$wizardIO, 'validateStep'], null, 'WIZARD_VIEW')
        ->register('migrateToInnoDB_utf8', 'doMigrateToInnoDB_utf8', $dbcheckInc, 'DBCHECK_VIEW')
        ->register('redirectCheckAvailability', [JTL\Redirect::class, 'checkAvailability'])
        ->register('updateRedirectState', null, $redirectInc, 'REDIRECT_VIEW')
@@ -100,7 +108,9 @@ try {
        ->register('deleteShippingSurcharge', 'deleteShippingSurcharge', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
        ->register('deleteShippingSurchargeZIP', 'deleteShippingSurchargeZIP', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
        ->register('createShippingSurchargeZIP', 'createShippingSurchargeZIP', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
-       ->register('getShippingSurcharge', 'getShippingSurcharge', $versandartenInc, 'ORDER_SHIPMENT_VIEW');
+       ->register('getShippingSurcharge', 'getShippingSurcharge', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
+       ->register('exportformatSyntaxCheck', [Exportformat::class, 'ioCheckSyntax'], null, 'EXPORT_FORMATS_VIEW')
+       ->register('mailvorlageSyntaxCheck', [SyntaxChecker::class, 'ioCheckSyntax'], null, 'CONTENT_EMAIL_TEMPLATE_VIEW');
 } catch (Exception $e) {
     $io->respondAndExit(new IOError($e->getMessage(), $e->getCode()));
 }

@@ -11,7 +11,9 @@
                     role="button"
                     data=["toggle"=> "collapse", "target"=>"#cllps-box{$oBox->getID()}"]
                 }
-                    {lang key='rangeOfPrices'}
+                    <span class="text-truncate">
+                        {lang key='rangeOfPrices'}
+                    </span>
                 {/button}
                 {collapse class="pb-4" id="cllps-box{$oBox->getID()}" visible=true}
                     {block name='boxes-box-filter-pricerange-include-price-slider'}

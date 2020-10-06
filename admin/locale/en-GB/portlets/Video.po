@@ -44,6 +44,12 @@ msgstr "The video ID forms the last part of the Vimeo URL after the character \"
 msgid "repeatVideo"
 msgstr "Repeat video once it has finished"
 
+msgid "muteVideo"
+msgstr "mute Video"
+
+msgid "autoplayVideo"
+msgstr "start playing as soon as video is ready"
+
 msgid "showImage"
 msgstr "Show image"
 

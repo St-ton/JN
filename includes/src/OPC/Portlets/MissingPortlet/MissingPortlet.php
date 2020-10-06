@@ -43,16 +43,6 @@ class MissingPortlet extends Portlet
     }
 
     /**
-     * @param PortletInstance $instance
-     * @return string
-     * @throws \Exception
-     */
-    public function getConfigPanelHtml(PortletInstance $instance): string
-    {
-        return $this->getConfigPanelHtmlFromTpl($instance);
-    }
-
-    /**
      * @return string
      */
     public function getMissingClass(): string

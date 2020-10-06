@@ -275,10 +275,10 @@ class Campaign
     }
 
     /**
-     * @param int    $id
-     * @param int    $kKey
-     * @param float  $fWert
-     * @param string $customData
+     * @param int         $id
+     * @param int         $kKey
+     * @param float       $fWert
+     * @param string|null $customData
      * @return int
      * @former setzeKampagnenVorgang()
      */

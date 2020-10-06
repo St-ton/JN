@@ -26,6 +26,7 @@ $step            = 'plugin_uebersicht';
 $invalidateCache = false;
 $hasError        = false;
 $updated         = false;
+$pluginNotFound  = false;
 $pluginID        = Request::verifyGPCDataInt('kPlugin');
 $db              = Shop::Container()->getDB();
 $cache           = Shop::Container()->getCache();
@@ -108,7 +109,11 @@ if ($step === 'plugin_uebersicht' && $pluginID > 0) {
     $smarty->assign('defaultTabbertab', $activeTab);
     $loader = $loader ?? Helper::getLoaderByPluginID($pluginID, $db, $cache);
     if ($loader !== null) {
-        $plugin = $loader->init($pluginID, $invalidateCache);
+        try {
+            $plugin = $loader->init($pluginID, $invalidateCache);
+        } catch (InvalidArgumentException $e) {
+            $pluginNotFound = true;
+        }
     }
     if ($plugin !== null) {
         $oPlugin = $plugin;
@@ -180,12 +185,13 @@ if (SAFE_MODE) {
 
 $alertHelper->addAlert(Alert::TYPE_NOTE, $notice, 'pluginNotice');
 $alertHelper->addAlert(Alert::TYPE_ERROR, $errorMsg, 'pluginError');
-if ($plugin->getState() === State::DISABLED) {
+if ($plugin !== null && $plugin->getState() === State::DISABLED) {
     $alertHelper->addAlert(Alert::TYPE_WARNING, __('pluginIsDeactivated'), 'pluginIsDeactivated');
 }
 
 $smarty->assign('oPlugin', $plugin)
     ->assign('step', $step)
+    ->assign('pluginNotFound', $pluginNotFound)
     ->assign('hasDifferentVersions', false)
     ->assign('currentDatabaseVersion', 0)
     ->assign('currentFileVersion', 0)

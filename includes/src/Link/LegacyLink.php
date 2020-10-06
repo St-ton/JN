@@ -588,7 +588,7 @@ class LegacyLink extends MainModel
      * @param int         $id
      * @param object|null $data
      * @param mixed|null  $option
-     * @param int         $kLinkgruppe
+     * @param int|null    $kLinkgruppe
      * @return $this
      */
     public function load($id, $data = null, $option = null, int $kLinkgruppe = null): self
@@ -619,8 +619,8 @@ class LegacyLink extends MainModel
     }
 
     /**
-     * @param int $kVaterLink
-     * @param int $kVaterLinkgruppe
+     * @param int      $kVaterLink
+     * @param int|null $kVaterLinkgruppe
      * @return null|array
      */
     public static function getSub(int $kVaterLink, int $kVaterLinkgruppe = null): ?array
@@ -719,8 +719,8 @@ class LegacyLink extends MainModel
     }
 
     /**
-     * @param bool $sub
-     * @param int  $linkGroupID
+     * @param bool     $sub
+     * @param int|null $linkGroupID
      * @return int
      */
     public function delete(bool $sub = true, int $linkGroupID = null): int

@@ -3089,12 +3089,19 @@ div.markdown thead tr td {
 .has-notify-icon {
     position: relative;
     span:nth-child(2) {
-        transform: scale(0.5);
+        transform: scale(0.4);
         position: absolute;
-        top: -4px;
-        right: -10px;
+        top: -16px;
+        right: -25px;
+        color: #fff;
+    }
+    &.stack-refresh {
+        span:nth-child(2) {
+            right: -29px;
+        }
     }
 }
+
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
     -webkit-appearance: none;

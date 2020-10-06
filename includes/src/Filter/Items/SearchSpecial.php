@@ -52,7 +52,7 @@ class SearchSpecial extends AbstractFilter
      */
     public function setValue($value): FilterInterface
     {
-        $this->value = \is_array($value) ? $value : [(int)$value];
+        $this->value = \is_array($value) ? \array_map('\intval', $value) : (int)$value;
 
         return $this;
     }
@@ -149,7 +149,11 @@ class SearchSpecial extends AbstractFilter
         $or         = $this->getType() === Type::OR;
         $conf       = $this->getConfig();
         $conditions = [];
-        foreach ($this->getValue() as $value) {
+        $values     = $this->getValue();
+        if (!\is_array($values)) {
+            $values = [$values];
+        }
+        foreach ($values as $value) {
             switch ($value) {
                 case \SEARCHSPECIALS_BESTSELLER:
                     $minSales = ($min = (int)$conf['global']['global_bestseller_minanzahl']) > 0
@@ -227,6 +231,9 @@ class SearchSpecial extends AbstractFilter
             ? 'JOIN'
             : 'LEFT JOIN';
         $baseValue = $this->productFilter->getSearchSpecial()->getValue();
+        if (!\is_array($values)) {
+            $values = [$values];
+        }
         foreach ($values as $value) {
             switch ($value) {
                 case \SEARCHSPECIALS_BESTSELLER:
@@ -305,8 +312,7 @@ class SearchSpecial extends AbstractFilter
             ? $this->getClassName()
             : null;
         $state            = (new StateSQL())->from($this->productFilter->getCurrentStateData($ignore));
-        $cacheID          = 'fltr_' . \str_replace('\\', '', __CLASS__) .
-            \md5($this->productFilter->getFilterSQL()->getBaseQuery($state));
+        $cacheID          = $this->getCacheID($this->productFilter->getFilterSQL()->getBaseQuery($state));
         if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
             $this->options = $cached;
 

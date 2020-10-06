@@ -1131,8 +1131,8 @@ final class Products extends AbstractSync
     }
 
     /**
-     * @param int $productID
-     * @param int $downloadID
+     * @param int      $productID
+     * @param int|null $downloadID
      */
     private function deleteDownload(int $productID, int $downloadID = null): void
     {

@@ -56,10 +56,10 @@ final class MigrationManager
 
     /**
      * MigrationManager constructor.
-     * @param DbInterface $db
-     * @param string      $path
-     * @param string      $pluginID
-     * @param Version     $version
+     * @param DbInterface  $db
+     * @param string       $path
+     * @param string       $pluginID
+     * @param Version|null $version
      */
     public function __construct(DbInterface $db, string $path, string $pluginID, Version $version = null)
     {
@@ -105,8 +105,8 @@ final class MigrationManager
     /**
      * Migrate the specified identifier.
      *
-     * @param int  $identifier
-     * @param bool $deleteData
+     * @param int|null $identifier
+     * @param bool     $deleteData
      * @return array
      * @throws Exception
      */

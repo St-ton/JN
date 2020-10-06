@@ -6,7 +6,7 @@
 			~ .step { cursor: auto; }
 		}
 	}
-
+	.modal-body {border: 0}
 	.img-setup-guide { float: left; margin-left: rem(-195px); margin-top: rem(-30px); }
 
 	.modal-content {
@@ -40,10 +40,23 @@
 	}
 
 	&:not([data-setup-current="5"]), &.installed {
-		[data-setup-submit] { display: none; }
+		[data-setup-submit], [data-setup-auth] { display: none; }
 	}
 
 	&:not([data-setup-current="6"]) {
 		[data-setup-close] { display: none; }
+	}
+	.error {
+		input {
+			color: $danger;
+			border-color: $danger;
+		}
+	}
+	.custom-checkbox-centered {
+		.custom-control-label {
+			&:before, &:after {
+				top: 39%;
+			}
+		}
 	}
 }

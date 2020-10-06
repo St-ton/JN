@@ -64,3 +64,35 @@ body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; 
 .alert-info a {
 	color: $white;
 }
+
+.object-fit-cover {
+	object-fit: cover;
+	width: 100%;
+}
+
+.icon-in-border {
+	border: solid 1px map-get($primary-palette, 'darker');
+	padding: 10px;
+	border-radius: 10px;
+	position: relative;
+
+	span {
+		display: block;
+		background: #F5F7FA;
+		position: absolute;
+		top: -15px;
+		margin: 0;
+		padding: 0 rem(5px);
+		z-index: 10;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		overflow: hidden;
+	}
+}
+
+.shipping-method-country {
+	a {
+		text-decoration: underline dotted;
+		display: inline-block;
+	}
+}

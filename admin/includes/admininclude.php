@@ -64,6 +64,7 @@ $oAccount   = Shop::Container()->getAdminAccount();
 $loggedIn   = $oAccount->logged();
 $updater    = new Updater($db);
 $hasUpdates = $updater->hasPendingUpdates();
+$conf       = Shop::getSettings([CONF_GLOBAL]);
 Shop::setIsFrontend(false);
 
 if (!empty($_COOKIE['JTLSHOP']) && empty($_SESSION['frontendUpToDate'])) {
@@ -90,9 +91,18 @@ if ($loggedIn
     && strpos($_SERVER['SCRIPT_FILENAME'], 'logout') === false
     && strpos($_SERVER['SCRIPT_FILENAME'], 'dbupdater') === false
     && strpos($_SERVER['SCRIPT_FILENAME'], 'io.php') === false
-    && $updater->hasPendingUpdates()
+    && $hasUpdates
 ) {
     \header('Location: ' . Shop::getURL(true) . '/' . \PFAD_ADMIN . 'dbupdater.php');
+    exit;
+}
+if ($loggedIn
+    && ($conf['global']['global_wizard_done'] ?? 'Y') === 'N'
+    && strpos($_SERVER['SCRIPT_FILENAME'], 'wizard') === false
+    && !$hasUpdates
+    && !Backend::get('redirectedToWizard')
+) {
+    \header('Location: ' . Shop::getURL(true) . '/' . \PFAD_ADMIN . 'wizard.php');
     exit;
 }
 

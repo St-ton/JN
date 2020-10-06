@@ -10,27 +10,28 @@
     {if $style === 'list' || $style === 'gallery'}
         {if $style === 'list'}
             {$grid = '12'}
+            {$eqHeightClasses = ''}
         {else}
             {$grid   = '6'}
             {$gridmd = '4'}
-            {$gridxl = '3'}
+            {$eqHeightClasses = 'row-eq-height row-eq-img-height'}
         {/if}
         {if $inContainer === false}
             <div class="container-fluid">
         {/if}
-        {row class=$style|cat:' product-list opc-ProductStream opc-ProductStream-'|cat:$style|cat:' '|cat:$instance->getStyleClasses()
+        {row class=$style|cat:' '|cat:$eqHeightClasses|cat:' product-list opc-ProductStream opc-ProductStream-'|cat:$style|cat:' '|cat:$instance->getStyleClasses()
             itemprop="mainEntity"
             itemscope=true
             itemtype="http://schema.org/ItemList"
             style="{$instance->getStyleString()}"}
             {foreach $productlist as $Artikel}
-                {col cols={$grid} md="{if isset($gridmd)}{$gridmd}{/if}" xl="{if isset($gridxl)}{$gridxl}{/if}"
+                {col cols={$grid} md="{if isset($gridmd)}{$gridmd}{/if}"
                      class="product-wrapper {if !($style === 'list' && $Artikel@last)}mb-4{/if}"
                      itemprop="itemListElement" itemscope=true itemtype="http://schema.org/Product"}
                     {if $style === 'list'}
                         {include file='productlist/item_list.tpl' tplscope=$style}
                     {elseif $style === 'gallery'}
-                        {include file='productlist/item_box.tpl' tplscope=$style}
+                        {include file='productlist/item_box.tpl' tplscope=$style class='thumbnail'}
                     {/if}
                 {/col}
             {/foreach}
@@ -61,17 +62,18 @@
         {if $inContainer === false}
             <div class="container-fluid">
         {/if}
-        <div style="{$instance->getStyleString()}">
-            {include file='snippets/product_slider.tpl' productlist=$productlist}
+        <div class="opc-product-slider" style="{$instance->getStyleString()}">
+            {include file='snippets/product_slider.tpl' productlist=$productlist isOPC=true}
         </div>
         {if $inContainer === false}
             </div>
         {/if}
     {elseif $style === 'box-slider'}
-        <div style="{$instance->getStyleString()}">
+        <div class="opc-product-slider" style="{$instance->getStyleString()}">
             {include file='snippets/product_slider.tpl'
                 productlist=$productlist
                 tplscope='box'
+                isOPC=true
             }
         </div>
     {/if}

@@ -40,10 +40,10 @@ class TemplateInstaller implements InstallerInterface
     /**
      * @inheritDoc
      */
-    public function update(string $exsID, string $downloadedArchive, AjaxResponse $response): int
+    public function update(string $exsID, string $zip, AjaxResponse $response): int
     {
         $extractor        = new Extractor(new XMLParser());
-        $installResponse  = $extractor->extractTemplate($downloadedArchive);
+        $installResponse  = $extractor->extractTemplate($zip);
         $response->status = $installResponse->getStatus();
         if ($response->status === InstallationResponse::STATUS_FAILED) {
             $response->error      = $installResponse->getError() ?? \implode(', ', $installResponse->getMessages());
@@ -59,8 +59,16 @@ class TemplateInstaller implements InstallerInterface
     /**
      * @inheritDoc
      */
-    public function install(string $itemID, string $downloadedArchive, AjaxResponse $response): int
+    public function install(string $itemID, string $zip, AjaxResponse $response): int
     {
-        return $this->update($itemID, $downloadedArchive, $response);
+        return $this->update($itemID, $zip, $response);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function forceUpdate(string $zip, AjaxResponse $response): int
+    {
+        return $this->install('', $zip, $response);
     }
 }

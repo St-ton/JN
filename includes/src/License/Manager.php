@@ -23,7 +23,9 @@ class Manager
 
     private const CHECK_INTERVAL_HOURS = 4;
 
-    private const API_URL = 'https://checkout-stage.jtl-software.com/v1/licenses';
+    private const API_LIVE_URL = 'https://checkout.jtl-software.com/v1/licenses';
+
+    private const API_DEV_URL = 'https://checkout-stage.jtl-software.com/v1/licenses';
 
     /**
      * @var string
@@ -75,6 +77,31 @@ class Manager
      * @throws ClientException
      */
     public function setBinding(string $url): string
+    {
+        $res = $this->client->request(
+            'POST',
+            $url,
+            [
+                'headers' => [
+                    'Accept'        => 'application/json',
+                    'Content-Type'  => 'application/json',
+                    'Authorization' => 'Bearer ' . AuthToken::getInstance($this->db)->get()
+                ],
+                'verify'  => true,
+                'body'    => \json_encode((object)['domain' => $this->domain])
+            ]
+        );
+
+        return (string)$res->getBody();
+    }
+
+    /**
+     * @param string $url
+     * @return string
+     * @throws GuzzleException
+     * @throws ClientException
+     */
+    public function createLicense(string $url): string
     {
         $res = $this->client->request(
             'POST',
@@ -169,7 +196,7 @@ class Manager
         }
         $res = $this->client->request(
             'POST',
-            self::API_URL,
+            \EXS_LIVE === true ? self::API_LIVE_URL : self::API_DEV_URL,
             [
                 'headers' => [
                     'Accept'        => 'application/json',
@@ -230,6 +257,15 @@ class Manager
     public function getLicenseByExsID(string $exsID): ?ExsLicense
     {
         return (new Mapper($this))->getCollection()->getBound()->getForExsID($exsID);
+    }
+
+    /**
+     * @param string $key
+     * @return ExsLicense|null
+     */
+    public function getLicenseByLicenseKey(string $key): ?ExsLicense
+    {
+        return (new Mapper($this))->getCollection()->getBound()->getForLicenseKey($key);
     }
 
     /**

@@ -390,7 +390,7 @@ class Page implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        $result = [
+        return [
             'key'          => $this->getKey(),
             'id'           => $this->getId(),
             'publishFrom'  => $this->getPublishFrom(),
@@ -403,7 +403,5 @@ class Page implements \JsonSerializable
             'lockedAt'     => $this->getLockedAt(),
             'areaList'     => $this->getAreaList()->jsonSerialize(),
         ];
-
-        return $result;
     }
 }

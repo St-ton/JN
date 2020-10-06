@@ -30,12 +30,20 @@ final class Wishlist extends AbstractBox
         if (!empty(Frontend::getWishList()->kWunschliste)) {
             $this->setWishListID(Frontend::getWishList()->kWunschliste);
             $wishlistItems    = Frontend::getWishList()->CWunschlistePos_arr;
-            $validPostVars    = ['a', 'k', 's', 'h', 'l', 'm', 't', 'hf', 'kf', 'show', 'suche'];
+            $validPostVars    = ['a', 'k', 's', 'h', 'l', 'm', 't', 'hf', 'kf', 'qf', 'show', 'suche'];
             $additionalParams = '';
             $postMembers      = \array_keys($_REQUEST);
             foreach ($postMembers as $postMember) {
                 if ((int)$_REQUEST[$postMember] > 0 && \in_array($postMember, $validPostVars, true)) {
-                    $additionalParams .= '&' . $postMember . '=' . $_REQUEST[$postMember];
+                    if (\is_array($_REQUEST[$postMember])) {
+                        $extraTMP = '';
+                        foreach ($_REQUEST[$postMember] as $item) {
+                            $extraTMP .= '&' . $postMember . '%5B%5D=' . $item;
+                        }
+                        $additionalParams .= $extraTMP;
+                    } else {
+                        $additionalParams .= '&' . $postMember . '=' . $_REQUEST[$postMember];
+                    }
                 }
             }
             $additionalParams = Text::filterXSS($additionalParams);

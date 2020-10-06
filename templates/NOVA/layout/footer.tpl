@@ -242,7 +242,7 @@
                 {/container}
                 {block name='layout-footer-copyright'}
                     <div id="copyright" class="mt-3">
-                        {container fluid=true class='py-3 font-size-sm text-center"'}
+                        {container fluid=true class='py-3 font-size-sm text-center'}
                             {row}
                                 {assign var=isBrandFree value=JTL\Shop::isBrandfree()}
                                 {col}

@@ -106,7 +106,7 @@ class Configurator
      * @param object $cart
      * @deprecated since 5.0.0
      */
-    public static function postcheckBasket(&$cart): void
+    public static function postcheckBasket($cart): void
     {
         \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
         self::postcheckCart($cart);

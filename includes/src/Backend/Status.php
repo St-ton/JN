@@ -9,7 +9,6 @@ use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\License\Manager;
 use JTL\License\Mapper;
-use JTL\License\Struct\ExsLicense;
 use JTL\Media\Image\Product;
 use JTL\Media\Image\StatsItem;
 use JTL\Nice;
@@ -444,7 +443,8 @@ class Status
         $manager = new Manager($this->db, $this->cache);
         $mapper  = new Mapper($manager);
 
-        return $mapper->getCollection()->getAboutToBeExpired(28)->count() > 0;
+        return $mapper->getCollection()->getAboutToBeExpired(28)->count() > 0
+            || $mapper->getCollection()->getBoundExpired()->count() > 0;
     }
 
     /**

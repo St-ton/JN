@@ -350,22 +350,20 @@ class Service
         return Request::verifyGPCDataInt('opcEditedPageKey');
     }
 
+
     /**
      * @param string $propname
-     * @param array $enabledFilters
+     * @param array  $enabledFilters
      * @return string
      * @throws \SmartyException
      */
-    public function getFilterList(string $propname, array $enabledFilters = [])
+    public function getFilterList(string $propname, array $enabledFilters = []): string
     {
         $filters = $this->getFilterOptions($enabledFilters);
-        $smarty  = Shop::Smarty();
-        $html    = $smarty
-            ->assign('propname', $propname)
+
+        return Shop::Smarty()->assign('propname', $propname)
             ->assign('filters', $filters)
             ->fetch(\PFAD_ROOT . \PFAD_ADMIN . 'opc/tpl/config/filter-list.tpl');
-
-        return $html;
     }
 
     /**

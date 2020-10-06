@@ -105,7 +105,7 @@ class UpdateIO
         if (!\preg_match('/^([0-9_a-z]+).sql.gz$/', $file, $m)) {
             return new IOError('Wrong download request');
         }
-        $filePath = PFAD_ROOT . PFAD_EXPORT_BACKUP . $file;
+        $filePath = PFAD_ROOT . \PFAD_EXPORT_BACKUP . $file;
 
         return \file_exists($filePath)
             ? new IOFile($filePath, 'application/x-gzip')
@@ -135,7 +135,7 @@ class UpdateIO
                 $plugin           = $loader->init($pluginID);
                 $manager          = new PluginMigrationManager(
                     $this->db,
-                    $plugin->getPaths()->getBasePath() . PFAD_PLUGIN_MIGRATIONS,
+                    $plugin->getPaths()->getBasePath() . \PFAD_PLUGIN_MIGRATIONS,
                     $plugin->getPluginID(),
                     $plugin->getMeta()->getSemVer()
                 );
@@ -184,7 +184,7 @@ class UpdateIO
                 $plugin  = $loader->init($pluginID);
                 $manager = new PluginMigrationManager(
                     $this->db,
-                    $plugin->getPaths()->getBasePath() . PFAD_PLUGIN_MIGRATIONS,
+                    $plugin->getPaths()->getBasePath() . \PFAD_PLUGIN_MIGRATIONS,
                     $plugin->getPluginID(),
                     $plugin->getMeta()->getSemVer()
                 );

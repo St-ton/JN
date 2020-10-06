@@ -262,7 +262,7 @@ class Controller
      */
     private function handleUpload(array $tplConfXML, string $value, string $name): string
     {
-        if (empty($_FILES[$value]['name']) || $_FILES[$value]['error'] !== UPLOAD_ERR_OK) {
+        if (empty($_FILES[$value]['name']) || $_FILES[$value]['error'] !== \UPLOAD_ERR_OK) {
             throw new InvalidArgumentException('No file provided or upload error');
         }
         $file  = $_FILES[$value];
@@ -275,7 +275,7 @@ class Controller
                 if (!isset($setting->key, $setting->rawAttributes['target']) || $setting->key !== $name) {
                     continue;
                 }
-                $templatePath = PFAD_TEMPLATES . $this->currentTemplateDir . '/' . $setting->rawAttributes['target'];
+                $templatePath = \PFAD_TEMPLATES . $this->currentTemplateDir . '/' . $setting->rawAttributes['target'];
                 $base         = PFAD_ROOT . $templatePath;
                 // optional target file name + extension
                 if (isset($setting->rawAttributes['targetFileName'])) {
@@ -398,7 +398,7 @@ class Controller
                                 $_theme->value . '/preview.png'
                                 : $tplBase . $this->currentTemplateDir . '/themes/' . $_theme->value . '/preview.png';
                             if (\file_exists($previewImage)) {
-                                $base                    = $shopURL . PFAD_TEMPLATES;
+                                $base                    = $shopURL . \PFAD_TEMPLATES;
                                 $preview[$_theme->value] = isset($_theme->dir)
                                     ? $base . $_theme->dir . '/themes/' . $_theme->value . '/preview.png'
                                     : $base . $this->currentTemplateDir . '/themes/' . $_theme->value . '/preview.png';

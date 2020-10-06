@@ -7,6 +7,7 @@ use JTL\Backend\Revision;
 use JTL\Catalog\Currency;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
+use JTL\Update\Updater;
 
 /**
  * Class Plugins
@@ -99,15 +100,17 @@ class Plugins
      */
     public function getHelpDesc(array $params, $smarty): string
     {
-        $placement   = $params['placement'] ?? 'left';
-        $cID         = !empty($params['cID']) ? $params['cID'] : null;
-        $description = isset($params['cDesc'])
+        $placement    = $params['placement'] ?? 'left';
+        $cID          = !empty($params['cID']) ? $params['cID'] : null;
+        $iconQuestion = !empty($params['iconQuestion']);
+        $description  = isset($params['cDesc'])
             ? \str_replace('"', '\'', $params['cDesc'])
             : null;
 
         return $smarty->assign('placement', $placement)
                       ->assign('cID', $cID)
                       ->assign('description', $description)
+                      ->assign('iconQuestion', $iconQuestion)
                       ->fetch('tpl_inc/help_description.tpl');
     }
 
@@ -212,10 +215,12 @@ class Plugins
             $params['account']->attributes['useAvatarUpload']->cAttribValue
             : 'templates/bootstrap/gfx/avatar-default.svg';
 
-        \executeHook(\HOOK_BACKEND_FUNCTIONS_GRAVATAR, [
-            'url'          => &$url,
-            'AdminAccount' => &$_SESSION['AdminAccount']
-        ]);
+        if (!(new Updater(Shop::Container()->getDB()))->hasPendingUpdates()) {
+            \executeHook(\HOOK_BACKEND_FUNCTIONS_GRAVATAR, [
+                'url'          => &$url,
+                'AdminAccount' => &$_SESSION['AdminAccount']
+            ]);
+        }
 
         return $url;
     }
@@ -233,5 +238,4 @@ class Plugins
 
         return Shop::Container()->getCaptchaService()->getHeadMarkup($smarty);
     }
-
 }

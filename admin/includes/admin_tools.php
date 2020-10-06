@@ -515,9 +515,11 @@ function setCurrencyConversionTooltipIO($netPrice, $grossPrice, $tooltipID)
  */
 function addFav($title, $url)
 {
-    $success = false;
+    $success     = false;
+    $kAdminlogin = Shop::Container()->getAdminAccount()->getID();
+
     if (!empty($title) && !empty($url)) {
-        $success = AdminFavorite::add((int)$_SESSION['AdminAccount']->kAdminlogin, $title, $url);
+        $success = AdminFavorite::add($kAdminlogin, $title, $url);
     }
 
     if ($success) {

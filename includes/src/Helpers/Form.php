@@ -340,6 +340,37 @@ class Form
     }
 
     /**
+     * @param int $max
+     * @return bool
+     * @since 5.0.0
+     */
+    public static function reachedUploadLimitPerHour(int $max = 0): bool
+    {
+        if ($max <= 0) {
+            return false;
+        }
+        Shop::Container()->getDB()->executeQueryPrepared(
+            "DELETE
+                FROM tfloodprotect
+                WHERE dErstellt < DATE_SUB(NOW(), INTERVAL 1 HOUR)
+                    AND cTyp = 'upload'",
+            [],
+            ReturnType::DEFAULT
+        );
+
+        $result = Shop::Container()->getDB()->executeQueryPrepared(
+            "SELECT COUNT(kFloodProtect) AS nAnfragen
+                FROM tfloodprotect
+                WHERE cTyp = 'upload'
+                    AND cIP = :ip",
+            ['ip' => Request::getRealIP()],
+            ReturnType::SINGLE_OBJECT
+        );
+
+        return $result->nAnfragen >= $max;
+    }
+
+    /**
      * @return stdClass
      * @since 5.0.0
      */

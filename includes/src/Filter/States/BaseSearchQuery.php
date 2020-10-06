@@ -307,7 +307,7 @@ class BaseSearchQuery extends AbstractFilter
         $sql->addCondition('tsuchanfrage.nAktiv = 1');
 
         $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
-        $cacheID   = 'fltr_' . \str_replace('\\', '', __CLASS__) . \md5($baseQuery);
+        $cacheID   = $this->getCacheID($baseQuery);
         if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
             $this->options = $cached;
 
@@ -938,7 +938,7 @@ class BaseSearchQuery extends AbstractFilter
 
             $this->productFilter->getDB()->query(
                 'INSERT INTO tsuchcachetreffer
-                        SELECT kSuchCache, kArtikelTMP, ROUND(MAX(15 - score) * 10)
+                        SELECT kSuchCache, kArtikelTMP, ROUND(MAX(score) * -10)
                         FROM ( ' . $sql . ' ) AS i
                         LEFT JOIN tartikelsichtbarkeit 
                             ON tartikelsichtbarkeit.kArtikel = i.kArtikelTMP
@@ -1042,7 +1042,7 @@ class BaseSearchQuery extends AbstractFilter
     }
 
     /**
-     * @param array $config
+     * @param array|null $config
      * @return array
      * @former gibSuchSpalten()
      */
@@ -1060,8 +1060,8 @@ class BaseSearchQuery extends AbstractFilter
     }
 
     /**
-     * @param array $exclude
-     * @param array $conf
+     * @param array      $exclude
+     * @param array|null $conf
      * @return string
      * @former gibMaxPrioSpalte()
      */

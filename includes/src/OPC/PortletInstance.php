@@ -503,11 +503,11 @@ class PortletInstance implements \JsonSerializable
     }
 
     /**
-     * @param string    $src
-     * @param string    $alt
-     * @param string    $title
-     * @param int|array $divisor
-     * @param string    $default
+     * @param string|null $src
+     * @param string|null $alt
+     * @param string|null $title
+     * @param int|array   $divisor
+     * @param string|null $default
      * @return array
      */
     public function getImageAttributes($src = null, $alt = null, $title = null, $divisor = 1, $default = null): array
@@ -518,7 +518,7 @@ class PortletInstance implements \JsonSerializable
         $srcset   = '';
         $srcsizes = '';
 
-        $filepath   = \PFAD_ROOT . \STORAGE_OPC . \basename($src);
+        $filepath   = \PFAD_ROOT . \STORAGE_OPC . \basename(\urldecode($src));
         $sizes      = \is_file($filepath) ? \getimagesize($filepath) : [0, 0];
         $realWidth  = $sizes[0];
         $realHeight = $sizes[1];
@@ -613,11 +613,11 @@ class PortletInstance implements \JsonSerializable
     }
 
     /**
-     * @param string $src
-     * @param string $alt
-     * @param string $title
-     * @param int    $divisor
-     * @param null   $default
+     * @param string|null $src
+     * @param string|null $alt
+     * @param string|null $title
+     * @param int         $divisor
+     * @param string|null $default
      * @return $this
      */
     public function setImageAttributes($src = null, $alt = null, $title = null, $divisor = 1, $default = null): self
@@ -666,15 +666,13 @@ class PortletInstance implements \JsonSerializable
      */
     public function jsonSerializeShort()
     {
-        $result = [
+        return [
             'id'              => $this->portlet->getId(),
             'class'           => $this->portlet->getClass(),
             'title'           => $this->portlet->getTitle(),
             'properties'      => $this->properties,
             'widthHeuristics' => $this->widthHeuristics,
         ];
-
-        return $result;
     }
 
     /**

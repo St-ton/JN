@@ -2,6 +2,9 @@
     function confirmDelete() {ldelim}
         return confirm('{__('sureDeleteLink')|replace:"\n":' '}');
     {rdelim}
+    $(document).ready(function () {
+        $('.duplicate-special-link').closest('.link-group-wrapper').find('.duplicate-special-page-warning').removeClass('d-none');
+    });
 </script>
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('links') cBeschreibung=__('linksDesc') cDokuURL=__('linksUrl')}
@@ -19,19 +22,28 @@
             {/if}
             {assign var=lgName value='linkgroup-'|cat:$linkgruppe->getID()}
             {assign var=missingTranslations value=$linkAdmin->getMissingLinkGroupTranslations($linkgruppe->getID())}
-            <div class="card panel-{if $linkgruppe->getID() > 0}default{else}danger{/if}">
+            <div class="card panel-{if $linkgruppe->getID() > 0}default{else}danger{/if} link-group-wrapper">
                 <div class="card-header row accordion-heading">
                     <div class="subheading1 col-md-6" id="heading-{$lgName}">
                         <span class="pull-left">
-                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse{$lgName}"{if $missingTranslations|count > 0} title="{__('missingTranslations')}: {$missingTranslations|count}"{/if}>
+                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse{$lgName}">
                                 <span class="accordion-toggle-icon"><i class="fal fa-plus"></i></span>
                                 {if $linkgruppe->getID() > 0}
                                     {$linkgruppe->getName()} ({__('linkGroupTemplatename')}: {$linkgruppe->getTemplate()})
                                 {else}
                                     {__('linksWithoutLinkGroup')}
                                 {/if}
-                                {if $missingTranslations|count > 0}<i class="fal fa-exclamation-triangle text-warning"></i>{/if}
                             </a>
+                            {if $missingTranslations|count > 0}
+                                <i class="fal fa-exclamation-triangle text-warning"
+                                      data-toggle="tooltip"
+                                      data-placement="top"
+                                      title="{__('missingTranslations')}: {$missingTranslations|count}"></i>
+                            {/if}
+                            <i title="{__('hasAtLeastOneDuplicateSpecialLink')}"
+                               class="d-none duplicate-special-page-warning fal fa-exclamation-triangle text-danger"
+                               data-toggle="tooltip"
+                               data-placement="top"></i>
                         </span>
                     </div>
                     <div class="col-md-6">
@@ -66,16 +78,6 @@
                     </div>
                 </div>
                 <div id="collapse{$lgName}" class="card-body collapse" role="tabpanel" aria-labelledby="heading-{$lgName}">
-                    {*{if $missingTranslations|count > 0}*}
-                        {*<div class="help-block container">*}
-                            {*<p>Achtung: Übersetzungen fehlen!</p>*}
-                            {*<ul class="default">*}
-                                {*{foreach $missingTranslations as $translation}*}
-                                    {*<li>{$translation->cNameDeutsch}</li>*}
-                                {*{/foreach}*}
-                            {*</ul>*}
-                        {*</div>*}
-                    {*{/if}*}
                     {if $linkgruppe->getLinks()->count() > 0}
                         <div class="table-responsive">
                             <table class="table">

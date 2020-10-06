@@ -11,8 +11,18 @@
                 {if $isReference === true}<i>{/if}
                 {$link->getDisplayName()}
                 {if $isReference === true} ({__('Referenz')})</i>{/if}
-                {if $missingLinkTranslations|count > 0} <i title="{__('missingTranslations')}: {$missingLinkTranslations|count}" class="fal fa-exclamation-triangle text-warning"></i>{/if}
-                {if $link->hasDuplicateSpecialLink()} <i title="{sprintf(__('hasDuplicateSpecialLink'), '')}" class="fal fa-exclamation-triangle text-danger"></i>{/if}
+                {if $missingLinkTranslations|count > 0}
+                    <i title="{__('missingTranslations')}: {$missingLinkTranslations|count}"
+                       class="fal fa-exclamation-triangle text-warning"
+                       data-toggle="tooltip"
+                       data-placement="top"></i>
+                {/if}
+                {if $link->hasDuplicateSpecialLink()}
+                    <i title="{sprintf(__('hasDuplicateSpecialLink'), '')}"
+                       class="duplicate-special-link fal fa-exclamation-triangle text-danger"
+                       data-toggle="tooltip"
+                       data-placement="top"></i>
+                {/if}
             </div>
         </td>
         <td class="text-center floatforms min-w-sm" style="width: 60%">

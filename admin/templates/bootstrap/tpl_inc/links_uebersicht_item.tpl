@@ -1,9 +1,9 @@
 {if !isset($kPlugin)}
-    {assign var=kPlugin value=0}
+    {$kPlugin = 0}
 {/if}
 {foreach $list as $link}
-    {assign var=missingLinkTranslations value=$linkAdmin->getMissingLinkTranslations($link->getID())}
-    {assign var=isReference value=$link->getReference() > 0}
+    {$missingLinkTranslations = $linkAdmin->getMissingLinkTranslations($link->getID())}
+    {$isReference = $link->getReference() > 0}
     <tr class="link-item{if $kPlugin > 0 && $kPlugin == $link->getPluginID()} highlight{/if}{if $link->getLevel() == 0} main{/if}">
         {math equation="a * b" a=$link->getLevel()-1 b=20 assign=fac}
         <td style="width: 30%">
@@ -93,7 +93,7 @@
                 <input type="hidden" name="kLinkgruppe" value="{$id}" />
                 <input type="hidden" name="kLink" value="{$link->getID()}" />
                 <div class="btn-group">
-                    {assign var=deleteCount value=$linkGroupCountByLinkID[$link->getID()]|default:1}
+                    {$deleteCount = $linkGroupCountByLinkID[$link->getID()]|default:1}
                     <button name="action"
                             value="delete-link"
                             class="btn btn-link px-2{if $link->getPluginID() > 0} disabled{/if}"

@@ -9,19 +9,21 @@
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('links') cBeschreibung=__('linksDesc') cDokuURL=__('linksUrl')}
 <div id="content">
-    <div class="block pb-4">
-        <form action="links.php" method="post">
-            {$jtl_token}
-            <button class="btn btn-primary add" name="action" value="create-linkgroup"><i class="fa fa-share"></i> {__('newLinkGroup')}</button>
-        </form>
-    </div>
+    <form action="links.php" method="post">
+        {$jtl_token}
+        <div class="row">
+            <div class="col-sm-6 col-xl-auto">
+                <button class="btn btn-primary add btn-block mb-4" name="action" value="create-linkgroup"><i class="fa fa-share"></i> {__('newLinkGroup')}</button>
+            </div>
+        </div>
+    </form>
     <div class="accordion" id="accordion2" role="tablist" aria-multiselectable="true">
         {foreach $linkgruppen as $linkgruppe}
             {if $linkgruppe->getID() < 0 && $linkgruppe->getLinks()->count() === 0}
                 {continue}
             {/if}
-            {assign var=lgName value='linkgroup-'|cat:$linkgruppe->getID()}
-            {assign var=missingTranslations value=$linkAdmin->getMissingLinkGroupTranslations($linkgruppe->getID())}
+            {$lgName = 'linkgroup-'|cat:$linkgruppe->getID()}
+            {$missingTranslations = $linkAdmin->getMissingLinkGroupTranslations($linkgruppe->getID())}
             <div class="card panel-{if $linkgruppe->getID() > 0}default{else}danger{/if} link-group-wrapper">
                 <div class="card-header row accordion-heading">
                     <div class="subheading1 col-md-6" id="heading-{$lgName}">
@@ -91,10 +93,12 @@
             </div>
         {/foreach}
     </div>{* /accordion *}
-    <div class="block">
-        <form action="links.php" method="post">
-            {$jtl_token}
-            <button class="btn btn-primary add" name="action" value="create-linkgroup"><i class="fa fa-share"></i> {__('newLinkGroup')}</button>
-        </form>
-    </div>
+    <form action="links.php" method="post">
+        {$jtl_token}
+        <div class="row">
+            <div class="col-sm-6 col-xl-auto mb-4">
+                <button class="btn btn-primary add btn-block" name="action" value="create-linkgroup"><i class="fa fa-share"></i> {__('newLinkGroup')}</button>
+            </div>
+        </div>
+    </form>
 </div>

@@ -297,9 +297,9 @@ class Admin
             ) {
                 foreach ($responseData->links as $link) {
                     if (isset($link->rel) && $link->rel === 'redirect_url') {
-                        \http_response_code(301);
-                        \header('Location: ' . $link->href);
-                        exit();
+                        $response->redirect = $link->href;
+                        $response->status   = 'OK';
+                        $this->sendResponse($response);
                     }
                 }
             }

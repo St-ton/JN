@@ -62,6 +62,10 @@
             data: $(e.target).serialize()
         }).done(function (r) {
             const result = JSON.parse(r);
+            if (result.status === 'OK' && result.redirect !== null) {
+                window.location = result.redirect;
+                return false;
+            }
             if (result.replaceWith) {
                 for (let itemID in result.replaceWith) {
                     $(itemID).replaceWith(result.replaceWith[itemID]);

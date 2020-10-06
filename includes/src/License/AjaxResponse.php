@@ -31,6 +31,11 @@ class AjaxResponse implements JsonSerializable
     public $status = 'OK';
 
     /**
+     * @var string|null
+     */
+    public $redirect;
+
+    /**
      * @var string
      */
     public $action = '';
@@ -62,7 +67,8 @@ class AjaxResponse implements JsonSerializable
             'id'           => $this->id,
             'notification' => \trim($this->notification),
             'html'         => \trim($this->html),
-            'replaceWith'  => $this->replaceWith
+            'replaceWith'  => $this->replaceWith,
+            'redirect'     => $this->redirect
         ];
     }
 }

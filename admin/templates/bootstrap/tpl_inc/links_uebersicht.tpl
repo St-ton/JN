@@ -1,9 +1,10 @@
 <script type="text/javascript">
-    function confirmDelete() {ldelim}
+    function confirmDelete() {
         return confirm('{__('sureDeleteLink')|replace:"\n":' '}');
-    {rdelim}
+    }
     $(document).ready(function () {
-        $('.duplicate-special-link').closest('.link-group-wrapper').find('.duplicate-special-page-warning').removeClass('d-none');
+        $('.duplicate-special-link').closest('.link-group-wrapper').find('.duplicate-special-page-warning')
+            .removeClass('d-none');
     });
 </script>
 
@@ -13,7 +14,9 @@
         {$jtl_token}
         <div class="row">
             <div class="col-sm-6 col-xl-auto">
-                <button class="btn btn-primary add btn-block mb-4" name="action" value="create-linkgroup"><i class="fa fa-share"></i> {__('newLinkGroup')}</button>
+                <button class="btn btn-primary add btn-block mb-4" name="action" value="create-linkgroup">
+                    <i class="fa fa-share"></i> {__('newLinkGroup')}
+                </button>
             </div>
         </div>
     </form>
@@ -28,7 +31,8 @@
                 <div class="card-header row accordion-heading">
                     <div class="subheading1 col-md-6" id="heading-{$lgName}">
                         <span class="pull-left">
-                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse{$lgName}">
+                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2"
+                               href="#collapse{$lgName}">
                                 <span class="accordion-toggle-icon"><i class="fal fa-plus"></i></span>
                                 {if $linkgruppe->getID() > 0}
                                     {$linkgruppe->getName()} ({__('linkGroupTemplatename')}: {$linkgruppe->getTemplate()})
@@ -97,7 +101,9 @@
         {$jtl_token}
         <div class="row">
             <div class="col-sm-6 col-xl-auto mb-4">
-                <button class="btn btn-primary add btn-block" name="action" value="create-linkgroup"><i class="fa fa-share"></i> {__('newLinkGroup')}</button>
+                <button class="btn btn-primary add btn-block" name="action" value="create-linkgroup">
+                    <i class="fa fa-share"></i> {__('newLinkGroup')}
+                </button>
             </div>
         </div>
     </form>

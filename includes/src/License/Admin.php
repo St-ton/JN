@@ -35,6 +35,8 @@ class Admin
 {
     public const ACTION_EXTEND = 'extendLicense';
 
+    public const ACTION_UPGRADE = 'upgradeLicense';
+
     public const ACTION_SET_BINDING = 'setbinding';
 
     public const ACTION_CLEAR_BINDING = 'clearbinding';
@@ -89,6 +91,7 @@ class Admin
      */
     private $validActions = [
         self::ACTION_EXTEND,
+        self::ACTION_UPGRADE,
         self::ACTION_SET_BINDING,
         self::ACTION_CLEAR_BINDING,
         self::ACTION_RECHECK,
@@ -154,8 +157,8 @@ class Admin
                 $this->auth->revoke();
                 $action = null;
             }
-            if ($action === self::ACTION_EXTEND) {
-                $this->extend($smarty);
+            if ($action === self::ACTION_EXTEND || $action === self::ACTION_UPGRADE) {
+                $this->extendUpgrade($smarty, $action);
             }
         }
         if ($action === null || !\in_array($action, $this->validActions, true) || !$valid) {
@@ -269,14 +272,14 @@ class Admin
      * @param JTLSmarty $smarty
      * @throws \SmartyException
      */
-    private function extend(JTLSmarty $smarty): void
+    private function extendUpgrade(JTLSmarty $smarty, string $action): void
     {
         $responseData     = null;
         $apiResponse      = '';
         $response         = new AjaxResponse();
-        $response->action = 'extendLicense';
+        $response->action = $action;
         try {
-            $apiResponse  = $this->manager->extend(
+            $apiResponse  = $this->manager->extendUpgrade(
                 Request::postVar('url'),
                 Request::postVar('exsid'),
                 Request::postVar('key')
@@ -288,7 +291,11 @@ class Admin
         }
         if (isset($responseData->state)) {
             if ($responseData->state === self::STATE_APPROVED) {
-                $smarty->assign('extendSuccessMessage', 'Successfully extended.');
+                if ($action === self::ACTION_EXTEND) {
+                    $smarty->assign('extendSuccessMessage', 'Successfully extended.');
+                } elseif ($action === self::ACTION_UPGRADE) {
+                    $smarty->assign('extendSuccessMessage', 'Successfully executed.');
+                }
             } elseif ($responseData->state === self::STATE_FAILED && isset($responseData->failure_reason)) {
                 $smarty->assign('extendErrorMessage', $responseData->failure_reason);
             } elseif ($responseData->state === self::STATE_CREATED

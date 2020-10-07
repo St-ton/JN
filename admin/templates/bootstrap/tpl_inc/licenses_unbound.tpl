@@ -58,12 +58,6 @@
                                                 <i class="fa fa-link"></i> {__($link->getRel())}
                                             </button>
                                         {/form}
-                                    {elseif $link->getRel() !== 'itemDetails' && $link->getRel() !== 'clearBinding'
-                                    && $link->getRel() !== 'extendSubscription' && $link->getRel() !== 'extendLicense'
-                                    && $link->getRel() !== 'documentation'}
-                                        <a class="btn btn-sm btn-default" href="{$link->getHref()}" title="{__($link->getRel())}">
-                                            {$link->getRel()}{__($link->getRel())}
-                                        </a>
                                     {/if}
                                 {/foreach}
                             </td>

@@ -43,7 +43,8 @@ final class PaymentPlugins extends AbstractStep
         $this->setDescription(\sprintf(__('stepFourDesc'), \implode(', ', $paymentMethods)));
         $this->setID(4);
 
-        $recommendations = new Manager($this->alertService, Manager::SCOPE_WIZARD_PAYMENT_PROVIDER);
+        $scope           = Manager::SCOPE_WIZARD_PAYMENT_PROVIDER;
+        $recommendations = new Manager($this->alertService, $scope);
 
         $question = new Question($db);
         $question->setID(10);
@@ -54,6 +55,7 @@ final class PaymentPlugins extends AbstractStep
         $question->setIsFullWidth(true);
         $question->setIsRequired(false);
         $question->setValue(false);
+        $question->setScope($scope);
         $question->setValidation(static function (QuestionInterface $question) {
             $questionValidation = new QuestionValidation($question);
             $questionValidation->checkSSL(true);

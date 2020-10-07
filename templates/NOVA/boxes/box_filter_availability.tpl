@@ -3,13 +3,15 @@
     && !($isMobile || $Einstellungen.template.productlist.filter_placement === 'modal')}
         <div id="sidebox{$oBox->getID()}" class="box box-filter-availability d-none d-lg-block">
             {button
-            variant="link"
-            class="text-decoration-none px-0 text-left dropdown-toggle"
-            block=true
-            role="button"
-            data=["toggle"=> "collapse", "target"=>"#cllps-box{$oBox->getID()}"]
+                variant="link"
+                class="text-decoration-none px-0 text-left dropdown-toggle text-truncate"
+                block=true
+                role="button"
+                data=["toggle"=> "collapse", "target"=>"#cllps-box{$oBox->getID()}"]
             }
-                {lang key='filterAvailability'}
+                <span class="text-truncate">
+                    {lang key='filterAvailability'}
+                </span>
             {/button}
             {collapse id="cllps-box{$oBox->getID()}"
                 visible=($oBox->getItems()->isActive() || $Einstellungen.template.productlist.filter_items_always_visible === 'Y')}

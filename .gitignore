@@ -45,6 +45,7 @@
 /media/image/opc/*
 /media/image/variation/*
 /media/video/*
+!/media/video/open_opc.mp4
 
 # mediafiles
 /mediafiles/Bilder/*

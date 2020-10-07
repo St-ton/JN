@@ -1,9 +1,0 @@
-lessphp_*
-
-*.orig
-*.BACKUP*
-*.BASE*
-*.LOCAL*
-*.REMOTE*
-favicon.ico
-node_modules/

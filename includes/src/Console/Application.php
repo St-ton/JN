@@ -10,6 +10,7 @@ use JTL\Console\Command\Cache\DeleteFileCacheCommand;
 use JTL\Console\Command\Cache\DeleteTemplateCacheCommand;
 use JTL\Console\Command\Command;
 use JTL\Console\Command\InstallCommand;
+use JTL\Console\Command\Mailtemplates\ResetCommand;
 use JTL\Console\Command\Migration\CreateCommand;
 use JTL\Console\Command\Migration\InnodbUtf8Command;
 use JTL\Console\Command\Migration\MigrateCommand;
@@ -158,6 +159,7 @@ class Application extends BaseApplication
             $cmds[] = new DbesTmpCommand();
             $cmds[] = new ClearObjectCacheCommand();
             $cmds[] = new CreateModelCommand();
+            $cmds[] = new ResetCommand();
 
             if ($this->devMode) {
                 $cmds[] = new CreateCommand();

@@ -8,7 +8,9 @@
                 role="button"
                 aria=["expanded"=>"false","controls"=>"crd-cllps-{$oBox->getID()}"]
                 class="text-decoration-none font-weight-bold d-md-none dropdown-toggle"}
-                {$oBox->getTitle()}
+                <span class="text-truncate">
+                    {$oBox->getTitle()}
+                </span>
             {/link}
         {/block}
         {block name='boxes-box-linkgroups-title'}

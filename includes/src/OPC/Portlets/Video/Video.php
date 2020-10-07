@@ -187,11 +187,32 @@ class Video extends Portlet
                         ],
                     ],
                     'local'   => [
-                        'video-local-url'   => [
-                            'label'                => __('videoURL'),
+                        'video-local-url'      => [
+                            'label'    => __('videoURL'),
                             'type'                 => InputType::VIDEO,
                             'width'                => 50,
                         ],
+                        'video-local-loop' => [
+                            'label'   => __('repeatVideo'),
+                            'type'    => InputType::CHECKBOX,
+                            'width'   => 50,
+                        ],
+                        'video-local-autoplay' => [
+                            'label'   => __('autoplayVideo'),
+                            'type'    => InputType::CHECKBOX,
+                            'width'   => 33,
+                        ],
+                        'video-local-mute'    => [
+                            'label'   => __('muteVideo'),
+                            'type'    => InputType::CHECKBOX,
+                            'width'   => 33,
+                        ],
+                        'video-local-controls' => [
+                            'label'   => __('showControls'),
+                            'type'    => InputType::CHECKBOX,
+                            'width'   => 33,
+                            'default' => '1',
+                        ]
                     ]
                 ]
             ],

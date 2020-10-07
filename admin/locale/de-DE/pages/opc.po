@@ -6,8 +6,7 @@ msgid "opcNotInstalled"
 msgstr "Das Update für den OnPage Composer wurde nicht ordnungsgemäß installiert. Bitte aktualisieren Sie die Migrationen."
 
 msgid "dbUpdateNeeded"
-msgstr "Ein Datenbank-Update Ihres JTL-Shops ist erforderlich um den OnPage Composer nutzen zu können.<br><br>"
-"Bitte führen Sie das Update im <a href=\"%s/admin/dbupdater.php\" target=\"_blank\">Admin-Backend</a> durch!"
+msgstr "Ein Datenbank-Update Ihres JTL-Shops ist erforderlich um den OnPage Composer nutzen zu können.<br><br>Bitte führen Sie das Update im <a href=\"%s/admin/dbupdater.php\" target=\"_blank\">Admin-Backend</a> durch!"
 
 # OPC GUI
 
@@ -152,9 +151,6 @@ msgstr "OnPage Composer"
 
 msgid "toggleNavigation"
 msgstr "Navigation ein-/ausschalten"
-
-msgid "somethingHappend"
-msgstr "Es ist ein unbekannter Fehler aufgetreten."
 
 msgid "noteInfoInGuide"
 msgstr "Sie finden neben den nachfolgend aufgelisteten Touren auch ausführliche Informationen in unserem <a href=\"https://guide.jtl-software.de\" target=\"_blank\"><i class=\"fa fa-external-link\"></i> Guide</a>."

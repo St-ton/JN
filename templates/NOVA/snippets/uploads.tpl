@@ -1,7 +1,8 @@
 {block name='snippets-uploads'}
-    {if !empty($oUploadSchema_arr) && !($Artikel->nIstVater || $Artikel->kVaterArtikel > 0)}
+    {if !empty($oUploadSchema_arr)}
+
         {getUploaderLang iso=$smarty.session.currentLanguage->cISO639|default:'' assign='uploaderLang'}
-        {if $tplscope === 'product'}
+        {if $tplscope === 'product' && !empty($Artikel) && !($Artikel->nIstVater || $Artikel->kVaterArtikel > 0)}
             {block name='snippets-uploads-subheading-product'}
                 <div class="h3 section-heading">{lang key='uploadHeadline'}</div>
             {/block}
@@ -66,7 +67,7 @@
                                                     uniquename: "{$oUploadSchema->cUnique}",
                                                     uploader:   "4.00",
                                                     prodID:     "{$oUploadSchema->prodID}",
-                                                    cname:      "{$oUploadSchema->cName|replace:" ":"_"}"
+                                                    cname:      "{$Artikel->cName|replace:" ":"_"}_{$oUploadSchema->cName|replace:" ":"_"}"
                                                     {if !empty($oUploadSchema->WarenkorbPosEigenschaftArr)},
                                                     variation:  "{strip}
                                                     {foreach name=variationen from=$oUploadSchema->WarenkorbPosEigenschaftArr item=Variation}_{$Variation->cEigenschaftWertName|trans|replace:" ":"_"}{/foreach}
@@ -85,10 +86,12 @@
                                                 clientUploadErrorIsActive = false;
                                                 let msgField = $('#queue{$oUploadSchema@index} .current-upload'),
                                                     uploadMsgField = $('.uploadifyMsg');
+                                                msgField.removeClass('text-danger').addClass('text-success');
                                                 if (typeof data.response !== 'undefined' && typeof data.response.cName !== 'undefined') {
                                                     msgField.removeClass('text-danger').addClass('text-success');
                                                     msgField.html('<i class="fas fa-check" aria-hidden="true"></i>' + data.response.cName + ' (' + data.response.cKB + ' KB)');
                                                 } else {
+                                                    msgField.removeClass('text-success').addClass('text-danger');
                                                     msgField.html('{lang key='uploadError'}');
                                                     msgField.removeClass('text-success').addClass('text-danger');
                                                     $el.fileinput('clear');
@@ -255,10 +258,12 @@
                                                         }).on('filebatchuploadsuccess', function (event, data) {
                                                             var msgField       = $('#queue{$oUploadSchema@index}{$oUpload@index} .current-upload'),
                                                                 uploadMsgField = $('.uploadifyMsg');
+                                                            msgField.removeClass('text-danger').addClass('text-success');
                                                             if (typeof data.response !== 'undefined' && typeof data.response.cName !== 'undefined') {
                                                                 msgField.removeClass('text-danger').addClass('text-success');
                                                                 msgField.html('<i class="fas fa-check" aria-hidden="true"></i>' + data.response.cName + ' (' + data.response.cKB + ' KB)');
                                                             } else {
+                                                                msgField.removeClass('text-success').addClass('text-danger');
                                                                 msgField.html('{lang key='uploadError'}');
                                                                 msgField.removeClass('text-success').addClass('text-danger');
                                                                 $el.fileinput('clear');

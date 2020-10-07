@@ -89,3 +89,10 @@ body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; 
 		overflow: hidden;
 	}
 }
+
+.shipping-method-country {
+	a {
+		text-decoration: underline dotted;
+		display: inline-block;
+	}
+}

@@ -1994,6 +1994,9 @@ msgstr "Please uninstall this extensions or purchase a valid license."
 msgid "Further using these extensions will violate the license policy and may have legal consequences."
 msgstr "Further using these extensions will violate the license policy and may have legal consequences."
 
+msgid "Licensing problem detected"
+msgstr "Licensing problem detected"
+
 msgid "Understood"
 msgstr "Understood"
 
@@ -2003,5 +2006,11 @@ msgstr "Disable plugins"
 msgid "Disable template"
 msgstr "Disable template"
 
+msgid "Smarty syntax error"
+msgstr "Smarty syntax error"
+
 msgid "weRecommend"
 msgstr "We recommend:"
+
+msgid "somethingHappend"
+msgstr "An unknown error occurred."

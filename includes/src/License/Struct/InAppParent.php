@@ -26,9 +26,9 @@ class InAppParent
      */
     public function __construct(?stdClass $json = null)
     {
-        if ($json !== null && isset($json->parent)) {
-            $this->setName($json->parent->name);
-            $this->setExsID($json->parent->exsid);
+        if ($json !== null && isset($json->parent_id)) {
+            $this->setName($json->parent_name);
+            $this->setExsID($json->parent_id);
         }
     }
 

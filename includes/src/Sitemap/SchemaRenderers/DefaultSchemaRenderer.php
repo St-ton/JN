@@ -35,7 +35,14 @@ final class DefaultSchemaRenderer extends AbstractSchemaRenderer
     {
         $xml  = $this->getXmlHeader();
         $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"';
-        if ($this->config['sitemap']['sitemap_googleimage_anzeigen'] === 'Y') {
+
+        if ($this->config['sitemap']['sitemap_googleimage_anzeigen'] === 'Y' ||
+            $this->config['sitemap']['sitemap_images_categories'] === 'Y' ||
+            $this->config['sitemap']['sitemap_images_manufacturers'] === 'Y' ||
+            $this->config['sitemap']['sitemap_images_newscategory_items'] === 'Y' ||
+            $this->config['sitemap']['sitemap_images_news_items'] === 'Y' ||
+            $this->config['sitemap']['sitemap_images_attributes'] === 'Y'
+        ) {
             $xml .= ' xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"';
         }
 

@@ -53,7 +53,7 @@ msgid "Unterkategorien"
 msgstr "Unterkategorien"
 
 msgid "Seiten der Linkgruppe „megamenu“"
-msgstr "Seiten der Linkgruppe \"megamenu\""
+msgstr "Seiten der Linkgruppe „megamenu“"
 
 msgid "Hersteller-Dropdown"
 msgstr "Hersteller-Dropdown"

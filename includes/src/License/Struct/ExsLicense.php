@@ -341,7 +341,10 @@ class ExsLicense
     public function setReferencedItem(?ReferencedItemInterface $referencedItem): void
     {
         $this->referencedItem = $referencedItem;
-        if ($referencedItem !== null && $this->canBeUsed === true && $this->getLicense()->isExpired()) {
+        if ($referencedItem !== null
+            && $this->canBeUsed === true
+            && ($this->getLicense()->isExpired() || $this->getLicense()->getSubscription()->isExpired())
+        ) {
             $avail = $this->getReleases()->getAvailable();
             $inst  = $referencedItem->getInstalledVersion();
             if ($avail !== null && $inst !== null && $inst->greaterThan($avail->getVersion())) {

@@ -58,7 +58,7 @@
             <input type="hidden" name="method" value="{$link->getMethod()|default:'POST'}">
             <input type="hidden" name="exsid" value="{$license->getExsID()}">
             <input type="hidden" name="key" value="{$license->getLicense()->getKey()}">
-            <button type="submit" class="btn btn-sm btn-primary extend-license"
+            <button type="submit" class="btn btn-sm btn-primary upgrade-license"
                     data-link="{$link->getHref()}"
                     href="#"
                     title="{__($link->getRel())}">

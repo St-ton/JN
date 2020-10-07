@@ -2,7 +2,9 @@
 
 namespace JTL\License\Struct;
 
+use Carbon\Carbon;
 use DateTime;
+use DateTimeZone;
 use stdClass;
 
 /**
@@ -56,10 +58,13 @@ class Subscription
      */
     public function setValidUntil($validUntil): void
     {
+        $this->validUntil = null;
         if ($validUntil !== null) {
-            $this->validUntil = \is_a($validUntil, DateTime::class) ? $validUntil : new DateTime($validUntil);
-        } else {
-            $this->validUntil = null;
+            $this->validUntil = \is_a($validUntil, DateTime::class)
+                ? $validUntil
+                : Carbon::createFromTimeString($validUntil, 'UTC')
+                    ->toDateTime()
+                    ->setTimezone(new DateTimeZone(\SHOP_TIMEZONE));
         }
     }
 

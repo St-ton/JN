@@ -48,8 +48,8 @@ class Limit extends AbstractFilter
             $limit = $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel;
         } else {
             $type = 'artikeluebersicht_anzahl_darstellung' .
-                $extendedView
-                    ?? $this->getConfig('artikeluebersicht')['artikeluebersicht_erw_darstellung_stdansicht'];
+                ($extendedView
+                    ?? $this->getConfig('artikeluebersicht')['artikeluebersicht_erw_darstellung_stdansicht']);
 
             if (($limit = $this->getConfig('artikeluebersicht')[$type]) === 0) {
                 $limit = ($max = $this->getConfig('artikeluebersicht')['artikeluebersicht_artikelproseite']) !== 0

@@ -41,6 +41,7 @@ class ExpiredExsLicense extends ExsLicense
         $vendor->setHref($data->cURL);
         $this->setVendor($vendor);
         $this->setLinks([]);
+        $this->setReleases(new Releases());
         $ref = new ReferencedPlugin();
         $ref->setInternalID((int)$data->kPlugin);
         $ref->setInstalled(true);
@@ -76,6 +77,7 @@ class ExpiredExsLicense extends ExsLicense
         $vendor->setHref($data->getUrl());
         $this->setVendor($vendor);
         $this->setLinks([]);
+        $this->setReleases(new Releases());
         $ref = new ReferencedTemplate();
         $ref->setInternalID($data->getTemplateID());
         $ref->setInstalled(true);

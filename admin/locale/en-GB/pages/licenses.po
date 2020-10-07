@@ -135,7 +135,7 @@ msgid "setBinding"
 msgstr "Bind to current shop"
 
 msgid "upgradeLicense"
-msgstr "Buy"
+msgstr "Buy license"
 
 msgid "Update to version %s available"
 msgstr "Update to version %s available"

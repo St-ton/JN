@@ -25,3 +25,6 @@ msgstr "Warenkorb / Kaufabwicklung"
 
 msgid "configsection_8"
 msgstr "Boxen"
+
+msgid "configsection_130"
+msgstr "Globale SEO Einstellungen"

@@ -2404,3 +2404,21 @@ msgstr "Nein"
 
 msgid "direct_advertising_value(Y)"
 msgstr "Ja"
+
+msgid "seo_robots_pagination_value(I)"
+msgstr "index"
+
+msgid "seo_robots_pagination_value(NF)"
+msgstr "noindex, follow"
+
+msgid "seo_robots_filter_value(I)"
+msgstr "index"
+
+msgid "seo_robots_filter_value(NF)"
+msgstr "noindex, follow"
+
+msgid "seo_robots_manufacturer_value(I)"
+msgstr "index"
+
+msgid "sseo_robots_manufacturer_value(NF)"
+msgstr "noindex, follow"

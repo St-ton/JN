@@ -235,3 +235,6 @@ msgstr "Allgemein"
 
 msgid "configgroup_110_manufacturer_filter"
 msgstr "Herstellerfilter"
+
+msgid "configgroup_130_robot_meta_tags"
+msgstr "Robots-Meta-Tags"

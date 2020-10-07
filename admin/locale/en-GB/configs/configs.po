@@ -2992,3 +2992,21 @@ msgstr "Allowed file uploads per hour"
 
 msgid "upload_modul_limit_desc"
 msgstr "Specify the maximum number of files that a user can upload per hour when the Upload Module is activated."
+
+msgid "seo_robots_pagination_name"
+msgstr "Paginated pages"
+
+msgid "seo_robots_pagination_desc"
+msgstr "Paginated pages"
+
+msgid "seo_robots_filter_name"
+msgstr "Filter pages"
+
+msgid "seo_robots_filter_desc"
+msgstr "Filter pages"
+
+msgid "seo_robots_manufacturer_name"
+msgstr "Manufacturer pages"
+
+msgid "seo_robots_manufacturer_desc"
+msgstr "Manufacturer pages"

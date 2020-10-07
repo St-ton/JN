@@ -2992,3 +2992,21 @@ msgstr "Erlaubte Datei-Uploads pro Stunde"
 
 msgid "upload_modul_limit_desc"
 msgstr "Hier legen Sie fest, wie viele Dateien ein Benutzer bei aktiviertem Uploadmodul pro Stunde maximal hochladen darf."
+
+msgid "seo_robots_pagination_name"
+msgstr "Paginierte Seiten"
+
+msgid "seo_robots_pagination_desc"
+msgstr "Paginierte Seiten"
+
+msgid "seo_robots_filter_name"
+msgstr "Filter Seiten"
+
+msgid "seo_robots_filter_desc"
+msgstr "Filter Seiten"
+
+msgid "seo_robots_manufacturer_name"
+msgstr "Hersteller Seiten"
+
+msgid "seo_robots_manufacturer_desc"
+msgstr "Hersteller Seiten"

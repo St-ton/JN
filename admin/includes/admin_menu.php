@@ -354,6 +354,11 @@ $adminMenu = [
                     'permissions' => 'SETTINGS_SPECIALPRODUCTS_VIEW',
                     'section'     => CONF_SUCHSPECIAL,
                 ],
+                __('Settings')   => (object)[
+                    'link'        => 'einstellungen.php?kSektion=' . CONF_SEO,
+                    'permissions' => 'SETTINGS_SEO_VIEW',
+                    'section'     => CONF_SEO,
+                ],
             ],
             __('Languages')       => (object)[
                 'link'        => 'sprache.php',

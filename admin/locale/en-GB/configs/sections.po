@@ -25,3 +25,6 @@ msgstr "Basket/Checkout"
 
 msgid "configsection_8"
 msgstr "Boxes"
+
+msgid "configsection_130"
+msgstr "Global SEO settings"

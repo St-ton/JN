@@ -20,6 +20,7 @@ class ExpiredExsLicense extends ExsLicense
         $this->setLinks([]);
         $this->setReleases(new Releases());
         $this->setParent(new InAppParent());
+        $this->setCanBeUsed(false);
     }
 
     /**

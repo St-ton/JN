@@ -2,7 +2,9 @@
 
 namespace JTL\License\Struct;
 
+use Carbon\Carbon;
 use DateTime;
+use DateTimeZone;
 use JTLShop\SemVer\Version;
 use stdClass;
 
@@ -124,7 +126,11 @@ class Release
      */
     public function setReleaseDate($releaseDate): void
     {
-        $this->releaseDate = \is_a($releaseDate, DateTime::class) ? $releaseDate : new DateTime($releaseDate);
+        $this->releaseDate = \is_a($releaseDate, DateTime::class)
+            ? $releaseDate
+            : Carbon::createFromTimeString($releaseDate, 'UTC')
+                ->toDateTime()
+                ->setTimezone(new DateTimeZone(\SHOP_TIMEZONE));
     }
 
     /**

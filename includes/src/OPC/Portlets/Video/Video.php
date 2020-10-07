@@ -4,6 +4,7 @@ namespace JTL\OPC\Portlets\Video;
 
 use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
+use JTL\OPC\PortletInstance;
 
 /**
  * Class Video
@@ -11,6 +12,33 @@ use JTL\OPC\Portlet;
  */
 class Video extends Portlet
 {
+    /**
+     * @param PortletInstance $instance
+     * @return string
+     */
+    public function getPreviewImageUrl(PortletInstance $instance): string
+    {
+        $vendor = $instance->getProperty('video-vendor');
+
+        if ($vendor === 'youtube') {
+            $videoId = $instance->getProperty('video-yt-id');
+            $srcUrl  = 'http://i3.ytimg.com/vi/' . $videoId . '/maxresdefault.jpg';
+        } elseif ($vendor === 'vimeo') {
+            $videoId  = $instance->getProperty('video-vim-id');
+            $videoXML = \unserialize(\file_get_contents('http://vimeo.com/api/v2/video/' . $videoId . '.php'));
+            $srcUrl   = $videoXML[0]['thumbnail_large'];
+        }
+
+        $localPath = \PFAD_ROOT . \STORAGE_VIDEO_THUMBS . $videoId . '.jpg';
+        $localUrl  = \Shop::getURL() . '/' . \STORAGE_VIDEO_THUMBS . $videoId . '.jpg';
+
+        if (!\is_file($localPath)) {
+            \file_put_contents($localPath, \file_get_contents($srcUrl));
+        }
+
+        return $localUrl;
+    }
+
     /**
      * @return string
      */

@@ -12,7 +12,7 @@
 
         {if $instance->getProperty('video-vendor') === 'youtube'}
             {image
-                src='https://img.youtube.com/vi/'|cat:$instance->getProperty('video-yt-id')|cat:'/maxresdefault.jpg'
+                src=$portlet->getPreviewImageUrl($instance)
                 alt='YouTube Video'
                 fluid=true
                 style=$style}
@@ -21,7 +21,7 @@
             {$hash  = unserialize(file_get_contents("http://vimeo.com/api/v2/video/$imgid.php"))}
 
             {image
-                src=$hash[0].thumbnail_large
+                src=$portlet->getPreviewImageUrl($instance)
                 alt='Vimeo Video'
                 fluid=true
                 style=$style}

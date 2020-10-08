@@ -28,19 +28,22 @@
                                         <div class="productbox-title subheadline">{$pushedArtikel->cName}</div>
                                     {/block}
                                 {/col}
-                                {col cols=4}
+                                {col cols=12 md=4}
                                     {block name='productdetails-pushed-success-product-cell-image'}
                                         {counter assign=imgcounter print=0}
-                                        {image lazy=true webp=true
-                                            src=$pushedArtikel->getImage(\JTL\Media\Image::SIZE_XS)
-                                            srcset="{$pushedArtikel->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                {$pushedArtikel->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                {$pushedArtikel->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                            alt="{if isset($pushedArtikel->Bilder[0]->cAltAttribut)}{$pushedArtikel->Bilder[0]->cAltAttribut|strip_tags|truncate:60|escape:'html'}{else}{$pushedArtikel->cName}{/if}"
-                                            id="image{$pushedArtikel->kArtikel}_{$imgcounter}"
-                                            sizes="auto"
-                                            class="image mb-3" fluid=true
-                                        }
+                                        <div class="square square-image">
+                                            <div class="inner">
+                                                {image lazy=true webp=true
+                                                    src=$pushedArtikel->getImage(\JTL\Media\Image::SIZE_XS)
+                                                    srcset="{$pushedArtikel->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                        {$pushedArtikel->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                        {$pushedArtikel->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                    alt="{if isset($pushedArtikel->Bilder[0]->cAltAttribut)}{$pushedArtikel->Bilder[0]->cAltAttribut|strip_tags|truncate:60|escape:'html'}{else}{$pushedArtikel->cName}{/if}"
+                                                    id="image{$pushedArtikel->kArtikel}_{$imgcounter}"
+                                                    sizes="auto"
+                                                    class="image mb-3" fluid=true}
+                                            </div>
+                                        </div>
                                     {/block}
                                 {/col}
                                 {col}

@@ -1,5 +1,5 @@
 {if $isPreview}
-    <div {$instance->getAttributeString()} class="opc-Video">
+    <div {$instance->getAttributeString()} class="opc-Video" style="position: relative">
         {if !empty($instance->getProperty('video-responsive'))}
             {$style = 'width:100%;'}
         {else}
@@ -31,6 +31,10 @@
                 <span>{__('Video')}</span>
             </div>
         {/if}
+        <div style="width: 100%; height: 100%; position: absolute; left: 0; top: 0;
+    background: url(http://localhost/danny/Projekte/shop5/includes/src/OPC/Portlets/Video/preview.png);
+    background-size: cover;
+    opacity: 0.5;"></div>
     </div>
 {else}
     <div id="{$instance->getUid()}" {$instance->getAttributeString()} class="{$instance->getStyleClasses()}">

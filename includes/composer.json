@@ -60,7 +60,7 @@
         "league/flysystem": "^1.0",
         "league/flysystem-sftp": "^1.0",
         "league/flysystem-ziparchive": "^1.0",
-        "oyejorge/less.php": "~1.7",
+        "wikimedia/less.php": "~3.0.0",
         "scssphp/scssphp": "1.0.6"
     },
     "require-dev": {

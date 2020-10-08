@@ -24,7 +24,8 @@ class LESSCommand extends Command
     {
         $this->setName('compile:less')
             ->setDescription('Compile all theme specific less files')
-            ->addOption('theme', 't', InputOption::VALUE_OPTIONAL, 'choose a single theme name to compile');
+            ->addOption('theme', null, InputOption::VALUE_OPTIONAL, 'choose a single theme name to compile')
+            ->addOption('templateDir', null, InputOption::VALUE_OPTIONAL, 'choose a template directory to compile from');
     }
 
     /**
@@ -32,9 +33,11 @@ class LESSCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $io         = $this->getIO();
-        $themeParam = $this->getOption('theme');
-        $directory  = \PFAD_ROOT . \PFAD_TEMPLATES . 'Evo/themes/';
+        $io               = $this->getIO();
+        $themeParam       = $this->getOption('theme');
+        $templateDirParam = $this->getOption('templateDir');
+        $directory        = !isset($templateDirParam)
+        ? \PFAD_ROOT . \PFAD_TEMPLATES . 'Evo/themes/' : \PFAD_ROOT . \PFAD_TEMPLATES . $templateDirParam;
         if ($themeParam === null) {
             $fileSystem = new Filesystem(new Local('/'));
             foreach ($fileSystem->listContents($directory) as $themeFolder) {

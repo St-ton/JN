@@ -25,7 +25,8 @@ class SASSCommand extends Command
     {
         $this->setName('compile:sass')
             ->setDescription('Compile all theme specific sass files')
-            ->addOption('theme', 't', InputOption::VALUE_OPTIONAL, 'choose a single theme name to compile');
+            ->addOption('theme', null, InputOption::VALUE_OPTIONAL, 'choose a single theme name to compile')
+            ->addOption('templateDir', null, InputOption::VALUE_OPTIONAL, 'choose a template directory to compile from');
     }
 
     /**
@@ -33,13 +34,15 @@ class SASSCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $io           = $this->getIO();
-        $themeParam   = $this->getOption('theme');
-        $cacheDir     = \PFAD_ROOT . \PFAD_COMPILEDIR . 'tpleditortmp';
-        $template     = 'NOVA';
-        $templateDir  = \PFAD_ROOT . \PFAD_TEMPLATES . $template . '/themes/';
-        $fileSystem   = new Filesystem(new Local('/'));
-        $themeFolders = $fileSystem->listContents($templateDir, false);
+        $io               = $this->getIO();
+        $themeParam       = $this->getOption('theme');
+        $templateDirParam = $this->getOption('templateDir');
+        $cacheDir         = \PFAD_ROOT . \PFAD_COMPILEDIR . 'tpleditortmp';
+        $templateDir      = !isset($templateDirParam)
+            ? \PFAD_ROOT . \PFAD_TEMPLATES .'NOVA/themes/' : \PFAD_ROOT . \PFAD_TEMPLATES . $templateDirParam;
+        $templateDir      = substr($templateDir, -1) !== '/' ? $templateDir . '/' : $templateDir;
+        $fileSystem       = new Filesystem(new Local('/'));
+        $themeFolders     = $fileSystem->listContents($templateDir, false);
         if (!isset($themeParam)) {
             foreach ($themeFolders as $themeFolder) {
                 $this->compile($themeFolder['basename'], $templateDir, $cacheDir, $io);

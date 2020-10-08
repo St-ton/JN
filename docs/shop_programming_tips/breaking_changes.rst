@@ -32,12 +32,19 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
 
 - **Die ungenutzte Seitentypen "Newsarchiv" und "RMA" wurden entfernt**
 
-- **Versionierung geändert: "Semantic Versioning" für den Onlineshop, "API-Versioning" intern für den Abgleich mit
-  JTL-Wawi**
+- **Die Versionierung wurde geändert**
+
+    "Semantic Versioning" : für JTL-Shop, |br|
+    "API-Versioning" : intern für den Abgleich mit JTL-Wawi**
 
     Mit JTL-Shop 5.x wird die Versionsnummerierung des Onlineshops auf das allgemein gültige Verfahren
     `SemVer <http://semver.org/>`_ umgestellt. |br|
     Für die Verbindung zur JTL-Wawi wird intern weiterhin die bisherige Versionierung als interne API-Version geführt.
+
+- **Die Upgrade-Möglichkeit von JTL-Shop *kleiner* Version 4.02 auf Version 5.x wurde entfernt**
+
+    Nutzer vorheriger Versionen (zum Beispiel 3.0x) müssen mindestens auf JTL-Shop Version 4.06 aktualisieren
+    um von dort auf JTL-Shop Version 5.0 upgraden zu können.
 
 - **UTF8-Migration für gesamten Onlineshop**
 
@@ -65,8 +72,13 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
 
 - **Plugins werden nicht mehr im Installationspaket ausgeliefert**
 
-    Plugins werden zukünftig über den JTL-Store installierbar sein. |br|
+    Plugins werden zukünftig über den JTL-Extensionstore installierbar sein. |br|
     Aus diesem Grund sind im Installationspaket des Onlineshops keine Plugins mehr enthalten.
+
+    Folgende Plugins fallen ersatzlos weg:
+
+    - JTL Backend User Extension
+    - JTL Themebar
 
 - **Werkzeuge zum Kompilieren von Themes überarbeitet**
 
@@ -200,14 +212,43 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
 
     Zukünftig wird dieses Exportformat ggf. von Yatego selbst als Plugin zur Verfügung gestellt.
 
-- **Exportformate von Drittanbietern entfernt:**
+- **Exportformate von Drittanbietern wurden entfernt:**
 
     Folgende Exportformat von Drittanbietern wurden aus dem Core von JTL-Shop entfernt:
 
     - Hardwareschotte
     - Kelkoo
-    - Become
+    - Become Europe (become.eu)
     - Europe
+    - Billiger
+    - Geizhals
+    - Preisauskunft
+    - Preistrend
+    - Shopboy
+    - Idealo
+    - Preisroboter
+    - Milando
+    - Channelpilot
+    - Preissuchmaschine
+    - Elm@r Produktdatei
+    - Yatego Neu
+    - LeGuide.com
+    - Twenga
+
+- **Alte Shop3-Backend-Templates wurden entfernt**
+
+- **Die Unterstützung für ein seperates MobileTemplate wurde entfernt**
+
+- **Folgende veraltete Core-Funktionalitäten wurden entfernt:**
+
+    - Bilderfunktion "Hochskalieren"
+    - Funktion und Box "Globale Merkmale"
+    - VCard Upload
+    - Google Analytics
+    - News-Widget
+    - Kunden werben Kunden
+    - Alte JTL-Shop 3.0 Bilderschnittstelle
+    - Internes Wort-Verlinkssystem
 
 - **Im meta-Tag "robots" von Spezialseiten ist der "content" nun auf "nofollow, noindex" gesetzt**
 

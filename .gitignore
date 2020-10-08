@@ -1,6 +1,5 @@
 # files
 /includes/config.JTL-Shop.ini.php
-/templates/Evo
 /includes/plugins/*
 /plugins/*
 /rss.xml

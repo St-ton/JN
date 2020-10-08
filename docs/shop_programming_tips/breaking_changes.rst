@@ -168,9 +168,14 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
     Verzeichnis ``bilder/`` zusammengeführt. |br|
     Die bisherigen Verzeichnisse werden nicht mehr genutzt.
 
-- **Das Modul "Preisradar" wurde entfernt**
-- **Das Modul "Preisgrafik" wurde entfernt**
-- **Das Modul "Umfrage" wurde entfernt**
+- **Veraltete Module wurden entfernt**
+
+    Folgende veraltete Module wurden aus dem Core von JTL-Shop entfernt:
+
+    - Preisradar
+    - Preisgrafik
+    - Umfrage
+
 - **Das Widget "Do You Know" ("DUK") wurde entfernt**
 
     Diese Features wurden bisher sehr wenig genutzt und sind nicht mehr zeitgemäß. |br|

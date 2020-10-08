@@ -28,6 +28,10 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
     Das CSS-Framework *Bootstrap* hat mit JTL-Shop 5.x ebenfalls ein Update erhalten und ist nun in Version 4.1.3
     im Onlineshop enthalten.
 
+- **Die veralteten Bibliotheken "xajax" und "PclZip" wurden entfernt**
+
+- **Die ungenutzte Seitentypen "Newsarchiv" und "RMA" wurden entfernt**
+
 - **Versionierung geändert: "Semantic Versioning" für den Onlineshop, "API-Versioning" intern für den Abgleich mit
   JTL-Wawi**
 
@@ -95,7 +99,7 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
 
 - **Der Auswahlassistent wird zum Portlet**
 
-    Das bisher unter JTL-Shop 4.x vorhandene Modul "Auswahlassistent" wurde aus dem Core des Onlineshops entfernt.
+    Das bisher unter JTL-Shop 4.x vorhandene Modul "Auswahlassistent" wurde aus dem Core von JTL-Shop entfernt.
 
     Der Auswahlassistent ist nun ein Portlet des OnPage Composers für JTL-Shop 5.x. |br|
     Dadurch lassen sich im OnPage Composer Auswahlassistenten auf der jeweiligen Seite platzieren.
@@ -120,6 +124,8 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
     - WorldPay
     - Sofort
     - Billpay
+    - Moneybookers
+    - UOS
 
 - **Hooks erweitert/ergänzt/entfernt**
 
@@ -136,7 +142,7 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
 - **Das Feature "Produkt-Tags" wurde entfernt**
 
     Das Produkttagging durch Kunden wird wenig genutzt und ist nicht mehr zeitgemäß. |br|
-    Dieses Feature wurde mit JTL-Shop 5.x aus dem Core des Onlineshops entfernt.
+    Dieses Feature wurde mit JTL-Shop 5.x aus dem Core von JTL-Shop entfernt.
 
 - **Die URL-Generierung wurde überarbeitet**
 
@@ -146,7 +152,7 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
 - **Die Einstellungen (1142) und (1130) für die Anzahl der Vorschaubilder bei Varkombis wurde entfernen**
 
     Aufgrund der performanteren Darstellung der Artikeldetails im NOVA-Template sind diese beiden Einstellungen
-    überholt und wurden mit JTL-Shop 5.x aus dem Core des Onlineshops entfernt.
+    überholt und wurden mit JTL-Shop 5.x aus dem Core von JTL-Shop entfernt.
 
 - **Das Duplizieren von Bildern in Multilanguage-Onlineshops wurde deaktiviert**
 
@@ -163,11 +169,12 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
     Die bisherigen Verzeichnisse werden nicht mehr genutzt.
 
 - **Das Modul "Preisradar" wurde entfernt**
+- **Das Modul "Preisgrafik" wurde entfernt**
 - **Das Modul "Umfrage" wurde entfernt**
 - **Das Widget "Do You Know" ("DUK") wurde entfernt**
 
     Diese Features wurden bisher sehr wenig genutzt und sind nicht mehr zeitgemäß. |br|
-    Sie wurden mit JTL-Shop 5.x aus dem Core entfernt.
+    Sie wurden mit JTL-Shop 5.x aus dem Core von JTL-Shop entfernt.
 
 - **Die dynamische Preisberechnung erlaubt nun gleichbleibende Preise bei Auslandslieferungen**
 
@@ -182,9 +189,19 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
 
 - **Das Yatego-Exportformat wurde entfernt**
 
-    Das veraltete und fehlerhafte Exportformat "Yatego" wurde aus dem Core des Onlineshops entfernt.
+    Das veraltete und fehlerhafte Exportformat "Yatego" wurde aus dem Core von JTL-Shop entfernt.
 
     Zukünftig wird dieses Exportformat ggf. von Yatego selbst als Plugin zur Verfügung gestellt.
+
+- **Exportformate von Drittanbietern entfernt:**
+
+    Folgende Exportformat von Drittanbietern wurden aus dem Core von JTL-Shop entfernt:
+
+    - Hardwareschotte
+    - Kelkoo
+    - Become
+    - Europe
+    - become.eu
 
 - **Im meta-Tag "robots" von Spezialseiten ist der "content" nun auf "nofollow, noindex" gesetzt**
 
@@ -233,7 +250,7 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
     Sobald in einem der Pfade ein *favicon* gefunden wird, wird die Suche beendet und das gefundene *favicon*
     verwendet.
 
-- **Google Analytics Tracking wurde aus dem Onlineshop-Core entfernt**
+- **Google Analytics Tracking wurde aus dem Core von JTL-Shop entfernt**
 
     Aufgrund umfangreicher Änderungen in "Google Analytics" wurde die bisher im Onlineshop verwendete Implementierung
     (``ga.js``) aus JTL-Shop 5.x entfernt.
@@ -241,7 +258,7 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
     Zukünftig wird es für das Tracking gesonderte Plugins geben, die auch die aktuellen Anforderungen der DSGVO
     umsetzen.
 
-- **Google-Recaptcha und Gravatar wurden aus dem Onlineshop-Core entfernt**
+- **Google-Recaptcha und Gravatar wurden aus dem Core von JTL-Shop entfernt**
 
     Gemäß den Anforderungen der DSGVO müssen für die Datenweitergabe an Drittanbieter jeweils gesonderte
     Einverständnisse von allen Endkunden eingeholt werden. Deshalb wurden diese Drittanbietermodule aus JTL-Shop 5.x

@@ -10,3 +10,12 @@ msgstr "Installation guide"
 
 msgid "noRecommendationFound"
 msgstr "No recommendation for id found."
+
+msgid "successInstallPaymentPlugin"
+msgstr "The plug-in has been successfully installed and is now ready to be set up under \"Administration > Payments > Payment methods\" and \"Plug-ins > Installed plug-ins\"."
+
+msgid "successInstallLegalPlugin"
+msgstr "The plug-in has been successfully installed and is now ready to be set up under \"Plug-ins > Installed plug-ins\"."
+
+msgid "installPlugin"
+msgstr "Install plugin"

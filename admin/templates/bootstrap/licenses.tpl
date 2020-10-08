@@ -11,8 +11,8 @@
         {if isset($smarty.get.debug)}
             <h3>AuthToken</h3>
             <pre>{$authToken}</pre>
-            <h3>License data</h3>
-            <pre>{$licenses|var_dump}</pre>
+            <h3>Bound licenses</h3>
+            <pre>{$licenses->getBound()|dump}</pre>
             <h3>Raw data</h3>
             <pre>{$rawData|var_dump}</pre>
         {/if}

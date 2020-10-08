@@ -27,10 +27,30 @@ class Migration_20200522000000 extends Migration implements IMigration
 
     public function up()
     {
-        // removed due to runtime reasons in cli environment
+        if (\PHP_SAPI === 'cli') {
+            // removed in cli environment due to runtime reasons
+            return;
+        }
+
+        // fix for cli: SHOP-4321
+        Shop::Container()->getGetText();
+
+        unset($_SESSION['emailSyntaxErrorCount'], $_SESSION['exportSyntaxErrorCount']);
+        $smarty   = new MailSmarty($this->getDB());
+        $renderer = new SmartyRenderer($smarty);
+        $checker  = new SyntaxChecker(
+            $this->getDB(),
+            new TemplateFactory($this->getDB()),
+            $renderer,
+            new TestHydrator($smarty, $this->getDB(), Shopsetting::getInstance())
+        );
+        $checker->checkAll();
+        $ef = new Exportformat(0, $this->getDB());
+        $ef->checkAll();
     }
 
     public function down()
     {
+        unset($_SESSION['emailSyntaxErrorCount'], $_SESSION['exportSyntaxErrorCount']);
     }
 }

@@ -32,9 +32,8 @@
             </div>
         {/if}
         <div style="width: 100%; height: 100%; position: absolute; left: 0; top: 0;
-    background: url(http://localhost/danny/Projekte/shop5/includes/src/OPC/Portlets/Video/preview.png);
-    background-size: cover;
-    opacity: 0.5;"></div>
+    background: url(http://localhost/danny/Projekte/shop5/includes/src/OPC/Portlets/Video/preview.svg);
+    background-size: cover;"></div>
     </div>
 {else}
     <div id="{$instance->getUid()}" {$instance->getAttributeString()} class="{$instance->getStyleClasses()}">

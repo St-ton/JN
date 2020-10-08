@@ -111,7 +111,7 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
 
 - **Mehrere Zahlungsart-Integrationen wurden entfernt**
 
-    Die folgenden Zahlungsmodule werden von JTL im Auslieferungszustand des Onlineshops nicht mehr angeboten und wurden
+    Die folgenden Zahlungsmodule werden von JTL im Auslieferungszustand von JTL-Shop nicht mehr angeboten und wurden
     aus dem Core von JTL-Shop 5.x entfernt: |br|
 
     - EOS
@@ -126,6 +126,8 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
     - Billpay
     - Moneybookers
     - UOS
+
+    Die Zahlungsart "PayPal" wird zukünftig ebenfalls als Plugin *JTL PayPal* angeboten.
 
 - **Hooks erweitert/ergänzt/entfernt**
 
@@ -206,7 +208,6 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
     - Kelkoo
     - Become
     - Europe
-    - become.eu
 
 - **Im meta-Tag "robots" von Spezialseiten ist der "content" nun auf "nofollow, noindex" gesetzt**
 

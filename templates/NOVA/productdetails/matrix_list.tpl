@@ -44,7 +44,7 @@
                                 {if $child->inWarenkorbLegbar == 1 && !$child->bHasKonfig && ($child->nVariationAnzahl == $child->nVariationOhneFreifeldAnzahl)}
                                     {inputgroup size="sm" class="float-right {if isset($smarty.session.variBoxAnzahl_arr[$child->kArtikel]->bError) && $smarty.session.variBoxAnzahl_arr[$child->kArtikel]->bError} has-error{/if}"}
                                         {if $child->cEinheit}
-                                            {inputgroupaddon prepend=true is-text=true class="unit form-control"}
+                                            {inputgroupaddon prepend=true is-text=true class="unit"}
                                                 {$child->cEinheit}:
                                             {/inputgroupaddon}
                                         {/if}
@@ -59,7 +59,7 @@
                             {/col}
                         {/block}
                         {block name='productdetails-matrix-list-muted-x'}
-                            {col cols=1}
+                            {col cols=1 class="text-right px-1"}
                                 <span class="text-muted">&times;</span>
                             {/col}
                         {/block}

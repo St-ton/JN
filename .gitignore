@@ -42,16 +42,7 @@
 /media/image/manufacturer/*
 /media/image/news/*
 /media/image/newscategory/*
-/media/image/opc/xs/*
-/media/image/opc/sm/*
-/media/image/opc/md/*
-/media/image/opc/lg/*
-/media/image/opc/xl/*
-!/media/image/opc/xs/pakete.png
-!/media/image/opc/sm/pakete.png
-!/media/image/opc/md/pakete.png
-!/media/image/opc/lg/pakete.png
-!/media/image/opc/xl/pakete.png
+/media/image/opc/*
 /media/image/variation/*
 /media/video/*
 !/media/video/open_opc.mp4

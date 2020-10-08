@@ -45,24 +45,26 @@
                         <td>
                             {$versandart->cName}
                             <hr class="my-1">
-                            <span class="d-block">
+                            <span class="d-block shipping-method-country">
                                 {foreach $versandart->countries as $country}
                                     {if $country@iteration == 20}
                                         <span class="collapse" aria-expanded="false" id="show-all-countries-{$versandart->kVersandart}">
                                         {$collapse=1}
                                     {/if}
-                                    <a href="versandarten.php?zuschlag=1&kVersandart={$versandart->kVersandart}&cISO={$country->getISO()}&token={$smarty.session.jtl_token}"
-                                        data-toggle="tooltip"
-                                        title="{__('isleListsDesc')}">
-                                        <span class="small">
-                                            {if in_array($country->getISO(), $versandart->shippingSurchargeCountries)}
-                                                <u>{$country->getName()}*</u>
-                                            {else}
-                                                {$country->getName()}
-                                            {/if}
-                                        </span>
-                                        {if !$country@last},{/if}
-                                    </a>
+                                    {strip}
+                                        <a href="versandarten.php?zuschlag=1&kVersandart={$versandart->kVersandart}&cISO={$country->getISO()}&token={$smarty.session.jtl_token}"
+                                            data-toggle="tooltip"
+                                            title="{__('isleListsDesc')}">
+                                            <i class="fas fa-plus-circle"></i>
+                                            <span class="small">
+                                                {if in_array($country->getISO(), $versandart->shippingSurchargeCountries)}
+                                                    <u>{$country->getName()}*</u>
+                                                {else}
+                                                    {$country->getName()}
+                                                {/if}
+                                            </span>
+                                        </a>
+                                    {/strip}{if !$country@last},{/if}
                                     {if $country@iteration > 20 && $country@last}
                                         </span>
                                         <button class="btn btn-link float-right" data-toggle="collapse" data-target="#show-all-countries-{$versandart->kVersandart}">

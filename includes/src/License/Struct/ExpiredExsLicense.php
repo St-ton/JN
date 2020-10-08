@@ -23,12 +23,14 @@ class ExpiredExsLicense extends ExsLicense
         $license->setIsBound(true);
         $license->setKey($data->cPluginID);
         $license->setExpired(true);
-        $license->setValidUntil(new DateTime('1970-01-01'));
         $license->setCreated(new DateTime());
         $license->setType(self::TYPE_PLUGIN);
         $this->setLicense($license);
         $this->setID($data->cPluginID);
         $this->setState(self::STATE_ACTIVE);
+        $subscription = new Subscription();
+        $subscription->setExpired(true);
+        $license->setSubscription($subscription);
         $vendor = new Vendor();
         $vendor->setName($data->cAutor);
         $vendor->setHref($data->cURL);

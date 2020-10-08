@@ -121,3 +121,6 @@ msgstr "Zahlungsart nicht gefunden."
 
 msgid "feeNameHint"
 msgstr "Hier legen Sie den Namen einer eventuell anfallenden Gebühr für die Zahlungsart fest. Der Name der Gebühr wird während der Kaufabwicklung bei der Zahlungsart angezeigt. Die Höhe der Gebühr legen Sie individuell in jeder Versandart fest, für die die Zahlungsart angeboten wird."
+
+msgid "paymentsReceived"
+msgstr "Zahlungseingänge"

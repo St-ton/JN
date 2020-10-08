@@ -400,8 +400,8 @@ msgstr "File system"
 msgid "Some directories are not writeable."
 msgstr "Some directories are not writeable."
 
-msgid "Please delete the installation directory '/install' in the root directory."
-msgstr "Please delete the installation directory '/install/' in the root directory of your JTL-Shop."
+msgid "Please delete the installation directory \"/install\" in the root directory."
+msgstr "Please delete the installation directory \"/install\" in the root directory of your JTL-Shop."
 
 msgid "Database"
 msgstr "Database"
@@ -409,7 +409,7 @@ msgstr "Database"
 msgid "There are errors within the database structure."
 msgstr "Error in the database structure."
 
-msgid "Your template version differs from your shop version.<br />For additional help about template updates go to <i class='fa fa-external-link'></i> Wiki"
+msgid "Your template version differs from your shop version.<br />For additional help about template updates go to <i class=\"fa fa-external-link\"></i> Wiki"
 msgstr "The template version does not match the version of our online shop.<br/>For further information on adjusting the template, please see the <i class=\"fa fa-external-link\"></i> JTL-Guide."
 
 msgid "You are using a full responsive template. The activation of a separate mobile template is not necessary in this case."
@@ -436,13 +436,13 @@ msgstr "No full-text index available."
 msgid "E-mail template broken"
 msgstr "Defective email template"
 
-msgid "The E-mail template 'Passwort vergessen'/'Forgotten password' is outdated. The variable $neues_passwort is not available anymore. Please replace this with $passwordResetLink or reset the template."
+msgid "The E-mail template \"Passwort vergessen\"/\"Forgotten password\" is outdated. The variable $neues_passwort is not available anymore. Please replace this with $passwordResetLink or reset the template."
 msgstr "The email template \"Forgot password\" is outdated. The variable $neues_passwort is no longer available. Please replace it by $passwordResetLink or reset the template."
 
 msgid "Insecure SMTP connection"
 msgstr "Unsafe SMTP connection"
 
-msgid "You have selected SMTP as mail-method, but no encryption method has been chosen. We recommend you urgently to adjust your mail settings. You can find these options at 'System > E-Mails > Emaileinstellungen > SMTP Security'"
+msgid "You have selected SMTP as mail-method, but no encryption method has been chosen. We recommend you urgently to adjust your mail settings. You can find these options at \"System > E-Mails > Emaileinstellungen > SMTP Security\""
 msgstr "You chose SMTP but did not select an SMTP security method. We urgently recommend adapting your email settings. You will find the option here: Administration > Emails > Server."
 
 msgid "User management"

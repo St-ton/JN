@@ -2569,10 +2569,14 @@ div.markdown thead tr td {
   position: relative;
 }
 .has-notify-icon span:nth-child(2) {
-  transform: scale(0.5);
+  transform: scale(0.4);
   position: absolute;
-  top: -4px;
-  right: -10px;
+  top: -16px;
+  right: -25px;
+  color: #fff;
+}
+.has-notify-icon.stack-refresh span:nth-child(2) {
+  right: -29px;
 }
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {

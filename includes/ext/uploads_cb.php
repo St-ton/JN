@@ -54,6 +54,7 @@ if (!empty($_FILES)) {
         'application/x-csh',
         'application/x-httpd-cgi',
         'application/x-httpd-perl',
+        'application/octet-stream',
         'application/sql',
         'text/x-sql',
         'text/sql',
@@ -88,7 +89,7 @@ if (!empty($_FILES)) {
     $targetFile = PFAD_UPLOADS . $unique;
     $tempFile   = $fileData['tmp_name'];
     $targetInfo = pathinfo($targetFile);
-    $realPath   = realpath($targetInfo['dirname']);
+    $realPath   = str_replace('\\', '/', realpath($targetInfo['dirname']) . DS);
 
     // legitimate uploads do not have an extension for the destination file name - but for the originally uploaded file
     if (!isset($sourceInfo['extension']) || isset($targetInfo['extension'])) {
@@ -96,11 +97,11 @@ if (!empty($_FILES)) {
     }
     if (isset($fileData['error'], $fileData['name'])
         && (int)$fileData['error'] === UPLOAD_ERR_OK
-        && mb_strpos($realPath . DS, PFAD_UPLOADS) === 0
+        && mb_strpos($realPath, PFAD_UPLOADS) === 0
         && move_uploaded_file($tempFile, $targetFile)
     ) {
         $file = new stdClass();
-        if (isset($_REQUEST['prodID'])) {
+        if (isset($_REQUEST['cname'])) {
             $file->cName = (int)$_REQUEST['prodID']
                 . '_' . Seo::sanitizeSeoSlug(Seo::getFlatSeoPath($_REQUEST['cname']))
                 . '_' . $unique . '.' . $sourceInfo['extension'];
@@ -132,10 +133,10 @@ if (!empty($_REQUEST['action'])) {
             $unique     = $_REQUEST['uniquename'];
             $filePath   = PFAD_UPLOADS . $unique;
             $targetInfo = pathinfo($filePath);
-            $realPath   = realpath($targetInfo['dirname']);
+            $realPath   = str_replace('\\', '/', realpath($targetInfo['dirname'] . DS));
             if (!isset($targetInfo['extension'])
                 && isset($_SESSION['Uploader'][$unique])
-                && mb_strpos($realPath . DS, PFAD_UPLOADS) === 0
+                && mb_strpos($realPath, PFAD_UPLOADS) === 0
             ) {
                 unset($_SESSION['Uploader'][$unique]);
                 if (file_exists($filePath)) {

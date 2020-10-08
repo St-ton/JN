@@ -4,7 +4,7 @@
     {foreach $NaviFilter->searchFilterCompat->getOptions() as $searchFilter}
         {if $limit != -1 && $searchFilter@iteration > $limit && !$collapseInit}
             {block name='snippets-filter-search-more-top'}
-                <div class="collapse {if $NaviFilter->searchFilterCompat->isActive()} show{/if}" id="box-collps-filter{$NaviFilter->searchFilterCompat->getNiceName()}" aria-expanded="false">
+                <div class="collapse {if $NaviFilter->searchFilterCompat->isActive()} show{/if}" id="box-collps-filter{$NaviFilter->searchFilterCompat->getNiceName()}" aria-expanded="false" role="button">
                     <ul class="nav flex-column">
                 {$collapseInit = true}
             {/block}

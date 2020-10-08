@@ -26,13 +26,21 @@
         nBis = nBis || 0;
 
         $('#price-rows').append(
-            '<div class="price-row">' +
-                '<button type="button" class="btn-remove-range btn btn-danger btn-sm">' +
-                    '<i class="fas fa-trash-alt"></i></button> ' +
-                '<label for="nVon_' + n + '">{__('from')}:</label> ' +
-                '<input id="nVon_' + n + '" class="form-control" name="nVon[]" type="text" value="' + nVon + '"> ' +
-                '<label for="nBis_' + n + '">{__('to')}:</label> ' +
-                '<input id="nBis_' + n + '" class="form-control" name="nBis[]" type="text" value="' + nBis + '">' +
+            '<div class="price-row row mx-0 justify-content-end">' +
+                '<div class="col-5 col-md-4 px-1"><div class="input-group mb-3">' +
+                '  <div class="input-group-prepend">' +
+                '    <span class="input-group-text">{__('from')}</span>' +
+                '  </div>' +
+                '  <input id="nVon_' + n + '" class="form-control" name="nVon[]" type="text" value="' + nVon + '"> ' +
+                '</div></div>' +
+                '<div class="col-5 col-md-4 px-1"><div class="input-group mb-3">'+
+                '  <div class="input-group-prepend">'+
+                '    <span class="input-group-text">{__('to')}</span>'+
+                '  </div>'+
+                '  <input id="nBis_' + n + '" class="form-control" name="nBis[]" type="text" value="' + nBis + '"> '+
+                '</div></div>' +
+                '<div class="col-1 text-right"><button type="button" class="btn-remove-range btn btn-link btn-sm">' +
+                '<span class="far fa-trash-alt"></span></button></div>' +
             '</div>'
         );
 
@@ -41,7 +49,7 @@
 
     function removePriceRange()
     {
-        $(this).parent().remove();
+        $(this).closest('.price-row').remove();
     }
 
     function selectCheck(selectBox)
@@ -163,13 +171,16 @@
                         {/if}
                         {if $oConfig->cWertName === 'preisspannenfilter_anzeige_berechnung'}
                     </div>
-                    <div id="Werte" style="display: {if $oConfig->gesetzterWert === 'M'}block{else}none{/if};"
-                         class="form-inline">
+                    <div id="Werte" style="display: {if $oConfig->gesetzterWert === 'M'}block{else}none{/if};">
                         <div id="ranges-error-alert" class="alert alert-danger" style="display: none;"></div>
-                        <div id="price-rows"></div>
-                        <button type="button" class="btn btn-info btn-sm" id="btn-add-range">
-                            <i class="fal fa-plus"></i>
-                        </button>
+                        <div id="price-rows" class="w-100"></div>
+                        <div class="row">
+                            <div class="ml-auto col-sm-6 col-lg-auto">
+                                <button type="button" class="btn btn-primary btn-block" id="btn-add-range">
+                                    <i class="fal fa-plus"></i> {__('addPriceRange')}
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <div class="item input-group">
                         {/if}

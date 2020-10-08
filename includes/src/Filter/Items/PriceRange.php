@@ -489,7 +489,7 @@ class PriceRange extends AbstractFilter
                     ->setType($this->getType())
                     ->setClassName($this->getClassName())
                     ->setName($fromLocalized . ' - ' . $toLocalized)
-                    ->setValue($i)
+                    ->setValue($from . '_' . $to)
                     ->setCount($count)
                     ->setSort(0);
             }

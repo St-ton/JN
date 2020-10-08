@@ -2003,5 +2003,11 @@ msgstr "Disable plugins"
 msgid "Disable template"
 msgstr "Disable template"
 
+msgid "Smarty syntax error"
+msgstr "Smarty syntax error"
+
 msgid "weRecommend"
 msgstr "We recommend:"
+
+msgid "somethingHappend"
+msgstr "An unknown error occurred."

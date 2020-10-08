@@ -233,6 +233,7 @@ switch ($action) {
         $cache->flushAll();
         $cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
+        $cache->flushTags([CACHING_GROUP_OPTION]);
         $tab = 'settings';
         break;
     case 'benchmark':

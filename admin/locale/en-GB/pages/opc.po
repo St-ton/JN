@@ -152,9 +152,6 @@ msgstr "OnPage Composer"
 msgid "toggleNavigation"
 msgstr "Toggle navigation"
 
-msgid "somethingHappend"
-msgstr "An unknown error occurred."
-
 msgid "noteInfoInGuide"
 msgstr "Aside from the guided tours listed below, you can also find a lot of information in the <a href=\"https://guide.jtl-software.com\" target=\"_blank\"><i class=\"fa fa-external-link\"></i> JTL-Guide</a>."
 

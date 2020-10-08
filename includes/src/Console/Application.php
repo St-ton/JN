@@ -12,6 +12,7 @@ use JTL\Console\Command\Command;
 use JTL\Console\Command\Compile\LESSCommand;
 use JTL\Console\Command\Compile\SASSCommand;
 use JTL\Console\Command\InstallCommand;
+use JTL\Console\Command\Mailtemplates\ResetCommand;
 use JTL\Console\Command\Migration\CreateCommand;
 use JTL\Console\Command\Migration\InnodbUtf8Command;
 use JTL\Console\Command\Migration\MigrateCommand;
@@ -162,6 +163,7 @@ class Application extends BaseApplication
             $cmds[] = new CreateModelCommand();
             $cmds[] = new LESSCommand();
             $cmds[] = new SASSCommand();
+            $cmds[] = new ResetCommand();
 
             if ($this->devMode) {
                 $cmds[] = new CreateCommand();

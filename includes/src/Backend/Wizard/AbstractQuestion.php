@@ -100,6 +100,11 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     protected $validation;
 
     /**
+     * @var string
+     */
+    protected $scope;
+
+    /**
      * AbstractQuestion constructor.
      * @param DbInterface $db
      */
@@ -458,5 +463,21 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
         }
 
         return $data;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getScope(): ?string
+    {
+        return $this->scope;
+    }
+
+    /**
+     * @param string $scope
+     */
+    public function setScope(string $scope): void
+    {
+        $this->scope = $scope;
     }
 }

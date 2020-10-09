@@ -30,7 +30,7 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
 
 - **Die veralteten Bibliotheken "xajax" und "PclZip" wurden entfernt**
 
-- **Die ungenutzte Seitentypen "Newsarchiv" und "RMA" wurden entfernt**
+- **Die ungenutzten Seitentypen "Newsarchiv" und "RMA" wurden entfernt**
 
 - **Die Versionierung wurde geändert**
 
@@ -43,8 +43,8 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
 
 - **Die Upgrade-Möglichkeit von JTL-Shop *kleiner* Version 4.02 auf Version 5.x wurde entfernt**
 
-    Nutzer vorheriger Versionen (zum Beispiel 3.0x) müssen mindestens auf JTL-Shop Version 4.06 aktualisieren
-    um von dort auf JTL-Shop Version 5.0 upgraden zu können.
+    Nutzer vorheriger Versionen (zum Beispiel Version und kliner 3.0x) müssen mindestens auf JTL-Shop Version 4.06
+    aktualisieren, um von dort auf JTL-Shop Version 5.x upgraden zu können.
 
 - **UTF8-Migration für gesamten Onlineshop**
 
@@ -139,7 +139,7 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
     - Moneybookers
     - UOS
 
-    Die Zahlungsart "PayPal" wird zukünftig ebenfalls als Plugin *JTL PayPal* angeboten.
+    Die alte Core-Zahlungsart "PayPal" wurde entfernt. Das Plugin *JTL PayPal* wird weiterhin angeboten.
 
 - **Hooks erweitert/ergänzt/entfernt**
 

@@ -411,7 +411,6 @@
                                                 <option value="{$vclass->kVersandklasse}">{$vclass->cName}</option>
                                             {/foreach}
                                         </select>
-                                        <span class="input-group-addon">{getHelpDesc cDesc=__('shippingclassDesc')}</span>
                                     </div>
                                 {/if}
                             </div>

@@ -244,3 +244,6 @@ msgstr "Referenz"
 
 msgid "hasAtLeastOneDuplicateSpecialLink"
 msgstr "In dieser Linkgruppe existiert mindestens eine Spezialseite mehrmals, für die gleiche(n) Kundengruppe(n)."
+
+msgid "newLinkGroupTitle"
+msgstr "Neue Linkgruppe erstellen"

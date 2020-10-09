@@ -85,3 +85,6 @@ msgstr "Please enter a value that equals or exceeds 1."
 
 msgid "errorFormatSelect"
 msgstr "Please select a valid export format."
+
+msgid "immediately"
+msgstr "immediately"

@@ -85,3 +85,6 @@ msgstr "Bitte geben Sie einen Wert größer oder gleich 1 ein."
 
 msgid "errorFormatSelect"
 msgstr "Bitte wählen Sie ein gültiges Exportformat aus."
+
+msgid "immediately"
+msgstr "sofort"

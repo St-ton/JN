@@ -218,3 +218,9 @@ msgstr "Fehler beim Hochladen des Bildes."
 
 msgid "noMenuItem"
 msgstr "Sonstiges"
+
+msgid "sureDeleteUser"
+msgstr "Möchten Sie den User wirklich löschen?"
+
+msgid "newUserTitle"
+msgstr "Benutzer erstellen"

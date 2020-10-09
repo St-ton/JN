@@ -218,3 +218,9 @@ msgstr "Error uploading the image."
 
 msgid "noMenuItem"
 msgstr "Other"
+
+msgid "sureDeleteUser"
+msgstr "Delete user?"
+
+msgid "newUserTitle"
+msgstr "Creating a user"

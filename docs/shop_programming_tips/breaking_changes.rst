@@ -65,10 +65,10 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
     auf Datenbanktabellen, sondern auf der Struktur in der Datei ``admin/includes/admin_menu.php``. |br|
     Die Anordnung sämtlicher Menüeinträge wurde im Zuge dieser Änderung ebenfalls stark modernisiert.
 
-- **Mehrsprachigkeit des Backends auf "GNU gettext" umgestellt**
+- **Mehrsprachigkeit des Backends wurde auf "gettext" umgestellt**
 
-    Die Mehrsprachigkeit aller Menüs im Backend des Onlineshops wird ab JTL-Shop 5.0 mittels
-    `GNU gettext <https://www.gnu.org/software/gettext/>`_ geregelt.
+    Die Mehrsprachigkeit aller Menüs im Backend von JTL-Shop wird ab Version 5.0 mittels
+    `gettext/gettext <https://github.com/php-gettext/Gettext>`_ geregelt. |br|
 
 - **Plugins werden nicht mehr im Installationspaket ausgeliefert**
 
@@ -108,13 +108,6 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
 
     Diese Einstellung wurde mit JTL-Shop 3.x im Rahmen des Finanzierungsmoduls "Dresdner Cetelem" / "Commerz Finanz"
     angelegt. Sie ist in JTL-Shop 4.x und JTL-Shop 5.x nicht mehr enthalten.
-
-- **Der Auswahlassistent wird zum Portlet**
-
-    Das bisher unter JTL-Shop 4.x vorhandene Modul "Auswahlassistent" wurde aus dem Core von JTL-Shop entfernt.
-
-    Der Auswahlassistent ist nun ein Portlet des OnPage Composers für JTL-Shop 5.x. |br|
-    Dadurch lassen sich im OnPage Composer Auswahlassistenten auf der jeweiligen Seite platzieren.
 
 - **Datentyp für Mediendateien Tabs geändert**
 
@@ -176,12 +169,6 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
     Die fremdsprachigen Bildnamen-Attribute aus JTL-Wawi werden nicht länger berücksichtigt, da diese Attribute
     nur verbalen Charakter besitzen. JTL-Wawi speichert ebenfalls nur einen Bildersatz für die Standardsprache.
 
-- **Bilderverzeichnisse wurden zusammengefasst**
-
-    Die bisherigen Speicherorte für Bilder und Mediendateien (``media/``, ``mediafiles/``, ``gfx/``) wurden unter dem
-    Verzeichnis ``bilder/`` zusammengeführt. |br|
-    Die bisherigen Verzeichnisse werden nicht mehr genutzt.
-
 - **Veraltete Module wurden entfernt**
 
     Folgende veraltete Module wurden aus dem Core von JTL-Shop entfernt:
@@ -237,7 +224,7 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
 
 - **Alte Shop3-Backend-Templates wurden entfernt**
 
-- **Die Unterstützung für ein seperates MobileTemplate wurde entfernt**
+- **Die Unterstützung für ein separates MobileTemplate wurde entfernt**
 
 - **Folgende veraltete Core-Funktionalitäten wurden entfernt:**
 
@@ -302,8 +289,8 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
     Aufgrund umfangreicher Änderungen in "Google Analytics" wurde die bisher im Onlineshop verwendete Implementierung
     (``ga.js``) aus JTL-Shop 5.x entfernt.
 
-    Zukünftig wird es für das Tracking gesonderte Plugins geben, die auch die aktuellen Anforderungen der DSGVO
-    umsetzen.
+    Zukünftig kann das Tracking über gesonderte Plugins geregelt werden, die auch den jeweils aktuellen Anforderungen
+    der DSGVO entsprechen.
 
 - **Google-Recaptcha und Gravatar wurden aus dem Core von JTL-Shop entfernt**
 

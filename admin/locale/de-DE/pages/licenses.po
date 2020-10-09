@@ -125,9 +125,6 @@ msgstr "Testlizenz verlängern"
 msgid "extendTestLicense"
 msgstr "Testlizenz verlängern"
 
-msgid "Clear binding"
-msgstr "alter Text"
-
 msgid "itemDetails"
 msgstr "Details"
 

@@ -481,3 +481,6 @@ msgstr "Global"
 
 msgid "Availability notifications"
 msgstr "Verfügbarkeitsanfragen"
+
+msgid "Set up"
+msgstr "Einrichten"

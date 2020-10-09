@@ -13,9 +13,9 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
 --------------------------------
 
 
-- **Systemvoraussetzung auf PHP 7.2 angehoben**
+- **Systemvoraussetzung auf PHP 7.3 angehoben**
 
-    Für den Betrieb von JTL-Shop 5.x ist PHP 7.2 Voraussetzung.
+    Für den Betrieb von JTL-Shop 5.x ist PHP 7.3 Voraussetzung.
 
 - **jQuery Version auf 3.0 angehoben**
 
@@ -43,7 +43,7 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
 
 - **Die Upgrade-Möglichkeit von JTL-Shop *kleiner* Version 4.02 auf Version 5.x wurde entfernt**
 
-    Nutzer vorheriger Versionen (zum Beispiel Version und kliner 3.0x) müssen mindestens auf JTL-Shop Version 4.06
+    Nutzer vorheriger Versionen (zum Beispiel Version und kleiner 3.0x) müssen auf JTL-Shop Version 4.06
     aktualisieren, um von dort auf JTL-Shop Version 5.x upgraden zu können.
 
 - **UTF8-Migration für gesamten Onlineshop**

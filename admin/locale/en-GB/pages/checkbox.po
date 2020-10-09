@@ -42,7 +42,7 @@ msgid "checkboxCreate"
 msgstr "Create new check box"
 
 msgid "internalLinkTitle"
-msgstr "Interner Link"
+msgstr "Internal link"
 
 msgid "internalLink"
 msgstr "Yes"
@@ -54,7 +54,7 @@ msgid "hintInternalPage"
 msgstr "You can optionally link a custom page next to the check box."
 
 msgid "hintPlaceToShowCheckbox"
-msgstr "Specify the place in which the check box is to be displayed. This setting and \"Special function in online shop\" cannot be the same."
+msgstr "Specify the place in which the check box is to be displayed. This setting and the selection for \"Special function in online shop\" cannot be the same."
 
 msgid "hintCheckCheckboxActivation"
 msgstr "Specify whether the check box must be activated or whether it is optional."

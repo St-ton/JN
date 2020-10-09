@@ -309,10 +309,10 @@ msgid "artikeluebersicht_lagerbestandanzeige_anzeigen_value(N)"
 msgstr "Nein"
 
 msgid "artikeluebersicht_lagerbestandanzeige_anzeigen_value(U)"
-msgstr "Ja, wenn Artikel ausverkauft und Überverkäufe möglich sind"
+msgstr "Ja, wenn Artikel ausverkauft und Überverkäufe möglich sind."
 
 msgid "artikeluebersicht_lagerbestandanzeige_anzeigen_value(I)"
-msgstr "Ja, wenn Artikel ausverkauft und keine Überverkäufe möglich sind"
+msgstr "Ja, wenn Artikel ausverkauft und keine Überverkäufe möglich sind."
 
 msgid "artikeluebersicht_hersteller_anzeigen_value(Y)"
 msgstr "Ja, als Text"
@@ -507,10 +507,10 @@ msgid "artikeldetails_lieferantenbestand_anzeigen_value(N)"
 msgstr "Nein"
 
 msgid "artikeldetails_lieferantenbestand_anzeigen_value(U)"
-msgstr "Ja, wenn Artikel ausverkauft und Überverkäufe möglich sind"
+msgstr "Ja, wenn Artikel ausverkauft und Überverkäufe möglich sind."
 
 msgid "artikeldetails_lieferantenbestand_anzeigen_value(I)"
-msgstr "Ja, wenn Artikel ausverkauft und keine Überverkäufe möglich sind"
+msgstr "Ja, wenn Artikel ausverkauft und keine Überverkäufe möglich sind."
 
 msgid "artikeldetails_kurzbeschreibung_anzeigen_value(Y)"
 msgstr "Ja"
@@ -1299,7 +1299,7 @@ msgid "bilder_dateiformat_value(PNG)"
 msgstr "PNG"
 
 msgid "bilder_dateiformat_value(AUTO)"
-msgstr "Auto (zusätzlich .webp anlegen)"
+msgstr "Automatisch, zusätzlich .webp anlegen"
 
 msgid "container_verwenden_value(N)"
 msgstr "Nein"
@@ -2394,10 +2394,10 @@ msgid "bewertung_sortierung_value(3)"
 msgstr "Bewertung absteigend"
 
 msgid "bewertung_sortierung_value(4)"
-msgstr "Hilfreich aufsteigend"
+msgstr "Hilfreichste zuerst"
 
 msgid "bewertung_sortierung_value(5)"
-msgstr "Hilfreich absteigend"
+msgstr "Am wenigsten hiflreiche zuerst"
 
 msgid "direct_advertising_value(N)"
 msgstr "Nein"

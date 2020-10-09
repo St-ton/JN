@@ -3,10 +3,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "exportformat"
-msgstr "Aufgabenplaner für Exporte"
+msgstr "Exporte-Manager"
 
 msgid "exportformatDesc"
-msgstr "Mit dem Aufgabenplaner können Sie automatisch auszuführende Aufgaben, z. B. Exporte für Preissuchmaschinen, anlegen."
+msgstr "Mit diesem Aufgabenplaner für Exporte können Sie automatisch auszuführende Aufgaben, z. B. Exporte für Preissuchmaschinen, anlegen."
 
 msgid "exportformatUrl"
 msgstr "https://jtl-url.de/jl5z1"
@@ -27,7 +27,7 @@ msgid "exportformatLastXHourPre"
 msgstr "Letzten"
 
 msgid "exportformatDelete"
-msgstr "Markierte Aufgabe löschen"
+msgstr "Markierte Aufgaben löschen"
 
 msgid "exportformatQueue"
 msgstr "Geplante Aufgaben"

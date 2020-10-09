@@ -9,7 +9,7 @@ msgid "langURL"
 msgstr "https://jtl-url.de/br78w"
 
 msgid "langDesc"
-msgstr "Edit the standard text blocks of the online shop. All texts are defined on the basis of a specific language. You can also export and import text blocks for every language."
+msgstr "Edit the standard text blocks of the online shops. All texts are defined on the basis of a specific language. You can also export and import text blocks for every language."
 
 msgid "langVars"
 msgstr "Language variables"

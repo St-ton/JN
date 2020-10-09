@@ -219,7 +219,7 @@ msgid "sureDeleteLinkGroup"
 msgstr "Möchten Sie die Linkgruppe „<strong>%s</strong>“ wirklich löschen?"
 
 msgid "newLinksSaveContinueEdit"
-msgstr "Seite speichern und weiter bearbeiten"
+msgstr "Seite speichern und weiterbearbeiten"
 
 msgid "createWithSearchEngineName"
 msgstr "(anlegen unter „Name für Suchmaschinen“)"

@@ -24,4 +24,4 @@ msgid "flipcardBack"
 msgstr "Back"
 
 msgid "flipDirDesc"
-msgstr "Specifies whether the flip card rotates around the vertical or horizontal axis."
+msgstr "Specifies whether the flipcard rotates around the vertical or horizontal axis."

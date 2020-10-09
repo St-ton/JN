@@ -63,7 +63,7 @@ msgid "errorDownloadFileCreate"
 msgstr "Cannot create download file for %s. Page %s may be currently unavailable. Please try again later."
 
 msgid "errorDownloadTimeLong"
-msgstr "Cannot download %s because of timeout. Please contact the Support team."
+msgstr "Cannot download %s because of timeout. Please contact the Support team. Please contact the Support team."
 
 msgid "successDownload"
 msgstr "%s downloaded successfully."

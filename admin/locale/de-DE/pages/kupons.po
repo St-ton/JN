@@ -201,7 +201,7 @@ msgid "errorCouponCodeShort"
 msgstr "Der zu generierende Code ist kürzer als 2 Zeichen. Bitte vergrößern Sie die Anzahl an Zeichen in Präfix und/oder Suffix oder geben Sie eine größere Zahl bei der Länge des Zufallscodes an."
 
 msgid "errorCouponCodeOptionSelect"
-msgstr "Bitte wählen Sie für „Zufallscode mit …“ mindestens eine Option aus."
+msgstr "Bitte wählen Sie für „Zufallscode mit&nbsp;…“ mindestens eine Option aus."
 
 msgid "errorCouponCodeDuplicate"
 msgstr "Der angegebene Code wird bereits von einem anderen Coupon verwendet. Bitte wählen Sie einen anderen Code."

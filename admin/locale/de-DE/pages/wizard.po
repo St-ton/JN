@@ -45,10 +45,10 @@ msgid "stepTwo"
 msgstr "Schritt 2 – E-Mail-Einstellungen"
 
 msgid "stepTwoDesc"
-msgstr "Hier sehen Sie die wichtigsten E-Mail-Einstellungen. Nehmen Sie die übrigen Einstellungen zum E-Mail-Server möglichst zeitnah nach dieser Ersteinrichtung unter „Administration &gt; E-Mail &gt; Server“ vor. Weitere Informationen dazu finden Sie im <a href=\"https://jtl-url.de/jnw83\" target=\"_blank\">JTL-Guide</a>."
+msgstr "Hier sehen Sie die wichtigsten E-Mail-Einstellungen. Nehmen Sie die übrigen Einstellungen zum E-Mail-Server möglichst zeitnah nach dieser Ersteinrichtung unter „Administration > E-Mail > Server“ vor. Weitere Informationen dazu finden Sie im <a href=\"https://jtl-url.de/jnw83\" target=\"_blank\">JTL-Guide</a>."
 
 msgid "stepFive"
-msgstr "Schritt 5 – Übersicht &amp; Bestätigung"
+msgstr "Schritt 5 – Übersicht & Bestätigung"
 
 msgid "stepFiveDesc"
 msgstr "Hier sehen Sie einen Überblick der gerade vorgenommenen Einstellungen. Sie können jeden Punkt noch einmal bearbeiten. Klicken Sie anschließend auf „Bestätigen“."

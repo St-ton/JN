@@ -84,7 +84,7 @@ msgid "kampagnenDate"
 msgstr "Created on"
 
 msgid "kampagnenNLInfo"
-msgstr "Number of calls of newsletters linked with the campaign Default: 0 if the campaign is not assigned to a newsletter or there were no newsletter calls"
+msgstr "Number of calls of newsletters linked with the campaign. Default: 0 if the campaign is not assigned to a newsletter or there were no newsletter calls"
 
 msgid "successCampaignSave"
 msgstr "Campaign saved successfully."

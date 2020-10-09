@@ -195,14 +195,14 @@ msgid "permission_WIZARD_VIEW"
 msgstr "Einrichten"
 
 msgid "permission_IMAGE_UPLOAD"
-msgstr "Bild-Upload"
+msgstr "Hochladen von Bildern (für Slider und im OPC)"
 
 # description of admin group (tadminlogingruppe)
 msgid "Voller Zugriff auf den Administrationsbereich."
 msgstr "Voller Zugriff auf den Administrationsbereich"
 
 msgid "resume"
-msgstr "Über den Autor (wird z. B. bei Blogbeiträgen angezeigt)"
+msgstr "Über den Autor (wird z.&nbsp;B. bei Blogbeiträgen angezeigt)"
 
 msgid "personalInformation"
 msgstr "Autoreninformationen"

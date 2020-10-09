@@ -24,7 +24,7 @@ msgid "opcPortlets"
 msgstr "Available portlets"
 
 msgid "opcBlueprints"
-msgstr "Available templates"
+msgstr "Available blueprints"
 
 msgid "sureDeleteAll"
 msgstr "Delete all drafts of this page?"

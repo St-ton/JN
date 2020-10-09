@@ -72,7 +72,7 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
 
 - **Plugins werden nicht mehr im Installationspaket ausgeliefert**
 
-    Plugins werden zukünftig über den JTL-Extensionstore installierbar sein. |br|
+    Plugins werden zukünftig über den JTL-Extension Store installierbar sein. |br|
     Aus diesem Grund sind im Installationspaket des Onlineshops keine Plugins mehr enthalten.
 
     Folgende Plugins fallen ersatzlos weg:
@@ -199,7 +199,7 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
 
     Die dynamische Berechnung der Nettopreise wurde in JTL-Shop 5.x in die default-Einstellungen übernommen.
 
-    In JTL-Shop 4.x kann diese Berechnung mittels Konfigurationseinstellung in der
+    Ab JTL-Shop 4.06 kann diese Berechnung mittels Konfigurationseinstellung in der
     ``includes/config.JTL-Shop.ini.php`` aktiviert werden:
 
     .. code-block:: php

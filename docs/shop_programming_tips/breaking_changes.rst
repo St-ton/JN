@@ -46,6 +46,13 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
     Nutzer vorheriger Versionen (zum Beispiel Version und kleiner 3.0x) müssen auf JTL-Shop Version 4.06
     aktualisieren, um von dort auf JTL-Shop Version 5.x upgraden zu können.
 
+- **Das von JTL-Shop 4 bekannte Template "Evo" wird ab JTL-Shop 5.x als separates Projekt geführt
+  und ist nicht mehr im Lieferumfang von JTL-Shop enhalten**
+
+    Sie finden das Template "Evo" im JTL-Repository auf gitlab unter
+    `Evo <https://gitlab.com/jtl-software/jtl-shop/templates>` und auf dem JTL Builds-Server unter
+    `build.jtl-shop.de <https://build.jtl-shop.de/get/template_evo-5-0-0-rc-3.zip/template>`
+
 - **UTF8-Migration für gesamten Onlineshop**
 
     + Zur String-Manipulation werden die PHP *Multibyte String Funktionen* (``mb_``) empfohlen.

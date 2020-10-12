@@ -189,7 +189,9 @@ $progress-bar-color:                $gray !default;
 $table-accent-bg:                   $gray-lighter !default;
 $table-hover-bg:                    $gray-lighter !default;
 
-$table-cell-padding:               (map-get($spacers, 1) * 3) $spacer !default;
+$table-cell-padding:                (map-get($spacers, 1) * 3) !default;
+$table-cell-padding-x:              $spacer !default;
+$table-cell-padding-y:              (map-get($spacers, 1) * 3) !default;
 $table-cell-padding-sm:             map-get($spacers, 2) $spacer !default;
 
 $table-striped-order:               even !default;

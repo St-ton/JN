@@ -21,12 +21,12 @@
                 || $type === 'date' || $type === 'time'}
             <div class="form-group">
                 <label for="config-{$propname}"
-                        {if !empty($propdesc.desc) || !empty($propdesc.hint)}
-                            data-toggle="tooltip" title="{$propdesc.desc|default:''} - {$propdesc.hint|default:''}"
+                        {if !empty($propdesc.desc)}
+                            data-toggle="tooltip" title="{$propdesc.desc|default:''}"
                             data-placement="auto"
                         {/if}>
                     {$propdesc.label}
-                    {if !empty($propdesc.desc) || !empty($propdesc.hint)}
+                    {if !empty($propdesc.desc)}
                         <i class="fas fa-info-circle fa-fw"></i>
                     {/if}
                 </label>

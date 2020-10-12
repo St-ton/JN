@@ -76,7 +76,9 @@ function gibBranding(int $brandingID)
  */
 function speicherEinstellung(int $brandingID, array $post, array $files)
 {
+    $db                 = Shop::Container()->getDB();
     $conf               = new stdClass();
+    $conf->dRandabstand = 0;
     $conf->kBranding    = $brandingID;
     $conf->cPosition    = $post['cPosition'];
     $conf->nAktiv       = $post['nAktiv'];
@@ -86,7 +88,7 @@ function speicherEinstellung(int $brandingID, array $post, array $files)
     if (mb_strlen($files['cBrandingBild']['name']) > 0) {
         $conf->cBrandingBild = 'kBranding_' . $brandingID . mappeFileTyp($files['cBrandingBild']['type']);
     } else {
-        $tmpConf             = Shop::Container()->getDB()->select(
+        $tmpConf             = $db->select(
             'tbrandingeinstellung',
             'kBranding',
             $brandingID
@@ -98,16 +100,16 @@ function speicherEinstellung(int $brandingID, array $post, array $files)
 
     if ($conf->kBranding > 0 && mb_strlen($conf->cPosition) > 0 && mb_strlen($conf->cBrandingBild) > 0) {
         // Alte Einstellung loeschen
-        Shop::Container()->getDB()->delete('tbrandingeinstellung', 'kBranding', $brandingID);
-
+        $db->delete('tbrandingeinstellung', 'kBranding', $brandingID);
         if (mb_strlen($files['cBrandingBild']['name']) > 0) {
             loescheBrandingBild($conf->kBranding);
             speicherBrandingBild($files, $conf->kBranding);
         }
-        Shop::Container()->getDB()->insert('tbrandingeinstellung', $conf);
-        $data = Shop::Container()->getDB()->select('tbranding', 'kBranding', $conf->kBranding);
+        $db->insert('tbrandingeinstellung', $conf);
+        $data = $db->select('tbranding', 'kBranding', $conf->kBranding);
         $type = Media::getClass($data->cBildKategorie ?? '');
         $type::clearCache();
+        Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
 
         return true;
     }

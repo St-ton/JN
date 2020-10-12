@@ -763,21 +763,30 @@
   box-shadow: 24px -24px currentColor, 48px 0 currentColor;
 }
 
-#opc .image-btn {
+#opc .image-btn,
+#opc .video-btn {
   min-width: 64px;
   min-height: 64px;
   display: block;
 }
-#opc .image-btn img {
+#opc .image-btn img,
+#opc .video-btn img {
   min-width: 64px;
   min-height: 64px;
   max-width: 100%;
   max-height: 100%;
 }
-#opc .image-btn img.thumb {
+#opc .image-btn img.thumb,
+#opc .video-btn img.thumb {
   max-width: 128px;
   max-height: 128px;
   object-fit: contain;
+}
+
+#opc .video-btn video {
+  background: url("../gfx/upload-stub.png");
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 #opc .zone-props textarea {

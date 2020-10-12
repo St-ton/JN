@@ -238,11 +238,11 @@
 
         {getUploaderLang iso=$smarty.session.currentLanguage->cISO639|default:'' assign='uploaderLang'}
 
-        <link rel="preload" importance="low" href="{$ShopURL}/{$templateDir}themes/base/fontawesome/webfonts/fa-solid-900.woff2" as="font" crossorigin/>
-        <link rel="preload" importance="low" href="{$ShopURL}/{$templateDir}themes/base/fontawesome/webfonts/fa-regular-400.woff2" as="font" crossorigin/>
-        <link rel="preload" importance="low" href="{$ShopURL}/{$templateDir}themes/base/fonts/opensans/open-sans-600.woff2" as="font" crossorigin/>
-        <link rel="preload" importance="low" href="{$ShopURL}/{$templateDir}themes/base/fonts/opensans/open-sans-regular.woff2" as="font" crossorigin/>
-        <link rel="preload" importance="low" href="{$ShopURL}/{$templateDir}themes/base/fonts/montserrat/Montserrat-SemiBold.woff2" as="font" crossorigin/>
+        <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fontawesome/webfonts/fa-solid-900.woff2" as="font" crossorigin/>
+        <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fontawesome/webfonts/fa-regular-400.woff2" as="font" crossorigin/>
+        <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/opensans/open-sans-600.woff2" as="font" crossorigin/>
+        <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/opensans/open-sans-regular.woff2" as="font" crossorigin/>
+        <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/montserrat/Montserrat-SemiBold.woff2" as="font" crossorigin/>
         <link rel="preload" href="{$ShopURL}/{$templateDir}js/app/globals.js" as="script" crossorigin>
         <link rel="preload" href="{$ShopURL}/{$templateDir}js/app/snippets/form-counter.js" as="script" crossorigin>
         <link rel="preload" href="{$ShopURL}/{$templateDir}js/app/plugins/navscrollbar.js" as="script" crossorigin>
@@ -257,7 +257,7 @@
         {if $Einstellungen.preisverlauf.preisverlauf_anzeigen === 'Y' && !empty($bPreisverlauf)}
             <script defer src="{$ShopURL}/{$templateDir}js/Chart.bundle.min.js"></script>
         {/if}
-        <script defer type="module" src="{$ShopURL}/{$templateDir}js/app/app.js"></script>
+        <script type="module" src="{$ShopURL}/{$templateDir}js/app/app.js"></script>
     </head>
     {/block}
 
@@ -349,25 +349,8 @@
                             {else}
                                 {block name='layout-header-branding-shop-nav'}
                                     {nav id="shop-nav" right=true class="nav-right ml-auto order-lg-last align-items-center flex-shrink-0"}
-                                        {block name='layout-header-branding-shop-nav-language'}
-                                            {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
-                                                {navitemdropdown
-                                                class="language-dropdown d-flex d-lg-none"
-                                                right=true
-                                                text="
-                                                    {foreach $smarty.session.Sprachen as $language}
-                                                        {if $language->kSprache == $smarty.session.kSprache}
-                                                            {$language->iso639|upper}
-                                                        {/if}
-                                                    {/foreach}"
-                                                }
-                                                    {foreach $smarty.session.Sprachen as $language}
-                                                        {dropdownitem href="{$language->cURL}" rel="nofollow" active=($language->kSprache == $smarty.session.kSprache)}
-                                                        {$language->iso639|upper}
-                                                        {/dropdownitem}
-                                                    {/foreach}
-                                                {/navitemdropdown}
-                                            {/if}
+                                        {block name='layout-header-branding-shop-nav-include-language-dropdown'}
+                                            {include file='snippets/language_dropdown.tpl' dropdownClass='d-flex d-lg-none'}
                                         {/block}
                                         {include file='layout/header_nav_icons.tpl'}
                                     {/nav}

@@ -153,7 +153,7 @@ class Manager
      * @throws GuzzleException
      * @throws ClientException
      */
-    public function extend(string $url, string $exsID, string $key): string
+    public function extendUpgrade(string $url, string $exsID, string $key): string
     {
         $res = $this->client->request(
             'POST',
@@ -166,7 +166,6 @@ class Manager
                 ],
                 'verify'  => true,
                 'body'    => \json_encode((object)[
-                    'intent'        => 'extend',
                     'exsid'         => $exsID,
                     'reference'     => (object)[
                         'license' => $key,
@@ -205,9 +204,9 @@ class Manager
                 ],
                 'verify'  => true,
                 'body'    => \json_encode((object)['shop' => [
-                    'domain'  => $this->domain,
-                    'version' => \APPLICATION_VERSION,
-                ], 'extensions'                           => $installedExtensions])
+                    'domain'    => $this->domain,
+                    'version'   => \APPLICATION_VERSION,
+                ], 'extensions' => $installedExtensions])
             ]
         );
         $this->housekeeping();

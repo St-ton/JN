@@ -1,9 +1,9 @@
 {if !isset($kPlugin)}
-    {assign var=kPlugin value=0}
+    {$kPlugin = 0}
 {/if}
 {foreach $list as $link}
-    {assign var=missingLinkTranslations value=$linkAdmin->getMissingLinkTranslations($link->getID())}
-    {assign var=isReference value=$link->getReference() > 0}
+    {$missingLinkTranslations = $linkAdmin->getMissingLinkTranslations($link->getID())}
+    {$isReference = $link->getReference() > 0}
     <tr class="link-item{if $kPlugin > 0 && $kPlugin == $link->getPluginID()} highlight{/if}{if $link->getLevel() == 0} main{/if}">
         {math equation="a * b" a=$link->getLevel()-1 b=20 assign=fac}
         <td style="width: 30%">
@@ -11,13 +11,24 @@
                 {if $isReference === true}<i>{/if}
                 {$link->getDisplayName()}
                 {if $isReference === true} ({__('Referenz')})</i>{/if}
-                {if $missingLinkTranslations|count > 0} <i title="{__('missingTranslations')}: {$missingLinkTranslations|count}" class="fal fa-exclamation-triangle text-warning"></i>{/if}
-                {if $link->hasDuplicateSpecialLink()} <i title="{sprintf(__('hasDuplicateSpecialLink'), '')}" class="fal fa-exclamation-triangle text-danger"></i>{/if}
+                {if $missingLinkTranslations|count > 0}
+                    <i title="{__('missingTranslations')}: {$missingLinkTranslations|count}"
+                       class="fal fa-exclamation-triangle text-warning"
+                       data-toggle="tooltip"
+                       data-placement="top"></i>
+                {/if}
+                {if $link->hasDuplicateSpecialLink()}
+                    <i title="{sprintf(__('hasDuplicateSpecialLink'), '')}"
+                       class="duplicate-special-link fal fa-exclamation-triangle text-danger"
+                       data-toggle="tooltip"
+                       data-placement="top"></i>
+                {/if}
             </div>
         </td>
         <td class="text-center floatforms min-w-sm" style="width: 60%">
             <div class="row">
-                <form class="navbar-form2 col-lg-4 col-md-12 left px-1" method="post" action="links.php" name="aenderlinkgruppe_{$link->getID()}_{$id}">
+                <form class="navbar-form2 col-lg-4 col-md-12 left px-1" method="post" action="links.php"
+                      name="aenderlinkgruppe_{$link->getID()}_{$id}">
                     {$jtl_token}
                     <input type="hidden" name="action" value="move-to-linkgroup" />
                     <input type="hidden" name="kLink" value="{$link->getID()}" />
@@ -83,7 +94,7 @@
                 <input type="hidden" name="kLinkgruppe" value="{$id}" />
                 <input type="hidden" name="kLink" value="{$link->getID()}" />
                 <div class="btn-group">
-                    {assign var=deleteCount value=$linkGroupCountByLinkID[$link->getID()]|default:1}
+                    {$deleteCount = $linkGroupCountByLinkID[$link->getID()]|default:1}
                     <button name="action"
                             value="delete-link"
                             class="btn btn-link px-2{if $link->getPluginID() > 0} disabled{/if}"
@@ -107,7 +118,8 @@
                                 <span class="fas fa-unlink"></span>
                             </span>
                         </button>
-                        <button name="action" value="edit-link" class="btn btn-link px-2" title="{__('modify')}" data-toggle="tooltip">
+                        <button name="action" value="edit-link" class="btn btn-link px-2" title="{__('modify')}"
+                                data-toggle="tooltip">
                             <span class="icon-hover">
                                 <span class="fal fa-edit"></span>
                                 <span class="fas fa-edit"></span>

@@ -50,5 +50,21 @@
             </button>
         {/form}
         </p>
+    {elseif $link->getRel() === 'upgradeLicense'}
+        <p class="mt-2 mb-0">
+        {form class='upgrade-license-form mt-2'}
+            <input type="hidden" name="action" value="upgradeLicense">
+            <input type="hidden" name="url" value="{$link->getHref()}">
+            <input type="hidden" name="method" value="{$link->getMethod()|default:'POST'}">
+            <input type="hidden" name="exsid" value="{$license->getExsID()}">
+            <input type="hidden" name="key" value="{$license->getLicense()->getKey()}">
+            <button type="submit" class="btn btn-sm btn-primary upgrade-license"
+                    data-link="{$link->getHref()}"
+                    href="#"
+                    title="{__($link->getRel())}">
+                <i class="fa fa-link"></i> {__($link->getRel())}
+            </button>
+        {/form}
+        </p>
     {/if}
 {/foreach}

@@ -62,17 +62,18 @@
         {if $inContainer === false}
             <div class="container-fluid">
         {/if}
-        <div style="{$instance->getStyleString()}">
-            {include file='snippets/product_slider.tpl' productlist=$productlist}
+        <div class="opc-product-slider" style="{$instance->getStyleString()}">
+            {include file='snippets/product_slider.tpl' productlist=$productlist isOPC=true}
         </div>
         {if $inContainer === false}
             </div>
         {/if}
     {elseif $style === 'box-slider'}
-        <div style="{$instance->getStyleString()}">
+        <div class="opc-product-slider" style="{$instance->getStyleString()}">
             {include file='snippets/product_slider.tpl'
                 productlist=$productlist
                 tplscope='box'
+                isOPC=true
             }
         </div>
     {/if}

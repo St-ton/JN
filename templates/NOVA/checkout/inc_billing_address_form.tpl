@@ -240,7 +240,7 @@
                             {block name='checkout-inc-billing-address-form-country'}
                                 {formgroup
                                     class="{if isset($fehlendeAngaben.land)} has-error{/if}"
-                                    label-for="country"
+                                    label-for="billing_address-country"
                                     label="{lang key='country' section='account data'}"
                                 }
                                     {select name="land" id="billing_address-country" class="country-input custom-select js-country-select" required=true autocomplete="billing country"}

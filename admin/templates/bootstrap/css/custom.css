@@ -2572,8 +2572,11 @@ div.markdown thead tr td {
   transform: scale(0.4);
   position: absolute;
   top: -16px;
-  right: -26px;
+  right: -25px;
   color: #fff;
+}
+.has-notify-icon.stack-refresh span:nth-child(2) {
+  right: -29px;
 }
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {

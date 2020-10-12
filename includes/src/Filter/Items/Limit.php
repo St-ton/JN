@@ -6,6 +6,7 @@ use JTL\Filter\AbstractFilter;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\Option;
 use JTL\Filter\ProductFilter;
+use JTL\Helpers\Request;
 use JTL\Shop;
 
 /**
@@ -32,17 +33,23 @@ class Limit extends AbstractFilter
      */
     public function getProductsPerPageLimit(): int
     {
+        $extendedView = Request::getVar('ed');
         if ($this->productFilter->getProductLimit() !== 0) {
             $limit = $this->productFilter->getProductLimit();
-        } elseif (isset($_SESSION['ArtikelProSeite']) && $_SESSION['ArtikelProSeite'] !== 0) {
+        } elseif (isset($_SESSION['ArtikelProSeite'])
+            && $_SESSION['ArtikelProSeite'] !== 0
+            && !$extendedView
+        ) {
             $limit = $_SESSION['ArtikelProSeite'];
         } elseif (isset($_SESSION['oErweiterteDarstellung']->nAnzahlArtikel)
             && $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel !== 0
+            && !$extendedView
         ) {
             $limit = $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel;
         } else {
             $type = 'artikeluebersicht_anzahl_darstellung' .
-                $this->getConfig('artikeluebersicht')['artikeluebersicht_erw_darstellung_stdansicht'];
+                ($extendedView
+                    ?? $this->getConfig('artikeluebersicht')['artikeluebersicht_erw_darstellung_stdansicht']);
 
             if (($limit = $this->getConfig('artikeluebersicht')[$type]) === 0) {
                 $limit = ($max = $this->getConfig('artikeluebersicht')['artikeluebersicht_artikelproseite']) !== 0

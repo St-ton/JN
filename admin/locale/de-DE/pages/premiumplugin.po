@@ -10,3 +10,12 @@ msgstr "Installationsanleitung"
 
 msgid "noRecommendationFound"
 msgstr "Keine zur ID passende Plugin-Empfehlung gefunden."
+
+msgid "successInstallPaymentPlugin"
+msgstr "Das Plugin wurde erfolgreich installiert. Sie müssen es nun noch unter „Administration > Zahlungen > Zahlungsarten“ und „Plugins > Installierte Plugins“ einrichten."
+
+msgid "successInstallLegalPlugin"
+msgstr "Das Plugin wurde erfolgreich installiert. Sie müssen es nun noch unter „Plugins > Installierte Plugins“ einrichten."
+
+msgid "installPlugin"
+msgstr "Plugin installieren"

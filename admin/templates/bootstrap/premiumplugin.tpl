@@ -65,6 +65,15 @@
                     </div>
                     <div class="card-body">
                         {$recommendation->getSetupDescription()}
+                        <div class="row">
+                            <div class="col-sm-6 col-xl-auto">
+                                <form method="post">
+                                    <button type="submit" name="action" value="install" class="btn btn-primary btn-block">
+                                        {__('installPlugin')}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -938,7 +938,7 @@ class BaseSearchQuery extends AbstractFilter
 
             $this->productFilter->getDB()->query(
                 'INSERT INTO tsuchcachetreffer
-                        SELECT kSuchCache, kArtikelTMP, ROUND(MAX(15 - score) * 10)
+                        SELECT kSuchCache, kArtikelTMP, ROUND(MAX(score) * -10)
                         FROM ( ' . $sql . ' ) AS i
                         LEFT JOIN tartikelsichtbarkeit 
                             ON tartikelsichtbarkeit.kArtikel = i.kArtikelTMP

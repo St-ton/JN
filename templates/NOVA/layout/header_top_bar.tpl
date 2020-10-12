@@ -18,25 +18,8 @@
                         {/navitemdropdown}
                     {/if}
                 {/block}
-                {block name='layout-header-top-bar-user-settings-language'}
-                    {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
-                        {navitemdropdown
-                            class="language-dropdown"
-                            right=true
-                            text="
-                                {foreach $smarty.session.Sprachen as $language}
-                                    {if $language->kSprache == $smarty.session.kSprache}
-                                        {$language->iso639|upper}
-                                    {/if}
-                                {/foreach}"
-                        }
-                            {foreach $smarty.session.Sprachen as $language}
-                                {dropdownitem href="{$language->cURL}" rel="nofollow" active=($language->kSprache == $smarty.session.kSprache)}
-                                    {$language->iso639|upper}
-                                {/dropdownitem}
-                            {/foreach}
-                        {/navitemdropdown}
-                    {/if}
+                {block name='layout-header-top-bar-user-settings-include-language-dropdown'}
+                    {include file='snippets/language_dropdown.tpl'}
                 {/block}
             {/block}
         {/if}

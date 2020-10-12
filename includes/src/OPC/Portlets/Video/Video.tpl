@@ -51,10 +51,9 @@
                     {if !empty($instance->getProperty('video-yt-start'))}&start={$instance->getProperty('video-yt-start')}{/if}
                     {if !empty($instance->getProperty('video-yt-end'))}&end={$instance->getProperty('video-yt-end')}{/if}"
                     {/strip}
-                        type="text/html"
                         class="needs-consent youtube
                             {if $instance->getProperty('video-responsive')}embed-responsive-item{/if}"
-                        frameborder="0" allowfullscreen>
+                        allowfullscreen>
                         {if !empty($instance->getProperty('video-title'))}
                             title="{$instance->getProperty('video-title')|escape:'html'}"
                         {/if}
@@ -93,8 +92,8 @@
             </div>
         {else}
             <div{if $instance->getProperty('video-responsive')} class="embed-responsive embed-responsive-16by9"{/if}>
-                <video width="{$instance->getProperty('video-width')}"
-                       height="{$instance->getProperty('video-height')}"
+                <video {if $instance->getProperty('video-width')}width="{$instance->getProperty('video-width')}"{/if}
+                       {if $instance->getProperty('video-height')}height="{$instance->getProperty('video-height')}"{/if}
                        {if $instance->getProperty('video-local-autoplay')} autoplay{/if}
                        {if $instance->getProperty('video-local-mute')} muted{/if}
                        {if $instance->getProperty('video-local-loop')} loop{/if}

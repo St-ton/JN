@@ -1994,6 +1994,9 @@ msgstr "Please uninstall this extensions or purchase a valid license."
 msgid "Further using these extensions will violate the license policy and may have legal consequences."
 msgstr "Further using these extensions will violate the license policy and may have legal consequences."
 
+msgid "Licensing problem detected"
+msgstr "Licensing problem detected"
+
 msgid "Understood"
 msgstr "Understood"
 

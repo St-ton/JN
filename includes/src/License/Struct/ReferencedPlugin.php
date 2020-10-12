@@ -16,10 +16,9 @@ use stdClass;
 class ReferencedPlugin extends ReferencedItem
 {
     /**
-     * ReferencedPlugin constructor.
      * @inheritDoc
      */
-    public function __construct(DbInterface $db, stdClass $license, ?Release $release)
+    public function initByExsID(DbInterface $db, stdClass $license, ?Release $release): void
     {
         $installed = $db->select('tplugin', 'exsID', $license->exsid);
         if ($installed !== null) {

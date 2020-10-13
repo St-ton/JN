@@ -134,6 +134,9 @@ msgstr "Details"
 msgid "setBinding"
 msgstr "An diesen Shop binden"
 
+msgid "upgradeLicense"
+msgstr "Lizenz kaufen"
+
 msgid "Update to version %s available"
 msgstr "Aktualisierung auf Version %s verfügbar"
 
@@ -169,6 +172,9 @@ msgstr "Wird von %s verwaltet"
 
 msgid "Successfully extended."
 msgstr "Erfolgreich verlängert."
+
+msgid "Successfully executed."
+msgstr "Erfolgreich ausgeführt."
 
 msgid "Enter token"
 msgstr "Token hinzufügen"

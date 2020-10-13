@@ -66,7 +66,15 @@
                         {/if}</iframe>
                 <a href="#" class="trigger give-consent"
                    data-consent="youtube"
-                   style="position:absolute;left:16px;top:16px;">Youtube Consent geben</a>
+                   style="width: 100%; height: 100%; position: absolute; left: 0; top: 0;
+                           background: url({$portlet->getPreviewImageUrl($instance)});
+    background-size: cover;">
+                    <span style="width: 100%; height: 100%; position: absolute; left: 0; top: 0;
+    background: url(http://localhost/danny/Projekte/shop5/includes/src/OPC/Portlets/Video/preview.svg);
+    background-size: cover;">
+                    </span>
+                    Youtube Consent geben
+                </a>
             </div>
         {elseif $instance->getProperty('video-vendor') === 'vimeo'}
             <div{if $instance->getProperty('video-responsive')}

@@ -992,6 +992,11 @@ class Artikel
     public $originalSeo = '';
 
     /**
+     * @var string|null
+     */
+    public $customImgName;
+
+    /**
      * @var int
      */
     private $kSprache;
@@ -1278,6 +1283,9 @@ class Artikel
                     ORDER BY nNr',
                 ReturnType::ARRAY_OF_OBJECTS
             );
+        }
+        if (isset($this->FunktionsAttribute[\FKT_ATTRIBUT_BILDNAME])) {
+            $this->customImgName = $this->FunktionsAttribute[\FKT_ATTRIBUT_BILDNAME];
         }
         if (\count($images) === 0) {
             $image               = new stdClass();

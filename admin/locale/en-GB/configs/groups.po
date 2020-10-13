@@ -30,7 +30,7 @@ msgid "configgroup_1_admin_area"
 msgstr "Admin area"
 
 msgid "configgroup_1_cookies"
-msgstr "Cookie settings <br><span class=\"text-danger\">ACHTUNG: Gefahr, sich aus dem Backend auszusperren! Bitte hier nur Änderungen vornehmen, wenn Sie genau wissen, was Sie tun!</span>"
+msgstr "Cookie settings <br><span class=\"text-danger\">Faulty cookie settings may lead to a dysfunctional back-end login! Only make changes if you know what you are doing.</span>"
 
 msgid "configgroup_2_general"
 msgstr "General"

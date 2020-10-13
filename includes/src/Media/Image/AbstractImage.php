@@ -78,7 +78,7 @@ abstract class AbstractImage implements IMedia
                 throw new Exception('No such image id: ' . (int)$mediaReq->id);
             }
 
-            $imgPath      = '';
+            $imgPath      = null;
             $matchFound   = false;
             $allowedFiles = [];
             foreach ($allowedNames as $allowedName) {
@@ -96,7 +96,7 @@ abstract class AbstractImage implements IMedia
                 \header('Location: ' . Shop::getURL() . '/' . $allowedFiles[0], true, 301);
                 exit;
             }
-            if (!\is_file(\PFAD_ROOT . $imgPath)) {
+            if ($imgPath === null || !\is_file(\PFAD_ROOT . $imgPath)) {
                 Image::render($mediaReq, true);
             }
         } catch (Exception $e) {
@@ -116,8 +116,7 @@ abstract class AbstractImage implements IMedia
     {
         $req   = static::getRequest($type, $id, $mixed, $size, $number, $source);
         $thumb = $req->getThumb($size);
-        $raw   = $req->getRaw();
-        if (!\file_exists(\PFAD_ROOT . $thumb) && ($raw === null || !\file_exists($raw))) {
+        if (!\file_exists(\PFAD_ROOT . $thumb) && (($raw = $req->getRaw()) === null || !\file_exists($raw))) {
             $thumb = \BILD_KEIN_ARTIKELBILD_VORHANDEN;
         }
 
@@ -249,14 +248,14 @@ abstract class AbstractImage implements IMedia
      */
     protected static function getLimitStatement(int $offset = null, int $limit = null): string
     {
-        $limitStmt = '';
-        if ($limit !== null) {
-            $limitStmt = ' LIMIT ';
-            if ($offset !== null) {
-                $limitStmt .= $offset . ', ';
-            }
-            $limitStmt .= $limit;
+        if ($limit === null) {
+            return '';
         }
+        $limitStmt = ' LIMIT ';
+        if ($offset !== null) {
+            $limitStmt .= $offset . ', ';
+        }
+        $limitStmt .= $limit;
 
         return $limitStmt;
     }
@@ -302,7 +301,6 @@ abstract class AbstractImage implements IMedia
     public function cacheImage(MediaImageRequest $req, bool $overwrite = false): array
     {
         $result     = [];
-        $rawImage   = null;
         $rawPath    = $req->getRaw();
         $extensions = [$req->getExt() === 'auto' ? 'jpg' : $req->getExt()];
         if (Image::hasWebPSupport()) {
@@ -326,7 +324,7 @@ abstract class AbstractImage implements IMedia
                     $res->cached = \is_file($thumbPath);
                     if ($res->cached === false) {
                         $renderStart = \microtime(true);
-                        if ($rawImage === null && $rawPath !== null && !\is_file($rawPath)) {
+                        if ($rawPath !== null && !\is_file($rawPath)) {
                             throw new Exception(\sprintf('Image source "%s" does not exist', $rawPath));
                         }
                         Image::render($req);
@@ -339,7 +337,6 @@ abstract class AbstractImage implements IMedia
                 $result[$size] = $res;
             }
         }
-        unset($rawImage);
 
         return $result;
     }

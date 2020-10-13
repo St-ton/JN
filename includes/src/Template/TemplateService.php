@@ -6,6 +6,7 @@ use Exception;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\License\Manager;
+use JTL\License\Struct\ExpiredExsLicense;
 use SimpleXMLElement;
 
 /**
@@ -109,8 +110,13 @@ class TemplateService implements TemplateServiceInterface
             $parentXML
         );
         if ($withLicense === true) {
-            $manager = new Manager($this->db, $this->cache);
-            $template->setExsLicense($manager->getLicenseByItemID($template->getTemplate()));
+            $manager    = new Manager($this->db, $this->cache);
+            $exsLicense = $manager->getLicenseByItemID($template->getTemplate());
+            if ($exsLicense === null && $template->getExsID() !== null) {
+                $exsLicense = new ExpiredExsLicense();
+                $exsLicense->initFromTemplateData($template);
+            }
+            $template->setExsLicense($exsLicense);
         }
         $template->setBoxLayout($this->getBoxLayout($tplXML, $parentXML));
         $template->setResources(new Resources($this->db, $tplXML, $parentXML));

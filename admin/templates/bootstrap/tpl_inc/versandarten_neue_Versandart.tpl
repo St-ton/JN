@@ -69,11 +69,11 @@
     {/literal}
 </script>
 
-{assign var=cTitel value=__('createShippingMethod')}
+{assign var=cTitel value=__('createShippingMethodTitle')}
 {assign var=cBeschreibung value=__('createShippingMethodDesc')}
 
 {if isset($Versandart->kVersandart) && $Versandart->kVersandart > 0}
-    {assign var=cTitel value=__('modifyedShippingType')}
+    {assign var=cTitel value=__('modifyedShippingTypeTitle')|sprintf:$Versandart->cName}
     {assign var=cBeschreibung value=""}
 {/if}
 

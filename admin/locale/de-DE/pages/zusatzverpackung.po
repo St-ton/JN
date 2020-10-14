@@ -23,6 +23,9 @@ msgstr "Automatisch berechnen"
 msgid "zusatzverpackungCreate"
 msgstr "Zusatzverpackung anlegen"
 
+msgid "zusatzverpackungCreateTitle"
+msgstr "Zusatzverpackung anlegen"
+
 msgid "zusatzverpackungEdit"
 msgstr "Zusatzverpackung bearbeiten"
 

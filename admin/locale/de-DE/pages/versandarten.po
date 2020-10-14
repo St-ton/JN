@@ -14,6 +14,9 @@ msgstr "Klicken Sie auf die einzelnen Versandländer, um Zuschlagslisten (z. B. 
 msgid "createShippingMethod"
 msgstr "Versandart anlegen"
 
+msgid "createShippingMethodTitle"
+msgstr "Versandart anlegen"
+
 msgid "createShippingMethodDesc"
 msgstr "Hier legen Sie eine neue Versandart für JTL-Shop an. Diese kann im Anschluss mit einer Versandart in JTL-Wawi verknüpft werden."
 
@@ -82,6 +85,9 @@ msgstr "Versandart speichern"
 
 msgid "modifyedShippingType"
 msgstr "Änderungen speichern"
+
+msgid "modifyedShippingTypeTitle"
+msgstr "Versandart „%s“ ändern"
 
 msgid "shippingTypeName"
 msgstr "Versandart"

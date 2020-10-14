@@ -27,6 +27,7 @@ $Einstellungen = Shop::getSettings([
     CONF_TRUSTEDSHOPS
 ]);
 $kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_LOGIN);
+$Link          = $linkHelper->getPageLink($kLink);
 $cHinweis      = '';
 $hinweis       = '';
 $cFehler       = '';
@@ -873,6 +874,7 @@ $smarty->assign('cHinweis', $cHinweis)
        ->assign('step', $step)
        ->assign('Navigation', $cBrotNavi)
        ->assign('requestURL', isset($requestURL) ? $requestURL : null)
+       ->assign('Link', $Link)
        ->assign('Einstellungen', $Einstellungen)
        ->assign('BESTELLUNG_STATUS_BEZAHLT', BESTELLUNG_STATUS_BEZAHLT)
        ->assign('BESTELLUNG_STATUS_VERSANDT', BESTELLUNG_STATUS_VERSANDT)

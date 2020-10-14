@@ -68,7 +68,7 @@
                    style="background-image:
                            url({$portlet->getPreviewOverlayUrl()}),
                            url({$portlet->getPreviewImageUrl($instance)});">
-                    YouTube-Videos zulassen
+                    {lang key='allowConsentYouTube'}
                 </a>
             </div>
         {elseif $instance->getProperty('video-vendor') === 'vimeo'}
@@ -84,7 +84,7 @@
                     {/strip}
                         class="needs-consent vimeo
                             {if $instance->getProperty('video-responsive')}embed-responsive-item{/if}"
-                        frameborder="0" allowfullscreen
+                        allowfullscreen
                         {if !empty($instance->getProperty('video-title'))}
                             title="{$instance->getProperty('video-title')}"
                         {/if}
@@ -97,7 +97,7 @@
                    style="background-image:
                            url({$portlet->getPreviewOverlayUrl()}),
                            url({$portlet->getPreviewImageUrl($instance)});">
-                    Vimeo-Videos zulassen
+                    {lang key='allowConsentVimeo'}
                 </a>
             </div>
         {else}

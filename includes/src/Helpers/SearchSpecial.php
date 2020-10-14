@@ -47,8 +47,13 @@ class SearchSpecial
      */
     public static function getAll(int $langID = 0): array
     {
+        static $allOverlays = [];
+
         $langID  = $langID > 0 ? $langID : Shop::getLanguageID();
         $cacheID = 'haso_' . $langID;
+        if (isset($allOverlays[$cacheID])) {
+            return $allOverlays[$cacheID];
+        }
         if (($overlays = Shop::Container()->getCache()->get($cacheID)) === false) {
             $overlays = [];
             $types    = Shop::Container()->getDB()->query(
@@ -67,6 +72,7 @@ class SearchSpecial
             });
             Shop::Container()->getCache()->set($cacheID, $overlays, [\CACHING_GROUP_OPTION]);
         }
+        $allOverlays[$cacheID] = $overlays;
 
         return $overlays;
     }

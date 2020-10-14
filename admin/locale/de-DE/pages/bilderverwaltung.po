@@ -39,7 +39,10 @@ msgid "articlePic"
 msgstr "Artikelbild"
 
 msgid "corruptedPicsNote"
-msgstr "Fehlerhafte Bilder sind Bilder, die zwar einen Eintrag in der Datenbank haben, allerdings nicht als Datei auf dem Server vorhanden sind. Es werden maximal 50 Ergebnisse angezeigt."
+msgstr "Fehlerhafte Bilder sind Bilder, die zwar einen Eintrag in der Datenbank haben, allerdings nicht als Datei auf dem Server vorhanden sind. Es werden maximal %d Ergebnisse angezeigt."
+
+msgid "Too many corrupted images"
+msgstr "Zu viele fehlerhafte Bilder."
 
 msgid "successCacheReset"
 msgstr "Cache wurde erfolgreich zurückgesetzt."

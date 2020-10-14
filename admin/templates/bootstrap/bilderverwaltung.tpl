@@ -78,7 +78,7 @@
         <h3 class="top40">
             {__('currentCorruptedPics')}
         </h3>
-        <p class="small text-muted">{__('corruptedPicsNote')}</p>
+        <p class="small text-muted">{__('corruptedPicsNote')|sprintf:$smarty.const.MAX_CORRUPTED_IMAGES}</p>
         <table class="list table table-condensed">
             {foreach $corruptedImagesByType as $corruptedImages}
                 <thead>

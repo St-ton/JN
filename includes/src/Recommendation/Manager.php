@@ -27,7 +27,7 @@ class Manager
 
     private const API_DEV_URL = 'https://checkout-stage.jtl-software.com/v1/recommendations';
 
-    private const API_LIVE_URL = 'https://checkout-stage.jtl-software.com/v1/recommendations';
+    private const API_LIVE_URL = 'https://checkout.jtl-software.com/v1/recommendations';
 
     /**
      * @var Client

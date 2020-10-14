@@ -1883,6 +1883,15 @@ msgstr "Help Centre"
 msgid "notificationsHeader"
 msgstr "Notifications"
 
+msgid "Refresh all notifications"
+msgstr "Refresh all notifications"
+
+msgid "Mark notification as read"
+msgstr "Hide notification as read"
+
+msgid "Mark all notifications as unread"
+msgstr "Show all hidden notifications"
+
 msgid "favouritesHeader"
 msgstr "Favourites"
 

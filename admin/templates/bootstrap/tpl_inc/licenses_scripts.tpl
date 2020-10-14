@@ -116,5 +116,8 @@
         $('#content_wrapper').on('submit', '.extend-license-form', function (e) {
             return bindCallback($(e.target).find('.extend-license'), e);
         });
+        $('#content_wrapper').on('submit', '.upgrade-license-form', function (e) {
+            return bindCallback($(e.target).find('.upgrade-license'), e);
+        });
     });
 </script>

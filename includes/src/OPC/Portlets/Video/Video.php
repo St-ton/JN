@@ -42,6 +42,14 @@ class Video extends Portlet
     /**
      * @return string
      */
+    public function getPreviewOverlayUrl(): string
+    {
+        return \Shop::getURL() . '/' . \PFAD_INCLUDES . 'src/OPC/Portlets/Video/preview.svg';
+    }
+
+    /**
+     * @return string
+     */
     public function getButtonHtml(): string
     {
         return $this->getFontAwesomeButtonHtml('fas fa-film');

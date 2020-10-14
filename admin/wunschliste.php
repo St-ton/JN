@@ -12,12 +12,24 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('MODULE_WISHLIST_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 $alertHelper = Shop::Container()->getAlertService();
-$settingsIDs = [442, 443, 440, 439, 445, 446, 1460];
+$settingsIDs = [
+    'boxen_wunschzettel_anzahl',
+    'boxen_wunschzettel_bilder',
+    'global_wunschliste_weiterleitung',
+    'global_wunschliste_anzeigen',
+    'global_wunschliste_freunde_aktiv',
+    'global_wunschliste_max_email',
+    'global_wunschliste_artikel_loeschen_nach_kauf'
+];
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 if (Request::verifyGPCDataInt('einstellungen') === 1) {
-    $alertHelper->addAlert(Alert::TYPE_SUCCESS, saveAdminSettings($settingsIDs, $_POST), 'saveSettings');
+    $alertHelper->addAlert(
+        Alert::TYPE_SUCCESS,
+        saveAdminSettings($settingsIDs, $_POST, [CACHING_GROUP_OPTION], true),
+        'saveSettings'
+    );
 }
 $itemCount     = (int)Shop::Container()->getDB()->query(
     'SELECT COUNT(DISTINCT twunschliste.kWunschliste) AS cnt
@@ -96,7 +108,7 @@ $wishListPositions = Shop::Container()->getDB()->query(
     ReturnType::ARRAY_OF_OBJECTS
 );
 
-$smarty->assign('oConfig_arr', getAdminSectionSettings($settingsIDs))
+$smarty->assign('oConfig_arr', getAdminSectionSettings($settingsIDs, true))
     ->assign('oPagiPos', $oPagiPos)
     ->assign('oPagiArtikel', $oPagiArtikel)
     ->assign('oPagiFreunde', $oPagiFreunde)

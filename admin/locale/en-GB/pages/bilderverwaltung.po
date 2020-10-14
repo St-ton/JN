@@ -39,7 +39,10 @@ msgid "articlePic"
 msgstr "Item image"
 
 msgid "corruptedPicsNote"
-msgstr "Faulty images are images with an entry in the database for which no file exists on the server. A maximum of 50 results is shown."
+msgstr "Faulty images are images with an entry in the database for which no file exists on the server. A maximum of %d results is shown."
+
+msgid "Too many corrupted images"
+msgstr "Too many faulty images."
 
 msgid "successCacheReset"
 msgstr "Cache deleted successfully."

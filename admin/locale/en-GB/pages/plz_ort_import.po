@@ -79,3 +79,15 @@ msgstr "Temporary import deleted successfully."
 
 msgid "importCancel"
 msgstr "Import was cancelled."
+
+msgid "importDataFrom"
+msgstr "Import data from %s"
+
+msgid "createBackupFrom"
+msgstr "Create backup from %s ..."
+
+msgid "downloadFrom"
+msgstr "Download from %s"
+
+msgid "importPending"
+msgstr "Importing %s …"

@@ -189,13 +189,13 @@ msgid "permission_DBCHECK_VIEW"
 msgstr "Check database"
 
 msgid "permission_PERMISSIONCHECK_VIEW"
-msgstr "Check directory"
+msgstr "Directory check"
 
 msgid "permission_WIZARD_VIEW"
 msgstr "Set up"
 
 msgid "permission_IMAGE_UPLOAD"
-msgstr "Image upload"
+msgstr "Image upload (for sliders and in OPC)"
 
 # description of admin group (tadminlogingruppe)
 msgid "Voller Zugriff auf den Administrationsbereich."
@@ -218,3 +218,9 @@ msgstr "Error uploading the image."
 
 msgid "noMenuItem"
 msgstr "Other"
+
+msgid "sureDeleteUser"
+msgstr "Delete user?"
+
+msgid "newUserTitle"
+msgstr "Creating a user"

@@ -54,7 +54,7 @@ msgid "successEntriesDelete"
 msgstr " Selected log entries deleted successfully."
 
 msgid "minLogLevel"
-msgstr "Create log entry starting with level"
+msgstr "Create log entries starting from level"
 
 msgid "logLevelError"
 msgstr "Error"

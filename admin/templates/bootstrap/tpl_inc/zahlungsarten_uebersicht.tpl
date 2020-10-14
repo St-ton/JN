@@ -111,6 +111,7 @@
                                         <a href="premiumplugin.php?scope={$recommendations->getScope()}&id={$recommendation->getId()}"
                                            class="btn btn-primary">
                                             {__('getToKnowMore')}
+                                            <span class="fal fa-long-arrow-right ml-1"></span>
                                         </a>
                                     </td>
                                 </tr>

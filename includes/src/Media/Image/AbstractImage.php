@@ -234,6 +234,9 @@ abstract class AbstractImage implements IMedia
                         $result->addGeneratedItem($size);
                         if ($filesize === true) {
                             $bytes = \filesize($thumb);
+                            if ($bytes === false) {
+                                $bytes = 0;
+                            }
                             $result->addGeneratedSizeItem($size, $bytes);
                         }
                     }

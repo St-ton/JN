@@ -120,7 +120,7 @@ class CacheRedis implements ICachingMethod
                 $this->redis->expire($cacheID, $exp);
             }
 
-            return $res;
+            return \is_bool($res) ? $res : false;
         } catch (RedisException $e) {
             echo 'Redis exception: ' . $e->getMessage();
 

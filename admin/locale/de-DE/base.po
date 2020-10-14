@@ -1883,6 +1883,15 @@ msgstr "Hilfecenter"
 msgid "notificationsHeader"
 msgstr "Mitteilungen"
 
+msgid "Refresh all notifications"
+msgstr "Alle Mitteilungen aktualisieren"
+
+msgid "Mark notification as read"
+msgstr "Mitteilung als gelesen verbergen"
+
+msgid "Mark all notifications as unread"
+msgstr "Alle verborgenen Mitteilungen anzeigen"
+
 msgid "favouritesHeader"
 msgstr "Favoriten"
 

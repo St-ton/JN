@@ -19,3 +19,9 @@ msgstr "Das Plugin wurde erfolgreich installiert. Sie müssen es nun noch unter 
 
 msgid "installPlugin"
 msgstr "Plugin installieren"
+
+msgid "pluginHasLicense"
+msgstr "Lizenz bereits vorhanden"
+
+msgid "authenticate"
+msgstr "Bitte authentifizieren Sie Ihren Onlineshop einmalig über den zentralen Login von JTL, um dieses Plugin zu installieren"

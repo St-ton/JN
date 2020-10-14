@@ -3,7 +3,6 @@
 namespace JTL\License\Struct;
 
 use DateTime;
-use JTL\Shop;
 use JTL\Template\Model;
 use JTLShop\SemVer\Version;
 use stdClass;
@@ -14,16 +13,26 @@ use stdClass;
  */
 class ExpiredExsLicense extends ExsLicense
 {
+    private function setDefaults(): void
+    {
+        $this->setQueryDate(new DateTime());
+        $this->setState(self::STATE_ACTIVE);
+        $this->setLinks([]);
+        $this->setReleases(new Releases());
+        $this->setParent(new InAppParent());
+        $this->setCanBeUsed(false);
+    }
+
     /**
      * @param stdClass $data
      * @throws \Exception
      */
     public function initFromPluginData(stdClass $data): void
     {
+        $this->setDefaults();
         $this->setType(self::TYPE_PLUGIN);
         $this->setName($data->cName);
         $this->setExsID($data->exsID);
-        $this->setQueryDate(new DateTime());
         $license = new License();
         $license->setIsBound(true);
         $license->setKey($data->cPluginID);
@@ -32,7 +41,6 @@ class ExpiredExsLicense extends ExsLicense
         $license->setType(License::TYPE_NONE);
         $this->setLicense($license);
         $this->setID($data->cPluginID);
-        $this->setState(self::STATE_ACTIVE);
         $subscription = new Subscription();
         $subscription->setExpired(true);
         $license->setSubscription($subscription);
@@ -40,7 +48,6 @@ class ExpiredExsLicense extends ExsLicense
         $vendor->setName($data->cAutor);
         $vendor->setHref($data->cURL);
         $this->setVendor($vendor);
-        $this->setLinks([]);
         $ref = new ReferencedPlugin();
         $ref->setInternalID((int)$data->kPlugin);
         $ref->setInstalled(true);
@@ -55,10 +62,10 @@ class ExpiredExsLicense extends ExsLicense
      */
     public function initFromTemplateData(Model $data): void
     {
+        $this->setDefaults();
         $this->setType(self::TYPE_TEMPLATE);
         $this->setName($data->cTemplate);
         $this->setExsID($data->getExsID());
-        $this->setQueryDate(new DateTime());
         $license = new License();
         $license->setIsBound(true);
         $license->setKey($data->cTemplate);
@@ -67,7 +74,6 @@ class ExpiredExsLicense extends ExsLicense
         $license->setType(License::TYPE_NONE);
         $this->setLicense($license);
         $this->setID($data->cTemplate);
-        $this->setState(self::STATE_ACTIVE);
         $subscription = new Subscription();
         $subscription->setExpired(true);
         $license->setSubscription($subscription);
@@ -75,7 +81,7 @@ class ExpiredExsLicense extends ExsLicense
         $vendor->setName($data->getUrl());
         $vendor->setHref($data->getUrl());
         $this->setVendor($vendor);
-        $this->setLinks([]);
+        $this->setReleases(new Releases());
         $ref = new ReferencedTemplate();
         $ref->setInternalID($data->getTemplateID());
         $ref->setInstalled(true);

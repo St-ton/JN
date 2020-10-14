@@ -1884,7 +1884,7 @@ msgid "notificationsHeader"
 msgstr "Notifications"
 
 msgid "Refresh all notifications"
-msgstr "Alle Mitteilungen aktualisieren"
+msgstr "Refresh all notifications"
 
 msgid "Mark notification as read"
 msgstr "Hide notification as read"

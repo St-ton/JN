@@ -79,7 +79,7 @@
                                                 {/if}
                                                 {input type="hidden" name="fpwh" value=$fpwh}
                                                 {button type="submit" value="1" block=true class="submit_once" variant="primary"}
-                                                    {lang key='createNewPassword' section='forgot password'}
+                                                    {lang key='confirmNewPassword' section='forgot password'}
                                                 {/button}
                                             {/formgroup}
                                         {/block}

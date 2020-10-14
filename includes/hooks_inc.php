@@ -12,6 +12,7 @@ use JTL\Catalog\Product\MerkmalWert;
 use JTL\Catalog\Product\Preise;
 use JTL\CheckBox;
 use JTL\Checkout\Bestellung;
+use JTL\Checkout\Versandart;
 use JTL\Customer\Customer;
 use JTL\Emailvorlage;
 use JTL\Firma;
@@ -1943,6 +1944,17 @@ define('HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB_LIEFERADRESSE_ALT', 305);
  * @param \JTL\Link\LinkGroupList list
  */
 define('HOOK_LINKGROUPS_LOADED_PRE_CACHE', 306);
+
+/**
+ * @since 5.0.0
+ * @file includes/src/Helpers/ShippingMethod.php
+ * @param float price
+ * @param Versandart|object shippingMethod
+ * @param string iso
+ * @param Artikel|stdClass additionalProduct
+ * @param Artikel|null product
+ */
+define('HOOK_CALCULATESHIPPINGFEES', 307);
 
 /**
  * @since 5.0.0

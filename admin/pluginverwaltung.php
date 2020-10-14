@@ -346,6 +346,13 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                     if (isset($match->cName) && $match->cName === $customLang->cName) {
                         continue;
                     }
+                    if ($match === null) {
+                        $pluginLang                        = new stdClass();
+                        $pluginLang->kPluginSprachvariable = $kPluginSprachvariable;
+                        $pluginLang->cISO                  = $iso;
+                        $pluginLang->cName                 = '';
+                        $db->insert('tpluginsprachvariablesprache', $pluginLang);
+                    }
 
                     $db->insert('tpluginsprachvariablecustomsprache', $customLang);
                 }

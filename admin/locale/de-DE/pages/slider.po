@@ -114,4 +114,4 @@ msgid "directionNavigation"
 msgstr "Pfeilnavigation"
 
 msgid "animationSpeed"
-msgstr "Animations-Geschwindigkeit"
+msgstr "Animationsgeschwindigkeit"

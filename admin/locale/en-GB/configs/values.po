@@ -9,7 +9,7 @@ msgid "artikel_artikelanzeigefilter_value(2)"
 msgstr "Show only items with available stock"
 
 msgid "artikel_artikelanzeigefilter_value(3)"
-msgstr "Show only items with available stock or option “Allow negative stock”"
+msgstr "Show only items with available stock or option \"Allow negative stock\""
 
 msgid "artikel_artikelanzeigefilter_seo_value(404)"
 msgstr "Page not found (404 - Not found)"
@@ -108,7 +108,7 @@ msgid "global_versandhinweis_value(zzgl)"
 msgstr "Plus Shipments"
 
 msgid "global_versandhinweis_value(inkl)"
-msgstr "includes shipping costs"
+msgstr "Incl. Shipments"
 
 msgid "global_versandhinweis_value(kein)"
 msgstr "No shipping cost information"
@@ -1299,7 +1299,7 @@ msgid "bilder_dateiformat_value(PNG)"
 msgstr "PNG"
 
 msgid "bilder_dateiformat_value(AUTO)"
-msgstr "Auto (additionally create .webp)"
+msgstr "Automatically; also create .webp"
 
 msgid "container_verwenden_value(N)"
 msgstr "No"
@@ -2388,22 +2388,22 @@ msgid "consent_manager_active_value(Y)"
 msgstr "Yes"
 
 msgid "bewertung_sortierung_value(0)"
-msgstr "Date ascending"
+msgstr "Date in ascending order"
 
 msgid "bewertung_sortierung_value(1)"
-msgstr "Date descending"
+msgstr "Date in descending order"
 
 msgid "bewertung_sortierung_value(2)"
-msgstr "Review ascending"
+msgstr "Reviews in ascending order"
 
 msgid "bewertung_sortierung_value(3)"
-msgstr "Review descending"
+msgstr "Reviews in descending order"
 
 msgid "bewertung_sortierung_value(4)"
-msgstr "Helpful ascending"
+msgstr "Most helpful first"
 
 msgid "bewertung_sortierung_value(5)"
-msgstr "Helpful descending"
+msgstr "Least helpful first"
 
 msgid "direct_advertising_value(N)"
 msgstr "No"

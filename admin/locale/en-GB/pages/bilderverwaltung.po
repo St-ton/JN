@@ -9,7 +9,7 @@ msgid "bilderverwaltungURL"
 msgstr "https://jtl-url.de/v4jwa"
 
 msgid "bilderverwaltungDesc"
-msgstr "This is an overview of all existing images and, if applicable, errors. The different sizes of the images in JTL-Shop are only generated when the images are opened in the front end for the first time. This may lead to longer loading times in some cases. By selecting \"Generate\", you create all images that have not yet been generated. \"Empty cache\" deletes all image sizes created from th original image. \"Clear\" deletes faulty original images."
+msgstr "This is an overview of all existing images and, if applicable, errors. The different sizes of the images in JTL-Shop are only generated when the images are opened in the front end for the first time. This may lead to longer loading times in some cases. By selecting \"Generate\", you create all images that have not yet been generated. By selecting \"Empty cache\", you delete all existing images. \"Empty cache\" deletes all image sizes created from the original image. \"Clear\" deletes faulty original images."
 
 msgid "headlineTyp"
 msgstr "Type"
@@ -48,7 +48,7 @@ msgid "successCacheReset"
 msgstr "Cache deleted successfully."
 
 msgid "errorCacheReset"
-msgstr "Cache could not be deleted completely."
+msgstr "Could not reset entire cache."
 
 msgid "successImageCleanup"
 msgstr "Images cleared successfully."
@@ -63,7 +63,7 @@ msgid "successImageGenerate"
 msgstr "Images generated successfully."
 
 msgid "errorImageGenerate"
-msgstr "Error while generating images"
+msgstr "Could not generate images"
 
 msgid "pendingImageDelete"
 msgstr "Deleting images…"

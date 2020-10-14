@@ -24,8 +24,7 @@ msgid "iconAlignment"
 msgstr "Alignment"
 
 msgid "alignmentDesc"
-msgstr "Specifies whether the button is to be displayed on the right or left side, in the centre, or extends over the "
-"entire width of the page."
+msgstr "Specifies whether the button is to be displayed on the right or left side, in the centre, or extends over the entire width of the page."
 
 msgid "openInNewTabDesc"
 msgstr "Specifies whether clicking on the button opens a new browser tab."

@@ -63,7 +63,7 @@ msgid "successImageGenerate"
 msgstr "Bilder wurden erfolgreich generiert."
 
 msgid "errorImageGenerate"
-msgstr "Fehler beim Generieren der Bilder"
+msgstr "Bilder konnten nicht generiert werden."
 
 msgid "pendingImageDelete"
 msgstr "Bilder werden gelöscht…"

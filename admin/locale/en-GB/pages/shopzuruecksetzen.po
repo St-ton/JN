@@ -45,7 +45,7 @@ msgid "deleteRevisions"
 msgstr "Delete revisions"
 
 msgid "deleteProductCategory"
-msgstr "Delete items, categories and characteristics (complete synchronisation with JTL-Wawi restores data)"
+msgstr "Delete items, categories, and characteristics (complete synchronisation with JTL-Wawi restores data)"
 
 msgid "deleteTax"
 msgstr "Delete tax classes/rates/zones/zone countries (complete synchronisation of the global data with JTL-Wawi restores data)"
@@ -66,7 +66,7 @@ msgid "deleteCustomers"
 msgstr "Delete online shop customers"
 
 msgid "customersOrdersCoupons"
-msgstr "Customers, orders and coupons"
+msgstr "Customers, orders, and coupons"
 
 msgid "deleteCoupons"
 msgstr "Delete coupons"
@@ -75,7 +75,7 @@ msgid "yesBackupDone"
 msgstr "Yes, I performed a backup of my online shop database."
 
 msgid "followingWillBeDeleted"
-msgstr "The following areas of JTL-Shop will be reset <span id=\"messageDataGetsLost\" class=\"hide\">and the respective data will be deleted:</span>"
+msgstr "The following areas of JTL-Shop will be reset<span id=\"messageDataGetsLost\" class=\"hide\"> and the respective data will be deleted:</span>"
 
 msgid "sureContinue"
 msgstr "Would you like to continue?"

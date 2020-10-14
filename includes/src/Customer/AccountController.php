@@ -143,7 +143,8 @@ class AccountController
             );
         }
         $this->smarty->assign('alertNote', $alertNote)
-            ->assign('step', $step);
+            ->assign('step', $step)
+            ->assign('Link', $this->linkService->getSpecialPage(\LINKTYP_LOGIN));
     }
 
     /**
@@ -291,7 +292,6 @@ class AccountController
         $this->smarty->assign('Kunde', $_SESSION['Kunde'])
             ->assign('customerAttributes', $_SESSION['Kunde']->getCustomerAttributes())
             ->assign('bewertungen', $ratings)
-            ->assign('Link', $this->linkService->getSpecialPage(\LINKTYP_LOGIN))
             ->assign('BESTELLUNG_STATUS_BEZAHLT', \BESTELLUNG_STATUS_BEZAHLT)
             ->assign('BESTELLUNG_STATUS_VERSANDT', \BESTELLUNG_STATUS_VERSANDT)
             ->assign('BESTELLUNG_STATUS_OFFEN', \BESTELLUNG_STATUS_OFFEN)

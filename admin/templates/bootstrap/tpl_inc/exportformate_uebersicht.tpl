@@ -2,11 +2,16 @@
 <div id="content">
     <script type="text/javascript" src="{$templateBaseURL}js/jquery.progressbar.js"></script>
     <script type="text/javascript">
-        var url = "{$shopURL}/{$PFAD_ADMIN}exportformate.php",
-            token = "{$smarty.session.jtl_token}",
-            tpl = "{$templateBaseURL}gfx/jquery";
+        var url     = "{$shopURL}/{$PFAD_ADMIN}exportformate.php",
+            token   = "{$smarty.session.jtl_token}",
+            running = [],
+            imgPath = "{$templateBaseURL}gfx/jquery";
         {literal}
         $(function () {
+            $('.extract_async').on('click', function (el) {
+                init_export(parseInt(el.currentTarget.dataset.exportid, 10));
+                return false;
+            });
             $('#exportall').on('click', function () {
                 $('.extract_async').trigger('click');
                 return false;
@@ -14,6 +19,11 @@
         });
 
         function init_export(id) {
+            if (running.indexOf(id) !== -1) {
+                return false;
+            }
+            running.push(id);
+            show_export_info({kExportformat: id, bFirst: true, nMax: 0, nCurrent: 0});
             $.getJSON(url, {token: token, action: 'export', kExportformat: id, ajax: '1'}, function (cb) {
                 do_export(cb);
             });
@@ -46,18 +56,22 @@
                 textFormat:   'fraction',
                 steps:        cb.bFirst ? 0 : 20,
                 stepDuration: cb.bFirst ? 0 : 20,
-                boxImage:     tpl + '/progressbar.gif',
+                boxImage:     imgPath + '/progressbar.gif',
                 barImage:     {
-                    0: tpl + '/progressbg_red.gif',
-                    30: tpl + '/progressbg_orange.gif',
-                    50: tpl + '/progressbg_yellow.gif',
-                    70: tpl + '/progressbg_green.gif'
+                    0: imgPath + '/progressbg_red.gif',
+                    30: imgPath + '/progressbg_orange.gif',
+                    50: imgPath + '/progressbg_yellow.gif',
+                    70: imgPath + '/progressbg_green.gif'
                 }
             });
         }
 
         function finish_export(cb) {
-            var elem = '#progress' + cb.kExportformat;
+            var elem = '#progress' + cb.kExportformat,
+                idx  = running.indexOf(cb.kExportformat);
+            if (idx > -1) {
+                running.splice(idx, 1);
+            }
             $(elem).find('div').fadeOut(250, function () {
                 $('#error-msg-' + cb.kExportformat).remove();
                 var text  = $(elem).find('p').html(),
@@ -87,12 +101,12 @@
                     <th class="text-center">{__('customerGroup')}</th>
                     <th class="text-center">{__('lastModified')}</th>
                     <th class="text-center">{__('syntax')}</th>
-                    <th class="text-center" width="200">{__('actions')}</th>
+                    <th class="text-center" style="width:200px">{__('actions')}</th>
                 </tr>
                 </thead>
                 <tbody>
                 {foreach $exportformate as $exportformat}
-                    {if $exportformat->nSpecial == 0}
+                    {if $exportformat->nSpecial === 0}
                         <tr>
                             <td class="text-left"> {$exportformat->cName}</td>
                             <td class="text-left" id="progress{$exportformat->kExportformat}">
@@ -104,7 +118,7 @@
                             <td class="text-center">{$exportformat->Kundengruppe->cName}</td>
                             <td class="text-center">{if !empty($exportformat->dZuletztErstellt)}{$exportformat->dZuletztErstellt}{else}-{/if}</td>
                             <td class="text-center">
-                                {if (int)$exportformat->nFehlerhaft === 1}
+                                {if $exportformat->nFehlerhaft === 1}
                                     <i class="fal fa-times text-danger"></i>
                                 {else}
                                     <i class="fal fa-check text-success"></i>
@@ -134,7 +148,7 @@
                                             </span>
                                         </button>
                                         {if !$exportformat->bPluginContentExtern}
-                                            <a href="#" onclick="return init_export('{$exportformat->kExportformat}');" class="btn btn-link px-1 extract_async notext" title="{__('createExportFileAsync')}" data-toggle="tooltip">
+                                            <a href="#" class="btn btn-link px-1 extract_async notext" title="{__('createExportFileAsync')}" data-toggle="tooltip" data-exportid="{$exportformat->kExportformat}" id="start-export-{$exportformat->kExportformat}">
                                                 <span class="icon-hover">
                                                     <span class="fal fa-plus-square"></span>
                                                     <span class="fas fa-plus-square"></span>

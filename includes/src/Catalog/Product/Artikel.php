@@ -5325,6 +5325,8 @@ class Artikel
      */
     public function gibMwStVersandLaenderString($asString = true)
     {
+        static $allCountries = [];
+
         if ($this->conf['global']['global_versandfrei_anzeigen'] !== 'Y') {
             return $asString ? '' : [];
         }
@@ -5345,7 +5347,7 @@ class Artikel
             return \trim($e);
         }));
         $cacheID = 'jtl_ola_' . \md5($shippingFreeCountries);
-        if (($countries = Shop::Container()->getCache()->get($cacheID)) === false) {
+        if (($countries = $allCountries[$cacheID] ?? Shop::Container()->getCache()->get($cacheID)) === false) {
             $countries = Shop::Container()->getCountryService()->getFilteredCountryList($codes)->mapWithKeys(
                 static function (Country $country) {
                     return [$country->getISO() => $country->getName()];
@@ -5358,6 +5360,7 @@ class Artikel
                 [\CACHING_GROUP_CORE, \CACHING_GROUP_CATEGORY, \CACHING_GROUP_OPTION]
             );
         }
+        $allCountries[$cacheID] = $countries;
 
         return $asString
             ? Shop::Lang()->get('noShippingCostsAtExtended', 'basket', \implode(', ', $countries))

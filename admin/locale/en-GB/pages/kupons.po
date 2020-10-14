@@ -89,11 +89,20 @@ msgstr "Coupon type"
 msgid "standardCoupon"
 msgstr "Standard coupon"
 
+msgid "standardCouponCreate"
+msgstr "Create standard coupon"
+
 msgid "shippingCoupon"
 msgstr "Free shipping coupon"
 
+msgid "shippingCouponCreate"
+msgstr "Create free shipping coupon"
+
 msgid "newCustomerCoupon"
 msgstr "New customer coupon/Welcome coupon"
+
+msgid "newCustomerCouponCreate"
+msgstr "Create new customer coupon/Welcome coupon"
 
 msgid "additionalShippingCosts"
 msgstr "Valid for COD charges"

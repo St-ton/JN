@@ -89,11 +89,20 @@ msgstr "Coupon-Art"
 msgid "standardCoupon"
 msgstr "Standardcoupon"
 
+msgid "standardCouponCreate"
+msgstr "Standardcoupon erstellen"
+
 msgid "shippingCoupon"
 msgstr "Versandkostenfrei-Coupon"
 
+msgid "shippingCouponCreate"
+msgstr "Versandkostenfrei-Coupon erstellen"
+
 msgid "newCustomerCoupon"
 msgstr "Neukunden- / Begrüßungscoupon"
+
+msgid "newCustomerCouponCreate"
+msgstr "Neukunden- / Begrüßungscoupon erstellen"
 
 msgid "additionalShippingCosts"
 msgstr "Gilt für Nachnahmegebühren"

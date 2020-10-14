@@ -18,9 +18,6 @@
                 style=$style}
             <div class="give-consent-preview" style="background-image: url({$portlet->getPreviewOverlayUrl()})"></div>
         {elseif $instance->getProperty('video-vendor') === 'vimeo'}
-            {$imgid = $instance->getProperty('video-vim-id')}
-            {$hash  = unserialize(file_get_contents("http://vimeo.com/api/v2/video/$imgid.php"))}
-
             {image
                 src=$portlet->getPreviewImageUrl($instance)
                 alt='Vimeo Video'

@@ -14,6 +14,7 @@
 .opc-Video .give-consent-preview:not(:hover) {
   color: #fff;
 }
+
 .opc-Video {
   display: flex;
   flex-direction: column;

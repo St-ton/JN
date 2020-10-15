@@ -123,7 +123,7 @@ msgid "nextStatusMail"
 msgstr "Der nächste %s wird am %s versendet."
 
 msgid "contentTypeCountNewsletterOptOut"
-msgstr "Newsletter Abmeldungen"
+msgstr "Newsletter-Abmeldungen"
 
 msgid "contentTypeCountNewsletterOptIn"
-msgstr "Newsletter Anmeldungen"
+msgstr "Newsletter-Anmeldungen"

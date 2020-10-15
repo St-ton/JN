@@ -23,8 +23,11 @@ msgstr "Calculate automatically"
 msgid "zusatzverpackungCreate"
 msgstr "Create additional packaging"
 
+msgid "zusatzverpackungCreateTitle"
+msgstr "Creating additional packaging"
+
 msgid "zusatzverpackungEdit"
-msgstr "Edit additional packaging"
+msgstr "Editing additional packaging"
 
 msgid "zusatzverpackungAddedNone"
 msgstr "No additional packaging available yet"

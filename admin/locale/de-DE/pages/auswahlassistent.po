@@ -48,7 +48,7 @@ msgid "aaLinkTaken"
 msgstr "Es wird bereits eine andere Gruppe auf einer ausgewählten Spezialseite angezeigt."
 
 msgid "aaMerkmalTaken"
-msgstr "Es wurde bereits für eine andere Frage in dieser Gruppe das ausgewählte Merkmal gewählt."
+msgstr "Das ausgewählte Merkmal wurde bereits für eine andere Frage in dieser Gruppe gewählt."
 
 msgid "successGroupSaved"
 msgstr "Gruppe wurde erfolgreich gespeichert."

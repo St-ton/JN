@@ -62,6 +62,8 @@ ifndef('SMARTY_USE_SUB_DIRS', false);
 ifndef('JTL_INCLUDE_ONLY_DB', 0);
 ifndef('SOCKET_TIMEOUT', 30);
 ifndef('ARTICLES_PER_PAGE_HARD_LIMIT', 100);
+ifndef('MAX_CORRUPTED_IMAGES', 50);
+ifndef('MAX_IMAGES_PER_STEP', 50000);
 
 // Pfade
 ifndef('PFAD_CLASSES', 'classes/old/'); // DEPRECATED
@@ -221,6 +223,8 @@ ifndef('ES_SESSIONS', 0);
 ifndef('MAX_REVISIONS', 5);
 
 ifndef('SHOW_DEBUG_BAR', false);
+
+ifndef('EXS_LIVE', true);
 
 ifndef('ART_MATRIX_MAX', 250);
 

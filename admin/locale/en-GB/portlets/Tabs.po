@@ -6,10 +6,10 @@ msgid "Tabs"
 msgstr "Tabs"
 
 msgid "tabOne"
-msgstr "Tab one"
+msgstr "Tab 1"
 
 msgid "tabTwo"
-msgstr "Tab two"
+msgstr "Tab 2"
 
 msgid "tabThree"
-msgstr "Tab three"
+msgstr "Tab 3"

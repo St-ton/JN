@@ -17,17 +17,17 @@ use JTL\Shop;
  */
 class Manager
 {
-    public const SCOPE_WIZARD_PAYMENT_PROVIDER  = 'wizard.payment-provider';
-    public const SCOPE_WIZARD_LEGAL_TEXTS       = 'wizard.legal-texts';
+    public const SCOPE_WIZARD_PAYMENT_PROVIDER = 'wizard.payment-provider';
+
+    public const SCOPE_WIZARD_LEGAL_TEXTS = 'wizard.legal-texts';
+
     public const SCOPE_BACKEND_PAYMENT_PROVIDER = 'backend.payment-provider';
-    public const SCOPE_BACKEND_LEGAL_TEXTS      = 'backend.legal-texts';
 
-    private const API_URL = 'https://checkout-stage.jtl-software.com/v1/recommendations';
+    public const SCOPE_BACKEND_LEGAL_TEXTS = 'backend.legal-texts';
 
-    /**
-     * @var string
-     */
-    private $domain;
+    private const API_DEV_URL = 'https://checkout-stage.jtl-software.com/v1/recommendations';
+
+    private const API_LIVE_URL = 'https://checkout.jtl-software.com/v1/recommendations';
 
     /**
      * @var Client
@@ -59,7 +59,6 @@ class Manager
         $this->alertService = $alertService;
         $this->scope        = $scope;
         $this->client       = new Client();
-        $this->domain       = \parse_url(\URL_SHOP)['host'];
         $this->setRecommendations();
     }
 
@@ -110,7 +109,7 @@ class Manager
      */
     private function getJSONFromAPI(string $scope): array
     {
-        $url = self::API_URL . '?scope=' . $scope;
+        $url = (\EXS_LIVE === true ? self::API_LIVE_URL : self::API_DEV_URL) . '?scope=' . $scope;
         try {
             $res = $this->client->request(
                 'GET',
@@ -128,18 +127,6 @@ class Manager
         }
 
         return empty($res) ? [] : \json_decode((string)$res->getBody())->extensions;
-//        return $this->getTestJSON();
-    }
-
-    /**
-     * @return mixed
-     */
-    private function getTestJSON()
-    {
-        return \json_decode(
-            \file_get_contents(\PFAD_ROOT . 'getRecommendation.json'),
-            false
-        )->extensions;
     }
 
     /**

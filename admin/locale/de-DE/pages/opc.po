@@ -6,7 +6,7 @@ msgid "opcNotInstalled"
 msgstr "Das Update für den OnPage Composer wurde nicht ordnungsgemäß installiert. Bitte aktualisieren Sie die Migrationen."
 
 msgid "dbUpdateNeeded"
-msgstr "Ein Datenbank-Update Ihres JTL-Shops ist erforderlich um den OnPage Composer nutzen zu können.<br><br>Bitte führen Sie das Update im <a href=\"%s/admin/dbupdater.php\" target=\"_blank\">Admin-Backend</a> durch!"
+msgstr "Ein Datenbank-Update Ihres JTL-Shops ist erforderlich, um den OnPage Composer nutzen zu können.<br/><br/>Bitte führen Sie das Update im <a href=\"%s/admin/dbupdater.php\" target=\"_blank\">Admin-Backend</a> durch!"
 
 # OPC GUI
 
@@ -29,7 +29,7 @@ msgid "Portlets"
 msgstr "Portlets"
 
 msgid "Blueprints"
-msgstr "Vorlagen"
+msgstr "Blueprints"
 
 msgid "Revisions"
 msgstr "Versionen"
@@ -38,7 +38,7 @@ msgid "Page structure"
 msgstr "Seitenstruktur"
 
 msgid "Import blueprint"
-msgstr "Vorlage importieren"
+msgstr "Blueprints importieren"
 
 msgid "Unsaved revision"
 msgstr "Nicht gespeicherte Version"
@@ -56,13 +56,13 @@ msgid "editPortletPostfix"
 msgstr " bearbeiten"
 
 msgid "Save this Portlet as a blueprint"
-msgstr "Portlet als Vorlage speichern"
+msgstr "Portlet als Blueprint speichern"
 
 msgid "Blueprint name"
-msgstr "Vorlagenname"
+msgstr "Blueprint-Name"
 
 msgid "Delete Blueprint?"
-msgstr "Vorlage löschen?"
+msgstr "Blueprint löschen?"
 
 # Config Tabs
 
@@ -102,16 +102,16 @@ msgid "Border radius"
 msgstr "Rahmenabrundung"
 
 msgid "Hidden on XS"
-msgstr "Verstecken bei XS"
+msgstr "Portlet verstecken bei XS"
 
 msgid "Hidden on SM"
-msgstr "Verstecken bei SM"
+msgstr "Portlet verstecken bei SM"
 
 msgid "Hidden on MD"
-msgstr "Verstecken bei MD"
+msgstr "Portlet verstecken bei MD"
 
 msgid "Hidden on LG"
-msgstr "Verstecken bei LG"
+msgstr "Portlet verstecken bei LG"
 
 msgid "cssNumericDesc"
 msgstr "Geben Sie den gewünschten Wert ohne Leerzeichen und mit Punkt als Dezimaltrennzeichen ein "
@@ -153,7 +153,7 @@ msgid "toggleNavigation"
 msgstr "Navigation ein-/ausschalten"
 
 msgid "noteInfoInGuide"
-msgstr "Sie finden neben den nachfolgend aufgelisteten Touren auch ausführliche Informationen in unserem <a href=\"https://guide.jtl-software.de\" target=\"_blank\"><i class=\"fa fa-external-link\"></i> Guide</a>."
+msgstr "Sie finden neben den nachfolgend aufgelisteten Touren auch ausführliche Informationen in unserem Guide."
 
 msgid "generalIntroduction"
 msgstr "Allgemeine Einführung"
@@ -168,7 +168,7 @@ msgid "noteMovementOnPage"
 msgstr "Sie hätten gern etwas mehr Bewegung auf Ihren Seiten?"
 
 msgid "noteSaveAsTemplate"
-msgstr "Sie haben eine tolle Ansicht angelegt, die Sie häufiger verwenden möchten?<br/> Legen Sie sie doch als Vorlage an und greifen Sie so einfach immer wieder darauf zu."
+msgstr "Sie haben eine tolle Ansicht angelegt, die Sie häufiger verwenden möchten?<br/> Legen Sie sie doch als Blueprint an und greifen Sie so einfach immer wieder darauf zu."
 
 msgid "settingsMore"
 msgstr "Einstellungen (Vertiefung)"
@@ -189,13 +189,13 @@ msgid "restoreChanges"
 msgstr "Lokale Änderungen wiederherstellen"
 
 msgid "restoreUnsaved"
-msgstr "Dieser Entwurf wurde während der letzten Sitzung nicht gespeichert. Letzte Änderung weiter bearbeiten?"
+msgstr "Dieser Entwurf wurde während der letzten Sitzung nicht gespeichert. Letzte Änderung weiterbearbeiten?"
 
 msgid "noCurrent"
 msgstr "Nein, Änderungen verwerfen"
 
 msgid "yesRestore"
-msgstr "Ja, weiter bearbeiten"
+msgstr "Ja, weiterbearbeiten"
 
 msgid "editSettings"
 msgstr "Einstellungen bearbeiten"
@@ -204,7 +204,7 @@ msgid "copySelect"
 msgstr "Auswahl kopieren"
 
 msgid "saveTemplate"
-msgstr "Auswahl als Vorlage speichern"
+msgstr "Auswahl als Blueprint speichern"
 
 msgid "goUp"
 msgstr "Nächsthöhere Ebene auswählen"
@@ -213,7 +213,7 @@ msgid "deleteSelect"
 msgstr "Auswahl löschen [Entf]"
 
 msgid "templateTitle"
-msgstr "Name der Vorlage"
+msgstr "Name des Blueprints"
 
 msgid "availableFilters"
 msgstr "Verfügbare Filter"
@@ -249,7 +249,7 @@ msgid "zoneDelete"
 msgstr "Zone löschen"
 
 msgid "templateDeleteSure"
-msgstr "Vorlage wirklich löschen?"
+msgstr "Blueprint wirklich löschen?"
 
 msgid "publishNot"
 msgstr "Nicht veröffentlichen"
@@ -453,7 +453,7 @@ msgid "opcImportUnmappedP"
 msgstr "%s Bereiche konnten nicht abgebildet werden, da deren IDs auf der aktuellen Seite nicht auftauchen."
 
 msgid "opcImportSuccessTitle"
-msgstr "Import erfolgreich"
+msgstr "Import erfolgreich."
 
 msgid "btnTitleCopyArea"
 msgstr "Inhalt in sichtbaren Bereich übertragen"

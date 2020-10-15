@@ -62,7 +62,8 @@ define('C_WARENKORBPOS_TYP_GRATISGESCHENK', 11);
 //
 define('C_WARENKORBPOS_TYP_ZINSAUFSCHLAG', 13);
 define('C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR', 14);
-define('C_WARENKORBPOS_TYP_RESERVED', 15); // reserviert für Retoure in POS - SHOP-3545
+define('C_WARENKORBPOS_TYP_RESERVED1', 15); // reserviert für Wawi intern - SHOP-3545
+define('C_WARENKORBPOS_TYP_RESERVED2', 16); // reserviert für Retoure in POS - SHOP-3545
 //
 define('KONFIG_ITEM_TYP_ARTIKEL', 0);
 define('KONFIG_ITEM_TYP_SPEZIAL', 1);

@@ -24,10 +24,10 @@ msgid "redirectTo"
 msgstr "Ziel-URL"
 
 msgid "redirectRefererCount"
-msgstr "Verweise"
+msgstr "Besucher"
 
 msgid "redirectReferer"
-msgstr "Verweis"
+msgstr "Ursprung"
 
 msgid "redirectRefererDirect"
 msgstr "Direkteinstieg"

@@ -77,12 +77,12 @@
                                     <span class="fal fa-map-marker-question fa-fw"></span>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right">
-                                    <span class="dropdown-header">Hilfecenter</span>
+                                    <span class="dropdown-header">{__('helpCenterHeader')}</span>
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="https://jtl-url.de/shopschritte" target="_blank" rel="noopener">
                                         {__('firstSteps')}
                                     </a>
-                                    <a class="dropdown-item" href="https://jtl-url.de/shopguide" target="_blank" rel="noopener">
+                                    <a class="dropdown-item" href="https://jtl-url.de/0762z" target="_blank" rel="noopener">
                                         {__('jtlGuide')}
                                     </a>
                                     <a class="dropdown-item" href="https://forum.jtl-software.de" target="_blank" rel="noopener">
@@ -138,7 +138,7 @@
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="staticBackdropLabel">{__('Licenses expired')}</h5>
+                                <h5 class="modal-title" id="staticBackdropLabel">{__('Licensing problem detected')}</h5>
                             </div>
                             <div class="modal-body">
                                 <div class="row">

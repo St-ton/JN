@@ -42,13 +42,13 @@ msgid "itemDetails"
 msgstr "Details"
 
 msgid "setBinding"
-msgstr "An diesen Shop binden"
+msgstr "An diesen Onlineshop binden"
 
 msgid "extendSubscription"
 msgstr "Subscription verlängern"
 
 msgid "extendLicense"
-msgstr "Lizenz verlängern"
+msgstr "Testlizenz verlängern"
 
 msgid "extendTestLicense"
 msgstr "Testlizenz verlängern"
@@ -58,3 +58,6 @@ msgstr "Plugin ist deaktiviert."
 
 msgid "pluginNotFound"
 msgstr "Plugin wurde nicht gefunden."
+
+msgid "No license found."
+msgstr "Keine Lizenz gefunden."

@@ -6,7 +6,7 @@ msgid "filecheck"
 msgstr "Check of online shop files"
 
 msgid "filecheckDesc"
-msgstr "Here you can review all online shop files to check whether they have been uploaded correctly. The files are checked for discrepancies between the checksum of the original files and the checksum of the current file. If no discrepancies are found, the status is \"OK\". If an online shop file has been changed, transferred with errors or deleted, the status is \"modified\"."
+msgstr "Here you can review all online shop files to check whether they have been uploaded correctly. The files are checked for discrepancies between the checksum of the original files and the checksum of the current file. If no discrepancies are found, the status is \"OK\". If an online shop file has been changed, transferred with errors, or deleted, the status is \"modified\"."
 
 msgid "filecheckURL"
 msgstr "https://jtl-url.de/bhzcm"

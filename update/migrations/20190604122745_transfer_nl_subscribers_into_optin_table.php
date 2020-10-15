@@ -22,7 +22,6 @@ class Migration_20190604122745 extends Migration implements IMigration
 
     public function up()
     {
-        //$nlSubscribers = $this->fetchAll('SELECT * FROM tnewsletterempfaenger WHERE nAktiv = 1');
         $nlSubscribers = $this->getDB()->queryPrepared(
             'SELECT * FROM tnewsletterempfaenger WHERE nAktiv = :active',
             ['active' => 1],
@@ -69,34 +68,7 @@ class Migration_20190604122745 extends Migration implements IMigration
                     'eingetragen'     => $subscriber->dEingetragen
                 ],
                 ReturnType::DEFAULT
-            )
-
-           /*
-            * $this->execute("
-            *    INSERT INTO toptin(
-            *        kOptinCode,
-            *        kOptinClass,
-            *        cMail,
-            *        cRefData,
-            *        dCreated,
-            *        dActivated
-            *    )
-            *    VALUES(
-            *        '".$subscriber->cOptCode."',
-            *        '".quotemeta(OptinNewsletter::class)."',
-            *        '".$subscriber->cEmail."',
-            *        '".quotemeta(serialize($refData))."',
-            *        '".$subscriber->dEingetragen."',
-            *        NOW()
-            *    )
-            *    ON DUPLICATE KEY UPDATE
-            *         kOptinClass = kOptinClass,
-            *         cMail = cMail,
-            *         cRefData = cRefdata,
-            *         dCreated = NOW(),
-            *         dActivated = NOW()
-            *");
-            */
+            );
         }
     }
 

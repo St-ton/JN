@@ -24,7 +24,7 @@ msgid "lastsearch"
 msgstr "Last searched"
 
 msgid "blacklistDescription"
-msgstr "Separate multiple search terms by semicolon"
+msgstr "Separate multiple search terms by semicolons"
 
 msgid "searchrequest"
 msgstr "Search queries"

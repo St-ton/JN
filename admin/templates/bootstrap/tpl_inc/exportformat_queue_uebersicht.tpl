@@ -55,7 +55,7 @@
                                                 {$oExportformatCron->oJobQueue->tasksExecuted|default:0}/{$oExportformatCron->nAnzahlArtikel->nAnzahl}
                                             </td>
                                             <td class="text-center">{if $oExportformatCron->dLetzterStart_de === '00.00.0000 00:00'}-{else}{$oExportformatCron->dLetzterStart_de}{/if}</td>
-                                            <td class="text-center">{if $oExportformatCron->dNaechsterStart_de === null}sofort{else}{$oExportformatCron->dNaechsterStart_de}{/if}</td>
+                                            <td class="text-center">{if $oExportformatCron->dNaechsterStart_de === null}{__('immediately')}{else}{$oExportformatCron->dNaechsterStart_de}{/if}</td>
                                             <td class="text-center">
                                                 <div class="btn-group">
                                                     <a href="exportformat_queue.php?action=editieren&kCron={$oExportformatCron->cronID}&token={$smarty.session.jtl_token}"

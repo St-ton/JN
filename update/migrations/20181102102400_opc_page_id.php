@@ -4,11 +4,8 @@ use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
 /**
- * Change OPC page id type
- *
- * @author dr
+ * Class Migration_20181102102400
  */
-
 class Migration_20181102102400 extends Migration implements IMigration
 {
     protected $author      = 'dr';

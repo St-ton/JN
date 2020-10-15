@@ -29,7 +29,7 @@
 
     <div class="form-group form-row align-items-center">
         {if $inputType === JTL\Plugin\Admin\InputType::SELECT}
-            <label class="col col-sm-4 col-form-label text-sm-right" for="{$name}{$postfix}">{__($name)}</label>
+            <label class="col col-sm-4 col-form-label text-sm-right" for="{$name}{$postfix}">{__($name)}:</label>
             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                 <select class="custom-select" id="{$name}{$postfix}" name="{$inputName}">
                     {foreach $inputConfig->getAllowedValues() as $k => $v}
@@ -45,8 +45,7 @@
             </div>
         {else}
             <label class="col col-sm-4 col-form-label text-sm-right" for="{$name}{$postfix}">
-                {__({$name})}
-                {if $name === 'languageID'}
+                {__({$name})}{if $name === 'languageID'}
                     {foreach $availableLanguages as $availableLanguage}
                         {if $availableLanguage->id === (int)$item->getAttribValue($name)}
                             ({$availableLanguage->localizedName})

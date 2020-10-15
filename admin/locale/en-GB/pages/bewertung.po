@@ -45,7 +45,7 @@ msgid "ratingStars"
 msgstr "Stars"
 
 msgid "ratingForProduct"
-msgstr "Customer review for a particular item"
+msgstr "Customer reviews for a particular item"
 
 msgid "ratingcArtNr"
 msgstr "SKU/item name"

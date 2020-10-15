@@ -215,29 +215,37 @@ abstract class AbstractImage implements IMedia
      */
     public function getStats(bool $filesize = false): StatsItem
     {
-        $result = new StatsItem();
-        foreach ($this->getAllImages() as $image) {
-            if ($image === null) {
-                continue;
-            }
-            $raw = $image->getRaw();
-            $result->addItem();
-            if ($raw !== null && \file_exists($raw)) {
-                foreach (Image::getAllSizes() as $size) {
-                    $thumb = $image->getThumb($size, true);
-                    if (!\file_exists($thumb)) {
-                        continue;
-                    }
-                    $result->addGeneratedItem($size);
-                    if ($filesize === true) {
-                        $bytes = \filesize($thumb);
-                        $result->addGeneratedSizeItem($size, $bytes);
-                    }
+        $result      = new StatsItem();
+        $totalImages = $this->getTotalImageCount();
+        $offset      = 0;
+        do {
+            foreach ($this->getAllImages($offset, \MAX_IMAGES_PER_STEP) as $image) {
+                if ($image === null) {
+                    continue;
                 }
-            } else {
-                $result->addCorrupted();
+                $raw = $image->getRaw();
+                $result->addItem();
+                if ($raw !== null && \file_exists($raw)) {
+                    foreach (Image::getAllSizes() as $size) {
+                        $thumb = $image->getThumb($size, true);
+                        if (!\file_exists($thumb)) {
+                            continue;
+                        }
+                        $result->addGeneratedItem($size);
+                        if ($filesize === true) {
+                            $bytes = \filesize($thumb);
+                            if ($bytes === false) {
+                                $bytes = 0;
+                            }
+                            $result->addGeneratedSizeItem($size, $bytes);
+                        }
+                    }
+                } else {
+                    $result->addCorrupted();
+                }
             }
-        }
+            $offset += \MAX_IMAGES_PER_STEP;
+        } while ($offset < $totalImages);
 
         return $result;
     }

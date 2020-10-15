@@ -55,7 +55,6 @@
                                         <a href="versandarten.php?zuschlag=1&kVersandart={$versandart->kVersandart}&cISO={$country->getISO()}&token={$smarty.session.jtl_token}"
                                             data-toggle="tooltip"
                                             title="{__('isleListsDesc')}">
-                                            <i class="fas fa-plus-circle"></i>
                                             <span class="small">
                                                 {if in_array($country->getISO(), $versandart->shippingSurchargeCountries)}
                                                     <u>{$country->getName()}*</u>

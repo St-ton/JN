@@ -83,7 +83,7 @@ $(document).ready(function() {
 </style>
 {/literal}
 
-{assign var=cTitel value=__('benutzerNeu')}
+{assign var=cTitel value=__('newUserTitle')}
 {if isset($oAccount->kAdminlogin) && $oAccount->kAdminlogin > 0}
     {assign var=cTitel value=__('benutzerBearbeiten')}
 {/if}

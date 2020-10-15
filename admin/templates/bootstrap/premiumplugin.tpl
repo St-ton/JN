@@ -11,11 +11,13 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col">
-                                <img width="160" height="160" src="{$recommendation->getPreviewImage()}" loading="lazy">
+                                <img width="160" height="160" class="mb-2" src="{$recommendation->getPreviewImage()}" loading="lazy">
                             </div>
                             <div class="col-auto align-self-end">
-                                <div><a href="{$recommendation->getManufacturer()->getProfileURL()}">{$recommendation->getTitle()}</a></div>
-                                <div>{__('manufacturer')}: {$recommendation->getManufacturer()->getName()}</div>
+                                <div><a href="{$recommendation->getURL()}">{$recommendation->getTitle()}</a></div>
+                                <div>
+                                    {__('manufacturer')}: <a href="{$recommendation->getManufacturer()->getProfileURL()}">{$recommendation->getManufacturer()->getName()}</a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -29,9 +31,10 @@
                 </div>
             </div>
         </div>
-        <div class="row mb-5">
+        <div class="row mb-5 justify-content-center">
+            {$imgCount = $recommendation->getImages()|count}
             {foreach $recommendation->getImages() as $image}
-                <div class="col-md text-center pr-md-4 pr-0">
+                <div class="col-md{if $imgCount < 5}-3{/if} text-center pr-md-4 pr-0">
                     <img src="{$image}" class="object-fit-cover mb-md-0 mb-2" loading="lazy">
                 </div>
             {/foreach}
@@ -44,7 +47,7 @@
                         <hr class="mb-n3">
                     </div>
                     <div class="card-body">
-                        <table class="table table-borderless table-sm">
+                        <table class="table table-borderless table-sm font-size-base">
                             <tbody>
                                 {foreach  $recommendation->getBenefits() as $benefit}
                                     <tr>

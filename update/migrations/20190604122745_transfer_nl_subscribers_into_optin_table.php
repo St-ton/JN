@@ -25,7 +25,7 @@ class Migration_20190604122745 extends Migration implements IMigration
         $nlSubscribers = $this->getDB()->queryPrepared(
             'SELECT * FROM tnewsletterempfaenger WHERE nAktiv = :active',
             ['active' => 1],
-            ReturnType::DEFAULT
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($nlSubscribers as $subscriber) {
             $refData = (new OptinRefData())

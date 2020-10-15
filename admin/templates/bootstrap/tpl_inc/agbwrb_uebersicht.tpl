@@ -58,7 +58,7 @@
                             <tbody>
                             {foreach $recommendations->getRecommendations() as $recommendation}
                                 <tr>
-                                    <td><img src="{$recommendation->getPreviewImage()}" width="160" height="160" alt="{$recommendation->getTitle()}" loading="lazy"></td>
+                                    <td><img src="{$recommendation->getPreviewImage()}" style="max-width: 120px;" alt="{$recommendation->getTitle()}" loading="lazy"></td>
                                     <td>
                                         <p class="mb-1">{$recommendation->getTeaser()}</p>
                                         <a href="premiumplugin.php?scope={$recommendations->getScope()}&id={$recommendation->getId()}"

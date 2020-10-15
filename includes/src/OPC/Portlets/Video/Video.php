@@ -5,6 +5,7 @@ namespace JTL\OPC\Portlets\Video;
 use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
 use JTL\OPC\PortletInstance;
+use JTL\Shop;
 
 /**
  * Class Video
@@ -18,22 +19,23 @@ class Video extends Portlet
      */
     public function getPreviewImageUrl(PortletInstance $instance): string
     {
-        $vendor = $instance->getProperty('video-vendor');
-
+        $vendor  = $instance->getProperty('video-vendor');
+        $srcURL  = '';
+        $videoID = '';
         if ($vendor === 'youtube') {
-            $videoId = $instance->getProperty('video-yt-id');
-            $srcUrl  = 'http://i3.ytimg.com/vi/' . $videoId . '/maxresdefault.jpg';
+            $videoID = $instance->getProperty('video-yt-id');
+            $srcURL  = 'https://i3.ytimg.com/vi/' . $videoID . '/maxresdefault.jpg';
         } elseif ($vendor === 'vimeo') {
-            $videoId  = $instance->getProperty('video-vim-id');
-            $videoXML = \unserialize(\file_get_contents('http://vimeo.com/api/v2/video/' . $videoId . '.php'));
-            $srcUrl   = $videoXML[0]['thumbnail_large'];
+            $videoID  = $instance->getProperty('video-vim-id');
+            $videoXML = \unserialize(\file_get_contents('https://vimeo.com/api/v2/video/' . $videoID . '.php'));
+            $srcURL   = $videoXML[0]['thumbnail_large'];
         }
 
-        $localPath = \PFAD_ROOT . \STORAGE_VIDEO_THUMBS . $videoId . '.jpg';
-        $localUrl  = \Shop::getURL() . '/' . \STORAGE_VIDEO_THUMBS . $videoId . '.jpg';
+        $localPath = \PFAD_ROOT . \STORAGE_VIDEO_THUMBS . $videoID . '.jpg';
+        $localUrl  = Shop::getURL() . '/' . \STORAGE_VIDEO_THUMBS . $videoID . '.jpg';
 
         if (!\is_file($localPath)) {
-            \file_put_contents($localPath, \file_get_contents($srcUrl));
+            \file_put_contents($localPath, \file_get_contents($srcURL));
         }
 
         return $localUrl;
@@ -44,7 +46,7 @@ class Video extends Portlet
      */
     public function getPreviewOverlayUrl(): string
     {
-        return \Shop::getURL() . '/' . \PFAD_INCLUDES . 'src/OPC/Portlets/Video/preview.svg';
+        return Shop::getURL() . '/' . \PFAD_INCLUDES . 'src/OPC/Portlets/Video/preview.svg';
     }
 
     /**

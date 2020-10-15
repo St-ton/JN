@@ -81,7 +81,7 @@ msgid "newsletterdraftcharacter"
 msgstr "Send this template as"
 
 msgid "newsletterconfigdesc"
-msgstr "These email settings are valid for sending newsletters."
+msgstr "These email settings refer to newsletters."
 
 msgid "newsletterartnr"
 msgstr "Promoted item"
@@ -99,7 +99,7 @@ msgid "newsletterdraftdate"
 msgstr "Send on"
 
 msgid "newsletterdraftformat"
-msgstr "(DD/MM/YYYY hh:mm)"
+msgstr "DD/MM/YYYY hh:mm"
 
 msgid "newsletterdesc"
 msgstr "Manage your newsletters and subscribers. Please note that newsletters are managed separately for each language."

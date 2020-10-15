@@ -7,4 +7,3 @@ msgstr "Help"
 
 msgid "Help_desc"
 msgstr "Current help topics for JTL-Shop"
-

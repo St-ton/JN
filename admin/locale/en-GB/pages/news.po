@@ -156,10 +156,10 @@ msgid "successNewsCommentDelete"
 msgstr "Selected blog comments deleted successfully."
 
 msgid "commentReply"
-msgstr "Reply to comment"
+msgstr "Reply"
 
 msgid "answerComment"
-msgstr "Reply comment"
+msgstr "Reply to comment"
 
 msgid "newsCommentAnswerEdit"
 msgstr "Edit reply"
@@ -174,4 +174,4 @@ msgid "authorNotAvailable"
 msgstr "Not available"
 
 msgid "noNewsAuthor"
-msgstr "No author available. If you want to explicitly specify an author for this post, please create a corresponding user with access rights for the blog system."
+msgstr "No author available. No author available. If you want to enter an author responsible for this blog post, please create a user with the required rights first."

@@ -75,7 +75,7 @@
                                                     </span>
                                                 </button>
                                             {/if}
-                                            <button class="notext btn btn-link px-2" name="action" value="account_delete" onclick="return confirm('{__('sureDeleteGroup')}');" title="{__('delete')}" data-toggle="tooltip">
+                                            <button class="notext btn btn-link px-2" name="action" value="account_delete" onclick="return confirm('{__('sureDeleteUser')}');" title="{__('delete')}" data-toggle="tooltip">
                                                 <span class="icon-hover">
                                                     <span class="fal fa-trash-alt"></span>
                                                     <span class="fas fa-trash-alt"></span>

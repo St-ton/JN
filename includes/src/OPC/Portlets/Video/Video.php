@@ -14,9 +14,9 @@ class Video extends Portlet
 {
     /**
      * @param PortletInstance $instance
-     * @return string
+     * @return string|null
      */
-    public function getPreviewImageUrl(PortletInstance $instance): string
+    public function getPreviewImageUrl(PortletInstance $instance): ?string
     {
         $vendor = $instance->getProperty('video-vendor');
 
@@ -33,6 +33,10 @@ class Video extends Portlet
         $localUrl  = \Shop::getURL() . '/' . \STORAGE_VIDEO_THUMBS . $videoId . '.jpg';
 
         if (!\is_file($localPath)) {
+            if (!\is_writable(\PFAD_ROOT . \STORAGE_VIDEO_THUMBS)) {
+                return null;
+            }
+
             \file_put_contents($localPath, \file_get_contents($srcUrl));
         }
 

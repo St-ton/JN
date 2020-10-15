@@ -10,19 +10,13 @@
             {$style = $style|cat:'px'}
         {/if}
 
-        {if $instance->getProperty('video-vendor') === 'youtube'}
-            {image
-                src=$portlet->getPreviewImageUrl($instance)
-                alt='YouTube Video'
-                fluid=true
-                style=$style}
+        {$src = $portlet->getPreviewImageUrl($instance)}
+
+        {if $src !== null && $instance->getProperty('video-vendor') === 'youtube'}
+            {image src=$src alt='YouTube Video' fluid=true style=$style}
             <div class="give-consent-preview" style="background-image: url({$portlet->getPreviewOverlayUrl()})"></div>
-        {elseif $instance->getProperty('video-vendor') === 'vimeo'}
-            {image
-                src=$portlet->getPreviewImageUrl($instance)
-                alt='Vimeo Video'
-                fluid=true
-                style=$style}
+        {elseif $src !== null && $instance->getProperty('video-vendor') === 'vimeo'}
+            {image src=$src alt='Vimeo Video' fluid=true style=$style}
             <div class="give-consent-preview" style="background-image: url({$portlet->getPreviewOverlayUrl()})"></div>
         {else}
             <div>
@@ -32,6 +26,8 @@
         {/if}
     </div>
 {else}
+    {$previewImageUrl = $portlet->getPreviewImageUrl($instance)}
+
     <div id="{$instance->getUid()}" {$instance->getAttributeString()} class="opc-Video {$instance->getStyleClasses()}">
         {if !empty($instance->getProperty('video-title'))}
             <label>{$instance->getProperty('video-title')|escape:'html'}</label>
@@ -63,8 +59,8 @@
                 <a href="#" class="trigger give-consent give-consent-preview"
                    data-consent="youtube"
                    style="background-image:
-                           url({$portlet->getPreviewOverlayUrl()}),
-                           url({$portlet->getPreviewImageUrl($instance)});">
+                           url({$portlet->getPreviewOverlayUrl()})
+                           {if $previewImageUrl !== null},url({$previewImageUrl});{/if}">
                     {lang key='allowConsentYouTube'}
                 </a>
             </div>
@@ -92,8 +88,8 @@
                 <a href="#" class="trigger give-consent give-consent-preview"
                    data-consent="vimeo"
                    style="background-image:
-                           url({$portlet->getPreviewOverlayUrl()}),
-                           url({$portlet->getPreviewImageUrl($instance)});">
+                           url({$portlet->getPreviewOverlayUrl()})
+                           {if $previewImageUrl !== null},url({$previewImageUrl});{/if}">
                     {lang key='allowConsentVimeo'}
                 </a>
             </div>

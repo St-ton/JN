@@ -25,7 +25,7 @@
   font-weight: bold;
   font-size: 12px;
   background-color: #fff;
-  min-height: 64px;
+  min-height: 64px !important;
 }
 .opc-Video > div {
   font-size: 14px;

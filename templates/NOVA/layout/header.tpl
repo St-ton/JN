@@ -290,7 +290,7 @@
             {block name='layout-header-branding-top-bar'}
                 {if !$isMobile}
                     <div id="header-top-bar" class="d-none {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}">
-                        <div class="container-fluid container-fluid-xl {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex flex-row-reverse{/if}">
+                        <div class="container-fluid {if $Einstellungen.template.megamenu.header_full_width === 'N'}container-fluid-xl{/if} {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex flex-row-reverse{/if}">
                             {include file='layout/header_top_bar.tpl'}
                         </div>
                     </div>
@@ -298,7 +298,7 @@
             {/block}
             <header class="d-print-none {if !$isMobile || $Einstellungen.template.theme.mobile_search_type !== 'fixed'}sticky-top{/if} fixed-navbar" id="jtl-nav-wrapper">
                 {block name='layout-header-container-inner'}
-                    <div class="container-fluid container-fluid-xl">
+                    <div class="container-fluid {if $Einstellungen.template.megamenu.header_full_width === 'N'}container-fluid-xl{/if}">
                     {block name='layout-header-category-nav'}
                         {navbar toggleable=true fill=true type="expand-lg" class="justify-content-start {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}align-items-center{else}align-items-lg-end{/if} pt-0 px-0 pb-lg-0"}
                             {block name='layout-header-navbar-toggle'}

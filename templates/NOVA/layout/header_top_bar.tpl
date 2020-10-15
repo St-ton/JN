@@ -33,5 +33,13 @@
             {/block}
         {/if}
         {/nav}
+        {block name='layout-header-top-bar-note'}
+            {$topbarLang = {lang key='topbarNote'}}
+            {if $topbarLang !== ''}
+                {nav tag='ul' class='nav-dividers'}
+                    {navitem id="topbarNote"}{$topbarLang}{/navitem}
+                {/nav}
+            {/if}
+        {/block}
     {/strip}
 {/block}

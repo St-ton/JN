@@ -174,3 +174,6 @@ msgstr "Nur auf Desktop"
 
 msgid "Keine"
 msgstr "Nein"
+
+msgid "Header über gesamte Bildschirmbreite darstellen"
+msgstr "Header über gesamte Bildschirmbreite darstellen"

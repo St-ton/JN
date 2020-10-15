@@ -3,12 +3,15 @@
 
 .form-title { display: block; font-weight: $font-weight-bold; font-size: $font-size-base * 0.8; margin-bottom: $spacer; text-transform: uppercase; }
 
-.form-group-list { border: $border-width solid $border-color; border-radius: $border-radius; max-height: rem(280px); overflow: auto;
+.form-group-list { border: $border-width solid $border-color; border-radius: $border-radius; max-height: rem(430px); overflow: auto;
 	&.disabled { pointer-events: none; opacity: .4; }
 }
 
 .form-group-list-item { padding: $spacer; border-bottom: $border-width solid $border-color;
 	&:last-child { border: 0; }
+	p {
+		margin-bottom:map-get($spacers, 2);
+	}
 }
 
 .custom-file-label { display: flex; align-items: center; justify-content: space-between;

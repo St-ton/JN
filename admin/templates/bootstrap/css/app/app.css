@@ -227,8 +227,8 @@ table {
 }
 
 caption {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
   color: #bdbdbd;
   text-align: left;
   caption-side: bottom;
@@ -1737,7 +1737,7 @@ pre code {
 }
 .table th,
 .table td {
-  padding: 1rem;
+  padding: 0.75rem 1rem;
   vertical-align: top;
   border-top: 1px solid #bdbdbd;
 }
@@ -12415,7 +12415,7 @@ hr {
 .form-group-list {
   border: 1px solid #bdbdbd;
   border-radius: 0.25rem;
-  max-height: 17.5rem;
+  max-height: 26.875rem;
   overflow: auto;
 }
 .form-group-list.disabled {
@@ -12429,6 +12429,9 @@ hr {
 }
 .form-group-list-item:last-child {
   border: 0;
+}
+.form-group-list-item p {
+  margin-bottom: 0.5rem;
 }
 
 .custom-file-label {

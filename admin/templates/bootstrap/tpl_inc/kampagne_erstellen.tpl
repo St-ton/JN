@@ -43,6 +43,7 @@
                     <input id="cParameter" class="form-control" name="cParameter" type="text"
                            value="{if isset($oKampagne->cParameter)}{$oKampagne->cParameter}{/if}">
                 </div>
+                <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('kampagneParamDesc')}</div>
             </div>
             <div class="form-group form-row align-items-center">
                 <label class="col col-sm-4 col-form-label text-sm-right" for="cWertSelect">{__('kampagneValueType')}:</label>
@@ -54,6 +55,7 @@
                         <option value="1"{if isset($oKampagne->nDynamisch) && $oKampagne->nDynamisch == 1} selected{/if}>{__('dynamic')}</option>
                     </select>
                 </div>
+                <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('kampagneValueTypeDesc')}</div>
             </div>
             <div class="form-group form-row align-items-center" id="static-value-input-group">
                 <label class="col col-sm-4 col-form-label text-sm-right" for="cWert">{__('kampagneValueStatic')}:</label>
@@ -62,6 +64,7 @@
                            value="{if isset($oKampagne->cWert)}{$oKampagne->cWert}{/if}"
                            {if isset($oKampagne->kKampagne) && $oKampagne->kKampagne < 1000} disabled{/if} />
                 </div>
+                <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('kampagneValueStaticDesc')}</div>
             </div>
             <div class="form-group form-row align-items-center">
                 <label class="col col-sm-4 col-form-label text-sm-right" for="nAktiv">{__('activated')}:</label>

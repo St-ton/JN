@@ -2,6 +2,7 @@
 
 use JTL\Backend\AdminIO;
 use JTL\Backend\JSONAPI;
+use JTL\Backend\Notification;
 use JTL\Backend\TwoFA;
 use JTL\Backend\Wizard\WizardIO;
 use JTL\Exportformat;
@@ -110,7 +111,8 @@ try {
        ->register('createShippingSurchargeZIP', 'createShippingSurchargeZIP', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
        ->register('getShippingSurcharge', 'getShippingSurcharge', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
        ->register('exportformatSyntaxCheck', [Exportformat::class, 'ioCheckSyntax'], null, 'EXPORT_FORMATS_VIEW')
-       ->register('mailvorlageSyntaxCheck', [SyntaxChecker::class, 'ioCheckSyntax'], null, 'CONTENT_EMAIL_TEMPLATE_VIEW');
+       ->register('mailvorlageSyntaxCheck', [SyntaxChecker::class, 'ioCheckSyntax'], null, 'CONTENT_EMAIL_TEMPLATE_VIEW')
+       ->register('notificationAction', [Notification::class, 'ioNotification']);
 } catch (Exception $e) {
     $io->respondAndExit(new IOError($e->getMessage(), $e->getCode()));
 }

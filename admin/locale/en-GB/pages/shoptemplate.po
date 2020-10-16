@@ -9,7 +9,7 @@ msgid "shoptemplateURL"
 msgstr "https://jtl-url.de/4t1so"
 
 msgid "shoptemplatesDesc"
-msgstr "This page contains all templates included in the folder \"/templates/\" of the JTL-Shop root directory. If you have a new template and want to use it, use <abbr title=\"FTP (File Transfer Protocol) is a data transfer protocol\">FTP</abbr> to move it to this directory first. You can only activate one normal and one mobile template for JTL-Shop at the same time. Use the button \"Settings\" to configure the activated template."
+msgstr "This page contains all templates included in the folder \"/templates/\" of the JTL-Shop root directory. If you have a new template and want to use it, use <abbr title=\"FTP (File Transfer Protocol) is a data transfer protocol\">FTP</abbr> to move it to this directory first. You can only activate one normal and one mobile template for JTL-Shop at the same time. Use the button \"Settings\" to configure the activated template."
 
 msgid "templateName"
 msgstr "Template name"
@@ -63,7 +63,7 @@ msgid "successTemplateUpload"
 msgstr "Template uploaded successfully."
 
 msgid "uploadTemplateHeading"
-msgstr "Upload template"
+msgstr "Upload a template"
 
 msgid "errorTemplateUpload"
 msgstr "Could not upload template. Please contact the Support team."
@@ -72,25 +72,25 @@ msgid "errorParentNotFound"
 msgstr "Parent template not found."
 
 msgid "errorShopVersionNotFound"
-msgstr "XML node \"ShopVersion\"/\"MinShopVersion\" not found."
+msgstr "XML node \"ShopVersion\"/\"MinShopVersionParent\" not found."
 
 msgid "errorXmlNotFound"
 msgstr "template.xml not found."
 
 msgid "errorXmlParse"
-msgstr "XML could not be parsed."
+msgstr "Could not parse XML."
 
 msgid "errorNameNotFound"
 msgstr "XML node \"Name\" not found."
 
 msgid "errorInvalidVersion"
-msgstr "Not a valid SemVer."
+msgstr "No valid SemVer."
 
 msgid "errorUnknown"
-msgstr "Unknwon error."
+msgstr "Unknown error."
 
 msgid "dangerMinShopVersion"
-msgstr "Please note that the template requires a newer version of JTL-Shop. This might lead to issues."
+msgstr "Please note: This template requires a newer version of JTL-Shop. This might lead to performance issues."
 
 msgid "dangerMaxShopVersion"
-msgstr "Please note that the template requires an older version of JTL-Shop. This might lead to issues."
+msgstr "Please note: This template was developed for an older version of JTL-Shop. This might lead to performance issues."

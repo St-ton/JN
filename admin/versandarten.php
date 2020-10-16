@@ -452,15 +452,16 @@ if ($step === 'uebersicht') {
         if ($method->versandberechnung->cModulId === 'vm_versandberechnung_artikelanzahl_jtl') {
             $method->einheit = 'Stück';
         }
-        $countries                          = explode(' ', trim($method->cLaender));
         $method->countries                  = new Collection();
         $method->shippingSurchargeCountries = array_column($db->queryPrepared(
             'SELECT DISTINCT cISO FROM tversandzuschlag WHERE kVersandart = :shippingMethodID',
             ['shippingMethodID' => (int)$method->kVersandart],
             ReturnType::ARRAY_OF_ASSOC_ARRAYS
         ), 'cISO');
-        foreach ($countries as $country) {
-            $method->countries->push($countryHelper->getCountry($country));
+        foreach (explode(' ', trim($method->cLaender)) as $item) {
+            if (($country = $countryHelper->getCountry($item)) !== null) {
+                $method->countries->push($country);
+            }
         }
         $method->countries               = $method->countries->sortBy(static function (Country $country) {
             return $country->getName();

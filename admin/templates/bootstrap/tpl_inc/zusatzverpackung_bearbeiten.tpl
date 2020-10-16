@@ -5,7 +5,7 @@
     <div class="card">
         <div class="card-header">
             <div class="subheading1">
-                {if isset($kVerpackung) && $kVerpackung > 0}{__('zusatzverpackungEdit')}{else}{__('zusatzverpackungCreate')}{/if}
+                {if isset($kVerpackung) && $kVerpackung > 0}{__('zusatzverpackungEdit')}{else}{__('zusatzverpackungCreateTitle')}{/if}
             </div>
             <hr class="mb-n3">
         </div>

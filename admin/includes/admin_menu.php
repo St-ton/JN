@@ -29,6 +29,7 @@ $adminMenu = [
                 __('Free gifts') => (object)[
                     'link'        => 'gratisgeschenk.php',
                     'permissions' => 'MODULE_GIFT_VIEW',
+                    'section'     => CONF_SONSTIGES,
                 ],
             ],
             __('Statistics') => [

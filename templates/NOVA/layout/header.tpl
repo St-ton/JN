@@ -316,7 +316,7 @@
                                         {if isset($ShopLogoURL)}
                                             {image src=$ShopLogoURL
                                                 alt=$Einstellungen.global.global_shopname
-                                                style="{if $ShopLogoURL|strpos:'.svg' !== false}height: 100px;{/if}"
+                                                id="shop-logo"
                                             }
                                         {else}
                                             <span class="h1">{$Einstellungen.global.global_shopname}</span>

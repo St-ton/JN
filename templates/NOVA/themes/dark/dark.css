@@ -23816,10 +23816,6 @@ header a {
 header .navbar {
   position: static;
 }
-header .navbar-brand img {
-  max-width: 5.625rem;
-  max-height: 2rem;
-}
 header .navbar-toggler {
   color: #9b9b9b;
 }
@@ -23924,10 +23920,6 @@ header .nav-right .dropdown-menu {
   }
 }
 @media (min-width: 992px) {
-  header .navbar-brand img {
-    max-width: 10rem;
-    max-height: 4rem;
-  }
   header .navbar-collapse {
     height: 4.3125rem;
   }

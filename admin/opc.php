@@ -7,11 +7,12 @@ use JTL\Shop;
 /**
  * @global \JTL\Smarty\JTLSmarty     $smarty
  * @global \JTL\Backend\AdminAccount $oAccount
+ * @global string                    $currentTemplateDir
+ * @global bool                      $hasUpdates
  */
 
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
-
 $pageKey      = Request::verifyGPCDataInt('pageKey');
 $pageId       = Request::verifyGPDataString('pageId');
 $pageUrl      = Request::verifyGPDataString('pageUrl');
@@ -49,6 +50,7 @@ if ($hasUpdates) {
         $page = $opcPage->getDraft($pageKey);
     } catch (Exception $e) {
         $error = $e->getMessage();
+        $page  = null;
     }
 
     Shop::Container()->getGetText()->loadAdminLocale('pages/opc/tutorials');

@@ -120,7 +120,7 @@ if (!JTL_INCLUDE_ONLY_DB && !defined('CLI_BATCHRUN')) {
     $bAdminWartungsmodus = false;
     if ($config['wartungsmodus_aktiviert'] === 'Y' && basename($_SERVER['SCRIPT_FILENAME']) !== 'wartung.php') {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
-        if (!Shop::isAdmin()) {
+        if (!Shop::isAdmin(true)) {
             http_response_code(503);
             require_once PFAD_ROOT . 'wartung.php';
             exit;

@@ -51,7 +51,7 @@ msgid "emailAddWRBForm"
 msgstr "Attach model withdrawal form"
 
 msgid "emailAddDSE"
-msgstr "Attach data privacy statement"
+msgstr "Attach data privacy notice"
 
 msgid "emailActive"
 msgstr "Send email"

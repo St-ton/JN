@@ -18,7 +18,7 @@ msgid "errorSave"
 msgstr "Could not create banner."
 
 msgid "errrorBannerNotFound"
-msgstr "Banner not found."
+msgstr "Could not find banner."
 
 msgid "successDeleted"
 msgstr "Banner deleted successfully."
@@ -36,7 +36,7 @@ msgid "chooseBanner"
 msgstr "Select banner"
 
 msgid "warningNoBannerInDir"
-msgstr "No banner in folder <strong>%s</strong>."
+msgstr "No banners in folder <strong>%s</strong>."
 
 msgid "viewingOptions"
 msgstr "Display options"

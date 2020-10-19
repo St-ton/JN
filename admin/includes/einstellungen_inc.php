@@ -45,7 +45,7 @@ function bearbeiteEinstellungsSuche(string $query, bool $save = false)
 
     if ($isIdList) {
         $result->nSuchModus = 1;
-        $result->cSearch    = 'Suche nach ID: ' . implode(', ', $idList);
+        $result->cSearch    = \sprintf(__('searchForID'), implode(', ', $idList));
         $result->cWHERE    .= ' AND kEinstellungenConf IN (' . implode(', ', $idList) . ')';
         $result->confIds    = $idList;
     } else {
@@ -63,20 +63,20 @@ function bearbeiteEinstellungsSuche(string $query, bool $save = false)
 
         if ($isIdRange) {
             $result->nSuchModus = 2;
-            $result->cSearch    = 'Suche nach ID Range: ' . $rangeList[0] . ' - ' . $rangeList[1];
+            $result->cSearch    = \sprintf(__('searchForIDRange'), $rangeList[0] . ' - ' . $rangeList[1]);
             $result->cWHERE    .= ' AND kEinstellungenConf BETWEEN ' . $rangeList[0] . ' AND ' . $rangeList[1];
             $result->cWHERE    .= " AND cConf = 'Y'";
             $result->confIdFrom = $rangeList[0];
             $result->confIdTo   = $rangeList[1];
         } elseif ((int)$query > 0) {
             $result->nSuchModus = 3;
-            $result->cSearch    = 'Suche nach ID: ' . $query;
-            $result->cWHERE    .= " AND kEinstellungenConf = '" . (int)$query . "'";
+            $result->cSearch    = \sprintf(__('searchForID'), $query);
+            $result->cWHERE    .= ' AND kEinstellungenConf = ' . (int)$query;
         } else {
             $query              = mb_convert_case($query, MB_CASE_LOWER);
             $queryEnt           = Text::htmlentities($query);
             $result->nSuchModus = 4;
-            $result->cSearch    = 'Suche nach Name: ' . $query;
+            $result->cSearch    = \sprintf(__('searchForName'), $query);
             $getText            = Shop::Container()->getGetText();
             $configTranslations = $getText->getAdminTranslations('configs/configs');
             $valueNames         = [];

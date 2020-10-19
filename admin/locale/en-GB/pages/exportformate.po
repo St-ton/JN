@@ -99,10 +99,10 @@ msgid "availableFormats"
 msgstr "Existing export formats"
 
 msgid "exportAll"
-msgstr "Exporting all"
+msgstr "Export all"
 
 msgid "sureDeleteFormat"
 msgstr "Delete export format?"
 
 msgid "useCache"
-msgstr "Use cache?"
+msgstr "Use cache"

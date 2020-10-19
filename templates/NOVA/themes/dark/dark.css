@@ -23458,14 +23458,6 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 #image_wrapper img {
   outline: none !important;
 }
-#image_wrapper .slick-slide:not(.slick-current) img {
-  -webkit-filter: opacity(0.4);
-  filter: opacity(0.4);
-}
-#image_wrapper .slick-slide:not(.slick-current) img:hover {
-  -webkit-filter: opacity(1);
-  filter: opacity(1);
-}
 #image_wrapper .product-detail-image-topbar {
   display: none;
 }

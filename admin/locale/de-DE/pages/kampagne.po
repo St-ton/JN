@@ -142,3 +142,12 @@ msgstr "Artikel in Warenkorb"
 
 msgid "Angeschaute Newsletter"
 msgstr "Gelesene Newsletter"
+
+msgid "kampagneParamDesc"
+msgstr "Kampagnen werden durch einen von Ihnen bestimmten URL-Parameter initiiert und werden im Anschluss in der Session gehalten, um Folgeaktionen (z. B. Käufe) auszuwerten. Bsp.: rv, http://demoshop.jtl-software.de/?rv=5"
+
+msgid "kampagneValueTypeDesc"
+msgstr "Wählen Sie hier, ob der Kampagnenwert ein fester Wert oder ein dynamischer Wert sein soll."
+
+msgid "kampagneValueStaticDesc"
+msgstr "Geben Sie hier den Kampagnenwert ein, wenn Sie vorher „Fester Wert“ ausgewählt haben. Bsp.: 5, http://demoshop.jtl-software.de/?rv=5"

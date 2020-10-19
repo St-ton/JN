@@ -62,6 +62,8 @@ ifndef('SMARTY_USE_SUB_DIRS', false);
 ifndef('JTL_INCLUDE_ONLY_DB', 0);
 ifndef('SOCKET_TIMEOUT', 30);
 ifndef('ARTICLES_PER_PAGE_HARD_LIMIT', 100);
+ifndef('MAX_CORRUPTED_IMAGES', 50);
+ifndef('MAX_IMAGES_PER_STEP', 50000);
 
 // Pfade
 ifndef('PFAD_CLASSES', 'classes/old/'); // DEPRECATED
@@ -164,6 +166,7 @@ ifndef('STORAGE_CATEGORIES', PFAD_MEDIA_IMAGE_STORAGE . 'categories/');
 ifndef('STORAGE_CHARACTERISTICS', PFAD_MEDIA_IMAGE_STORAGE . 'characteristics/');
 ifndef('STORAGE_CHARACTERISTIC_VALUES', PFAD_MEDIA_IMAGE_STORAGE . 'characteristicvalues/');
 ifndef('STORAGE_OPC', PFAD_MEDIA_IMAGE_STORAGE . 'opc/');
+ifndef('STORAGE_VIDEO_THUMBS', PFAD_MEDIA_IMAGE_STORAGE . 'videothumbs/');
 // Plugins
 ifndef('PFAD_PLUGIN', PFAD_INCLUDES . 'plugins/');
 // dbeS

@@ -18,37 +18,31 @@ msgid "suchspecialoverlayActive"
 msgstr "Badge function active"
 
 msgid "suchspecialoverlayActiveDesc"
-msgstr "Specify whether the badge will be displayed for the item type indicated in the field \"Sticker for item type\"."
+msgstr "Specify whether the badge will be displayed for the item type indicated in the field \"Badge for item type\"."
 
 msgid "suchspecialoverlayFileName"
 msgstr "Badge image"
 
 msgid "suchspecialoverlayFileNameDesc"
-msgstr "Select the image used for the item sticker. This setting only relates to the EVO template and does not have any effects if NOVA is active."
+msgstr "Select the image used for the item badge. This setting is only valid for the EVO template and has no effect when NOVA is enabled."
 
 msgid "suchspecialoverlayPrio"
 msgstr "Priority (1 = low priority)"
 
-msgid "suchspecialoverlayMargin"
-msgstr "Distance from edge of item image"
-
-msgid "suchspecialoverlayMarginDesc"
-msgstr "Specify the distance in pixels between the badge image and the edge of the item image."
-
 msgid "suchspecialoverlayClarityDesc"
-msgstr "Specify the transparency of the badge as a percentage. If you use the EVO template, this setting is changed by adjusting the template. If NOVA is active, this setting does not have any effects."
+msgstr "Specify the transparency of the badge as a percentage. If you use the EVO template, this setting is changed by adjusting the template. If NOVA is active, this settings does not have any effect."
 
 msgid "suchspecialoverlaySize"
 msgstr "Badge size in pixels (px)"
 
 msgid "suchspecialoverlaySizeDesc"
-msgstr "Specify the size of the badge in relation to the item image. If you use the EVO template, this setting is changed by adjusting the template. If NOVA is active, this setting does not have any effects."
+msgstr "Specify the size of the badge in relation to the item image. If you use the EVO template, this setting is changed by adjusting the template. If NOVA is active, this settings does not have any effect."
 
 msgid "suchspecialoverlayPositionDesc"
-msgstr "Specify where in the item image the badge will be placed. If you use the EVO template, this setting is changed by adjusting the template. If NOVA is active, this setting does not have any effects."
+msgstr "Specify where in the item image the badge will be placed. If you use the EVO template, this setting is changed by adjusting the template. If NOVA is active, this settings does not have any effect."
 
 msgid "suchspecialoverlayPrioDesc"
-msgstr "If several badges apply to an item, you can specify which one will be displayed. The sticker with the highest number and thus the priority will be displayed."
+msgstr "If several badges apply to an item, you can specify which one will be displayed. The badge with the highest number and thus the priority will be displayed."
 
 msgid "errorOverlayWritePermissions"
 msgstr "Could not save badge. Please check the write access of the folder \"%s\"."

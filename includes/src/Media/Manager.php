@@ -5,6 +5,7 @@ namespace JTL\Media;
 use DirectoryIterator;
 use Exception;
 use FilesystemIterator;
+use JTL\Alert\Alert;
 use JTL\DB\DbInterface;
 use JTL\Helpers\URL;
 use JTL\IO\IOError;
@@ -108,6 +109,9 @@ class Manager
      */
     public function loadStats(string $type)
     {
+        /* attention: this will parallelize async io stats */
+        \session_write_close();
+        /* but there should not be any session operations after this point */
         $items = $this->getItems(true);
 
         return ($type === null || \in_array($type, $items, true))
@@ -282,10 +286,9 @@ class Manager
         /** @var IMedia $instance */
         $corruptedImages = [];
         $totalImages     = $instance->getTotalImageCount();
+        $offset          = 0;
         do {
-            $i = 0;
-            foreach ($instance->getAllImages() as $image) {
-                ++$i;
+            foreach ($instance->getAllImages($offset, \MAX_IMAGES_PER_STEP) as $image) {
                 if (!\file_exists($image->getRaw())) {
                     $corruptedImage            = (object)[
                         'article' => [],
@@ -309,8 +312,17 @@ class Manager
                         $corruptedImages[$corruptedImage->picture] = $corruptedImage;
                     }
                 }
+                if (\count($corruptedImages) >= $limit) {
+                    Shop::Container()->getAlertService()->addAlert(
+                        Alert::TYPE_ERROR,
+                        __('Too many corrupted images'),
+                        'too-many-corrupted-images'
+                    );
+                    break;
+                }
             }
-        } while (\count($corruptedImages) < $limit && $i < $totalImages);
+            $offset += \MAX_IMAGES_PER_STEP;
+        } while (\count($corruptedImages) < $limit && $offset < $totalImages);
 
         return [$type => \array_slice($corruptedImages, 0, $limit)];
     }

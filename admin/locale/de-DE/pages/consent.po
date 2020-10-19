@@ -9,7 +9,7 @@ msgid "pageTitle"
 msgstr "Consent-Manager"
 
 msgid "pageDesc"
-msgstr "Hier können Sie Einstellungen zu nötigen Consents vornehmen."
+msgstr "Hier können Sie nötige Zustimmungen zur Anzeige von Drittanbieterinhalten und -Cookies verwalten."
 
 msgid "itemID"
 msgstr "ID"
@@ -30,19 +30,19 @@ msgid "purpose"
 msgstr "Zweck"
 
 msgid "disable"
-msgstr "deaktivieren"
+msgstr "Deaktivieren"
 
 msgid "enable"
-msgstr "aktivieren"
+msgstr "Aktivieren"
 
 msgid "saveAndContinue"
-msgstr "Speichern und weiter bearbeiten"
+msgstr "Speichern und weiterbearbeiten"
 
 msgid "modelHeader"
 msgstr "Consent"
 
 msgid "childHeading"
-msgstr "Lokalisierungen"
+msgstr "Lokalisierung"
 
 msgid "generalHeading"
 msgstr "Allgemein"

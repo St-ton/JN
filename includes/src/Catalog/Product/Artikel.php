@@ -4074,12 +4074,14 @@ class Artikel
             $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_GELB])
                 ? $this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_GELB]
                 : Shop::Lang()->get('ampelGelb');
-
+            $this->setToParentStockText(\ART_ATTRIBUT_AMPELTEXT_GELB, 'ampelGelb');
+            
             if ($this->fLagerbestand <= (int)$this->conf['global']['artikel_lagerampel_rot']) {
                 $this->Lageranzeige->nStatus   = 0;
                 $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_ROT])
                     ? $this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_ROT]
                     : Shop::Lang()->get('ampelRot');
+                $this->setToParentStockText(\ART_ATTRIBUT_AMPELTEXT_ROT, 'ampelRot');
             }
             if ($this->fLagerbestand >= (int)$this->conf['global']['artikel_lagerampel_gruen']
                 || ($this->cLagerKleinerNull === 'Y' && $this->conf['global']['artikel_ampel_lagernull_gruen'] === 'Y')
@@ -4088,6 +4090,7 @@ class Artikel
                 $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_GRUEN])
                     ? $this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_GRUEN]
                     : Shop::Lang()->get('ampelGruen');
+                $this->setToParentStockText(\ART_ATTRIBUT_AMPELTEXT_GRUEN, 'ampelGruen');
             }
         } else {
             $this->Lageranzeige->nStatus = (int)$this->conf['global']['artikel_lagerampel_keinlager'];
@@ -4097,17 +4100,20 @@ class Artikel
                     $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_GELB])
                         ? $this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_GELB]
                         : Shop::Lang()->get('ampelGelb');
+                    $this->setToParentStockText(\ART_ATTRIBUT_AMPELTEXT_GELB, 'ampelGelb');
                     break;
                 case 0:
                     $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_ROT])
                         ? $this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_ROT]
                         : Shop::Lang()->get('ampelRot');
+                    $this->setToParentStockText(\ART_ATTRIBUT_AMPELTEXT_ROT, 'ampelRot');
                     break;
                 default:
                     $this->Lageranzeige->nStatus   = 2;
                     $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_GRUEN])
                         ? $this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_GRUEN]
                         : Shop::Lang()->get('ampelGruen');
+                    $this->setToParentStockText(\ART_ATTRIBUT_AMPELTEXT_GRUEN, 'ampelGruen');
                     break;
             }
         }
@@ -4122,6 +4128,25 @@ class Artikel
         }
 
         return $this;
+    }
+
+    /**
+     * Set stock text to parent product if it's a child and ampel_text_ attribute is set
+     *
+     * @param string  $stockTextConstant
+     * @param string  $stockTextLangVar
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
+     */
+    private function setToParentStockText(string $stockTextConstant, string $stockTextLangVar): void
+    {
+        if ($this->kVaterArtikel > 0 && empty($this->AttributeAssoc[$stockTextConstant])) {
+            $parentProduct = new self();
+            $parentProduct->fuelleArtikel($this->kVaterArtikel, self::getDefaultOptions());
+            $this->Lageranzeige->AmpelText = (!empty($parentProduct->AttributeAssoc[$stockTextConstant]))
+                ? $parentProduct->AttributeAssoc[$stockTextConstant]
+                : Shop::Lang()->get($stockTextLangVar, 'global');
+        }
     }
 
     /**

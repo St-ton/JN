@@ -42,7 +42,7 @@ msgid "noticeTextEmail"
 msgstr "Note (email)"
 
 msgid "noticeTextEmailDesc"
-msgstr "This text is displayed in addition to the existing content of the email templates \"Order confirmation\" and \"Order was updated \"."
+msgstr "This text is displayed in addition to the existing content of the email templates \"Order confirmation\" and \"Order was updated\"."
 
 msgid "paymentAckMail"
 msgstr "Email: Confirmation of payment"
@@ -120,7 +120,7 @@ msgid "errorPaymentMethodNotFound"
 msgstr "Could not find payment method."
 
 msgid "feeNameHint"
-msgstr "Enter a name for a potential charge for the payment method. The name of the charge will be displayed during checkout. The amount of the charge is specified individually for each shipping method for which the shipping method is available."
+msgstr "Enter a name for a potential charge for the payment method. The name of the charge will be displayed during checkout. The amount of the charge is specified individually for each shipping method for which the payment method is available."
 
 msgid "paymentsReceived"
 msgstr "Payments received"

@@ -187,7 +187,7 @@ function ajaxCall(url, params, callback) {
             }
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            if (typeof callback === 'function') {
+            if (typeof callback === 'function' && jqXHR.responseJSON) {
                 callback(jqXHR.responseJSON, jqXHR);
             }
         }
@@ -369,7 +369,7 @@ function reloadFavs() {
 
 function switchCouponTooltipVisibility() {
     $('#cWertTyp').on('change', function() {
-        if($(this).val() === 'prozent') {
+        if ($(this).val() === 'prozent') {
             $('#fWertTooltip').parent().hide();
         } else {
             $('#fWertTooltip').parent().show();
@@ -592,7 +592,7 @@ function hideBackdrop() {
  */
 function ioCall(name, args = [], success = ()=>{}, error = ()=>{}, context = {}, disableSpinner = false)
 {
-    if(JTL_TOKEN === null) {
+    if (JTL_TOKEN === null) {
         throw 'Error: IO call not possible. JTL_TOKEN was not set on this page.';
     }
 
@@ -613,7 +613,7 @@ function ioCall(name, args = [], success = ()=>{}, error = ()=>{}, context = {},
         },
         success: function (data, textStatus, jqXHR) {
             if (data) {
-                if(data.domAssigns) {
+                if (data.domAssigns) {
                     data.domAssigns.forEach(item => {
                         let $item = $('#' + item.target);
 
@@ -622,36 +622,32 @@ function ioCall(name, args = [], success = ()=>{}, error = ()=>{}, context = {},
                         }
                     });
                 }
-
-                if(data.debugLogLines) {
+                if (data.debugLogLines) {
                     data.debugLogLines.forEach(line => {
-                        if(line[1]) {
+                        if (line[1]) {
                             console.groupCollapsed(...line[0]);
-                        }
-                        else if(line[2]) {
+                        } else if (line[2]) {
                             console.groupEnd();
-                        }
-                        else {
+                        } else {
                             console.log(...line[0]);
                         }
                     });
                 }
-
-                if(data.varAssigns) {
+                if (data.varAssigns) {
                     data.varAssigns.forEach(assign => {
                         context[assign.name] = assign.value;
                     });
                 }
-
-                if(data.windowLocationHref) {
+                if (data.windowLocationHref) {
                     window.location.href = data.windowLocationHref;
                 }
             }
-
             success(data, context);
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            error(jqXHR.responseJSON);
+            if (jqXHR.responseJSON) {
+                error(jqXHR.responseJSON);
+            }
         }
     }).always(function () {
         if (disableSpinner === false) {
@@ -668,7 +664,7 @@ function ioCall(name, args = [], success = ()=>{}, error = ()=>{}, context = {},
  */
 function ioDownload(name, args)
 {
-    if(JTL_TOKEN === null) {
+    if (JTL_TOKEN === null) {
         throw 'Error: IO download not possible. JTL_TOKEN was not set on this page.';
     }
 
@@ -754,7 +750,7 @@ function enableTypeahead(selector, funcName, display, suggestion, onSelect, spin
             {
                 limit: 50,
                 source: function (query, syncResults, asyncResults) {
-                    if(pendingRequest !== null) {
+                    if (pendingRequest !== null) {
                         pendingRequest.abort();
                     }
                     pendingRequest = ioCall(funcName, [query, 100], function (data) {

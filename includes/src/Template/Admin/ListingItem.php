@@ -199,7 +199,7 @@ class ListingItem
             $this->isChild        = isset($node['Parent']);
             $this->parent         = $node['Parent'] ?? null;
             $version              = $node['Version'] ?? $node['ShopVersion'];
-            $this->optionsCount   = isset($node['Settings'][0]) ? 1 : 0;
+            $this->optionsCount   = ($this->isChild() || isset($node['Settings'][0])) ? 1 : 0;
             $this->maxShopVersion = Version::parse($node['MaxShopVersion'] ?? '0.0.0');
             $this->minShopVersion = Version::parse($node['MinShopVersion'] ?? $node['ShopVersion'] ?? '5.0.0');
             $this->addChecksums();

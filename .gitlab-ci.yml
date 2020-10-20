@@ -31,7 +31,7 @@ stages:
     DB_HOST_NET=$(docker network inspect -f '{{range .Containers}}{{if eq .Name "mariadb-10-2-container"}}{{.IPv4Address}}{{end}}{{end}}' mysql-php-network)
     DB_HOST="${DB_HOST_NET::-3}"
 
-    echo "Building projekt in PHP 7.1 and mariadb server 10.2 docker image..."
+    echo "Building projekt in PHP 7.3 and mariadb server 10.2 docker image..."
     docker run \
       -d -it \
       -w '/creation' \
@@ -306,7 +306,7 @@ tagsDeployment:
 
 
 
-stagingPreDeploy:
+.stagingPreDeploy:
   stage: stagingPre
   variables:
     GIT_STRATEGY: none
@@ -320,7 +320,7 @@ stagingPreDeploy:
   tags:
     - dev-checkout
 
-stagingDevPhp73:
+.stagingDevPhp73:
   stage: staging
   variables:
     GIT_STRATEGY: none

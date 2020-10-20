@@ -276,7 +276,7 @@ class Controller
                     continue;
                 }
                 $templatePath = \PFAD_TEMPLATES . $this->currentTemplateDir . '/' . $setting->rawAttributes['target'];
-                $base         = PFAD_ROOT . $templatePath;
+                $base         = \PFAD_ROOT . $templatePath;
                 // optional target file name + extension
                 if (isset($setting->rawAttributes['targetFileName'])) {
                     $value = $setting->rawAttributes['targetFileName'];

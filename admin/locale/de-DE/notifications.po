@@ -60,7 +60,7 @@ msgid "hasLicenseExpirationsTitle"
 msgstr "Lizenzen/Subscriptions"
 
 msgid "hasLicenseExpirationsMessage"
-msgstr "Mindestens eine Subscription läuft in Kürze ab oder ist bereits abgelaufen."
+msgstr "Mindestens eine Subscription läuft in Kürze ab."
 
 msgid "hasFullTextIndexErrorTitle"
 msgstr "Volltextsuche"
@@ -123,7 +123,7 @@ msgid "Safe mode enabled."
 msgstr "Abgesicherter Modus aktiv. Gewisse Funktionalitäten stehen nicht zur Verfügung."
 
 msgid "ustIdMiasCheckTitle"
-msgstr "Ust-ID Prüfung"
+msgstr "Prüfung der USt.-IdNr."
 
 msgid "ustIdMiasCheckMessage"
 msgstr "Wenn Sie die europaweite Umsatzsteuerprüfung durch das MIAS-System der EU verwenden wollen, installieren Sie bitte das PHP-Modul 'php_soap'."

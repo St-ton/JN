@@ -17,6 +17,7 @@ $sectionID = isset($_REQUEST['kSektion']) ? (int)$_REQUEST['kSektion'] : 0;
 $bSuche    = isset($_REQUEST['einstellungen_suchen']) && (int)$_REQUEST['einstellungen_suchen'] === 1;
 $db        = Shop::Container()->getDB();
 $getText   = Shop::Container()->getGetText();
+$search    = Request::verifyGPDataString('cSuche');
 
 $getText->loadConfigLocales(true, true);
 
@@ -80,7 +81,7 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form
     // Einstellungssuche
     $sql = new stdClass();
     if ($bSuche) {
-        $sql = bearbeiteEinstellungsSuche($_REQUEST['cSuche'], true);
+        $sql = bearbeiteEinstellungsSuche($search, true);
     }
     if (!isset($sql->cWHERE)) {
         $sql->cWHERE = '';
@@ -186,7 +187,7 @@ if ($step === 'einstellungen bearbeiten') {
     $confData = [];
     $sql      = new stdClass();
     if ($bSuche) {
-        $sql = bearbeiteEinstellungsSuche($_REQUEST['cSuche']);
+        $sql = bearbeiteEinstellungsSuche($search);
     }
     if (!isset($sql->cWHERE)) {
         $sql->cWHERE = '';
@@ -260,7 +261,9 @@ if ($step === 'einstellungen bearbeiten') {
     }
 
     $smarty->assign('Sektion', $section)
-           ->assign('Conf', filteredConfData($confData, Request::verifyGPDataString('group')))
+           ->assign('Conf', \mb_strlen($search) > 0
+               ? $confData
+               : filteredConfData($confData, Request::verifyGPDataString('group')))
            ->assign(
                'title',
                __('settings') . ': ' . (Request::verifyGPDataString('group') !== ''

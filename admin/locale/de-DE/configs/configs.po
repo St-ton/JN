@@ -288,7 +288,7 @@ msgid "startseite_neuimsortiment_anzahl_name"
 msgstr "„Neu im Sortiment“: Anzahl Artikel"
 
 msgid "startseite_neuimsortiment_anzahl_desc"
-msgstr "Hier legen Sie die Anzahl der Artikel in der Box fest. Geben Sie 0 ein, um diese Box gar nicht anzuzeigen. Weitere Einstellungen zu dem „Neu im Sortiment“-Slider finden Sie im Einstellungen-Tab unter \"Standardelemente > Footer / Boxen\""
+msgstr "Hier legen Sie die Anzahl der Artikel in der Box fest. Geben Sie 0 ein, um diese Box gar nicht anzuzeigen. Weitere Einstellungen zu dem „Neu im Sortiment“-Slider finden Sie im Einstellungen-Tab unter „Standardelemente > Footer / Boxen“."
 
 msgid "startseite_neuimsortiment_sortnr_name"
 msgstr "„Neu im Sortiment“: Sortiernummer"
@@ -390,7 +390,7 @@ msgid "email_master_absender_name_name"
 msgstr "Absender für Master-E-Mail-Adresse"
 
 msgid "email_master_absender_name_desc"
-msgstr "Abweichend von der Master-E-Mail-Adresse wird den Empfängern Ihrer E-Mails diese Angabe als Absender angezeigt. Achtung: Manche Anbieter (z. B. Office365) erlauben keine abweichende Angabe und es muss die exakte Master-E-Mail-Adresse eingetragen werden."
+msgstr "Hier legen Sie fest, welcher Absender bei E-Mails verwendet werden soll."
 
 msgid "suche_fulltext_name"
 msgstr "Volltextsuche verwenden"
@@ -660,7 +660,7 @@ msgid "suchfilter_anzeigen_ab_name"
 msgstr "Filter im „Content-Bereich“ anzeigen ab"
 
 msgid "suchfilter_anzeigen_ab_desc"
-msgstr "Hier legen Sie fest, wie viele Artikel in den Suchergebnissen mindestens angezeigt werden müssen, damit die Filter im „Content-Bereich“ angezeigt werden."
+msgstr "Hier legen Sie fest, wie viele Artikel in den Suchergebnissen mindestens angezeigt werden müssen, damit die Filter im Content-Bereich angezeigt werden."
 
 msgid "artikeluebersicht_erw_darstellung_name"
 msgstr "Erweiterte Darstellung für Artikelübersicht nutzen"
@@ -1362,7 +1362,7 @@ msgid "bestellabschluss_spamschutz_nutzen_name"
 msgstr "Spamschutz aktivieren"
 
 msgid "bestellabschluss_spamschutz_nutzen_desc"
-msgstr "Hier legen Sie fest, ob weitere Bestellungen von der gleichen IP-Adresse nur nach 2 Minuten Wartezeit möglich sind. Wird früher versucht, erneut zu bestellen, wird die Wartezeit verdoppelt, sie beträgt dann also 4, 8, 16, 32 usw. Minuten."
+msgstr "Hier legen Sie fest, ob weitere Bestellungen von der gleichen IP-Adresse nur nach 2 Minuten Wartezeit möglich sind. Wird früher versucht, erneut zu bestellen, wird die Wartezeit verdoppelt; sie beträgt dann also 4, 8, 16, 32 usw. Minuten."
 
 msgid "bestellabschluss_abschlussseite_name"
 msgstr "Abschluss-Seite nach externer Bezahlung"
@@ -1734,7 +1734,7 @@ msgid "bilder_hintergrundfarbe_name"
 msgstr "Hintergrundfarbe"
 
 msgid "bilder_hintergrundfarbe_desc"
-msgstr "Geben Sie eine Hintergrundfarbe für Bilder an. Nur zu sehen, wenn \"Container-Größe vewenden - Ja\" eingestellt ist."
+msgstr "Geben Sie eine Hintergrundfarbe für Bilder an. Die Farbe ist nur zu sehen, wenn „Ja“ für „Container-Größe verwenden“ eingestellt ist."
 
 msgid "sonstiges_livesuche_all_top_count_name"
 msgstr "Anzahl anzuzeigender TOP-Suchanfragen"
@@ -2346,7 +2346,7 @@ msgid "allgemein_suchspecialfilter_benutzen_name"
 msgstr "Besondere-Artikel-Filter benutzen"
 
 msgid "allgemein_suchspecialfilter_benutzen_desc"
-msgstr "Mit dieser Option legen Sie fest, ob Ihren Kunden in der Ergebnisliste unter dem Punkt „Filtern nach“ besondere Artikel (z. B. Top-Artikel) als Filtermöglichkeit angezeigt werden. Diese Optionen werden im NOVA-Template nur teilweise unterstützt. Bitte wählen Sie „Ja, im Content-Bereich und der Navigationsbox“ oder „Nein“, falls Sie NOVA verwenden."
+msgstr "Mit dieser Option legen Sie fest, ob Ihren Kunden in der Ergebnisliste unter dem Punkt „Filtern nach“ besondere Artikel (z.&nbsp;B. Top-Artikel) als Filtermöglichkeit angezeigt werden. Diese Optionen werden im NOVA-Template nur teilweise unterstützt. Bitte wählen Sie „Ja, im Content-Bereich und der Navigationsbox“ oder „Nein“, falls Sie NOVA verwenden."
 
 msgid "search_special_filter_type_name"
 msgstr "Mehrfachauswahl bei Spezialfilter"
@@ -2361,7 +2361,7 @@ msgid "allgemein_kategoriefilter_benutzen_desc"
 msgstr "Mit dieser Option legen Sie fest, ob Ihren Kunden in der Ergebnisliste unter dem Punkt „Filtern nach“ die Kategorie als Filtermöglichkeit angezeigt wird. Diese Optionen werden im NOVA-Template nur teilweise unterstützt. Bitte wählen Sie „Ja, im Content-Bereich und der Navigationsbox“ oder „Nein“, falls Sie NOVA verwenden."
 
 msgid "allgemein_availabilityfilter_benutzen_name"
-msgstr "Verfügbarkeitsfilterung benutzen"
+msgstr "Verfügbarkeitsfilter benutzen"
 
 msgid "allgemein_availabilityfilter_benutzen_desc"
 msgstr "Mit dieser Option legen Sie fest, ob Ihren Kunden in der Ergebnisliste unter dem Punkt „Filtern nach“ die Verfügbarkeit als Filtermöglichkeit angezeigt wird. Diese Optionen werden im NOVA-Template nur teilweise unterstützt. Bitte wählen Sie „Ja, im Content-Bereich und der Navigationsbox“ oder „Nein“, falls Sie NOVA verwenden."
@@ -2976,7 +2976,7 @@ msgid "consent_manager_active_desc"
 msgstr "Hier legen Sie fest, ob der Consent-Manager genutzt werden soll."
 
 msgid "bewertung_sortierung_name"
-msgstr "Standard-Sortierung"
+msgstr "Standardsortierung"
 
 msgid "bewertung_sortierung_desc"
 msgstr "Hier legen Sie fest, wie Bewertungen standardmäßig sortiert werden."

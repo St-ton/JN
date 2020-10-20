@@ -51,7 +51,7 @@ msgid "cg_filter_description"
 msgstr "Enthält Filterdaten"
 
 msgid "cg_status_description"
-msgstr "Enthält Status für Notifications"
+msgstr "Enthält Status für Mitteilungen"
 
 msgid "cg_article_nicename"
 msgstr "Artikel"

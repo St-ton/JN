@@ -44,7 +44,7 @@
                 {if $trigger === 'click'}
                     flipcard.on('click', flipCard);
                 {else}
-                    flipcard.hover(flipCard);
+                    flipcard.on('mouseenter mouseleave', flipCard);
                 {/if}
             {/if}
 

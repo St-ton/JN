@@ -5,7 +5,12 @@
                 {$configLocalization = $configGroup->getSprache()}
                 {$configImagePath = $configGroup->getImage(\JTL\Media\Image::SIZE_XS)}
                 {$kKonfiggruppe = $configGroup->getKonfiggruppe()}
-                <div class="cfg-group js-cfg-group {if $configGroup@first}visited{/if}" data-id="{$kKonfiggruppe}">
+                <div class="cfg-group js-cfg-group {if $configGroup@first}visited{/if}"
+                     data-id="{$kKonfiggruppe}"
+                    {if !$configGroup@first}
+                     data-toggle="tooltip"
+                     title="{lang key='completeConfigGroupHint' section='productDetails'}"
+                    {/if}>
                     <div class="hr-sect mb-0">
                         <span class="d-none js-group-checked"><i class="far fa-check-square"></i></span>
                         <span><i class="far fa-square"></i></span>

@@ -4133,8 +4133,8 @@ class Artikel
     /**
      * Set stock text to parent product if it's a child and ampel_text_ attribute is set
      *
-     * @param string  $stockTextConstant
-     * @param string  $stockTextLangVar
+     * @param string $stockTextConstant
+     * @param string $stockTextLangVar
      * @throws CircularReferenceException
      * @throws ServiceNotFoundException
      */

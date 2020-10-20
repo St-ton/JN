@@ -1,4 +1,4 @@
-{block name='page-freegift'}
+{block name='page-free-gift'}
     {opcMountPoint id='opc_before_free_gift' inContainer=false}
     {container}
         <p>{lang key='freeGiftFromOrderValue'}</p>

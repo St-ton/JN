@@ -1,3 +1,4 @@
+{block name='productdetails-mediafile-youtube-embed'}
 {$height     = 'auto'}
 {$width      = '100%'}
 {$related    = '?rel=0'}
@@ -28,3 +29,4 @@
             frameborder="0"{$fullscreen}>
     </iframe>
 </div>
+{/block}

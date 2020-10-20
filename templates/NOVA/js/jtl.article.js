@@ -1071,7 +1071,7 @@
             $('.js-cfg-next').on('click', function () {
                 $('button[data-target="' +  $(this).data('target') + '"]')
                     .prop('disabled', false)
-                    .closest('.js-cfg-group').addClass('visited');
+                    .closest('.js-cfg-group').addClass('visited').tooltip('disable');
                 that.configurator();
             });
             $('#cfg-tab-summary-finish').on('click', function () {

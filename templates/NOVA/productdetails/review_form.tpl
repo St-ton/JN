@@ -19,7 +19,7 @@
                     {/block}
                     {if $ratingAllowed}
                         {block name='productdetails-review-form-form-main'}
-                            {block name='productdetails-review-form'}
+                            {block name='productdetails-review-form-form-info'}
                                 <div class="alert alert-info">{lang key='shareYourRatingGuidelines' section='product rating'}</div>
                             {/block}
                             {block name='productdetails-review-form-image-name'}

@@ -22,3 +22,9 @@ msgstr "as thumbnail"
 
 msgid "imageResponsive"
 msgstr "Responsive image"
+
+msgid "alignmentDesc"
+msgstr "Specifies whether the image is to be displayed on the right or left side or in the centre of the page."
+
+msgid "imgUrlDesc"
+msgstr "If you want to hyperlink this image you can enter a destination URL here."

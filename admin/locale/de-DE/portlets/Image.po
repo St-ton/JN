@@ -22,3 +22,9 @@ msgstr "als Vorschaubild"
 
 msgid "imageResponsive"
 msgstr "Responsives Bild"
+
+msgid "alignmentDesc"
+msgstr "Legt fest, ob das Bild links, rechts oder mittig angezeigt wird."
+
+msgid "imgUrlDesc"
+msgstr "Falls Sie das Bild verlinken wollen, können Sie hier eine Ziel-URL eintragen."

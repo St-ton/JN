@@ -16,8 +16,16 @@
     {elseif $instance->getProperty('align') === 'center'}
         {$alignCSS = 'margin-left: auto;margin-right: auto;'}
     {/if}
-    {if $isPreview}<div class="opc-Image-with-image">{/if}
+    {if $isPreview}
+        <div class="opc-Image-with-image">
+    {/if}
     <div style="max-width: {$imgAttribs.realWidth}px; {$alignCSS}">
+        {if !$isPreview}
+            {$href = $instance->getProperty('url')}
+            {if !empty($href)}
+                <a href="{$href|escape:'html'}">
+            {/if}
+        {/if}
         {image
             src=$imgAttribs.src
             srcset=$imgAttribs.srcset
@@ -29,6 +37,11 @@
             thumbnail=$portlet->getThumbnailProp($instance)
             class=$instance->getStyleClasses()
         }
+        {if !$isPreview}
+            </a>
+        {/if}
     </div>
-    {if $isPreview}</div>{/if}
+    {if $isPreview}
+        </div>
+    {/if}
 {/if}

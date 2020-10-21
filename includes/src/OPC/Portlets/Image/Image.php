@@ -66,7 +66,7 @@ class Image extends Portlet
                     'circle'    => __('shapeCircle'),
                     'thumbnail' => __('shapeThumbnail'),
                 ],
-                'width' => 50,
+                'width' => 25,
             ],
             'align' => [
                 'type'       => InputType::SELECT,
@@ -77,8 +77,14 @@ class Image extends Portlet
                     'right'  => __('right'),
                 ],
                 'default'    => 'center',
-                'width'      => 50,
+                'width'      => 25,
                 'desc'       => __('alignmentDesc')
+            ],
+            'url' => [
+                'type'  => InputType::TEXT,
+                'label' => __('url'),
+                'width' => 50,
+                'desc'  => __('imgUrlDesc')
             ],
             'alt'        => [
                 'label' => __('alternativeText'),

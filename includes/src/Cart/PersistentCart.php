@@ -415,6 +415,8 @@ class PersistentCart
                         }
                         $productIDs[] = (int)$productExists->kArtikel;
                     }
+                } else {
+                    $productIDs[] = (int)$item->kArtikel;
                 }
                 // Konfigitem ohne Artikelbezug?
             } elseif ($item->kArtikel === 0 && !empty($item->kKonfigitem)) {
@@ -434,6 +436,45 @@ class PersistentCart
         return $msg . \implode(', ', $productNames);
     }
 
+    private function checkOrphanedConfigItems(&$ids)
+    {
+        $db = Shop::Container()->getDB();
+        foreach($this->oWarenkorbPersPos_arr as $item) {
+            if ($item->kKonfigitem > 0){
+                $mainKonfigProduct = \array_filter($this->oWarenkorbPersPos_arr, static function ($persItem) use ($item) {
+                    if ($persItem->kWarenkorbPers === $item->kWarenkorbPers
+                        && $persItem->dHinzugefuegt === $item->dHinzugefuegt
+                        && (int)$persItem->kKonfigitem === 0) {
+                        return true;
+                    }
+                    return false;
+                });
+                //if main product not found, delete the child
+                if (\count($mainKonfigProduct) === 0) {
+                    $ids[] = (int)$item->kArtikel;
+                    continue;
+                }
+                $configItem = $db->queryPrepared(
+                    '\'SELECT * FROM tkonfigitem WHERE kKonfigitem =:konfigItemId ',
+                    ['konfigItemId'=>$item->kKonfigitem],ReturnType::SINGLE_OBJECT);
+
+                $checkForExistence = $db->queryPrepared(
+                    'SELECT * FROM tartikelkonfiggruppe 
+                    WHERE kArtikel =:parentID 
+                    AND kKonfiggruppe=:configItemGroupId',
+                    ['parentID'=>$mainKonfigProduct[0]->kArtikel,
+                     'configItemGroupId'=>$configItem->kKonfiggruppe,
+                    ],ReturnType::ARRAY_OF_OBJECTS
+                );
+            }
+        }
+        // first,  iterate trough all items, which are konfigitems
+        // second, find the associated parent konfig product by dHinzugefuegt and kWarenkorbPers and kKonfigitem = 0
+        // third, check if the associated parent is existent in tartikelkonfiggruppe by kArtikel
+        // if not, delete the item, but not the parent, only when all connected child konfigitems were deleted (after foreach)
+
+
+    }
     /**
      * return $this
      */

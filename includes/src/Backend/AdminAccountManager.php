@@ -931,6 +931,13 @@ class AdminAccountManager
         }
         switch ($step) {
             case 'account_edit':
+                if (Request::postInt('id') > 0) {
+                    $this->alertService->addAlert(
+                        Alert::TYPE_WARNING,
+                        __('warningPasswordResetAuth'),
+                        'warningPasswordResetAuth'
+                    );
+                }
                 $this->smarty->assign('oAdminGroup_arr', $this->getAdminGroups())
                     ->assign(
                         'languages',

@@ -66,6 +66,8 @@
                 $("#{$uid} .hours .cntdwn-item").html(hours);
                 $("#{$uid} .minutes .cntdwn-item").html(minutes);
                 $("#{$uid} .seconds .cntdwn-item").html(seconds);
+
+                $(window).trigger('resize');
             }, 1000);
         });
     </script>{/inline_script}

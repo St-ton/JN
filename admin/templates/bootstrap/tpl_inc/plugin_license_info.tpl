@@ -17,7 +17,6 @@
                 <th>{__('Date created')}</th>
                 <td>{$license->getCreated()->format('d.m.Y')}</td>
             </tr>
-            <pre>{$data|var_dump}</pre>
             {if $license->getValidUntil() !== null}
             <tr>
                 <th>{__('Valid until')}</th>

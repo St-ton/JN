@@ -149,13 +149,16 @@
                 let maxHeight       = Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
                     otherElemHeight = 0,
                     current         = ($('#gallery .slick-current').data('slick-index')),
-                    $galleryImages  = $('#gallery img, #gallery picture source');
+                    $galleryImages  = $('#gallery img, #gallery picture source'),
+                    previewHeight   = $('#gallery_preview_wrapper').length > 0 ? 230 : 30;
 
                 if (fullscreen) {
                     $imgWrapper.addClass('fullscreen');
                     let $galleryTopbar = $('#image_wrapper .product-detail-image-topbar');
 
-                    otherElemHeight = $galleryTopbar.outerHeight() + parseInt($galleryTopbar.css('marginBottom')) + 230;
+                    otherElemHeight = $galleryTopbar.outerHeight()
+                        + parseInt($galleryTopbar.css('marginBottom'))
+                        + previewHeight;
 
                     $galleryImages.removeAttr('sizes');
                     lazySizes.autoSizer.updateElem($galleryImages);

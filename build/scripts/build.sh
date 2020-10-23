@@ -70,7 +70,7 @@ build_create()
 
     echo "Executing migrations";
     build_migrate;
-	
+
     echo "Reset mailtemplates";
     build_reset_mailtemplates;
 
@@ -115,7 +115,7 @@ build_create_deleted_files_csv()
 
     cd ${REPOSITORY_DIR};
     git pull >/dev/null 2>&1;
-    git diff --name-status --diff-filter D tags/v4.03.0 ${REMOTE_STR}${APPLICATION_VERSION} -- ${REPOSITORY_DIR} ':!admin/classes' ':!classes' ':!includes/ext' ':!includes/plugins' > ${DELETE_FILES_CSV_FILENAME_TMP};
+    git diff --name-status --diff-filter D tags/v4.03.0 ${REMOTE_STR}${APPLICATION_VERSION} -- ${REPOSITORY_DIR} ':!admin/classes' ':!classes' ':!includes/ext' ':!includes/plugins' ':!templates/Evo' > ${DELETE_FILES_CSV_FILENAME_TMP};
     cd ${CUR_PWD};
 
     while read line; do

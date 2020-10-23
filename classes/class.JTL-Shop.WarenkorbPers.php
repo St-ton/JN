@@ -353,18 +353,18 @@ class WarenkorbPers
                 // Hat die Position einen Artikel
                 if ($WarenkorbPersPos->kArtikel > 0) {
                     // Prüfe auf kArtikel
-                    $oArtikelVorhanden = Shop::DB()->select('tartikel', 'kArtikel', (int)$WarenkorbPersPos->kArtikel);
+                    $oArtikelVorhanden = $db->select('tartikel', 'kArtikel', (int)$WarenkorbPersPos->kArtikel);
                     // Falls Artikel vorhanden
                     if (isset($oArtikelVorhanden->kArtikel) && $oArtikelVorhanden->kArtikel > 0) {
                         // Sichtbarkeit Prüfen
-                        $oSichtbarkeit = Shop::DB()->select(
+                        $oSichtbarkeit = $db->select(
                             'tartikelsichtbarkeit',
                             'kArtikel', (int)$WarenkorbPersPos->kArtikel,
                             'kKundengruppe', (int)$_SESSION['Kundengruppe']->kKundengruppe
                         );
                         if ($oSichtbarkeit === null || !isset($oSichtbarkeit->kArtikel) || !$oSichtbarkeit->kArtikel) {
                             // Prüfe welche kEigenschaft gesetzt ist
-                            $oEigenschaft_arr = Shop::DB()->selectAll(
+                            $oEigenschaft_arr = $db->selectAll(
                                 'teigenschaft',
                                 'kArtikel', (int)$WarenkorbPersPos->kArtikel,
                                 'kEigenschaft, cName, cTyp'
@@ -375,7 +375,7 @@ class WarenkorbPers
                                         if (count($WarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr) > 0) {
                                             foreach ($WarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr as $oWarenkorbPersPosEigenschaft) {
                                                 if ($oWarenkorbPersPosEigenschaft->kEigenschaft === $oEigenschaft->kEigenschaft) {
-                                                    $oEigenschaftWertVorhanden = Shop::DB()->select(
+                                                    $oEigenschaftWertVorhanden = $db->select(
                                                         'teigenschaftwert',
                                                         'kEigenschaftWert',
                                                         (int)$oWarenkorbPersPosEigenschaft->kEigenschaftWert,
@@ -384,8 +384,8 @@ class WarenkorbPers
                                                     );
                                                     // Prüfe ob die Eigenschaft vorhanden ist
                                                     if (!isset($oEigenschaftWertVorhanden->kEigenschaftWert) || !$oEigenschaftWertVorhanden->kEigenschaftWert) {
-                                                        Shop::DB()->delete('twarenkorbperspos', 'kWarenkorbPersPos', $WarenkorbPersPos->kWarenkorbPersPos);
-                                                        Shop::DB()->delete('twarenkorbpersposeigenschaft', 'kWarenkorbPersPos', $WarenkorbPersPos->kWarenkorbPersPos);
+                                                        $db->delete('twarenkorbperspos', 'kWarenkorbPersPos', $WarenkorbPersPos->kWarenkorbPersPos);
+                                                        $db->delete('twarenkorbpersposeigenschaft', 'kWarenkorbPersPos', $WarenkorbPersPos->kWarenkorbPersPos);
                                                         $cArtikel_arr[] = $WarenkorbPersPos->cArtikelName;
                                                         $hinweis .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
                                                     }

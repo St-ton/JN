@@ -2023,3 +2023,6 @@ msgstr "We recommend:"
 
 msgid "somethingHappend"
 msgstr "An unknown error occurred."
+
+msgid "warningPasswordResetAuth"
+msgstr "If this account is connected to the JTL-Extension Store, the connection must be renewed once the password has been changed (Plug-ins > My purchases > Connect account). This does not affect your purchased extensions."

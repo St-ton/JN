@@ -98,7 +98,7 @@
 </button>
 
 <script>
-    opc.setConfigSaveCallback(saveImageSet_{$propname});
+    opc.once('save-config', saveImageSet_{$propname});
 
     $(function () {
         $('#{$propname}-slides').sortable({

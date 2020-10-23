@@ -18,7 +18,7 @@
             },
         );
 
-        opc.setConfigSaveCallback(function() {
+        opc.once('save-config', () => {
             $('#textarea-{$propname}').val(CKEDITOR.instances['textarea-{$propname}'].getData());
         });
     </script>

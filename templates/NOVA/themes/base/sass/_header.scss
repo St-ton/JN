@@ -11,8 +11,6 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 
 	.navbar { position: static; }
 
-	.navbar-brand img { max-width: rem(90px); max-height: 2rem;}
-
 	.navbar-toggler { color: $gray-darker; }
 
 	.nav-right {
@@ -75,8 +73,6 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 	/* desktop only */
 
 	@include media-breakpoint-up(lg) {
-		.navbar-brand img { max-width: rem(160px); max-height: 4rem; }
-
 		.navbar-collapse { height: rem(69px); }
 
 		.navbar-nav {

@@ -1,4 +1,4 @@
-{block name='snippets-filter-characteristics'}
+{block name='snippets-filter-characteristic'}
     {$is_dropdown = ($Merkmal->cTyp === 'SELECTBOX')}
     {$limit = $Einstellungen.template.productlist.filter_max_options}
     {$collapseInit = false}

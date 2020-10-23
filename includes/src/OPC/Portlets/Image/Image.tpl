@@ -20,10 +20,18 @@
         <div class="opc-Image-with-image">
     {/if}
     <div style="max-width: {$imgAttribs.realWidth}px; {$alignCSS}">
-        {if !$isPreview}
+        {$isLink = $instance->getProperty('is-link')}
+
+        {if $isLink && !$isPreview}
             {$href = $instance->getProperty('url')}
             {if !empty($href)}
-                <a href="{$href|escape:'html'}">
+                <a href="{$href|escape:'html'}"
+                        {if !empty($instance->getProperty('link-title'))}
+                            title = "{$instance->getProperty('link-title')|escape:'html'}"
+                        {/if}
+                        {if $instance->getProperty('new-tab') === true}
+                            target = "_blank"
+                        {/if}>
             {/if}
         {/if}
         {image
@@ -41,7 +49,7 @@
             </a>
         {/if}
     </div>
-    {if $isPreview}
+    {if $isLink && $isPreview}
         </div>
     {/if}
 {/if}

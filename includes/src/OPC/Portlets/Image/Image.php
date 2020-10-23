@@ -80,14 +80,31 @@ class Image extends Portlet
                 'width'      => 25,
                 'desc'       => __('alignmentDesc')
             ],
-            'url' => [
-                'type'  => InputType::TEXT,
-                'label' => __('url'),
-                'width' => 50,
-                'desc'  => __('imgUrlDesc')
-            ],
             'alt'        => [
                 'label' => __('alternativeText'),
+                'width'      => 50,
+            ],
+            'is-link' => [
+                'type'     => InputType::CHECKBOX,
+                'label'    => __('isLink'),
+                'children' => [
+                    'url' => [
+                        'type'  => InputType::TEXT,
+                        'label' => __('url'),
+                        'width' => 50,
+                        'desc'  => __('imgUrlDesc')
+                    ],
+                    'link-title' => [
+                        'label'      => __('linkTitle'),
+                        'width'      => 50,
+                    ],
+                    'new-tab' => [
+                        'type'       => InputType::CHECKBOX,
+                        'label'      => __('openInNewTab'),
+                        'width'      => 50,
+                        'desc'       => __('openInNewTabDesc')
+                    ],
+                ],
             ],
         ];
     }

@@ -1,9 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Recommendation;
 
 use JTL\Helpers\Text;
 use JTL\License\Struct\Link;
+use Parsedown;
 use stdClass;
 
 /**
@@ -74,11 +75,11 @@ class Recommendation
 
     /**
      * Recommendation constructor.
-     * @param \stdClass $recommendation
+     * @param stdClass $recommendation
      */
     public function __construct(stdClass $recommendation)
     {
-        $this->parseDown = new \Parsedown();
+        $this->parseDown = new Parsedown();
 
         $this->setId($recommendation->id);
         $this->setDescription($recommendation->description);
@@ -99,7 +100,7 @@ class Recommendation
      */
     public function parseDown(string $text): string
     {
-        return $this->setLinkTargets(mb_convert_encoding(
+        return $this->setLinkTargets(\mb_convert_encoding(
             $this->parseDown->text(Text::convertUTF8($text)),
             'HTML-ENTITIES'
         ));
@@ -285,9 +286,9 @@ class Recommendation
 
     /**
      * @param string $text
-     * @return mixed
+     * @return string
      */
-    public function setLinkTargets(string $text)
+    public function setLinkTargets(string $text): string
     {
         return \str_replace('<a ', '<a target="_blank" ', $text);
     }

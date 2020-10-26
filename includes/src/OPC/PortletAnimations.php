@@ -20,8 +20,8 @@ trait PortletAnimations
                 'default' => '',
                 'width'   => 34,
                 'options' => [
-                    ''          => 'none',
-                    'attention' => [
+                    ''           => 'none',
+                    'attention'  => [
                         'label'   => 'Attention Seekers',
                         'options' => [
                             'bounce'     => 'bounce',
@@ -35,7 +35,7 @@ trait PortletAnimations
                             'jello'      => 'jello',
                         ],
                     ],
-                    'bouncing' => [
+                    'bouncing'   => [
                         'label'   => 'Bouncing Entrances',
                         'options' => [
                             'bounceIn'      => 'bounceIn',
@@ -45,7 +45,7 @@ trait PortletAnimations
                             'bounceInUp'    => 'bounceInUp',
                         ],
                     ],
-                    'fading' => [
+                    'fading'     => [
                         'label'   => 'Fading Entrances',
                         'options' => [
                             'fadeIn'        => 'fadeIn',
@@ -55,7 +55,7 @@ trait PortletAnimations
                             'fadeInLeftBig' => 'fadeInLeftBig',
                         ],
                     ],
-                    'flippers' => [
+                    'flippers'   => [
                         'label'   => 'Flippers',
                         'options' => [
                             'flip'    => 'flip',
@@ -69,7 +69,7 @@ trait PortletAnimations
                             'lightSpeedIn' => 'lightSpeedIn',
                         ],
                     ],
-                    'rotating' => [
+                    'rotating'   => [
                         'label'   => 'Rotating Entrances',
                         'options' => [
                             'rotateIn'          => 'rotateIn',
@@ -79,7 +79,7 @@ trait PortletAnimations
                             'rotateInUpRight'   => 'rotateInUpRight',
                         ],
                     ],
-                    'sliding' => [
+                    'sliding'    => [
                         'label'   => 'Sliding Entrances',
                         'options' => [
                             'slideInUp'    => 'slideInUp',
@@ -88,7 +88,7 @@ trait PortletAnimations
                             'slideInRight' => 'slideInRight',
                         ],
                     ],
-                    'zoom' => [
+                    'zoom'       => [
                         'label'   => 'Zoom Entrances',
                         'options' => [
                             'zoomIn'      => 'zoomIn',
@@ -98,7 +98,7 @@ trait PortletAnimations
                             'zoomInUp'    => 'zoomInUp',
                         ],
                     ],
-                    'specials' => [
+                    'specials'   => [
                         'label'   => 'Specials',
                         'options' => [
                             'hinge'  => 'hinge',
@@ -107,29 +107,29 @@ trait PortletAnimations
                     ],
                 ],
             ],
-            'wow-duration'  => [
+            'wow-duration'    => [
                 'label'       => __('Duration'),
                 'help'        => __('Change the animation duration (e.g. 2s)'),
                 'placeholder' => '1s',
                 'width'       => 34,
             ],
-            'wow-delay'     => [
-                'label'      => __('Delay'),
-                'help'       => __('Delay before the animation starts'),
-                'width'      => 34,
+            'wow-delay'       => [
+                'label' => __('Delay'),
+                'help'  => __('Delay before the animation starts'),
+                'width' => 34,
             ],
-            'wow-offset'    => [
+            'wow-offset'      => [
                 'label'       => __('Offset (px)'),
                 'type'        => InputType::NUMBER,
                 'placeholder' => 200,
                 'help'        => __('Distance to start the animation (related to the browser bottom)'),
                 'width'       => 50,
             ],
-            'wow-iteration' => [
-                'label'      => __('Iteration'),
-                'type'       => InputType::NUMBER,
-                'help'       => __('Number of times the animation is repeated'),
-                'width'      => 50,
+            'wow-iteration'   => [
+                'label' => __('Iteration'),
+                'type'  => InputType::NUMBER,
+                'help'  => __('Number of times the animation is repeated'),
+                'width' => 50,
             ],
         ];
     }

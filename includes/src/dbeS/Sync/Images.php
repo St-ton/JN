@@ -543,25 +543,15 @@ final class Images extends AbstractSync
     }
 
     /**
-     * @param object $image
-     * @param string $ext
+     * @param stdClass $image
+     * @param string   $ext
      * @return string
      */
-    private function getCategoryImageName($image, string $ext): string
+    private function getCategoryImageName(stdClass $image, string $ext): string
     {
         $imageName = $image->cPfad;
         if (empty($image->kKategorie) || !$this->config['bilder_kategorie_namen']) {
             return $this->getNewFilename((\pathinfo($imageName)['filename']) . '.' . $ext);
-        }
-        $attr = $this->db->select(
-            'tkategorieattribut',
-            'kKategorie',
-            (int)$image->kKategorie,
-            'cName',
-            \KAT_ATTRIBUT_BILDNAME
-        );
-        if (!empty($attr->cWert)) {
-            return $attr->cWert . '.' . $ext;
         }
         $data = $this->db->queryPrepared(
             "SELECT tseo.cSeo, tkategorie.cName
@@ -586,11 +576,11 @@ final class Images extends AbstractSync
     }
 
     /**
-     * @param object $image
-     * @param string $ext
+     * @param stdClass $image
+     * @param string   $ext
      * @return string
      */
-    private function getManufacturerImageName($image, string $ext): string
+    private function getManufacturerImageName(stdClass $image, string $ext): string
     {
         $data = $this->db->queryPrepared(
             'SELECT cName, cSeo
@@ -609,11 +599,11 @@ final class Images extends AbstractSync
     }
 
     /**
-     * @param object $image
-     * @param string $ext
+     * @param stdClass $image
+     * @param string   $ext
      * @return string
      */
-    private function getCharacteristicValueImageName($image, string $ext): string
+    private function getCharacteristicValueImageName(stdClass$image, string $ext): string
     {
         $conf = (int)$this->config['bilder_merkmalwert_namen'];
         if ($conf === 2) {
@@ -640,11 +630,11 @@ final class Images extends AbstractSync
     }
 
     /**
-     * @param object $image
+     * @param stdClass $image
      * @param string $ext
      * @return string
      */
-    private function getCharacteristicImageName($image, string $ext): string
+    private function getCharacteristicImageName(stdClass $image, string $ext): string
     {
         $conf = (int)$this->config['bilder_merkmal_namen'];
         if ($conf === 2) {
@@ -738,7 +728,7 @@ final class Images extends AbstractSync
     /**
      * @param array $xml
      */
-    private function handleDeletes($xml): void
+    private function handleDeletes(array $xml): void
     {
         \executeHook(\HOOK_BILDER_XML_BEARBEITEDELETES, [
             'Kategorie'        => $xml['del_bilder']['kKategoriePict'] ?? [],

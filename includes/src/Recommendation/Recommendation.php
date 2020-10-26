@@ -99,10 +99,10 @@ class Recommendation
      */
     public function parseDown(string $text): string
     {
-        return mb_convert_encoding(
+        return $this->setLinkTargets(mb_convert_encoding(
             $this->parseDown->text(Text::convertUTF8($text)),
             'HTML-ENTITIES'
-        );
+        ));
     }
 
     /**
@@ -281,5 +281,14 @@ class Recommendation
         foreach ($links as $link) {
             $this->links[] = new Link($link);
         }
+    }
+
+    /**
+     * @param string $text
+     * @return mixed
+     */
+    public function setLinkTargets(string $text)
+    {
+        return \str_replace('<a ', '<a target="_blank" ', $text);
     }
 }

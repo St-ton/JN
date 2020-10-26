@@ -46,7 +46,7 @@ class_alias(\JTL\Backend\Status::class, 'Status', true);
 class_alias(\JTL\SimpleCSS::class, 'SimpleCSS', true);
 class_alias(\JTL\Piechart::class, 'Piechart', true);
 class_alias(\JTL\Slider::class, 'Slider', true);
-if (!\class_exists('XMLParser')) {
+if (!class_exists('XMLParser')) {
     class_alias(\JTL\XMLParser::class, 'XMLParser', true);
 }
 class_alias(\JTL\SimpleMail::class, 'SimpleMail', true);

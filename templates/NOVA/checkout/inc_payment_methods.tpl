@@ -19,12 +19,12 @@
                     {/block}
                     {if $zahlungsart->fAufpreis != 0}
                         {block name='checkout-inc-payment-methods-badge'}
-                            <span class="ml-3 float-right font-weight-bold">
+                            <strong class="ml-3 float-right">
                             {if $zahlungsart->cGebuehrname|has_trans}
                                 <span>{$zahlungsart->cGebuehrname|trans} </span>
                             {/if}
                                 {$zahlungsart->cPreisLocalized}
-                            </span>
+                            </strong>
                         {/block}
                     {/if}
                     {if $zahlungsart->cHinweisText|has_trans}

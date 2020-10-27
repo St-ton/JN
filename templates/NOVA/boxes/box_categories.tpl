@@ -7,7 +7,7 @@
                     data=["toggle"=>"collapse"]
                     role="button"
                     aria=["expanded"=>"false","controls"=>"crd-cllps-{$oBox->getID()}"]
-                    class="text-decoration-none font-weight-bold mb-2 d-md-none dropdown-toggle"}
+                    class="text-decoration-none font-bold mb-2 d-md-none dropdown-toggle"}
                     {if !empty($oBox->getTitle())}{$oBox->getTitle()}{else}{lang key='categories'}{/if}
                 {/link}
             {/block}

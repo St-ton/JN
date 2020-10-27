@@ -7,7 +7,7 @@
                     data=["toggle"=>"collapse"]
                     role="button"
                     aria=["expanded"=>"false","controls"=>"crd-cllps-{$oBox->getID()}"]
-                    class="text-decoration-none font-weight-bold d-md-none dropdown-toggle"}
+                    class="text-decoration-none font-bold d-md-none dropdown-toggle"}
                     {lang key='newsBoxMonthOverview'}
                 {/link}
             {/block}

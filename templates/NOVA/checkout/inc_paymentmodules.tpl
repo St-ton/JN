@@ -27,8 +27,8 @@
         }
             {block name='checkout-inc-paymentmodules-during-order'}
                 <ul class="list-unstyled">
-                    <li><span class="font-weight-bold">{lang key='yourOrderId' section='checkout'}: </span>{$Bestellung->cBestellNr}</li>
-                    <li><span class="font-weight-bold">{lang key='yourChosenPaymentOption' section='checkout'}: </span>{$Bestellung->cZahlungsartName}</li>
+                    <li><strong>{lang key='yourOrderId' section='checkout'}: </strong>{$Bestellung->cBestellNr}</li>
+                    <li><strong>{lang key='yourChosenPaymentOption' section='checkout'}: </strong>{$Bestellung->cZahlungsartName}</li>
                 </ul>
             {/block}
         {/if}

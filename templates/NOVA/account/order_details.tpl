@@ -15,9 +15,9 @@
             {block name='account-order-details-order-heading'}
                 {row class='align-items-center'}
                     {col cols=12 lg=3 class='border-lg-right'}
-                        <span class="font-weight-bold font-size-lg">
+                        <strong class="font-size-lg">
                             <span class="far fa-calendar mr-2"></span>{$Bestellung->dErstelldatum_de}
-                        </span>
+                        </strong>
                     {/col}
                     {col cols=6 lg='auto'}
                         {lang key='yourOrderId' section='checkout'}: {$Bestellung->cBestellNr}

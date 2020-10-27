@@ -27,10 +27,10 @@
                     {block name='productdetails-warehouse-modal-content-header'}
                         {row}
                             {col}
-                                <span class="font-weight-bold">{lang key='warehouse'}</span>
+                                <strong>{lang key='warehouse'}</strong>
                             {/col}
                             {col class="ml-auto text-right"}
-                                <span class="ml-auto font-weight-bold">{lang key='status'}</span>
+                                <strong class="ml-auto">{lang key='status'}</strong>
                             {/col}
                         {/row}
                         <hr>
@@ -39,7 +39,7 @@
                         {foreach $Artikel->oWarenlager_arr as $oWarenlager}
                             {row}
                                 {col}
-                                    <span class="font-weight-bold">{$oWarenlager->getName()}</span>
+                                    <strong>{$oWarenlager->getName()}</strong>
                                 {/col}
                                 {col class="ml-auto text-right"}
                                     <span class="ml-auto">

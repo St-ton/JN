@@ -5,8 +5,8 @@
         {/block}
         {block name='checkout-inc-order-completed-id-payment'}
             <ul class="list-unstyled mb-md-6">
-                <li><span class="font-weight-bold">{lang key='yourOrderId' section='checkout'}:</span> {$Bestellung->cBestellNr}</li>
-                <li><span class="font-weight-bold">{lang key='yourChosenPaymentOption' section='checkout'}:</span> {$Bestellung->cZahlungsartName}</li>
+                <li><strong>{lang key='yourOrderId' section='checkout'}:</strong> {$Bestellung->cBestellNr}</li>
+                <li><strong>{lang key='yourChosenPaymentOption' section='checkout'}:</strong> {$Bestellung->cZahlungsartName}</li>
             </ul>
         {/block}
     {/card}

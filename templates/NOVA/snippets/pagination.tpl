@@ -25,7 +25,7 @@
                 {if in_array('label', $parts) || in_array('pagi', $parts)}
                     {block name='snippets-pagination-page-count-multiple'}
                         {if in_array('label', $parts)}
-                            {col cols="auto" class="font-weight-bold"}
+                            {col cols="auto" class="font-bold"}
                                 {lang key='paginationEntryPagination' printf={$oPagination->getFirstPageItem() + 1}|cat:':::'|cat:{$oPagination->getFirstPageItem() + $oPagination->getPageItemCount()}|cat:':::'|cat:{$oPagination->getItemCount()}}
                             {/col}
                         {/if}
@@ -96,7 +96,7 @@
                 {/if}
             {else}
                 {block name='snippets-pagination-page-count-one'}
-                    {col cols="auto" class="font-weight-bold mb-3 mb-md-0"}
+                    {col cols="auto" class="font-bold mb-3 mb-md-0"}
                         {lang key='paginationTotalEntries'} {$oPagination->getItemCount()}
                     {/col}
                 {/block}

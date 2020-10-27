@@ -124,7 +124,7 @@
                                     {card class='card-gray' no-body=true}
                                         {cardheader}
                                         {block name='basket-index-coupon-heading'}
-                                            <span class="font-weight-bold font-size-lg" data-toggle="collapse" data-target="#coupon-form">{lang key='useCoupon' section='checkout'}</span>
+                                            <strong class="font-size-lg" data-toggle="collapse" data-target="#coupon-form">{lang key='useCoupon' section='checkout'}</strong>
                                         {/block}
                                         {/cardheader}
                                         {collapse id="coupon-form"}

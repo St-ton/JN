@@ -23202,6 +23202,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   hyphens: auto;
 }
 
+.font-bold {
+  font-weight: 700;
+}
+
 .zindex-dropdown {
   z-index: 1000;
 }

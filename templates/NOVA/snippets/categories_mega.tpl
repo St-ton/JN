@@ -45,7 +45,7 @@
                                         {row class="lg-row-lg nav"}
                                             {col lg=4 xl=3 class="my-lg-4 nav-item dropdown d-lg-none"}
                                                 {link href=$category->getURL() class="font-size-base" rel="nofollow"}
-                                                    <span class="text-truncate font-weight-bold d-block pr-3 pr-lg-0">{lang key='menuShow' printf=$category->getName()}</span>
+                                                    <strong class="text-truncate d-block pr-3 pr-lg-0">{lang key='menuShow' printf=$category->getName()}</strong>
                                                 {/link}
                                             {/col}
                                             {block name='snippets-categories-mega-sub-categories'}
@@ -111,14 +111,14 @@
                                         {col lg=4 xl=3 class="my-lg-4 nav-item d-lg-none"}
                                             {block name='snippets-categories-mega-manufacturers-header'}
                                                 {link href="{$manufacturerOverview->getURL()}" class="font-size-base" rel="nofollow"}
-                                                    <span class="text-truncate font-weight-bold d-block pr-3 pr-lg-0">
+                                                    <strong class="text-truncate d-block pr-3 pr-lg-0">
                                                         {if !empty($manufacturerOverview->getName())}
                                                             {$manufacturerTitle = $manufacturerOverview->getName()}
                                                         {else}
                                                             {$manufacturerTitle = {lang key='manufacturers'}}
                                                         {/if}
                                                         {lang key='menuShow' printf=$manufacturerTitle}
-                                                    </span>
+                                                    </strong>
                                                 {/link}
                                             {/block}
                                         {/col}
@@ -204,7 +204,7 @@
                                         {row class="lg-row-lg nav"}
                                             {col lg=4 xl=3 class="my-lg-4 nav-item dropdown d-lg-none"}
                                                 {block name='layout-header-top-bar-user-settings-currency-header'}
-                                                    <span class="font-size-base font-weight-bold ">{lang key='currency'}</span>
+                                                    <strong class="font-size-base">{lang key='currency'}</strong>
                                                 {/block}
                                             {/col}
                                             {foreach $smarty.session.Waehrungen as $currency}

@@ -60,9 +60,9 @@
                                         {block name='productdetails-details-info-item-id'}
                                             {if isset($Artikel->cArtNr)}
                                                 <li class='product-sku'>
-                                                    <span class="font-weight-bold">
+                                                    <strong>
                                                         {lang key='sortProductno'}:
-                                                    </span>
+                                                    </strong>
                                                     <span itemprop="sku">{$Artikel->cArtNr}</span>
                                                 </li>
                                             {/if}
@@ -70,9 +70,9 @@
                                         {block name='productdetails-details-info-mhd'}
                                             {if isset($Artikel->dMHD) && isset($Artikel->dMHD_de)}
                                                 <li>
-                                                    <span class="font-weight-bold" title="{lang key='productMHDTool'}">
+                                                    <strong title="{lang key='productMHDTool'}">
                                                         {lang key='productMHD'}:
-                                                    </span>
+                                                    </strong>
                                                     <span itemprop="best-before">{$Artikel->dMHD_de}</span>
                                                 </li>
                                             {/if}
@@ -82,7 +82,7 @@
                                             && ($Einstellungen.artikeldetails.gtin_display === 'details'
                                             || $Einstellungen.artikeldetails.gtin_display === 'always')}
                                                 <li>
-                                                    <span class="font-weight-bold">{lang key='ean'}:</span>
+                                                    <strong>{lang key='ean'}:</strong>
                                                     <span itemprop="{if $Artikel->cBarcode|count_characters === 8}gtin8{else}gtin13{/if}">{$Artikel->cBarcode}</span>
                                                 </li>
                                             {/if}
@@ -92,7 +92,7 @@
                                             && ($Einstellungen.artikeldetails.isbn_display === 'D'
                                             || $Einstellungen.artikeldetails.isbn_display === 'DL')}
                                                 <li>
-                                                    <span class="font-weight-bold">{lang key='isbn'}:</span>
+                                                    <strong>{lang key='isbn'}:</strong>
                                                     <span itemprop="gtin13">{$Artikel->cISBN}</span>
                                                 </li>
                                             {/if}
@@ -102,7 +102,7 @@
                                             {if $Einstellungen.artikeldetails.artikeldetails_kategorie_anzeigen === 'Y' && isset($Brotnavi[$cidx])}
                                                 {block name='productdetails-details-info-category'}
                                                     <li class="product-category word-break">
-                                                        <span class="font-weight-bold">{lang key='category'}: </span>
+                                                        <strong>{lang key='category'}: </strong>
                                                         <a href="{$Brotnavi[$cidx]->getURLFull()}" itemprop="category">{$Brotnavi[$cidx]->getName()}</a>
                                                     </li>
                                                 {/block}
@@ -112,7 +112,7 @@
                                             {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'N' && isset($Artikel->cHersteller)}
                                                 {block name='productdetails-details-product-info-manufacturer'}
                                                     <li itemprop="brand" itemscope="true" itemtype="http://schema.org/Organization">
-                                                        <span class="font-weight-bold">{lang key='manufacturers'}:</span>
+                                                        <strong>{lang key='manufacturers'}:</strong>
                                                         <a class="text-decoration-none"
                                                            href="{if !empty($Artikel->cHerstellerHomepage)}{$Artikel->cHerstellerHomepage}{else}{$Artikel->cHerstellerSeo}{/if}"
                                                             {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B'}
@@ -145,7 +145,7 @@
                                             && ($Einstellungen.artikeldetails.adr_hazard_display === 'D'
                                             || $Einstellungen.artikeldetails.adr_hazard_display === 'DL')}
                                                 <li>
-                                                    <span class="font-weight-bold">{lang key='adrHazardSign'}:</span>
+                                                    <strong>{lang key='adrHazardSign'}:</strong>
                                                     <table class="adr-table">
                                                         <tr>
                                                             <td>{$Artikel->cGefahrnr}</td>

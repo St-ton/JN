@@ -29,7 +29,7 @@
                                                 {col lg=4 xl=3 class="my-lg-4 nav-item dropdown d-lg-none"}
                                                     {block name='snippets-linkgroup-list-links-header'}
                                                         {link href=$li->getURL() title=$li->getName()}
-                                                            <span class="text-truncate font-weight-bold d-block pr-3 pr-lg-0">{lang key='menuShow' printf=$li->getName()}</span>
+                                                            <strong class="text-truncate d-block pr-3 pr-lg-0">{lang key='menuShow' printf=$li->getName()}</strong>
                                                         {/link}
                                                     {/block}
                                                 {/col}

@@ -11,5 +11,5 @@
 <script>
     var dateTimeInput = $('#config-{$propname}');
     opc.gui.initDateTimePicker(dateTimeInput);
-    dateTimeInput.val('{$propval|escape:'html'}');
+    dateTimeInput.val(opc.page.decodeDate('{$propval|escape:'html'}'));
 </script>

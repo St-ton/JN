@@ -256,7 +256,7 @@ final class JTLCache implements JTLCacheInterface
             // port for memcache(d) server
             'memcache_host'    => self::DEFAULT_MEMCACHE_HOST,
             // host of memcache(d) server
-            'prefix'           => 'jc_' . (\defined('DB_NAME') ? \DB_NAME . '_' : ''),
+            'prefix'           => 'j5_' . (\defined('DB_NAME') ? \DB_NAME . '_' : ''),
             // try to make a quite unique prefix if multiple shops are used
             'lifetime'         => self::DEFAULT_LIFETIME,
             // cache lifetime in seconds

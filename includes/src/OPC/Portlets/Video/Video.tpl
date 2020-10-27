@@ -1,5 +1,5 @@
 {if $isPreview}
-    <div {$instance->getAttributeString()} class="opc-Video">
+    <div {$instance->getAttributeString()} class="opc-Video" style="position: relative">
         {if !empty($instance->getProperty('video-responsive'))}
             {$style = 'width:100%;'}
         {else}
@@ -10,21 +10,14 @@
             {$style = $style|cat:'px'}
         {/if}
 
-        {if $instance->getProperty('video-vendor') === 'youtube'}
-            {image
-                src='https://img.youtube.com/vi/'|cat:$instance->getProperty('video-yt-id')|cat:'/maxresdefault.jpg'
-                alt='YouTube Video'
-                fluid=true
-                style=$style}
-        {elseif $instance->getProperty('video-vendor') === 'vimeo'}
-            {$imgid = $instance->getProperty('video-vim-id')}
-            {$hash  = unserialize(file_get_contents("http://vimeo.com/api/v2/video/$imgid.php"))}
+        {$src = $portlet->getPreviewImageUrl($instance)}
 
-            {image
-                src=$hash[0].thumbnail_large
-                alt='Vimeo Video'
-                fluid=true
-                style=$style}
+        {if $src !== null && $instance->getProperty('video-vendor') === 'youtube'}
+            {image src=$src alt='YouTube Video' fluid=true style=$style}
+            <div class="give-consent-preview" style="background-image: url({$portlet->getPreviewOverlayUrl()})"></div>
+        {elseif $src !== null && $instance->getProperty('video-vendor') === 'vimeo'}
+            {image src=$src alt='Vimeo Video' fluid=true style=$style}
+            <div class="give-consent-preview" style="background-image: url({$portlet->getPreviewOverlayUrl()})"></div>
         {else}
             <div>
                 <i class="fas fa-film"></i>
@@ -33,7 +26,9 @@
         {/if}
     </div>
 {else}
-    <div id="{$instance->getUid()}" {$instance->getAttributeString()} class="{$instance->getStyleClasses()}">
+    {$previewImageUrl = $portlet->getPreviewImageUrl($instance)}
+
+    <div id="{$instance->getUid()}" {$instance->getAttributeString()} class="opc-Video {$instance->getStyleClasses()}">
         {if !empty($instance->getProperty('video-title'))}
             <label>{$instance->getProperty('video-title')|escape:'html'}</label>
         {/if}
@@ -53,17 +48,21 @@
                     {/strip}
                         class="needs-consent youtube
                             {if $instance->getProperty('video-responsive')}embed-responsive-item{/if}"
-                        allowfullscreen>
                         {if !empty($instance->getProperty('video-title'))}
                             title="{$instance->getProperty('video-title')|escape:'html'}"
                         {/if}
                         {if !$instance->getProperty('video-responsive')}
                             width="{$instance->getProperty('video-width')}"
                             height="{$instance->getProperty('video-height')}"
-                        {/if}</iframe>
-                <a href="#" class="trigger give-consent"
+                        {/if}
+                        allowfullscreen></iframe>
+                <a href="#" class="trigger give-consent give-consent-preview"
                    data-consent="youtube"
-                   style="position:absolute;left:16px;top:16px;">Youtube Consent geben</a>
+                   style="background-image:
+                           url({$portlet->getPreviewOverlayUrl()})
+                           {if $previewImageUrl !== null},url({$previewImageUrl});{/if}">
+                    {lang key='allowConsentYouTube'}
+                </a>
             </div>
         {elseif $instance->getProperty('video-vendor') === 'vimeo'}
             <div{if $instance->getProperty('video-responsive')}
@@ -78,7 +77,7 @@
                     {/strip}
                         class="needs-consent vimeo
                             {if $instance->getProperty('video-responsive')}embed-responsive-item{/if}"
-                        frameborder="0" allowfullscreen
+                        allowfullscreen
                         {if !empty($instance->getProperty('video-title'))}
                             title="{$instance->getProperty('video-title')}"
                         {/if}
@@ -86,9 +85,13 @@
                             width="{$instance->getProperty('video-width')}"
                             height="{$instance->getProperty('video-height')}"
                         {/if}></iframe>
-                <a href="#" class="trigger give-consent"
+                <a href="#" class="trigger give-consent give-consent-preview"
                    data-consent="vimeo"
-                   style="position:absolute;left:16px;top:16px;">Vimeo Consent geben</a>
+                   style="background-image:
+                           url({$portlet->getPreviewOverlayUrl()})
+                           {if $previewImageUrl !== null},url({$previewImageUrl});{/if}">
+                    {lang key='allowConsentVimeo'}
+                </a>
             </div>
         {else}
             <div{if $instance->getProperty('video-responsive')} class="embed-responsive embed-responsive-16by9"{/if}>

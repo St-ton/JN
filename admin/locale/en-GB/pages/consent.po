@@ -9,7 +9,7 @@ msgid "pageTitle"
 msgstr "Consent manager"
 
 msgid "pageDesc"
-msgstr "Manage texts for conset items"
+msgstr "Here you can manage the required consents to display third-party content and cookies."
 
 msgid "itemID"
 msgstr "ID"
@@ -18,7 +18,7 @@ msgid "company"
 msgstr "Company"
 
 msgid "pluginID"
-msgstr "Plugin ID"
+msgstr "Plug-in ID"
 
 msgid "languageID"
 msgstr "Language ID"
@@ -30,22 +30,22 @@ msgid "purpose"
 msgstr "Purpose"
 
 msgid "disable"
-msgstr "disable"
+msgstr "Disable"
 
 msgid "enable"
-msgstr "enable"
+msgstr "Enable"
 
 msgid "saveAndContinue"
-msgstr "Save and continue"
+msgstr "Save and keep editing"
 
 msgid "modelHeader"
 msgstr "Consent"
 
 msgid "childHeading"
-msgstr "Localizations"
+msgstr "Localisation"
 
 msgid "generalHeading"
 msgstr "General"
 
 msgid "privacyPolicy"
-msgstr "Privacy policy (link)"
+msgstr "Terms of use (link)"

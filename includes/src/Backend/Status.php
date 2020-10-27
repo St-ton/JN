@@ -142,9 +142,10 @@ class Status
     /**
      * checks the shop-filesystem-structure against 'admin/includes/shopmd5files/[shop-version].csv'
      *
+     * @param string|null $hash
      * @return bool  true='no errors', false='something is wrong'
      */
-    public function validModifiedFileStruct(): bool
+    public function validModifiedFileStruct(?string &$hash = null): bool
     {
         if (($validModifiedFileStruct = $this->cache->get(self::CACHE_ID_MODIFIED_FILE_STRUCT)) === false) {
             $check   = new FileCheck();
@@ -162,6 +163,7 @@ class Status
                 [\CACHING_GROUP_STATUS]
             );
         }
+        $hash = \md5(($hash ?? 'validModifiedFileStruct') . '_' . $validModifiedFileStruct);
 
         return $validModifiedFileStruct === 0;
     }
@@ -169,9 +171,10 @@ class Status
     /**
      * checks the shop-filesystem-structure against 'admin/includes/shopmd5files/deleted_files_[shop-version].csv'
      *
+     * @param string|null $hash
      * @return bool  true='no errors', false='something is wrong'
      */
-    public function validOrphanedFilesStruct(): bool
+    public function validOrphanedFilesStruct(?string &$hash = null): bool
     {
         if (($validOrphanedFilesStruct = $this->cache->get(self::CACHE_ID_ORPHANED_FILE_STRUCT)) === false) {
             $check             = new FileCheck();
@@ -191,14 +194,16 @@ class Status
                 [\CACHING_GROUP_STATUS]
             );
         }
+        $hash = \md5(($hash ?? 'validOrphanedFilesStruct') . '_' . $validOrphanedFilesStruct);
 
         return $validOrphanedFilesStruct === 0;
     }
 
     /**
+     * @param string|null $hash
      * @return bool
      */
-    public function validFolderPermissions(): bool
+    public function validFolderPermissions(?string &$hash = null): bool
     {
         if (($filesystemFolders = $this->cache->get(self::CACHE_ID_FOLDER_PERMISSIONS)) === false) {
             $filesystem = new Filesystem(\PFAD_ROOT);
@@ -210,6 +215,7 @@ class Status
                 [\CACHING_GROUP_STATUS]
             );
         }
+        $hash = \md5(($hash ?? 'validFolderPermissions') . '_' . $filesystemFolders->nCountInValid);
 
         return $filesystemFolders->nCountInValid === 0;
     }
@@ -436,15 +442,19 @@ class Status
     }
 
     /**
+     * @param string|null $hash
      * @return bool
      */
-    public function hasLicenseExpirations(): bool
+    public function hasLicenseExpirations(?string &$hash = null): bool
     {
         $manager = new Manager($this->db, $this->cache);
         $mapper  = new Mapper($manager);
 
-        return $mapper->getCollection()->getAboutToBeExpired(28)->count() > 0
-            || $mapper->getCollection()->getBoundExpired()->count() > 0;
+        $toBeExpired  = $mapper->getCollection()->getAboutToBeExpired(28)->count();
+        $boundExpired = $mapper->getCollection()->getBoundExpired()->count();
+        $hash         = \md5(($hash ?? 'hasLicenseExpirations') . '_' . $toBeExpired . '_' . $boundExpired);
+
+        return $toBeExpired > 0 || $boundExpired > 0;
     }
 
     /**
@@ -508,11 +518,13 @@ class Status
      * Checks, whether SMTP is configured for sending mails but no encryption method is chosen for E-Mail-Server
      * communication
      *
+     * @param string|null $hash
      * @return bool
      */
-    public function hasInsecureMailConfig(): bool
+    public function hasInsecureMailConfig(?string &$hash = null): bool
     {
         $conf = Shop::getConfig([\CONF_EMAILS])['emails'];
+        $hash = \md5(($hash ?? 'hasInsecureMailConfig') . '_' . $conf['email_methode']);
 
         return $conf['email_methode'] === 'smtp' && empty(\trim($conf['email_smtp_verschluesselung']));
     }

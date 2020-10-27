@@ -1,8 +1,8 @@
 <?php
 
 use JTL\Backend\AdminLoginStatus;
-use JTL\Backend\Notification;
 use JTL\Backend\Revision;
+use JTL\Events\Event;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
@@ -29,7 +29,6 @@ require PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'error_handler.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
-require PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_tools.php';
@@ -120,9 +119,9 @@ if ($loggedIn) {
         $oAccount->redirectOnFailure(AdminLoginStatus::ERROR_SESSION_INVALID);
     }
 
-    Shop::fire('backend.notification', Notification::getInstance()->buildDefault());
     if (isset($_POST['revision-action'], $_POST['revision-type'], $_POST['revision-id']) && Form::validateToken()) {
         $revision = new Revision($db);
+        Shop::fire(Event::REVISION_RESTORE_DELETE, ['revision' => $revision]);
         if ($_POST['revision-action'] === 'restore') {
             $revision->restoreRevision(
                 $_POST['revision-type'],

@@ -83,28 +83,28 @@ trait PortletStyles
                 'width'   => 34,
                 'desc'    => __('cssNumericDesc'),
             ],
-            'box-styles'  => [
-                'type'    => InputType::BOX_STYLES,
+            'box-styles'       => [
+                'type' => InputType::BOX_STYLES,
             ],
             'hidden-xs'        => [
-                'type'       => InputType::CHECKBOX,
-                'label'      => __('Hidden on XS'),
-                'width'      => 25,
+                'type'  => InputType::CHECKBOX,
+                'label' => __('Hidden on XS'),
+                'width' => 25,
             ],
             'hidden-sm'        => [
-                'type'       => InputType::CHECKBOX,
-                'label'      => __('Hidden on SM'),
-                'width'      => 25,
+                'type'  => InputType::CHECKBOX,
+                'label' => __('Hidden on SM'),
+                'width' => 25,
             ],
             'hidden-md'        => [
-                'type'       => InputType::CHECKBOX,
-                'label'      => __('Hidden on MD'),
-                'width'      => 25,
+                'type'  => InputType::CHECKBOX,
+                'label' => __('Hidden on MD'),
+                'width' => 25,
             ],
             'hidden-lg'        => [
-                'type'       => InputType::CHECKBOX,
-                'label'      => __('Hidden on LG'),
-                'width'      => 25,
+                'type'  => InputType::CHECKBOX,
+                'label' => __('Hidden on LG'),
+                'width' => 25,
             ],
         ];
     }

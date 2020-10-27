@@ -110,7 +110,7 @@
         </div>
         <div class="form-group-list">
             {foreach $question->getOptions() as $option}
-                <div class="form-group-list-item">
+                <div class="form-group-list-item py-2">
                     <div class="form-row">
                         <div class="col-xl-3">
                             <div class="custom-control custom-checkbox custom-checkbox-centered">
@@ -131,7 +131,10 @@
                         </div>
                         <div class="col-xl">
                             {$option->getDescription()}
-                            <a href="premiumplugin.php?scope={$question->getScope()}&id={$option->getValue()}&fromWizard=true" target="_blank">{__('getToKnowMore')}</a>
+                            <a href="premiumplugin.php?scope={$question->getScope()}&id={$option->getValue()}&fromWizard=true" target="_blank">
+                                {__('getToKnowMore')}
+                                <span class="fal fa-long-arrow-right ml-1"></span>
+                            </a>
                         </div>
                     </div>
                 </div>

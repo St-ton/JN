@@ -114,7 +114,7 @@
                     <div class="alert alert-info" role="alert">{__('noFilterResults')}</div>
                 {else}
                     <div class="alert alert-info" role="alert">
-                        {__('emptySetMessage1')} {$cKuponTypName}s {__('emptySetMessage2')}
+                        {__('emptySetMessage1')} {__($cKuponTypName)} {__('emptySetMessage2')}
                     </div>
                 {/if}
                 <div class="card-footer save-wrapper">
@@ -141,7 +141,7 @@
                         <div class="col-sm-6 col-xl-auto">
                             <a href="kupons.php?kKupon=0&cKuponTyp={$cKuponTyp}&token={$smarty.session.jtl_token}"
                                class="btn btn-primary btn-block" title="{__('modify')}">
-                                <i class="fa fa-share"></i> {$cKuponTypName} {__('create')}
+                                <i class="fa fa-share"></i> {__($cKuponTypName|cat:'Create')}
                             </a>
                         </div>
                     </div>
@@ -175,7 +175,7 @@
         <div class="tab-content">
             {kupons_uebersicht_tab
                 cKuponTyp=$couponTypes.standard
-                cKuponTypName=__('standardCoupon')
+                cKuponTypName='standardCoupon'
                 oKupon_arr=$oKuponStandard_arr
                 nKuponCount=$nKuponStandardCount
                 pagination=$oPaginationStandard
@@ -183,7 +183,7 @@
             }
             {kupons_uebersicht_tab
                 cKuponTyp=$couponTypes.shipping
-                cKuponTypName=__('shippingCoupon')
+                cKuponTypName='shippingCoupon'
                 oKupon_arr=$oKuponVersandkupon_arr
                 nKuponCount=$nKuponVersandCount
                 pagination=$oPaginationVersandkupon
@@ -191,7 +191,7 @@
             }
             {kupons_uebersicht_tab
                 cKuponTyp=$couponTypes.newCustomer
-                cKuponTypName=__('newCustomerCoupon')
+                cKuponTypName='newCustomerCoupon'
                 oKupon_arr=$oKuponNeukundenkupon_arr
                 nKuponCount=$nKuponNeukundenCount
                 pagination=$oPaginationNeukundenkupon

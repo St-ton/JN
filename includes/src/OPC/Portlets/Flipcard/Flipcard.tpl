@@ -44,7 +44,7 @@
                 {if $trigger === 'click'}
                     flipcard.on('click', flipCard);
                 {else}
-                    flipcard.on('hover', flipCard);
+                    flipcard.on('mouseenter mouseleave', flipCard);
                 {/if}
             {/if}
 
@@ -71,15 +71,15 @@
 
         function updateHeight_{$uid}()
         {
-            var flipcard      = $('#{$uid}');
-            var flipcardInner = flipcard.find('.opc-Flipcard-inner');
-            var flipcardFaces = flipcardInner.find('.opc-Flipcard-face');
-            var height        = 0;
+            let flipcard      = $('#{$uid}');
+            let flipcardInner = flipcard.find('.opc-Flipcard-inner');
+            let flipcardFaces = flipcardInner.find('.opc-Flipcard-face');
+            let height        = 0;
 
             flipcardInner.css('height', 'auto');
             flipcardFaces.css('height', 'auto');
 
-            flipcardInner.find('.opc-Flipcard-face').each(function(i, elm) {
+            flipcardInner.find('.opc-Flipcard-face').each((i, elm) => {
                 height = Math.max(height, $(elm).height());
             });
 

@@ -3,7 +3,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "Banner"
-msgstr "Banner"
+msgstr "Banners"
 
 msgid "Zones"
 msgstr "Zones"
@@ -21,4 +21,4 @@ msgid "bannerAreas"
 msgstr "Banner zones"
 
 msgid "altTextDesc"
-msgstr "\"alt\" attribute of the image"
+msgstr "\"alt\" attribute of image"

@@ -105,4 +105,4 @@ msgid "sureDeleteFormat"
 msgstr "Möchten Sie das Exportformat wirklich löschen?"
 
 msgid "useCache"
-msgstr "Cache nutzen?"
+msgstr "Cache nutzen"

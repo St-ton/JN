@@ -9,7 +9,7 @@ msgid "freischaltenURL"
 msgstr "https://jtl-url.de/z3qa0"
 
 msgid "freischaltenDesc"
-msgstr "Here you activate customer reviews, search queries, blog post comments and the recipients of newsletters in the currently selected language."
+msgstr "Here you activate customer reviews, search queries, blog post comments, and the recipients of newsletters in the currently selected language."
 
 msgid "freischaltenActivate"
 msgstr "Activate"
@@ -48,7 +48,7 @@ msgid "freischaltenNewsCommentsDate"
 msgstr "Created on"
 
 msgid "freischaltenNewsletterReceiver"
-msgstr "Newsletter recipient"
+msgstr "Newsletter recipients"
 
 msgid "freischaltenSearchItem"
 msgstr "Search term"
@@ -63,7 +63,7 @@ msgid "freischaltenMappingOnBTN"
 msgstr "Link"
 
 msgid "freischaltenMappingDesc"
-msgstr "Warning: When a link exists, search queries are activated immediately."
+msgstr "Please note: When a link exists, search queries are activated immediately."
 
 msgid "errorSearchTermMissing"
 msgstr "Please enter a search term."

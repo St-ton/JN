@@ -62,6 +62,8 @@ ifndef('SMARTY_USE_SUB_DIRS', false);
 ifndef('JTL_INCLUDE_ONLY_DB', 0);
 ifndef('SOCKET_TIMEOUT', 30);
 ifndef('ARTICLES_PER_PAGE_HARD_LIMIT', 100);
+ifndef('MAX_CORRUPTED_IMAGES', 50);
+ifndef('MAX_IMAGES_PER_STEP', 50000);
 
 // Pfade
 ifndef('PFAD_CLASSES', 'classes/old/'); // DEPRECATED
@@ -164,6 +166,7 @@ ifndef('STORAGE_CATEGORIES', PFAD_MEDIA_IMAGE_STORAGE . 'categories/');
 ifndef('STORAGE_CHARACTERISTICS', PFAD_MEDIA_IMAGE_STORAGE . 'characteristics/');
 ifndef('STORAGE_CHARACTERISTIC_VALUES', PFAD_MEDIA_IMAGE_STORAGE . 'characteristicvalues/');
 ifndef('STORAGE_OPC', PFAD_MEDIA_IMAGE_STORAGE . 'opc/');
+ifndef('STORAGE_VIDEO_THUMBS', PFAD_MEDIA_IMAGE_STORAGE . 'videothumbs/');
 // Plugins
 ifndef('PFAD_PLUGIN', PFAD_INCLUDES . 'plugins/');
 // dbeS
@@ -222,6 +225,8 @@ ifndef('MAX_REVISIONS', 5);
 
 ifndef('SHOW_DEBUG_BAR', false);
 
+ifndef('EXS_LIVE', true);
+
 ifndef('ART_MATRIX_MAX', 250);
 
 ifndef('QUEUE_MAX_STUCK_HOURS', 1);
@@ -245,7 +250,7 @@ ifndef('SECURE_PHP_FUNCTIONS', '
     str_repeat, str_replace, str_rot13, str_shuffle, str_split, str_word_count, strcasecmp, strchr, strcmp, strcoll,
     strcspn, strip_tags, stripslashes, stristr, strlen, strnatcasecmp, strnatcmp, strncasecmp, strncmp, strpbrk, strpos,
     strrchr, strrev, strripos, strrpos, strspn, strstr, strtok, strtolower, strtoupper, strtr, substr_compare,
-    substr_count, substr_replace, substr, trim, ucfirst, ucwords, vsprintf, wordwrap,
+    substr_count, substr_replace, substr, trim, ucfirst, ucwords, vsprintf, var_dump, print_r, printf, wordwrap,
     
     checkdate, date_add, date_create_from_format, date_create_immutable_from_format, date_create_immutable, date_create,
     date_date_set, date_diff, date_format, date_get_last_errors, date_interval_create_from_date_string,

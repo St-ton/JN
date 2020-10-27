@@ -699,9 +699,9 @@ abstract class AbstractSync
                     baseprice.fVKNetto, baseprice.fVKNetto + varaufpreis.fMinAufpreisNetto)) fVKNettoMin,
                 MAX(IF(varaufpreis.fMaxAufpreisNetto IS NULL,
                     baseprice.fVKNetto, baseprice.fVKNetto + varaufpreis.fMaxAufpreisNetto)) fVKNettoMax,
-                baseprice.nLagerAnzahlMax,
-                baseprice.dStart,
-                baseprice.dEnde
+                MAX(baseprice.nLagerAnzahlMax) nLagerAnzahlMax,
+                MAX(baseprice.dStart) dStart,
+                MIN(baseprice.dEnde) dEnde
             FROM (
                 SELECT IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) kArtikel,
                     tartikel.kArtikel kKindArtikel,
@@ -709,12 +709,19 @@ abstract class AbstractSync
                     tpreis.kKundengruppe,
                     tpreis.kKunde,
                     IF (tpreis.kKundengruppe > 0, 9, 1) nRangeType,
-                    null nLagerAnzahlMax,
-                    tpreisdetail.fVKNetto,
-                    null dStart, null dEnde
+                    IF(tartikelsonderpreis.nIstAnzahl = 0, null, tartikelsonderpreis.nAnzahl) nLagerAnzahlMax,
+                    IF(tsonderpreise.fNettoPreis < tpreisdetail.fVKNetto,
+                        tsonderpreise.fNettoPreis, tpreisdetail.fVKNetto) fVKNetto,
+                    tartikelsonderpreis.dStart dStart,
+                    IF(tartikelsonderpreis.nIstDatum = 0, null, tartikelsonderpreis.dEnde) dEnde
                 FROM tartikel
                 INNER JOIN tpreis ON tpreis.kArtikel = tartikel.kArtikel
                 INNER JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
+                LEFT JOIN tartikelsonderpreis ON tartikelsonderpreis.cAktiv = \'Y\'
+                    AND tartikelsonderpreis.kArtikel = tartikel.kArtikel
+                LEFT JOIN tsonderpreise
+                    ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis
+                        AND tsonderpreise.kKundengruppe = tpreis.kKundengruppe
                 WHERE tartikel.nIstVater = 0
                     AND IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) IN ('
             . $idString . ')
@@ -738,8 +745,7 @@ abstract class AbstractSync
                     ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis
                     AND tsonderpreise.kKundengruppe = tpreis.kKundengruppe
                 WHERE tartikelsonderpreis.cAktiv = \'Y\'
-                    AND IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) IN ('
-            . $idString . ')) baseprice
+                    AND tartikel.kArtikel IN (' . $idString . ')) baseprice
             LEFT JOIN (
                 SELECT variations.kArtikel, variations.kKundengruppe,
                     SUM(variations.fMinAufpreisNetto) fMinAufpreisNetto,
@@ -770,10 +776,7 @@ abstract class AbstractSync
             GROUP BY baseprice.kArtikel,
                 baseprice.kKundengruppe,
                 baseprice.kKunde,
-                baseprice.nRangeType,
-                baseprice.nLagerAnzahlMax,
-                baseprice.dStart,
-                baseprice.dEnde',
+                baseprice.nRangeType',
             ReturnType::DEFAULT
         );
     }

@@ -40,7 +40,7 @@
                             <meta itemprop="minPrice" content="{$Artikel->Preise->oPriceRange->minBruttoPrice}">
                             <meta itemprop="maxPrice" content="{$Artikel->Preise->oPriceRange->maxBruttoPrice}">
                         {/if}
-                        </span>{if $tplscope !== 'detail'} <span class="footnote-reference">*</span>{/if}
+                        </span>{if $tplscope !== 'detail'} <span class="position-absolute ml-1 footnote-reference">*</span>{/if}
                     {/block}
                     {block name='productdetails-price-snippets'}
                         {if $tplscope !== 'box'}
@@ -150,7 +150,7 @@
                                                             <tr class="bulk-price-{$bulkPrice.nAnzahl}">
                                                                 <td>{$bulkPrice.nAnzahl}</td>
                                                                 <td>
-                                                                    <span class="bulk-price mr-1">{$bulkPrice.cPreisLocalized[$NettoPreise]}</span><span class="footnote-reference">*</span>
+                                                                    <span class="bulk-price mr-1">{$bulkPrice.cPreisLocalized[$NettoPreise]}</span><span class="position-absolute ml-1 footnote-reference">*</span>
                                                                 </td>
                                                                 {if !empty($bulkPrice.cBasePriceLocalized)}
                                                                     <td class="bulk-base-price">

@@ -101,6 +101,15 @@ msgstr "Border colour"
 msgid "Border radius"
 msgstr "Border rounding"
 
+msgid "Custom css class"
+msgstr "Add custom css classes"
+
+msgid "CustomCssClassDesc"
+msgstr "Assign one or multiple CSS classes to the portlet (separated with space, without the '.' selector)"
+
+msgid "CustomCssClassPlaceholder"
+msgstr "first-custom-class second-custom-class"
+
 msgid "Hidden on XS"
 msgstr "Hide portlet for XS"
 

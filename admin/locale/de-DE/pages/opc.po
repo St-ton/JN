@@ -101,6 +101,15 @@ msgstr "Rahmenfarbe"
 msgid "Border radius"
 msgstr "Rahmenabrundung"
 
+msgid "Custom css class"
+msgstr "Benutzerdefinierte CSS Klasse(n) hinzufügen"
+
+msgid "CustomCssClassDesc"
+msgstr "Vergeben Sie eine oder mehrere CSS-Klassen ( separiert mit Leerzeichen, ohne den '.' selector )"
+
+msgid "CustomCssClassPlaceholder"
+msgstr "first-custom-class second-custom-class"
+
 msgid "Hidden on XS"
 msgstr "Portlet verstecken bei XS"
 

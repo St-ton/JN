@@ -101,7 +101,7 @@
                                 {/block}
                             {/if}
                             {block name='basket-cart-dropdown-cart-item-total'}
-                                <li class="font-bold">
+                                <li class="font-weight-bold-util">
                                     {if empty($smarty.session.Versandart)}
                                         {lang key='subtotal' section='account data'}
                                     {else}

@@ -57,7 +57,7 @@
                                                                     {col cols=12 sm=3}<small class="desc text-info">{$versandart->cLieferdauer|trans}</small>{/col}
                                                                 {/block}
                                                                 {block name='checkout-step3-shipping-options-shipping-option-price'}
-                                                                    {col cols=12 sm=4 class='font-bold'}
+                                                                    {col cols=12 sm=4 class='font-weight-bold-util'}
                                                                         {$versandart->cPreisLocalized}
                                                                         {if !empty($versandart->Zuschlag->fZuschlag)}
                                                                             <div>

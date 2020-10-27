@@ -8,7 +8,7 @@
                         data=["toggle"=>"collapse"]
                         role="button"
                         aria=["expanded"=>"false","controls"=>"crd-cllps-{$oBox->getID()}"]
-                        class="text-decoration-none font-bold mb-2 d-md-none dropdown-toggle"}
+                        class="text-decoration-none font-weight-bold-util mb-2 d-md-none dropdown-toggle"}
                         {lang key='wishlist'}
                     {/link}
                 {/block}

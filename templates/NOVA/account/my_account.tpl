@@ -12,7 +12,7 @@
             {/col}
             {col cols=12 lg=6 class="mb-5"}
                 {block name='account-my-account-account-credit'}
-                    {card class='text-center border border-primary font-bold'}
+                    {card class='text-center border border-primary font-weight-bold-util'}
                         {lang key='yourMoneyOnAccount' section='login'}: {$Kunde->cGuthabenLocalized}
                     {/card}
                 {/block}

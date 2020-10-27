@@ -10,11 +10,11 @@
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            <div class="col">
-                                <img width="160" height="160" class="mb-2" src="{$recommendation->getPreviewImage()}" loading="lazy">
+                            <div class="col-auto px-3">
+                                <img style="max-width: 160px;" src="{$recommendation->getPreviewImage()}" loading="lazy">
                             </div>
-                            <div class="col-auto align-self-end">
-                                <div><a href="{$recommendation->getURL()}">{$recommendation->getTitle()}</a></div>
+                            <div class="col align-self-end px-3">
+                                <div><a class="font-weight-bold" href="{$recommendation->getURL()}">{$recommendation->getTitle()}</a></div>
                                 <div>
                                     {__('manufacturer')}: <a href="{$recommendation->getManufacturer()->getProfileURL()}">{$recommendation->getManufacturer()->getName()}</a>
                                 </div>
@@ -31,7 +31,7 @@
                 </div>
             </div>
         </div>
-        <div class="row mb-5 justify-content-center">
+        <div class="row mb-5">
             {$imgCount = $recommendation->getImages()|count}
             {foreach $recommendation->getImages() as $image}
                 <div class="col-md{if $imgCount < 5}-3{/if} text-center pr-md-4 pr-0">

@@ -22,7 +22,8 @@ $getText          = Shop::Container()->getGetText();
 $checker          = new Checker(Shop::Container()->getLogService(), $db, $cache);
 $manager          = new LicenseManager($db, $cache);
 $admin            = new Admin($manager, $db, $cache, $checker);
-$recommendations  = new Manager($alertHelper, Request::verifyGPDataString('scope'));
+$scope            = Request::verifyGPDataString('scope');
+$recommendations  = new Manager($alertHelper, $scope);
 $hasLicense       = $manager->getLicenseByExsID($recommendationID) !== null;
 $token            = AuthToken::getInstance($db);
 $action           = Request::verifyGPDataString('action');
@@ -33,7 +34,7 @@ if ($action === 'install') {
     $installer->setRecommendations($recommendations->getRecommendations());
     $errorMsg = $installer->onSaveStep([$recommendationID]);
     if ($errorMsg === '') {
-        $successMsg = Manager::SCOPE_BACKEND_PAYMENT_PROVIDER
+        $successMsg = $scope === Manager::SCOPE_BACKEND_PAYMENT_PROVIDER
             ? __('successInstallPaymentPlugin')
             : __('successInstallLegalPlugin');
         $alertHelper->addAlert(

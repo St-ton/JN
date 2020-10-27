@@ -96,6 +96,11 @@ class MenuItem
     private $productCount = -1;
 
     /**
+     * @var string|null
+     */
+    public $customImgName;
+
+    /**
      * @return int
      */
     public function getID(): int
@@ -327,7 +332,7 @@ class MenuItem
      * MenuItem constructor.
      * @param stdClass $data
      */
-    public function __construct($data)
+    public function __construct(stdClass $data)
     {
         $this->setImageType(Image::TYPE_CATEGORY);
         $this->setID($data->kKategorie);
@@ -342,7 +347,9 @@ class MenuItem
         } else {
             $this->setDescription($data->cBeschreibung_spr);
         }
-
+        if (isset($data->customImgName)) {
+            $this->customImgName = $data->customImgName;
+        }
         $this->setURL($data->cSeo ?? '');
         $this->setImageURL($data->cPfad ?? '');
         $this->generateAllImageSizes(true, 1, $data->cPfad ?? null);

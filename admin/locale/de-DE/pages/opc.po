@@ -6,7 +6,7 @@ msgid "opcNotInstalled"
 msgstr "Das Update für den OnPage Composer wurde nicht ordnungsgemäß installiert. Bitte aktualisieren Sie die Migrationen."
 
 msgid "dbUpdateNeeded"
-msgstr "Ein Datenbank-Update Ihres JTL-Shops ist erforderlich, um den OnPage Composer nutzen zu können.<br/><br/>Bitte führen Sie das Update im <a href=\"%s/admin/dbupdater.php\" target=\"_blank\">Admin-Backend</a> durch!"
+msgstr "Ein Datenbank-Update Ihres JTL-Shops ist erforderlich, um den OnPage Composer nutzen zu können.<br><br>Bitte führen Sie das Update im <a href=\"%s/admin/dbupdater.php\" target=\"_blank\">Admin-Backend</a> durch!"
 
 # OPC GUI
 
@@ -168,7 +168,7 @@ msgid "noteMovementOnPage"
 msgstr "Sie hätten gern etwas mehr Bewegung auf Ihren Seiten?"
 
 msgid "noteSaveAsTemplate"
-msgstr "Sie haben eine tolle Ansicht angelegt, die Sie häufiger verwenden möchten?<br/> Legen Sie sie doch als Blueprint an und greifen Sie so einfach immer wieder darauf zu."
+msgstr "Sie haben eine tolle Ansicht angelegt, die Sie häufiger verwenden möchten?<br> Legen Sie sie doch als Blueprint an und greifen Sie so einfach immer wieder darauf zu."
 
 msgid "settingsMore"
 msgstr "Einstellungen (Vertiefung)"

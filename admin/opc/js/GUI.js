@@ -7,7 +7,6 @@ class GUI
         this.io            = io;
         this.page          = page;
         this.messages      = messages;
-        this.configSaveCb  = noop;
         this.imageSelectCB = noop;
         this.iconPickerCB  = noop;
         this.inPreviewMode = false;
@@ -400,7 +399,6 @@ class GUI
     {
         let portletData = portlet.data('portlet');
 
-        this.setConfigSaveCallback(noop);
         this.setImageSelectCallback(noop);
 
         this.curPortlet = portlet;
@@ -429,7 +427,7 @@ class GUI
     {
         event.preventDefault();
 
-        this.configSaveCb();
+        opc.emit('save-config');
 
         let portletData  = this.page.portletToJSON(this.curPortlet);
         let configObject = $(event.target).serializeControls();
@@ -695,11 +693,6 @@ class GUI
 
         this.unsavedRevision.click();
         this.restoreUnsavedModal.modal('hide');
-    }
-
-    setConfigSaveCallback(callback)
-    {
-        this.configSaveCb = callback;
     }
 
     setImageSelectCallback(callback)

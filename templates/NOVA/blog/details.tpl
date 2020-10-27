@@ -132,15 +132,16 @@
                                                         label-for="comment-text"
                                                         label-class="commentForm"
                                                     }
-                                                        {if $Einstellungen.news.news_kommentare_freischalten === 'Y'}
-                                                            <small class="form-text text-muted">{lang key='commentWillBeValidated' section='news'}</small>
-                                                        {/if}
-                                                        {textarea id="comment-text" name="cKommentar" required=true}{/textarea}
                                                         {if $nPlausiValue_arr.cKommentar > 0}
                                                             <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
                                                                 {lang key='fillOut' section='global'}
                                                             </div>
                                                         {/if}
+                                                        {if $Einstellungen.news.news_kommentare_freischalten === 'Y'}
+                                                            <small class="form-text text-muted">{lang key='commentWillBeValidated' section='news'}</small>
+                                                        {/if}
+                                                        {textarea id="comment-text" name="cKommentar" required=true}{/textarea}
+
                                                     {/formgroup}
                                                     {row}
                                                         {col md=4 xl=3 class='ml-auto'}

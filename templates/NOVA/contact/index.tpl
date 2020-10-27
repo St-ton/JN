@@ -193,17 +193,17 @@
                                                             label="{lang key='subject' section='contact'}"
                                                             label-for="subject"
                                                         }
+                                                            {if !empty($fehlendeAngaben.subject)}
+                                                                <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                                                    {lang key='fillOut'}
+                                                                </div>
+                                                            {/if}
                                                             {select name="subject" id="subject" class='custom-select' required=true}
                                                                 <option value="" selected disabled>{lang key='subject' section='contact'}</option>
                                                                 {foreach $betreffs as $betreff}
                                                                     <option value="{$betreff->kKontaktBetreff}" {if $Vorgaben->kKontaktBetreff == $betreff->kKontaktBetreff}selected{/if}>{$betreff->AngezeigterName}</option>
                                                                 {/foreach}
                                                             {/select}
-                                                            {if !empty($fehlendeAngaben.subject)}
-                                                                <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
-                                                                    {lang key='fillOut'}
-                                                                </div>
-                                                            {/if}
                                                         {/formgroup}
                                                     {/col}
                                                 {/row}
@@ -217,12 +217,13 @@
                                                         label="{lang key='message' section='contact'}"
                                                         label-for="message"
                                                     }
-                                                        {textarea name="nachricht" rows="10" id="message" required=true placeholder=" "}{if isset($Vorgaben->cNachricht)}{$Vorgaben->cNachricht}{/if}{/textarea}
                                                         {if !empty($fehlendeAngaben.nachricht)}
                                                             <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
                                                                 {lang key='fillOut'}
                                                             </div>
                                                         {/if}
+                                                        {textarea name="nachricht" rows="10" id="message" required=true placeholder=" "}{if isset($Vorgaben->cNachricht)}{$Vorgaben->cNachricht}{/if}{/textarea}
+
                                                     {/formgroup}
                                                 {/col}
                                             {/row}

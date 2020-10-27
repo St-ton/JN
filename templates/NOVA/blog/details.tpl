@@ -141,7 +141,6 @@
                                                             <small class="form-text text-muted">{lang key='commentWillBeValidated' section='news'}</small>
                                                         {/if}
                                                         {textarea id="comment-text" name="cKommentar" required=true}{/textarea}
-
                                                     {/formgroup}
                                                     {row}
                                                         {col md=4 xl=3 class='ml-auto'}

@@ -223,7 +223,6 @@
                                                             </div>
                                                         {/if}
                                                         {textarea name="nachricht" rows="10" id="message" required=true placeholder=" "}{if isset($Vorgaben->cNachricht)}{$Vorgaben->cNachricht}{/if}{/textarea}
-
                                                     {/formgroup}
                                                 {/col}
                                             {/row}

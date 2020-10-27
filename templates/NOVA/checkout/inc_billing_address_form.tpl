@@ -366,7 +366,6 @@
                                         required=true
                                         autocomplete="billing address-level2"
                                     }
-
                                 {/formgroup}
                             {/block}
                         {/col}
@@ -407,7 +406,6 @@
                                         placeholder=" "
                                         required=($Einstellungen.kunden.kundenregistrierung_abfragen_ustid === 'Y')
                                     }
-
                                 {/formgroup}
                             {/col}
                         {/block}

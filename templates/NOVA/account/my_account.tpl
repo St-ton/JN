@@ -29,7 +29,7 @@
                                 {row class="align-items-center"}
                                     {col}
                                         <span class="h3 mb-0">
-                                            {link class='text-decoration-none' href="$cCanonicalURL?bestellungen=1"}
+                                            {link class='text-decoration-none-util' href="$cCanonicalURL?bestellungen=1"}
                                                 {lang key='myOrders'}
                                             {/link}
                                         </span>
@@ -87,7 +87,7 @@
                                 {row class="align-items-center"}
                                     {col}
                                         <span class="h3 mb-0">
-                                            {link class='text-decoration-none' href="$cCanonicalURL?editRechnungsadresse=1"}
+                                            {link class='text-decoration-none-util' href="$cCanonicalURL?editRechnungsadresse=1"}
                                                 {lang key='myPersonalData'}
                                             {/link}
                                         </span>
@@ -163,7 +163,7 @@
                         {cardheader}
                             {block name='account-my-account-wishlist-header'}
                                 <span class="h3 mb-0">
-                                    {link class='text-decoration-none' href="{get_static_route id='wunschliste.php'}"}
+                                    {link class='text-decoration-none-util' href="{get_static_route id='wunschliste.php'}"}
                                         {lang key='myWishlists'}
                                     {/link}
                                 </span>
@@ -226,7 +226,7 @@
                         {cardheader}
                             {block name='account-my-account-comparelist-header'}
                                 <span class="h3 mb-0">
-                                    {link class='text-decoration-none' href="{get_static_route id='vergleichsliste.php'}"}
+                                    {link class='text-decoration-none-util' href="{get_static_route id='vergleichsliste.php'}"}
                                         {lang key='myCompareList'}
                                     {/link}
                                 </span>

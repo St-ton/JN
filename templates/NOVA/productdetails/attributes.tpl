@@ -18,7 +18,7 @@
                                         {else}
                                             {block name='productdetails-attributes-image'}
                                                 {link href=$characteristicValue->cURLFull
-                                                    class="text-decoration-none"
+                                                    class="text-decoration-none-util"
                                                     data=['toggle'=>'tooltip', 'placement'=>'top', 'boundary'=>'window']
                                                     title=$characteristicValue->cWert|escape:'html'
                                                     aria=["label"=>$characteristicValue->cWert|escape:'html']

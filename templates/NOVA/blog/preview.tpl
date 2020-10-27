@@ -51,7 +51,7 @@
                     {col cols="auto" class="ml-auto"}
                         {if isset($Einstellungen.news.news_kommentare_nutzen) && $Einstellungen.news.news_kommentare_nutzen === 'Y'}
                             {block name='blog-preview-comments'}
-                                {link href=$newsItem->getURL()|cat:'#comments' class='text-decoration-none'}
+                                {link href=$newsItem->getURL()|cat:'#comments' class='text-decoration-none-util'}
                                     <span class="fas fa-comments"></span>
                                     <span class="sr-only">
                                             {if $newsItem->getCommentCount() === 1}

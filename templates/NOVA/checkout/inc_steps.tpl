@@ -8,7 +8,7 @@
                 {block name='checkout-inc-steps-first'}
                     {link href="{get_static_route id='bestellvorgang.php'}?editRechnungsadresse=1"
                         title="{lang section='account data' key='billingAndDeliveryAddress'}"
-                        class="text-decoration-none"}
+                        class="text-decoration-none-util"}
                         <div class="step-content">
                             {badge variant="primary" class="badge-pill mr-3 ml-md-auto"}
                                 <span class="badge-count">1</span>
@@ -27,7 +27,7 @@
                 {block name='checkout-inc-steps-second'}
                     {link href="{get_static_route id='bestellvorgang.php'}?editVersandart=1"
                         title="{lang section='account data' key='shippingAndPaymentOptions'}"
-                        class="text-decoration-none"}
+                        class="text-decoration-none-util"}
                         <div class="step-content">
                             {badge variant="{if $step2_active || $step3_active}primary{else}secondary{/if}" class="badge-pill mr-3 ml-md-auto"}
                                 <span class="badge-count">2</span>

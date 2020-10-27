@@ -43,7 +43,7 @@
             {col tag='dt' cols=6}{lang key='manufacturer' section='productDetails'}:{/col}
             {col tag='dd' cols=6 itemprop='manufacturer' itemscope=true itemtype='http://schema.org/Organization'}
                 {link href="{if !empty($Artikel->cHerstellerHomepage)}{$Artikel->cHerstellerHomepage}{else}{$Artikel->cHerstellerSeo}{/if}"
-                    class="text-decoration-none"
+                    class="text-decoration-none-util"
                     itemprop="url"
                     target="{if !empty($Artikel->cHerstellerHomepage)}_blank{else}_self{/if}"}
                     {if ($Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'BT'

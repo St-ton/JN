@@ -33,7 +33,7 @@
                 {block name='snippets-filter-active-filter-remove'}
                     {link href=$NaviFilter->getURL()->getUnsetAll()
                         title="{lang key='removeFilters'}"
-                        class='text-decoration-none d-inline-block js-filter-item'}
+                        class='text-decoration-none-util d-inline-block js-filter-item'}
                         {lang key='removeFilters'}
                     {/link}
                 {/block}

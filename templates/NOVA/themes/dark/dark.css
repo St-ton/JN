@@ -23185,6 +23185,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   text-decoration: none;
 }
 
+.text-decoration-none-util {
+  text-decoration: none;
+}
+
 @media (max-width: 1299.98px) {
   .font-size-2x {
     font-size: 1.3461538462rem;

@@ -7,7 +7,7 @@
                 data=["toggle"=>"collapse"]
                 role="button"
                 aria=["expanded"=>"false","controls"=>"crd-cllps-{$oBox->getID()}"]
-                class="text-decoration-none font-weight-bold-util d-md-none dropdown-toggle"}
+                class="text-decoration-none-util font-weight-bold-util d-md-none dropdown-toggle"}
                 <span class="text-truncate">
                     {$oBox->getTitle()}
                 </span>

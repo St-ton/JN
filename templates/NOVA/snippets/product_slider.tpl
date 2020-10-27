@@ -37,7 +37,7 @@
                             {if $titleContainer|default:false}<div class="container px-0 px-md-3">{/if}
                                 <div class="hr-sect h2 mb-5">
                                     {if !empty($moreLink)}
-                                        {link class="text-decoration-none" href=$moreLink title=$moreTitle data-toggle="tooltip" data=["placement"=>"auto right"] aria=["label"=>$moreTitle]}
+                                        {link class="text-decoration-none-util" href=$moreLink title=$moreTitle data-toggle="tooltip" data=["placement"=>"auto right"] aria=["label"=>$moreTitle]}
                                             {$title}
                                         {/link}
                                     {else}

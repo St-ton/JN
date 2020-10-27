@@ -45,7 +45,7 @@
                                             {block name='productdetails-details-include-rating'}
                                                 {link href="{$Artikel->cURLFull}#tab-votes"
                                                     id="jump-to-votes-tab"
-                                                    class="d-print-none text-decoration-none"
+                                                    class="d-print-none text-decoration-none-util"
                                                     aria=["label"=>{lang key='Votes'}]
                                                 }
                                                     {include file='productdetails/rating.tpl' stars=$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt total=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl}
@@ -113,7 +113,7 @@
                                                 {block name='productdetails-details-product-info-manufacturer'}
                                                     <li itemprop="brand" itemscope="true" itemtype="http://schema.org/Organization">
                                                         <strong>{lang key='manufacturers'}:</strong>
-                                                        <a class="text-decoration-none"
+                                                        <a class="text-decoration-none-util"
                                                            href="{if !empty($Artikel->cHerstellerHomepage)}{$Artikel->cHerstellerHomepage}{else}{$Artikel->cHerstellerSeo}{/if}"
                                                             {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B'}
                                                                 data-toggle="tooltip"

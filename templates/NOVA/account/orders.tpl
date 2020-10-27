@@ -11,7 +11,7 @@
                             {link href="{get_static_route id='jtl.php'}?bestellung={$order->kBestellung}"
                                 title="{lang key='showOrder' section='login'}: {lang key='orderNo' section='login'} {$order->cBestellNr}"
                                 data=["toggle" => "tooltip", "placement" => "bottom"]
-                                class="text-decoration-none"}
+                                class="text-decoration-none-util"}
                                 {row}
                                     {col cols=6 md=3 order=1}
                                         <strong><i class="far fa-calendar-alt"></i> {$order->dBestelldatum}</strong>

@@ -96,7 +96,7 @@
                                                     {block name='comparelist-index-products-header-delete'}
                                                         <div class="delete-link-times">
                                                             {link href=$oArtikel->cURLDEL
-                                                                class="text-decoration-none"
+                                                                class="text-decoration-none-util"
                                                                 title="{lang key='removeFromCompareList' section='comparelist'}"
                                                                 aria=["label"=>"{lang key='removeFromCompareList' section='comparelist'}"]
                                                                 data=["toggle"=>"tooltip"]}

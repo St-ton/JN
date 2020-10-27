@@ -392,7 +392,7 @@
                                                                 name="remove" value=$wlPosition->kWunschlistePos
                                                                 aria=["label"=>"{lang key='wishlistremoveItem' section='login'}"]
                                                                 title="{lang key='wishlistremoveItem' section='login'}"
-                                                                class="wishlist-pos-delete float-right text-decoration-none mt-n2 m-0 p-1 font-size-lg"
+                                                                class="wishlist-pos-delete float-right text-decoration-none-util mt-n2 m-0 p-1 font-size-lg"
                                                                 data=["toggle"=>"tooltip"]
                                                             }
                                                                 <i class="fas fa-times"></i>
@@ -448,9 +448,9 @@
                                                     {/block}
                                                     {block name='snippets-wishlist-form-basket-price'}
                                                         {if $wlPosition->Artikel->getOption('nShowOnlyOnSEORequest', 0) === 1}
-                                                            <p class="caption text-decoration-none">{lang key='productOutOfStock' section='productDetails'}</p>
+                                                            <p class="caption text-decoration-none-util">{lang key='productOutOfStock' section='productDetails'}</p>
                                                         {elseif $wlPosition->Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
-                                                            <p class="caption text-decoration-none">{lang key='priceOnApplication' section='global'}</p>
+                                                            <p class="caption text-decoration-none-util">{lang key='priceOnApplication' section='global'}</p>
                                                         {else}
                                                             {block name='snippets-wishlist-form-basket-include-price'}
                                                                 {include file='productdetails/price.tpl' Artikel=$wlPosition->Artikel tplscope='detail'}

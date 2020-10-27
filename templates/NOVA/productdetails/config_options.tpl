@@ -18,7 +18,7 @@
                             id="crd-hdr-{$configGroup@iteration}"
                             variant="link"
                             data=["toggle"=>"collapse","target"=>"#cfg-grp-cllps-{$configGroup@iteration}"]
-                            class="text-left-util text-decoration-none"
+                            class="text-left-util text-decoration-none-util"
                             disabled=!$configGroup@first
                         }
                             {$configLocalization->getName()}

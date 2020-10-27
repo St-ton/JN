@@ -6,7 +6,7 @@
         <ul class="productlist-filter-accordion border-md-bottom border-lg-bottom-0">
         {block name='snippets-filter-mobile-sorting'}
             <li>
-                {link class="text-decoration-none text-left-util filter-type-FilterItemSort"
+                {link class="text-decoration-none-util text-left-util filter-type-FilterItemSort"
                 data=["toggle"=> "collapse", "target"=>"#sorting-collapse"]}
                 {lang key='sorting' section='productOverview'}
                     <span class="float-right mx-3 font-italic text-right-util text-truncate w-40 pr-1">

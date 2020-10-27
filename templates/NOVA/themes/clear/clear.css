@@ -19619,6 +19619,28 @@ aside .box-monthlynews a .value:hover {
   padding-left: 0.5rem;
 }
 
+.nav-scrollbar-item .nav-mobile-heading {
+  display: block;
+  padding-right: 1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@media (min-width: 992px) {
+  .nav-scrollbar-item .nav-mobile-heading {
+    padding-right: 0;
+  }
+}
+.nav-scrollbar-item .dropdown-body {
+  padding: 0;
+}
+@media (min-width: 992px) {
+  .nav-scrollbar-item .dropdown-body {
+    padding-bottom: 1.5rem;
+    padding-top: 1.5rem;
+  }
+}
+
 .breadcrumb-wrapper {
   margin-bottom: 2rem;
 }

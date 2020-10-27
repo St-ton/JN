@@ -24,7 +24,7 @@
                     {block name='snippets-categories-mega-recursive-child-header'}
                         <li class="nav-item d-lg-none">
                             {link href=$mainCategory->getURL() nofollow=true}
-                                <strong class="text-truncate d-block pr-3 pr-lg-0">
+                                <strong class="nav-mobile-heading">
                                     {lang key='menuShow' printf=$mainCategory->getName()}
                                 </strong>
                             {/link}

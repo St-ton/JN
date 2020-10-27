@@ -37,15 +37,15 @@
                             && isset($activeParent->kKategorie))
                             && $activeParent->kKategorie == $category->getID())} active{/if}">
                             {link href=$category->getURL() title=$category->getName() class="nav-link dropdown-toggle" target="_self"}
-                                <span class="text-truncate d-block pr-3 pr-lg-0">{$category->getName()}</span>
+                                <span class="nav-mobile-heading">{$category->getName()}</span>
                             {/link}
                             <div class="dropdown-menu">
-                                <div class="dropdown-body p-0 py-lg-4">
+                                <div class="dropdown-body">
                                     {container}
                                         {row class="lg-row-lg nav"}
                                             {col lg=4 xl=3 class="my-lg-4 nav-item dropdown d-lg-none"}
-                                                {link href=$category->getURL() class="font-size-base" rel="nofollow"}
-                                                    <strong class="text-truncate d-block pr-3 pr-lg-0">{lang key='menuShow' printf=$category->getName()}</strong>
+                                                {link href=$category->getURL() rel="nofollow"}
+                                                    <strong class="nav-mobile-heading">{lang key='menuShow' printf=$category->getName()}</strong>
                                                 {/link}
                                             {/col}
                                             {block name='snippets-categories-mega-sub-categories'}
@@ -104,14 +104,14 @@
                         </span>
                     {/link}
                     <div class="dropdown-menu">
-                        <div class="dropdown-body p-0 py-lg-4">
+                        <div class="dropdown-body">
                             {container}
                                 {row class="lg-row-lg nav"}
                                     {if $manufacturerOverview !== null}
                                         {col lg=4 xl=3 class="my-lg-4 nav-item d-lg-none"}
                                             {block name='snippets-categories-mega-manufacturers-header'}
-                                                {link href="{$manufacturerOverview->getURL()}" class="font-size-base" rel="nofollow"}
-                                                    <strong class="text-truncate d-block pr-3 pr-lg-0">
+                                                {link href="{$manufacturerOverview->getURL()}" rel="nofollow"}
+                                                    <strong class="nav-mobile-heading">
                                                         {if !empty($manufacturerOverview->getName())}
                                                             {$manufacturerTitle = $manufacturerOverview->getName()}
                                                         {else}
@@ -199,12 +199,12 @@
                         {/block}
                         {block name='layout-header-top-bar-user-settings-currency-body'}
                             <div class="dropdown-menu">
-                                <div class="dropdown-body p-0 py-lg-4">
+                                <div class="dropdown-body">
                                     {container}
                                         {row class="lg-row-lg nav"}
                                             {col lg=4 xl=3 class="my-lg-4 nav-item dropdown d-lg-none"}
                                                 {block name='layout-header-top-bar-user-settings-currency-header'}
-                                                    <strong class="font-size-base">{lang key='currency'}</strong>
+                                                    <strong class="nav-mobile-heading">{lang key='currency'}</strong>
                                                 {/block}
                                             {/col}
                                             {foreach $smarty.session.Waehrungen as $currency}

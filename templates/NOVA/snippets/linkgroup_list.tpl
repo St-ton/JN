@@ -23,13 +23,13 @@
                                     <span class="text-truncate">{$li->getName()}</span>
                                 {/link}
                                 <div class="dropdown-menu">
-                                    <div class="dropdown-body p-0 py-lg-4">
+                                    <div class="dropdown-body">
                                         {container}
                                             {row class="lg-row-lg nav"}
                                                 {col lg=4 xl=3 class="my-lg-4 nav-item dropdown d-lg-none"}
                                                     {block name='snippets-linkgroup-list-links-header'}
                                                         {link href=$li->getURL() title=$li->getName()}
-                                                            <strong class="text-truncate d-block pr-3 pr-lg-0">{lang key='menuShow' printf=$li->getName()}</strong>
+                                                            <strong class="nav-mobile-heading">{lang key='menuShow' printf=$li->getName()}</strong>
                                                         {/link}
                                                     {/block}
                                                 {/col}

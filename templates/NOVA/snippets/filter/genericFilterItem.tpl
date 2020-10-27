@@ -18,7 +18,7 @@
                             {if $filter->getIcon() !== null}
                                 <i class="fa {$filter->getIcon()} mr-2"></i>
                             {else}
-                                <i class="far fa-{if $filterIsActive === true}check-{/if}square text-muted mr-2"></i>
+                                <i class="far fa-{if $filterIsActive === true}check-{/if}square text-muted-util mr-2"></i>
                             {/if}
                             {if $filter->getNiceName() === 'Rating'}
                                 {block name='snippets-filter-genericFilterItem-include-rating-nav'}

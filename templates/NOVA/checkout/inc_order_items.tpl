@@ -56,7 +56,7 @@
                                     <p>{link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}{$oPosition->cName|trans}{/link}</p>
                                 {/block}
                                 {block name='checkout-inc-order-items-product-data'}
-                                    <ul class="list-unstyled text-muted small">
+                                    <ul class="list-unstyled text-muted-util small">
                                         {block name='checkout-inc-order-items-product-data-sku'}
                                             <li class="sku"><strong>{lang key='productNo'}:</strong> {$oPosition->Artikel->cArtNr}</li>
                                         {/block}
@@ -157,13 +157,13 @@
                                     {$oPosition->cName|trans}{if isset($oPosition->discountForArticle)}{$oPosition->discountForArticle|trans}{/if}
                                     {if isset($oPosition->cArticleNameAffix)}
                                         {if is_array($oPosition->cArticleNameAffix)}
-                                            <ul class="small text-muted">
+                                            <ul class="small text-muted-util">
                                                 {foreach $oPosition->cArticleNameAffix as $cArticleNameAffix}
                                                     <li>{$cArticleNameAffix|trans}</li>
                                                 {/foreach}
                                             </ul>
                                         {else}
-                                            <ul class="small text-muted">
+                                            <ul class="small text-muted-util">
                                                 <li>{$oPosition->cArticleNameAffix|trans}</li>
                                             </ul>
                                         {/if}
@@ -176,7 +176,7 @@
 
                             {if $oPosition->istKonfigVater()}
                                 {block name='checkout-inc-order-items-product-cofig-items'}
-                                    <ul class="config-items text-muted small">
+                                    <ul class="config-items text-muted-util small">
                                         {$labeled=false}
                                         {foreach $smarty.session.Warenkorb->PositionenArr as $KonfigPos}
                                             {block name='product-config-item'}
@@ -212,7 +212,7 @@
                             {/if}
                             {if !empty($oPosition->Artikel->kStueckliste) && !empty($oPosition->Artikel->oStueckliste_arr)}
                                 {block name='checkout-inc-order-items-product-partlist-items'}
-                                    <ul class="partlist-items text-muted small">
+                                    <ul class="partlist-items text-muted-util small">
                                         {foreach $oPosition->Artikel->oStueckliste_arr as $partListItem}
                                             <li>
                                                 <span class="qty">{$partListItem->fAnzahl_stueckliste}x</span>

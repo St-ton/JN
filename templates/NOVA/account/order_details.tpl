@@ -37,7 +37,7 @@
                                 <li class="mb-4">
                                     {block name='account-order-details-payment'}
                                         {lang key='paymentOptions' section='global'}:
-                                        <span class="text-muted d-block font-size-sm">
+                                        <span class="text-muted-util d-block font-size-sm">
                                             <ul class="list-unstyled">
                                                 <li>{$Bestellung->cZahlungsartName}</li>
                                                 <li>
@@ -63,7 +63,7 @@
                                 <li class="mb-4">
                                     {block name='account-order-details-shipping'}
                                         {lang key='shippingOptions' section='global'}:
-                                        <span class="text-muted d-block font-size-sm">
+                                        <span class="text-muted-util d-block font-size-sm">
                                             <ul class="list-unstyled">
                                                 <li>{$Bestellung->cVersandartName}</li>
                                                 {if $Bestellung->cStatus == BESTELLUNG_STATUS_VERSANDT}
@@ -85,7 +85,7 @@
                                 <li class="mb-4">
                                     {block name='account-order-details-billing-address'}
                                         {lang key='billingAdress' section='checkout'}:
-                                        <span class="text-muted d-block font-size-sm">
+                                        <span class="text-muted-util d-block font-size-sm">
                                             {block name='account-order-details-include-inc-billing-address'}
                                                 {include file='checkout/inc_billing_address.tpl' orderDetail=true}
                                             {/block}
@@ -95,7 +95,7 @@
                                 <li class="mb-4">
                                     {block name='account-order-details-shipping-address'}
                                         {lang key='shippingAdress' section='checkout'}:
-                                        <span class="text-muted d-block font-size-sm">
+                                        <span class="text-muted-util d-block font-size-sm">
                                             {if !empty($Lieferadresse->kLieferadresse)}
                                                 {block name='account-order-details-include-inc-delivery-address'}
                                                     {include file='checkout/inc_delivery_address.tpl' orderDetail=true}
@@ -258,7 +258,7 @@
                                             <td>{$oLieferscheinpos->oPosition->cArtNr}</td>
                                             <td>
                                                 {$oLieferscheinpos->oPosition->cName}
-                                                <ul class="list-unstyled text-muted small">
+                                                <ul class="list-unstyled text-muted-util small">
                                                     {if !empty($oLieferscheinpos->oPosition->cHinweis)}
                                                         <li class="text-info notice">{$oLieferscheinpos->oPosition->cHinweis}</li>
                                                     {/if}

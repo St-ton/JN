@@ -179,7 +179,7 @@
 
         {if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'P' && !empty($oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getName())}
             {block name='productdetails-question-on-item-form-privacy'}
-                <p class="privacy text-muted small">
+                <p class="privacy text-muted-util small">
                     {link href=$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL() class="popup"}
                         {lang key='privacyNotice'}
                     {/link}

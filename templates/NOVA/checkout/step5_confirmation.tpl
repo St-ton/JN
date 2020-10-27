@@ -85,7 +85,7 @@
 
                                             {$cEstimatedDelivery = $smarty.session.Warenkorb->getEstimatedDeliveryTime()}
                                             {if $cEstimatedDelivery|@count_characters > 0}
-                                                <p class="small text-muted">
+                                                <p class="small text-muted-util">
                                                     <strong>{lang key='shippingTime'}</strong>: {$cEstimatedDelivery}
                                                 </p>
                                             {/if}
@@ -96,7 +96,7 @@
                                             <p><strong class="title">{lang key='paymentOptions'}</strong></p>
                                             <p>{$smarty.session.Zahlungsart->angezeigterName|trans}</p>
                                             {if isset($smarty.session.Zahlungsart->cHinweisText) && !empty($smarty.session.Zahlungsart->cHinweisText)}{* this should be localized *}
-                                                <p class="small text-muted">{$smarty.session.Zahlungsart->cHinweisText}</p>
+                                                <p class="small text-muted-util">{$smarty.session.Zahlungsart->cHinweisText}</p>
                                             {/if}
                                         {/block}
                                     {/col}

@@ -108,7 +108,7 @@
                                         <tr>
                                             <td class="min-w-sm">
                                                 {lang key='billingAdress' section='account data'}
-                                                <small class="text-muted d-block">{$Kunde->cStrasse} {$Kunde->cHausnummer}, {$Kunde->cPLZ} {$Kunde->cOrt}, {$Kunde->cLand}</small>
+                                                <small class="text-muted-util d-block">{$Kunde->cStrasse} {$Kunde->cHausnummer}, {$Kunde->cPLZ} {$Kunde->cOrt}, {$Kunde->cLand}</small>
                                             </td>
                                             <td class="text-right-util">
                                                 {link href="$cCanonicalURL?editRechnungsadresse=1"
@@ -123,7 +123,7 @@
                                         <tr>
                                             <td class="min-w-sm">
                                                 {lang key='contactInformation' section='account data'} {lang key='and'} {lang key='email' section='account data'}
-                                                <small class="text-muted d-block">{$Kunde->cMail}</small>
+                                                <small class="text-muted-util d-block">{$Kunde->cMail}</small>
                                             </td>
                                             <td class="text-right-util">
                                                 {link class='float-right' href="$cCanonicalURL?editRechnungsadresse=1"

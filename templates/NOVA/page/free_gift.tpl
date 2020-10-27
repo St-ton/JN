@@ -23,7 +23,7 @@
                                     {/link}
                                 {/block}
                                 {block name='page-freegift-freegift-info'}
-                                    <p class="small text-muted">{lang key='freeGiftFrom1'} {$oArtikelGeschenk->cBestellwert} {lang key='freeGiftFrom2'}</p>
+                                    <p class="small text-muted-util">{lang key='freeGiftFrom1'} {$oArtikelGeschenk->cBestellwert} {lang key='freeGiftFrom2'}</p>
                                 {/block}
                                 {block name='page-freegift-freegift-link'}
                                     <p>{link href=$oArtikelGeschenk->cURLFull}{$oArtikelGeschenk->cName}{/link}</p>

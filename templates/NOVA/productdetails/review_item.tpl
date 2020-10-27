@@ -3,7 +3,7 @@
         {block name='productdetails-review-itme-helpful'}
             {if $oBewertung->nHilfreich > 0}
             {col cols=12 class="review-helpful-total"}
-                <small class="text-muted">
+                <small class="text-muted-util">
                     {if $oBewertung->nHilfreich > 0}
                         {$oBewertung->nHilfreich}
                     {else}

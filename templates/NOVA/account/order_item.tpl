@@ -25,7 +25,7 @@
                                     {block name='account-order-item-link'}
                                         {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}{$oPosition->cName|trans}{/link}
                                     {/block}
-                                    <ul class="list-unstyled text-muted small mt-2">
+                                    <ul class="list-unstyled text-muted-util small mt-2">
                                         {block name='account-order-item-sku'}
                                             <li class="sku">{lang key='productNo' section='global'}: {$oPosition->Artikel->cArtNr}</li>
                                         {/block}
@@ -123,13 +123,13 @@
                                     {$oPosition->cName|trans}{if isset($oPosition->discountForArticle)}{$oPosition->discountForArticle|trans}{/if}
                                     {if isset($oPosition->cArticleNameAffix)}
                                         {if is_array($oPosition->cArticleNameAffix)}
-                                            <ul class="small text-muted">
+                                            <ul class="small text-muted-util">
                                                 {foreach $oPosition->cArticleNameAffix as $cArticleNameAffix}
                                                     <li>{$cArticleNameAffix|trans}</li>
                                                 {/foreach}
                                             </ul>
                                         {else}
-                                            <ul class="small text-muted">
+                                            <ul class="small text-muted-util">
                                                 <li>{$oPosition->cArticleNameAffix|trans}</li>
                                             </ul>
                                         {/if}
@@ -142,7 +142,7 @@
 
                             {if is_string($oPosition->cUnique) && !empty($oPosition->cUnique) && (int)$oPosition->kKonfigitem === 0} {*istKonfigVater()*}
                                 {block name='account-order-item-config-items'}
-                                    <ul class="config-items text-muted small">
+                                    <ul class="config-items text-muted-util small">
                                         {foreach $Bestellung->Positionen as $KonfigPos}
                                             {if $oPosition->cUnique == $KonfigPos->cUnique && $KonfigPos->kKonfigitem > 0}
                                                 <li>

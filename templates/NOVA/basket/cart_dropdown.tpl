@@ -81,7 +81,7 @@
                         <ul class="list-unstyled">
                             {if $NettoPreise}
                                 {block name='basket-cart-dropdown-cart-item-net'}
-                                    <li class="text-muted mb-2 font-size-sm">
+                                    <li class="text-muted-util mb-2 font-size-sm">
                                         {if empty($smarty.session.Versandart)}
                                             {lang key='subtotal' section='account data'}
                                         {else}
@@ -93,7 +93,7 @@
                             {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N' && isset($Steuerpositionen) && $Steuerpositionen|@count > 0}
                                 {block name='basket-cart-dropdown-cart-item-tax'}
                                     {foreach $Steuerpositionen as $Steuerposition}
-                                        <li class="text-muted mb-2 font-size-sm">
+                                        <li class="text-muted-util mb-2 font-size-sm">
                                             {$Steuerposition->cName}
                                             <span class="float-right text-nowrap">{$Steuerposition->cPreisLocalized}</span>
                                         </li>
@@ -111,7 +111,7 @@
                             {/block}
                             {block name='basket-cart-dropdown-cart-item-favourable-shipping'}
                                 {if $favourableShippingString !== '' && empty($smarty.session.Versandart)}
-                                    <li class="text-muted mt-2 font-size-sm">{$favourableShippingString}</li>
+                                    <li class="text-muted-util mt-2 font-size-sm">{$favourableShippingString}</li>
                                 {/if}
                             {/block}
                         </ul>
@@ -133,7 +133,7 @@
                     {if !empty($WarenkorbVersandkostenfreiHinweis)}
                         {block name='basket-cart-dropdown-shipping-free-hint'}
                             <hr>
-                            <ul class="list-icons text-muted font-size-sm">
+                            <ul class="list-icons text-muted-util font-size-sm">
                                 <li>
                                     <a class="popup" href="{if !empty($oSpezialseiten_arr) && isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}{else}#{/if}" data-toggle="tooltip"  data-placement="bottom" title="{lang key='shippingInfo' section='login'}">
                                         <i class="fa fa-info-circle"></i>

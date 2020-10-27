@@ -118,7 +118,7 @@
                         {/link}
                         {if $Einstellungen.navigationsfilter.unterkategorien_beschreibung_anzeigen === 'Y' && !empty($subCategory->getDescription())}
                             {block name='productlist-header-subcategories-description'}
-                                <p class="item_desc small text-muted d-none d-md-block">{$subCategory->getDescription()|strip_tags|truncate:68}</p>
+                                <p class="item_desc small text-muted-util d-none d-md-block">{$subCategory->getDescription()|strip_tags|truncate:68}</p>
                             {/block}
                         {/if}
                         {if $Einstellungen.navigationsfilter.unterkategorien_lvl2_anzeigen === 'Y'}

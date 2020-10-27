@@ -20,7 +20,7 @@
                 {/block}
 
                 {block name='blog-details-author'}
-                    <div class="author-meta text-muted text-center-util font-size-sm">
+                    <div class="author-meta text-muted-util text-center-util font-size-sm">
                         {if empty($newsItem->getDateValidFrom())}
                             {assign var=dDate value=$newsItem->getDateCreated()->format('Y-m-d H:i:s')}
                         {else}
@@ -133,7 +133,7 @@
                                                         label-class="commentForm"
                                                     }
                                                         {if $Einstellungen.news.news_kommentare_freischalten === 'Y'}
-                                                            <small class="form-text text-muted">{lang key='commentWillBeValidated' section='news'}</small>
+                                                            <small class="form-text text-muted-util">{lang key='commentWillBeValidated' section='news'}</small>
                                                         {/if}
                                                         {textarea id="comment-text" name="cKommentar" required=true}{/textarea}
                                                         {if $nPlausiValue_arr.cKommentar > 0}

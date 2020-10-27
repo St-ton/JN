@@ -3,7 +3,7 @@
         {foreach $filter->getOptions() as $filterOption}
             <li>
                 {link rel="nofollow" href=$filterOption->getURL()}
-                    <i class="fa {if $NaviFilter->getFilterValue($filter->getClassName()) == $filterOption->getValue()}fa-check-square-o{else}fa-square-o{/if} text-muted"></i>
+                    <i class="fa {if $NaviFilter->getFilterValue($filter->getClassName()) == $filterOption->getValue()}fa-check-square-o{else}fa-square-o{/if} text-muted-util"></i>
                     {$filterOption->getName()|escape:'html'}{badge class="float-right"}{$filterOption->getCount()}{/badge}
                 {/link}
             </li>

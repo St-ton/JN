@@ -164,13 +164,13 @@
                                 {$oPosition->cName|trans}{if isset($oPosition->discountForArticle)}{$oPosition->discountForArticle|trans}{/if}
                                 {if isset($oPosition->cArticleNameAffix)}
                                     {if is_array($oPosition->cArticleNameAffix)}
-                                        <ul class="small text-muted">
+                                        <ul class="small text-muted-util">
                                             {foreach $oPosition->cArticleNameAffix as $cArticleNameAffix}
                                                 <li>{$cArticleNameAffix|trans}</li>
                                             {/foreach}
                                         </ul>
                                     {else}
-                                        <ul class="small text-muted">
+                                        <ul class="small text-muted-util">
                                             <li>{$oPosition->cArticleNameAffix|trans}</li>
                                         </ul>
                                     {/if}
@@ -183,7 +183,7 @@
 
                         {if $oPosition->istKonfigVater()}
                             {block name='basket-cart-items-product-cofig-items'}
-                                <ul class="config-items text-muted small">
+                                <ul class="config-items text-muted-util small">
                                     {$labeled=false}
                                     {foreach $smarty.session.Warenkorb->PositionenArr as $KonfigPos}
                                         {block name='product-config-item'}
@@ -220,7 +220,7 @@
 
                         {if !empty($oPosition->Artikel->kStueckliste) && !empty($oPosition->Artikel->oStueckliste_arr)}
                             {block name='basket-cart-items-product-partlist-items'}
-                                <ul class="partlist-items text-muted small">
+                                <ul class="partlist-items text-muted-util small">
                                     {foreach $oPosition->Artikel->oStueckliste_arr as $partListItem}
                                         <li>
                                             <span class="qty">{$partListItem->fAnzahl_stueckliste}x</span>

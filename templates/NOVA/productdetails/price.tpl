@@ -79,7 +79,7 @@
                             {/if}
 
                             {block name='productdetails-price-detail-vat-info'}
-                                <span class="vat_info text-muted">
+                                <span class="vat_info text-muted-util">
                                     {include file='snippets/shipping_tax_info.tpl' taxdata=$Artikel->taxData}
                                 </span>
                             {/block}
@@ -188,7 +188,7 @@
                         {block name='productdetails-price-special-prices'}
                             {if $Artikel->Preise->Sonderpreis_aktiv && isset($Einstellungen.artikeluebersicht) && $Einstellungen.artikeluebersicht.artikeluebersicht_sonderpreisanzeige == 2}
                                 <div class="instead-of old-price">
-                                    <small class="text-muted">
+                                    <small class="text-muted-util">
                                         {lang key='oldPrice'}:
                                         <del class="value">{$Artikel->Preise->alterVKLocalized[$NettoPreise]}</del>
                                     </small>
@@ -196,7 +196,7 @@
                             {elseif !$Artikel->Preise->Sonderpreis_aktiv && $Artikel->Preise->rabatt > 0 && isset($Einstellungen.artikeluebersicht)}
                                 {if $Einstellungen.artikeluebersicht.artikeluebersicht_rabattanzeige == 3 || $Einstellungen.artikeluebersicht.artikeluebersicht_rabattanzeige == 4}
                                     <div class="old-price">
-                                        <small class="text-muted">
+                                        <small class="text-muted-util">
                                             {lang key='oldPrice'}:
                                             <del class="value text-nowrap">{$Artikel->Preise->alterVKLocalized[$NettoPreise]}</del>
                                         </small>
@@ -204,7 +204,7 @@
                                 {/if}
                                 {if $Einstellungen.artikeluebersicht.artikeluebersicht_rabattanzeige == 2 || isset($Einstellungen.artikeluebersicht) && $Einstellungen.artikeluebersicht.artikeluebersicht_rabattanzeige == 4}
                                     <div class="discount">
-                                        <small class="text-muted">
+                                        <small class="text-muted-util">
                                             {lang key='discount'}:
                                             <span class="value text-nowrap">{$Artikel->Preise->rabatt}%</span>
                                         </small>

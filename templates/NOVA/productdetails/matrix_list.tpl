@@ -60,7 +60,7 @@
                         {/block}
                         {block name='productdetails-matrix-list-muted-x'}
                             {col cols=1 class="text-right-util px-1"}
-                                <span class="text-muted">&times;</span>
+                                <span class="text-muted-util">&times;</span>
                             {/col}
                         {/block}
                         {block name='productdetails-matrix-list-include-price'}

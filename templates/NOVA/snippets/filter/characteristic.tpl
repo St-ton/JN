@@ -22,7 +22,7 @@
                     title="{if $Merkmal->getData('cTyp') === 'BILD'}{$attributeValue->getValue()|escape:'html'}{/if}"
                 }
                     <div class="align-items-center d-flex">
-                        <i class="far fa-{if $attributeValue->isActive()}check-{/if}square text-muted mr-2"></i>
+                        <i class="far fa-{if $attributeValue->isActive()}check-{/if}square text-muted-util mr-2"></i>
                         {if !empty($attributeImageURL)}
                             {image lazy=true webp=true
                                 src=$attributeImageURL
@@ -52,7 +52,7 @@
                             title="{$attributeValue->getValue()|escape:'html'}"
                         }
                             <div class="align-items-center d-flex">
-                                <i class="far fa-{if $attributeValue->isActive()}check-{/if}square text-muted mr-2"></i>
+                                <i class="far fa-{if $attributeValue->isActive()}check-{/if}square text-muted-util mr-2"></i>
                                 {if !empty($attributeImageURL)}
                                     {image lazy=true webp=true
                                         src=$attributeImageURL

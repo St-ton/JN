@@ -5,7 +5,7 @@
             <div id="sidebox{$oBox->getID()}-{$characteristic->getID()}" class="box box-filter-characteristics d-none d-lg-block">
                 {button
                     variant="link"
-                    class="text-decoration-none px-0 text-left-util dropdown-toggle"
+                    class="btn-filter-box dropdown-toggle"
                     role="button"
                     block=true
                     data=["toggle"=> "collapse", "target"=>"#cllps-box{$oBox->getID()}-{$characteristic->getID()}"]

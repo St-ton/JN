@@ -20036,6 +20036,16 @@ aside .box-monthlynews a .value:hover {
   background-color: #ffffff;
 }
 
+.btn-filter-box {
+  text-decoration: none;
+  padding-left: 0;
+  padding-right: 0;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .card-gray {
   background: #f5f7fa;
   border: 0;
@@ -23238,6 +23248,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 
 .text-center-util {
   text-align: center;
+}
+
+.text-muted-util {
+  color: #707070;
 }
 
 .zindex-dropdown {

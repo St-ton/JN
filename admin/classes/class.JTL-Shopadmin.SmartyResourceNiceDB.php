@@ -54,7 +54,7 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
             } else {
                 // Plugin Emailvorlage?
                 $cTableSprache = 'temailvorlagesprache';
-                if (isset($pcs[3]) && (int)$pcs[3] > 0) {
+                if (isset($pcs[3]) && !empty($pcs[3])) {
                     $cTableSprache = 'tpluginemailvorlagesprache';
                 }
                 $vl = Shop::DB()->select($cTableSprache, ['kEmailvorlage', 'kSprache'], [(int)$pcs[1], (int)$pcs[2]]);

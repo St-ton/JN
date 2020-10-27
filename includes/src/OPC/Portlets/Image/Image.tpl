@@ -21,18 +21,16 @@
     {/if}
     <div style="max-width: {$imgAttribs.realWidth}px; {$alignCSS}">
         {$isLink = $instance->getProperty('is-link')}
+        {$href = $instance->getProperty('url')}
 
-        {if $isLink && !$isPreview}
-            {$href = $instance->getProperty('url')}
-            {if !empty($href)}
-                <a href="{$href|escape:'html'}"
-                        {if !empty($instance->getProperty('link-title'))}
-                            title = "{$instance->getProperty('link-title')|escape:'html'}"
-                        {/if}
-                        {if $instance->getProperty('new-tab') === true}
-                            target = "_blank"
-                        {/if}>
-            {/if}
+        {if $isLink && !$isPreview && !empty($href)}
+            <a href="{$href|escape:'html'}"
+                {if !empty($instance->getProperty('link-title'))}
+                    title = "{$instance->getProperty('link-title')|escape:'html'}"
+                {/if}
+                {if $instance->getProperty('new-tab') === true}
+                    target = "_blank"
+                {/if}>
         {/if}
         {image
             src=$imgAttribs.src
@@ -45,11 +43,11 @@
             thumbnail=$portlet->getThumbnailProp($instance)
             class=$instance->getStyleClasses()
         }
-        {if !$isPreview}
+        {if $isLink && !$isPreview && !empty($href)}
             </a>
         {/if}
     </div>
-    {if $isLink && $isPreview}
+    {if $isPreview}
         </div>
     {/if}
 {/if}

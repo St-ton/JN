@@ -62,7 +62,7 @@
             } else {
                 data += '0'
             }
-            simpleAjaxCall('pluginverwaltung.php', data, function (res) {
+            simpleAjaxCall('pluginverwaltung.php', data, function () {
                 location.reload();
             });
             return false;

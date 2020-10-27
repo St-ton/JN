@@ -19,7 +19,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {foreach $pluginsErroneous->toArray() as $listingItem}
+                        {foreach $pluginsErroneous as $listingItem}
                             <tr>
                                 <td class="check">
                                     <div class="custom-control custom-checkbox">

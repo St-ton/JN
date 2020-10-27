@@ -63,7 +63,7 @@
                                     {foreach $ArtikelabhaengigeVersandarten as $artikelversand}
                                         <tr>
                                             <td>{$artikelversand->cName|trans}</td>
-                                            <td class="text-right text-nowrap">
+                                            <td class="text-right-util text-nowrap">
                                                 <strong>{$artikelversand->cPreisLocalized}</strong>
                                             </td>
                                         </tr>
@@ -106,7 +106,7 @@
                                                     </p>
                                                 {/if}
                                             </td>
-                                            <td class="text-right text-nowrap">
+                                            <td class="text-right-util text-nowrap">
                                                 <strong>
                                                     {$versandart->cPreisLocalized}
                                                 </strong>

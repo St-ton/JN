@@ -25,7 +25,7 @@
                                     {col cols=6 md=4 order=5 order-md=4}
                                         {lang key='orderStatus' section='login'}: {$order->Status}
                                     {/col}
-                                    {col cols=2 md=1 order=3 order-md=5 class="text-right"}
+                                    {col cols=2 md=1 order=3 order-md=5 class="text-right-util"}
                                         <i class="fa fa-eye"></i>
                                     {/col}
                                 {/row}

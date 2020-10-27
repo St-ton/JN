@@ -23228,6 +23228,18 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   font-weight: 700;
 }
 
+.text-right-util {
+  text-align: right;
+}
+
+.text-left-util {
+  text-align: left;
+}
+
+.text-center-util {
+  text-align: center;
+}
+
 .zindex-dropdown {
   z-index: 1000;
 }

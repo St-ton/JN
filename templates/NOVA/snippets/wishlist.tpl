@@ -65,14 +65,14 @@
                     {block name='snippets-wishlist-actions'}
                         {col class="col-auto"}
                             {dropdown variant="link no-caret" class="wishlist-options" text="<i class='fas fa-ellipsis-v'></i>" aria=["label"=>"{lang key='rename' section='wishlistOptions'}"]}
-                                {dropdownitem class="text-center position-relative"}
+                                {dropdownitem class="text-center-util position-relative"}
                                 {block name='snippets-wishlist-actions-rename'}
                                     {button type="submit" variant="link" class="w-100 no-caret" data=["toggle" => "collapse", "target"=>"#edit-wishlist-name"]}
                                         {lang key='rename'}
                                     {/button}
                                 {/block}
                                 {/dropdownitem}
-                                {dropdownitem class="text-center position-relative"}
+                                {dropdownitem class="text-center-util position-relative"}
                                 {block name='snippets-wishlist-actions-remove-products'}
                                     {form
                                         method="post"
@@ -88,7 +88,7 @@
                                     {/form}
                                 {/block}
                                 {/dropdownitem}
-                                {dropdownitem class="text-center position-relative"}
+                                {dropdownitem class="text-center-util position-relative"}
                                 {block name='snippets-wishlist-actions-add-all-cart'}
                                     {form
                                         method="post"
@@ -104,7 +104,7 @@
                                     {/form}
                                 {/block}
                                 {/dropdownitem}
-                                {dropdownitem class="text-center position-relative"}
+                                {dropdownitem class="text-center-util position-relative"}
                                 {block name='snippets-wishlist-actions-delete-wl'}
                                     {form method="post" action="{get_static_route id='wunschliste.php'}" slide=true}
                                         {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
@@ -117,7 +117,7 @@
                                 {/block}
                                 {/dropdownitem}
                                 {if $CWunschliste->nStandard != 1}
-                                    {dropdownitem class="text-center position-relative"}
+                                    {dropdownitem class="text-center-util position-relative"}
                                     {block name='snippets-wishlist-actions-set-active'}
                                         {form method="post" action="{get_static_route id='wunschliste.php'}" slide=true}
                                             {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
@@ -135,7 +135,7 @@
                                     {/block}
                                     {/dropdownitem}
                                 {/if}
-                                {dropdownitem class="text-center position-relative"}
+                                {dropdownitem class="text-center-util position-relative"}
                                 {block name='snippets-wishlist-actions-add-new'}
                                     {button type="submit"
                                         variant="link"

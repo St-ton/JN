@@ -59,7 +59,7 @@
                                                 {/formrow}
                                             {/block}
                                         </td>
-                                        <td class="text-right text-nowrap">
+                                        <td class="text-right-util text-nowrap">
                                             {block name='snippets-wishlist-dropdown-products-remove'}
                                                 {link class="remove float-right"
                                                     href=$wishlistItem->cURL

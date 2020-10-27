@@ -7,7 +7,7 @@
             {row id="freegift"}
                 {block name='page-freegift-freegifts'}
                     {foreach $oArtikelGeschenk_arr as $oArtikelGeschenk}
-                        {col sm=6 md=4 class="text-center"}
+                        {col sm=6 md=4 class="text-center-util"}
                             <label for="gift{$oArtikelGeschenk->kArtikel}">
                                 {block name='page-freegift-freegift-image'}
                                     {link href=$oArtikelGeschenk->cURLFull}

@@ -3,7 +3,7 @@
         <div id="add-to-cart" class="mt-5 d-print-none product-buy{if $Artikel->nErscheinendesProdukt} coming_soon{/if}">
             {if $Artikel->nErscheinendesProdukt}
                 {block name='productdetails-basket-coming-soon'}
-                    <div class="{if $Einstellungen.global.global_erscheinende_kaeuflich === 'Y'}alert alert-warning coming_soon{/if} text-center">
+                    <div class="{if $Einstellungen.global.global_erscheinende_kaeuflich === 'Y'}alert alert-warning coming_soon{/if} text-center-util">
                         {lang key='productAvailableFrom' section='global'}: <strong>{$Artikel->Erscheinungsdatum_de}</strong>
                         {if $Einstellungen.global.global_erscheinende_kaeuflich === 'Y' && $Artikel->inWarenkorbLegbar == 1}
                             ({lang key='preorderPossible' section='global'})

@@ -21,8 +21,8 @@
                 {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
                     {col cols=2}{lang key="pricePerUnit" section="productDetails"}{/col}
                 {/if}
-                {col cols=1 class="text-center"}{lang key="quantity" section="checkout"}{/col}
-                {col cols=2 class="text-right"}{lang key="price"}{/col}
+                {col cols=1 class="text-center-util"}{lang key="quantity" section="checkout"}{/col}
+                {col cols=2 class="text-right-util"}{lang key="price"}{/col}
             {/row}
             <hr class="d-none d-lg-flex my-3">
         {/block}
@@ -32,7 +32,7 @@
                 {row class="type-{$oPosition->nPosTyp}"}
                     {block name='checkout-inc-order-items-image'}
                         {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
-                            {col cols=3 lg=2 class="text-center vcenter"}
+                            {col cols=3 lg=2 class="text-center-util vcenter"}
                                 {if !empty($oPosition->Artikel->cVorschaubild)}
                                     {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}
                                         {image fluid-grow=true webp=true lazy=true
@@ -271,7 +271,7 @@
                                 {col }
                                     <span class="price_label"><strong>{lang key='totalSum'} ({lang key='net'}):</strong></span>
                                 {/col}
-                                {col class="col-auto ml-auto text-right price-col"}
+                                {col class="col-auto ml-auto text-right-util price-col"}
                                     <strong class="price total-sum">{$WarensummeLocalized[$NettoPreise]}</strong>
                                 {/col}
                             {/row}
@@ -285,7 +285,7 @@
                                     {col}
                                         <span class="tax_label">{$Steuerposition->cName}:</span>
                                     {/col}
-                                    {col class="col-auto ml-auto text-right price-col"}
+                                    {col class="col-auto ml-auto text-right-util price-col"}
                                         <span class="tax_label">{$Steuerposition->cPreisLocalized}</span>
                                     {/col}
                                 {/row}
@@ -299,7 +299,7 @@
                                  {col}
                                     {lang key='useCredit' section='account data'}
                                  {/col}
-                                 {col class="col-auto ml-auto text-right"}
+                                 {col class="col-auto ml-auto text-right-util"}
                                      {$smarty.session.Bestellung->GutscheinLocalized}
                                  {/col}
                              {/row}
@@ -311,7 +311,7 @@
                             {col}
                                 <span class="price_label"><strong>{lang key='totalSum'}:</strong></span>
                             {/col}
-                            {col class="col-auto ml-auto text-right price-col"}
+                            {col class="col-auto ml-auto text-right-util price-col"}
                                 <strong class="price total-sum">{$WarensummeLocalized[0]}</strong>
                             {/col}
                         {/row}
@@ -324,13 +324,13 @@
                         {else}
                             {$shippingCosts = $FavourableShipping->cPriceLocalized[$NettoPreise]}
                         {/if}
-                        {row class="shipping-costs text-right"}
+                        {row class="shipping-costs text-right-util"}
                            {col cols=12}
                                 <small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$shippingCosts:$FavourableShipping->country->getName() key='shippingInformationSpecific' section='basket'}</small>
                             {/col}
                         {/row}
                     {elseif empty($FavourableShipping) && empty($smarty.session.Versandart)}
-                        {row class="shipping-costs text-right"}
+                        {row class="shipping-costs text-right-util"}
                             {col cols=12}
                                 <small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() key='shippingInformation' section='basket'}</small>
                             {/col}
@@ -349,7 +349,7 @@
                                         {/col}
                                     {/block}
                                     {block name='checkout-inc-order-items-finance-costs-value'}
-                                        {col class="col-auto ml-auto text-right price-col"}
+                                        {col class="col-auto ml-auto text-right-util price-col"}
                                             <strong class="price_overall">
                                                 {$attribute->cValue}
                                             </strong>

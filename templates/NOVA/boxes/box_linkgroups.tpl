@@ -1,5 +1,5 @@
 {block name='boxes-box-linkgroups'}
-    {card class="box box-linkgroup mb-md-7 text-left" id="box{$oBox->getID()}" no-body=true}
+    {card class="box box-linkgroup mb-md-7 text-left-util" id="box{$oBox->getID()}" no-body=true}
         {block name='boxes-box-linkgroups-toggle-title'}
             {link
                 id="crd-hdr-{$oBox->getID()}"

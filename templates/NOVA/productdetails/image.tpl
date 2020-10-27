@@ -1,5 +1,5 @@
 {block name='productdetails-image'}
-    <div id="image_wrapper" class="gallery-with-action text-right mb-6" role="group">
+    <div id="image_wrapper" class="gallery-with-action text-right-util mb-6" role="group">
         {row class="h-100"}
         {block name='productdetails-image-button'}
             {col cols=12 class="mb-4 product-detail-image-topbar"}

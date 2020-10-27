@@ -2,7 +2,7 @@
     {foreach $items as $item}
         {if $type === 'product'}
             {block name='snippets-slider-items-product'}
-                <div class="product-wrapper text-center {if $item@first && $item@last} m-auto{elseif $item@first} ml-auto {elseif $item@last} mr-auto {/if}{if isset($style)} {$style}{/if}" {if $tplscope !== 'box'}{if isset($Link) && $Link->getLinkType() === $smarty.const.LINKTYP_STARTSEITE || $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE}itemprop="about"{else}itemprop="isRelatedTo"{/if} itemscope itemtype="http://schema.org/Product"{/if}>
+                <div class="product-wrapper text-center-util {if $item@first && $item@last} m-auto{elseif $item@first} ml-auto {elseif $item@last} mr-auto {/if}{if isset($style)} {$style}{/if}" {if $tplscope !== 'box'}{if isset($Link) && $Link->getLinkType() === $smarty.const.LINKTYP_STARTSEITE || $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE}itemprop="about"{else}itemprop="isRelatedTo"{/if} itemscope itemtype="http://schema.org/Product"{/if}>
                     {include file='productlist/item_slider.tpl' Artikel=$item tplscope=$tplscope}
                 </div>
             {/block}

@@ -6,10 +6,10 @@
         <ul class="productlist-filter-accordion border-md-bottom border-lg-bottom-0">
         {block name='snippets-filter-mobile-sorting'}
             <li>
-                {link class="text-decoration-none text-left filter-type-FilterItemSort"
+                {link class="text-decoration-none text-left-util filter-type-FilterItemSort"
                 data=["toggle"=> "collapse", "target"=>"#sorting-collapse"]}
                 {lang key='sorting' section='productOverview'}
-                    <span class="float-right mx-3 font-italic text-right text-truncate w-40 pr-1">
+                    <span class="float-right mx-3 font-italic text-right-util text-truncate w-40 pr-1">
                     {foreach $Suchergebnisse->getSortingOptions() as $option}
                         {if $option->isActive()} {$option->getName()}{/if}
                     {/foreach}
@@ -48,7 +48,7 @@
                                                 class="my-2"
                                                 visible=$subFilter->isActive() || $Einstellungen.template.productlist.filter_items_always_visible === 'Y'}
                                                 {if ($subFilter->getData('cTyp') === 'SELECTBOX') && $subFilter->getOptions()|@count > 0}
-                                                    {dropdown variant="outline-secondary" text="{lang key='selectFilter' section='global'} " toggle-class="btn-block text-left"}
+                                                    {dropdown variant="outline-secondary" text="{lang key='selectFilter' section='global'} " toggle-class="btn-block text-left-util"}
                                                         {include file='snippets/filter/characteristic.tpl' Merkmal=$subFilter sub=true}
                                                     {/dropdown}
                                                 {else}

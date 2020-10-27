@@ -14,13 +14,13 @@
                 <meta itemprop="mainEntityOfPage" content="{$newsItem->getURL()}">
                 {block name='blog-details-heading'}
                     {opcMountPoint id='opc_before_heading'}
-                    <h1 itemprop="headline" class="text-center">
+                    <h1 itemprop="headline" class="text-center-util">
                         {$newsItem->getTitle()}
                     </h1>
                 {/block}
 
                 {block name='blog-details-author'}
-                    <div class="author-meta text-muted text-center font-size-sm">
+                    <div class="author-meta text-muted text-center-util font-size-sm">
                         {if empty($newsItem->getDateValidFrom())}
                             {assign var=dDate value=$newsItem->getDateCreated()->format('Y-m-d H:i:s')}
                         {else}

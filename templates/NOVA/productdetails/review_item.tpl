@@ -26,7 +26,7 @@
                         <span itemprop="name" class="d-none">{$oBewertung->cTitel}</span>
                     {/block}
                     {block name='productdetails-review-item-review'}
-                        {col class="col-auto text-center" itemprop="reviewRating" itemscope=true itemtype="http://schema.org/Rating"}
+                        {col class="col-auto text-center-util" itemprop="reviewRating" itemscope=true itemtype="http://schema.org/Rating"}
                             {block name='productdetails-review-item-rating'}
                                 {block name='productdetails-review-item-include-rating'}
                                     {include file='productdetails/rating.tpl' stars=$oBewertung->nSterne}

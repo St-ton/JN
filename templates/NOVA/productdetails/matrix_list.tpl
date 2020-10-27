@@ -52,19 +52,19 @@
                                         name="variBoxAnzahl[{$child->kArtikel}]"
                                         type="text"
                                         value="{if isset($smarty.session.variBoxAnzahl_arr[$child->kArtikel]->fAnzahl)}{$smarty.session.variBoxAnzahl_arr[$child->kArtikel]->fAnzahl|replace_delim}{/if}"
-                                        class="text-right"
+                                        class="text-right-util"
                                         aria=["label"=>"{lang key='quantity'} {$child->cName}"]}
                                     {/inputgroup}
                                 {/if}
                             {/col}
                         {/block}
                         {block name='productdetails-matrix-list-muted-x'}
-                            {col cols=1 class="text-right px-1"}
+                            {col cols=1 class="text-right-util px-1"}
                                 <span class="text-muted">&times;</span>
                             {/col}
                         {/block}
                         {block name='productdetails-matrix-list-include-price'}
-                            {col cols=5 md=2 class="text-right"}
+                            {col cols=5 md=2 class="text-right-util"}
                                 {include file='productdetails/price.tpl' Artikel=$child tplscope='matrix'}
                             {/col}
                         {/block}

@@ -4,7 +4,7 @@
         <div id="sidebox{$oBox->getID()}" class="box box-filter-availability d-none d-lg-block">
             {button
                 variant="link"
-                class="text-decoration-none px-0 text-left dropdown-toggle text-truncate"
+                class="text-decoration-none px-0 text-left-util dropdown-toggle text-truncate"
                 block=true
                 role="button"
                 data=["toggle"=> "collapse", "target"=>"#cllps-box{$oBox->getID()}"]

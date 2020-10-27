@@ -242,7 +242,7 @@
                                     {input type="hidden" id="comment-hidden" name="kommentar" value=""}
                                     {block name='checkout-step5-confirmation-order-items'}
                                         {card no-body=true class='card-gray card-products'}
-                                            {cardheader class='p-0 text-right'}
+                                            {cardheader class='p-0 text-right-util'}
                                                 {block name='checkout-step5-confirmation-order-items-header'}
                                                     {button variant="link"
                                                         size="sm"

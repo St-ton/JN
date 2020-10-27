@@ -29,7 +29,7 @@
                             {col}
                                 <strong>{lang key='warehouse'}</strong>
                             {/col}
-                            {col class="ml-auto text-right"}
+                            {col class="ml-auto text-right-util"}
                                 <strong class="ml-auto">{lang key='status'}</strong>
                             {/col}
                         {/row}
@@ -41,7 +41,7 @@
                                 {col}
                                     <strong>{$oWarenlager->getName()}</strong>
                                 {/col}
-                                {col class="ml-auto text-right"}
+                                {col class="ml-auto text-right-util"}
                                     <span class="ml-auto">
                                          {if $anzeige !== 'nichts'
                                          && ($Artikel->cLagerKleinerNull === 'N'

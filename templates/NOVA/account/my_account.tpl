@@ -12,7 +12,7 @@
             {/col}
             {col cols=12 lg=6 class="mb-5"}
                 {block name='account-my-account-account-credit'}
-                    {card class='text-center border border-primary font-weight-bold-util'}
+                    {card class='text-center-util border border-primary font-weight-bold-util'}
                         {lang key='yourMoneyOnAccount' section='login'}: {$Kunde->cGuthabenLocalized}
                     {/card}
                 {/block}
@@ -56,11 +56,11 @@
                                                 data-boundary="window"
                                                 data-href="{$cCanonicalURL}?bestellung={$order->kBestellung}">
                                                 <td>{$order->dBestelldatum}</td>
-                                                <td class="text-right">{$order->cBestellwertLocalized}</td>
-                                                <td class="text-right">
+                                                <td class="text-right-util">{$order->cBestellwertLocalized}</td>
+                                                <td class="text-right-util">
                                                    {$order->Status}
                                                 </td>
-                                                <td class="text-right d-none d-md-block">
+                                                <td class="text-right-util d-none d-md-block">
                                                     <i class="fa fa-eye"></i>
                                                 </td>
                                             </tr>
@@ -110,7 +110,7 @@
                                                 {lang key='billingAdress' section='account data'}
                                                 <small class="text-muted d-block">{$Kunde->cStrasse} {$Kunde->cHausnummer}, {$Kunde->cPLZ} {$Kunde->cOrt}, {$Kunde->cLand}</small>
                                             </td>
-                                            <td class="text-right">
+                                            <td class="text-right-util">
                                                 {link href="$cCanonicalURL?editRechnungsadresse=1"
                                                     aria=["label"=>{lang key='editBillingAdress' section='account data'}]
                                                 }
@@ -125,7 +125,7 @@
                                                 {lang key='contactInformation' section='account data'} {lang key='and'} {lang key='email' section='account data'}
                                                 <small class="text-muted d-block">{$Kunde->cMail}</small>
                                             </td>
-                                            <td class="text-right">
+                                            <td class="text-right-util">
                                                 {link class='float-right' href="$cCanonicalURL?editRechnungsadresse=1"
                                                     aria=["label"=>{lang key='editCustomerData' section='account data'}]
                                                 }
@@ -139,7 +139,7 @@
                                             <td class="min-w-sm">
                                                 {lang key='password' section='account data'}
                                             </td>
-                                            <td class="text-right">
+                                            <td class="text-right-util">
                                                 {link href="{get_static_route id='jtl.php' params=['pass' => 1]}"
                                                     aria=["label"=>{lang key='changePassword' section='login'}]
                                                 }
@@ -183,7 +183,7 @@
                                                 </td>
                                             {/block}
                                             {block name='account-my-account-wishlist-visibility'}
-                                                <td class="text-right">
+                                                <td class="text-right-util">
                                                     <div class="d-inline-flex flex-nowrap mr-1">
                                                         <span data-switch-label-state="public-{$wishlist->kWunschliste}" class="{if $wishlist->nOeffentlich != 1}d-none{/if}">
                                                             {lang key='public'}

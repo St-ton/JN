@@ -26,10 +26,10 @@
                         <span class="text-accent">{lang key="pricePerUnit" section="productDetails"}</span>
                     {/col}
                 {/if}
-                {col cols=3 class="text-center"}
+                {col cols=3 class="text-center-util"}
                     <span class="text-accent">{lang key="quantity" section="checkout"}</span>
                 {/col}
-                {col cols=2 class="text-right"}
+                {col cols=2 class="text-right-util"}
                     <span class="text-accent">{lang key="price"}</span>
                 {/col}
                 {col cols=12}
@@ -244,7 +244,7 @@
                             {/if}
                         {/block}
 
-                        {col cols=$cols xl=3 class="ml-auto text-center mb-4 mb-xl-0 text-nowrap"}
+                        {col cols=$cols xl=3 class="ml-auto text-center-util mb-4 mb-xl-0 text-nowrap"}
                         {block name='basket-cart-items-quantity'}
                             {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
                                 {if $oPosition->istKonfigVater()}

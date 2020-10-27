@@ -39,7 +39,7 @@
                                                     {/formrow}
                                                 </td>
                                                 {block name='basket-cart-dropdown-cart-item-item-price'}
-                                                    <td class="text-right text-nowrap">
+                                                    <td class="text-right-util text-nowrap">
                                                         {if $oPosition->istKonfigVater()}
                                                             {$oPosition->cKonfigpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
                                                         {else}
@@ -64,7 +64,7 @@
                                                     </td>
                                                 {/block}
                                                 {block name='basket-cart-dropdown-cart-item-noitem-price'}
-                                                    <td class="text-right text-nowrap">
+                                                    <td class="text-right-util text-nowrap">
                                                         {$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
                                                     </td>
                                                 {/block}

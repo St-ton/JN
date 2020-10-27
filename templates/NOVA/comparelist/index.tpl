@@ -90,7 +90,7 @@
                                 <tr>
                                     <th class="sticky-top">&nbsp;</th>
                                     {foreach $oVergleichsliste->oArtikel_arr as $oArtikel}
-                                        <th class="text-center sticky-top min-w pb-0">
+                                        <th class="text-center-util sticky-top min-w pb-0">
                                             <div class="stretched">
                                                 <div>
                                                     {block name='comparelist-index-products-header-delete'}

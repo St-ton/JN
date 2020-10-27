@@ -30,7 +30,7 @@
                         {block name='snippets-uploads-scheme-product-data-main'}
                             {col cols=12}
                                 {block name='snippets-uploads-scheme-product-input'}
-                                    <div class="text-center
+                                    <div class="text-center-util
                                         {if isset($smarty.get.fillOut) && $smarty.get.fillOut == 12 && ($oUploadSchema->nPflicht
                                     && !$oUploadSchema->bVorhanden)} upload-error{/if}"
                                          id="upload-{$oUploadSchema@index}">
@@ -141,7 +141,7 @@
                             {/col}
                         {/block}
                         {block name='snippets-uploads-scheme-product-filedata'}
-                            {col cols=12 class="word-break text-right"}
+                            {col cols=12 class="word-break text-right-util"}
                                 <div id="queue{$oUploadSchema@index}" style="margin-bottom: 15px;" class="uploadifyMsg">
                                     <span class="current-upload small text-success">
                                         {if $oUploadSchema->bVorhanden}
@@ -193,7 +193,7 @@
                                         {/block}
                                     {/if}
                                     {block name='snippets-uploads-scheme-upload-filedata-main'}
-                                        {col cols=12 md=8 class="word-break text-right"}
+                                        {col cols=12 md=8 class="word-break text-right-util"}
                                             {block name='snippets-uploads-scheme-upload-filedata'}
                                                 <div id="queue{$oUploadSchema@index}{$oUpload@index}" style="margin-bottom: 15px;" class="uploadifyMsg">
                                                         <span class="current-upload small text-success">
@@ -203,7 +203,7 @@
                                                             {/if}
                                                         </span>
                                                 </div>
-                                                <div class="text-center {if isset($smarty.get.fillOut) && $smarty.get.fillOut == 12 && ($oUpload->nPflicht
+                                                <div class="text-center-util {if isset($smarty.get.fillOut) && $smarty.get.fillOut == 12 && ($oUpload->nPflicht
                                                 && !$oUpload->bVorhanden)} upload-error{/if}"
                                                      id="upload-{$oUploadSchema@index}{$oUpload@index}">
                                                     <input id="fileinput{$oUploadSchema@index}{$oUpload@index}"

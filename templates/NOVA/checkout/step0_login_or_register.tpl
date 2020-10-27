@@ -46,7 +46,7 @@
                     {/block}
                     {block name='checkout-step0-login-or-register-form-submit'}
                         {row class='mt-5'}
-                            {col cols=12 class="text-left text-md-right mb-3"}
+                            {col cols=12 class="text-left-util text-md-right mb-3"}
                                 {block name='checkout-step0-login-or-register-modal-privacy'}
                                     {link href=$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL() class="popup"}
                                         {lang key='privacyNotice'}

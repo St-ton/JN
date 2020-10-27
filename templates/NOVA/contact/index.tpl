@@ -246,7 +246,7 @@
                             {opcMountPoint id='opc_before_submit'}
                             {block name='contact-index-form-submit'}
                                 {row}
-                                    {col cols=12 class="text-left text-md-right mb-3"}
+                                    {col cols=12 class="text-left-util text-md-right mb-3"}
                                         {block name='contact-index-modal-privacy'}
                                             {link href=$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL() class="popup"}
                                                 {lang key='privacyNotice'}

@@ -61,7 +61,7 @@
                                                 {/col}
                                                 {col cols=12}
                                                     {block name='basket-index-form-freegift'}
-                                                        {form method="post" name="freegift" action="{get_static_route id='warenkorb.php'}" class="text-center" slide=true}
+                                                        {form method="post" name="freegift" action="{get_static_route id='warenkorb.php'}" class="text-center-util" slide=true}
                                                             {block name='basket-index-freegifts'}
                                                                 <div id="freegift"
                                                                      class="slick-smooth-loading carousel carousel-arrows-inside slick-lazy slick-type-half"
@@ -94,9 +94,9 @@
                     {else}
                         {block name='basket-index-cart-empty'}
                             {row}
-                                {col class="text-center"}
+                                {col class="text-center-util"}
                                     {block name='basket-index-alert-empty'}
-                                        {alert variant="info" class="text-center mt-4 pt-2 pb-5"}
+                                        {alert variant="info" class="text-center-util mt-4 pt-2 pb-5"}
                                             {badge variant="light" class="bubble"}
                                                 <i class="fas fa-shopping-cart"></i>
                                             {/badge}<br/>
@@ -147,10 +147,10 @@
                                     {if $NettoPreise}
                                         {block name='basket-index-price-net'}
                                             {row class="total-net"}
-                                                {col class="text-left" cols=7}
+                                                {col class="text-left-util" cols=7}
                                                     <span class="price_label"><strong>{lang key='subtotal' section='account data'} ({lang key='net'}):</strong></span>
                                                 {/col}
-                                                {col class="text-right price-col" cols=5}
+                                                {col class="text-right-util price-col" cols=5}
                                                     <strong class="price total-sum">{$WarensummeLocalized[$NettoPreise]}</strong>
                                                 {/col}
                                             {/row}
@@ -161,10 +161,10 @@
                                         {block name='basket-index-tax'}
                                             {foreach $Steuerpositionen as $Steuerposition}
                                                 {row class="tax"}
-                                                    {col class="text-left" cols=7}
+                                                    {col class="text-left-util" cols=7}
                                                         <span class="tax_label">{$Steuerposition->cName}:</span>
                                                     {/col}
-                                                    {col class="text-right price-col" cols=5}
+                                                    {col class="text-right-util price-col" cols=5}
                                                         <span class="tax_label">{$Steuerposition->cPreisLocalized}</span>
                                                     {/col}
                                                 {/row}
@@ -175,10 +175,10 @@
                                     {if isset($smarty.session.Bestellung->GuthabenNutzen) && $smarty.session.Bestellung->GuthabenNutzen == 1}
                                         {block name='basket-index-credit'}
                                             {row class="customer-credit"}
-                                                {col class="text-left" cols=7}
+                                                {col class="text-left-util" cols=7}
                                                     {lang key='useCredit' section='account data'}
                                                 {/col}
-                                                {col class="text-right" cols=5}
+                                                {col class="text-right-util" cols=5}
                                                     {$smarty.session.Bestellung->GutscheinLocalized}
                                                 {/col}
                                             {/row}
@@ -186,10 +186,10 @@
                                     {/if}
                                     {block name='basket-index-price-sticky'}
                                         {row class="total border-top mt-3 pt-3 font-size-lg"}
-                                            {col class="text-left" cols=7}
+                                            {col class="text-left-util" cols=7}
                                                 <span class="price_label">{lang key='subtotal' section='account data'}:</span>
                                             {/col}
-                                            {col class="text-right price-col" cols=5}
+                                            {col class="text-right-util price-col" cols=5}
                                                 <strong class="total-sum">{$WarensummeLocalized[0]}</strong>
                                             {/col}
                                         {/row}

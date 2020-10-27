@@ -28,7 +28,7 @@
                                 {/block}
                                 {block name='layout-header-nav-account-form-captcha'}
                                     {if isset($showLoginCaptcha) && $showLoginCaptcha}
-                                        {formgroup class="text-center"}
+                                        {formgroup class="text-center-util"}
                                             {captchaMarkup getBody=true}
                                         {/formgroup}
                                     {/if}

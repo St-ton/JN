@@ -121,7 +121,7 @@
                                                         type="text"
                                                         aria=["label"=>"{lang key='quantity'} {$oVariationWert0->cName}-{$oVariationWert1->cName}"]
                                                         value="{if isset($smarty.session.variBoxAnzahl_arr[$cVariBox]->fAnzahl)}{$smarty.session.variBoxAnzahl_arr[$cVariBox]->fAnzahl|replace_delim}{/if}"
-                                                        class="text-right"}
+                                                        class="text-right-util"}
                                                     {if $Artikel->nIstVater == 1}
                                                         {if isset($child->Preise->cVKLocalized[$NettoPreise]) && $child->Preise->cVKLocalized[$NettoPreise] > 0}
                                                             {inputgroupaddon append=true}
@@ -235,7 +235,7 @@
                                     || (!isset($oVariationWertHead->nNichtLieferbar)
                                         || $oVariationWertHead->nNichtLieferbar != 1)}
                                     {assign var=cVariBox value=$oVariationWertHead->kEigenschaft|cat:':'|cat:$oVariationWertHead->kEigenschaftWert}
-                                    <td class="text-center">
+                                    <td class="text-center-util">
                                         {if $Artikel->oVariBoxMatrixBild_arr|@count > 0}
                                             {foreach $Artikel->oVariBoxMatrixBild_arr as $oVariBoxMatrixBild}
                                                 {if $oVariBoxMatrixBild->kEigenschaftWert == $oVariationWertHead->kEigenschaftWert}
@@ -259,7 +259,7 @@
                                     {if isset($Artikel->oVariationKombiKinderAssoc_arr[$cVariBox])}
                                         {assign var=child value=$Artikel->oVariationKombiKinderAssoc_arr[$cVariBox]}
                                     {/if}
-                                    <td class="text-center">
+                                    <td class="text-center-util">
                                         {if $Einstellungen.global.global_erscheinende_kaeuflich === 'N'
                                             && isset($child->nErscheinendesProdukt) && $child->nErscheinendesProdukt == 1}
                                             <small>
@@ -316,7 +316,7 @@
                                             </div>
                                         {else}
                                             {inputgroup class="{if isset($smarty.session.variBoxAnzahl_arr[$cVariBox]->bError) && $smarty.session.variBoxAnzahl_arr[$cVariBox]->bError}has-error{/if}"}
-                                                {input class="text-right{if isset($smarty.session.variBoxAnzahl_arr[$cVariBox]->bError) && $smarty.session.variBoxAnzahl_arr[$cVariBox]->bError} bg-danger{/if}"
+                                                {input class="text-right-util{if isset($smarty.session.variBoxAnzahl_arr[$cVariBox]->bError) && $smarty.session.variBoxAnzahl_arr[$cVariBox]->bError} bg-danger{/if}"
                                                     placeholder="0"
                                                     name="variBoxAnzahl[_{$oVariationWertHead->kEigenschaft}:{$oVariationWertHead->kEigenschaftWert}]"
                                                     aria=["label"=>"{lang key='quantity'} {$oVariationWertHead->cName}"]
@@ -388,7 +388,7 @@
                                     {assign var=child value=$Artikel->oVariationKombiKinderAssoc_arr[$cVariBox]}
                                 {/if}
                                 <tr>
-                                    <td class="text-center">
+                                    <td class="text-center-util">
                                         {if $Artikel->oVariBoxMatrixBild_arr|@count > 0}
                                             {foreach $Artikel->oVariBoxMatrixBild_arr as $oVariBoxMatrixBild}
                                                 {if $oVariBoxMatrixBild->kEigenschaftWert == $oVariationWertHead->kEigenschaftWert}
@@ -454,7 +454,7 @@
                                         {else}
                                             {inputgroup class="{if isset($smarty.session.variBoxAnzahl_arr[$cVariBox]->bError) && $smarty.session.variBoxAnzahl_arr[$cVariBox]->bError}has-error{/if}"}
                                                 {input
-                                                    class="text-right" placeholder="0"
+                                                    class="text-right-util" placeholder="0"
                                                     name="variBoxAnzahl[_{$oVariationWertHead->kEigenschaft}:{$oVariationWertHead->kEigenschaftWert}]"
                                                     aria=["label"=>"{lang key='quantity'} {$oVariationWertHead->cName}"]
                                                     type="text"

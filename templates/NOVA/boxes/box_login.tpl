@@ -25,7 +25,7 @@
                         {/block}
                         {if isset($showLoginCaptcha) && $showLoginCaptcha}
                             {block name='boxes-box-login-form-captcha'}
-                                {formgroup class="text-center"}
+                                {formgroup class="text-center-util"}
                                     {captchaMarkup getBody=true}
                                 {/formgroup}
                             {/block}

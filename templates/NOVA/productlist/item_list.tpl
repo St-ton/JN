@@ -144,7 +144,7 @@
                                         {if $Artikel->nIstVater && $Artikel->kVaterArtikel == 0}
                                             {col cols=12}
                                                 {block name='productlist-item-list-basket-details-variations'}
-                                                    {alert variation="info" class="choose-variations text-left"}
+                                                    {alert variation="info" class="choose-variations text-left-util"}
                                                         {lang key='chooseVariations' section='messages'}
                                                     {/alert}
                                                 {/block}

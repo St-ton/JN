@@ -15,7 +15,7 @@
                                     {assign var=oArtikel value=$oImageMapArea->oArtikel}
                                     <div class="area-desc">
                                         {block name='snippets-banner-map-area-image'}
-                                            <div class="text-center mb-3">
+                                            <div class="text-center-util mb-3">
                                                 {if $oArtikel !== null}
                                                     {image fluid=true webp=true
                                                         src=$oArtikel->Bilder[0]->cURLMini

@@ -1,6 +1,6 @@
 {block name='boxes-box-basket'}
     {card class="box box-basket mb-4" id="sidebox{$oBox->getID()}"}
-        <div class="box-body text-center">
+        <div class="box-body text-center-util">
             {block name='boxes-box-basket-content'}
                 {block name='boxes-box-basket-title'}
                     <div class="productlist-filter-headline align-items-center d-flex">

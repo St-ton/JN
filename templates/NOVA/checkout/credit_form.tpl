@@ -11,7 +11,7 @@
                         {/col}
                         {col cols=12 md=6}
                             {block name='checkout-credit-form-alert'}
-                                <div class="credit-amount-description text-center mb-4">
+                                <div class="credit-amount-description text-center-util mb-4">
                                     {lang key='yourCreditIs' section='account data'} <strong class="credit-amount">{$GuthabenLocalized}</strong>
                                 </div>
                             {/block}

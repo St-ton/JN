@@ -86,7 +86,7 @@
         </head>
     {/block}
         {block name='snippets-maintenance-content'}
-        <body id="main-wrapper" class="text-center font-size-1.5x pt-5 vh-100">
+        <body id="main-wrapper" class="text-center-util font-size-1.5x pt-5 vh-100">
             {container class="d-flex flex-column h-100" fluid=true}
                 {block name='snippets-maintenance-content-language'}
                     {row}

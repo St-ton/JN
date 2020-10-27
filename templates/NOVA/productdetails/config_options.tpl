@@ -18,7 +18,7 @@
                             id="crd-hdr-{$configGroup@iteration}"
                             variant="link"
                             data=["toggle"=>"collapse","target"=>"#cfg-grp-cllps-{$configGroup@iteration}"]
-                            class="text-left text-decoration-none"
+                            class="text-left-util text-decoration-none"
                             disabled=!$configGroup@first
                         }
                             {$configLocalization->getName()}
@@ -30,7 +30,7 @@
                         aria=["labelledby"=>"crd-hdr-{$configGroup@iteration}"]
                         data=["parent"=>"#cfg-accordion"]
                         class="js-cfg-group-collapse"}
-                        <div class="text-center mb-4 sticky-top">
+                        <div class="text-center-util mb-4 sticky-top">
                             {if !empty($configGroup->getMin()) || !empty($configGroup->getMax())}
                                 {badge variant="info" class="js-group-badge-checked"}
                                     {if $configGroup->getMin() === 1 && $configGroup->getMax() === 1}

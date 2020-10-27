@@ -7,7 +7,7 @@
         {assign var=oVariationKombi_arr value=$Artikel->getChildVariations()}
         {block name='productdetails-variation-spinner'}
             {row}
-                {col class="updatingStockInfo text-center d-none"}
+                {col class="updatingStockInfo text-center-util d-none"}
                     <i class="fa fa-spinner fa-spin" title="{lang key='updatingStockInformation' section='productDetails'}"></i>
                 {/col}
             {/row}
@@ -32,7 +32,7 @@
                                 </span>
                             {/if}
                         </dt>
-                        <dd class="form-group text-left">
+                        <dd class="form-group text-left-util">
                             {if $Variation->cTyp === 'SELECTBOX'}
                                 {block name='productdetails-variation-select-outer'}
                                 {select class='custom-select selectpicker' title="{lang key='pleaseChooseVariation' section='productDetails'}" name="eigenschaftwert[{$Variation->kEigenschaft}]" required=!$showMatrix}

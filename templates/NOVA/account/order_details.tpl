@@ -22,7 +22,7 @@
                     {col cols=6 lg='auto'}
                         {lang key='yourOrderId' section='checkout'}: {$Bestellung->cBestellNr}
                     {/col}
-                    {col cols=6 lg='auto' class='text-right text-lg-left'}
+                    {col cols=6 lg='auto' class='text-right-util text-lg-left'}
                         {lang key='orderStatus' section='login'}: {$Bestellung->Status}
                     {/col}
                 {/row}
@@ -184,7 +184,7 @@
                                 <tr>
                                     <th>{lang key='shippingOrder' section='order'}</th>
                                     <th>{lang key='shippedOn' section='login'}</th>
-                                    <th class="text-right">{lang key='packageTracking' section='order'}</th>
+                                    <th class="text-right-util">{lang key='packageTracking' section='order'}</th>
                                 </tr>
                             {/block}
                         </thead>
@@ -194,7 +194,7 @@
                                     <tr>
                                         <td>{link data=["toggle"=>"modal", "target"=>"#shipping-order-{$oLieferschein->getLieferschein()}"] id=$oLieferschein->getLieferschein() href="#" title=$oLieferschein->getLieferscheinNr()}{$oLieferschein->getLieferscheinNr()}{/link}</td>
                                         <td>{$oLieferschein->getErstellt()|date_format:"%d.%m.%Y %H:%M"}</td>
-                                        <td class="text-right">
+                                        <td class="text-right-util">
                                             {foreach $oLieferschein->oVersand_arr as $oVersand}
                                                 {if $oVersand->getIdentCode()}
                                                     <p>{link href=$oVersand->getLogistikVarUrl() target="_blank" class="shipment" title=$oVersand->getIdentCode()}{lang key='packageTracking' section='order'}{/link}</p>

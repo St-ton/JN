@@ -86,7 +86,7 @@
                 {container class="d-print-none pt-4"}
                     {if $newsletterActive}
                         {block name='layout-footer-newsletter'}
-                            {row class="newsletter-footer" class="text-center text-md-left align-items-center"}
+                            {row class="newsletter-footer" class="text-center-util text-md-left align-items-center"}
                                 {col cols=12 lg=6}
                                     {block name='layout-footer-newsletter-heading'}
                                         <div class="h2">
@@ -242,7 +242,7 @@
                 {/container}
                 {block name='layout-footer-copyright'}
                     <div id="copyright" class="mt-3">
-                        {container fluid=true class='py-3 font-size-sm text-center'}
+                        {container fluid=true class='py-3 font-size-sm text-center-util'}
                             {row}
                                 {assign var=isBrandFree value=JTL\Shop::isBrandfree()}
                                 {col}

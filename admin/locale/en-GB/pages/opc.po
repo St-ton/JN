@@ -102,10 +102,10 @@ msgid "Border radius"
 msgstr "Border rounding"
 
 msgid "Custom css class"
-msgstr "Add custom css classes"
+msgstr "Custom class names"
 
 msgid "CustomCssClassDesc"
-msgstr "Assign one or multiple CSS classes to the portlet (separated with space, without the '.' selector)"
+msgstr "List one or more class names, separated by white spaces, that should be appended to the Portlets \"class\" attribute."
 
 msgid "CustomCssClassPlaceholder"
 msgstr "first-custom-class second-custom-class"

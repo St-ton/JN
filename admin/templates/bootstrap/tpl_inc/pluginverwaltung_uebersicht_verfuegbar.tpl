@@ -97,12 +97,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                        {foreach $pluginsAvailable->toArray() as $listingItem}
+                        {foreach $pluginsAvailable as $listingItem}
                             <tr class="plugin">
                                 <td class="check">
                                     <div class="custom-control custom-checkbox">
+                                        <input type="hidden" id="plugin-ext-{$listingItem->getDir()}" name="isExtension[]" value="{if $listingItem->isLegacy()}0{else}1{/if}">
                                         <input class="custom-control-input" type="checkbox" name="cVerzeichnis[]" id="plugin-check-{$listingItem->getDir()}" value="{$listingItem->getDir()}" />
-                                        {* TODO: kPlugin statt cVerzeichnis *}
                                         <label class="custom-control-label" for="plugin-check-{$listingItem->getDir()}"></label>
                                     </div>
                                     {if $listingItem->isShop5Compatible() === false}
@@ -148,7 +148,7 @@
                         </div>
                         <div class="ml-auto col-sm-6 col-xl-auto">
                             <button name="deinstallieren" id="uninstall-available-plugin" type="submit" class="btn btn-danger btn-block">
-                                <i class="fas fa-trash-alt"></i> {__('pluginBtnDeInstall')}
+                                <i class="fas fa-trash-alt"></i> {__('pluginBtnDelete')}
                             </button>
                         </div>
                         <div class="col-sm-6 col-xl-auto">
@@ -160,7 +160,7 @@
                 </div>
             </div>
         </form>
-        {include file='tpl_inc/pluginverwaltung_uninstall_modal.tpl' context='available' selector='#available-plugins' button='#uninstall-available-plugin'}
+        {include file='tpl_inc/pluginverwaltung_delete_modal.tpl' context='available' selector='#available-plugins' button='#uninstall-available-plugin'}
     {else}
         <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
     {/if}

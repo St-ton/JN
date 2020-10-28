@@ -23735,8 +23735,20 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
+  margin: 0.5rem 0;
 }
 
+.product-configuration {
+  margin-top: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+#cfg-container {
+  margin-bottom: 2rem;
+}
+#cfg-container .cfg-group .hr-sect {
+  margin-bottom: 0;
+}
 #cfg-container .cfg-group .hr-sect::before {
   max-width: 2%;
 }
@@ -23781,6 +23793,19 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   }
 }
 
+#cfg-modal-tabs {
+  margin-top: auto;
+}
+#cfg-modal-tabs .nav-link-text {
+  display: none;
+  margin-left: 0.5rem;
+}
+@media (min-width: 576px) {
+  #cfg-modal-tabs .nav-link-text {
+    display: inline-flex;
+  }
+}
+
 .modal-body .tab-content {
   margin-top: 0;
   margin-bottom: 1rem;
@@ -23802,10 +23827,18 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   }
 }
 
+.cfg-group .cfg-group-info {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+.cfg-group .group-description {
+  margin-bottom: 1rem;
+}
 .cfg-group .config-item {
   cursor: pointer;
   padding: 0.75rem;
   border: 2px solid #f8f8f8;
+  margin-bottom: 2rem;
   border-radius: 0;
 }
 .cfg-group .config-item .badge-circle {
@@ -23842,6 +23875,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   position: absolute;
   top: -20px;
   right: -22px;
+}
+.cfg-group .cfg-swatch:checked ~ .custom-control-label .config-item .badge-circle i {
+  margin-left: auto;
+  margin-right: auto;
 }
 .cfg-group .cfg-swatch:checked ~ .custom-control-label .config-item .badge-circle.circle-small {
   top: -12px;
@@ -23941,6 +23978,9 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
     text-align: right;
     margin-bottom: 0;
   }
+}
+#form_bundles .bundle-price .text-warning {
+  margin-left: 0.25rem;
 }
 
 /* comparelist */

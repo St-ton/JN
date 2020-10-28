@@ -11,14 +11,13 @@
                      data-toggle="tooltip"
                      title="{lang key='completeConfigGroupHint' section='productDetails'}"
                     {/if}>
-                    <div class="hr-sect mb-0">
+                    <div class="hr-sect">
                         <span class="d-none js-group-checked"><i class="far fa-check-square"></i></span>
                         <span><i class="far fa-square"></i></span>
                         {button
                             id="crd-hdr-{$configGroup@iteration}"
                             variant="link"
                             data=["toggle"=>"collapse","target"=>"#cfg-grp-cllps-{$configGroup@iteration}"]
-                            class="text-left-util text-decoration-none-util"
                             disabled=!$configGroup@first
                         }
                             {$configLocalization->getName()}
@@ -30,7 +29,7 @@
                         aria=["labelledby"=>"crd-hdr-{$configGroup@iteration}"]
                         data=["parent"=>"#cfg-accordion"]
                         class="js-cfg-group-collapse"}
-                        <div class="text-center-util mb-4 sticky-top">
+                        <div class="cfg-group-info sticky-top">
                             {if !empty($configGroup->getMin()) || !empty($configGroup->getMax())}
                                 {badge variant="info" class="js-group-badge-checked"}
                                     {if $configGroup->getMin() === 1 && $configGroup->getMax() === 1}
@@ -55,7 +54,7 @@
                         {alert variant="danger" class="js-cfg-group-error" data=["id"=>"{$kKonfiggruppe}"]}{/alert}
                     {/block}
                     {block name='productdetails-config-container-group-description'}
-                        {row class="group-description mb-3"}
+                        {row class="group-description"}
                             {if !empty($aKonfigerror_arr[$kKonfiggruppe])}
                                 {col cols=12}
                                     {alert variant="danger"}
@@ -128,11 +127,11 @@
                                                 class="cfg-swatch"
                                                 required=$oItem@first && $configGroup->getMin() > 0
                                             }
-                                                <div data-id="{$oItem->getKonfigitem()}" class="config-item mb-5{if $oItem->getEmpfohlen()} bg-info{/if}{if empty($bSelectable)} disabled{/if}{if $checkboxActive} active{/if}">
+                                                <div data-id="{$oItem->getKonfigitem()}" class="config-item {if $oItem->getEmpfohlen()} bg-info{/if}{if empty($bSelectable)} disabled{/if}{if $checkboxActive} active{/if}">
                                                     {if isset($aKonfigitemerror_arr[$kKonfigitem]) && $aKonfigitemerror_arr[$kKonfigitem]}
                                                         <p class="box_error alert alert-danger">{$aKonfigitemerror_arr[$kKonfigitem]}</p>
                                                     {/if}
-                                                    {badge class="badge-circle circle-small"}<i class="fas fa-check mx-auto"></i>{/badge}
+                                                    {badge class="badge-circle circle-small"}<i class="fas fa-check"></i>{/badge}
                                                     {if !empty($oItem->getArtikel()->Bilder[0]->cURLNormal)}
                                                         {$productImage = $oItem->getArtikel()->Bilder[0]}
                                                         <div class="square square-image">
@@ -149,7 +148,7 @@
                                                             </div>
                                                         </div>
                                                     {/if}
-                                                    <p class="my-2 cfg-item-description">
+                                                    <p class="cfg-item-description">
                                                         {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
                                                         {if $smarty.session.Kundengruppe->mayViewPrices()}
                                                             {badge variant="light"}
@@ -213,11 +212,11 @@
                                                 id="item{$oItem->getKonfigitem()}"
                                                 class="cfg-swatch"
                                             }
-                                                <div data-id="$oItem->getKonfigitem()" class="config-item mb-5{if $oItem->getEmpfohlen()} bg-info{/if}{if empty($bSelectable)} disabled{/if}{if $checkboxActive} active{/if}">
+                                                <div data-id="$oItem->getKonfigitem()" class="config-item {if $oItem->getEmpfohlen()} bg-info{/if}{if empty($bSelectable)} disabled{/if}{if $checkboxActive} active{/if}">
                                                     {if isset($aKonfigitemerror_arr[$kKonfigitem]) && $aKonfigitemerror_arr[$kKonfigitem]}
                                                         <p class="box_error alert alert-danger">{$aKonfigitemerror_arr[$kKonfigitem]}</p>
                                                     {/if}
-                                                    {badge class="badge-circle circle-small"}<i class="fas fa-check mx-auto"></i>{/badge}
+                                                    {badge class="badge-circle circle-small"}<i class="fas fa-check"></i>{/badge}
                                                     {if !empty($oItem->getArtikel()->Bilder[0]->cURLNormal)}
                                                         <div class="square square-image">
                                                             <div class="inner">
@@ -234,7 +233,7 @@
                                                             </div>
                                                         </div>
                                                     {/if}
-                                                    <p class="mb-2 cfg-item-description">
+                                                    <p class="cfg-item-description">
                                                         {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
                                                         {if $smarty.session.Kundengruppe->mayViewPrices()}
                                                             {badge variant="light"}
@@ -358,7 +357,7 @@
                                                         </div>
                                                     </div>
                                                 {/if}
-                                                <p class="mb-2 cfg-item-description">
+                                                <p class="cfg-item-description">
                                                     {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
                                                     {if $smarty.session.Kundengruppe->mayViewPrices()}
                                                         {badge variant="light"}
@@ -426,7 +425,6 @@
                             {if $configGroup@last}
                                 {nav}
                                     {navitem id="cfg-tab-summary-finish"
-                                        class="m-auto"
                                         href="#cfg-tab-pane-summary"
                                         role="tab"
                                         router-data=["toggle"=>"pill"]
@@ -442,7 +440,7 @@
                                     size="sm"
                                     variant="secondary"
                                     data=["toggle"=>"collapse","target"=>"#cfg-grp-cllps-{$configGroup@iteration + 1}"]
-                                    class="m-auto js-cfg-next no-caret"}
+                                    class="js-cfg-next no-caret"}
                                     {lang key='nextConfigurationGroup' section='productDetails'} <i class="fas fa-arrow-right"></i>
                                 {/button}
                             {/if}

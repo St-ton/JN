@@ -19,7 +19,7 @@
                                 <span class="price price-sm">{$ProduktBundle->cPriceLocalized[$NettoPreise]}</span>
                             </strong>
                             {if $ProduktBundle->fPriceDiff > 0}
-                                <span class="text-warning ml-1">({lang key='youSave' section='productDetails'}: {$ProduktBundle->cPriceDiffLocalized[$NettoPreise]})</span>
+                                <span class="text-warning">({lang key='youSave' section='productDetails'}: {$ProduktBundle->cPriceDiffLocalized[$NettoPreise]})</span>
                             {/if}
                             {if $ProductMain->cLocalizedVPE}
                                 <strong>{lang key='basePrice'}: </strong>

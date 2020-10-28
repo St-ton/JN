@@ -196,11 +196,19 @@
 	align-items: center;
 	justify-content: space-between;
 	flex-wrap: wrap;
+	margin: map_get($spacers ,2) 0;
+}
+
+.product-configuration {
+	margin-top: map_get($spacers, 2);
+	margin-bottom: map_get($spacers, 5);
 }
 
 #cfg-container {
+	margin-bottom: map_get($spacers, 5);
 	.cfg-group {
 		.hr-sect {
+			margin-bottom: 0;
 			&::before {
 				max-width: 2%;
 			}
@@ -216,6 +224,9 @@
 			.custom-control-label {
 				width: 100%;
 			}
+		}
+		.sticky-bottom .button{
+			margin: auto;
 		}
 	}
 
@@ -252,6 +263,25 @@
 	}
 }
 
+#cfg-modal-tabs {
+	margin-top: auto;
+
+	.nav-link-text {
+		display: none;
+		margin-left: map_get($spacers, 2);
+		@include media-breakpoint-up(sm) {
+			display: inline-flex;
+		}
+	}
+}
+
+#cfg-tab-summary-finish {
+	margin: auto;
+}
+
+#configuration-table .vat_info{
+	color: $text-muted;
+}
 .modal-body .tab-content {
 	margin-top: 0;
 	margin-bottom: 1rem;
@@ -272,10 +302,18 @@
 }
 
 .cfg-group {
+	.cfg-group-info {
+		text-align: center;
+		margin-bottom: map_get($spacers, 4);
+	}
+	.group-description {
+		margin-bottom: map_get($spacers, 3);
+	}
 	.config-item {
         cursor: pointer;
 		padding: $alert-padding-y;
 		border: 2px solid $cool-white;
+		margin-bottom: map_get($spacers, 5);
 		@include border-radius($dropdown-border-radius);
 		.badge-circle{
 			display: none;
@@ -314,6 +352,10 @@
 			position: absolute;
 			top: -20px;
 			right: -22px;
+			i {
+				margin-left: auto;
+				margin-right: auto;
+			}
 			&.circle-small{
 				top: -12px;
 				right: -14px;
@@ -408,6 +450,9 @@
 		@include media-breakpoint-up(md) {
 			text-align: right;
 			margin-bottom: 0;
+		}
+		.text-warning {
+			margin-left: map_get($spacers, 1);
 		}
 	}
 }

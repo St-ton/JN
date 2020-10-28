@@ -152,3 +152,12 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 	width: 24px;
 	z-index: 10;
 }
+
+.account-icon-dropdown {
+	.dropdown-footer {
+		background-color: $gray-lighter;
+		a {
+			text-decoration: underline;
+		}
+	}
+}

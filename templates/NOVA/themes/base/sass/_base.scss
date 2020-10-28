@@ -263,6 +263,12 @@ input.form-control[name="wishlist-url"] {
 #wlName button[data-toggle] {
   height: $input-height;
 }
+.wishlist-options {
+  .dropdown-item {
+    position: relative;
+    text-align: center;
+  }
+}
 
 /* Action buttons */
 .action-tip-animation {

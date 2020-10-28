@@ -19608,6 +19608,9 @@ aside .box-monthlynews a .value:hover {
   opacity: 0;
 }
 
+#shop-nav .nav-link i {
+  position: relative;
+}
 @media (max-width: 767.98px) {
   #shop-nav .nav-link {
     padding-left: 0.75rem;
@@ -22196,6 +22199,11 @@ input.form-control[name=wishlist-url] {
   height: calc(1.5em + 1.25rem + 2px);
 }
 
+.wishlist-options .dropdown-item {
+  position: relative;
+  text-align: center;
+}
+
 /* Action buttons */
 .action-tip-animation {
   position: absolute;
@@ -24132,6 +24140,13 @@ header .nav-right .dropdown-menu {
   right: 52px;
   width: 24px;
   z-index: 10;
+}
+
+.account-icon-dropdown .dropdown-footer {
+  background-color: #f5f7fa;
+}
+.account-icon-dropdown .dropdown-footer a {
+  text-decoration: underline;
 }
 
 /* footer */

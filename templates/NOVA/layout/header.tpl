@@ -290,7 +290,7 @@
             {block name='layout-header-branding-top-bar'}
                 {if !$isMobile}
                     <div id="header-top-bar" class="d-none {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}">
-                        <div class="container-fluid container-fluid-xl {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex flex-row-reverse{/if}">
+                        <div class="container-fluid {if $Einstellungen.template.megamenu.header_full_width === 'N'}container-fluid-xl{/if} {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex flex-row-reverse{/if}">
                             {include file='layout/header_top_bar.tpl'}
                         </div>
                     </div>
@@ -298,7 +298,7 @@
             {/block}
             <header class="d-print-none {if !$isMobile || $Einstellungen.template.theme.mobile_search_type !== 'fixed'}sticky-top{/if} fixed-navbar" id="jtl-nav-wrapper">
                 {block name='layout-header-container-inner'}
-                    <div class="container-fluid container-fluid-xl">
+                    <div class="container-fluid {if $Einstellungen.template.megamenu.header_full_width === 'N'}container-fluid-xl{/if}">
                     {block name='layout-header-category-nav'}
                         {navbar toggleable=true fill=true type="expand-lg" class="justify-content-start {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}align-items-center{else}align-items-lg-end{/if} pt-0 px-0 pb-lg-0"}
                             {block name='layout-header-navbar-toggle'}
@@ -316,7 +316,7 @@
                                         {if isset($ShopLogoURL)}
                                             {image src=$ShopLogoURL
                                                 alt=$Einstellungen.global.global_shopname
-                                                style="{if $ShopLogoURL|strpos:'.svg' !== false}height: 100px;{/if}"
+                                                id="shop-logo"
                                             }
                                         {else}
                                             <span class="h1">{$Einstellungen.global.global_shopname}</span>
@@ -349,25 +349,8 @@
                             {else}
                                 {block name='layout-header-branding-shop-nav'}
                                     {nav id="shop-nav" right=true class="nav-right ml-auto order-lg-last align-items-center flex-shrink-0"}
-                                        {block name='layout-header-branding-shop-nav-language'}
-                                            {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
-                                                {navitemdropdown
-                                                class="language-dropdown d-flex d-lg-none"
-                                                right=true
-                                                text="
-                                                    {foreach $smarty.session.Sprachen as $language}
-                                                        {if $language->kSprache == $smarty.session.kSprache}
-                                                            {$language->iso639|upper}
-                                                        {/if}
-                                                    {/foreach}"
-                                                }
-                                                    {foreach $smarty.session.Sprachen as $language}
-                                                        {dropdownitem href="{$language->cURL}" rel="nofollow" active=($language->kSprache == $smarty.session.kSprache)}
-                                                        {$language->iso639|upper}
-                                                        {/dropdownitem}
-                                                    {/foreach}
-                                                {/navitemdropdown}
-                                            {/if}
+                                        {block name='layout-header-branding-shop-nav-include-language-dropdown'}
+                                            {include file='snippets/language_dropdown.tpl' dropdownClass='d-flex d-lg-none'}
                                         {/block}
                                         {include file='layout/header_nav_icons.tpl'}
                                     {/nav}

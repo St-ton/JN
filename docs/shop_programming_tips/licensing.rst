@@ -1,4 +1,4 @@
-Lizensierung
+Lizenzierung
 ============
 
 .. |br| raw:: html
@@ -12,6 +12,18 @@ Plugin- und Template-Lizensierung (ab Shop 5.0.0)
 
 Als Erstes müssen Sie Ihr neues Plugin/Template im JTL-Kundencenter anlegen und eine ``EsxID`` für dieses
 Plugin/Template generieren.
+
+Loggen Sie sich hierzu in Ihr Kundencenter in den
+Bereich `Erweiterungen verwalten <https://kundencenter.jtl-software.de/sellerprogramm/erweiterungen-verwalten>`_ ein
+und legen Sie dort eine neue Erweiterung des gewünschten Typs (JTL-Shop 5 Plugin oder JTL-Shop 5 Template) an. (Bitte
+Beachten Sie, dass Sie das Onboarding für Seller durchlaufen haben müssen, um Ihre Plugins und Templates im
+JTL-Extension Store anbieten zu können)
+
+.. image:: /_images/lic_cust_centre_login.png
+
+Mit Erstellung der neuen Erweiterung wird auch sofort eine dazugehörige ExsID generiert.
+
+.. image:: /_images/lic_exs_id.png
 
 ExsID
 """""
@@ -66,10 +78,25 @@ Die ``ExsID`` tragen Sie in der ``info.xml`` Ihres Plugins, bzw. in der ``templa
     </Template>
 
 Falls Sie Ihr Plugin oder Template kostenlos zur Verfügung stellen wollen, sind ab hier keine weiteren Schritte
-erfoderlich. |br|
+erforderlich. |br|
 Das Plugin ist nun über das Backend von JTL-Shop installierbar und updatebar.
 
 Falls Sie Testlizenzen ausgestellt haben, werden Plugins mit abgelaufenen Testlizenzen automatisch deaktiviert.
+
+Die PluginID beim Updaten
+-------------------------
+
+Mit der korrekten Pflege der Plugin ID können Sie sicherstellen, dass Ihr Plugin korrekt geupdatet wird. Eine
+versionsübergreifend identische Benennung der ``PluginID`` und des dazugehörigen Installationsordners gewährleisten,
+dass Plugins sich aktualisieren können.
+
+Wenn die Benennungen der PluginID und des dazugehörigen Installationsordners zwischen 2 Versionen Unterschiede
+aufweisen, wird JTL-Shop keine Aktualisierung des bestehenden Plugins vornehmen, sondern eine separate Neuinstallation
+vornehmen, so dass am Ende 2 unterschiedliche Versionen desselben Plugins installiert sind.
+
+Stellen Sie daher sicher, dass über alle Versionen Ihres Plugins hinweg Die ``PluginID`` in der ``info.xml``, der
+Installationsorder des Plugins sowie das Feld ``PluginID`` bei der Pflege der Erweiterung im Kundencenter immer exakt
+identisch benannt sind, um derartige Fehler zu vermeiden.
 
 Lizenzprüfung
 -------------

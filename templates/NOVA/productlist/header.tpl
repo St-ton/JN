@@ -168,7 +168,9 @@
     {/block}
 
     {block name='productlist-header-include-active-filter'}
-        {$alertList->displayAlertByKey('noFilterResults')}
+        {if $NaviFilter->getFilterCount() > 0}
+            {$alertList->displayAlertByKey('noFilterResults')}
+        {/if}
         <div class="my-3">
             {include file='snippets/filter/active_filter.tpl'}
         </div>

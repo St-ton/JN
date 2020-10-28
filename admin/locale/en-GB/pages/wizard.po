@@ -105,10 +105,10 @@ msgid "weRecommend"
 msgstr "Our recommendation"
 
 msgid "weRecommendLegalDesc"
-msgstr "To use a plug-in, you need to make a separate contract with the respective partner. Click &quot;Learn more&quot; to get more information on the plug-ins of interest."
+msgstr "To use a plug-in, you need to make a separate contract with the respective partner. Click \"Learn more\" to get more information on the plug-ins of interest."
 
 msgid "weRecommendPaymentDesc"
-msgstr "To use a plug-in, you need to make a separate contract with the respective payment provider. Click &quot;Learn more&quot;to get more information on the plug-ins of interest."
+msgstr "To use a plug-in, you need to make a separate contract with the respective payment provider. Click \"Learn more\" to get more information on the plug-ins of interest."
 
 msgid "getToKnowMore"
 msgstr "Learn more"
@@ -153,7 +153,7 @@ msgid "recommendationSupportDesc"
 msgstr "In case of further questions, we recommend one of our support packages (included for 12 months after purchase of licence; not required with hosting by JTL)."
 
 msgid "recommendationExtensionStoreLink"
-msgstr "https://www.jtl-software.de/jtl-store/marktplatz"
+msgstr "https://jtl-url.de/exs"
 
 msgid "recommendationExtensionStore"
 msgstr "JTL-Extension&nbsp;Store"

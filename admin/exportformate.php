@@ -10,6 +10,9 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Shop;
 
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
+
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
 
@@ -108,7 +111,7 @@ if (Request::postInt('neu_export') === 1 && Form::validateToken()) {
         $_POST['cFusszeile'] = str_replace('<tab>', "\t", Request::postVar('cFusszeile', ''));
         $smarty->assign('cPlausiValue_arr', $checkResult)
                ->assign('cPostVar_arr', Collection::make(Text::filterXSS($_POST))->map(static function ($e) {
-                    return is_string($e) ? Text::htmlentities($e) : $e;
+                   return is_string($e) ? Text::htmlentities($e) : $e;
                })->all());
         $step = 'neuer Export';
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCheckInput'), 'errorCheckInput');

@@ -149,8 +149,8 @@
                                                         {if $bulkPrice.nAnzahl > 0}
                                                             <tr class="bulk-price-{$bulkPrice.nAnzahl}">
                                                                 <td>{$bulkPrice.nAnzahl}</td>
-                                                                <td class="bulk-price">
-                                                                    {$bulkPrice.cPreisLocalized[$NettoPreise]} <span class="footnote-reference">*</span>
+                                                                <td>
+                                                                    <span class="bulk-price mr-1">{$bulkPrice.cPreisLocalized[$NettoPreise]}</span><span class="footnote-reference">*</span>
                                                                 </td>
                                                                 {if !empty($bulkPrice.cBasePriceLocalized)}
                                                                     <td class="bulk-base-price">

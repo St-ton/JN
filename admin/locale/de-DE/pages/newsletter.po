@@ -99,7 +99,7 @@ msgid "newsletterdraftdate"
 msgstr "Versenden am"
 
 msgid "newsletterdraftformat"
-msgstr "(TT/MM/JJJJ hh:mm)"
+msgstr "TT/MM/JJJJ hh:mm"
 
 msgid "newsletterdesc"
 msgstr "Hier verwalten Sie Ihre Newsletter und Newsletter-Abonnenten. Beachten Sie, dass Newsletter pro Sprache verwaltet werden."

@@ -7,6 +7,7 @@ use JTL\Backend\Revision;
 use JTL\Catalog\Currency;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
+use JTL\Update\Updater;
 
 /**
  * Class Plugins
@@ -214,10 +215,12 @@ class Plugins
             $params['account']->attributes['useAvatarUpload']->cAttribValue
             : 'templates/bootstrap/gfx/avatar-default.svg';
 
-        \executeHook(\HOOK_BACKEND_FUNCTIONS_GRAVATAR, [
-            'url'          => &$url,
-            'AdminAccount' => &$_SESSION['AdminAccount']
-        ]);
+        if (!(new Updater(Shop::Container()->getDB()))->hasPendingUpdates()) {
+            \executeHook(\HOOK_BACKEND_FUNCTIONS_GRAVATAR, [
+                'url'          => &$url,
+                'AdminAccount' => &$_SESSION['AdminAccount']
+            ]);
+        }
 
         return $url;
     }
@@ -235,5 +238,4 @@ class Plugins
 
         return Shop::Container()->getCaptchaService()->getHeadMarkup($smarty);
     }
-
 }

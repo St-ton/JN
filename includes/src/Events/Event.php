@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Events;
 
@@ -15,4 +15,6 @@ class Event extends Enum
     public const MAP_CRONJOB_TYPE = 'map.cronjob.type';
 
     public const GET_AVAILABLE_CRONJOBS = 'get.available.cronjobs';
+
+    public const REVISION_RESTORE_DELETE = 'backend.revision.restore.delete';
 }

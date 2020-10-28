@@ -69,7 +69,7 @@ interface BootstrapperInterface
     /**
      * @return PluginInterface
      */
-    public function getPlugin(): PluginInterface;
+    public function getPlugin();
 
     /**
      * @return DbInterface

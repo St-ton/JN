@@ -9,7 +9,7 @@ msgid "rssSettings"
 msgstr "RSS settings"
 
 msgid "rssDescription"
-msgstr "You can automatically generate an RSS feed for JTL-Shop. The feed allows you to display new items, blog posts and reviews. You can create the RSS feed manually or have it generated automatically with every synchronisation with JTL-Wawi."
+msgstr "You can automatically generate an RSS feed for JTL-Shop. The feed allows you to display new items, blog posts, and reviews. You can create the RSS feed manually or have it generated automatically with every synchronisation with JTL-Wawi."
 
 msgid "successRSSCreate"
 msgstr "RSS feed created successfully."

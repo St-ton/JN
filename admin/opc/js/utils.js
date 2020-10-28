@@ -21,7 +21,7 @@ class Subject
     once(cb)
     {
         let tmpCB = data => {
-            cb();
+            cb(data);
             this.off(tmpCB);
         };
 
@@ -30,7 +30,7 @@ class Subject
 
     emit(data)
     {
-        this.listeners.forEach(cb => cb(data));
+        this.listeners.slice().forEach(cb => cb(data));
     }
 }
 

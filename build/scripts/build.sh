@@ -71,6 +71,9 @@ build_create()
     echo "Executing migrations";
     build_migrate;
 
+    echo "Reset mailtemplates";
+    build_reset_mailtemplates;
+
     echo "Creating database struct";
     build_create_db_struct;
 
@@ -111,7 +114,8 @@ build_create_deleted_files_csv()
     fi
 
     cd ${REPOSITORY_DIR};
-    git diff --name-status --diff-filter D v4.03.0 ${REMOTE_STR}${APPLICATION_VERSION} -- ${REPOSITORY_DIR} ':!admin/classes' ':!classes' ':!includes/ext' ':!includes/plugins' > ${DELETE_FILES_CSV_FILENAME_TMP};
+    git pull >/dev/null 2>&1;
+    git diff --name-status --diff-filter D tags/v4.03.0 ${REMOTE_STR}${APPLICATION_VERSION} -- ${REPOSITORY_DIR} ':!admin/classes' ':!classes' ':!includes/ext' ':!includes/plugins' ':!templates/Evo' > ${DELETE_FILES_CSV_FILENAME_TMP};
     cd ${CUR_PWD};
 
     while read line; do
@@ -371,6 +375,11 @@ build_add_files_to_patch_dir()
             fi
         done< <(diff -rq /tmp_composer-${PATCH_VERSION}/includes/vendor includes/vendor);
     fi
+}
+
+build_reset_mailtemplates()
+{
+    php ${REPOSITORY_DIR}/cli mailtemplates:reset
 }
 
 

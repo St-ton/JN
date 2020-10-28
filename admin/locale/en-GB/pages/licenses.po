@@ -6,13 +6,13 @@ msgid "docURL"
 msgstr ""
 
 msgid "errorFetchLicenseAPI"
-msgstr "Could fetch data from store API."
+msgstr "Could not establish connection to API of JTL-Extension Store."
 
 msgid "Error code: %d"
 msgstr "Error code: %d"
 
 msgid "Licenses"
-msgstr "Licenses"
+msgstr "Licences"
 
 msgid "(disabled)"
 msgstr "(disabled)"
@@ -24,7 +24,7 @@ msgid "Update"
 msgstr "Update"
 
 msgid "Update all"
-msgstr "Update all"
+msgstr "Update all extensions"
 
 msgid "Install"
 msgstr "Install"
@@ -33,10 +33,10 @@ msgid "Install all"
 msgstr "Install all"
 
 msgid "Refresh"
-msgstr "Refresh"
+msgstr "Check licences again"
 
 msgid "Unbound licenses"
-msgstr "Unbound licenses"
+msgstr "Unbound licences"
 
 msgid "free"
 msgstr "free"
@@ -48,46 +48,46 @@ msgid "test"
 msgstr "test"
 
 msgid "dev"
-msgstr "dev"
+msgstr "develop"
 
 msgid "License expired"
-msgstr "License expired"
-
-msgid "Version %s available"
-msgstr "Version %s available"
-
-msgid "No version available"
-msgstr "No version available"
+msgstr "Licence expired"
 
 msgid "Subscription expired on %s"
 msgstr "Subscription expired on %s"
 
 msgid "License expired on %s"
-msgstr "License expired on %s"
+msgstr "Licence expired on %s"
+
+msgid "Version %s available"
+msgstr "Version %s available"
+
+msgid "No version available"
+msgstr "No version currently available"
 
 msgid "Valid"
-msgstr "Valid"
+msgstr "valid"
 
 msgid "Valid until %s"
-msgstr "Valid until %s"
+msgstr "valid until %s"
 
 msgid "Subscription valid until %s"
 msgstr "Subscription valid until %s"
 
 msgid "License valid until %s"
-msgstr "License valid until %s"
+msgstr "Licence valid until %s"
 
 msgid "Warning: License only valid until %s"
-msgstr "Warning: License only valid until %s"
+msgstr "Caution: licence only valid until %s"
 
 msgid "Warning: Subscription only valid until %s"
-msgstr "Warning: Subscription only valid until %s"
+msgstr "Caution: subscription only valid until %s"
 
 msgid "Warning: only valid until %s"
-msgstr "Warning: only valid until %s"
+msgstr "Caution: only valid until %s"
 
 msgid "pageDesc"
-msgstr "Manage your active and available licenses."
+msgstr "View and manage your licences and subscriptions."
 
 msgid "ID"
 msgstr "ID"
@@ -99,10 +99,10 @@ msgid "Installed"
 msgstr "Installed"
 
 msgid "State"
-msgstr "State"
+msgstr "Status"
 
 msgid "Type"
-msgstr "Typ"
+msgstr "Type"
 
 msgid "Action"
 msgstr "Action"
@@ -111,61 +111,64 @@ msgid "Subscription"
 msgstr "Subscription"
 
 msgid "Developer"
-msgstr "Developer"
+msgstr "Developed by"
 
 msgid "documentation"
 msgstr "Documentation"
 
 msgid "extendSubscription"
-msgstr "extend subscription"
+msgstr "Renew subscription"
 
 msgid "extendLicense"
-msgstr "Extend license"
+msgstr "Renew test licence"
 
 msgid "extendTestLicense"
-msgstr "Extend test license"
-
-msgid "Clear binding"
-msgstr "Clear binding"
+msgstr "Renew test licence"
 
 msgid "itemDetails"
 msgstr "Details"
 
 msgid "setBinding"
-msgstr "Bind to current shop"
+msgstr "Bind to this online shop"
+
+msgid "upgradeLicense"
+msgstr "Buy license"
 
 msgid "Update to version %s available"
 msgstr "Update to version %s available"
 
 msgid "storeNotLinkedDesc"
-msgstr "To access contents from the JTL-Extension Store you have to link your account first."
+msgstr "In order to access contents of JTL-Extension Store, connect your JTL account to the online shop first."
 
 msgid "storeLink"
-msgstr "Konto verknüpfen"
+msgstr "Connect account"
 
 msgid "unlink"
-msgstr "unlink"
+msgstr "Cancel connection"
 
 msgid "Validity"
 msgstr "Validity"
 
 msgid "updates available"
-msgstr "updates available"
+msgstr "available update(s)"
 
 msgid "last update"
-msgstr "Zuletzt aktualisiert"
+msgstr "last updated"
 
 msgid "Archive checksum validation failed"
-msgstr "Archive checksum validation failed"
+msgstr "Could not validate checksum. Please contact the Support team."
 
 msgid "Could not validate archive"
-msgstr "Could not validate archive"
+msgstr "Could not validate archive. Please contact the Support team."
 
 msgid "Managed by %s"
-msgstr "Managed by %s"
+msgstr "Is managed by %s"
 
 msgid "Successfully extended."
-msgstr "Successfully extended."
+msgstr "Renewed successfully."
+
+msgid "Successfully executed."
+msgstr "Successfully executed."
 
 msgid "Enter token"
 msgstr "Enter token"

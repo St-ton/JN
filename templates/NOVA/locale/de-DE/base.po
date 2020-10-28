@@ -65,25 +65,19 @@ msgid "Listen- und Gallerieansicht"
 msgstr "Listen- und Gallerieansicht"
 
 msgid "Auswahloptionen bei „Filter anzeigen in (Desktop)“"
-msgstr "Auswahloptionen bei „Filter anzeigen in (Desktop)“"
+msgstr "Filterposition"
 
 msgid "Schaltfläche „Warenkorb“ in Artikelübersicht (Listenansicht) anzeigen"
 msgstr "Schaltfläche „Warenkorb“ in Artikelübersicht (Listenansicht) anzeigen"
 
 msgid "Filter immer ausgeklappt"
-msgstr "Filter immer ausgeklappt"
+msgstr "Filter immer ausklappen"
 
 msgid "Zusatzinfos zu Artikeln beim Hovern/Antippen anzeigen"
-msgstr "Zusatzinfos zu Artikeln beim Hovern/Antippen anzeigen"
-
-msgid "Seitenleiste Einstellungen"
-msgstr "Seitenleiste Einstellungen"
-
-msgid "Preisspanne immer anzeigen (empfohlen)"
-msgstr "Preisspanne immer anzeigen (empfohlen)"
+msgstr "Zusatzinfos zu Artikeln beim Hovern / Antippen anzeigen"
 
 msgid "Footer-Einstellungen"
-msgstr "Footer-Einstellungen"
+msgstr "Footer"
 
 msgid "Newsletter-Anmeldung im Footer"
 msgstr "Newsletter-Anmeldung anzeigen"
@@ -119,13 +113,13 @@ msgid "Skype-Link"
 msgstr "Skype-Link"
 
 msgid "Variationsauswahl anzeigen"
-msgstr "Variationsauswahl anzeigen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"nur in Verbindung mit Zusatzinfos beim Hovern/Antippen\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Variationsauswahl anzeigen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Nur in Verbindung mit Zusatzinfos beim Hovern/Antippen\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "Anzahl der sichtbaren Filteroptionen in Boxen"
-msgstr "Anzahl der sichtbaren Filteroptionen in Boxen. <span data-html=\"true\" data-toggle=\"tooltip\" title=\"weitere Optionen können eingeblendet werden\"><span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Anzahl der sichtbaren Filteroptionen in Boxen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Weitere Optionen können dennoch eingeblendet werden\"><span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "Anzahl der möglichen Variationswerte für Radio und Swatches"
-msgstr "Anzahl der möglichen Variationswerte für Radio und Swatches. <span data-html=\"true\" data-toggle=\"tooltip\" title=\"nur in Verbindung mit „Variationsauswahl anzeigen“\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Anzahl der möglichen Variationswerte für Radio und Swatches <span data-html=\"true\" data-toggle=\"tooltip\" title=\"nur in Verbindung mit „Variationsauswahl anzeigen“\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "keine Beschränkung"
 msgstr "keine Beschränkung"
@@ -161,22 +155,25 @@ msgid "Icon mit Dropdown"
 msgstr "Icon mit Dropdown"
 
 msgid "im Contentbereich"
-msgstr "im Contentbereich"
+msgstr "Im Contentbereich"
 
 msgid "zwischen Header und Content"
-msgstr "zwischen Header und Content"
+msgstr "Zwischen Header und Content"
 
 msgid "Wunschzettel und Vergleichsliste - Animation anzeigen"
-msgstr "Wunschzettel und Vergleichsliste - Animation anzeigen"
+msgstr "Animation für Wunschzettel und Vergleichsliste anzeigen"
 
 msgid "Auf Desktop und mobilen Geräten"
 msgstr "Auf Desktop und mobilen Geräten"
 
 msgid "Nur mobil"
-msgstr "Nur mobil"
+msgstr "Nur auf mobilen Geräten"
 
 msgid "Nur Desktop"
-msgstr "Nur Desktop"
+msgstr "Nur auf Desktop"
 
 msgid "Keine"
-msgstr "Keine"
+msgstr "Nein"
+
+msgid "Header über gesamte Bildschirmbreite darstellen"
+msgstr "Header über gesamte Bildschirmbreite darstellen"

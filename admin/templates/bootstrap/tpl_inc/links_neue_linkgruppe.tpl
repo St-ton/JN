@@ -1,4 +1,4 @@
-{assign var=cTitel value=__('newLinkGroup')}
+{assign var=cTitel value=__('newLinkGroupTitle')}
 {if $linkGroup !== null}
     {assign var=cTitel value=__('saveLinkGroup')}
 {/if}

@@ -90,7 +90,7 @@ class Image
             'container'                     => $settings['container_verwenden'] === 'Y',
             'format'                        => \mb_convert_case($settings['bilder_dateiformat'], \MB_CASE_LOWER),
             'quality'                       => (int)$settings['bilder_jpg_quali'],
-            'branding'                      => $branding[self::TYPE_PRODUCT] ?? null,
+            'branding'                      => $branding,
             self::TYPE_PRODUCT              => [
                 self::SIZE_XS => [
                     'width'  => (int)$settings['bilder_artikel_mini_breite'],
@@ -333,6 +333,9 @@ class Image
         $thumbnail = $req->getThumb($req->getSize(), true);
         $manager   = new ImageManager(['driver' => self::getImageDriver()]);
         $img       = $manager->make($rawPath);
+        $canvas    = $manager->canvas($img->width(), $img->height(), $settings['background']);
+        $canvas->insert($img);
+        $img = $canvas;
         self::checkDirectory($thumbnail);
         self::resize($req, $img, $settings);
         self::addBranding($manager, $req, $img);
@@ -356,7 +359,7 @@ class Image
     {
         // @todo: doesn't look very good with small images
 //        $image->blur(1);
-        // @todo: strange blue tones with PNG - https://felix.vm0.halle/media/image/product/28037/md/blauer-artikel.png
+        // @todo: strange blue tones with PNG
 //        if (self::getImageDriver() === 'imagick') {
 //            $image->getCore()->setColorspace(\Imagick::COLORSPACE_RGB);
 //            $image->getCore()->transformImageColorspace(\Imagick::COLORSPACE_RGB);
@@ -396,22 +399,24 @@ class Image
      */
     private static function addBranding(ImageManager $manager, MediaImageRequest $req, InImage $img): void
     {
-        $branding = self::getSettings()['branding'];
-        $type     = $req->getSize()->getSize();
-        if ($branding === null || !\in_array($type, [self::SIZE_LG, self::SIZE_XL], true)) {
+        $type   = $req->getType();
+        $size   = $req->getSize()->getSize();
+        $config = self::getSettings()['branding'];
+        $config = $config[$type] ?? null;
+        if ($config === null || !\in_array($size, [self::SIZE_LG, self::SIZE_XL], true)) {
             return;
         }
-        $watermark = $manager->make($branding->path);
-        if ($branding->size > 0) {
-            $brandWidth  = \round(($img->getWidth() * $branding->size) / 100.0);
+        $watermark = $manager->make($config->path);
+        if ($config->size > 0) {
+            $brandWidth  = \round(($img->getWidth() * $config->size) / 100.0);
             $brandHeight = \round(($brandWidth / $watermark->getWidth()) * $watermark->getHeight());
             $newWidth    = \min($watermark->getWidth(), $brandWidth);
             $newHeight   = \min($watermark->getHeight(), $brandHeight);
             $watermark->resize($newWidth, $newHeight, static function (Constraint $constraint) {
                 $constraint->aspectRatio();
             });
-            $watermark->opacity($branding->transparency);
-            $img->insert($watermark, $branding->position, 10, 10);
+            $watermark->opacity(100 - $config->transparency);
+            $img->insert($watermark, $config->position, 10, 10);
         }
     }
 

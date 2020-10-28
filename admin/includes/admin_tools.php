@@ -19,25 +19,29 @@ use JTL\XMLParser;
 
 /**
  * @param int|array $configSectionID
+ * @param bool $byName
  * @return array
  */
-function getAdminSectionSettings($configSectionID)
+function getAdminSectionSettings($configSectionID, bool $byName = false)
 {
     $gettext = Shop::Container()->getGetText();
     $gettext->loadConfigLocales();
     $db = Shop::Container()->getDB();
     if (is_array($configSectionID)) {
+        $where    = $byName
+            ? "WHERE cWertName IN ('" . implode("','", $configSectionID) . "')"
+            : 'WHERE kEinstellungenConf IN (' . implode(',', \array_map('\intval', $configSectionID)) . ')';
         $confData = $db->query(
             'SELECT *
                 FROM teinstellungenconf
-                WHERE kEinstellungenConf IN (' . implode(',', array_map('\intval', $configSectionID)) . ')
+                ' . $where . '
                 ORDER BY nSort',
             ReturnType::ARRAY_OF_OBJECTS
         );
     } else {
         $confData = $db->selectAll(
             'teinstellungenconf',
-            'kEinstellungenSektion',
+            $byName ? 'cWertName' : 'kEinstellungenSektion',
             $configSectionID,
             '*',
             'nSort'
@@ -111,15 +115,19 @@ function getAdminSectionSettings($configSectionID)
  * @param array $settingsIDs
  * @param array $post
  * @param array $tags
+ * @param bool $byName
  * @return string
  */
-function saveAdminSettings(array $settingsIDs, array &$post, $tags = [CACHING_GROUP_OPTION])
+function saveAdminSettings(array $settingsIDs, array &$post, $tags = [CACHING_GROUP_OPTION], bool $byName = false)
 {
     $db       = Shop::Container()->getDB();
+    $where    = $byName
+        ? "WHERE cWertName IN ('" . implode("','", $settingsIDs) . "')"
+        : 'WHERE kEinstellungenConf IN (' . implode(',', \array_map('\intval', $settingsIDs)) . ')';
     $confData = $db->query(
         'SELECT *
             FROM teinstellungenconf
-            WHERE kEinstellungenConf IN (' . implode(',', \array_map('\intval', $settingsIDs)) . ')
+            ' . $where . '
             ORDER BY nSort',
         ReturnType::ARRAY_OF_OBJECTS
     );

@@ -2,7 +2,7 @@
 <div class="card-columns">
     {foreach $Artikel->oDownload_arr as $oDownload}
         {if isset($oDownload->oDownloadSprache)}
-            {card title=$oDownload->oDownloadSprache->getName() class="mb-3"}
+            {card title-text=$oDownload->oDownloadSprache->getName() class="mb-3"}
                 {row}
                     {block name='productdetails-download-description'}
                         {col cols=12}

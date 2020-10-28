@@ -32,7 +32,7 @@
                                     {/if}
                                 {/foreach}
                             {/if}
-                            {card img-src="{if !empty($oMedienDatei->cPfad)}{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}{elseif !empty($oMedienDatei->cURL)}{$oMedienDatei->cURL}{/if}" title="{$oMedienDatei->cName}" img-top=true img-alt="{$cMediaAltAttr}"}
+                            {card img-src="{if !empty($oMedienDatei->cPfad)}{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}{elseif !empty($oMedienDatei->cURL)}{$oMedienDatei->cURL}{/if}" title-text="{$oMedienDatei->cName}" img-top=true img-alt="{$cMediaAltAttr}"}
                                 <p>{$oMedienDatei->cBeschreibung}</p>
                             {/card}
                         {/block}
@@ -40,7 +40,7 @@
                     {elseif $oMedienDatei->nMedienTyp === 2}
                         {if $oMedienDatei->cName|strlen > 1}
                             {block name='productdetails-mediafile-audio'}
-                                {card title=$oMedienDatei->cName class="mb-3"}
+                                {card title-text=$oMedienDatei->cName class="mb-3"}
                                     {row}
                                         {col cols=12}
                                             {$oMedienDatei->cBeschreibung}
@@ -67,7 +67,7 @@
                     {* Video *}
                     {elseif $oMedienDatei->nMedienTyp === 3}
                         {block name='productdetails-mediafile-video'}
-                            {if ($oMedienDatei->videoType === 'mp4' 
+                            {if ($oMedienDatei->videoType === 'mp4'
                             || $oMedienDatei->videoType === 'webm'
                             || $oMedienDatei->videoType === 'ogg')}
                                     <video class="product-detail-video mw-100" controls>
@@ -77,12 +77,12 @@
 
                             {else}
                                 {lang key='videoTypeNotSupported' section='errorMessages'}
-                            {/if}      
+                            {/if}
                         {/block}
                     {* Sonstiges *}
                     {elseif $oMedienDatei->nMedienTyp === 4}
                         {block name='productdetails-mediafile-misc'}
-                            {card title=$oMedienDatei->cName class="mb-3"}
+                            {card title-text=$oMedienDatei->cName class="mb-3"}
                                 {row}
                                     {col cols=12}
                                         {$oMedienDatei->cBeschreibung}
@@ -113,7 +113,7 @@
                         {* PDF *}
                     {elseif $oMedienDatei->nMedienTyp == 5}
                         {block name='productdetails-mediafile-pdf'}
-                            {card title=$oMedienDatei->cName class="mb-3"}
+                            {card title-text=$oMedienDatei->cName class="mb-3"}
                                 {row}
                                     {col md=6}
                                         {$oMedienDatei->cBeschreibung}

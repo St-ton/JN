@@ -471,3 +471,13 @@ input.typeahead {
 .ml-auto-util {
   margin-left: auto;
 }
+.manufacturer-image-wrapper {
+  margin-bottom: map-get($spacers, 1);
+}
+.sitemap-group {
+  margin-bottom: map-get($spacers, 5);
+  li, .sitemap-group-item {
+    margin-top: map-get($spacers, 2);
+    margin-bottom: map-get($spacers, 2);
+  }
+}

@@ -3,7 +3,7 @@
         {block name='page-sitemap-pages'}
             {opcMountPoint id='opc_before_pages' inContainer=false}
             {container}
-                {card header={lang key='sitemapSites'} class="mb-5"}
+                {card header={lang key='sitemapSites'} class="sitemap-group"}
                     {block name='page-sitemap-pages-content'}
                         {row}
                             {foreach $linkgroups as $linkgroup}
@@ -27,29 +27,29 @@
         {block name='page-sitemap-categories'}
             {opcMountPoint id='opc_before_categories' inContainer=false}
             {container}
-                {card header={lang key='sitemapKats'} class="mb-5"}
+                {card header={lang key='sitemapKats'} class="sitemap-group"}
                     {block name='page-sitemap-categories-content'}
                         {row}
                             {foreach $oKategorieliste->elemente as $oKategorie}
                                 {if $oKategorie->getChildren()|@count > 0}
                                     {col cols=12 md=4 lg=3}
                                         <ul class="list-unstyled">
-                                            <li class="py-2">
+                                            <li>
                                                 {link href=$oKategorie->getURL() title=$oKategorie->getName() class="nice-deco"}
                                                     <strong>{$oKategorie->getShortName()}</strong>
                                                 {/link}
                                             </li>
                                             {foreach $oKategorie->getChildren() as $oSubKategorie}
-                                                <li class="py-2">
+                                                <li>
                                                     {link href=$oSubKategorie->getURL() title=$oKategorie->getName() class="nice-deco"}
                                                         {$oSubKategorie->getShortName()}
                                                     {/link}
                                                 </li>
                                                 {if $oSubKategorie->getChildren()|@count > 0}
-                                                    <li class="py-2">
+                                                    <li>
                                                         <ul class="sub-categories list-unstyled pl-4">
                                                             {foreach $oSubKategorie->getChildren() as $oSubSubKategorie}
-                                                                <li class="py-2">
+                                                                <li>
                                                                     {link href=$oSubSubKategorie->getURL()
                                                                        title=$oKategorie->getName() class="nice-deco"}
                                                                         {$oSubSubKategorie->getShortName()}
@@ -69,7 +69,7 @@
                                 <ul class="list-unstyled">
                                     {foreach $oKategorieliste->elemente as $oKategorie}
                                         {if $oKategorie->getChildren()|@count == 0}
-                                            <li class="py-2">
+                                            <li>
                                                 &nbsp;&nbsp;{link href=$oKategorie->getURL() title=$oKategorie->getName() class="nice-deco"}
                                                     {$oKategorie->getShortName()}
                                                 {/link}
@@ -88,11 +88,11 @@
         {block name='page-sitemap-manufacturer'}
             {opcMountPoint id='opc_before_manufacturers' inContainer=false}
             {container}
-                {card header={lang key='sitemapNanufacturer'} class="mb-5"}
+                {card header={lang key='sitemapNanufacturer'} class="sitemap-group"}
                     {block name='page-sitemap-manufacturer-content'}
                         {row}
                             {foreach $oHersteller_arr as $oHersteller}
-                                {col cols=12 md=4 lg=3 class="py-2"}
+                                {col cols=12 md=4 lg=3 class="sitemap-group-item"}
                                     {link href=$oHersteller->cURL  class="nice-deco"}{$oHersteller->cName}{/link}
                                 {/col}
                             {/foreach}
@@ -106,7 +106,7 @@
         {block name='page-sitemap-news'}
             {opcMountPoint id='opc_before_news' inContainer=false}
             {container}
-                {card header={lang key='sitemapNews'} class="mb-5"}
+                {card header={lang key='sitemapNews'} class="sitemap-group"}
                     {block name='page-sitemap-news-content'}
                         {row}
                             {foreach $oNewsMonatsUebersicht_arr as $oNewsMonatsUebersicht}
@@ -116,7 +116,7 @@
                                         <strong>{link href=$oNewsMonatsUebersicht->cURLFull class="nice-deco"}{$oNewsMonatsUebersicht->cName}{/link}</strong>
                                         <ul class="list-unstyled">
                                             {foreach $oNewsMonatsUebersicht->oNews_arr as $oNews}
-                                                <li class="py-2">&nbsp;&nbsp;{link href=$oNews->cURLFull class="nice-deco"}{$oNews->cBetreff}{/link}</li>
+                                                <li>&nbsp;&nbsp;{link href=$oNews->cURLFull class="nice-deco"}{$oNews->cBetreff}{/link}</li>
                                             {/foreach}
                                         </ul>
                                     {/col}
@@ -136,7 +136,7 @@
         {block name='page-sitemap-news-categories'}
             {opcMountPoint id='opc_before_news_categories' inContainer=false}
             {container}
-                {card header={lang key='sitemapNewsCats'} class="mb-5"}
+                {card header={lang key='sitemapNewsCats'} class="sitemap-group"}
                     {block name='page-sitemap-news-categories-content'}
                         {row}
                             {foreach $oNewsKategorie_arr as $oNewsKategorie}
@@ -145,7 +145,7 @@
                                         <strong>{link href=$oNewsKategorie->cURLFull}{$oNewsKategorie->cName}{/link}</strong>
                                         <ul class="list-unstyled">
                                             {foreach $oNewsKategorie->oNews_arr as $oNews}
-                                                <li class="py-2">
+                                                <li>
                                                     &nbsp;&nbsp;{link href=$oNews->cURLFull class="nice-deco"}{$oNews->cBetreff}{/link}
                                                 </li>
                                             {/foreach}

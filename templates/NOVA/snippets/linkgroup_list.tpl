@@ -52,7 +52,7 @@
                         {/block}
                     {else}
                         {block name='snippets-linkgroup-list-links-navitem'}
-                            {navitem href=$li->getURL() nofollow=$li->getNoFollow() class="nav-scrollbar-item {if $activeId == $li->getId()}active{/if}{if $tplscope=='sitemap'} py-2{/if}" router-class="{if $tplscope=='sitemap'}nice-deco{/if}"}
+                            {navitem href=$li->getURL() nofollow=$li->getNoFollow() class="nav-scrollbar-item {if $activeId == $li->getId()}active{/if}" router-class="{if $tplscope=='sitemap'}nice-deco{/if}"}
                                 {$li->getName()}
                             {/navitem}
                         {/block}

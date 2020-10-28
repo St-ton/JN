@@ -69,16 +69,14 @@
                 'box-slider' : {
                     arrows:         false,
                     lazyLoad:       'ondemand',
-                    slidesToShow:   2,
+                    slidesToShow:   1,
                     swipeToSlide:   true,
-                    slidesToScroll: 2,
+                    slidesToScroll: 1,
                     mobileFirst:    true,
                     responsive: [
                         {
                             breakpoint: 992,
                             settings: {
-                                slidesToShow: 1,
-                                slidesToScroll: 1,
                                 arrows: true,
                             }
                         }

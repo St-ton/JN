@@ -109,7 +109,7 @@ class PortletInstance implements \JsonSerializable
 
         Shop::fire('shop.OPC.PortletInstance.getPreviewHtml', [
             'portletInstance' => $this,
-            'result' => &$result
+            'result'          => &$result
         ]);
 
         return $result;
@@ -126,7 +126,7 @@ class PortletInstance implements \JsonSerializable
 
         Shop::fire('shop.OPC.PortletInstance.getFinalHtml', [
             'portletInstance' => $this,
-            'result' => &$result
+            'result'          => &$result
         ]);
 
         return $result;
@@ -251,7 +251,7 @@ class PortletInstance implements \JsonSerializable
 
     /**
      * @param string $name
-     * @param $value
+     * @param        $value
      * @return PortletInstance
      */
     public function setAttribute(string $name, $value): self
@@ -291,7 +291,7 @@ class PortletInstance implements \JsonSerializable
                     foreach ($boxStyles as $styleName => $styleValue) {
                         $this->setStyle($styleName, $styleValue);
                     }
-                } elseif (!Text::startsWith($propname, 'hidden-')) {
+                } elseif ($propname !== 'custom-class' && !Text::startsWith($propname, 'hidden-')) {
                     $this->setStyle($propname, $this->getProperty($propname));
                 }
             }
@@ -316,7 +316,7 @@ class PortletInstance implements \JsonSerializable
 
     /**
      * @param string $name
-     * @param $value
+     * @param        $value
      * @return PortletInstance
      */
     public function setStyle(string $name, $value): self
@@ -328,7 +328,7 @@ class PortletInstance implements \JsonSerializable
 
     /**
      * @param string $name
-     * @param $value
+     * @param        $value
      * @return PortletInstance
      */
     public function setAnimation(string $name, $value): self
@@ -384,6 +384,10 @@ class PortletInstance implements \JsonSerializable
         if ($this->getProperty('hidden-xl')) {
             $res .= 'opc-hidden-xl ';
         }
+        if (!empty($this->getProperty('custom-class'))) {
+            $res .= $this->getProperty('custom-class');
+        }
+
 
         return $res;
     }
@@ -581,11 +585,11 @@ class PortletInstance implements \JsonSerializable
         $srcsizes .= '100vw';
 
         return [
-            'srcset'   => $srcset,
-            'srcsizes' => $srcsizes,
-            'src'      => \str_replace(' ', '%20', $this->getImage()),
-            'alt'      => $alt,
-            'title'    => $title,
+            'srcset'     => $srcset,
+            'srcsizes'   => $srcsizes,
+            'src'        => \str_replace(' ', '%20', $this->getImage()),
+            'alt'        => $alt,
+            'title'      => $title,
             'realWidth'  => $realWidth,
             'realHeight' => $realHeight,
         ];

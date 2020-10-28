@@ -65,6 +65,11 @@
                                         label="{lang key='passwordRepeat' section='account data'}"
                                         label-for="password2"
                                     }
+                                        {if isset($fehlendeAngaben.pass_ungleich)}
+                                            <div class="form-error-msg text-danger"><i class="fa fa-exclamation-triangle"></i>
+                                                {lang key='passwordsMustBeEqual' section='account data'}
+                                            </div>
+                                        {/if}
                                         {input
                                             type="password"
                                             name="pass2"
@@ -76,13 +81,7 @@
                                             autocomplete="new-password"
                                             aria-autocomplete="none"
                                             disabled=($unregForm === 1)
-                                            value=""
-                                        }
-                                        {if isset($fehlendeAngaben.pass_ungleich)}
-                                            <div class="form-error-msg text-danger"><i class="fa fa-exclamation-triangle"></i>
-                                                {lang key='passwordsMustBeEqual' section='account data'}
-                                            </div>
-                                        {/if}
+                                            value=""}
                                     {/formgroup}
                                 {/col}
                             {/block}

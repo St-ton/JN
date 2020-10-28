@@ -1961,6 +1961,9 @@ msgstr "All categories"
 msgid "filterCharacteristics"
 msgstr "Characteristics"
 
+msgid "filterAvailability"
+msgstr "Availability"
+
 msgid "za_ueberweisung_jtl"
 msgstr "Bank transfer"
 

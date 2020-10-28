@@ -137,7 +137,7 @@
                                                                     {$mft->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_hersteller_normal_breite}w"
                                                             sizes="auto"
                                                             alt=$mft->getName()|escape:'html'
-                                                            class="d-none d-md-block mb-3"}
+                                                            class="d-none d-lg-block mb-3"}
                                                     {/if}
                                                     {$mft->getName()}
                                                 {/link}

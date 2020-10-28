@@ -9,7 +9,17 @@
 header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94); position: relative; background-color: $white; z-index: $zindex-sticky;
 	a { text-decoration: none; }
 
-	.navbar { position: static; }
+	.navbar {
+		padding: 0;
+		position: static;
+	}
+
+	@include media-breakpoint-up(lg) {
+		padding-bottom: 0;
+		.navbar-brand {
+			margin-right: map-get($spacers, 6);
+		}
+	}
 
 	.navbar-toggler { color: $gray-darker; }
 
@@ -23,8 +33,6 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 	/* mobile only */
 
 	@include media-breakpoint-down(md) {
-		.navbar { /*height: rem(50px); */padding: 0; }
-
 		.dropup, .dropright, .dropdown, .dropleft, .col, [class*='col-'] { position: static; }
 
 		.navbar-collapse { position: fixed; top: 0; left: 0; display: block; height: 100vh !important; -webkit-overflow-scrolling: touch; max-width: rem(270px); transition: $transition-base; z-index: $zindex-fixed + 20; width: 100%; background: $white;
@@ -57,7 +65,14 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 			.nav { flex-direction: column; }
 		}
 
+		#mainNavigation {
+			@include media-breakpoint-up(lg) {
+				margin-right: map-get($spacers, 3);
+			}
+		}
 		.nav-mobile-header {
+			padding-left: map-get($spacers, 3);
+			padding-right: map-get($spacers, 3);
 			> .row { height: rem(50px); }
 		}
 
@@ -127,11 +142,16 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 			}
 		}
 	}
+	#burger-menu {
+		margin-right: map-get($spacers, 3);
+	}
 }
 
 .fixed-search {
 	background-color: $white;
 	@include box-shadow($popover-box-shadow);
+	padding-top: map-get($spacers, 2);
+	padding-bottom: map-get($spacers, 2);
 }
 
 .main-search .twitter-typeahead {
@@ -158,6 +178,21 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 		background-color: $gray-lighter;
 		a {
 			text-decoration: underline;
+		}
+	}
+}
+#content {
+	padding-bottom: map-get($spacers, 6);
+}
+#content-wrapper {
+	margin-top: 0;
+	&.has-fluid {
+		padding-top: map-get($spacers, 3);
+	}
+	&:not(.has-fluid) {
+		padding-top: map-get($spacers, 5);
+		@include media-breakpoint-up(lg) {
+			padding-top: map-get($spacers, 7);
 		}
 	}
 }

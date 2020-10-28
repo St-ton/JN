@@ -13,7 +13,7 @@
             {/row}
         {/block}
         {block name='productdetails-variation-variation'}
-            {row class="variations {if $simple}simple{else}switch{/if}-variations mb-4"}
+            {row class="variations {if $simple}simple{else}switch{/if}-variations"}
                 {col}
                     <dl>
                     {foreach name=Variationen from=$Artikel->$VariationsSource key=i item=Variation}

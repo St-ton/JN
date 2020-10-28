@@ -413,6 +413,35 @@
 		border-top: 1px solid $gray-lighter;
 		border-bottom: 1px solid $gray-lighter;
 	}
+	ul.info-essential {
+		margin: map_get($spacers, 5) 0;
+	}
+	.shortdesc {
+		margin-bottom: map_get($spacers, 3);
+	}
+	.product-offer {
+		margin-bottom: map_get($spacers, 5);
+		> .row {
+			margin-bottom: map_get($spacers, 4);
+		}
+	}
+	.stock-information {
+	  	border-top: $border-width solid $border-color;
+		border-bottom: $border-width solid $border-color;
+		align-items: flex-end;
+		margin-left: 0;
+		margin-right: 0;
+	}
+	.question-on-item {
+		margin-left: auto;
+		.question {
+			padding: 0;
+		}
+	}
+}
+
+.start-configuration i {
+	margin-left: map_get($spacers, 1);
 }
 
 #add-to-cart {
@@ -457,3 +486,9 @@
 	}
 }
 
+#jump-to-votes-tab {
+	text-decoration: none;
+	@media print {
+		display: none;
+	}
+}

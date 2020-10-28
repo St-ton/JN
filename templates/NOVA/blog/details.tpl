@@ -61,7 +61,7 @@
 
                         {block name='blog-details-comments-link'}
                             {if $Einstellungen.news.news_kommentare_nutzen === 'Y'}
-                            {link class="text-decoration-none-util text-nowrap" href="#comments" title="{lang key='readComments' section='news'}"}
+                            {link class="text-decoration-none-util text-nowrap-util" href="#comments" title="{lang key='readComments' section='news'}"}
                                 /
                                 <span class="fas fa-comments"></span>
                                 <span class="sr-only">

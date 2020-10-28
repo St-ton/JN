@@ -22,7 +22,7 @@
                                     {/block}
                                 </td>
                                 {block name='snippets-wishlist-dropdown-count'}
-                                    <td class="text-right-util text-nowrap">
+                                    <td class="text-right-util text-nowrap-util">
                                         {$wishlist->productCount} {lang key='products'}
                                     </td>
                                 {/block}

@@ -171,7 +171,7 @@
                         {/block}
                         {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
                             {block name='account-order-item-price-single-price'}
-                                {col class='price-col text-right-util hidden-xs text-nowrap' md=2 cols=3}
+                                {col class='price-col text-right-util hidden-xs text-nowrap-util' md=2 cols=3}
                                     {if $oPosition->nPosTyp == $smarty.const.C_WARENKORBPOS_TYP_ARTIKEL}
                                         {if !(is_string($oPosition->cUnique) && !empty($oPosition->cUnique) && (int)$oPosition->kKonfigitem === 0)} {*!istKonfigVater()*}
                                             {$oPosition->cEinzelpreisLocalized[$NettoPreise]}
@@ -183,7 +183,7 @@
                             {/block}
                         {/if}
                         {block name='account-order-item-price-overall'}
-                            {col class='price-col text-right-util text-nowrap' md=2 cols=3}
+                            {col class='price-col text-right-util text-nowrap-util' md=2 cols=3}
                                 <strong class="price_overall">
                                     {if is_string($oPosition->cUnique) && !empty($oPosition->cUnique) && (int)$oPosition->kKonfigitem === 0}
                                         {$oPosition->cKonfigpreisLocalized[$NettoPreise]}

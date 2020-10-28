@@ -226,7 +226,7 @@
 
                         {block name='checkout-inc-order-items-price-single'}
                             {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
-                                {col cols=$cols lg=2 class="ml-auto text-nowrap"}
+                                {col cols=$cols lg=2 class="ml-auto text-nowrap-util"}
                                     {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
                                         {if !$oPosition->istKonfigVater()}
                                             <span class="mr-3 d-inline-flex d-lg-none">{lang key="pricePerUnit" section="productDetails"}:</span>{$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
@@ -236,14 +236,14 @@
                             {/if}
                         {/block}
                         {block name='checkout-inc-order-items-quantity'}
-                            {col cols=$cols lg=1 class="ml-auto text-nowrap mb-2 mb-lg-0 text-lg-center"}
+                            {col cols=$cols lg=1 class="ml-auto text-nowrap-util mb-2 mb-lg-0 text-lg-center"}
                                 <span class="mr-3 d-inline-flex d-lg-none">{lang key="quantity" section="checkout"}:</span> {$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{$oPosition->Artikel->cEinheit}{/if}
                             {/col}
                         {/block}
                     {/block}
 
                     {block name='checkout-inc-order-items-order-items-price-net'}
-                        {col cols=$cols lg=2 class="price-col ml-auto text-nowrap text-accent text-lg-right"}
+                        {col cols=$cols lg=2 class="price-col ml-auto text-nowrap-util text-accent text-lg-right"}
                             <strong class="price_overall">
                                 {if $oPosition->istKonfigVater()}
                                     {$oPosition->cKonfigpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}

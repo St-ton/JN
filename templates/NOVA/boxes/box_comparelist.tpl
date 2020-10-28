@@ -59,7 +59,7 @@
                                                 {/formrow}
                                             {/block}
                                         </td>
-                                        <td class="text-right-util text-nowrap">
+                                        <td class="text-right-util text-nowrap-util">
                                             {block name='boxes-box-comparelist-dropdown-products-remove'}
                                                 {link href=$product->cURLDEL class="remove float-right"
                                                     title="{lang section="comparelist" key="removeFromCompareList"}"

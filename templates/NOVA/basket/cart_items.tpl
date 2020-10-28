@@ -234,7 +234,7 @@
 
                         {block name='basket-cart-items-price-single'}
                             {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
-                                {col cols=$cols xl=2 class="ml-auto text-nowrap mb-3 mb-xl-0"}
+                                {col cols=$cols xl=2 class="ml-auto text-nowrap-util mb-3 mb-xl-0"}
                                 {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL && !$oPosition->istKonfigVater()}
                                     <strong class="mr-3 d-inline-flex d-xl-none">
                                         {lang key="pricePerUnit" section="productDetails"}:
@@ -244,7 +244,7 @@
                             {/if}
                         {/block}
 
-                        {col cols=$cols xl=3 class="ml-auto text-center-util mb-4 mb-xl-0 text-nowrap"}
+                        {col cols=$cols xl=3 class="ml-auto text-center-util mb-4 mb-xl-0 text-nowrap-util"}
                         {block name='basket-cart-items-quantity'}
                             {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
                                 {if $oPosition->istKonfigVater()}
@@ -292,7 +292,7 @@
                         {/col}
                     {/block}
                     {block name='basket-cart-items-order-items-price-net'}
-                        {col cols=$cols xl=2 class="price-col ml-auto text-nowrap text-accent text-xl-right"}
+                        {col cols=$cols xl=2 class="price-col ml-auto text-nowrap-util text-accent text-xl-right"}
                             <strong class="mr-3 d-inline-flex d-xl-none">{lang key="price"}:</strong>
                             <span class="price_overall text-accent">
                                 {if $oPosition->istKonfigVater()}
@@ -316,7 +316,7 @@
                                 {button type="submit"
                                     variant="link"
                                     size="sm"
-                                    class="p-0 droppos text-decoration-underline text-nowrap"
+                                    class="p-0 droppos text-decoration-underline text-nowrap-util"
                                     name="dropPos"
                                     value=$oPosition@index
                                     title="{lang key='delete'}"}

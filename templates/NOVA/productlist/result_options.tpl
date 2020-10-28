@@ -10,7 +10,7 @@
                 {if $show_filters}
                     {block name='productlist-result-options-filter-link-filter'}
                         {button id="js-filters" variant="outline-secondary"
-                            class="text-nowrap"
+                            class="text-nowrap-util"
                             data=["toggle" => "{if !empty($filterPlacement)}{$filterPlacement}{else}modal{/if}", "target" => "#collapseFilter"]
                             aria=["expanded" => "false",
                                 "controls" => "collapseFilter"]

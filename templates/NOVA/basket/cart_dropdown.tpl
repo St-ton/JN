@@ -39,7 +39,7 @@
                                                     {/formrow}
                                                 </td>
                                                 {block name='basket-cart-dropdown-cart-item-item-price'}
-                                                    <td class="text-right-util text-nowrap">
+                                                    <td class="text-right-util text-nowrap-util">
                                                         {if $oPosition->istKonfigVater()}
                                                             {$oPosition->cKonfigpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
                                                         {else}
@@ -64,7 +64,7 @@
                                                     </td>
                                                 {/block}
                                                 {block name='basket-cart-dropdown-cart-item-noitem-price'}
-                                                    <td class="text-right-util text-nowrap">
+                                                    <td class="text-right-util text-nowrap-util">
                                                         {$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
                                                     </td>
                                                 {/block}
@@ -86,7 +86,7 @@
                                             {lang key='subtotal' section='account data'}
                                         {else}
                                             {lang key='totalSum'}
-                                        {/if} ({lang key='net'}) <span class="float-right text-nowrap">{$WarensummeLocalized[$NettoPreise]}</span>
+                                        {/if} ({lang key='net'}) <span class="float-right text-nowrap-util">{$WarensummeLocalized[$NettoPreise]}</span>
                                     </li>
                                 {/block}
                             {/if}
@@ -95,7 +95,7 @@
                                     {foreach $Steuerpositionen as $Steuerposition}
                                         <li class="text-muted-util mb-2 font-size-sm">
                                             {$Steuerposition->cName}
-                                            <span class="float-right text-nowrap">{$Steuerposition->cPreisLocalized}</span>
+                                            <span class="float-right text-nowrap-util">{$Steuerposition->cPreisLocalized}</span>
                                         </li>
                                     {/foreach}
                                 {/block}
@@ -106,7 +106,7 @@
                                         {lang key='subtotal' section='account data'}
                                     {else}
                                         {lang key='totalSum'}
-                                    {/if}: <span class="float-right text-nowrap">{$WarensummeLocalized[0]}</span>
+                                    {/if}: <span class="float-right text-nowrap-util">{$WarensummeLocalized[0]}</span>
                                 </li>
                             {/block}
                             {block name='basket-cart-dropdown-cart-item-favourable-shipping'}

@@ -12,7 +12,7 @@
                     </i>
                 {/block}
                 {block name='basket-cart-dropdown-labelprice'}
-                    <span class="text-nowrap d-none d-md-inline-block font-size-base {if $WarenkorbArtikelPositionenanzahl != 0}ml-3{/if}">{$WarensummeLocalized[0]}</span>
+                    <span class="text-nowrap-util d-none d-md-inline-block font-size-base {if $WarenkorbArtikelPositionenanzahl != 0}ml-3{/if}">{$WarensummeLocalized[0]}</span>
                 {/block}
             {/link}
         {/block}

@@ -30,7 +30,7 @@
                                         {/col}
                                     {/formrow}
                                 </td>
-                                <td  class="text-right-util text-nowrap">
+                                <td  class="text-right-util text-nowrap-util">
                                     {block name='snippets-comparelist-dropdown-products-remove'}
                                         {link href="?vlplo={$product->kArtikel}" class="remove float-right"
                                             title="{lang section="comparelist" key="removeFromCompareList"}"

@@ -148,7 +148,7 @@
                     {button type="link"
                         block=true
                         variant="primary"
-                        class="min-w-sm my-1 text-nowrap"
+                        class="min-w-sm my-1 text-nowrap-util"
                         href="{$NaviFilter->getURL()->getCategories()}"}
                         {lang key='filterShowItem' printf=$itemCount}
                     {/button}

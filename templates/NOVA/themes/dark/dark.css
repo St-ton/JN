@@ -22394,6 +22394,11 @@ input.typeahead:-ms-input-placeholder {
   background-color: #525252;
 }
 
+.img-responsive {
+  max-width: 100%;
+  height: auto;
+}
+
 /* utilities */
 .rounded-top-left {
   border-top-left-radius: 0.125rem !important;

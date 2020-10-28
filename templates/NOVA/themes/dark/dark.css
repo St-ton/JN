@@ -19645,6 +19645,7 @@ aside .box-monthlynews a .value:hover {
 }
 
 .breadcrumb-wrapper {
+  align-items: center;
   margin-bottom: 2rem;
 }
 @media (min-width: 992px) {
@@ -19656,19 +19657,40 @@ aside .box-monthlynews a .value:hover {
 }
 
 .breadcrumb {
+  padding: 0.5rem 0;
+  margin-bottom: 0;
   font-size: 0.8125rem;
 }
 .breadcrumb a {
   text-decoration: none;
 }
 
+.breadcrumb-item {
+  display: none;
+}
+@media (min-width: 768px) {
+  .breadcrumb-item {
+    display: flex;
+  }
+}
 .breadcrumb-item.active {
   font-weight: 700;
+}
+.breadcrumb-item.first {
+  padding-left: 0;
 }
 .breadcrumb-item.first::before {
   display: none;
 }
 
+.breadcrumb-arrow {
+  display: flex;
+}
+@media (min-width: 768px) {
+  .breadcrumb-arrow {
+    display: none;
+  }
+}
 .breadcrumb-arrow::before {
   content: '\f104' !important;
   font-family: "Font Awesome 5 Free" !important;
@@ -19680,6 +19702,18 @@ aside .box-monthlynews a .value:hover {
   padding-right: 1rem;
   margin-right: 1rem;
   border-right: 1px solid #f5f7fa;
+}
+
+.navigation-arrows {
+  display: none;
+}
+@media (min-width: 768px) {
+  .navigation-arrows {
+    display: block;
+  }
+}
+.navigation-arrows .btn {
+  float: right;
 }
 
 .btn {

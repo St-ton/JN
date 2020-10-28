@@ -6,9 +6,9 @@
                     {include file='checkout/inc_billing_address_form.tpl'}
                 {/block}
                 {block name='account-address-form-form-submit'}
-                    {row class='mt-5'}
+                    {row class='btn-row'}
                         {col md=3 cols=12}
-                            {link class="btn btn-outline-primary btn-block mb-3" href="{get_static_route id='jtl.php'}"}
+                            {link class="btn btn-outline-primary btn-back" href="{get_static_route id='jtl.php'}"}
                                 {lang key='back'}
                             {/link}
                         {/col}

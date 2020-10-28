@@ -5,8 +5,8 @@
         {/block}
         {block name='account-downloads-order-downloads'}
             {foreach $Bestellung->oDownload_arr as $oDownload}
-                {card no-body=true class="cols-12 col-md-8 px-0"}
-                    {cardheader id="download-{$oDownload@iteration}" class="p-2 border-top"}
+                {card no-body=true class="cols-12 col-md-8 download-item"}
+                    {cardheader id="download-{$oDownload@iteration}"}
                         {button
                             variant="link"
                             role="button"
@@ -64,9 +64,9 @@
         {/block}
     {elseif !empty($oDownload_arr)}
         {block name='account-downloads-customer-downloads'}
-            {row class='mb-5'}
+            {row}
                 {col cols=12 md=6}
-                    {card no-body=true}
+                    {card no-body=true class="download-main"}
                         {cardheader}
                             {block name='account-downloads-customer-downloads-heading'}
                                 <span class="h3">
@@ -74,12 +74,12 @@
                                 </span>
                             {/block}
                         {/cardheader}
-                        {cardbody class="p-0"}
+                        {cardbody class="download-main-body"}
                             <div id="account-download-accordion">
                                 {block name='account-downloads-customer-downloads'}
                                     {foreach $oDownload_arr as $oDownload}
-                                        {card no-body=true}
-                                            {cardheader id="download-{$oDownload@iteration}" class="p-2 border-top"}
+                                        {card no-body=true class="download-item"}
+                                            {cardheader id="download-{$oDownload@iteration}"}
                                                 {button
                                                     variant="link"
                                                     role="button"

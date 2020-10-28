@@ -7,7 +7,7 @@
             {alert variant="info"}{lang key='changePasswordDesc' section='login'}{/alert}
         {/block}
         {row}
-            {col md=5 lg=4}
+            {col md=7 lg=6}
                 {block name='account-change-password-form-password'}
                     {form id="password" action="{get_static_route id='jtl.php'}" method="post" class="jtl-validate" slide=true}
                         {block name='account-change-password-form-password-content'}
@@ -26,7 +26,7 @@
                                        required=true
                                        name="neuesPasswort1"
                                        autocomplete="new-password"}
-                                <label for="newPassword" class="col-form-label pt-0">
+                                <label for="newPassword" class="col-form-label">
                                     {lang key='newPassword' section='login'}
                                 </label>
                             </div>
@@ -42,7 +42,7 @@
                             {block name='account-change-password-form-submit'}
                                 {row}
                                     {col cols=12 class='col-md'}
-                                        {link class="btn btn-outline-primary btn-block mb-3" href="{get_static_route id='jtl.php'}"}
+                                        {link class="btn btn-outline-primary btn-back" href="{get_static_route id='jtl.php'}"}
                                             {lang key='back'}
                                         {/link}
                                     {/col}

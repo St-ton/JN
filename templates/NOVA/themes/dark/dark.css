@@ -20093,6 +20093,16 @@ aside .box-monthlynews a .value:hover {
   white-space: nowrap;
 }
 
+.btn-back {
+  display: block;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.btn-row {
+  margin-top: 2rem;
+}
+
 .card-gray {
   background: #525252;
   border: 0;
@@ -23933,6 +23943,11 @@ header .nav-right .dropdown-menu {
   -webkit-box-shadow: inset 0 1rem 0.5625rem -0.75rem rgba(255, 255, 255, 0.06);
   box-shadow: inset 0 1rem 0.5625rem -0.75rem rgba(255, 255, 255, 0.06);
 }
+@media (min-width: 992px) {
+  header #mainNavigation {
+    margin-right: 1rem;
+  }
+}
 @media (max-width: 991.98px) {
   header .dropup, header .dropright, header .dropdown, header .dropleft, header .col, header [class*=col-] {
     position: static;
@@ -24005,13 +24020,6 @@ header .nav-right .dropdown-menu {
   header .navbar-nav .nav {
     flex-direction: column;
   }
-}
-@media (max-width: 991.98px) and (min-width: 992px) {
-  header #mainNavigation {
-    margin-right: 1rem;
-  }
-}
-@media (max-width: 991.98px) {
   header .nav-mobile-header {
     padding-left: 1rem;
     padding-right: 1rem;
@@ -24019,21 +24027,15 @@ header .nav-right .dropdown-menu {
   header .nav-mobile-header > .row {
     height: 3.125rem;
   }
-}
-@media (max-width: 991.98px) {
   header .nav-mobile-body {
     height: calc(100vh - 3.125rem);
     height: calc(var(--vh, 1vh) * 100 - 3.125rem);
     overflow-y: auto;
     position: relative;
   }
-}
-@media (max-width: 991.98px) {
   header .nav-scrollbar-inner {
     overflow: visible;
   }
-}
-@media (max-width: 991.98px) {
   header .nav-right {
     font-size: 1rem;
   }
@@ -24175,6 +24177,16 @@ header #burger-menu {
 @media (min-width: 992px) {
   #content-wrapper:not(.has-fluid) {
     padding-top: 4rem;
+  }
+}
+
+#search {
+  margin-right: 1rem;
+  display: none;
+}
+@media (min-width: 992px) {
+  #search {
+    display: block;
   }
 }
 

@@ -30,6 +30,12 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 		}
 	}
 
+	#mainNavigation {
+		@include media-breakpoint-up(lg) {
+			margin-right: map-get($spacers, 3);
+		}
+	}
+
 	/* mobile only */
 
 	@include media-breakpoint-down(md) {
@@ -65,11 +71,6 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 			.nav { flex-direction: column; }
 		}
 
-		#mainNavigation {
-			@include media-breakpoint-up(lg) {
-				margin-right: map-get($spacers, 3);
-			}
-		}
 		.nav-mobile-header {
 			padding-left: map-get($spacers, 3);
 			padding-right: map-get($spacers, 3);
@@ -195,4 +196,11 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 			padding-top: map-get($spacers, 7);
 		}
 	}
+}
+#search {
+	margin-right: map-get($spacers, 3);
+	display: none;
+	@include media-breakpoint-up(lg) {
+		  display: block;
+  	}
 }

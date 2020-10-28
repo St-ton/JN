@@ -214,8 +214,8 @@
                     {row class='align-items-center'}
                     {block name='snippets-wishlist-visibility-form'}
                         {col class='col-xl'}
-                            <div class="d-inline-flex flex-nowrap mr-1">
-                                <div class="custom-control custom-switch ml-2">
+                            <div class="d-inline-flex flex-nowrap">
+                                <div class="custom-control custom-switch">
                                     <input type='checkbox'
                                            class='custom-control-input wl-visibility-switch'
                                            id="wl-visibility-{$CWunschliste->kWunschliste}"

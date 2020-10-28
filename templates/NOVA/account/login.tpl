@@ -76,7 +76,7 @@
                                 {/formgroup}
                             {/block}
                             {block name='account-login-form-submit-register'}
-                                <span class="mb-2 d-block d-md-inline-block">
+                                <span class="register-wrapper">
                                     {lang key='newHere'}
                                     {link class="register" href="{get_static_route id='registrieren.php'}"}
                                         {lang key='registerNow'}
@@ -84,7 +84,11 @@
                                 </span>
                             {/block}
                             {block name='account-login-form-submit-resetpw'}
-                               {link class="resetpw ml-0 ml-md-3" href="{get_static_route id='pass.php'}"}<span class="fa fa-question-circle"></span> {lang key='forgotPassword'}{/link}
+                                <span class="resetpw-wrapper">
+                                   {link class="resetpw" href="{get_static_route id='pass.php'}"}
+                                       <span class="fa fa-question-circle"></span> {lang key='forgotPassword'}
+                                   {/link}
+                                </span>
                             {/block}
                         {/block}
                     </fieldset>

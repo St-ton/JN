@@ -10,19 +10,21 @@
         <h1>{lang key='orderCompletedPre' section='checkout'}</h1>
     {/block}
     {block name='account-order-details-order-details-data'}
-        {card no-body=true class='mb-3'}
+        {card no-body=true class='order-details'}
             {cardheader}
             {block name='account-order-details-order-heading'}
                 {row class='align-items-center'}
-                    {col cols=12 lg=3 class='border-lg-right'}
-                        <strong class="font-size-lg">
-                            <span class="far fa-calendar mr-2"></span>{$Bestellung->dErstelldatum_de}
-                        </strong>
-                    {/col}
+                    {block name='account-order-details-order-heading-date'}
+                        {col cols=12 lg=3 class='border-lg-right'}
+                            <div class="order-details-date">
+                                <span class="far fa-calendar"></span>{$Bestellung->dErstelldatum_de}
+                            </div>
+                        {/col}
+                    {/block}
                     {col cols=6 lg='auto'}
                         {lang key='yourOrderId' section='checkout'}: {$Bestellung->cBestellNr}
                     {/col}
-                    {col cols=6 lg='auto' class='text-right-util text-lg-left'}
+                    {col cols=6 lg='auto' class='order-details-status'}
                         {lang key='orderStatus' section='login'}: {$Bestellung->Status}
                     {/col}
                 {/row}
@@ -33,11 +35,11 @@
                 {block name='account-order-details-order-body'}
                     {row}
                         {col cols=12 lg=3 class='border-lg-right'}
-                            <ul class="list-unstyled">
-                                <li class="mb-4">
+                            <ul class="list-unstyled order-details-data">
+                                <li>
                                     {block name='account-order-details-payment'}
                                         {lang key='paymentOptions' section='global'}:
-                                        <span class="text-muted-util d-block font-size-sm">
+                                        <span class="order-details-data-item">
                                             <ul class="list-unstyled">
                                                 <li>{$Bestellung->cZahlungsartName}</li>
                                                 <li>
@@ -60,10 +62,10 @@
                                         </span>
                                     {/block}
                                 </li>
-                                <li class="mb-4">
+                                <li>
                                     {block name='account-order-details-shipping'}
                                         {lang key='shippingOptions' section='global'}:
-                                        <span class="text-muted-util d-block font-size-sm">
+                                        <span class="order-details-data-item">
                                             <ul class="list-unstyled">
                                                 <li>{$Bestellung->cVersandartName}</li>
                                                 {if $Bestellung->cStatus == BESTELLUNG_STATUS_VERSANDT}
@@ -82,20 +84,20 @@
                                         </span>
                                     {/block}
                                 </li>
-                                <li class="mb-4">
+                                <li>
                                     {block name='account-order-details-billing-address'}
                                         {lang key='billingAdress' section='checkout'}:
-                                        <span class="text-muted-util d-block font-size-sm">
+                                        <span class="order-details-data-item">
                                             {block name='account-order-details-include-inc-billing-address'}
                                                 {include file='checkout/inc_billing_address.tpl' orderDetail=true}
                                             {/block}
                                         </span>
                                     {/block}
                                 </li>
-                                <li class="mb-4">
+                                <li>
                                     {block name='account-order-details-shipping-address'}
                                         {lang key='shippingAdress' section='checkout'}:
-                                        <span class="text-muted-util d-block font-size-sm">
+                                        <span class="order-details-data-item">
                                             {if !empty($Lieferadresse->kLieferadresse)}
                                                 {block name='account-order-details-include-inc-delivery-address'}
                                                     {include file='checkout/inc_delivery_address.tpl' orderDetail=true}
@@ -307,9 +309,9 @@
             {/if}
         {/block}
         {block name='account-order-details-actions'}
-            {row}
+            {row class="btn-row"}
                 {col md=3 cols=12}
-                    {link class="btn btn-outline-primary btn-block mt-3" href="{get_static_route id='jtl.php'}?bestellungen=1"}
+                    {link class="btn btn-outline-primary btn-block" href="{get_static_route id='jtl.php'}?bestellungen=1"}
                         {lang key='back'}
                     {/link}
                 {/col}

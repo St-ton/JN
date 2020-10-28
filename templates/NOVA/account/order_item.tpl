@@ -25,7 +25,7 @@
                                     {block name='account-order-item-link'}
                                         {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}{$oPosition->cName|trans}{/link}
                                     {/block}
-                                    <ul class="list-unstyled text-muted-util small mt-2">
+                                    <ul class="list-unstyled text-muted-util small item-detail-list">
                                         {block name='account-order-item-sku'}
                                             <li class="sku">{lang key='productNo' section='global'}: {$oPosition->Artikel->cArtNr}</li>
                                         {/block}

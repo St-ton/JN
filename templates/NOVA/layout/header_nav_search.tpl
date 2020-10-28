@@ -1,6 +1,6 @@
 {block name='layout-header-nav-search'}
     {block name='layout-header-nav-search-search'}
-        <li class="nav-item d-none d-lg-block mr-3" id="search">
+        <li class="nav-item" id="search">
             <div class="search-wrapper">
                 {form action='index.php' method='get'}
                     <div class="form-icon">

@@ -18,7 +18,11 @@ class DateOfIssue extends AbstractSortingOption
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->setOrderBy('tartikel.dErscheinungsdatum IS NULL, tartikel.dErscheinungsdatum ASC, tartikel.cName');
+        $this->setOrderBy(
+            'IF(COALESCE(tartikel.dErscheinungsdatum, NOW()) <= NOW(), 1, 0)
+            , IF(tartikel.dErscheinungsdatum <= NOW(), NULL, tartikel.dErscheinungsdatum) ASC
+            , tartikel.cName'
+        );
         $this->setName(Shop::Lang()->get('sortDateofissue'));
         $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_erscheinungsdatum']);
         $this->setValue(\SEARCH_SORT_DATEOFISSUE);

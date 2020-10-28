@@ -407,7 +407,7 @@ class WarenkorbPers
             if ($bForceDelete) {
                 $kArtikel_arr = $this->_checkForOrphanedConfigItems($kArtikel_arr, $db);
                 foreach ($this->oWarenkorbPersPos_arr as $i => $WarenkorbPersPos) {
-                    if (!\in_array($WarenkorbPersPos->kWarenkorbPersPos, $kArtikel_arr)) {
+                    if (!in_array($WarenkorbPersPos->kWarenkorbPersPos, $kArtikel_arr)) {
                         $this->entfernePos($WarenkorbPersPos->kWarenkorbPersPos);
                         Jtllog::writeLog(
                             'Der Artikel ' . $WarenkorbPersPos->kArtikel . ' ist vom persistenten Warenkorb gelöscht worden.',
@@ -446,8 +446,8 @@ class WarenkorbPers
                 continue;
             }
 
-            $mainKonfigProduct = \array_values(
-                \array_filter($this->oWarenkorbPersPos_arr, static function ($persItem) use ($item) {
+            $mainKonfigProduct = array_values(
+                array_filter($this->oWarenkorbPersPos_arr, static function ($persItem) use ($item) {
                     return $persItem->kWarenkorbPers === $item->kWarenkorbPers
                         && $persItem->cUnique === $item->cUnique
                         && (int)$persItem->kKonfigitem === 0;
@@ -455,9 +455,9 @@ class WarenkorbPers
             );
 
             //if main product not found, remove the child id
-            if (\count($mainKonfigProduct) === 0) {
-                $ids = \array_values(
-                    \array_filter($ids, static function ($id) use ($item) {
+            if (count($mainKonfigProduct) === 0) {
+                $ids = array_values(
+                    array_filter($ids, static function ($id) use ($item) {
                         return (int)$id !== (int)$item->kWarenkorbPersPos;
                     })
                 );
@@ -471,8 +471,8 @@ class WarenkorbPers
 
             $checkParentsExistence = $db->queryPrepared(
                 'SELECT * FROM tartikelkonfiggruppe 
-            WHERE kArtikel =:parentID 
-            AND kKonfiggruppe=:configItemGroupId',
+                    WHERE kArtikel =:parentID
+                    AND kKonfiggruppe=:configItemGroupId',
                 [
                     'parentID' => $mainKonfigProduct[0]->kArtikel,
                     'configItemGroupId' => $configItem->kKonfiggruppe,
@@ -480,9 +480,9 @@ class WarenkorbPers
                 2
             );
 
-            if (\count($checkParentsExistence) === 0) {
-                $ids = \array_values(
-                    \array_filter($ids, static function ($id) use ($item, $mainKonfigProduct) {
+            if (count($checkParentsExistence) === 0) {
+                $ids = array_values(
+                    array_filter($ids, static function ($id) use ($item, $mainKonfigProduct) {
                         return (int)$id !== (int)$item->kWarenkorbPersPos
                             && (int)$id !== $mainKonfigProduct[0]->kWarenkorbPersPos;
                     })

@@ -133,7 +133,7 @@
     </div>
     {block name='snippets-filter-mobile-footer-buttons'}
         <div class="productlist-filter-footer px-3 mt-auto">
-            {formrow class="justify-content-end align-items-center"}
+            {formrow class="justify-content-end align-items-center-util"}
                 {col}
                     {button block=true
                         variant="outline-primary"

@@ -20,7 +20,7 @@
             {elseif $Artikel->inWarenkorbLegbar == 1 }
                 {if !$showMatrix}
                     {block name='productdetails-basket-form-inline'}
-                        {row class="align-items-center mb-3"}
+                        {row class="align-items-center-util mb-3"}
                             {block name='productdetails-basket-quantity'}
                                 {col cols=12 sm=6 class="mb-3 mb-sm-0"}
                                     {inputgroup id="quantity-grp" class="form-counter choose_quantity"}

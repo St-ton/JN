@@ -1,7 +1,7 @@
 {block name='productdetails-reviews'}
     <div class="reviews mt-3">
         {block name='productdetails-reviews-content'}
-        {row id='reviews-overview' class='align-items-center'}
+        {row id='reviews-overview' class='align-items-center-util'}
             {block name='productdetails-reviews-overview'}
                 {col cols=12 md=4 order=1 order-md=0}
                     {card class="mb-3"}

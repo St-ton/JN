@@ -15,7 +15,7 @@
                     {card no-body=true class="mb-3"}
                         {cardheader}
                             {block name='checkout-step5-confirmation-delivery-billing-address-header'}
-                                {row class='align-items-center'}
+                                {row class='align-items-center-util'}
                                     {col}
                                         <span class="h3 mb-0">{lang section="account data" key='billingAndDeliveryAddress'}</span>
                                     {/col}
@@ -58,7 +58,7 @@
                     {card no-body=true class="mb-3"}
                         {cardheader}
                             {block name='checkout-step5-confirmation-shipping-billing-method-header'}
-                                {row class='align-items-center'}
+                                {row class='align-items-center-util'}
                                     {col}
                                         <span class="h3 mb-0">{lang section="account data" key='shippingAndPaymentOptions'}</span>
                                     {/col}

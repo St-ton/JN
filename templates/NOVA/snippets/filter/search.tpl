@@ -13,7 +13,7 @@
             {link nofollow=true
                 href=$searchFilter->getURL()
                 class="filter-item {if $searchFilter->isActive()}active{/if}"}
-                    <div class="align-items-center d-flex">
+                    <div class="align-items-center-util d-flex">
                         <i class="far fa-{if $searchFilter->isActive()}check-{/if}square text-muted-util mr-2"></i>
                         <span class="word-break">{$searchFilter->getName()}</span>
                         {badge variant="outline-secondary" class="ml-auto"}{$searchFilter->getCount()}{/badge}

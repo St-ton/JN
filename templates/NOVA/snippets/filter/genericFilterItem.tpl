@@ -14,7 +14,7 @@
                     {link class="filter-item {if $filterIsActive === true}active{/if}"
                         href="{if $filterOption->isActive()}{$filter->getUnsetFilterURL($filterOption->getValue())}{else}{$filterOption->getURL()}{/if}"
                         nofollow=true}
-                        <div class="align-items-center d-flex">
+                        <div class="align-items-center-util d-flex">
                             {if $filter->getIcon() !== null}
                                 <i class="fa {$filter->getIcon()} mr-2"></i>
                             {else}

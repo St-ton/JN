@@ -13,7 +13,7 @@
                     {/link}
                 {/block}
                 {block name='boxes-box-wishlist-title'}
-                    <div class="productlist-filter-headline align-items-center d-none d-md-flex">
+                    <div class="productlist-filter-headline align-items-center-util d-none d-md-flex">
                         <i class='fa fa-heart mr-2'></i>
                         {lang key='wishlist'}
                     </div>
@@ -33,7 +33,7 @@
                                     <tr>
                                         <td class="w-100" data-id={$wishlistItem->kArtikel}>
                                             {block name='boxes-box-wishlist-dropdown-products-image-title'}
-                                                {formrow class="align-items-center"}
+                                                {formrow class="align-items-center-util"}
                                                     {if $oBox->getShowImages()}
                                                         {col class="col-auto"}
                                                             {block name='boxes-box-wishlist-dropdown-products-image'}

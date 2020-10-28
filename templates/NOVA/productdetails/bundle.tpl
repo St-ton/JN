@@ -12,7 +12,7 @@
             {/block}
             {if $smarty.session.Kundengruppe->mayViewPrices()}
                 {block name='productdetails-bundle-form-price'}
-                    {row class='mb-7 mt-n2 justify-content-md-center align-items-center'}
+                    {row class='mb-7 mt-n2 justify-content-md-center align-items-center-util'}
                         {col cols=12 md='auto' class='text-center-util text-md-right mb-2 mb-md-0'}
                             <strong>
                                 {lang key='priceForAll' section='productDetails'}:

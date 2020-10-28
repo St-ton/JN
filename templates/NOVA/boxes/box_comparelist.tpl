@@ -15,7 +15,7 @@
                     {/link}
                 {/block}
                 {block name='boxes-box-comparelist-title'}
-                    <div class="productlist-filter-headline align-items-center d-none d-md-flex">
+                    <div class="productlist-filter-headline align-items-center-util d-none d-md-flex">
                         <i class='fas fa-list mr-2'></i>
                         {lang key='compare'}
                     </div>
@@ -37,7 +37,7 @@
                                         <tr>
                                         <td class="w-100" data-id={$product->kArtikel}>
                                             {block name='boxes-box-comparelist-dropdown-products-image-title'}
-                                                {formrow class="align-items-center"}
+                                                {formrow class="align-items-center-util"}
                                                     {col class="col-auto"}
                                                         {block name='boxes-box-comparelist-dropdown-products-image'}
                                                             {link href=$product->cURLFull}

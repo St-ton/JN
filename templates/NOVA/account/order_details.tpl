@@ -13,7 +13,7 @@
         {card no-body=true class='order-details'}
             {cardheader}
             {block name='account-order-details-order-heading'}
-                {row class='align-items-center'}
+                {row class='align-items-center-util'}
                     {block name='account-order-details-order-heading-date'}
                         {col cols=12 lg=3 class='border-lg-right'}
                             <div class="order-details-date">

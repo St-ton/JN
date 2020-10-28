@@ -26,7 +26,7 @@
                     {card no-body=true}
                         {cardheader}
                             {block name='account-my-account-orders-content-header'}
-                                {row class="align-items-center"}
+                                {row class="align-items-center-util"}
                                     {col}
                                         <span class="h3">
                                             {link class='text-decoration-none-util' href="$cCanonicalURL?bestellungen=1"}
@@ -84,7 +84,7 @@
                     {card no-body=true}
                         {cardheader}
                             {block name='account-my-account-billing-address-header'}
-                                {row class="align-items-center"}
+                                {row class="align-items-center-util"}
                                     {col}
                                         <span class="h3">
                                             {link class='text-decoration-none-util' href="$cCanonicalURL?editRechnungsadresse=1"}

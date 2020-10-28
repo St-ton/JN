@@ -21,7 +21,7 @@
                     href="{if !empty($attributeValue->getURL())}{$attributeValue->getURL()}{else}#{/if}"
                     title="{if $Merkmal->getData('cTyp') === 'BILD'}{$attributeValue->getValue()|escape:'html'}{/if}"
                 }
-                    <div class="align-items-center d-flex">
+                    <div class="align-items-center-util d-flex">
                         <i class="far fa-{if $attributeValue->isActive()}check-{/if}square text-muted-util mr-2"></i>
                         {if !empty($attributeImageURL)}
                             {image lazy=true webp=true
@@ -51,7 +51,7 @@
                             href="{if !empty($attributeValue->getURL())}{$attributeValue->getURL()}{else}#{/if}"
                             title="{$attributeValue->getValue()|escape:'html'}"
                         }
-                            <div class="align-items-center d-flex">
+                            <div class="align-items-center-util d-flex">
                                 <i class="far fa-{if $attributeValue->isActive()}check-{/if}square text-muted-util mr-2"></i>
                                 {if !empty($attributeImageURL)}
                                     {image lazy=true webp=true
@@ -86,7 +86,7 @@
                             title="{$attributeValue->getValue()|escape:'html'}: {$attributeValue->getCount()}"
                             class="{if $attributeValue->isActive()}active{/if} filter-item"
                         }
-                            <div class="align-items-center d-flex">
+                            <div class="align-items-center-util d-flex">
                                 {if !empty($attributeImageURL)}
                                     {image lazy=true webp=true
                                         src=$attributeImageURL

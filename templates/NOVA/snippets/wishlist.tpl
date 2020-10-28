@@ -60,7 +60,7 @@
                 </div>
             {/block}
 
-            {row class='align-items-center'}
+            {row class='align-items-center-util'}
                 {if $isCurrenctCustomer === true}
                     {block name='snippets-wishlist-actions'}
                         {col class="col-auto"}
@@ -211,7 +211,7 @@
                     {block name='snippets-wishlist-visibility-hr-top'}
                         <hr class="mb-3">
                     {/block}
-                    {row class='align-items-center'}
+                    {row class='align-items-center-util'}
                     {block name='snippets-wishlist-visibility-form'}
                         {col class='col-xl'}
                             <div class="d-inline-flex flex-nowrap">
@@ -558,7 +558,7 @@
                                                                                         name="addToCart"
                                                                                         value=$wlPosition->kWunschlistePos
                                                                                         variant="primary"
-                                                                                        class="mt-3 align-items-center"
+                                                                                        class="mt-3 align-items-center-util"
                                                                                         block=true
                                                                                         title="{lang key='wishlistaddToCart' section='login'}"}
                                                                                         <span class="fas fa-shopping-cart"></span> {lang key='addToCart'}

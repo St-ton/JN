@@ -25,7 +25,7 @@
                     {nav vertical=true class="mt-2 mt-md-0"}
                         {foreach $oBox->getItems() as $newsCategory}
                             {if $newsCategory@index === 10}{break}{/if}
-                            {navitem href=$newsCategory->cURLFull title=$newsCategory->cName router-class="align-items-center d-flex"}
+                            {navitem href=$newsCategory->cURLFull title=$newsCategory->cName router-class="align-items-center-util d-flex"}
                                 {$newsCategory->cName}
                                 {badge variant="outline-secondary" class="ml-auto"}{$newsCategory->nAnzahlNews}{/badge}
                             {/navitem}

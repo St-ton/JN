@@ -23320,6 +23320,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   color: #707070;
 }
 
+.align-items-center-util {
+  align-items: center;
+}
+
 .zindex-dropdown {
   z-index: 1000;
 }

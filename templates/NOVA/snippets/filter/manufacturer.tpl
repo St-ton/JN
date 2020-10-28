@@ -24,7 +24,7 @@
                 data=$tooltip
                 class="filter-item {if $filterOption->isActive()}active{/if}"
             }
-                <div class="align-items-center d-flex">
+                <div class="align-items-center-util d-flex">
                     {if $Einstellungen.navigationsfilter.hersteller_anzeigen_als == 'B'}
                         {block name='snippets-filter-manufacturer-item-image'}
                             {image lazy=true webo=true

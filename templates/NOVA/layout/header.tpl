@@ -300,7 +300,7 @@
                 {block name='layout-header-container-inner'}
                     <div class="container-fluid {if $Einstellungen.template.megamenu.header_full_width === 'N'}container-fluid-xl{/if}">
                     {block name='layout-header-category-nav'}
-                        {navbar toggleable=true fill=true type="expand-lg" class="justify-content-start {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}align-items-center{else}align-items-lg-end{/if}"}
+                        {navbar toggleable=true fill=true type="expand-lg" class="justify-content-start {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}align-items-center-util{else}align-items-lg-end{/if}"}
                             {block name='layout-header-navbar-toggle'}
                                 <button id="burger-menu" class="navbar-toggler collapsed {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}" type="button" data-toggle="collapse" data-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">
                                     <span class="navbar-toggler-icon"></span>
@@ -361,7 +361,7 @@
                                     <div id="mainNavigation" class="collapse navbar-collapse nav-scrollbar">
                                         {block name='layout-header-include-include-categories-header'}
                                             <div class="nav-mobile-header d-lg-none">
-                                                {row class="align-items-center"}
+                                                {row class="align-items-center-util"}
                                                     {col}
                                                         {block name='layout-header-include-categories-mega-toggler'}
                                                             <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">

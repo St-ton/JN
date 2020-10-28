@@ -16,7 +16,7 @@
                     <div class="align-items-center-util d-flex">
                         <i class="far fa-{if $searchFilter->isActive()}check-{/if}square text-muted-util mr-2"></i>
                         <span class="word-break">{$searchFilter->getName()}</span>
-                        {badge variant="outline-secondary" class="ml-auto"}{$searchFilter->getCount()}{/badge}
+                        {badge variant="outline-secondary" class="ml-auto-util"}{$searchFilter->getCount()}{/badge}
                     </div>
             {/link}
         {/block}
@@ -28,7 +28,7 @@
             <div class="w-100">
                 {button variant="link"
                     role="button"
-                    class="p-0 ml-auto mt-1"
+                    class="p-0 ml-auto-util mt-1"
                     data=["toggle"=> "collapse", "target"=>"#box-collps-filter{$NaviFilter->searchFilterCompat->getNiceName()}"]}
                     {lang key='showAll'}
                 {/button}

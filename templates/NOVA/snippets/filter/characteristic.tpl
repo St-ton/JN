@@ -31,7 +31,7 @@
                             }
                         {/if}
                         <span class="word-break mr-3">{$attributeValue->getValue()|escape:'html'}</span>
-                        {badge variant="outline-secondary" class="ml-auto"}{$attributeValue->getCount()}{/badge}
+                        {badge variant="outline-secondary" class="ml-auto-util"}{$attributeValue->getCount()}{/badge}
                     </div>
                 {/dropdownitem}
             {/block}
@@ -61,7 +61,7 @@
                                     }
                                 {/if}
                                 <span class="word-break">{$attributeValue->getValue()|escape:'html'}</span>
-                                {badge variant="outline-secondary" class="ml-auto"}{$attributeValue->getCount()}{/badge}
+                                {badge variant="outline-secondary" class="ml-auto-util"}{$attributeValue->getCount()}{/badge}
                             </div>
                         {/link}
                     {/block}
@@ -98,7 +98,7 @@
                                 <span class="word-break">
                                     {$attributeValue->getValue()|escape:'html'}
                                 </span>
-                                {badge variant="outline-secondary" class="ml-auto"}{$attributeValue->getCount()}{/badge}
+                                {badge variant="outline-secondary" class="ml-auto-util"}{$attributeValue->getCount()}{/badge}
                             </div>
                         {/link}
                     {/block}
@@ -113,7 +113,7 @@
             <div class="w-100">
                 {button variant="link"
                     role="button"
-                    class="p-0 ml-auto mt-1"
+                    class="p-0 ml-auto-util mt-1"
                     data=["toggle"=> "collapse", "target"=>"#box-collps-filter-attribute-{$Merkmal->getValue()}"]}
                     {lang key='showAll'}
                 {/button}

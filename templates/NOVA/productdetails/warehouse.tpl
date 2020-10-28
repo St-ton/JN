@@ -29,8 +29,8 @@
                             {col}
                                 <strong>{lang key='warehouse'}</strong>
                             {/col}
-                            {col class="ml-auto text-right-util"}
-                                <strong class="ml-auto">{lang key='status'}</strong>
+                            {col class="ml-auto-util text-right-util"}
+                                <strong class="ml-auto-util">{lang key='status'}</strong>
                             {/col}
                         {/row}
                         <hr>
@@ -41,8 +41,8 @@
                                 {col}
                                     <strong>{$oWarenlager->getName()}</strong>
                                 {/col}
-                                {col class="ml-auto text-right-util"}
-                                    <span class="ml-auto">
+                                {col class="ml-auto-util text-right-util"}
+                                    <span class="ml-auto-util">
                                          {if $anzeige !== 'nichts'
                                          && ($Artikel->cLagerKleinerNull === 'N'
                                          && $oWarenlager->getBackorderString($Artikel) !== ''

@@ -203,7 +203,7 @@
         {/block}
         {block name='account-order-items-total-wrapper'}
         {row}
-            {col xl=5 md=6 class='ml-auto pt-4 pb-3'}
+            {col xl=5 md=6 class='ml-auto-util pt-4 pb-3'}
                 {block name='account-order-items-total'}
                     {if $NettoPreise}
                         {block name='account-order-items-total-price-net'}
@@ -211,7 +211,7 @@
                                 {col }
                                     <span class="price_label"><strong>{lang key='totalSum'} ({lang key='net'}):</strong></span>
                                 {/col}
-                                {col class="col-auto ml-auto text-right-util price-col"}
+                                {col class="col-auto ml-auto-util text-right-util price-col"}
                                     <strong class="price total-sum">{$Bestellung->WarensummeLocalized[1]}</strong>
                                 {/col}
                             {/row}
@@ -223,7 +223,7 @@
                                 {col}
                                     {lang key='useCredit' section='account data'}
                                 {/col}
-                                {col class="col-auto ml-auto text-right-util"}
+                                {col class="col-auto ml-auto-util text-right-util"}
                                     {$Bestellung->GutscheinLocalized}
                                 {/col}
                             {/row}
@@ -236,7 +236,7 @@
                                     {col}
                                         <span class="tax_label">{$taxPosition->cName}:</span>
                                     {/col}
-                                    {col class="col-auto ml-auto text-right-util price-col"}
+                                    {col class="col-auto ml-auto-util text-right-util price-col"}
                                         <span class="tax_label">{$taxPosition->cPreisLocalized}</span>
                                     {/col}
                                 {/row}
@@ -249,7 +249,7 @@
                             {col}
                                 <span class="price_label"><strong>{lang key='totalSum'} {if $NettoPreise}{lang key='gross' section='global'}{/if}:</strong></span>
                             {/col}
-                            {col class="col-auto ml-auto text-right-util price-col"}
+                            {col class="col-auto ml-auto-util text-right-util price-col"}
                                 <strong class="price total-sum">{$Bestellung->WarensummeLocalized[0]}</strong>
                             {/col}
                         {/row}
@@ -265,7 +265,7 @@
                                             {/col}
                                         {/block}
                                         {block name='account-order-items-finance-costs-value'}
-                                            {col class="col-auto ml-auto text-right-util price-col"}
+                                            {col class="col-auto ml-auto-util text-right-util price-col"}
                                                 <strong class="price_overall">
                                                     {$attribute->cValue}
                                                 </strong>

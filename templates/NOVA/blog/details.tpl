@@ -185,7 +185,7 @@
                                                 </div>
                                             {/block}
                                         {/col}
-                                        {col cols="12" md=6 class="ml-auto"}
+                                        {col cols="12" md=6 class="ml-auto-util"}
                                             {block name='blog-details-include-pagination'}
                                                 {include file='snippets/pagination.tpl' oPagination=$oPagiComments cThisUrl=$articleURL cParam_arr=$cParam_arr}
                                             {/block}

@@ -22568,6 +22568,10 @@ input.typeahead:-ms-input-placeholder {
   background-color: #525252;
 }
 
+.ml-auto-util {
+  margin-left: auto;
+}
+
 /* utilities */
 .rounded-top-left {
   border-top-left-radius: 0.125rem !important;
@@ -24662,6 +24666,23 @@ header #burger-menu {
   .contact-form .contact-form-privacy {
     text-align: right;
   }
+}
+
+/* newsletter */
+.newsletter-content {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.newsletter-subscribe {
+  margin-bottom: 5rem;
+}
+.newsletter-subscribe .newsletter-subscribe-consent {
+  margin-top: 0.25rem;
+}
+
+.newsletter-unsubscribe {
+  margin-top: 1rem;
 }
 
 header, #main-wrapper {

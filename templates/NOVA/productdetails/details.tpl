@@ -215,7 +215,7 @@
                                                         {include file='productdetails/stock.tpl'}
                                                     {/block}
                                                 {/col}
-                                                {col class="col-auto ml-auto"}
+                                                {col class="col-auto ml-auto-util"}
                                                     {block name='productdetails-details-question-on-item'}
                                                         {if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'P'}
                                                             <button type="button" id="z{$Artikel->kArtikel}"

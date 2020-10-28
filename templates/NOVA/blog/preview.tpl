@@ -48,7 +48,7 @@
                             <span class="align-middle">{$newsItem->getDateValidFrom()->format('d.m.Y')}</span>
                         {/block}
                     {/col}
-                    {col cols="auto" class="ml-auto"}
+                    {col cols="auto" class="ml-auto-util"}
                         {if isset($Einstellungen.news.news_kommentare_nutzen) && $Einstellungen.news.news_kommentare_nutzen === 'Y'}
                             {block name='blog-preview-comments'}
                                 {link href=$newsItem->getURL()|cat:'#comments' class='text-decoration-none-util'}

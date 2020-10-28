@@ -67,7 +67,7 @@
                         {/block}
                         {block name='productdetails-review-form-form-submit'}
                             {row}
-                                {col cols=12 md=4 lg=3 class='ml-auto'}
+                                {col cols=12 md=4 lg=3 class='ml-auto-util'}
                                     {input type="hidden" name="bfh" value="1"}
                                     {input type="hidden" name="a" value=$Artikel->kArtikel}
                                     {button type="submit" value="1" variant="primary" block=true}

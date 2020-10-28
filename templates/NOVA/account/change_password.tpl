@@ -46,7 +46,7 @@
                                             {lang key='back'}
                                         {/link}
                                     {/col}
-                                    {col class='ml-auto col-md-auto'}
+                                    {col class='ml-auto-util col-md-auto'}
                                         {input type="hidden" name="pass_aendern" value="1"}
                                         {button type="submit" value="1" block=true variant="primary"}
                                             {lang key='changePassword' section='login'}

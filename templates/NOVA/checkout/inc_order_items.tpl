@@ -50,7 +50,7 @@
                         {/if}
                     {/block}
                     {block name='checkout-inc-order-items-items-main-content'}
-                        {col cols=$cols lg=$itemInfoCols class="ml-auto"}
+                        {col cols=$cols lg=$itemInfoCols class="ml-auto-util"}
                             {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL || $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_GRATISGESCHENK}
                                 {block name='checkout-inc-order-items-product-data-link'}
                                     <p>{link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}{$oPosition->cName|trans}{/link}</p>
@@ -226,7 +226,7 @@
 
                         {block name='checkout-inc-order-items-price-single'}
                             {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
-                                {col cols=$cols lg=2 class="ml-auto text-nowrap-util"}
+                                {col cols=$cols lg=2 class="ml-auto-util text-nowrap-util"}
                                     {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
                                         {if !$oPosition->istKonfigVater()}
                                             <span class="mr-3 d-inline-flex d-lg-none">{lang key="pricePerUnit" section="productDetails"}:</span>{$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
@@ -236,14 +236,14 @@
                             {/if}
                         {/block}
                         {block name='checkout-inc-order-items-quantity'}
-                            {col cols=$cols lg=1 class="ml-auto text-nowrap-util mb-2 mb-lg-0 text-lg-center"}
+                            {col cols=$cols lg=1 class="ml-auto-util text-nowrap-util mb-2 mb-lg-0 text-lg-center"}
                                 <span class="mr-3 d-inline-flex d-lg-none">{lang key="quantity" section="checkout"}:</span> {$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{$oPosition->Artikel->cEinheit}{/if}
                             {/col}
                         {/block}
                     {/block}
 
                     {block name='checkout-inc-order-items-order-items-price-net'}
-                        {col cols=$cols lg=2 class="price-col ml-auto text-nowrap-util text-accent text-lg-right"}
+                        {col cols=$cols lg=2 class="price-col ml-auto-util text-nowrap-util text-accent text-lg-right"}
                             <strong class="price_overall">
                                 {if $oPosition->istKonfigVater()}
                                     {$oPosition->cKonfigpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
@@ -263,7 +263,7 @@
     {/block}
     {block name='checkout-inc-order-items-order-items-total'}
         {row}
-            {col xl=5 md=6 class='ml-auto pt-4 pb-3'}
+            {col xl=5 md=6 class='ml-auto-util pt-4 pb-3'}
                 {block name='checkout-inc-order-items-price-tax'}
                     {if $NettoPreise}
                         {block name='checkout-inc-order-items-price-net'}
@@ -271,7 +271,7 @@
                                 {col }
                                     <span class="price_label"><strong>{lang key='totalSum'} ({lang key='net'}):</strong></span>
                                 {/col}
-                                {col class="col-auto ml-auto text-right-util price-col"}
+                                {col class="col-auto ml-auto-util text-right-util price-col"}
                                     <strong class="price total-sum">{$WarensummeLocalized[$NettoPreise]}</strong>
                                 {/col}
                             {/row}
@@ -285,7 +285,7 @@
                                     {col}
                                         <span class="tax_label">{$Steuerposition->cName}:</span>
                                     {/col}
-                                    {col class="col-auto ml-auto text-right-util price-col"}
+                                    {col class="col-auto ml-auto-util text-right-util price-col"}
                                         <span class="tax_label">{$Steuerposition->cPreisLocalized}</span>
                                     {/col}
                                 {/row}
@@ -299,7 +299,7 @@
                                  {col}
                                     {lang key='useCredit' section='account data'}
                                  {/col}
-                                 {col class="col-auto ml-auto text-right-util"}
+                                 {col class="col-auto ml-auto-util text-right-util"}
                                      {$smarty.session.Bestellung->GutscheinLocalized}
                                  {/col}
                              {/row}
@@ -311,7 +311,7 @@
                             {col}
                                 <span class="price_label"><strong>{lang key='totalSum'}:</strong></span>
                             {/col}
-                            {col class="col-auto ml-auto text-right-util price-col"}
+                            {col class="col-auto ml-auto-util text-right-util price-col"}
                                 <strong class="price total-sum">{$WarensummeLocalized[0]}</strong>
                             {/col}
                         {/row}
@@ -349,7 +349,7 @@
                                         {/col}
                                     {/block}
                                     {block name='checkout-inc-order-items-finance-costs-value'}
-                                        {col class="col-auto ml-auto text-right-util price-col"}
+                                        {col class="col-auto ml-auto-util text-right-util price-col"}
                                             <strong class="price_overall">
                                                 {$attribute->cValue}
                                             </strong>

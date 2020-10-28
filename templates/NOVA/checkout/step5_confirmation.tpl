@@ -262,7 +262,7 @@
                                     {/block}
                                     {block name='checkout-step5-confirmation-order-items-actions'}
                                         {row class='mt-5'}
-                                            {col cols=12 md=6 lg=4 class='ml-auto order-1 order-md-2'}
+                                            {col cols=12 md=6 lg=4 class='ml-auto-util order-1 order-md-2'}
                                                 {button type="submit" variant="primary" id="complete-order-button" block=true class="submit_once mb-3"}
                                                     {lang key='orderLiableToPay' section='checkout'}
                                                 {/button}

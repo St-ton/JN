@@ -145,7 +145,7 @@
                                         }
                                     {/formgroup}
                                     {row}
-                                        {col class='ml-auto col-md-auto'}
+                                        {col class='ml-auto-util col-md-auto'}
                                             {button type='submit' value='1' block=true variant='primary' class='mb-3'}
                                                 {lang key='view' section='global'}
                                             {/button}

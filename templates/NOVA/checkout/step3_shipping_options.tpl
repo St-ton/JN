@@ -154,7 +154,7 @@
                         {if isset($Versandarten)}
                             {block name='checkout-step3-shipping-options-shipping-type-submit'}
                                 {row class='mt-5'}
-                                    {col cols=12 md=5 class='ml-auto order-1 order-md-2'}
+                                    {col cols=12 md=5 class='ml-auto-util order-1 order-md-2'}
                                         {input type="hidden" name="versandartwahl" value="1"}
                                         {input type="hidden" name="zahlungsartwahl" value="1"}
                                         {button type="submit" variant="primary" class="submit_once d-none mb-3" block=true}

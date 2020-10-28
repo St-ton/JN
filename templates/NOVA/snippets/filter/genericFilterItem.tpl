@@ -26,7 +26,7 @@
                                 {/block}
                             {/if}
                             <span class="word-break">{$filterOption->getName()}</span>
-                            {badge variant="outline-secondary" class="ml-auto"}{$filterOption->getCount()}{/badge}
+                            {badge variant="outline-secondary" class="ml-auto-util"}{$filterOption->getCount()}{/badge}
                         </div>
                     {/link}
                 {/block}
@@ -37,7 +37,7 @@
                     <div class="w-100">
                         {button variant="link"
                             role="button"
-                            class="p-0 ml-auto mt-1"
+                            class="p-0 ml-auto-util mt-1"
                             data=["toggle"=> "collapse", "target"=>"#box-collps-filter{$filter->getNiceName()}"]}
                             {lang key='showAll'}
                         {/button}

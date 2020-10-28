@@ -192,7 +192,7 @@
             {input type="hidden" name="show" value="1"}
             {input type="hidden" name="fragezumprodukt" value="1"}
             {row}
-                {col md='auto' class="ml-auto"}
+                {col md='auto' class="ml-auto-util"}
                     {button type="submit" value="1" variant="primary" block=true}
                         {lang key='sendQuestion' section='productDetails'}
                     {/button}

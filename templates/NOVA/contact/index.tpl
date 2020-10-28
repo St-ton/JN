@@ -256,7 +256,7 @@
                                     {col cols=12 lg=8 offset-lg=4}
                                         {block name='contact-index-form-submit-button'}
                                             {row}
-                                                {col md=4 xl=3 class='ml-auto'}
+                                                {col md=4 xl=3 class='ml-auto-util'}
                                                 {input type='hidden' name='kontakt' value='1'}
                                                     {button type='submit' variant='primary' class='btn-block'}
                                                         {lang key='sendMessage' section='contact'}

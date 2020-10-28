@@ -11,7 +11,7 @@
                     {/inputgroupaddon}
                 {/inputgroup}
             {/col}
-            {col cols=5 class="ml-auto"}
+            {col cols=5 class="ml-auto-util"}
                 {inputgroup class="mb-3"}
                     {input id="{$id}-to" class="price-range-input"  placeholder=$priceRangeMax aria=["label" => {lang key='differentialPriceTo' section='productOverview'}]}
                     {inputgroupaddon prepend=true}

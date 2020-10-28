@@ -264,7 +264,7 @@
                     <span class="fa fa-chain-broken"></span> {lang key='deleteAccount' section='login'}
                 {/link}
             {/col}
-            {col md="auto" cols=12 class="ml-auto"}
+            {col md="auto" cols=12 class="ml-auto-util"}
                 {link href="{get_static_route id='jtl.php'}?logout=1" title="{lang key='logOut'}" class="btn btn-primary btn-block min-w-sm"}
                     <span class="fa fa-sign-out-alt"></span> {lang key='logOut'}
                 {/link}

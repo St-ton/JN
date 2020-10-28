@@ -114,7 +114,7 @@
                 {/block}
                 {if ($Warenkorb->PositionenArr|@count > 0)}
                     {block name='basket-index-side'}
-                    {col class='ml-auto' cols=12 lg=4}
+                    {col class='ml-auto-util' cols=12 lg=4}
                         <div class="sticky-top cart-summary">
                             {block name='basket-index-side-heading'}
                                 <div class="h2 basket-heading">{lang key="orderOverview" section="account data"}</div>

@@ -15,7 +15,7 @@
                             {lang key='back'}
                         {/link}
                     {/col}
-                    {col class='ml-auto col-md-auto'}
+                    {col class='ml-auto-util col-md-auto'}
                         {button type="submit" value="1" block=true variant="danger"}
                             {lang key='deleteAccount' section='login'}
                         {/button}

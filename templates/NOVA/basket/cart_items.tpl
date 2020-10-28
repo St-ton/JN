@@ -58,7 +58,7 @@
                         {/if}
                     {/block}
                     {block name='basket-cart-items-items-main-content'}
-                        {col cols=$cols xl=$itemInfoCols class="ml-auto"}
+                        {col cols=$cols xl=$itemInfoCols class="ml-auto-util"}
                         {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL || $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_GRATISGESCHENK}
                             {block name='basket-cart-items-product-link'}
                                 {link class='mb-3 d-block' href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}{$oPosition->cName|trans}{/link}

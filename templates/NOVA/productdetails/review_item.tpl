@@ -41,7 +41,7 @@
                                 {if isset($smarty.session.Kunde) && $smarty.session.Kunde->kKunde > 0 && $smarty.session.Kunde->kKunde != $oBewertung->kKunde}
                                     {block name='productdetails-review-item-buttons'}
                                         {formrow class="review-helpful mt-3 mb-5 mg-lg-0" id="help{$oBewertung->kBewertung}"}
-                                            {col class='col-auto ml-auto'}
+                                            {col class='col-auto ml-auto-util'}
                                                 {button size="sm"
                                                     class="btn-icon btn-icon-primary js-helpful badge-circle-1 badge-circle-no-sizes {if (int)$oBewertung->rated === 1}on-list{/if}"
                                                     title="{lang key='yes'}"

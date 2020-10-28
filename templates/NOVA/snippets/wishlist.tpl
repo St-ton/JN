@@ -36,7 +36,7 @@
                             {/block}
                             {block name='snippets-wishlist-form-submit'}
                                 {row}
-                                    {col md=4 xl=3 class='ml-auto'}
+                                    {col md=4 xl=3 class='ml-auto-util'}
                                         {button name='action' type='submit' value='sendViaMail' variant='primary' class='btn-block'}
                                             {lang key='wishlistSend' section='login'}
                                         {/button}
@@ -236,7 +236,7 @@
                         {/col}
                     {/block}
                     {block name='snippets-wishlist-visibility-count'}
-                        {col class='col-auto ml-auto'}
+                        {col class='col-auto ml-auto-util'}
                             {count($CWunschliste->CWunschlistePos_arr)} {lang key='products'}
                         {/col}
                     {/block}
@@ -582,7 +582,7 @@
                         {block name='snippets-wishlist-form-basket-submit'}
                             <div class="sticky-bottom">
                             {row}
-                                {col cols=12 md="auto" class="ml-auto"}
+                                {col cols=12 md="auto" class="ml-auto-util"}
                                     {if $isCurrenctCustomer === true}
                                         {button type="submit"
                                             title="{lang key='addCurrentProductsToCart' section='wishlist'}"

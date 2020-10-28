@@ -29,7 +29,7 @@
                                 {lang key='paginationEntryPagination' printf={$oPagination->getFirstPageItem() + 1}|cat:':::'|cat:{$oPagination->getFirstPageItem() + $oPagination->getPageItemCount()}|cat:':::'|cat:{$oPagination->getItemCount()}}
                             {/col}
                         {/if}
-                        {col cols="auto" class="ml-auto {if $showFilter === true && (in_array('count', $parts) || in_array('sort', $parts))}border-md-right{/if}"}
+                        {col cols="auto" class="ml-auto-util {if $showFilter === true && (in_array('count', $parts) || in_array('sort', $parts))}border-md-right{/if}"}
                             {nav tag='nav' aria=["label"=>"pagination"]}
                             <ul class="pagination mb-0">
                                 {if in_array('pagi', $parts)}
@@ -104,7 +104,7 @@
 
             {if $showFilter === true && (in_array('count', $parts) || in_array('sort', $parts))}
                 {block name='snippets-pagination-form'}
-                    {col cols="12" md="auto" class="ml-md-0 ml-auto mt-3 mt-md-0"}
+                    {col cols="12" md="auto" class="ml-md-0 ml-auto-util mt-3 mt-md-0"}
                         {form action="{$cThisUrl}{$cAnchor}" method="get"}
                             {block name='snippets-pagination-form-content'}
                                 {row}

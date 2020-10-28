@@ -83,7 +83,7 @@
                             {foreach $Artikel->Bilder as $image}
                                 {strip}
                                 <div class="square square-image mb-0 js-gallery-images
-                                    {if $image@first} preview-first {if $imageCount <= $imageCountDefault} ml-auto{/if}
+                                    {if $image@first} preview-first {if $imageCount <= $imageCountDefault} ml-auto-util{/if}
                                     {elseif $image@index >= $imageCountDefault} d-none{/if}
                                     {if $image@last && $imageCount <= $imageCountDefault} mr-auto{/if}">
                                     <div class="inner p-1 p-xl-2">

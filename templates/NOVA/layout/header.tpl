@@ -335,12 +335,12 @@
 
                             {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}
                                 {block name='layout-header-secure-checkout'}
-                                    <div class="ml-auto ml-lg-0">
+                                    <div class="ml-auto-util ml-lg-0">
                                         {block name='layout-header-secure-checkout-title'}
                                             <i class="fas fa-lock align-center mr-2"></i>{lang key='secureCheckout' section='checkout'}
                                         {/block}
                                     </div>
-                                    <div class="ml-auto d-none d-lg-block">
+                                    <div class="ml-auto-util d-none d-lg-block">
                                         {block name='layout-header-secure-include-header-top-bar'}
                                             {include file='layout/header_top_bar.tpl'}
                                         {/block}
@@ -369,7 +369,7 @@
                                                             </button>
                                                         {/block}
                                                     {/col}
-                                                    {col class="col-auto ml-auto"}
+                                                    {col class="col-auto ml-auto-util"}
                                                         <span class="nav-offcanvas-title">{lang key='menuName'}</span>
                                                         {block name='layout-header-include-categories-mega-back'}
                                                             {link href="#" class="nav-offcanvas-title d-none" data=["menu-back"=>""]}
@@ -449,7 +449,7 @@
         {if !$bExclusive && !empty($boxes.left|strip_tags|trim) && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}
             {block name='layout-header-content-productlist-starttags'}
                 <div class="row">
-                    <div class="col-lg-8 col-xl-9 ml-auto order-lg-1">
+                    <div class="col-lg-8 col-xl-9 ml-auto-util order-lg-1">
             {/block}
         {/if}
 

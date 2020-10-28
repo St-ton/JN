@@ -110,7 +110,7 @@
         {block name='snippets-filter-characteristics-more-bottom'}
                 </ul>
             </div>
-            <div class="w-100">
+            <div class="w-100-util">
                 {button variant="link"
                     role="button"
                     class="p-0 ml-auto-util mt-1"

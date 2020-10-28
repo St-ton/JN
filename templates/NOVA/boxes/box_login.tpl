@@ -1,5 +1,5 @@
 {block name='boxes-box-login'}
-    {card id="sidebox{$oBox->getID()}" class="box box-login mb-4"}
+    {card id="sidebox{$oBox->getID()}" class="box box-login box-normal"}
         {block name='boxes-box-login-content'}
             {block name='boxes-box-login-title'}
                 <div class="productlist-filter-headline">
@@ -45,7 +45,7 @@
                             {/formgroup}
                         {/block}
                         {block name='boxes-box-login-form-links'}
-                            {link class="resetpw px-0 d-block mb-2" href="{get_static_route id='pass.php' secure=true}"}
+                            {link class="resetpw box-login-resetpw" href="{get_static_route id='pass.php' secure=true}"}
                                 {lang key='forgotPassword'}
                             {/link}
                             {lang key='newHere'}

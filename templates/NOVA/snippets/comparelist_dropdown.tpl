@@ -7,7 +7,7 @@
                     {foreach $smarty.session.Vergleichsliste->oArtikel_arr as $product}
                         {block name='snippets-comparelist-dropdown-products-body'}
                             <tr>
-                                <td class="w-100">
+                                <td class="w-100-util">
                                     {formrow class="align-items-center-util"}
                                         {col class="col-auto"}
                                             {block name='snippets-comparelist-dropdown-products-image'}

@@ -25,7 +25,7 @@
                     {/block}
                 {/collapse}
                 {block name='boxes-box-filter-search-special-hr'}
-                    <hr class="my-2">
+                    <hr class="box-filter-hr">
                 {/block}
             </div>
         {/if}

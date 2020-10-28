@@ -40,7 +40,7 @@
                     {/block}
                 {/col}
             {/if}
-            <div class="w-100"></div>
+            <div class="w-100-util"></div>
         {/block}
 
         {* firstname lastname *}
@@ -68,7 +68,7 @@
                     }
                 {/block}
             {/col}
-            <div class="w-100"></div>
+            <div class="w-100-util"></div>
         {/block}
 
         {* firm / firmtext *}
@@ -99,7 +99,7 @@
                     {/block}
                 {/col}
             {/if}
-            <div class="w-100"></div>
+            <div class="w-100-util"></div>
         {/block}
 
         {* street / number *}
@@ -126,7 +126,7 @@
                     }
                 {/block}
             {/col}
-            <div class="w-100"></div>
+            <div class="w-100-util"></div>
         {/block}
 
         {* address addition *}
@@ -144,7 +144,7 @@
                     {/block}
                 {/col}
             {/block}
-            <div class="w-100"></div>
+            <div class="w-100-util"></div>
         {/if}
 
         {* country *}

@@ -67,7 +67,7 @@
                             {dropdown variant="link no-caret" class="wishlist-options" text="<i class='fas fa-ellipsis-v'></i>" aria=["label"=>"{lang key='rename' section='wishlistOptions'}"]}
                                 {dropdownitem}
                                 {block name='snippets-wishlist-actions-rename'}
-                                    {button type="submit" variant="link" class="w-100 no-caret" data=["toggle" => "collapse", "target"=>"#edit-wishlist-name"]}
+                                    {button type="submit" variant="link" class="w-100-util no-caret" data=["toggle" => "collapse", "target"=>"#edit-wishlist-name"]}
                                         {lang key='rename'}
                                     {/button}
                                 {/block}
@@ -154,7 +154,7 @@
                             {dropdown id='wlName'
                                 variant='outline-secondary'
                                 text=$CWunschliste->cName
-                                toggle-class='w-100'}
+                                toggle-class='w-100-util'}
                             {foreach $oWunschliste_arr as $wishlist}
                                 {dropdownitem href="{get_static_route id='wunschliste.php'}{if $wishlist->nStandard != 1}?wl={$wishlist->kWunschliste}{/if}" rel="nofollow" }
                                     {$wishlist->cName}

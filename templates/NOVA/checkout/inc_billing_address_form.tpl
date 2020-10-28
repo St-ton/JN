@@ -75,7 +75,7 @@
                                 {/block}
                             {/col}
                         {/if}
-                        <div class="w-100"></div>
+                        <div class="w-100-util"></div>
                     {/block}
                     {* firstname lastname *}
                     {block name='checkout-inc-billing-address-form-firstname-lastname'}
@@ -111,7 +111,7 @@
                                 }
                             {/block}
                         {/col}
-                        <div class="w-100"></div>
+                        <div class="w-100-util"></div>
                     {/block}
                     {* firm / firmtext *}
                     {block name='checkout-inc-billing-address-form-company-wrap'}
@@ -152,7 +152,7 @@
                                 {/block}
                             {/col}
                         {/if}
-                        <div class="w-100"></div>
+                        <div class="w-100-util"></div>
                     {/block}
                 {/formrow}
             {/col}
@@ -203,7 +203,7 @@
                                 }
                             {/block}
                         {/col}
-                        <div class="w-100"></div>
+                        <div class="w-100-util"></div>
                     {/block}
                     {* adress addition *}
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_adresszusatz !== 'N'}
@@ -224,7 +224,7 @@
                                     }
                                 {/block}
                             {/col}
-                            <div class="w-100"></div>
+                            <div class="w-100-util"></div>
                         {/block}
                     {/if}
                     {* country *}
@@ -370,7 +370,7 @@
                                 {/formgroup}
                             {/block}
                         {/col}
-                        <div class="w-100"></div>
+                        <div class="w-100-util"></div>
                     {/block}
                     {* UStID *}
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_ustid !== 'N'}
@@ -533,7 +533,7 @@
                                     {/block}
                                 {/col}
                             {/if}
-                            <div class="w-100"></div>
+                            <div class="w-100-util"></div>
                         {/block}
                     {/if}
 

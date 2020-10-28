@@ -34,7 +34,7 @@
             {if $limit != -1 && $filter->getOptions()|count > $limit}
                 {block name='snippets-filter-genericFilterItem-more-bottom'}
                     </div>
-                    <div class="w-100">
+                    <div class="w-100-util">
                         {button variant="link"
                             role="button"
                             class="p-0 ml-auto-util mt-1"

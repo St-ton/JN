@@ -42,7 +42,7 @@
                                 {/formgroup}
                             {/col}
                         {/block}
-                        <div class="w-100"></div>
+                        <div class="w-100-util"></div>
                     {/if}
 
                     {if $Einstellungen.artikeldetails.produktfrage_abfragen_vorname !== 'N' || $Einstellungen.artikeldetails.produktfrage_abfragen_nachname !== 'N'}
@@ -71,7 +71,7 @@
                                 {/col}
                             {/if}
                         {/block}
-                        <div class="w-100"></div>
+                        <div class="w-100-util"></div>
                     {/if}
 
                     {if $Einstellungen.artikeldetails.produktfrage_abfragen_firma !== 'N'}

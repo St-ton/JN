@@ -143,3 +143,53 @@ $jqcloud-classes: 7;
     text-decoration: none;
   }
 }
+
+.box-normal {
+  @include media-breakpoint-up(md) {
+    margin-bottom: map-get($spacers, 4);
+  }
+  .box-normal-link {
+    text-decoration: none;
+    font-weight: $font-weight-bold;
+    margin-bottom: map-get($spacers, 2);
+    @include media-breakpoint-up(md) {
+      display: none;
+    }
+  }
+}
+.box-filter-hr {
+  margin-top: map-get($spacers, 2);
+  margin-bottom: map-get($spacers, 2);
+}
+.box-normal-hr {
+  margin-top: map-get($spacers, 3);
+  margin-bottom: map-get($spacers, 3);
+  display: flex;
+  @include media-breakpoint-up(md) {
+    display: none;
+  }
+}
+.box-last-seen {
+  .box-last-seen-item {
+    margin-bottom: map-get($spacers, 3);
+  }
+}
+.box-nav-item {
+  margin-top: map-get($spacers, 2);
+  @include media-breakpoint-up(md) {
+   margin-top: 0;
+  }
+}
+.box-login {
+  .box-login-resetpw {
+    margin-bottom: map-get($spacers, 2);
+    padding-left: 0;
+    padding-right: 0;
+    display: block;
+  }
+}
+.box-wishlist {
+  .box-wishlist-icon {
+    margin-right: map-get($spacers, 2);
+  }
+}

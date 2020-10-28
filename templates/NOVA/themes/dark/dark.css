@@ -24570,6 +24570,20 @@ header #burger-menu {
   margin-right: 0.5rem;
 }
 
+/* contact */
+.contact-form legend {
+  border: 0;
+}
+.contact-form .contact-form-privacy {
+  text-align: left;
+  margin-bottom: 1rem;
+}
+@media (min-width: 768px) {
+  .contact-form .contact-form-privacy {
+    text-align: right;
+  }
+}
+
 header, #main-wrapper {
   background: #343434;
   color: #ebebeb;

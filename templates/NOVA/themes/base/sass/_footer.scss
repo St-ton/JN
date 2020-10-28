@@ -1,7 +1,7 @@
 #footer {
 	background-color: $gray-lighter;
 	margin-top: auto;
-	padding: $spacer 0 0;
+	padding: map-get($spacers, 4) 0 0;
 	a {
 		text-decoration: none;
 	}
@@ -28,7 +28,15 @@
 	#copyright {
 		background-color: $gray-dark;
 		color: $gray-lighter;
+		margin-top: map-get($spacers, 3);
+		> div {
+			padding-top: map-get($spacers, 3);
+			padding-bottom: map-get($spacers, 3);
+			font-size: $font-size-sm;
+			text-align: center;
+		}
 	}
+
 	.footer-logo {
 		width: auto;
 		height: 18px;
@@ -36,5 +44,29 @@
 	}
 	.list-group-item {
 		background: transparent;
+	}
+	.newsletter-footer {
+		text-align: center;
+		@include media-breakpoint-up(md) { text-align: left; }
+		align-items: center;
+		.newsletter-email-wrapper {
+			margin-bottom: 0;
+		}
+	}
+	&.newsletter-active {
+		#footer-boxes {
+			margin-top: map-get($spacers, 4);
+			@include media-breakpoint-up(lg) { margin-top: map-get($spacers, 7); }
+		}
+	}
+	.footer-social-media {
+		margin-bottom: map-get($spacers, 2);
+		margin-top: map-get($spacers, 5);
+		ul {
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+			margin-bottom: 0;
+		}
 	}
 }

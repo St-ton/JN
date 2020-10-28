@@ -24428,4 +24428,123 @@ header #burger-menu {
   margin-left: 0.5rem;
 }
 
+/* basket */
+/* cart-dropdown */
+.cart-dropdown .cart-dropdown-total-item {
+  color: #707070;
+  margin-bottom: 0.5rem;
+  font-size: 0.75rem;
+}
+.cart-dropdown .cart-dropdown-total-item-price {
+  float: right;
+  white-space: nowrap;
+}
+.cart-dropdown .cart-dropdown-next {
+  margin-bottom: 1rem;
+}
+@media (min-width: 992px) {
+  .cart-dropdown .cart-dropdown-next {
+    margin-bottom: 0;
+  }
+}
+
+/* index */
+.basket .basket-heading {
+  margin-bottom: 2rem;
+}
+.basket .basket-items {
+  margin-bottom: 4rem;
+}
+.basket .basket-freegift {
+  margin-bottom: 1.5rem;
+}
+.basket .basket-empty {
+  text-align: center;
+}
+.basket .basket-empty .alert {
+  margin-top: 1.5rem;
+  padding-top: 0.5rem;
+  padding-bottom: 2rem;
+}
+.basket .basket-summary {
+  margin-top: 1.5rem;
+}
+.basket .basket-summary .basket-summary-total {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  font-size: 1rem;
+  border-top: 1px solid #ebebeb;
+}
+.basket .basket-summary-notice {
+  margin-top: 2rem;
+}
+.basket #cart-checkout-btn {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+/* cart-items */
+.cart-items-header {
+  padding-bottom: 1rem;
+}
+
+.cart-items-body {
+  padding-bottom: 1rem;
+}
+.cart-items-body .cart-items-image {
+  height: 100%;
+}
+.cart-items-body .cart-items-single-price {
+  margin-left: auto;
+  margin-bottom: 1rem;
+  white-space: nowrap;
+}
+@media (min-width: 1300px) {
+  .cart-items-body .cart-items-single-price {
+    margin-bottom: 0;
+  }
+}
+.cart-items-body .cart-items-quantity {
+  margin-left: auto;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  white-space: nowrap;
+}
+@media (min-width: 1300px) {
+  .cart-items-body .cart-items-quantity {
+    margin-bottom: 0;
+  }
+}
+.cart-items-body .cart-items-price {
+  margin-left: auto;
+  white-space: nowrap;
+  color: Montserrat, sans-serif;
+}
+@media (min-width: 1300px) {
+  .cart-items-body .cart-items-price {
+    text-align: right;
+  }
+}
+.cart-items-body .cart-items-price-text {
+  margin-right: 1rem;
+  display: inline-block;
+}
+@media (min-width: 1300px) {
+  .cart-items-body .cart-items-price-text {
+    display: none;
+  }
+}
+.cart-items-body .cart-items-delete {
+  margin-left: auto;
+  margin-top: 1.5rem;
+}
+.cart-items-body .cart-items-delete .cart-items-delete-button {
+  padding: 0;
+  text-decoration: underline;
+  white-space: nowrap;
+}
+.cart-items-body .cart-items-delete .cart-items-delete-button > span {
+  margin-right: 0.5rem;
+}
+
 /*# sourceMappingURL=clear.css.map */

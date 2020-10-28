@@ -14,23 +14,23 @@
     {/block}
     {block name='basket-cart-items-order-items'}
         {block name='basket-cart-items-order-items-header'}
-            {row class="text-accent d-none d-xl-flex pb-3"}
+            {row class="cart-items-header text-accent d-none d-xl-flex"}
                 {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
                     {col cols=2}{/col}
                 {/if}
                 {col cols=$itemInfoCols}
-                    <span class="text-accent">{lang key='product'}</span>
+                    <span>{lang key='product'}</span>
                 {/col}
                 {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
                     {col cols=2}
-                        <span class="text-accent">{lang key="pricePerUnit" section="productDetails"}</span>
+                        <span>{lang key="pricePerUnit" section="productDetails"}</span>
                     {/col}
                 {/if}
                 {col cols=3 class="text-center-util"}
-                    <span class="text-accent">{lang key="quantity" section="checkout"}</span>
+                    <span>{lang key="quantity" section="checkout"}</span>
                 {/col}
                 {col cols=2 class="text-right-util"}
-                    <span class="text-accent">{lang key="price"}</span>
+                    <span>{lang key="price"}</span>
                 {/col}
                 {col cols=12}
                     <hr>
@@ -40,10 +40,10 @@
         {block name='basket-cart-items-order-items-main'}
         {foreach $smarty.session.Warenkorb->PositionenArr as $oPosition}
             {if !$oPosition->istKonfigKind()}
-                {row class="type-{$oPosition->nPosTyp} pb-3"}
+                {row class="cart-items-body type-{$oPosition->nPosTyp}"}
                     {block name='basket-cart-items-image'}
                         {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
-                            {col cols=3 xl=2 class="h-100"}
+                            {col cols=3 xl=2 class="cart-items-image"}
                                 {if !empty($oPosition->Artikel->cVorschaubild)}
                                     {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}
                                         {image lazy=true
@@ -234,9 +234,9 @@
 
                         {block name='basket-cart-items-price-single'}
                             {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
-                                {col cols=$cols xl=2 class="ml-auto text-nowrap-util mb-3 mb-xl-0"}
+                                {col cols=$cols xl=2 class="cart-items-single-price"}
                                 {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL && !$oPosition->istKonfigVater()}
-                                    <strong class="mr-3 d-inline-flex d-xl-none">
+                                    <strong class="cart-items-price-text">
                                         {lang key="pricePerUnit" section="productDetails"}:
                                     </strong>{$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
                                 {/if}
@@ -244,7 +244,7 @@
                             {/if}
                         {/block}
 
-                        {col cols=$cols xl=3 class="ml-auto text-center-util mb-4 mb-xl-0 text-nowrap-util"}
+                        {col cols=$cols xl=3 class="cart-items-quantity"}
                         {block name='basket-cart-items-quantity'}
                             {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
                                 {if $oPosition->istKonfigVater()}
@@ -292,8 +292,8 @@
                         {/col}
                     {/block}
                     {block name='basket-cart-items-order-items-price-net'}
-                        {col cols=$cols xl=2 class="price-col ml-auto text-nowrap-util text-accent text-xl-right"}
-                            <strong class="mr-3 d-inline-flex d-xl-none">{lang key="price"}:</strong>
+                        {col cols=$cols xl=2 class="cart-items-price price-col"}
+                            <strong class="cart-items-price-text">{lang key="price"}:</strong>
                             <span class="price_overall text-accent">
                                 {if $oPosition->istKonfigVater()}
                                     {$oPosition->cKonfigpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
@@ -307,7 +307,7 @@
                         {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL
                         || $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_GRATISGESCHENK
                         }
-                            {col cols=$cols xl=10 class='mt-4 ml-auto' data=['toggle'=>'product-actions']}
+                            {col cols=$cols xl=10 class='cart-items-delete' data=['toggle'=>'product-actions']}
                                 {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
                                     {block name='basket-cart-items-cart-submit-include-wishlist-button'}
                                         {include file='snippets/wishlist_button.tpl' Artikel=$oPosition->Artikel buttonAndText=true}
@@ -316,11 +316,11 @@
                                 {button type="submit"
                                     variant="link"
                                     size="sm"
-                                    class="p-0 droppos text-decoration-underline text-nowrap-util"
+                                    class="cart-items-delete-button droppos"
                                     name="dropPos"
                                     value=$oPosition@index
                                     title="{lang key='delete'}"}
-                                    <span class="fas fa-trash-alt mr-2"></span>{lang key='delete'}
+                                    <span class="fas fa-trash-alt"></span>{lang key='delete'}
                                 {/button}
                             {/col}
                         {/if}

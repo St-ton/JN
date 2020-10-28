@@ -1,6 +1,6 @@
 {block name='blog-preview'}
     {$title = $newsItem->getTitle()|escape:'quotes'}
-    <div itemprop="blogPost" itemscope=true itemtype="https://schema.org/BlogPosting" class="newsbox h-100 border-bottom border-sm-bottom-0 pb-5 position-relative">
+    <div itemprop="blogPost" itemscope=true itemtype="https://schema.org/BlogPosting" class="newsbox">
         <meta itemprop="mainEntityOfPage" content="{$ShopURL}/{$newsItem->getURL()}">
         {block name='blog-preview-news-header'}
             <div class="newsbox-header">
@@ -31,7 +31,7 @@
                         {assign var=dDate value=$newsItem->getDateValidFrom()->format('Y-m-d')}
                         {block name='blog-preview-author'}
                             {if $newsItem->getAuthor() !== null}
-                                <div class="d-none d-sm-inline-block align-middle">
+                                <div class="newsbox-author">
                                     {block name='blog-preview-include-author'}
                                         {include file='snippets/author.tpl' oAuthor=$newsItem->getAuthor() showModal=false}
                                     {/block}

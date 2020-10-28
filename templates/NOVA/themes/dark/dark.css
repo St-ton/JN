@@ -20995,6 +20995,9 @@ label {
 .newsbox {
   display: flex;
   flex-direction: column;
+  height: 100%;
+  padding-bottom: 2rem;
+  position: relative;
 }
 
 .newsbox-image {
@@ -21015,6 +21018,83 @@ label {
   font-weight: 700;
   margin: 1rem 0;
   display: block;
+}
+
+.newsbox-author {
+  vertical-align: middle;
+  display: none;
+}
+@media (min-width: 576px) {
+  .newsbox-author {
+    display: inline-block;
+  }
+}
+
+.news-categorylist {
+  margin-bottom: 1.5rem;
+}
+
+.author-meta {
+  text-align: center;
+  font-size: 0.75rem;
+  color: #ebebeb;
+}
+
+.blog-details .blog-details-image {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+.blog-details .blog-details-content {
+  margin-bottom: 1.5rem;
+}
+.blog-details .blog-details-save {
+  margin-left: auto;
+}
+.blog-details .blog-details-save .btn {
+  float: right;
+}
+.blog-details .blog-details-hr {
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+}
+.blog-details .blog-details-comments-list {
+  padding: 1rem;
+  background-color: #F5F7FA;
+}
+.blog-details .blog-details-comments-list-item {
+  margin: 0;
+  background-color: #F5F7FA;
+  border-top: 0;
+}
+.blog-details .review-reply {
+  margin-top: 1rem;
+  margin-left: 1rem;
+}
+.blog-details .blockquote-footer {
+  margin-top: 1rem;
+}
+
+.blog-overview .blog-overview-main {
+  align-items: end;
+  margin-top: 3rem;
+  margin-bottom: 0.5rem;
+}
+.blog-overview .blog-overview-main .custom-select {
+  margin-bottom: 0.5rem;
+}
+@media (min-width: 1300px) {
+  .blog-overview .blog-overview-main .custom-select {
+    margin-bottom: 0;
+  }
+}
+.blog-overview .blog-overview-main .blog-overview-pagination {
+  margin-left: auto;
+}
+.blog-overview .blog-overview-preview {
+  margin-top: 1.5rem;
+}
+.blog-overview .blog-overview-preview .blog-overview-preview-item {
+  margin-bottom: 2rem;
 }
 
 .pagination-sm .page-item.active .page-link::after, .pagination-sm .page-item.active .page-text::after {

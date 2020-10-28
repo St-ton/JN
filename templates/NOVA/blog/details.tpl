@@ -3,7 +3,7 @@
         {include file='snippets/extension.tpl'}
     {/block}
 
-    {container}
+    {container class="blog-details"}
     {if !empty($cNewsErr)}
         {block name='blog-details-alert'}
             {alert variant="danger"}{lang key='newsRestricted' section='news'}{/alert}
@@ -20,7 +20,7 @@
                 {/block}
 
                 {block name='blog-details-author'}
-                    <div class="author-meta text-muted-util text-center-util font-size-sm">
+                    <div class="author-meta">
                         {if empty($newsItem->getDateValidFrom())}
                             {assign var=dDate value=$newsItem->getDateCreated()->format('Y-m-d H:i:s')}
                         {else}
@@ -44,7 +44,7 @@
 
                         {if isset($Einstellungen.news.news_kategorie_unternewsanzeigen) && $Einstellungen.news.news_kategorie_unternewsanzeigen === 'Y' && !empty($oNewsKategorie_arr)}
                             {block name='blog-details-sub-news'}
-                                <span class="news-categorylist mb-4">
+                                <span class="news-categorylist">
                                     {if $newsItem->getAuthor() === null}/{/if}
                                     {foreach $oNewsKategorie_arr as $oNewsKategorie}
                                         {link itemprop="articleSection"
@@ -89,7 +89,7 @@
                             sizes="auto"
                             alt="{$newsItem->getTitle()|escape:'quotes'} - {$newsItem->getMetaTitle()|escape:'quotes'}"
                             center=true
-                            class="my-5"
+                            class="blog-details-image"
                         }
                         <meta itemprop="image" content="{$imageBaseURL}{$newsItem->getPreviewImage()}">
                     {/block}
@@ -97,8 +97,8 @@
 
                 {block name='blog-details-article-content'}
                     {opcMountPoint id='opc_before_content'}
-                    {row itemprop="articleBody" class="mb-4"}
-                        {col cols=12 class="blog-content"}
+                    {row itemprop="articleBody" class="blog-details-content"}
+                        {col cols=12}
                             {$newsItem->getContent()}
                         {/col}
                     {/row}
@@ -108,7 +108,9 @@
                     {block name='blog-details-article-comments'}
                         {if $userCanComment === true}
                             {block name='blog-details-form-comment'}
-                                <hr class="my-6">
+                                {block name='blog-details-form-comment-hr-top'}
+                                    <hr class="blog-details-hr">
+                                {/block}
                                 {row}
                                     {col cols=12}
                                         {block name='blog-details-form-comment-heading'}
@@ -143,8 +145,8 @@
                                                         {/if}
                                                     {/formgroup}
                                                     {row}
-                                                        {col md=4 xl=3 class='ml-auto'}
-                                                            {button block=true variant="primary" name="speichern" type="submit" class="float-right"}
+                                                        {col md=4 xl=3 class='blog-details-save'}
+                                                            {button block=true variant="primary" name="speichern" type="submit"}
                                                                 {lang key='newsCommentSave' section='news'}
                                                             {/button}
                                                         {/col}
@@ -169,7 +171,9 @@
                                     {assign var=articleURL value='news.php'}
                                     {assign var=cParam_arr value=['kNews'=>$newsItem->getID(),'n'=>$newsItem->getID()]}
                                 {/if}
-                                <hr class="my-6">
+                                {block name='blog-details-form-comment-hr-middle'}
+                                    <hr class="blog-details-hr">
+                                {/block}
                                 <div id="comments">
                                     {row class="align-items-center-util mb-3"}
                                         {col cols="auto"}
@@ -188,19 +192,19 @@
                                         {/col}
                                     {/row}
                                     {block name='blog-details-comments'}
-                                        {listgroup class="list-group-flush p-3 bg-info"}
+                                        {listgroup class="blog-details-comments-list list-group-flush"}
                                             {foreach $comments as $comment}
-                                                {listgroupitem class="bg-info m-0 border-top-0" itemprop="comment"}
+                                                {listgroupitem class="blog-details-comments-list-item" itemprop="comment"}
                                                     <p>
                                                         {$comment->getName()}, {$comment->getDateCreated()->format('d.m.y H:i')}
                                                     </p>
                                                     {$comment->getText()}
                                                      {foreach $comment->getChildComments() as $childComment}
-                                                        <div class="review-reply mt-3 ml-3">
+                                                        <div class="review-reply">
                                                             <span class="subheadline">{lang key='commentReply' section='news'}:</span>
                                                             <blockquote>
                                                                 {$childComment->getText()}
-                                                                <div class="mt-3 blockquote-footer">{$childComment->getName()}, {$childComment->getDateCreated()->format('d.m.y H:i')}</div>
+                                                                <div class="blockquote-footer">{$childComment->getName()}, {$childComment->getDateCreated()->format('d.m.y H:i')}</div>
                                                             </blockquote>
                                                         </div>
                                                      {/foreach}
@@ -215,7 +219,9 @@
                 {/if}
             </article>
             {if $oNews_arr|count > 0}
-            <hr class="my-6">
+            {block name='blog-details-form-comment-hr-bottom'}
+                <hr class="blog-details-hr">
+            {/block}
             {block name='blog-details-latest-news'}
                 <div class="h2">{lang key='news' section='news'}</div>
                 <div itemprop="about"

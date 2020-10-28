@@ -10,9 +10,9 @@
         {include file='snippets/extension.tpl'}
     {/block}
     {opcMountPoint id='opc_before_filter' inContainer=false}
-    {container}
+    {container class="blog-overview"}
         {block name='filter'}
-            {row class='align-items-end mt-6 mb-2'}
+            {row class='blog-overview-main'}
                 {col cols=12 class='col-xl'}
                     {get_static_route id='news.php' assign=routeURL}
                     {block name='blog-overview-form'}
@@ -21,7 +21,7 @@
                                 {formrow}
                                     {col cols=12 sm=4 lg='auto'}
                                         {block name='blog-overview-form-sort'}
-                                            {select name="nSort" class="onchangeSubmit custom-select mb-3 mb-xl-0" aria=["label"=>"{lang key='newsSort' section='news'}"]}
+                                            {select name="nSort" class="onchangeSubmit custom-select" aria=["label"=>"{lang key='newsSort' section='news'}"]}
                                                 <option value="-1"{if $nSort === -1} selected{/if}>{lang key='newsSort' section='news'}</option>
                                                 <option value="1"{if $nSort === 1} selected{/if}>{lang key='newsSortDateDESC' section='news'}</option>
                                                 <option value="2"{if $nSort === 2} selected{/if}>{lang key='newsSortDateASC' section='news'}</option>
@@ -34,7 +34,7 @@
                                     {/col}
                                     {col cols=12 sm=4 lg='auto'}
                                         {block name='blog-overview-form-date'}
-                                            {select name="cDatum" class="onchangeSubmit custom-select mb-3 mb-xl-0" aria=["label"=>"{lang key='newsDateFilter' section='news'}"]}
+                                            {select name="cDatum" class="onchangeSubmit custom-select" aria=["label"=>"{lang key='newsDateFilter' section='news'}"]}
                                                 <option value="-1"{if $cDatum == -1} selected{/if}>{lang key='newsDateFilter' section='news'}</option>
                                                 {if !empty($oDatum_arr)}
                                                     {foreach $oDatum_arr as $oDatum}
@@ -52,7 +52,7 @@
                                     {/if}
                                     {col cols=12 sm=4 lg='auto'}
                                         {block name='blog-overview-form-categories'}
-                                            {select name="nNewsKat" class="onchangeSubmit custom-select mb-3 mb-xl-0" aria=["label"=>"{lang key='newsCategorie' section='news'}"]}
+                                            {select name="nNewsKat" class="onchangeSubmit custom-select" aria=["label"=>"{lang key='newsCategorie' section='news'}"]}
                                                 <option value="-1"{if $kNewsKategorie === -1} selected{/if}>{lang key='newsCategorie' section='news'}</option>
                                                 {if !empty($oNewsKategorie_arr)}
                                                     {assign var=selectedCat value=$kNewsKategorie}
@@ -68,7 +68,7 @@
                                             {select
                                                 name="{$oPagination->getId()}_nItemsPerPage"
                                                 id="{$oPagination->getId()}_nItemsPerPage"
-                                                class="onchangeSubmit custom-select mb-3 mb-xl-0"
+                                                class="onchangeSubmit custom-select"
                                                 aria=["label"=>"{lang key='newsPerSite' section='news'}"]
                                             }
                                                 <option value="-1" {if $oPagination->getItemsPerPage() == 0} selected{/if}>
@@ -87,7 +87,7 @@
                         {/form}
                     {/block}
                 {/col}
-                {col cols=12 class='col-sm-auto ml-auto'}
+                {col cols=12 sm="auto" class='blog-overview-pagination'}
                     {block name='blog-overview-include-pagination-top'}
                         {include file='snippets/pagination.tpl' oPagination=$oPagination cThisUrl='news.php' parts=['pagi'] noWrapper=true}
                     {/block}
@@ -134,9 +134,9 @@
                     {/if}
                     {opcMountPoint id='opc_before_news_list'}
                     {block name='blog-overview-previews'}
-                        {row class="mt-4"}
+                        {row class="blog-overview-preview"}
                             {foreach $newsItems as $newsItem}
-                                {col cols=12 md=6 lg=4 class='mb-5'}
+                                {col cols=12 md=6 lg=4 class='blog-overview-preview-item'}
                                     {block name='blog-overview-include-preview'}
                                         {include file='blog/preview.tpl'}
                                     {/block}

@@ -1,6 +1,6 @@
 {block name='productdetails-basket'}
     {if ($Artikel->inWarenkorbLegbar == 1 || $Artikel->nErscheinendesProdukt == 1) || $Artikel->Variationen}
-        <div id="add-to-cart" class="mt-5 d-print-none product-buy{if $Artikel->nErscheinendesProdukt} coming_soon{/if}">
+        <div id="add-to-cart" class="product-buy{if $Artikel->nErscheinendesProdukt} coming_soon{/if}">
             {if $Artikel->nErscheinendesProdukt}
                 {block name='productdetails-basket-coming-soon'}
                     <div class="{if $Einstellungen.global.global_erscheinende_kaeuflich === 'Y'}alert alert-warning coming_soon{/if} text-center-util">
@@ -20,9 +20,9 @@
             {elseif $Artikel->inWarenkorbLegbar == 1 }
                 {if !$showMatrix}
                     {block name='productdetails-basket-form-inline'}
-                        {row class="align-items-center mb-3"}
+                        {row class="basket-form-inline"}
                             {block name='productdetails-basket-quantity'}
-                                {col cols=12 sm=6 class="mb-3 mb-sm-0"}
+                                {col cols=12 sm=6}
                                     {inputgroup id="quantity-grp" class="form-counter choose_quantity"}
                                         {inputgroupprepend}
                                             {button variant=""
@@ -66,7 +66,7 @@
                                         disabled=$Artikel->bHasKonfig && !$isConfigCorrect|default:false
                                         class="js-cfg-validate"}
                                         <span class="btn-basket-check">
-                                            <span class="{if !isset($kEditKonfig)}d-none{/if} d-sm-inline-block mr-1">
+                                            <span class="{if !isset($kEditKonfig)}d-none{/if}">
                                                 {if isset($kEditKonfig)}
                                                     {lang key='applyChanges'}
                                                 {else}
@@ -91,7 +91,7 @@
                 || $Artikel->cTeilbar === 'Y'
                 || $Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|default:0 > 0)}
                 {block name='productdetails-basket-alert-purchase-info'}
-                    {alert variant="info" class="mt-2 purchase-info"}
+                    {alert variant="info" class="purchase-info"}
                         {assign var=units value=$Artikel->cEinheit}
                         {if empty($Artikel->cEinheit) || $Artikel->cEinheit|@count_characters == 0}
                             <p>{lang key='units' section='productDetails' assign='units'}</p>

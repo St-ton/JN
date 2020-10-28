@@ -372,3 +372,43 @@
 		border-bottom: 1px solid $gray-lighter;
 	}
 }
+
+#add-to-cart {
+	margin-top: map_get($spacers, 5);
+	@media print {
+		display: none !important;
+	}
+	.alert .purchase-info {
+		margin-top: map_get($spacers, 2);
+	}
+}
+.basket-form-inline {
+	text-align: center;
+	margin-bottom: map_get($spacers, 3);
+	.col:first-child {
+		margin-bottom: map_get($spacers, 3);
+		@include media-breakpoint-up(sm) {
+			margin-bottom: 0;
+		}
+	}
+}
+
+#form_bundles {
+	.row {
+		margin-bottom: map_get($spacers, 7);
+		margin-top: -(map_get($spacers, 2));
+		align-items: center;
+		@include media-breakpoint-up(md) {
+			justify-content: center;
+		}
+	}
+	.bundle-price{
+		text-align: center;
+		margin-bottom: map_get($spacers, 2);
+		@include media-breakpoint-up(md) {
+			text-align: right;
+			margin-bottom: 0;
+		}
+	}
+}
+

@@ -16,14 +16,14 @@ class Serverinfo extends AbstractWidget
      */
     public function init()
     {
-        $cUrl = \parse_url(Shop::getURL());
+        $parsed = \parse_url(Shop::getURL());
         $this->oSmarty->assign('phpOS', \PHP_OS)
-                      ->assign('phpVersion', Text::htmlentities(\PHP_VERSION))
-                      ->assign('serverAddress', Text::htmlentities($_SERVER['SERVER_ADDR']))
-                      ->assign('serverHTTPHost', Text::htmlentities($_SERVER['HTTP_HOST']))
-                      ->assign('mySQLVersion', Text::htmlentities($this->oDB->getServerInfo()))
-                      ->assign('mySQLStats', Text::htmlentities($this->oDB->getServerStats()))
-                      ->assign('cShopHost', $cUrl['scheme'] . '://' . $cUrl['host']);
+            ->assign('phpVersion', \PHP_VERSION)
+            ->assign('serverAddress', $_SERVER['SERVER_ADDR'] ?? '?')
+            ->assign('serverHTTPHost', $_SERVER['HTTP_HOST'] ?? '?')
+            ->assign('mySQLVersion', $this->oDB->getServerInfo())
+            ->assign('mySQLStats', $this->oDB->getServerStats())
+            ->assign('cShopHost', $parsed['scheme'] . '://' . $parsed['host']);
     }
 
     /**

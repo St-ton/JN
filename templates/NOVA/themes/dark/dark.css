@@ -23907,6 +23907,90 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   border-bottom: 1px solid #525252;
 }
 
+/* comparelist */
+#filter-checkboxes {
+  margin-bottom: 1.5rem;
+}
+@media (max-width: 991.98px) {
+  #filter-checkboxes .custom-checkbox label {
+    max-width: 32vw;
+  }
+}
+#filter-checkboxes .custom-checkbox label, #filter-checkboxes .custom-checkbox ::after {
+  cursor: pointer;
+}
+
+.delete-link-times {
+  position: absolute;
+  z-index: 1;
+  right: 0.5rem;
+  top: 0.5rem;
+  font-size: 1rem;
+}
+
+.comparelist .table tr.comparelist-row td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 996;
+}
+.comparelist .table {
+  width: 98%;
+}
+.comparelist .table thead th {
+  background: #343434;
+  vertical-align: top;
+  z-index: 999;
+}
+.comparelist .table thead th:first-child {
+  z-index: 997;
+}
+.comparelist .table thead th:not(:first-child) {
+  z-index: 998;
+}
+.comparelist .table tbody td:first-child {
+  background-color: #525252;
+  font-weight: 700;
+}
+@media (max-width: 991.98px) {
+  .comparelist .table td {
+    padding: 0.3rem;
+  }
+  .comparelist .table td:first-child > div {
+    width: 110px;
+  }
+  .comparelist .table th {
+    padding: 0;
+  }
+}
+.comparelist .stretched {
+  display: flex;
+  flex-direction: column;
+}
+
+.custom-checkbox + .description {
+  margin-left: 1.5rem;
+}
+
+.comparelist-checkboxes {
+  padding-top: 1rem;
+}
+.comparelist-checkboxes .comparelist-checkbox-wrapper {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.comparelist-item {
+  padding-bottom: 0;
+  text-align: center;
+}
+.comparelist-item .comparelist-item-image {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.comparelist-item .comparelist-item-more {
+  padding-left: 0;
+}
+
 /* header */
 #header-top-bar {
   position: relative;

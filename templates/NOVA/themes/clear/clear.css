@@ -23908,6 +23908,9 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 
 /* comparelist */
+#filter-checkboxes {
+  margin-bottom: 1.5rem;
+}
 @media (max-width: 991.98px) {
   #filter-checkboxes .custom-checkbox label {
     max-width: 32vw;
@@ -23966,6 +23969,26 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 
 .custom-checkbox + .description {
   margin-left: 1.5rem;
+}
+
+.comparelist-checkboxes {
+  padding-top: 1rem;
+}
+.comparelist-checkboxes .comparelist-checkbox-wrapper {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.comparelist-item {
+  padding-bottom: 0;
+  text-align: center;
+}
+.comparelist-item .comparelist-item-image {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.comparelist-item .comparelist-item-more {
+  padding-left: 0;
 }
 
 /* header */

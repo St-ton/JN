@@ -604,8 +604,8 @@ class PersistentCart
 
             $checkParentsExistence = $db->queryPrepared(
                 'SELECT * FROM tartikelkonfiggruppe 
-            WHERE kArtikel =:parentID 
-            AND kKonfiggruppe=:configItemGroupId',
+                    WHERE kArtikel =:parentID
+                    AND kKonfiggruppe=:configItemGroupId',
                 [
                     'parentID' => $mainKonfigProduct[0]->kArtikel,
                     'configItemGroupId' => $configItem->kKonfiggruppe,

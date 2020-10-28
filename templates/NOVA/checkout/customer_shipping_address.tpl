@@ -12,6 +12,9 @@
                             label="{lang key='salutation' section='account data'}{if $Einstellungen.kunden.lieferadresse_abfragen_anrede === 'O'}<span class='optional'> - {lang key='optional'}</span>{/if}"
                             label-for="{$prefix}-{$name}-salutation"
                         }
+                            {if !empty($fehlendeAngaben.anrede)}
+                                <div class="form-error-msg text-danger">{lang key='fillOut'}</div>
+                            {/if}
                             {select name="{$prefix}[{$name}][anrede]" id="{$prefix}-{$name}-salutation" class='custom-select' required=($Einstellungen.kunden.lieferadresse_abfragen_anrede === 'Y') autocomplete="shipping sex"}
                                 <option value="" selected="selected" {if $Einstellungen.kunden.lieferadresse_abfragen_anrede === 'Y'}disabled{/if}>
                                     {if $Einstellungen.kunden.lieferadresse_abfragen_anrede === 'Y'}{lang key='salutation' section='account data'}{else}{lang key='noSalutation'}{/if}
@@ -19,9 +22,6 @@
                                 <option value="w"{if isset($Lieferadresse->cAnrede) && $Lieferadresse->cAnrede === 'w'} selected="selected"{/if}>{lang key='salutationW'}</option>
                                 <option value="m"{if isset($Lieferadresse->cAnrede) && $Lieferadresse->cAnrede === 'm'} selected="selected"{/if}>{lang key='salutationM'}</option>
                             {/select}
-                            {if !empty($fehlendeAngaben.anrede)}
-                                <div class="form-error-msg text-danger">{lang key='fillOut'}</div>
-                            {/if}
                         {/formgroup}
                     {/block}
                 {/col}
@@ -232,6 +232,15 @@
                         label="{lang key='plz' section='account data'}"
                         label-for="{$prefix}-{$name}-postcode"
                     }
+                        {if isset($fehlendeAngaben.plz)}
+                            <div class="form-error-msg text-danger"><i class="fa fa-exclamation-triangle"></i>
+                                {if $fehlendeAngaben.plz >= 2}
+                                    {lang key='checkPLZCity' section='checkout'}
+                                {else}
+                                    {lang key='fillOut'}
+                                {/if}
+                            </div>
+                        {/if}
                         {input
                             type="text"
                             name="{$prefix}[{$name}][plz]"
@@ -244,15 +253,6 @@
                             data-country="#{$prefix}-{$name}-country"
                             required=true
                             autocomplete="shipping postal-code"}
-                        {if isset($fehlendeAngaben.plz)}
-                            <div class="form-error-msg text-danger"><i class="fa fa-exclamation-triangle"></i>
-                                {if $fehlendeAngaben.plz >= 2}
-                                    {lang key='checkPLZCity' section='checkout'}
-                                {else}
-                                    {lang key='fillOut'}
-                                {/if}
-                            </div>
-                        {/if}
                     {/formgroup}
                 {/block}
             {/col}
@@ -264,16 +264,6 @@
                         label=""
                         label-for="{$prefix}-{$name}-city"
                     }
-                        {input type="text"
-                            name="{$prefix}[{$name}][ort]"
-                            value="{if isset($Lieferadresse->cOrt)}{$Lieferadresse->cOrt}{/if}"
-                            id="{$prefix}-{$name}-city"
-                            class="city_input typeahead bg-typeahead-fix"
-                            placeholder="{lang key='city' section='account data'}"
-                            required=true
-                            autocomplete="shipping address-level2"
-                            aria=["label"=>{lang key='city' section='account data'}]
-                        }
                         {if isset($fehlendeAngaben.ort)}
                             <div class="form-error-msg text-danger"><i class="fa fa-exclamation-triangle"></i>
                                 {if $fehlendeAngaben.ort==3}
@@ -283,6 +273,15 @@
                                 {/if}
                             </div>
                         {/if}
+                        {input type="text"
+                            name="{$prefix}[{$name}][ort]"
+                            value="{if isset($Lieferadresse->cOrt)}{$Lieferadresse->cOrt}{/if}"
+                            id="{$prefix}-{$name}-city"
+                            class="city_input typeahead bg-typeahead-fix"
+                            placeholder="{lang key='city' section='account data'}"
+                            required=true
+                            autocomplete="shipping address-level2"
+                            aria=["label"=>{lang key='city' section='account data'}]}
                     {/formgroup}
                 {/block}
             {/col}

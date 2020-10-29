@@ -20150,17 +20150,9 @@ aside .box-monthlynews a .value:hover {
     min-width: calc(100%/5);
   }
 }
-@media (max-width: 1299.98px) {
-  .carousel:not(.slick-initialized).slick-type-box .product-wrapper {
-    width: calc(100%/2);
-    min-width: calc(100%/2);
-  }
-}
-@media (min-width: 992px) {
-  .carousel:not(.slick-initialized).slick-type-box .product-wrapper {
-    width: 100%;
-    min-width: 100%;
-  }
+.carousel:not(.slick-initialized).slick-type-box .product-wrapper {
+  width: 100%;
+  min-width: 100%;
 }
 .carousel:not(.slick-initialized).slick-type-half .product-wrapper {
   width: calc(100%/2);
@@ -22392,6 +22384,11 @@ input.typeahead:-ms-input-placeholder {
 .list-group-wrapper.disabled .list-group-item {
   padding: 1rem;
   background-color: #f5f7fa;
+}
+
+.img-responsive {
+  max-width: 100%;
+  height: auto;
 }
 
 /* utilities */

@@ -35,8 +35,7 @@
 		}
 		&.slick-type-box {
 			.product-wrapper {
-				@include media-breakpoint-down(lg) { width: calc(100%/2); min-width: calc(100%/2);}
-				@include media-breakpoint-up(lg) { width: 100%; min-width: 100%;}
+				width: 100%; min-width: 100%;
 			}
 		}
 		&.slick-type-half {

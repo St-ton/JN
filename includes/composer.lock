@@ -1302,12 +1302,12 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/jtl-software/jtl-shop/tools/shop5-systemcheck.git",
-                "reference": "372f9eb2acec1c348630e087d17979d91fbfcc67"
+                "reference": "c7c9664b8ed32a1318409af5896fdcc5d403bbc3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/jtl-software%2Fjtl-shop%2Ftools%2Fshop5-systemcheck/repository/archive.zip?sha=372f9eb2acec1c348630e087d17979d91fbfcc67",
-                "reference": "372f9eb2acec1c348630e087d17979d91fbfcc67",
+                "url": "https://gitlab.com/api/v4/projects/jtl-software%2Fjtl-shop%2Ftools%2Fshop5-systemcheck/repository/archive.zip?sha=c7c9664b8ed32a1318409af5896fdcc5d403bbc3",
+                "reference": "c7c9664b8ed32a1318409af5896fdcc5d403bbc3",
                 "shasum": ""
             },
             "require": {
@@ -1336,7 +1336,7 @@
                 "jtl",
                 "jtl-shop"
             ],
-            "time": "2020-10-15T11:28:22+00:00"
+            "time": "2020-10-28T08:31:46+00:00"
         },
         {
             "name": "jtlshop/wizard",

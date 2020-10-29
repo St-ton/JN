@@ -86,6 +86,14 @@ trait PortletStyles
             'box-styles'       => [
                 'type' => InputType::BOX_STYLES,
             ],
+            'custom-class'     => [
+                'type'        => InputType::TEXT,
+                'label'       => __('Custom css class'),
+                'default'     => '',
+                'width'       => 100,
+                'placeholder' => __('CustomCssClassPlaceholder'),
+                'desc'        => __('CustomCssClassDesc'),
+            ],
             'hidden-xs'        => [
                 'type'  => InputType::CHECKBOX,
                 'label' => __('Hidden on XS'),

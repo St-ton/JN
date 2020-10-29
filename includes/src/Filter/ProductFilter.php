@@ -287,10 +287,10 @@ class ProductFilter
     }
 
     /**
-     * @param bool $showChildProducts
+     * @param int $showChildProducts
      * @return ProductFilter
      */
-    public function setShowChildProducts(bool $showChildProducts): self
+    public function setShowChildProducts(int $showChildProducts): self
     {
         $this->showChildProducts = $showChildProducts;
 

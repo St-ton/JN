@@ -543,6 +543,9 @@
 #opc #configModal .modal-dialog .checkbox-standalone {
   padding: 26px 0 0 2px;
 }
+#opc #configModal .colorpicker-input:placeholder-shown ~ .input-group-append i {
+  visibility: hidden !important;
+}
 #opc #configModal .product-filter-config label {
   display: block;
   font-weight: bold;

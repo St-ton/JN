@@ -24984,6 +24984,26 @@ header #burger-menu {
   margin-left: auto;
 }
 
+/* register */
+.register-form-account .register-form-account-unreg, .register-form-account .register-form-account-password, .register-form-account .register-form-account-repeat {
+  margin-bottom: 1rem;
+}
+@media (min-width: 768px) {
+  .register-form-account .register-form-account-unreg, .register-form-account .register-form-account-password, .register-form-account .register-form-account-repeat {
+    margin-bottom: 0;
+  }
+}
+
+/* customer-login */
+.customer-login-buttons {
+  margin-bottom: 0;
+}
+.customer-login-buttons .customer-login-buttons-forgot {
+  width: 100%;
+  display: block;
+  text-decoration: underline;
+}
+
 header, #main-wrapper {
   background: #343434;
   color: #ebebeb;

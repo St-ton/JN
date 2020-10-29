@@ -295,13 +295,12 @@ Um die Update-Fähigkeiten Ihres Parent-Templates weiterhin zu gewährleisten, f
 
 .. attention::
 
-    Die so erstellte ``functions.php`` ersetzt das Original aus dem Vatertemplate vollständig! Stellen Sie deshalb
-    sicher, dass **alle** geerbten Funktionen ebenfalls implementiert werden!
+    Die so erstellte ``functions.php`` ersetzt das Original aus dem Vatertemplate vollständig!
 
 Theoretisch könnten Sie einfach eine komplette Kopie der Datei aus dem Parent-Template erstellen und dort Ihre
-Änderungen vornehmen. Das ist jedoch nicht sehr sinnvoll, da dann bei jedem Update des Onlineshops alle Änderungen
+Änderungen vornehmen. Das ist jedoch nicht sehr sinnvoll, da dann bei jedem Update von JTL-Shop alle Änderungen
 nachgezogen werden müssten. |br|
-Besser ist es, das Original einfach per ``include`` in das eigene Script einzubinden (siehe obiges Beispiel).
+Besser ist es, das Original einfach per ``include`` in das eigene Script einzubinden (siehe Beispiel oben).
 
 NOVA-Template
 +++++++++++++
@@ -335,7 +334,7 @@ Funktionen im Evo-Child registrieren
 ++++++++++++++++++++++++++++++++++++
 
 Im nachfolgenden Beispiel wird eine Funktion zur Berechnung der Kreiszahl PI in die PHP-Datei ``functions.php``
-eingebunden:
+eingebunden und in Smarty registriert:
 
 .. code-block:: php
 
@@ -360,8 +359,8 @@ eingebunden:
 Funktionen im NOVA-Child registrieren
 +++++++++++++++++++++++++++++++++++++
 
-Im nachfolgenden Beispiel wird eine Methode zur Berechnung der Kreiszahl PI in die ``Bootstrap``-Klasse eingefügt:
-eingebunden.
+Im nachfolgenden Beispiel wird eine Methode zur Berechnung der Kreiszahl PI in die ``Bootstrap``-Klasse eingebunden und
+in Smarty registriert:
 
 .. code-block:: php
 
@@ -405,16 +404,20 @@ eingebunden.
 Funktionen nutzen
 +++++++++++++++++
 
-Die Funktion ``getPI``  kann dann im Template z. B. mit ``{getPi(12)}`` verwendet werden.
+Die Funktion ``getPI()``  kann dann im Template z. B. mit ``{getPi(12)}`` verwendet werden.
 
 
 Überschreiben bestehender Funktionen
 ------------------------------------
 
-Das Überschreiben von Funktionalitäten ist ebenfalls möglich. |br|
-Hierzu muss lediglich die Registrierung der originalen Funktion zuerst mit ``$smarty->unregisterPlugin`` aufgehoben
-werden. |br|
-Danach kann die eigene Funktion registriert werden.
+Das Überschreiben von Funktionalitäten ist ebenfalls möglich.
+
+Funktionen im Evo-Child überschreiben
++++++++++++++++++++++++++++++++++++++
+
+In Ihrem Evo-Child muss lediglich die Registrierung der originalen Funktion zuerst mit ``$smarty->unregisterPlugin``
+aufgehoben werden. |br|
+Danach kann die neue Funktion registriert werden.
 
 Im nachfolgenden Beispiel wird die Funktion ``trans`` des EVO-Templates dahingehend erweitert, dass bei
 nicht vorhandener Übersetzung der Text "*-no translation-*" ausgegeben wird.
@@ -442,6 +445,44 @@ nicht vorhandener Übersetzung der Text "*-no translation-*" ausgegeben wird.
 
         return $trans;
     }
+
+Funktionen im NOVA-Child überschreiben
+++++++++++++++++++++++++++++++++++++++
+
+In Ihrem NOVA-Child überschreiben sie Funktionen, indem Sie die entsprechende Basisklasse des NOVA-Templates
+``templates/NOVA/Plugins.php`` durch eine eigene Klasse in Ihrem NOVA-Child
+``templates/NOVAchild/Plugins.php`` erweitern.
+
+Im nachfolgenden Beispiel wird die Funktion ``getTranslation()`` des NOVA-Templates dahingehend erweitert, dass bei
+nicht vorhandener Übersetzung der Text "*-no translation-*" ausgegeben wird.
+
+.. code-block:: php
+
+    <?php declare(strict_types=1);
+
+    namespace Template\NOVAchild;
+
+    use JTL\Shop;
+
+    /**
+     * Class Bootstrap
+     * @package Template\NOVAchild
+     */
+    class Plugins extends \Template\NOVA\Plugins
+    {
+        public function getTranslation($mixed, $to = null): ?string
+        {
+            $to = $to ?: Shop::getLanguageCode();
+
+            if ($this->hasTranslation($mixed, $to)) {
+                return \is_string($mixed) ? $mixed : $mixed[$to];
+            }
+
+            return '*-no translation-*';
+        }
+    }
+
+
 
 Unabhängige Artikellisten erzeugen
 ----------------------------------

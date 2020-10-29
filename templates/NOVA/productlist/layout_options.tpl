@@ -3,7 +3,7 @@
     && $Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung === 'Y'
     && empty($AktuelleKategorie->categoryFunctionAttributes['darstellung'])
     && $navid === 'header'}
-        {buttongroup class="ml-2"}
+        {buttongroup class="layout-options-group"}
             {block name='productlist-layout-options-quare'}
                 {link href=$oErweiterteDarstellung->cURL_arr[$smarty.const.ERWDARSTELLUNG_ANSICHT_LISTE]
                     id="ed_list"

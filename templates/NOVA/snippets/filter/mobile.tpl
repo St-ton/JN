@@ -36,7 +36,7 @@
                                 {if $subFilter->getVisibility() !== \JTL\Filter\Visibility::SHOW_NEVER
                                     && $subFilter->getVisibility() !== \JTL\Filter\Visibility::SHOW_BOX
                                     && $filter->getOptions()|count > 0}
-                                    <li>
+                                    <li class="snippets-filter-mobile-item">
                                         {block name='snippets-filter-mobile-filters-button'}
                                             {link class="collapsed"
                                                 data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$subFilter->getFrontendName()|@seofy}"]}
@@ -45,7 +45,7 @@
                                         {/block}
                                         {block name='snippets-filter-mobile-filters-collapse'}
                                             {collapse id="filter-collapse-{$subFilter->getFrontendName()|@seofy}"
-                                                class="my-2"
+                                                class="snippets-filter-mobile-item-collapse"
                                                 visible=$subFilter->isActive() || $Einstellungen.template.productlist.filter_items_always_visible === 'Y'}
                                                 {if ($subFilter->getData('cTyp') === 'SELECTBOX') && $subFilter->getOptions()|@count > 0}
                                                     {dropdown variant="outline-secondary" text="{lang key='selectFilter' section='global'} " toggle-class="btn-block text-left-util"}
@@ -60,7 +60,7 @@
                                 {/if}
                             {/foreach}
                         {elseif $filter->getOptions()|count > 0}
-                            <li>
+                            <li class="snippets-filter-mobile-item">
                                 {if $filter->getClassName() === "JTL\Filter\Items\PriceRange"}
                                     {block name='snippets-filter-mobile-filters-price-range'}
                                         {link class="collapsed"
@@ -68,7 +68,7 @@
                                             {$filter->getFrontendName()}
                                         {/link}
                                         {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}"
-                                            class="my-2 py-2"
+                                            class="snippets-filter-mobile-item-collapse"
                                             visible=true}
                                             {block name='snippets-filter-mobile-include-price-slider'}
                                                 {input data=['id'=>'js-price-range-url'] type="hidden" value="{$NaviFilter->getFilterURL()->getURL()}"}
@@ -83,7 +83,7 @@
                                             {$filter->getFrontendName()}
                                         {/link}
                                         {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}"
-                                            class="my-2 py-2"
+                                            class="snippets-filter-mobile-item-collapse"
                                             visible=$filter->isActive() || $Einstellungen.template.productlist.filter_items_always_visible === 'Y'}
                                             {block name='snippets-filter-mobile-include-search'}
                                                 {include file='snippets/filter/search.tpl'}
@@ -97,7 +97,7 @@
                                             <span class="text-truncate">{$filter->getFrontendName()}</span>
                                         {/link}
                                         {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}"
-                                            class="my-2 py-2"
+                                            class="snippets-filter-mobile-item-collapse"
                                             visible=$filter->isActive() || $Einstellungen.template.productlist.filter_items_always_visible === 'Y'}
                                             {block name='snippets-filter-mobile-include-manufacturer'}
                                                 {include file='snippets/filter/manufacturer.tpl'}
@@ -110,7 +110,7 @@
                                             <span class="text-truncate">{$filter->getFrontendName()}</span>
                                         {/link}
                                         {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}"
-                                            class="my-2"
+                                            class="snippets-filter-mobile-item-collapse"
                                             visible=$filter->isActive() || $Einstellungen.template.productlist.filter_items_always_visible === 'Y'}
                                             {block name='snippets-filter-mobile-include-generic-filter-item'}
                                                 {include file='snippets/filter/genericFilterItem.tpl' filter=$filter}
@@ -133,11 +133,11 @@
     </div>
     {block name='snippets-filter-mobile-footer-buttons'}
         <div class="productlist-filter-footer px-3 mt-auto">
-            {formrow class="justify-content-end align-items-center-util"}
+            {formrow class="snippets-filter-mobile-buttons"}
                 {col}
                     {button block=true
                         variant="outline-primary"
-                        class="my-1 no-caret"
+                        class="no-caret"
                         data=['toggle'=>'collapse', 'dismiss'=>'modal']
                         href="#collapseFilter"
                         aria=['expanded'=>'true','controls'=>'collapseFilter']}
@@ -148,7 +148,7 @@
                     {button type="link"
                         block=true
                         variant="primary"
-                        class="min-w-sm my-1 text-nowrap-util"
+                        class="min-w-sm text-nowrap-util"
                         href="{$NaviFilter->getURL()->getCategories()}"}
                         {lang key='filterShowItem' printf=$itemCount}
                     {/button}

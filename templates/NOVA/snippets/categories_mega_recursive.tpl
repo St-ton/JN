@@ -12,7 +12,7 @@
                             {$mainCategory->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_kategorien_breite}w"
                 sizes="auto"
                 alt=$mainCategory->getName()|escape:'html'
-                class="d-none d-md-block mb-3"}
+                class="submenu-headline-image"}
             {/if}
             <span class="text-truncate d-block">{$mainCategory->getName()}</span>
         {/link}
@@ -41,7 +41,7 @@
                             {else}
                                 {block name='snippets-categories-mega-recursivechild-category-no-child'}
                                     {navitem href=$category->getURL()}
-                                            <span class="text-truncate d-block">{$category->getName()}</span>
+                                        <span class="text-truncate d-block">{$category->getName()}</span>
                                     {/navitem}
                                 {/block}
                             {/if}

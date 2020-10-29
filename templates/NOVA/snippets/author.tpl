@@ -1,9 +1,9 @@
 {block name='snippets-author'}
     {block name='snippets-author-content'}
-        <div itemprop="author" itemscope itemtype="https://schema.org/Person">
+        <div class="snippets-author" itemprop="author" itemscope itemtype="https://schema.org/Person">
             {block name='snippets-author-title'}
                 {if $showModal|default:true}
-                    {link class="author-modal d-inline-block"
+                    {link class="author-modal snippets-author-link"
                         href="#"
                         title=$oAuthor->cName
                         data=["target"=>"#author-{$oAuthor->kContentAuthor}"]
@@ -25,9 +25,9 @@
             {block name='snippets-author-modal'}
                 {if $showModal|default:true}
                     {if !empty($oAuthor->cAvatarImgSrcFull)}
-                        {$title = "<img alt='{$oAuthor->cName}' src='{$oAuthor->cAvatarImgSrcFull}' height='80' class='rounded-circle' /><span itemprop='name' class='ml-3'>{$oAuthor->cName}</span>"}
+                        {$title = "<img alt='{$oAuthor->cName}' src='{$oAuthor->cAvatarImgSrcFull}' height='80' class='rounded-circle' /><span itemprop='name' class='snippets-author-title'>{$oAuthor->cName}</span>"}
                     {else}
-                        {$title = "<span itemprop='name' class='ml-3'>"|cat:$oAuthor->cName|cat:'</span>'}
+                        {$title = "<span itemprop='name' class='snippets-author-title'>"|cat:$oAuthor->cName|cat:'</span>'}
                     {/if}
                     <div id="author-{$oAuthor->kContentAuthor}" title="{$title}" class="d-none">
                         {block name='snippets-author-modal-content'}

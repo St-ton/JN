@@ -1,6 +1,6 @@
 {block name='snippets-comparelist-dropdown'}
     {block name='snippets-comparelist-dropdown-products'}
-        <div class="table-responsive max-h-sm lg-max-h">
+        <div class="comparelist-dropdown-table table-responsive max-h-sm lg-max-h">
             {if !empty($smarty.session.Vergleichsliste->oArtikel_arr)}
                 <table class="table table-vertical-middle table-striped table-img">
                     <tbody>
@@ -32,7 +32,7 @@
                                 </td>
                                 <td  class="text-right-util text-nowrap-util">
                                     {block name='snippets-comparelist-dropdown-products-remove'}
-                                        {link href="?vlplo={$product->kArtikel}" class="remove float-right"
+                                        {link href="?vlplo={$product->kArtikel}" class="remove"
                                             title="{lang section="comparelist" key="removeFromCompareList"}"
                                             data=["name"=>"Vergleichsliste.remove",
                                                 "toggle"=>"product-actions",
@@ -52,14 +52,14 @@
         </div>
     {/block}
     {block name='snippets-comparelist-dropdown-hint'}
-        <div class="dropdown-body">
+        <div class="comparelist-dropdown-table-body dropdown-body">
             {if !empty($smarty.session.Vergleichsliste->oArtikel_arr) && $smarty.session.Vergleichsliste->oArtikel_arr|@count <= 1}
                 {block name='snippets-comparelist-dropdown-more-than-one'}
                     {lang key='productNumberHint' section='comparelist'}
                 {/block}
             {else}
                 {block name='snippets-comparelist-dropdown-hint-to-compare'}
-                    {link class="btn btn-block btn-primary btn-sm"
+                    {link class="comparelist-dropdown-table-body-button btn btn-block btn-primary btn-sm"
                         id='nav-comparelist-goto'
                         href="{get_static_route id='vergleichsliste.php'}"
                     }

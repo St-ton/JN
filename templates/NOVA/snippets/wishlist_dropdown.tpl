@@ -1,7 +1,7 @@
 {block name='snippets-wishlist-dropdown'}
     {if $wishlists->isNotEmpty()}
         {block name='snippets-wishlist-dropdown-wishlists'}
-            <div class="table-responsive max-h-sm lg-max-h">
+            <div class="wishlist-dropdown-items table-responsive max-h-sm lg-max-h">
                 <table class="table table-vertical-middle table-striped">
                     <tbody>
                         {foreach $wishlists as $wishlist}
@@ -34,7 +34,7 @@
         {/block}
     {/if}
     {block name='snippets-wishlist-dropdown-new-wl'}
-        <div class="dropdown-body">
+        <div class="wishlist-dropdown-footer dropdown-body">
             {block name='snippets-wishlist-dropdown-new-wl-link'}
                 {button variant="primary" type="link" block=true size="sm" href="{get_static_route id='wunschliste.php'}?newWL=1"}
                     {lang key='addNew' section='wishlist'}

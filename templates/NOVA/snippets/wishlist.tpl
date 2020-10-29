@@ -8,7 +8,7 @@
             {include file='snippets/extension.tpl'}
         {/block}
 
-        {container}
+        {container class="snippets-wishlist"}
         {if $step === 'wunschliste versenden' && $Einstellungen.global.global_wunschliste_freunde_aktiv === 'Y'}
             {block name='snippets-wishlist-content-heading-email'}
                 <div class="h2">{lang key='wishlistViaEmail' section='login'}</div>
@@ -17,7 +17,7 @@
                 {row}
                     {col cols=12}
                     {block name='snippets-wishlist-form-subheading'}
-                        <div class="subheadline mb-5">{$CWunschliste->cName}</div>
+                        <div class="subheadline">{$CWunschliste->cName}</div>
                     {/block}
                     {block name='snippets-wishlist-form'}
                         {form method="post" action="{get_static_route id='wunschliste.php'}" name="Wunschliste"}
@@ -37,7 +37,7 @@
                             {block name='snippets-wishlist-form-submit'}
                                 {row}
                                     {col md=4 xl=3 class='ml-auto-util'}
-                                        {button name='action' type='submit' value='sendViaMail' variant='primary' class='btn-block'}
+                                        {button name='action' block=true type='submit' value='sendViaMail' variant='primary'}
                                             {lang key='wishlistSend' section='login'}
                                         {/button}
                                     {/col}
@@ -60,7 +60,7 @@
                 </div>
             {/block}
 
-            {row class='align-items-center-util'}
+            {row class="wishlist-actions"}
                 {if $isCurrenctCustomer === true}
                     {block name='snippets-wishlist-actions'}
                         {col class="col-auto"}
@@ -154,7 +154,8 @@
                             {dropdown id='wlName'
                                 variant='outline-secondary'
                                 text=$CWunschliste->cName
-                                toggle-class='w-100-util'}
+                                toggle-class='w-100-util'
+                                class="wishlist-dropdown-name"}
                             {foreach $oWunschliste_arr as $wishlist}
                                 {dropdownitem href="{get_static_route id='wunschliste.php'}{if $wishlist->nStandard != 1}?wl={$wishlist->kWunschliste}{/if}" rel="nofollow" }
                                     {$wishlist->cName}
@@ -165,7 +166,7 @@
                     {/block}
                 {/if}
                 {block name='snippets-wishlist-search'}
-                    {col cols=12 class="col-md mt-3 mt-md-0"}
+                    {col cols=12 class="col-md wishlist-search-wrapper"}
                     {if $hasItems === true || !empty($wlsearch)}
                         <div id="wishlist-search">
                             {form method="post"
@@ -183,9 +184,14 @@
                                     {input name="cSuche" size="35" type="text" value=$wlsearch placeholder="{lang key='wishlistSearch' section='login'}" aria=["label"=>"{lang key='wishlistSearch' section='login'}"]}
                                     {inputgroupaddon append=true}
                                     {block name='snippets-wishlist-search-form-submit'}
-                                        {button name="action" value="search" type="submit" variant="outline-primary" aria=["label"=>{lang key='wishlistSearchBTN' section='login'}]}
+                                        {button name="action"
+                                            value="search"
+                                            type="submit"
+                                            variant="outline-primary"
+                                            aria=["label"=>{lang key='wishlistSearchBTN' section='login'}]
+                                            class="wishlist-search-button"}
                                             <i class="fa fa-search"></i>
-                                            <span class="d-none d-md-inline-block">{lang key='wishlistSearchBTN' section='login'}</span>
+                                            <span class="wishlist-search-button-text">{lang key='wishlistSearchBTN' section='login'}</span>
                                         {/button}
                                     {/block}
                                     {/inputgroupaddon}
@@ -209,11 +215,11 @@
             {if $isCurrenctCustomer === true}
                 {block name='snippets-wishlist-visibility'}
                     {block name='snippets-wishlist-visibility-hr-top'}
-                        <hr class="mb-3">
+                        <hr>
                     {/block}
-                    {row class='align-items-center-util'}
+                    {row class='wishlist-privacy-count'}
                     {block name='snippets-wishlist-visibility-form'}
-                        {col class='col-xl'}
+                        {col class='col-xl wishlist-privacy'}
                             <div class="d-inline-flex flex-nowrap">
                                 <div class="custom-control custom-switch">
                                     <input type='checkbox'
@@ -236,14 +242,14 @@
                         {/col}
                     {/block}
                     {block name='snippets-wishlist-visibility-count'}
-                        {col class='col-auto ml-auto-util'}
+                        {col class='col-auto ml-auto-util wishlist-count'}
                             {count($CWunschliste->CWunschlistePos_arr)} {lang key='products'}
                         {/col}
                     {/block}
                     {/row}
                 {/block}
                 {block name='snippets-wishlist-link'}
-                    {row class="mt-3 {if $CWunschliste->nOeffentlich != 1}d-none{/if}" id='wishlist-url-wrapper'}
+                    {row class="wishlist-url {if $CWunschliste->nOeffentlich != 1}d-none{/if}" id='wishlist-url-wrapper'}
                         {col cols=12}
                             {form method="post" action="{get_static_route id='wunschliste.php'}"}
                                 {block name='snippets-wishlist-link-inputs-hidden'}
@@ -290,7 +296,7 @@
                     {/block}
                     {row}
                         {col cols=12}
-                            {collapse id="edit-wishlist-name" visible=false class='mb-3'}
+                            {collapse id="edit-wishlist-name" visible=false class="wishlist-collapse"}
                                 {form
                                     method="post"
                                     action="{get_static_route id='wunschliste.php'}{if $CWunschliste->nStandard != 1}?wl={$CWunschliste->kWunschliste}{/if}"
@@ -324,7 +330,7 @@
                 {block name='snippets-wishlist-form-new'}
                     {row}
                         {col cols=12}
-                            {collapse id="create-new-wishlist" visible=($newWL === 1) class='mb-3'}
+                            {collapse id="create-new-wishlist" visible=($newWL === 1) class="wishlist-collapse"}
                                 {form method="post" action="{get_static_route id='wunschliste.php'}" slide=true}
                                     {block name='snippets-wishlist-form-content-new'}
                                         {block name='snippets-wishlist-form-content-new-inputs-hidden'}
@@ -359,7 +365,7 @@
                 {form method="post"
                     action="{get_static_route id='wunschliste.php'}{if $CWunschliste->nStandard != 1}?wl={$CWunschliste->kWunschliste}{/if}"
                     name="Wunschliste"
-                    class="basket_wrapper{if $hasItems === true} mt-6{/if}"
+                    class="basket_wrapper{if $hasItems === true} has-items{/if}"
                     id="wl-items-form"}
                 {block name='snippets-wishlist-form-basket-content'}
                     {block name='snippets-wishlist-form-basket-inputs-hidden'}
@@ -377,8 +383,8 @@
                         {block name='snippets-wishlist-form-basket-products'}
                             {row class='product-list'}
                             {foreach $wishlistItems as $wlPosition}
-                                {col cols=12 sm=6 md=4 xl=3 class="mb-8"}
-                                    <div id="result-wrapper_buy_form_{$wlPosition->kWunschlistePos}" data-wrapper="true" class="productbox productbox-column productbox-hover p-2 p-xl-0">
+                                {col cols=12 sm=6 md=4 xl=3 class="wishlist-item"}
+                                    <div id="result-wrapper_buy_form_{$wlPosition->kWunschlistePos}" data-wrapper="true" class="productbox productbox-column productbox-hover">
                                         <div class="productbox-inner pos-abs">
                                             {row}
                                                 {col cols=12}
@@ -392,7 +398,7 @@
                                                                 name="remove" value=$wlPosition->kWunschlistePos
                                                                 aria=["label"=>"{lang key='wishlistremoveItem' section='login'}"]
                                                                 title="{lang key='wishlistremoveItem' section='login'}"
-                                                                class="wishlist-pos-delete float-right text-decoration-none-util mt-n2 m-0 p-1 font-size-lg"
+                                                                class="wishlist-pos-delete"
                                                                 data=["toggle"=>"tooltip"]
                                                             }
                                                                 <i class="fas fa-times"></i>
@@ -448,9 +454,9 @@
                                                     {/block}
                                                     {block name='snippets-wishlist-form-basket-price'}
                                                         {if $wlPosition->Artikel->getOption('nShowOnlyOnSEORequest', 0) === 1}
-                                                            <p class="caption text-decoration-none-util">{lang key='productOutOfStock' section='productDetails'}</p>
+                                                            <p class="caption">{lang key='productOutOfStock' section='productDetails'}</p>
                                                         {elseif $wlPosition->Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
-                                                            <p class="caption text-decoration-none-util">{lang key='priceOnApplication' section='global'}</p>
+                                                            <p class="caption">{lang key='priceOnApplication' section='global'}</p>
                                                         {else}
                                                             {block name='snippets-wishlist-form-basket-include-price'}
                                                                 {include file='productdetails/price.tpl' Artikel=$wlPosition->Artikel tplscope='detail'}
@@ -466,7 +472,7 @@
                                                                     small=true}
                                                             {/block}
                                                             {block name='snippets-wishlist-form-basket-characteristics-selected'}
-                                                                {row tag='dl' class="text-nowrap-util formrow-small"}
+                                                                {row tag='dl' class="formrow-small"}
                                                                     {foreach $wlPosition->CWunschlistePosEigenschaft_arr as $CWunschlistePosEigenschaft}
                                                                         {if $CWunschlistePosEigenschaft->cFreifeldWert}
                                                                             {col tag='dt' cols=6}{$CWunschlistePosEigenschaft->cEigenschaftName}:{/col}
@@ -488,7 +494,7 @@
                                                                     readonly=($isCurrenctCustomer !== true)
                                                                     rows="5"
                                                                     name="Kommentar_{$wlPosition->kWunschlistePos}"
-                                                                    class="my-3 js-update-wl auto-expand"
+                                                                    class="js-update-wl auto-expand"
                                                                     aria=["label"=>"{lang key='wishlistComment' section='login'} {$wlPosition->cArtikelName}"]
                                                                 }{$wlPosition->cKommentar}{/textarea}
                                                             {/block}
@@ -543,11 +549,11 @@
                                                                                 {/inputgroup}
                                                                             {/block}
                                                                         {/col}
-                                                                        {col cols=12}
+                                                                        {col cols=12 class="wishlist-item-buttons"}
                                                                             {if $wlPosition->Artikel->bHasKonfig}
                                                                                 {block name='snippets-wishlist-form-basket-has-config'}
                                                                                     {link href=$wlPosition->Artikel->cURLFull
-                                                                                        class="btn btn-primary btn-block mt-3"
+                                                                                        class="btn btn-primary btn-block"
                                                                                         title="{lang key='product' section='global'} {lang key='configure' section='global'}"}
                                                                                         <span class="fa fa-cogs"></span> {lang key='configure'}
                                                                                     {/link}
@@ -558,7 +564,6 @@
                                                                                         name="addToCart"
                                                                                         value=$wlPosition->kWunschlistePos
                                                                                         variant="primary"
-                                                                                        class="mt-3 align-items-center-util"
                                                                                         block=true
                                                                                         title="{lang key='wishlistaddToCart' section='login'}"}
                                                                                         <span class="fas fa-shopping-cart"></span> {lang key='addToCart'}
@@ -580,9 +585,9 @@
                             {/row}
                         {/block}
                         {block name='snippets-wishlist-form-basket-submit'}
-                            <div class="sticky-bottom">
+                            <div class="wishlist-all-to-cart sticky-bottom">
                             {row}
-                                {col cols=12 md="auto" class="ml-auto-util"}
+                                {col cols=12 md="auto"}
                                     {if $isCurrenctCustomer === true}
                                         {button type="submit"
                                             title="{lang key='addCurrentProductsToCart' section='wishlist'}"

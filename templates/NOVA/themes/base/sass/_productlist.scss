@@ -177,8 +177,25 @@
 	margin-bottom: map-get($spacers, 3);
 }
 
+.item-list-price {
+	margin-bottom: map-get($spacers, 3);
+}
+
+.item-list-basket-details {
+	margin-top: map-get($spacers, 5);
+}
+
+.basket-details-add-to-cart {
+	margin-top: map-get($spacers, 3);
+}
+
 .variations-list {
 	margin-bottom: 0;
+}
+
+.item-list-description {
+	margin-bottom: map-get($spacers, 1);
+	margin-top: -(map-get($spacers, 2));
 }
 
 .active-filters {

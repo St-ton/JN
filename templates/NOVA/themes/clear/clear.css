@@ -23748,8 +23748,25 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   margin-bottom: 1rem;
 }
 
+.item-list-price {
+  margin-bottom: 1rem;
+}
+
+.item-list-basket-details {
+  margin-top: 2rem;
+}
+
+.basket-details-add-to-cart {
+  margin-top: 1rem;
+}
+
 .variations-list {
   margin-bottom: 0;
+}
+
+.item-list-description {
+  margin-bottom: 0.25rem;
+  margin-top: -0.5rem;
 }
 
 .active-filters {

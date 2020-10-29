@@ -25004,6 +25004,22 @@ header #burger-menu {
   text-decoration: underline;
 }
 
+/* selectionwizard */
+.selection-wizard-wrapper {
+  margin-top: 4rem;
+  margin-bottom: 4rem;
+}
+.selection-wizard-wrapper .selection-wizard-desc {
+  margin-bottom: 0;
+}
+.selection-wizard-wrapper .selection-wizard {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+.selection-wizard-wrapper .selection-wizard-question .selection-wizard-question-item {
+  margin-bottom: 1rem;
+}
+
 header, #main-wrapper {
   background: #343434;
   color: #ebebeb;

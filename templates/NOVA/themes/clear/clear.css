@@ -24984,24 +24984,20 @@ header #burger-menu {
   margin-left: auto;
 }
 
-/* register */
-.register-form-account .register-form-account-unreg, .register-form-account .register-form-account-password, .register-form-account .register-form-account-repeat {
-  margin-bottom: 1rem;
+/* selectionwizard */
+.selection-wizard-wrapper {
+  margin-top: 4rem;
+  margin-bottom: 4rem;
 }
-@media (min-width: 768px) {
-  .register-form-account .register-form-account-unreg, .register-form-account .register-form-account-password, .register-form-account .register-form-account-repeat {
-    margin-bottom: 0;
-  }
-}
-
-/* customer-login */
-.customer-login-buttons {
+.selection-wizard-wrapper .selection-wizard-desc {
   margin-bottom: 0;
 }
-.customer-login-buttons .customer-login-buttons-forgot {
-  width: 100%;
-  display: block;
-  text-decoration: underline;
+.selection-wizard-wrapper .selection-wizard {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+.selection-wizard-wrapper .selection-wizard-question .selection-wizard-question-item {
+  margin-bottom: 1rem;
 }
 
 /*# sourceMappingURL=clear.css.map */

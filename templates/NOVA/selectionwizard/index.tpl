@@ -68,7 +68,7 @@
             </script>{/inline_script}
         {/block}
         {block name='selectionwizard-index-include-form'}
-                <div id="selectionwizard" class="{if $container|default:true}container {/if}my-7">
+                <div id="selectionwizard" class="selection-wizard-wrapper {if $container|default:true}container {/if}">
                     {include file='selectionwizard/form.tpl' AWA=$AWA}
                 </div>
         {/block}

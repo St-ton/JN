@@ -272,38 +272,69 @@ Template-Code:
 Erstellen eigener Smarty-Funktionen
 -----------------------------------
 
-Um in Ihrem Template eigene Smarty-Funktionen nutzen zu können, legen Sie im Verzeichnis ``[templatename]/php/`` eine
-Datei ``functions.php`` an. |br|
-Diese Datei wird automatisch beim Start geladen und ermöglicht das Registrieren von Smarty-Plugins.
+Um eigen Smarty-Funktionen zu registrieren, gibt es template-abhängig zwei Wege.
 
-.. attention::
+Evo-Template
+++++++++++++
 
-    Die so erstellte ``functions.php`` ersetzt das Original aus dem Vatertemplate vollständig! Stellen Sie deshalb sicher,
-    dass **alle** geerbten Funktionen ebenfalls implementiert werden!
+Wenn Sie ein Child-Template des Evo-Templates verwenden, legen Sie im Wurzelverzeichnis Ihres Child-Templates
+einen Ordner ``php/`` an. Erzeugen Sie dort eine Datei namens ``functions.php``.
 
-Theoretisch könnten Sie einfach eine komplette Kopie der Datei aus dem Parent-Template erstellen und dort Ihre
-Änderungen vornehmen. Das ist jedoch nicht sehr sinnvoll, da dann bei jedem Update des Onlineshops alle Änderungen
-nachgezogen werden müssten. |br|
-Besser ist es, das Original einfach per ``include`` in das eigene Script einzubinden.
-
-Um die Update-Fähigkeiten Ihres Parent-Templates weiterhin zu gewährleisten, erstellen Sie eine
-leere ``functions.php`` und fügen dort den folgenden Code ein:
+Um die Update-Fähigkeiten Ihres Parent-Templates weiterhin zu gewährleisten, fügen Sie folgenden Inhalt ein:
 
 .. code-block:: php
-   :emphasize-lines: 8
+    :emphasize-lines: 6
 
     <?php
     /**
-     * Eigene Smarty-Funktionen mit Vererbung aus dem Vatertemplate
-     *
      * @global JTLSmarty $smarty
      */
 
     include realpath(__DIR__ . '/../../Evo/php/functions.php');
 
-Danach können Sie Ihre eigenen Smarty-Funktionen implementieren und in Smarty registrieren.
+.. attention::
 
-Im nachfolgenden Beispiel wird eine Funktion zur Berechnung der Kreiszahl PI eingebunden.
+    Die so erstellte ``functions.php`` ersetzt das Original aus dem Vatertemplate vollständig! Stellen Sie deshalb
+    sicher, dass **alle** geerbten Funktionen ebenfalls implementiert werden!
+
+Theoretisch könnten Sie einfach eine komplette Kopie der Datei aus dem Parent-Template erstellen und dort Ihre
+Änderungen vornehmen. Das ist jedoch nicht sehr sinnvoll, da dann bei jedem Update des Onlineshops alle Änderungen
+nachgezogen werden müssten. |br|
+Besser ist es, das Original einfach per ``include`` in das eigene Script einzubinden (siehe obiges Beispiel).
+
+NOVA-Template
++++++++++++++
+
+Wenn Sie ein Child-Template des NOVA-Templates verwenden, erstellen Sie im Wurzelverzeichnis Ihres Child-Templates
+eine PHP-Klasse namens ``Bootstrap.php`` mit folgendem Inhalt:
+
+.. code-block:: php
+
+    <?php declare(strict_types=1);
+
+    namespace Template\NOVAchild;
+
+    /**
+     * Class Bootstrap
+     * @package Template\NOVAchild
+     */
+    class Bootstrap extends \Template\NOVA\Bootstrap
+    {
+        // eigene Methoden
+    }
+
+
+.. hint::
+
+    Die PHP-Datei, wie auch die PHP-Klasse, wird beim Start automatisch geladen und ermöglicht das Registrieren
+    von Smarty-Plugins. |br|
+    Danach können Sie Ihre eigenen Smarty-Funktionen implementieren und in Smarty registrieren.
+
+Funktionen im Evo-Child registrieren
+++++++++++++++++++++++++++++++++++++
+
+Im nachfolgenden Beispiel wird eine Funktion zur Berechnung der Kreiszahl PI in die PHP-Datei ``functions.php``
+eingebunden:
 
 .. code-block:: php
 
@@ -317,14 +348,64 @@ Im nachfolgenden Beispiel wird eine Funktion zur Berechnung der Kreiszahl PI ein
 
         for ($i = 0; $i < $precision; $i++) {
             $iterator = $iterator + $factor / $nenner;
-            $factor   = $factor * -1;
+            $factor  *= -1;
             $nenner  += 2;
         }
 
         return $iterator * 4;
     }
 
+
+Funktionen im NOVA-Child registrieren
++++++++++++++++++++++++++++++++++++++
+
+Im nachfolgenden Beispiel wird eine Methode zur Berechnung der Kreiszahl PI in ``Bootstrap``-Klasse eingefügt:
+eingebunden.
+
+.. code:: php
+
+    <?php declare(strict_types=1);
+
+    namespace Template\NOVAchild;
+
+    use Smarty;
+
+    /**
+     * Class Bootstrap
+     * @package Template\NOVAchild
+     */
+    class Bootstrap extends \Template\NOVA\Bootstrap
+    {
+        public function boot(): void
+        {
+            try {
+                $this->getSmarty()->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getPI', [$this, 'getPI']);
+            } catch (\SmartyException $e) {
+                throw new \RuntimeException('Problems during smarty instantiation: ' . $e->getMessage());
+            }
+        }
+
+        public function getPI($precision)
+        {
+            $iterator = 1;
+            $factor   = -1;
+            $nenner   = 3;
+
+            for ($i = 0; $i < $precision; $i++) {
+                $iterator = $iterator + $factor / $nenner;
+                $factor   *= -1;
+                $nenner   += 2;
+            }
+
+            return $iterator * 4;
+        }
+    }
+
+Funktionen nutzen
++++++++++++++++++
+
 Die Funktion ``getPI``  kann dann im Template z. B. mit ``{getPi(12)}`` verwendet werden.
+
 
 Überschreiben bestehender Funktionen
 ------------------------------------

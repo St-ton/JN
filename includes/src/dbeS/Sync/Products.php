@@ -68,7 +68,6 @@ final class Products extends AbstractSync
             }
         }
         $productIDs = \array_unique(flatten($productIDs));
-        $this->handlePriceRange($productIDs);
         $this->db->query('COMMIT', ReturnType::DEFAULT);
         $this->clearProductCaches($productIDs);
 
@@ -1004,7 +1003,6 @@ final class Products extends AbstractSync
         }
         $this->db->delete('tseo', ['cKey', 'kKey'], ['kArtikel', $id]);
         $this->db->delete('tartikel', 'kArtikel', $id);
-        $this->db->delete('tpricerange', 'kArtikel', $id);
         $this->db->delete('tkategorieartikel', 'kArtikel', $id);
         $this->db->delete('tartikelsprache', 'kArtikel', $id);
         $this->db->delete('tartikelattribut', 'kArtikel', $id);

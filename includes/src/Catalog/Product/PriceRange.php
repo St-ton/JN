@@ -98,23 +98,66 @@ class PriceRange
     private function loadPriceRange(): void
     {
         $priceRange = Shop::Container()->getDB()->queryPrepared(
-            'SELECT fVKNettoMin, fVKNettoMax 
-                FROM tpricerange
-                WHERE kArtikel = :articleID
-                    AND (
-                        (kKundengruppe = 0 AND kKunde = :customerID)
-                        OR
-                        (kKundengruppe = :customerGroup
-                            AND COALESCE(nLagerAnzahlMax, :stock) <= :stock
-                            AND CURDATE() BETWEEN COALESCE(dStart, CURDATE()) AND COALESCE(dEnde, CURDATE())
-                        )
-                    )
-                ORDER BY nRangeType ASC LIMIT 1',
+            "SELECT baseprice.kArtikel,
+                   MIN(IF(varaufpreis.fMinAufpreisNetto IS NULL,
+                          baseprice.fVKNetto, baseprice.fVKNetto + varaufpreis.fMinAufpreisNetto)) fVKNettoMin,
+                   MAX(IF(varaufpreis.fMaxAufpreisNetto IS NULL,
+                          baseprice.fVKNetto, baseprice.fVKNetto + varaufpreis.fMaxAufpreisNetto)) fVKNettoMax
+            FROM (
+                SELECT IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) kArtikel,
+                       tartikel.kArtikel kKindArtikel,
+                       tartikel.nIstVater,
+                       IF(tsonderpreise.fNettoPreis < tpreisdetail.fVKNetto,
+                          tsonderpreise.fNettoPreis, tpreisdetail.fVKNetto) fVKNetto
+                FROM tartikel
+                INNER JOIN tpreis ON tpreis.kArtikel = tartikel.kArtikel
+                INNER JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
+                LEFT JOIN  tartikelsonderpreis ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
+                LEFT JOIN  tsonderpreise
+                           ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis
+                               AND tsonderpreise.kKundengruppe = tpreis.kKundengruppe
+                               AND tartikelsonderpreis.cAktiv = 'Y'
+                               AND tartikelsonderpreis.dStart <= CURDATE()
+                               AND (tartikelsonderpreis.nIstAnzahl = 0
+                                        OR (tartikelsonderpreis.nAnzahl <= tartikel.fLagerbestand))
+                               AND (tartikelsonderpreis.nIstDatum = 0
+                                        OR (tartikelsonderpreis.dEnde >= CURDATE()))
+                WHERE tartikel.nIstVater = 0
+                  AND (tpreis.kKundengruppe = :customerGroup
+                    OR (tpreis.kKundengruppe = 0 AND tpreis.kKunde = :customerID))
+                  AND IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) = :productID
+            ) baseprice
+            LEFT JOIN (
+                      SELECT variations.kArtikel,
+                             variations.kKundengruppe,
+                             SUM(variations.fMinAufpreisNetto) fMinAufpreisNetto,
+                             SUM(variations.fMaxAufpreisNetto) fMaxAufpreisNetto
+                      FROM (
+                          SELECT teigenschaft.kArtikel,
+                                 tkundengruppe.kKundengruppe,
+                                 MIN(COALESCE(teigenschaftwertaufpreis.fAufpreisNetto,
+                                              teigenschaftwert.fAufpreisNetto)) fMinAufpreisNetto,
+                                 MAX(COALESCE(teigenschaftwertaufpreis.fAufpreisNetto,
+                                              teigenschaftwert.fAufpreisNetto)) fMaxAufpreisNetto
+                          FROM teigenschaft
+                          INNER JOIN teigenschaftwert ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
+                          JOIN       tkundengruppe
+                          LEFT JOIN  teigenschaftwertaufpreis
+                                     ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
+                                         AND teigenschaftwertaufpreis.kKundengruppe = tkundengruppe.kKundengruppe
+                          WHERE teigenschaft.kArtikel = :productID
+                          GROUP BY teigenschaft.kArtikel, tkundengruppe.kKundengruppe, teigenschaft.kEigenschaft
+                      ) variations
+                      GROUP BY variations.kArtikel, variations.kKundengruppe
+                  ) varaufpreis
+                      ON varaufpreis.kArtikel = baseprice.kKindArtikel
+                          AND varaufpreis.kKundengruppe = :customerGroup
+                          AND baseprice.nIstVater = 0
+            GROUP BY baseprice.kArtikel",
             [
-                'articleID'     => $this->productData->kArtikel,
+                'productID'     => $this->productData->kArtikel,
                 'customerGroup' => $this->customerGroupID,
-                'customerID'    => $this->customerID,
-                'stock'         => $this->productData->fLagerbestand,
+                'customerID'    => $this->customerID
             ],
             ReturnType::SINGLE_OBJECT
         );
@@ -157,8 +200,8 @@ class PriceRange
                 INNER JOIN tkonfigitem ON tkonfigitem.kKonfiggruppe = tartikelkonfiggruppe.kKonfiggruppe
                 INNER JOIN tartikel tkonfigartikel ON tkonfigartikel.kArtikel = tkonfigitem.kArtikel
                 LEFT JOIN tkonfigitempreis ON tkonfigitempreis.kKonfigitem = tkonfigitem.kKonfigitem
-                WHERE tartikel.kArtikel = :articleID
                     AND tkonfigitempreis.kKundengruppe = :customerGroup
+                WHERE tartikel.kArtikel = :articleID
                 GROUP BY tartikel.kArtikel,
                     tkonfiggruppe.kKonfiggruppe,
                     tkonfigitem.kArtikel,

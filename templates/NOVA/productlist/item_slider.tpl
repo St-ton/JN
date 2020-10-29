@@ -1,7 +1,7 @@
 {block name='productlist-item-slider'}
     {block name='productlist-item-slider-link'}
         {link href=$Artikel->cURLFull}
-            <div class="productbox-image square square-image mb-0">
+            <div class="item-slider productbox-image square square-image">
                 <div class="inner">
                     {if isset($Artikel->Bilder[0]->cAltAttribut)}
                         {assign var=alt value=$Artikel->Bilder[0]->cAltAttribut|strip_tags|truncate:60|escape:'html'}

@@ -16,8 +16,22 @@
     {elseif $instance->getProperty('align') === 'center'}
         {$alignCSS = 'margin-left: auto;margin-right: auto;'}
     {/if}
-    {if $isPreview}<div class="opc-Image-with-image">{/if}
+    {if $isPreview}
+        <div class="opc-Image-with-image">
+    {/if}
     <div style="max-width: {$imgAttribs.realWidth}px; {$alignCSS}">
+        {$isLink = $instance->getProperty('is-link')}
+        {$href = $instance->getProperty('url')}
+
+        {if $isLink && !$isPreview && !empty($href)}
+            <a href="{$href|escape:'html'}"
+                {if !empty($instance->getProperty('link-title'))}
+                    title = "{$instance->getProperty('link-title')|escape:'html'}"
+                {/if}
+                {if $instance->getProperty('new-tab') === true}
+                    target = "_blank"
+                {/if}>
+        {/if}
         {image
             src=$imgAttribs.src
             srcset=$imgAttribs.srcset
@@ -29,6 +43,11 @@
             thumbnail=$portlet->getThumbnailProp($instance)
             class=$instance->getStyleClasses()
         }
+        {if $isLink && !$isPreview && !empty($href)}
+            </a>
+        {/if}
     </div>
-    {if $isPreview}</div>{/if}
+    {if $isPreview}
+        </div>
+    {/if}
 {/if}

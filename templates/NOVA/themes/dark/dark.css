@@ -23694,6 +23694,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   border-right: none;
 }
 
+#product-list .product-wrapper:not(:last-child) {
+  margin-bottom: 4rem;
+}
+
 .gallery,
 .list {
   align-items: flex-end;

@@ -127,6 +127,14 @@
 	border-right: none;
 }
 
+#product-list {
+	.product-wrapper {
+		&:not(:last-child) {
+			margin-bottom: 4rem;
+		}
+	}
+}
+
 .gallery,
 .list {
 	align-items: flex-end;

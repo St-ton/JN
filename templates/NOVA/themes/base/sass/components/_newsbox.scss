@@ -64,6 +64,10 @@
 	.blockquote-footer {
 		margin-top: map-get($spacers, 3);
 	}
+	.blog-comments-header {
+		align-items: center;
+		margin-bottom: map-get($spacers, 3);
+	}
 }
 .blog-overview {
 	.blog-overview-main {

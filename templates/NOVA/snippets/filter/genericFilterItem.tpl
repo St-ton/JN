@@ -14,11 +14,11 @@
                     {link class="filter-item {if $filterIsActive === true}active{/if}"
                         href="{if $filterOption->isActive()}{$filter->getUnsetFilterURL($filterOption->getValue())}{else}{$filterOption->getURL()}{/if}"
                         nofollow=true}
-                        <div class="align-items-center-util d-flex">
+                        <div class="box-link-wrapper">
                             {if $filter->getIcon() !== null}
                                 <i class="fa {$filter->getIcon()} snippets-filter-item-icon-right"></i>
                             {else}
-                                <i class="far fa-{if $filterIsActive === true}check-{/if}square text-muted-util snippets-filter-item-icon-right"></i>
+                                <i class="far fa-{if $filterIsActive === true}check-{/if}square snippets-filter-item-icon-right"></i>
                             {/if}
                             {if $filter->getNiceName() === 'Rating'}
                                 {block name='snippets-filter-genericFilterItem-include-rating-nav'}
@@ -34,10 +34,9 @@
             {if $limit != -1 && $filter->getOptions()|count > $limit}
                 {block name='snippets-filter-genericFilterItem-more-bottom'}
                     </div>
-                    <div class="w-100-util">
+                    <div class="snippets-filter-show-all">
                         {button variant="link"
                             role="button"
-                            class="snippets-filter-show-all"
                             data=["toggle"=> "collapse", "target"=>"#box-collps-filter{$filter->getNiceName()}"]}
                             {lang key='showAll'}
                         {/button}

@@ -484,3 +484,11 @@ input.typeahead {
 .w-100-util {
   width: 100%;
 }
+.form-error-msg {
+  color: $danger;
+}
+//backwards compatibility for html from wawi
+.img-responsive {
+  max-width: 100%;
+  height: auto;
+}

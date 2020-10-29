@@ -21,8 +21,8 @@
                     href="{if !empty($attributeValue->getURL())}{$attributeValue->getURL()}{else}#{/if}"
                     title="{if $Merkmal->getData('cTyp') === 'BILD'}{$attributeValue->getValue()|escape:'html'}{/if}"
                 }
-                    <div class="align-items-center-util d-flex">
-                        <i class="far fa-{if $attributeValue->isActive()}check-{/if}square text-muted-util snippets-filter-item-icon-right"></i>
+                    <div class="box-link-wrapper">
+                        <i class="far fa-{if $attributeValue->isActive()}check-{/if}square snippets-filter-item-icon-right"></i>
                         {if !empty($attributeImageURL)}
                             {image lazy=true webp=true
                                 src=$attributeImageURL
@@ -51,8 +51,8 @@
                             href="{if !empty($attributeValue->getURL())}{$attributeValue->getURL()}{else}#{/if}"
                             title="{$attributeValue->getValue()|escape:'html'}"
                         }
-                            <div class="align-items-center-util d-flex">
-                                <i class="far fa-{if $attributeValue->isActive()}check-{/if}square text-muted-util snippets-filter-item-icon-right"></i>
+                            <div class="box-link-wrapper">
+                                <i class="far fa-{if $attributeValue->isActive()}check-{/if}square snippets-filter-item-icon-right"></i>
                                 {if !empty($attributeImageURL)}
                                     {image lazy=true webp=true
                                         src=$attributeImageURL
@@ -86,7 +86,7 @@
                             title="{$attributeValue->getValue()|escape:'html'}: {$attributeValue->getCount()}"
                             class="{if $attributeValue->isActive()}active{/if} filter-item"
                         }
-                            <div class="align-items-center-util d-flex">
+                            <div class="box-link-wrapper">
                                 {if !empty($attributeImageURL)}
                                     {image lazy=true webp=true
                                         src=$attributeImageURL
@@ -110,10 +110,9 @@
         {block name='snippets-filter-characteristics-more-bottom'}
                 </ul>
             </div>
-            <div class="w-100-util">
+            <div class="snippets-filter-show-all">
                 {button variant="link"
                     role="button"
-                    class="snippets-filter-show-all"
                     data=["toggle"=> "collapse", "target"=>"#box-collps-filter-attribute-{$Merkmal->getValue()}"]}
                     {lang key='showAll'}
                 {/button}

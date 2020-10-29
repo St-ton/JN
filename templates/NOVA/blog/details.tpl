@@ -134,15 +134,15 @@
                                                         label-for="comment-text"
                                                         label-class="commentForm"
                                                     }
-                                                        {if $Einstellungen.news.news_kommentare_freischalten === 'Y'}
-                                                            <small class="form-text text-muted-util">{lang key='commentWillBeValidated' section='news'}</small>
-                                                        {/if}
-                                                        {textarea id="comment-text" name="cKommentar" required=true}{/textarea}
                                                         {if $nPlausiValue_arr.cKommentar > 0}
-                                                            <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                                            <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i>
                                                                 {lang key='fillOut' section='global'}
                                                             </div>
                                                         {/if}
+                                                        {if $Einstellungen.news.news_kommentare_freischalten === 'Y'}
+                                                            <small class="form-text text-muted">{lang key='commentWillBeValidated' section='news'}</small>
+                                                        {/if}
+                                                        {textarea id="comment-text" name="cKommentar" required=true}{/textarea}
                                                     {/formgroup}
                                                     {row}
                                                         {col md=4 xl=3 class='blog-details-save'}
@@ -175,7 +175,7 @@
                                     <hr class="blog-details-hr">
                                 {/block}
                                 <div id="comments">
-                                    {row class="align-items-center-util mb-3"}
+                                    {row class="blog-comments-header"}
                                         {col cols="auto"}
                                             {block name='blog-details-comments-content-heading'}
                                                 <div class="h2 section-heading">{lang key='newsComments' section='news'}

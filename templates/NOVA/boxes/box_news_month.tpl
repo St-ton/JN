@@ -26,8 +26,8 @@
                         {foreach $oBox->getItems() as $newsMonth}
                             {if $newsMonth@index === 10}{break}{/if}
                             {block name='boxes-box-news-month-news-link'}
-                                {navitem href=$newsMonth->cURL  title=$newsMonth->cName router-class="align-items-center-util d-flex"}
-                                    <i class="far fa-newspaper mr-2"></i>
+                                {navitem href=$newsMonth->cURL  title=$newsMonth->cName router-class="box-link-wrapper"}
+                                    <i class="far fa-newspaper snippets-filter-item-icon-right"></i>
                                     {$newsMonth->cName}
                                     {badge variant="outline-secondary" class="ml-auto-util"}{$newsMonth->nAnzahl}{/badge}
                                 {/navitem}

@@ -14,9 +14,9 @@
                                 <img style="max-width: 160px;" src="{$recommendation->getPreviewImage()}" loading="lazy">
                             </div>
                             <div class="col align-self-end px-3">
-                                <div><a class="font-weight-bold" href="{$recommendation->getURL()}">{$recommendation->getTitle()}</a></div>
+                                <div><a class="font-weight-bold" target="_blank" href="{$recommendation->getURL()}">{$recommendation->getTitle()}</a></div>
                                 <div>
-                                    {__('manufacturer')}: <a href="{$recommendation->getManufacturer()->getProfileURL()}">{$recommendation->getManufacturer()->getName()}</a>
+                                    {__('manufacturer')}: <a href="{$recommendation->getManufacturer()->getProfileURL()}" target="_blank">{$recommendation->getManufacturer()->getName()}</a>
                                 </div>
                             </div>
                         </div>
@@ -26,7 +26,7 @@
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-body">
-                        {$recommendation->getDescription()}
+                        <span class="underline-links">{$recommendation->getDescription()}</span>
                     </div>
                 </div>
             </div>
@@ -67,7 +67,7 @@
                         <hr class="mb-n3">
                     </div>
                     <div class="card-body">
-                        {$recommendation->getSetupDescription()}
+                        <span class="underline-links">{$recommendation->getSetupDescription()}</span>
                         <div class="row">
                             <div class="col-sm-6 col-xl-auto">
                                 <form method="post">

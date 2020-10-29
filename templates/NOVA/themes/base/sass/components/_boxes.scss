@@ -197,3 +197,13 @@ $jqcloud-classes: 7;
     margin-right: map-get($spacers, 2);
   }
 }
+.box-slider {
+  margin-bottom: map-get($spacers, 4);
+}
+.box-link-wrapper {
+  align-items: center;
+  display: flex;
+  i.snippets-filter-item-icon-right {
+    color: $text-muted;
+  }
+}

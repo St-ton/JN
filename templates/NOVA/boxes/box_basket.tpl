@@ -3,7 +3,7 @@
         <div class="box-body text-center-util">
             {block name='boxes-box-basket-content'}
                 {block name='boxes-box-basket-title'}
-                    <div class="productlist-filter-headline align-items-center-util d-flex">
+                    <div class="productlist-filter-headline box-link-wrapper">
                         {lang key='yourBasket'}
                     </div>
                 {/block}

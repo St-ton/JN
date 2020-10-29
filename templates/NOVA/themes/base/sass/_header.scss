@@ -146,7 +146,7 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 	.submenu-headline-image {
 		margin-bottom: map-get($spacers, 3);
 		display: none;
-		@include media-breakpoint-up(md) {
+		@include media-breakpoint-up(lg) {
 			display: block;
 		}
 	}

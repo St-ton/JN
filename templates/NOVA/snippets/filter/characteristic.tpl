@@ -22,7 +22,7 @@
                     title="{if $Merkmal->getData('cTyp') === 'BILD'}{$attributeValue->getValue()|escape:'html'}{/if}"
                 }
                     <div class="align-items-center-util d-flex">
-                        <i class="far fa-{if $attributeValue->isActive()}check-{/if}square text-muted-util mr-2"></i>
+                        <i class="far fa-{if $attributeValue->isActive()}check-{/if}square text-muted-util snippets-filter-item-icon-right"></i>
                         {if !empty($attributeImageURL)}
                             {image lazy=true webp=true
                                 src=$attributeImageURL
@@ -52,7 +52,7 @@
                             title="{$attributeValue->getValue()|escape:'html'}"
                         }
                             <div class="align-items-center-util d-flex">
-                                <i class="far fa-{if $attributeValue->isActive()}check-{/if}square text-muted-util mr-2"></i>
+                                <i class="far fa-{if $attributeValue->isActive()}check-{/if}square text-muted-util snippets-filter-item-icon-right"></i>
                                 {if !empty($attributeImageURL)}
                                     {image lazy=true webp=true
                                         src=$attributeImageURL
@@ -113,7 +113,7 @@
             <div class="w-100-util">
                 {button variant="link"
                     role="button"
-                    class="p-0 ml-auto-util mt-1"
+                    class="snippets-filter-show-all"
                     data=["toggle"=> "collapse", "target"=>"#box-collps-filter-attribute-{$Merkmal->getValue()}"]}
                     {lang key='showAll'}
                 {/button}

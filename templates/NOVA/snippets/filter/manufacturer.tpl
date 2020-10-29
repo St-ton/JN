@@ -43,7 +43,7 @@
                         {/block}
                     {elseif $Einstellungen.navigationsfilter.hersteller_anzeigen_als === 'T'}
                         {block name='snippets-filter-manufacturer-item-text'}
-                            <i class="far fa-{if $filterIsActive === true}check-{/if}square text-muted-util mr-2"></i>
+                            <i class="far fa-{if $filterIsActive === true}check-{/if}square text-muted-util snippets-filter-item-icon-right"></i>
                             <span class="word-break">{$filterOption->getName()}</span>
                             {badge variant="outline-secondary" class="ml-auto-util"}{$filterOption->getCount()}{/badge}
                         {/block}
@@ -60,7 +60,7 @@
                 {button
                     variant="link"
                     role="button"
-                    class="p-0 ml-auto-util mt-1"
+                    class="snippets-filter-show-all"
                     data=["toggle"=> "collapse", "target"=>"#box-collps-filter{$filter->getNiceName()}"]}
                     {lang key='showAll'}
                 {/button}

@@ -1,29 +1,29 @@
 {block name='snippets-filter-mobile'}
     {if $isMobile && !$isTablet}
-        <span class="h2 mt-3 border-0 px-3" id="productlist-filter">{lang key='filterAndSort'}</span>
+        <span class="h2 snippets-filter-mobile-heading" id="productlist-filter">{lang key='filterAndSort'}</span>
     {/if}
     <div class="productlist-filter-wrapper dropdown-full-width">
         <ul class="productlist-filter-accordion border-md-bottom border-lg-bottom-0">
         {block name='snippets-filter-mobile-sorting'}
-            <li>
-                {link class="text-decoration-none-util text-left-util filter-type-FilterItemSort"
-                data=["toggle"=> "collapse", "target"=>"#sorting-collapse"]}
-                {lang key='sorting' section='productOverview'}
-                    <span class="float-right mx-3 font-italic text-right-util text-truncate w-40 pr-1">
-                    {foreach $Suchergebnisse->getSortingOptions() as $option}
-                        {if $option->isActive()} {$option->getName()}{/if}
-                    {/foreach}
-                </span>
+            <li class="snippets-filter-mobile-sorting">
+                {link class="snippets-filter-mobile-sorting-link filter-type-FilterItemSort"
+                    data=["toggle"=> "collapse", "target"=>"#sorting-collapse"]}
+                    {lang key='sorting' section='productOverview'}
+                    <span class="font-italic text-truncate">
+                        {foreach $Suchergebnisse->getSortingOptions() as $option}
+                            {if $option->isActive()} {$option->getName()}{/if}
+                        {/foreach}
+                    </span>
                 {/link}
-                {collapse id="sorting-collapse" class="my-2"}
-                {foreach $Suchergebnisse->getSortingOptions() as $option}
-                    {dropdownitem class="filter-item py-1"
-                    active=$option->isActive()
-                    href=$option->getURL()
-                    rel='nofollow'}
-                    {$option->getName()}
-                    {/dropdownitem}
-                {/foreach}
+                {collapse id="sorting-collapse" class="snippets-filter-mobile-sorting-collapse"}
+                    {foreach $Suchergebnisse->getSortingOptions() as $option}
+                        {dropdownitem class="filter-item"
+                            active=$option->isActive()
+                            href=$option->getURL()
+                            rel='nofollow'}
+                        {$option->getName()}
+                        {/dropdownitem}
+                    {/foreach}
                 {/collapse}
             </li>
         {/block}

@@ -16,13 +16,13 @@
                         nofollow=true}
                         <div class="align-items-center-util d-flex">
                             {if $filter->getIcon() !== null}
-                                <i class="fa {$filter->getIcon()} mr-2"></i>
+                                <i class="fa {$filter->getIcon()} snippets-filter-item-icon-right"></i>
                             {else}
-                                <i class="far fa-{if $filterIsActive === true}check-{/if}square text-muted-util mr-2"></i>
+                                <i class="far fa-{if $filterIsActive === true}check-{/if}square text-muted-util snippets-filter-item-icon-right"></i>
                             {/if}
                             {if $filter->getNiceName() === 'Rating'}
                                 {block name='snippets-filter-genericFilterItem-include-rating-nav'}
-                                    <span class="mr-2">{include file='productdetails/rating.tpl' stars=$filterOption->getValue()}</span>
+                                    <span class="snippets-filter-item-icon-right">{include file='productdetails/rating.tpl' stars=$filterOption->getValue()}</span>
                                 {/block}
                             {/if}
                             <span class="word-break">{$filterOption->getName()}</span>
@@ -37,7 +37,7 @@
                     <div class="w-100-util">
                         {button variant="link"
                             role="button"
-                            class="p-0 ml-auto-util mt-1"
+                            class="snippets-filter-show-all"
                             data=["toggle"=> "collapse", "target"=>"#box-collps-filter{$filter->getNiceName()}"]}
                             {lang key='showAll'}
                         {/button}

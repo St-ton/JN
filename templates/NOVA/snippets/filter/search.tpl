@@ -14,7 +14,7 @@
                 href=$searchFilter->getURL()
                 class="filter-item {if $searchFilter->isActive()}active{/if}"}
                     <div class="align-items-center-util d-flex">
-                        <i class="far fa-{if $searchFilter->isActive()}check-{/if}square text-muted-util mr-2"></i>
+                        <i class="far fa-{if $searchFilter->isActive()}check-{/if}square text-muted-util snippets-filter-item-icon-right"></i>
                         <span class="word-break">{$searchFilter->getName()}</span>
                         {badge variant="outline-secondary" class="ml-auto-util"}{$searchFilter->getCount()}{/badge}
                     </div>
@@ -28,7 +28,7 @@
             <div class="w-100-util">
                 {button variant="link"
                     role="button"
-                    class="p-0 ml-auto-util mt-1"
+                    class="snippets-filter-show-all"
                     data=["toggle"=> "collapse", "target"=>"#box-collps-filter{$NaviFilter->searchFilterCompat->getNiceName()}"]}
                     {lang key='showAll'}
                 {/button}

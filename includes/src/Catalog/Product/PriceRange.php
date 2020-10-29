@@ -56,6 +56,16 @@ class PriceRange
     public $maxBruttoPrice;
 
     /**
+     * @var bool
+     */
+    public $isMinSpecialPrice;
+
+    /**
+     * @var bool
+     */
+    public $isMaxSpecialPrice;
+
+    /**
      * PriceRange constructor.
      *
      * @param int $productID
@@ -99,16 +109,22 @@ class PriceRange
     {
         $priceRange = Shop::Container()->getDB()->queryPrepared(
             "SELECT baseprice.kArtikel,
+                    MIN(IF(varaufpreis.fMinAufpreisNetto IS NULL,
+                      baseprice.specialPrice, baseprice.specialPrice + varaufpreis.fMinAufpreisNetto)) specialPriceMin,
+                    MAX(IF(varaufpreis.fMaxAufpreisNetto IS NULL,
+                      baseprice.specialPrice, baseprice.specialPrice + varaufpreis.fMaxAufpreisNetto)) specialPriceMax,
                    MIN(IF(varaufpreis.fMinAufpreisNetto IS NULL,
-                          baseprice.fVKNetto, baseprice.fVKNetto + varaufpreis.fMinAufpreisNetto)) fVKNettoMin,
+                      baseprice.fVKNetto, baseprice.fVKNetto + varaufpreis.fMinAufpreisNetto)) fVKNettoMin,
                    MAX(IF(varaufpreis.fMaxAufpreisNetto IS NULL,
-                          baseprice.fVKNetto, baseprice.fVKNetto + varaufpreis.fMaxAufpreisNetto)) fVKNettoMax
+                      baseprice.fVKNetto, baseprice.fVKNetto + varaufpreis.fMaxAufpreisNetto)) fVKNettoMax
             FROM (
                 SELECT IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) kArtikel,
                        tartikel.kArtikel kKindArtikel,
                        tartikel.nIstVater,
-                       IF(tsonderpreise.fNettoPreis < tpreisdetail.fVKNetto,
-                          tsonderpreise.fNettoPreis, tpreisdetail.fVKNetto) fVKNetto
+                        MIN(IF(tsonderpreise.fNettoPreis < tpreisdetail.fVKNetto,
+                          tsonderpreise.fNettoPreis, 999999999)) specialPrice,
+                       MIN(IF(tsonderpreise.fNettoPreis < tpreisdetail.fVKNetto,
+                          tsonderpreise.fNettoPreis, tpreisdetail.fVKNetto)) fVKNetto
                 FROM tartikel
                 INNER JOIN tpreis ON tpreis.kArtikel = tartikel.kArtikel
                 INNER JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
@@ -126,6 +142,9 @@ class PriceRange
                   AND (tpreis.kKundengruppe = :customerGroup
                     OR (tpreis.kKundengruppe = 0 AND tpreis.kKunde = :customerID))
                   AND IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) = :productID
+                GROUP BY IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel),
+                       tartikel.kArtikel,
+                       tartikel.nIstVater
             ) baseprice
             LEFT JOIN (
                       SELECT variations.kArtikel,
@@ -163,11 +182,15 @@ class PriceRange
         );
 
         if ($priceRange) {
-            $this->minNettoPrice = (float)$priceRange->fVKNettoMin;
-            $this->maxNettoPrice = (float)$priceRange->fVKNettoMax;
+            $this->minNettoPrice     = (float)$priceRange->fVKNettoMin;
+            $this->maxNettoPrice     = (float)$priceRange->fVKNettoMax;
+            $this->isMinSpecialPrice = ((float)$priceRange->specialPriceMin <= $this->minNettoPrice);
+            $this->isMaxSpecialPrice = ((float)$priceRange->specialPriceMax <= $this->maxNettoPrice);
         } else {
-            $this->minNettoPrice = $this->productData->fNettoPreis;
-            $this->maxNettoPrice = $this->productData->fNettoPreis;
+            $this->minNettoPrice     = $this->productData->fNettoPreis;
+            $this->maxNettoPrice     = $this->productData->fNettoPreis;
+            $this->isMinSpecialPrice = false;
+            $this->isMaxSpecialPrice = false;
         }
 
         if (Configurator::hasKonfig($this->productData->kArtikel)) {
@@ -308,15 +331,23 @@ class PriceRange
     {
         $discount /= 100;
         if ($discount !== $this->discount) {
-            $this->minNettoPrice /= (1 - $this->discount);
-            $this->maxNettoPrice /= (1 - $this->discount);
+            if (!$this->isMinSpecialPrice) {
+                $this->minNettoPrice /= (1 - $this->discount);
+            }
+            if (!$this->isMaxSpecialPrice) {
+                $this->maxNettoPrice /= (1 - $this->discount);
+            }
 
             $this->discount = $discount;
 
             $ust = Tax::getSalesTax($this->productData->kSteuerklasse);
 
-            $this->minNettoPrice *= (1 - $this->discount);
-            $this->maxNettoPrice *= (1 - $this->discount);
+            if (!$this->isMinSpecialPrice) {
+                $this->minNettoPrice *= (1 - $this->discount);
+            }
+            if (!$this->isMaxSpecialPrice) {
+                $this->maxNettoPrice *= (1 - $this->discount);
+            }
             $this->minBruttoPrice = Tax::getGross($this->minNettoPrice, $ust);
             $this->maxBruttoPrice = Tax::getGross($this->maxNettoPrice, $ust);
         }

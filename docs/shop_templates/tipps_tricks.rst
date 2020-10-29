@@ -272,7 +272,7 @@ Template-Code:
 Erstellen eigener Smarty-Funktionen
 -----------------------------------
 
-Um eigen Smarty-Funktionen zu registrieren, gibt es template-abhängig zwei Wege.
+Um eigene Smarty-Funktionen zu registrieren, gibt es template-abhängig zwei Wege.
 
 Evo-Template
 ++++++++++++
@@ -312,11 +312,11 @@ eine PHP-Klasse namens ``Bootstrap.php`` mit folgendem Inhalt:
 
     <?php declare(strict_types=1);
 
-    namespace Template\NOVAchild;
+    namespace Template\[NOVA-child-name];
 
     /**
      * Class Bootstrap
-     * @package Template\NOVAchild
+     * @package Template\[NOVA-child-name]
      */
     class Bootstrap extends \Template\NOVA\Bootstrap
     {
@@ -366,13 +366,13 @@ in Smarty registriert:
 
     <?php declare(strict_types=1);
 
-    namespace Template\NOVAchild;
+    namespace Template\[NOVA-child-name];
 
     use Smarty;
 
     /**
      * Class Bootstrap
-     * @package Template\NOVAchild
+     * @package Template\[NOVA-child-name]
      */
     class Bootstrap extends \Template\NOVA\Bootstrap
     {
@@ -450,7 +450,7 @@ Funktionen im NOVA-Child überschreiben
 ++++++++++++++++++++++++++++++++++++++
 
 In Ihrem NOVA-Child überschreiben sie Funktionen, indem Sie die entsprechende Basisklasse des NOVA-Templates
-``templates/NOVA/Plugins.php`` mit einer eigenen Klasse in Ihrem NOVA-Child ``templates/NOVAchild/Plugins.php``
+``templates/NOVA/Plugins.php`` mit einer eigenen Klasse in Ihrem NOVA-Child ``templates/[NOVA-child-name]/Plugins.php``
 erweitern.
 
 Im nachfolgenden Beispiel wird die Funktion ``getTranslation()`` des NOVA-Templates dahingehend erweitert, dass bei
@@ -460,13 +460,13 @@ nicht vorhandener Übersetzung der Text "*-no translation-*" ausgegeben wird.
 
     <?php declare(strict_types=1);
 
-    namespace Template\NOVAchild;
+    namespace Template\[NOVA-child-name];
 
     use JTL\Shop;
 
     /**
      * Class Bootstrap
-     * @package Template\NOVAchild
+     * @package Template\[NOVA-child-name]
      */
     class Plugins extends \Template\NOVA\Plugins
     {

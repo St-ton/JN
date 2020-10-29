@@ -33,7 +33,13 @@
 	}
 }
 
-.productbox-inner { position: relative; }
+.productbox-inner {
+	position: relative;
+
+	.productbox-title {
+		top: map-get($spacers, 2);
+	}
+}
 
 .productbox-quick-actions { position: absolute; right: map-get($spacers, 2); top: map-get($spacers, 2); display: flex; z-index: 1; justify-content: flex-end;
 	.btn { margin: map-get($spacers, 1); }

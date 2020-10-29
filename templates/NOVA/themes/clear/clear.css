@@ -21103,6 +21103,9 @@ label {
 .productbox-inner {
   position: relative;
 }
+.productbox-inner .productbox-title {
+  top: 0.5rem;
+}
 
 .productbox-quick-actions {
   position: absolute;

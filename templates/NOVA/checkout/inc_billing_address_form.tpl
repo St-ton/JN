@@ -447,7 +447,7 @@
                     {/block}
                     {if $Einstellungen.kunden.direct_advertising === 'Y'}
                         {block name='checkout-inc-billing-address-form-direct-advertising'}
-                            {col cols=12 class="text-muted-util mt-n3 mb-3"}
+                            {col cols=12 class="direct-advertising"}
                                 <small>{lang key="directAdvertising" section="checkout"}</small>
                             {/col}
                         {/block}

@@ -197,7 +197,7 @@
                 {/row}
             {/if}
             {block name='account-order-item-last-hr'}
-                <hr class="my-3">
+                <hr>
             {/block}
         {/foreach}
         {/block}

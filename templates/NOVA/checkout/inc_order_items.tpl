@@ -13,7 +13,7 @@
 
     {block name='checkout-inc-order-items-order-items'}
         {block name='checkout-inc-order-items-order-items-header'}
-            {row class="text-accent d-none d-lg-flex"}
+            {row class="checkout-items-header text-accent d-none d-lg-flex"}
                 {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
                     {col cols=2}{/col}
                 {/if}
@@ -24,12 +24,12 @@
                 {col cols=1 class="text-center-util"}{lang key="quantity" section="checkout"}{/col}
                 {col cols=2 class="text-right-util"}{lang key="price"}{/col}
             {/row}
-            <hr class="d-none d-lg-flex my-3">
+            <hr class="checkout-items-header-hr d-none d-lg-flex">
         {/block}
         {block name='checkout-inc-order-items-order-items-main'}
         {foreach $smarty.session.Warenkorb->PositionenArr as $oPosition}
             {if !$oPosition->istKonfigKind()}
-                {row class="type-{$oPosition->nPosTyp}"}
+                {row class="type-{$oPosition->nPosTyp} checkout-items-item-title"}
                     {block name='checkout-inc-order-items-image'}
                         {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
                             {col cols=3 lg=2 class="text-center-util vcenter"}
@@ -50,7 +50,7 @@
                         {/if}
                     {/block}
                     {block name='checkout-inc-order-items-items-main-content'}
-                        {col cols=$cols lg=$itemInfoCols class="ml-auto-util"}
+                        {col cols=$cols lg=$itemInfoCols class="checkout-items-item-main ml-auto-util"}
                             {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL || $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_GRATISGESCHENK}
                                 {block name='checkout-inc-order-items-product-data-link'}
                                     <p>{link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}{$oPosition->cName|trans}{/link}</p>
@@ -226,18 +226,18 @@
 
                         {block name='checkout-inc-order-items-price-single'}
                             {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
-                                {col cols=$cols lg=2 class="ml-auto-util text-nowrap-util"}
+                                {col cols=$cols lg=2 class="checkout-items-item-price-single ml-auto-util text-nowrap-util"}
                                     {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
                                         {if !$oPosition->istKonfigVater()}
-                                            <span class="mr-3 d-inline-flex d-lg-none">{lang key="pricePerUnit" section="productDetails"}:</span>{$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
+                                            <span class="checkout-items-item-title">{lang key="pricePerUnit" section="productDetails"}:</span>{$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
                                         {/if}
                                     {/if}
                                 {/col}
                             {/if}
                         {/block}
                         {block name='checkout-inc-order-items-quantity'}
-                            {col cols=$cols lg=1 class="ml-auto-util text-nowrap-util mb-2 mb-lg-0 text-lg-center"}
-                                <span class="mr-3 d-inline-flex d-lg-none">{lang key="quantity" section="checkout"}:</span> {$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{$oPosition->Artikel->cEinheit}{/if}
+                            {col cols=$cols lg=1 class="checkout-items-item-quantity text-nowrap-util"}
+                                <span class="checkout-items-item-title">{lang key="quantity" section="checkout"}:</span> {$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{$oPosition->Artikel->cEinheit}{/if}
                             {/col}
                         {/block}
                     {/block}
@@ -262,8 +262,8 @@
         {/block}
     {/block}
     {block name='checkout-inc-order-items-order-items-total'}
-        {row}
-            {col xl=5 md=6 class='ml-auto-util pt-4 pb-3'}
+        {row class="checkout-items-total-wrapper"}
+            {col xl=5 md=6 class='checkout-items-total'}
                 {block name='checkout-inc-order-items-price-tax'}
                     {if $NettoPreise}
                         {block name='checkout-inc-order-items-price-net'}
@@ -307,7 +307,7 @@
                     {/if}
                     {block name='checkout-inc-order-items-price-sticky'}
                         <hr>
-                        {row}
+                        {row class="checkout-items-total-total"}
                             {col}
                                 <span class="price_label"><strong>{lang key='totalSum'}:</strong></span>
                             {/col}
@@ -341,8 +341,8 @@
                     {block name='checkout-inc-order-items-finance'}
                         {foreach $smarty.session.Warenkorb->OrderAttributes as $attribute}
                             {if $attribute->cName === 'Finanzierungskosten'}
-                                <hr class="my-3">
-                                {row class="type-{$smarty.const.C_WARENKORBPOS_TYP_ZINSAUFSCHLAG}"}
+                                <hr>
+                                {row class="checkout-items-total-finance-item type-{$smarty.const.C_WARENKORBPOS_TYP_ZINSAUFSCHLAG}"}
                                     {block name='checkout-inc-order-items-finance-costs'}
                                         {col}
                                             {lang key='financeCosts' section='order'}

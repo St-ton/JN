@@ -12,7 +12,7 @@
                                 {lang key='back'}
                             {/link}
                         {/col}
-                        {col md=4 xl=3 class='ml-md-auto'}
+                        {col md=4 xl=3 class="checkout-button-row-submit"}
                             {input type="hidden" name="editRechnungsadresse" value="1"}
                             {input type="hidden" name="edit" value="1"}
                             {button type="submit" value="1" block=true variant="primary"}

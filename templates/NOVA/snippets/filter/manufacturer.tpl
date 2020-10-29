@@ -24,7 +24,7 @@
                 data=$tooltip
                 class="filter-item {if $filterOption->isActive()}active{/if}"
             }
-                <div class="align-items-center-util d-flex">
+                <div class="box-link-wrapper">
                     {if $Einstellungen.navigationsfilter.hersteller_anzeigen_als == 'B'}
                         {block name='snippets-filter-manufacturer-item-image'}
                             {image lazy=true webo=true
@@ -43,7 +43,7 @@
                         {/block}
                     {elseif $Einstellungen.navigationsfilter.hersteller_anzeigen_als === 'T'}
                         {block name='snippets-filter-manufacturer-item-text'}
-                            <i class="far fa-{if $filterIsActive === true}check-{/if}square text-muted-util snippets-filter-item-icon-right"></i>
+                            <i class="far fa-{if $filterIsActive === true}check-{/if}square snippets-filter-item-icon-right"></i>
                             <span class="word-break">{$filterOption->getName()}</span>
                             {badge variant="outline-secondary" class="ml-auto-util"}{$filterOption->getCount()}{/badge}
                         {/block}
@@ -56,11 +56,10 @@
         {block name='snippets-filter-manufacturer-more-bottom'}
                 </ul>
             </div>
-            <div class="w-100-util">
+            <div class="snippets-filter-show-all">
                 {button
                     variant="link"
                     role="button"
-                    class="snippets-filter-show-all"
                     data=["toggle"=> "collapse", "target"=>"#box-collps-filter{$filter->getNiceName()}"]}
                     {lang key='showAll'}
                 {/button}

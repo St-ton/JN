@@ -175,7 +175,7 @@
                                     <hr class="blog-details-hr">
                                 {/block}
                                 <div id="comments">
-                                    {row class="align-items-center-util mb-3"}
+                                    {row class="blog-comments-header"}
                                         {col cols="auto"}
                                             {block name='blog-details-comments-content-heading'}
                                                 <div class="h2 section-heading">{lang key='newsComments' section='news'}

@@ -20931,6 +20931,10 @@ label {
 .blog-details .blockquote-footer {
   margin-top: 1rem;
 }
+.blog-details .blog-comments-header {
+  align-items: center;
+  margin-bottom: 1rem;
+}
 
 .blog-overview .blog-overview-main {
   align-items: end;
@@ -22142,6 +22146,14 @@ aside .box-monthlynews a .value:hover {
 
 .box-slider {
   margin-bottom: 1.5rem;
+}
+
+.box-link-wrapper {
+  align-items: center;
+  display: flex;
+}
+.box-link-wrapper i.snippets-filter-item-icon-right {
+  color: #707070;
 }
 
 :root {
@@ -25135,6 +25147,9 @@ header #burger-menu {
 }
 
 .snippets-filter-show-all {
+  width: 100%;
+}
+.snippets-filter-show-all .btn {
   padding: 0;
   margin-left: auto;
   margin-top: 0.25rem;

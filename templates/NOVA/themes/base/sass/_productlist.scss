@@ -130,7 +130,7 @@
 #product-list {
 	.product-wrapper {
 		&:not(:last-child) {
-			margin-bottom: 7rem;
+			margin-bottom: map-get($spacers, 7);
 		}
 	}
 }

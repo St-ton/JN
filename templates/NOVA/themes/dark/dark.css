@@ -23695,7 +23695,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 
 #product-list .product-wrapper:not(:last-child) {
-  margin-bottom: 7rem;
+  margin-bottom: 4rem;
 }
 
 .gallery,

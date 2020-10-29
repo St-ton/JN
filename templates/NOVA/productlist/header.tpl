@@ -53,7 +53,7 @@
             {/if}
         {/if}
         {if $oNavigationsinfo->getName()}
-            <div class="title mb-4">
+            <div class="title">
                 {opcMountPoint id='opc_before_heading'}
                 {block name='productlist-header-description-heading'}
                     <h1 class="h2">{$oNavigationsinfo->getName()}</h1>

@@ -23702,6 +23702,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   margin-bottom: 4rem;
 }
 
+#result-wrapper .title {
+  margin-bottom: 1.5rem;
+}
+
 .gallery,
 .list {
   align-items: flex-end;

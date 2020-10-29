@@ -139,6 +139,12 @@
 	}
 }
 
+#result-wrapper {
+	.title {
+		margin-bottom: map-get($spacers, 4);
+	}
+}
+
 .gallery,
 .list {
 	align-items: flex-end;

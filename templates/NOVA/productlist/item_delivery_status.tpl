@@ -1,5 +1,5 @@
 {block name='productlist-item-delivery-status'}
-    <div class="delivery-status mb-3">
+    <div class="item-delivery-status delivery-status">
         {$anzeige = $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandsanzeige}
         {if $Artikel->inWarenkorbLegbar === $smarty.const.INWKNICHTLEGBAR_UNVERKAEUFLICH}
             <span class="status"><small>{lang key='productUnsaleable' section='productDetails'}</small></span>

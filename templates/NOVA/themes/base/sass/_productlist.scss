@@ -173,6 +173,10 @@
 	}
 }
 
+.item-delivery-status {
+	margin-bottom: map-get($spacers, 3);
+}
+
 .active-filters {
 	margin-top: map-get($spacers, 3);
 	margin-bottom: map-get($spacers, 3);

@@ -23744,6 +23744,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   list-style: none;
 }
 
+.item-delivery-status {
+  margin-bottom: 1rem;
+}
+
 .active-filters {
   margin-top: 1rem;
   margin-bottom: 1rem;

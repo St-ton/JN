@@ -6,7 +6,7 @@
     <div id="result-options">
         {row}
         {block name='productlist-result-options-filter-link'}
-            {col cols=12 md=4 class="filter-collapsible-control order-1 order-md-0 d-flex justify-content-between"}
+            {col cols=12 md=4 class="filter-collapsible-control order-1 order-md-0 d-flex"}
                 {if $show_filters}
                     {block name='productlist-result-options-filter-link-filter'}
                         {button id="js-filters" variant="outline-secondary"

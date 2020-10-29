@@ -193,6 +193,12 @@
 	margin-left: map-get($spacers, 2);
 }
 
+#result-options {
+	.col {
+		justify-content: space-between;
+	}
+}
+
 .item-slider.productbox-image {
 	margin-bottom: 0;
 }

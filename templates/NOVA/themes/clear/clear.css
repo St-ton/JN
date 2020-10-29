@@ -23764,6 +23764,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   margin-left: 0.5rem;
 }
 
+#result-options .col {
+  justify-content: space-between;
+}
+
 .item-slider.productbox-image {
   margin-bottom: 0;
 }

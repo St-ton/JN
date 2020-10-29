@@ -23561,6 +23561,16 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 .product-detail .product-thumbnails {
   width: 100%;
+  margin-bottom: 2rem;
+  margin-left: 0;
+  margin-right: 0;
+  display: none;
+}
+@media (min-width: 992px) {
+  .product-detail .product-thumbnails {
+    margin-bottom: 0;
+    display: flex;
+  }
 }
 .product-detail .product-thumbnails .slick-list {
   width: 100%;
@@ -23569,12 +23579,17 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   opacity: 0.5;
 }
 
+#image_wrapper {
+  margin-bottom: 3rem;
+  text-align: right;
+}
 #image_wrapper .slick-list,
 #image_wrapper .slick-slide,
 #image_wrapper img {
   outline: none !important;
 }
 #image_wrapper .product-detail-image-topbar {
+  margin-bottom: 1.5rem;
   display: none;
 }
 #image_wrapper.fullscreen {
@@ -23588,6 +23603,8 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   overflow: hidden;
 }
 #image_wrapper.fullscreen .product-actions {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
   display: none;
 }
 #image_wrapper.fullscreen .product-detail-image-preview-bar {
@@ -23686,6 +23703,9 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 #image_wrapper #gallery .slick-slide {
   padding: 0;
+}
+#image_wrapper #gallery_preview .square-image {
+  margin-bottom: 0;
 }
 #image_wrapper #gallery_preview:not(.slick-initialized) div.js-gallery-images {
   width: calc(79%/5);
@@ -23970,6 +23990,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   padding: 0;
 }
 
+.start-configuration i {
+  margin-left: 0.25rem;
+}
+
 #add-to-cart {
   margin-top: 2rem;
 }
@@ -24026,6 +24050,36 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   #jump-to-votes-tab {
     display: none;
   }
+}
+
+#tab-downloads card {
+  margin-bottom: 1rem;
+}
+
+.product-matrix {
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+.product-matrix .variation-matrix .delivery-status {
+  margin: 0 0.5rem;
+}
+.product-matrix .variation-matrix .configurepos span {
+  padding-left: 0.5rem;
+  display: none;
+}
+@media (min-width: 576px) {
+  .product-matrix .variation-matrix .configurepos span {
+    display: inline-block;
+  }
+}
+.product-matrix .btn[type=submit] {
+  float: right;
+}
+.product-matrix > .row {
+  padding: 0.5rem 0;
+}
+.product-matrix > .row:nth-of-type(odd) {
+  background-color: #f5f7fa;
 }
 
 /* comparelist */

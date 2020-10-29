@@ -127,6 +127,10 @@
 	border-right: none;
 }
 
+.productlist-header-description-image {
+	margin-bottom: map-get($spacers, 5);
+}
+
 #product-list {
 	.product-wrapper {
 		&:not(:last-child) {

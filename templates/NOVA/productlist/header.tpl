@@ -48,7 +48,7 @@
                         {$navData->getImage(\JTL\Media\Image::SIZE_LG)} {$Einstellungen.bilder.bilder_kategorien_gross_breite}w"
                     alt="{$navData->cBeschreibung|strip_tags|truncate:40|escape:'html'}"
                     sizes="100vw"
-                    class="mb-5"
+                    class="productlist-header-description-image"
                 }
             {/if}
         {/if}

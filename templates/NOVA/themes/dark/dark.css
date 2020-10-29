@@ -23748,6 +23748,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   margin-bottom: 1rem;
 }
 
+.variations-list {
+  margin-bottom: 0;
+}
+
 .active-filters {
   margin-top: 1rem;
   margin-bottom: 1rem;

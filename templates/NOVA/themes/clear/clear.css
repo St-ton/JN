@@ -23714,6 +23714,34 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   content: "";
 }
 
+.content-cats-small::after {
+  display: block;
+  clear: both;
+  content: "";
+}
+.content-cats-small .outer {
+  margin-bottom: 0.5rem;
+}
+.content-cats-small .caption {
+  margin-bottom: 0.5rem;
+}
+@media (min-width: 768px) {
+  .content-cats-small .caption {
+    text-align: center;
+  }
+}
+.content-cats-small hr {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding-left: 0;
+  list-style: none;
+}
+
+.active-filters {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
 .gallery,
 .list {
   align-items: flex-end;

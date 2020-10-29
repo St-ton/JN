@@ -93,13 +93,13 @@
     {block name='productlist-header-subcategories'}
         {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'N' && $oUnterKategorien_arr|@count > 0}
             {opcMountPoint id='opc_before_subcategories'}
-            {row class="row-eq-height content-cats-small clearfix"}
+            {row class="row-eq-height content-cats-small"}
                 {foreach $oUnterKategorien_arr as $subCategory}
                     {col cols=12 md=4 lg=3}
                         {link href=$subCategory->getURL()}
                             {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}
                                 {block name='productlist-header-subcategories-image'}
-                                    <div class="square square-image mb-2 d-none d-md-flex">
+                                    <div class="outer square square-image d-none d-md-flex">
                                         <div class="inner">
                                             {image fluid=true lazy=true webp=true
                                                 src=$subCategory->getImage(\JTL\Media\Image::SIZE_SM)
@@ -110,22 +110,25 @@
                             {/if}
                             {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'B'}
                                 {block name='productlist-header-subcategories-link'}
-                                    <div class="caption text-md-center mb-2">
+                                    <div class="caption">
                                         {$subCategory->getName()}
                                     </div>
                                 {/block}
                             {/if}
                         {/link}
-                        {if $Einstellungen.navigationsfilter.unterkategorien_beschreibung_anzeigen === 'Y' && !empty($subCategory->getDescription())}
+                        {if $Einstellungen.navigationsfilter.unterkategorien_beschreibung_anzeigen === 'Y'
+                                && !empty($subCategory->getDescription())}
                             {block name='productlist-header-subcategories-description'}
-                                <p class="item_desc small text-muted-util d-none d-md-block">{$subCategory->getDescription()|strip_tags|truncate:68}</p>
+                                <p class="item_desc small text-muted-util d-none d-md-block">
+                                    {$subCategory->getDescription()|strip_tags|truncate:68}
+                                </p>
                             {/block}
                         {/if}
                         {if $Einstellungen.navigationsfilter.unterkategorien_lvl2_anzeigen === 'Y'}
                             {if $subCategory->hasChildren()}
                                 {block name='productlist-header-subcategories-list'}
-                                    <hr class="my-3 d-none d-md-block">
-                                    <ul class="list-unstyled d-none d-md-block">
+                                    <hr class="d-none d-md-block">
+                                    <ul class="d-none d-md-block">
                                         {foreach $subCategory->getChildren() as $subChild}
                                             <li>
                                                 {link href=$subChild->getURL() title=$subChild->getName()}{$subChild->getName()}{/link}
@@ -150,7 +153,8 @@
             {block name='productlist-header-include-product-slider-top'}
                 {opcMountPoint id='opc_before_category_top'}
                 {lang key='topOffer' assign='slidertitle'}
-                {include file='snippets/product_slider.tpl' id='slider-top-products' productlist=$KategorieInhalt->TopArtikel->elemente title=$slidertitle}
+                {include file='snippets/product_slider.tpl' id='slider-top-products'
+                        productlist=$KategorieInhalt->TopArtikel->elemente title=$slidertitle}
             {/block}
         {/if}
 
@@ -158,7 +162,8 @@
             {block name='productlist-header-include-product-slider-bestseller'}
                 {opcMountPoint id='opc_before_category_bestseller'}
                 {lang key='bestsellers'  assign='slidertitle'}
-                {include file='snippets/product_slider.tpl' id='slider-bestseller-products' productlist=$KategorieInhalt->BestsellerArtikel->elemente title=$slidertitle}
+                {include file='snippets/product_slider.tpl' id='slider-bestseller-products'
+                        productlist=$KategorieInhalt->BestsellerArtikel->elemente title=$slidertitle}
             {/block}
         {/if}
     {/if}
@@ -171,8 +176,6 @@
         {if $NaviFilter->getFilterCount() > 0}
             {$alertList->displayAlertByKey('noFilterResults')}
         {/if}
-        <div class="my-3">
-            {include file='snippets/filter/active_filter.tpl'}
-        </div>
+        {include file='snippets/filter/active_filter.tpl'}
     {/block}
 {/block}

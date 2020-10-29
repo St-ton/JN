@@ -150,6 +150,34 @@
 	}
 }
 
+.content-cats-small {
+	@include clearfix();
+
+	.outer {
+		margin-bottom: map-get($spacers, 2);
+	}
+
+	.caption {
+		margin-bottom: map-get($spacers, 2);
+
+		@media (min-width: 768px) {
+			text-align: center;
+		}
+	}
+
+	hr {
+		margin-top: map-get($spacers, 3);
+		margin-bottom: map-get($spacers, 3);
+		padding-left: 0;
+		list-style: none;
+	}
+}
+
+.active-filters {
+	margin-top: map-get($spacers, 3);
+	margin-bottom: map-get($spacers, 3);
+}
+
 .gallery,
 .list {
 	align-items: flex-end;

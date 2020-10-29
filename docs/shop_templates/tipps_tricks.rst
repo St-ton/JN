@@ -292,6 +292,7 @@ Um die Update-Fähigkeiten Ihres Parent-Templates weiterhin zu gewährleisten, f
 
     include realpath(__DIR__ . '/../../Evo/php/functions.php');
 
+
 .. attention::
 
     Die so erstellte ``functions.php`` ersetzt das Original aus dem Vatertemplate vollständig! Stellen Sie deshalb
@@ -359,10 +360,10 @@ eingebunden:
 Funktionen im NOVA-Child registrieren
 +++++++++++++++++++++++++++++++++++++
 
-Im nachfolgenden Beispiel wird eine Methode zur Berechnung der Kreiszahl PI in ``Bootstrap``-Klasse eingefügt:
+Im nachfolgenden Beispiel wird eine Methode zur Berechnung der Kreiszahl PI in die ``Bootstrap``-Klasse eingefügt:
 eingebunden.
 
-.. code:: php
+.. code-block:: php
 
     <?php declare(strict_types=1);
 

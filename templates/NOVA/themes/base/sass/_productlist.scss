@@ -143,6 +143,11 @@
 	.title {
 		margin-bottom: map-get($spacers, 4);
 	}
+
+	.desc {
+		@include clearfix();
+		margin-bottom: map-get($spacers, 5);
+	}
 }
 
 .gallery,

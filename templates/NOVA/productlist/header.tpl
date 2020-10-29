@@ -65,7 +65,7 @@
             && $oNavigationsinfo->getCategory() !== null
             && $oNavigationsinfo->getCategory()->cBeschreibung|strlen > 0}
             {block name='productlist-header-description-category'}
-                <div class="desc clearfix mb-5">
+                <div class="desc">
                     <p>{$oNavigationsinfo->getCategory()->cBeschreibung}</p>
                 </div>
             {/block}
@@ -74,7 +74,7 @@
             && $oNavigationsinfo->getManufacturer() !== null
             && $oNavigationsinfo->getManufacturer()->cBeschreibung|strlen > 0}
             {block name='productlist-header-description-manufacturers'}
-                <div class="desc clearfix mb-5">
+                <div class="desc">
                     <p>{$oNavigationsinfo->getManufacturer()->cBeschreibung}</p>
                 </div>
             {/block}
@@ -83,7 +83,7 @@
             && $oNavigationsinfo->getCharacteristicValue() !== null
             && $oNavigationsinfo->getCharacteristicValue()->cBeschreibung|strlen > 0}
             {block name='productlist-header-description-attributes'}
-                <div class="desc clearfix mb-5">
+                <div class="desc">
                     <p>{$oNavigationsinfo->getCharacteristicValue()->cBeschreibung}</p>
                 </div>
             {/block}

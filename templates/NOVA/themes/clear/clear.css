@@ -23705,6 +23705,14 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 #result-wrapper .title {
   margin-bottom: 1.5rem;
 }
+#result-wrapper .desc {
+  margin-bottom: 2rem;
+}
+#result-wrapper .desc::after {
+  display: block;
+  clear: both;
+  content: "";
+}
 
 .gallery,
 .list {

@@ -24686,8 +24686,20 @@ header #burger-menu {
 }
 
 /* order-item */
-.order-items .item-detail-list {
+.order-items .order-item .item-detail-list {
   margin-top: 0.5rem;
+}
+.order-items .order-item .order-item-image-wrapper {
+  padding-right: 0.25rem;
+}
+.order-items .order-items-total {
+  margin-left: auto;
+  padding-top: 1.5rem;
+  padding-bottom: 1rem;
+}
+.order-items .price-col {
+  text-align: right;
+  margin-left: auto;
 }
 
 /* order-details */
@@ -25285,6 +25297,9 @@ header #burger-menu {
 }
 
 /* shipping-tax-info */
+.vat_info {
+  color: #707070;
+}
 .vat_info .shipping {
   display: inline-block;
 }

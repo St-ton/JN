@@ -21903,6 +21903,10 @@ aside .box .nav-link {
   padding-left: 0;
   padding-right: 0;
 }
+aside .box .snippets-categories-nav-link-child {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
 aside .box-monthlynews a .value {
   text-decoration: underline;
 }
@@ -24383,8 +24387,24 @@ header .nav-right .dropdown-menu {
     flex-direction: column;
   }
 }
+header .submenu-headline-image {
+  margin-bottom: 1rem;
+  display: none;
+}
+@media (min-width: 768px) {
+  header .submenu-headline-image {
+    display: block;
+  }
+}
 header #burger-menu {
   margin-right: 1rem;
+}
+
+@media (min-width: 992px) {
+  .nav-item-lg-m {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
 }
 
 .fixed-search {
@@ -25082,6 +25102,68 @@ header #burger-menu {
   padding-right: 0.25rem;
   text-align: right;
   width: 40%;
+}
+
+.snippets-filter-mobile-item .snippets-filter-mobile-item-collapse {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.snippets-filter-mobile-buttons {
+  justify-content: end;
+  align-items: center;
+}
+.snippets-filter-mobile-buttons .btn {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+/* alert */
+.alert-wrapper .close {
+  margin-left: 1rem;
+}
+
+/* author */
+.snippets-author .snippets-author-link {
+  display: inline-block;
+}
+
+.snippets-author-title {
+  margin-left: 1rem;
+}
+
+/* banner */
+.snippets-banner {
+  margin-bottom: 2rem;
+}
+.snippets-banner .snippets-banner-image {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.snippets-banner .snippets-banner-image img {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* maintenance */
+.maintenance-main-wrapper {
+  padding-top: 2rem;
+}
+.maintenance-main-wrapper .maintenance-main {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.maintenance-main-wrapper .maintenance-main-item {
+  margin-bottom: 1rem;
+}
+.maintenance-main-wrapper .maintenance-main-image {
+  margin-bottom: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+  width: 25%;
 }
 
 header, #main-wrapper {

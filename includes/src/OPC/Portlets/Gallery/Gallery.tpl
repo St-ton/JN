@@ -39,7 +39,7 @@
     {/if}
     {row
         id=$instance->getUid()
-        class='opc-Gallery opc-Gallery-'|cat:$galleryStyle
+        class='opc-Gallery opc-Gallery-'|cat:$galleryStyle|cat:' '|cat:$instance->getStyleClasses()
         style=$instance->getStyleString()
     }
         {$xsSum = 0}

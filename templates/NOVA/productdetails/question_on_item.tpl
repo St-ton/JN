@@ -150,10 +150,10 @@
             {/block}
             {block name='productdetails-question-on-item-form-textarea'}
                 {formgroup label-for="question" label="{lang key='question' section='productDetails'}"}
-                    {textarea name="nachricht" id="question" rows="8" required=true placeholder=" " class="{if isset($fehlendeAngaben_fragezumprodukt.nachricht) && $fehlendeAngaben_fragezumprodukt.nachricht > 0}has-error{/if}"}{if isset($Anfrage)}{$Anfrage->cNachricht}{/if}{/textarea}
                     {if isset($fehlendeAngaben_fragezumprodukt.nachricht) && $fehlendeAngaben_fragezumprodukt.nachricht > 0}
                         <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i> {if $fehlendeAngaben_fragezumprodukt.nachricht > 0}{lang key='fillOut'}{/if}</div>
                     {/if}
+                    {textarea name="nachricht" id="question" rows="8" required=true placeholder=" " class="{if isset($fehlendeAngaben_fragezumprodukt.nachricht) && $fehlendeAngaben_fragezumprodukt.nachricht > 0}has-error{/if}"}{if isset($Anfrage)}{$Anfrage->cNachricht}{/if}{/textarea}
                 {/formgroup}
             {/block}
             {block name='productdetails-question-on-item-form-include-checkbox'}

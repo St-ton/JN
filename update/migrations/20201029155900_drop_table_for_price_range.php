@@ -19,9 +19,9 @@ class Migration_20201029155900 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute(
+        /*$this->execute(
             'DROP TABLE `tpricerange`'
-        );
+        );*/
     }
 
     public function down()

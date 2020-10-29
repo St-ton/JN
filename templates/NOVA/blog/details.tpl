@@ -139,7 +139,7 @@
                                                         {/if}
                                                         {textarea id="comment-text" name="cKommentar" required=true}{/textarea}
                                                         {if $nPlausiValue_arr.cKommentar > 0}
-                                                            <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                                            <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i>
                                                                 {lang key='fillOut' section='global'}
                                                             </div>
                                                         {/if}

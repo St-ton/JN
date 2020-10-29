@@ -48,7 +48,7 @@
                                             {lang key='password' section='account data'}
                                         </label>
                                         {if isset($fehlendeAngaben.pass_zu_kurz)}
-                                            <div class="form-error-msg text-danger"><i class="fa fa-exclamation-triangle"></i>
+                                            <div class="form-error-msg"><i class="fa fa-exclamation-triangle"></i>
                                                 {lang key='passwordTooShort' section='login' printf=$Einstellungen.kunden.kundenregistrierung_passwortlaenge}
                                             </div>
                                         {/if}
@@ -79,7 +79,7 @@
                                             value=""
                                         }
                                         {if isset($fehlendeAngaben.pass_ungleich)}
-                                            <div class="form-error-msg text-danger"><i class="fa fa-exclamation-triangle"></i>
+                                            <div class="form-error-msg"><i class="fa fa-exclamation-triangle"></i>
                                                 {lang key='passwordsMustBeEqual' section='account data'}
                                             </div>
                                         {/if}

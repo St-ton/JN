@@ -200,7 +200,7 @@
                                                                 {/foreach}
                                                             {/select}
                                                             {if !empty($fehlendeAngaben.subject)}
-                                                                <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                                                <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i>
                                                                     {lang key='fillOut'}
                                                                 </div>
                                                             {/if}
@@ -219,7 +219,7 @@
                                                     }
                                                         {textarea name="nachricht" rows="10" id="message" required=true placeholder=" "}{if isset($Vorgaben->cNachricht)}{$Vorgaben->cNachricht}{/if}{/textarea}
                                                         {if !empty($fehlendeAngaben.nachricht)}
-                                                            <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                                            <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i>
                                                                 {lang key='fillOut'}
                                                             </div>
                                                         {/if}

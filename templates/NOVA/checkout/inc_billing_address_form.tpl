@@ -48,7 +48,7 @@
                                         <option value="m" {if isset($cPost_var['anrede']) && $cPost_var['anrede'] === 'm'}selected="selected"{elseif isset($Kunde->cAnrede) && $Kunde->cAnrede === 'm'}selected="selected"{/if}>{lang key='salutationM'}</option>
                                     {/select}
                                     {if isset($fehlendeAngaben.anrede)}
-                                        <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                        <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i>
                                             {lang key='fillOut'}
                                         </div>
                                     {/if}
@@ -250,7 +250,7 @@
                                         {/foreach}
                                     {/select}
                                     {if isset($fehlendeAngaben.land)}
-                                        <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                        <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i>
                                             {lang key='fillOut' section='global'}
                                         </div>
                                     {/if}
@@ -300,7 +300,7 @@
                                         {/if}
 
                                         {if isset($fehlendeAngaben.bundesland)}
-                                            <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                            <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i>
                                                 {lang key='fillOut' section='global'}
                                             </div>
                                         {/if}
@@ -329,7 +329,7 @@
                                         autocomplete="billing postal-code"
                                     }
                                     {if isset($fehlendeAngaben.plz)}
-                                        <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                        <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i>
                                             {if $fehlendeAngaben.plz >= 2}
                                                 {lang key='checkPLZCity' section='checkout'}
                                             {else}
@@ -359,7 +359,7 @@
                                         autocomplete="billing address-level2"
                                     }
                                     {if isset($fehlendeAngaben.ort)}
-                                        <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                        <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i>
                                             {if $fehlendeAngaben.ort==3}
                                                  {lang key='cityNotNumeric' section='account data'}
                                             {else}
@@ -390,7 +390,7 @@
                                         required=($Einstellungen.kunden.kundenregistrierung_abfragen_ustid === 'Y')
                                     }
                                     {if isset($fehlendeAngaben.ustid)}
-                                        <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                        <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i>
                                             {if $fehlendeAngaben.ustid == 1}
                                                 {lang key='fillOut' section='global'}
                                             {elseif $fehlendeAngaben.ustid == 2}
@@ -646,7 +646,7 @@
                                             }
                                         {/if}
                                         {if isset($fehlendeAngaben.custom[$kKundenfeld])}
-                                            <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                            <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i>
                                                 {if $fehlendeAngaben.custom[$kKundenfeld] === 1}
                                                     {lang key='fillOut' section='global'}
                                                 {elseif $fehlendeAngaben.custom[$kKundenfeld] === 2}

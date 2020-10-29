@@ -20,7 +20,7 @@
                                 <option value="m"{if isset($Lieferadresse->cAnrede) && $Lieferadresse->cAnrede === 'm'} selected="selected"{/if}>{lang key='salutationM'}</option>
                             {/select}
                             {if !empty($fehlendeAngaben.anrede)}
-                                <div class="form-error-msg text-danger">{lang key='fillOut'}</div>
+                                <div class="form-error-msg">{lang key='fillOut'}</div>
                             {/if}
                         {/formgroup}
                     {/block}
@@ -215,7 +215,7 @@
                             {/if}
 
                             {if !empty($fehlendeAngaben.bundesland)}
-                                <div class="form-error-msg text-danger">{lang key='fillOut'}</div>
+                                <div class="form-error-msg">{lang key='fillOut'}</div>
                             {/if}
                         {/formgroup}
                     {/block}
@@ -245,7 +245,7 @@
                             required=true
                             autocomplete="shipping postal-code"}
                         {if isset($fehlendeAngaben.plz)}
-                            <div class="form-error-msg text-danger"><i class="fa fa-exclamation-triangle"></i>
+                            <div class="form-error-msg"><i class="fa fa-exclamation-triangle"></i>
                                 {if $fehlendeAngaben.plz >= 2}
                                     {lang key='checkPLZCity' section='checkout'}
                                 {else}
@@ -275,7 +275,7 @@
                             aria=["label"=>{lang key='city' section='account data'}]
                         }
                         {if isset($fehlendeAngaben.ort)}
-                            <div class="form-error-msg text-danger"><i class="fa fa-exclamation-triangle"></i>
+                            <div class="form-error-msg"><i class="fa fa-exclamation-triangle"></i>
                                 {if $fehlendeAngaben.ort==3}
                                     {lang key='cityNotNumeric' section='account data'}
                                 {else}

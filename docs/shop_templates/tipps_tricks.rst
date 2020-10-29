@@ -450,8 +450,8 @@ Funktionen im NOVA-Child überschreiben
 ++++++++++++++++++++++++++++++++++++++
 
 In Ihrem NOVA-Child überschreiben sie Funktionen, indem Sie die entsprechende Basisklasse des NOVA-Templates
-``templates/NOVA/Plugins.php`` durch eine eigene Klasse in Ihrem NOVA-Child
-``templates/NOVAchild/Plugins.php`` erweitern.
+``templates/NOVA/Plugins.php`` mit einer eigenen Klasse in Ihrem NOVA-Child ``templates/NOVAchild/Plugins.php``
+erweitern.
 
 Im nachfolgenden Beispiel wird die Funktion ``getTranslation()`` des NOVA-Templates dahingehend erweitert, dass bei
 nicht vorhandener Übersetzung der Text "*-no translation-*" ausgegeben wird.
@@ -478,7 +478,7 @@ nicht vorhandener Übersetzung der Text "*-no translation-*" ausgegeben wird.
                 return \is_string($mixed) ? $mixed : $mixed[$to];
             }
 
-            return '*-no translation-*';
+            return '-no translation-';
         }
     }
 

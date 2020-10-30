@@ -269,7 +269,7 @@ function saveAdminSectionSettings(int $configSectionID, array &$post, $tags = [C
     }
     Shop::Container()->getCache()->flushTags($tags);
 
-    if ($invalid > 0 || \count($confData) === 0) {
+    if ($invalid > 0 || count($confData) === 0) {
         return __('errorConfigSave');
     }
 

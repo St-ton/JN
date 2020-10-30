@@ -7,12 +7,21 @@
             <input type="hidden" class="form-control" id="aSlide[{$kSlide}][nSort]" name="aSlide[{$kSlide}][nSort]" value="{if $kSlide}{$smarty.foreach.slide.iteration}{/if}" autocomplete="off" />
             <i class="btn btn-primary fa fa-bars"></i>
         </td>
-        <td class="text-center"><img src="{if isset($oSlide)}{$oSlide->getAbsoluteImage()}{else}templates/bootstrap/gfx/layout/upload.png{/if}" id="img{$kSlide}" onclick="select_image('{$kSlide}');" alt="Slidergrafik" class="slide-image" role="button" /></td>
-        <td class="text-center min-w-sm">
-            <input class="form-control margin2" id="cTitel{$kSlide}" type="text" name="aSlide[{$kSlide}][cTitel]" value="{if isset($oSlide)}{$oSlide->getTitle()}{/if}" placeholder="{__('title')}" />
-            <input class="form-control margin2" id="cLink{$kSlide}" type="text" name="aSlide[{$kSlide}][cLink]" value="{if isset($oSlide)}{$oSlide->getLink()}{/if}" placeholder="{__('link')}" />
+        <td class="text-center">
+            <img src="{if isset($oSlide)}{$oSlide->getAbsoluteImage()}{else}templates/bootstrap/gfx/layout/upload.png{/if}"
+                 id="img{$kSlide}" onclick="select_image('{$kSlide}');"
+                 alt="Slidergrafik" class="slide-image" role="button">
         </td>
-        <td class="min-w-sm"><textarea class="form-control vheight" id="cText{$kSlide}" name="aSlide[{$kSlide}][cText]" maxlength="255" placeholder="{__('text')}">{if isset($oSlide)}{$oSlide->getText()}{/if}</textarea></td>
+        <td class="text-center min-w-sm">
+            <input class="form-control margin2" id="cTitel{$kSlide}" type="text" name="aSlide[{$kSlide}][cTitel]"
+                   value="{if isset($oSlide)}{$oSlide->getTitle()}{/if}" placeholder="{__('title')}">
+            <input class="form-control margin2" id="cLink{$kSlide}" type="text" name="aSlide[{$kSlide}][cLink]"
+                   value="{if isset($oSlide)}{$oSlide->getLink()}{/if}" placeholder="{__('link')}">
+        </td>
+        <td class="min-w-sm">
+            <textarea class="form-control vheight" id="cText{$kSlide}" name="aSlide[{$kSlide}][cText]"
+                      maxlength="255" placeholder="{__('text')}">{if isset($oSlide)}{$oSlide->getText()}{/if}</textarea>
+        </td>
         <td class="vcenter">
             <button type="button"
                     onclick="$(this).parent().parent().find('input[name*=\'delete\']').val('1'); $(this).parent().parent().css({ 'display':'none'});sortSlide();"
@@ -59,17 +68,20 @@
             <div class="card-footer">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        <button type="button" class="btn btn-outline-primary btn-block mb-2" onclick="window.location.href = 'slider.php';">
+                        <button type="button" class="btn btn-outline-primary btn-block mb-2"
+                                onclick="window.location.href = 'slider.php';">
                             <i class="fa fa-angle-double-left"></i> {__('goBack')}
                         </button>
                     </div>
                     <div class="col-sm-6 col-xl-auto">
-                        <button type="button" class="btn btn-outline-primary btn-block mb-2" onclick="location.reload();">
+                        <button type="button" class="btn btn-outline-primary btn-block mb-2"
+                                onclick="location.reload();">
                             {__('cancelWithIcon')}
                         </button>
                     </div>
                     <div class="col-sm-6 col-xl-auto">
-                        <button type="button" class="btn btn-outline-primary btn-block mb-2" onclick="addSlide();">
+                        <button type="button" class="btn btn-outline-primary btn-block mb-2"
+                                onclick="addSlide();">
                             <i class="glyphicon glyphicon-plus"></i> {__('add')}
                         </button>
                     </div>

@@ -220,7 +220,8 @@ class Kategorie
         $item = $db->query(
             'SELECT tkategorie.kKategorie, ' . $catSQL->cSELECT . ' tkategorie.kOberKategorie, 
                 tkategorie.nSort, tkategorie.dLetzteAktualisierung,
-                tkategorie.cName, tkategorie.cBeschreibung, tseo.cSeo, tkategoriepict.cPfad, tkategoriepict.cType
+                tkategorie.cName, tkategorie.cBeschreibung, tseo.cSeo, tkategoriepict.cPfad, tkategoriepict.cType,
+                atr.cWert AS customImgName
                 FROM tkategorie
                 ' . $catSQL->cJOIN . '
                 LEFT JOIN tkategoriesichtbarkeit ON tkategoriesichtbarkeit.kKategorie = tkategorie.kKategorie
@@ -228,7 +229,11 @@ class Kategorie
                 LEFT JOIN tseo ON tseo.cKey = 'kKategorie'
                     AND tseo.kKey = " . $id . '
                     AND tseo.kSprache = ' . $languageID . '
-                LEFT JOIN tkategoriepict ON tkategoriepict.kKategorie = tkategorie.kKategorie
+                LEFT JOIN tkategoriepict 
+                    ON tkategoriepict.kKategorie = tkategorie.kKategorie
+                LEFT JOIN tkategorieattribut atr
+                    ON atr.kKategorie = tkategorie.kKategorie
+                    AND atr.cName = \'bildname\' 
                 WHERE tkategorie.kKategorie = ' . $id . '
                     ' . $catSQL->cWHERE . '
                     AND tkategoriesichtbarkeit.kKategorie IS NULL',

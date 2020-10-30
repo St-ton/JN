@@ -87,7 +87,7 @@ class LanguageHelper
     /**
      * @var string
      */
-    public $cacheID = 'language_data';
+    public $cacheID = 'cr_lng_dta';
 
     /**
      * @var array
@@ -290,7 +290,7 @@ class LanguageHelper
 
     private function initLangData(): void
     {
-        $data = $this->cache->get('lang_data_list', function ($cache, $cacheID, &$content, &$tags) {
+        $data = $this->cache->get('lng_dta_lst', function ($cache, $cacheID, &$content, &$tags) {
             $content = $this->db->query(
                 'SELECT * FROM tsprache ORDER BY kSprache ASC',
                 ReturnType::COLLECTION
@@ -1013,7 +1013,7 @@ class LanguageHelper
         }
 
 
-        $cacheID = 'shop_lang_' . (($shop === true) ? 'b' : '');
+        $cacheID = 'shp_lng_' . (($shop === true) ? 'b' : '');
         if (($lang = $this->cache->get($cacheID)) !== false && $lang !== null) {
             return $lang;
         }

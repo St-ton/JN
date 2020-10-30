@@ -68,7 +68,7 @@ class SearchSpecial
                 }
             }
             $overlays = \Functional\sort($overlays, static function (Overlay $left, Overlay $right) {
-                return $left->getPriority() > $right->getPriority();
+                return $left->getPriority() <=> $right->getPriority();
             });
             Shop::Container()->getCache()->set($cacheID, $overlays, [\CACHING_GROUP_OPTION]);
         }
@@ -179,6 +179,10 @@ class SearchSpecial
      */
     public static function randomizeAndLimit(array $arr, int $limit = 1): array
     {
+        if ($limit < 0) {
+            $limit = 0;
+        }
+
         \shuffle($arr);
 
         return \array_slice($arr, 0, $limit);
@@ -313,9 +317,6 @@ class SearchSpecial
      */
     public function getNewProducts(int $limit, int $customerGroupID = 0): array
     {
-        if (!$limit) {
-            $limit = 20;
-        }
         if (!$customerGroupID) {
             $customerGroupID = CustomerGroup::getDefaultGroupID();
         }

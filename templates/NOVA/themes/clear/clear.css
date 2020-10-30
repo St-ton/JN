@@ -20150,17 +20150,9 @@ aside .box-monthlynews a .value:hover {
     min-width: calc(100%/5);
   }
 }
-@media (max-width: 1299.98px) {
-  .carousel:not(.slick-initialized).slick-type-box .product-wrapper {
-    width: calc(100%/2);
-    min-width: calc(100%/2);
-  }
-}
-@media (min-width: 992px) {
-  .carousel:not(.slick-initialized).slick-type-box .product-wrapper {
-    width: 100%;
-    min-width: 100%;
-  }
+.carousel:not(.slick-initialized).slick-type-box .product-wrapper {
+  width: 100%;
+  min-width: 100%;
 }
 .carousel:not(.slick-initialized).slick-type-half .product-wrapper {
   width: calc(100%/2);
@@ -22394,6 +22386,11 @@ input.typeahead:-ms-input-placeholder {
   background-color: #f5f7fa;
 }
 
+.img-responsive {
+  max-width: 100%;
+  height: auto;
+}
+
 /* utilities */
 .rounded-top-left {
   border-top-left-radius: 0.125rem !important;
@@ -23869,10 +23866,6 @@ header a {
 header .navbar {
   position: static;
 }
-header .navbar-brand img {
-  max-width: 5.625rem;
-  max-height: 2rem;
-}
 header .navbar-toggler {
   color: #525252;
 }
@@ -23977,10 +23970,6 @@ header .nav-right .dropdown-menu {
   }
 }
 @media (min-width: 992px) {
-  header .navbar-brand img {
-    max-width: 10rem;
-    max-height: 4rem;
-  }
   header .navbar-collapse {
     height: 4.3125rem;
   }

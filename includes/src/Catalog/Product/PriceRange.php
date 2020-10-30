@@ -330,7 +330,7 @@ class PriceRange
      * @param int|null $netto
      * @return array
      */
-    public function getLocalizedArray(int $netto = null)
+    public function getLocalizedArray(int $netto = null): array
     {
         if ($netto !== null) {
             return $netto === 0

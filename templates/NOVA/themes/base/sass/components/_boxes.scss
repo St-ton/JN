@@ -192,11 +192,6 @@ $jqcloud-classes: 7;
     display: block;
   }
 }
-.box-wishlist {
-  .box-wishlist-icon {
-    margin-right: map-get($spacers, 2);
-  }
-}
 .box-slider {
   margin-bottom: map-get($spacers, 4);
 }
@@ -207,3 +202,16 @@ $jqcloud-classes: 7;
     color: $text-muted;
   }
 }
+.box-delete-button {
+  text-align: right;
+  white-space: nowrap;
+  .remove {
+    float: right;
+  }
+}
+.box-filter-price {
+  .box-filter-price-collapse {
+    padding-bottom: map-get($spacers, 4);
+  }
+}
+

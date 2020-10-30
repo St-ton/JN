@@ -14,7 +14,7 @@
                 {/block}
                 {block name='boxes-box-wishlist-title'}
                     <div class="productlist-filter-headline align-items-center-util d-none d-md-flex">
-                        <i class='fa fa-heart box-wishlist-icon'></i>
+                        <i class='fa fa-heart icon-mr-2'></i>
                         {lang key='wishlist'}
                     </div>
                 {/block}
@@ -59,9 +59,9 @@
                                                 {/formrow}
                                             {/block}
                                         </td>
-                                        <td class="text-right-util text-nowrap-util">
+                                        <td class="box-delete-button">
                                             {block name='snippets-wishlist-dropdown-products-remove'}
-                                                {link class="remove float-right"
+                                                {link class="remove"
                                                     href=$wishlistItem->cURL
                                                     data=["name"=>"Wunschliste.remove",
                                                     "toggle"=>"product-actions",

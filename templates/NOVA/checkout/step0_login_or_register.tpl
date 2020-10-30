@@ -29,8 +29,8 @@
                 {/card}
             {/block}
             {block name='checkout-step0-login-or-hr'}
-                <div class="d-lg-none d-block">
-                    <div class="hr-sect my-5">{lang key='or'}</div>
+                <div class="checkout-existing-customer-hr">
+                    <div class="hr-sect">{lang key='or'}</div>
                 </div>
             {/block}
         {/col}

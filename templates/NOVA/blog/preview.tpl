@@ -1,6 +1,6 @@
 {block name='blog-preview'}
     {$title = $newsItem->getTitle()|escape:'quotes'}
-    <div itemprop="blogPost" itemscope=true itemtype="https://schema.org/BlogPosting" class="newsbox">
+    <div itemprop="blogPost" itemscope=true itemtype="https://schema.org/BlogPosting" class="newsbox blog-preview">
         <meta itemprop="mainEntityOfPage" content="{$ShopURL}/{$newsItem->getURL()}">
         {block name='blog-preview-news-header'}
             <div class="newsbox-header">
@@ -27,7 +27,7 @@
         {block name='blog-preview-news-body'}
             <div class="newsbox-body">
                 {row}
-                    {col cols=8}
+                    {col cols=8 class="blog-preview-author"}
                         {assign var=dDate value=$newsItem->getDateValidFrom()->format('Y-m-d')}
                         {block name='blog-preview-author'}
                             {if $newsItem->getAuthor() !== null}
@@ -48,10 +48,10 @@
                             <span class="align-middle">{$newsItem->getDateValidFrom()->format('d.m.Y')}</span>
                         {/block}
                     {/col}
-                    {col cols="auto" class="ml-auto-util"}
+                    {col cols="auto" class="blog-preview-comment"}
                         {if isset($Einstellungen.news.news_kommentare_nutzen) && $Einstellungen.news.news_kommentare_nutzen === 'Y'}
                             {block name='blog-preview-comments'}
-                                {link href=$newsItem->getURL()|cat:'#comments' class='text-decoration-none-util'}
+                                {link href=$newsItem->getURL()|cat:'#comments'}
                                     <span class="fas fa-comments"></span>
                                     <span class="sr-only">
                                             {if $newsItem->getCommentCount() === 1}
@@ -86,7 +86,7 @@
             <div class="newsbox-footer">
                 {link href=$newsItem->getURL() title=$title}
                     {lang key='moreLink' section='news'}
-                    <i class="fas fa-long-arrow-alt-right ml-2"></i>
+                    <i class="fas fa-long-arrow-alt-right icon-mr-2"></i>
                 {/link}
             </div>
         {/block}

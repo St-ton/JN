@@ -26,7 +26,7 @@
             && $Bestellung->Zahlungsart->cModulId !== 'za_lastschrift_jtl'
         }
             {block name='checkout-inc-paymentmodules-during-order'}
-                <ul class="list-unstyled">
+                <ul class="list-unstyled payment-method-module-ids">
                     <li><strong>{lang key='yourOrderId' section='checkout'}: </strong>{$Bestellung->cBestellNr}</li>
                     <li><strong>{lang key='yourChosenPaymentOption' section='checkout'}: </strong>{$Bestellung->cZahlungsartName}</li>
                 </ul>

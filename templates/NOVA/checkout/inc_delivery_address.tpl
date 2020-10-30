@@ -1,5 +1,5 @@
 {block name='checkout-inc-delivery-address'}
-    <ul class="list-unstyled">
+    <ul class="list-unstyled inc-delivery-address">
         {if isset($orderDetail)}
             {if $Lieferadresse->cFirma}<li>{$Lieferadresse->cFirma}</li>{/if}
             {if $Lieferadresse->cZusatz}<li>{$Lieferadresse->cZusatz}</li>{/if}

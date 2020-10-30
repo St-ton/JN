@@ -1,6 +1,6 @@
 {block name='checkout-customer-shipping-address'}
     <fieldset>
-    {formrow}
+    {formrow class="customer-shipping-address"}
         {$name = 'shipping_address'}
         {* salutation / title *}
         {block name='checkout-customer-shipping-address-salutation-title'}

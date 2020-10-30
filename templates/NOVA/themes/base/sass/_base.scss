@@ -492,3 +492,6 @@ input.typeahead {
   max-width: 100%;
   height: auto;
 }
+.icon-mr-2 {
+  margin-right: map-get($spacers, 2);
+}

@@ -140,7 +140,7 @@
                                                             </div>
                                                         {/if}
                                                         {if $Einstellungen.news.news_kommentare_freischalten === 'Y'}
-                                                            <small class="form-text text-muted">{lang key='commentWillBeValidated' section='news'}</small>
+                                                            <small class="form-text text-muted-util">{lang key='commentWillBeValidated' section='news'}</small>
                                                         {/if}
                                                         {textarea id="comment-text" name="cKommentar" required=true}{/textarea}
                                                     {/formgroup}

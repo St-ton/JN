@@ -1,7 +1,7 @@
 {block name='checkout-inc-shipping-address'}
     {assign var=fehlendeAngabenShipping value=$fehlendeAngaben.shippingAddress|default:null}
     {assign var=showShippingAddress value=(isset($Lieferadresse) || !empty($kLieferadresse) || isset($forceDeliveryAddress))}
-    {row}
+    {row class="inc-shipping-address"}
         {col cols=12}
             {block name='checkout-inc-shipping-address-checkbox-equals'}
                 <div class="form-group checkbox control-toggle">
@@ -9,8 +9,9 @@
                     {checkbox id="checkout_register_shipping_address"
                         name="shipping_address" value="0" checked=!$showShippingAddress
                         data=["toggle"=>"collapse", "target"=>"#select_shipping_address"]
-                        class="{if isset($forceDeliveryAddress)}d-none{/if}"}
-                    {lang key='shippingAdressEqualBillingAdress' section='account data'}
+                        class="{if isset($forceDeliveryAddress)}d-none{/if}"
+                    }
+                        {lang key='shippingAdressEqualBillingAdress' section='account data'}
                     {/checkbox}
                 </div>
             {/block}

@@ -91,7 +91,19 @@
 			margin-bottom: map-get($spacers, 5);
 		}
 	}
+	.blog-overview-hr {
+		margin-top: - map-get($spacers, 1);
+		margin-bottom: map-get($spacers, 5);
+	}
 }
 .blog-header {
 	margin-bottom: map-get($spacers, 5);
+}
+.blog-preview {
+	.blog-preview-comment {
+		margin-left: auto;
+		a {
+			text-decoration: none;
+		}
+	}
 }

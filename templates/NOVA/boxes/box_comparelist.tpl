@@ -16,7 +16,7 @@
                 {/block}
                 {block name='boxes-box-comparelist-title'}
                     <div class="productlist-filter-headline align-items-center-util d-none d-md-flex">
-                        <i class='fas fa-list mr-2'></i>
+                        <i class='fas fa-list icon-mr-2'></i>
                         {lang key='compare'}
                     </div>
                 {/block}
@@ -59,9 +59,9 @@
                                                 {/formrow}
                                             {/block}
                                         </td>
-                                        <td class="text-right-util text-nowrap-util">
+                                        <td class="box-delete-button">
                                             {block name='boxes-box-comparelist-dropdown-products-remove'}
-                                                {link href=$product->cURLDEL class="remove float-right"
+                                                {link href=$product->cURLDEL class="remove"
                                                     title="{lang section="comparelist" key="removeFromCompareList"}"
                                                     data=["name"=>"Vergleichsliste.remove",
                                                     "toggle"=>"product-actions",

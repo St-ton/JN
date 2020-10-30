@@ -20950,9 +20950,20 @@ label {
 .blog-overview .blog-overview-preview .blog-overview-preview-item {
   margin-bottom: 2rem;
 }
+.blog-overview .blog-overview-hr {
+  margin-top: -0.25rem;
+  margin-bottom: 2rem;
+}
 
 .blog-header {
   margin-bottom: 2rem;
+}
+
+.blog-preview .blog-preview-comment {
+  margin-left: auto;
+}
+.blog-preview .blog-preview-comment a {
+  text-decoration: none;
 }
 
 .pagination-sm .page-item.active .page-link::after, .pagination-sm .page-item.active .page-text::after {
@@ -22135,10 +22146,6 @@ aside .box-monthlynews a .value:hover {
   display: block;
 }
 
-.box-wishlist .box-wishlist-icon {
-  margin-right: 0.5rem;
-}
-
 .box-slider {
   margin-bottom: 1.5rem;
 }
@@ -22149,6 +22156,18 @@ aside .box-monthlynews a .value:hover {
 }
 .box-link-wrapper i.snippets-filter-item-icon-right {
   color: #707070;
+}
+
+.box-delete-button {
+  text-align: right;
+  white-space: nowrap;
+}
+.box-delete-button .remove {
+  float: right;
+}
+
+.box-filter-price .box-filter-price-collapse {
+  padding-bottom: 1.5rem;
 }
 
 :root {
@@ -22758,6 +22777,10 @@ input.typeahead:-ms-input-placeholder {
 .img-responsive {
   max-width: 100%;
   height: auto;
+}
+
+.icon-mr-2 {
+  margin-right: 0.5rem;
 }
 
 /* utilities */
@@ -25123,6 +25146,18 @@ header #burger-menu {
 .checkout-existing-customer {
   margin-bottom: 1rem;
 }
+.checkout-existing-customer .checkout-existing-customer-hr {
+  display: block;
+}
+@media (min-width: 992px) {
+  .checkout-existing-customer .checkout-existing-customer-hr {
+    display: none;
+  }
+}
+.checkout-existing-customer .checkout-existing-customer-hr > div {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
 
 .checkout-register-form {
   margin-top: 1rem;
@@ -25260,6 +25295,10 @@ header #burger-menu {
   padding-top: 1.5rem;
   padding-bottom: 1rem;
   margin-left: auto;
+}
+
+.checkout-payment-options {
+  margin-bottom: 1rem;
 }
 
 /* selectionwizard */

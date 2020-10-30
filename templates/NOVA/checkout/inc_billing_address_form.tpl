@@ -1,5 +1,5 @@
 {block name='checkout-inc-billing-address-form'}
-    <fieldset>
+    <fieldset class="inc-billing-address-form">
         {block name='checkout-inc-billing-address-form-legend'}
             {if isset($checkout) || $nSeitenTyp === $smarty.const.PAGE_MEINKONTO}
                 <div class="h2">

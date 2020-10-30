@@ -24871,7 +24871,7 @@ header #burger-menu {
   justify-content: center;
 }
 
-.account-head-data {
+.account-head-data > div {
   margin-bottom: 2rem;
 }
 .account-head-data .account-head-data-credit {

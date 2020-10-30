@@ -22,7 +22,7 @@
             <div class="form-group">
                 <label for="config-{$propname}"
                         {if !empty($propdesc.desc)}
-                            data-toggle="tooltip" title="{$propdesc.desc|default:''}"
+                            data-toggle="tooltip" title="{$propdesc.desc|default:''|escape:'html'}"
                             data-placement="auto"
                         {/if}>
                     {$propdesc.label}
@@ -32,7 +32,7 @@
                 </label>
                 <input type="{$type}" class="form-control" id="config-{$propname}" name="{$propname}"
                        value="{$propval|escape:'html'}"
-                       {if !empty($propdesc.placeholder)}placeholder="{$propdesc.placeholder}"{/if}
+                       {if !empty($propdesc.placeholder)}placeholder="{$propdesc.placeholder|escape:'html'}"{/if}
                        {if $required === true}required{/if}>
                 {if isset($propdesc.help)}
                     <span class="help-block">{$propdesc.help}</span>

@@ -92,6 +92,9 @@ msgstr "Installieren"
 msgid "pluginBtnDeInstall"
 msgstr "Deinstallieren"
 
+msgid "pluginBtnDelete"
+msgstr "Löschen"
+
 msgid "pluginBtnReload"
 msgstr "Neu laden"
 
@@ -136,6 +139,9 @@ msgstr "Bitte wählen Sie mindestens ein Plugin aus."
 
 msgid "successPluginDeactivate"
 msgstr "Ausgewählte Plugins wurden erfolgreich deaktiviert."
+
+msgid "errorPluginDeleteAtLeastOne"
+msgstr "Mindestens ein Plugin konnte nicht gelöscht werden."
 
 msgid "errorPluginDeleteSQL"
 msgstr "Das Plugin konnte aufgrund eines SQL-Fehlers nicht deinstalliert werden. Bitte sehen Sie sich die Log-Datei an."
@@ -196,6 +202,9 @@ msgstr "Plugin-Lizenz"
 
 msgid "deletePluginData"
 msgstr "Möchten Sie das Plugin aus der Datenbank löschen?"
+
+msgid "deletePluginFilesHeading"
+msgstr "Möchten Sie wirklich versuchen, sämtliche Plugindateien zu löschen?"
 
 msgid "deletePluginFilesQuestion"
 msgstr "Sollen die dazugehörigen Dateien ebenfalls gelöscht werden?"

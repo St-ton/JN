@@ -185,7 +185,12 @@ class Slide
             } else {
                 $this->setThumbnail(\STORAGE_OPC . '.tmb/' . \basename($this->getThumbnail()));
             }
-            $this->setImage(\STORAGE_OPC . \basename($this->getImage()));
+            $path = \parse_url(\Shop::getURL() . '/', \PHP_URL_PATH);
+            if (Text::startsWith($this->image, $path)) {
+                $this->image = \ltrim(\substr($this->image, \mb_strlen($path)), '/');
+            } else {
+                $this->image = \STORAGE_OPC . \basename($this->image);
+            }
         }
 
         return $this->id === null || $this->id === 0

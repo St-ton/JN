@@ -1,7 +1,7 @@
 {block name='snippets-uploads'}
     {if !empty($oUploadSchema_arr)}
         {getUploaderLang iso=$smarty.session.currentLanguage->cISO639|default:'' assign='uploaderLang'}
-        {if $tplscope === 'product' && !empty($Artikel) && !($Artikel->nIstVater || $Artikel->kVaterArtikel > 0)}
+        {if $tplscope === 'product' && !empty($Artikel) && !($Artikel->nIstVater || $Artikel->kVaterArtikel > 0 || $Artikel->isSimpleVariation || $Artikel->bHasKonfig)}
             {block name='snippets-uploads-subheading-product'}
                 <div class="h3 section-heading">{lang key='uploadHeadline'}</div>
             {/block}
@@ -154,7 +154,7 @@
                     {/row}
                 {/foreach}
             {/block}
-        {else}
+        {elseif $tplscope === 'basket'}
             {block name='snippets-uploads-subheading'}
                 <div class="h3 section-heading">{lang key='uploadHeadline'}</div>
                 <hr class="upload-scheme-cart-hr-before">

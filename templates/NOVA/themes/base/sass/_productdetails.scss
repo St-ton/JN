@@ -22,6 +22,10 @@
 	}
 }
 
+.delivery-status .list-unstyled {
+	margin-bottom: 0;
+}
+
 #image_wrapper {
 	margin-bottom: map_get($spacers, 6);
 	text-align: right;
@@ -423,36 +427,49 @@
 	padding: 0.2rem 0.45rem;
 }
 
-#product-offer .product-info {
-	border: 0;
-	.bordered-top-bottom {
-		padding: ($grid-gutter-width / 2);
-		border-top: 1px solid $gray-lighter;
-		border-bottom: 1px solid $gray-lighter;
+#product-offer {
+	.product-info {
+		border: 0;
+		.bordered-top-bottom {
+			padding: ($grid-gutter-width / 2);
+			border-top: 1px solid $gray-lighter;
+			border-bottom: 1px solid $gray-lighter;
+		}
+		ul.info-essential {
+			margin: map_get($spacers, 5) 0;
+		}
+		.shortdesc {
+			margin-bottom: map_get($spacers, 3);
+		}
+		.product-offer {
+			margin-bottom: map_get($spacers, 5);
+			> .row {
+				margin-bottom: map_get($spacers, 4);
+			}
+		}
+		.stock-information {
+			border-top: $border-width solid $border-color;
+			border-bottom: $border-width solid $border-color;
+			align-items: flex-end;
+			margin-left: 0;
+			margin-right: 0;
+		}
+		.question-on-item {
+			margin-left: auto;
+			.question {
+				padding: 0;
+			}
+		}
 	}
-	ul.info-essential {
-		margin: map_get($spacers, 5) 0;
-	}
-	.shortdesc {
-		margin-bottom: map_get($spacers, 3);
-	}
-	.product-offer {
-		margin-bottom: map_get($spacers, 5);
-		> .row {
+	.price_wrapper {
+		@include media-breakpoint-up(md) {
 			margin-bottom: map_get($spacers, 4);
 		}
 	}
-	.stock-information {
-	  	border-top: $border-width solid $border-color;
-		border-bottom: $border-width solid $border-color;
-		align-items: flex-end;
-		margin-left: 0;
-		margin-right: 0;
-	}
-	.question-on-item {
-		margin-left: auto;
-		.question {
-			padding: 0;
+	.bulk-prices {
+		margin-top: map_get($spacers, 3);
+		.bulk-price {
+			margin-right: map_get($spacers, 1);
 		}
 	}
 }
@@ -510,9 +527,45 @@
 	}
 }
 
-#tab-downloads card {
+#tabAccordion,
+.tab-navigation {
+	margin-bottom: map_get($spacers, 7);
+}
+
+#tabAccordion > .card,
+#tab-downloads .card,
+.variations .swatches {
 	margin-bottom: map_get($spacers, 3);
 }
+
+#tabAccordion > .card{
+	.card-header {
+		margin-bottom: 0;
+		@include font-size($h6-font-size);
+	}
+	.collapse {
+		margin-bottom: map_get($spacers, 5);
+	}
+}
+
+.product-stock-info {
+	padding: map_get($spacers, 3) 0;
+	margin-right: 0;
+	margin-left: 0;
+	border-bottom: 1px solid $gray-lighter;
+	align-items: flex-end;
+	@include media-breakpoint-up(lg) {
+		padding: map_get($spacers, 3);
+	}
+	.link {
+		padding: 0;
+		text-decoration: underline;
+		span {
+			margin-right: map_get($spacers, 2);
+		}
+	}
+}
+
 
 .product-matrix {
 	margin-top: map_get($spacers, 3);
@@ -537,5 +590,94 @@
 		&:nth-of-type(odd) {
 			background-color: $gray-lighter;
 		}
+	}
+}
+
+.media .card,
+.reviews-mosthelpful,
+#reviews-list .review {
+	margin-bottom: map_get($spacers, 3);
+}
+
+
+
+.product-popup {
+	display: none;
+}
+
+#productImagesModal {
+	.modal-header {
+		padding: 0;
+		border: 0;
+	}
+}
+
+#pushed-success {
+	padding: 0;
+	margin-bottom: map_get($spacers, 5);
+	box-shadow: $box-shadow-sm;
+	.square-image .image,
+	.continue-shopping {
+		margin-bottom: map_get($spacers, 3);
+	}
+	.x-selling {
+		display: none;
+		border-left: 1px solid $border-color;
+		@include media-breakpoint-up(md) {
+			display: block;
+		}
+	}
+}
+
+.reviews,
+#description .desc .h3 {
+	margin-top: map_get($spacers, 3);
+}
+
+#reviews-overview {
+	align-items: center;
+	.card {
+		margin-bottom: map_get($spacers, 3);
+	}
+}
+
+#ratingDropdown {
+	padding-left: 0;
+	padding-right: 0;
+	span {
+		margin: 0 map_get($spacers, 2)
+	}
+	.dropdown-menu {
+		padding: 0;
+	}
+	.dropdown-body {
+		padding: map_get($spacers, 3);
+		.row {
+			margin-bottom: map_get($spacers, 2);
+		}
+	}
+}
+
+#article_rating {
+	margin-bottom: map_get($spacers, 3);
+	width: auto;
+}
+
+.review-comment {
+	.row {
+		margin-top: map_get($spacers, 1);
+	}
+	.review-helpful {
+		margin-top: map_get($spacers, 3);
+		margin-bottom: map_get($spacers, 5);
+		justify-content: space-evenly;
+		.col {
+			flex: 0 0 auto;
+			width: auto;
+			max-width: 100%;
+		}
+	}
+	.review-reply {
+		margin-left: map_get($spacers, 3);
 	}
 }

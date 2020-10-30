@@ -19,7 +19,7 @@
             {/if}
         {/if}
         {block name='productdetails-popups-include-pushed'}
-            <div id="popupa{$kArtikel}" class="d-none">
+            <div id="popupa{$kArtikel}" class="product-popup">
                 {include file='productdetails/pushed.tpl' oArtikel=$Artikel fAnzahl=$bWarenkorbAnzahl}
             </div>
         {/block}

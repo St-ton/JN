@@ -107,7 +107,6 @@ final class QuickSync extends AbstractSync
             $this->sendAvailabilityMails($product, $conf);
         }
         $clearTags = \array_unique($clearTags);
-        $this->handlePriceRange($clearTags);
         $this->cache->flushTags(map($clearTags, static function ($e) {
             return \CACHING_GROUP_ARTICLE . '_' . $e;
         }));

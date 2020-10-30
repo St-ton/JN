@@ -163,8 +163,8 @@
 			}
 			&.slick-count-default {
 				div.js-gallery-images {
-					width: calc((100%)/5);
-					min-width: calc((100%)/5);
+					width: calc(((100%)/5) - 1rem);
+					min-width: calc(((100%)/5) - 1rem);
 				}
 			}
 			.slick-prev {

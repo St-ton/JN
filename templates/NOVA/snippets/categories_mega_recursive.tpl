@@ -3,7 +3,7 @@
     {$max_subsub_items="{if $isMobile}10{else}3{/if}"}
     {block name='snippets-categories-mega-recursive-main-link'}
         {link href=$mainCategory->getURL()
-        class="d-lg-block {if $firstChild}submenu-headline submenu-headline-toplevel{/if} {$subCategory} {if $mainCategory->hasChildren() && $subCategory < $max_subsub_items}nav-link dropdown-toggle{/if}"
+        class="d-lg-block {if $firstChild}submenu-headline submenu-headline-toplevel{/if} {$subCategory} {if $mainCategory->hasChildren() && $subCategory < $max_subsub_items && $Einstellungen.template.megamenu.show_subcategories !== 'N'}nav-link dropdown-toggle{/if}"
         aria=["expanded"=>"false"]}
             {if $firstChild
                 && $Einstellungen.template.megamenu.show_category_images !== 'N'
@@ -16,7 +16,7 @@
                             {$mainCategory->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_kategorien_breite}w"
                 sizes="auto"
                 alt=$mainCategory->getName()|escape:'html'
-                class="d-none d-md-block mb-3"}
+                class="d-none d-lg-block mb-3"}
             {/if}
             <span class="text-truncate d-block">{$mainCategory->getName()}{if $mainCategory->hasChildren() && $subCategory >= $max_subsub_items}<span class="ml-1 text-truncate">({$mainCategory->getChildren()|count})</span>{/if}</span>
 

@@ -43,12 +43,16 @@ class Category extends AbstractImage
     public function getImageNames(MediaImageRequest $req): array
     {
         return $this->db->queryPrepared(
-            'SELECT pic.cPfad AS path, pic.kKategorie, pic.kKategorie AS id, cat.cName, cat.cSeo AS seoPath
+            'SELECT pic.cPfad AS path, pic.kKategorie, pic.kKategorie AS id, cat.cName,
+                atr.cWert AS customImgName, cat.cSeo AS seoPath
                 FROM tkategorie cat
                 JOIN tkategoriepict pic
                     ON cat.kKategorie = pic.kKategorie
+                LEFT JOIN tkategorieattribut atr
+                    ON cat.kKategorie = atr.kKategorie
+                    AND atr.cName = :atr
                 WHERE pic.kKategorie = :cid',
-            ['cid' => $req->getID()],
+            ['cid' => $req->getID(), 'atr' => \KAT_ATTRIBUT_BILDNAME],
             ReturnType::COLLECTION
         )->map(static function ($item) {
             return self::getCustomName($item);
@@ -62,6 +66,9 @@ class Category extends AbstractImage
     {
         if (\is_string($mixed)) {
             return \pathinfo($mixed)['filename'];
+        }
+        if (isset($mixed->customImgName)) {
+            return Image::getCleanFilename($mixed->customImgName);
         }
         if (isset($mixed->currentImagePath)) {
             return \pathinfo($mixed->currentImagePath)['filename'];
@@ -116,11 +123,17 @@ class Category extends AbstractImage
      */
     public function getAllImages(int $offset = null, int $limit = null): Generator
     {
-        $images = $this->db->query(
-            'SELECT pic.cPfad AS path, pic.kKategorie, pic.kKategorie AS id, cat.cName, cat.cSeo AS seoPath
+        $images = $this->db->queryPrepared(
+            'SELECT pic.cPfad AS path, pic.kKategorie, pic.kKategorie AS id, cat.cName, 
+                atr.cWert AS customImgName, cat.cSeo AS seoPath
                 FROM tkategorie cat
                 JOIN tkategoriepict pic
-                    ON cat.kKategorie = pic.kKategorie' . self::getLimitStatement($offset, $limit),
+                    ON cat.kKategorie = pic.kKategorie
+                LEFT JOIN tkategorieattribut atr
+                    ON cat.kKategorie = atr.kKategorie
+                    AND atr.cName = :atr'
+            . self::getLimitStatement($offset, $limit),
+            ['atr' => \KAT_ATTRIBUT_BILDNAME],
             ReturnType::QUERYSINGLE
         );
         while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {

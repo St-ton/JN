@@ -230,7 +230,7 @@ class AuthToken
         }
 
         if ($authCode === null || $authCode !== $this->authCode) {
-            $logger !== null && $logger->addError('Call responseToken with invalid authcode!');
+            $logger !== null && $logger->error('Call responseToken with invalid authcode!');
             \http_response_code(404);
             exit;
         }

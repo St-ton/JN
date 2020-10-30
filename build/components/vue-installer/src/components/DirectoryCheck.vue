@@ -38,7 +38,7 @@
             <icon name="sync" spin></icon> {{ $t('verifyWritePermissions') }}
         </b-alert>
         <b-alert variant="danger" show v-if="networkError !== false">
-            <icon name="exclamation-triangle"></icon> {{ $t('networkError') }} {{ networkError }}
+            <icon name="exclamation-triangle"></icon> {{ $t('networkError') }} <div v-html="networkError"></div>
         </b-alert>
         <continue :disableBack="false" :disable="!checkedDirectories || networkError !== false || directoriesStatus === 0"></continue>
     </div>
@@ -99,6 +99,11 @@ export default {
         check() {
             axios.get(this.$getApiUrl('dircheck'))
                 .then(response => {
+                    if (!response.data.testresults) {
+                        this.networkError = response.data;
+                        return;
+                    }
+                    this.networkError = false;
                     this.directories = [];
                     Object.keys(response.data.testresults).forEach((dir, idx) => {
                         this.directories.push({

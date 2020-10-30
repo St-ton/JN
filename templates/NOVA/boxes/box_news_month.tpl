@@ -29,7 +29,7 @@
                                 {navitem href=$newsMonth->cURL  title=$newsMonth->cName router-class="box-link-wrapper"}
                                     <i class="far fa-newspaper snippets-filter-item-icon-right"></i>
                                     {$newsMonth->cName}
-                                    {badge variant="outline-secondary" class="ml-auto-util"}{$newsMonth->nAnzahl}{/badge}
+                                    {badge variant="outline-secondary"}{$newsMonth->nAnzahl}{/badge}
                                 {/navitem}
                             {/block}
                         {/foreach}

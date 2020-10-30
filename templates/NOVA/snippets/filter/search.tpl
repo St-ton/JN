@@ -16,7 +16,7 @@
                     <div class="box-link-wrapper">
                         <i class="far fa-{if $searchFilter->isActive()}check-{/if}square snippets-filter-item-icon-right"></i>
                         <span class="word-break">{$searchFilter->getName()}</span>
-                        {badge variant="outline-secondary" class="ml-auto-util"}{$searchFilter->getCount()}{/badge}
+                        {badge variant="outline-secondary"}{$searchFilter->getCount()}{/badge}
                     </div>
             {/link}
         {/block}

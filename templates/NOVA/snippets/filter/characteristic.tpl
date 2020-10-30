@@ -3,7 +3,7 @@
     {$limit = $Einstellungen.template.productlist.filter_max_options}
     {$collapseInit = false}
     {if $Merkmal->getData('cTyp') === 'BILD'}
-        <ul class="nav">
+        <ul class="nav nav-filter-has-image">
     {/if}
     {foreach $Merkmal->getOptions() as $attributeValue}
         {$attributeImageURL = null}
@@ -30,8 +30,8 @@
                                 class="vmiddle"
                             }
                         {/if}
-                        <span class="word-break mr-3">{$attributeValue->getValue()|escape:'html'}</span>
-                        {badge variant="outline-secondary" class="ml-auto-util"}{$attributeValue->getCount()}{/badge}
+                        <span class="word-break">{$attributeValue->getValue()|escape:'html'}</span>
+                        {badge variant="outline-secondary"}{$attributeValue->getCount()}{/badge}
                     </div>
                 {/dropdownitem}
             {/block}
@@ -61,7 +61,7 @@
                                     }
                                 {/if}
                                 <span class="word-break">{$attributeValue->getValue()|escape:'html'}</span>
-                                {badge variant="outline-secondary" class="ml-auto-util"}{$attributeValue->getCount()}{/badge}
+                                {badge variant="outline-secondary"}{$attributeValue->getCount()}{/badge}
                             </div>
                         {/link}
                     {/block}
@@ -98,7 +98,7 @@
                                 <span class="word-break">
                                     {$attributeValue->getValue()|escape:'html'}
                                 </span>
-                                {badge variant="outline-secondary" class="ml-auto-util"}{$attributeValue->getCount()}{/badge}
+                                {badge variant="outline-secondary"}{$attributeValue->getCount()}{/badge}
                             </div>
                         {/link}
                     {/block}

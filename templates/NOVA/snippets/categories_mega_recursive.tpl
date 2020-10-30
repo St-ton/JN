@@ -1,7 +1,7 @@
 {block name='snippets-categories-mega-recursive'}
     {block name='snippets-categories-mega-recursive-main-link'}
         {link href=$mainCategory->getURL()
-        class="d-lg-block {if $firstChild}submenu-headline submenu-headline-toplevel{/if} {if $mainCategory->hasChildren() && $Einstellungen.template.megamenu.show_subcategories !== 'N'}nav-link dropdown-toggle{/if}" aria=["expanded"=>"false"]}
+        class="categories-recursive-link d-lg-block {if $firstChild}submenu-headline submenu-headline-toplevel{/if} {if $mainCategory->hasChildren() && $Einstellungen.template.megamenu.show_subcategories !== 'N'}nav-link dropdown-toggle{/if}" aria=["expanded"=>"false"]}
             {if $firstChild
                 && $Einstellungen.template.megamenu.show_category_images !== 'N'
                 && (!$isMobile || $isTablet)
@@ -20,7 +20,7 @@
     {/block}
     {if $mainCategory->hasChildren() && $Einstellungen.template.megamenu.show_subcategories !== 'N'}
         {block name='snippets-categories-mega-recursive-child-content'}
-            <div class="dropdown-menu">
+            <div class="categories-recursive-dropdown dropdown-menu">
                 {nav}
                     {block name='snippets-categories-mega-recursive-child-header'}
                         <li class="nav-item d-lg-none">

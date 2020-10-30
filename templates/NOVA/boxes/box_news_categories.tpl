@@ -27,7 +27,7 @@
                             {if $newsCategory@index === 10}{break}{/if}
                             {navitem href=$newsCategory->cURLFull title=$newsCategory->cName router-class="box-link-wrapper"}
                                 {$newsCategory->cName}
-                                {badge variant="outline-secondary" class="ml-auto-util"}{$newsCategory->nAnzahlNews}{/badge}
+                                {badge variant="outline-secondary"}{$newsCategory->nAnzahlNews}{/badge}
                             {/navitem}
                         {/foreach}
                     {/nav}

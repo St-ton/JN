@@ -2,7 +2,7 @@
     {$limit = $Einstellungen.template.productlist.filter_max_options}
     {$collapseInit = false}
     {if $Einstellungen.navigationsfilter.hersteller_anzeigen_als === 'B'}
-        <ul class="nav">
+        <ul class="nav nav-filter-has-image">
     {/if}
     {foreach $filter->getOptions() as $filterOption}
         {assign var=filterIsActive value=$filterOption->isActive() || $NaviFilter->getFilterValue($filter->getClassName()) === $filterOption->getValue()}
@@ -39,13 +39,13 @@
                                 class="vmiddle filter-img"
                             }
                             <span class="word-break">{$filterOption->getName()}</span>
-                            {badge variant="outline-secondary" class="ml-auto-util"}{$filterOption->getCount()}{/badge}
+                            {badge variant="outline-secondary"}{$filterOption->getCount()}{/badge}
                         {/block}
                     {elseif $Einstellungen.navigationsfilter.hersteller_anzeigen_als === 'T'}
                         {block name='snippets-filter-manufacturer-item-text'}
                             <i class="far fa-{if $filterIsActive === true}check-{/if}square snippets-filter-item-icon-right"></i>
                             <span class="word-break">{$filterOption->getName()}</span>
-                            {badge variant="outline-secondary" class="ml-auto-util"}{$filterOption->getCount()}{/badge}
+                            {badge variant="outline-secondary"}{$filterOption->getCount()}{/badge}
                         {/block}
                     {/if}
                 </div>

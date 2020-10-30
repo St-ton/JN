@@ -3,7 +3,7 @@
     {block name='snippets-categories-offcanvas-heading'}
         <div class="h5">{$result->current->cName}</div>
     {/block}
-    {nav}
+    {nav class="categories-offcanvas"}
         {block name='snippets-categories-offcanvas-navitems'}
             {navitem class="clearfix"}
                 {link href="#" class="nav-sub" data-ref="0"}

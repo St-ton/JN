@@ -22157,6 +22157,9 @@ aside .box-monthlynews a .value:hover {
 .box-link-wrapper i.snippets-filter-item-icon-right {
   color: #707070;
 }
+.box-link-wrapper .badge {
+  margin-left: auto;
+}
 
 .box-delete-button {
   text-align: right;
@@ -22781,6 +22784,10 @@ input.typeahead:-ms-input-placeholder {
 
 .icon-mr-2 {
   margin-right: 0.5rem;
+}
+
+.page-freegift .page-freegift {
+  text-align: center;
 }
 
 /* utilities */

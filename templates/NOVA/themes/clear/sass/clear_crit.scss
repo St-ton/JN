@@ -187,7 +187,13 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 
   .navbar { position: static; }
 
-  .navbar-brand img { max-height: 2rem;}
+  .navbar-brand {
+    padding-top: $navbar-padding-y;
+    padding-bottom: $navbar-padding-y;
+    img {
+      height: $navbar-image-height;
+    }
+  }
 
   .navbar-toggler { color: $gray-darker; }
 
@@ -199,7 +205,13 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
   }
 
   @include media-breakpoint-up(lg) {
-    .navbar-brand img { max-height: 56px; height: 56px; }
+    .navbar-brand {
+      padding-top: $navbar-padding-y-lg;
+      padding-bottom: $navbar-padding-y-lg;
+      img {
+        height: $navbar-image-height-lg;
+      }
+    }
 
     .navbar-collapse { height: rem(69px); }
 

@@ -22,14 +22,12 @@
             self.initSlick($('.evo-slider:not(.slick-initialized)'), 'product-slider');
             self.initSlick($('.news-slider:not(.slick-initialized)'), 'news-slider');
 
-            $('.slick-lazy').on('mouseenter', function (e) {
-                let mainNode = $(this);
-                mainNode.removeClass('slick-lazy');
-                if (!mainNode.hasClass('slick-initialized')) {
-                    mainNode.find('.product-wrapper').removeClass('m-auto ml-auto mr-auto');
-                    self.initSlick(mainNode, mainNode.data('slick-type'));
-                }
-            });
+            let mainNode = $('.slick-lazy');
+            mainNode.removeClass('slick-lazy');
+            if (!mainNode.hasClass('slick-initialized')) {
+                mainNode.find('.product-wrapper').removeClass('m-auto ml-auto mr-auto');
+                self.initSlick(mainNode, mainNode.data('slick-type'));
+            }
 
             document.querySelectorAll('.slick-lazy').forEach(function(slickItem) {
                 let startX;

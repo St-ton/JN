@@ -24501,6 +24501,10 @@ header .nav-right .dropdown-menu {
   header .nav-mobile-header > .row {
     height: 3.125rem;
   }
+  header .nav-mobile-header .nav-mobile-header-hr {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
   header .nav-mobile-body {
     height: calc(100vh - 3.125rem);
     height: calc(var(--vh, 1vh) * 100 - 3.125rem);
@@ -24644,11 +24648,17 @@ header #burger-menu {
   z-index: 10;
 }
 
+.account-icon-dropdown .account-icon-dropdown-pass {
+  margin-bottom: 2rem;
+}
 .account-icon-dropdown .dropdown-footer {
   background-color: #f5f7fa;
 }
 .account-icon-dropdown .dropdown-footer a {
   text-decoration: underline;
+}
+.account-icon-dropdown .account-icon-dropdown {
+  margin-bottom: 0.5rem;
 }
 
 #content {
@@ -25043,6 +25053,12 @@ header #burger-menu {
   .contact-form .contact-form-privacy {
     text-align: right;
   }
+}
+.contact-form .is-top {
+  margin-bottom: 2rem;
+}
+.contact-form .contact-form-hr {
+  margin-bottom: 2rem;
 }
 
 /* newsletter */

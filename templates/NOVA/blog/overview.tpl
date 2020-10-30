@@ -96,7 +96,6 @@
             {block name='blog-overview-hr-top'}
                 <hr class="blog-overview-hr">
             {/block}
-            {/block}
         {/block}
         {block name='blog-overview-category'}
             {if $noarchiv === 1}

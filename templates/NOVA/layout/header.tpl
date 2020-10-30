@@ -373,13 +373,13 @@
                                                         <span class="nav-offcanvas-title">{lang key='menuName'}</span>
                                                         {block name='layout-header-include-categories-mega-back'}
                                                             {link href="#" class="nav-offcanvas-title d-none" data=["menu-back"=>""]}
-                                                                <span class="fas fa-chevron-left mr-2"></span>
+                                                                <span class="fas fa-chevron-left icon-mr-2"></span>
                                                                 <span>{lang key='back'}</span>
                                                             {/link}
                                                         {/block}
                                                     {/col}
                                                 {/row}
-                                                <hr class="my-0" />
+                                                <hr class="nav-mobile-header-hr" />
                                             </div>
                                         {/block}
                                         {block name='layout-header-include-include-categories-body'}

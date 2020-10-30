@@ -18,7 +18,7 @@
     {/block}
     {block name='layout-header-nav-search-search-dropdown'}
         {if $Einstellungen.template.theme.mobile_search_type === 'dropdown'}
-            {navitemdropdown class='d-block d-lg-none'
+            {navitemdropdown class='search-wrapper-dropdown d-block d-lg-none'
                 text='<i id="mobile-search-dropdown" class="fas fa-search"></i>'
                 right=true
                 no-caret=true

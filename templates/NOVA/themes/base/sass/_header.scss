@@ -75,6 +75,10 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 			padding-left: map-get($spacers, 3);
 			padding-right: map-get($spacers, 3);
 			> .row { height: rem(50px); }
+			.nav-mobile-header-hr {
+				margin-top: 0;
+				margin-bottom: 0;
+			}
 		}
 
 		.nav-mobile-body { height: calc(100vh - #{rem(50px)}); height: calc(var(--vh, 1vh) * 100 - #{rem(50px)}); overflow-y: auto; position: relative; }
@@ -189,13 +193,20 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 }
 
 .account-icon-dropdown {
+	.account-icon-dropdown-pass {
+		margin-bottom: map-get($spacers, 5);
+	}
 	.dropdown-footer {
 		background-color: $gray-lighter;
 		a {
 			text-decoration: underline;
 		}
 	}
+	.account-icon-dropdown {
+		margin-bottom: map-get($spacers, 2);
+	}
 }
+
 #content {
 	padding-bottom: map-get($spacers, 6);
 }

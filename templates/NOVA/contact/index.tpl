@@ -41,7 +41,7 @@
                         {block name='contact-index-form-content'}
                             {block name='contact-index-fieldset-contact'}
                             <fieldset>
-                                {row class="{if !empty($Spezialcontent->oben)}mt-5{/if}"}
+                                {row class="{if !empty($Spezialcontent->oben)}is-top{/if}"}
                                      {col cols=12 lg=4}
                                         {block name='contact-index-legend-contact'}
                                             <legend class="h3">{lang key='contact'}</legend>
@@ -168,7 +168,7 @@
                             </fieldset>
                             {/block}
                             {block name='contact-index-hr'}
-                                <hr class="mb-5">
+                                <hr class="contact-form-hr">
                             {/block}
                             {block name='contact-index-fieldset-message'}
                             <fieldset>

@@ -45,7 +45,6 @@
                                             {block name='productdetails-details-include-rating'}
                                                 {link href="{$Artikel->cURLFull}#tab-votes"
                                                     id="jump-to-votes-tab"
-                                                    class="d-print-none text-decoration-none-util"
                                                     aria=["label"=>{lang key='Votes'}]
                                                 }
                                                     {include file='productdetails/rating.tpl' stars=$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt total=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl}
@@ -56,7 +55,7 @@
                                     {/block}
                                 {/if}
                                 {block name='productdetails-details-info-essential'}
-                                    <ul class="list-unstyled my-5">
+                                    <ul class="info-essential list-unstyled">
                                         {block name='productdetails-details-info-item-id'}
                                             {if isset($Artikel->cArtNr)}
                                                 <li class='product-sku'>
@@ -166,7 +165,7 @@
                             {if $Einstellungen.artikeldetails.artikeldetails_kurzbeschreibung_anzeigen === 'Y' && $Artikel->cKurzBeschreibung}
                                 {block name='productdetails-details-info-description'}
                                     {opcMountPoint id='opc_before_short_desc'}
-                                    <div class="shortdesc mb-3" itemprop="description">
+                                    <div class="shortdesc" itemprop="description">
                                         {$Artikel->cKurzBeschreibung}
                                     </div>
                                 {/block}
@@ -174,7 +173,7 @@
                             {opcMountPoint id='opc_after_short_desc'}
                             {/block}
 
-                            <div class="product-offer mb-5"{if !($Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N')} itemprop="offers" itemscope itemtype="http://schema.org/Offer"{/if}>
+                            <div class="product-offer"{if !($Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N')} itemprop="offers" itemscope itemtype="http://schema.org/Offer"{/if}>
                                 {block name='productdetails-details-info-hidden'}
                                     {if !($Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N')}
                                         <meta itemprop="url" content="{$Artikel->cURLFull}">
@@ -201,7 +200,7 @@
                                     {include file='productdetails/variation.tpl' simple=$Artikel->isSimpleVariation showMatrix=$showMatrix}
                                 {/block}
 
-                                {row class="mb-4"}
+                                {row}
                                     {block name='productdetails-details-include-price'}
                                         {col}
                                             {include file='productdetails/price.tpl' Artikel=$Artikel tplscope='detail' priceLarge=true}
@@ -209,17 +208,17 @@
                                     {/block}
                                     {block name='productdetails-details-stock'}
                                         {col cols=12}
-                                            {row class="border-top border-bottom align-items-end no-gutters {if !isset($availability) && !isset($shippingTime)}py-3 px-lg-3{/if}"}
+                                            {row class="stock-information {if !isset($availability) && !isset($shippingTime)}py-3 px-lg-3{/if}"}
                                                 {col}
                                                     {block name='productdetails-details-include-stock'}
                                                         {include file='productdetails/stock.tpl'}
                                                     {/block}
                                                 {/col}
-                                                {col class="col-auto ml-auto-util"}
+                                                {col class="question-on-item col-auto"}
                                                     {block name='productdetails-details-question-on-item'}
                                                         {if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'P'}
                                                             <button type="button" id="z{$Artikel->kArtikel}"
-                                                                    class="btn btn-link question p-0"
+                                                                    class="btn btn-link question"
                                                                     title="{lang key='productQuestion' section='productDetails'}"
                                                                     data-toggle="modal"
                                                                     data-target="#question-popup-{$Artikel->kArtikel}">
@@ -242,14 +241,15 @@
                                 {/block}
                                 {*WARENKORB anzeigen wenn keine variationen mehr auf lager sind?!*}
                                 {if $Artikel->bHasKonfig}
-                                    {row class="mb-4"}
+                                    {row}
                                         {col cols=12 sm=6}
                                             {button type="button"
+                                                class="start-configuration"
                                                 value="{lang key='configure'}"
                                                 block=true
                                                 data=["toggle"=>"modal", "target"=>"#cfg-container"]
                                             }
-                                                <span class="mr-1">{lang key='configure'}</span> <i class="fas fa-cogs"></i>
+                                                <span>{lang key='configure'}</span> <i class="fas fa-cogs"></i>
                                             {/button}
                                         {/col}
                                     {/row}

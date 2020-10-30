@@ -4,7 +4,7 @@
             {foreach $Artikel->oVariationKombiKinderAssoc_arr as $child}
                 {if $Einstellungen.artikeldetails.artikeldetails_warenkorbmatrix_lagerbeachten !== 'Y' ||
                 ($Einstellungen.artikeldetails.artikeldetails_warenkorbmatrix_lagerbeachten === 'Y' && $child->inWarenkorbLegbar == 1)}
-                    {row class="pt-2 pb-2 {cycle values="bg-light,"}"}
+                    {row}
                         {block name='productdetails-matrix-list-image'}
                             {col cols=6 md=2}
                                 <div class="square square-image">
@@ -59,7 +59,7 @@
                             {/col}
                         {/block}
                         {block name='productdetails-matrix-list-muted-x'}
-                            {col cols=1 class="text-right-util px-1"}
+                            {col cols=1 class="text-right-util"}
                                 <span class="text-muted-util">&times;</span>
                             {/col}
                         {/block}
@@ -75,7 +75,7 @@
         {block name='productdetails-matrix-list-submit'}
             {input type="hidden" name="variBox" value="1"}
             {input type="hidden" name="varimatrix" value="1"}
-            {button name="inWarenkorb" type="submit" value="1" variant="primary" class="float-right mb-5"}{lang key='addToCart'}{/button}
+            {button name="inWarenkorb" type="submit" value="1" variant="primary"}{lang key='addToCart'}{/button}
         {/block}
     {/if}
 {/block}

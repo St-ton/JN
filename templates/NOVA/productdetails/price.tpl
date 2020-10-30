@@ -1,6 +1,6 @@
 {block name='productdetails-price'}
     {if $smarty.session.Kundengruppe->mayViewPrices()}
-        <div class="price_wrapper mb-md-4">
+        <div class="price_wrapper">
             {block name='productdetails-price-wrapper'}
             {if $Artikel->getOption('nShowOnlyOnSEORequest', 0) === 1}
                 {block name='productdetails-price-out-of-stock'}
@@ -122,7 +122,7 @@
                             {* --- Staffelpreise? --- *}
                             {if !empty($Artikel->staffelPreis_arr)}
                                 {block name='productdetails-price-detail-bulk-price'}
-                                    <div class="bulk-price mt-3">
+                                    <div class="bulk-prices">
                                         <table class="table table-sm table-hover">
                                             <thead>
                                                 {block name='productdetails-price-detail-bulk-price-head'}
@@ -150,7 +150,7 @@
                                                             <tr class="bulk-price-{$bulkPrice.nAnzahl}">
                                                                 <td>{$bulkPrice.nAnzahl}</td>
                                                                 <td>
-                                                                    <span class="bulk-price mr-1">{$bulkPrice.cPreisLocalized[$NettoPreise]}</span><span class="footnote-reference">*</span>
+                                                                    <span class="bulk-price">{$bulkPrice.cPreisLocalized[$NettoPreise]}</span><span class="footnote-reference">*</span>
                                                                 </td>
                                                                 {if !empty($bulkPrice.cBasePriceLocalized)}
                                                                     <td class="bulk-base-price">

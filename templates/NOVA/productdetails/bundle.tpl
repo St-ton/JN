@@ -12,14 +12,14 @@
             {/block}
             {if $smarty.session.Kundengruppe->mayViewPrices()}
                 {block name='productdetails-bundle-form-price'}
-                    {row class='mb-7 mt-n2 justify-content-md-center align-items-center-util'}
-                        {col cols=12 md='auto' class='text-center-util text-md-right mb-2 mb-md-0'}
+                    {row}
+                        {col cols=12 md='auto' class='bundle-price'}
                             <strong>
                                 {lang key='priceForAll' section='productDetails'}:
                                 <span class="price price-sm">{$ProduktBundle->cPriceLocalized[$NettoPreise]}</span>
                             </strong>
                             {if $ProduktBundle->fPriceDiff > 0}
-                                <span class="text-warning ml-1">({lang key='youSave' section='productDetails'}: {$ProduktBundle->cPriceDiffLocalized[$NettoPreise]})</span>
+                                <span class="text-warning">({lang key='youSave' section='productDetails'}: {$ProduktBundle->cPriceDiffLocalized[$NettoPreise]})</span>
                             {/if}
                             {if $ProductMain->cLocalizedVPE}
                                 <strong>{lang key='basePrice'}: </strong>

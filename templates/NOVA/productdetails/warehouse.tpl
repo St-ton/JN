@@ -9,10 +9,10 @@
             || $Artikel->fLagerbestand > 0
             || $Artikel->fZulauf > 0)}
         {block name='productdetails-warehouse-detail-link'}
-            {row class="product-stock-info row no-gutters py-3 px-lg-3 border-bottom align-items-end"}
+            {row class="product-stock-info row "}
                 {col}
-                    {button variant="link" class="p-0 text-decoration-underline" data=["toggle"=>"modal", "target"=>"#warehouseAvailability"]}
-                        <span class="fas fa-map-marker-alt mr-2"></span>{lang key='warehouseAvailability'}
+                    {button variant="link" data=["toggle"=>"modal", "target"=>"#warehouseAvailability"]}
+                        <span class="fas fa-map-marker-alt"></span>{lang key='warehouseAvailability'}
                     {/button}
                 {/col}
             {/row}

@@ -21,7 +21,7 @@
         {/block}
         {block name='productdetails-review-item-content'}
             {col cols=12}
-                {row class="mt-1" itemprop="review" itemscope=true itemtype="http://schema.org/Review"}
+                {row itemprop="review" itemscope=true itemtype="http://schema.org/Review"}
                     {block name='productdetails-review-item-title'}
                         <span itemprop="name" class="d-none">{$oBewertung->cTitel}</span>
                     {/block}
@@ -40,8 +40,8 @@
                             {if $Einstellungen.bewertung.bewertung_hilfreich_anzeigen === 'Y'}
                                 {if isset($smarty.session.Kunde) && $smarty.session.Kunde->kKunde > 0 && $smarty.session.Kunde->kKunde != $oBewertung->kKunde}
                                     {block name='productdetails-review-item-buttons'}
-                                        {formrow class="review-helpful mt-3 mb-5 mg-lg-0" id="help{$oBewertung->kBewertung}"}
-                                            {col class='col-auto ml-auto-util'}
+                                        {formrow class="review-helpful" id="help{$oBewertung->kBewertung}"}
+                                            {col}
                                                 {button size="sm"
                                                     class="btn-icon btn-icon-primary js-helpful badge-circle-1 badge-circle-no-sizes {if (int)$oBewertung->rated === 1}on-list{/if}"
                                                     title="{lang key='yes'}"
@@ -53,7 +53,7 @@
                                                 {/button}
                                                 <b><span class="d-block" data-review-count-id="hilfreich_{$oBewertung->kBewertung}">{$oBewertung->nHilfreich}</span></b>
                                             {/col}
-                                            {col class='col-auto mr-auto'}
+                                            {col}
                                                 {button size="sm"
                                                     class="btn-icon js-helpful badge-circle-1 badge-circle-no-sizes {if $oBewertung->rated !== null && (int)$oBewertung->rated === 0}on-list{/if}"
                                                     title="{lang key='no'}"
@@ -72,7 +72,7 @@
                         {/col}
                     {/block}
                     {block name='productdetails-review-item-details'}
-                        {col class='col-lg'}
+                        {col}
                             <blockquote>
                                 <span class="subheadline">{$oBewertung->cTitel}</span>
                                 <p itemprop="reviewBody">{$oBewertung->cText|nl2br}</p>
@@ -85,7 +85,7 @@
                             </blockquote>
                             <meta itemprop="thumbnailURL" content="{$Artikel->cVorschaubildURL}">
                             {if !empty($oBewertung->cAntwort)}
-                                <div class="review-reply ml-3">
+                                <div class="review-reply">
                                     <span class="subheadline">{lang key='reply' section='product rating'} {$cShopName}:</span>
                                     <blockquote>
                                         <p>{$oBewertung->cAntwort}</p>

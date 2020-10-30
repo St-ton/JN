@@ -40,7 +40,7 @@
                     {elseif $oMedienDatei->nMedienTyp === 2}
                         {if $oMedienDatei->cName|strlen > 1}
                             {block name='productdetails-mediafile-audio'}
-                                {card title=$oMedienDatei->cName class="mb-3"}
+                                {card title=$oMedienDatei->cName}
                                     {row}
                                         {col cols=12}
                                             {$oMedienDatei->cBeschreibung}
@@ -82,16 +82,14 @@
                     {* Sonstiges *}
                     {elseif $oMedienDatei->nMedienTyp === 4}
                         {block name='productdetails-mediafile-misc'}
-                            {card title=$oMedienDatei->cName class="mb-3"}
+                            {card title=$oMedienDatei->cName}
                                 {row}
                                     {col cols=12}
                                         {$oMedienDatei->cBeschreibung}
                                     {/col}
                                     {col cols=12}
                                         {if $oMedienDatei->cURL|strpos:'youtube' !== false || $oMedienDatei->cURL|strpos:'youtu.be' !== false}
-                                            <div class="mt-3">
-                                                {include file='productdetails/mediafile_youtube_embed.tpl'}
-                                            </div>
+                                            {include file='productdetails/mediafile_youtube_embed.tpl'}
                                         {else}
                                             {if isset($oMedienDatei->oEmbed) && $oMedienDatei->oEmbed->code}
                                                 {$oMedienDatei->oEmbed->code}
@@ -113,7 +111,7 @@
                         {* PDF *}
                     {elseif $oMedienDatei->nMedienTyp == 5}
                         {block name='productdetails-mediafile-pdf'}
-                            {card title=$oMedienDatei->cName class="mb-3"}
+                            {card title=$oMedienDatei->cName}
                                 {row}
                                     {col md=6}
                                         {$oMedienDatei->cBeschreibung}

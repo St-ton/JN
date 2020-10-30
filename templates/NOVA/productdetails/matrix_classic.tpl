@@ -84,7 +84,7 @@
                                                 <div>
                                                     {link href=$child->cSeo title="{lang key='configure'} {$oVariationWert0->cName}-{$oVariationWert1->cName}" class="btn btn-primary configurepos"}
                                                         <i class="fa fa-cogs"></i>
-                                                        <span class="d-none d-sm-inline-block pl-2">{lang key='configure'}</span>
+                                                        <span>{lang key='configure'}</span>
                                                     {/link}
                                                 </div>
                                                 {if isset($child->nErscheinendesProdukt) && $child->nErscheinendesProdukt == 1}
@@ -287,7 +287,7 @@
                                                 && $child->nVariationAnzahl > $child->nVariationOhneFreifeldAnzahl)}
                                             {link href=$child->cSeo title="{lang key='configure'} {$oVariationWertHead->cName}" class="btn btn-primary configurepos"}
                                                 <i class="fa fa-cogs"></i>
-                                                <span class="d-none d-sm-inline-block pl-2">{lang key='configure'}</span>
+                                                <span>{lang key='configure'}</span>
                                             {/link}
                                             {if isset($child->nErscheinendesProdukt) && $child->nErscheinendesProdukt == 1}
                                                 <small>
@@ -420,7 +420,7 @@
                                                 && $child->nVariationAnzahl > $child->nVariationOhneFreifeldAnzahl)}
                                             {link href=$child->cSeo title="{lang key='configure'} {$oVariationWertHead->cName}" class="btn btn-primary configurepos"}
                                                 <i class="fa fa-cogs"></i>
-                                                <span class="d-none d-sm-inline-block pl-2">{lang key='configure'}</span>
+                                                <span>{lang key='configure'}</span>
                                             {/link}
                                             {if isset($child->nErscheinendesProdukt) && $child->nErscheinendesProdukt == 1}
                                                 <div>
@@ -487,7 +487,7 @@
                                                     </small>
                                                 </div>
                                             {/if}
-                                            <div class="delivery-status ml-3">
+                                            <div class="delivery-status">
                                                 <small>
                                                     {if $Artikel->nIstVater == 1}
                                                         {if isset($child->nErscheinendesProdukt) && !$child->nErscheinendesProdukt}
@@ -528,6 +528,6 @@
     {/block}
     {block name='productdetails-matrix-classic-submit'}
         {input type="hidden" name="variBox" value="1"}
-        {button name="inWarenkorb" type="submit" value="{lang key='addToCart'}" variant="primary" class="float-right"}{lang key='addToCart'}{/button}
+        {button name="inWarenkorb" type="submit" value="{lang key='addToCart'}" variant="primary"}{lang key='addToCart'}{/button}
     {/block}
 {/block}

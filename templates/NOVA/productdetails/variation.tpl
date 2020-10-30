@@ -13,7 +13,7 @@
             {/row}
         {/block}
         {block name='productdetails-variation-variation'}
-            {row class="variations {if $simple}simple{else}switch{/if}-variations mb-4"}
+            {row class="variations {if $simple}simple{else}switch{/if}-variations"}
                 {col}
                     <dl>
                     {foreach name=Variationen from=$Artikel->$VariationsSource key=i item=Variation}
@@ -208,7 +208,7 @@
                                 {/block}
                             {elseif $Variation->cTyp === 'TEXTSWATCHES'}
                                 {block name='productdetails-variation-textswatch-outer'}
-                                    {formrow class="mb-3 swatches {$Variation->cTyp|lower}"}
+                                    {formrow class="swatches {$Variation->cTyp|lower}"}
                                         {foreach name=Variationswerte from=$Variation->Werte key=y item=Variationswert}
                                             {assign var=bSelected value=false}
                                             {if isset($oVariationKombi_arr[$Variationswert->kEigenschaft])}

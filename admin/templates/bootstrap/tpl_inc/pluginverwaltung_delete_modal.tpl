@@ -2,25 +2,18 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">{__('deletePluginData')}</h2>
+                <h2 class="modal-title">{__('deletePluginFilesHeading')}</h2>
                 <button type="button" class="close" data-dismiss="modal">
                     <i class="fal fa-times"></i>
                 </button>
             </div>
             <div class="modal-body">
-                <label for="delete-files-{$context}">{__('deletePluginFilesQuestion')}</label>
-                <input type="checkbox" id="delete-files-{$context}" name="delete-files">
             </div>
             <div class="modal-footer">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto submit">
                         <button type="button" class="delete-plugindata-yes btn btn-danger btn-bock">
                             <i class="fa fa-close"></i>&nbsp;{__('deletePluginDataYes')}
-                        </button>
-                    </div>
-                    <div class="col-sm-6 col-xl-auto submit">
-                        <button type="button" class="delete-plugindata-no btn btn-outline-primary">
-                            <i class="fa fa-close"></i>&nbsp;{__('deletePluginDataNo')}
                         </button>
                     </div>
                     <div class="col-sm-6 col-xl-auto submit">
@@ -50,19 +43,12 @@
         });
         function uninstall(deleteData) {
             var data = $('{$selector}').serialize();
-            data += '&deinstallieren=1&delete-data=';
-            if (deleteData === true) {
-                data += '1';
-            } else {
-                data += '0';
-            }
-            data += '&delete-files=';
-            if (document.getElementById('delete-files-{$context}').checked) {
-                data += '1'
-            } else {
-                data += '0'
-            }
-            simpleAjaxCall('pluginverwaltung.php', data, function () {
+            data += '&delete=1&delete-data=1&delete-files=1';
+            $('{$selector} input[type=checkbox]:checked').each(function (i, ele) {
+                var name = $(ele).attr('value');
+                data += '&ext[' + name + ']=' + $('#plugin-ext-' + name).val();
+            });
+            simpleAjaxCall('pluginverwaltung.php', data, function (res) {
                 location.reload();
             });
             return false;

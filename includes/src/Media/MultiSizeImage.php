@@ -68,7 +68,7 @@ trait MultiSizeImage
      * @param int    $number
      * @return string|null
      */
-    public function getImage(string $size = Image::SIZE_MD, int $number = 1): ?string
+    public function getImage(string $size = Image::SIZE_LG, int $number = 1): ?string
     {
         return $this->images[$number][$size] ?? null;
     }

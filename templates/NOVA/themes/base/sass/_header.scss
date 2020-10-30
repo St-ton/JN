@@ -202,7 +202,7 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 			text-decoration: underline;
 		}
 	}
-	.account-icon-dropdown {
+	.account-icon-dropdown-logout {
 		margin-bottom: map-get($spacers, 2);
 	}
 }

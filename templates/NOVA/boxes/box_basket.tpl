@@ -15,5 +15,8 @@
                 {/block}
             {/block}
         </div>
+        {block name='boxes-box-basket-hr-end'}
+            <hr class="box-normal-hr">
+        {/block}
     {/card}
 {/block}

@@ -45,6 +45,9 @@
                     {/block}
                 </div>
             {/foreach}
+            {block name='boxes-box-last-seen-hr-end'}
+                <hr class="box-normal-hr">
+            {/block}
         {/block}
     {/card}
 {/block}

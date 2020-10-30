@@ -76,7 +76,7 @@
 			padding-right: map-get($spacers, 3);
 		}
 	}
-	.productlist-page-nav-header-m {
+	&.productlist-page-nav-header-m {
 		margin-top: map-get($spacers, 6);
 	}
 }

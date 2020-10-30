@@ -21077,7 +21077,7 @@ label {
     border-right: 1px solid #ebebeb;
   }
 }
-.productlist-page-nav .productlist-page-nav-header-m {
+.productlist-page-nav.productlist-page-nav-header-m {
   margin-top: 3rem;
 }
 
@@ -24664,7 +24664,7 @@ header #burger-menu {
 .account-icon-dropdown .dropdown-footer a {
   text-decoration: underline;
 }
-.account-icon-dropdown .account-icon-dropdown {
+.account-icon-dropdown .account-icon-dropdown-logout {
   margin-bottom: 0.5rem;
 }
 
@@ -25062,7 +25062,7 @@ header #burger-menu {
   }
 }
 .contact-form .is-top {
-  margin-bottom: 2rem;
+  margin-top: 2rem;
 }
 .contact-form .contact-form-hr {
   margin-bottom: 2rem;
@@ -25155,7 +25155,7 @@ header #burger-menu {
   margin-right: auto;
 }
 .checkout-steps .step-check {
-  margin-left: 0;
+  margin-left: 0.25rem;
   margin-right: auto;
   color: #F8BF00;
 }

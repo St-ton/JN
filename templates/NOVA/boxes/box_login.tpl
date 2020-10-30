@@ -67,6 +67,9 @@
                     {/link}
                 {/block}
             {/if}
+            {block name='boxes-box-login-hr-end'}
+                <hr class="box-normal-hr">
+            {/block}
         {/block}
     {/card}
 {/block}

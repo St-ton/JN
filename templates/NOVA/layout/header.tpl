@@ -300,7 +300,7 @@
                 {block name='layout-header-container-inner'}
                     <div class="container-fluid {if $Einstellungen.template.megamenu.header_full_width === 'N'}container-fluid-xl{/if}">
                     {block name='layout-header-category-nav'}
-                        {navbar toggleable=true fill=true type="expand-lg" class="justify-content-start {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}align-items-center{else}align-items-lg-end{/if}"}
+                        {navbar toggleable=true fill=true type="expand-lg" class="justify-content-start {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}align-items-center-util{else}align-items-lg-end{/if}"}
                             {block name='layout-header-navbar-toggle'}
                                 <button id="burger-menu" class="navbar-toggler collapsed {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}" type="button" data-toggle="collapse" data-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">
                                     <span class="navbar-toggler-icon"></span>
@@ -335,12 +335,12 @@
 
                             {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}
                                 {block name='layout-header-secure-checkout'}
-                                    <div class="ml-auto ml-lg-0">
+                                    <div class="ml-auto-util ml-lg-0">
                                         {block name='layout-header-secure-checkout-title'}
                                             <i class="fas fa-lock align-center mr-2"></i>{lang key='secureCheckout' section='checkout'}
                                         {/block}
                                     </div>
-                                    <div class="ml-auto d-none d-lg-block">
+                                    <div class="ml-auto-util d-none d-lg-block">
                                         {block name='layout-header-secure-include-header-top-bar'}
                                             {include file='layout/header_top_bar.tpl'}
                                         {/block}
@@ -361,7 +361,7 @@
                                     <div id="mainNavigation" class="collapse navbar-collapse nav-scrollbar">
                                         {block name='layout-header-include-include-categories-header'}
                                             <div class="nav-mobile-header d-lg-none">
-                                                {row class="align-items-center"}
+                                                {row class="align-items-center-util"}
                                                     {col}
                                                         {block name='layout-header-include-categories-mega-toggler'}
                                                             <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">
@@ -369,17 +369,17 @@
                                                             </button>
                                                         {/block}
                                                     {/col}
-                                                    {col class="col-auto ml-auto"}
+                                                    {col class="col-auto ml-auto-util"}
                                                         <span class="nav-offcanvas-title">{lang key='menuName'}</span>
                                                         {block name='layout-header-include-categories-mega-back'}
                                                             {link href="#" class="nav-offcanvas-title d-none" data=["menu-back"=>""]}
-                                                                <span class="fas fa-chevron-left mr-2"></span>
+                                                                <span class="fas fa-chevron-left icon-mr-2"></span>
                                                                 <span>{lang key='back'}</span>
                                                             {/link}
                                                         {/block}
                                                     {/col}
                                                 {/row}
-                                                <hr class="my-0" />
+                                                <hr class="nav-mobile-header-hr" />
                                             </div>
                                         {/block}
                                         {block name='layout-header-include-include-categories-body'}
@@ -449,7 +449,7 @@
         {if !$bExclusive && !empty($boxes.left|strip_tags|trim) && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}
             {block name='layout-header-content-productlist-starttags'}
                 <div class="row">
-                    <div class="col-lg-8 col-xl-9 ml-auto order-lg-1">
+                    <div class="col-lg-8 col-xl-9 ml-auto-util order-lg-1">
             {/block}
         {/if}
 

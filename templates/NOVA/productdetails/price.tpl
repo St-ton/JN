@@ -79,7 +79,7 @@
                             {/if}
 
                             {block name='productdetails-price-detail-vat-info'}
-                                <span class="vat_info text-muted-util">
+                                <span class="vat_info">
                                     {include file='snippets/shipping_tax_info.tpl' taxdata=$Artikel->taxData}
                                 </span>
                             {/block}

@@ -11,7 +11,7 @@
             && $Bestellung->Zahlungsart->cModulId !== 'za_lastschrift_jtl'
         }
             {block name='checkout-inc-paymentmodules-alert'}
-                <p class="mb-4 mb-md-5">
+                <p class="checkout-paymentmodules-alert">
                     {if isset($smarty.session.Zahlungsart->nWaehrendBestellung) && $smarty.session.Zahlungsart->nWaehrendBestellung == 1}
                         {lang key='orderConfirmationPre' section='checkout'}
                     {else}
@@ -26,14 +26,14 @@
             && $Bestellung->Zahlungsart->cModulId !== 'za_lastschrift_jtl'
         }
             {block name='checkout-inc-paymentmodules-during-order'}
-                <ul class="list-unstyled">
+                <ul class="list-unstyled payment-method-module-ids">
                     <li><strong>{lang key='yourOrderId' section='checkout'}: </strong>{$Bestellung->cBestellNr}</li>
                     <li><strong>{lang key='yourChosenPaymentOption' section='checkout'}: </strong>{$Bestellung->cZahlungsartName}</li>
                 </ul>
             {/block}
         {/if}
         {block name='checkout-inc-paymentmodules-method-inner'}
-            <div class="payment-method-inner mb-3">
+            <div class="payment-method-inner">
                 {if $Bestellung->Zahlungsart->cModulId === 'za_paypal_jtl'}
                     {block name='checkout-inc-paymentmodules-include-bestellabschluss'}
                         {include file='checkout/modules/paypal/bestellabschluss.tpl'}

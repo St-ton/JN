@@ -42,7 +42,7 @@
                                 {/formgroup}
                             {/col}
                         {/block}
-                        <div class="w-100"></div>
+                        <div class="w-100-util"></div>
                     {/if}
 
                     {if $Einstellungen.artikeldetails.produktfrage_abfragen_vorname !== 'N' || $Einstellungen.artikeldetails.produktfrage_abfragen_nachname !== 'N'}
@@ -71,7 +71,7 @@
                                 {/col}
                             {/if}
                         {/block}
-                        <div class="w-100"></div>
+                        <div class="w-100-util"></div>
                     {/if}
 
                     {if $Einstellungen.artikeldetails.produktfrage_abfragen_firma !== 'N'}
@@ -150,10 +150,10 @@
             {/block}
             {block name='productdetails-question-on-item-form-textarea'}
                 {formgroup label-for="question" label="{lang key='question' section='productDetails'}"}
-                    {textarea name="nachricht" id="question" rows="8" required=true placeholder=" " class="{if isset($fehlendeAngaben_fragezumprodukt.nachricht) && $fehlendeAngaben_fragezumprodukt.nachricht > 0}has-error{/if}"}{if isset($Anfrage)}{$Anfrage->cNachricht}{/if}{/textarea}
                     {if isset($fehlendeAngaben_fragezumprodukt.nachricht) && $fehlendeAngaben_fragezumprodukt.nachricht > 0}
-                        <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i> {if $fehlendeAngaben_fragezumprodukt.nachricht > 0}{lang key='fillOut'}{/if}</div>
+                        <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i> {if $fehlendeAngaben_fragezumprodukt.nachricht > 0}{lang key='fillOut'}{/if}</div>
                     {/if}
+                    {textarea name="nachricht" id="question" rows="8" required=true placeholder=" " class="{if isset($fehlendeAngaben_fragezumprodukt.nachricht) && $fehlendeAngaben_fragezumprodukt.nachricht > 0}has-error{/if}"}{if isset($Anfrage)}{$Anfrage->cNachricht}{/if}{/textarea}
                 {/formgroup}
             {/block}
             {block name='productdetails-question-on-item-form-include-checkbox'}
@@ -192,7 +192,7 @@
             {input type="hidden" name="show" value="1"}
             {input type="hidden" name="fragezumprodukt" value="1"}
             {row}
-                {col md='auto' class="ml-auto"}
+                {col md='auto' class="ml-auto-util"}
                     {button type="submit" value="1" variant="primary" block=true}
                         {lang key='sendQuestion' section='productDetails'}
                     {/button}

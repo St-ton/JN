@@ -467,3 +467,36 @@ input.typeahead {
     background-color: $gray-lighter;
   }
 }
+
+.ml-auto-util {
+  margin-left: auto;
+}
+.manufacturer-image-wrapper {
+  margin-bottom: map-get($spacers, 1);
+}
+.sitemap-group {
+  margin-bottom: map-get($spacers, 5);
+  li, .sitemap-group-item {
+    margin-top: map-get($spacers, 2);
+    margin-bottom: map-get($spacers, 2);
+  }
+}
+.w-100-util {
+  width: 100%;
+}
+.form-error-msg {
+  color: $danger;
+}
+//backwards compatibility for html from wawi
+.img-responsive {
+  max-width: 100%;
+  height: auto;
+}
+.icon-mr-2 {
+  margin-right: map-get($spacers, 2);
+}
+.page-freegift {
+  .page-freegift {
+    text-align: center;
+  }
+}

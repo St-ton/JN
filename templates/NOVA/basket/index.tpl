@@ -4,13 +4,13 @@
     {/block}
 
     {block name='basket-index-content'}
-        {container}
+        {container class="basket"}
             {row}
                 {block name='basket-index-main'}
                 {col cols=12 lg="{if ($Warenkorb->PositionenArr|@count > 0)}7{else}12{/if}"}
                     {opcMountPoint id='opc_before_heading'}
                     {block name='basket-index-heading'}
-                        <h1 class="h2 mb-5">{lang key='basket'} ({count($smarty.session.Warenkorb->PositionenArr)} {lang key='products'})</h1>
+                        <h1 class="h2 basket-heading">{lang key='basket'} ({count($smarty.session.Warenkorb->PositionenArr)} {lang key='products'})</h1>
                     {/block}
                     {block name='basket-index-include-extension'}
                         {include file='snippets/extension.tpl'}
@@ -24,7 +24,7 @@
                                     {block name='basket-index-form-cart'}
                                         {form id="cart-form" method="post" action="{get_static_route id='warenkorb.php'}" class="jtl-validate" slide=true}
                                             {input type="hidden" name="wka" value="1"}
-                                            <div class="mb-7">
+                                            <div class="basket-items">
                                                 {block name='basket-index-include-order-items'}
                                                     {include file='basket/cart_items.tpl'}
                                                 {/block}
@@ -53,10 +53,10 @@
                                                     {$selectedFreegift=$oPosition->Artikel->kArtikel}
                                                 {/if}
                                             {/foreach}
-                                            {row class="mb-4"}
+                                            {row class="basket-freegift"}
                                                 {col cols=12}
                                                     {block name='basket-index-freegifts-heading'}
-                                                        <h3 class="mb-4">{lang key='freeGiftFromOrderValueBasket'}</h3>
+                                                        <div class="h3 basket-heading">{lang key='freeGiftFromOrderValueBasket'}</div>
                                                     {/block}
                                                 {/col}
                                                 {col cols=12}
@@ -93,10 +93,10 @@
                         {/block}
                     {else}
                         {block name='basket-index-cart-empty'}
-                            {row}
-                                {col class="text-center-util"}
+                            {row class="basket-empty"}
+                                {col}
                                     {block name='basket-index-alert-empty'}
-                                        {alert variant="info" class="text-center-util mt-4 pt-2 pb-5"}
+                                        {alert variant="info"}
                                             {badge variant="light" class="bubble"}
                                                 <i class="fas fa-shopping-cart"></i>
                                             {/badge}<br/>
@@ -114,10 +114,10 @@
                 {/block}
                 {if ($Warenkorb->PositionenArr|@count > 0)}
                     {block name='basket-index-side'}
-                    {col class='ml-auto' cols=12 lg=4}
+                    {col class='ml-auto-util' cols=12 lg=4}
                         <div class="sticky-top cart-summary">
                             {block name='basket-index-side-heading'}
-                                <div class="h2 mb-5">{lang key="orderOverview" section="account data"}</div>
+                                <div class="h2 basket-heading">{lang key="orderOverview" section="account data"}</div>
                             {/block}
                             {if $Einstellungen.kaufabwicklung.warenkorb_kupon_anzeigen === 'Y' && $KuponMoeglich == 1}
                                 {block name='basket-index-coupon'}
@@ -142,7 +142,7 @@
                                     {/card}
                                 {/block}
                             {/if}
-                            {card class="card-gray mt-4"}
+                            {card class="card-gray basket-summary"}
                                 {block name='basket-index-price-tax'}
                                     {if $NettoPreise}
                                         {block name='basket-index-price-net'}
@@ -185,7 +185,7 @@
                                         {/block}
                                     {/if}
                                     {block name='basket-index-price-sticky'}
-                                        {row class="total border-top mt-3 pt-3 font-size-lg"}
+                                        {row class="basket-summary-total"}
                                             {col class="text-left-util" cols=7}
                                                 <span class="price_label">{lang key='subtotal' section='account data'}:</span>
                                             {/col}
@@ -205,12 +205,14 @@
                                     {/if}
                                 {/block}
                                 {block name='basket-index-proceed-button'}
-                                    {link id="cart-checkout-btn" href="{get_static_route id='bestellvorgang.php'}?wk=1" class="btn btn-primary w-100 mt-3"}{lang key='nextStepCheckout' section='checkout'}{/link}
+                                    {link id="cart-checkout-btn" href="{get_static_route id='bestellvorgang.php'}?wk=1" class="btn btn-primary"}
+                                        {lang key='nextStepCheckout' section='checkout'}
+                                    {/link}
                                 {/block}
                             {/card}
                             {if !empty($WarenkorbVersandkostenfreiHinweis) && $Warenkorb->PositionenArr|@count > 0}
                                 {block name='basket-index-alert'}
-                                    {row class="mt-5"}
+                                    {row class="basket-summary-notice"}
                                         {col cols=1}<i class="fas fa-truck"></i>{/col}
                                         {col cols=10 class="basket_notice"}{$WarenkorbVersandkostenfreiHinweis}{/col}
                                     {/row}

@@ -4,7 +4,7 @@
 {$id = $instance->getProperty('id')}
 {$withoutTitle = empty($title)}
 
-<div class="opc-Divider {$instance->getAnimationClass()} {if $withoutTitle}opc-Divider-empty{/if}"
+<div class="opc-Divider {$instance->getAnimationClass()} {$instance->getStyleClasses()} {if $withoutTitle}opc-Divider-empty{/if}"
      {$instance->getAnimationDataAttributeString()}
      {if $isPreview}{$instance->getDataAttributeString()}{/if} {if !empty($id)}id="{$id}"{/if}
      {$instance->getAttributeString()}>

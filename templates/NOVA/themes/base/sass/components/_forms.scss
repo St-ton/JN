@@ -142,6 +142,9 @@ label {
 }
 
 .price-range-inputs {
+	.input-group {
+		margin-bottom: map-get($spacers, 3);
+	}
 	.input-group-prepend {
 		height: 1.6rem;
 		.input-group-text {
@@ -156,4 +159,7 @@ label {
 		padding: $input-padding-y-sm $input-padding-x-sm;
 	}
 }
-
+.price-range-slide {
+	margin-left: map-get($spacers, 2);
+	margin-right: map-get($spacers, 2);
+}

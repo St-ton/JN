@@ -1,6 +1,6 @@
 {block name='boxes-box-wishlist'}
     {if $oBox->getItems()|count > 0}
-        {card class="box box-wishlist mb-md-4" id="sidebox{$oBox->getID()}"}
+        {card class="box box-wishlist box-normal" id="sidebox{$oBox->getID()}"}
             {block name='boxes-box-wishlist-content'}
                 {block name='boxes-box-wishlist-toggle-title'}
                     {link id="crd-hdr-{$oBox->getID()}"
@@ -8,13 +8,13 @@
                         data=["toggle"=>"collapse"]
                         role="button"
                         aria=["expanded"=>"false","controls"=>"crd-cllps-{$oBox->getID()}"]
-                        class="text-decoration-none-util font-weight-bold-util mb-2 d-md-none dropdown-toggle"}
+                        class="box-normal-link dropdown-toggle"}
                         {lang key='wishlist'}
                     {/link}
                 {/block}
                 {block name='boxes-box-wishlist-title'}
-                    <div class="productlist-filter-headline align-items-center d-none d-md-flex">
-                        <i class='fa fa-heart mr-2'></i>
+                    <div class="productlist-filter-headline align-items-center-util d-none d-md-flex">
+                        <i class='fa fa-heart icon-mr-2'></i>
                         {lang key='wishlist'}
                     </div>
                 {/block}
@@ -31,9 +31,9 @@
                                 {foreach $oBox->getItems() as $wishlistItem}
                                         {if $wishlistItem@iteration > $maxItems}{break}{/if}
                                     <tr>
-                                        <td class="w-100" data-id={$wishlistItem->kArtikel}>
+                                        <td class="w-100-util" data-id={$wishlistItem->kArtikel}>
                                             {block name='boxes-box-wishlist-dropdown-products-image-title'}
-                                                {formrow class="align-items-center"}
+                                                {formrow class="align-items-center-util"}
                                                     {if $oBox->getShowImages()}
                                                         {col class="col-auto"}
                                                             {block name='boxes-box-wishlist-dropdown-products-image'}
@@ -59,9 +59,9 @@
                                                 {/formrow}
                                             {/block}
                                         </td>
-                                        <td class="text-right-util text-nowrap">
+                                        <td class="box-delete-button">
                                             {block name='snippets-wishlist-dropdown-products-remove'}
-                                                {link class="remove float-right"
+                                                {link class="remove"
                                                     href=$wishlistItem->cURL
                                                     data=["name"=>"Wunschliste.remove",
                                                     "toggle"=>"product-actions",
@@ -86,7 +86,7 @@
                 {/block}
             {/block}
             {block name='boxes-box-wishlist-hr-end'}
-                <hr class="my-3 d-flex d-md-none">
+                <hr class="box-normal-hr">
             {/block}
         {/card}
     {else}

@@ -1,7 +1,7 @@
 {block name='checkout-inc-payment-methods'}
     {radiogroup}
         {foreach $Zahlungsarten as $zahlungsart}
-            {col cols=12 id=$zahlungsart->cModulId class="mb-3"}
+            {col cols=12 id=$zahlungsart->cModulId class="checkout-payment-method"}
                 {radio name="Zahlungsart"
                         value=$zahlungsart->kZahlungsart
                         id="payment{$zahlungsart->kZahlungsart}"
@@ -19,7 +19,7 @@
                     {/block}
                     {if $zahlungsart->fAufpreis != 0}
                         {block name='checkout-inc-payment-methods-badge'}
-                            <strong class="ml-3 float-right">
+                            <strong class="checkout-payment-method-badge">
                             {if $zahlungsart->cGebuehrname|has_trans}
                                 <span>{$zahlungsart->cGebuehrname|trans} </span>
                             {/if}
@@ -29,7 +29,7 @@
                     {/if}
                     {if $zahlungsart->cHinweisText|has_trans}
                         {block name='checkout-inc-payment-methods-note'}
-                            <span class="btn-block">
+                            <span class="checkout-payment-method-note">
                                 <small>{$zahlungsart->cHinweisText|trans}</small>
                             </span>
                         {/block}

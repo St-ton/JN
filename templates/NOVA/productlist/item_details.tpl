@@ -1,5 +1,5 @@
 {block name='productlist-item-details'}
-    {formrow tag='dl' class="text-nowrap {if $small|default:false === true}formrow-small{/if}"}
+    {formrow tag='dl' class="productlist-item-detail text-nowrap-util {if $small|default:false === true}formrow-small{/if}"}
     {block name='productlist-item-details-product-number'}
         {col tag='dt' cols=6}{lang key='productNo'}:{/col}
         {col tag='dd' cols=6}{$Artikel->cArtNr}{/col}
@@ -8,7 +8,7 @@
         {block name='productlist-item-details-variations'}
             {col tag='dt' cols=6}{lang key='variationsIn' section='productOverview'}:{/col}
             {col tag='dd' cols=6}
-                <ul class="list-unstyled mb-0">
+                <ul class="variations-list list-unstyled">
                     {foreach $Artikel->Variationen as $variation}
                         <li>{$variation->cName}<li>
                         {if $variation@index === 3 && !$variation@last}

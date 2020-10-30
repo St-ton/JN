@@ -1,8 +1,7 @@
 {block name='snippets-uploads'}
     {if !empty($oUploadSchema_arr)}
-
         {getUploaderLang iso=$smarty.session.currentLanguage->cISO639|default:'' assign='uploaderLang'}
-        {if $tplscope === 'product' && !empty($Artikel) && !($Artikel->nIstVater || $Artikel->kVaterArtikel > 0)}
+        {if $tplscope === 'product' && !empty($Artikel) && !($Artikel->nIstVater || $Artikel->kVaterArtikel > 0 || $Artikel->isSimpleVariation || $Artikel->bHasKonfig)}
             {block name='snippets-uploads-subheading-product'}
                 <div class="h3 section-heading">{lang key='uploadHeadline'}</div>
             {/block}
@@ -13,12 +12,12 @@
             {/block}
             {block name='snippets-uploads-schemes-product'}
                 {foreach $oUploadSchema_arr as $oUploadSchema}
-                    {row class="mb-4"}
+                    {row class="upload-scheme-product"}
                         {if !empty($oUploadSchema->cName) || !empty($oUploadSchema->cBeschreibung)}
                             {block name='snippets-uploads-scheme-product-name'}
                                 {col cols=12}
                                     {if !empty($oUploadSchema->cName)}
-                                        <div class=" h6 upload_title">{$oUploadSchema->cName}</div>
+                                        <div class="h6 upload_title">{$oUploadSchema->cName}</div>
                                     {/if}
                                     {if !empty($oUploadSchema->cBeschreibung)}
                                         <p class="upload_desc">{$oUploadSchema->cBeschreibung}</p>
@@ -155,17 +154,17 @@
                     {/row}
                 {/foreach}
             {/block}
-        {else}
+        {elseif $tplscope === 'basket'}
             {block name='snippets-uploads-subheading'}
                 <div class="h3 section-heading">{lang key='uploadHeadline'}</div>
-                <hr class="mt-0 mb-2">
+                <hr class="upload-scheme-cart-hr-before">
             {/block}
             {block name='snippets-uploads-schemes'}
                 {foreach $oUploadSchema_arr as $oUploadSchema}
-                    <div>
+                    <div class="upload-scheme-cart">
                         {block name='snippets-uploads-scheme-name'}
                             <p>
-                                <strong class="mb-2">
+                                <span class="upload-scheme-cart-name">
                                     {$oUploadSchema->cName}
                                     {if !empty($oUploadSchema->WarenkorbPosEigenschaftArr)}
                                         <small>
@@ -174,12 +173,12 @@
                                             {/foreach}
                                         </small>
                                     {/if}
-                                </strong>
+                                </span>
                             </p>
                         {/block}
                         {block name='snippets-uploads-scheme-uploads'}
                             {foreach $oUploadSchema->oUpload_arr as $oUpload}
-                                {row class="mb-3"}
+                                {row class="upload-scheme-cart-upload"}
                                     {if !empty($oUpload->cName) || !empty($oUpload->cBeschreibung)}
                                         {block name='snippets-uploads-scheme-upload-name-desc'}
                                             {col cols=12 md=4}
@@ -322,7 +321,7 @@
                     </div>
                 {/foreach}
                 {block name='snippets-uploads-schemes-hr'}
-                    <hr class="my-4">
+                    <hr class="upload-scheme-cart-hr-after">
                 {/block}
             {/block}
         {/if}

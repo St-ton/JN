@@ -12,7 +12,7 @@
         {if $nQuestion < $AWA->getCurQuestion()}
             {block name='selectionwizard-question-answer-smaller'}
                 {row class="text-center-util"}
-                    {col cols=4 sm=4 md=3 xl=2 class="mb-3"}
+                    {col cols=4 sm=4 md=3 xl=2 class="selection-wizard-question-item"}
                         <span class="selection-wizard-answer">
                             {$characteristicValue = $AWA->getSelectedValue($nQuestion)}
                             {$img = $characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)}
@@ -61,7 +61,7 @@
                 {block name='selectionwizard-question-answer-equals-other'}
                     {row class="text-center-util"}
                         {foreach $oFrage->oWert_arr as $characteristicValue}
-                            {col cols=4 sm=4 md=3 xl=2 class="mb-3"}
+                            {col cols=4 sm=4 md=3 xl=2 class="selection-wizard-question-item"}
                                 {if $characteristicValue->getCount() > 0}
                                     {link class="selection-wizard-answer text-decoration-none-util" href="#" data=["value"=>$characteristicValue->getID()]}
                                         {$img = $characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)}
@@ -108,7 +108,7 @@
                 {else}
                     {row class="text-center-util"}
                         {foreach $oFrage->oWert_arr as $characteristicValue}
-                            {col cols=4 sm=4 md=3 xl=2 class="mb-3"}
+                            {col cols=4 sm=4 md=3 xl=2 class="selection-wizard-question-item"}
                                 {if $characteristicValue->getCount() > 0}
                                     {$img = $characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)}
                                     <span class="selection-wizard-answer">

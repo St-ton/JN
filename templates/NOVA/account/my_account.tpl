@@ -12,7 +12,7 @@
             {/col}
             {col cols=12 lg=6}
                 {block name='account-my-account-account-credit'}
-                    {card class='text-center-util border border-primary font-weight-bold-util'}
+                    {card class='account-head-data-credit'}
                         {lang key='yourMoneyOnAccount' section='login'}: {$Kunde->cGuthabenLocalized}
                     {/card}
                 {/block}
@@ -20,8 +20,8 @@
         {/row}
     {/block}
     {block name='account-my-account-account-data'}
-        {row}
-            {col cols=12 lg=6 class='mb-5'}
+        {row }
+            {col cols=12 lg=6 class="account-data-item account-data-item-orders"}
                 {block name='account-my-account-orders-content'}
                     {card no-body=true}
                         {cardheader}
@@ -79,7 +79,7 @@
                     {/card}
                 {/block}
             {/col}
-            {col cols=12 lg=6 class='mb-5'}
+            {col cols=12 lg=6 class="account-data-item account-data-item-address"}
                 {block name='account-my-account-billing-address'}
                     {card no-body=true}
                         {cardheader}
@@ -157,7 +157,7 @@
         {/row}
 
         {row}
-            {col cols=12 lg=6 class='mb-5'}
+            {col cols=12 lg=6 class="account-data-item account-data-item-wishlist"}
                 {block name='account-my-account-wishlist-content'}
                     {card no-body=true id='my-wishlists'}
                         {cardheader}
@@ -220,7 +220,7 @@
                     {/card}
                 {/block}
             {/col}
-            {col cols=12 lg=6 class='mb-5'}
+            {col cols=12 lg=6 class="account-data-item account-data-item-comparelist"}
                 {block name='account-my-account-comparelist'}
                     {card no-body=true class="account-comparelist"}
                         {cardheader}

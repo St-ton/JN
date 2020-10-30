@@ -1,9 +1,9 @@
 {block name='basket-cart-dropdown-label'}
-    <li class="cart-icon-dropdown nav-item dropdown">
+    <li class="cart-icon-dropdown nav-item dropdown {if $WarenkorbArtikelPositionenanzahl != 0}not-empty{/if}">
         {block name='basket-cart-dropdown-label-link'}
             {link class='nav-link' aria=['expanded' => 'false', 'label' => {lang key='basket'}] data=['toggle' => 'dropdown']}
                 {block name='basket-cart-dropdown-label-count'}
-                    <i class='fas fa-shopping-cart{if $WarenkorbArtikelPositionenanzahl == 0} mr-md-3{/if}'>
+                    <i class='fas fa-shopping-cart cart-icon-dropdown-icon'>
                         {if $WarenkorbArtikelPositionenanzahl >= 1}
                         <span class="fa-sup" title="{$WarenkorbArtikelPositionenanzahl}">
                             {$WarenkorbArtikelPositionenanzahl}
@@ -12,7 +12,7 @@
                     </i>
                 {/block}
                 {block name='basket-cart-dropdown-labelprice'}
-                    <span class="text-nowrap-util d-none d-md-inline-block font-size-base {if $WarenkorbArtikelPositionenanzahl != 0}ml-3{/if}">{$WarensummeLocalized[0]}</span>
+                    <span class="cart-icon-dropdown-price">{$WarensummeLocalized[0]}</span>
                 {/block}
             {/link}
         {/block}

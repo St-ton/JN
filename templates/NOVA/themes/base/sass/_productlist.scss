@@ -204,6 +204,10 @@
 }
 
 .item-list-description {
+	display: none;
+	@include media-breakpoint-up(md) {
+		display: block;
+	}
 	margin-bottom: map-get($spacers, 1);
 	margin-top: -(map-get($spacers, 2));
 }

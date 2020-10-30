@@ -11,7 +11,6 @@
                             variant="link"
                             role="button"
                             block=true
-                            class="text-left-util"
                             aria=["expanded"=>"false","controls"=>"collapse-download-{$oDownload@iteration}"]
                             data=["toggle"=> "collapse", "target"=>"#collapse-download-{$oDownload@iteration}"]
                         }
@@ -84,7 +83,6 @@
                                                     variant="link"
                                                     role="button"
                                                     block=true
-                                                    class="text-left-util"
                                                     aria=["expanded"=>"false","controls"=>"collapse-download-{$oDownload@iteration}"]
                                                     data=["toggle"=> "collapse", "target"=>"#collapse-download-{$oDownload@iteration}"]
                                                 }

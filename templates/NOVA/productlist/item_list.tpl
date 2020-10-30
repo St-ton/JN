@@ -100,7 +100,7 @@
                     {if $Einstellungen.artikeluebersicht.artikeluebersicht_kurzbeschreibung_anzeigen === 'Y'
                             && $Artikel->cKurzBeschreibung}
                         {block name='productlist-item-list-description'}
-                            <div class="item-list-description d-none d-md-block" itemprop="description">
+                            <div class="item-list-description" itemprop="description">
                                 {$Artikel->cKurzBeschreibung}
                             </div>
                         {/block}

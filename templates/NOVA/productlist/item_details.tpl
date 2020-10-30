@@ -1,5 +1,5 @@
 {block name='productlist-item-details'}
-    {formrow tag='dl' class="text-nowrap-util {if $small|default:false === true}formrow-small{/if}"}
+    {formrow tag='dl' class="productlist-item-detail text-nowrap-util {if $small|default:false === true}formrow-small{/if}"}
     {block name='productlist-item-details-product-number'}
         {col tag='dt' cols=6}{lang key='productNo'}:{/col}
         {col tag='dd' cols=6}{$Artikel->cArtNr}{/col}

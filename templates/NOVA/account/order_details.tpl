@@ -122,7 +122,7 @@
                     {/block}
                 {/cardbody}
             {else}
-                {cardbody}
+                {cardbody class="order-details-request-plz"}
                     {block name='account-order-details-request-plz'}
                         {row}
                             {col cols=12 md=6}
@@ -215,21 +215,21 @@
                     {block name='account-order-details-delivery-note-popup'}
                         {modal id="shipping-order-{$oLieferschein->getLieferschein()}"
                             title=(($Bestellung->cStatus == BESTELLUNG_STATUS_TEILVERSANDT) ? {lang key='partialShipped' section='order'} : {lang key='shipped' section='order'})
-                            class="fade"
+                            class="fade shipping-order-modal"
                             size="lg"}
                             {block name='account-order-details-delivery-note-popup-heading'}
-                                <div class="mb-3">
+                                <div class="shipping-order-modal-mb">
                                     <strong>{lang key='shippingOrder' section='order'}</strong>: {$oLieferschein->getLieferscheinNr()}<br />
                                     <strong>{lang key='shippedOn' section='login'}</strong>: {$oLieferschein->getErstellt()|date_format:"%d.%m.%Y %H:%M"}<br />
                                 </div>
                             {/block}
                             {if $oLieferschein->getHinweis()|@count_characters > 0}
                                 {block name='account-order-details-delivery-note-popup-alert'}
-                                    {alert variant="info" class="mb-3"}{$oLieferschein->getHinweis()}{/alert}
+                                    {alert variant="info" class="shipping-order-modal-mb"}{$oLieferschein->getHinweis()}{/alert}
                                 {/block}
                             {/if}
                             {block name='account-order-details-delivery-note-popup-tracking'}
-                                <div class="mb-3">
+                                <div class="shipping-order-modal-mb">
                                     {foreach $oLieferschein->oVersand_arr as $oVersand}
                                         {if $oVersand->getIdentCode()}
                                             <p>

@@ -29,7 +29,7 @@
     {block name='productlist-item-slider-caption'}
         {block name='productlist-item-slider-caption-short-desc'}
             {link href=$Artikel->cURLFull}
-                <span class="text-clamp-2">
+                <span class="item-slider-desc text-clamp-2">
                     {if isset($showPartsList) && $showPartsList === true && isset($Artikel->fAnzahl_stueckliste)}
                         {block name='productlist-item-slider-caption-bundle'}
                             {$Artikel->fAnzahl_stueckliste}x
@@ -42,12 +42,12 @@
         {if $tplscope === 'box'}
             {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}
                 {block name='productlist-item-slider-include-rating'}
-                    <small>{include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung link=$Artikel->cURLFull}</small>
+                    <small class="item-slider-rating">{include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung link=$Artikel->cURLFull}</small>
                 {/block}
             {/if}
         {/if}
         {block name='productlist-item-slider-include-price'}
-            <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+            <div class="item-slider-price" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
                 {include file='productdetails/price.tpl' Artikel=$Artikel tplscope=$tplscope}
             </div>
         {/block}

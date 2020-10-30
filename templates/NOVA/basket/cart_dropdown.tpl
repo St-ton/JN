@@ -117,7 +117,7 @@
                         </ul>
                     {/block}
                     {block name='basket-cart-dropdown-buttons'}
-                        {row class='mt-3'}
+                        {row class="cart-dropdown-buttons"}
                             {col cols=12 lg=6}
                                 {button variant="outline-primary" type="link" block=true  size="sm" href="{get_static_route id='bestellvorgang.php'}?wk=1" class="cart-dropdown-next"}
                                     {lang key='nextStepCheckout' section='checkout'}
@@ -133,9 +133,13 @@
                     {if !empty($WarenkorbVersandkostenfreiHinweis)}
                         {block name='basket-cart-dropdown-shipping-free-hint'}
                             <hr>
-                            <ul class="list-icons text-muted-util font-size-sm">
+                            <ul class="cart-dropdown-shipping-notice list-icons text-muted-util font-size-sm">
                                 <li>
-                                    <a class="popup" href="{if !empty($oSpezialseiten_arr) && isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}{else}#{/if}" data-toggle="tooltip"  data-placement="bottom" title="{lang key='shippingInfo' section='login'}">
+                                    <a class="popup"
+                                       href="{if !empty($oSpezialseiten_arr) && isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}{else}#{/if}"
+                                       data-toggle="tooltip"
+                                       data-placement="bottom"
+                                       title="{lang key='shippingInfo' section='login'}">
                                         <i class="fa fa-info-circle"></i>
                                     </a>
                                     {$WarenkorbVersandkostenfreiHinweis|truncate:160:"..."}
@@ -147,7 +151,7 @@
             {/block}
         {else}
             {block name='basket-cart-dropdown-hint-empty'}
-                {dropdownitem class='p-2' href="{{get_static_route id='warenkorb.php'}}" rel="nofollow" title="{lang section='checkout' key='emptybasket'}"}
+                {dropdownitem class="cart-dropdown-empty" href="{{get_static_route id='warenkorb.php'}}" rel="nofollow" title="{lang section='checkout' key='emptybasket'}"}
                     {lang section='checkout' key='emptybasket'}
                 {/dropdownitem}
             {/block}

@@ -20,13 +20,16 @@
         {/block}
     {elseif !$alertNote}
         {block name='account-login-alert'}
-            {alert variant="info"}{lang key='loginDesc' section='login'} {if isset($oRedirect->cName) && $oRedirect->cName}{lang key='redirectDesc1'} {$oRedirect->cName} {lang key='redirectDesc2'}.{/if}{/alert}
+            {alert variant="info"}
+                {lang key='loginDesc' section='login'}
+                {if isset($oRedirect->cName) && $oRedirect->cName}{lang key='redirectDesc1'} {$oRedirect->cName} {lang key='redirectDesc2'}.{/if}
+            {/alert}
         {/block}
     {/if}
 
     {block name='account-login-form'}
         {opcMountPoint id='opc_before_login'}
-        {row}
+        {row class="login-form"}
             {col sm=8 lg=6}
                 {form id="login_form" action="{get_static_route id='jtl.php'}" method="post" role="form" class="jtl-validate" slide=true}
                     <fieldset>
@@ -59,7 +62,7 @@
                             {/if}
 
                             {block name='account-login-form-submit'}
-                                {formgroup}
+                                {formgroup class="login-form-submit"}
                                     {input type="hidden" name="login" value="1"}
                                     {if !empty($oRedirect->cURL)}
                                         {foreach $oRedirect->oParameter_arr as $oParameter}

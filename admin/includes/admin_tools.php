@@ -218,6 +218,7 @@ function bearbeiteListBox($listBoxes, $valueName, int $configSectionID)
  */
 function saveAdminSectionSettings(int $configSectionID, array &$post, $tags = [CACHING_GROUP_OPTION])
 {
+    Shop::Container()->getGetText()->loadAdminLocale('configs/configs');
     if (!Form::validateToken()) {
         return __('errorCSRF');
     }
@@ -279,7 +280,7 @@ function saveAdminSectionSettings(int $configSectionID, array &$post, $tags = [C
  * @param $setting
  * @return bool
  */
-function validateSetting($setting)
+function validateSetting($setting): bool
 {
     $valid = true;
     switch ($setting->cName) {
@@ -299,14 +300,14 @@ function validateSetting($setting)
  * @param $setting
  * @return bool
  */
-function validateNumberRange(int $min, int $max, $setting)
+function validateNumberRange(int $min, int $max, $setting): bool
 {
     $valid = $min <= $setting->cWert && $setting->cWert <= $max;
 
     if (!$valid) {
         Shop::Container()->getAlertService()->addAlert(
             Alert::TYPE_DANGER,
-            'number falsch',
+            sprintf(__('errrorNumberRange'), __($setting->cName . '_name'), $min, $max),
             'errrorNumberRange'
         );
     }

@@ -72,7 +72,7 @@
             {$imageCount = $Artikel->Bilder|@count}
             {$imageCountDefault = 5}
             {if $imageCount > 1}
-                <div id="gallery_preview_wrapper" class="mx-auto">
+                <div id="gallery_preview_wrapper" class="product-thumbnails-wrapper">
                     <div id="gallery_preview"
                          class="product-thumbnails slick-smooth-loading carousel carousel-thumbnails slick-lazy {if $imageCount <= $imageCountDefault}slick-count-default{/if}"
                          data-slick-type="gallery_preview">

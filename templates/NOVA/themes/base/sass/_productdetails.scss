@@ -7,22 +7,30 @@
 
 	.slick-slide { transition: opacity $transition-base-timing; }
 
-	.product-thumbnails {
-		width: 100%;
-		margin-bottom: map_get($spacers, 5);
-		margin-left: 0;
-		margin-right: 0;
+	.product-thumbnails-wrapper {
 		display: none;
+		margin-left: auto;
+		margin-right: auto;
 		@include media-breakpoint-up(lg) {
 			margin-bottom: 0;
 			display: flex;
 		}
-		.slick-list { width: 100%; }
-		.slick-slide:not(.slick-current) { opacity: .5; }
-		.inner {
-			padding:  map_get($spacers, 1);
-			@include media-breakpoint-up(lg) {
-				padding:  map_get($spacers, 2);
+		.product-thumbnails {
+			width: 100%;
+			margin-bottom: map_get($spacers, 5);
+			margin-left: 0;
+			margin-right: 0;
+			.slick-list {
+				width: 100%;
+			}
+			.slick-slide:not(.slick-current) {
+				opacity: .5;
+			}
+			.inner {
+				padding: map_get($spacers, 1);
+				@include media-breakpoint-up(lg) {
+					padding: map_get($spacers, 2);
+				}
 			}
 		}
 	}
@@ -47,7 +55,10 @@
 		margin-bottom: map_get($spacers, 4);
 		display: none;
 	}
-
+	.product-actions {
+		padding-top: map_get($spacers, 2);
+		padding-bottom: map_get($spacers, 2);
+	}
 	&.fullscreen {
 		position: fixed;
 		top: 0;
@@ -59,8 +70,6 @@
 		overflow: hidden;
 
 		.product-actions {
-			padding-top: map_get($spacers, 2);
-			padding-bottom: map_get($spacers, 2);
 			display: none;
 		}
 

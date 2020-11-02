@@ -19767,7 +19767,6 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
 
 /* add to cart btn */
 #add-to-cart .btn .btn-basket-check {
-  /* this is the button text message */
   top: 0;
   left: 0;
   width: 100%;
@@ -19776,6 +19775,7 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
 }
 #add-to-cart .btn .btn-basket-check span {
   margin-right: 0.25rem;
+  display: none;
 }
 @media (min-width: 576px) {
   #add-to-cart .btn .btn-basket-check span {
@@ -23969,30 +23969,34 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 .product-detail .slick-slide {
   transition: opacity ease-in-out;
 }
-.product-detail .product-thumbnails {
-  width: 100%;
-  margin-bottom: 2rem;
-  margin-left: 0;
-  margin-right: 0;
+.product-detail .product-thumbnails-wrapper {
   display: none;
+  margin-left: auto;
+  margin-right: auto;
 }
 @media (min-width: 992px) {
-  .product-detail .product-thumbnails {
+  .product-detail .product-thumbnails-wrapper {
     margin-bottom: 0;
     display: flex;
   }
 }
-.product-detail .product-thumbnails .slick-list {
+.product-detail .product-thumbnails-wrapper .product-thumbnails {
+  width: 100%;
+  margin-bottom: 2rem;
+  margin-left: 0;
+  margin-right: 0;
+}
+.product-detail .product-thumbnails-wrapper .product-thumbnails .slick-list {
   width: 100%;
 }
-.product-detail .product-thumbnails .slick-slide:not(.slick-current) {
+.product-detail .product-thumbnails-wrapper .product-thumbnails .slick-slide:not(.slick-current) {
   opacity: 0.5;
 }
-.product-detail .product-thumbnails .inner {
+.product-detail .product-thumbnails-wrapper .product-thumbnails .inner {
   padding: 0.25rem;
 }
 @media (min-width: 992px) {
-  .product-detail .product-thumbnails .inner {
+  .product-detail .product-thumbnails-wrapper .product-thumbnails .inner {
     padding: 0.5rem;
   }
 }
@@ -24017,6 +24021,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   margin-bottom: 1.5rem;
   display: none;
 }
+#image_wrapper .product-actions {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
 #image_wrapper.fullscreen {
   position: fixed;
   top: 0;
@@ -24028,8 +24036,6 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   overflow: hidden;
 }
 #image_wrapper.fullscreen .product-actions {
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
   display: none;
 }
 #image_wrapper.fullscreen .product-detail-image-preview-bar {

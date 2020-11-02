@@ -66,7 +66,7 @@
                                         disabled=$Artikel->bHasKonfig && !$isConfigCorrect|default:false
                                         class="js-cfg-validate"}
                                         <span class="btn-basket-check">
-                                            <span class="{if !isset($kEditKonfig)}d-none{/if}">
+                                            <span>
                                                 {if isset($kEditKonfig)}
                                                     {lang key='applyChanges'}
                                                 {else}

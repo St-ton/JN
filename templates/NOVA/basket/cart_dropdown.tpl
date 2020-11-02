@@ -1,5 +1,5 @@
 {block name='basket-cart-dropdown'}
-    <div class="dropdown-menu dropdown-menu-right lg-min-w-lg">
+    <div class="cart-dropdown dropdown-menu dropdown-menu-right lg-min-w-lg">
         {if $smarty.session.Warenkorb->PositionenArr|@count > 0}
             {block name='basket-cart-dropdown-cart-items-content'}
                 <div class="table-responsive max-h-sm lg-max-h">
@@ -39,7 +39,7 @@
                                                     {/formrow}
                                                 </td>
                                                 {block name='basket-cart-dropdown-cart-item-item-price'}
-                                                    <td class="text-right text-nowrap">
+                                                    <td class="text-right-util text-nowrap-util">
                                                         {if $oPosition->istKonfigVater()}
                                                             {$oPosition->cKonfigpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
                                                         {else}
@@ -64,7 +64,7 @@
                                                     </td>
                                                 {/block}
                                                 {block name='basket-cart-dropdown-cart-item-noitem-price'}
-                                                    <td class="text-right text-nowrap">
+                                                    <td class="text-right-util text-nowrap-util">
                                                         {$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
                                                     </td>
                                                 {/block}
@@ -81,45 +81,45 @@
                         <ul class="list-unstyled">
                             {if $NettoPreise}
                                 {block name='basket-cart-dropdown-cart-item-net'}
-                                    <li class="text-muted mb-2 font-size-sm">
+                                    <li class="cart-dropdown-total-item">
                                         {if empty($smarty.session.Versandart)}
                                             {lang key='subtotal' section='account data'}
                                         {else}
                                             {lang key='totalSum'}
-                                        {/if} ({lang key='net'}) <span class="float-right text-nowrap">{$WarensummeLocalized[$NettoPreise]}</span>
+                                        {/if} ({lang key='net'}) <span class="cart-dropdown-total-item-price">{$WarensummeLocalized[$NettoPreise]}</span>
                                     </li>
                                 {/block}
                             {/if}
                             {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N' && isset($Steuerpositionen) && $Steuerpositionen|@count > 0}
                                 {block name='basket-cart-dropdown-cart-item-tax'}
                                     {foreach $Steuerpositionen as $Steuerposition}
-                                        <li class="text-muted mb-2 font-size-sm">
+                                        <li class="cart-dropdown-total-item">
                                             {$Steuerposition->cName}
-                                            <span class="float-right text-nowrap">{$Steuerposition->cPreisLocalized}</span>
+                                            <span class="cart-dropdown-total-item-price">{$Steuerposition->cPreisLocalized}</span>
                                         </li>
                                     {/foreach}
                                 {/block}
                             {/if}
                             {block name='basket-cart-dropdown-cart-item-total'}
-                                <li class="font-weight-bold">
+                                <li class="font-weight-bold-util">
                                     {if empty($smarty.session.Versandart)}
                                         {lang key='subtotal' section='account data'}
                                     {else}
                                         {lang key='totalSum'}
-                                    {/if}: <span class="float-right text-nowrap">{$WarensummeLocalized[0]}</span>
+                                    {/if}: <span class="cart-dropdown-total-item-price">{$WarensummeLocalized[0]}</span>
                                 </li>
                             {/block}
                             {block name='basket-cart-dropdown-cart-item-favourable-shipping'}
                                 {if $favourableShippingString !== '' && empty($smarty.session.Versandart)}
-                                    <li class="text-muted mt-2 font-size-sm">{$favourableShippingString}</li>
+                                    <li class="cart-dropdown-total-item">{$favourableShippingString}</li>
                                 {/if}
                             {/block}
                         </ul>
                     {/block}
                     {block name='basket-cart-dropdown-buttons'}
-                        {row class='mt-3'}
+                        {row class="cart-dropdown-buttons"}
                             {col cols=12 lg=6}
-                                {button variant="outline-primary" type="link" block=true  size="sm" href="{get_static_route id='bestellvorgang.php'}?wk=1" class="mb-3 mb-lg-0"}
+                                {button variant="outline-primary" type="link" block=true  size="sm" href="{get_static_route id='bestellvorgang.php'}?wk=1" class="cart-dropdown-next"}
                                     {lang key='nextStepCheckout' section='checkout'}
                                 {/button}
                             {/col}
@@ -133,9 +133,13 @@
                     {if !empty($WarenkorbVersandkostenfreiHinweis)}
                         {block name='basket-cart-dropdown-shipping-free-hint'}
                             <hr>
-                            <ul class="list-icons text-muted font-size-sm">
+                            <ul class="cart-dropdown-shipping-notice list-icons text-muted-util font-size-sm">
                                 <li>
-                                    <a class="popup" href="{if !empty($oSpezialseiten_arr) && isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}{else}#{/if}" data-toggle="tooltip"  data-placement="bottom" title="{lang key='shippingInfo' section='login'}">
+                                    <a class="popup"
+                                       href="{if !empty($oSpezialseiten_arr) && isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}{else}#{/if}"
+                                       data-toggle="tooltip"
+                                       data-placement="bottom"
+                                       title="{lang key='shippingInfo' section='login'}">
                                         <i class="fa fa-info-circle"></i>
                                     </a>
                                     {$WarenkorbVersandkostenfreiHinweis|truncate:160:"..."}
@@ -147,7 +151,7 @@
             {/block}
         {else}
             {block name='basket-cart-dropdown-hint-empty'}
-                {dropdownitem class='p-2' href="{{get_static_route id='warenkorb.php'}}" rel="nofollow" title="{lang section='checkout' key='emptybasket'}"}
+                {dropdownitem class="cart-dropdown-empty" href="{{get_static_route id='warenkorb.php'}}" rel="nofollow" title="{lang section='checkout' key='emptybasket'}"}
                     {lang section='checkout' key='emptybasket'}
                 {/dropdownitem}
             {/block}

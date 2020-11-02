@@ -1,5 +1,5 @@
 {block name='checkout-inc-billing-address'}
-    <ul class="list-unstyled">
+    <ul class="list-unstyled inc-billing-address">
         {if isset($orderDetail)}
             {if $Kunde->cFirma}<li>{$Kunde->cFirma}</li>{/if}
             <li>{$Kunde->cTitel} {$Kunde->cVorname} {$Kunde->cNachname}</li>

@@ -1,5 +1,5 @@
 {block name='boxes-box-direct-purchase'}
-    {card class="box box-direct-purchase mb-4" id="sidebox{$oBox->getID()}" title=""}
+    {card class="box box-direct-purchase box-normal" id="sidebox{$oBox->getID()}" title=""}
         {block name='boxes-box-direct-purchase-title'}
             <div class="productlist-filter-headline">
                 {lang key='quickBuy'}

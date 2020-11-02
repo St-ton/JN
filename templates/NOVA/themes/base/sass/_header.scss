@@ -9,8 +9,6 @@
 header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94); position: relative; background-color: $white; z-index: $zindex-sticky;
 	a { text-decoration: none; }
 
-	.navbar { position: static; }
-
 	.navbar-toggler { color: $gray-darker; }
 
 	.nav-right {
@@ -20,11 +18,15 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 		}
 	}
 
+	#mainNavigation {
+		@include media-breakpoint-up(lg) {
+			margin-right: map-get($spacers, 3);
+		}
+	}
+
 	/* mobile only */
 
 	@include media-breakpoint-down(md) {
-		.navbar { /*height: rem(50px); */padding: 0; }
-
 		.dropup, .dropright, .dropdown, .dropleft, .col, [class*='col-'] { position: static; }
 
 		.navbar-collapse { position: fixed; top: 0; left: 0; display: block; height: 100vh !important; -webkit-overflow-scrolling: touch; max-width: rem(270px); transition: $transition-base; z-index: $zindex-fixed + 20; width: 100%; background: $white;
@@ -58,7 +60,13 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 		}
 
 		.nav-mobile-header {
+			padding-left: map-get($spacers, 3);
+			padding-right: map-get($spacers, 3);
 			> .row { height: rem(50px); }
+			.nav-mobile-header-hr {
+				margin-top: 0;
+				margin-bottom: 0;
+			}
 		}
 
 		.nav-mobile-body { height: calc(100vh - #{rem(50px)}); height: calc(var(--vh, 1vh) * 100 - #{rem(50px)}); overflow-y: auto; position: relative; }
@@ -127,11 +135,30 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 			}
 		}
 	}
+	.submenu-headline-image {
+		margin-bottom: map-get($spacers, 3);
+		display: none;
+		@include media-breakpoint-up(lg) {
+			display: block;
+		}
+	}
+	#burger-menu {
+		margin-right: map-get($spacers, 3);
+	}
+}
+
+.nav-item-lg-m {
+	@include media-breakpoint-up(lg) {
+		margin-top: map-get($spacers, 4);
+		margin-bottom: map-get($spacers, 4);
+	}
 }
 
 .fixed-search {
 	background-color: $white;
 	@include box-shadow($popover-box-shadow);
+	padding-top: map-get($spacers, 2);
+	padding-bottom: map-get($spacers, 2);
 }
 
 .main-search .twitter-typeahead {
@@ -151,4 +178,19 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 	right: 52px;
 	width: 24px;
 	z-index: 10;
+}
+
+.account-icon-dropdown {
+	.account-icon-dropdown-pass {
+		margin-bottom: map-get($spacers, 5);
+	}
+	.dropdown-footer {
+		background-color: $gray-lighter;
+		a {
+			text-decoration: underline;
+		}
+	}
+	.account-icon-dropdown-logout {
+		margin-bottom: map-get($spacers, 2);
+	}
 }

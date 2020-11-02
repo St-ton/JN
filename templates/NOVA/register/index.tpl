@@ -7,7 +7,7 @@
         {if $step === 'formular'}
             {if isset($checkout) && $checkout == 1}
                 {block name='register-index-include-inc-steps'}
-                    {container}
+                    {container class="register-steps"}
                         {include file='checkout/inc_steps.tpl'}
                     {/container}
                 {/block}
@@ -60,7 +60,7 @@
         {elseif $step === 'formular eingegangen'}
             {block name='register-index-account-created'}
                 {opcMountPoint id='opc_before_heading' inContainer=false}
-                {container}
+                {container class="register-finished"}
                     <h1>{lang key='accountCreated'}</h1>
                     {opcMountPoint id='opc_after_heading'}
                     <p>{lang key='activateAccountDesc'}</p>

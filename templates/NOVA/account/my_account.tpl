@@ -1,18 +1,18 @@
 {block name='account-my-account'}
     {block name='heading'}
-        <div class="h2 mb-4">{lang key='welcome' section='login'} {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}</div>
+        <div class="h2">{lang key='welcome' section='login'} {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}</div>
     {/block}
     {opcMountPoint id='opc_before_account_page'}
     {block name='account-my-account-head-data'}
-        {row}
-            {col cols=12 lg=6 class="mb-5"}
+        {row class="account-head-data"}
+            {col cols=12 lg=6}
                 {block name='account-my-account-alert'}
                     {lang key='myAccountDesc' section='login'}
                 {/block}
             {/col}
-            {col cols=12 lg=6 class="mb-5"}
+            {col cols=12 lg=6}
                 {block name='account-my-account-account-credit'}
-                    {card class='text-center border border-primary font-weight-bold'}
+                    {card class='account-head-data-credit'}
                         {lang key='yourMoneyOnAccount' section='login'}: {$Kunde->cGuthabenLocalized}
                     {/card}
                 {/block}
@@ -20,16 +20,16 @@
         {/row}
     {/block}
     {block name='account-my-account-account-data'}
-        {row}
-            {col cols=12 lg=6 class='mb-5'}
+        {row }
+            {col cols=12 lg=6 class="account-data-item account-data-item-orders"}
                 {block name='account-my-account-orders-content'}
                     {card no-body=true}
                         {cardheader}
                             {block name='account-my-account-orders-content-header'}
-                                {row class="align-items-center"}
+                                {row class="align-items-center-util"}
                                     {col}
-                                        <span class="h3 mb-0">
-                                            {link class='text-decoration-none' href="$cCanonicalURL?bestellungen=1"}
+                                        <span class="h3">
+                                            {link class='text-decoration-none-util' href="$cCanonicalURL?bestellungen=1"}
                                                 {lang key='myOrders'}
                                             {/link}
                                         </span>
@@ -56,11 +56,11 @@
                                                 data-boundary="window"
                                                 data-href="{$cCanonicalURL}?bestellung={$order->kBestellung}">
                                                 <td>{$order->dBestelldatum}</td>
-                                                <td class="text-right">{$order->cBestellwertLocalized}</td>
-                                                <td class="text-right">
+                                                <td class="text-right-util">{$order->cBestellwertLocalized}</td>
+                                                <td class="text-right-util">
                                                    {$order->Status}
                                                 </td>
-                                                <td class="text-right d-none d-md-block">
+                                                <td class="text-right-util d-none d-md-block">
                                                     <i class="fa fa-eye"></i>
                                                 </td>
                                             </tr>
@@ -79,15 +79,15 @@
                     {/card}
                 {/block}
             {/col}
-            {col cols=12 lg=6 class='mb-5'}
+            {col cols=12 lg=6 class="account-data-item account-data-item-address"}
                 {block name='account-my-account-billing-address'}
                     {card no-body=true}
                         {cardheader}
                             {block name='account-my-account-billing-address-header'}
-                                {row class="align-items-center"}
+                                {row class="align-items-center-util"}
                                     {col}
-                                        <span class="h3 mb-0">
-                                            {link class='text-decoration-none' href="$cCanonicalURL?editRechnungsadresse=1"}
+                                        <span class="h3">
+                                            {link class='text-decoration-none-util' href="$cCanonicalURL?editRechnungsadresse=1"}
                                                 {lang key='myPersonalData'}
                                             {/link}
                                         </span>
@@ -108,9 +108,9 @@
                                         <tr>
                                             <td class="min-w-sm">
                                                 {lang key='billingAdress' section='account data'}
-                                                <small class="text-muted d-block">{$Kunde->cStrasse} {$Kunde->cHausnummer}, {$Kunde->cPLZ} {$Kunde->cOrt}, {$Kunde->cLand}</small>
+                                                <small class="text-muted-util d-block">{$Kunde->cStrasse} {$Kunde->cHausnummer}, {$Kunde->cPLZ} {$Kunde->cOrt}, {$Kunde->cLand}</small>
                                             </td>
-                                            <td class="text-right">
+                                            <td class="text-right-util">
                                                 {link href="$cCanonicalURL?editRechnungsadresse=1"
                                                     aria=["label"=>{lang key='editBillingAdress' section='account data'}]
                                                 }
@@ -123,9 +123,9 @@
                                         <tr>
                                             <td class="min-w-sm">
                                                 {lang key='contactInformation' section='account data'} {lang key='and'} {lang key='email' section='account data'}
-                                                <small class="text-muted d-block">{$Kunde->cMail}</small>
+                                                <small class="text-muted-util d-block">{$Kunde->cMail}</small>
                                             </td>
-                                            <td class="text-right">
+                                            <td class="text-right-util">
                                                 {link class='float-right' href="$cCanonicalURL?editRechnungsadresse=1"
                                                     aria=["label"=>{lang key='editCustomerData' section='account data'}]
                                                 }
@@ -139,7 +139,7 @@
                                             <td class="min-w-sm">
                                                 {lang key='password' section='account data'}
                                             </td>
-                                            <td class="text-right">
+                                            <td class="text-right-util">
                                                 {link href="{get_static_route id='jtl.php' params=['pass' => 1]}"
                                                     aria=["label"=>{lang key='changePassword' section='login'}]
                                                 }
@@ -157,13 +157,13 @@
         {/row}
 
         {row}
-            {col cols=12 lg=6 class='mb-5'}
+            {col cols=12 lg=6 class="account-data-item account-data-item-wishlist"}
                 {block name='account-my-account-wishlist-content'}
                     {card no-body=true id='my-wishlists'}
                         {cardheader}
                             {block name='account-my-account-wishlist-header'}
-                                <span class="h3 mb-0">
-                                    {link class='text-decoration-none' href="{get_static_route id='wunschliste.php'}"}
+                                <span class="h3">
+                                    {link class='text-decoration-none-util' href="{get_static_route id='wunschliste.php'}"}
                                         {lang key='myWishlists'}
                                     {/link}
                                 </span>
@@ -183,15 +183,15 @@
                                                 </td>
                                             {/block}
                                             {block name='account-my-account-wishlist-visibility'}
-                                                <td class="text-right">
-                                                    <div class="d-inline-flex flex-nowrap mr-1">
+                                                <td class="text-right-util">
+                                                    <div class="d-inline-flex flex-nowrap">
                                                         <span data-switch-label-state="public-{$wishlist->kWunschliste}" class="{if $wishlist->nOeffentlich != 1}d-none{/if}">
                                                             {lang key='public'}
                                                         </span>
                                                         <span data-switch-label-state="private-{$wishlist->kWunschliste}" class="{if $wishlist->nOeffentlich == 1}d-none{/if}">
                                                             {lang key='private'}
                                                         </span>
-                                                        <div class="custom-control custom-switch ml-2">
+                                                        <div class="custom-control custom-switch">
                                                             <input type='checkbox'
                                                                    class='custom-control-input wl-visibility-switch'
                                                                    id="wl-visibility-{$wishlist->kWunschliste}"
@@ -220,19 +220,19 @@
                     {/card}
                 {/block}
             {/col}
-            {col cols=12 lg=6 class='mb-5'}
+            {col cols=12 lg=6 class="account-data-item account-data-item-comparelist"}
                 {block name='account-my-account-comparelist'}
-                    {card no-body=true}
+                    {card no-body=true class="account-comparelist"}
                         {cardheader}
                             {block name='account-my-account-comparelist-header'}
-                                <span class="h3 mb-0">
-                                    {link class='text-decoration-none' href="{get_static_route id='vergleichsliste.php'}"}
+                                <span class="h3">
+                                    {link class='text-decoration-none-util' href="{get_static_route id='vergleichsliste.php'}"}
                                         {lang key='myCompareList'}
                                     {/link}
                                 </span>
                             {/block}
                         {/cardheader}
-                        {cardbody class="d-flex justify-content-center align-items-center flex-column"}
+                        {cardbody}
                             {block name='account-my-account-comparelist-body'}
                                 <p>
                                     {if count($compareList->oArtikel_arr) > 0}
@@ -258,13 +258,13 @@
     {/block}
 
     {block name='account-my-account-actions'}
-        {row}
+        {row class="btn-row"}
             {col md="auto" cols=12}
-                {link class='btn btn-outline-danger btn-block mb-3 mb-md-0' href="{get_static_route id='jtl.php' params=['del' => 1]}"}
+                {link class='btn btn-outline-danger btn-back' href="{get_static_route id='jtl.php' params=['del' => 1]}"}
                     <span class="fa fa-chain-broken"></span> {lang key='deleteAccount' section='login'}
                 {/link}
             {/col}
-            {col md="auto" cols=12 class="ml-auto"}
+            {col md="auto" cols=12 class="ml-auto-util"}
                 {link href="{get_static_route id='jtl.php'}?logout=1" title="{lang key='logOut'}" class="btn btn-primary btn-block min-w-sm"}
                     <span class="fa fa-sign-out-alt"></span> {lang key='logOut'}
                 {/link}

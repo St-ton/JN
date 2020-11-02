@@ -465,8 +465,14 @@
 			border-top: $border-width solid $border-color;
 			border-bottom: $border-width solid $border-color;
 			align-items: flex-end;
-			margin-left: 0;
-			margin-right: 0;
+			&.stock-information-p {
+				padding-top: map_get($spacers, 3);
+				padding-bottom: map_get($spacers, 3);
+				@include media-breakpoint-up(lg) {
+					padding-left: map_get($spacers, 3);
+					padding-right: map_get($spacers, 3);
+				}
+			}
 		}
 		.question-on-item {
 			margin-left: auto;
@@ -551,8 +557,7 @@
 }
 
 #tabAccordion > .card,
-#tab-downloads .card,
-.variations .swatches {
+#tab-downloads .card {
 	margin-bottom: map_get($spacers, 3);
 }
 
@@ -583,22 +588,16 @@
 
 .product-stock-info {
 	padding: map_get($spacers, 3) 0;
-	margin-right: 0;
-	margin-left: 0;
-	border-bottom: 1px solid $gray-lighter;
+	border-bottom: $border-width solid $border-color;
 	align-items: flex-end;
 	@include media-breakpoint-up(lg) {
 		padding: map_get($spacers, 3);
 	}
-	.link {
+	.product-stock-info-button {
 		padding: 0;
 		text-decoration: underline;
-		span {
-			margin-right: map_get($spacers, 2);
-		}
 	}
 }
-
 
 .product-matrix {
 	margin-top: map_get($spacers, 3);
@@ -655,7 +654,7 @@
 	}
 	.x-selling {
 		display: none;
-		border-left: 1px solid $border-color;
+		border-left: $border-width solid $border-color;
 		@include media-breakpoint-up(md) {
 			display: block;
 		}

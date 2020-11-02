@@ -24411,8 +24411,16 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   border-top: 1px solid #ebebeb;
   border-bottom: 1px solid #ebebeb;
   align-items: flex-end;
-  margin-left: 0;
-  margin-right: 0;
+}
+#product-offer .product-info .stock-information.stock-information-p {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+@media (min-width: 992px) {
+  #product-offer .product-info .stock-information.stock-information-p {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
 }
 #product-offer .product-info .question-on-item {
   margin-left: auto;
@@ -24504,8 +24512,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 
 #tabAccordion > .card,
-#tab-downloads .card,
-.variations .swatches {
+#tab-downloads .card {
   margin-bottom: 1rem;
 }
 
@@ -24532,9 +24539,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 
 .product-stock-info {
   padding: 1rem 0;
-  margin-right: 0;
-  margin-left: 0;
-  border-bottom: 1px solid #f5f7fa;
+  border-bottom: 1px solid #ebebeb;
   align-items: flex-end;
 }
 @media (min-width: 992px) {
@@ -24542,12 +24547,9 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
     padding: 1rem;
   }
 }
-.product-stock-info .link {
+.product-stock-info .product-stock-info-button {
   padding: 0;
   text-decoration: underline;
-}
-.product-stock-info .link span {
-  margin-right: 0.5rem;
 }
 
 .product-matrix {

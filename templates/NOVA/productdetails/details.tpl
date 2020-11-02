@@ -208,7 +208,7 @@
                                     {/block}
                                     {block name='productdetails-details-stock'}
                                         {col cols=12}
-                                            {row class="stock-information no-gutters {if !isset($availability) && !isset($shippingTime)}stock-information-p{/if}"}
+                                            {row no-gutters=true class="stock-information {if !isset($availability) && !isset($shippingTime)}stock-information-p{/if}"}
                                                 {col}
                                                     {block name='productdetails-details-include-stock'}
                                                         {include file='productdetails/stock.tpl'}

@@ -7,7 +7,7 @@
                 <hr class="productlist-page-nav-top">
             {/block}
         {/if}
-        {row class="{if $navid === 'header'}productlist-page-nav-header-m{/if} no-gutters productlist-page-nav"}
+        {row no-gutters=true class="{if $navid === 'header'}productlist-page-nav-header-m{/if} productlist-page-nav"}
             {if count($NaviFilter->getSearchResults()->getProducts()) > 0  && $navid === 'header'}
                 {block name='snippets-productlist-page-nav-result-options-sort'}
                     {col cols=12 md="auto" class="displayoptions"}

@@ -1,6 +1,6 @@
 {block name='snippets-filter-price-slider'}
     {block name='snippets-filter-price-slider-content'}
-        {row class="no-gutters price-range-inputs"}
+        {row no-gutters=true class="price-range-inputs"}
             {col cols=5}
                 {inputgroup}
                     {input id="{$id}-from" class="price-range-input" placeholder=0 aria=["label" => {lang key='differentialPriceFrom' section='productOverview'}]}

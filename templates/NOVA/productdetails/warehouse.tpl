@@ -9,7 +9,7 @@
             || $Artikel->fLagerbestand > 0
             || $Artikel->fZulauf > 0)}
         {block name='productdetails-warehouse-detail-link'}
-            {row class="product-stock-info no-gutters row"}
+            {row no-gutters=true class="product-stock-info row"}
                 {col}
                     {button class="product-stock-info-button" variant="link" data=["toggle"=>"modal", "target"=>"#warehouseAvailability"]}
                         <span class="fas fa-map-marker-alt icon-mr-2"></span>{lang key='warehouseAvailability'}

@@ -110,9 +110,11 @@ class PriceRange
         $priceRange = Shop::Container()->getDB()->queryPrepared(
             "SELECT baseprice.kArtikel,
                     MIN(IF(varaufpreis.fMinAufpreisNetto IS NULL,
-                      baseprice.specialPrice, baseprice.specialPrice + varaufpreis.fMinAufpreisNetto)) specialPriceMin,
+                        COALESCE(baseprice.specialPrice, 999999999),
+                        baseprice.specialPrice + varaufpreis.fMinAufpreisNetto)) specialPriceMin,
                     MAX(IF(varaufpreis.fMaxAufpreisNetto IS NULL,
-                      baseprice.specialPrice, baseprice.specialPrice + varaufpreis.fMaxAufpreisNetto)) specialPriceMax,
+                        COALESCE(baseprice.specialPrice, 0),
+                        baseprice.specialPrice + varaufpreis.fMaxAufpreisNetto)) specialPriceMax,
                    MIN(IF(varaufpreis.fMinAufpreisNetto IS NULL,
                       baseprice.fVKNetto, baseprice.fVKNetto + varaufpreis.fMinAufpreisNetto)) fVKNettoMin,
                    MAX(IF(varaufpreis.fMaxAufpreisNetto IS NULL,
@@ -121,10 +123,9 @@ class PriceRange
                 SELECT IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) kArtikel,
                        tartikel.kArtikel kKindArtikel,
                        tartikel.nIstVater,
-                        MIN(IF(tsonderpreise.fNettoPreis < tpreisdetail.fVKNetto,
-                          tsonderpreise.fNettoPreis, 999999999)) specialPrice,
-                       MIN(IF(tsonderpreise.fNettoPreis < tpreisdetail.fVKNetto,
-                          tsonderpreise.fNettoPreis, tpreisdetail.fVKNetto)) fVKNetto
+                       tsonderpreise.fNettoPreis specialPrice,
+                       IF(tsonderpreise.fNettoPreis < tpreisdetail.fVKNetto,
+                          tsonderpreise.fNettoPreis, tpreisdetail.fVKNetto) fVKNetto
                 FROM tartikel
                 INNER JOIN tpreis ON tpreis.kArtikel = tartikel.kArtikel
                 INNER JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
@@ -139,12 +140,14 @@ class PriceRange
                                AND (tartikelsonderpreis.nIstDatum = 0
                                         OR (tartikelsonderpreis.dEnde >= CURDATE()))
                 WHERE tartikel.nIstVater = 0
-                  AND (tpreis.kKundengruppe = :customerGroup
-                    OR (tpreis.kKundengruppe = 0 AND tpreis.kKunde = :customerID))
+                  AND ((tpreis.kKundengruppe = 0 AND tpreis.kKunde = :customerID)
+                    OR (tpreis.kKundengruppe = :customerGroup AND NOT EXISTS(
+                        SELECT 1 FROM tpreis iPrice
+                            WHERE iPrice.kKunde = :customerID
+                                AND iPrice.kKundengruppe = 0
+                                AND iPrice.kArtikel = tartikel.kArtikel
+                        )))
                   AND IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) = :productID
-                GROUP BY IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel),
-                       tartikel.kArtikel,
-                       tartikel.nIstVater
             ) baseprice
             LEFT JOIN (
                       SELECT variations.kArtikel,
@@ -174,7 +177,7 @@ class PriceRange
                           AND baseprice.nIstVater = 0
             GROUP BY baseprice.kArtikel",
             [
-                'productID'     => $this->productData->kArtikel,
+                'productID'     => (int)$this->productData->kArtikel,
                 'customerGroup' => $this->customerGroupID,
                 'customerID'    => $this->customerID
             ],
@@ -184,8 +187,8 @@ class PriceRange
         if ($priceRange) {
             $this->minNettoPrice     = (float)$priceRange->fVKNettoMin;
             $this->maxNettoPrice     = (float)$priceRange->fVKNettoMax;
-            $this->isMinSpecialPrice = ((float)$priceRange->specialPriceMin <= $this->minNettoPrice);
-            $this->isMaxSpecialPrice = ((float)$priceRange->specialPriceMax <= $this->maxNettoPrice);
+            $this->isMinSpecialPrice = (\round($priceRange->specialPriceMin, 2) === \round($this->minNettoPrice, 2));
+            $this->isMaxSpecialPrice = (\round($priceRange->specialPriceMax, 2) === \round($this->maxNettoPrice));
         } else {
             $this->minNettoPrice     = $this->productData->fNettoPreis;
             $this->maxNettoPrice     = $this->productData->fNettoPreis;
@@ -382,18 +385,39 @@ class PriceRange
      *
      * @param int|null $netto
      * @return string|string[]
+     * @deprecated since 5.0.0
      */
     public function getLocalized(int $netto = null)
     {
+        $rangePrices = $this->getLocalizedArray($netto);
+
         if ($netto !== null) {
-            return $netto === 0
-                ? $this->getMinLocalized(0) . ' - ' . $this->getMaxLocalized(0)
-                : $this->getMinLocalized(1) . ' - ' . $this->getMaxLocalized(1);
+            return $rangePrices[0] . ' - '. $rangePrices[1];
         }
 
         return [
-            $this->getMinLocalized(0) . ' - ' . $this->getMaxLocalized(0),
-            $this->getMinLocalized(1) . ' - ' . $this->getMaxLocalized(1)
+            $rangePrices[0][0] . ' - '. $rangePrices[0][1],
+            $rangePrices[1][0] . ' - '. $rangePrices[1][1],
+        ];
+    }
+
+    /**
+     * get localized min - max prices as array
+     *
+     * @param int|null $netto
+     * @return array
+     */
+    public function getLocalizedArray(int $netto = null): array
+    {
+        if ($netto !== null) {
+            return $netto === 0
+                ? [ $this->getMinLocalized(0) , $this->getMaxLocalized(0) ]
+                : [ $this->getMinLocalized(1) , $this->getMaxLocalized(1) ];
+        }
+
+        return [
+            [ $this->getMinLocalized(0) , $this->getMaxLocalized(0) ],
+            [ $this->getMinLocalized(1) , $this->getMaxLocalized(1) ]
         ];
     }
 

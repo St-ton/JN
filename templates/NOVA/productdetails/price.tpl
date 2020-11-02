@@ -28,9 +28,10 @@
                         <span{if $Artikel->Preise->oPriceRange->isRange() && $tplscope !== 'box'} itemprop="priceSpecification" itemscope itemtype="http://schema.org/UnitPriceSpecification"{/if}>
                         {if $tplscope !== 'detail' && $Artikel->Preise->oPriceRange->isRange()}
                             {if $Artikel->Preise->oPriceRange->rangeWidth() <= $Einstellungen.artikeluebersicht.articleoverview_pricerange_width}
-                                {$Artikel->Preise->oPriceRange->getLocalized($NettoPreise)}
+                                {assign var=rangePrices value=$Artikel->Preise->oPriceRange->getLocalizedArray($NettoPreise)}
+                                <span class="first-range-price">{$rangePrices[0]} - </span><span class="second-range-price">{$rangePrices[1]} {if $tplscope !== 'detail'} <span class="footnote-reference">*</span>{/if}</span>
                             {else}
-                                {$Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)}
+                                {$Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)} <span class="footnote-reference">*</span>
                             {/if}
                         {else}
                             {if $Artikel->Preise->oPriceRange->isRange() && ($Artikel->nVariationsAufpreisVorhanden == 1 || $Artikel->bHasKonfig) && $Artikel->kVaterArtikel == 0}{$Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)}{else}{$Artikel->Preise->cVKLocalized[$NettoPreise]}{/if}
@@ -40,7 +41,7 @@
                             <meta itemprop="minPrice" content="{$Artikel->Preise->oPriceRange->minBruttoPrice}">
                             <meta itemprop="maxPrice" content="{$Artikel->Preise->oPriceRange->maxBruttoPrice}">
                         {/if}
-                        </span>{if $tplscope !== 'detail'} <span class="footnote-reference">*</span>{/if}
+                        {if $tplscope !== 'detail' && !$Artikel->Preise->oPriceRange->isRange()} <span class="footnote-reference">*</span>{/if}
                     {/block}
                     {block name='productdetails-price-snippets'}
                         {if $tplscope !== 'box'}

@@ -22754,6 +22754,11 @@ input.typeahead:-ms-input-placeholder {
   background-color: #f5f7fa;
 }
 
+.price .second-range-price {
+  display: inline-block;
+  white-space: nowrap;
+}
+
 .ml-auto-util {
   margin-left: auto;
 }
@@ -24150,8 +24155,8 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   }
 }
 #image_wrapper #gallery_preview:not(.slick-initialized).slick-count-default div.js-gallery-images {
-  width: calc((100%)/5);
-  min-width: calc((100%)/5);
+  width: calc(((100%)/5) - 1rem);
+  min-width: calc(((100%)/5) - 1rem);
 }
 #image_wrapper #gallery_preview:not(.slick-initialized) .slick-prev {
   margin-right: -0.5rem;

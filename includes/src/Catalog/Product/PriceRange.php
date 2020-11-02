@@ -382,18 +382,39 @@ class PriceRange
      *
      * @param int|null $netto
      * @return string|string[]
+     * @deprecated since 5.0.0
      */
     public function getLocalized(int $netto = null)
     {
+        $rangePrices = $this->getLocalizedArray($netto);
+
         if ($netto !== null) {
-            return $netto === 0
-                ? $this->getMinLocalized(0) . ' - ' . $this->getMaxLocalized(0)
-                : $this->getMinLocalized(1) . ' - ' . $this->getMaxLocalized(1);
+            return $rangePrices[0] . ' - '. $rangePrices[1];
         }
 
         return [
-            $this->getMinLocalized(0) . ' - ' . $this->getMaxLocalized(0),
-            $this->getMinLocalized(1) . ' - ' . $this->getMaxLocalized(1)
+            $rangePrices[0][0] . ' - '. $rangePrices[0][1],
+            $rangePrices[1][0] . ' - '. $rangePrices[1][1],
+        ];
+    }
+
+    /**
+     * get localized min - max prices as array
+     *
+     * @param int|null $netto
+     * @return array
+     */
+    public function getLocalizedArray(int $netto = null): array
+    {
+        if ($netto !== null) {
+            return $netto === 0
+                ? [ $this->getMinLocalized(0) , $this->getMaxLocalized(0) ]
+                : [ $this->getMinLocalized(1) , $this->getMaxLocalized(1) ];
+        }
+
+        return [
+            [ $this->getMinLocalized(0) , $this->getMaxLocalized(0) ],
+            [ $this->getMinLocalized(1) , $this->getMaxLocalized(1) ]
         ];
     }
 

@@ -461,6 +461,10 @@ input.typeahead {
     background-color: $gray-lighter;
   }
 }
+.price .second-range-price{
+  display:inline-block;
+  white-space: nowrap;
+}
 
 //backwards compatibility for html from wawi
 .img-responsive {

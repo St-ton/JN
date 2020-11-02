@@ -22386,6 +22386,11 @@ input.typeahead:-ms-input-placeholder {
   background-color: #525252;
 }
 
+.price .second-range-price {
+  display: inline-block;
+  white-space: nowrap;
+}
+
 .img-responsive {
   max-width: 100%;
   height: auto;

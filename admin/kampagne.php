@@ -10,9 +10,10 @@ use JTL\Pagination\Pagination;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('STATS_CAMPAIGN_VIEW', true, true);
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'kampagne_inc.php';
 
 $campaignID   = 0;

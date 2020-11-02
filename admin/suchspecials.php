@@ -9,8 +9,10 @@ use JTL\Helpers\Text;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
-$oAccount->permission('SETTINGS_SPECIALPRODUCTS_VIEW', true, true);
+/** @global \JTL\Backend\AdminAccount $oAccount */
 /** @global \JTL\Smarty\JTLSmarty $smarty */
+
+$oAccount->permission('SETTINGS_SPECIALPRODUCTS_VIEW', true, true);
 $step        = 'suchspecials';
 $db          = Shop::Container()->getDB();
 $alertHelper = Shop::Container()->getAlertService();

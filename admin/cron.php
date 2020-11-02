@@ -7,9 +7,10 @@ use JTL\Helpers\Request;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('CRON_VIEW', true, true);
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 $admin    = Shop::Container()->get(Controller::class);
 $deleted  = 0;
 $updated  = 0;

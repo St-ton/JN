@@ -21,10 +21,11 @@ use function Functional\filter;
 use function Functional\first;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global JTLSmarty $smarty */
 
 $oAccount->permission('CONTENT_EMAIL_TEMPLATE_VIEW', true, true);
 
-/** @global JTLSmarty $smarty */
 $mailTemplate        = null;
 $hasError            = false;
 $continue            = true;

@@ -10,8 +10,9 @@ use JTL\Pagination\Pagination;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
-$oAccount->permission('DISPLAY_BANNER_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
+/** @global \JTL\Backend\AdminAccount $oAccount */
+$oAccount->permission('DISPLAY_BANNER_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'banner_inc.php';
 $action      = (isset($_REQUEST['action']) && Form::validateToken()) ? $_REQUEST['action'] : 'view';
 $alertHelper = Shop::Container()->getAlertService();

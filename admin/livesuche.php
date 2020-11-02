@@ -10,9 +10,10 @@ use JTL\Pagination\Pagination;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('MODULE_LIVESEARCH_VIEW', true, true);
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 setzeSprache();
 

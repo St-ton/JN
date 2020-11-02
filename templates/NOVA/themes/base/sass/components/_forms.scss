@@ -142,6 +142,9 @@ label {
 }
 
 .price-range-inputs {
+	.col:nth-child(2) {
+		margin-left: auto;
+	}
 	.input-group {
 		margin-bottom: map-get($spacers, 3);
 	}

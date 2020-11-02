@@ -690,7 +690,7 @@
         {block name='checkout-inc-billing-address-form-captcha'}
             {row}
                 {col cols=8 offset=4}
-                    {formgroup class="{if isset($fehlendeAngaben.captcha) && $fehlendeAngaben.captcha != false} has-error{/if}"}
+                    {formgroup class="simple-captcha-wrapper {if isset($fehlendeAngaben.captcha) && $fehlendeAngaben.captcha != false} has-error{/if}"}
                         {captchaMarkup getBody=true}
                     {/formgroup}
                 {/col}

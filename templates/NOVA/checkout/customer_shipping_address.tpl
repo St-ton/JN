@@ -228,7 +228,7 @@
             {col cols=12 md=4}
                 {block name='checkout-customer-shipping-address-zip'}
                     {formgroup
-                        class="{if !empty($fehlendeAngaben.plz)} has-error{/if}"
+                        class="{if !empty($fehlendeAngaben.plz)} has-error{/if} postcode-wrapper"
                         label="{lang key='plz' section='account data'}"
                         label-for="{$prefix}-{$name}-postcode"
                     }
@@ -260,7 +260,7 @@
             {col cols=12 md=8}
                 {block name='checkout-customer-shipping-address-city'}
                     {formgroup
-                        class="{if !empty($fehlendeAngaben.ort)} has-error{/if} exclude-from-label-slide"
+                        class="{if !empty($fehlendeAngaben.ort)} has-error{/if} city-wrapper exclude-from-label-slide"
                         label=""
                         label-for="{$prefix}-{$name}-city"
                     }

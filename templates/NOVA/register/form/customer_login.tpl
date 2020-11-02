@@ -25,7 +25,7 @@
     {/block}
     {if isset($showLoginCaptcha) && $showLoginCaptcha}
         {block name='register-form-customer-login-captcha'}
-            <div class="form-group text-center-util">
+            <div class="form-group simple-captcha-wrapper">
                 {captchaMarkup getBody=true}
             </div>
         {/block}

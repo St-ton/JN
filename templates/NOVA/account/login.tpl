@@ -55,7 +55,7 @@
 
                             {if isset($showLoginCaptcha) && $showLoginCaptcha}
                                 {block name='account-login-form-submit-captcha'}
-                                   {formgroup class="text-center-util"}
+                                   {formgroup class="simple-captcha-wrapper"}
                                         {captchaMarkup getBody=true}
                                    {/formgroup}
                                 {/block}

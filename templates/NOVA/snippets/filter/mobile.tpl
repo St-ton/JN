@@ -48,7 +48,7 @@
                                                 class="snippets-filter-mobile-item-collapse"
                                                 visible=$subFilter->isActive() || $Einstellungen.template.productlist.filter_items_always_visible === 'Y'}
                                                 {if ($subFilter->getData('cTyp') === 'SELECTBOX') && $subFilter->getOptions()|@count > 0}
-                                                    {dropdown variant="outline-secondary" text="{lang key='selectFilter' section='global'} " toggle-class="btn-block text-left-util"}
+                                                    {dropdown variant="outline-secondary" text="{lang key='selectFilter' section='global'} " toggle-class="btn-block"}
                                                         {include file='snippets/filter/characteristic.tpl' Merkmal=$subFilter sub=true}
                                                     {/dropdown}
                                                 {else}

@@ -61,7 +61,7 @@
                                             {if (!isset($smarty.session.bAnti_spam_already_checked) || $smarty.session.bAnti_spam_already_checked !== true) &&
                                             isset($Einstellungen.newsletter.newsletter_sicherheitscode) && $Einstellungen.newsletter.newsletter_sicherheitscode !== 'N' && empty($smarty.session.Kunde->kKunde)}
                                                 {block name='newsletter-index-form-captcha'}
-                                                    <div class="form-group{if !empty($plausiArr.captcha) && $plausiArr.captcha === true} has-error{/if}">
+                                                    <div class="form-group simple-captcha-wrapper{if !empty($plausiArr.captcha) && $plausiArr.captcha === true} has-error{/if}">
                                                         {captchaMarkup getBody=true}
                                                     </div>
                                                 {/block}

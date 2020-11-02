@@ -11,7 +11,7 @@
         {/block}
         {if $nQuestion < $AWA->getCurQuestion()}
             {block name='selectionwizard-question-answer-smaller'}
-                {row class="text-center-util"}
+                {row}
                     {col cols=4 sm=4 md=3 xl=2 class="selection-wizard-question-item"}
                         <span class="selection-wizard-answer">
                             {$characteristicValue = $AWA->getSelectedValue($nQuestion)}
@@ -59,7 +59,7 @@
                 {/block}
             {else}
                 {block name='selectionwizard-question-answer-equals-other'}
-                    {row class="text-center-util"}
+                    {row}
                         {foreach $oFrage->oWert_arr as $characteristicValue}
                             {col cols=4 sm=4 md=3 xl=2 class="selection-wizard-question-item"}
                                 {if $characteristicValue->getCount() > 0}
@@ -106,7 +106,7 @@
                         <option value="-1">{lang key='pleaseChoose' section='global'}</option>
                     {/select}
                 {else}
-                    {row class="text-center-util"}
+                    {row}
                         {foreach $oFrage->oWert_arr as $characteristicValue}
                             {col cols=4 sm=4 md=3 xl=2 class="selection-wizard-question-item"}
                                 {if $characteristicValue->getCount() > 0}

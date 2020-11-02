@@ -14,7 +14,7 @@
                 <meta itemprop="mainEntityOfPage" content="{$newsItem->getURL()}">
                 {block name='blog-details-heading'}
                     {opcMountPoint id='opc_before_heading'}
-                    <h1 itemprop="headline" class="text-center-util">
+                    <h1 itemprop="headline">
                         {$newsItem->getTitle()}
                     </h1>
                 {/block}

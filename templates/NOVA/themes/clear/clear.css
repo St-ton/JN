@@ -20711,6 +20711,9 @@ label {
   padding-bottom: 0.5rem;
 }
 
+.price-range-inputs .col:nth-child(2) {
+  margin-left: auto;
+}
 .price-range-inputs .input-group {
   margin-bottom: 1rem;
 }
@@ -20891,6 +20894,9 @@ label {
   color: #707070;
 }
 
+.blog-details h1 {
+  text-align: center;
+}
 .blog-details .blog-details-image {
   margin-top: 2rem;
   margin-bottom: 2rem;
@@ -22799,6 +22805,10 @@ input.typeahead:-ms-input-placeholder {
   text-align: center;
 }
 
+.simple-captcha-wrapper {
+  text-align: center;
+}
+
 /* utilities */
 .rounded-top-left {
   border-top-left-radius: 0.125rem !important;
@@ -24620,6 +24630,9 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
     display: block;
   }
 }
+#pushed-success .card-header {
+  text-align: center;
+}
 
 .reviews,
 #description .desc .h3 {
@@ -25697,6 +25710,9 @@ header #burger-menu {
 .selection-wizard-wrapper .selection-wizard {
   margin-top: 2rem;
   margin-bottom: 2rem;
+}
+.selection-wizard-wrapper .selection-wizard-question .row {
+  text-align: center;
 }
 .selection-wizard-wrapper .selection-wizard-question .selection-wizard-question-item {
   margin-bottom: 1rem;

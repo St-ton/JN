@@ -31,6 +31,9 @@
 	color: $text-muted;
 }
 .blog-details {
+	h1 {
+		text-align: center;
+	}
 	.blog-details-image {
 		margin-top: map-get($spacers, 5);
 		margin-bottom: map-get($spacers, 5);

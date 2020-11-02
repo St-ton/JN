@@ -242,7 +242,7 @@
                         {/col}
                     {/block}
                     {block name='snippets-wishlist-visibility-count'}
-                        {col class='col-auto ml-auto-util wishlist-count'}
+                        {col class='col-auto wishlist-count'}
                             {count($CWunschliste->CWunschlistePos_arr)} {lang key='products'}
                         {/col}
                     {/block}

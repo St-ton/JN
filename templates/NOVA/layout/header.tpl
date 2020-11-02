@@ -335,12 +335,12 @@
 
                             {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}
                                 {block name='layout-header-secure-checkout'}
-                                    <div class="ml-auto-util ml-lg-0">
+                                    <div class="secure-checkout-icon ml-auto-util ml-lg-0">
                                         {block name='layout-header-secure-checkout-title'}
-                                            <i class="fas fa-lock align-center icon-mr-2"></i>{lang key='secureCheckout' section='checkout'}
+                                            <i class="fas fa-lock icon-mr-2"></i>{lang key='secureCheckout' section='checkout'}
                                         {/block}
                                     </div>
-                                    <div class="ml-auto-util d-none d-lg-block">
+                                    <div class="secure-checkout-topbar ml-auto-util d-none d-lg-block">
                                         {block name='layout-header-secure-include-header-top-bar'}
                                             {include file='layout/header_top_bar.tpl'}
                                         {/block}
@@ -362,14 +362,14 @@
                                         {block name='layout-header-include-include-categories-header'}
                                             <div class="nav-mobile-header d-lg-none">
                                                 {row class="align-items-center-util"}
-                                                    {col}
+                                                    {col class="nav-mobile-header-toggler"}
                                                         {block name='layout-header-include-categories-mega-toggler'}
                                                             <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">
                                                                 <span class="navbar-toggler-icon"></span>
                                                             </button>
                                                         {/block}
                                                     {/col}
-                                                    {col class="col-auto ml-auto-util"}
+                                                    {col class="col-auto nav-mobile-header-name ml-auto-util"}
                                                         <span class="nav-offcanvas-title">{lang key='menuName'}</span>
                                                         {block name='layout-header-include-categories-mega-back'}
                                                             {link href="#" class="nav-offcanvas-title d-none" data=["menu-back"=>""]}

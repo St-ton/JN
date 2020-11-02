@@ -24551,6 +24551,11 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   text-decoration: underline;
 }
 
+.warehouse-row .warehouse-right {
+  margin-left: auto;
+  text-align: right;
+}
+
 .product-matrix {
   margin-top: 1rem;
   margin-bottom: 2rem;
@@ -25634,6 +25639,9 @@ header #burger-menu {
 }
 
 /* inc-order-items */
+.checkout-items-item > div {
+  margin-left: auto;
+}
 .checkout-items-item .checkout-items-item-title {
   margin-right: 1rem;
   display: inline-flex;
@@ -25645,7 +25653,6 @@ header #burger-menu {
 }
 .checkout-items-item .checkout-items-item-quantity {
   margin-bottom: 0.5rem;
-  margin-left: auto;
 }
 @media (min-width: 992px) {
   .checkout-items-item .checkout-items-item-quantity {
@@ -25658,6 +25665,10 @@ header #burger-menu {
   padding-top: 1.5rem;
   padding-bottom: 1rem;
   margin-left: auto;
+}
+.checkout-items-total .col-auto {
+  margin-left: auto;
+  text-align: right;
 }
 
 .checkout-payment-options {
@@ -25979,6 +25990,9 @@ header #burger-menu {
 .snippets-wishlist .wishlist-actions .wishlist-dropdown-name .dropdown-item {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
+}
+.snippets-wishlist .wishlist-count {
+  margin-left: auto;
 }
 
 /* mobile */

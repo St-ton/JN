@@ -25,24 +25,24 @@
                 class="fade"}
                 {block name='productdetails-warehouse-modal-content'}
                     {block name='productdetails-warehouse-modal-content-header'}
-                        {row}
+                        {row class="warehouse-row"}
                             {col}
                                 <strong>{lang key='warehouse'}</strong>
                             {/col}
-                            {col class="ml-auto-util text-right-util"}
-                                <strong class="ml-auto-util">{lang key='status'}</strong>
+                            {col class="warehouse-right"}
+                                <strong>{lang key='status'}</strong>
                             {/col}
                         {/row}
                         <hr>
                     {/block}
                     {block name='productdetails-warehouse-modal-content-items'}
                         {foreach $Artikel->oWarenlager_arr as $oWarenlager}
-                            {row}
+                            {row class="warehouse-row"}
                                 {col}
                                     <strong>{$oWarenlager->getName()}</strong>
                                 {/col}
-                                {col class="ml-auto-util text-right-util"}
-                                    <span class="ml-auto-util">
+                                {col class="warehouse-right"}
+                                    <span>
                                          {if $anzeige !== 'nichts'
                                          && ($Artikel->cLagerKleinerNull === 'N'
                                          && $oWarenlager->getBackorderString($Artikel) !== ''

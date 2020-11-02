@@ -607,7 +607,12 @@
 		text-decoration: underline;
 	}
 }
-
+.warehouse-row {
+	.warehouse-right {
+		margin-left: auto;
+		text-align: right;
+	}
+}
 .product-matrix {
 	margin-top: map_get($spacers, 3);
 	margin-bottom: map_get($spacers, 5);

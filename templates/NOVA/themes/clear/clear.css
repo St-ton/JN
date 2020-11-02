@@ -24208,7 +24208,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 #cfg-container .cfg-group .custom-control-inline .custom-control-label {
   width: 100%;
 }
-#cfg-container .cfg-group .sticky-bottom .button {
+#cfg-container .cfg-group .sticky-bottom .btn {
   margin: auto;
 }
 @media (max-width: 991.98px) {

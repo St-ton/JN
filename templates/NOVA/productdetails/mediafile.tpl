@@ -2,13 +2,13 @@
     {if !empty($Artikel->oMedienDatei_arr)}
         {assign var=mp3List value=false}
         {assign var=titles value=false}
-        <div class="card-columns {if $mediaType->count < 3}card-columns-2{/if}">
+        <div class="mediafiles card-columns {if $mediaType->count < 3}card-columns-2{/if}">
         {foreach $Artikel->oMedienDatei_arr as $oMedienDatei}
             {if ($mediaType->name == $oMedienDatei->cMedienTyp && $oMedienDatei->cAttributTab|count_characters == 0)
             || ($oMedienDatei->cAttributTab|count_characters > 0 && $mediaType->name == $oMedienDatei->cAttributTab)}
                 {if $oMedienDatei->nErreichbar == 0}
                     {block name='productdetails-mediafilealert'}
-                        {col}
+                        {col class="mediafiles-no-media"}
                             {alert variant="danger"}
                                 {lang key='noMediaFile' section='errorMessages'}
                             {/alert}
@@ -32,7 +32,7 @@
                                     {/if}
                                 {/foreach}
                             {/if}
-                            {card img-src="{if !empty($oMedienDatei->cPfad)}{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}{elseif !empty($oMedienDatei->cURL)}{$oMedienDatei->cURL}{/if}" title="{$oMedienDatei->cName}" img-top=true img-alt="{$cMediaAltAttr}"}
+                            {card class="mediafiles-description" img-src="{if !empty($oMedienDatei->cPfad)}{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}{elseif !empty($oMedienDatei->cURL)}{$oMedienDatei->cURL}{/if}" title="{$oMedienDatei->cName}" img-top=true img-alt="{$cMediaAltAttr}"}
                                 <p>{$oMedienDatei->cBeschreibung}</p>
                             {/card}
                         {/block}
@@ -40,7 +40,7 @@
                     {elseif $oMedienDatei->nMedienTyp === 2}
                         {if $oMedienDatei->cName|strlen > 1}
                             {block name='productdetails-mediafile-audio'}
-                                {card title=$oMedienDatei->cName}
+                                {card class="mediafiles-audio" title=$oMedienDatei->cName}
                                     {row}
                                         {col cols=12}
                                             {$oMedienDatei->cBeschreibung}
@@ -82,7 +82,7 @@
                     {* Sonstiges *}
                     {elseif $oMedienDatei->nMedienTyp === 4}
                         {block name='productdetails-mediafile-misc'}
-                            {card title=$oMedienDatei->cName}
+                            {card class="mediafiles-misc" title=$oMedienDatei->cName}
                                 {row}
                                     {col cols=12}
                                         {$oMedienDatei->cBeschreibung}
@@ -111,7 +111,7 @@
                         {* PDF *}
                     {elseif $oMedienDatei->nMedienTyp == 5}
                         {block name='productdetails-mediafile-pdf'}
-                            {card title=$oMedienDatei->cName}
+                            {card class="mediafiles-pdf" title=$oMedienDatei->cName}
                                 {row}
                                     {col md=6}
                                         {$oMedienDatei->cBeschreibung}

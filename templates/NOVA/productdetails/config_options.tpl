@@ -297,7 +297,7 @@
                             {/block}
                         {elseif $viewType === $smarty.const.KONFIG_ANZEIGE_TYP_DROPDOWN}
                             {block name='productdetails-config-container-group-item-type-dropdown'}
-                                {col cols=12 data=["id"=>$kKonfiggruppe] class="mb-3"}
+                                {col cols=12 data=["id"=>$kKonfiggruppe] class="config-option-dropdown"}
                                     {formgroup}
                                         {select name="item[{$kKonfiggruppe}][]"
                                             data=["ref"=>$kKonfiggruppe]
@@ -372,7 +372,7 @@
                                             {/col}
                                             {col md=8 cols="{if empty($cBeschreibung)}12{else}8{/if}"}
                                                 {if !empty($cBeschreibung)}
-                                                    <div class="mb-2">
+                                                    <div class="config-option-dropdown-description">
                                                         {$cBeschreibung}
                                                     </div>
                                                 {/if}

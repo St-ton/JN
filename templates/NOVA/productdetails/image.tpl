@@ -1,6 +1,6 @@
 {block name='productdetails-image'}
     <div id="image_wrapper" class="gallery-with-action" role="group">
-        {row class="h-100"}
+        {row class="gallery-with-action-main"}
         {block name='productdetails-image-button'}
             {col cols=12 class="product-detail-image-topbar"}
                 {button id="image_fullscreen_close" variant="link" aria=["label"=>"close"]}
@@ -86,7 +86,7 @@
                                     {if $image@first} preview-first {if $imageCount <= $imageCountDefault} ml-auto-util{/if}
                                     {elseif $image@index >= $imageCountDefault} d-none{/if}
                                     {if $image@last && $imageCount <= $imageCountDefault} mr-auto{/if}">
-                                    <div class="inner p-1 p-xl-2">
+                                    <div class="inner">
                                         {image alt=$image->cAltAttribut|escape:'html'
                                             class="product-image"
                                             fluid=true
@@ -131,7 +131,6 @@
                                 <div class="square square-image">
                                     <div class="inner">
                                         {image fluid=true webp=true lazy=true
-                                        class=""
                                         src=$Variationswert->getImage(\JTL\Media\Image::SIZE_XS)
                                         srcset="{$Variationswert->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_variationen_mini_breite}w,
                                         {$Variationswert->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_variationen_klein_breite}w,

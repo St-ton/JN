@@ -98,7 +98,7 @@
                         </div>
                     {/block}
                     {block name='productdetails-pushed-success-product-cell-links'}
-                        {row}
+                        {row class="pushed-success-buttons"}
                             {col cols=12 md=6}
                                 {link href=$pushedArtikel->cURLFull
                                     class="btn btn-outline-primary btn-block continue-shopping"

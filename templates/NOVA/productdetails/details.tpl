@@ -58,7 +58,7 @@
                                     <ul class="info-essential list-unstyled">
                                         {block name='productdetails-details-info-item-id'}
                                             {if isset($Artikel->cArtNr)}
-                                                <li class='product-sku'>
+                                                <li class="product-sku">
                                                     <strong>
                                                         {lang key='sortProductno'}:
                                                     </strong>
@@ -68,7 +68,7 @@
                                         {/block}
                                         {block name='productdetails-details-info-mhd'}
                                             {if isset($Artikel->dMHD) && isset($Artikel->dMHD_de)}
-                                                <li>
+                                                <li class="product-mhd">
                                                     <strong title="{lang key='productMHDTool'}">
                                                         {lang key='productMHD'}:
                                                     </strong>
@@ -80,7 +80,7 @@
                                             {if !empty($Artikel->cBarcode)
                                             && ($Einstellungen.artikeldetails.gtin_display === 'details'
                                             || $Einstellungen.artikeldetails.gtin_display === 'always')}
-                                                <li>
+                                                <li class="product-ean">
                                                     <strong>{lang key='ean'}:</strong>
                                                     <span itemprop="{if $Artikel->cBarcode|count_characters === 8}gtin8{else}gtin13{/if}">{$Artikel->cBarcode}</span>
                                                 </li>
@@ -90,7 +90,7 @@
                                             {if !empty($Artikel->cISBN)
                                             && ($Einstellungen.artikeldetails.isbn_display === 'D'
                                             || $Einstellungen.artikeldetails.isbn_display === 'DL')}
-                                                <li>
+                                                <li class="product-isbn">
                                                     <strong>{lang key='isbn'}:</strong>
                                                     <span itemprop="gtin13">{$Artikel->cISBN}</span>
                                                 </li>
@@ -110,7 +110,7 @@
                                         {block name='productdetails-details-info-manufacturer-wrapper'}
                                             {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'N' && isset($Artikel->cHersteller)}
                                                 {block name='productdetails-details-product-info-manufacturer'}
-                                                    <li itemprop="brand" itemscope="true" itemtype="http://schema.org/Organization">
+                                                    <li  class="product-manufacturer" itemprop="brand" itemscope="true" itemtype="http://schema.org/Organization">
                                                         <strong>{lang key='manufacturers'}:</strong>
                                                         <a class="text-decoration-none-util"
                                                            href="{if !empty($Artikel->cHerstellerHomepage)}{$Artikel->cHerstellerHomepage}{else}{$Artikel->cHerstellerSeo}{/if}"
@@ -143,7 +143,7 @@
                                             {if !empty($Artikel->cUNNummer) && !empty($Artikel->cGefahrnr)
                                             && ($Einstellungen.artikeldetails.adr_hazard_display === 'D'
                                             || $Einstellungen.artikeldetails.adr_hazard_display === 'DL')}
-                                                <li>
+                                                <li class="product-hazard">
                                                     <strong>{lang key='adrHazardSign'}:</strong>
                                                     <table class="adr-table">
                                                         <tr>

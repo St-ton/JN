@@ -23985,6 +23985,14 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 .product-detail .product-thumbnails .slick-slide:not(.slick-current) {
   opacity: 0.5;
 }
+.product-detail .product-thumbnails .inner {
+  padding: 0.25rem;
+}
+@media (min-width: 992px) {
+  .product-detail .product-thumbnails .inner {
+    padding: 0.5rem;
+  }
+}
 
 .delivery-status .list-unstyled, .delivery-status .list-icons {
   margin-bottom: 0;
@@ -23998,6 +24006,9 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 #image_wrapper .slick-slide,
 #image_wrapper img {
   outline: none !important;
+}
+#image_wrapper .gallery-with-action-main {
+  height: 100%;
 }
 #image_wrapper .product-detail-image-topbar {
   margin-bottom: 1.5rem;
@@ -24332,6 +24343,12 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 .cfg-group.visited .js-group-checked {
   color: #1C871E;
 }
+.cfg-group .config-option-dropdown {
+  margin-top: 1rem;
+}
+.cfg-group .config-option-dropdown .config-option-dropdown-description {
+  margin-bottom: 0.5rem;
+}
 
 @media (max-width: 767.98px) {
   #product-configurator .modal-dialog {
@@ -24400,15 +24417,19 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 #product-offer .product-info .question-on-item .question {
   padding: 0;
 }
+
 @media (min-width: 768px) {
-  #product-offer .price_wrapper {
+  .price_wrapper {
     margin-bottom: 1.5rem;
   }
 }
-#product-offer .bulk-prices {
+.price_wrapper .price {
+  display: inline-block;
+}
+.price_wrapper .bulk-prices {
   margin-top: 1rem;
 }
-#product-offer .bulk-prices .bulk-price {
+.price_wrapper .bulk-prices .bulk-price {
   margin-right: 0.25rem;
 }
 
@@ -24483,6 +24504,19 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 #tab-downloads .card,
 .variations .swatches {
   margin-bottom: 1rem;
+}
+
+.variations .custom-radio {
+  margin-bottom: 0.5rem;
+}
+.variations .variation-badge {
+  white-space: nowrap;
+}
+.variations .variation-badge.badge-right {
+  margin-left: auto;
+}
+.variations .variation-badge:not(.badge-right) {
+  margin-left: 0.25rem;
 }
 
 #tabAccordion > .card .card-header {
@@ -24622,6 +24656,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 .review-comment .review-reply {
   margin-left: 1rem;
+}
+
+.product-attributes {
+  margin-top: 1rem;
 }
 
 /* comparelist */

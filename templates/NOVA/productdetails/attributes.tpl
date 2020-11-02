@@ -1,6 +1,6 @@
 {block name='productdetails-attributes'}
 {if $showAttributesTable}
-    <div class="product-attributes mt-3">
+    <div class="product-attributes">
     {block name='productdetails-attributes-table'}
         <table class="table table-sm table-striped table-bordered-outline">
             {if $Einstellungen.artikeldetails.merkmale_anzeigen === 'Y'}

@@ -1,5 +1,5 @@
 {block name='productdetails-download'}
-<div class="card-columns">
+<div class="productdetails-download card-columns">
     {foreach $Artikel->oDownload_arr as $oDownload}
         {if isset($oDownload->oDownloadSprache)}
             {card title=$oDownload->oDownloadSprache->getName()}

@@ -22776,6 +22776,9 @@ input.typeahead:-ms-input-placeholder {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
 }
+.sitemap-group .sub-categories {
+  padding-left: 1.5rem;
+}
 
 .w-100-util {
   width: 100%;
@@ -25138,6 +25141,17 @@ header #burger-menu {
   margin-bottom: 0;
 }
 
+@media (min-width: 992px) {
+  .sidepanel-left {
+    padding-right: 2rem;
+  }
+}
+@media (min-width: 1300px) {
+  .sidepanel-left {
+    padding-right: 4rem;
+  }
+}
+
 /* account */
 /* downloads */
 .download-item {
@@ -25690,6 +25704,12 @@ header #burger-menu {
   margin-bottom: 1rem;
 }
 
+/* credit-form */
+.credit-form .credit-amount-description {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
 /* selectionwizard */
 .selection-wizard-wrapper {
   margin-top: 4rem;
@@ -25999,6 +26019,17 @@ header #burger-menu {
 .snippets-wishlist .wishlist-actions .wishlist-dropdown-name .dropdown-item {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
+}
+
+/* mobile */
+.productlist-applied-filter {
+  margin-bottom: 2rem;
+}
+
+.productlist-filter-footer {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  margin-top: auto;
 }
 
 /*# sourceMappingURL=clear.css.map */

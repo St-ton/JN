@@ -47,7 +47,7 @@
                                                 </li>
                                                 {if $oSubKategorie->getChildren()|@count > 0}
                                                     <li>
-                                                        <ul class="sub-categories list-unstyled pl-4">
+                                                        <ul class="sub-categories list-unstyled">
                                                             {foreach $oSubKategorie->getChildren() as $oSubSubKategorie}
                                                                 <li>
                                                                     {link href=$oSubSubKategorie->getURL()

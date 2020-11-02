@@ -126,13 +126,13 @@
         {/if}
         </ul>
         {block name='snippets-filter-mobile-include-active-filter'}
-            <div class="productlist-applied-filter mb-5">
+            <div class="productlist-applied-filter">
                 {include file='snippets/filter/active_filter.tpl'}
             </div>
         {/block}
     </div>
     {block name='snippets-filter-mobile-footer-buttons'}
-        <div class="productlist-filter-footer px-3 mt-auto">
+        <div class="productlist-filter-footer">
             {formrow class="snippets-filter-mobile-buttons"}
                 {col}
                     {button block=true

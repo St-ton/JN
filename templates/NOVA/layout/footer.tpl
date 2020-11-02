@@ -54,7 +54,7 @@
                     </div>{* /col *}
                 {/block}
                 {block name='layout-footer-sidepanel-left'}
-                    <aside id="sidepanel_left" class="d-print-none col-12 col-lg-4 col-xl-3 order-lg-0 pr-lg-5 pr-xl-7 dropdown-full-width">
+                    <aside id="sidepanel_left" class="sidepanel-left d-print-none col-12 col-lg-4 col-xl-3 order-lg-0 dropdown-full-width">
                         {block name='footer-sidepanel-left-content'}{$boxes.left}{/block}
                     </aside>
                 {/block}
@@ -248,7 +248,7 @@
                                 {block name='layout-footer-copyright-copyright'}
                                     {col}
                                         {if !empty($meta_copyright)}
-                                            <span class="mr-2" itemprop="copyrightHolder">&copy; {$meta_copyright}</span>
+                                            <span class="icon-mr-2" itemprop="copyrightHolder">&copy; {$meta_copyright}</span>
                                         {/if}
                                         {if $Einstellungen.global.global_zaehler_anzeigen === 'Y'}
                                             {lang key='counter'}: {$Besucherzaehler}

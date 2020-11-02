@@ -337,7 +337,7 @@
                                 {block name='layout-header-secure-checkout'}
                                     <div class="ml-auto-util ml-lg-0">
                                         {block name='layout-header-secure-checkout-title'}
-                                            <i class="fas fa-lock align-center mr-2"></i>{lang key='secureCheckout' section='checkout'}
+                                            <i class="fas fa-lock align-center icon-mr-2"></i>{lang key='secureCheckout' section='checkout'}
                                         {/block}
                                     </div>
                                     <div class="ml-auto-util d-none d-lg-block">

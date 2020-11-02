@@ -70,3 +70,12 @@
 		}
 	}
 }
+
+.sidepanel-left {
+	@include media-breakpoint-up(lg) {
+		padding-right: map-get($spacers, 5);
+	}
+	@include media-breakpoint-up(xl) {
+		padding-right: map-get($spacers, 7);
+	}
+}

@@ -89,6 +89,11 @@ aside {
       background: $gray-lighter;
    }
 }
+.box-categories {
+  .nav-link {
+    cursor: pointer;
+  }
+}
 
 // boxes
 .box_login {

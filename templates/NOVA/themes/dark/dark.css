@@ -22016,6 +22016,10 @@ aside .box-monthlynews a .value:hover {
   background: #525252;
 }
 
+.box-categories .nav-link {
+  cursor: pointer;
+}
+
 .box_login .register {
   text-decoration: underline;
 }

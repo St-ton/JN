@@ -264,9 +264,15 @@ $pagination-disabled-bg:            transparent !default;
 
 // breadcrumbs
 
+$breadcrumb-padding-y:              map-get($spacers, 2) !default;
+$breadcrumb-padding-x:              0 !default;
+
 $breadcrumb-bg:                     transparent !default;
 $breadcrumb-divider-color:          $gray-dark !default;
 $breadcrumb-active-color:           $gray-dark !default;
+
+$breadcrumb-border-radius:          0 !default;
+$breadcrumb-margin-bottom:          0 !default;
 
 $tap-target-size:                   44px !default;
 $tap-target-size-sm:                36px !default;

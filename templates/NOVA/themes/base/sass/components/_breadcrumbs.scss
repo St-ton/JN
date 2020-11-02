@@ -6,8 +6,6 @@
 }
 
 .breadcrumb {
-	padding:map-get($spacers, 2) 0;
-	margin-bottom: 0;
 	@include font-size($font-size-base * (13 / $font-size-base));
 	a { text-decoration: none; }
 }

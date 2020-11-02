@@ -9,18 +9,6 @@
 header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94); position: relative; background-color: $white; z-index: $zindex-sticky;
 	a { text-decoration: none; }
 
-	.navbar {
-		padding: 0;
-		position: static;
-	}
-
-	@include media-breakpoint-up(lg) {
-		padding-bottom: 0;
-		.navbar-brand {
-			margin-right: map-get($spacers, 6);
-		}
-	}
-
 	.navbar-toggler { color: $gray-darker; }
 
 	.nav-right {
@@ -205,27 +193,4 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 	.account-icon-dropdown-logout {
 		margin-bottom: map-get($spacers, 2);
 	}
-}
-
-#content {
-	padding-bottom: map-get($spacers, 6);
-}
-#content-wrapper {
-	margin-top: 0;
-	&.has-fluid {
-		padding-top: map-get($spacers, 3);
-	}
-	&:not(.has-fluid) {
-		padding-top: map-get($spacers, 5);
-		@include media-breakpoint-up(lg) {
-			padding-top: map-get($spacers, 7);
-		}
-	}
-}
-#search {
-	margin-right: map-get($spacers, 3);
-	display: none;
-	@include media-breakpoint-up(lg) {
-		  display: block;
-  	}
 }

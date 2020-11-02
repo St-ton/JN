@@ -39,18 +39,7 @@
             {elseif $oNavigationsinfo->getCharacteristicValue() !== null}
                 {$navData = $oNavigationsinfo->getCharacteristicValue()}
             {/if}
-            {if $navData->getImage(\JTL\Media\Image::SIZE_XS)|default:null !== null}
-                {image fluid=true lazy=true webp=true
-                    src=$navData->getImage(\JTL\Media\Image::SIZE_XS)
-                    srcset="{$navData->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_kategorien_mini_breite}w,
-                        {$navData->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_kategorien_klein_breite}w,
-                        {$navData->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_kategorien_breite}w,
-                        {$navData->getImage(\JTL\Media\Image::SIZE_LG)} {$Einstellungen.bilder.bilder_kategorien_gross_breite}w"
-                    alt="{$navData->cBeschreibung|strip_tags|truncate:40|escape:'html'}"
-                    sizes="100vw"
-                    class="productlist-header-description-image"
-                }
-            {/if}
+            {include file='snippets/image.tpl' class='productlist-header-description-image' item=$navData square=false}
         {/if}
         {if $oNavigationsinfo->getName()}
             <div class="title">

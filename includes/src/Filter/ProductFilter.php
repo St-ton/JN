@@ -760,6 +760,7 @@ class ProductFilter
             if (empty($params['cSuche'])) {
                 $this->bExtendedJTLSearch = false;
             }
+            $this->nSeite = \max(1, Request::verifyGPCDataInt('seite'));
             \executeHook(\HOOK_NAVI_SUCHE, [
                 'bExtendedJTLSearch'         => &$this->bExtendedJTLSearch,
                 'oExtendedJTLSearchResponse' => &$this->oExtendedJTLSearchResponse,
@@ -1662,7 +1663,7 @@ class ProductFilter
         if ($this->searchResults === null) {
             $productList         = new Collection();
             $productKeys         = $this->getProductKeys();
-            $productCount        = \count($productKeys);
+            $productCount        = $productKeys->count();
             $this->searchResults = (new SearchResults())
                 ->setProductCount($productCount)
                 ->setProductKeys($productKeys);

@@ -12,6 +12,9 @@
         <div class="result mt-3" v-if="!finished">
             <b-alert variant="info" show><icon name="sync" spin></icon> {{ $t('installing') }}.</b-alert>
         </div>
+        <b-alert variant="danger" show v-if="networkError !== false">
+            <icon name="exclamation-triangle"></icon> {{ $t('networkError') }} <div v-html="networkError"></div>
+        </b-alert>
 
         <div class="result mt-3" v-if="error !== null">
             <b-alert :variant="error ? 'danger' : 'success'" show>
@@ -28,10 +31,11 @@ import qs from 'qs';
 export default {
     name: 'schema',
     data() {
-        let finished = false,
-            error    = null,
-            msg      = null,
-            postData = qs.stringify({
+        let finished     = false,
+            error        = null,
+            msg          = null,
+            networkError = false,
+            postData     = qs.stringify({
                 admin: this.$store.state.adminUser,
                 wawi:  this.$store.state.wawiUser,
                 db:    this.$store.state.database
@@ -58,6 +62,11 @@ export default {
         this.$i18n.add('de', messages.de);
         axios.post(this.$getApiUrl('doinstall'), postData)
             .then(response => {
+                if (!response.data.payload) {
+                    this.networkError = response.data;
+                    return ;
+                }
+                this.networkError = false;
                 this.$store.commit('setSecretKey', response.data.payload.secretKey);
                 if (this.$store.state.installDemoData === true) {
                     this.finished = false;
@@ -88,7 +97,8 @@ export default {
         return {
             finished,
             error,
-            msg
+            msg,
+            networkError
         };
     }
 };

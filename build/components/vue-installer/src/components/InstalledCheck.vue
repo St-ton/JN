@@ -17,7 +17,7 @@
                     {{ $t('msgProtoWarning') }}
                 </b-alert>
                 <b-alert variant="danger" show v-if="networkError !== false">
-                    <icon name="exclamation-triangle"></icon> {{ $t('networkError') }} {{ networkError }}
+                    <icon name="exclamation-triangle"></icon> {{ $t('networkError') }} <div v-html="networkError"></div>
                 </b-alert>
                 <b-form-checkbox v-model="anyway" value="true" unchecked-value="false" v-if="protoWarning && !isInstalled">
                     {{ $t('continueAnyway') }}
@@ -68,6 +68,11 @@ export default {
         this.$i18n.add('de', messages.de);
         axios.get(this.$getApiUrl('installedcheck'))
             .then(response => {
+                if (!response.data.installed && !response.data.shopURL) {
+                    this.networkError = response.data;
+                    return;
+                }
+                this.networkError = false;
                 this.isInstalled = response.data.installed;
                 if (response.data.shopURL.indexOf('https:') === -1
                     && response.data.shopURL.indexOf('localhost') === -1

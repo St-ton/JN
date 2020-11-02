@@ -91,29 +91,31 @@ class SmartyRenderer implements RendererInterface
     {
         $legalData = $template->getLegalData();
         $model     = $template->getModel();
+        $akz       = '';
+        $legal     = '';
         if ($model === null || \mb_strlen($html) === 0) {
             return $html;
         }
         if ($model->getShowAKZ()) {
             $rendered = $this->renderHTML('core_jtl_anbieterkennzeichnung_' . $languageID);
             if (\mb_strlen($rendered) > 0) {
-                $html .= '<br /><br />' . $rendered;
+                $akz .= '<br /><br />' . $rendered;
             }
         }
         if ($model->getShowWRB()) {
-            $html .= $this->addLineBreakText($legalData['wrb']->cContentHtml, Shop::Lang()->get('wrb'));
+            $legal .= $this->addLineBreakText($legalData['wrb']->cContentHtml, Shop::Lang()->get('wrb'));
         }
         if ($model->getShowWRBForm()) {
-            $html .= $this->addLineBreakText($legalData['wrbform']->cContentHtml, Shop::Lang()->get('wrbform'));
+            $legal .= $this->addLineBreakText($legalData['wrbform']->cContentHtml, Shop::Lang()->get('wrbform'));
         }
         if ($model->getShowAGB()) {
-            $html .= $this->addLineBreakText($legalData['agb']->cContentHtml, Shop::Lang()->get('agb'));
+            $legal .= $this->addLineBreakText($legalData['agb']->cContentHtml, Shop::Lang()->get('agb'));
         }
         if ($model->getShowDSE()) {
-            $html .= $this->addLineBreakText($legalData['dse']->cContentHtml, Shop::Lang()->get('dse'));
+            $legal .= $this->addLineBreakText($legalData['dse']->cContentHtml, Shop::Lang()->get('dse'));
         }
 
-        return $html;
+        return \str_replace(['[AKZ]', '[LEGAL_DATA]'], [$akz, $legal], $html);
     }
 
     /**
@@ -127,29 +129,31 @@ class SmartyRenderer implements RendererInterface
     {
         $legalData = $template->getLegalData();
         $model     = $template->getModel();
+        $akz       = '';
+        $legal     = '';
         if ($model === null) {
             return $text;
         }
         if ($model->getShowAKZ()) {
             $rendered = $this->renderText('core_jtl_anbieterkennzeichnung_' . $languageID);
             if (\mb_strlen($rendered) > 0) {
-                $text .= "\n\n" . $rendered;
+                $akz .= "\n\n" . $rendered;
             }
         }
         if ($model->getShowWRB()) {
-            $text .= $this->addLineBreakText($legalData['wrb']->cContentText, Shop::Lang()->get('wrb'), false);
+            $legal .= $this->addLineBreakText($legalData['wrb']->cContentText, Shop::Lang()->get('wrb'), false);
         }
         if ($model->getShowWRBForm()) {
-            $text .= $this->addLineBreakText($legalData['wrbform']->cContentText, Shop::Lang()->get('wrbform'), false);
+            $legal .= $this->addLineBreakText($legalData['wrbform']->cContentText, Shop::Lang()->get('wrbform'), false);
         }
         if ($model->getShowAGB()) {
-            $text .= $this->addLineBreakText($legalData['agb']->cContentText, Shop::Lang()->get('agb'), false);
+            $legal .= $this->addLineBreakText($legalData['agb']->cContentText, Shop::Lang()->get('agb'), false);
         }
         if ($model->getShowDSE()) {
-            $text .= $this->addLineBreakText($legalData['dse']->cContentText, Shop::Lang()->get('dse'), false);
+            $legal .= $this->addLineBreakText($legalData['dse']->cContentText, Shop::Lang()->get('dse'), false);
         }
 
-        return $text;
+        return \str_replace(['[AKZ]', '[LEGAL_DATA]'], [$akz, $legal], $text);
     }
 
     /**

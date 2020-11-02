@@ -465,3 +465,10 @@ input.typeahead {
   display:inline-block;
   white-space: nowrap;
 }
+
+//backwards compatibility for html from wawi
+.img-responsive {
+  max-width: 100%;
+  height: auto;
+}
+

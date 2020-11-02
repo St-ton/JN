@@ -16108,7 +16108,7 @@ select.selectpicker {
   font-size: 0.875rem;
   line-height: 1.5;
   position: fixed;
-  z-index: 1049;
+  z-index: 1050;
   bottom: 2rem;
   left: 1rem;
   right: 1rem;
@@ -16343,7 +16343,7 @@ select.selectpicker {
   position: fixed;
   left: 1rem;
   bottom: 1rem;
-  z-index: 1049;
+  z-index: 1050;
   background: #ffffff;
   border-radius: 10rem;
   padding: 0.5rem;

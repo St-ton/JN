@@ -38,13 +38,13 @@ const sortable = new Draggable.Sortable($(`.${Classes.dropzone}`).get(), {
 sortable.on('drag:start', (evt) => {
 	let $target = $(evt.data.sensorEvent.data.target)
 
-	$body.addClass('draggable--show-grid')
-
 	clearTimeout(to)
 
 	if($target.parents(`[${Data.ignore}]`).length > 0 || $target.is(`[${Data.ignore}]`)) {
 		sortable.dragging = false
 		evt.cancel()
+	} else {
+		$body.addClass('draggable--show-grid')
 	}
 })
 

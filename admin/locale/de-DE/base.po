@@ -1961,6 +1961,9 @@ msgstr "Alle Kategorien"
 msgid "filterCharacteristics"
 msgstr "Merkmale"
 
+msgid "filterAvailability"
+msgstr "Verfügbarkeit"
+
 msgid "za_ueberweisung_jtl"
 msgstr "Überweisung"
 
@@ -2026,3 +2029,6 @@ msgstr "Es ist ein unbekannter Fehler aufgetreten."
 
 msgid "warningPasswordResetAuth"
 msgstr "Falls für dieses Konto eine Verknüpfung mit dem JTL-Extension Store besteht, muss diese nach der Änderung des Passworts erneuert werden (Plugins > Meine Käufe > Konto verknüpfen). Dies hat keine Auswirkungen auf bereits erstandene Extensions."
+
+msgid "errrorNumberRange"
+msgstr "Der Wert der Einstellung \"%s\" muss zwischen %d und %d liegen."

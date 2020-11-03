@@ -158,7 +158,7 @@ class PageDB
      * @return Page
      * @throws Exception
      */
-    public function getDraft(int $key) : Page
+    public function getDraft(int $key): Page
     {
         $draftRow = $this->getDraftRow($key);
         $seo      = $this->getPageSeo($draftRow->cPageId);
@@ -208,7 +208,7 @@ class PageDB
         }
 
         Shop::fire('shop.OPC.PageDB.getPublicPage', [
-            'id' => $id,
+            'id'   => $id,
             'page' => &$page
         ]);
 
@@ -274,8 +274,8 @@ class PageDB
         if (!empty($pageIdObj->attribs)) {
             $attribSeos = $this->shopDB->queryPrepared(
                 "SELECT cSeo FROM tseo WHERE cKey = 'kMerkmalWert'
-                     AND kKey IN (" . \implode(',', $pageIdObj->attribs) . ")
-                     AND kSprache = :lang",
+                     AND kKey IN (" . \implode(',', $pageIdObj->attribs) . ')
+                     AND kSprache = :lang',
                 ['lang' => $pageIdObj->lang],
                 ReturnType::ARRAY_OF_OBJECTS
             );
@@ -413,7 +413,7 @@ class PageDB
     }
 
     /**
-     * @param int $draftKey
+     * @param int    $draftKey
      * @param string $draftName
      * @return PageDB
      * @throws Exception
@@ -478,7 +478,7 @@ class PageDB
         }
 
         Shop::fire('shop.OPC.PageDB.getPageRow', [
-            'row' => &$row,
+            'row'  => &$row,
             'page' => &$page
         ]);
 

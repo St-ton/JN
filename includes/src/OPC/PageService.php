@@ -42,8 +42,8 @@ class PageService
     /**
      * PageService constructor.
      * @param Service $opc
-     * @param PageDB $pageDB
-     * @param Locker $locker
+     * @param PageDB  $pageDB
+     * @param Locker  $locker
      * @throws \SmartyException
      */
     public function __construct(Service $opc, PageDB $pageDB, Locker $locker)
@@ -473,7 +473,7 @@ class PageService
     }
 
     /**
-     * @param int $draftKey
+     * @param int    $draftKey
      * @param string $draftName
      * @throws Exception
      */

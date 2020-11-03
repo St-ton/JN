@@ -6,7 +6,9 @@ use JTL\Helpers\Form;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
 /** @global \JTL\Smarty\JTLSmarty $smarty */
+
 $oAccount->permission('WAWI_SYNC_VIEW', true, true);
 
 $alertHelper = Shop::Container()->getAlertService();

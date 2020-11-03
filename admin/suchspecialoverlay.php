@@ -6,11 +6,12 @@ use JTL\Helpers\Request;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('DISPLAY_ARTICLEOVERLAYS_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'suchspecialoverlay_inc.php';
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 $alertHelper = Shop::Container()->getAlertService();
 $step        = 'suchspecialoverlay_uebersicht';
 setzeSprache();

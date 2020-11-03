@@ -9,10 +9,10 @@
             || $Artikel->fLagerbestand > 0
             || $Artikel->fZulauf > 0)}
         {block name='productdetails-warehouse-detail-link'}
-            {row class="product-stock-info row no-gutters py-3 px-lg-3 border-bottom align-items-end"}
+            {row no-gutters=true class="product-stock-info row"}
                 {col}
-                    {button variant="link" class="p-0 text-decoration-underline" data=["toggle"=>"modal", "target"=>"#warehouseAvailability"]}
-                        <span class="fas fa-map-marker-alt mr-2"></span>{lang key='warehouseAvailability'}
+                    {button class="product-stock-info-button" variant="link" data=["toggle"=>"modal", "target"=>"#warehouseAvailability"]}
+                        <span class="fas fa-map-marker-alt icon-mr-2"></span>{lang key='warehouseAvailability'}
                     {/button}
                 {/col}
             {/row}
@@ -25,24 +25,24 @@
                 class="fade"}
                 {block name='productdetails-warehouse-modal-content'}
                     {block name='productdetails-warehouse-modal-content-header'}
-                        {row}
+                        {row class="warehouse-row"}
                             {col}
-                                <span class="font-weight-bold">{lang key='warehouse'}</span>
+                                <strong>{lang key='warehouse'}</strong>
                             {/col}
-                            {col class="ml-auto text-right"}
-                                <span class="ml-auto font-weight-bold">{lang key='status'}</span>
+                            {col class="warehouse-right"}
+                                <strong>{lang key='status'}</strong>
                             {/col}
                         {/row}
                         <hr>
                     {/block}
                     {block name='productdetails-warehouse-modal-content-items'}
                         {foreach $Artikel->oWarenlager_arr as $oWarenlager}
-                            {row}
+                            {row class="warehouse-row"}
                                 {col}
-                                    <span class="font-weight-bold">{$oWarenlager->getName()}</span>
+                                    <strong>{$oWarenlager->getName()}</strong>
                                 {/col}
-                                {col class="ml-auto text-right"}
-                                    <span class="ml-auto">
+                                {col class="warehouse-right"}
+                                    <span>
                                          {if $anzeige !== 'nichts'
                                          && ($Artikel->cLagerKleinerNull === 'N'
                                          && $oWarenlager->getBackorderString($Artikel) !== ''

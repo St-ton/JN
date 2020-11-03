@@ -73,7 +73,7 @@
         class="{if $hasError}has-error{/if}"}
         {block name='snippets-form-group-simple-error'}
             {if $hasError}
-                <div class="form-error-msg text-danger">{$invalidReason}</div>
+                <div class="form-error-msg">{$invalidReason}</div>
             {/if}
         {/block}
         {if isset($inputType) && $inputType === 'number'}

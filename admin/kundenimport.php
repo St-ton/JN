@@ -11,9 +11,10 @@ use JTL\Mail\Mailer;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('IMPORT_CUSTOMER_VIEW', true, true);
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 if (isset($_FILES['csv']['tmp_name'])
     && Request::postInt('kundenimport') === 1

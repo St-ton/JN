@@ -300,9 +300,9 @@
                 {block name='layout-header-container-inner'}
                     <div class="container-fluid {if $Einstellungen.template.megamenu.header_full_width === 'N'}container-fluid-xl{/if}">
                     {block name='layout-header-category-nav'}
-                        {navbar toggleable=true fill=true type="expand-lg" class="justify-content-start {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}align-items-center{else}align-items-lg-end{/if} pt-0 px-0 pb-lg-0"}
+                        {navbar toggleable=true fill=true type="expand-lg" class="justify-content-start {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}align-items-center-util{else}align-items-lg-end{/if}"}
                             {block name='layout-header-navbar-toggle'}
-                                <button id="burger-menu" class="navbar-toggler mr-3 collapsed {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}" type="button" data-toggle="collapse" data-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">
+                                <button id="burger-menu" class="navbar-toggler collapsed {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}" type="button" data-toggle="collapse" data-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">
                                     <span class="navbar-toggler-icon"></span>
                                 </button>
                             {/block}
@@ -312,7 +312,7 @@
                                     <span itemprop="name" class="d-none">{$meta_publisher}</span>
                                     <meta itemprop="url" content="{$ShopURL}">
                                     <meta itemprop="logo" content="{$ShopLogoURL}">
-                                    {link class="navbar-brand mr-lg-6" href=$ShopURL title=$Einstellungen.global.global_shopname}
+                                    {link class="navbar-brand" href=$ShopURL title=$Einstellungen.global.global_shopname}
                                         {if isset($ShopLogoURL)}
                                             {image src=$ShopLogoURL
                                                 alt=$Einstellungen.global.global_shopname
@@ -335,12 +335,12 @@
 
                             {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}
                                 {block name='layout-header-secure-checkout'}
-                                    <div class="ml-auto ml-lg-0">
+                                    <div class="secure-checkout-icon ml-auto-util ml-lg-0">
                                         {block name='layout-header-secure-checkout-title'}
-                                            <i class="fas fa-lock align-center mr-2"></i>{lang key='secureCheckout' section='checkout'}
+                                            <i class="fas fa-lock icon-mr-2"></i>{lang key='secureCheckout' section='checkout'}
                                         {/block}
                                     </div>
-                                    <div class="ml-auto d-none d-lg-block">
+                                    <div class="secure-checkout-topbar ml-auto-util d-none d-lg-block">
                                         {block name='layout-header-secure-include-header-top-bar'}
                                             {include file='layout/header_top_bar.tpl'}
                                         {/block}
@@ -348,7 +348,7 @@
                                 {/block}
                             {else}
                                 {block name='layout-header-branding-shop-nav'}
-                                    {nav id="shop-nav" right=true class="nav-right ml-auto order-lg-last align-items-center flex-shrink-0"}
+                                    {nav id="shop-nav" right=true class="nav-right order-lg-last"}
                                         {block name='layout-header-branding-shop-nav-include-language-dropdown'}
                                             {include file='snippets/language_dropdown.tpl' dropdownClass='d-flex d-lg-none'}
                                         {/block}
@@ -358,29 +358,39 @@
 
                                 {*categories*}
                                 {block name='layout-header-include-categories-mega'}
-                                    <div id="mainNavigation" class="collapse navbar-collapse nav-scrollbar mr-lg-3">
-                                        <div class="nav-mobile-header px-3 d-lg-none">
-                                            {row class="align-items-center"}
-                                                {col}
-                                                    <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">
-                                                        <span class="navbar-toggler-icon"></span>
-                                                    </button>
-                                                {/col}
-                                                {col class="col-auto ml-auto"}
-                                                    <span class="nav-offcanvas-title">{lang key='menuName'}</span>
-                                                    {link href="#" class="nav-offcanvas-title d-none" data=["menu-back"=>""]}
-                                                        <span class="fas fa-chevron-left mr-2"></span>
-                                                        <span>{lang key='back'}</span>
-                                                    {/link}
-                                                {/col}
-                                            {/row}
-                                            <hr class="my-0" />
-                                        </div>
-                                        <div class="nav-mobile-body">
-                                            {navbarnav class="nav-scrollbar-inner mr-auto"}
-                                                {include file='snippets/categories_mega.tpl'}
-                                            {/navbarnav}
-                                        </div>
+                                    <div id="mainNavigation" class="collapse navbar-collapse nav-scrollbar">
+                                        {block name='layout-header-include-include-categories-header'}
+                                            <div class="nav-mobile-header d-lg-none">
+                                                {row class="align-items-center-util"}
+                                                    {col class="nav-mobile-header-toggler"}
+                                                        {block name='layout-header-include-categories-mega-toggler'}
+                                                            <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">
+                                                                <span class="navbar-toggler-icon"></span>
+                                                            </button>
+                                                        {/block}
+                                                    {/col}
+                                                    {col class="col-auto nav-mobile-header-name ml-auto-util"}
+                                                        <span class="nav-offcanvas-title">{lang key='menuName'}</span>
+                                                        {block name='layout-header-include-categories-mega-back'}
+                                                            {link href="#" class="nav-offcanvas-title d-none" data=["menu-back"=>""]}
+                                                                <span class="fas fa-chevron-left icon-mr-2"></span>
+                                                                <span>{lang key='back'}</span>
+                                                            {/link}
+                                                        {/block}
+                                                    {/col}
+                                                {/row}
+                                                <hr class="nav-mobile-header-hr" />
+                                            </div>
+                                        {/block}
+                                        {block name='layout-header-include-include-categories-body'}
+                                            <div class="nav-mobile-body">
+                                                {navbarnav class="nav-scrollbar-inner mr-auto"}
+                                                    {block name='layout-header-include-include-categories-mega'}
+                                                        {include file='snippets/categories_mega.tpl'}
+                                                    {/block}
+                                                {/navbarnav}
+                                            </div>
+                                        {/block}
                                     </div>
                                 {/block}
                             {/if}
@@ -391,7 +401,7 @@
             </header>
             {block name='layout-header-search-fixed'}
                 {if $Einstellungen.template.theme.mobile_search_type === 'fixed' && $isMobile}
-                    <div class="container-fluid container-fluid-xl fixed-search py-2 fixed-top smoothscroll-top-search d-lg-none d-none">
+                    <div class="container-fluid container-fluid-xl fixed-search fixed-top smoothscroll-top-search d-lg-none d-none">
                         {include file='snippets/search_form.tpl' id='search-header-mobile-fixed'}
                     </div>
                 {/if}
@@ -422,25 +432,24 @@
     {block name='layout-header-content-all-starttags'}
         {block name='layout-header-content-wrapper-starttag'}
             <div id="content-wrapper"
-                 class="{if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}
-                            container-fluid container-fluid-xl
-                        {/if} mt-0 {if $isFluidBanner || $isFluidSlider}pt-3{else}pt-sm-3 pt-5 pt-lg-7{/if}">
+                 class="{if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}is-item-list container-fluid container-fluid-xl{/if}
+                        {if $isFluidBanner || $isFluidSlider} has-fluid{/if}">
         {/block}
 
         {block name='layout-header-breadcrumb'}
-            {container fluid=($smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp) class="{if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}px-0{/if}"}
+            {container fluid=($smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp) class="breadcrumb-container"}
                 {include file='layout/breadcrumb.tpl'}
             {/container}
         {/block}
 
         {block name='layout-header-content-starttag'}
-            <div id="content" class="pb-6">
+            <div id="content">
         {/block}
 
         {if !$bExclusive && !empty($boxes.left|strip_tags|trim) && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}
             {block name='layout-header-content-productlist-starttags'}
                 <div class="row">
-                    <div class="col-lg-8 col-xl-9 ml-auto order-lg-1">
+                    <div class="col-lg-8 col-xl-9 ml-auto-util order-lg-1">
             {/block}
         {/if}
 

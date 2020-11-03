@@ -165,25 +165,34 @@ class Iframe
         return this.jq('.opc-droptarget');
     }
 
-    loadStylesheet(url, isLess)
+    loadStylesheet(url)
     {
-        if (this.loadedStylesheets.indexOf(url) === -1) {
-            this.loadedStylesheets.push(url);
-            this
-                .jq('<link rel="stylesheet' + (isLess ? '/less' : '') + '" href="' + url + '">')
-                .appendTo(this.head);
-        }
+        return new Promise((resolve, reject) => {
+            if (this.loadedStylesheets.indexOf(url) === -1) {
+                this.loadedStylesheets.push(url);
+                this
+                    .jq('<link rel="stylesheet" href="' + url + '">')
+                    .on('load', () => resolve())
+                    .appendTo(this.head);
+            } else {
+                resolve();
+            }
+        })
     }
 
     loadPortletPreviewCss(portletCls)
     {
         let portletBtn = this.gui.portletButtons.filter("[data-portlet-class='" + portletCls + "']");
 
-        if(portletBtn) {
+        if (portletBtn) {
             let css = portletBtn.data('portlet-css');
 
-            if(css) {
-                this.loadStylesheet(css);
+            if (css) {
+                this.loadStylesheet(css).then(() => {
+                    if (portletCls === 'Flipcard') {
+                        this.page.updateFlipcards();
+                    }
+                });
             }
         }
     }
@@ -197,7 +206,7 @@ class Iframe
 
     loadScript(url, callback)
     {
-        var script = this.ctx.document.createElement('script');
+        let script = this.ctx.document.createElement('script');
 
         script.src = url;
         script.addEventListener('load', callback || noop);
@@ -343,8 +352,8 @@ class Iframe
         this.setSelected(newPortlet);
         this.updateDropTargets();
         this.gui.setUnsaved(true, true);
-        this.page.updateFlipcards();
         this.loadMissingPortletPreviewStyles();
+        this.page.updateFlipcards();
         this.disableLinks();
     }
 

@@ -1,6 +1,6 @@
 {block name='productdetails-attributes'}
 {if $showAttributesTable}
-    <div class="product-attributes mt-3">
+    <div class="product-attributes">
     {block name='productdetails-attributes-table'}
         <table class="table table-sm table-striped table-bordered-outline">
             {if $Einstellungen.artikeldetails.merkmale_anzeigen === 'Y'}
@@ -18,7 +18,7 @@
                                         {else}
                                             {block name='productdetails-attributes-image'}
                                                 {link href=$characteristicValue->cURLFull
-                                                    class="text-decoration-none"
+                                                    class="text-decoration-none-util"
                                                     data=['toggle'=>'tooltip', 'placement'=>'top', 'boundary'=>'window']
                                                     title=$characteristicValue->cWert|escape:'html'
                                                     aria=["label"=>$characteristicValue->cWert|escape:'html']

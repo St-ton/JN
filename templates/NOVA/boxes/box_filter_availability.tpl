@@ -4,7 +4,7 @@
         <div id="sidebox{$oBox->getID()}" class="box box-filter-availability d-none d-lg-block">
             {button
                 variant="link"
-                class="text-decoration-none px-0 text-left dropdown-toggle text-truncate"
+                class="btn-filter-box dropdown-toggle"
                 block=true
                 role="button"
                 data=["toggle"=> "collapse", "target"=>"#cllps-box{$oBox->getID()}"]
@@ -20,7 +20,7 @@
                 {/block}
             {/collapse}
             {block name='boxes-box-filter-availability-hr'}
-                <hr class="my-2">
+                <hr class="box-filter-hr">
             {/block}
         </div>
     {/if}

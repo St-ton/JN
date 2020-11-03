@@ -23,7 +23,7 @@
     <script>
         $('#config-{$propid}-group').colorpicker({
             format: '{$propdesc.colorFormat|default:'rgba'}',
-            fallbackColor: 'rgba(0,0,0,0)',
+            fallbackColor: 'rgba(0,0,0,1.0)',
             extensions: [
                 {
                     name: 'swatches',

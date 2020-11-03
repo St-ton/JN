@@ -30,7 +30,7 @@
                             {assign var=activeParent value=$activeParents[$i]}
                         {/if}
                         {if $hasItems}
-                            <li class="nav-item {if $hasItems}dropdown{/if}{if $li->getIsActive() || (isset($activeParent) && $activeParent == $li->getID())} active{/if}">
+                            <li class="link-group-item nav-item {if $hasItems}dropdown{/if}{if $li->getIsActive() || (isset($activeParent) && $activeParent == $li->getID())} active{/if}">
                                 {block name='snippets-linkgroup-recursive-link'}
                                     <a class="nav-link dropdown-toggle" target="_self" href="{$li->getURL()}" data-toggle="collapse"
                                        data-target="#link_box_{$li->getID()}_{$i}"

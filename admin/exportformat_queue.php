@@ -4,7 +4,8 @@ use JTL\Helpers\Form;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
-global $smarty;
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('EXPORT_SCHEDULE_VIEW', true, true);
 

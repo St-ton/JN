@@ -13232,6 +13232,10 @@ ul li:last-child, ol li:last-child {
   font-weight: 600 !important;
 }
 
+.underline-links a {
+  text-decoration: underline;
+}
+
 .overflow-x-scroll {
   overflow-x: scroll !important;
 }

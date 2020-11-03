@@ -390,7 +390,8 @@ body {
   margin: 2px 0 0;
   list-style: none;
   font-size: $font-size-base;
-  background-color: $dropdown-bg;
+  color: $header-color;
+  background-color: $header-bg-color;
   border: 1px solid $dropdown-border-color;
   border-radius: $border-radius;
   @include box-shadow(0 8px 10px -5px rgba(0, 0, 0, 0.15));

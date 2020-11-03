@@ -21003,8 +21003,19 @@ label {
   border-bottom: 4px solid #1973D3;
 }
 
+@media (min-width: 768px) {
+  .dropdown-item.page-item {
+    background-color: transparent;
+  }
+}
+
 .page-link, .page-text {
   text-decoration: none;
+}
+@media (max-width: 767.98px) {
+  .page-link, .page-text {
+    color: #ffffff;
+  }
 }
 
 .pagination {
@@ -22699,7 +22710,8 @@ body {
   margin: 2px 0 0;
   list-style: none;
   font-size: 0.875rem;
-  background-color: #ffffff;
+  color: #ffffff;
+  background-color: #1C1D2C;
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 0.125rem;
   -webkit-box-shadow: 0 8px 10px -5px rgba(0, 0, 0, 0.15);
@@ -26139,14 +26151,15 @@ header #burger-menu {
 #footer .btn-outline-primary, header .btn-outline-primary {
   color: #ffffff;
 }
-#footer .btn-outline-primary:hover, header .btn-outline-primary:hover {
-  color: #ffffff;
-}
 #footer .hr-no-top, header .hr-no-top {
   border: none;
 }
 #footer .box-categories .dropdown .collapse, #footer .box-linkgroup .dropdown .collapse, header .box-categories .dropdown .collapse, header .box-linkgroup .dropdown .collapse {
   background: #1C1D2C;
+}
+
+.btn-animated .btn-outline-primary:hover {
+  color: #ffffff;
 }
 
 .dropdown-item .btn-link {

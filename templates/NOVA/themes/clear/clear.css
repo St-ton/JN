@@ -21003,8 +21003,19 @@ label {
   border-bottom: 4px solid #F8BF00;
 }
 
+@media (min-width: 768px) {
+  .dropdown-item.page-item {
+    background-color: transparent;
+  }
+}
+
 .page-link, .page-text {
   text-decoration: none;
+}
+@media (max-width: 767.98px) {
+  .page-link, .page-text {
+    color: #525252;
+  }
 }
 
 .pagination {
@@ -22699,6 +22710,7 @@ body {
   margin: 2px 0 0;
   list-style: none;
   font-size: 0.875rem;
+  color: #707070;
   background-color: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 0.125rem;

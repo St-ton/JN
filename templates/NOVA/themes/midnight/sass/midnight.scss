@@ -24,9 +24,6 @@
   }
   .btn-outline-primary {
     color: $header-color;
-    &:hover {
-      color: $header-color;
-    }
   }
   .hr-no-top {
     border: none;
@@ -36,6 +33,11 @@
        background: $footer-bg-color;
      }
    }
+}
+.btn-animated {
+  .btn-outline-primary:hover {
+    color: $header-color;
+  }
 }
 .dropdown-item {
   .btn-link {

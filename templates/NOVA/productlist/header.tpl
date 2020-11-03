@@ -88,12 +88,10 @@
                         {link href=$subCategory->getURL()}
                             {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}
                                 {block name='productlist-header-subcategories-image'}
-                                    <div class="outer square square-image d-none d-md-flex">
-                                        <div class="inner">
-                                            {image fluid=true lazy=true webp=true
-                                                src=$subCategory->getImage(\JTL\Media\Image::SIZE_SM)
-                                                alt=$subCategory->getName()}
-                                        </div>
+                                    <div class="subcategories-image d-none d-md-flex">
+                                        {image fluid=true lazy=true webp=true
+                                            src=$subCategory->getImage(\JTL\Media\Image::SIZE_SM)
+                                            alt=$subCategory->getName()}
                                     </div>
                                 {/block}
                             {/if}

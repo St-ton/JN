@@ -32,7 +32,7 @@
                                 {block name='snippets-productlist-page-nav-actions-sort'}
                                     {dropdown class="filter-type-FilterItemSort btn-group" variant="outline-secondary" text="{lang key='sorting' section='productOverview'}"}
                                         {foreach $Suchergebnisse->getSortingOptions() as $option}
-                                            {dropdownitem rel="nofollow" href=$option->getURL() class="filter-item" active=$option->isActive()}
+                                            {dropdownitem rel="nofollow" href=$option->getURL() class="page-nav-filter-item" active=$option->isActive()}
                                                 {$option->getName()}
                                             {/dropdownitem}
                                         {/foreach}
@@ -41,7 +41,7 @@
                                 {block name='snippets-productlist-page-nav-actions-items'}
                                     {dropdown class="filter-type-FilterItemLimits btn-group" variant="outline-secondary" text="{lang key='productsPerPage' section='productOverview'}"}
                                         {foreach $Suchergebnisse->getLimitOptions() as $option}
-                                            {dropdownitem rel="nofollow" href=$option->getURL() class="filter-item" active=$option->isActive()}
+                                            {dropdownitem rel="nofollow" href=$option->getURL() class="page-nav-filter-item" active=$option->isActive()}
                                                 {$option->getName()}
                                             {/dropdownitem}
                                         {/foreach}

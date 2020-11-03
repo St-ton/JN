@@ -1,5 +1,5 @@
 {block name='checkout-inc-billing-address-form'}
-    <fieldset>
+    <fieldset class="inc-billing-address-form">
         {block name='checkout-inc-billing-address-form-legend'}
             {if isset($checkout) || $nSeitenTyp === $smarty.const.PAGE_MEINKONTO}
                 <div class="h2">
@@ -40,18 +40,18 @@
                                         label-for="salutation"
                                         label="{lang key='salutation' section='account data'}{if $Einstellungen.kunden.kundenregistrierung_abfragen_anrede === 'O'}<span class='optional'> - {lang key='optional'}</span>{/if}"
                                     }
-                                        {if isset($fehlendeAngaben.anrede)}
-                                            <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
-                                                {lang key='fillOut'}
-                                            </div>
-                                        {/if}
-                                        {select name="anrede" id="salutation" class='custom-select' required=($Einstellungen.kunden.kundenregistrierung_abfragen_anrede === 'Y') autocomplete="billing sex"}
-                                            <option value="" selected="selected" {if $Einstellungen.kunden.kundenregistrierung_abfragen_anrede === 'Y'}disabled{/if}>
-                                                {if $Einstellungen.kunden.kundenregistrierung_abfragen_anrede === 'Y'}{lang key='salutation' section='account data'}{else}{lang key='noSalutation'}{/if}
-                                            </option>
-                                            <option value="w" {if isset($cPost_var['anrede']) && $cPost_var['anrede'] === 'w'}selected="selected"{elseif isset($Kunde->cAnrede) && $Kunde->cAnrede === 'w'}selected="selected"{/if}>{lang key='salutationW'}</option>
-                                            <option value="m" {if isset($cPost_var['anrede']) && $cPost_var['anrede'] === 'm'}selected="selected"{elseif isset($Kunde->cAnrede) && $Kunde->cAnrede === 'm'}selected="selected"{/if}>{lang key='salutationM'}</option>
-                                        {/select}
+                                    {if isset($fehlendeAngaben.anrede)}
+                                        <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i>
+                                            {lang key='fillOut'}
+                                        </div>
+                                    {/if}
+                                    {select name="anrede" id="salutation" class='custom-select' required=($Einstellungen.kunden.kundenregistrierung_abfragen_anrede === 'Y') autocomplete="billing sex"}
+                                        <option value="" selected="selected" {if $Einstellungen.kunden.kundenregistrierung_abfragen_anrede === 'Y'}disabled{/if}>
+                                            {if $Einstellungen.kunden.kundenregistrierung_abfragen_anrede === 'Y'}{lang key='salutation' section='account data'}{else}{lang key='noSalutation'}{/if}
+                                        </option>
+                                        <option value="w" {if isset($cPost_var['anrede']) && $cPost_var['anrede'] === 'w'}selected="selected"{elseif isset($Kunde->cAnrede) && $Kunde->cAnrede === 'w'}selected="selected"{/if}>{lang key='salutationW'}</option>
+                                        <option value="m" {if isset($cPost_var['anrede']) && $cPost_var['anrede'] === 'm'}selected="selected"{elseif isset($Kunde->cAnrede) && $Kunde->cAnrede === 'm'}selected="selected"{/if}>{lang key='salutationM'}</option>
+                                    {/select}
                                     {/formgroup}
                                 {/block}
                             {/col}
@@ -75,7 +75,7 @@
                                 {/block}
                             {/col}
                         {/if}
-                        <div class="w-100"></div>
+                        <div class="w-100-util"></div>
                     {/block}
                     {* firstname lastname *}
                     {block name='checkout-inc-billing-address-form-firstname-lastname'}
@@ -111,7 +111,7 @@
                                 }
                             {/block}
                         {/col}
-                        <div class="w-100"></div>
+                        <div class="w-100-util"></div>
                     {/block}
                     {* firm / firmtext *}
                     {block name='checkout-inc-billing-address-form-company-wrap'}
@@ -152,7 +152,7 @@
                                 {/block}
                             {/col}
                         {/if}
-                        <div class="w-100"></div>
+                        <div class="w-100-util"></div>
                     {/block}
                 {/formrow}
             {/col}
@@ -203,7 +203,7 @@
                                 }
                             {/block}
                         {/col}
-                        <div class="w-100"></div>
+                        <div class="w-100-util"></div>
                     {/block}
                     {* adress addition *}
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_adresszusatz !== 'N'}
@@ -224,7 +224,7 @@
                                     }
                                 {/block}
                             {/col}
-                            <div class="w-100"></div>
+                            <div class="w-100-util"></div>
                         {/block}
                     {/if}
                     {* country *}
@@ -244,7 +244,7 @@
                                     label="{lang key='country' section='account data'}"
                                 }
                                     {if isset($fehlendeAngaben.land)}
-                                        <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                        <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i>
                                             {lang key='fillOut' section='global'}
                                         </div>
                                     {/if}
@@ -273,7 +273,7 @@
                                         label="{lang key='state' section='account data'}{if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland !== 'Y'}<span class='optional'> - {lang key='optional'}</span>{/if}"
                                     }
                                         {if isset($fehlendeAngaben.bundesland)}
-                                            <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                            <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i>
                                                 {lang key='fillOut' section='global'}
                                             </div>
                                         {/if}
@@ -318,7 +318,7 @@
                                     label={lang key='plz' section='account data'}
                                 }
                                     {if isset($fehlendeAngaben.plz)}
-                                        <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                        <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i>
                                             {if $fehlendeAngaben.plz >= 2}
                                                 {lang key='checkPLZCity' section='checkout'}
                                             {else}
@@ -347,7 +347,7 @@
                                     label=''
                                 }
                                     {if isset($fehlendeAngaben.ort)}
-                                        <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                        <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i>
                                             {if $fehlendeAngaben.ort==3}
                                                  {lang key='cityNotNumeric' section='account data'}
                                             {else}
@@ -369,7 +369,7 @@
                                 {/formgroup}
                             {/block}
                         {/col}
-                        <div class="w-100"></div>
+                        <div class="w-100-util"></div>
                     {/block}
                     {* UStID *}
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_ustid !== 'N'}
@@ -381,7 +381,7 @@
                                     label="{lang key='ustid' section='account data'}{if $Einstellungen.kunden.kundenregistrierung_abfragen_ustid !== 'Y'}<span class='optional'> - {lang key='optional'}</span>{/if}"
                                 }
                                     {if isset($fehlendeAngaben.ustid)}
-                                        <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                        <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i>
                                             {if $fehlendeAngaben.ustid == 1}
                                                 {lang key='fillOut' section='global'}
                                             {elseif $fehlendeAngaben.ustid == 2}
@@ -446,7 +446,7 @@
                     {/block}
                     {if $Einstellungen.kunden.direct_advertising === 'Y'}
                         {block name='checkout-inc-billing-address-form-direct-advertising'}
-                            {col cols=12 class="text-muted mt-n3 mb-3"}
+                            {col cols=12 class="direct-advertising"}
                                 <small>{lang key="directAdvertising" section="checkout"}</small>
                             {/col}
                         {/block}
@@ -532,7 +532,7 @@
                                     {/block}
                                 {/col}
                             {/if}
-                            <div class="w-100"></div>
+                            <div class="w-100-util"></div>
                         {/block}
                     {/if}
 
@@ -592,7 +592,7 @@
                                         label="{$oKundenfeld->getLabel()}{if !$oKundenfeld->isRequired()}<span class='optional'> - {lang key='optional'}</span>{/if}"
                                     }
                                         {if isset($fehlendeAngaben.custom[$kKundenfeld])}
-                                            <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                            <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i>
                                                 {if $fehlendeAngaben.custom[$kKundenfeld] === 1}
                                                     {lang key='fillOut' section='global'}
                                                 {elseif $fehlendeAngaben.custom[$kKundenfeld] === 2}
@@ -690,7 +690,7 @@
         {block name='checkout-inc-billing-address-form-captcha'}
             {row}
                 {col cols=8 offset=4}
-                    {formgroup class="{if isset($fehlendeAngaben.captcha) && $fehlendeAngaben.captcha != false} has-error{/if}"}
+                    {formgroup class="simple-captcha-wrapper {if isset($fehlendeAngaben.captcha) && $fehlendeAngaben.captcha != false} has-error{/if}"}
                         {captchaMarkup getBody=true}
                     {/formgroup}
                 {/col}

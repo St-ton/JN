@@ -11,8 +11,10 @@ use JTL\Slide;
 use JTL\Slider;
 
 require_once __DIR__ . '/includes/admininclude.php';
-$oAccount->permission('SLIDER_VIEW', true, true);
+/** @global \JTL\Backend\AdminAccount $oAccount */
 /** @global \JTL\Smarty\JTLSmarty $smarty */
+
+$oAccount->permission('SLIDER_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'slider_inc.php';
 $alertHelper = Shop::Container()->getAlertService();
 $db          = Shop::Container()->getDB();

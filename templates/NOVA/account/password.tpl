@@ -8,11 +8,11 @@
             {include file='snippets/extension.tpl'}
         {/block}
         {block name='account-password-heading'}
-            {container}
+            {container class="account-password-heading"}
                 <h1>{lang key='forgotPassword' section='global'}</h1>
             {/container}
         {/block}
-        {container}
+        {container class="account-password"}
             {if $step === 'formular'}
                 {row}
                     {col cols=12 lg=8}

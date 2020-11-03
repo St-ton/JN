@@ -11,9 +11,10 @@ use JTL\License\Manager as LicenseManager;
 use JTL\Recommendation\Manager;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 $recommendationID = Request::verifyGPDataString('id');
 $alertHelper      = Shop::Container()->getAlertService();
 $db               = Shop::Container()->getDB();

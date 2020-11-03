@@ -1,6 +1,5 @@
 {block name='snippets-uploads'}
     {if !empty($oUploadSchema_arr)}
-
         {getUploaderLang iso=$smarty.session.currentLanguage->cISO639|default:'' assign='uploaderLang'}
         {if $tplscope === 'product' && !empty($Artikel) && !($Artikel->nIstVater || $Artikel->kVaterArtikel > 0 || $Artikel->isSimpleVariation || $Artikel->bHasKonfig)}
             {block name='snippets-uploads-subheading-product'}
@@ -13,12 +12,12 @@
             {/block}
             {block name='snippets-uploads-schemes-product'}
                 {foreach $oUploadSchema_arr as $oUploadSchema}
-                    {row class="mb-4"}
+                    {row class="upload-scheme-product"}
                         {if !empty($oUploadSchema->cName) || !empty($oUploadSchema->cBeschreibung)}
                             {block name='snippets-uploads-scheme-product-name'}
                                 {col cols=12}
                                     {if !empty($oUploadSchema->cName)}
-                                        <div class=" h6 upload_title">{$oUploadSchema->cName}</div>
+                                        <div class="h6 upload_title">{$oUploadSchema->cName}</div>
                                     {/if}
                                     {if !empty($oUploadSchema->cBeschreibung)}
                                         <p class="upload_desc">{$oUploadSchema->cBeschreibung}</p>
@@ -30,7 +29,7 @@
                         {block name='snippets-uploads-scheme-product-data-main'}
                             {col cols=12}
                                 {block name='snippets-uploads-scheme-product-input'}
-                                    <div class="text-center
+                                    <div class="text-center-util
                                         {if isset($smarty.get.fillOut) && $smarty.get.fillOut == 12 && ($oUploadSchema->nPflicht
                                     && !$oUploadSchema->bVorhanden)} upload-error{/if}"
                                          id="upload-{$oUploadSchema@index}">
@@ -141,7 +140,7 @@
                             {/col}
                         {/block}
                         {block name='snippets-uploads-scheme-product-filedata'}
-                            {col cols=12 class="word-break text-right"}
+                            {col cols=12 class="word-break text-right-util"}
                                 <div id="queue{$oUploadSchema@index}" style="margin-bottom: 15px;" class="uploadifyMsg">
                                     <span class="current-upload small text-success">
                                         {if $oUploadSchema->bVorhanden}
@@ -158,14 +157,14 @@
         {elseif $tplscope === 'basket'}
             {block name='snippets-uploads-subheading'}
                 <div class="h3 section-heading">{lang key='uploadHeadline'}</div>
-                <hr class="mt-0 mb-2">
+                <hr class="upload-scheme-cart-hr-before">
             {/block}
             {block name='snippets-uploads-schemes'}
                 {foreach $oUploadSchema_arr as $oUploadSchema}
-                    <div>
+                    <div class="upload-scheme-cart">
                         {block name='snippets-uploads-scheme-name'}
                             <p>
-                                <strong class="mb-2">
+                                <span class="upload-scheme-cart-name">
                                     {$oUploadSchema->cName}
                                     {if !empty($oUploadSchema->WarenkorbPosEigenschaftArr)}
                                         <small>
@@ -174,12 +173,12 @@
                                             {/foreach}
                                         </small>
                                     {/if}
-                                </strong>
+                                </span>
                             </p>
                         {/block}
                         {block name='snippets-uploads-scheme-uploads'}
                             {foreach $oUploadSchema->oUpload_arr as $oUpload}
-                                {row class="mb-3"}
+                                {row class="upload-scheme-cart-upload"}
                                     {if !empty($oUpload->cName) || !empty($oUpload->cBeschreibung)}
                                         {block name='snippets-uploads-scheme-upload-name-desc'}
                                             {col cols=12 md=4}
@@ -193,7 +192,7 @@
                                         {/block}
                                     {/if}
                                     {block name='snippets-uploads-scheme-upload-filedata-main'}
-                                        {col cols=12 md=8 class="word-break text-right"}
+                                        {col cols=12 md=8 class="word-break text-right-util"}
                                             {block name='snippets-uploads-scheme-upload-filedata'}
                                                 <div id="queue{$oUploadSchema@index}{$oUpload@index}" style="margin-bottom: 15px;" class="uploadifyMsg">
                                                         <span class="current-upload small text-success">
@@ -203,7 +202,7 @@
                                                             {/if}
                                                         </span>
                                                 </div>
-                                                <div class="text-center {if isset($smarty.get.fillOut) && $smarty.get.fillOut == 12 && ($oUpload->nPflicht
+                                                <div class="text-center-util {if isset($smarty.get.fillOut) && $smarty.get.fillOut == 12 && ($oUpload->nPflicht
                                                 && !$oUpload->bVorhanden)} upload-error{/if}"
                                                      id="upload-{$oUploadSchema@index}{$oUpload@index}">
                                                     <input id="fileinput{$oUploadSchema@index}{$oUpload@index}"
@@ -322,7 +321,7 @@
                     </div>
                 {/foreach}
                 {block name='snippets-uploads-schemes-hr'}
-                    <hr class="my-4">
+                    <hr class="upload-scheme-cart-hr-after">
                 {/block}
             {/block}
         {/if}

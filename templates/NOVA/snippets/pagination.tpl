@@ -20,18 +20,18 @@
 
     {get_static_route id=$cThisUrl assign=cThisUrl}
     {block name='snippets-pagination-content'}
-        {row class="{if $noWrapper === true}border-0 py-0{/if} pagination-wrapper clearfix mb-3 align-items-center"}
+        {row class="{if $noWrapper === true}pagination-no-wrapper{/if} pagination-wrapper clearfix"}
             {if $oPagination->getPageCount() > 1}
                 {if in_array('label', $parts) || in_array('pagi', $parts)}
                     {block name='snippets-pagination-page-count-multiple'}
                         {if in_array('label', $parts)}
-                            {col cols="auto" class="font-weight-bold"}
+                            {col cols="auto" class="font-weight-bold-util"}
                                 {lang key='paginationEntryPagination' printf={$oPagination->getFirstPageItem() + 1}|cat:':::'|cat:{$oPagination->getFirstPageItem() + $oPagination->getPageItemCount()}|cat:':::'|cat:{$oPagination->getItemCount()}}
                             {/col}
                         {/if}
-                        {col cols="auto" class="ml-auto {if $showFilter === true && (in_array('count', $parts) || in_array('sort', $parts))}border-md-right{/if}"}
+                        {col cols="auto" class="ml-auto-util {if $showFilter === true && (in_array('count', $parts) || in_array('sort', $parts))}border-md-right{/if}"}
                             {nav tag='nav' aria=["label"=>"pagination"]}
-                            <ul class="pagination mb-0">
+                            <ul class="pagination">
                                 {if in_array('pagi', $parts)}
                                     {if $oPagination->getPage() > 0}
                                         {block name='snippets-pagination-page-link-previous'}
@@ -96,7 +96,7 @@
                 {/if}
             {else}
                 {block name='snippets-pagination-page-count-one'}
-                    {col cols="auto" class="font-weight-bold mb-3 mb-md-0"}
+                    {col cols="auto" class="pagination-entries"}
                         {lang key='paginationTotalEntries'} {$oPagination->getItemCount()}
                     {/col}
                 {/block}
@@ -104,7 +104,7 @@
 
             {if $showFilter === true && (in_array('count', $parts) || in_array('sort', $parts))}
                 {block name='snippets-pagination-form'}
-                    {col cols="12" md="auto" class="ml-md-0 ml-auto mt-3 mt-md-0"}
+                    {col cols="12" md="auto" class="pagination-selects"}
                         {form action="{$cThisUrl}{$cAnchor}" method="get"}
                             {block name='snippets-pagination-form-content'}
                                 {row}
@@ -116,7 +116,7 @@
                                 {if in_array('count', $parts)}
                                     {col cols=12 md='auto'}
                                         {block name='snippets-pagination-form-items-pre-page'}
-                                            {select class="custom-select mr-md-3 mb-3 mb-md-0"
+                                            {select class="pagination-selects-entries custom-select"
                                                     name="{$oPagination->getId()}_nItemsPerPage"
                                                     id="{$oPagination->getId()}_nItemsPerPage"
                                                     title="{lang key='paginationEntriesPerPage'}"}
@@ -136,7 +136,7 @@
                                 {if $oPagination->getSortByOptions()|@count > 0 && in_array('sort', $parts)}
                                     {col cols=12 md='auto'}
                                         {block name='snippets-pagination-form-sort'}
-                                            {select class="custom-select col-md-auto "
+                                            {select class="custom-select pagination-selects-sort col-md-auto"
                                                     name="{$oPagination->getId()}_nSortByDir"
                                                     id="{$oPagination->getId()}_nSortByDir"
                                                     title="{lang key='sorting' section='productOverview'}"}

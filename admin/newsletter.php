@@ -16,9 +16,10 @@ use JTL\Session\Frontend;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('MODULE_NEWSLETTER_VIEW', true, true);
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $db            = Shop::Container()->getDB();
 $conf          = Shop::getSettings([CONF_NEWSLETTER]);

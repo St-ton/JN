@@ -3,9 +3,9 @@
 use JTL\Backend\Status;
 
 require_once __DIR__ . '/includes/admininclude.php';
-
-$oAccount->redirectOnFailure();
+/** @global \JTL\Backend\AdminAccount $oAccount */
 /** @global \JTL\Smarty\JTLSmarty $smarty */
+$oAccount->redirectOnFailure();
 
 $status             = Status::getInstance(Shop::Container()->getDB(), Shop::Container()->getCache());
 $orphanedCategories = $status->getOrphanedCategories(false);

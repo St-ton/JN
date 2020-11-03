@@ -37,14 +37,14 @@
                     {/block}
                 {/if}
                 {block name='contact-index-form'}
-                    {form name="contact" action="{get_static_route id='kontakt.php'}" method="post" class="jtl-validate" slide=true}
+                    {form name="contact" action="{get_static_route id='kontakt.php'}" method="post" class="contact-form jtl-validate" slide=true}
                         {block name='contact-index-form-content'}
                             {block name='contact-index-fieldset-contact'}
                             <fieldset>
-                                {row class="{if !empty($Spezialcontent->oben)}mt-5{/if}"}
+                                {row class="{if !empty($Spezialcontent->oben)}is-top{/if}"}
                                      {col cols=12 lg=4}
                                         {block name='contact-index-legend-contact'}
-                                            <legend class="border-0 h3">{lang key='contact'}</legend>
+                                            <legend class="h3">{lang key='contact'}</legend>
                                         {/block}
                                     {/col}
                                     {col cols=12 lg=8}
@@ -168,14 +168,14 @@
                             </fieldset>
                             {/block}
                             {block name='contact-index-hr'}
-                                <hr class="mb-5">
+                                <hr class="contact-form-hr">
                             {/block}
                             {block name='contact-index-fieldset-message'}
                             <fieldset>
                                 {row}
                                     {col cols=12 lg=4}
                                         {block name='contact-index-legend-message'}
-                                            <legend class="border-0 h3">{lang key='message' section='contact'}</legend>
+                                            <legend class="h3">{lang key='message' section='contact'}</legend>
                                         {/block}
                                     {/col}
                                     {col cols=12 lg=8}
@@ -194,7 +194,7 @@
                                                             label-for="subject"
                                                         }
                                                             {if !empty($fehlendeAngaben.subject)}
-                                                                <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                                                <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i>
                                                                     {lang key='fillOut'}
                                                                 </div>
                                                             {/if}
@@ -218,7 +218,7 @@
                                                         label-for="message"
                                                     }
                                                         {if !empty($fehlendeAngaben.nachricht)}
-                                                            <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                                            <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i>
                                                                 {lang key='fillOut'}
                                                             </div>
                                                         {/if}
@@ -246,22 +246,24 @@
                             {opcMountPoint id='opc_before_submit'}
                             {block name='contact-index-form-submit'}
                                 {row}
-                                    {col cols=12 class="text-left text-md-right mb-3"}
-                                        {block name='contact-index-modal-privacy'}
+                                    {col cols=12 class="contact-form-privacy"}
+                                        {block name='contact-index-form-submit-privacy'}
                                             {link href=$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL() class="popup"}
                                                 {lang key='privacyNotice'}
                                             {/link}
                                         {/block}
                                     {/col}
                                     {col cols=12 lg=8 offset-lg=4}
-                                        {row}
-                                            {col md=4 xl=3 class='ml-auto'}
-                                            {input type='hidden' name='kontakt' value='1'}
-                                                {button type='submit' variant='primary' class='btn-block'}
-                                                    {lang key='sendMessage' section='contact'}
-                                                {/button}
-                                            {/col}
-                                        {/row}
+                                        {block name='contact-index-form-submit-button'}
+                                            {row}
+                                                {col md=4 xl=3 class='ml-auto-util'}
+                                                {input type='hidden' name='kontakt' value='1'}
+                                                    {button type='submit' variant='primary' class='btn-block'}
+                                                        {lang key='sendMessage' section='contact'}
+                                                    {/button}
+                                                {/col}
+                                            {/row}
+                                        {/block}
                                     {/col}
                                 {/row}
                             {/block}

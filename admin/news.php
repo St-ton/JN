@@ -16,8 +16,10 @@ use JTL\Pagination\Pagination;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
-$oAccount->permission('CONTENT_NEWS_SYSTEM_VIEW', true, true);
+/** @global \JTL\Backend\AdminAccount $oAccount */
 /** @global \JTL\Smarty\JTLSmarty $smarty */
+
+$oAccount->permission('CONTENT_NEWS_SYSTEM_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'news_inc.php';
 
 $uploadDir      = PFAD_ROOT . PFAD_NEWSBILDER;

@@ -38,10 +38,11 @@
             sizes=$imgAttribs.srcsizes
             alt=$imgAttribs.alt|escape:'html'
             title=$imgAttribs.title
-            style=$instance->getStyleString()|cat:' display: block; width: 100%'
+            style=$instance->getStyleString()
             rounded=$portlet->getRoundedProp($instance)
             thumbnail=$portlet->getThumbnailProp($instance)
             class=$instance->getStyleClasses()
+            fluid-grow=true
         }
         {if $isLink && !$isPreview && !empty($href)}
             </a>

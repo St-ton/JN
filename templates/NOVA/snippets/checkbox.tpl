@@ -10,7 +10,7 @@
     {if !empty($checkboxes)}
         {block name='snippets-checkbox-checkboxes'}
             {foreach $checkboxes as $cb}
-                {formgroup class="exclude-from-label-slide" label-for=" " description="{if !empty($cb->cBeschreibung)}{$cb->cBeschreibung}{/if}"}
+                {formgroup class="snippets-checkbox-wrapper exclude-from-label-slide" label-for=" " description="{if !empty($cb->cBeschreibung)}{$cb->cBeschreibung}{/if}"}
                     {block name='snippets-checkbox-checkbox'}
                         {checkbox
                             id="{if isset($cIDPrefix)}{$cIDPrefix}_{/if}{$cb->cID}"

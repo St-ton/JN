@@ -51,6 +51,9 @@
 	&:hover {
 		.slick-arrow { opacity: 1; }
 	}
+	.slick-slider-mb {
+		margin-bottom: map-get($spacers, 4);
+	}
 }
 
 .slick-track { display: flex; flex-wrap: nowrap; }

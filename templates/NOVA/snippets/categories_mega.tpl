@@ -37,15 +37,15 @@
                             && isset($activeParent->kKategorie))
                             && $activeParent->kKategorie == $category->getID())} active{/if}">
                             {link href=$category->getURL() title=$category->getName() class="nav-link dropdown-toggle" target="_self"}
-                                <span class="text-truncate d-block pr-3 pr-lg-0">{$category->getName()}</span>
+                                <span class="nav-mobile-heading">{$category->getName()}</span>
                             {/link}
                             <div class="dropdown-menu">
-                                <div class="dropdown-body p-0 py-lg-4">
+                                <div class="dropdown-body">
                                     {container}
                                         {row class="lg-row-lg nav"}
-                                            {col lg=4 xl=3 class="my-lg-4 nav-item dropdown d-lg-none"}
-                                                {link href=$category->getURL() class="font-size-base" rel="nofollow"}
-                                                    <span class="text-truncate font-weight-bold d-block pr-3 pr-lg-0">{lang key='menuShow' printf=$category->getName()}</span>
+                                            {col lg=4 xl=3 class="nav-item-lg-m nav-item dropdown d-lg-none"}
+                                                {link href=$category->getURL() rel="nofollow"}
+                                                    <strong class="nav-mobile-heading">{lang key='menuShow' printf=$category->getName()}</strong>
                                                 {/link}
                                             {/col}
                                             {block name='snippets-categories-mega-sub-categories'}
@@ -56,7 +56,7 @@
                                                         {get_category_array categoryId=$category->getID() assign='sub_categories'}
                                                     {/if}
                                                     {foreach $sub_categories as $sub}
-                                                        {col lg=4 xl=3 class="my-lg-4 nav-item {if $sub->hasChildren()}dropdown{/if}"}
+                                                        {col lg=4 xl=3 class="nav-item-lg-m nav-item {if $sub->hasChildren()}dropdown{/if}"}
                                                             {block name='snippets-categories-mega-category-child-body-include-categories-mega-recursive'}
                                                                 {include file='snippets/categories_mega_recursive.tpl' mainCategory=$sub firstChild=true}
                                                             {/block}
@@ -104,27 +104,27 @@
                         </span>
                     {/link}
                     <div class="dropdown-menu">
-                        <div class="dropdown-body p-0 py-lg-4">
+                        <div class="dropdown-body">
                             {container}
                                 {row class="lg-row-lg nav"}
                                     {if $manufacturerOverview !== null}
-                                        {col lg=4 xl=3 class="my-lg-4 nav-item d-lg-none"}
+                                        {col lg=4 xl=3 class="nav-item-lg-m nav-item d-lg-none"}
                                             {block name='snippets-categories-mega-manufacturers-header'}
-                                                {link href="{$manufacturerOverview->getURL()}" class="font-size-base" rel="nofollow"}
-                                                    <span class="text-truncate font-weight-bold d-block pr-3 pr-lg-0">
+                                                {link href="{$manufacturerOverview->getURL()}" rel="nofollow"}
+                                                    <strong class="nav-mobile-heading">
                                                         {if !empty($manufacturerOverview->getName())}
                                                             {$manufacturerTitle = $manufacturerOverview->getName()}
                                                         {else}
                                                             {$manufacturerTitle = {lang key='manufacturers'}}
                                                         {/if}
                                                         {lang key='menuShow' printf=$manufacturerTitle}
-                                                    </span>
+                                                    </strong>
                                                 {/link}
                                             {/block}
                                         {/col}
                                     {/if}
                                     {foreach $manufacturers as $mft}
-                                        {col lg=4 xl=3 class='my-lg-4 nav-item'}
+                                        {col lg=4 xl=3 class='nav-item-lg-m nav-item'}
                                             {block name='snippets-categories-mega-manufacturers-link'}
                                                 {link href=$mft->cURLFull title=$mft->cSeo class='submenu-headline submenu-headline-toplevel nav-link '}
                                                     {if $Einstellungen.template.megamenu.show_manufacturer_images !== 'N'
@@ -137,7 +137,7 @@
                                                                     {$mft->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_hersteller_normal_breite}w"
                                                             sizes="auto"
                                                             alt=$mft->getName()|escape:'html'
-                                                            class="d-none d-lg-block mb-3"}
+                                                            class="submenu-headline-image"}
                                                     {/if}
                                                     {$mft->getName()}
                                                 {/link}
@@ -199,16 +199,16 @@
                         {/block}
                         {block name='layout-header-top-bar-user-settings-currency-body'}
                             <div class="dropdown-menu">
-                                <div class="dropdown-body p-0 py-lg-4">
+                                <div class="dropdown-body">
                                     {container}
                                         {row class="lg-row-lg nav"}
-                                            {col lg=4 xl=3 class="my-lg-4 nav-item dropdown d-lg-none"}
+                                            {col lg=4 xl=3 class="nav-item-lg-m nav-item dropdown d-lg-none"}
                                                 {block name='layout-header-top-bar-user-settings-currency-header'}
-                                                    <span class="font-size-base font-weight-bold ">{lang key='currency'}</span>
+                                                    <strong class="nav-mobile-heading">{lang key='currency'}</strong>
                                                 {/block}
                                             {/col}
                                             {foreach $smarty.session.Waehrungen as $currency}
-                                                {col lg=4 xl=3 class='my-lg-4 nav-item'}
+                                                {col lg=4 xl=3 class='nav-item-lg-m nav-item'}
                                                     {block name='layout-header-top-bar-user-settings-currency-header-items'}
                                                         {dropdownitem href=$currency->getURLFull() rel="nofollow" active=($smarty.session.Waehrung->getName() === $currency->getName())}
                                                             {$currency->getName()}

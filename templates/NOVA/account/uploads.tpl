@@ -4,7 +4,7 @@
         {assign var=nImageMaxWidth value=480}
         {assign var=nImageMaxHeight value=320}
         {assign var=nImagePreviewWidth value=35}
-        <div id="uploads" class="mt-3">
+        <div id="uploads">
             {block name='account-uploads-subheading'}
                 <div class="h2">{lang key='yourUploads'}</div>
             {/block}
@@ -14,10 +14,10 @@
                         <thead>
                             {block name='account-uploads-uploads-heading'}
                             <tr>
-                                <th class="text-center">{lang key='name'}</th>
-                                <th class="text-center">{lang key='uploadFilesize'}</th>
-                                <th class="text-center">{lang key='uploadAdded'}</th>
-                                <th class="text-center">{lang key='uploadFile'}</th>
+                                <th>{lang key='name'}</th>
+                                <th>{lang key='uploadFilesize'}</th>
+                                <th>{lang key='uploadAdded'}</th>
+                                <th>{lang key='uploadFile'}</th>
                             </tr>
                             {/block}
                         </thead>
@@ -25,14 +25,14 @@
                             {block name='account-uploads-uploads'}
                                 {foreach $Bestellung->oUpload_arr as $oUpload}
                                         <tr>
-                                            <td class="text-center vcenter">{$oUpload->cName}</td>
-                                            <td class="text-center vcenter">{$oUpload->cGroesse}</td>
-                                            <td class="text-center vcenter">
+                                            <td class="vcenter">{$oUpload->cName}</td>
+                                            <td class="vcenter">{$oUpload->cGroesse}</td>
+                                            <td class="vcenter">
                                                 <span class="infocur" title="{$oUpload->dErstellt|date_format:'%d.%m.%Y - %H:%M:%S'}">
                                                     {$oUpload->dErstellt|date_format:'%d.%m.%Y'}
                                                 </span>
                                             </td>
-                                            <td class="text-center">
+                                            <td>
                                                 {form method="post" action="{get_static_route id='jtl.php'}" slide=true}
                                                     {input name="kUpload" type="hidden" value=$oUpload->kUpload}
                                                     {block name='account-uploads-uploads-button'}

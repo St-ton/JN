@@ -275,7 +275,7 @@ if ($step === 'einstellungen bearbeiten') {
 }
 
 $smarty->assign('cPrefDesc', filteredConfDescription($sectionID))
-       ->assign('cPrefURL', $smarty->getConfigVars('prefURL' . $sectionID))
+       ->assign('cPrefURL', __('prefURL' . $sectionID))
        ->assign('step', $step)
        ->assign('waehrung', $defaultCurrency->cName)
        ->display('einstellungen.tpl');

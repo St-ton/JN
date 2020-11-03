@@ -6,9 +6,10 @@ use JTL\Helpers\Request;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('SETTINGS_GLOBAL_META_VIEW', true, true);
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 $db = Shop::Container()->getDB();
 setzeSprache();
 if (Request::postInt('einstellungen') === 1 && Form::validateToken()) {

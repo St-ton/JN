@@ -17,7 +17,8 @@
                         <button type="button" class="delete-plugindata-yes btn btn-danger btn-bock">
                             <i class="fa fa-close"></i>&nbsp;{__('deletePluginDataYes')}
                         </button>
-                    </div> <div class="col-sm-6 col-xl-auto submit">
+                    </div>
+                    <div class="col-sm-6 col-xl-auto submit">
                         <button type="button" class="delete-plugindata-no btn btn-outline-primary">
                             <i class="fa fa-close"></i>&nbsp;{__('deletePluginDataNo')}
                         </button>

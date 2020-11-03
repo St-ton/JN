@@ -1,5 +1,5 @@
 {block name='snippets-notification'}
-    {card no-body=true class="clearfix {if isset($inline)} m-0{/if}"}
+    {card no-body=true class="snippets-notification clearfix {if isset($inline)} m-0{/if}"}
         {if isset($title)}
             {cardheader}
                 {block name='snippets-notification-title'}

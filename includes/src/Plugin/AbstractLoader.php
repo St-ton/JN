@@ -197,6 +197,7 @@ abstract class AbstractLoader implements LoaderInterface
         $paths->setBaseDir($pluginDir);
         $paths->setBasePath($basePath);
         $paths->setVersionedPath($basePath);
+        $paths->setBaseURL($baseURL);
         $paths->setFrontendPath($basePath . \PFAD_PLUGIN_FRONTEND);
         $paths->setFrontendURL($baseURL . \PFAD_PLUGIN_FRONTEND);
         $paths->setAdminPath($basePath . \PFAD_PLUGIN_ADMINMENU);

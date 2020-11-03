@@ -2,7 +2,7 @@
     {assign var=maxItems value=$oBox->getItemCount()}
     {assign var=itemCount value=count($oBox->getProducts())}
     {if $itemCount > 0}
-        {card class="box box-compare mb-md-4" id="sidebox{$oBox->getID()}"}
+        {card class="box box-compare box-normal" id="sidebox{$oBox->getID()}"}
             {block name='boxes-box-comparelist-content'}
                 {block name='boxes-box-comparelist-toggle-title'}
                     {link id="crd-hdr-{$oBox->getID()}"
@@ -10,13 +10,13 @@
                         data=["toggle"=>"collapse"]
                         role="button"
                         aria=["expanded"=>"false","controls"=>"crd-cllps-{$oBox->getID()}"]
-                        class="text-decoration-none font-weight-bold mb-2 d-md-none dropdown-toggle"}
+                        class="box-normal-link dropdown-toggle"}
                         {lang key='compare'}
                     {/link}
                 {/block}
                 {block name='boxes-box-comparelist-title'}
-                    <div class="productlist-filter-headline align-items-center d-none d-md-flex">
-                        <i class='fas fa-list mr-2'></i>
+                    <div class="productlist-filter-headline align-items-center-util d-none d-md-flex">
+                        <i class='fas fa-list icon-mr-2'></i>
                         {lang key='compare'}
                     </div>
                 {/block}
@@ -35,9 +35,9 @@
                                             {break}
                                         {/if}
                                         <tr>
-                                        <td class="w-100" data-id={$product->kArtikel}>
+                                        <td class="w-100-util" data-id={$product->kArtikel}>
                                             {block name='boxes-box-comparelist-dropdown-products-image-title'}
-                                                {formrow class="align-items-center"}
+                                                {formrow class="align-items-center-util"}
                                                     {col class="col-auto"}
                                                         {block name='boxes-box-comparelist-dropdown-products-image'}
                                                             {link href=$product->cURLFull}
@@ -59,9 +59,9 @@
                                                 {/formrow}
                                             {/block}
                                         </td>
-                                        <td class="text-right text-nowrap">
+                                        <td class="box-delete-button">
                                             {block name='boxes-box-comparelist-dropdown-products-remove'}
-                                                {link href=$product->cURLDEL class="remove float-right"
+                                                {link href=$product->cURLDEL class="remove"
                                                     title="{lang section="comparelist" key="removeFromCompareList"}"
                                                     data=["name"=>"Vergleichsliste.remove",
                                                     "toggle"=>"product-actions",
@@ -91,7 +91,7 @@
                 {/block}
             {/block}
             {block name='boxes-box-comparelist-hr-end'}
-                <hr class="my-3 d-flex d-md-none">
+                <hr class="box-normal-hr">
             {/block}
         {/card}
     {else}

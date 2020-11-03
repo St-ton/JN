@@ -1,13 +1,13 @@
 {block name='page-free-gift'}
     {opcMountPoint id='opc_before_free_gift' inContainer=false}
-    {container}
+    {container class="page-freegift"}
         <p>{lang key='freeGiftFromOrderValue'}</p>
         {if !empty($oArtikelGeschenk_arr)}
             {opcMountPoint id='opc_before_free_gift_list'}
             {row id="freegift"}
                 {block name='page-freegift-freegifts'}
                     {foreach $oArtikelGeschenk_arr as $oArtikelGeschenk}
-                        {col sm=6 md=4 class="text-center"}
+                        {col sm=6 md=4 class="page-freegift-item"}
                             <label for="gift{$oArtikelGeschenk->kArtikel}">
                                 {block name='page-freegift-freegift-image'}
                                     {link href=$oArtikelGeschenk->cURLFull}
@@ -23,7 +23,7 @@
                                     {/link}
                                 {/block}
                                 {block name='page-freegift-freegift-info'}
-                                    <p class="small text-muted">{lang key='freeGiftFrom1'} {$oArtikelGeschenk->cBestellwert} {lang key='freeGiftFrom2'}</p>
+                                    <p class="small text-muted-util">{lang key='freeGiftFrom1'} {$oArtikelGeschenk->cBestellwert} {lang key='freeGiftFrom2'}</p>
                                 {/block}
                                 {block name='page-freegift-freegift-link'}
                                     <p>{link href=$oArtikelGeschenk->cURLFull}{$oArtikelGeschenk->cName}{/link}</p>

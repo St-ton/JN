@@ -16,6 +16,8 @@ use JTL\Recommendation\Manager;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('ORDER_PAYMENT_VIEW', true, true);
 
@@ -24,7 +26,6 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'zahlungsarten_inc.php';
 
 Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 $db              = Shop::Container()->getDB();
 $defaultCurrency = $db->select('twaehrung', 'cStandard', 'Y');
 $step            = 'uebersicht';

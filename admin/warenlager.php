@@ -8,9 +8,10 @@ use JTL\Helpers\GeneralObject;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('WAREHOUSE_VIEW', true, true);
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 $step        = 'uebersicht';
 $action      = (isset($_POST['a']) && Form::validateToken()) ? $_POST['a'] : null;
 $alertHelper = Shop::Container()->getAlertService();

@@ -8,11 +8,12 @@ use JTL\Pagination\Pagination;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
 $oAccount->permission('MODULE_COMPARELIST_VIEW', true, true);
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 $db          = Shop::Container()->getDB();
 $settingIDs  = '(469, 470)';
 $alertHelper = Shop::Container()->getAlertService();

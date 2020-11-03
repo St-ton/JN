@@ -1,6 +1,5 @@
 .opc-Gallery-columns {
-  columns: 1;
-  column-gap: 8px;
+  display: flex;
   margin-bottom: 8px;
 
   .opc-Gallery-btn {
@@ -14,21 +13,32 @@
   }
 }
 
+.opc-Gallery-column {
+  padding: 0 4px;
+  flex: 1 1 0;
+}
+
+.opc-Gallery-column-2 ,
+.opc-Gallery-column-3 ,
+.opc-Gallery-column-4 {
+  display: none;
+}
+
 @media (min-width: 576px) {
-  .opc-Gallery-columns {
-    columns: 2;
+  .opc-Gallery-column-2 {
+    display: block;
   }
 }
 
 @media (min-width: 768px) {
-  .opc-Gallery-columns {
-    columns: 3;
+  .opc-Gallery-column-3 {
+    display: block;
   }
 }
 
 @media (min-width: 1200px) {
-  .opc-Gallery-columns {
-    columns: 4;
+  .opc-Gallery-column-4 {
+    display: block;
   }
 }
 

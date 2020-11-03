@@ -11,6 +11,7 @@ use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
+/** @global \JTL\Backend\AdminAccount $oAccount */
 setzeSprache();
 $oAccount->permission('OBJECTCACHE_VIEW', true, true);
 $notice       = '';

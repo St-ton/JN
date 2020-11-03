@@ -108,11 +108,11 @@ class XML
     }
 
     /**
-     * @param string $parser
-     * @param mixed  $tag
-     * @param mixed  $attributes
+     * @param resource $parser
+     * @param mixed    $tag
+     * @param mixed    $attributes
      */
-    public function open(&$parser, $tag, $attributes): void
+    public function open($parser, $tag, $attributes): void
     {
         $this->data            = '';
         $this->last_opened_tag = $tag;
@@ -145,7 +145,7 @@ class XML
      * @param resource $parser
      * @param string   $data
      */
-    public function data(&$parser, $data): void
+    public function data($parser, $data): void
     {
         if ($this->last_opened_tag !== null) {
             $this->data .= $data;
@@ -156,7 +156,7 @@ class XML
      * @param resource $parser
      * @param string   $tag
      */
-    public function close(&$parser, $tag): void
+    public function close($parser, $tag): void
     {
         if ($this->last_opened_tag === $tag) {
             $this->parent          = $this->data;

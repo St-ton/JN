@@ -13,7 +13,7 @@
     {else}
         {block name='account-feedback-ratings'}
             {foreach $bewertungen as $Bewertung}
-                {card no-body=true}
+                {card no-body=true class="account-feedback"}
                     {cardheader}
                         {block name='account-feedback-rating-header'}
                             <strong>{$Bewertung->cTitel}</strong> - {$Bewertung->dDatum}

@@ -68,7 +68,7 @@ class SearchSpecial
                 }
             }
             $overlays = \Functional\sort($overlays, static function (Overlay $left, Overlay $right) {
-                return $left->getPriority() > $right->getPriority();
+                return $left->getPriority() <=> $right->getPriority();
             });
             Shop::Container()->getCache()->set($cacheID, $overlays, [\CACHING_GROUP_OPTION]);
         }

@@ -20,7 +20,7 @@
                                     {/formgroup}
                                 {/block}
                                 {block name='layout-header-nav-account-form-password'}
-                                    {formgroup label-for="password_quick" label={lang key='password'} class="mb-5"}
+                                    {formgroup label-for="password_quick" label={lang key='password'} class="account-icon-dropdown-pass"}
                                         {input type="password" name="passwort" id="password_quick" size-class="sm"
                                                required=true placeholder=" "
                                                autocomplete="current-password"}
@@ -28,7 +28,7 @@
                                 {/block}
                                 {block name='layout-header-nav-account-form-captcha'}
                                     {if isset($showLoginCaptcha) && $showLoginCaptcha}
-                                        {formgroup class="text-center"}
+                                        {formgroup class="simple-captcha-wrapper"}
                                             {captchaMarkup getBody=true}
                                         {/formgroup}
                                     {/if}
@@ -56,9 +56,9 @@
                     {/block}
                 </div>
                 {block name='layout-header-nav-account-link-register'}
-                    <div class="dropdown-footer bg-gray-light">
+                    <div class="dropdown-footer">
                         {lang key='newHere'}
-                        {link href="{get_static_route id='registrieren.php'}" class="text-decoration-underline" rel="nofollow" title="{lang key='registerNow'}"}
+                        {link href="{get_static_route id='registrieren.php'}" rel="nofollow" title="{lang key='registerNow'}"}
                             {lang key='registerNow'}
                         {/link}
                     </div>
@@ -79,7 +79,7 @@
                     {lang key='myWishlists'}
                 {/dropdownitem}
                 {dropdowndivider}
-                {dropdownitem href="{get_static_route id='jtl.php' secure=true}?logout=1" rel="nofollow" title="{lang key='logOut'}" class="mb-2"}
+                {dropdownitem href="{get_static_route id='jtl.php' secure=true}?logout=1" rel="nofollow" title="{lang key='logOut'}" class="account-icon-dropdown-logout"}
                     {lang key='logOut'}
                 {/dropdownitem}
             {/block}

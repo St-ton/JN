@@ -5,11 +5,12 @@ use Systemcheck\Environment;
 use Systemcheck\Platform\Hosting;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->redirectOnFailure();
 
 $phpInfo = '';
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 if (isset($_GET['phpinfo'])) {
     if (in_array('phpinfo', explode(',', ini_get('disable_functions')), true)) {
         return;

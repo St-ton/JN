@@ -222,3 +222,7 @@ $jqcloud-classes: 7;
   }
 }
 
+.hr-no-top {
+  margin-top: 0;
+  margin-bottom: map-get($spacers, 3);
+}

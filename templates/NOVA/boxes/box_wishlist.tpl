@@ -77,7 +77,7 @@
                             </tbody>
                         </table>
                         {block name='boxes-box-wishlist-actions'}
-                            <hr class="mt-0 mb-3">
+                            <hr class="hr-no-top">
                             {link href="{get_static_route id='wunschliste.php'}?wl={$oBox->getWishListID()}" class="btn btn-outline-primary btn-block btn-sm"}
                                 {lang key='goToWishlist'}
                             {/link}

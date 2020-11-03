@@ -8,6 +8,9 @@
 	background-color: $dropdown-link-bg-color;
 	text-decoration: none;
 }
+.dropdown-divider {
+	margin: 0;
+}
 
 .dropdown-toggle {
 	&::after {

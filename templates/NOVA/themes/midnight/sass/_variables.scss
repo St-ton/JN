@@ -151,6 +151,7 @@ $headings-color:                    $gray-700 !default;
 $navbar-light-hover-color:          $primary !default;
 
 $text-muted:                        $gray !default;
+$text-muted-header:                 $gray-lighter !default;
 $input-color-placeholder:           $gray !default;
 
 /* links */
@@ -389,6 +390,8 @@ $dropdown-link-hover-bg		: lighten($bg-main-ligther, 10%) !default;
 
 $dropdown-link-active-color	: $header-color !default;
 $dropdown-link-active-bg	: lighten($bg-main-ligther, 10%) !default;
+
+$dropdown-divider-bg        : $border-color !default;
 
 $dropdown-padding-y         : 0 !default;
 

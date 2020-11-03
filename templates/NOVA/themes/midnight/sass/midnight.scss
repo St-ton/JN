@@ -9,6 +9,39 @@
     border-color: $primary;
   }
 }
+#footer, header {
+  .table-striped {
+    color: $header-color;
+    tbody tr:nth-of-type(odd) {
+      background-color: $bg-main;
+    }
+    tbody tr:nth-of-type(even) {
+      background-color: $bg-main-ligther;
+    }
+    td {
+      border: none;
+    }
+  }
+  .btn-outline-primary {
+    color: $header-color;
+    &:hover {
+      color: $header-color;
+    }
+  }
+  .hr-no-top {
+    border: none;
+  }
+  .box-categories, .box-linkgroup {
+    .dropdown .collapse {
+       background: $footer-bg-color;
+     }
+   }
+}
+.dropdown-item {
+  .btn-link {
+    color: $dropdown-link-color;
+  }
+}
 .account-icon-dropdown {
   .dropdown-footer {
     background-color: $bg-main-ligther;

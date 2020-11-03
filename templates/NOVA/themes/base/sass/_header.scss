@@ -44,6 +44,7 @@ header {
 	}
 	.dropdown-menu {
 		background-color: $header-bg-color;
+		color: $header-color;
 	}
 
 	.navbar-toggler { color: $header-color; }
@@ -235,6 +236,9 @@ header {
 		}
 	}
 	.account-icon-dropdown-logout {
-		margin-bottom: map-get($spacers, 2);
+		padding-bottom: map-get($spacers, 2);
 	}
+}
+.cart-dropdown-shipping-notice {
+	color: $text-muted-header;
 }

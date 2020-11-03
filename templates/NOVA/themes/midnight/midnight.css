@@ -7680,7 +7680,7 @@ input[type=button].btn-block {
   height: 0;
   margin: 0.5rem 0;
   overflow: hidden;
-  border-top: 1px solid #e9ecef;
+  border-top: 1px solid #ebebeb;
 }
 
 .dropdown-item {
@@ -20423,6 +20423,10 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
   text-decoration: none;
 }
 
+.dropdown-divider {
+  margin: 0;
+}
+
 .dropdown-toggle, [data-toggle=collapse]:not(.navbar-toggler) {
   display: flex;
   justify-content: space-between;
@@ -21908,6 +21912,7 @@ table caption {
   transition: all 0.5s ease-in-out;
   transition-delay: 0.2s;
   background: #ffffff;
+  color: #707070;
   -webkit-box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2);
   box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2);
 }
@@ -22182,6 +22187,11 @@ aside .box-monthlynews a .value:hover {
 
 .box-filter-price .box-filter-price-collapse {
   padding-bottom: 1.5rem;
+}
+
+.hr-no-top {
+  margin-top: 0;
+  margin-bottom: 1rem;
 }
 
 :root {
@@ -24826,6 +24836,7 @@ header .form-control::placeholder, header .form-control:focus::placeholder {
 }
 header .dropdown-menu {
   background-color: #1C1D2C;
+  color: #ffffff;
 }
 header .navbar-toggler {
   color: #ffffff;
@@ -25083,7 +25094,11 @@ header #burger-menu {
   text-decoration: underline;
 }
 .account-icon-dropdown .account-icon-dropdown-logout {
-  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.cart-dropdown-shipping-notice {
+  color: #f5f7fa;
 }
 
 /* footer */
@@ -25323,7 +25338,7 @@ header #burger-menu {
 /* basket */
 /* cart-dropdown */
 .cart-dropdown .cart-dropdown-total-item {
-  color: #707070;
+  color: #f5f7fa;
   margin-bottom: 0.5rem;
   font-size: 0.75rem;
 }
@@ -26107,6 +26122,35 @@ header #burger-menu {
 
 #footer .form-control, header .form-control, .fixed-search .form-control {
   border-color: #1973D3;
+}
+
+#footer .table-striped, header .table-striped {
+  color: #ffffff;
+}
+#footer .table-striped tbody tr:nth-of-type(odd), header .table-striped tbody tr:nth-of-type(odd) {
+  background-color: #1C1D2C;
+}
+#footer .table-striped tbody tr:nth-of-type(even), header .table-striped tbody tr:nth-of-type(even) {
+  background-color: #30324b;
+}
+#footer .table-striped td, header .table-striped td {
+  border: none;
+}
+#footer .btn-outline-primary, header .btn-outline-primary {
+  color: #ffffff;
+}
+#footer .btn-outline-primary:hover, header .btn-outline-primary:hover {
+  color: #ffffff;
+}
+#footer .hr-no-top, header .hr-no-top {
+  border: none;
+}
+#footer .box-categories .dropdown .collapse, #footer .box-linkgroup .dropdown .collapse, header .box-categories .dropdown .collapse, header .box-linkgroup .dropdown .collapse {
+  background: #1C1D2C;
+}
+
+.dropdown-item .btn-link {
+  color: #ffffff;
 }
 
 .account-icon-dropdown .dropdown-footer {

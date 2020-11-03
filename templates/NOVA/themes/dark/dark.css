@@ -20422,6 +20422,10 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
   text-decoration: none;
 }
 
+.dropdown-divider {
+  margin: 0;
+}
+
 .dropdown-toggle, [data-toggle=collapse]:not(.navbar-toggler) {
   display: flex;
   justify-content: space-between;
@@ -21907,6 +21911,7 @@ table caption {
   transition: all 0.5s ease-in-out;
   transition-delay: 0.2s;
   background: #343434;
+  color: #ebebeb;
   -webkit-box-shadow: 0 0.25rem 0.5rem rgba(255, 255, 255, 0.2);
   box-shadow: 0 0.25rem 0.5rem rgba(255, 255, 255, 0.2);
 }
@@ -22181,6 +22186,11 @@ aside .box-monthlynews a .value:hover {
 
 .box-filter-price .box-filter-price-collapse {
   padding-bottom: 1.5rem;
+}
+
+.hr-no-top {
+  margin-top: 0;
+  margin-bottom: 1rem;
 }
 
 :root {
@@ -24825,6 +24835,7 @@ header .form-control::placeholder, header .form-control:focus::placeholder {
 }
 header .dropdown-menu {
   background-color: #343434;
+  color: #ebebeb;
 }
 header .navbar-toggler {
   color: #ebebeb;
@@ -25082,7 +25093,11 @@ header #burger-menu {
   text-decoration: underline;
 }
 .account-icon-dropdown .account-icon-dropdown-logout {
-  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.cart-dropdown-shipping-notice {
+  color: #ebebeb;
 }
 
 /* footer */

@@ -1,47 +1,30 @@
 #header-top-bar {
 	position: relative;
-	background-color: $header-bg-color;
 	z-index: ($zindex-sticky + 1);
 	flex-direction: row-reverse;
-	a {
-		text-decoration: none;
-		color: $header-color;
-		&:hover:not(.dropdown-item) {
-			color: $primary;
-		}
-	}
 }
 
 .sticky-header header { position: sticky; top: 0; }
 
-header {
-	box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94);
-	position: relative;
-	background-color: $header-bg-color;
-	z-index: $zindex-sticky;
-	color: $header-color;
-	a {
-		text-decoration: none;
-		color: $header-color;
-		&:hover {
-			color: $primary;
+#jtl-nav-wrapper {
+	.form-control, .form-control:focus  {
+		&::placeholder {
+			color: $header-color;
 		}
 	}
-
 	.label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) {
 		label {
 			background: $header-bg-color;
 			color: $header-color;
 		}
 	}
+}
 
-	.form-control, .form-control:focus  {
-		background-color: $header-bg-color;
-		color: $header-color;
-		&::placeholder {
-			color: $header-color;
-		}
-	}
+header {
+	box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94);
+	position: relative;
+	z-index: $zindex-sticky;
+
 	.dropdown-menu {
 		background-color: $header-bg-color;
 		color: $header-color;

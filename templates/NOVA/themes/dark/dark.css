@@ -20545,8 +20545,6 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
   background: #343434;
   height: 0.125rem;
   top: 45%;
-  left: -3em;
-  right: -3em;
   z-index: -1;
 }
 .label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) .form-control::placeholder {
@@ -22350,7 +22348,7 @@ image:focus {
   content: "";
 }
 
-header, #main-wrapper {
+#main-wrapper {
   background: #343434;
 }
 
@@ -24801,16 +24799,8 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 /* header */
 #header-top-bar {
   position: relative;
-  background-color: #343434;
   z-index: 1021;
   flex-direction: row-reverse;
-}
-#header-top-bar a {
-  text-decoration: none;
-  color: #ebebeb;
-}
-#header-top-bar a:hover:not(.dropdown-item) {
-  color: #0ef83c;
 }
 
 .sticky-header header {
@@ -24818,32 +24808,20 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   top: 0;
 }
 
-header {
-  box-shadow: 0 1rem 0.5625rem -0.75rem rgba(255, 255, 255, 0.06);
-  position: relative;
-  background-color: #343434;
-  z-index: 1020;
-  color: #ebebeb;
-  /* mobile only */
-  /* desktop only */
-}
-header a {
-  text-decoration: none;
+#jtl-nav-wrapper .form-control::placeholder, #jtl-nav-wrapper .form-control:focus::placeholder {
   color: #ebebeb;
 }
-header a:hover {
-  color: #0ef83c;
-}
-header .label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) label {
+#jtl-nav-wrapper .label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) label {
   background: #343434;
   color: #ebebeb;
 }
-header .form-control, header .form-control:focus {
-  background-color: #343434;
-  color: #ebebeb;
-}
-header .form-control::placeholder, header .form-control:focus::placeholder {
-  color: #ebebeb;
+
+header {
+  box-shadow: 0 1rem 0.5625rem -0.75rem rgba(255, 255, 255, 0.06);
+  position: relative;
+  z-index: 1020;
+  /* mobile only */
+  /* desktop only */
 }
 header .dropdown-menu {
   background-color: #343434;
@@ -25114,8 +25092,6 @@ header #burger-menu {
 
 /* footer */
 #footer {
-  background-color: #525252;
-  color: #ebebeb;
   margin-top: auto;
   padding: 1.5rem 0 0;
 }

@@ -84,7 +84,7 @@
                                                 <div>
                                                     {link href=$child->cSeo title="{lang key='configure'} {$oVariationWert0->cName}-{$oVariationWert1->cName}" class="btn btn-primary configurepos"}
                                                         <i class="fa fa-cogs"></i>
-                                                        <span class="d-none d-sm-inline-block pl-2">{lang key='configure'}</span>
+                                                        <span>{lang key='configure'}</span>
                                                     {/link}
                                                 </div>
                                                 {if isset($child->nErscheinendesProdukt) && $child->nErscheinendesProdukt == 1}
@@ -121,7 +121,7 @@
                                                         type="text"
                                                         aria=["label"=>"{lang key='quantity'} {$oVariationWert0->cName}-{$oVariationWert1->cName}"]
                                                         value="{if isset($smarty.session.variBoxAnzahl_arr[$cVariBox]->fAnzahl)}{$smarty.session.variBoxAnzahl_arr[$cVariBox]->fAnzahl|replace_delim}{/if}"
-                                                        class="text-right"}
+                                                        class="text-right-util"}
                                                     {if $Artikel->nIstVater == 1}
                                                         {if isset($child->Preise->cVKLocalized[$NettoPreise]) && $child->Preise->cVKLocalized[$NettoPreise] > 0}
                                                             {inputgroupaddon append=true}
@@ -235,7 +235,7 @@
                                     || (!isset($oVariationWertHead->nNichtLieferbar)
                                         || $oVariationWertHead->nNichtLieferbar != 1)}
                                     {assign var=cVariBox value=$oVariationWertHead->kEigenschaft|cat:':'|cat:$oVariationWertHead->kEigenschaftWert}
-                                    <td class="text-center">
+                                    <td class="text-center-util">
                                         {if $Artikel->oVariBoxMatrixBild_arr|@count > 0}
                                             {foreach $Artikel->oVariBoxMatrixBild_arr as $oVariBoxMatrixBild}
                                                 {if $oVariBoxMatrixBild->kEigenschaftWert == $oVariationWertHead->kEigenschaftWert}
@@ -259,7 +259,7 @@
                                     {if isset($Artikel->oVariationKombiKinderAssoc_arr[$cVariBox])}
                                         {assign var=child value=$Artikel->oVariationKombiKinderAssoc_arr[$cVariBox]}
                                     {/if}
-                                    <td class="text-center">
+                                    <td class="text-center-util">
                                         {if $Einstellungen.global.global_erscheinende_kaeuflich === 'N'
                                             && isset($child->nErscheinendesProdukt) && $child->nErscheinendesProdukt == 1}
                                             <small>
@@ -287,7 +287,7 @@
                                                 && $child->nVariationAnzahl > $child->nVariationOhneFreifeldAnzahl)}
                                             {link href=$child->cSeo title="{lang key='configure'} {$oVariationWertHead->cName}" class="btn btn-primary configurepos"}
                                                 <i class="fa fa-cogs"></i>
-                                                <span class="d-none d-sm-inline-block pl-2">{lang key='configure'}</span>
+                                                <span>{lang key='configure'}</span>
                                             {/link}
                                             {if isset($child->nErscheinendesProdukt) && $child->nErscheinendesProdukt == 1}
                                                 <small>
@@ -316,7 +316,7 @@
                                             </div>
                                         {else}
                                             {inputgroup class="{if isset($smarty.session.variBoxAnzahl_arr[$cVariBox]->bError) && $smarty.session.variBoxAnzahl_arr[$cVariBox]->bError}has-error{/if}"}
-                                                {input class="text-right{if isset($smarty.session.variBoxAnzahl_arr[$cVariBox]->bError) && $smarty.session.variBoxAnzahl_arr[$cVariBox]->bError} bg-danger{/if}"
+                                                {input class="text-right-util{if isset($smarty.session.variBoxAnzahl_arr[$cVariBox]->bError) && $smarty.session.variBoxAnzahl_arr[$cVariBox]->bError} bg-danger{/if}"
                                                     placeholder="0"
                                                     name="variBoxAnzahl[_{$oVariationWertHead->kEigenschaft}:{$oVariationWertHead->kEigenschaftWert}]"
                                                     aria=["label"=>"{lang key='quantity'} {$oVariationWertHead->cName}"]
@@ -388,7 +388,7 @@
                                     {assign var=child value=$Artikel->oVariationKombiKinderAssoc_arr[$cVariBox]}
                                 {/if}
                                 <tr>
-                                    <td class="text-center">
+                                    <td class="text-center-util">
                                         {if $Artikel->oVariBoxMatrixBild_arr|@count > 0}
                                             {foreach $Artikel->oVariBoxMatrixBild_arr as $oVariBoxMatrixBild}
                                                 {if $oVariBoxMatrixBild->kEigenschaftWert == $oVariationWertHead->kEigenschaftWert}
@@ -420,7 +420,7 @@
                                                 && $child->nVariationAnzahl > $child->nVariationOhneFreifeldAnzahl)}
                                             {link href=$child->cSeo title="{lang key='configure'} {$oVariationWertHead->cName}" class="btn btn-primary configurepos"}
                                                 <i class="fa fa-cogs"></i>
-                                                <span class="d-none d-sm-inline-block pl-2">{lang key='configure'}</span>
+                                                <span>{lang key='configure'}</span>
                                             {/link}
                                             {if isset($child->nErscheinendesProdukt) && $child->nErscheinendesProdukt == 1}
                                                 <div>
@@ -454,7 +454,7 @@
                                         {else}
                                             {inputgroup class="{if isset($smarty.session.variBoxAnzahl_arr[$cVariBox]->bError) && $smarty.session.variBoxAnzahl_arr[$cVariBox]->bError}has-error{/if}"}
                                                 {input
-                                                    class="text-right" placeholder="0"
+                                                    class="text-right-util" placeholder="0"
                                                     name="variBoxAnzahl[_{$oVariationWertHead->kEigenschaft}:{$oVariationWertHead->kEigenschaftWert}]"
                                                     aria=["label"=>"{lang key='quantity'} {$oVariationWertHead->cName}"]
                                                     type="text"
@@ -487,7 +487,7 @@
                                                     </small>
                                                 </div>
                                             {/if}
-                                            <div class="delivery-status ml-3">
+                                            <div class="delivery-status">
                                                 <small>
                                                     {if $Artikel->nIstVater == 1}
                                                         {if isset($child->nErscheinendesProdukt) && !$child->nErscheinendesProdukt}
@@ -528,6 +528,6 @@
     {/block}
     {block name='productdetails-matrix-classic-submit'}
         {input type="hidden" name="variBox" value="1"}
-        {button name="inWarenkorb" type="submit" value="{lang key='addToCart'}" variant="primary" class="float-right"}{lang key='addToCart'}{/button}
+        {button name="inWarenkorb" type="submit" value="{lang key='addToCart'}" variant="primary"}{lang key='addToCart'}{/button}
     {/block}
 {/block}

@@ -15,6 +15,7 @@
             {
                 baseFloatZIndex: 9000,
                 language: adminLang,
+                filebrowserBrowseUrl: 'elfinder.php?ckeditor=1&token=' + JTL_TOKEN + '&mediafilesType=image',
             },
         );
 

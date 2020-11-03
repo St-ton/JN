@@ -11,9 +11,10 @@ use function Functional\map;
 use function Functional\reindex;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('SETTINGS_CONTACTFORM_VIEW', true, true);
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 $tab         = 'config';
 $step        = 'uebersicht';
 $alertHelper = Shop::Container()->getAlertService();

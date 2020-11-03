@@ -9,9 +9,10 @@ use JTL\Helpers\Request;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('STATS_COUPON_VIEW', true, true);
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 $step      = 'kuponstatistik_uebersicht';
 $cWhere    = '';
 $coupons   = Shop::Container()->getDB()->query(

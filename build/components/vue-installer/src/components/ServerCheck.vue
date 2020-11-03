@@ -108,7 +108,7 @@
             <icon name="sync" spin></icon> {{ $t('validateServerRequirements') }}
         </b-alert>
         <b-alert variant="danger" show v-if="networkError !== false">
-            <icon name="exclamation-triangle"></icon> {{ $t('networkError') }} {{ networkError }}
+            <icon name="exclamation-triangle"></icon> {{ $t('networkError') }} <div v-html="networkError"></div>
         </b-alert>
         <continue :disableBack="false" :disable="!checkedServer || serverStatus === 2 || modulesStatus === 2 || networkError !== false"></continue>
     </div>
@@ -209,6 +209,10 @@ export default {
         check() {
             axios.get(this.$getApiUrl('systemcheck'))
                 .then(response => {
+                    if (!response.data.testresults) {
+                        this.networkError = response.data;
+                        return ;
+                    }
                     this.phpModules = response.data.testresults.php_modules.map(this.$addClasses);
                     this.programs = response.data.testresults.programs.map(this.$addClasses);
                     this.phpConfig = response.data.testresults.php_config.map(this.$addClasses);

@@ -6,6 +6,7 @@ use JTL\Plugin\Admin\ListingItem;
 use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
 use JTL\Plugin\Admin\Validation\PluginValidator;
 use JTL\Shop;
+use JTL\XMLParser;
 
 /**
  * Search for backend settings

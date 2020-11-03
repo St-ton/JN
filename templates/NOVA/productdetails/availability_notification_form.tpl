@@ -13,7 +13,7 @@
     {block name='productdetails-availability-notification-form-form'}
         {form action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{else}{$ShopURL}/{/if}"
             method="post" id="article_availability{$Artikel->kArtikel}"
-            class="jtl-validate"
+            class="jtl-validate availability-notification-form"
             slide=true}
             {block name='productdetails-availability-notification-form-fieldset-contact'}
                 <fieldset>

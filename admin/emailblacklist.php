@@ -7,9 +7,10 @@ use JTL\Helpers\Request;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('SETTINGS_EMAIL_BLACKLIST_VIEW', true, true);
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 $step = 'emailblacklist';
 if (Request::postInt('einstellungen') > 0) {
     Shop::Container()->getAlertService()->addAlert(

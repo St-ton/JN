@@ -291,7 +291,7 @@ class PortletInstance implements \JsonSerializable
                     foreach ($boxStyles as $styleName => $styleValue) {
                         $this->setStyle($styleName, $styleValue);
                     }
-                } elseif (!Text::startsWith($propname, 'hidden-')) {
+                } elseif ($propname !== 'custom-class' && !Text::startsWith($propname, 'hidden-')) {
                     $this->setStyle($propname, $this->getProperty($propname));
                 }
             }
@@ -384,6 +384,10 @@ class PortletInstance implements \JsonSerializable
         if ($this->getProperty('hidden-xl')) {
             $res .= 'opc-hidden-xl ';
         }
+        if (!empty($this->getProperty('custom-class'))) {
+            $res .= $this->getProperty('custom-class');
+        }
+
 
         return $res;
     }
@@ -583,7 +587,7 @@ class PortletInstance implements \JsonSerializable
         return [
             'srcset'     => $srcset,
             'srcsizes'   => $srcsizes,
-            'src'        => \str_replace(' ', '%20', $this->getImage()),
+            'src'        => \str_replace(' ', '%20', $this->getImage(Image::SIZE_LG)),
             'alt'        => $alt,
             'title'      => $title,
             'realWidth'  => $realWidth,

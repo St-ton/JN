@@ -11,10 +11,11 @@ use JTL\Pagination\Pagination;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('ORDER_PACKAGE_VIEW', true, true);
 
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 $step        = 'zusatzverpackung';
 $languages   = LanguageHelper::getAllLanguages();
 $action      = '';

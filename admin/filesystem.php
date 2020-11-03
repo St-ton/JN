@@ -1,8 +1,9 @@
 <?php
 
-/** @global \JTL\Smarty\JTLSmarty $smarty */
-
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Smarty\JTLSmarty $smarty */
+/** @global \JTL\Backend\AdminAccount $oAccount */
+
 $oAccount->permission('FILESYSTEM_VIEW', true, true);
 
 use JTL\Alert\Alert;

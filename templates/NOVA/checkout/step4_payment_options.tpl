@@ -3,7 +3,7 @@
  * @deprecated since 4.06
  *}
 {block name='checkout-step4-payment-options'}
-    {row class="mb-3 form-group"}
+    {row class="checkout-payment-options form-group"}
         {block name='checkout-step4-payment-options-include-inc-payment-methods'}
             {include file='checkout/inc_payment_methods.tpl'}
         {/block}

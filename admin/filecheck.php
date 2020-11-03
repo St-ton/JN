@@ -9,12 +9,14 @@ use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'filecheck_inc.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('FILECHECK_VIEW', true, true);
+$cache = Shop::Container()->getCache();
 $cache->flush(Status::CACHE_ID_MODIFIED_FILE_STRUCT);
 $cache->flush(Status::CACHE_ID_ORPHANED_FILE_STRUCT);
 
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 $fileChecker        = new FileCheck();
 $zipArchiveError    = '';
 $backupMessage      = '';

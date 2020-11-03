@@ -18,23 +18,23 @@
                 {foreach $links as $li}
                     {if $li->getChildLinks()->count() > 0 && isset($dropdownSupport)}
                         {block name='snippets-linkgroup-list-links-dropdown'}
-                            <li class="nav-item nav-scrollbar-item dropdown dropdown-full{if $activeId == $li->getId()} active{/if}">
+                            <li class="link-group-item nav-item nav-scrollbar-item dropdown dropdown-full{if $activeId == $li->getId()} active{/if}">
                                 {link href=$li->getURL() title=$li->getName() class="nav-link dropdown-toggle" target="_self"}
                                     <span class="text-truncate">{$li->getName()}</span>
                                 {/link}
                                 <div class="dropdown-menu">
-                                    <div class="dropdown-body p-0 py-lg-4">
+                                    <div class="dropdown-body">
                                         {container}
                                             {row class="lg-row-lg nav"}
-                                                {col lg=4 xl=3 class="my-lg-4 nav-item dropdown d-lg-none"}
+                                                {col lg=4 xl=3 class="nav-item-lg-m nav-item dropdown d-lg-none"}
                                                     {block name='snippets-linkgroup-list-links-header'}
                                                         {link href=$li->getURL() title=$li->getName()}
-                                                            <span class="text-truncate font-weight-bold d-block pr-3 pr-lg-0">{lang key='menuShow' printf=$li->getName()}</span>
+                                                            <strong class="nav-mobile-heading">{lang key='menuShow' printf=$li->getName()}</strong>
                                                         {/link}
                                                     {/block}
                                                 {/col}
                                                 {foreach $li->getChildLinks() as $subli}
-                                                    {col lg=4 xl=3 class='my-lg-4 nav-item'}
+                                                    {col lg=4 xl=3 class='nav-item-lg-m nav-item'}
                                                         {block name='snippets-linkgroup-list-links-sublinks'}
                                                             {if !empty($subli->getName())}
                                                                 {link href=$subli->getURL() rel="{if $subli->getNoFollow()}nofollow{/if}" class="submenu-headline submenu-headline-toplevel nav-link"}
@@ -52,7 +52,7 @@
                         {/block}
                     {else}
                         {block name='snippets-linkgroup-list-links-navitem'}
-                            {navitem href=$li->getURL() nofollow=$li->getNoFollow() class="nav-scrollbar-item {if $activeId == $li->getId()}active{/if}{if $tplscope=='sitemap'} py-2{/if}" router-class="{if $tplscope=='sitemap'}nice-deco{/if}"}
+                            {navitem href=$li->getURL() nofollow=$li->getNoFollow() class="nav-scrollbar-item {if $activeId == $li->getId()}active{/if}" router-class="{if $tplscope=='sitemap'}nice-deco{/if}"}
                                 {$li->getName()}
                             {/navitem}
                         {/block}

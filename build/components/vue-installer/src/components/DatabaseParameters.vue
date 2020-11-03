@@ -74,6 +74,9 @@
                 {{ $t(msg) }}
             </b-alert>
         </div>
+        <b-alert class="result mt-3" variant="danger" show v-if="networkError !== false">
+            <icon name="exclamation-triangle"></icon> {{ $t('networkError') }} <div v-html="networkError"></div>
+        </b-alert>
         <continue :disableBack="false" :disable="error !== false"></continue>
     </div>
 </template>
@@ -85,8 +88,9 @@ import qs from 'qs';
 export default {
     name:    'databaseparameters',
     data() {
-        let msg = null,
-            error = null;
+        let msg          = null,
+            networkError = false,
+            error        = null;
         const messages = {
             de: {
                 hostPrep:            'Host',
@@ -162,13 +166,19 @@ export default {
             },
             installDemoData: false,
             error,
-            msg
+            msg,
+            networkError
         };
     },
     methods: {
         checkCredentials(db) {
             axios.post(this.$getApiUrl('credentialscheck'), qs.stringify(db))
                 .then(response => {
+                    if (!response.data.msg) {
+                        this.networkError = response.data;
+                        return;
+                    }
+                    this.networkError = false;
                     this.msg = response.data.msg;
                     this.error = response.data.error;
                     this.$store.commit('setDBCredentials', db);

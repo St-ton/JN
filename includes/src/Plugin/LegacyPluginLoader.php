@@ -188,6 +188,7 @@ class LegacyPluginLoader extends AbstractLoader
         $paths->setBasePath($basePath);
         $paths->setVersionedPath($basePath . $versioned);
         $paths->setFrontendPath($basePath . $versioned . \PFAD_PLUGIN_FRONTEND);
+        $paths->setBaseURL($baseURL);
         $paths->setFrontendURL($baseURL . $versioned . \PFAD_PLUGIN_FRONTEND);
         $paths->setAdminPath($basePath . $versioned . \PFAD_PLUGIN_ADMINMENU);
         $paths->setAdminURL($baseURL . $versioned . \PFAD_PLUGIN_ADMINMENU);

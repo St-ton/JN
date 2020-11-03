@@ -27,7 +27,7 @@ msgid "prefDesc4"
 msgstr ""
 
 msgid "prefURL4"
-msgstr "https://jtl-url.de/451tr"
+msgstr "https://jtl-url.de/nzk8x"
 
 msgid "prefDesc9"
 msgstr ""
@@ -51,19 +51,19 @@ msgid "prefDesc1"
 msgstr ""
 
 msgid "prefURL1"
-msgstr "https://jtl-url.de/y0dq-"
+msgstr "https://jtl-url.de/emqy1"
 
 msgid "prefDesc6"
 msgstr ""
 
 msgid "prefURL6"
-msgstr "https://jtl-url.de/8htnx"
+msgstr "https://jtl-url.de/7rvme"
 
 msgid "prefDesc7"
 msgstr ""
 
 msgid "prefURL7"
-msgstr "https://jtl-url.de/z6bih"
+msgstr "https://jtl-url.de/c0h2b"
 
 msgid "prefDesc2"
 msgstr ""

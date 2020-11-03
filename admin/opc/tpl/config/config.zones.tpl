@@ -6,7 +6,7 @@
 {if empty($src)}
     {$imgsrc = null}
 {else}
-    {$imgsrc = \Shop::getURL()|cat:'/'|cat:\STORAGE_OPC|cat:($src|basename)}
+    {$imgsrc = \Shop::getURL()|cat:'/'|cat:\STORAGE_OPC|cat:$src}
 {/if}
 
 <div {if empty($imgsrc)}style="display: none"{/if} id="banner-editor-{$propname}">

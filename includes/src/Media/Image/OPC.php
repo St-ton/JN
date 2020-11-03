@@ -52,7 +52,10 @@ class OPC extends AbstractImage
     public static function getCustomName($mixed): string
     {
         /** @var PortletInstance $mixed */
-        return \pathinfo($mixed->currentImagePath)['filename'];
+        $pathInfo = \pathinfo($mixed->currentImagePath);
+        return (!empty($pathInfo['dirname']) && $pathInfo['dirname'] !== '.'
+                ? $pathInfo['dirname'] . '/'
+                : '') . $pathInfo['filename'];
     }
 
     /**

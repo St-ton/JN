@@ -4,7 +4,10 @@
 	&:last-child { border-bottom-left-radius: $dropdown-border-radius; border-bottom-right-radius: $dropdown-border-radius; }
 }
 
-.dropdown-item { text-decoration: none; }
+.dropdown-item {
+	background-color: $dropdown-link-bg-color;
+	text-decoration: none;
+}
 
 .dropdown-toggle {
 	&::after {

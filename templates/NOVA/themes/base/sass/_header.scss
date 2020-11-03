@@ -1,15 +1,52 @@
 #header-top-bar {
 	position: relative;
-	background-color: $white;
+	background-color: $header-bg-color;
 	z-index: ($zindex-sticky + 1);
 	flex-direction: row-reverse;
+	a {
+		text-decoration: none;
+		color: $header-color;
+		&:hover:not(.dropdown-item) {
+			color: $primary;
+		}
+	}
 }
+
 .sticky-header header { position: sticky; top: 0; }
 
-header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94); position: relative; background-color: $white; z-index: $zindex-sticky;
-	a { text-decoration: none; }
+header {
+	box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94);
+	position: relative;
+	background-color: $header-bg-color;
+	z-index: $zindex-sticky;
+	color: $header-color;
+	a {
+		text-decoration: none;
+		color: $header-color;
+		&:hover {
+			color: $primary;
+		}
+	}
 
-	.navbar-toggler { color: $gray-darker; }
+	.label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) {
+		label {
+			background: $header-bg-color;
+			color: $header-color;
+		}
+	}
+
+	.form-control, .form-control:focus  {
+		background-color: $header-bg-color;
+		color: $header-color;
+		&::placeholder {
+			color: $header-color;
+		}
+	}
+	.dropdown-menu {
+		background-color: $header-bg-color;
+	}
+
+	.navbar-toggler { color: $header-color; }
 
 	.nav-right {
 		.dropdown-menu {
@@ -29,7 +66,7 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 	@include media-breakpoint-down(md) {
 		.dropup, .dropright, .dropdown, .dropleft, .col, [class*='col-'] { position: static; }
 
-		.navbar-collapse { position: fixed; top: 0; left: 0; display: block; height: 100vh !important; -webkit-overflow-scrolling: touch; max-width: rem(270px); transition: $transition-base; z-index: $zindex-fixed + 20; width: 100%; background: $white;
+		.navbar-collapse { position: fixed; top: 0; left: 0; display: block; height: 100vh !important; -webkit-overflow-scrolling: touch; max-width: rem(270px); transition: $transition-base; z-index: $zindex-fixed + 20; width: 100%; background: $header-bg-color;
 			&:not(.show) { transform: translateX(-100%); }
 		}
 
@@ -155,10 +192,17 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 }
 
 .fixed-search {
-	background-color: $white;
+	background-color: $header-bg-color;
 	@include box-shadow($popover-box-shadow);
 	padding-top: map-get($spacers, 2);
 	padding-bottom: map-get($spacers, 2);
+	.form-control {
+		background-color: $header-bg-color;
+		color: $header-color;
+		&::placeholder {
+			color: $header-color;
+		}
+	}
 }
 
 .main-search .twitter-typeahead {
@@ -169,7 +213,7 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 .form-clear {
 	align-items: center;
 	bottom: 8px;
-	color: rgba(0, 0, 0, .54);
+	color: $header-color;
 	cursor: pointer;
 	display: flex;
 	height: 24px;

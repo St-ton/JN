@@ -361,7 +361,7 @@ function filteredConfDescription(int $sectionID): string
             $desc = __('prefDesc5ProductQuestion');
             break;
         default:
-            $desc = Shop::Smarty()->getConfigVars('prefDesc' . $sectionID);
+            $desc = __('prefDesc' . $sectionID);
             break;
     }
 

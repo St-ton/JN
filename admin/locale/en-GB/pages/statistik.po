@@ -30,7 +30,7 @@ msgid "statisticEinstiegsseite"
 msgstr "Start page"
 
 msgid "statisticEinstiegsseiteURL"
-msgstr "https://jtl-url.de/og4rq"
+msgstr "https://jtl-url.de/8bs5u"
 
 msgid "statisticDesc"
 msgstr "Here you can find detailed statistics regarding your online shop. Select the period for which you want to view the statistics."

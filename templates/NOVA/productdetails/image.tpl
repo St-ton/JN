@@ -1,8 +1,8 @@
 {block name='productdetails-image'}
-    <div id="image_wrapper" class="gallery-with-action text-right mb-6" role="group">
-        {row class="h-100"}
+    <div id="image_wrapper" class="gallery-with-action" role="group">
+        {row class="gallery-with-action-main"}
         {block name='productdetails-image-button'}
-            {col cols=12 class="mb-4 product-detail-image-topbar"}
+            {col cols=12 class="product-detail-image-topbar"}
                 {button id="image_fullscreen_close" variant="link" aria=["label"=>"close"]}
                     <span aria-hidden="true"><i class="fa fa-times"></i></span>
                 {/button}
@@ -12,7 +12,7 @@
             {col cols=12}
             {if !($Artikel->nIstVater && $Artikel->kVaterArtikel == 0)}
                 {block name='productdetails-image-actions'}
-                    <div class="product-actions py-2" data-toggle="product-actions">
+                    <div class="product-actions" data-toggle="product-actions">
                         {if $Einstellungen.artikeldetails.artikeldetails_vergleichsliste_anzeigen === 'Y'}
                             {block name='productdetails-image-include-comparelist-button'}
                                 {include file='snippets/comparelist_button.tpl'}
@@ -72,9 +72,9 @@
             {$imageCount = $Artikel->Bilder|@count}
             {$imageCountDefault = 5}
             {if $imageCount > 1}
-                <div id="gallery_preview_wrapper" class="mx-auto">
+                <div id="gallery_preview_wrapper" class="product-thumbnails-wrapper">
                     <div id="gallery_preview"
-                         class="product-thumbnails slick-smooth-loading carousel carousel-thumbnails mb-5 mb-lg-0 d-none d-lg-flex mx-0 slick-lazy {if $imageCount <= $imageCountDefault}slick-count-default{/if}"
+                         class="product-thumbnails slick-smooth-loading carousel carousel-thumbnails slick-lazy {if $imageCount <= $imageCountDefault}slick-count-default{/if}"
                          data-slick-type="gallery_preview">
                         {if $imageCount > $imageCountDefault}
                             <button class="slick-prev slick-arrow slick-inital-arrow" aria-label="Previous" type="button" style="">Previous</button>
@@ -82,11 +82,11 @@
                         {block name='productdetails-image-preview-images'}
                             {foreach $Artikel->Bilder as $image}
                                 {strip}
-                                <div class="square square-image mb-0 js-gallery-images
-                                    {if $image@first} preview-first {if $imageCount <= $imageCountDefault} ml-auto{/if}
+                                <div class="square square-image js-gallery-images
+                                    {if $image@first} preview-first {if $imageCount <= $imageCountDefault} ml-auto-util{/if}
                                     {elseif $image@index >= $imageCountDefault} d-none{/if}
                                     {if $image@last && $imageCount <= $imageCountDefault} mr-auto{/if}">
-                                    <div class="inner p-1 p-xl-2">
+                                    <div class="inner">
                                         {image alt=$image->cAltAttribut|escape:'html'
                                             class="product-image"
                                             fluid=true
@@ -131,7 +131,6 @@
                                 <div class="square square-image">
                                     <div class="inner">
                                         {image fluid=true webp=true lazy=true
-                                        class=""
                                         src=$Variationswert->getImage(\JTL\Media\Image::SIZE_XS)
                                         srcset="{$Variationswert->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_variationen_mini_breite}w,
                                         {$Variationswert->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_variationen_klein_breite}w,

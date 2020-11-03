@@ -5,7 +5,7 @@
             <div id="sidebox{$oBox->getID()}-{$characteristic->getID()}" class="box box-filter-characteristics d-none d-lg-block">
                 {button
                     variant="link"
-                    class="text-decoration-none px-0 text-left dropdown-toggle"
+                    class="btn-filter-box dropdown-toggle"
                     role="button"
                     block=true
                     data=["toggle"=> "collapse", "target"=>"#cllps-box{$oBox->getID()}-{$characteristic->getID()}"]
@@ -36,7 +36,7 @@
                     {block name='boxes-box-filter-characteristics-characteristics'}
                         {if ($characteristic->getData('cTyp') === 'SELECTBOX') && $characteristic->getOptions()|@count > 0}
                             {block name='boxes-box-filter-characteristics-select'}
-                                {dropdown variant="outline-secondary" text="{lang key='selectFilter' section='global'} " toggle-class="btn-block text-left"}
+                                {dropdown variant="outline-secondary" text="{lang key='selectFilter' section='global'} " toggle-class="btn-block text-left-util"}
                                 {block name='boxes-box-filter-characteristics-include-characteristics-dropdown'}
                                     {include file='snippets/filter/characteristic.tpl' Merkmal=$characteristic}
                                 {/block}
@@ -52,7 +52,7 @@
                     {/block}
                 {/collapse}
                 {block name='boxes-box-filter-characteristics-hr'}
-                    <hr class="my-2">
+                    <hr class="box-filter-hr">
                 {/block}
             </div>
         {/foreach}

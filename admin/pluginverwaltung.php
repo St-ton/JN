@@ -25,18 +25,24 @@ use JTL\Plugin\State;
 use JTL\Shop;
 use JTL\XMLParser;
 use JTLShop\SemVer\Version;
+use League\Flysystem\Adapter\Local;
+use League\Flysystem\Filesystem;
+use League\Flysystem\MountManager;
 use function Functional\first;
 use function Functional\group;
 use function Functional\select;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
-$oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
+/** @global \JTL\Backend\AdminAccount $oAccount */
+$oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
+
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'pluginverwaltung_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 
 $errorCount      = 0;
+$plugin          = null;
 $pluginUploaded  = false;
 $reload          = false;
 $notice          = '';
@@ -274,6 +280,27 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
             }
         }
         $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LICENSES, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
+    } elseif (Request::postInt('delete') === 1) {
+        $dirs    = Request::postVar('cVerzeichnis', []);
+        $res     = count($dirs) > 0;
+        $manager = new MountManager(['root' => new Filesystem(new Local(\PFAD_ROOT))]);
+        $manager->mountFilesystem('plgn', Shop::Container()->get(\JTL\Filesystem\Filesystem::class));
+        foreach ($dirs as $dir) {
+            $dir  = basename($dir);
+            $test = $_POST['ext'][$dir] ?? -1;
+            if ($test === -1) {
+                continue;
+            }
+            $dirName = (int)$test === 1
+                ? (\PLUGIN_DIR . $dir)
+                : (\PFAD_PLUGIN . $dir);
+            $res     = @$manager->deleteDir('plgn://' . $dirName) && $res;
+        }
+        if ($res === true) {
+            $_SESSION['plugin_msg'] = __('successPluginDelete');
+        } else {
+            $_SESSION['plugin_msg'] = __('errorPluginDeleteAtLeastOne');
+        }
     } else {
         $errorMsg = __('errorAtLeastOnePlugin');
     }
@@ -368,15 +395,15 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
 if ($step === 'pluginverwaltung_uebersicht') {
     foreach ($pluginsAvailable as $available) {
         /** @var ListingItem $available */
-        $szFolder = $available->getPath() . '/';
-        $files    = [
+        $baseDir = $available->getPath() . '/';
+        $files   = [
             'license.md',
             'License.md',
             'LICENSE.md'
         ];
         foreach ($files as $file) {
-            if (file_exists($szFolder . $file)) {
-                $vLicenseFiles[$available->getDir()] = $szFolder . $file;
+            if (file_exists($baseDir . $file)) {
+                $vLicenseFiles[$available->getDir()] = $baseDir . $file;
                 break;
             }
         }

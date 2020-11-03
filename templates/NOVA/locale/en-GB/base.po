@@ -174,3 +174,6 @@ msgstr "Only with desktop devices"
 
 msgid "Keine"
 msgstr "No"
+
+msgid "Header über gesamte Bildschirmbreite darstellen"
+msgstr "Display header over full width"

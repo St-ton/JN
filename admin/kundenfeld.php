@@ -9,10 +9,11 @@ use JTL\PlausiKundenfeld;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('ORDER_CUSTOMERFIELDS_VIEW', true, true);
 
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 $cf          = CustomerFields::getInstance((int)$_SESSION['kSprache']);
 $step        = 'uebersicht';
 $alertHelper = Shop::Container()->getAlertService();

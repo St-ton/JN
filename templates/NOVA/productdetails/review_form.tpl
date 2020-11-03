@@ -7,7 +7,7 @@
     {/block}
 
     {block name='productdetails-review-form-content'}
-        {container}
+        {container class="review-form"}
             {block name='productdetails-review-form-heading'}
                 <h1>{lang key='productRating' section='product rating'}</h1>
             {/block}
@@ -19,11 +19,11 @@
                     {/block}
                     {if $ratingAllowed}
                         {block name='productdetails-review-form-form-main'}
-                            {block name='productdetails-review-form'}
+                            {block name='productdetails-review-form-form-info'}
                                 <div class="alert alert-info">{lang key='shareYourRatingGuidelines' section='product rating'}</div>
                             {/block}
                             {block name='productdetails-review-form-image-name'}
-                                <div class="vmiddle">
+                                <div class="review-form-image">
                                     {if !empty($Artikel->Bilder[0]->cPfadMini)}
                                         {image webp=true lazy=true
                                             src=$Artikel->Bilder[0]->cURLMini
@@ -32,10 +32,9 @@
                                                     {$Artikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
                                             sizes="200px"
                                             alt=$Artikel->cName
-                                            class="vmiddle"
                                         }
                                     {/if}
-                                    <span class="vmiddle">{$Artikel->cName}</span>
+                                    <span>{$Artikel->cName}</span>
                                 </div>
                                 <hr>
                             {/block}
@@ -66,8 +65,8 @@
                             {/block}
                         {/block}
                         {block name='productdetails-review-form-form-submit'}
-                            {row}
-                                {col cols=12 md=4 lg=3 class='ml-auto'}
+                            {row class="review-form-buttons"}
+                                {col cols=12 md=4 lg=3 class='ml-auto-util'}
                                     {input type="hidden" name="bfh" value="1"}
                                     {input type="hidden" name="a" value=$Artikel->kArtikel}
                                     {button type="submit" value="1" variant="primary" block=true}

@@ -50,8 +50,10 @@
             <section>
                 {container fluid=true}
                     {block name='page-index-subheading-news'}
-                        <div class="hr-sect h2 mb-5">
-                            {link href="{get_static_route id='news.php'}"}{lang key='news' section='news'}{/link}
+                        <div class="blog-header">
+                            <div class="hr-sect h2">
+                                {link href="{get_static_route id='news.php'}"}{lang key='news' section='news'}{/link}
+                            </div>
                         </div>
                     {/block}
                     {block name='page-index-news'}

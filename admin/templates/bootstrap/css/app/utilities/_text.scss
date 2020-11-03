@@ -5,3 +5,9 @@
 .font-size-base { font-size: $font-size-base !important; }
 
 .font-weight-semibold { font-weight: $font-weight-semibold !important; }
+
+.underline-links {
+  a {
+    text-decoration: underline;
+  }
+}

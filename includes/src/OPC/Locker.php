@@ -26,7 +26,7 @@ class Locker
      * Try to lock draft to only be manipulated by this one user
      *
      * @param string $userName
-     * @param Page $page
+     * @param Page   $page
      * @return bool
      * @throws \InvalidArgumentException
      * @throws \Exception

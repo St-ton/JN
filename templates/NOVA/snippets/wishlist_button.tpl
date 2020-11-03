@@ -17,12 +17,12 @@
                 {button name="Wunschliste"
                     type="submit"
                     variant="link"
-                    class="{$classes|default:''} mr-3 pr-3 p-0 d-block d-lg-inline-block  border-lg-right wishlist action-tip-animation-b {if $isOnWishList}on-list{/if}"
+                    class="{$classes|default:''} wishlist-button wishlist action-tip-animation-b {if $isOnWishList}on-list{/if}"
                     aria=["label" => {lang key='addToWishlist' section='productDetails'}]
                     data=["wl-pos" => $wishlistPos, "product-id-wl" => "{if isset($Artikel->kVariKindArtikel)}{$Artikel->kVariKindArtikel}{else}{$Artikel->kArtikel}{/if}"]}
-                    <span class="d-flex align-items-baseline">
-                        <span class="{if $isOnWishList}fas{else}far{/if} fa-heart mr-2 wishlist-icon"></span>
-                        <span class="text-decoration-underline">{lang key='onWishlist'}</span>
+                    <span class="wishlist-button-inner">
+                        <span class="{if $isOnWishList}fas{else}far{/if} fa-heart wishlist-icon"></span>
+                        <span class="wishlist-button-text">{lang key='onWishlist'}</span>
                     </span>
                 {/button}
             {/block}

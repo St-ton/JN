@@ -13,10 +13,10 @@
             {link nofollow=true
                 href=$searchFilter->getURL()
                 class="filter-item {if $searchFilter->isActive()}active{/if}"}
-                    <div class="align-items-center d-flex">
-                        <i class="far fa-{if $searchFilter->isActive()}check-{/if}square text-muted mr-2"></i>
+                    <div class="box-link-wrapper">
+                        <i class="far fa-{if $searchFilter->isActive()}check-{/if}square snippets-filter-item-icon-right"></i>
                         <span class="word-break">{$searchFilter->getName()}</span>
-                        {badge variant="outline-secondary" class="ml-auto"}{$searchFilter->getCount()}{/badge}
+                        {badge variant="outline-secondary"}{$searchFilter->getCount()}{/badge}
                     </div>
             {/link}
         {/block}
@@ -25,10 +25,9 @@
         {block name='snippets-filter-search-more-bottom'}
                 </ul>
             </div>
-            <div class="w-100">
+            <div class="snippets-filter-show-all">
                 {button variant="link"
                     role="button"
-                    class="p-0 ml-auto mt-1"
                     data=["toggle"=> "collapse", "target"=>"#box-collps-filter{$NaviFilter->searchFilterCompat->getNiceName()}"]}
                     {lang key='showAll'}
                 {/button}

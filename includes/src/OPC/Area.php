@@ -65,7 +65,7 @@ class Area implements \JsonSerializable
         }
 
         Shop::fire('shop.OPC.Area.getPreviewHtml', [
-            'area' => $this,
+            'area'   => $this,
             'result' => &$result
         ]);
 
@@ -85,7 +85,7 @@ class Area implements \JsonSerializable
         }
 
         Shop::fire('shop.OPC.Area.getFinalHtml', [
-            'area' => $this,
+            'area'   => $this,
             'result' => &$result
         ]);
 

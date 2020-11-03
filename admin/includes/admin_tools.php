@@ -1,5 +1,6 @@
 <?php
 
+use JTL\Alert\Alert;
 use JTL\Backend\AdminFavorite;
 use JTL\Backend\Notification;
 use JTL\Campaign;
@@ -217,10 +218,12 @@ function bearbeiteListBox($listBoxes, $valueName, int $configSectionID)
  */
 function saveAdminSectionSettings(int $configSectionID, array &$post, $tags = [CACHING_GROUP_OPTION])
 {
+    Shop::Container()->getGetText()->loadAdminLocale('configs/configs');
     if (!Form::validateToken()) {
         return __('errorCSRF');
     }
     $db       = Shop::Container()->getDB();
+    $invalid  = 0;
     $confData = $db->selectAll(
         'teinstellungenconf',
         ['kEinstellungenSektion', 'cConf'],
@@ -228,14 +231,12 @@ function saveAdminSectionSettings(int $configSectionID, array &$post, $tags = [C
         '*',
         'nSort'
     );
-    if (count($confData) === 0) {
-        return __('errorConfigSave');
-    }
     foreach ($confData as $config) {
         $val                        = new stdClass();
         $val->cWert                 = $post[$config->cWertName] ?? null;
         $val->cName                 = $config->cWertName;
         $val->kEinstellungenSektion = $configSectionID;
+        $valid                      = true;
         switch ($config->cInputTyp) {
             case 'kommazahl':
                 $val->cWert = (float)str_replace(',', '.', $val->cWert);
@@ -243,6 +244,7 @@ function saveAdminSectionSettings(int $configSectionID, array &$post, $tags = [C
             case 'zahl':
             case 'number':
                 $val->cWert = (int)$val->cWert;
+                $valid      = validateSetting($val);
                 break;
             case 'text':
                 $val->cWert = mb_substr($val->cWert, 0, 255);
@@ -253,7 +255,7 @@ function saveAdminSectionSettings(int $configSectionID, array &$post, $tags = [C
                 break;
         }
 
-        if ($config->cInputTyp !== 'listbox' && $config->cInputTyp !== 'selectkdngrp') {
+        if ($valid && $config->cInputTyp !== 'listbox' && $config->cInputTyp !== 'selectkdngrp') {
             $db->delete(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
@@ -261,10 +263,56 @@ function saveAdminSectionSettings(int $configSectionID, array &$post, $tags = [C
             );
             $db->insert('teinstellungen', $val);
         }
+        if (!$valid) {
+            $invalid++;
+        }
     }
     Shop::Container()->getCache()->flushTags($tags);
 
+    if ($invalid > 0 || count($confData) === 0) {
+        return __('errorConfigSave');
+    }
+
     return __('successConfigSave');
+}
+
+/**
+ * @param $setting
+ * @return bool
+ */
+function validateSetting($setting): bool
+{
+    $valid = true;
+    switch ($setting->cName) {
+        case 'bilder_jpg_quali':
+            $valid = validateNumberRange(0, 100, $setting);
+            break;
+        default:
+            break;
+    }
+
+    return $valid;
+}
+
+/**
+ * @param int $min
+ * @param int $max
+ * @param $setting
+ * @return bool
+ */
+function validateNumberRange(int $min, int $max, $setting): bool
+{
+    $valid = $min <= $setting->cWert && $setting->cWert <= $max;
+
+    if (!$valid) {
+        Shop::Container()->getAlertService()->addAlert(
+            Alert::TYPE_DANGER,
+            sprintf(__('errrorNumberRange'), __($setting->cName . '_name'), $min, $max),
+            'errrorNumberRange'
+        );
+    }
+
+    return $valid;
 }
 
 /**

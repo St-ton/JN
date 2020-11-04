@@ -66,12 +66,14 @@
                                                             </span>
                                                         </button>
                                                     {*{/if}*}
-                                                    <button class="btn btn-link px-2" type="submit" name="delete" value="{$job->getCronID()}" title="{__('delete')}" data-toggle="tooltip">
-                                                        <span class="icon-hover">
-                                                            <span class="fal fa-trash-alt"></span>
-                                                            <span class="fas fa-trash-alt"></span>
-                                                        </span>
-                                                    </button>
+                                                    {if $job->getType() !== \JTL\Cron\Type::LICENSE_CHECK}
+                                                        <button class="btn btn-link px-2" type="submit" name="delete" value="{$job->getCronID()}" title="{__('delete')}" data-toggle="tooltip">
+                                                            <span class="icon-hover">
+                                                                <span class="fal fa-trash-alt"></span>
+                                                                <span class="fas fa-trash-alt"></span>
+                                                            </span>
+                                                        </button>
+                                                    {/if}
                                                 </div>
                                             </td>
                                         </tr>

@@ -3,16 +3,16 @@
         {block name='productdetails-reviews-content'}
         {row id='reviews-overview'}
             {block name='productdetails-reviews-overview'}
-                {col cols=12 md=4 order=1 order-md=0}
-                    {card}
-                        {block name='productdetails-reviews-heading'}
-                            <div class="card-title">
-                                <div class="subheadline">
-                                    {lang key='averageProductRating' section='product rating'}
+                {if $Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0}
+                    {col cols=12 md=4 order=1 order-md=0}
+                        {card}
+                            {block name='productdetails-reviews-heading'}
+                                <div class="card-title">
+                                    <div class="subheadline">
+                                        {lang key='averageProductRating' section='product rating'}
+                                    </div>
                                 </div>
-                            </div>
-                        {/block}
-                        {if $Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0}
+                            {/block}
                             {block name='productdetails-reviews-rating-dropdown'}
                             <div class="dropdown">
                                 <button class="btn btn-link dropdown-toggle" type="button" id="ratingDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -65,9 +65,9 @@
                                 </div>
                             </div>
                             {/block}
-                        {/if}
-                    {/card}
-                {/col}
+                        {/card}
+                    {/col}
+                {/if}
             {/block}
             {block name='productdetails-reviews-votes'}
                 {col cols=12 md=8  order=0 order-md=1}

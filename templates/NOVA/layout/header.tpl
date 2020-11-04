@@ -13,7 +13,8 @@
             {/if}
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <meta http-equiv="X-UA-Compatible" content="IE=edge">
-            <meta name="robots" content="{if $robotsContent}{$robotsContent}{elseif $bNoIndex === true  || (isset($Link) && $Link->getNoFollow() === true)}noindex{else}index, follow{/if}">
+            {$noindex = $bNoIndex === true  || (isset($Link) && $Link->getNoFollow() === true)}
+            <meta name="robots" content="{if $robotsContent}{$robotsContent}{elseif $noindex}noindex{else}index, follow{/if}">
 
             <meta itemprop="url" content="{$cCanonicalURL}"/>
             <meta property="og:type" content="website" />
@@ -36,7 +37,7 @@
 
         <title itemprop="name">{block name='layout-header-head-title'}{$meta_title}{/block}</title>
 
-        {if !empty($cCanonicalURL)}
+        {if !empty($cCanonicalURL) && !$noindex}
             <link rel="canonical" href="{$cCanonicalURL}">
         {/if}
 

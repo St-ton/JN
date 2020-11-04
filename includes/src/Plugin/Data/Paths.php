@@ -41,6 +41,11 @@ class Paths
     /**
      * @var string
      */
+    private $baseURL;
+
+    /**
+     * @var string
+     */
     private $adminPath;
 
     /**
@@ -151,6 +156,22 @@ class Paths
     public function setFrontendPath(string $frontendPath): void
     {
         $this->frontendPath = $frontendPath;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBaseURL(): string
+    {
+        return $this->baseURL;
+    }
+
+    /**
+     * @param string $baseURL
+     */
+    public function setBaseURL(string $baseURL): void
+    {
+        $this->baseURL = $baseURL;
     }
 
     /**

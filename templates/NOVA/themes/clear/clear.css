@@ -23894,6 +23894,11 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   list-style: none;
 }
 
+.subcategories-image {
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
 .item-delivery-status {
   margin-bottom: 1rem;
 }

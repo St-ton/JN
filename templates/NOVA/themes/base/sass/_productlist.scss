@@ -173,6 +173,11 @@
 	}
 }
 
+.subcategories-image {
+	justify-content: center;
+	margin-bottom: map_get($spacers, 3);
+}
+
 .item-delivery-status {
 	margin-bottom: map-get($spacers, 3);
 }

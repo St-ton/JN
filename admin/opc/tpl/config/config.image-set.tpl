@@ -24,7 +24,7 @@
             {if empty($slideData.url)}
                 {$imgUrl = 'opc/gfx/upload-stub.png'}
             {else}
-                {$imgUrl = \Shop::getURL()|cat:'/'|cat:\STORAGE_OPC|cat:$slideData.url}
+                {$imgUrl = \JTL\Shop::getURL()|cat:'/'|cat:$smarty.const.STORAGE_OPC|cat:$slideData.url}
             {/if}
             <div style="background-image: url('{$imgUrl}')" class="slide-image-btn"
                  onclick="opc.gui.openElFinder(elfinderCallback_{$propname}.bind(this), 'Bilder')">

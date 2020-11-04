@@ -7,7 +7,7 @@
     {if empty($propval)}
         {$imgsrc = 'opc/gfx/upload-stub.png'}
     {else}
-        {$imgsrc = \Shop::getURL()|cat:'/'|cat:\STORAGE_OPC|cat:$propval}
+        {$imgsrc = \JTL\Shop::getURL()|cat:'/'|cat:$smarty.const.STORAGE_OPC|cat:$propval}
     {/if}
     <button type="button" class="image-btn" onclick="opc.selectImageProp('{$propname}')">
         <img src="{$imgsrc|escape:'html'}"

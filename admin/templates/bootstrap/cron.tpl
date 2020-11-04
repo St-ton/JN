@@ -73,6 +73,10 @@
                                                                 <span class="fas fa-trash-alt"></span>
                                                             </span>
                                                         </button>
+                                                    {else}
+                                                        <span class="btn btn-link px-2">
+                                                            <span class="icon-hover"></span>
+                                                        </span>
                                                     {/if}
                                                 </div>
                                             </td>

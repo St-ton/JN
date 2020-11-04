@@ -220,6 +220,7 @@
                 "issues": "https://github.com/fzaninotto/Faker/issues",
                 "source": "https://github.com/fzaninotto/Faker/tree/v1.9.1"
             },
+            "abandoned": true,
             "time": "2019-12-12T13:22:17+00:00"
         },
         {
@@ -1182,12 +1183,12 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/jtl-software/jtl-shop/tools/scc.git",
-                "reference": "95385f5364c842b26fa600f4322d3a34fe3471b8"
+                "reference": "e82cd82e57f3f4670e96ee114f3e97335e042ec3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/jtl-software%2Fjtl-shop%2Ftools%2Fscc/repository/archive.zip?sha=95385f5364c842b26fa600f4322d3a34fe3471b8",
-                "reference": "95385f5364c842b26fa600f4322d3a34fe3471b8",
+                "url": "https://gitlab.com/api/v4/projects/jtl-software%2Fjtl-shop%2Ftools%2Fscc/repository/archive.zip?sha=e82cd82e57f3f4670e96ee114f3e97335e042ec3",
+                "reference": "e82cd82e57f3f4670e96ee114f3e97335e042ec3",
                 "shasum": ""
             },
             "require": {
@@ -1215,7 +1216,7 @@
             "keywords": [
                 "jtl-shop"
             ],
-            "time": "2020-09-28T11:33:59+00:00"
+            "time": "2020-11-03T13:12:39+00:00"
         },
         {
             "name": "jtlshop/sccbs3",

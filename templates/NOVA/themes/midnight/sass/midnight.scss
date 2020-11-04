@@ -50,3 +50,8 @@
     color: $header-color;
   }
 }
+header {
+  @include media-breakpoint-up(lg) {
+    border-bottom: 4px solid $primary;
+  }
+}

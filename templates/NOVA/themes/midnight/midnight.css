@@ -26147,4 +26147,10 @@ header #burger-menu {
   color: #ffffff;
 }
 
+@media (min-width: 992px) {
+  header {
+    border-bottom: 4px solid #1973D3;
+  }
+}
+
 /*# sourceMappingURL=midnight.css.map */

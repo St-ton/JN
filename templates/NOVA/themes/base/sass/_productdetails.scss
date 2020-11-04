@@ -178,7 +178,7 @@
 		}
 	}
 
-	#gallery_preview {
+	.product-thumbnails {
 		.square-image {
 			margin-bottom: 0;
 		}
@@ -197,6 +197,12 @@
 				@include media-breakpoint-down(lg) {
 					width: calc(72%/5);
 					min-width: calc(72%/5);
+				}
+				&.first-ml {
+					margin-left: auto;
+				}
+				&.last-mr {
+					margin-right: auto;
 				}
 			}
 			&.slick-count-default {

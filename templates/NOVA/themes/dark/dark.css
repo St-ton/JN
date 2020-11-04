@@ -24147,10 +24147,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 #image_wrapper #gallery .slick-slide {
   padding: 0;
 }
-#image_wrapper #gallery_preview .square-image {
+#image_wrapper .product-thumbnails .square-image {
   margin-bottom: 0;
 }
-#image_wrapper #gallery_preview:not(.slick-initialized) div.js-gallery-images {
+#image_wrapper .product-thumbnails:not(.slick-initialized) div.js-gallery-images {
   width: calc(79%/5);
   min-width: calc(79%/5);
   height: 100%;
@@ -24159,26 +24159,32 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   border-radius: 0.125rem;
   margin: 0 0.5rem;
 }
-#image_wrapper #gallery_preview:not(.slick-initialized) div.js-gallery-images:not(.preview-first) {
+#image_wrapper .product-thumbnails:not(.slick-initialized) div.js-gallery-images:not(.preview-first) {
   opacity: 0.2;
 }
 @media (max-width: 1299.98px) {
-  #image_wrapper #gallery_preview:not(.slick-initialized) div.js-gallery-images {
+  #image_wrapper .product-thumbnails:not(.slick-initialized) div.js-gallery-images {
     width: calc(72%/5);
     min-width: calc(72%/5);
   }
 }
-#image_wrapper #gallery_preview:not(.slick-initialized).slick-count-default div.js-gallery-images {
+#image_wrapper .product-thumbnails:not(.slick-initialized) div.js-gallery-images.first-ml {
+  margin-left: auto;
+}
+#image_wrapper .product-thumbnails:not(.slick-initialized) div.js-gallery-images.last-mr {
+  margin-right: auto;
+}
+#image_wrapper .product-thumbnails:not(.slick-initialized).slick-count-default div.js-gallery-images {
   width: calc(((100%)/5) - 1rem);
   min-width: calc(((100%)/5) - 1rem);
 }
-#image_wrapper #gallery_preview:not(.slick-initialized) .slick-prev {
+#image_wrapper .product-thumbnails:not(.slick-initialized) .slick-prev {
   margin-right: -0.5rem;
   animation: 0.5s fadeIn;
   animation-fill-mode: forwards;
   visibility: hidden;
 }
-#image_wrapper #gallery_preview:not(.slick-initialized) .slick-next {
+#image_wrapper .product-thumbnails:not(.slick-initialized) .slick-next {
   margin-left: -0.5rem;
   animation: 0.5s fadeIn;
   animation-fill-mode: forwards;

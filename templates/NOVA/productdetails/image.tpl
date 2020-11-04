@@ -83,9 +83,9 @@
                             {foreach $Artikel->Bilder as $image}
                                 {strip}
                                 <div class="square square-image js-gallery-images
-                                    {if $image@first} preview-first {if $imageCount <= $imageCountDefault} ml-auto-util{/if}
+                                    {if $image@first} preview-first {if $imageCount <= $imageCountDefault} first-ml{/if}
                                     {elseif $image@index >= $imageCountDefault} d-none{/if}
-                                    {if $image@last && $imageCount <= $imageCountDefault} mr-auto{/if}">
+                                    {if $image@last && $imageCount <= $imageCountDefault} last-mr{/if}">
                                     <div class="inner">
                                         {image alt=$image->cAltAttribut|escape:'html'
                                             class="product-image"

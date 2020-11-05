@@ -34,8 +34,7 @@
                                             item=$pushedArtikel
                                             square=false
                                             class='image'
-                                            srcSize='sm'
-                                            alt="{if isset($pushedArtikel->Bilder[0]->cAltAttribut)}{$pushedArtikel->Bilder[0]->cAltAttribut|strip_tags|truncate:60|escape:'html'}{else}{$pushedArtikel->cName}{/if}"}
+                                            srcSize='sm'}
                                     {/block}
                                 {/col}
                                 {col}

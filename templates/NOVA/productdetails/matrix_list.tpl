@@ -7,7 +7,7 @@
                     {row class="matrix-list"}
                         {block name='productdetails-matrix-list-image'}
                             {col cols=6 md=2}
-                                {include file='snippets/image.tpl' item=$child srcSize='xs' alt=$child->Bilder[0]->cAltAttribut}
+                                {include file='snippets/image.tpl' item=$child srcSize='xs'}
                             {/col}
                         {/block}
                         {block name='productdetails-matrix-list-coming-soon'}

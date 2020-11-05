@@ -19,7 +19,8 @@
                             item=$characteristic
                             square=false
                             class='img-xs'
-                            srcSize='xs'}
+                            srcSize='xs'
+                            sizes='24px'}
                     {/if}
                     {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'B'}
                         <span class="text-truncate">

@@ -637,9 +637,10 @@ class ProductFilter
 
     /**
      * @param array $params
+     * @param bool  $validate
      * @return $this
      */
-    public function initStates(array $params): self
+    public function initStates(array $params, bool $validate = true): self
     {
         $params = \array_merge($this->getParamsPrototype(), $params);
         if ($params['kKategorie'] > 0) {
@@ -809,7 +810,7 @@ class ProductFilter
         ]);
         $this->params = $params;
 
-        return $this->validate();
+        return $validate === true ? $this->validate() : $this;
     }
 
     /**

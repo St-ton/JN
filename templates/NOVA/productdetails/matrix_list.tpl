@@ -7,18 +7,7 @@
                     {row class="matrix-list"}
                         {block name='productdetails-matrix-list-image'}
                             {col cols=6 md=2}
-                                <div class="square square-image">
-                                    <div class="inner">
-                                        {image fluid=true lazy=true webp=true
-                                        src=$child->Bilder[0]->cURLMini
-                                        srcset="{$child->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                        {$child->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                        {$child->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                        alt=$child->Bilder[0]->cAltAttribut
-                                        sizes="auto"
-                                        }
-                                    </div>
-                                </div>
+                                {include file='snippets/image.tpl' item=$child srcSize='xs'}
                             {/col}
                         {/block}
                         {block name='productdetails-matrix-list-coming-soon'}

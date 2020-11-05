@@ -24,16 +24,7 @@
                             {/block}
                             {block name='productdetails-review-form-image-name'}
                                 <div class="review-form-image">
-                                    {if !empty($Artikel->Bilder[0]->cPfadMini)}
-                                        {image webp=true lazy=true
-                                            src=$Artikel->Bilder[0]->cURLMini
-                                            srcset="{$Artikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                    {$Artikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                    {$Artikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                            sizes="200px"
-                                            alt=$Artikel->cName
-                                        }
-                                    {/if}
+                                    {include file='snippets/image.tpl' item=$Artikel square=false sizes='200px'}
                                     <span>{$Artikel->cName}</span>
                                 </div>
                                 <hr>

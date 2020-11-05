@@ -24334,6 +24334,9 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 .cfg-group .group-description {
   margin-bottom: 1rem;
 }
+.cfg-group .group-description img {
+  margin-bottom: 1rem;
+}
 .cfg-group .config-item {
   cursor: pointer;
   padding: 0.75rem;

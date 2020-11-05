@@ -89,7 +89,7 @@
                             {row class="newsletter-footer"}
                                 {col cols=12 lg=6}
                                     {block name='layout-footer-newsletter-heading'}
-                                        <div class="h2">
+                                        <div class="h2 newsletter-footer-heading">
                                             {lang key='newsletter' section='newsletter'} {lang key='newsletterSendSubscribe' section='newsletter'}
                                         </div>
                                     {/block}

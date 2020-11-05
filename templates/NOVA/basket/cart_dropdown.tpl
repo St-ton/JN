@@ -133,7 +133,7 @@
                     {if !empty($WarenkorbVersandkostenfreiHinweis)}
                         {block name='basket-cart-dropdown-shipping-free-hint'}
                             <hr>
-                            <ul class="cart-dropdown-shipping-notice list-icons text-muted-util font-size-sm">
+                            <ul class="cart-dropdown-shipping-notice list-icons font-size-sm">
                                 <li>
                                     <a class="popup"
                                        href="{if !empty($oSpezialseiten_arr) && isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}{else}#{/if}"

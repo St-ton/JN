@@ -11,7 +11,7 @@
             {container}
                 <h1 class="h2">{lang key='compare' section='global'}</h1>
                 {if !$isAjax}
-                    <hr class="mt-0 mb-3">
+                    <hr class="hr-no-top>
                 {/if}
             {/container}
         {/block}

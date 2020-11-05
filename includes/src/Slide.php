@@ -188,8 +188,6 @@ class Slide
             $path = \parse_url(\Shop::getURL() . '/', \PHP_URL_PATH);
             if (Text::startsWith($this->image, $path)) {
                 $this->image = \ltrim(\substr($this->image, \mb_strlen($path)), '/');
-            } else {
-                $this->image = \STORAGE_OPC . \basename($this->image);
             }
         }
 

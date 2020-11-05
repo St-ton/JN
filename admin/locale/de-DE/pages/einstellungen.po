@@ -18,55 +18,55 @@ msgid "settingsSaved"
 msgstr "Einstellungen wurden erfolgreich gespeichert."
 
 msgid "prefDesc5"
-msgstr ""
+msgstr " "
 
 msgid "prefURL5"
 msgstr "https://jtl-url.de/c1wy5"
 
 msgid "prefDesc4"
-msgstr ""
+msgstr " "
 
 msgid "prefURL4"
-msgstr "https://jtl-url.de/hrlop"
+msgstr "https://jtl-url.de/hvr-b"
 
 msgid "prefDesc9"
-msgstr ""
+msgstr " "
 
 msgid "prefURL9"
 msgstr "https://jtl-url.de/kgce4"
 
 msgid "prefDesc8"
-msgstr ""
+msgstr " "
 
 msgid "prefURL8"
 msgstr "https://jtl-url.de/d109m"
 
 msgid "prefDesc3"
-msgstr ""
+msgstr " "
 
 msgid "prefURL3"
 msgstr "https://jtl-url.de/jnw83"
 
 msgid "prefDesc1"
-msgstr ""
+msgstr " "
 
 msgid "prefURL1"
-msgstr "https://jtl-url.de/l30th"
+msgstr "https://jtl-url.de/04p3t"
 
 msgid "prefDesc6"
-msgstr ""
+msgstr " "
 
 msgid "prefURL6"
-msgstr "https://jtl-url.de/fa7yt"
+msgstr "https://jtl-url.de/vsn01"
 
 msgid "prefDesc7"
-msgstr ""
+msgstr " "
 
 msgid "prefURL7"
 msgstr "https://jtl-url.de/kxqgt"
 
 msgid "prefDesc2"
-msgstr ""
+msgstr " "
 
 msgid "prefURL2"
 msgstr "https://jtl-url.de/sdka5"

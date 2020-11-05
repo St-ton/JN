@@ -346,6 +346,9 @@
 	}
 	.group-description {
 		margin-bottom: map_get($spacers, 3);
+		img {
+			margin-bottom: map_get($spacers, 3);
+		}
 	}
 	.config-item {
         cursor: pointer;

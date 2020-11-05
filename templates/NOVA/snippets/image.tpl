@@ -1,11 +1,23 @@
 {block name='snippets-image'}
     {block name='snippets-image-variables'}
-        {$square = $square|default:true}
-        {$fluid  = $fluid|default:true}
-        {$lazy   = $lazy|default:true}
-        {$webp   = $webp|default:true}
-        {$sizes  = $sizes|default:'auto'}
-        {$class  = $class|default:''}
+        {$square  = $square|default:true}
+        {$fluid   = $fluid|default:true}
+        {$lazy    = $lazy|default:true}
+        {$webp    = $webp|default:true}
+        {$sizes   = $sizes|default:'auto'}
+        {$class   = $class|default:''}
+        {$srcSize = $srcSize|default:'md'}
+        {$alt     = ''}
+        {if $srcSize === 'xs'}
+            {$srcSize = \JTL\Media\Image::SIZE_XS}
+        {elseif $srcSize === 'sm'}
+            {$srcSize = \JTL\Media\Image::SIZE_SM}
+        {elseif $srcSize === 'md'}
+            {$srcSize = \JTL\Media\Image::SIZE_MD}
+        {else}
+            {$srcSize = \JTL\Media\Image::SIZE_LG}
+        {/if}
+
 
         {$imageType = $item->getImageType()}
 
@@ -39,11 +51,18 @@
             {$klein  = $Einstellungen.bilder.bilder_newskategorie_klein_breite}
             {$normal = $Einstellungen.bilder.bilder_newskategorie_normal_breite}
             {$gross  = $Einstellungen.bilder.bilder_newskategorie_gross_breite}
+        {elseif $imageType === \JTL\Media\Image::TYPE_CONFIGGROUP}
+            {$mini   = $Einstellungen.bilder.bilder_konfiggruppe_mini_breite}
+            {$klein  = $Einstellungen.bilder.bilder_konfiggruppe_klein_breite}
+            {$normal = $Einstellungen.bilder.bilder_konfiggruppe_normal_breite}
+            {$gross  = $Einstellungen.bilder.bilder_konfiggruppe_gross_breite}
+            {$alt    = $configGroup->getSprache()->getName()}
         {else}
             {$mini   = $Einstellungen.bilder.bilder_kategorien_mini_breite}
             {$klein  = $Einstellungen.bilder.bilder_kategorien_klein_breite}
             {$normal = $Einstellungen.bilder.bilder_kategorien_breite}
             {$gross  = $Einstellungen.bilder.bilder_kategorien_gross_breite}
+            {$alt    = $item->cBeschreibung|strip_tags|truncate:50|escape:'html'}
         {/if}
     {/block}
 
@@ -55,15 +74,14 @@
             {if $item->getImage(\JTL\Media\Image::SIZE_XS)|default:null !== null}
                 {block name='snippets-image-main-image'}
                     {image fluid=$fluid lazy=$lazy webp=$webp
-                        src=$item->getImage(\JTL\Media\Image::SIZE_XS)
+                        src=$item->getImage($srcSize)
                         srcset="{$item->getImage(\JTL\Media\Image::SIZE_XS)} {$mini}w,
                                 {$item->getImage(\JTL\Media\Image::SIZE_SM)} {$klein}w,
                                 {$item->getImage(\JTL\Media\Image::SIZE_MD)} {$normal}w,
                                 {$item->getImage(\JTL\Media\Image::SIZE_LG)} {$gross}w"
-                        alt="{$item->cBeschreibung|strip_tags|truncate:40|escape:'html'}"
+                        alt=$alt
                         sizes=$sizes
                         class=$class
-                        style="max-width:{$gross}px"
                     }
                 {/block}
             {/if}

@@ -128,19 +128,7 @@
                     {foreach name=Variationswerte from=$Variation->Werte key=y item=Variationswert}
                         {if $Variationswert->getImage() !== null}
                             <div class="variation-image-preview d-none fade vt{$Variationswert->kEigenschaftWert}">
-                                <div class="square square-image">
-                                    <div class="inner">
-                                        {image fluid=true webp=true lazy=true
-                                        src=$Variationswert->getImage(\JTL\Media\Image::SIZE_XS)
-                                        srcset="{$Variationswert->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_variationen_mini_breite}w,
-                                        {$Variationswert->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_variationen_klein_breite}w,
-                                        {$Variationswert->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_variationen_breite}w,
-                                        {$Variationswert->getImage(\JTL\Media\Image::SIZE_LG)} {$Einstellungen.bilder.bilder_variationen_gross_breite}w,"
-                                        sizes="100vw"
-                                        alt=$Variationswert->cName|escape:'quotes'
-                                        }
-                                    </div>
-                                </div>
+                                {include file='snippets/image.tpl' item=$Variationswert sizes='100vw'}
                             </div>
                         {/if}
                     {/foreach}

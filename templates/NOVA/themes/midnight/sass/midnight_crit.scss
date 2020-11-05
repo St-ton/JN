@@ -186,7 +186,7 @@ html {
   a {
     text-decoration: none;
     color: $header-color;
-    &:hover:not(.dropdown-item) {
+    &:hover:not(.dropdown-item):not(.btn) {
       color: $primary;
     }
   }

@@ -24663,6 +24663,9 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 #pushed-success .card-header {
   text-align: center;
 }
+#pushed-success .pushed-success-image-wrapper {
+  margin-bottom: 1rem;
+}
 
 .reviews,
 #description .desc .h3 {

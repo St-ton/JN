@@ -682,6 +682,9 @@
 	.card-header {
 		text-align: center;
 	}
+	.pushed-success-image-wrapper {
+		margin-bottom: map_get($spacers, 3);
+	}
 }
 
 .reviews,

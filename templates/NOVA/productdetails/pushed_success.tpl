@@ -28,7 +28,7 @@
                                         <div class="productbox-title subheadline">{$pushedArtikel->cName}</div>
                                     {/block}
                                 {/col}
-                                {col cols=12 md=4}
+                                {col cols=12 md=4 class="pushed-success-image-wrapper"}
                                     {block name='productdetails-pushed-success-product-cell-image'}
                                         {counter assign=imgcounter print=0}
                                         <div class="square square-image">

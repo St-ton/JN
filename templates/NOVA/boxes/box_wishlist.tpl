@@ -38,13 +38,11 @@
                                                         {col class="col-auto"}
                                                             {block name='boxes-box-wishlist-dropdown-products-image'}
                                                                 {link href=$wishlistItem->Artikel->cURLFull title=$wishlistItem->cArtikelName|escape:'quotes'}
-                                                                    {image fluid=true webp=true lazy=true
-                                                                        src=$wishlistItem->Artikel->Bilder[0]->cURLMini
-                                                                        srcset="{$wishlistItem->Artikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                                                {$wishlistItem->Artikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                                                {$wishlistItem->Artikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                                                        sizes="24px"
-                                                                        alt=$wishlistItem->Artikel->cName|strip_tags|escape:'html'}
+                                                                    {include file='snippets/image.tpl'
+                                                                        item=$wishlistItem->Artikel
+                                                                        square=false
+                                                                        srcSize='xs'
+                                                                        sizes='24px'}
                                                                 {/link}
                                                             {/block}
                                                         {/col}

@@ -9,14 +9,7 @@
                         {assign var=alt value=$Artikel->cName}
                     {/if}
                     {block name='productlist-item-slider-image'}
-                        {image fluid=true webp=true lazy=true
-                            alt=$Artikel->cName
-                            src=$Artikel->Bilder[0]->cURLKlein
-                            srcset="{$Artikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                {$Artikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                {$Artikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                            sizes="auto"
-                            class="product-image"}
+                        {include file='snippets/image.tpl' item=$Artikel square=false srcSize='sm' class='product-image'}
                     {/block}
                     {if $tplscope !== 'box'}
                         <meta itemprop="image" content="{$Artikel->Bilder[0]->cURLNormal}">

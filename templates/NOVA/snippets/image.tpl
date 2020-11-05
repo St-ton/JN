@@ -1,13 +1,14 @@
 {block name='snippets-image'}
     {block name='snippets-image-variables'}
-        {$square  = $square|default:true}
-        {$fluid   = $fluid|default:true}
-        {$lazy    = $lazy|default:true}
-        {$webp    = $webp|default:true}
-        {$sizes   = $sizes|default:'auto'}
-        {$class   = $class|default:''}
-        {$srcSize = $srcSize|default:'md'}
-        {$center  = $center|default:false}
+        {$square      = $square|default:true}
+        {$fluid       = $fluid|default:true}
+        {$lazy        = $lazy|default:true}
+        {$webp        = $webp|default:true}
+        {$sizes       = $sizes|default:'auto'}
+        {$class       = $class|default:''}
+        {$squareClass = $squareClass|default:''}
+        {$srcSize     = $srcSize|default:'md'}
+        {$center      = $center|default:false}
 
         {if $srcSize === 'xs'}
             {$srcSize = \JTL\Media\Image::SIZE_XS}
@@ -39,6 +40,11 @@
             {$klein  = $Einstellungen.bilder.bilder_artikel_klein_breite}
             {$normal = $Einstellungen.bilder.bilder_artikel_normal_breite}
             {$gross  = $Einstellungen.bilder.bilder_artikel_gross_breite}
+            {if isset($item->Bilder[0]->cAltAttribut)}
+                {$alt=$item->Bilder[0]->cAltAttribut|truncate:60}
+            {else}
+                {$alt=$item->cName|default:''}
+            {/if}
         {elseif $imageType === \JTL\Media\Image::TYPE_VARIATION}
             {$mini   = $Einstellungen.bilder.bilder_variationen_mini_breite}
             {$klein  = $Einstellungen.bilder.bilder_variationen_klein_breite}
@@ -79,11 +85,11 @@
     {/block}
 
     {block name='snippets-image-main'}
-        {if $square}
-        <div class="square square-image">
-            <div class="inner">
-        {/if}
-            {if $item->getImage(\JTL\Media\Image::SIZE_XS)|default:null !== null}
+        {if $item->getImage(\JTL\Media\Image::SIZE_XS)|default:null !== null}
+            {if $square}
+            <div class="square square-image {$squareClass}">
+                <div class="inner">
+            {/if}
                 {block name='snippets-image-main-image'}
                     {image fluid=$fluid lazy=$lazy webp=$webp center=$center
                         src=$item->getImage($srcSize)
@@ -91,15 +97,15 @@
                                 {$item->getImage(\JTL\Media\Image::SIZE_SM)} {$klein}w,
                                 {$item->getImage(\JTL\Media\Image::SIZE_MD)} {$normal}w,
                                 {$item->getImage(\JTL\Media\Image::SIZE_LG)} {$gross}w"
-                        alt=$alt|escape:'quotes'|escape:'html'
+                        alt=$alt|strip_tags|escape:'quotes'|escape:'html'
                         sizes=$sizes
                         class=$class
                     }
                 {/block}
-            {/if}
-        {if $square}
+            {if $square}
+                </div>
             </div>
-        </div>
+            {/if}
         {/if}
     {/block}
 {/block}

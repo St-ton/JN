@@ -41,13 +41,7 @@
                                                     {col class="col-auto"}
                                                         {block name='boxes-box-comparelist-dropdown-products-image'}
                                                             {link href=$product->cURLFull}
-                                                                {image fluid=true webp=true lazy=true
-                                                                    src=$product->Bilder[0]->cURLMini
-                                                                    srcset="{$product->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                                        {$product->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                                        {$product->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                                                    sizes="45px"
-                                                                    alt=$product->cName|strip_tags|escape:'html'}
+                                                                {include file='snippets/image.tpl' item=$product square=false srcSize='xs' sizes='45px'}
                                                             {/link}
                                                         {/block}
                                                     {/col}

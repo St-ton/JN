@@ -178,3 +178,6 @@ msgstr "Token hinzufügen"
 
 msgid "Manually enter token"
 msgstr "Token manuell eingeben"
+
+msgid "License for extension already bound to domain"
+msgstr "Eine Lizenz für diese Extension wurde bereits an den aktuellen Shop gebunden"

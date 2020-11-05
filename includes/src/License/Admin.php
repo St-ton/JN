@@ -134,7 +134,7 @@ class Admin
         $valid  = Form::validateToken();
         if ($valid) {
             if ($action === self::ACTION_SAVE_TOKEN) {
-                $this->saveToken($smarty);
+                $this->saveToken();
                 $action = null;
             }
             if ($action === self::ACTION_ENTER_TOKEN) {
@@ -258,7 +258,13 @@ class Admin
                 : $this->manager->clearBinding(Request::postVar('url'));
         } catch (ClientException | GuzzleException $e) {
             $response->error = $e->getMessage();
-            $smarty->assign('bindErrorMessage', $e->getMessage());
+            if ($e->getResponse()->getStatusCode() === 400) {
+                $body = \json_decode((string)$e->getResponse()->getBody());
+                if (isset($body->code, $body->message) && $body->code === 422) {
+                    $response->error = $body->message;
+                }
+            }
+            $smarty->assign('bindErrorMessage', $response->error);
         }
         $this->getLicenses(true);
         $this->getList($smarty);
@@ -270,6 +276,7 @@ class Admin
 
     /**
      * @param JTLSmarty $smarty
+     * @param string    $action
      * @throws \SmartyException
      */
     private function extendUpgrade(JTLSmarty $smarty, string $action): void
@@ -327,10 +334,7 @@ class Admin
             ->assign('hasAuth', false);
     }
 
-    /**
-     * @param JTLSmarty $smarty
-     */
-    private function saveToken(JTLSmarty $smarty): void
+    private function saveToken(): void
     {
         $code  = \trim(Request::postVar('code', ''));
         $token = \trim(Request::postVar('token', ''));

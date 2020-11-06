@@ -20107,9 +20107,6 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
 .carousel:hover .slick-arrow {
   opacity: 1;
 }
-.carousel .slick-slider-mb {
-  margin-bottom: 1.5rem;
-}
 
 .slick-track {
   display: flex;
@@ -25930,8 +25927,11 @@ header #burger-menu {
 }
 
 /* product-slider */
-.slick-slider-other {
+.slick-slider-other.is-not-opc {
   margin-bottom: 2rem;
+}
+.slick-slider-other.is-not-opc .carousel {
+  margin-bottom: 1.5rem;
 }
 .slick-slider-other .slick-slider-other-container {
   padding-left: 0;
@@ -25943,7 +25943,7 @@ header #burger-menu {
     padding-right: 1rem;
   }
 }
-.slick-slider-other .slick-slider-other-container .hr-sect {
+.slick-slider-other .hr-sect {
   margin-bottom: 2rem;
 }
 

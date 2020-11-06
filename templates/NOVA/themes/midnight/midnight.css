@@ -25889,6 +25889,10 @@ header #burger-menu {
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
 }
+.snippets-filter-mobile-sorting .snippets-filter-mobile-sorting-collapse .dropdown-item {
+  background-color: transparent;
+  color: #525252;
+}
 .snippets-filter-mobile-sorting .snippets-filter-mobile-sorting-link {
   text-decoration: none;
   text-align: left;

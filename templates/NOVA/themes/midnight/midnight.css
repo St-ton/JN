@@ -24835,7 +24835,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 
 /* header */
-#header-top-bar {
+.topbar-wrapper {
   position: relative;
   z-index: 1021;
   flex-direction: row-reverse;

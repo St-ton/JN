@@ -301,31 +301,33 @@
                 {block name='layout-header-container-inner'}
                     <div class="container-fluid {if $Einstellungen.template.megamenu.header_full_width === 'N'}container-fluid-xl{/if}">
                     {block name='layout-header-category-nav'}
-                        {block name='layout-header-navbar-toggle'}
-                            <button id="burger-menu" class="burger-menu-wrapper navbar-toggler collapsed {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}" type="button" data-toggle="collapse" data-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">
-                                <span class="navbar-toggler-icon"></span>
-                            </button>
-                        {/block}
+                        <div class="toggler-logo-wrapper">
+                            {block name='layout-header-navbar-toggle'}
+                                <button id="burger-menu" class="burger-menu-wrapper navbar-toggler collapsed {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}" type="button" data-toggle="collapse" data-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">
+                                    <span class="navbar-toggler-icon"></span>
+                                </button>
+                            {/block}
 
-                        {block name='layout-header-logo'}
-                            <div id="logo" class="logo-wrapper" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-                                <span itemprop="name" class="d-none">{$meta_publisher}</span>
-                                <meta itemprop="url" content="{$ShopURL}">
-                                <meta itemprop="logo" content="{$ShopLogoURL}">
-                                {link class="navbar-brand" href=$ShopURL title=$Einstellungen.global.global_shopname}
-                                {if isset($ShopLogoURL)}
-                                    {image src=$ShopLogoURL
-                                    alt=$Einstellungen.global.global_shopname
-                                    id="shop-logo"
-                                    }
-                                {else}
-                                    <span class="h1">{$Einstellungen.global.global_shopname}</span>
-                                {/if}
-                                {/link}
-                            </div>
-                        {/block}
+                            {block name='layout-header-logo'}
+                                <div id="logo" class="logo-wrapper" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+                                    <span itemprop="name" class="d-none">{$meta_publisher}</span>
+                                    <meta itemprop="url" content="{$ShopURL}">
+                                    <meta itemprop="logo" content="{$ShopLogoURL}">
+                                    {link class="navbar-brand" href=$ShopURL title=$Einstellungen.global.global_shopname}
+                                    {if isset($ShopLogoURL)}
+                                        {image src=$ShopLogoURL
+                                        alt=$Einstellungen.global.global_shopname
+                                        id="shop-logo"
+                                        }
+                                    {else}
+                                        <span class="h1">{$Einstellungen.global.global_shopname}</span>
+                                    {/if}
+                                    {/link}
+                                </div>
+                            {/block}
+                        </div>
                         {navbar toggleable=true fill=true type="expand-lg" class="justify-content-start {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}align-items-center-util{else}align-items-lg-end{/if}"}
-                                                       {block name='layout-header-search'}
+                           {block name='layout-header-search'}
                                 {if $Einstellungen.template.theme.mobile_search_type === 'fixed'}
                                     <div class="d-lg-none{if !$isTablet} container-fluid container-fluid-xl py-2 order-1 {else} px-4 py-2 flex-grow-1{/if}">
                                         {include file='snippets/search_form.tpl' id='search-header-mobile-top'}

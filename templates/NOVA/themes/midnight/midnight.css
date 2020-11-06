@@ -22838,23 +22838,6 @@ input.typeahead:-ms-input-placeholder {
   text-align: center;
 }
 
-@media (max-width: 991.98px) {
-  .burger-menu-wrapper {
-    position: absolute;
-    top: 8px;
-  }
-}
-
-.logo-wrapper {
-  float: left;
-}
-@media (max-width: 991.98px) {
-  .logo-wrapper {
-    position: absolute;
-    left: 46px;
-  }
-}
-
 /* utilities */
 .rounded-top-left {
   border-top-left-radius: 0.125rem !important;
@@ -26205,16 +26188,6 @@ header #burger-menu {
   header {
     border-bottom: 4px solid #1973D3;
   }
-}
-
-.logo-wrapper {
-  float: none !important;
-}
-
-#header-top-bar {
-  float: right;
-  position: sticky;
-  top: 0;
 }
 
 /*# sourceMappingURL=midnight.css.map */

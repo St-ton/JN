@@ -456,3 +456,21 @@ hr {
   background-color: $footer-bg-color;
   color: $footer-color;
 }
+.toggler-logo-wrapper {
+  float: none;
+  @include media-breakpoint-down(md) {
+    position: absolute;
+    .logo-wrapper {
+      float: left;
+    }
+    .burger-menu-wrapper {
+      float: left;
+      padding-top: 1rem;
+    }
+  }
+}
+#header-top-bar {
+  float: right;
+  position: sticky;
+  top: 0;
+}

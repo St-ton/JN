@@ -412,32 +412,26 @@
                                                             {strip}
                                                                 <div>
                                                                     {link href=$wlPosition->Artikel->cURLFull}
-                                                                    <div class="square square-image first-wrapper">
-                                                                        <div class="inner">
-                                                                        {image alt=$wlPosition->Artikel->cName fluid=true webp=true lazy=true
-                                                                            src="{$image->cURLKlein}"
-                                                                            srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                                             {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                                             {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                                                            sizes="auto"
-                                                                            class="{if !$isMobile && !empty($wlPosition->Artikel->Bilder[1])} first{/if}"
-                                                                        }
-                                                                        </div>
-                                                                    </div>
+                                                                        {include file='snippets/image.tpl'
+                                                                            fluid=false
+                                                                            item=$wlPosition->Artikel
+                                                                            squareClass='first-wrapper'
+                                                                            srcSize='sm'
+                                                                            class="{if !$isMobile && !empty($wlPosition->Artikel->Bilder[1])} first{/if}"}
                                                                     {if !$isMobile && !empty($wlPosition->Artikel->Bilder[1])}
-                                                                    <div class="square square-image second-wrapper">
-                                                                        <div class="inner">
-                                                                        {$image = $wlPosition->Artikel->Bilder[1]}
-                                                                        {image alt=$wlPosition->Artikel->cName fluid=true webp=true lazy=true
-                                                                            src="{$image->cURLKlein}"
-                                                                            srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                                                 {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                                                 {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                                                            sizes="auto"
-                                                                            class='second'
-                                                                        }
+                                                                        <div class="square square-image second-wrapper">
+                                                                            <div class="inner">
+                                                                            {$image = $wlPosition->Artikel->Bilder[1]}
+                                                                            {image alt=$wlPosition->Artikel->cName fluid=true webp=true lazy=true
+                                                                                src="{$image->cURLKlein}"
+                                                                                srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                                                     {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                                                     {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                                                sizes="auto"
+                                                                                class='second'
+                                                                            }
+                                                                            </div>
                                                                         </div>
-                                                                    </div>
                                                                     {/if}
                                                                     {/link}
                                                                 </div>

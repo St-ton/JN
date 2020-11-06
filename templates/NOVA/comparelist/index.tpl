@@ -106,16 +106,7 @@
                                                     {/block}
                                                     {block name='comparelist-index-products-header-image'}
                                                         {link href=$oArtikel->cURLFull}
-                                                            {image fluid=true webp=true lazy=true
-                                                                alt=$oArtikel->cName
-                                                                src=$oArtikel->cVorschaubild
-                                                                srcset="{$oArtikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                                     {$oArtikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                                     {$oArtikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
-                                                                     {$oArtikel->Bilder[0]->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
-                                                                sizes="200px"
-                                                                class="comparelist-item-image"
-                                                            }
+                                                            {include file='snippets/image.tpl' item=$oArtikel srcSize='xs' square=false class='comparelist-item-image' sizes='200px'}
                                                         {/link}
                                                     {/block}
                                                 </div>

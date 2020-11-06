@@ -116,15 +116,7 @@
                                         {$oNewsCat->getDescription()}
                                     {/col}
                                     {col cols=12 sm=4}
-                                        {image webp=true center=true fluid=true lazy=true
-                                            src=$oNewsCat->getImage(\JTL\Media\Image::SIZE_MD)
-                                                srcset="{$oNewsCat->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_newskategorie_mini_breite}w,
-                                                {$oNewsCat->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_newskategorie_klein_breite}w,
-                                                {$oNewsCat->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_newskategorie_normal_breite}w,
-                                                {$oNewsCat->getImage(\JTL\Media\Image::SIZE_LG)} {$Einstellungen.bilder.bilder_newskategorie_gross_breite}w"
-                                            sizes="auto"
-                                            alt=$oNewsCat->getName()|escape:'quotes'
-                                        }
+                                        {include file='snippets/image.tpl' item=$oNewsCat square=false center=true}
                                     {/col}
                                 {else}
                                     {col sm=12}{$oNewsCat->getDescription()}{/col}

@@ -80,17 +80,12 @@
 
                 {if $newsItem->getPreviewImage() !== ''}
                     {block name='blog-details-image'}
-                        {image webp=true lazy=true fluid=true
-                            src=$newsItem->getImage(\JTL\Media\Image::SIZE_MD)
-                            srcset="{$newsItem->getImage(\JTL\Media\Image::SIZE_XS)} 300w,
-                                {$newsItem->getImage(\JTL\Media\Image::SIZE_SM)} 600w,
-                                {$newsItem->getImage(\JTL\Media\Image::SIZE_MD)} 1200w,
-                                {$newsItem->getImage(\JTL\Media\Image::SIZE_LG)} 1800w"
-                            sizes="auto"
-                            alt="{$newsItem->getTitle()|escape:'quotes'} - {$newsItem->getMetaTitle()|escape:'quotes'}"
+                        {include file='snippets/image.tpl'
+                            item=$newsItem
+                            square=false
                             center=true
                             class="blog-details-image"
-                        }
+                            alt="{$newsItem->getTitle()|escape:'quotes'} - {$newsItem->getMetaTitle()|escape:'quotes'}"}
                         <meta itemprop="image" content="{$imageBaseURL}{$newsItem->getPreviewImage()}">
                     {/block}
                 {/if}

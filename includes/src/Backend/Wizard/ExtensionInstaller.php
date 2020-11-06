@@ -107,11 +107,17 @@ class ExtensionInstaller
                             $createdLicenseKeys[] = $data->meta->exs_key;
                         }
                     } catch (ClientException | GuzzleException $e) {
-                        $errorMsg .= \sprintf(
-                            '%s: %s <br>',
-                            $recom->getTitle(),
-                            Text::htmlentities($e->getMessage())
-                        );
+                        if ($e->getResponse()->getStatusCode() === 400
+                            && ($license = $this->manager->getLicenseByExsID($id)) !== null
+                        ) {
+                            $createdLicenseKeys[] = $license->getLicense()->getKey();
+                        } else {
+                            $errorMsg .= \sprintf(
+                                '%s: %s <br>',
+                                $recom->getTitle(),
+                                Text::htmlentities($e->getMessage())
+                            );
+                        }
                     }
                 }
             }

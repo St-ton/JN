@@ -8,18 +8,18 @@
 	.slick-slide { transition: opacity $transition-base-timing; }
 
 	.product-thumbnails-wrapper {
-		display: none;
 		margin-left: auto;
 		margin-right: auto;
-		@include media-breakpoint-up(lg) {
-			margin-bottom: 0;
-			display: flex;
-		}
 		.product-thumbnails {
+			display: none;
 			width: 100%;
 			margin-bottom: map_get($spacers, 5);
 			margin-left: 0;
 			margin-right: 0;
+			@include media-breakpoint-up(lg) {
+				margin-bottom: 0;
+				display: flex;
+			}
 			.slick-list {
 				width: 100%;
 			}
@@ -178,7 +178,7 @@
 		}
 	}
 
-	#gallery_preview {
+	.product-thumbnails {
 		.square-image {
 			margin-bottom: 0;
 		}
@@ -188,7 +188,7 @@
 				min-width: calc(79%/5);
 				height: 100%;
 				&:not(.preview-first) {
-					opacity: 0.2;
+					opacity: 0.5;
 				}
 				padding: 0;
 				border: $border-width solid $gray-darker;
@@ -197,6 +197,12 @@
 				@include media-breakpoint-down(lg) {
 					width: calc(72%/5);
 					min-width: calc(72%/5);
+				}
+				&.first-ml {
+					margin-left: auto;
+				}
+				&.last-mr {
+					margin-right: auto;
 				}
 			}
 			&.slick-count-default {
@@ -346,6 +352,9 @@
 	}
 	.group-description {
 		margin-bottom: map_get($spacers, 3);
+		img {
+			margin-bottom: map_get($spacers, 3);
+		}
 	}
 	.config-item {
         cursor: pointer;

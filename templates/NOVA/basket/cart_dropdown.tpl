@@ -15,14 +15,13 @@
                                                         {block name='basket-cart-dropdown-cart-item-item-image'}
                                                             {col class="col-auto"}
                                                                 {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans|escape:'html'}
-                                                                    {image lazy=true webp=true
-                                                                        src=$oPosition->Artikel->Bilder[0]->cURLMini
-                                                                        srcset="{$oPosition->Artikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                                            {$oPosition->Artikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                                            {$oPosition->Artikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                                                        sizes="45px"
-                                                                        alt=$oPosition->Artikel->cName
-                                                                        class="img-sm"}
+                                                                    {include file='snippets/image.tpl'
+                                                                        fluid=false
+                                                                        item=$oPosition->Artikel
+                                                                        square=false
+                                                                        srcSize='xs'
+                                                                        sizes='45px'
+                                                                        class='img-sm'}
                                                                 {/link}
                                                             {/col}
                                                         {/block}
@@ -133,7 +132,7 @@
                     {if !empty($WarenkorbVersandkostenfreiHinweis)}
                         {block name='basket-cart-dropdown-shipping-free-hint'}
                             <hr>
-                            <ul class="cart-dropdown-shipping-notice list-icons text-muted-util font-size-sm">
+                            <ul class="cart-dropdown-shipping-notice list-icons font-size-sm">
                                 <li>
                                     <a class="popup"
                                        href="{if !empty($oSpezialseiten_arr) && isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}{else}#{/if}"

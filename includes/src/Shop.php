@@ -308,7 +308,7 @@ final class Shop
 
     /**
      * @var bool
-     * @deprecated since 5.0
+     * @deprecated since 5.0.0
      */
     public static $isSeoMainword = false;
 
@@ -1751,7 +1751,7 @@ final class Shop
      * @param array                     $params
      * @param object|null|ProductFilter $productFilter
      * @return ProductFilter
-     * @deprecated since 5.0
+     * @deprecated since 5.0.0
      */
     public static function buildNaviFilter(array $params, $productFilter = null): ProductFilter
     {
@@ -1764,14 +1764,18 @@ final class Shop
     }
 
     /**
-     * build navigation filter object from parameters
+     * build product filter object from parameters
      *
      * @param array                       $params
      * @param stdClass|null|ProductFilter $productFilter
+     * @param bool                        $validate
      * @return ProductFilter
      */
-    public static function buildProductFilter(array $params, $productFilter = null): ProductFilter
-    {
+    public static function buildProductFilter(
+        array $params,
+        $productFilter = null,
+        bool $validate = true
+    ): ProductFilter {
         $pf = new ProductFilter(
             Config::getDefault(),
             self::Container()->getDB(),
@@ -1783,12 +1787,12 @@ final class Shop
             }
         }
 
-        return $pf->initStates($params);
+        return $pf->initStates($params, $validate);
     }
 
     /**
      * @return ProductFilter
-     * @deprecated since 5.0
+     * @deprecated since 5.0.0
      */
     public static function getNaviFilter(): ProductFilter
     {
@@ -1822,7 +1826,7 @@ final class Shop
 
     /**
      * @param null|ProductFilter $productFilter
-     * @deprecated since 5.0 - this is done in ProductFilter:validate()
+     * @deprecated since 5.0.0 - this is done in ProductFilter:validate()
      */
     public static function checkNaviFilter($productFilter = null): void
     {

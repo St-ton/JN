@@ -71,6 +71,7 @@ final class ItemList implements ItemListInterface
                 JOIN tseo 
                     ON tseo.cKey = \'kNews\'
                     AND tseo.kKey = tnews.kNews
+                    AND tseo.kSprache = tnewssprache.languageID
                 WHERE tnews.kNews IN (' . $itemList  . ')
                 GROUP BY tnews.kNews, tnewssprache.languageID
                 ORDER BY FIELD(tnews.kNews, ' . $itemList . ')',

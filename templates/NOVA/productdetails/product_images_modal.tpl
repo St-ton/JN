@@ -5,7 +5,7 @@
             {block name='productdetails-product-images-modal-header'}
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true" class="fas fa-times"></span>
+                        <span aria-hidden="true">×</span>
                     </button>
                 </div>
             {/block}

@@ -25994,7 +25994,7 @@ header #burger-menu {
 @media (min-width: 992px) {
   .wishlist-button {
     display: inline-block;
-    border: 1px solid #ebebeb;
+    border-right: 1px solid #ebebeb;
   }
 }
 .wishlist-button .wishlist-button-inner {

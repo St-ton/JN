@@ -34,7 +34,7 @@
 <div id="modalTempImport" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header alert-warning">
+            <div class="modal-header">
                 <h2><i class="fal fa-exclamation-triangle"></i> {__('plz_ort_import')}</h2>
                 <button type="button" class="close" data-dismiss="modal">
                     <i class="fal fa-times"></i>
@@ -100,8 +100,11 @@
         }
     });
 
-    function showModalWait() {
+    function showModalWait(onShow) {
         var $modalWait = $("#modalWait");
+        if ((typeof onShow) === 'function') {
+            $modalWait.on('shown.bs.modal', onShow);
+        }
         $modalWait.modal({backdrop: false});
 
         return $modalWait;
@@ -136,7 +139,7 @@
                 window.location.reload();
             }
             $('[data-callback]').attr('disabled', false);
-        });
+        }, {}, {}, true);
     }
 
     function refreshNotify() {
@@ -159,7 +162,7 @@
                         notify.close();
                     }, 3000);
                 }
-            });
+            }, {}, {}, true);
         }
     }
 
@@ -186,15 +189,16 @@
 
         window.setTimeout(refreshNotify, 1500);
         ioCall('plzimportActionDoImport', [ref, part], callback, function(result) {
-            ioCall('plzimportActionResetImport', ['danger', 'Fehler beim Import... Import abgebrochen!'], callback);
-        });
+            ioCall('plzimportActionResetImport', ['danger', 'Fehler beim Import... Import abgebrochen!'], callback, {}, {}, true);
+        }, {}, {}, true);
     }
 
     function startBackup(ref) {
-        var $modalWait = showModalWait();
-        ioCall('plzimportActionRestoreBackup', [ref], function(result) {
-            $modalWait.modal('hide');
-            updateIndex();
+        var $modalWait = showModalWait(function() {
+            ioCall('plzimportActionRestoreBackup', [ref], function(result) {
+                $modalWait.modal('hide');
+                updateIndex();
+            }, {}, {}, true);
         });
     }
 
@@ -213,7 +217,7 @@
                     plz_ort_import_exists();
                 }
             }
-        });
+        }, {}, {}, true);
     }
 
     function plz_ort_import_exists() {
@@ -237,22 +241,23 @@
             window.setTimeout(function(){
                 notify.close();
             }, 3000);
-        });
+        }, {}, {}, true);
     }
 
     function plz_ort_import_new($el) {
         showBackdrop();
         var $modal = $('#modalSelect');
         if ($modal.length === 0) {
-            var $modalWait = showModalWait();
-            ioCall('plzimportActionLoadAvailableDownloads', [], function (result) {
-                $modal = $(result.dialogHTML);
-                $modal.on('hide.bs.modal', function () {
-                    hideBackdrop();
-                });
-                $modalWait.one('hidden.bs.modal', function () {
-                    $modal.modal({backdrop: false});
-                }).modal('hide');
+            var $modalWait = showModalWait(function() {
+                ioCall('plzimportActionLoadAvailableDownloads', [], function (result) {
+                    $modal = $(result.dialogHTML);
+                    $modal.on('hide.bs.modal', function () {
+                        hideBackdrop();
+                    });
+                    $modalWait.one('hidden.bs.modal', function () {
+                        $modal.modal({backdrop: false});
+                    }).modal('hide');
+                }, {}, {}, true);
             });
         } else {
             $modal.modal({backdrop: false});

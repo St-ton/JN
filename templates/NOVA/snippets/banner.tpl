@@ -17,14 +17,7 @@
                                         {block name='snippets-banner-map-area-image'}
                                             <div class="snippets-banner-image">
                                                 {if $oArtikel !== null}
-                                                    {image fluid=true webp=true
-                                                        src=$oArtikel->Bilder[0]->cURLMini
-                                                        srcset="{$oArtikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                            {$oArtikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                            {$oArtikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                                        alt=$oArtikel->cName|strip_tags|escape:'quotes'|truncate:60
-                                                        sizes="auto"
-                                                    }
+                                                    {include file='snippets/image.tpl' item=$oArtikel square=false}
                                                 {/if}
                                             </div>
                                             {*{if $oArtikel !== null}

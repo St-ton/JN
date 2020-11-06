@@ -6,14 +6,11 @@
                 && $Einstellungen.template.megamenu.show_category_images !== 'N'
                 && (!$isMobile || $isTablet)
                 && !empty($mainCategory->getImage(\JTL\Media\Image::SIZE_XS))}
-                    {image fluid=true lazy=true webp=true
-                    src=$mainCategory->getImage(\JTL\Media\Image::SIZE_XS)
-                    srcset="{$mainCategory->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_kategorien_mini_breite}w,
-                            {$mainCategory->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_kategorien_klein_breite}w,
-                            {$mainCategory->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_kategorien_breite}w"
-                sizes="auto"
-                alt=$mainCategory->getName()|escape:'html'
-                class="submenu-headline-image"}
+                {include file='snippets/image.tpl'
+                    class='submenu-headline-image'
+                    item=$mainCategory
+                    square=false
+                    srcSize='sm'}
             {/if}
             <span class="text-truncate d-block">{$mainCategory->getName()}</span>
         {/link}

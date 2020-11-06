@@ -3,7 +3,7 @@
         {foreach $Artikel->oKonfig_arr as $configGroup}
             {if $configGroup->getItemCount() > 0}
                 {$configLocalization = $configGroup->getSprache()}
-                {$configImagePath = $configGroup->getImage(\JTL\Media\Image::SIZE_XS)}
+                {$configGroupHasImage = ($configGroup->getImage(\JTL\Media\Image::SIZE_MD)|strpos:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN) === false}
                 {$kKonfiggruppe = $configGroup->getKonfiggruppe()}
                 <div class="cfg-group js-cfg-group {if $configGroup@first}visited{/if}"
                      data-id="{$kKonfiggruppe}"
@@ -63,25 +63,13 @@
                                 {/col}
                             {/if}
                             {if $configLocalization->hatBeschreibung()}
-                                {col cols=12 lg="{if !empty($configImagePath) && $configImagePath|strpos:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN === false}8{else}12{/if}" order=1 order-lg=0}
+                                {col cols=12 lg="{if $configGroupHasImage}7{else}12{/if}" order=1 order-lg=0}
                                     {$configLocalization->getBeschreibung()}
                                 {/col}
                             {/if}
-                            {if !empty($configImagePath) && $configImagePath|strpos:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN === false}
-                                {col cols=12 lg=4 offset-lg="{if $configLocalization->hatBeschreibung()}0{else}4{/if}" order=0 order-lg=1}
-                                    <div class="square square-image">
-                                        <div class="inner">
-                                            {image fluid=true lazy=true webp=true
-                                                src=$configImagePath
-                                                srcset="{$configGroup->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_konfiggruppe_mini_breite}w,
-                                                    {$configGroup->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_konfiggruppe_klein_breite}w,
-                                                    {$configGroup->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_konfiggruppe_normal_breite}w,
-                                                    {$configGroup->getImage(\JTL\Media\Image::SIZE_LG)} {$Einstellungen.bilder.bilder_konfiggruppe_gross_breite}w"
-                                                alt=$configLocalization->getName()
-                                                sizes="auto"
-                                            }
-                                        </div>
-                                    </div>
+                            {if $configGroupHasImage}
+                                {col cols=12 lg=5 offset-lg="{if $configLocalization->hatBeschreibung()}0{else}5{/if}" order=0 order-lg=1}
+                                    {include file='snippets/image.tpl' item=$configGroup square=false}
                                 {/col}
                             {/if}
                         {/row}
@@ -132,22 +120,7 @@
                                                         <p class="box_error alert alert-danger">{$aKonfigitemerror_arr[$kKonfigitem]}</p>
                                                     {/if}
                                                     {badge class="badge-circle circle-small"}<i class="fas fa-check"></i>{/badge}
-                                                    {if !empty($oItem->getArtikel()->Bilder[0]->cURLNormal)}
-                                                        {$productImage = $oItem->getArtikel()->Bilder[0]}
-                                                        <div class="square square-image">
-                                                            <div class="inner">
-                                                                {image fluid=true webp=true lazy=true
-                                                                src=$productImage->cURLMini
-                                                                srcset="{$productImage->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                                    {$productImage->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                                    {$productImage->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
-                                                                    {$productImage->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
-                                                                sizes="auto"
-                                                                alt=$oItem->getName()
-                                                            }
-                                                            </div>
-                                                        </div>
-                                                    {/if}
+                                                    {include file='snippets/image.tpl' item=$oItem->getArtikel() srcSize='sm' alt=$oItem->getName()}
                                                     <p class="cfg-item-description">
                                                         {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
                                                         {if $smarty.session.Kundengruppe->mayViewPrices()}
@@ -217,22 +190,7 @@
                                                         <p class="box_error alert alert-danger">{$aKonfigitemerror_arr[$kKonfigitem]}</p>
                                                     {/if}
                                                     {badge class="badge-circle circle-small"}<i class="fas fa-check"></i>{/badge}
-                                                    {if !empty($oItem->getArtikel()->Bilder[0]->cURLNormal)}
-                                                        <div class="square square-image">
-                                                            <div class="inner">
-                                                                {$productImage = $oItem->getArtikel()->Bilder[0]}
-                                                                {image fluid=true webp=true lazy=true
-                                                                    src=$productImage->cURLMini
-                                                                    srcset="{$productImage->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                                        {$productImage->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                                        {$productImage->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
-                                                                        {$productImage->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
-                                                                    sizes="auto"
-                                                                    alt=$oItem->getName()
-                                                                }
-                                                            </div>
-                                                        </div>
-                                                    {/if}
+                                                    {include file='snippets/image.tpl' item=$oItem->getArtikel() srcSize='sm' alt=$oItem->getName()}
                                                     <p class="cfg-item-description">
                                                         {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
                                                         {if $smarty.session.Kundengruppe->mayViewPrices()}
@@ -341,22 +299,7 @@
                                     {collapse visible=isset($nKonfigitem_arr) && in_array($oItem->getKonfigitem(), $nKonfigitem_arr) id="drpdwn_qnt_{$oItem->getKonfigitem()}" class="cfg-drpdwn-item"}
                                         {row}
                                             {col md=4 cols="{if empty($cBeschreibung)}12{else}4{/if}"}
-                                                {if !empty($oItem->getArtikel()->Bilder[0]->cURLNormal)}
-                                                    <div class="square square-image">
-                                                        <div class="inner">
-                                                            {$productImage = $oItem->getArtikel()->Bilder[0]}
-                                                            {image fluid=true webp=true lazy=true
-                                                                src=$productImage->cURLMini
-                                                                srcset="{$productImage->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                                    {$productImage->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                                    {$productImage->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
-                                                                    {$productImage->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
-                                                                sizes="auto"
-                                                                alt=$oItem->getName()
-                                                            }
-                                                        </div>
-                                                    </div>
-                                                {/if}
+                                                {include file='snippets/image.tpl' item=$oItem->getArtikel() srcSize='sm' alt=$oItem->getName()}
                                                 <p class="cfg-item-description">
                                                     {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
                                                     {if $smarty.session.Kundengruppe->mayViewPrices()}

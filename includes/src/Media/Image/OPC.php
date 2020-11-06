@@ -21,7 +21,7 @@ class OPC extends AbstractImage
     public const REGEX = '/^media\/image\/'
     . '(?P<type>opc)'
     . '\/(?P<size>xs|sm|md|lg|xl)'
-    . '\/(?P<name>[a-zA-Z0-9\-_\. äööüÄÖÜß]+)'
+    . '\/(?P<name>[a-zA-Z0-9\-_\. äööüÄÖÜß\/]+)'
     . '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**
@@ -52,7 +52,10 @@ class OPC extends AbstractImage
     public static function getCustomName($mixed): string
     {
         /** @var PortletInstance $mixed */
-        return \pathinfo($mixed->currentImagePath)['filename'];
+        $pathInfo = \pathinfo($mixed->currentImagePath);
+        return (!empty($pathInfo['dirname']) && $pathInfo['dirname'] !== '.'
+                ? $pathInfo['dirname'] . '/'
+                : '') . $pathInfo['filename'];
     }
 
     /**

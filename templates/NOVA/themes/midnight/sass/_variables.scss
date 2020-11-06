@@ -1,32 +1,29 @@
 $image-path:                        'images' !default;
 
 // colors
-$gray-lighter:                      #525252 !default;
-$gray-light:                        #707070 !default;
-$gray:                              #ebebeb !default;
-$gray-dark:                         #9b9b9b !default;
-$gray-medium:                       #f5f7fa !default;
-$gray-darker:                       #9b9b9b !default;
-$sand:                              #525252 !default;
-$cool-white:                        #212121 !default;
-$primary:                           #0ef83c !default;
-$secondary:                         transparent !default;
-$secondary:                         transparent !default;
-$success:                           #088319 !default;
-$success:                           #088319 !default;
-$bg-success:                        #CDE1D6 !default;
-$bg-success:                        #CDE1D6 !default;
-$info:                              #ebebeb !default;
-$info:                              #ebebeb !default;
+$gray-lighter:                      #f5f7fa !default;
+$gray-light:                        #9b9b9b !default;
+$gray:                              #707070 !default;
+$gray-dark:                         #525252 !default;
+$gray-medium:                       #ebebeb !default;
+$gray-darker:                       #525252 !default;
+$sand:                              #ebebeb !default;
+$cool-white:                        #f8f8f8 !default;
+$primary:                           #1973D3 !default;
+$secondary:                         $primary !default;
+$success:                           #1C871E !default;
+$bg-success:                        #cee8d1 !default;
+$info:                              #525252 !default;
 $bg-info:                           #F5F7FA !default;
-$bg-info:                           #F5F7FA !default;
-$warning:                           #F39932 !default;
+$warning:                           #f39932 !default;
 $bg-warning:                        #F9F2DC !default;
-$danger:                            #B90000 !default;
+$danger:                            #b90000 !default;
 $bg-danger:                         #E8CCD2 !default;
+$bg-main:                           #1C1D2C !default;
+$bg-main-ligther:                   lighten($bg-main, 10%) !default;
 
-$white:                             #343434 !default;
-$black:                             #fff !default;
+$white:                             #ffffff !default;
+$black:                             #000000 !default;
 
 $dark:                              $gray-dark !default;
 $gray-100:                          $gray-lighter !default;
@@ -34,14 +31,12 @@ $gray-500:                          $gray-light !default;
 $gray-600:                          $gray !default;
 $gray-700:                          $gray-dark !default;
 
-$bg-typeahead-fix:                  $white !important !default;
-
 $yiq-text-dark:                     $gray-darker !default;
 $yiq-text-light:                    $gray-lighter !default;
 
-$bg-typeahead-fix:                  $white !important !default;
+$bg-typeahead-fix:                  $white !important  !default;
 
-$theme-colors				: () !default;
+$theme-colors				: ();
 $theme-colors: map-merge((
         'gray'			: $gray,
         'gray-light'	: $gray-lighter,
@@ -49,6 +44,12 @@ $theme-colors: map-merge((
         'gray-dark'		: $gray-light,
         'gray-darker'	: $gray-darker
 ), $theme-colors);
+
+$copyright-bg-color:               $primary !default;
+$footer-bg-color:                  $bg-main !default;
+$footer-color:                     $white !default;
+$header-bg-color:                  $bg-main !default;
+$header-color:                     $white !default;
 
 // spacer
 
@@ -138,17 +139,19 @@ $transition-base-duration:          .2s !default;
 $transition-base-timing:            ease-in-out !default;
 $transition-base:                   all $transition-base-duration $transition-base-timing !default;
 $transition-fade:                   opacity .35s linear !default;
+
 // styles
 
 $highlight-border-size:             .375rem !default;
 
-$body-bg:                           $white !default;
+$body-bg:                           $gray-100 !default;
 $body-color:                        $gray-600 !default;
 
 $headings-color:                    $gray-700 !default;
 $navbar-light-hover-color:          $primary !default;
 
 $text-muted:                        $gray !default;
+$text-muted-header:                 $gray-lighter !default;
 $input-color-placeholder:           $gray !default;
 
 /* links */
@@ -157,9 +160,6 @@ $link-color:                        $gray-darker !default;
 $link-decoration:                   underline !default;
 $link-hover-color:                  $primary !default;
 $link-hover-decoration:             none !default;
-
-//$breadcrumb-divider:                "/";
-$breadcrumb-active-color:           $gray-dark !default;
 
 $border-radius:                     .125rem !default;
 $border-radius-lg:                  $border-radius !default;
@@ -178,6 +178,7 @@ $searchcloud-font-size-scaling:     30% !default;
 $navbar-light-color:                $gray-dark !default;
 
 $input-bg:                          $white !default;
+$input-focus-border-color:          $primary !default;
 $input-focus-box-shadow:            none !default;
 $list-group-bg:                     $white !default;
 $list-group-disabled-bg:            $white !default;
@@ -197,10 +198,10 @@ $table-cell-padding-sm:             map-get($spacers, 2) $spacer !default;
 $table-striped-order:               even !default;
 
 $sizes: (
-        20:                               20%,
-        40:                               40%,
-        60:                               60%,
-        80:                               80%
+  20:                               20%,
+  40:                               40%,
+  60:                               60%,
+  80:                               80%
 ) !default;
 
 // paths
@@ -262,14 +263,14 @@ $pagination-focus-box-shadow:       none !default;
 $pagination-disabled-color:         $gray-light !default;
 $pagination-disabled-bg:            transparent !default;
 
-// breadcrumbs
+/* breadcrumbs */
 
 $breadcrumb-padding-y:              map-get($spacers, 2) !default;
 $breadcrumb-padding-x:              0 !default;
 
 $breadcrumb-bg:                     transparent !default;
-$breadcrumb-divider-color:          $gray-dark !default;
-$breadcrumb-active-color:           $gray-dark !default;
+$breadcrumb-divider-color:          $gray !default;
+$breadcrumb-active-color:           $gray-darker !default;
 
 $breadcrumb-border-radius:          0 !default;
 $breadcrumb-margin-bottom:          0 !default;
@@ -335,7 +336,7 @@ $ribbon-bg-colors: map-merge((
 
 $nav-tabs-border-radius					: 0 !default;
 
-$nav-tabs-link-hover-border-color		: 0 !default;
+$nav-tabs-link-hover-border-color		: transparent !default;
 $nav-tabs-link-active-color				: $link-color !default;
 $nav-tabs-link-active-bg				: transparent !default;
 $nav-tabs-link-active-border-color		: $primary !default;
@@ -347,21 +348,11 @@ $navbar-padding-y         : .4rem !default;
 $navbar-padding-y-lg      : .6rem !default;
 $navbar-image-height      : 2rem !default;
 $navbar-image-height-lg   : 50px !default;
-
-/* navs */
-
-$nav-tabs-border-radius					: 0 !default;
-
-$nav-tabs-link-hover-border-color		: 0 !default;
-$nav-tabs-link-active-color				: $link-color !default;
-$nav-tabs-link-active-bg				: transparent !default;
-$nav-tabs-link-active-border-color		: $primary !default;
-
 /* modals */
 
 $modal-inner-padding			: $spacer 0 !default;
 
-$modal-content-padding			: map-get($spacers, 4) map-get($spacers, 5) !default;
+$modal-content-padding			: $spacer map-get($spacers, 5) !default;
 $modal-content-padding-sm   	: $spacer !default;
 $modal-content-border-width		: 0 !default;
 $modal-content-box-shadow-sm-up	: 0 0 rem(10px) transparentize($black, .9) !default;
@@ -391,11 +382,19 @@ $dropdown-box-shadow		: 0 rem(1px) rem(12px) transparentize($black, .84) !defaul
 $dropdown-border-width		: 0 !default;
 $dropdown-border-radius		: 0 !default;
 
-$dropdown-link-color		: $gray-darker !default;
-$dropdown-link-hover-color	: $gray-darker !default;
-$dropdown-link-hover-bg		: $gray-lighter !default;
+$dropdown-link-bg-color	    : $bg-main-ligther !default;
 
-$dropdown-link-active-color	: $dropdown-link-hover-color !default;
-$dropdown-link-active-bg	: $dropdown-link-hover-bg !default;
+$dropdown-link-color		: $header-color !default;
+$dropdown-link-hover-color	: $header-color !default;
+$dropdown-link-hover-bg		: lighten($bg-main-ligther, 10%) !default;
+
+$dropdown-link-active-color	: $header-color !default;
+$dropdown-link-active-bg	: lighten($bg-main-ligther, 10%) !default;
+
+$dropdown-divider-bg        : $border-color !default;
 
 $dropdown-padding-y         : 0 !default;
+
+//theme specific:
+$hr-border-color: $border-color;
+

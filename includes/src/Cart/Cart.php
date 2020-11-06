@@ -893,12 +893,12 @@ class Cart
 
     /**
      * gibt Gesamtanzahl eines bestimmten Artikels im Warenkorb zurueck
-     * @param int $productID
-     * @param int $excludePos
-     * @param bool $countParentProducts
+     * @param int|null $productID
+     * @param int      $excludePos
+     * @param bool     $countParentProducts
      * @return int|float
      */
-    public function gibAnzahlEinesArtikels(int $productID, int $excludePos = -1, bool $countParentProducts = false)
+    public function gibAnzahlEinesArtikels(?int $productID, int $excludePos = -1, bool $countParentProducts = false)
     {
         if (!$productID) {
             return 0;

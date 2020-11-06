@@ -522,7 +522,7 @@ class PortletInstance implements \JsonSerializable
         $srcset   = '';
         $srcsizes = '';
 
-        $filepath   = \PFAD_ROOT . \STORAGE_OPC . \basename(\urldecode($src));
+        $filepath   = \PFAD_ROOT . \STORAGE_OPC . \urldecode($src);
         $sizes      = \is_file($filepath) ? \getimagesize($filepath) : [0, 0];
         $realWidth  = $sizes[0];
         $realHeight = $sizes[1];
@@ -538,7 +538,7 @@ class PortletInstance implements \JsonSerializable
                 'realHeight' => $realHeight,
             ];
         }
-        $this->generateAllImageSizes(true, 1, \rawurldecode(\basename($src)));
+        $this->generateAllImageSizes(true, 1, \rawurldecode($src));
         foreach ($this->getImages()[1] as $size => $url) {
             $url   = \str_replace(' ', '%20', $url);
             $width = self::$dirSizes[$size] ?? null;

@@ -13,7 +13,8 @@
             {/if}
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <meta http-equiv="X-UA-Compatible" content="IE=edge">
-            <meta name="robots" content="{if $robotsContent}{$robotsContent}{elseif $bNoIndex === true  || (isset($Link) && $Link->getNoFollow() === true)}noindex{else}index, follow{/if}">
+            {$noindex = $bNoIndex === true  || (isset($Link) && $Link->getNoFollow() === true)}
+            <meta name="robots" content="{if $robotsContent}{$robotsContent}{elseif $noindex}noindex{else}index, follow{/if}">
 
             <meta itemprop="url" content="{$cCanonicalURL}"/>
             <meta name="theme-color" content="#f8bf00">
@@ -37,7 +38,7 @@
 
         <title itemprop="name">{block name='layout-header-head-title'}{$meta_title}{/block}</title>
 
-        {if !empty($cCanonicalURL)}
+        {if !empty($cCanonicalURL) && !$noindex}
             <link rel="canonical" href="{$cCanonicalURL}">
         {/if}
 
@@ -328,7 +329,7 @@
 
                             {block name='layout-header-search'}
                                 {if $Einstellungen.template.theme.mobile_search_type === 'fixed'}
-                                    <div class="d-lg-none{if !$isTablet} container-fluid container-fluid-xl py-2 order-1 bg-white{else} px-4 py-2 flex-grow-1{/if}">
+                                    <div class="d-lg-none{if !$isTablet} container-fluid container-fluid-xl py-2 order-1 {else} px-4 py-2 flex-grow-1{/if}">
                                         {include file='snippets/search_form.tpl' id='search-header-mobile-top'}
                                     </div>
                                 {/if}

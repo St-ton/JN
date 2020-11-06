@@ -11,15 +11,11 @@
                             <label for="gift{$oArtikelGeschenk->kArtikel}">
                                 {block name='page-freegift-freegift-image'}
                                     {link href=$oArtikelGeschenk->cURLFull}
-                                        {image fluid=true webp=true lazy=true
-                                            alt=$oArtikelGeschenk->cName
-                                            src=$oArtikelGeschenk->Bilder[0]->cURLMini
-                                            srcset="{$oArtikelGeschenk->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                {$oArtikelGeschenk->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                {$oArtikelGeschenk->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
-                                                {$oArtikelGeschenk->Bilder[0]->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
-                                            sizes="200px"
-                                        }
+                                        {include file='snippets/image.tpl'
+                                            item=$oArtikelGeschenk
+                                            square=false
+                                            srcSize='sm'
+                                            sizes='200px'}
                                     {/link}
                                 {/block}
                                 {block name='page-freegift-freegift-info'}

@@ -772,3 +772,23 @@
 .product-attributes {
 	margin-top: map_get($spacers, 3);
 }
+
+.estimated-delivery {
+	color: $text-muted;
+	font-size: $font-size-sm;
+	cursor: pointer;
+	display: inline-block;
+	> span {
+		white-space: nowrap
+	}
+	.estimated-delivery-info {
+		text-decoration: underline;
+
+	}
+	&:hover {
+		.estimated-delivery-info {
+			color: $primary;
+			text-decoration: none;
+		}
+	}
+}

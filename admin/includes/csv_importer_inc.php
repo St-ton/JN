@@ -24,7 +24,7 @@ use JTL\Shop;
  *      2 = insert only non-existing
  * @return int - -1 if importer-id-mismatch / 0 on success / >1 import error count
  */
-function handleCsvImportAction($importerId, $target, $fields = [], $delim = null, $importType = 2)
+function handleCsvImportAction($importerId, $target, $fields = [], $delim = null, $importType = 2, &$errors = [])
 {
     if (Form::validateToken() === false || Request::verifyGPDataString('importcsv') !== $importerId) {
         return -1;
@@ -37,6 +37,7 @@ function handleCsvImportAction($importerId, $target, $fields = [], $delim = null
         && $csvMime !== 'application/csv'
         && $csvMime !== 'application/vnd.msexcel'
     ) {
+        $errors[] = 'Gewählte Datei hat einen ungültigen MIME-Typen.';
         return 1;
     }
 
@@ -45,8 +46,8 @@ function handleCsvImportAction($importerId, $target, $fields = [], $delim = null
     $nErrors           = 0;
     $importDeleteDone  = false;
     $oldRedirectFormat = false;
-    $mapArticleNumber  = false;
     $defLanguage       = LanguageHelper::getDefaultLanguage();
+    $rowIndex          = 2;
 
     if ($delim === null) {
         $delim = getCsvDelimiter($csvFilename);
@@ -56,6 +57,9 @@ function handleCsvImportAction($importerId, $target, $fields = [], $delim = null
         $fields = fgetcsv($fs, 0, $delim);
     }
 
+    $articleNumberPresent = false;
+    $destUrlPresent       = false;
+
     foreach ($fields as &$field) {
         if ($field === 'sourceurl') {
             $field             = 'cFromUrl';
@@ -63,18 +67,28 @@ function handleCsvImportAction($importerId, $target, $fields = [], $delim = null
         } elseif ($field === 'destinationurl') {
             $field             = 'cToUrl';
             $oldRedirectFormat = true;
+            $destUrlPresent    = true;
         } elseif ($field === 'articlenumber') {
-            $field             = 'cArtNr';
-            $oldRedirectFormat = true;
-            $mapArticleNumber  = true;
+            $field                = 'cArtNr';
+            $oldRedirectFormat    = true;
+            $articleNumberPresent = true;
         } elseif ($field === 'languageiso') {
             $field             = 'cIso';
             $oldRedirectFormat = true;
-            $mapArticleNumber  = true;
         }
     }
 
     unset($field);
+
+    if ($oldRedirectFormat) {
+        if ($destUrlPresent === false && $articleNumberPresent === false) {
+            $errors[] = 'CSV enthält weder Artikelnummern noch Ziel-URLs.';
+            return 1;
+        } elseif ($destUrlPresent === true && $articleNumberPresent === true) {
+            $errors[] = 'CSV enthält sowohl Artikelnummern als Ziel-URLs und darf nur eines von beiden beinhalten.';
+            return 1;
+        }
+    }
 
     if (isset($_REQUEST['importType'])) {
         $importType = Request::verifyGPCDataInt('importType');
@@ -102,8 +116,15 @@ function handleCsvImportAction($importerId, $target, $fields = [], $delim = null
             $obj->cFromUrl = $from;
         }
 
-        if ($mapArticleNumber) {
+        if ($articleNumberPresent) {
             $obj->cToUrl = getArtNrUrl($obj->cArtNr, $obj->cIso ?? $defLanguage->cISO);
+
+            if (empty($obj->cToUrl)) {
+                ++$nErrors;
+                $errors[] = 'Artikelnummer ' . $obj->cArtNr . ' konnte nicht im Shop gefunden werden.';
+                continue;
+            }
+
             unset($obj->cArtNr, $obj->cIso);
         }
 
@@ -118,19 +139,18 @@ function handleCsvImportAction($importerId, $target, $fields = [], $delim = null
 
             if ($importType === 0 || $importerId === 2) {
                 $res = Shop::Container()->getDB()->insert($table, $obj);
-
-                if ($res === 0) {
-                    ++$nErrors;
-                }
             } elseif ($importType === 1) {
                 Shop::Container()->getDB()->delete($target, $fields, $row);
                 $res = Shop::Container()->getDB()->insert($table, $obj);
+            }
 
-                if ($res === 0) {
-                    ++$nErrors;
-                }
+            if ($res === 0) {
+                ++$nErrors;
+                $errors[] = 'Zeile ' . $rowIndex . ' konnte nicht gespeichert werden.';
             }
         }
+
+        ++$rowIndex;
     }
 
     return $nErrors;

@@ -20,10 +20,19 @@ $oAccount->permission('REDIRECT_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_exporter_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_importer_inc.php';
 
-handleCsvImportAction('redirects', 'tredirect');
+$alertHelper  = Shop::Container()->getAlertService();
+$errors       = [];
+$importResult = handleCsvImportAction('redirects', 'tredirect', [], null, 2, $errors);
 
-$redirects   = $_POST['redirects'] ?? [];
-$alertHelper = Shop::Container()->getAlertService();
+if ($importResult > 0) {
+    $alertHelper->addAlert(
+        Alert::TYPE_ERROR,
+        __('errorImport') . '<br><br>' . implode('<br>', $errors),
+        'errorImport'
+    );
+}
+
+$redirects = $_POST['redirects'] ?? [];
 
 if (Form::validateToken()) {
     switch (Request::verifyGPDataString('action')) {

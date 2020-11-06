@@ -85,46 +85,52 @@
             {row class="row-eq-height content-cats-small"}
                 {foreach $oUnterKategorien_arr as $subCategory}
                     {col cols=12 md=4 lg=3}
-                        {link href=$subCategory->getURL()}
+                        <div class="sub-categories"
                             {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}
                                 {block name='productlist-header-subcategories-image'}
-                                    <div class="subcategories-image d-none d-md-flex">
-                                        {image fluid=true lazy=true webp=true
-                                            src=$subCategory->getImage(\JTL\Media\Image::SIZE_SM)
-                                            alt=$subCategory->getName()}
-                                    </div>
+                                    {link href=$subCategory->getURL()}
+                                        <div class="subcategories-image d-none d-md-flex">
+                                            {image fluid=true lazy=true webp=true
+                                                src=$subCategory->getImage(\JTL\Media\Image::SIZE_SM)
+                                                alt=$subCategory->getName()}
+                                        </div>
+                                    {/link}
                                 {/block}
                             {/if}
-                            {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'B'}
-                                {block name='productlist-header-subcategories-link'}
-                                    <div class="caption">
-                                        {$subCategory->getName()}
-                                    </div>
-                                {/block}
-                            {/if}
-                        {/link}
-                        {if $Einstellungen.navigationsfilter.unterkategorien_beschreibung_anzeigen === 'Y'
-                                && !empty($subCategory->getDescription())}
-                            {block name='productlist-header-subcategories-description'}
-                                <p class="item_desc small text-muted-util d-none d-md-block">
-                                    {$subCategory->getDescription()|strip_tags|truncate:68}
-                                </p>
-                            {/block}
-                        {/if}
-                        {if $Einstellungen.navigationsfilter.unterkategorien_lvl2_anzeigen === 'Y'}
-                            {if $subCategory->hasChildren()}
-                                {block name='productlist-header-subcategories-list'}
-                                    <hr class="d-none d-md-block">
-                                    <ul class="d-none d-md-block">
-                                        {foreach $subCategory->getChildren() as $subChild}
-                                            <li>
-                                                {link href=$subChild->getURL() title=$subChild->getName()}{$subChild->getName()}{/link}
-                                            </li>
-                                        {/foreach}
-                                    </ul>
-                                {/block}
-                            {/if}
-                        {/if}
+                            <div>
+                                {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'B'}
+                                    {block name='productlist-header-subcategories-link'}
+                                        <div class="caption">
+                                            {link href=$subCategory->getURL()}
+                                                {$subCategory->getName()}
+                                            {/link}
+                                        </div>
+                                    {/block}
+                                {/if}
+                                {if $Einstellungen.navigationsfilter.unterkategorien_beschreibung_anzeigen === 'Y'
+                                        && !empty($subCategory->getDescription())}
+                                    {block name='productlist-header-subcategories-description'}
+                                        <p class="item_desc small text-muted-util d-none d-md-block">
+                                            {$subCategory->getDescription()|strip_tags|truncate:68}
+                                        </p>
+                                    {/block}
+                                {/if}
+                                {if $Einstellungen.navigationsfilter.unterkategorien_lvl2_anzeigen === 'Y'}
+                                    {if $subCategory->hasChildren()}
+                                        {block name='productlist-header-subcategories-list'}
+                                            <hr class="d-none d-md-block">
+                                            <ul class="d-none d-md-block">
+                                                {foreach $subCategory->getChildren() as $subChild}
+                                                    <li>
+                                                        {link href=$subChild->getURL() title=$subChild->getName()}{$subChild->getName()}{/link}
+                                                    </li>
+                                                {/foreach}
+                                            </ul>
+                                        {/block}
+                                    {/if}
+                                {/if}
+                            </div>
+                        </div>
                     {/col}
                 {/foreach}
             {/row}

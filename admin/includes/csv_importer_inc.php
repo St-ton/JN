@@ -37,7 +37,7 @@ function handleCsvImportAction($importerId, $target, $fields = [], $delim = null
         && $csvMime !== 'application/csv'
         && $csvMime !== 'application/vnd.msexcel'
     ) {
-        $errors[] = 'Gewählte Datei hat einen ungültigen MIME-Typen.';
+        $errors[] = __('csvImportInvalidMime');
         return 1;
     }
 
@@ -82,10 +82,10 @@ function handleCsvImportAction($importerId, $target, $fields = [], $delim = null
 
     if ($oldRedirectFormat) {
         if ($destUrlPresent === false && $articleNumberPresent === false) {
-            $errors[] = 'CSV enthält weder Artikelnummern noch Ziel-URLs.';
+            $errors[] = __('csvImportNoArtNrOrDestUrl');
             return 1;
         } elseif ($destUrlPresent === true && $articleNumberPresent === true) {
-            $errors[] = 'CSV enthält sowohl Artikelnummern als Ziel-URLs und darf nur eines von beiden beinhalten.';
+            $errors[] = __('csvImportArtNrAndDestUrlError');
             return 1;
         }
     }
@@ -121,7 +121,7 @@ function handleCsvImportAction($importerId, $target, $fields = [], $delim = null
 
             if (empty($obj->cToUrl)) {
                 ++$nErrors;
-                $errors[] = 'Artikelnummer ' . $obj->cArtNr . ' konnte nicht im Shop gefunden werden.';
+                $errors[] = \sprintf(__('csvImportArtNrNotFound'), $obj->cArtNr);
                 continue;
             }
 
@@ -146,7 +146,7 @@ function handleCsvImportAction($importerId, $target, $fields = [], $delim = null
 
             if ($res === 0) {
                 ++$nErrors;
-                $errors[] = 'Zeile ' . $rowIndex . ' konnte nicht gespeichert werden.';
+                $errors[] = \sprintf(__('csvImportSaveError'), $rowIndex);
             }
         }
 

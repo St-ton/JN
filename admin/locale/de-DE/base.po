@@ -2032,3 +2032,18 @@ msgstr "Falls für dieses Konto eine Verknüpfung mit dem JTL-Extension Store be
 
 msgid "errrorNumberRange"
 msgstr "Der Wert der Einstellung \"%s\" muss zwischen %d und %d liegen."
+
+msgid "csvImportInvalidMime"
+msgstr "Gewählte Datei hat einen ungültigen MIME-Typen"
+
+msgid "csvImportNoArtNrOrDestUrl"
+msgstr "CSV enthält weder Artikelnummern noch Ziel-URLs."
+
+msgid "csvImportArtNrAndDestUrlError"
+msgstr "CSV enthält sowohl Artikelnummern als Ziel-URLs und darf nur eines von beiden beinhalten."
+
+msgid "csvImportArtNrNotFound"
+msgstr "Artikelnummer %s konnte nicht im Shop gefunden werden."
+
+msgid "csvImportSaveError"
+msgstr "Zeile %s konnte nicht gespeichert werden."

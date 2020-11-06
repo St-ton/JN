@@ -19409,6 +19409,11 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
 .navbar-toggler[aria-expanded=false] .navbar-toggler-icon:after {
   transform: translateX(-50%) translateY(0.375rem);
 }
+@media (min-width: 992px) {
+  .navbar-toggler {
+    display: none;
+  }
+}
 
 .nav-scrollbar {
   overflow: hidden;
@@ -22831,6 +22836,23 @@ input.typeahead:-ms-input-placeholder {
 
 .simple-captcha-wrapper {
   text-align: center;
+}
+
+@media (max-width: 991.98px) {
+  .burger-menu-wrapper {
+    position: absolute;
+    top: 8px;
+  }
+}
+
+.logo-wrapper {
+  float: left;
+}
+@media (max-width: 991.98px) {
+  .logo-wrapper {
+    position: absolute;
+    left: 46px;
+  }
 }
 
 /* utilities */

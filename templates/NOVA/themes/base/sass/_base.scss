@@ -513,3 +513,16 @@ input.typeahead {
 .simple-captcha-wrapper {
   text-align: center;
 }
+.burger-menu-wrapper {
+  @include media-breakpoint-down(md) {
+    position: absolute;
+    top: 8px;
+  }
+}
+.logo-wrapper {
+  float: left;
+  @include media-breakpoint-down(md) {
+    position: absolute;
+    left: 46px;
+  }
+}

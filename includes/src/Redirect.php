@@ -188,6 +188,7 @@ class Redirect
     /**
      * @param string $file
      * @return array
+     * @deprecated since 5.0.0
      */
     public function doImport(string $file): array
     {
@@ -229,6 +230,7 @@ class Redirect
      * @param array  $mapping
      * @param object $language
      * @return $this
+     * @deprecated since 5.0.0
      */
     protected function import($csv, $row, &$errors, $mapping, $language): self
     {
@@ -297,6 +299,7 @@ class Redirect
      *
      * @param array $rows
      * @return array|null
+     * @deprecated since 5.0.0
      */
     public function readHeadRow($rows): ?array
     {

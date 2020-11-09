@@ -19409,6 +19409,11 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
 .navbar-toggler[aria-expanded=false] .navbar-toggler-icon:after {
   transform: translateX(-50%) translateY(0.375rem);
 }
+@media (min-width: 992px) {
+  .navbar-toggler {
+    display: none;
+  }
+}
 
 .nav-scrollbar {
   overflow: hidden;
@@ -24842,7 +24847,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 
 /* header */
-#header-top-bar {
+.topbar-wrapper {
   position: relative;
   z-index: 1021;
   flex-direction: row-reverse;

@@ -151,10 +151,15 @@ class MigrationManager
         try {
             $this->db->beginTransaction();
             $migration->$direction();
-            $this->db->commit();
+            if ($this->db->getPDO()->inTransaction()) {
+                // Transaction may be committed by DDL in migration
+                $this->db->commit();
+            }
             $this->migrated($migration, $direction, $start);
         } catch (Exception $e) {
-            $this->db->rollback();
+            if ($this->db->getPDO()->inTransaction()) {
+                $this->db->rollback();
+            }
             $migrationFile = new \ReflectionClass($migration->getName());
 
             throw new Exception(

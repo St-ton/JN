@@ -28,7 +28,12 @@ use JTL\Shop;
  * @throws InvalidArgumentException
  */
 function handleCsvImportAction(
-    string $importerId, $target, array $fields = [], $delim = null, int $importType = 2, &$errors = []
+    string $importerId,
+    $target,
+    array $fields = [],
+    $delim = null,
+    int $importType = 2,
+    &$errors = []
 ) {
     if (Form::validateToken() === false || Request::verifyGPDataString('importcsv') !== $importerId) {
         return -1;

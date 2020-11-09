@@ -22,12 +22,28 @@ use JTL\Shop;
  *      0 = clear table, then import (careful!!! again: this will clear the table denoted by $target)
  *      1 = insert new, overwrite existing
  *      2 = insert only non-existing
+ * @param string[] - output a list of error messages
  * @return int - -1 if importer-id-mismatch / 0 on success / >1 import error count
+ * @throws TypeError
+ * @throws InvalidArgumentException
  */
-function handleCsvImportAction($importerId, $target, $fields = [], $delim = null, $importType = 2, &$errors = [])
-{
+function handleCsvImportAction(
+    string $importerId, $target, array $fields = [], $delim = null, int $importType = 2, &$errors = []
+) {
     if (Form::validateToken() === false || Request::verifyGPDataString('importcsv') !== $importerId) {
         return -1;
+    }
+
+    if (!is_string($target) && !is_callable($target)) {
+        throw new TypeError('argument $target must be either a string or a callable');
+    }
+
+    if (isset($_REQUEST['importType'])) {
+        $importType = Request::verifyGPCDataInt('importType');
+    }
+
+    if ($importType !== 0 && $importType !== 1 && $importType !== 2) {
+        throw new InvalidArgumentException('$importType must be 0, 1 or 2');
     }
 
     $csvMime = $_FILES['csvfile']['type'] ?? null;
@@ -84,14 +100,12 @@ function handleCsvImportAction($importerId, $target, $fields = [], $delim = null
         if ($destUrlPresent === false && $articleNumberPresent === false) {
             $errors[] = __('csvImportNoArtNrOrDestUrl');
             return 1;
-        } elseif ($destUrlPresent === true && $articleNumberPresent === true) {
+        }
+
+        if ($destUrlPresent === true && $articleNumberPresent === true) {
             $errors[] = __('csvImportArtNrAndDestUrlError');
             return 1;
         }
-    }
-
-    if (isset($_REQUEST['importType'])) {
-        $importType = Request::verifyGPCDataInt('importType');
     }
 
     if ($importType === 0 && is_string($target)) {
@@ -106,7 +120,7 @@ function handleCsvImportAction($importerId, $target, $fields = [], $delim = null
         }
 
         if ($oldRedirectFormat) {
-            $parsed = \parse_url($obj->cFromUrl);
+            $parsed = parse_url($obj->cFromUrl);
             $from   = $parsed['path'];
 
             if (isset($parsed['query'])) {
@@ -121,7 +135,7 @@ function handleCsvImportAction($importerId, $target, $fields = [], $delim = null
 
             if (empty($obj->cToUrl)) {
                 ++$nErrors;
-                $errors[] = \sprintf(__('csvImportArtNrNotFound'), $obj->cArtNr);
+                $errors[] = sprintf(__('csvImportArtNrNotFound'), $obj->cArtNr);
                 continue;
             }
 
@@ -134,7 +148,7 @@ function handleCsvImportAction($importerId, $target, $fields = [], $delim = null
             if ($res === false) {
                 ++$nErrors;
             }
-        } elseif (is_string($target)) {
+        } else { // is_string($target)
             $table = $target;
 
             if ($importType === 0 || $importerId === 2) {
@@ -146,7 +160,7 @@ function handleCsvImportAction($importerId, $target, $fields = [], $delim = null
 
             if ($res === 0) {
                 ++$nErrors;
-                $errors[] = \sprintf(__('csvImportSaveError'), $rowIndex);
+                $errors[] = sprintf(__('csvImportSaveError'), $rowIndex);
             }
         }
 
@@ -163,7 +177,7 @@ function handleCsvImportAction($importerId, $target, $fields = [], $delim = null
  */
 function getArtNrUrl(string $artNo, string $iso): ?string
 {
-    if (\mb_strlen($artNo) === 0) {
+    if ($artNo === '') {
         return null;
     }
 
@@ -178,9 +192,9 @@ function getArtNrUrl(string $artNo, string $iso): ?string
                 AND tseo.kSprache = tsprache.kSprache
             WHERE tartikel.cArtNr = :artno
             LIMIT 1",
-        ['iso' => \mb_convert_case($iso, \MB_CASE_LOWER), 'artno' => $artNo],
+        ['iso' => mb_convert_case($iso, MB_CASE_LOWER), 'artno' => $artNo],
         ReturnType::SINGLE_OBJECT
     );
 
-    return URL::buildURL($item, \URLART_ARTIKEL);
+    return URL::buildURL($item, URLART_ARTIKEL);
 }

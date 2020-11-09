@@ -20107,9 +20107,6 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
 .carousel:hover .slick-arrow {
   opacity: 1;
 }
-.carousel .slick-slider-mb {
-  margin-bottom: 1.5rem;
-}
 
 .slick-track {
   display: flex;
@@ -22390,11 +22387,6 @@ ul.partlist-items {
 }
 .delivery-status .status-2 {
   color: #1C871E;
-}
-
-.estimated-delivery {
-  color: #707070;
-  font-size: 12px;
 }
 
 /* ADR hazard sign */
@@ -24689,6 +24681,9 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 #pushed-success .card-header {
   text-align: center;
 }
+#pushed-success .pushed-success-image-wrapper {
+  margin-bottom: 1rem;
+}
 
 .reviews,
 #description .desc .h3 {
@@ -24743,6 +24738,23 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 
 .product-attributes {
   margin-top: 1rem;
+}
+
+.estimated-delivery {
+  color: #707070;
+  font-size: 0.75rem;
+  cursor: pointer;
+  display: inline-block;
+}
+.estimated-delivery > span {
+  white-space: nowrap;
+}
+.estimated-delivery .estimated-delivery-info {
+  text-decoration: underline;
+}
+.estimated-delivery:hover .estimated-delivery-info {
+  color: #1973D3;
+  text-decoration: none;
 }
 
 /* comparelist */
@@ -25877,6 +25889,10 @@ header #burger-menu {
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
 }
+.snippets-filter-mobile-sorting .snippets-filter-mobile-sorting-collapse .dropdown-item {
+  background-color: transparent;
+  color: #525252;
+}
 .snippets-filter-mobile-sorting .snippets-filter-mobile-sorting-link {
   text-decoration: none;
   text-align: left;
@@ -25953,8 +25969,11 @@ header #burger-menu {
 }
 
 /* product-slider */
-.slick-slider-other {
+.slick-slider-other.is-not-opc {
   margin-bottom: 2rem;
+}
+.slick-slider-other.is-not-opc .carousel {
+  margin-bottom: 1.5rem;
 }
 .slick-slider-other .slick-slider-other-container {
   padding-left: 0;
@@ -25966,7 +25985,7 @@ header #burger-menu {
     padding-right: 1rem;
   }
 }
-.slick-slider-other .slick-slider-other-container .hr-sect {
+.slick-slider-other .hr-sect {
   margin-bottom: 2rem;
 }
 
@@ -26017,7 +26036,7 @@ header #burger-menu {
 @media (min-width: 992px) {
   .wishlist-button {
     display: inline-block;
-    border: 1px solid #ebebeb;
+    border-right: 1px solid #ebebeb;
   }
 }
 .wishlist-button .wishlist-button-inner {

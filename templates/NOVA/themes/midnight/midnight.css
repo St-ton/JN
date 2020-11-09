@@ -25140,29 +25140,6 @@ header #burger-menu {
   margin-top: auto;
   padding: 1.5rem 0 0;
 }
-#footer .form-control {
-  background-color: #1C1D2C;
-  color: #ffffff;
-}
-#footer .form-control::placeholder {
-  color: #ffffff;
-}
-#footer .label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) label {
-  background: #1C1D2C;
-  color: #ffffff;
-}
-#footer a {
-  color: #ffffff;
-}
-#footer a:hover:not(.btn) {
-  color: #1973D3;
-}
-#footer .productlist-filter-headline {
-  color: #ffffff;
-}
-#footer .newsletter-footer-heading {
-  color: #ffffff;
-}
 #footer li {
   margin-bottom: 0.5rem;
 }
@@ -26202,6 +26179,30 @@ header #burger-menu {
   header {
     border-bottom: 4px solid #1973D3;
   }
+}
+
+#footer .form-control {
+  background-color: #1C1D2C;
+  color: #ffffff;
+}
+#footer .form-control::placeholder {
+  color: #ffffff;
+}
+#footer .label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) label {
+  background: #1C1D2C;
+  color: #ffffff;
+}
+#footer a {
+  color: #ffffff;
+}
+#footer a:hover:not(.btn) {
+  color: #1973D3;
+}
+#footer .productlist-filter-headline {
+  color: #ffffff;
+}
+#footer .newsletter-footer-heading {
+  color: #ffffff;
 }
 
 /*# sourceMappingURL=midnight.css.map */

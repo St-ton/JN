@@ -25140,29 +25140,6 @@ header #burger-menu {
   margin-top: auto;
   padding: 1.5rem 0 0;
 }
-#footer .form-control {
-  background-color: #f5f7fa;
-  color: #707070;
-}
-#footer .form-control::placeholder {
-  color: #707070;
-}
-#footer .label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) label {
-  background: #f5f7fa;
-  color: #707070;
-}
-#footer a {
-  color: #707070;
-}
-#footer a:hover:not(.btn) {
-  color: #F8BF00;
-}
-#footer .productlist-filter-headline {
-  color: #707070;
-}
-#footer .newsletter-footer-heading {
-  color: #707070;
-}
 #footer li {
   margin-bottom: 0.5rem;
 }

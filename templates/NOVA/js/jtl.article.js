@@ -157,7 +157,7 @@
                     let $galleryTopbar = $('#image_wrapper .product-detail-image-topbar');
 
                     otherElemHeight = $galleryTopbar.outerHeight()
-                        + parseInt($galleryTopbar.css('marginBottom'))
+                        + 2*parseInt($imgWrapper.css('paddingTop'))
                         + previewHeight;
 
                     $galleryImages.removeAttr('sizes');

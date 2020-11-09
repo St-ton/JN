@@ -175,3 +175,6 @@ msgstr "Enter token"
 
 msgid "Manually enter token"
 msgstr "Manually enter token"
+
+msgid "License for extension already bound to domain"
+msgstr "License for extension already bound to domain"

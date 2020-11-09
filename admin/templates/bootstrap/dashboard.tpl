@@ -31,7 +31,7 @@
                             <span class="fas fa-cog"></span>
                         </span>
                     </button>
-                    <div class="dropdown-menu dropdown-menu-right min-w-lg" aria-labelledby="helpcenter">
+                    <div id="available-widgets" class="dropdown-menu dropdown-menu-right min-w-lg" aria-labelledby="helpcenter">
                         {include file='tpl_inc/widget_selector.tpl' oAvailableWidget_arr=$oAvailableWidget_arr}
                     </div>
                 </div>

@@ -48,9 +48,11 @@ $(function () {
         // add click handler for widgets close button
         $('<a href="#" class="ml-2 btn-sm"><i class="fal fa-times"></li></a>')
             .on('click', function (e) {
-                ioCall('closeWidget', [widgetId]);
-                $widget.slideUp('fast');
                 e.preventDefault();
+                ioCall('closeWidget', [widgetId], function (result) {
+                    ioCall('getAvailableWidgets');
+                    $widget.slideUp('fast');
+                });
             })
             .appendTo($('.options', widget));
     });

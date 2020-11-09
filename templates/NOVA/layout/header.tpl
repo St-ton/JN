@@ -290,7 +290,7 @@
         {block name='layout-header-header'}
             {block name='layout-header-branding-top-bar'}
                 {if !$isMobile}
-                    <div id="header-top-bar" class="d-none topbar-wrapper {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}">
+                    <div id="header-top-bar" class="d-none topbar-wrapper {if $Einstellungen.template.megamenu.header_full_width === 'Y'}is-fullwidth{/if} {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}">
                         <div class="container-fluid {if $Einstellungen.template.megamenu.header_full_width === 'N'}container-fluid-xl{/if} {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex flex-row-reverse{/if}">
                             {include file='layout/header_top_bar.tpl'}
                         </div>

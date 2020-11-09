@@ -456,8 +456,15 @@ hr {
   background-color: $footer-bg-color;
   color: $footer-color;
 }
+
+/* header logo position - start */
 .toggler-logo-wrapper {
   float: none;
+  @include media-breakpoint-up(lg) {
+    .logo-wrapper {
+      padding-left: map-get($spacers, 4);
+    }
+  }
   @include media-breakpoint-down(md) {
     position: absolute;
     .logo-wrapper {
@@ -473,4 +480,11 @@ hr {
   float: right;
   position: sticky;
   top: 0;
+  &:not(.is-fullwidth) {
+    /* max-width of container-fluid-xl + padding of container-fluid */
+    @media (min-width: 103.125rem + 2rem) {
+      margin-right: calc((100vw - 103.125rem - 2rem) / 2);
+    }
+  }
 }
+/* header logo position - end */

@@ -17,7 +17,9 @@
             <meta name="robots" content="{if $robotsContent}{$robotsContent}{elseif $noindex}noindex{else}index, follow{/if}">
 
             <meta itemprop="url" content="{$cCanonicalURL}"/>
-            <meta name="theme-color" content="#f8bf00">
+            {block name='layout-header-head-theme-color'}
+                <meta name="theme-color" content="{if $Einstellungen.template.theme.theme_default === 'clear'}#f8bf00{else}#1C1D2C{/if}">
+            {/block}
             <meta property="og:type" content="website" />
             <meta property="og:site_name" content="{$meta_title}" />
             <meta property="og:title" content="{$meta_title}" />

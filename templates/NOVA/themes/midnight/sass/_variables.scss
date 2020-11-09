@@ -45,12 +45,6 @@ $theme-colors: map-merge((
         'gray-darker'	: $gray-darker
 ), $theme-colors);
 
-$copyright-bg-color:               $primary !default;
-$footer-bg-color:                  $bg-main !default;
-$footer-color:                     $white !default;
-$header-bg-color:                  $bg-main !default;
-$header-color:                     $white !default;
-
 // spacer
 
 $spacer: 1rem !default;
@@ -145,7 +139,14 @@ $transition-fade:                   opacity .35s linear !default;
 $highlight-border-size:             .375rem !default;
 
 $body-bg:                           $gray-100 !default;
-$body-color:                        $gray-600 !default;
+$body-color:                        $gray-700 !default;
+$table-color:                       $body-color !default;
+
+$copyright-bg-color:               $primary !default;
+$footer-bg-color:                  $bg-main !default;
+$footer-color:                     $white !default;
+$header-bg-color:                  $bg-main !default;
+$header-color:                     $white !default;
 
 $headings-color:                    $gray-700 !default;
 $navbar-light-hover-color:          $primary !default;

@@ -344,7 +344,7 @@ class Notification implements IteratorAggregate, Countable
             'created'           => 'NOW()',
         ], ['created']);
 
-        $this->updateNotifications($response);
+        $response->assignDom($hash, 'outerHTML', '');
     }
 
     /**
@@ -383,6 +383,12 @@ class Notification implements IteratorAggregate, Countable
             ],
             ReturnType::COLLECTION
         );
+
+        if ($res === 0) {
+            $response->assignDom('notify-drop', 'innerHTML', \getNotifyDropIO()['tpl']);
+
+            return;
+        }
 
         $hashes = $res->keyBy('notification_hash');
         foreach ($this->array as $notificationEntry) {

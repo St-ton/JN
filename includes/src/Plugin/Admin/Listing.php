@@ -125,12 +125,20 @@ final class Listing
      */
     public function getAll(Collection $installed): Collection
     {
+        if ($this->items->count() > 0) {
+            return $this->items;
+        }
         $parser = new XMLParser();
         $this->parsePluginsDir($parser, self::PLUGINS_DIR, $installed);
         $this->parsePluginsDir($parser, self::LEGACY_PLUGINS_DIR, $installed);
         $this->sort();
 
         return $this->items;
+    }
+
+    public function reset(): void
+    {
+        $this->items = new Collection();
     }
 
     /**

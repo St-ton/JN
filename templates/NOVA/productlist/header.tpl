@@ -85,7 +85,7 @@
             {row class="row-eq-height content-cats-small"}
                 {foreach $oUnterKategorien_arr as $subCategory}
                     {col cols=12 md=4 lg=3}
-                        <div class="sub-categories"
+                        <div class="sub-categories">
                             {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}
                                 {block name='productlist-header-subcategories-image'}
                                     {link href=$subCategory->getURL()}

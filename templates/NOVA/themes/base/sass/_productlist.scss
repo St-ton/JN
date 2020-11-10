@@ -151,6 +151,13 @@
 }
 
 .content-cats-small {
+
+	@include media-breakpoint-up(md) {
+		> div {
+			margin-bottom: map_get($spacers, 3);
+		}
+	}
+
 	.sub-categories {
 		display: flex;
 	  	flex-direction: column;
@@ -159,6 +166,11 @@
 	  	align-items: stretch;
 	  	justify-content: space-between;
 	  	height: 100%;
+
+		.subcategories-image {
+			justify-content: center;
+			margin-bottom: map_get($spacers, 3);
+		}
 	}
 	@include clearfix();
 
@@ -169,7 +181,7 @@
 	.caption {
 		margin-bottom: map-get($spacers, 2);
 
-		@media (min-width: 768px) {
+		@include media-breakpoint-up(md) {
 			text-align: center;
 		}
 	}
@@ -180,11 +192,6 @@
 		padding-left: 0;
 		list-style: none;
 	}
-}
-
-.subcategories-image {
-	justify-content: center;
-	margin-bottom: map_get($spacers, 3);
 }
 
 .item-delivery-status {

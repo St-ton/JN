@@ -32,7 +32,7 @@ class SortingType
             case \SEARCH_SORT_NONE:
                 return None::class;
             case \SEARCH_SORT_STANDARD:
-            case \SEARCH_SORT_AVAILABILITY: // option remove in 5.0.0
+            case \SEARCH_SORT_AVAILABILITY: // option removed in 5.0.0
                 return SortDefault::class;
             case \SEARCH_SORT_NAME_ASC:
                 return NameASC::class;

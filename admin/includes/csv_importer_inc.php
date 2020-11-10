@@ -156,12 +156,11 @@ function handleCsvImportAction(
         } else { // is_string($target)
             $table = $target;
 
-            if ($importType === 0 || $importerId === 2) {
-                $res = Shop::Container()->getDB()->insert($table, $obj);
-            } elseif ($importType === 1) {
+            if ($importType === 1) {
                 Shop::Container()->getDB()->delete($target, $fields, $row);
-                $res = Shop::Container()->getDB()->insert($table, $obj);
             }
+
+            $res = Shop::Container()->getDB()->insert($table, $obj);
 
             if ($res === 0) {
                 ++$nErrors;

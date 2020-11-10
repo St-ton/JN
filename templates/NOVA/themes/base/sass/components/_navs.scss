@@ -25,6 +25,9 @@
 			&:after { transform: translateX(-50%) translateY(rem(6px)); }
 		}
 	}
+	@include media-breakpoint-up(lg) {
+		display: none;
+	}
 }
 
 // nav scrollbar

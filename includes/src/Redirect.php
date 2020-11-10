@@ -188,6 +188,7 @@ class Redirect
     /**
      * @param string $file
      * @return array
+     * @deprecated since 5.0.0 - \handleCsvImportAction() in /admin/includes/in csv_import__inc.php is used instead
      */
     public function doImport(string $file): array
     {
@@ -229,6 +230,7 @@ class Redirect
      * @param array  $mapping
      * @param object $language
      * @return $this
+     * @deprecated since 5.0.0 - \handleCsvImportAction() in /admin/includes/in csv_import_inc.php is used instead
      */
     protected function import($csv, $row, &$errors, $mapping, $language): self
     {
@@ -268,6 +270,7 @@ class Redirect
      * @param string $artNo
      * @param string $iso
      * @return null|string
+     * @deprecated since 5.0.0 - \getArtNrUrl() in /admin/includes/in csv_import_inc.php is used instead
      */
     public function getArtNrUrl($artNo, string $iso): ?string
     {
@@ -297,6 +300,7 @@ class Redirect
      *
      * @param array $rows
      * @return array|null
+     * @deprecated since 5.0.0 - \handleCsvImportAction() in /admin/includes/in csv_import_inc.php is used instead
      */
     public function readHeadRow($rows): ?array
     {

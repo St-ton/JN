@@ -23888,6 +23888,24 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   content: "";
 }
 
+@media (min-width: 768px) {
+  .content-cats-small > div {
+    margin-bottom: 1rem;
+  }
+}
+.content-cats-small .sub-categories {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  flex-basis: auto;
+  align-items: stretch;
+  justify-content: space-between;
+  height: 100%;
+}
+.content-cats-small .sub-categories .subcategories-image {
+  justify-content: center;
+  margin-bottom: 1rem;
+}
 .content-cats-small::after {
   display: block;
   clear: both;

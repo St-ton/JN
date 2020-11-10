@@ -151,6 +151,27 @@
 }
 
 .content-cats-small {
+
+	@include media-breakpoint-up(md) {
+		> div {
+			margin-bottom: map_get($spacers, 3);
+		}
+	}
+
+	.sub-categories {
+		display: flex;
+	  	flex-direction: column;
+	  	flex-grow: 1;
+	  	flex-basis: auto;
+	  	align-items: stretch;
+	  	justify-content: space-between;
+	  	height: 100%;
+
+		.subcategories-image {
+			justify-content: center;
+			margin-bottom: map_get($spacers, 3);
+		}
+	}
 	@include clearfix();
 
 	.outer {
@@ -160,7 +181,7 @@
 	.caption {
 		margin-bottom: map-get($spacers, 2);
 
-		@media (min-width: 768px) {
+		@include media-breakpoint-up(md) {
 			text-align: center;
 		}
 	}

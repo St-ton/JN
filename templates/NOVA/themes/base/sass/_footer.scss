@@ -1,31 +1,6 @@
 #footer {
 	margin-top: auto;
 	padding: map-get($spacers, 4) 0 0;
-	.form-control {
-		background-color: $footer-bg-color;
-		color: $footer-color;
-		&::placeholder {
-			color: $footer-color;
-		}
-	}
-	.label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) {
-		label {
-			background: $footer-bg-color;
-			color: $footer-color;
-		}
-	}
-	a {
-		color: $footer-color;
-		&:hover:not(.btn) {
-			color: $primary;
-		}
-	}
-	.productlist-filter-headline {
-		color: $footer-color;
-	}
-	.newsletter-footer-heading {
-		color: $footer-color;
-	}
 	li {
 		margin-bottom: map-get($spacers, 2);
 	}

@@ -151,13 +151,11 @@
 }
 
 .content-cats-small {
-
 	@include media-breakpoint-up(md) {
 		> div {
 			margin-bottom: map_get($spacers, 3);
 		}
 	}
-
 	.sub-categories {
 		display: flex;
 	  	flex-direction: column;

@@ -25852,12 +25852,13 @@ header #burger-menu {
   margin-bottom: 0.5rem;
   margin-right: 0.5rem;
 }
-.snippets-filter-item .snippets-filter-item-all {
-  text-decoration: underline;
-  display: inline-block;
-}
 .snippets-filter-item .snippets-filter-custom .badge {
   float: right;
+}
+
+.snippets-filter-item-all {
+  text-decoration: none;
+  display: inline-block;
 }
 
 .snippets-filter-show-all {

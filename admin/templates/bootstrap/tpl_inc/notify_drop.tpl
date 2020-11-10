@@ -73,7 +73,7 @@
             ioCall('notificationAction', ['reset'], undefined, undefined, undefined, true);
         })
         .on('hidden.bs.dropdown', function () {
-            if (notificationModified) {
+            if (notificationModified === true) {
                 notificationModified = false;
                 window.setTimeout(function () {
                     ioCall('notificationAction', ['update'], undefined, undefined, undefined, true);

@@ -24507,6 +24507,11 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
     padding-right: 1rem;
   }
 }
+@media (max-width: 767.98px) {
+  #product-offer .product-info .stock-information {
+    margin-top: 1rem;
+  }
+}
 #product-offer .product-info .question-on-item {
   margin-left: auto;
 }
@@ -24514,10 +24519,8 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   padding: 0;
 }
 
-@media (min-width: 768px) {
-  .price_wrapper {
-    margin-bottom: 1.5rem;
-  }
+.price_wrapper {
+  margin-bottom: 1.5rem;
 }
 .price_wrapper .price {
   display: inline-block;

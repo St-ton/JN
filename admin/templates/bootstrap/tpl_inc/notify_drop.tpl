@@ -50,13 +50,14 @@
 {/if}
 <script>
     {literal}
-    var notificationActionTimer = null;
+    var notificationModified = false;
     $('#notify-drop')
         .on('click', '.close-notify', function (e) {
             let hash   = $(this).data('hash'),
                 $notes = $('.notify-count', '#notify-drop'),
                 notes  = parseInt($notes.text());
 
+            notificationModified = true;
             $('[data-toggle="tooltip"]', this).tooltip('hide');
             $('#' + hash).remove();
             ioCall('notificationAction', ['dismiss', hash], undefined, undefined, undefined, true);
@@ -72,9 +73,12 @@
             ioCall('notificationAction', ['reset'], undefined, undefined, undefined, true);
         })
         .on('hidden.bs.dropdown', function () {
-            window.setTimeout(function () {
-                ioCall('notificationAction', ['update'], undefined, undefined, undefined, true);
-            }, 150);
+            if (notificationModified) {
+                notificationModified = false;
+                window.setTimeout(function () {
+                    ioCall('notificationAction', ['update'], undefined, undefined, undefined, true);
+                }, 150);
+            }
         });
     {/literal}
 </script>

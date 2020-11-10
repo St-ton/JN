@@ -5,7 +5,7 @@
             <span class="fas fa-bell"></span>
             <span class="fa-stack">
                 <span class="fas fa-circle fa-stack-2x text-{$notifyTypes[$notifications->getHighestType()]}"></span>
-                <strong class="fa-stack-1x">{$notifications->count()}</strong>
+                <strong class="fa-stack-1x notify-count">{$notifications->count()}</strong>
             </span>
         </span>
     </a>
@@ -21,7 +21,7 @@
                     <div class="dropdown-header">
                         {if $notify->getHash() !== null}
                             <button type="button" class="close pull-right close-notify" aria-label="Close" data-hash="{$notify->getHash()}">
-                                <span aria-hidden="true"  data-toggle="tooltip" title="{__('Mark notification as read')}">&times;</span>
+                                <span aria-hidden="true" data-toggle="tooltip" title="{__('Mark notification as read')}">&times;</span>
                             </button>
                         {/if}
                         <i class="fa fa-circle text-{$notifyTypes[$notify->getType()]}" aria-hidden="true"></i>
@@ -53,22 +53,28 @@
     var notificationActionTimer = null;
     $('#notify-drop')
         .on('click', '.close-notify', function (e) {
-            e.stopPropagation();
-            ioCall('notificationAction', ['dismiss', $(this).data('hash')], function () {
-                if (notificationActionTimer !== null) {
-                    window.clearTimeout(notificationActionTimer);
-                }
-                notificationActionTimer = window.setTimeout(function () {
-                    notificationActionTimer = null;
-                    ioCall('notificationAction', ['update'], undefined, undefined, undefined, true);
-                }, 1500);
-            }, undefined, undefined, true);
+            let hash   = $(this).data('hash'),
+                $notes = $('.notify-count', '#notify-drop'),
+                notes  = parseInt($notes.text());
+
+            $('[data-toggle="tooltip"]', this).tooltip('hide');
+            $('#' + hash).remove();
+            ioCall('notificationAction', ['dismiss', hash], undefined, undefined, undefined, true);
+            if (--notes > 0) {
+                e.stopPropagation();
+                $notes.text(notes);
+            }
         })
         .on('click', '.refresh-notify', function () {
             ioCall('notificationAction', ['refresh'], undefined, undefined, undefined, true);
         })
         .on('click', '.showall-notify', function () {
             ioCall('notificationAction', ['reset'], undefined, undefined, undefined, true);
+        })
+        .on('hidden.bs.dropdown', function () {
+            window.setTimeout(function () {
+                ioCall('notificationAction', ['update'], undefined, undefined, undefined, true);
+            }, 150);
         });
     {/literal}
 </script>

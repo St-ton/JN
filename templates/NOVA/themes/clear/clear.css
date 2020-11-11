@@ -25657,18 +25657,18 @@ header #burger-menu {
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
-.checkout-register-form .checkout-button-row .checkout-register-form-buttons-privacy {
+
+.checkout-button-row {
+  margin-top: 2rem;
+}
+.checkout-button-row .checkout-register-form-buttons-privacy {
   margin-bottom: 1rem;
   text-align: left;
 }
 @media (min-width: 768px) {
-  .checkout-register-form .checkout-button-row .checkout-register-form-buttons-privacy {
+  .checkout-button-row .checkout-register-form-buttons-privacy {
     text-align: right;
   }
-}
-
-.checkout-button-row {
-  margin-top: 2rem;
 }
 @media (min-width: 768px) {
   .checkout-button-row .checkout-button-row-submit {

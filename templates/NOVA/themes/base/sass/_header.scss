@@ -225,3 +225,24 @@ header {
 .cart-dropdown-shipping-notice {
 	color: $text-muted-header;
 }
+.is-checkout {
+	header, .navbar {
+		height: header-height('xs');
+		@include media-breakpoint-up(lg) {
+			height: header-height('lg');
+		}
+	}
+	.search-form-wrapper-fixed, .fixed-search {
+		display: none;
+	}
+}
+.nav-icons {
+	@include media-breakpoint-down(md) {
+		height: header-height('md');
+	}
+}
+.search-form-wrapper-fixed {
+	padding-top: map-get($spacers, 2);
+	padding-bottom: map-get($spacers, 2);
+}
+

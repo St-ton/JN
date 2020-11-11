@@ -25161,6 +25161,29 @@ header #burger-menu {
   color: #f5f7fa;
 }
 
+.is-checkout header, .is-checkout .navbar {
+  height: 2.8rem;
+}
+@media (min-width: 992px) {
+  .is-checkout header, .is-checkout .navbar {
+    height: 4.325rem;
+  }
+}
+.is-checkout .search-form-wrapper-fixed, .is-checkout .fixed-search {
+  display: none;
+}
+
+@media (max-width: 991.98px) {
+  .nav-icons {
+    height: 2.8rem;
+  }
+}
+
+.search-form-wrapper-fixed {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
 /* footer */
 #footer {
   margin-top: auto;

@@ -101,7 +101,10 @@ class PortletInstance implements \JsonSerializable
     {
         $result = $this->portlet->getPreviewHtml($this);
         $dom    = new \DOMDocument('1.0', 'utf-8');
+        // suppress mark-up warnings like embeded svg tags the DOMDocument parser can not handle
+        \libxml_use_internal_errors(true);
         $dom->loadHTML('<?xml encoding="utf-8" ?>' . $result);
+        \libxml_clear_errors();
         /** @var \DOMElement $root */
         $root = $dom->getElementsByTagName('body')[0]->firstChild;
         $root->setAttribute('data-portlet', \json_encode($this->getData()));

@@ -15,9 +15,13 @@
             {__('notificationsHeader')}
         </div>
         <div class="dropdown-divider"></div>
+        {assign var="notifyCount" value=0}
         {foreach $notifications as $notify}
             {if !$notify->isIgnored()}
                 <div{if $notify->getHash() !== ''} id="{$notify->getHash()}"{/if}>
+                    {if $notifyCount++ > 0}
+                        <div class="dropdown-divider"></div>
+                    {/if}
                     <div class="dropdown-header">
                         {if $notify->getHash() !== null}
                             <button type="button" class="close pull-right close-notify" aria-label="Close" data-hash="{$notify->getHash()}">
@@ -32,9 +36,6 @@
                             {$notify->getDescription()}
                         {if $notify->getUrl() !== null}</a>{/if}
                     </div>
-                    {if !$notify@last}
-                    <div class="dropdown-divider"></div>
-                    {/if}
                 </div>
             {/if}
         {/foreach}

@@ -126,7 +126,7 @@
                                                         {if isset($child->Preise->cVKLocalized[$NettoPreise]) && $child->Preise->cVKLocalized[$NettoPreise] > 0}
                                                             {inputgroupaddon append=true}
                                                                 {inputgrouptext}
-                                                                    &times; {$child->Preise->cVKLocalized[$NettoPreise]}{if !empty($child->Preise->cPreisVPEWertInklAufpreis[$NettoPreise])} <small>({$child->Preise->cPreisVPEWertInklAufpreis[$NettoPreise]})</small>{/if}
+                                                                    &times; {$child->Preise->cVKLocalized[$NettoPreise]}&nbsp;<span class="footnote-reference">*</span>{if !empty($child->Preise->cPreisVPEWertInklAufpreis[$NettoPreise])} <small>({$child->Preise->cPreisVPEWertInklAufpreis[$NettoPreise]})</small>{/if}
                                                                 {/inputgrouptext}
                                                             {/inputgroupaddon}
                                                         {elseif isset($child->Preise->cVKLocalized[$NettoPreise])
@@ -134,7 +134,7 @@
                                                             {assign var=cVariBox value=$oVariationWert1->kEigenschaft|cat:':'|cat:$oVariationWert1->kEigenschaftWert|cat:'_'|cat:$oVariationWert0->kEigenschaft|cat:':'|cat:$oVariationWert0->kEigenschaftWert}
                                                             {inputgroupaddon append=true}
                                                                 {inputgrouptext}
-                                                                    &times; {$child->Preise->cVKLocalized[$NettoPreise]}{if !empty($child->Preise->cPreisVPEWertInklAufpreis[$NettoPreise])} <small>({$child->Preise->cPreisVPEWertInklAufpreis[$NettoPreise]})</small>{/if}
+                                                                    &times; {$child->Preise->cVKLocalized[$NettoPreise]}&nbsp;<span class="footnote-reference">*</span>{if !empty($child->Preise->cPreisVPEWertInklAufpreis[$NettoPreise])} <small>({$child->Preise->cPreisVPEWertInklAufpreis[$NettoPreise]})</small>{/if}
                                                                 {/inputgrouptext}
                                                             {/inputgroupaddon}
                                                         {/if}

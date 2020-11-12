@@ -114,6 +114,12 @@ Gültig vom {$Kupon->cGueltigAbLong}{if $Kupon->dGueltigBis != 0} bis zum {$Kupo
     {/foreach}
 {/if}<br>
 <br>
+{if count($Kupon->Hersteller)>0}Der Coupon gilt für folgende Hersteller:<br>
+	{foreach $Kupon->Hersteller as $Hersteller}
+		<a href="{$Hersteller->cURL}">{$Hersteller->getName()}</a><br>
+	{/foreach}
+{/if}<br>
+<br>
 Sie lösen den Coupon ein, indem Sie beim Bestellvorgang den Couponcode in das vorgesehene Feld eintragen.<br>
 <br>
 Viel Spaß bei Ihrem nächsten Einkauf in unserem Shop.<br>

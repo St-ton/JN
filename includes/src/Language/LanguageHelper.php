@@ -1012,12 +1012,11 @@ class LanguageHelper
             }
         }
 
-
         $cacheID = 'shp_lng_' . (($shop === true) ? 'b' : '');
         if (($lang = $this->cache->get($cacheID)) !== false && $lang !== null) {
             return $lang;
         }
-        $lang = LanguageModel::loadByAttributes($shop ? ['default' => 'Y'] : ['shopDefault' => 'Y'], $this->db);
+        $lang = LanguageModel::loadByAttributes($shop ? ['shopDefault' => 'Y'] : ['default' => 'Y'], $this->db);
         $this->cache->set($cacheID, $lang, [\CACHING_GROUP_LANGUAGE]);
 
         return $lang;

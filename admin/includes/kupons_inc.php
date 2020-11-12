@@ -616,8 +616,8 @@ function informCouponCustomers($coupon)
         : $coupon->fWert . ' %';
     $coupon->cLocalizedMBW  = Preise::getLocalizedPriceString($coupon->fMindestbestellwert, $defaultCurrency, false);
     // kKunde-Array aller auserwaehlten Kunden
-    $customerIDs  = Text::parseSSKint($coupon->cKunden);
-    $customerData = $db->query(
+    $customerIDs     = Text::parseSSKint($coupon->cKunden);
+    $customerData    = $db->query(
         'SELECT kKunde
             FROM tkunde
             WHERE TRUE

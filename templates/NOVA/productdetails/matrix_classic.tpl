@@ -154,7 +154,7 @@
                                                         {math equation='x+y' x=$ovw0 y=$ovw1 assign='fAufpreis'}
                                                         {inputgroupaddon append=true}
                                                             {inputgrouptext}
-                                                                {gibPreisStringLocalizedSmarty bAufpreise=true fAufpreisNetto=$fAufpreis fVKNetto=$Artikel->Preise->fVKNetto kSteuerklasse=$Artikel->kSteuerklasse nNettoPreise=$NettoPreise fVPEWert=$Artikel->fVPEWert cVPEEinheit=$Artikel->cVPEEinheit FunktionsAttribute=$Artikel->FunktionsAttribute}
+                                                                {gibPreisStringLocalizedSmarty bAufpreise=true fAufpreisNetto=$fAufpreis fVKNetto=$Artikel->Preise->fVKNetto kSteuerklasse=$Artikel->kSteuerklasse nNettoPreise=$NettoPreise fVPEWert=$Artikel->fVPEWert cVPEEinheit=$Artikel->cVPEEinheit FunktionsAttribute=$Artikel->FunktionsAttribute}&nbsp;<span class="footnote-reference">*</span>
                                                             {/inputgrouptext}
                                                         {/inputgroupaddon}
                                                     {elseif $Einstellungen.artikeldetails.artikel_variationspreisanzeige == 2

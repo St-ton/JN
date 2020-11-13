@@ -109,7 +109,7 @@
                                 </li>
                             {/block}
                             {block name='basket-cart-dropdown-cart-item-favourable-shipping'}
-                                {if $favourableShippingString !== '' && empty($smarty.session.Versandart)}
+                                {if $favourableShippingString !== ''}
                                     <li class="cart-dropdown-total-item">{$favourableShippingString}</li>
                                 {/if}
                             {/block}

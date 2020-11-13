@@ -4373,7 +4373,13 @@ function setzeSpracheUndWaehrungLink()
             $AktuellerArtikel->baueArtikelSprachURL();
         }
         foreach ($_SESSION['Sprachen'] as $i => $oSprache) {
-            if (isset($AktuellerArtikel->kArtikel, $AktuellerArtikel->cSprachURL_arr[$oSprache->cISO]) &&
+            if ($AktuelleSeite === 'STARTSEITE'
+                && defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true
+                && defined('URL_SHOP_' . strtoupper($oSprache->cISO))
+            ) {
+                $_SESSION['Sprachen'][$i]->cURL = Shop::getURL(false, true, (int)$oSprache->kSprache) . '/';
+                $_SESSION['Sprachen'][$i]->cURLFull = $_SESSION['Sprachen'][$i]->cURL;
+            } elseif (isset($AktuellerArtikel->kArtikel, $AktuellerArtikel->cSprachURL_arr[$oSprache->cISO]) &&
                 $AktuellerArtikel->kArtikel > 0
             ) {
                 $_SESSION['Sprachen'][$i]->cURL     = $AktuellerArtikel->cSprachURL_arr[$oSprache->cISO];

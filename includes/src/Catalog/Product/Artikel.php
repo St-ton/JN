@@ -1635,8 +1635,10 @@ class Artikel
                 $product = new self();
                 $product->fuelleArtikel((int)$bundle->kArtikel, $options);
 
-                $this->oProduktBundle_arr[]           = $product;
-                $this->oProduktBundlePrice->fVKNetto += $product->Preise->fVKNetto * $bundle->fAnzahl;
+                if ($product->kArtikel > 0) {
+                    $this->oProduktBundle_arr[]           = $product;
+                    $this->oProduktBundlePrice->fVKNetto += $product->Preise->fVKNetto * $bundle->fAnzahl;
+                }
             }
 
             $this->oProduktBundlePrice->fPriceDiff         = $this->oProduktBundlePrice->fVKNetto -

@@ -242,9 +242,10 @@ class Session
             }
             //EXPERIMENTAL_MULTILANG_SHOP
             foreach ($_SESSION['Sprachen'] as $Sprache) {
-                if (defined('URL_SHOP_' . strtoupper($Sprache->cISO))) {
+                if (isset($_SERVER['HTTP_HOST']) && defined('URL_SHOP_' . strtoupper($Sprache->cISO))) {
                     $shopLangURL = constant('URL_SHOP_' . strtoupper($Sprache->cISO));
-                    if (strpos($shopLangURL, $_SERVER['HTTP_HOST']) !== false) {
+                    $parsed      = parse_url($shopLangURL);
+                    if ($parsed['host'] === $_SERVER['HTTP_HOST']) {
                         $_SESSION['kSprache']    = $Sprache->kSprache;
                         $_SESSION['cISOSprache'] = trim($Sprache->cISO);
                         Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);

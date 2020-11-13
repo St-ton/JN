@@ -2969,7 +2969,7 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
         $kSprache = $oSprache->kSprache;
     }
     $kSprache = (int)$kSprache;
-    $cSEOURL  = Shop::getURL() . '/';
+    $cSEOURL  = Shop::getURL(false, true, $kSprache) . '/';
     // Gibt es zu der Suche bereits eine Suchanfrage und wird nicht ExtendedJTLSearch verwendet?
     if (!(isset($NaviFilter->Suche->bExtendedJTLSearch) &&
             $NaviFilter->Suche->bExtendedJTLSearch) &&

@@ -29,7 +29,7 @@
     {$videoSrcUrl    = "{Shop::getURL()}/{$smarty.const.PFAD_MEDIA_VIDEO}{$name}"}
 {/if}
 
-{container style=$style class=$class data=$data fluid=$fluid}
+{function containerContent}
     {if $instance->getProperty('background-flag') === 'video' && !empty($instance->getProperty('video-src'))}
         <video autoplay loop muted poster="{$videoPosterUrl}"
                style="display: inherit; width: 100%; position: absolute; left: 0; top: 0; opacity: 0.7;">
@@ -45,4 +45,17 @@
             {$instance->getSubareaFinalHtml('container')}
         {/if}
     </div>
-{/container}
+{/function}
+
+{if $inContainer}
+    <div style="{$style}" class="{$class}"
+         {foreach $data as $key => $value}
+             data-{$key}="{$value}"
+         {/foreach}>
+        {call containerContent}
+    </div>
+{else}
+    {container style=$style class=$class data=$data fluid=$fluid}
+        {call containerContent}
+    {/container}
+{/if}

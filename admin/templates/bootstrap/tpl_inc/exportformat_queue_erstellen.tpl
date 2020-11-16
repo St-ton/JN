@@ -4,11 +4,13 @@
         $(document).ready(function () {
             $('#nAlleXStunden').on('change', function () {
                 var val = $(this).val(),
-                    customField = $('#custom-freq-input');
+                    customFieldWrapper = $('#custom-freq-input-wrapper');
                 if (val === 'custom') {
-                    customField.attr('name', 'nAlleXStundenCustom').show();
+                    customFieldWrapper.removeClass('d-none')
+                        .find('input').attr('name', 'nAlleXStundenCustom');
                 } else {
-                    customField.attr('name', '').hide();
+                    customFieldWrapper.addClass('d-none')
+                        .find('input').attr('name', '');
                 }
             });
         });
@@ -52,7 +54,6 @@
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="nAlleXStunden">{__('exportformatEveryXHour')}:</label>
                         {assign var=showCustomInput value=false}
-                        <input type="number" min="1" value="{if !empty($oCron->frequency) && $oCron->frequency != 24 && $oCron->frequency != 48 && $oCron->frequency != 168}{assign var=showCustomInput value=true}{$oCron->frequency}{/if}" class="form-control" name="{if $showCustomInput}nAlleXStundenCustom{/if}"{if !$showCustomInput} style="display:none;"{/if} id="custom-freq-input" />
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <select id="nAlleXStunden" name="nAlleXStunden" class="custom-select">
                                 <option value="24"{if (isset($oFehler->nAlleXStunden) && $oFehler->nAlleXStunden == 24) || (isset($oCron->frequency) && $oCron->frequency === 24)} selected{/if}>
@@ -68,6 +69,16 @@
                                     {__('own')}
                                 </option>
                             </select>
+                        </div>
+                    </div>
+                    <div id="custom-freq-input-wrapper" class="form-group form-row align-items-center d-none">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="nAlleXStundenCustom"></label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <input type="number"
+                                   min="1"
+                                   value="{if !empty($oCron->frequency) && $oCron->frequency != 24 && $oCron->frequency != 48 && $oCron->frequency != 168}{assign var=showCustomInput value=true}{$oCron->frequency}{/if}"
+                                   class="form-control"
+                                   name="{if $showCustomInput}nAlleXStundenCustom{/if}" id="custom-freq-input"/>
                         </div>
                     </div>
                 </div>

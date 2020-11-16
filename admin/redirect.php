@@ -20,10 +20,21 @@ $oAccount->permission('REDIRECT_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_exporter_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_importer_inc.php';
 
-handleCsvImportAction('redirects', 'tredirect');
+$alertHelper  = Shop::Container()->getAlertService();
+$errors       = [];
+$importResult = handleCsvImportAction('redirects', 'tredirect', [], null, 2, $errors);
 
-$redirects   = $_POST['redirects'] ?? [];
-$alertHelper = Shop::Container()->getAlertService();
+if ($importResult > 0) {
+    $alertHelper->addAlert(
+        Alert::TYPE_ERROR,
+        __('errorImport') . '<br><br>' . implode('<br>', $errors),
+        'errorImport'
+    );
+} elseif ($importResult === 0) {
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successImport'), 'successImport');
+}
+
+$redirects = $_POST['redirects'] ?? [];
 
 if (Form::validateToken()) {
     switch (Request::verifyGPDataString('action')) {
@@ -68,25 +79,6 @@ if (Form::validateToken()) {
                     ->assign('cTab', 'new_redirect')
                     ->assign('cFromUrl', Request::verifyGPDataString('cFromUrl'))
                     ->assign('cToUrl', Request::verifyGPDataString('cToUrl'));
-            }
-            break;
-        case 'csvimport':
-            $redirect = new Redirect();
-            if (is_uploaded_file($_FILES['cFile']['tmp_name'])) {
-                $file = PFAD_ROOT . PFAD_EXPORT . md5($_FILES['cFile']['name'] . time());
-                if (move_uploaded_file($_FILES['cFile']['tmp_name'], $file)) {
-                    $errors = $redirect->doImport($file);
-                    if (count($errors) === 0) {
-                        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successImport'), 'successImport');
-                    } else {
-                        @unlink($file);
-                        $alertHelper->addAlert(
-                            Alert::TYPE_ERROR,
-                            __('errorImport') . '<br><br>' . implode('<br>', $errors),
-                            'errorImport'
-                        );
-                    }
-                }
             }
             break;
         default:

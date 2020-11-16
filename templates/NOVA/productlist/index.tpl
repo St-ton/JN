@@ -49,7 +49,7 @@
             {block name='productlist-index-products'}
                 {if $Suchergebnisse->getProducts()|@count > 0}
                 {opcMountPoint id='opc_before_products'}
-                {row class="product-list" id="product-list" itemprop="mainEntity" itemscope=true itemtype="http://schema.org/ItemList"}
+                {row class="product-list layout-{$style}" id="product-list" itemprop="mainEntity" itemscope=true itemtype="http://schema.org/ItemList"}
                     {foreach $Suchergebnisse->getProducts() as $Artikel}
                         {col cols={$grid} md="{if isset($gridmd)}{$gridmd}{/if}"
                              sm="{if isset($gridsm)}{$gridsm}{/if}" xl="{if isset($gridxl)}{$gridxl}{/if}"

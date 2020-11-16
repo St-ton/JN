@@ -77,10 +77,10 @@
 		@include media-breakpoint-up(md) {
 			&.productlist-item-border {
 				border-right: $border-width solid $border-color;
+				padding-right: map-get($spacers, 3);
 			}
 			margin-right: 0;
 			margin-bottom: 0;
-			padding-right: map-get($spacers, 3);
 		}
 	}
 	&.productlist-page-nav-header-m {

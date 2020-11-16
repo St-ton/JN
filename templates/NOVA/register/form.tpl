@@ -1,5 +1,5 @@
 {block name='register-form'}
-    {form action="{get_static_route id='registrieren.php'}" class="jtl-validate clearfix" slide=true}
+    {form action="{get_static_route id='registrieren.php'}" class="jtl-validate register-form clearfix" slide=true}
         {block name='register-form-content'}
             {block name='register-form-include-customer-account'}
                 {include file='register/form/customer_account.tpl'}
@@ -14,8 +14,8 @@
             {/if}
             {block name='register-form-submit'}
                 {row class="checkout-button-row"}
-                    {col cols=12 class="contact-form-privacy"}
-                        {block name='contact-index-modal-privacy'}
+                    {col cols=12 class="checkout-register-form-buttons-privacy"}
+                        {block name='register-form-submit-privacy'}
                             {link href=$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL() class="popup"}
                                 {lang key='privacyNotice'}
                             {/link}

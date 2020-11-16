@@ -348,7 +348,8 @@ $nav-link-padding-x       : 1rem !default;
 $navbar-padding-y         : .4rem !default;
 $navbar-padding-y-lg      : .6rem !default;
 $navbar-image-height      : 2rem !default;
-$navbar-image-height-lg   : 50px !default;
+$navbar-image-height-lg   : rem(50px) !default;
+
 /* modals */
 
 $modal-inner-padding			: $spacer 0 !default;

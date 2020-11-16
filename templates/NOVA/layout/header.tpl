@@ -17,6 +17,9 @@
             <meta name="robots" content="{if $robotsContent}{$robotsContent}{elseif $noindex}noindex{else}index, follow{/if}">
 
             <meta itemprop="url" content="{$cCanonicalURL}"/>
+            {block name='layout-header-head-theme-color'}
+                <meta name="theme-color" content="{if $Einstellungen.template.theme.theme_default === 'clear'}#f8bf00{else}#1C1D2C{/if}">
+            {/block}
             <meta property="og:type" content="website" />
             <meta property="og:site_name" content="{$meta_title}" />
             <meta property="og:title" content="{$meta_title}" />
@@ -269,7 +272,8 @@
                         || $Einstellungen.template.theme.wish_compare_animation === 'both'}wish-compare-animation-mobile{/if}
                      {if $Einstellungen.template.theme.wish_compare_animation === 'desktop'
                         || $Einstellungen.template.theme.wish_compare_animation === 'both'}wish-compare-animation-desktop{/if}
-                     {if $isMobile}is-mobile{/if}"
+                     {if $isMobile}is-mobile{/if}
+                     {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG} is-checkout{/if}"
               data-page="{$nSeitenTyp}"
               {if isset($Link) && !empty($Link->getIdentifier())} id="{$Link->getIdentifier()}"{/if}>
     {/block}
@@ -329,7 +333,7 @@
                         {navbar toggleable=true fill=true type="expand-lg" class="justify-content-start {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}align-items-center-util{else}align-items-lg-end{/if}"}
                            {block name='layout-header-search'}
                                 {if $Einstellungen.template.theme.mobile_search_type === 'fixed'}
-                                    <div class="d-lg-none{if !$isTablet} container-fluid container-fluid-xl py-2 order-1 {else} px-4 py-2 flex-grow-1{/if}">
+                                    <div class="d-lg-none search-form-wrapper-fixed container-fluid container-fluid-xl order-1">
                                         {include file='snippets/search_form.tpl' id='search-header-mobile-top'}
                                     </div>
                                 {/if}
@@ -350,7 +354,7 @@
                                 {/block}
                             {else}
                                 {block name='layout-header-branding-shop-nav'}
-                                    {nav id="shop-nav" right=true class="nav-right order-lg-last"}
+                                    {nav id="shop-nav" right=true class="nav-right order-lg-last nav-icons"}
                                         {block name='layout-header-branding-shop-nav-include-language-dropdown'}
                                             {include file='snippets/language_dropdown.tpl' dropdownClass='d-flex d-lg-none'}
                                         {/block}

@@ -21094,10 +21094,10 @@ label {
   .productlist-page-nav .productlist-item-info {
     margin-right: 0;
     margin-bottom: 0;
-    padding-right: 1rem;
   }
   .productlist-page-nav .productlist-item-info.productlist-item-border {
     border-right: 1px solid #ebebeb;
+    padding-right: 1rem;
   }
 }
 .productlist-page-nav.productlist-page-nav-header-m {
@@ -24500,12 +24500,6 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 #product-offer .product-info .stock-information.stock-information-p {
   padding-top: 1rem;
   padding-bottom: 1rem;
-}
-@media (min-width: 992px) {
-  #product-offer .product-info .stock-information.stock-information-p {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
 }
 @media (max-width: 767.98px) {
   #product-offer .product-info .stock-information {

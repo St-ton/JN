@@ -1,6 +1,5 @@
 {block name='snippets-categories-mega-recursive'}
-    {* max 3 sub categories on desktop are possible *}
-    {$max_subsub_items="{if $isMobile}10{else}3{/if}"}
+    {$max_subsub_items="{if $isMobile}5{else}2{/if}"}
     {block name='snippets-categories-mega-recursive-main-link'}
         {link href=$mainCategory->getURL()
             class="categories-recursive-link d-lg-block {if $firstChild}submenu-headline submenu-headline-toplevel{/if} {$subCategory} {if $mainCategory->hasChildren() && $subCategory < $max_subsub_items && $Einstellungen.template.megamenu.show_subcategories !== 'N'}nav-link dropdown-toggle{/if}"
@@ -16,7 +15,7 @@
                     srcSize='sm'}
             {/if}
             <span class="text-truncate d-block">
-                {$mainCategory->getName()}{if $mainCategory->hasChildren() && $subCategory >= $max_subsub_items}<span class="ml-1 text-truncate">({$mainCategory->getChildren()|count})</span>{/if}
+                {$mainCategory->getName()}{if $mainCategory->hasChildren() && $subCategory >= $max_subsub_items}<span class="more-subcategories">&nbsp;({$mainCategory->getChildren()|count})</span>{/if}
             </span>
         {/link}
     {/block}
@@ -45,7 +44,7 @@
                                 {block name='snippets-categories-mega-recursivechild-category-no-child'}
                                     {navitem href=$category->getURL()}
                                         <span class="text-truncate d-block">
-                                            {$category->getName()}{if $category->hasChildren()}<span class="ml-1 text-truncate">({$category->getChildren()|count})</span>{/if}
+                                            {$category->getName()}{if $category->hasChildren()}<span class="more-subcategories">&nbsp;({$category->getChildren()|count})</span>{/if}
                                         </span>
                                     {/navitem}
                                 {/block}

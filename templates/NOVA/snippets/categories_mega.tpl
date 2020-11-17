@@ -40,7 +40,7 @@
                             {/link}
                             <div class="dropdown-menu">
                                 <div class="dropdown-body">
-                                    {container}
+                                    {container class="subcategory-wrapper"}
                                         {row class="lg-row-lg nav"}
                                             {col lg=4 xl=3 class="nav-item-lg-m nav-item dropdown d-lg-none"}
                                                 {link href=$category->getURL() rel="nofollow"}

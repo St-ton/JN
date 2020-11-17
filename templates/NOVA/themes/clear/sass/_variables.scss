@@ -19,6 +19,8 @@ $warning:                           #f39932 !default;
 $bg-warning:                        #F9F2DC !default;
 $danger:                            #b90000 !default;
 $bg-danger:                         #E8CCD2 !default;
+$bg-main:                           $gray-lighter !default;
+$bg-main-ligther:                   $bg-main !default;
 
 $white:                             #ffffff !default;
 $black:                             #000000 !default;
@@ -137,12 +139,20 @@ $transition-fade:                   opacity .35s linear !default;
 $highlight-border-size:             .375rem !default;
 
 $body-bg:                           $gray-100 !default;
-$body-color:                        $gray-600 !default;
+$body-color:                        $gray-700 !default;
+$table-color:                       $body-color !default;
+
+$copyright-bg-color:               $gray-dark !default;
+$footer-bg-color:                  $bg-main !default;
+$footer-color:                     $body-color !default;
+$header-bg-color:                  $white !default;
+$header-color:                     $body-color !default;
 
 $headings-color:                    $gray-700 !default;
 $navbar-light-hover-color:          $primary !default;
 
 $text-muted:                        $gray !default;
+$text-muted-header:                 $text-muted !default;
 $input-color-placeholder:           $gray !default;
 
 /* links */
@@ -263,7 +273,8 @@ $breadcrumb-bg:                     transparent !default;
 $breadcrumb-divider-color:          $gray !default;
 $breadcrumb-active-color:           $gray-darker !default;
 
-$breadcrumb-border-radius:           0 !default;
+$breadcrumb-border-radius:          0 !default;
+$breadcrumb-margin-bottom:          0 !default;
 
 $tap-target-size:                   44px !default;
 $tap-target-size-sm:                36px !default;
@@ -333,7 +344,11 @@ $nav-tabs-link-active-border-color		: $primary !default;
 
 $navbar-nav-link-padding-x: map-get($spacers, 4) !default;
 $navbar-nav-link-padding-y: map-get($spacers, 4) !default;
-$nav-link-padding-x: 1rem !default;
+$nav-link-padding-x       : 1rem !default;
+$navbar-padding-y         : .4rem !default;
+$navbar-padding-y-lg      : .6rem !default;
+$navbar-image-height      : 2rem !default;
+$navbar-image-height-lg   : rem(50px) !default;
 
 /* modals */
 
@@ -368,6 +383,8 @@ $enable-shadows				: true !default;
 $dropdown-box-shadow		: 0 rem(1px) rem(12px) transparentize($black, .84) !default;
 $dropdown-border-width		: 0 !default;
 $dropdown-border-radius		: 0 !default;
+
+$dropdown-link-bg-color	    : transparent;
 
 $dropdown-link-color		: $gray-darker !default;
 $dropdown-link-hover-color	: $gray-darker !default;

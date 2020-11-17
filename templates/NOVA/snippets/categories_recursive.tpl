@@ -46,7 +46,7 @@
                                             && isset($activeParent->kKategorie))
                                         && $activeParent->kKategorie == $category->getID())}active{/if}">
                                     {block name='snippets-categories-recursive-categories-has-items-link'}
-                                        <span class="nav-link {if $i !== 0}px-2{/if} dropdown-toggle"
+                                        <span class="nav-link {if $i !== 0}snippets-categories-nav-link-child{/if} dropdown-toggle"
                                               data-toggle="collapse"
                                               data-target="#category_box_{$category->getID()}_{$i}-{$id}"
                                               aria-expanded="{if $category->getID() == $activeId
@@ -58,7 +58,7 @@
                                     {/block}
                                     {block name='snippets-categories-recursive-categories-has-items-nav'}
                                         {collapse id="category_box_{$category->getID()}_{$i}-{$id}"
-                                             class="{if $category->getID() == $activeId
+                                             class="snippets-categories-collapse {if $category->getID() == $activeId
                                                 || ((isset($activeParent)
                                                 && isset($activeParent->kKategorie))
                                                 && $activeParent->kKategorie == $category->getID())}show{/if}"}
@@ -95,7 +95,7 @@
                                             && isset($activeParent->kKategorie))
                                         && $activeParent->kKategorie == $category->getID())} active{/if}"
                                     href=$category->getURL()
-                                    router-class="{if $i !== 0}px-2{/if}"
+                                    router-class="{if $i !== 0}snippets-categories-nav-link-child{/if}"
                                 }
                                     {$category->getShortName()}
                                 {/navitem}

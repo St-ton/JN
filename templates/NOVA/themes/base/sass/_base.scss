@@ -56,7 +56,7 @@ image:focus {
   content: "\f068";
 }
 
-header, #main-wrapper { background: $white; }
+#main-wrapper { background: $white; }
 
 ul.config-items,
 ul.partlist-items {
@@ -96,10 +96,6 @@ ul.partlist-items {
   .status-2 {
     color: $success;
   }
-}
-.estimated-delivery {
-  color: $gray;
-  font-size: 12px;
 }
 
 /* ADR hazard sign */
@@ -263,6 +259,12 @@ input.form-control[name="wishlist-url"] {
 #wlName button[data-toggle] {
   height: $input-height;
 }
+.wishlist-options {
+  .dropdown-item {
+    position: relative;
+    text-align: center;
+  }
+}
 
 /* Action buttons */
 .action-tip-animation {
@@ -384,7 +386,8 @@ body {
   margin: 2px 0 0;
   list-style: none;
   font-size: $font-size-base;
-  background-color: $dropdown-bg;
+  color: $header-color;
+  background-color: $header-bg-color;
   border: 1px solid $dropdown-border-color;
   border-radius: $border-radius;
   @include box-shadow(0 8px 10px -5px rgba(0, 0, 0, 0.15));
@@ -461,10 +464,48 @@ input.typeahead {
     background-color: $gray-lighter;
   }
 }
+.price .second-range-price{
+  display:inline-block;
+  white-space: nowrap;
+}
 
+.ml-auto-util {
+  margin-left: auto;
+}
+.manufacturer-image-wrapper {
+  margin-bottom: map-get($spacers, 1);
+}
+
+.sitemap-group {
+  margin-bottom: map-get($spacers, 5);
+  li, .sitemap-group-item {
+    margin-top: map-get($spacers, 2);
+    margin-bottom: map-get($spacers, 2);
+  }
+  .sub-categories {
+    padding-left: map-get($spacers, 4);
+  }
+}
+
+.w-100-util {
+  width: 100%;
+}
+.form-error-msg {
+  color: $danger;
+}
 //backwards compatibility for html from wawi
 .img-responsive {
   max-width: 100%;
   height: auto;
 }
-
+.icon-mr-2 {
+  margin-right: map-get($spacers, 2);
+}
+.page-freegift {
+  .page-freegift {
+    text-align: center;
+  }
+}
+.simple-captcha-wrapper {
+  text-align: center;
+}

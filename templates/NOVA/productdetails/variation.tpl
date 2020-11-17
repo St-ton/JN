@@ -7,13 +7,13 @@
         {assign var=oVariationKombi_arr value=$Artikel->getChildVariations()}
         {block name='productdetails-variation-spinner'}
             {row}
-                {col class="updatingStockInfo text-center d-none"}
+                {col class="updatingStockInfo text-center-util d-none"}
                     <i class="fa fa-spinner fa-spin" title="{lang key='updatingStockInformation' section='productDetails'}"></i>
                 {/col}
             {/row}
         {/block}
         {block name='productdetails-variation-variation'}
-            {row class="variations {if $simple}simple{else}switch{/if}-variations mb-4"}
+            {row class="variations {if $simple}simple{else}switch{/if}-variations"}
                 {col}
                     <dl>
                     {foreach name=Variationen from=$Artikel->$VariationsSource key=i item=Variation}
@@ -32,7 +32,7 @@
                                 </span>
                             {/if}
                         </dt>
-                        <dd class="form-group text-left">
+                        <dd class="form-group text-left-util">
                             {if $Variation->cTyp === 'SELECTBOX'}
                                 {block name='productdetails-variation-select-outer'}
                                 {select class='custom-select selectpicker' title="{lang key='pleaseChooseVariation' section='productDetails'}" name="eigenschaftwert[{$Variation->kEigenschaft}]" required=!$showMatrix}
@@ -90,7 +90,7 @@
                                         !empty($Artikel->VariationenOhneFreifeld[$i]->Werte[$y]->nNichtLieferbar) && $Artikel->VariationenOhneFreifeld[$i]->Werte[$y]->nNichtLieferbar == 1}
                                         {else}
                                             {block name='productdetails-variation-radio-inner'}
-                                                <div class="custom-control custom-radio mb-2">
+                                                <div class="custom-control custom-radio">
                                                     <input type="radio"
                                                         class="custom-control-input"
                                                         name="eigenschaftwert[{$Variation->kEigenschaft}]"
@@ -181,18 +181,7 @@
                                                                {if $smarty.foreach.Variationswerte.index === 0 && !$showMatrix} required{/if}
                                                                />
                                                             {if $hasImage}
-                                                                <div class="square square-image">
-                                                                    <div class="inner">
-                                                                        {image fluid=true webp=true lazy=true
-                                                                            src=$Variationswert->getImage(\JTL\Media\Image::SIZE_XS)
-                                                                            srcset="{$Variationswert->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_variationen_mini_breite}w,
-                                                                                {$Variationswert->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_variationen_klein_breite}w,
-                                                                                {$Variationswert->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_variationen_breite}w"
-                                                                            sizes="90px"
-                                                                            alt=$Variationswert->cName|escape:'quotes'
-                                                                        }
-                                                                    </div>
-                                                                </div>
+                                                                {include file='snippets/image.tpl' sizes='90px' item=$Variationswert srcSize='xs'}
                                                             {else}
                                                                 {$Variationswert->cName}
                                                             {/if}
@@ -208,7 +197,7 @@
                                 {/block}
                             {elseif $Variation->cTyp === 'TEXTSWATCHES'}
                                 {block name='productdetails-variation-textswatch-outer'}
-                                    {formrow class="mb-3 swatches {$Variation->cTyp|lower}"}
+                                    {formrow class="swatches {$Variation->cTyp|lower}"}
                                         {foreach name=Variationswerte from=$Variation->Werte key=y item=Variationswert}
                                             {assign var=bSelected value=false}
                                             {if isset($oVariationKombi_arr[$Variationswert->kEigenschaft])}

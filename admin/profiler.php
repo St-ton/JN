@@ -9,9 +9,10 @@ use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statistik_inc.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('PROFILER_VIEW', true, true);
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 $tab         = 'uebersicht';
 $sqlData     = null;
 $alertHelper = Shop::Container()->getAlertService();

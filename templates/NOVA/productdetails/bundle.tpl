@@ -1,7 +1,7 @@
 {block name='productdetails-bundle'}
     {if !empty($Products)}
         {block name='productdetails-bundle-form'}
-            {form action="{if !empty($ProductMain->cURLFull)}{$ProductMain->cURLFull}{else}index.php{/if}" method="post" id="form_bundles" class="jtl-validate"}
+            {form action="{if !empty($ProductMain->cURLFull)}{$ProductMain->cURLFull}{else}index.php{/if}" method="post" id="form_bundles" class="bundle-form jtl-validate"}
             {block name='productdetails-bundle-hidden-inputs'}
                 {input type="hidden" name="a" value=$ProductMain->kArtikel}
                 {input type="hidden" name="addproductbundle" value="1"}
@@ -12,17 +12,17 @@
             {/block}
             {if $smarty.session.Kundengruppe->mayViewPrices()}
                 {block name='productdetails-bundle-form-price'}
-                    {row class='mb-7 mt-n2 justify-content-md-center align-items-center'}
-                        {col cols=12 md='auto' class='text-center text-md-right mb-2 mb-md-0'}
-                            <span class="font-weight-bold">
+                    {row}
+                        {col cols=12 md='auto' class='bundle-price'}
+                            <strong>
                                 {lang key='priceForAll' section='productDetails'}:
                                 <span class="price price-sm">{$ProduktBundle->cPriceLocalized[$NettoPreise]}</span>
-                            </span>
+                            </strong>
                             {if $ProduktBundle->fPriceDiff > 0}
-                                <span class="text-warning ml-1">({lang key='youSave' section='productDetails'}: {$ProduktBundle->cPriceDiffLocalized[$NettoPreise]})</span>
+                                <span class="text-warning">({lang key='youSave' section='productDetails'}: {$ProduktBundle->cPriceDiffLocalized[$NettoPreise]})</span>
                             {/if}
                             {if $ProductMain->cLocalizedVPE}
-                                <span class="font-weight-bold">{lang key='basePrice'}: </span>
+                                <strong>{lang key='basePrice'}: </strong>
                                 <span>{$ProductMain->cLocalizedVPE[$NettoPreise]}</span>
                             {/if}
                         {/col}

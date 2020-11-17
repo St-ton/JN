@@ -893,12 +893,12 @@ class Cart
 
     /**
      * gibt Gesamtanzahl eines bestimmten Artikels im Warenkorb zurueck
-     * @param int $productID
-     * @param int $excludePos
-     * @param bool $countParentProducts
+     * @param int|null $productID
+     * @param int      $excludePos
+     * @param bool     $countParentProducts
      * @return int|float
      */
-    public function gibAnzahlEinesArtikels(int $productID, int $excludePos = -1, bool $countParentProducts = false)
+    public function gibAnzahlEinesArtikels(?int $productID, int $excludePos = -1, bool $countParentProducts = false)
     {
         if (!$productID) {
             return 0;
@@ -1954,7 +1954,11 @@ class Cart
      */
     public function setFavourableShippingString(int $possibleShippingMethods): void
     {
-        if ($this->oFavourableShipping === null && empty(Frontend::get('Versandart'))) {
+        if (!empty(Frontend::get('Versandart'))) {
+            $this->favourableShippingString = '';
+            return;
+        }
+        if ($this->oFavourableShipping === null) {
             $this->favourableShippingString = \sprintf(
                 Shop::Lang()->get('shippingInformation', 'basket'),
                 Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_VERSAND)->getURL()

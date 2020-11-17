@@ -1,35 +1,35 @@
 {block name='productdetails-reviews'}
-    <div class="reviews mt-3">
+    <div class="reviews">
         {block name='productdetails-reviews-content'}
-        {row id='reviews-overview' class='align-items-center'}
+        {row id='reviews-overview'}
             {block name='productdetails-reviews-overview'}
-                {col cols=12 md=4 order=1 order-md=0}
-                    {card class="mb-3"}
-                        {block name='productdetails-reviews-heading'}
-                            <div class="card-title">
-                                <div class="subheadline">
-                                    {lang key='averageProductRating' section='product rating'}
+                {if $Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0}
+                    {col cols=12 md=4 order=1 order-md=0}
+                        {card}
+                            {block name='productdetails-reviews-heading'}
+                                <div class="card-title">
+                                    <div class="subheadline">
+                                        {lang key='averageProductRating' section='product rating'}
+                                    </div>
                                 </div>
-                            </div>
-                        {/block}
-                        {if $Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0}
+                            {/block}
                             {block name='productdetails-reviews-rating-dropdown'}
                             <div class="dropdown">
-                                <button class="btn btn-link px-0 dropdown-toggle" type="button" id="ratingDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <button class="btn btn-link dropdown-toggle" type="button" id="ratingDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     {block name='productdetails-reviews-include-rating'}
                                         {include file='productdetails/rating.tpl' total=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl}
-                                        <span class="mx-2">({$Artikel->Bewertungen->oBewertungGesamt->nAnzahl} {lang key='Votes'})</span>
+                                        <span>({$Artikel->Bewertungen->oBewertungGesamt->nAnzahl} {lang key='Votes'})</span>
                                     {/block}
                                 </button>
-                                <div class="dropdown-menu min-w-lg p-0" aria-labelledby="ratingDropdown" data-dropdown-stay>
-                                    <div class="dropdown-body p-3">
+                                <div class="dropdown-menu min-w-lg" aria-labelledby="ratingDropdown" data-dropdown-stay>
+                                    <div class="dropdown-body">
                                         {block name='productdetails-reviews-votes'}
                                             {foreach name=sterne from=$Artikel->Bewertungen->nSterne_arr item=nSterne key=i}
                                                 {assign var=int1 value=5}
                                                 {math equation='x - y' x=$int1 y=$i assign='schluessel'}
                                                 {assign var=int2 value=100}
                                                 {math equation='a/b*c' a=$nSterne b=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl c=$int2 assign='percent'}
-                                                {row class="mb-2"}
+                                                {row}
                                                     {col cols=4}
                                                     {if isset($bewertungSterneSelected) && $bewertungSterneSelected === $schluessel}
                                                         <strong>
@@ -65,9 +65,9 @@
                                 </div>
                             </div>
                             {/block}
-                        {/if}
-                    {/card}
-                {/col}
+                        {/card}
+                    {/col}
+                {/if}
             {/block}
             {block name='productdetails-reviews-votes'}
                 {col cols=12 md=8  order=0 order-md=1}
@@ -81,7 +81,7 @@
                         </div>
                         {input type="hidden" name="bfa" value="1"}
                         {input type="hidden" name="a" value=$Artikel->kArtikel}
-                        {button type="submit" name="bewerten" value="1" variant="outline-primary" class="w-auto mb-3"}
+                        {button type="submit" name="bewerten" value="1" variant="outline-primary"}
                             {if $bereitsBewertet === false}
                                 {lang key='productAssess' section='product rating'}
                             {else}
@@ -106,10 +106,10 @@
             $Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0
         }
             {block name='productdetails-reviews-form-most-useful'}
-                {card class="reviews-mosthelpful mb-3" no-body=true}
+                {card class="reviews-mosthelpful" no-body=true}
                     {block name='productdetails-reviews-most-helpful-header'}
                         {cardheader}
-                            <span class="h3 mb-0">
+                            <span class="h3">
                                 {lang key='theMostUsefulRating' section='product rating'}
                             </span>
                         {/cardheader}
@@ -148,7 +148,7 @@
                     {input type="hidden" name="btgseite" value=$BlaetterNavi->nAktuelleSeite}
                     {foreach $ratingPagination->getPageItems() as $oBewertung}
                         {block name='productdetails-reviews-form-include-review-item'}
-                            {card class="review mb-3 {if $oBewertung@last}last{/if}"}
+                            {card class="review {if $oBewertung@last}last{/if}"}
                                 {include file='productdetails/review_item.tpl' oBewertung=$oBewertung}
                             {/card}
                         {/block}

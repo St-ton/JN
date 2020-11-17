@@ -1,10 +1,15 @@
 {block name='productlist-item-box'}
-    {if $Einstellungen.template.productlist.variation_select_productlist === 'N' || $Einstellungen.template.productlist.hover_productlist !== 'Y'}
+    {if $Einstellungen.template.productlist.variation_select_productlist === 'N'
+            || $Einstellungen.template.productlist.hover_productlist !== 'Y'}
         {assign var=hasOnlyListableVariations value=0}
     {else}
-        {hasOnlyListableVariations artikel=$Artikel maxVariationCount=$Einstellungen.template.productlist.variation_select_productlist maxWerteCount=$Einstellungen.template.productlist.variation_max_werte_productlist assign='hasOnlyListableVariations'}
+        {hasOnlyListableVariations artikel=$Artikel
+            maxVariationCount=$Einstellungen.template.productlist.variation_select_productlist
+            maxWerteCount=$Einstellungen.template.productlist.variation_max_werte_productlist
+            assign='hasOnlyListableVariations'}
     {/if}
-    <div id="result-wrapper_buy_form_{$Artikel->kArtikel}" data-wrapper="true" class="productbox productbox-column {if $Einstellungen.template.productlist.hover_productlist === 'Y'} productbox-hover{/if}{if isset($class)} {$class}{/if}">
+    <div id="result-wrapper_buy_form_{$Artikel->kArtikel}" data-wrapper="true"
+         class="productbox productbox-column {if $Einstellungen.template.productlist.hover_productlist === 'Y'} productbox-hover{/if}{if isset($class)} {$class}{/if}">
         <div class="productbox-inner">
             {row}
                 {col cols=12}
@@ -46,8 +51,8 @@
                                                     {image alt=$alt fluid=true webp=true lazy=true
                                                         src="{$image->cURLKlein}"
                                                         srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                                         {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                                         {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                                 {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                                 {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
                                                         sizes="auto"
                                                         data=["id"  => $imgcounter|cat:"_2nd"]
                                                         class='second'
@@ -88,19 +93,22 @@
                 {col cols=12}
                     {block name='productlist-item-box-caption'}
                         {block name='productlist-item-box-caption-short-desc'}
-                            <div class="productbox-title mt-2" itemprop="name">
+                            <div class="productbox-title" itemprop="name">
                                 {link href=$Artikel->cURLFull class="text-clamp-2"}
                                     {$Artikel->cKurzbezeichnung}
                                 {/link}
                             </div>
                         {/block}
                         {block name='productlist-item-box-meta'}
-                            {if $Artikel->cName !== $Artikel->cKurzbezeichnung}<meta itemprop="alternateName" content="{$Artikel->cName}">{/if}
+                            {if $Artikel->cName !== $Artikel->cKurzbezeichnung}
+                                <meta itemprop="alternateName" content="{$Artikel->cName}">
+                            {/if}
                             <meta itemprop="url" content="{$Artikel->cURLFull}">
                         {/block}
                         {block name='productlist-index-include-rating'}
                             {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}
-                                {include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung link=$Artikel->cURLFull}<br>
+                                {include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung
+                                    link=$Artikel->cURLFull}<br>
                             {/if}
                         {/block}
                         {block name='productlist-index-include-price'}

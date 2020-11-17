@@ -2,9 +2,13 @@
     {if $Einstellungen.template.productlist.variation_select_productlist === 'N'}
         {assign var=hasOnlyListableVariations value=0}
     {else}
-        {hasOnlyListableVariations artikel=$Artikel maxVariationCount=$Einstellungen.template.productlist.variation_select_productlist maxWerteCount=$Einstellungen.template.productlist.variation_max_werte_productlist assign='hasOnlyListableVariations'}
+        {hasOnlyListableVariations artikel=$Artikel
+            maxVariationCount=$Einstellungen.template.productlist.variation_select_productlist
+            maxWerteCount=$Einstellungen.template.productlist.variation_max_werte_productlist
+            assign='hasOnlyListableVariations'}
     {/if}
-    <div id="result-wrapper_buy_form_{$Artikel->kArtikel}" data-wrapper="true" class="productbox productbox-row productbox-show-variations {if $Einstellungen.template.productlist.hover_productlist === 'Y'} productbox-hover{/if}{if isset($listStyle) && $listStyle === 'list'} active{/if}">
+    <div id="result-wrapper_buy_form_{$Artikel->kArtikel}" data-wrapper="true"
+         class="productbox productbox-row productbox-show-variations {if $Einstellungen.template.productlist.hover_productlist === 'Y'} productbox-hover{/if}{if isset($listStyle) && $listStyle === 'list'} active{/if}">
         <div class="productbox-inner">
         {row}
             {col cols=12 md=4 lg=6 xl=3}
@@ -93,9 +97,10 @@
                         </div>
                     {/block}
                     <meta itemprop="url" content="{$Artikel->cURLFull}">
-                    {if $Einstellungen.artikeluebersicht.artikeluebersicht_kurzbeschreibung_anzeigen === 'Y' && $Artikel->cKurzBeschreibung}
+                    {if $Einstellungen.artikeluebersicht.artikeluebersicht_kurzbeschreibung_anzeigen === 'Y'
+                            && $Artikel->cKurzBeschreibung}
                         {block name='productlist-item-list-description'}
-                            <div class="mb-1 mt-n2 d-none d-md-block" itemprop="description">
+                            <div class="item-list-description" itemprop="description">
                                 {$Artikel->cKurzBeschreibung}
                             </div>
                         {/block}
@@ -115,7 +120,9 @@
                                 {block name='productlist-item-list-form-variations'}
                                     <div class="productbox-onhover">
                                         {block name='productlist-item-list-form-include-variation'}
-                                            {include file='productdetails/variation.tpl' simple=$Artikel->isSimpleVariation showMatrix=false smallView=true ohneFreifeld=($hasOnlyListableVariations == 2)}
+                                            {include file='productdetails/variation.tpl'
+                                                simple=$Artikel->isSimpleVariation showMatrix=false
+                                                smallView=true ohneFreifeld=($hasOnlyListableVariations == 2)}
                                         {/block}
                                     </div>
                                 {/block}
@@ -125,7 +132,7 @@
                             <link itemprop="businessFunction" href="http://purl.org/goodrelations/v1#Sell" />
                             {block name='productlist-item-list-form'}
                                 {block name='productlist-item-list-include-price'}
-                                    <div class="mb-3">
+                                    <div class="item-list-price">
                                         {include file='productdetails/price.tpl' Artikel=$Artikel tplscope=$tplscope}
                                     </div>
                                 {/block}
@@ -134,7 +141,7 @@
                                 {/block}
                             {/block}
                             {block name='productlist-item-list-basket-details'}
-                                <div class="form-row productbox-onhover productbox-actions mt-5">
+                                <div class="form-row productbox-onhover productbox-actions item-list-basket-details">
                                     {if ($Artikel->inWarenkorbLegbar === 1
                                             || ($Artikel->nErscheinendesProdukt === 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y'))
                                         && (($Artikel->nIstVater === 0 && $Artikel->Variationen|@count === 0)
@@ -144,7 +151,7 @@
                                         {if $Artikel->nIstVater && $Artikel->kVaterArtikel == 0}
                                             {col cols=12}
                                                 {block name='productlist-item-list-basket-details-variations'}
-                                                    {alert variation="info" class="choose-variations text-left"}
+                                                    {alert variation="info" class="choose-variations text-left-util"}
                                                         {lang key='chooseVariations' section='messages'}
                                                     {/alert}
                                                 {/block}
@@ -188,7 +195,7 @@
                                                         variant="primary"
                                                         block=true id="submit{$Artikel->kArtikel}"
                                                         title="{lang key='addToCart'}"
-                                                        class="mt-3"
+                                                        class="basket-details-add-to-cart"
                                                         aria=["label"=>{lang key='addToCart'}]}
                                                         {lang key='addToCart'}
                                                     {/button}

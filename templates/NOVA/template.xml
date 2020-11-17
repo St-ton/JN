@@ -18,9 +18,9 @@
             <Setting Description="Ist Nova Template" Key="is_nova" Type="text" Value="Y" Editable="false"/>
         </Section>
         <Section Name="Theme" Key="theme">
-            <Setting Description="Theme" Key="theme_default" Type="select" Value="clear" Editable="false">
+            <Setting Description="Theme" Key="theme_default" Type="select" Value="clear">
                 <Option Value="clear">clear - Handgemacht mit <![CDATA[&hearts;]]> von JTL</Option>
-                <!--<Option Value="dark">dark - Themeprototyp</Option>-->
+                <Option Value="midnight">midnight</Option>
             </Setting>
             <Setting Description="Animation für Schaltflächen beim Hovern" Key="button_animated" Type="select" Value="N">
                 <Option Value="Y">Ja</Option>
@@ -149,9 +149,9 @@
             <File Path="themes/clear/clear.css"/>
             <File Path="themes/clear/custom.css"/>
         </CSS>
-        <CSS Name="dark.css">
-            <File Path="themes/dark/dark.css"/>
-            <File Path="themes/dark/custom.css"/>
+        <CSS Name="midnight.css">
+            <File Path="themes/midnight/midnight.css"/>
+            <File Path="themes/midnight/custom.css"/>
         </CSS>
         <JS Name="jtl3.js">
             <File Path="js/bootstrap-toolkit.js"/>
@@ -164,6 +164,7 @@
             <File Path="js/jtl.evo.js"/>
             <File Path="js/typeahead.bundle.js"/>
             <File Path="js/wow.min.js"/>
+            <File Path="js/colcade.js"/>
             <File Path="js/global.js"/>
             <File Path="js/slick-lightbox.min.js"/>
             <File Path="js/jquery.serialize-object.min.js"/>

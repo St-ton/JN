@@ -7,6 +7,8 @@ use JTL\Pagination\Pagination;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statistik_inc.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $statsType    = Request::verifyGPCDataInt('s');
 $db           = Shop::Container()->getDB();
@@ -32,7 +34,6 @@ switch ($statsType) {
         $oAccount->permission('STATS_VISITOR_VIEW', true, true);
         break;
 }
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 $interval  = 0;
 $filter    = new Filter('statistics');
 $dateRange = $filter->addDaterangefield(

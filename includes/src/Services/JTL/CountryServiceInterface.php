@@ -23,10 +23,10 @@ interface CountryServiceInterface
     public function getCountrylist(): Collection;
 
     /**
-     * @param string $ISO
+     * @param string $iso
      * @return null|Country
      */
-    public function getCountry(string $ISO): ?Country;
+    public function getCountry(string $iso): ?Country;
 
     /**
      * @param array $ISOToFilter

@@ -1,5 +1,5 @@
 {block name='boxes-box-news-categories'}
-    {card class="box box-newscategories mb-md-4" id="sidebox{$oBox->getID()}"}
+    {card class="box box-newscategories box-normal" id="sidebox{$oBox->getID()}"}
         {block name='boxes-box-news-categories-content'}
             {block name='boxes-box-news-categories-toggle-title'}
                 {link id="crd-hdr-{$oBox->getID()}"
@@ -7,7 +7,7 @@
                     data=["toggle"=>"collapse"]
                     role="button"
                     aria=["expanded"=>"false","controls"=>"crd-cllps-{$oBox->getID()}"]
-                    class="text-decoration-none font-weight-bold d-md-none dropdown-toggle"}
+                    class="box-normal-link dropdown-toggle"}
                     {lang key='newsBoxCatOverview'}
                 {/link}
             {/block}
@@ -22,12 +22,12 @@
                     visible=false
                     id="crd-cllps-{$oBox->getID()}"
                     aria=["labelledby"=>"crd-hdr-{$oBox->getID()}"]}
-                    {nav vertical=true class="mt-2 mt-md-0"}
+                    {nav vertical=true class="box-nav-item"}
                         {foreach $oBox->getItems() as $newsCategory}
                             {if $newsCategory@index === 10}{break}{/if}
-                            {navitem href=$newsCategory->cURLFull title=$newsCategory->cName router-class="align-items-center d-flex"}
+                            {navitem href=$newsCategory->cURLFull title=$newsCategory->cName router-class="box-link-wrapper"}
                                 {$newsCategory->cName}
-                                {badge variant="outline-secondary" class="ml-auto"}{$newsCategory->nAnzahlNews}{/badge}
+                                {badge variant="outline-secondary"}{$newsCategory->nAnzahlNews}{/badge}
                             {/navitem}
                         {/foreach}
                     {/nav}
@@ -36,6 +36,6 @@
         {/block}
     {/card}
     {block name='boxes-box-news-categories-hr-end'}
-        <hr class="my-3 d-flex d-md-none">
+        <hr class="box-normal-hr">
     {/block}
 {/block}

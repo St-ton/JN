@@ -305,6 +305,9 @@ abstract class AbstractBox implements BoxInterface
                 if (!\is_array($this->content)) {
                     $this->content = [];
                 }
+                if (!\is_array($this->title)) {
+                    $this->title = [];
+                }
                 $this->content[(int)$box->kSprache] = $box->cInhalt;
                 $this->title[(int)$box->kSprache]   = $box->cTitel;
             }

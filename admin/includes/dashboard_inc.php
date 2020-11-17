@@ -259,5 +259,5 @@ function getAvailableWidgetsIO()
     $wrapper          = Shop::Smarty()->assign('oAvailableWidget_arr', $availableWidgets)
                                       ->fetch('tpl_inc/widget_selector.tpl');
 
-    return $response->assignDom('settings', 'innerHTML', $wrapper);
+    return $response->assignDom('available-widgets', 'innerHTML', $wrapper);
 }

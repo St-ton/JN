@@ -2,6 +2,7 @@
 
 use JTL\Backend\AdminAccountManager;
 
+/** @global \JTL\Backend\AdminAccount $oAccount */
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ACCOUNT_VIEW', true, true);

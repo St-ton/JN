@@ -637,9 +637,10 @@ class ProductFilter
 
     /**
      * @param array $params
+     * @param bool  $validate
      * @return $this
      */
-    public function initStates(array $params): self
+    public function initStates(array $params, bool $validate = true): self
     {
         $params = \array_merge($this->getParamsPrototype(), $params);
         if ($params['kKategorie'] > 0) {
@@ -760,6 +761,7 @@ class ProductFilter
             if (empty($params['cSuche'])) {
                 $this->bExtendedJTLSearch = false;
             }
+            $this->nSeite = \max(1, Request::verifyGPCDataInt('seite'));
             \executeHook(\HOOK_NAVI_SUCHE, [
                 'bExtendedJTLSearch'         => &$this->bExtendedJTLSearch,
                 'oExtendedJTLSearchResponse' => &$this->oExtendedJTLSearchResponse,
@@ -808,7 +810,7 @@ class ProductFilter
         ]);
         $this->params = $params;
 
-        return $this->validate();
+        return $validate === true ? $this->validate() : $this;
     }
 
     /**
@@ -1662,7 +1664,7 @@ class ProductFilter
         if ($this->searchResults === null) {
             $productList         = new Collection();
             $productKeys         = $this->getProductKeys();
-            $productCount        = \count($productKeys);
+            $productCount        = $productKeys->count();
             $this->searchResults = (new SearchResults())
                 ->setProductCount($productCount)
                 ->setProductKeys($productKeys);

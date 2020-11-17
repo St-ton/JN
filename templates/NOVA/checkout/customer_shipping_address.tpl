@@ -1,6 +1,6 @@
 {block name='checkout-customer-shipping-address'}
     <fieldset>
-    {formrow}
+    {formrow class="customer-shipping-address"}
         {$name = 'shipping_address'}
         {* salutation / title *}
         {block name='checkout-customer-shipping-address-salutation-title'}
@@ -13,7 +13,7 @@
                             label-for="{$prefix}-{$name}-salutation"
                         }
                             {if !empty($fehlendeAngaben.anrede)}
-                                <div class="form-error-msg text-danger">{lang key='fillOut'}</div>
+                                <div class="form-error-msg">{lang key='fillOut'}</div>
                             {/if}
                             {select name="{$prefix}[{$name}][anrede]" id="{$prefix}-{$name}-salutation" class='custom-select' required=($Einstellungen.kunden.lieferadresse_abfragen_anrede === 'Y') autocomplete="shipping sex"}
                                 <option value="" selected="selected" {if $Einstellungen.kunden.lieferadresse_abfragen_anrede === 'Y'}disabled{/if}>
@@ -40,7 +40,7 @@
                     {/block}
                 {/col}
             {/if}
-            <div class="w-100"></div>
+            <div class="w-100-util"></div>
         {/block}
 
         {* firstname lastname *}
@@ -68,7 +68,7 @@
                     }
                 {/block}
             {/col}
-            <div class="w-100"></div>
+            <div class="w-100-util"></div>
         {/block}
 
         {* firm / firmtext *}
@@ -99,7 +99,7 @@
                     {/block}
                 {/col}
             {/if}
-            <div class="w-100"></div>
+            <div class="w-100-util"></div>
         {/block}
 
         {* street / number *}
@@ -126,7 +126,7 @@
                     }
                 {/block}
             {/col}
-            <div class="w-100"></div>
+            <div class="w-100-util"></div>
         {/block}
 
         {* address addition *}
@@ -144,7 +144,7 @@
                     {/block}
                 {/col}
             {/block}
-            <div class="w-100"></div>
+            <div class="w-100-util"></div>
         {/if}
 
         {* country *}
@@ -215,7 +215,7 @@
                             {/if}
 
                             {if !empty($fehlendeAngaben.bundesland)}
-                                <div class="form-error-msg text-danger">{lang key='fillOut'}</div>
+                                <div class="form-error-msg">{lang key='fillOut'}</div>
                             {/if}
                         {/formgroup}
                     {/block}
@@ -228,12 +228,12 @@
             {col cols=12 md=4}
                 {block name='checkout-customer-shipping-address-zip'}
                     {formgroup
-                        class="{if !empty($fehlendeAngaben.plz)} has-error{/if}"
+                        class="{if !empty($fehlendeAngaben.plz)} has-error{/if} postcode-wrapper"
                         label="{lang key='plz' section='account data'}"
                         label-for="{$prefix}-{$name}-postcode"
                     }
                         {if isset($fehlendeAngaben.plz)}
-                            <div class="form-error-msg text-danger"><i class="fa fa-exclamation-triangle"></i>
+                            <div class="form-error-msg"><i class="fa fa-exclamation-triangle"></i>
                                 {if $fehlendeAngaben.plz >= 2}
                                     {lang key='checkPLZCity' section='checkout'}
                                 {else}
@@ -260,12 +260,12 @@
             {col cols=12 md=8}
                 {block name='checkout-customer-shipping-address-city'}
                     {formgroup
-                        class="{if !empty($fehlendeAngaben.ort)} has-error{/if} exclude-from-label-slide"
+                        class="{if !empty($fehlendeAngaben.ort)} has-error{/if} city-wrapper exclude-from-label-slide"
                         label=""
                         label-for="{$prefix}-{$name}-city"
                     }
                         {if isset($fehlendeAngaben.ort)}
-                            <div class="form-error-msg text-danger"><i class="fa fa-exclamation-triangle"></i>
+                            <div class="form-error-msg"><i class="fa fa-exclamation-triangle"></i>
                                 {if $fehlendeAngaben.ort==3}
                                     {lang key='cityNotNumeric' section='account data'}
                                 {else}

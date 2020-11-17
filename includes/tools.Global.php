@@ -1738,9 +1738,6 @@ function checkSetPercentCouponWKPos($oWKPosition, $Kupon)
     );
     $waehrung   = isset($_SESSION['Waehrung']) ? $_SESSION['Waehrung'] : null;
     if ($waehrung === null || !isset($waehrung->kWaehrung)) {
-        $waehrung = $this->Waehrung;
-    }
-    if ($waehrung === null || !isset($waehrung->kWaehrung)) {
         $waehrung = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard = 'Y'", 1);
     }
     if (isset($kupons_mgl->kKupon) && $kupons_mgl->kKupon > 0 && $kupons_mgl->cWertTyp === 'prozent') {
@@ -3204,14 +3201,14 @@ function gibCaptchaCode($sec)
         case 1:
             $chars = '1234567890';
             for ($i = 0; $i < 4; $i++) {
-                $code .= $chars{rand(0, strlen($chars) - 1)};
+                $code .= $chars[rand(0, strlen($chars) - 1)];
             }
             break;
         case 2:
         case 3:
             $chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
             for ($i = 0; $i < 4; $i++) {
-                $code .= $chars{rand(0, strlen($chars) - 1)};
+                $code .= $chars[rand(0, strlen($chars) - 1)];
             }
             break;
     }

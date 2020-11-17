@@ -1,1 +1,1 @@
-<!-- removed in 5.0.0 -->
+<?php // removed in 5.0.0

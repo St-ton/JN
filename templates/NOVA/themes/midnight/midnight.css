@@ -23750,6 +23750,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
     padding-left: 1rem;
     overflow: auto;
   }
+  .productlist-filter#collapseFilter .productlist-filter-wrapper .dropdown-menu .dropdown-item {
+    text-decoration: none;
+    white-space: normal;
+  }
   .productlist-filter#collapseFilter .productlist-filter-footer {
     background: #ffffff;
     box-shadow: 0 -0.5rem 1rem rgba(0, 0, 0, 0.15);

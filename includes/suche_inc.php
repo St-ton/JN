@@ -63,7 +63,7 @@ function suchausdruckVorbereiten($cSuche)
     $cSuchTMP_arr = explode(' ', $cSuche);
 
     $cSuche_stripped = stripslashes($cSuche);
-    if ($cSuche_stripped[0] !== '"' || $cSuche_stripped{strlen($cSuche_stripped) - 1} !== '"') {
+    if ($cSuche_stripped[0] !== '"' || $cSuche_stripped[strlen($cSuche_stripped) - 1] !== '"') {
         foreach ($cSuchTMP_arr as $i => $cSuchTMP) {
             if (strpos($cSuchTMP, '+') !== false) {
                 $cSuchTMP_teil = explode('+', $cSuchTMP);

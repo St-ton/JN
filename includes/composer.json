@@ -24,7 +24,7 @@
     "require-dev": {
         "phpunit/php-token-stream": "~1.2",
         "nikic/php-parser": "^2.1",
-        "Symfony/Finder": "^2.8"
+        "symfony/finder": "^2.8"
     },
     "config": {
         "platform": {

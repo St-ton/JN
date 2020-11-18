@@ -6022,10 +6022,10 @@ class Artikel
             $mwst2 = number_format($mwst, 2, ',', '.');
             $mwst1 = number_format($mwst, 1, ',', '.');
             $mwst  = (int)$mwst;
-            if ($mwst2{strlen($mwst2) - 1} != '0') {
+            if ($mwst2[strlen($mwst2) - 1] != '0') {
                 return $mwst2;
             }
-            if ($mwst1{strlen($mwst1) - 1} != '0') {
+            if ($mwst1[strlen($mwst1) - 1] != '0') {
                 return $mwst1;
             }
 

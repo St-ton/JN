@@ -47,7 +47,7 @@ if (!$hasPendingUpdates) {
             WHERE cPluginID = 'jtl_search'",
         ReturnType::SINGLE_OBJECT
     );
-    $curScriptFileNameWithRequest = basename($_SERVER['REQUEST_URI']);
+    $curScriptFileNameWithRequest = basename($_SERVER['REQUEST_URI'] ?? 'index.php');
     foreach ($adminMenu as $rootName => $rootEntry) {
         $rootKey   = (string)$rootKey;
         $mainGroup = (object)[

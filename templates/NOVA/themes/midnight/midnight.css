@@ -25386,6 +25386,10 @@ header #burger-menu {
 .order-items .order-item .order-item-image-wrapper {
   padding-right: 0.25rem;
 }
+.order-items .order-item .order-item-image-wrapper img {
+  width: 100%;
+  object-fit: contain;
+}
 .order-items .order-items-total {
   margin-left: auto;
   padding-top: 1.5rem;
@@ -25877,6 +25881,15 @@ header #burger-menu {
     margin-bottom: 0;
     text-align: center;
   }
+}
+@media (max-width: 767.98px) {
+  .checkout-items-item .checkout-items-item-image-wrapper {
+    padding-right: 0;
+  }
+}
+.checkout-items-item .checkout-items-item-image-wrapper img {
+  width: 100%;
+  object-fit: contain;
 }
 
 .checkout-items-total {

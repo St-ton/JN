@@ -1,5 +1,5 @@
 {block name='snippets-image'}
-    {if !empty($item->getImage(\JTL\Media\Image::SIZE_XS))}
+    {if $item !== null && !empty($item->getImage(\JTL\Media\Image::SIZE_XS))}
     {block name='snippets-image-variables'}
         {$square      = $square|default:true}
         {$fluid       = $fluid|default:true}

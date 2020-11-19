@@ -1997,14 +1997,29 @@ msgstr "Licence expired."
 msgid "I understood this notice."
 msgstr "Yes, I have read this message."
 
-msgid "The following extensions do not have a valid license:"
-msgstr "You do not have valid licences for the following extensions:"
+msgid "No valid licence found for the following installed and active extensions:"
+msgstr "No valid licence found for the following installed and active extensions:"
 
-msgid "Please uninstall this extensions or purchase a valid license."
-msgstr "Please uninstall the extensions or purchase valid licences:"
+msgid "Possible reasons:"
+msgstr "Possible reasons:"
 
-msgid "Further using these extensions will violate the license policy and may have legal consequences."
-msgstr "Continued usage constitutes a licence violation and may have legal consequences."
+msgid "The extension was obtained from a different source than the JTL-Extension Store"
+msgstr "The extension was obtained from a different source than the JTL-Extension Store"
+
+msgid "The licence is not bound to this shop yet (check licence in \"My purchases\")"
+msgstr "The licence is not bound to this shop yet (check licence in \"My purchases\")"
+
+msgid "The licence is bound to a different customer account that is not connected to this shop (check connected account in \"My purchases\")"
+msgstr "The licence is bound to a different customer account that is not connected to this shop (check connected account in \"My purchases\")"
+
+msgid "The manufacturer disabled the licence"
+msgstr "The manufacturer disabled the licence"
+
+msgid "Further use of the extension constitutes a licence violation!"
+msgstr "Further use of the extension constitutes a licence violation!"
+
+msgid "Please purchase a licence in the JTL-Extension Store or contact the manufacturer of the extension for information on rights of use."
+msgstr "Please purchase a licence in the JTL-Extension Store or contact the manufacturer of the extension for information on rights of use."
 
 msgid "Licensing problem detected"
 msgstr "Licensing problem detected"

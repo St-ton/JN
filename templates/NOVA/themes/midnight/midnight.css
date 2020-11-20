@@ -22909,6 +22909,10 @@ input.typeahead:-ms-input-placeholder {
   text-align: center;
 }
 
+.page-shipping {
+  margin-top: 1rem;
+}
+
 /* utilities */
 .rounded-top-left {
   border-top-left-radius: 0.125rem !important;

@@ -22285,6 +22285,10 @@ aside .box-monthlynews a .value:hover {
   margin-bottom: 1rem;
 }
 
+.characteristic-collapse-btn-inner img {
+  margin-right: 0.25rem;
+}
+
 :root {
   --vh: 1vh;
 }

@@ -107,6 +107,7 @@ final class Globals extends AbstractSync
         ) {
             $this->mapper->mapObject($company, $source['tfirma'], 'mFirma');
             $this->dbDelInsert('tfirma', [$company], 1);
+            $this->cache->flushTags([\CACHING_GROUP_CORE]);
         }
     }
 

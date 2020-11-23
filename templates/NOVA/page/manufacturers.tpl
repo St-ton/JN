@@ -1,7 +1,7 @@
 {block name='page-manufacturers'}
     {opcMountPoint id='opc_before_manufacturers' inContainer=false}
     {block name='page-manufacturers-content'}
-        {container}
+        {container class="page-manufacturers"}
             {row}
                 {foreach $oHersteller_arr as $mft}
                     {col xl=3 md=4 sm=6}

@@ -19,7 +19,6 @@ class Migration_20201119133615 extends Migration implements IMigration
     {
         foreach ([
             'tkontaktbetreff' => 'kKontaktBetreff',
-            'tlinkgruppe'     => 'kLinkgruppe',
             'tsprachiso'      => 'kSprachISO',
             'ttext'           => 'kText',
         ] as $table => $keyColumn) {

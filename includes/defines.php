@@ -185,7 +185,7 @@ ifndef('BILD_KEIN_MERKMALWERTBILD_VORHANDEN', PFAD_GFX . 'keinBild_kl.gif');
 ifndef('BILD_UPLOAD_ZUGRIFF_VERWEIGERT', PFAD_GFX . 'keinBild.gif');
 //MediaImage Regex
 ifndef('MEDIAIMAGE_REGEX', '/^media\/image\/(?P<type>product)' .
-    '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl|os)\/(?P<name>[a-zA-Z0-9\-_]+)' .
+    '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl|os)\/(?P<name>[a-zA-Z0-9\-_\.]+)' .
     '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/');
 // Suchcache Lebensdauer in Minuten nach letzter Artikeländerung durch JTL-Wawi
 ifndef('SUCHCACHE_LEBENSDAUER', 60);

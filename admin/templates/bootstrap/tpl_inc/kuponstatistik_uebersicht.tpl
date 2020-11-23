@@ -109,8 +109,8 @@
                                     <div class="modal-dialog modal-lg" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <span class="ml-2">{$usedCouponOrder.cBestellNr} ({$usedCouponOrder.cUserName})</span>
                                                 <strong>{__('order')}: </strong>
+                                                <span class="ml-2">{$usedCouponOrder.cBestellNr} ({$usedCouponOrder.cUserName})</span>
                                                 <button type="button" class="close" data-dismiss="modal">
                                                     <i class="fal fa-times"></i>
                                                 </button>

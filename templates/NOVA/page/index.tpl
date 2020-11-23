@@ -27,7 +27,7 @@
                     {/if}
                     {assign var=moreLink value=$Box->cURL}
                     {block name='page-index-include-product-slider'}
-                        {container fluid=true}
+                        {container class="product-slider-wrapper" fluid=true}
                             {include file='snippets/product_slider.tpl'
                                 productlist=$Box->Artikel->elemente
                                 title=$title
@@ -47,7 +47,7 @@
 
             {opcMountPoint id='opc_before_news' inContainer=false}
 
-            <section>
+            <section class="index-news-wrapper">
                 {container fluid=true}
                     {block name='page-index-subheading-news'}
                         <div class="blog-header">

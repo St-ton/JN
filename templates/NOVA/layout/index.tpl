@@ -16,12 +16,12 @@
             {block name='layout-index-heading'}
                 {if !empty($Link->getTitle())}
                     {opcMountPoint id='opc_before_heading' inContainer=false}
-                    {container}
+                    {container class="index-heading-wrapper"}
                         <h1>{$Link->getTitle()}</h1>
                     {/container}
                 {elseif isset($bAjaxRequest) && $bAjaxRequest}
                     {opcMountPoint id='opc_before_heading' inContainer=false}
-                    {container}
+                    {container class="index-heading-wrapper"}
                         <h1>{if !empty($Link->getMetaTitle())}{$Link->getMetaTitle()}{else}{$Link->getName()}{/if}</h1>
                     {/container}
                 {/if}
@@ -33,7 +33,7 @@
             {block name='layout-index-link-content'}
                 {if !empty($Link->getContent())}
                     {opcMountPoint id='opc_before_content' inContainer=false}
-                    {container}
+                    {container class="link-content"}
                         {$Link->getContent()}
                     {/container}
                 {/if}

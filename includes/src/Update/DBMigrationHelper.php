@@ -290,7 +290,7 @@ class DBMigrationHelper
         $database = Shop::Container()->getDB()->getConfig()['database'];
 
         return Shop::Container()->getDB()->queryPrepared(
-            "SELECT `COLUMN_NAME`, `DATA_TYPE`, `COLUMN_TYPE`, `COLUMN_DEFAULT`, `IS_NULLABLE`
+            "SELECT `COLUMN_NAME`, `DATA_TYPE`, `COLUMN_TYPE`, `COLUMN_DEFAULT`, `IS_NULLABLE`, `EXTRA`
                 FROM information_schema.COLUMNS
                 WHERE `TABLE_SCHEMA` = :schema
                     AND `TABLE_NAME` = :table
@@ -452,7 +452,8 @@ class DBMigrationHelper
                     . "{$col->COLUMN_TYPE} $characterSet"
                     . ($col->IS_NULLABLE === 'YES' ? ' NULL' : ' NOT NULL')
                     . ($col->IS_NULLABLE === 'NO' && $col->COLUMN_DEFAULT === null ? '' : ' DEFAULT '
-                        . ($col->COLUMN_DEFAULT === null ? 'NULL' : "'{$col->COLUMN_DEFAULT}'"));
+                        . ($col->COLUMN_DEFAULT === null ? 'NULL' : "'{$col->COLUMN_DEFAULT}'"))
+                    . (!empty($col->EXTRA) ? ' ' . $col->EXTRA : '');
             }
 
             $sql .= \implode(", $lineBreak", $columnChange);

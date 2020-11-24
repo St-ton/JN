@@ -3,6 +3,7 @@
     value="{$setting->value|escape:'html'}"
     placeholder="{__($setting->cPlaceholder)}"
     {if $setting->cType === 'checkbox' && $setting->value === '1'} checked{/if}
+    {if isset($setting->rawAttributes['step'])} step="{$setting->rawAttributes['step']}"{/if}
     {if isset($setting->rawAttributes['min'])} min="{$setting->rawAttributes['min']}"{/if}
     {if isset($setting->rawAttributes['max'])} max="{$setting->rawAttributes['max']}"{/if}
     {if isset($setting->rawAttributes['maxlength'])} maxlength="{$setting->rawAttributes['maxlength']}"{/if}

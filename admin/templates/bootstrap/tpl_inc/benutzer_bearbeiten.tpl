@@ -354,8 +354,6 @@ $(document).ready(function() {
             {else}
                 <input type="hidden" name="kAdminlogingruppe" value="1" />
             {/if}
-
-{*            {if isset($oAccount->kAdminlogin) && $oAccount->kAdminlogin > 1}*}
             <div class="card">
                 <div class="card-header">
                     <div class="subheading1">{__('personalInformation')}</div>
@@ -432,8 +430,6 @@ $(document).ready(function() {
                     {/if}
                 </div>
             </div>
-
-{*            {/if}*}
         </div>
         <div class="card-footer save-wrapper">
             <div class="row">

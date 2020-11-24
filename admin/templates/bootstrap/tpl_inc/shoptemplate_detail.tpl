@@ -70,92 +70,33 @@
                                 </div>
                             {/if}
                             <div class="col-xs-12 col-md-12">
-                                <input type="hidden" name="cSektion[]" value="{$section->key}" />
-                                <input type="hidden" name="cName[]" value="{$setting->key}" />
                                 <div class="item form-group form-row align-items-center">
                                     {if $setting->isEditable}
-                                        <label class="col col-sm-4 col-form-label text-sm-right" for="{$section->key}-{$setting->key}">{__($setting->name)}:</label>
+                                        <label class="col col-sm-4 col-form-label text-sm-right" for="{$setting->elementID}">{__($setting->name)}:</label>
                                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                             {if $setting->cType === 'select'}
-                                                <select class="custom-select" name="cWert[]" id="{$section->key}-{$setting->key}">
-                                                    {foreach $setting->options as $option}
-                                                        <option value="{$option->value}" {if $option->value == $setting->value}selected="selected"{/if}>{__($option->name)}</option>
-                                                    {/foreach}
-                                                </select>
+                                                {include file='tpl_inc/option_select.tpl' setting=$setting section=$section}
                                             {elseif $setting->cType === 'optgroup'}
-                                                <select class="custom-select" name="cWert[]" id="{$section->key}-{$setting->key}">
-                                                    {foreach $setting->optGroups as $oOptgroup}
-                                                        <optgroup label="{__($oOptgroup->name)}">
-                                                            {foreach $oOptgroup->values as $option}
-                                                                <option value="{$option->value}" {if $option->value == $setting->value}selected="selected"{/if}>{__($option->name)}</option>
-                                                            {/foreach}
-                                                        </optgroup>
-                                                    {/foreach}
-                                                </select>
+                                                {include file='tpl_inc/option_optgroup.tpl' setting=$setting section=$section}
                                             {elseif $setting->cType === 'colorpicker'}
                                                 {include file='snippets/colorpicker.tpl'
-                                                cpID="{$section->key}-{$setting->key}"
-                                                cpName="cWert[]"
+                                                cpID="{$section->elementID}"
+                                                cpName="{$section->elementID}"
                                                 cpValue=$setting->value}
                                             {elseif $setting->cType === 'number'}
-                                                <div class="input-group form-counter">
-                                                    <div class="input-group-prepend">
-                                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                                            <span class="fas fa-minus"></span>
-                                                        </button>
-                                                    </div>
-                                                    <input class="form-control" type="number" name="cWert[]" id="{$section->key}-{$setting->key}" value="{$setting->value|escape:'html'}" placeholder="{__($setting->cPlaceholder)}" />
-                                                    <div class="input-group-append">
-                                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                                            <span class="fas fa-plus"></span>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            {elseif $setting->cType === 'text' || $setting->cType === 'float'}
-                                                <input class="form-control" type="text" name="cWert[]" id="{$section->key}-{$setting->key}" value="{$setting->value|escape:'html'}" placeholder="{__($setting->cPlaceholder)}" />
+                                                {include file='tpl_inc/option_number.tpl' setting=$setting section=$section}
+                                            {elseif $setting->cType === 'radio'}
+                                                {include file='tpl_inc/option_radio.tpl' setting=$setting section=$section}
                                             {elseif $setting->cType === 'textarea' }
-                                                <div class="form-group">
-                                                        <textarea style="resize:{if isset($setting->textareaAttributes.Resizable)}{$setting->textareaAttributes.Resizable}{/if};max-width:800%;width:100%;border:none"
-                                                                  name="cWert[]"
-                                                                  cols="{if isset($setting->textareaAttributes.Cols)}{$setting->textareaAttributes.Cols}{/if}"
-                                                                  rows="{if isset($setting->textareaAttributes.Rows)}{$setting->textareaAttributes.Rows}{/if}"
-                                                                  id="{$section->key}-{$setting->key}"
-                                                                  placeholder="{__($setting->cPlaceholder)}"
-                                                        >{$setting->cTextAreaValue|escape:'html'}
-                                                        </textarea>
-                                                </div>
-                                            {elseif $setting->cType === 'password'}
-                                                <div class="form-group">
-                                                    <input type="{$setting->cType}" size="32" name="cWert[]" value="{$setting->value}" id="pf_first" class="form-control">
-                                                </div>
+                                                {include file='tpl_inc/option_textarea.tpl' setting=$setting section=$section}
                                             {elseif $setting->cType === 'upload' && isset($setting->rawAttributes.target)}
-                                                <input type="hidden" name="cWert[]" value="upload-{$setting@iteration}" />
-                                            {include file='tpl_inc/fileupload.tpl'
-                                                fileID="tpl-upload-{$setting@iteration}"
-                                                fileName="upload-{$setting@iteration}"
-                                                fileDeleteUrl="{$shopURL}/{$PFAD_ADMIN}shoptemplate.php?token={$smarty.session.jtl_token}"
-                                                fileExtraData='{id:1}'
-                                                fileMaxSize="{if !empty($setting->rawAttributes.maxFileSize)}{$setting->rawAttributes.maxFileSize}{else}1000{/if}"
-                                                fileAllowedExtensions="{if !empty($setting->rawAttributes.allowedFileExtensions)}{$setting->rawAttributes.allowedFileExtensions}{/if}"
-                                                fileInitialPreview="[
-                                                    {if !empty($setting->value)}
-                                                        '<img src=\"{$shopURL}/templates/{$template->getDir()}/{$setting->rawAttributes.target}{$setting->value}?v={$smarty.now}\" class=\"file-preview-image\"/>'
-                                                    {/if}
-                                                ]"
-                                                fileInitialPreviewConfig="[{
-                                                    url: '{$shopURL}/{$PFAD_ADMIN}shoptemplate.php',
-                                                    extra: {
-                                                            upload: '{$template->getDir()}/{$setting->rawAttributes.target}{$setting->value}',
-                                                            id:     'upload-{$setting@iteration}',
-                                                            token:  '{$smarty.session.jtl_token}',
-                                                            cName:  '{$setting->key}'
-                                                    }
-                                                }]"
-                                            }
+                                                {include file='tpl_inc/option_upload.tpl' setting=$setting section=$section iteration=$setting@iteration}
+                                            {else}
+                                                {include file='tpl_inc/option_generic.tpl' setting=$setting section=$section iteration=$setting@iteration}
                                             {/if}
                                         </div>
                                     {else}
-                                        <input type="hidden" name="cWert[]" value="{$setting->value|escape:'html'}" />
+                                        <input type="hidden" name="{$setting->elementID}" value="{$setting->value|escape:'html'}" />
                                     {/if}
                                 </div>
                             </div>

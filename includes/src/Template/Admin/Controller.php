@@ -22,6 +22,7 @@ use JTL\Template\Model;
 use JTL\Template\XMLReader;
 use JTLShop\SemVer\Version;
 use stdClass;
+use function Functional\first;
 
 /**
  * Class Controller
@@ -71,7 +72,8 @@ class Controller
         JTLCacheInterface $cache,
         AlertServiceInterface $alertService,
         JTLSmarty $smarty
-    ) {
+    )
+    {
         $this->db           = $db;
         $this->cache        = $cache;
         $this->alertService = $alertService;
@@ -224,22 +226,32 @@ class Controller
         if ($tplXML !== null && !empty($tplXML->Parent)) {
             $parentFolder = (string)$tplXML->Parent;
         }
-        $tplConfXML   = $this->config->getConfigXML($reader, $parentFolder);
-        $sectionCount = \count($_POST['cSektion']);
-        for ($i = 0; $i < $sectionCount; $i++) {
-            $section = $_POST['cSektion'][$i];
-            $name    = $_POST['cName'][$i];
-            $value   = $_POST['cWert'][$i];
-            // for uploads, the value of an input field is the $_FILES index of the uploaded file
-            if (\mb_strpos($value, 'upload-') === 0) { // all upload fields have to start with "upload-"
-                try {
-                    $value = $this->handleUpload($tplConfXML, $value, $name);
-                } catch (InvalidArgumentException $e) {
+        $tplConfXML = $this->config->getConfigXML($reader, $parentFolder);
+        foreach ($tplConfXML as $config) {
+            foreach ($config->settings as $setting) {
+                if ($setting->cType === 'checkbox') {
+                    $value = isset($_POST[$setting->elementID]) ? '1' : '0';
+                } else {
+                    $value = $_POST[$setting->elementID] ?? null;
+                }
+                if ($value === null) {
+                    die('ARGH!');
                     continue;
                 }
+                if (\is_array($value)) {
+                    $value = first($value);
+                }
+                // for uploads, the value of an input field is the $_FILES index of the uploaded file
+                if ($setting->cType === 'upload') {
+                    try {
+                        $value = $this->handleUpload($tplConfXML, $value, $setting->key);
+                    } catch (InvalidArgumentException $e) {
+                        continue;
+                    }
+                }
+                $this->config->updateConfigInDB($setting->section, $setting->key, $value);
+                $this->cache->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_TEMPLATE]);
             }
-            $this->config->updateConfigInDB($section, $name, $value);
-            $this->cache->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_TEMPLATE]);
         }
         $check = $this->setActiveTemplate($this->currentTemplateDir);
         if ($check) {

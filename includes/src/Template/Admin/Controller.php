@@ -72,8 +72,7 @@ class Controller
         JTLCacheInterface $cache,
         AlertServiceInterface $alertService,
         JTLSmarty $smarty
-    )
-    {
+    ) {
         $this->db           = $db;
         $this->cache        = $cache;
         $this->alertService = $alertService;
@@ -235,7 +234,6 @@ class Controller
                     $value = $_POST[$setting->elementID] ?? null;
                 }
                 if ($value === null) {
-                    die('ARGH!');
                     continue;
                 }
                 if (\is_array($value)) {

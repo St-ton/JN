@@ -23,6 +23,9 @@ class Visitor
      */
     public static function generateData(): void
     {
+        if (\TRACK_VISITORS === false) {
+            return;
+        }
         $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
         $botID     = self::isSpider($userAgent);
         if ($botID > 0) {
@@ -101,7 +104,7 @@ class Visitor
      * @former dbLookupVisitor()
      * @since  5.0.0
      */
-    public static function dbLookup($userAgent, $ip): ?stdClass
+    public static function dbLookup(string $userAgent, string $ip): ?stdClass
     {
         return Shop::Container()->getDB()->select('tbesucher', 'cSessID', \session_id())
             ?? Shop::Container()->getDB()->select('tbesucher', 'cID', \md5($userAgent . $ip));
@@ -115,7 +118,7 @@ class Visitor
      * @return object
      * @since 5.0.0
      */
-    public static function updateVisitorObject($vis, int $visitorID, $userAgent, int $botID)
+    public static function updateVisitorObject($vis, int $visitorID, string $userAgent, int $botID)
     {
         $vis->kBesucher         = $visitorID;
         $vis->cIP               = (new IpAnonymizer(Request::getRealIP()))->anonymize();
@@ -139,7 +142,7 @@ class Visitor
      * @return stdClass
      * @since 5.0.0
      */
-    public static function createVisitorObject($userAgent, int $botID): stdClass
+    public static function createVisitorObject(string $userAgent, int $botID): stdClass
     {
         $vis                    = new stdClass();
         $vis->kBesucher         = 0;
@@ -165,22 +168,22 @@ class Visitor
     }
 
     /**
-     * @param object $visitor
+     * @param stdClass $visitor
      * @return int
      * @since since 5.0.0
      */
-    public static function dbInsert($visitor): int
+    public static function dbInsert(stdClass $visitor): int
     {
         return Shop::Container()->getDB()->insert('tbesucher', $visitor);
     }
 
     /**
-     * @param object $visitor
-     * @param int    $visitorID
+     * @param stdClass $visitor
+     * @param int      $visitorID
      * @return int
      * @since since 5.0.0
      */
-    public static function dbUpdate($visitor, int $visitorID): int
+    public static function dbUpdate(stdClass $visitor, int $visitorID): int
     {
         return Shop::Container()->getDB()->update('tbesucher', 'kBesucher', $visitorID, $visitor);
     }
@@ -309,7 +312,7 @@ class Visitor
      * @former werteRefererAus()
      * @since  5.0.0
      */
-    public static function analyzeReferer(int $visitorID, $referer): void
+    public static function analyzeReferer(int $visitorID, string $referer): void
     {
         $ref             = $_SERVER['HTTP_REFERER'] ?? '';
         $term            = new stdClass();
@@ -380,11 +383,9 @@ class Visitor
      * @former istSpider()
      * @since  5.0.0
      */
-    public static function isSpider($userAgent): int
+    public static function isSpider(string $userAgent): int
     {
-        $db         = Shop::Container()->getDB();
-        $cache      = Shop::Container()->getCache();
-        $controller = new Crawler\Controller($db, $cache);
+        $controller = new Crawler\Controller(Shop::Container()->getDB(), Shop::Container()->getCache());
         $bot        = $controller->getByUserAgent($userAgent);
 
         return $bot === false ? 0 : (int)$bot->kBesucherBot;
@@ -395,9 +396,7 @@ class Visitor
      */
     public static function getSpiders(): array
     {
-        $db         = Shop::Container()->getDB();
-        $cache      = Shop::Container()->getCache();
-        $controller = new Crawler\Controller($db, $cache);
+        $controller = new Crawler\Controller(Shop::Container()->getDB(), Shop::Container()->getCache());
 
         return $controller->getAllCrawlers();
     }
@@ -406,7 +405,7 @@ class Visitor
      * @param string $userAgent
      * @return bool|int
      */
-    private static function isMobile($userAgent)
+    private static function isMobile(string $userAgent)
     {
         return \preg_match(
             '/android|avantgo|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile' .
@@ -445,36 +444,36 @@ class Visitor
      * @param string   $userAgent
      * @return stdClass
      */
-    private static function getBrowserData(stdClass $browser, $userAgent): stdClass
+    private static function getBrowserData(stdClass $browser, string $userAgent): stdClass
     {
-        if (\preg_match('/MSIE/i', $userAgent) && !\preg_match('/Opera/i', $userAgent)) {
+        if (\stripos($userAgent, 'MSIE') !== false && \stripos($userAgent, 'Opera') === false) {
             $browser->nType    = \BROWSER_MSIE;
             $browser->cName    = 'Internet Explorer';
             $browser->cBrowser = 'msie';
-        } elseif (\preg_match('/Firefox/i', $userAgent)) {
+        } elseif (\stripos($userAgent, 'Firefox') !== false) {
             $browser->nType    = \BROWSER_FIREFOX;
             $browser->cName    = 'Mozilla Firefox';
             $browser->cBrowser = 'firefox';
-        } elseif (\preg_match('/Chrome/i', $userAgent)) {
+        } elseif (\stripos($userAgent, 'Chrome') !== false) {
             $browser->nType    = \BROWSER_CHROME;
             $browser->cName    = 'Google Chrome';
             $browser->cBrowser = 'chrome';
-        } elseif (\preg_match('/Safari/i', $userAgent)) {
+        } elseif (\stripos($userAgent, 'Safari') !== false) {
             $browser->nType = \BROWSER_SAFARI;
-            if (\preg_match('/iPhone/i', $userAgent)) {
+            if (\stripos($userAgent, 'iPhone') !== false) {
                 $browser->cName    = 'Apple iPhone';
                 $browser->cBrowser = 'iphone';
-            } elseif (\preg_match('/iPad/i', $userAgent)) {
+            } elseif (\stripos($userAgent, 'iPad') !== false) {
                 $browser->cName    = 'Apple iPad';
                 $browser->cBrowser = 'ipad';
-            } elseif (\preg_match('/iPod/i', $userAgent)) {
+            } elseif (\stripos($userAgent, 'iPod') !== false) {
                 $browser->cName    = 'Apple iPod';
                 $browser->cBrowser = 'ipod';
             } else {
                 $browser->cName    = 'Apple Safari';
                 $browser->cBrowser = 'safari';
             }
-        } elseif (\preg_match('/Opera/i', $userAgent)) {
+        } elseif (\stripos($userAgent, 'Opera') !== false) {
             $browser->nType = \BROWSER_OPERA;
             if (\preg_match('/Opera Mini/i', $userAgent)) {
                 $browser->cName    = 'Opera Mini';
@@ -504,7 +503,7 @@ class Visitor
         $browser->cVersion  = '0';
         $browser->cAgent    = $userAgent;
         $browser->bMobile   = self::isMobile($browser->cAgent);
-        if (\preg_match('/linux/i', $userAgent)) {
+        if (\stripos($userAgent, "linux") !== false) {
             $browser->cPlatform = 'linux';
         } elseif (\preg_match('/macintosh|mac os x/i', $userAgent)) {
             $browser->cPlatform = 'mac';

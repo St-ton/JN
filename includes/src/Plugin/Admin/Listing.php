@@ -243,7 +243,7 @@ final class Listing
                 $item->setIsShop4Compatible($code === InstallCode::OK);
             }
 
-            $this->items[] = $item;
+            $this->items->add($item);
         }
 
         return $this->items;

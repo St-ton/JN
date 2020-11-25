@@ -20,11 +20,6 @@ final class LinkList implements LinkListInterface
     private $db;
 
     /**
-     * @var int[]
-     */
-    private $linkIDs;
-
-    /**
      * @var Collection
      */
     private $links;
@@ -44,14 +39,14 @@ final class LinkList implements LinkListInterface
      */
     public function createLinks(array $linkIDs): Collection
     {
-        $this->linkIDs = \array_map('\intval', $linkIDs);
-        if (\count($this->linkIDs) === 0) {
+        $linkIDs = \array_map('\intval', $linkIDs);
+        if (\count($linkIDs) === 0) {
             return $this->links;
         }
         $realIDs  = $this->db->query(
             'SELECT `kLink`, `reference`, `kVaterLink`
                 FROM tlink 
-                WHERE kLink IN (' . \implode(',', $this->linkIDs) . ')',
+                WHERE kLink IN (' . \implode(',', $linkIDs) . ')',
             ReturnType::ARRAY_OF_OBJECTS
         );
         $loadData = [];

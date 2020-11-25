@@ -1024,7 +1024,7 @@ class Cart
      * @param bool   $name
      * @return $this
      */
-    public function setzeKonfig(&$item, bool $prices = true, bool $name = true): self
+    public function setzeKonfig($item, bool $prices = true, bool $name = true): self
     {
         // Falls Konfigitem gesetzt Preise + Name ueberschreiben
         if ((int)$item->kKonfigitem <= 0 || !\class_exists('Konfigitem')) {

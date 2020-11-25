@@ -9,7 +9,6 @@ use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\OPC\Portlets\MissingPortlet\MissingPortlet;
 use JTL\Plugin\PluginLoader;
-use JTL\Shop;
 use JTL\Update\Updater;
 use stdClass;
 use function Functional\map;

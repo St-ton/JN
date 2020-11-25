@@ -1170,29 +1170,29 @@ final class Shop
                 if (\mb_strpos($customFilterSeo, \SEP_HST) !== false) {
                     $arr             = \explode(\SEP_HST, $customFilterSeo);
                     $customFilterSeo = $arr[0];
-                    $slug            .= \SEP_HST . $arr[1];
+                    $slug           .= \SEP_HST . $arr[1];
                 }
                 if (($idx = \mb_strpos($customFilterSeo, \SEP_KAT)) !== false
                     && $idx !== \mb_strpos($customFilterSeo, \SEP_HST)
                 ) {
                     $manufacturers   = \explode(\SEP_KAT, $customFilterSeo);
                     $customFilterSeo = $manufacturers[0];
-                    $slug            .= \SEP_KAT . $manufacturers[1];
+                    $slug           .= \SEP_KAT . $manufacturers[1];
                 }
                 if (\mb_strpos($customFilterSeo, \SEP_MERKMAL) !== false) {
                     $arr             = \explode(\SEP_MERKMAL, $customFilterSeo);
                     $customFilterSeo = $arr[0];
-                    $slug            .= \SEP_MERKMAL . $arr[1];
+                    $slug           .= \SEP_MERKMAL . $arr[1];
                 }
                 if (\mb_strpos($customFilterSeo, \SEP_MM_MMW) !== false) {
                     $arr             = \explode(\SEP_MM_MMW, $customFilterSeo);
                     $customFilterSeo = $arr[0];
-                    $slug            .= \SEP_MM_MMW . $arr[1];
+                    $slug           .= \SEP_MM_MMW . $arr[1];
                 }
                 if (\mb_strpos($customFilterSeo, \SEP_SEITE) !== false) {
                     $arr             = \explode(\SEP_SEITE, $customFilterSeo);
                     $customFilterSeo = $arr[0];
-                    $slug            .= \SEP_SEITE . $arr[1];
+                    $slug           .= \SEP_SEITE . $arr[1];
                 }
 
                 $customSeo[$customFilter->getClassName()] = [
@@ -1225,22 +1225,22 @@ final class Shop
             if (($idx = \mb_strpos($merkmal, \SEP_KAT)) !== false && $idx !== \mb_strpos($merkmal, \SEP_HST)) {
                 $arr     = \explode(\SEP_KAT, $merkmal);
                 $merkmal = $arr[0];
-                $slug    .= \SEP_KAT . $arr[1];
+                $slug   .= \SEP_KAT . $arr[1];
             }
             if (\mb_strpos($merkmal, \SEP_HST) !== false) {
                 $arr     = \explode(\SEP_HST, $merkmal);
                 $merkmal = $arr[0];
-                $slug    .= \SEP_HST . $arr[1];
+                $slug   .= \SEP_HST . $arr[1];
             }
             if (\mb_strpos($merkmal, \SEP_MM_MMW) !== false) {
                 $arr     = \explode(\SEP_MM_MMW, $merkmal);
                 $merkmal = $arr[0];
-                $slug    .= \SEP_MM_MMW . $arr[1];
+                $slug   .= \SEP_MM_MMW . $arr[1];
             }
             if (\mb_strpos($merkmal, \SEP_SEITE) !== false) {
                 $arr     = \explode(\SEP_SEITE, $merkmal);
                 $merkmal = $arr[0];
-                $slug    .= \SEP_SEITE . $arr[1];
+                $slug   .= \SEP_SEITE . $arr[1];
             }
         }
         unset($merkmal);
@@ -1257,22 +1257,22 @@ final class Shop
                 if (($idx = \mb_strpos($hstseo, \SEP_KAT)) !== false && $idx !== \mb_strpos($hstseo, \SEP_HST)) {
                     $manufacturers[] = \explode(\SEP_KAT, $hstseo);
                     $manufSeo[$i]    = $manufacturers[0];
-                    $slug            .= \SEP_KAT . $manufacturers[1];
+                    $slug           .= \SEP_KAT . $manufacturers[1];
                 }
                 if (\mb_strpos($hstseo, \SEP_MERKMAL) !== false) {
                     $arr          = \explode(\SEP_MERKMAL, $hstseo);
                     $manufSeo[$i] = $arr[0];
-                    $slug         .= \SEP_MERKMAL . $arr[1];
+                    $slug        .= \SEP_MERKMAL . $arr[1];
                 }
                 if (\mb_strpos($hstseo, \SEP_MM_MMW) !== false) {
                     $arr          = \explode(\SEP_MM_MMW, $hstseo);
                     $manufSeo[$i] = $arr[0];
-                    $slug         .= \SEP_MM_MMW . $arr[1];
+                    $slug        .= \SEP_MM_MMW . $arr[1];
                 }
                 if (\mb_strpos($hstseo, \SEP_SEITE) !== false) {
                     $arr          = \explode(\SEP_SEITE, $hstseo);
                     $manufSeo[$i] = $arr[0];
-                    $slug         .= \SEP_SEITE . $arr[1];
+                    $slug        .= \SEP_SEITE . $arr[1];
                 }
             }
         } else {
@@ -1284,22 +1284,22 @@ final class Shop
             if (\mb_strpos($categorySeo, \SEP_HST) !== false) {
                 $arr         = \explode(\SEP_HST, $categorySeo);
                 $categorySeo = $arr[0];
-                $slug        .= \SEP_HST . $arr[1];
+                $slug       .= \SEP_HST . $arr[1];
             }
             if (\mb_strpos($categorySeo, \SEP_MERKMAL) !== false) {
                 $arr         = \explode(\SEP_MERKMAL, $categorySeo);
                 $categorySeo = $arr[0];
-                $slug        .= \SEP_MERKMAL . $arr[1];
+                $slug       .= \SEP_MERKMAL . $arr[1];
             }
             if (\mb_strpos($categorySeo, \SEP_MM_MMW) !== false) {
                 $arr         = \explode(\SEP_MM_MMW, $categorySeo);
                 $categorySeo = $arr[0];
-                $slug        .= \SEP_MM_MMW . $arr[1];
+                $slug       .= \SEP_MM_MMW . $arr[1];
             }
             if (\mb_strpos($categorySeo, \SEP_SEITE) !== false) {
                 $arr         = \explode(\SEP_SEITE, $categorySeo);
                 $categorySeo = $arr[0];
-                $slug        .= \SEP_SEITE . $arr[1];
+                $slug       .= \SEP_SEITE . $arr[1];
             }
         } else {
             $slug = $categories[0];

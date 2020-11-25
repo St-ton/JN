@@ -26,11 +26,6 @@ class LegacyPluginLoader extends AbstractLoader
     protected $plugin;
 
     /**
-     * @var string
-     */
-    private $basePath = \PFAD_ROOT . \PFAD_PLUGIN;
-
-    /**
      * PluginLoader constructor.
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
@@ -136,8 +131,6 @@ class LegacyPluginLoader extends AbstractLoader
         $this->plugin->setLinks(new Links());
 
         $this->plugin->setCache($this->loadCacheData($this->plugin));
-
-        $this->basePath = \PFAD_ROOT . \PFAD_PLUGIN;
 
         $this->plugin->setPaths($this->loadPaths($obj->cVerzeichnis));
         $this->plugin->oPluginHook_arr = $this->loadHooks((int)$obj->kPlugin);

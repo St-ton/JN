@@ -544,14 +544,8 @@ class Zahlungsart extends MainModel
     {
         $payments = [];
         $where    = $active ? ' WHERE z.nActive = 1' : '';
-
         if ($iso === null) {
-            if (isset($_SESSION['cISOSprache'])) {
-                $iso = $_SESSION['cISOSprache'];
-            } else {
-                $language = LanguageHelper::getDefaultLanguage();
-                $iso      = $language->cISO;
-            }
+            $iso = Shop::getLanguageCode() ?? LanguageHelper::getDefaultLanguage()->getCode();
         }
 
         $objs = Shop::Container()->getDB()->queryPrepared(

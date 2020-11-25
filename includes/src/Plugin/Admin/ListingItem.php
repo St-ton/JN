@@ -10,7 +10,6 @@ use JTL\Mapper\PluginValidation;
 use JTL\Plugin\InstallCode;
 use JTL\Plugin\PluginInterface;
 use JTL\Plugin\State;
-use JTL\Shop;
 use JTLShop\SemVer\Version;
 
 /**

@@ -215,7 +215,7 @@ abstract class AbstractLoader implements LoaderInterface
      * @param stdClass $data
      * @return License
      */
-    protected function loadLicense($data): License
+    protected function loadLicense(stdClass $data): License
     {
         $license = new License();
         if (\strlen($data->cLizenzKlasse) > 0 && \strpos($data->cLizenzKlasse, 'Plugin\\') !== 0) {
@@ -435,7 +435,7 @@ abstract class AbstractLoader implements LoaderInterface
      * @param string $canonicalFileName - full path of the file to check
      * @return bool
      */
-    protected function checkFileExistence($canonicalFileName): bool
+    protected function checkFileExistence(string $canonicalFileName): bool
     {
         static $checked = [];
         if (!\array_key_exists($canonicalFileName, $checked)) {

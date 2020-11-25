@@ -5,6 +5,7 @@ namespace JTL\Plugin;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Shop;
+use stdClass;
 
 /**
  * Class PluginLoader
@@ -81,7 +82,7 @@ class PluginLoader extends AbstractLoader
     /**
      * @inheritdoc
      */
-    public function loadFromObject($obj, string $currentLanguageCode): PluginInterface
+    public function loadFromObject(stdClass $obj, string $currentLanguageCode): PluginInterface
     {
         $id      = (int)$obj->kPlugin;
         $paths   = $this->loadPaths($obj->cVerzeichnis);

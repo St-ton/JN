@@ -65,7 +65,7 @@ class Backend extends AbstractSession
             if ($set === false) {
                 $this->setLanguageFromDefault();
             }
-            $_SESSION['kSprache']    = $_SESSION['kSprache'] ?? 1;
+            $_SESSION['kSprache']    = (int)($_SESSION['kSprache'] ?? 1);
             $_SESSION['cISOSprache'] = $_SESSION['cISOSprache'] ?? 'ger';
         }
         Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);

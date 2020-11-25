@@ -257,8 +257,8 @@ final class Installer
                 continue;
             }
             $tmpVersion = (int)$versionData['nr'];
-            $xy          = \trim(\str_replace('attr', '', $i));
-            $sqlFile     = $versionNode[$xy]['SQL'] ?? '';
+            $xy         = \trim(\str_replace('attr', '', $i));
+            $sqlFile    = $versionNode[$xy]['SQL'] ?? '';
             if ($sqlFile === '') {
                 continue;
             }

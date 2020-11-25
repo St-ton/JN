@@ -54,7 +54,7 @@ class Category implements CategoryInterface
     /**
      * @var int
      */
-    private $rght = 0;
+    protected $rght = 0;
 
     /**
      * @var int

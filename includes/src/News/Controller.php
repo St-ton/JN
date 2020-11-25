@@ -51,11 +51,6 @@ class Controller
     private $noticeMsg = '';
 
     /**
-     * @var int
-     */
-    private $currentNewsType;
-
-    /**
      * Controller constructor.
      * @param DbInterface $db
      * @param array       $config
@@ -101,13 +96,13 @@ class Controller
         if ($this->config['news']['news_benutzen'] !== 'Y') {
             return ViewType::NEWS_DISABLED;
         }
-        $this->currentNewsType = ViewType::NEWS_OVERVIEW;
+        $currentNewsType = ViewType::NEWS_OVERVIEW;
         if ($params['kNews'] > 0) {
-            $this->currentNewsType = ViewType::NEWS_DETAIL;
+            $currentNewsType = ViewType::NEWS_DETAIL;
         } elseif ($params['kNewsKategorie'] > 0) {
-            $this->currentNewsType = ViewType::NEWS_CATEGORY;
+            $currentNewsType = ViewType::NEWS_CATEGORY;
         } elseif ($params['kNewsMonatsUebersicht'] > 0) {
-            $this->currentNewsType = ViewType::NEWS_MONTH_OVERVIEW;
+            $currentNewsType = ViewType::NEWS_MONTH_OVERVIEW;
             if (($data = $this->getMonthOverview($params['kNewsMonatsUebersicht'])) !== null) {
                 $_SESSION['NewsNaviFilter']->cDatum   = (int)$data->nMonat . '-' . (int)$data->nJahr;
                 $_SESSION['NewsNaviFilter']->nNewsKat = -1;
@@ -122,7 +117,7 @@ class Controller
                          'captcha'    => 0
                      ]);
 
-        return $this->currentNewsType;
+        return $currentNewsType;
     }
 
     /**

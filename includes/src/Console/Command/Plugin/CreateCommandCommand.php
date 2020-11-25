@@ -42,6 +42,8 @@ class CreateCommandCommand extends Command
         try {
             $commandPath = $this->createFile($pluginID, $commandName, $author);
             $output->writeln("<info>Created command:</info> <comment>'" . $commandPath . "'</comment>");
+
+            return 0;
         } catch (Exception $e) {
             $this->getIO()->error($e->getMessage());
 

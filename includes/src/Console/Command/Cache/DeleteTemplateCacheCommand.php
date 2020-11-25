@@ -40,8 +40,11 @@ class DeleteTemplateCacheCommand extends Command
         }
         if ($filesystem->deleteDir('/templates_c/' . $activeTemplate->getDir())) {
             $io->success('Template cache deleted.');
-        } else {
-            $io->warning('Nothing to delete.');
+
+            return 0;
         }
+        $io->warning('Nothing to delete.');
+
+        return 1;
     }
 }

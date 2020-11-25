@@ -233,6 +233,7 @@ class InstallCommand extends Command
                 $this->printSystemCheckTable($systemCheckResults['testresults']['recommendations']);
             }
             $io->error('Failed');
+
             return 1;
         }
         $io->success('All requirements are met');
@@ -258,6 +259,7 @@ class InstallCommand extends Command
         if (\in_array(false, $dirCheck['testresults'], true)) {
             $this->printDirCheckTable($dirCheck['testresults'], $localFilesystem);
             $io->error('File permissions are incorrect.');
+
             return 1;
         }
 
@@ -273,6 +275,7 @@ class InstallCommand extends Command
 
         if ($dbCredentialsCheck['error']) {
             $io->error($dbCredentialsCheck['msg']);
+
             return 1;
         }
         $io->success('Credentials matched');

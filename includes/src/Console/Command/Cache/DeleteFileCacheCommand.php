@@ -32,8 +32,11 @@ class DeleteFileCacheCommand extends Command
         $fs = new Filesystem(new Local(\PFAD_ROOT));
         if ($fs->deleteDir('/templates_c/filecache/')) {
             $io->success('File cache deleted.');
-        } else {
-            $io->warning('Nothing to delete.');
+
+            return 0;
         }
+        $io->warning('Nothing to delete.');
+
+        return 1;
     }
 }

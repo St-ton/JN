@@ -64,5 +64,7 @@ class FilesCommand extends Command
         )
             ->newLine()
             ->success('Archive "' . $archive . '" created.');
+
+        return 0;
     }
 }

@@ -41,7 +41,7 @@ class InnodbUtf8Command extends Command
             if ($this->errCounter > 20) {
                 $this->getIO()->error('aborted due to too many errors');
 
-                return;
+                return 1;
             }
 
             $output->write('migrate ' . $table->TABLE_NAME . '... ');
@@ -89,6 +89,8 @@ class InnodbUtf8Command extends Command
         } else {
             $this->getIO()->success('all done');
         }
+
+        return 0;
     }
 
     /**

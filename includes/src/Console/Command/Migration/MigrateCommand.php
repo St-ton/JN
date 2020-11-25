@@ -43,11 +43,13 @@ class MigrateCommand extends Command
         if (!$updater->hasMinUpdateVersion()) {
             Shop::Container()->getGetText()->setLanguage('en-GB')->loadAdminLocale('pages/dbupdater');
             $io->writeln('<error>' . $updater->getMinUpdateVersionError() . '</error>');
-            return;
+
+            return 1;
         }
         if (empty($executedMigrations) && empty($migrations)) {
             $io->writeln('<info>Nothing to migrate.</info>');
-            return;
+
+            return 1;
         }
 
         try {
@@ -72,5 +74,7 @@ class MigrateCommand extends Command
             $manager->log($migration, IMigration::UP, 'JTL01', $e->getMessage());
             $io->error($e->getMessage());
         }
+
+        return 0;
     }
 }

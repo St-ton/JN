@@ -65,6 +65,8 @@ class CreateCommand extends Command
         $modelName = $this->writeDataModel($targetDir, $tableName, $author);
 
         $io->writeln("<info>Created DataModel:</info> <comment>'{$modelName}'</comment>");
+
+        return 0;
     }
 
     /**

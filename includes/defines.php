@@ -282,6 +282,8 @@ ifndef('SEO_SLUG_LOWERCASE', false);
 
 ifndef('SAFE_MODE', false);
 
+ifndef('TRACK_VISITORS', true);
+
 /**
  * @param string     $constant
  * @param string|int $value

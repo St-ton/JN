@@ -368,7 +368,7 @@ class Versandart
             ['kVersandart' => $this->kVersandart],
             ReturnType::COLLECTION
         )->map(static function ($surcharge) {
-            return new ShippingSurcharge($surcharge->kVersandzuschlag);
+            return new ShippingSurcharge((int)$surcharge->kVersandzuschlag);
         }));
 
         $cache->set($cacheID, $this->getShippingSurcharges(), [\CACHING_GROUP_OBJECT]);

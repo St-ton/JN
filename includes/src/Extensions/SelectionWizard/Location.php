@@ -250,8 +250,8 @@ class Location
                     if ($update) {
                         if ($this->isCategoryTaken(
                             $key,
-                            $params['kSprache'],
-                            $params['kAuswahlAssistentGruppe']
+                            (int)$params['kSprache'],
+                            (int)$params['kAuswahlAssistentGruppe']
                         )) {
                             $checks['cKategorie'] = 3;
                         }
@@ -270,8 +270,8 @@ class Location
                 if ($update) {
                     if ($this->isLinkTaken(
                         $key,
-                        $params['kSprache'],
-                        $params['kAuswahlAssistentGruppe']
+                        (int)$params['kSprache'],
+                        (int)$params['kAuswahlAssistentGruppe']
                     )) {
                         $checks['kLink_arr'] = 1;
                     }
@@ -284,8 +284,8 @@ class Location
         if (isset($params['nStartseite']) && (int)$params['nStartseite'] === 1) {
             if ($update) {
                 if ($this->isStartPageTaken(
-                    $params['kSprache'],
-                    $params['kAuswahlAssistentGruppe']
+                    (int)$params['kSprache'],
+                    (int)$params['kAuswahlAssistentGruppe']
                 )) {
                     $checks['nStartseite'] = 1;
                 }

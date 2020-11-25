@@ -76,6 +76,10 @@ class Separator
             foreach (\array_keys(\get_object_vars($data)) as $member) {
                 $this->$member = $data->$member;
             }
+            $this->nEinheit        = (int)$this->nEinheit;
+            $this->nDezimalstellen = (int)$this->nDezimalstellen;
+            $this->kSprache        = (int)$this->nEinheit;
+            $this->kTrennzeichen   = (int)$this->kTrennzeichen;
         }
 
         return $this;

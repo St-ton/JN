@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace JTL;
 
@@ -141,9 +142,7 @@ class Nice
         Shop::Container()->getGetText()->loadAdminLocale('widgets');
 
         $modules = [];
-        if (!\defined(\SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
-            $this->initConstants();
-        }
+        $this->initConstants();
         $module           = new stdClass();
         $module->kModulId = \SHOP_ERWEITERUNG_AUSWAHLASSISTENT;
         $module->cName    = __('moduleSelectionWizard');

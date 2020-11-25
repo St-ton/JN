@@ -49,6 +49,7 @@ switch ($action) {
             } else {
                 $slide->save();
             }
+            Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
         }
         break;
     default:
@@ -116,6 +117,7 @@ switch ($action) {
                         'successSliderSave',
                         ['saveInSession' => true]
                     );
+                    Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
                     header('Location: ' . $redirectUrl);
                     exit;
                 }
@@ -174,6 +176,7 @@ switch ($action) {
         $slider = new Slider($db);
         $slider->load($kSlider, false);
         if ($slider->delete() === true) {
+            Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
             header('Location: ' . $redirectUrl);
             exit;
         }

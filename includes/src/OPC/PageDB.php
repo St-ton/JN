@@ -34,10 +34,9 @@ class PageDB
      * @return bool
      * @throws Exception
      */
-    public function shopHasPendingUpdates()
+    public function shopHasPendingUpdates(): bool
     {
-        $updater = new Updater($this->shopDB);
-        return $updater->hasPendingUpdates();
+        return (new Updater($this->shopDB))->hasPendingUpdates();
     }
 
     /**
@@ -66,7 +65,7 @@ class PageDB
      * @param string $id
      * @return array
      */
-    public function getDraftRows($id): array
+    public function getDraftRows(string $id): array
     {
         return $this->shopDB->selectAll('topcpage', 'cPageId', $id);
     }
@@ -75,7 +74,7 @@ class PageDB
      * @param string $id
      * @return int
      */
-    public function getDraftCount($id): int
+    public function getDraftCount(string $id): int
     {
         return (int)$this->shopDB->queryPrepared(
             'SELECT COUNT(kPage) AS count FROM topcpage WHERE cPageId = :id',
@@ -101,14 +100,14 @@ class PageDB
     }
 
     /**
-     * @param int $revId
+     * @param int $id
      * @return object
      * @throws Exception
      */
-    public function getRevisionRow(int $revId)
+    public function getRevisionRow(int $id)
     {
         $revision    = new Revision($this->shopDB);
-        $revisionRow = $revision->getRevision($revId);
+        $revisionRow = $revision->getRevision($id);
 
         if (!\is_object($revisionRow)) {
             throw new Exception('The OPC page revision could not be found in the database.');
@@ -133,8 +132,11 @@ class PageDB
             ['pageId' => $id],
             ReturnType::SINGLE_OBJECT
         );
+        if ($publicRow === false) {
+            $publicRow = null;
+        }
 
-        return !\is_object($publicRow) ? null : $publicRow;
+        return $publicRow;
     }
 
     /**
@@ -171,15 +173,13 @@ class PageDB
     }
 
     /**
-     * @param int $revId
+     * @param int $id
      * @return Page
      * @throws Exception
      */
-    public function getRevision(int $revId): Page
+    public function getRevision(int $id): Page
     {
-        $revisionRow = $this->getRevisionRow($revId);
-
-        return $this->getPageFromRow($revisionRow);
+        return $this->getPageFromRow($this->getRevisionRow($id));
     }
 
     /**
@@ -202,7 +202,6 @@ class PageDB
     {
         $publicRow = $this->getPublicPageRow($id);
         $page      = null;
-
         if (\is_object($publicRow)) {
             $page = $this->getPageFromRow($publicRow);
         }
@@ -374,7 +373,7 @@ class PageDB
     }
 
     /**
-     * @param Page $page existing page draft
+     * @param Page $page - existing page draft
      * @return $this
      * @throws Exception
      */
@@ -393,7 +392,7 @@ class PageDB
     }
 
     /**
-     * @param Page $page existing page draft
+     * @param Page $page - existing page draft
      * @return $this
      * @throws Exception
      */
@@ -454,11 +453,11 @@ class PageDB
     }
 
     /**
-     * @param $row
+     * @param stdClass $row
      * @return Page
      * @throws Exception
      */
-    protected function getPageFromRow($row): Page
+    protected function getPageFromRow(stdClass $row): Page
     {
         $page = (new Page())
             ->setKey((int)$row->kPage)

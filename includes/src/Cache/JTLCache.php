@@ -201,6 +201,12 @@ final class JTLCache implements JTLCacheInterface
                 'value'       => \CACHING_GROUP_STATUS,
                 'description' => 'cg_status_description'
             ],
+            [
+                'name'        => 'CACHING_GROUP_OPC',
+                'nicename'    => 'cg_opc_nicename',
+                'value'       => \CACHING_GROUP_OPC,
+                'description' => 'cg_opc_description'
+            ],
         ];
 
         return $this;

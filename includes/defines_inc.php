@@ -573,3 +573,4 @@ define('CACHING_GROUP_MANUFACTURER', 'mnf');
 define('CACHING_GROUP_FILTER', 'fltr');
 define('CACHING_GROUP_FILTER_CHARACTERISTIC', 'fltrchr');
 define('CACHING_GROUP_STATUS', 'status');
+define('CACHING_GROUP_OPC', 'opc');

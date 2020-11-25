@@ -681,6 +681,9 @@ class IOMethods
         $configGroupCounts = $quantities;
         $configItemCounts  = $itemQuantities;
         foreach ($configGroups as $itemList) {
+            if ($itemList === null) {
+                continue;
+            }
             foreach ($itemList as $configItemID) {
                 $configItemID = (int)$configItemID;
                 // Falls ungültig, ignorieren

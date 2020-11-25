@@ -98,7 +98,11 @@ class StateChanger
         $this->db->update('tlink', 'kPlugin', $pluginID, (object)['bIsActive' => 1]);
         $this->db->update('topcportlet', 'kPlugin', $pluginID, (object)['bActive' => 1]);
         $this->db->update('topcblueprint', 'kPlugin', $pluginID, (object)['bActive' => 1]);
-        $this->cache->flushTags([\CACHING_GROUP_PLUGIN . '_' . $pluginID, \CACHING_GROUP_LICENSES]);
+        $this->cache->flushTags([
+            \CACHING_GROUP_CORE,
+            \CACHING_GROUP_PLUGIN . '_' . $pluginID,
+            \CACHING_GROUP_LICENSES
+        ]);
         if (($p = Helper::bootstrap($pluginID, $loader)) !== null) {
             $p->enabled();
         }
@@ -129,7 +133,11 @@ class StateChanger
         $this->db->update('tadminwidgets', 'kPlugin', $pluginID, (object)['bActive' => 0]);
         $this->db->update('topcportlet', 'kPlugin', $pluginID, (object)['bActive' => 0]);
         $this->db->update('topcblueprint', 'kPlugin', $pluginID, (object)['bActive' => 0]);
-        $this->cache->flushTags([\CACHING_GROUP_PLUGIN . '_' . $pluginID, \CACHING_GROUP_LICENSES]);
+        $this->cache->flushTags([
+            \CACHING_GROUP_CORE,
+            \CACHING_GROUP_PLUGIN . '_' . $pluginID,
+            \CACHING_GROUP_LICENSES
+        ]);
 
         return InstallCode::OK;
     }

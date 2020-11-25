@@ -4,18 +4,20 @@ namespace JTL\Plugin\Admin;
 
 use DateTime;
 use InvalidArgumentException;
+use JsonSerializable;
 use JTL\Helpers\GeneralObject;
 use JTL\Mapper\PluginValidation;
 use JTL\Plugin\InstallCode;
 use JTL\Plugin\PluginInterface;
 use JTL\Plugin\State;
+use JTL\Shop;
 use JTLShop\SemVer\Version;
 
 /**
  * Class ListingItem
  * @package JTL\Plugin\Admin
  */
-class ListingItem
+class ListingItem implements JsonSerializable
 {
     /**
      * @var bool
@@ -774,5 +776,18 @@ class ListingItem
     public function setLicenseMD(?string $licenseMD): void
     {
         $this->licenseMD = $licenseMD;
+    }
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        $res = [];
+        foreach (\get_object_vars($this) as $var => $val) {
+            $res[$var] = $val;
+        }
+
+        return $res;
     }
 }

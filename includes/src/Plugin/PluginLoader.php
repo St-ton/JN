@@ -37,7 +37,7 @@ class PluginLoader extends AbstractLoader
         $this->cacheID = \CACHING_GROUP_PLUGIN . '_' . $id . '_' . $languageID . '_' . $languageTag;
         if ($invalidateCache === true) {
             $this->cache->flush('hook_list');
-            $this->cache->flushTags([\CACHING_GROUP_PLUGIN, \CACHING_GROUP_PLUGIN . '_' . $id]);
+            $this->cache->flushTags([\CACHING_GROUP_CORE, \CACHING_GROUP_PLUGIN, \CACHING_GROUP_PLUGIN . '_' . $id]);
         } elseif (($plugin = $this->loadFromCache()) !== null) {
             $getText->setLanguage($languageTag);
             $getText->loadPluginLocale('base', $plugin);

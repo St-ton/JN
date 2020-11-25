@@ -232,6 +232,7 @@ final class Listing
             if ($plugin !== null) {
                 $plugin->setMinShopVersion($item->getMinShopVersion());
                 $plugin->setMaxShopVersion($item->getMaxShopVersion());
+                $item = $plugin;
             }
             if ($code === InstallCode::DUPLICATE_PLUGIN_ID && $plugin !== null) {
                 $item->setInstalled(true);

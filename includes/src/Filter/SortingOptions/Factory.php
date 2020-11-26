@@ -87,7 +87,9 @@ class Factory
             $all->push(new $class($this->productFilter, $this->plugins[$id]));
         }
 
-        return $all;
+        return $all->filter(static function (SortingOptionInterface $option) {
+            return $option->getPriority() !== 0;
+        });
     }
 
     /**

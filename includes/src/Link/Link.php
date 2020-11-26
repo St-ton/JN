@@ -297,6 +297,15 @@ final class Link extends AbstractLink
             : $id;
     }
 
+    public function deref(): void
+    {
+        $id     = $this->getID();
+        $realID = $this->getRealID($id);
+        if ($id !== $realID) {
+            $this->setID($realID);
+        }
+    }
+
     /**
      * @return array
      */

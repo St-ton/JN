@@ -1956,7 +1956,7 @@ final class Shop
      */
     public static function getAdminURL(bool $forceSSL = false): string
     {
-        return \rtrim(static::getURL($forceSSL, false) . '/' . \PFAD_ADMIN, '/');
+        return \rtrim(static::getURL($forceSSL) . '/' . \PFAD_ADMIN, '/');
     }
 
     /**

@@ -172,7 +172,6 @@
                                 <tr>
                                     <th class="check"></th>
                                     <th class="text-left">{__('headline')}</th>
-                                    {*<th class="text-left">{__('category')}</th>*}
                                     <th class="text-left">{__('customerGroup')}</th>
                                     <th class="text-center">{__('newsValidation')}</th>
                                     <th class="text-center">{__('active')}</th>
@@ -184,7 +183,7 @@
                                 <tbody>
                                 {if $oNews_arr|@count > 0 && $oNews_arr}
                                     {foreach $oNews_arr as $oNews}
-                                        <tr class="tab_bg{$oNews@iteration%2}">
+                                        <tr>
                                             <td class="check">
                                                 <div class="custom-control custom-checkbox">
                                                     <input class="custom-control-input" type="checkbox" name="kNews[]" value="{$oNews->getID()}" id="news-cb-{$oNews->getID()}" />
@@ -192,10 +191,9 @@
                                                 </div>
                                             </td>
                                             <td class="TD2"><label for="news-cb-{$oNews->getID()}">{$oNews->getTitle()}</label></td>
-                                            {*<td class="TD3">{$oNews->KategorieAusgabe}</td>*}
                                             <td class="TD4">
                                                 {foreach $oNews->getCustomerGroups() as $customerGroupID}
-                                                    {if $customerGroupID === -1}Alle{else}{Kundengruppe::getNameByID($customerGroupID)}{/if}{if !$customerGroupID@last},{/if}
+                                                    {if $customerGroupID === -1}{__('all')}{else}{Kundengruppe::getNameByID($customerGroupID)}{/if}{if !$customerGroupID@last},{/if}
                                                 {/foreach}
                                             </td>
                                             <td class="text-center">{$oNews->getDateValidFromLocalizedCompat()}</td>

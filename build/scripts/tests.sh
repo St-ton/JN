@@ -9,9 +9,13 @@ echo "] prepare all sources for re-use.."
 chown -R ${XUID}.${XGID} .
 
 echo "] check composer packages vulnerabilities..";
-./includes/vendor/bin/security-checker security:check "includes/composer.lock"
-if [ $? -ne 0 ]; then
-    exit 1;
+result=$(./includes/vendor/bin/security-checker security:check "includes/composer.lock")
+errorcode=$?
+if [ $errorcode -ne 0 ]; then
+    echo -ne "\e[1;31m Remote error: ${result}\e[0m \n"
+    #exit 1;
+else 
+    echo $result
 fi
 
 echo "] build components..";
@@ -23,9 +27,13 @@ for COMPONENT in build/components/*/ ; do
     chown -R ${XUID}.${XGID} .
 
     echo "] check composer packages vulnerabilities for ${COMPONENT}.."
-    ./includes/vendor/bin/security-checker security:check "${COMPONENT}composer.lock"
-    if [ $? -ne 0 ]; then
-        exit 1;
+    result=$(./includes/vendor/bin/security-checker security:check "${COMPONENT}composer.lock")
+    errorcode=$?
+    if [ $errorcode -ne 0 ]; then
+        echo -ne "\e[1;31m Remote error: ${result}\e[0m \n"
+        #exit 1;
+    else 
+        echo $result
     fi
 done
 

@@ -23,8 +23,8 @@ class DBMigrationHelper
     public const MIGRATE_TEXT    = 0x0004;
     public const MIGRATE_C_UTF8  = 0x0010;
     public const MIGRATE_TINYINT = 0x0020;
-    public const MIGRATE_TABLE  = self::MIGRATE_INNODB | self::MIGRATE_UTF8;
-    public const MIGRATE_COLUMN = self::MIGRATE_C_UTF8 | self::MIGRATE_TEXT | self::MIGRATE_TINYINT;
+    public const MIGRATE_TABLE   = self::MIGRATE_INNODB | self::MIGRATE_UTF8;
+    public const MIGRATE_COLUMN  = self::MIGRATE_C_UTF8 | self::MIGRATE_TEXT | self::MIGRATE_TINYINT;
 
     /**
      * @return stdClass

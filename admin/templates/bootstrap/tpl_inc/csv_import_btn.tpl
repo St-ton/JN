@@ -5,13 +5,14 @@
     @param bool bCustomStrategy - Show modal dialog to choose the import strategy (default: false)
 *}
 {assign var=bCustomStrategy value=$bCustomStrategy|default:true}
+{$importerType=$importerType|default:$importerId}
 <script>
     var $form_{$importerId} = null;
     var $fileInput_{$importerId} = null;
 
     $(function ()
     {
-        var $importcsvInput = $('<input>', { type: 'hidden', name: 'importcsv', value: '{$importerId}' });
+        var $importcsvInput = $('<input>', { type: 'hidden', name: 'importcsv', value: '{$importerType}' });
         var $tokenInput     = $('{$jtl_token}');
 
         $fileInput_{$importerId} = $('<input>', { type: 'file', name: 'csvfile', accept: '.csv,.slf' });
@@ -55,10 +56,14 @@
                 .submit();
         }
     {/if}
+
+    $(window).on('load', function () {
+        $('#modal-{$importerId}').detach().appendTo("body");
+    })
 </script>
 {if $bCustomStrategy === true}
     <div class="modal" tabindex="-1" role="dialog" id="modal-{$importerId}">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h2 class="modal-title">{__('importCsvChooseType')}</h2>

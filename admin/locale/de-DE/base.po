@@ -1997,14 +1997,29 @@ msgstr "Lizenzen abgelaufen"
 msgid "I understood this notice."
 msgstr "Ja, ich habe diesen Hinweis zur Kenntnis genommen."
 
-msgid "The following extensions do not have a valid license:"
-msgstr "Die folgenden Extensions haben keine gültige Lizenz:"
+msgid "No valid licence found for the following installed and active extensions:"
+msgstr "Zu folgenden installierten und aktiven Extensions wurde keine gültige Lizenz gefunden:"
 
-msgid "Please uninstall this extensions or purchase a valid license."
-msgstr "Bitte deinstallieren Sie die Extensions oder erwerben Sie eine gültige Lizenz."
+msgid "Possible reasons:"
+msgstr "Dies kann folgende Gründe haben:"
 
-msgid "Further using these extensions will violate the license policy and may have legal consequences."
-msgstr "Eine weitere Nutzung stellt eine Lizenzverletzung dar und kann juristische Konsequenzen haben."
+msgid "The extension was obtained from a different source than the JTL-Extension Store"
+msgstr "Eine Extension wurde über eine andere Quelle als den JTL-Extension Store bezogen"
+
+msgid "The licence is not bound to this shop yet (check licence in \"My purchases\")"
+msgstr "Die Lizenz ist noch nicht an diesen Shop gebunden (Lizenz prüfen unter \"Meine Käufe\")"
+
+msgid "The licence is bound to a different customer account that is not connected to this shop (check connected account in \"My purchases\")"
+msgstr "Die Lizenz ist einem anderen Kundenkonto zugeordnet, welches aber nicht mit diesem Shop verknüpft ist (verknüpftes Kundenkonto unter \"Meine Käufe\" prüfen)"
+
+msgid "The manufacturer disabled the licence"
+msgstr "Die Lizenz wurde vom Hersteller deaktiviert"
+
+msgid "Further use of the extension may constitute a licence violation!"
+msgstr "Eine weitere Nutzung kann einen Lizenzverstoß darstellen!"
+
+msgid "Please purchase a licence in the JTL-Extension Store or contact the manufacturer of the extension for information on rights of use."
+msgstr "Bitte erwerben Sie eine Lizenz im JTL-Extension Store oder kontaktieren Sie den Hersteller der Extension zu Informationen bezüglich der Nutzungsrechte."
 
 msgid "Licensing problem detected"
 msgstr "Lizenzproblem festgestellt"

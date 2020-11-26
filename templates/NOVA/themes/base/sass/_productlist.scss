@@ -161,6 +161,7 @@
 }
 
 .content-cats-small {
+	margin-bottom: map_get($spacers, 6);
 	@include media-breakpoint-up(md) {
 		> div {
 			margin-bottom: map_get($spacers, 3);

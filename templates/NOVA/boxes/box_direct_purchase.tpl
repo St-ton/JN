@@ -19,5 +19,8 @@
                 {/inputgroup}
             {/form}
         {/block}
+        {block name='boxes-box-direct-purchase-hr-end'}
+            <hr class="box-normal-hr">
+        {/block}
     {/card}
 {/block}

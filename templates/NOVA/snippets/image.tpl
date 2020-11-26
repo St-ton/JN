@@ -1,4 +1,5 @@
 {block name='snippets-image'}
+    {if $item !== null && !empty($item->getImage(\JTL\Media\Image::SIZE_XS))}
     {block name='snippets-image-variables'}
         {$square      = $square|default:true}
         {$fluid       = $fluid|default:true}
@@ -85,27 +86,26 @@
     {/block}
 
     {block name='snippets-image-main'}
-        {if $item->getImage(\JTL\Media\Image::SIZE_XS)|default:null !== null}
-            {if $square}
-            <div class="square square-image {$squareClass}">
-                <div class="inner">
-            {/if}
-                {block name='snippets-image-main-image'}
-                    {image fluid=$fluid lazy=$lazy webp=$webp center=$center
-                        src=$item->getImage($srcSize)
-                        srcset="{$item->getImage(\JTL\Media\Image::SIZE_XS)} {$mini}w,
-                                {$item->getImage(\JTL\Media\Image::SIZE_SM)} {$klein}w,
-                                {$item->getImage(\JTL\Media\Image::SIZE_MD)} {$normal}w,
-                                {$item->getImage(\JTL\Media\Image::SIZE_LG)} {$gross}w"
-                        alt=$alt|strip_tags|escape:'quotes'|escape:'html'
-                        sizes=$sizes
-                        class=$class
-                    }
-                {/block}
-            {if $square}
-                </div>
+        {if $square}
+        <div class="square square-image {$squareClass}">
+            <div class="inner">
+        {/if}
+            {block name='snippets-image-main-image'}
+                {image fluid=$fluid lazy=$lazy webp=$webp center=$center
+                    src=$item->getImage($srcSize)
+                    srcset="{$item->getImage(\JTL\Media\Image::SIZE_XS)} {$mini}w,
+                            {$item->getImage(\JTL\Media\Image::SIZE_SM)} {$klein}w,
+                            {$item->getImage(\JTL\Media\Image::SIZE_MD)} {$normal}w,
+                            {$item->getImage(\JTL\Media\Image::SIZE_LG)} {$gross}w"
+                    alt=$alt|strip_tags|escape:'quotes'|escape:'html'
+                    sizes=$sizes
+                    class=$class
+                }
+            {/block}
+        {if $square}
             </div>
-            {/if}
+        </div>
         {/if}
     {/block}
+    {/if}
 {/block}

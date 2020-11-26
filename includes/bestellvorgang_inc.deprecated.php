@@ -220,9 +220,9 @@ function setzeSmartyRechnungsadresse($nUnreg, $nCheckout = 0): void
 }
 
 /**
- * @param array $missingData
- * @param int   $nUnreg
- * @param array $post
+ * @param array      $missingData
+ * @param int        $nUnreg
+ * @param array|null $post
  * @deprecated since 5.0.0
  */
 function setzeFehlerSmartyRechnungsadresse($missingData, $nUnreg = 0, $post = null): void
@@ -796,7 +796,7 @@ function plausiZahlungsartZusatz($paymentMethod, array $post)
 }
 
 /**
- * @param array $post
+ * @param array|null $post
  * @return array
  * @deprecated since 5.0.0
  */

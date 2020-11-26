@@ -421,8 +421,8 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $languageID = 0, $bCanon
 }
 
 /**
- * @param object       $oPreis
- * @param object|array $priceRangeFilter
+ * @param object            $oPreis
+ * @param object|array|null $priceRangeFilter
  * @return string
  * @deprecated since 5.0.0
  */

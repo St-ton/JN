@@ -378,6 +378,7 @@ in Smarty registriert:
     {
         public function boot(): void
         {
+            parent::boot();
             try {
                 $this->getSmarty()->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getPI', [$this, 'getPI']);
             } catch (\SmartyException $e) {
@@ -404,7 +405,7 @@ in Smarty registriert:
 Funktionen nutzen
 +++++++++++++++++
 
-Die Funktion ``getPI()``  kann dann im Template z. B. mit ``{getPi(12)}`` verwendet werden.
+Die Funktion ``getPI()``  kann dann im Template z. B. mit ``{getPI(12)}`` verwendet werden.
 
 
 Überschreiben bestehender Funktionen

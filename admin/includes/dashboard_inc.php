@@ -187,11 +187,11 @@ function getRemoteData($url, $timeout = 15)
 }
 
 /**
- * @param string $url
- * @param string $dataName
- * @param string $tpl
- * @param string $wrapperID
- * @param string $post
+ * @param string      $url
+ * @param string      $dataName
+ * @param string      $tpl
+ * @param string      $wrapperID
+ * @param string|null $post
  * @return IOResponse
  * @throws SmartyException
  */

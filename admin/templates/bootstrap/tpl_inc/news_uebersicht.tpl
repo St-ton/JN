@@ -338,17 +338,6 @@
                                     </tr>
                                 {/if}
                                 </tbody>
-                                <tfoot>
-                                <tr>
-                                    <td class="check">
-                                        <div class="custom-control custom-checkbox">
-                                            <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);" />
-                                            <label class="custom-control-label" for="ALLMSGS3"></label>
-                                        </div>
-                                    </td>
-                                    <td colspan="5"><label for="ALLMSGS3">{__('globalSelectAll')}</label></td>
-                                </tr>
-                                </tfoot>
                             </table>
                         </div>
                         <input type="hidden" name="news" value="1" />
@@ -358,8 +347,8 @@
                             <div class="row">
                                 <div class="col-sm-6 col-xl-auto text-left">
                                     <div class="custom-control custom-checkbox">
-                                        <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" />
-                                        <label class="custom-control-label" for="ALLMSGS2">{__('globalSelectAll')}</label>
+                                        <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);" />
+                                        <label class="custom-control-label" for="ALLMSGS3">{__('globalSelectAll')}</label>
                                     </div>
                                 </div>
                                 <div class="ml-auto col-sm-6 col-xl-auto">

@@ -43,6 +43,10 @@
     }
     .order-item-image-wrapper {
       padding-right: map-get($spacers, 1);
+      img {
+        width: 100%;
+        object-fit: contain;
+      }
     }
   }
   .order-items-total {

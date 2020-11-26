@@ -2,6 +2,7 @@
 
 namespace JTL\Session;
 
+use JTL\Helpers\Request;
 use JTL\Session\Handler\JTLHandlerInterface;
 use JTL\Shop;
 use function Functional\last;
@@ -34,6 +35,31 @@ abstract class AbstractSession
         self::$handler = (new Storage())->getHandler();
         $this->initCookie(Shop::getSettings([\CONF_GLOBAL])['global'], $start);
         self::$handler->setSessionData($_SESSION);
+    }
+
+    /**
+     * pre-calculate all the localized shop base URLs
+     */
+    protected function initLanguageURLs(): void
+    {
+        if (\EXPERIMENTAL_MULTILANG_SHOP !== true) {
+            return;
+        }
+        $urls      = [];
+        $sslStatus = Request::checkSSL();
+        foreach ($_SESSION['Sprachen'] ?? [] as $language) {
+            $code    = \mb_convert_case($language->getCode(), \MB_CASE_UPPER);
+            $shopURL = \defined('URL_SHOP_' . $code) ? \constant('URL_SHOP_' . $code) : \URL_SHOP;
+            foreach ([0, 1] as $forceSSL) {
+                if ($sslStatus === 2) {
+                    $shopURL = \str_replace('http://', 'https://', $shopURL);
+                } elseif ($sslStatus === 4 || ($sslStatus === 3 && $forceSSL)) {
+                    $shopURL = \str_replace('http://', 'https://', $shopURL);
+                }
+                $urls[$language->getId()][$forceSSL] = \rtrim($shopURL, '/');
+            }
+        }
+        Shop::setURLs($urls);
     }
 
     /**

@@ -189,6 +189,9 @@ class Bestseller
         int $minsells = 10
     ): array {
         if ($viewallowed && \count($products) > 0) {
+            if (!\is_a($products, Collection::class)) {
+                $products = \collect($products);
+            }
             $options    = [
                 'Products'      => $products,
                 'Customergroup' => $customergrp,

@@ -378,8 +378,8 @@ in Smarty registriert:
     {
         public function boot(): void
         {
+            parent::boot();
             try {
-                parent::boot();
                 $this->getSmarty()->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getPI', [$this, 'getPI']);
             } catch (\SmartyException $e) {
                 throw new \RuntimeException('Problems during smarty instantiation: ' . $e->getMessage());

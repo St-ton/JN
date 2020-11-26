@@ -172,7 +172,7 @@
                                         <li>{__('The manufacturer disabled the licence')}</li>
                                     </ul>
                                 </div>
-                                <p><strong>{__('Further use of the extension constitutes a licence violation!')}</strong><br>
+                                <p><strong>{__('Further use of the extension may constitute a licence violation!')}</strong><br>
                                     {__('Please purchase a licence in the JTL-Extension Store or contact the manufacturer of the extension for information on rights of use.')}
                                 </p>
                             </div>

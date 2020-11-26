@@ -2015,8 +2015,8 @@ msgstr "Die Lizenz ist einem anderen Kundenkonto zugeordnet, welches aber nicht 
 msgid "The manufacturer disabled the licence"
 msgstr "Die Lizenz wurde vom Hersteller deaktiviert"
 
-msgid "Further use of the extension constitutes a licence violation!"
-msgstr "Eine weitere Nutzung stellt eine Lizenzverletzung dar!"
+msgid "Further use of the extension may constitute a licence violation!"
+msgstr "Eine weitere Nutzung kann einen Lizenzverstoß darstellen!"
 
 msgid "Please purchase a licence in the JTL-Extension Store or contact the manufacturer of the extension for information on rights of use."
 msgstr "Bitte erwerben Sie eine Lizenz im JTL-Extension Store oder kontaktieren Sie den Hersteller der Extension zu Informationen bezüglich der Nutzungsrechte."

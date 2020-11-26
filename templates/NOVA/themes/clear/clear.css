@@ -5791,7 +5791,7 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
 h1, h2, h3, h4, h5, h6,
-.h1, .h2, .h3, .h4, .h5, .h6 {
+.h1, .h2, .h3, .sidepanel-left .box-normal .box-normal-link, .h4, .h5, .h6 {
   margin-bottom: 1rem;
   font-family: Montserrat, sans-serif;
   font-weight: 400;
@@ -5807,7 +5807,7 @@ h2, .h2 {
   font-size: 1.5rem;
 }
 
-h3, .h3 {
+h3, .h3, .sidepanel-left .box-normal .box-normal-link {
   font-size: 1rem;
 }
 
@@ -22913,6 +22913,10 @@ input.typeahead:-ms-input-placeholder {
   text-align: center;
 }
 
+.link-content {
+  margin-bottom: 1rem;
+}
+
 /* utilities */
 .rounded-top-left {
   border-top-left-radius: 0.125rem !important;
@@ -23971,6 +23975,9 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   content: "";
 }
 
+.content-cats-small {
+  margin-bottom: 3rem;
+}
 @media (min-width: 768px) {
   .content-cats-small > div {
     margin-bottom: 1rem;
@@ -24788,7 +24795,9 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 
 .reviews,
-#description .desc .h3 {
+#description .desc .h3,
+#description .desc .sidepanel-left .box-normal .box-normal-link,
+.sidepanel-left .box-normal #description .desc .box-normal-link {
   margin-top: 1rem;
 }
 
@@ -25260,7 +25269,7 @@ header #burger-menu {
 /* footer */
 #footer {
   margin-top: auto;
-  padding: 1.5rem 0 0;
+  padding: 4rem 0 0;
 }
 #footer li {
   margin-bottom: 0.5rem;

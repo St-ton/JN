@@ -13,7 +13,7 @@ result=$(./includes/vendor/bin/security-checker security:check "includes/compose
 errorcode=$?
 if [ $errorcode -ne 0 ]; then
     echo -ne "\e[1;31m Remote error: ${result}\e[0m \n"
-    #exit 1;
+    exit 1;
 else 
     echo $result
 fi
@@ -31,7 +31,7 @@ for COMPONENT in build/components/*/ ; do
     errorcode=$?
     if [ $errorcode -ne 0 ]; then
         echo -ne "\e[1;31m Remote error: ${result}\e[0m \n"
-        #exit 1;
+        exit 1;
     else 
         echo $result
     fi

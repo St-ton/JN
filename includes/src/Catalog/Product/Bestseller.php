@@ -3,8 +3,8 @@
 namespace JTL\Catalog\Product;
 
 use Countable;
+use Illuminate\Support\Collection;
 use JTL\DB\ReturnType;
-use JTL\Helpers\GeneralObject;
 use JTL\Shop;
 
 /**
@@ -61,18 +61,18 @@ class Bestseller
     }
 
     /**
-     * @return array
+     * @return Collection
      */
-    public function getProducts(): array
+    public function getProducts(): Collection
     {
         return $this->products;
     }
 
     /**
-     * @param array $products
-     * @return $this
+     * @param Collection $products
+     * @return Bestseller
      */
-    public function setProducts(array $products): self
+    public function setProducts(Collection $products): self
     {
         $this->products = $products;
 
@@ -143,8 +143,9 @@ class Bestseller
     {
         $products = [];
         if ($this->customergrp !== null) {
-            $productsql = GeneralObject::hasCount($this->products)
-                ? ' AND tartikel.kArtikel IN (' . \implode(',', \array_map('\intval', $this->products)) . ') '
+            $productsql = $this->getProducts()->isNotEmpty()
+                ? ' AND tartikel.kArtikel IN (' .
+                    \implode(',', $this->getProducts()->toArray()) . ') '
                 : '';
             $storagesql = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $data       = Shop::Container()->getDB()->query(

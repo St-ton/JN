@@ -55,6 +55,7 @@ class Backend extends AbstractSession
         if (empty($_SESSION['Sprachen']) || \get_class($_SESSION['Sprachen'][0]) === stdClass::class) {
             $_SESSION['Sprachen'] = LanguageHelper::getInstance()->gibInstallierteSprachen();
         }
+        $this->initLanguageURLs();
     }
 
     private function setLanguage(): void

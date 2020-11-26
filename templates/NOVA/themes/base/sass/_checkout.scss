@@ -208,6 +208,15 @@
       text-align: center;
     }
   }
+  .checkout-items-item-image-wrapper {
+    @include media-breakpoint-down(sm) {
+      padding-right: 0;
+    }
+    img {
+      width: 100%;
+      object-fit: contain;
+    }
+  }
 }
 .checkout-items-total {
   padding-top: map-get($spacers, 4);

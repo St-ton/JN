@@ -213,7 +213,7 @@
 
         <script>
             window.lazySizesConfig = window.lazySizesConfig || {};
-            window.lazySizesConfig.expand  = 1;
+            window.lazySizesConfig.expand  = 50;
         </script>
         <script src="{$ShopURL}/{$templateDir}js/jquery-3.5.1.min.js"></script>
         <script src="{$ShopURL}/{$templateDir}js/lazysizes.min.js"></script>

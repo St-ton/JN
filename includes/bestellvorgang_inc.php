@@ -1870,6 +1870,8 @@ function versandartKorrekt(int $shippingMethodID, $formValues = 0)
             );
             unset($packagings);
         }
+    } elseif (Request::postInt('zahlungsartwahl') > 0) {
+        $_SESSION['AktiveVerpackung'] = [];
     }
     unset($_SESSION['Versandart']);
     if ($shippingMethodID <= 0) {

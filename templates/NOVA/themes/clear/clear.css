@@ -22285,6 +22285,10 @@ aside .box-monthlynews a .value:hover {
   margin-bottom: 1rem;
 }
 
+.characteristic-collapse-btn-inner img {
+  margin-right: 0.25rem;
+}
+
 :root {
   --vh: 1vh;
 }
@@ -22448,8 +22452,9 @@ ul.partlist-items {
 }
 
 .img-xs {
-  max-width: 24px;
-  max-height: 24px;
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
 }
 
 .searchcloud, .tagcloud {

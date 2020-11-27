@@ -137,15 +137,7 @@ class Form
      */
     public static function baueKontaktFormularVorgaben(bool $clear = false): stdClass
     {
-        $msg                  = new stdClass();
-        $msg->cAnrede         = '';
-        $msg->cVorname        = '';
-        $msg->cNachname       = '';
-        $msg->cFirma          = '';
-        $msg->cMail           = '';
-        $msg->cTel            = '';
-        $msg->cMobil          = '';
-        $msg->cFax            = '';
+        $msg                  = self::getDefaultCustomerFormInputs();
         $msg->kKontaktBetreff = null;
         $msg->cNachricht      = null;
 
@@ -153,57 +145,16 @@ class Form
             return $msg;
         }
 
-        if (isset($_SESSION['Kunde'])) {
-            $msg->cAnrede   = $_SESSION['Kunde']->cAnrede;
-            $msg->cVorname  = $_SESSION['Kunde']->cVorname;
-            $msg->cNachname = $_SESSION['Kunde']->cNachname;
-            $msg->cFirma    = $_SESSION['Kunde']->cFirma;
-            $msg->cMail     = $_SESSION['Kunde']->cMail;
-            $msg->cTel      = $_SESSION['Kunde']->cTel;
-            $msg->cMobil    = $_SESSION['Kunde']->cMobil;
-            $msg->cFax      = $_SESSION['Kunde']->cFax;
-        }
         $msg->kKontaktBetreff = Request::postInt('subject', null);
         $msg->cNachricht      = isset($_POST['nachricht'])
             ? Text::filterXSS($_POST['nachricht'])
             : null;
 
-        if (isset($_POST['anrede']) && $_POST['anrede']) {
-            $msg->cAnrede = Text::filterXSS($_POST['anrede']);
-        }
-        if (isset($_POST['vorname']) && $_POST['vorname']) {
-            $msg->cVorname = Text::filterXSS($_POST['vorname']);
-        }
-        if (isset($_POST['nachname']) && $_POST['nachname']) {
-            $msg->cNachname = Text::filterXSS($_POST['nachname']);
-        }
-        if (isset($_POST['firma']) && $_POST['firma']) {
-            $msg->cFirma = Text::filterXSS($_POST['firma']);
-        }
-        if (isset($_POST['email']) && $_POST['email']) {
-            $msg->cMail = Text::filterXSS($_POST['email']);
-        }
-        if (isset($_POST['fax']) && $_POST['fax']) {
-            $msg->cFax = Text::filterXSS($_POST['fax']);
-        }
-        if (isset($_POST['tel']) && $_POST['tel']) {
-            $msg->cTel = Text::filterXSS($_POST['tel']);
-        }
-        if (isset($_POST['mobil']) && $_POST['mobil']) {
-            $msg->cMobil = Text::filterXSS($_POST['mobil']);
-        }
         if (isset($_POST['subject']) && $_POST['subject']) {
             $msg->kKontaktBetreff = Text::filterXSS($_POST['subject']);
         }
         if (isset($_POST['nachricht']) && $_POST['nachricht']) {
             $msg->cNachricht = Text::filterXSS($_POST['nachricht']);
-        }
-        if (isset($msg->cAnrede) && \mb_strlen($msg->cAnrede) === 1) {
-            if ($msg->cAnrede === 'm') {
-                $msg->cAnredeLocalized = Shop::Lang()->get('salutationM');
-            } elseif ($msg->cAnrede === 'w') {
-                $msg->cAnredeLocalized = Shop::Lang()->get('salutationW');
-            }
         }
 
         return $msg;
@@ -377,5 +328,45 @@ class Form
     public static function baueFormularVorgaben(): stdClass
     {
         return self::baueKontaktFormularVorgaben();
+    }
+
+    /**
+     * @return stdClass
+     */
+    public static function getDefaultCustomerFormInputs(): stdClass
+    {
+        $msg    = new stdClass();
+        $inputs = [
+            'cAnrede'   => 'anrede',
+            'cVorname'  => 'vorname',
+            'cNachname' => 'nachname',
+            'cFirma'    => 'firma',
+            'cMail'     => 'email',
+            'cFax'      => 'fax',
+            'cTel'      => 'tel',
+            'cMobil'    => 'mobil'
+        ];
+
+        foreach ($inputs as $key => $input) {
+            $msg->$key = null;
+        }
+        if (isset($_SESSION['Kunde'])) {
+            foreach ($inputs as $key => $input) {
+                $msg->$key = $_SESSION['Kunde']->$key;
+            }
+        }
+        foreach ($inputs as $key => $input) {
+            $msg->$key = isset($_POST[$input]) ? Text::filterXSS($_POST[$input]) : $msg->$key;
+        }
+
+        if ($msg->cAnrede !== null && \mb_strlen($msg->cAnrede) === 1) {
+            if ($msg->cAnrede === 'm') {
+                $msg->cAnredeLocalized = Shop::Lang()->get('salutationM');
+            } elseif ($msg->cAnrede === 'w') {
+                $msg->cAnredeLocalized = Shop::Lang()->get('salutationW');
+            }
+        }
+
+        return $msg;
     }
 }

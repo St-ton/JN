@@ -254,11 +254,9 @@
                                     {/row}
 
                                     {block name='productdetails-details-include-config-container'}
-                                        {col}
-                                            {row id="product-configurator"}
-                                                {include file='productdetails/config_container.tpl'}
-                                            {/row}
-                                        {/col}
+                                        {row id="product-configurator"}
+                                            {include file='productdetails/config_container.tpl'}
+                                        {/row}
                                     {/block}
                                 {else}
                                     {block name='productdetails-details-include-basket'}

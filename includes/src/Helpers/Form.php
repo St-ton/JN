@@ -351,13 +351,12 @@ class Form
             $msg->$key = isset($_POST[$input]) ? Text::filterXSS($_POST[$input]) : ($_SESSION['Kunde']->$key ?? null);
         }
 
-        if ($msg->cAnrede !== null && \mb_strlen($msg->cAnrede) === 1) {
-            if ($msg->cAnrede === 'm') {
-                $msg->cAnredeLocalized = Shop::Lang()->get('salutationM');
-            } elseif ($msg->cAnrede === 'w') {
-                $msg->cAnredeLocalized = Shop::Lang()->get('salutationW');
-            }
+        if ($msg->cAnrede === 'm') {
+            $msg->cAnredeLocalized = Shop::Lang()->get('salutationM');
+        } elseif ($msg->cAnrede === 'w') {
+            $msg->cAnredeLocalized = Shop::Lang()->get('salutationW');
         }
+
 
         return $msg;
     }

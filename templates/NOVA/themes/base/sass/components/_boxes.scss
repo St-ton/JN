@@ -233,3 +233,8 @@ $jqcloud-classes: 7;
   margin-top: 0;
   margin-bottom: map-get($spacers, 3);
 }
+.characteristic-collapse-btn-inner {
+  img {
+    margin-right: map-get($spacers, 1);
+  }
+}

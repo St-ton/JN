@@ -348,15 +348,7 @@ class Form
         ];
 
         foreach ($inputs as $key => $input) {
-            $msg->$key = null;
-        }
-        if (isset($_SESSION['Kunde'])) {
-            foreach ($inputs as $key => $input) {
-                $msg->$key = $_SESSION['Kunde']->$key;
-            }
-        }
-        foreach ($inputs as $key => $input) {
-            $msg->$key = isset($_POST[$input]) ? Text::filterXSS($_POST[$input]) : $msg->$key;
+            $msg->$key = isset($_POST[$input]) ? Text::filterXSS($_POST[$input]) : ($_SESSION['Kunde']->$key ?? null);
         }
 
         if ($msg->cAnrede !== null && \mb_strlen($msg->cAnrede) === 1) {

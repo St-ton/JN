@@ -50,7 +50,7 @@
                         || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'B')
                         && !empty($Artikel->cHerstellerBildKlein)
                     }
-                        {image webp=true lazy=true fluid-grow=true
+                        {image webp=true lazy=true fluid=true
                             src=$Artikel->cHerstellerBildURLKlein
                             srcset="{$Artikel->cHerstellerBildURLKlein} {$Einstellungen.bilder.bilder_hersteller_mini_breite}w,
                                     {$Artikel->cHerstellerBildURLNormal} {$Einstellungen.bilder.bilder_hersteller_normal_breite}w"

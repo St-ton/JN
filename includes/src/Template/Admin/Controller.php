@@ -151,7 +151,6 @@ class Controller
         $html->id      = '#shoptemplate-overview';
         $html->content = $this->smarty->assign('listingItems', $lstng->getAll())
             ->assign('shopVersion', Version::parse(\APPLICATION_VERSION))
-            ->assign('shopURL', Shop::getURL())
             ->fetch('tpl_inc/shoptemplate_overview.tpl');
         $response->setHtml($html);
         die($response->toJson());

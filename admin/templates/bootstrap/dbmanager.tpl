@@ -53,11 +53,11 @@ $(function() {
     $('table.table-sticky-header').stickyTableHeaders({
         fixedOffset: $('.navbar-header')
     });
-    
+
     $search.keyup(function () {
         var val = $(this).val();
         var count = filter_tables(val);
-        
+
         if (count > 0) {
             $search.parent().removeClass('has-error');
         }
@@ -140,7 +140,7 @@ function get_params(p) {
             delete params[i];
         }
     }
-    
+
     params.push(p);
     return params;
 }
@@ -149,7 +149,7 @@ function add_row_listener() {
     $(document).on('click', '*[data-action="add-row"] > a', function(e) {
         var $row = $(this).parent('.fieldset-row');
         var $body = $row.parent('.fieldset-body');
-        
+
         if ($row.is('.fieldset-row:first')) {
             $add_row_tpl
                 .clone()
@@ -168,19 +168,19 @@ function filter_tables(value) {
     var rex = new RegExp(value, 'i');
     var $nav = $('.db-sidenav');
     var $items = $nav.find('li');
-    
+
     $items.hide();
     $nav.unhighlight();
 
     var $found = $items.filter(function () {
         return rex.test($(this).text());
     });
-    
+
     $found.show();
     if ($found.length > 0) {
         $nav.highlight(value);
     }
-    
+
     return $found.length;
 }
 
@@ -363,14 +363,14 @@ $(function() {
         var url = location.pathname.split('/').slice(-1)[0];
         location.href = url + '?' + jQuery.param(p);
     });
-    
+
     $('#paginator')
         .css('left', offset.left)
         .addClass('paginator-bottom');
-        
+
     //var slider = $('#paginator .slider');
     //slider.css('margin-left', (slider.width()/2) * -1);
-    
+
     $(document).scroll(function() {
         var off = Math.max(0, offset.left - $(this).scrollLeft());
         $('#paginator')
@@ -402,7 +402,7 @@ $(function() {
                 <li><a href="dbmanager.php?command"><span class="glyphicon glyphicon-flash"></span> SQL Kommando</a></li>
                 <li><a href="dbcheck.php">Konsistenz</a></li>
             </ol>
-        
+
             {if $sub === 'command'}
                 <h2>SQL Kommando</h2>
 
@@ -410,7 +410,7 @@ $(function() {
                     <i class="fa fa-keyboard-o" aria-hidden="true"></i>
                     Code-Vervollständigung via <span class="label label-default">STRG+Leertaste</span> ausführen
                 </p>
-                
+
                 {if isset($error)}
                     <div class="alert alert-danger" role="alert">
                         {get_class($error)}: <strong>{$error->getMessage()}</strong>
@@ -426,7 +426,7 @@ $(function() {
                         <button type="submit" class="btn btn-primary"><i class="fa fa-share"></i> Ausführen</button>
                     </div>
                 </form>
-                
+
                 <!-- ###################################################### -->
                 {if isset($result) && !isset($result[0])}
                     <div class="alert alert-xs alert-success">
@@ -523,7 +523,7 @@ $(function() {
                             {foreach $indexes as $index}
                                 <tr class="text-vcenter">
                                     <th>{$index->Index_type}</th>
-                                    <td>{array_keys($index->Columns)|implode:'<strong>,</strong> '}</td>
+                                    <td>{implode('<strong>,</strong> ', array_keys($index->Columns))}</td>
                                     <td>{$index@key}</td>
                                 </tr>
                             {/foreach}
@@ -533,13 +533,13 @@ $(function() {
             {elseif $sub === 'select'}
                 {table_scope_header table=$selectedTable}
                 {$headers = array_keys($columns)}
-                
+
                 <style>
                     html {
                         background-color: #fff;
                     }
                 </style>
-                
+
                 <div id="filter">
                     <form method="GET" action="dbmanager.php" data-sql={$info.statement|json_encode}>
                         <input type="hidden" name="token" value="{$smarty.session.jtl_token}">
@@ -549,7 +549,7 @@ $(function() {
                             <legend>
                                 <a href="#filter-where">Suche</a>
                             </legend>
-                            
+
                             <div class="fieldset-body">
                                 {if isset($filter.where.col) && $filter.where.col|@count > 0}
                                     {for $i=0 to count($filter.where.col) - 1}
@@ -560,7 +560,7 @@ $(function() {
                                 {/if}
                             </div>
                         </fieldset>
-                        
+
                         <fieldset>
                             <legend>Anzahl</legend>
                             <div class="fieldset-body">
@@ -576,7 +576,7 @@ $(function() {
                         </fieldset>
                     </form>
                 </div>
-                
+
                 <div class="query">
                     <div class="query-code">
                         <code class="sql"><div>{$info.statement}</div></code>
@@ -589,7 +589,7 @@ $(function() {
                         </a>
                     </div>
                 </div>
-                
+
                 {if count($data) > 0}
                     <div class="table-responsive">
                         <table class="table table-striped table-condensed table-bordered table-hover table-sql table-sticky-header nowrap">
@@ -641,7 +641,7 @@ $(function() {
                 {if $pages > 1}
                     <div id="pagination" class="pagination-static" data-total="{$pages}" data-current="{$page}"></div>
                 {/if}
-                
+
                 {*if $pages > 1}
                     <div id="paginator" class="paginator">
                         <input type="text" data-slider-min="1" data-slider-max="{$pages}" data-slider-scale="logarithmic" data-slider-step="1" data-slider-value="{$page}" data-slider-handle="square" />

@@ -898,14 +898,15 @@ class IOMethods
                 ? Shop::Lang()->get('priceAsConfigured', 'productDetails')
                 : Shop::Lang()->get('priceStarting');
         }
-
-        $objResponse->callEvoProductFunction(
-            'setPrice',
-            $fVK[$isNet],
-            $cVKLocalized[$isNet],
-            $cPriceLabel,
-            $wrapper
-        );
+        if (!$product->bHasKonfig) {
+            $objResponse->callEvoProductFunction(
+                'setPrice',
+                $fVK[$isNet],
+                $cVKLocalized[$isNet],
+                $cPriceLabel,
+                $wrapper
+            );
+        }
         $objResponse->callEvoProductFunction(
             'setArticleWeight',
             [

@@ -243,10 +243,11 @@
                                     {row}
                                         {col cols=12 sm=6}
                                             {button type="button"
-                                                class="start-configuration"
+                                                class="start-configuration js-start-configuration"
                                                 value="{lang key='configure'}"
                                                 block=true
                                                 data=["toggle"=>"modal", "target"=>"#cfg-container"]
+                                                disabled=(isset($Artikel->Variationen) && $Artikel->Variationen|@count > 0)
                                             }
                                                 <span>{lang key='configure'}</span> <i class="fas fa-cogs"></i>
                                             {/button}

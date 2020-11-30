@@ -993,6 +993,7 @@
                         enableQuantity,
                         nNetto,
                         quantityInput;
+                    $('.js-start-configuration').prop('disabled', !data.response.variationsSelected);
                     $('.js-cfg-group').each(function (i, item) {
                         let iconChecked     = $(this).find('.js-group-checked'),
                             badgeInfoDanger = 'alert-info';

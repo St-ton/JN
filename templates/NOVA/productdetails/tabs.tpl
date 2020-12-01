@@ -81,7 +81,7 @@
                                         {block name='tab-description-media-types'}
                                             {opcMountPoint id='opc_before_desc'}
                                             <div class="desc">
-                                                {$Artikel->cBeschreibung}
+                                                <p>{$Artikel->cBeschreibung}</p>
                                                 {if $useDescriptionWithMediaGroup}
                                                     {foreach $Artikel->getMediaTypes() as $mediaType}
                                                         <div class="h3">{$mediaType->name}</div>

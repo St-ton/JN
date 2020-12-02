@@ -871,7 +871,7 @@ class CartHelper
             $exists = false;
             foreach ($attributes as $oEigenschaftwerte) {
                 $oEigenschaftwerte->kEigenschaft = (int)$oEigenschaftwerte->kEigenschaft;
-                if ($oEigenschaftwerte->kEigenschaft === $var->kEigenschaft) {
+                if ($oEigenschaftwerte->kEigenschaft !== $var->kEigenschaft) {
                     continue;
                 }
                 if ($var->cTyp === 'PFLICHT-FREIFELD') {

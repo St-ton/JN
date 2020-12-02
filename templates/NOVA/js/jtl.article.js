@@ -235,7 +235,10 @@
                             return false;
                         }
                     });
-                that.configurator(true);
+                // timeout fixes problem with loading order of bootstrap dropdowns
+                setTimeout(function(){
+                    that.configurator(true);
+                },0);
             }
         },
 
@@ -993,6 +996,7 @@
                         enableQuantity,
                         nNetto,
                         quantityInput;
+                    $('.js-start-configuration').prop('disabled', !data.response.variationsSelected);
                     $('.js-cfg-group').each(function (i, item) {
                         let iconChecked     = $(this).find('.js-group-checked'),
                             badgeInfoDanger = 'alert-info';

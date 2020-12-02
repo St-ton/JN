@@ -53,8 +53,8 @@ if (!function_exists('Shop')) {
     }
 }
 Profiler::start();
-$db         = Shop::Container()->getDB();
-$cache      = Shop::Container()->getCache()->setJtlCacheConfig(
+$db    = Shop::Container()->getDB();
+$cache = Shop::Container()->getCache()->setJtlCacheConfig(
     $db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING)
 );
 Shop::setIsFrontend(false);

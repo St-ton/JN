@@ -14,7 +14,7 @@ cDokuURL=__('auswahlassistentURL')}
         <form class="navbar-form settings" method="post" action="auswahlassistent.php">
             {$jtl_token}
             <input name="speichern" type="hidden" value="1">
-            <input name="kSprache" type="hidden" value="{$smarty.session.kSprache}">
+            <input name="kSprache" type="hidden" value="{$languageID}">
             <input name="tab" type="hidden" value="frage">
             <input name="a" type="hidden" value="addQuest">
             {if (isset($oFrage->kAuswahlAssistentFrage) && $oFrage->kAuswahlAssistentFrage > 0) || (isset($kAuswahlAssistentFrage) && $kAuswahlAssistentFrage > 0)}

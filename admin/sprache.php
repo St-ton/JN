@@ -25,7 +25,7 @@ $tab         = $_REQUEST['tab'] ?? 'variables';
 $step        = 'overview';
 $lang        = Shop::Lang();
 setzeSprache();
-$langCode = $_SESSION['cISOSprache'];
+$langCode = $_SESSION['editLanguageCode'];
 
 if (isset($_FILES['csvfile']['tmp_name'])
     && Form::validateToken()

@@ -292,7 +292,7 @@ class LanguageHelper
     {
         $data = $this->cache->get('lng_dta_lst', function ($cache, $cacheID, &$content, &$tags) {
             $content = $this->db->query(
-                'SELECT * FROM tsprache 
+                'SELECT tsprache.*, tsprachiso.kSprachISO FROM tsprache 
                     LEFT JOIN tsprachiso
                         ON tsprache.cISO = tsprachiso.cISO
                     ORDER BY tsprache.kSprache ASC',

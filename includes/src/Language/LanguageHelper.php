@@ -292,7 +292,10 @@ class LanguageHelper
     {
         $data = $this->cache->get('lng_dta_lst', function ($cache, $cacheID, &$content, &$tags) {
             $content = $this->db->query(
-                'SELECT * FROM tsprache ORDER BY kSprache ASC',
+                'SELECT * FROM tsprache 
+                    LEFT JOIN tsprachiso
+                        ON tsprache.cISO = tsprachiso.cISO
+                    ORDER BY tsprache.kSprache ASC',
                 ReturnType::COLLECTION
             );
             $tags    = [\CACHING_GROUP_LANGUAGE];
@@ -307,7 +310,11 @@ class LanguageHelper
         $this->byISO = $data->groupBy('cISO')->transform(static function (Collection $e) {
             $e = $e->first();
 
-            return (object)['kSprachISO' => (int)$e->kSprache, 'cISO' => $e->cISO];
+            return (object)[
+                'kSprachISO' => (int)$e->kSprachISO,
+                'kSprache'   => (int)$e->kSprache,
+                'cISO'       => $e->cISO
+            ];
         })->toArray();
 
         $this->byLangID = $data->groupBy('kSprache')->transform(static function (Collection $e) {

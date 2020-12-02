@@ -97,6 +97,7 @@ class AdminAccount
         $this->getText       = $getText;
         $this->alertService  = $alertService;
         Backend::getInstance();
+        Shop::setIsFrontend(false);
         $this->initDefaults();
         $this->validateSession();
     }

@@ -1926,7 +1926,7 @@ final class Shop
     {
         $langID = $langID ?? self::$kSprache;
         $idx    = (int)$forceSSL;
-        if (isset(self::$url[$langID][$idx])) {
+        if (isset(self::$url[$langID][$idx]) && self::isFrontend()) {
             return self::$url[$langID][$idx];
         }
         $shopURL   = \URL_SHOP;

@@ -235,7 +235,10 @@
                             return false;
                         }
                     });
-                that.configurator(true);
+                // timeout fixes problem with loading order of bootstrap dropdowns
+                setTimeout(function(){
+                    that.configurator(true);
+                },0);
             }
         },
 

@@ -18,7 +18,7 @@ function gibAlleSuchspecialOverlays()
     foreach ($types as $type) {
         $overlays[] = JTL\Media\Image\Overlay::getInstance(
             (int)$type->kSuchspecialOverlay,
-            (int)$_SESSION['kSprache']
+            (int)$_SESSION['editLanguageID']
         );
     }
 
@@ -31,7 +31,7 @@ function gibAlleSuchspecialOverlays()
  */
 function gibSuchspecialOverlay(int $overlayID)
 {
-    return JTL\Media\Image\Overlay::getInstance($overlayID, (int)$_SESSION['kSprache']);
+    return JTL\Media\Image\Overlay::getInstance($overlayID, (int)$_SESSION['editLanguageID']);
 }
 
 /**
@@ -49,7 +49,12 @@ function speicherEinstellung(
     int $lang = null,
     string $template = null
 ): bool {
-    $overlay = JTL\Media\Image\Overlay::getInstance($overlayID, $lang ?? (int)$_SESSION['kSprache'], $template, false);
+    $overlay = JTL\Media\Image\Overlay::getInstance(
+        $overlayID,
+        $lang ?? (int)$_SESSION['editLanguageID'],
+        $template,
+        false
+    );
 
     if ($overlay->getType() <= 0) {
         Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, __('invalidOverlay'), 'invalidOverlay');

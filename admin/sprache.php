@@ -7,6 +7,7 @@ use JTL\Alert\Alert;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Language\LanguageHelper;
 use JTL\Pagination\Filter;
 use JTL\Pagination\Operation;
 use JTL\Pagination\Pagination;
@@ -26,6 +27,7 @@ $step        = 'overview';
 $lang        = Shop::Lang();
 setzeSprache();
 $langCode = $_SESSION['cISOSprache'];
+$smarty->assign('availableLanguages', LanguageHelper::getInstance()->gibVerfuegbareSprachen());
 
 if (isset($_FILES['csvfile']['tmp_name'])
     && Form::validateToken()

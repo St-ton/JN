@@ -1054,10 +1054,13 @@ class LinkHelper
         if (isset($this->linkGroups->staticRoutes[$id])) {
             $index = $this->linkGroups->staticRoutes[$id];
             if (is_array($index)) {
-                $language  = ($langISO !== null)
-                    ? $langISO
-                    : $_SESSION['cISOSprache'];
-                $langID = (int)Sprache::getInstance()->getLangIDFromIso($language)->kSprachISO;
+                if ($langISO === null) {
+                    $langID   = (int)$_SESSION['kSprache'];
+                    $language = $_SESSION['cISOSprache'];
+                } else {
+                    $language = $langISO;
+                    $langID   = (int)Sprache::getInstance()->getLangIDFromIso($langISO)->kSprache;
+                }
                 $localized = isset($index[$language])
                     ? $index[$language]
                     : null;

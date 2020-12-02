@@ -2,7 +2,7 @@
 <div id="content">
     <script type="text/javascript" src="{$templateBaseURL}js/jquery.progressbar.js"></script>
     <script type="text/javascript">
-        var url     = "{$adminURL/}exportformate.php",
+        var url     = "{$adminURL}/exportformate.php",
             token   = "{$smarty.session.jtl_token}",
             running = [],
             imgPath = "{$templateBaseURL}gfx/jquery";

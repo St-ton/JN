@@ -55,11 +55,12 @@ class Consent extends AbstractItem
                     $langCode = \mb_convert_case($localized['iso'], \MB_CASE_LOWER);
                     $mapped   = LanguageHelper::getLangIDFromIso($langCode);
                     if ($mapped === null) {
+                        $localization->languageID = 0;
                         continue;
                     }
                     $localization->languageID = $mapped->kSprachISO;
                     $addedLanguages[]         = $mapped->kSprachISO;
-                } elseif (\mb_strlen($hits2[0]) === \mb_strlen($l)) {
+                } elseif ($localization->languageID > 0 && \mb_strlen($hits2[0]) === \mb_strlen($l)) {
                     $localization->name          = $localized['Name'];
                     $localization->purpose       = $localized['Purpose'];
                     $localization->description   = $localized['Description'];

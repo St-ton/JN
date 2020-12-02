@@ -94,7 +94,7 @@ if (Form::validateToken()) {
                ->assign('mediafilesSubdir', $mediafilesSubdir)
                ->assign('isCKEditor', $isCKEditor)
                ->assign('CKEditorFuncNum', $CKEditorFuncNum)
-               ->assign('templateUrl', Shop::getURL() . '/' . PFAD_ADMIN . $currentTemplateDir)
+               ->assign('templateUrl', Shop::getAdminURL() . '/' . $currentTemplateDir)
                ->display('elfinder.tpl');
     }
 }

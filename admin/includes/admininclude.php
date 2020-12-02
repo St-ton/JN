@@ -57,6 +57,7 @@ $db         = Shop::Container()->getDB();
 $cache      = Shop::Container()->getCache()->setJtlCacheConfig(
     $db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING)
 );
+Shop::setIsFrontend(false);
 $session    = Backend::getInstance();
 $lang       = LanguageHelper::getInstance($db, $cache);
 $oAccount   = Shop::Container()->getAdminAccount();
@@ -64,7 +65,6 @@ $loggedIn   = $oAccount->logged();
 $updater    = new Updater($db);
 $hasUpdates = $updater->hasPendingUpdates();
 $conf       = Shop::getSettings([CONF_GLOBAL]);
-Shop::setIsFrontend(false);
 
 if (!empty($_COOKIE['JTLSHOP']) && empty($_SESSION['frontendUpToDate'])) {
     $adminToken   = $_SESSION['jtl_token'];
@@ -92,7 +92,7 @@ if ($loggedIn
     && strpos($_SERVER['SCRIPT_FILENAME'], 'io.php') === false
     && $hasUpdates
 ) {
-    \header('Location: ' . Shop::getURL(true) . '/' . \PFAD_ADMIN . 'dbupdater.php');
+    \header('Location: ' . Shop::getAdminURL(true) . '/dbupdater.php');
     exit;
 }
 if ($loggedIn
@@ -101,7 +101,7 @@ if ($loggedIn
     && !$hasUpdates
     && !Backend::get('redirectedToWizard')
 ) {
-    \header('Location: ' . Shop::getURL(true) . '/' . \PFAD_ADMIN . 'wizard.php');
+    \header('Location: ' . Shop::getAdminURL(true) . '/wizard.php');
     exit;
 }
 

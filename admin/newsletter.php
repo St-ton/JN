@@ -39,7 +39,7 @@ $customerGroup             = $db->select('tkundengruppe', 'cStandard', 'Y');
 $_SESSION['Kundengruppe']  = new CustomerGroup((int)$customerGroup->kKundengruppe);
 
 setzeSprache();
-$languageID  = (int)$_SESSION['editLanguageID'];
+$languageID = (int)$_SESSION['editLanguageID'];
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }

@@ -111,16 +111,13 @@ final class ConsentModel extends DataModel
                 return $e->getLanguageID();
             });
             $missing             = [];
+            $default             = clone $loc->first();
             foreach ($all as $languageModel) {
                 $langID = $languageModel->getId();
                 if (!$existingLanguageIDs->containsStrict($langID)) {
-                    $missing[] = $languageModel;
+                    $default->setLanguageID($languageModel->getId());
+                    $loc->add($default);
                 }
-            }
-            $default = clone $loc->first();
-            foreach ($missing as $languageModel) {
-                $default->setLanguageID($languageModel->getId());
-                $loc->add($default);
             }
         }
         parent::onInstanciation();

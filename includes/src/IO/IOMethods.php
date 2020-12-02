@@ -756,11 +756,15 @@ class IOMethods
         ));
         $config->errorMessages      = $itemErrors ?? [];
         $config->valid              = empty($config->invalidGroups) && empty($config->errorMessages);
-        $config->variationsSelected = !\in_array(\R_VARWAEHLEN, CartHelper::addToCartCheck(
-            $product,
-            1,
-            Product::getSelectedPropertiesForArticle($productID, false)
-        ), true);
+        $config->variationsSelected = $product->kVaterArtikel > 0 || !\in_array(
+            \R_VARWAEHLEN,
+            CartHelper::addToCartCheck(
+                $product,
+                1,
+                Product::getSelectedPropertiesForArticle($productID, false)
+            ),
+            true
+        );
         $smarty->assign('oKonfig', $config)
                ->assign('NettoPreise', $net)
                ->assign('Artikel', $product);

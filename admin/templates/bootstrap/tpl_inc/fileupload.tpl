@@ -94,7 +94,7 @@ $fileExtraData                 |         | you also need to add the jtl_token: j
             {if empty($fileAllowedExtensions)}
                 ['jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp', 'svg', 'webp']
             {elseif is_array($fileAllowedExtensions)}
-                ["{$fileAllowedExtensions|implode:'","'}"]
+                ["{implode('","', $fileAllowedExtensions)}"]
             {else}
                 {$fileAllowedExtensions}
             {/if},

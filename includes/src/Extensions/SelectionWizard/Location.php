@@ -108,7 +108,7 @@ class Location
                     $this->getLanguage($this->kAuswahlAssistentGruppe)
                 );
 
-                $this->cOrt = $category->cName . '(Kategorie)';
+                $this->cOrt = $category->cName . ' (Kategorie)';
                 break;
 
             case \AUSWAHLASSISTENT_ORT_LINK:
@@ -128,7 +128,7 @@ class Location
                     false,
                     'cName'
                 );
-                $this->cOrt = isset($link->cName) ? ($link->cName . '(CMS)') : null;
+                $this->cOrt = isset($link->cName) ? ($link->cName . ' (CMS)') : null;
                 break;
 
             case \AUSWAHLASSISTENT_ORT_STARTSEITE:

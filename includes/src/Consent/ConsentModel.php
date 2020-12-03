@@ -4,6 +4,7 @@ namespace JTL\Consent;
 
 use Exception;
 use Illuminate\Support\Collection;
+use JTL\Language\LanguageHelper;
 use JTL\Model\DataAttribute;
 use JTL\Model\DataModel;
 use JTL\Plugin\Admin\InputType;
@@ -91,6 +92,35 @@ final class ConsentModel extends DataModel
 
             return $res;
         });
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function onInstanciation(): void
+    {
+        $loc   = $this->getLocalization();
+        $count = $loc->count();
+        if ($count === 0) {
+            parent::onInstanciation();
+            return;
+        }
+        $all = LanguageHelper::getInstance($this->getDB())->gibInstallierteSprachen();
+        if ($loc->count() !== \count($all)) {
+            $existingLanguageIDs = $loc->map(function (ConsentLocalizationModel $e) {
+                return $e->getLanguageID();
+            });
+            $missing             = [];
+            $default             = clone $loc->first();
+            foreach ($all as $languageModel) {
+                $langID = $languageModel->getId();
+                if (!$existingLanguageIDs->containsStrict($langID)) {
+                    $default->setLanguageID($languageModel->getId());
+                    $loc->add($default);
+                }
+            }
+        }
+        parent::onInstanciation();
     }
 
     /**

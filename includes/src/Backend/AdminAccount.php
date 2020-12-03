@@ -489,7 +489,7 @@ class AdminAccount
     {
         $this->loggedIn = false;
         if (isset($_SESSION['AdminAccount']->cLogin, $_SESSION['AdminAccount']->cPass, $_SESSION['AdminAccount']->cURL)
-            && $_SESSION['AdminAccount']->cURL === Shop::getURL()
+            && $_SESSION['AdminAccount']->cURL === \URL_SHOP
         ) {
             $account                  = $this->db->select(
                 'tadminlogin',
@@ -544,7 +544,7 @@ class AdminAccount
         $group = $this->getPermissionsByGroup($admin->kAdminlogingruppe);
         if (\is_object($group) || (int)$admin->kAdminlogingruppe === \ADMINGROUP) {
             $_SESSION['AdminAccount']              = new stdClass();
-            $_SESSION['AdminAccount']->cURL        = Shop::getURL();
+            $_SESSION['AdminAccount']->cURL        = \URL_SHOP;
             $_SESSION['AdminAccount']->kAdminlogin = (int)$admin->kAdminlogin;
             $_SESSION['AdminAccount']->cLogin      = $admin->cLogin;
             $_SESSION['AdminAccount']->cMail       = $admin->cMail;

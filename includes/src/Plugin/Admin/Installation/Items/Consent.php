@@ -58,8 +58,8 @@ class Consent extends AbstractItem
                         $localization->languageID = 0;
                         continue;
                     }
-                    $localization->languageID = $mapped->kSprachISO;
-                    $addedLanguages[]         = $mapped->kSprachISO;
+                    $localization->languageID = $mapped->kSprache;
+                    $addedLanguages[]         = $mapped->kSprache;
                 } elseif ($localization->languageID > 0 && \mb_strlen($hits2[0]) === \mb_strlen($l)) {
                     $localization->name          = $localized['Name'];
                     $localization->purpose       = $localized['Purpose'];

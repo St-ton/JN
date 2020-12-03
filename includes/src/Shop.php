@@ -1924,9 +1924,6 @@ final class Shop
      */
     public static function getURL(bool $forceSSL = false, int $langID = null): string
     {
-        if ($langID === null && !self::isFrontend()) {
-            return self::buildBaseURL($forceSSL);
-        }
         $langID = $langID ?? self::$kSprache;
         $idx    = (int)$forceSSL;
         if (isset(self::$url[$langID][$idx])) {

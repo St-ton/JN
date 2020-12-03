@@ -19,7 +19,7 @@
                         fileDeleteUrl="{$adminURL}/shoplogouploader.php?token={$smarty.session.jtl_token}"
                         fileBrowseClear=true
                         fileSuccessMsg="{__('successLogoUpload')}"
-                        fileErrorMsg="{__('errorLogoUpload', $allowedExtensions|implode:', ', $smarty.const.PFAD_SHOPLOGO)}"
+                        fileErrorMsg="{__('errorLogoUpload', implode(', ', $allowedExtensions), $smarty.const.PFAD_SHOPLOGO)}"
                         fileInitialPreview="[
                                 '<img src=\"{$ShopLogoURL}\" class=\"file-preview-image img-fluid\" alt=\"Logo\" title=\"Logo\" />'
                             ]"

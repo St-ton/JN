@@ -20,7 +20,7 @@ build_create()
     local SCRIPT_DIR="${REPOSITORY_DIR}/build/scripts";
     local VERSION_REGEX="v?([0-9]{1,})\\.([0-9]{1,})\\.([0-9]{1,})(-(alpha|beta|rc)(\\.([0-9]{1,}))?)?";
 
-    source ${SCRIPT_DIR}/create_version_string.sh;
+    # source ${SCRIPT_DIR}/create_version_string.sh;
     source ${SCRIPT_DIR}/generate-tpl-checksums.sh;
 
     # Deactivate git renameList

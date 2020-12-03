@@ -9,7 +9,7 @@ ARCHIVE_PATH="${3}/${FILENAME}";
 echo "";
 echo "] create zip of build '${TAG}'...";
 
-zip -r -q ${ARCHIVE_PATH} . -x \*.git* \*.idea* \*build/* \*docs/* \*patch-dir-* \*templates_c/*.php\* \*templates_c/*/\* \*tests/* \*.asset_cs \*.php_cs \*.travis.yml \*phpunit.xml;
+zip -r -q ${ARCHIVE_PATH} . -x VERSION \*.git* \*.idea* \*build/* \*docs/* \*patch-dir-* \*templates_c/*.php\* \*templates_c/*/\* \*tests/* \*.asset_cs \*.php_cs \*.travis.yml \*phpunit.xml;
 chmod g+w ${ARCHIVE_PATH}
 echo "  ${FILENAME}";
 echo "";
@@ -29,7 +29,7 @@ if [[ ! -z $(find . -maxdepth 1 -type d -regex '^./patch-dir-.*') ]]; then
         CUR_PWD=$(pwd);
         echo "] patch: '${LOWER_VERSION}' to '${HIGHER_VERSION}'";
         cd ${path};
-        zip -r -q ${PATCH_ARCHIVE_PATH} . -x  \*.git* \*.idea* \*build/* \*docs/* \*patch-dir-* \*templates_c/*.php\* \*templates_c/*/\* \*tests/* \*.asset_cs \*.php_cs \*.travis.yml \*phpunit.xml;
+        zip -r -q ${PATCH_ARCHIVE_PATH} . -x VERSION \*.git* \*.idea* \*build/* \*docs/* \*patch-dir-* \*templates_c/*.php\* \*templates_c/*/\* \*tests/* \*.asset_cs \*.php_cs \*.travis.yml \*phpunit.xml;
         chmod g+w ${PATCH_ARCHIVE_PATH}
         echo "] filename: ${PATCH_FILENAME}";
         cd ${CUR_PWD};

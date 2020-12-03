@@ -36,7 +36,7 @@ build_create()
     # else
         # export APPLICATION_VERSION_STR=${APPLICATION_VERSION};
     # fi
-	export APPLICATION_VERSION_STR=`cat ${REPOSITORY_DIR}/VERSION`; 
+    export APPLICATION_VERSION_STR=`cat ${REPOSITORY_DIR}/VERSION`; 
 
     echo "Executing composer";
     build_composer_execute;

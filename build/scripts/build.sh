@@ -20,22 +20,23 @@ build_create()
     local SCRIPT_DIR="${REPOSITORY_DIR}/build/scripts";
     local VERSION_REGEX="v?([0-9]{1,})\\.([0-9]{1,})\\.([0-9]{1,})(-(alpha|beta|rc)(\\.([0-9]{1,}))?)?";
 
-    source ${SCRIPT_DIR}/create_version_string.sh;
+    # source ${SCRIPT_DIR}/create_version_string.sh;
     source ${SCRIPT_DIR}/generate-tpl-checksums.sh;
 
     # Deactivate git renameList
     git config diff.renames 0;
 
     echo "Create build info";
-    create_version_string ${REPOSITORY_DIR} ${APPLICATION_VERSION} ${APPLICATION_BUILD_SHA};
+    # create_version_string ${REPOSITORY_DIR} ${APPLICATION_VERSION} ${APPLICATION_BUILD_SHA};
 
-    if [[ "$APPLICATION_VERSION"  == "master" ]]; then
-        if [[ ! -z "${NEW_VERSION}" ]]; then
-            export APPLICATION_VERSION_STR=${NEW_VERSION};
-        fi
-    else
-        export APPLICATION_VERSION_STR=${APPLICATION_VERSION};
-    fi
+    # if [[ "$APPLICATION_VERSION"  == "master" ]]; then
+        # if [[ ! -z "${NEW_VERSION}" ]]; then
+            # export APPLICATION_VERSION_STR=${NEW_VERSION};
+        # fi
+    # else
+        # export APPLICATION_VERSION_STR=${APPLICATION_VERSION};
+    # fi
+    export APPLICATION_VERSION_STR=`cat ${REPOSITORY_DIR}/VERSION`; 
 
     echo "Executing composer";
     build_composer_execute;

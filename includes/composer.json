@@ -27,7 +27,7 @@
         "ifsnop/mysqldump-php": "^2.1",
         "symfony/var-dumper": "^5.1",
         "symfony/process": "^5.1",
-        "jtlshop/shop5-systemcheck": "dev-64bit-smarty",
+        "jtlshop/shop5-systemcheck": "dev-master",
         "jtlshop/sccbs3": "dev-master",
         "jtlshop/scc": "dev-master",
         "jtlshop/phpquery": "dev-master",

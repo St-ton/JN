@@ -926,13 +926,19 @@ class Cart
     {
         $defaultOptions               = Artikel::getDefaultOptions();
         $defaultOptions->nStueckliste = 1;
+        $configOptions                = clone $defaultOptions;
         $this->oFavourableShipping    = null;
+
+        $configOptions->nKeineSichtbarkeitBeachten = 1;
 
         foreach ($this->PositionenArr as $i => $item) {
             if ($item->kArtikel > 0 && $item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
                 $oldItem = clone $item;
                 $product = new Artikel();
-                if (!$product->fuelleArtikel($item->kArtikel, $defaultOptions)) {
+                if (!$product->fuelleArtikel($item->kArtikel, $item->kKonfigitem === 0
+                    ? $defaultOptions
+                    : $configOptions)
+                ) {
                     continue;
                 }
                 // Baue Variationspreise im Warenkorb neu, aber nur wenn es ein gültiger Artikel ist

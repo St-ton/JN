@@ -36,9 +36,10 @@ build_create()
 #   else
 #       export APPLICATION_VERSION_STR=${APPLICATION_VERSION};
 
-    export APPLICATION_VERSION_STR=`cat ${REPOSITORY_DIR}/VERSION`; 
+    export APPLICATION_VERSION_STR=`cat ${REPOSITORY_DIR}/VERSION`;
     sed -i "s/'APPLICATION_VERSION', '.*'/'APPLICATION_VERSION', '${APPLICATION_VERSION_STR}'/g" ${REPOSITORY_DIR}/includes/defines_inc.php
     sed -i "s/'APPLICATION_BUILD_SHA', '#DEV#'/'APPLICATION_BUILD_SHA', '${APPLICATION_BUILD_SHA}'/g" ${REPOSITORY_DIR}/includes/defines_inc.php
+    rm ${REPOSITORY_DIR}/VERSION
 
     echo "Executing composer";
     build_composer_execute;

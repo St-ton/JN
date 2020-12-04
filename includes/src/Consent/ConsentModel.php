@@ -110,12 +110,13 @@ final class ConsentModel extends DataModel
             $existingLanguageIDs = $loc->map(function (ConsentLocalizationModel $e) {
                 return $e->getLanguageID();
             });
-            $missing             = [];
             $default             = clone $loc->first();
             foreach ($all as $languageModel) {
                 $langID = $languageModel->getId();
                 if (!$existingLanguageIDs->containsStrict($langID)) {
+                    /** @var ConsentLocalizationModel $default */
                     $default->setLanguageID($languageModel->getId());
+                    $default->setId(0);
                     $loc->add($default);
                 }
             }

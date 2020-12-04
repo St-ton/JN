@@ -3084,7 +3084,7 @@ class Artikel
     /**
      * @return stdClass
      */
-    public static function getDefaultKonfigOptions(): stdClass
+    public static function getDefaultConfigOptions(): stdClass
     {
         $options                             = static::getDefaultOptions();
         $options->nKeineSichtbarkeitBeachten = 1;

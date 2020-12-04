@@ -925,7 +925,7 @@ class Cart
     public function setzePositionsPreise(): self
     {
         $defaultOptions               = Artikel::getDefaultOptions();
-        $configOptions                = Artikel::getDefaultKonfigOptions();
+        $configOptions                = Artikel::getDefaultConfigOptions();
         $defaultOptions->nStueckliste = 1;
         $this->oFavourableShipping    = null;
 

@@ -709,7 +709,7 @@ class AccountController
                 $tmpProduct = new Artikel();
                 $tmpProduct->fuelleArtikel($item->kArtikel, (int)$item->kKonfigitem === 0
                     ? Artikel::getDefaultOptions()
-                    : Artikel::getDefaultKonfigOptions());
+                    : Artikel::getDefaultConfigOptions());
                 if ((int)$tmpProduct->kArtikel > 0 && \count(CartHelper::addToCartCheck(
                     $tmpProduct,
                     $item->fAnzahl,

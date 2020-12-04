@@ -935,7 +935,7 @@ class Cart
             if ($item->kArtikel > 0 && $item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
                 $oldItem = clone $item;
                 $product = new Artikel();
-                if (!$product->fuelleArtikel($item->kArtikel, $item->kKonfigitem === 0
+                if (!$product->fuelleArtikel($item->kArtikel, (int)$item->kKonfigitem === 0
                     ? $defaultOptions
                     : $configOptions)
                 ) {

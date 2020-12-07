@@ -707,8 +707,9 @@ class AccountController
                 }
             } else {
                 $tmpProduct = new Artikel();
-                $tmpProduct->fuelleArtikel($item->kArtikel, Artikel::getDefaultOptions());
-
+                $tmpProduct->fuelleArtikel($item->kArtikel, (int)$item->kKonfigitem === 0
+                    ? Artikel::getDefaultOptions()
+                    : Artikel::getDefaultConfigOptions());
                 if ((int)$tmpProduct->kArtikel > 0 && \count(CartHelper::addToCartCheck(
                     $tmpProduct,
                     $item->fAnzahl,

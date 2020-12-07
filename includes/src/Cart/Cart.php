@@ -925,11 +925,9 @@ class Cart
     public function setzePositionsPreise(): self
     {
         $defaultOptions               = Artikel::getDefaultOptions();
+        $configOptions                = Artikel::getDefaultConfigOptions();
         $defaultOptions->nStueckliste = 1;
-        $configOptions                = clone $defaultOptions;
         $this->oFavourableShipping    = null;
-
-        $configOptions->nKeineSichtbarkeitBeachten = 1;
 
         foreach ($this->PositionenArr as $i => $item) {
             if ($item->kArtikel > 0 && $item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {

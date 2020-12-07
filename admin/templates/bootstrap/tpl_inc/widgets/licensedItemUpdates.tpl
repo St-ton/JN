@@ -76,11 +76,12 @@
                     </tr>
                     </thead>
                     {foreach $licenseItemUpdates as $license}
+                        {$avail = $license->getReleases()->getAvailable()}
                         <tr>
                             <td>
                                 <a href="{$shopURL}/{$smarty.const.PFAD_ADMIN}licenses.php#license-item-{$license->getID()}">
                                     {$license->getName()}
-                                </a> {if $license->getReleases()->getAvailable()->includesSecurityFixes()} <span class="badge badge-warning">{__('Security update')}</span> {/if}</td>
+                                </a> {if $avail !== null && $avail->includesSecurityFixes()} <span class="badge badge-warning">{__('Security update')}</span> {/if}</td>
                             <td>
                                 <p class="badge badge-secondary">{$license->getReferencedItem()->getInstalledVersion()}</p>
                                 &rarr;

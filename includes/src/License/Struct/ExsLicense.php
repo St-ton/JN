@@ -127,6 +127,9 @@ class ExsLicense
             $this->setHasSubscription($this->getLicense()->getSubscription()->getValidUntil() !== null);
         }
         $this->setVendor(new Vendor($json->vendor));
+        if (\is_array($json->releases)) {
+            $json->releases = null; // the api sends an empty array instead of an object when there are none...
+        }
         $this->releases = new Releases($json->releases);
         foreach ($json->links as $link) {
             $this->links[] = new Link($link);

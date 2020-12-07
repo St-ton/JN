@@ -52,7 +52,7 @@
                                                             <label class="custom-control-label" for="group-{$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}"></label>
                                                         </div>
                                                     </td>
-                                                    <td>
+                                                    <td class="text-center">
                                                         {if !$oAuswahlAssistentGruppe->nAktiv}
                                                             <i class="fal fa-times text-danger"></i>
                                                         {else}

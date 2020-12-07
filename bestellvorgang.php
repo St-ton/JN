@@ -256,7 +256,8 @@ $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('bestellschritt', gibBestellschritt($step))
        ->assign('requestURL', (isset($requestURL) ? $requestURL : null))
        ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
-       ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK);
+       ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK)
+       ->assign('warning_passwortlaenge', lang_passwortlaenge($Einstellungen['kunden']['kundenregistrierung_passwortlaenge']));
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_BESTELLVORGANG_PAGE);

@@ -3084,6 +3084,17 @@ class Artikel
     /**
      * @return stdClass
      */
+    public static function getDefaultConfigOptions(): stdClass
+    {
+        $options                             = static::getDefaultOptions();
+        $options->nKeineSichtbarkeitBeachten = 1;
+
+        return $options;
+    }
+
+    /**
+     * @return stdClass
+     */
     public static function getExportOptions(): stdClass
     {
         $options                            = new stdClass();

@@ -11,6 +11,7 @@ use JTL\Plugin\Admin\StateChanger;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Plugin\PluginLoader;
 use JTL\Plugin\State;
+use JTL\Shop;
 use JTL\Template\BootChecker;
 use Psr\Log\LoggerInterface;
 
@@ -84,10 +85,10 @@ class Checker
      */
     private function getPluginsWithoutLicense(Collection $items): Collection
     {
-        $plugins = $this->db->selectAll('tplugin', ['bExtension', 'nStatus'], [1, 2], 'kPlugin');
+        $plugins = $this->db->selectAll('tplugin', ['bExtension', 'nStatus'], [1, 2]);
         $loader  = new PluginLoader($this->db, $this->cache);
         foreach ($plugins as $dataItem) {
-            $plugin     = $loader->init((int)$dataItem->kPlugin, true);
+            $plugin     = $loader->loadFromObject($dataItem, Shop::getLanguageCode());
             $exsLicense = $plugin->getLicense()->getExsLicense();
             if ($exsLicense !== null && \is_a($exsLicense, ExpiredExsLicense::class)) {
                 $items->add($exsLicense);

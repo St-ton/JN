@@ -39,6 +39,6 @@ function updateZeilenBis($file): bool
  */
 function updateFertig(int $version): void
 {
-    header('Location: ' . Shop::getURL() . '/' . PFAD_ADMIN . 'dbupdater.php?nErrorCode=100');
+    header('Location: ' . Shop::getAdminURL() . '/dbupdater.php?nErrorCode=100');
     exit();
 }

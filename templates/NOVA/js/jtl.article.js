@@ -1070,10 +1070,12 @@
                 }, 200);
             });
             $('#cfg-accordion .js-cfg-group-collapse').on('shown.bs.collapse', function () {
-                $(this).prev()[0].scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
+                if (!$(this).find('select').is(":focus")) {
+                    $(this).prev()[0].scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
             });
             $('.js-cfg-next').on('click', function () {
                 $('button[data-target="' +  $(this).data('target') + '"]')

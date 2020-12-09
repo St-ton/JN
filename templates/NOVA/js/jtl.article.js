@@ -336,29 +336,36 @@
         },
 
         registerHoverVariations: function ($wrapper) {
+            let delay=300, setTimeoutConst;
             $('.variations label.variation', $wrapper)
                 .on('mouseenter', function (e) {
-                    let mainImageHeight = $('.js-gallery-images').innerHeight();
-                        $('.variation-image-preview.vt' + $(this).data('value')).addClass('show d-md-block')
-                        .css('top', $(this).offset().top - $(this).closest('#content').position().top - mainImageHeight/2 -12);
+                    setTimeoutConst = setTimeout(function () {
+                        let mainImageHeight = $('.js-gallery-images').innerHeight();
+                        $('.variation-image-preview.vt' + $(e.currentTarget).data('value')).addClass('show d-md-block')
+                            .css('top', $(e.currentTarget).offset().top - $(e.currentTarget).closest('#content').position().top - mainImageHeight / 2 - 12);
+                    }, delay)
                 })
                 .on('mouseleave', function (e) {
+                    clearTimeout(setTimeoutConst);
                     $('.variation-image-preview.vt' + $(this).data('value')).removeClass('show d-md-block');
                 });
 
             $('.variations .selectpicker')
                 .on('show.bs.select', function () {
                     $(this).parent().find('li .variation')
-                        .on('mouseenter', function () {
-                            let mainImageHeight = $('.js-gallery-images').innerHeight();
-                            $('.variation-image-preview.vt' + $(this).find('span[data-value]').data("value"))
-                                .addClass('show d-md-block')
-                                .css('top', $(this).offset().top - $(this).closest('#content').position().top - mainImageHeight/2 -12);
+                        .on('mouseenter', function (e) {
+                            setTimeoutConst = setTimeout(function () {
+                                let mainImageHeight = $('.js-gallery-images').innerHeight();
+                                $('.variation-image-preview.vt' + $(e.currentTarget).find('span[data-value]').data("value"))
+                                    .addClass('show d-md-block')
+                                    .css('top', $(e.currentTarget).offset().top - $(e.currentTarget).closest('#content').position().top - mainImageHeight / 2 - 12);
+                            }, delay)
                         })
                         .on('mouseleave', function () {
+                            clearTimeout(setTimeoutConst);
                             $('.variation-image-preview.vt' + $(this).find('span[data-value]').data("value"))
                                 .removeClass('show d-md-block');
-                    });
+                        });
                 })
                 .on('hide.bs.select', function () {
                     $(this).parent().find('li .variation').off('mouseenter mouseleave');

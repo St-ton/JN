@@ -114,7 +114,7 @@
                         {if !empty($separatedTabs)}
                             {block name='productdetails-tabs-tab-separated-tabs'}
                                 {foreach $separatedTabs as $separatedTab}
-                                    {tab title=$separatedTab.name active=$setActiveClass.separatedTabs && $separatedTab@first id="{$separatedTab.id}"}
+                                    {tab title=$separatedTab.name active=$setActiveClass.separatedTabs && $separatedTab@first id="{$separatedTab.name|@seofy}"}
                                         {$separatedTab.content}
                                     {/tab}
                                 {/foreach}
@@ -253,20 +253,21 @@
                             {if !empty($separatedTabs)}
                                 {block name='productdetails-tabs-separated-tabs'}
                                     {foreach $separatedTabs as $separatedTab}
+                                        {$separatedTabId = $separatedTab.name|@seofy}
                                         {card no-body=true}
-                                            {cardheader id="tab-{$separatedTab.id}-head"
+                                            {cardheader id="tab-{$separatedTabId}-head"
                                                 data=["toggle" => "collapse",
-                                                    "target"=>"#tab-{$separatedTab.id}"
+                                                    "target"=>"#tab-{$separatedTabId}"
                                                 ]
                                                 aria=["expanded" => "{if $setActiveClass.separatedTabs && $separatedTab@first}true{else}false{/if}",
-                                                    "controls" => "tab-{$separatedTab.id}"
+                                                    "controls" => "tab-{$separatedTabId}"
                                                 ]
                                             }
                                                 {$separatedTab.name}
                                             {/cardheader}
-                                            {collapse id="tab-{$separatedTab.id}" visible=($setActiveClass.separatedTabs && $separatedTab@first)
+                                            {collapse id="tab-{$separatedTabId}" visible=($setActiveClass.separatedTabs && $separatedTab@first)
                                                 data=["parent"=>"#tabAccordion"]
-                                                aria=["labelledby"=>"tab-{$separatedTab.id}-head"]
+                                                aria=["labelledby"=>"tab-{$separatedTabId}-head"]
                                             }
                                                 {cardbody}
                                                     {$separatedTab.content}

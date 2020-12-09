@@ -22842,14 +22842,18 @@ input.typeahead:-ms-input-placeholder {
   min-height: 140px;
 }
 
-.lazyload,
-.lazyloading {
+.lazyload {
   opacity: 0;
 }
 
-.lazyloaded {
+.lazyloading {
+  color: transparent;
   opacity: 1;
   transition: opacity 300ms;
+}
+
+.lazyloaded {
+  transition: none;
 }
 
 .list-group-wrapper.disabled {
@@ -24241,6 +24245,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   background: #ffffff;
   border: 3px solid #ebebeb;
   opacity: 0;
+  transition: opacity 300ms;
   border-radius: 0.125rem;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
   z-index: -5;
@@ -24267,12 +24272,12 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   border-image: initial;
 }
 #image_wrapper .variation-image-preview::before {
-  margin-top: -18px;
+  margin-top: -0.15625rem;
   border-width: 14px 0px 14px 18px;
   border-color: transparent transparent transparent #ebebeb;
 }
 #image_wrapper .variation-image-preview::after {
-  margin-top: -14px;
+  margin-top: 0.09375rem;
   border-width: 10px 0px 10px 14px;
   border-color: transparent transparent transparent #ffffff;
 }
@@ -24685,6 +24690,11 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 
 .variations .custom-radio {
   margin-bottom: 0.5rem;
+}
+.variations .custom-radio:hover:hover, .variations .custom-radio:hover:focus {
+  color: #525252;
+  text-decoration: none;
+  background-color: #f5f7fa;
 }
 .variations .variation-badge {
   white-space: nowrap;

@@ -118,7 +118,7 @@ function plzimportDoImport($target, array $sessData, $result): void
                     plzimportWriteSession('Import', $sessData);
                     fclose($fHandle);
 
-                    $cRedirectUrl = Shop::getURL() . '/' . PFAD_ADMIN . 'io.php?io=' .
+                    $cRedirectUrl = Shop::getAdminURL() . '/io.php?io=' .
                         urlencode(
                             json_encode(
                                 [
@@ -260,7 +260,7 @@ function plzimportDoDownload($target, array $sessData, $result): void
     $result->type    = 'success';
     $result->message = sprintf(__('successDownload'), $target);
     // Download fertig - weiter mit dem Import
-    $cRedirectUrl = Shop::getURL() . '/' . PFAD_ADMIN . 'io.php?io=' .
+    $cRedirectUrl = Shop::getAdminURL() . '/io.php?io=' .
         urlencode(
             json_encode(
                 [

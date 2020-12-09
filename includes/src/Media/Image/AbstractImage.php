@@ -93,7 +93,7 @@ abstract class AbstractImage implements IMedia
                 }
             }
             if ($matchFound === false) {
-                \header('Location: ' . Shop::getURL() . '/' . $allowedFiles[0], true, 301);
+                \header('Location: ' . Shop::getImageBaseURL() . $allowedFiles[0], true, 301);
                 exit;
             }
             if ($imgPath === null || !\is_file(\PFAD_ROOT . $imgPath)) {

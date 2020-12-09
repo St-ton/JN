@@ -65,32 +65,31 @@ class Category extends AbstractImage
     public static function getCustomName($mixed): string
     {
         if (\is_string($mixed)) {
-            return \pathinfo($mixed)['filename'];
-        }
-        if (isset($mixed->customImgName)) {
-            return Image::getCleanFilename($mixed->customImgName);
-        }
-        if (isset($mixed->currentImagePath)) {
-            return \pathinfo($mixed->currentImagePath)['filename'];
-        }
-        switch (Image::getSettings()['naming'][Image::TYPE_CATEGORY]) {
-            case 2:
-                $result = $mixed->path ?? $mixed->cBildpfad ?? null;
-                if ($result !== null) {
-                    return \pathinfo($result)['filename'];
-                }
-                break;
-            case 1:
-                $result = \method_exists($mixed, 'getURL')
-                    ? $mixed->getURL()
-                    : ($mixed->originalSeo ?? $mixed->seoPath ?? $mixed->cName ?? null);
-                break;
-            case 0:
-            default:
-                $result = \method_exists($mixed, 'getID')
-                    ? $mixed->getID()
-                    : ($mixed->id ?? $mixed->kKategorie ?? null);
-                break;
+            $result = \pathinfo($mixed)['filename'];
+        } elseif (isset($mixed->customImgName)) {
+            $result = $mixed->customImgName;
+        } elseif (isset($mixed->currentImagePath)) {
+            $result = \pathinfo($mixed->currentImagePath)['filename'];
+        } else {
+            switch (Image::getSettings()['naming'][Image::TYPE_CATEGORY]) {
+                case 2:
+                    $result = $mixed->path ?? $mixed->cBildpfad ?? null;
+                    if ($result !== null) {
+                        $result = \pathinfo($result)['filename'];
+                    }
+                    break;
+                case 1:
+                    $result = \method_exists($mixed, 'getURL')
+                        ? $mixed->getURL()
+                        : ($mixed->originalSeo ?? $mixed->seoPath ?? $mixed->cName ?? null);
+                    break;
+                case 0:
+                default:
+                    $result = \method_exists($mixed, 'getID')
+                        ? $mixed->getID()
+                        : ($mixed->id ?? $mixed->kKategorie ?? null);
+                    break;
+            }
         }
 
         return empty($result) ? 'image' : Image::getCleanFilename((string)$result);

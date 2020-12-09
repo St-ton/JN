@@ -63,12 +63,12 @@
                                 {/col}
                             {/if}
                             {if $configLocalization->hatBeschreibung()}
-                                {col cols=12 lg="{if $configGroupHasImage}7{else}12{/if}" order=1 order-lg=0}
+                                {col cols=12 lg="{if $configGroupHasImage}9{else}12{/if}" order=1 order-lg=0}
                                     {$configLocalization->getBeschreibung()}
                                 {/col}
                             {/if}
                             {if $configGroupHasImage}
-                                {col cols=12 lg=5 offset-lg="{if $configLocalization->hatBeschreibung()}0{else}5{/if}" order=0 order-lg=1}
+                                {col cols=12 lg=3 offset-lg="{if $configLocalization->hatBeschreibung()}0{else}5{/if}" order=0 order-lg=1}
                                     {include file='snippets/image.tpl' item=$configGroup square=false}
                                 {/col}
                             {/if}

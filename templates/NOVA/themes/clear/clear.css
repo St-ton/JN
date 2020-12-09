@@ -24412,6 +24412,14 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
     font-weight: 700;
   }
 }
+#cfg-container .cfg-footnote {
+  text-align: center;
+  margin-top: 1.8rem;
+  color: #707070;
+}
+#cfg-container .modal-body {
+  padding: 1rem 0 0;
+}
 
 #cfg-modal-tabs {
   margin-top: auto;
@@ -24451,7 +24459,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 @media (max-width: 767.98px) {
   #cfg-container-tab-panes {
-    height: calc((var(--vh, 1vh) * 87) - 3rem);
+    height: calc((var(--vh, 1vh) * 87) - 5rem);
   }
 }
 

@@ -29,9 +29,12 @@
                     <i class="fas fa-cart-plus"></i> <span class="nav-link-text">{lang key='yourConfiguration'}</span>
                 {/navitem}
                 {navitem href="#" disabled=true}
-                    <strong id="cfg-price" class="price"></strong>
+                    <strong id="cfg-price" class="price"></strong>&nbsp;<span class="footnote-reference">*</span>
                 {/navitem}
             {/nav}
+            <div class="cfg-footnote small">
+                <span class="footnote-reference">*</span>{include file='snippets/shipping_tax_info.tpl' taxdata=$Artikel->taxData}
+            </div>
         {/modal}
     {/block}
     {block name='productdetails-config-container-script'}

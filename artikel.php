@@ -111,6 +111,12 @@ if (empty($cCanonicalURL)) {
 $AktuellerArtikel->berechneSieSparenX($conf['artikeldetails']['sie_sparen_x_anzeigen']);
 $productNotices = Product::getProductMessages();
 
+if ($conf['artikeldetails']['artikeldetails_fragezumprodukt_anzeigen'] !== 'N') {
+    $smarty->assign('Anfrage', Product::getProductQuestionFormDefaults());
+}
+if ($conf['artikeldetails']['benachrichtigung_nutzen'] !== 'N') {
+    $smarty->assign('Benachrichtigung', Product::getAvailabilityFormDefaults());
+}
 if ($valid && Request::postInt('fragezumprodukt') === 1) {
     $productNotices = Product::checkProductQuestion($productNotices, $conf);
 } elseif ($valid && Request::postInt('benachrichtigung_verfuegbarkeit') === 1) {

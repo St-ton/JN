@@ -34,7 +34,7 @@
                     {foreach $lastPurchases as $license}
                         <tr>
                             <td>
-                                <a href="{$shopURL}/{$smarty.const.PFAD_ADMIN}licenses.php#license-item-{$license->getID()}">
+                                <a href="{$adminURL}/licenses.php#license-item-{$license->getID()}">
                                     {$license->getName()}
                                 </a> {if $license->getLicense()->isBound()}<span class="badge badge-primary">{__('bound')}</span>{else}<span class="badge badge-secondary">{__('unbound')}</span>{/if}</td>
                             <td>{$license->getLicense()->getCreated()->format('d.m.Y')}</td>
@@ -56,7 +56,7 @@
                         {$days = $license->getLicense()->getDaysRemaining()}
                         <tr>
                             <td>
-                                <a href="{$shopURL}/{$smarty.const.PFAD_ADMIN}licenses.php#license-item-{$license->getID()}">
+                                <a href="{$adminURL}/licenses.php#license-item-{$license->getID()}">
                                     {$license->getName()}
                                 </a>{if $days > 0} <span class="badge badge-danger">{n__('%d day remaining', '%d days remaining', $days)|sprintf:$days}</span>{/if}
                             </td>
@@ -76,11 +76,12 @@
                     </tr>
                     </thead>
                     {foreach $licenseItemUpdates as $license}
+                        {$avail = $license->getReleases()->getAvailable()}
                         <tr>
                             <td>
-                                <a href="{$shopURL}/{$smarty.const.PFAD_ADMIN}licenses.php#license-item-{$license->getID()}">
+                                <a href="{$adminURL}/licenses.php#license-item-{$license->getID()}">
                                     {$license->getName()}
-                                </a> {if $license->getReleases()->getAvailable()->includesSecurityFixes()} <span class="badge badge-warning">{__('Security update')}</span> {/if}</td>
+                                </a> {if $avail !== null && $avail->includesSecurityFixes()} <span class="badge badge-warning">{__('Security update')}</span> {/if}</td>
                             <td>
                                 <p class="badge badge-secondary">{$license->getReferencedItem()->getInstalledVersion()}</p>
                                 &rarr;
@@ -103,7 +104,7 @@
                     {foreach $testLicenses as $license}
                         <tr>
                             <td>
-                                <a href="{$shopURL}/{$smarty.const.PFAD_ADMIN}licenses.php#license-item-{$license->getID()}">
+                                <a href="{$adminURL}/licenses.php#license-item-{$license->getID()}">
                                     {$license->getName()}
                                 </a>
                             <td>{$license->getLicense()->getValidUntil()->format('d.m.Y')}</td>

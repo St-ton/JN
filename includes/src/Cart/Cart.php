@@ -925,6 +925,7 @@ class Cart
     public function setzePositionsPreise(): self
     {
         $defaultOptions               = Artikel::getDefaultOptions();
+        $configOptions                = Artikel::getDefaultConfigOptions();
         $defaultOptions->nStueckliste = 1;
         $this->oFavourableShipping    = null;
 
@@ -932,7 +933,10 @@ class Cart
             if ($item->kArtikel > 0 && $item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
                 $oldItem = clone $item;
                 $product = new Artikel();
-                if (!$product->fuelleArtikel($item->kArtikel, $defaultOptions)) {
+                if (!$product->fuelleArtikel($item->kArtikel, (int)$item->kKonfigitem === 0
+                    ? $defaultOptions
+                    : $configOptions)
+                ) {
                     continue;
                 }
                 // Baue Variationspreise im Warenkorb neu, aber nur wenn es ein gültiger Artikel ist

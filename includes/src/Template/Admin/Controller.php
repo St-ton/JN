@@ -143,7 +143,7 @@ class Controller
         $response  = $extractor->extractTemplate($files['tmp_name']);
         if ($response->getStatus() === InstallationResponse::STATUS_OK
             && $response->getDirName()
-            && ($bootstrapper = BootChecker::bootstrap($response->getDirName())) !== null
+            && ($bootstrapper = BootChecker::bootstrap(\rtrim($response->getDirName(), '/'))) !== null
         ) {
             $bootstrapper->installed();
         }
@@ -151,6 +151,7 @@ class Controller
         $html          = new stdClass();
         $html->id      = '#shoptemplate-overview';
         $html->content = $this->smarty->assign('listingItems', $lstng->getAll())
+            ->assign('shopVersion', Version::parse(\APPLICATION_VERSION))
             ->fetch('tpl_inc/shoptemplate_overview.tpl');
         $response->setHtml($html);
         die($response->toJson());

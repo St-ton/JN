@@ -10,23 +10,25 @@
                     block=true
                     data=["toggle"=> "collapse", "target"=>"#cllps-box{$oBox->getID()}-{$characteristic->getID()}"]
                 }
-                    {$img = $characteristic->getImage(\JTL\Media\Image::SIZE_XS)}
-                    {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'T'
-                    && $img !== null
-                    && $img|strpos:$smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN === false
-                    && $img|strpos:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN === false}
-                        {include file='snippets/image.tpl'
-                            item=$characteristic
-                            square=false
-                            class='img-xs'
-                            srcSize='xs'
-                            sizes='24px'}
-                    {/if}
-                    {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'B'}
-                        <span class="text-truncate">
-                            {$characteristic->cName}
-                        </span>
-                    {/if}
+                    <span class="characteristic-collapse-btn-inner">
+                        {$img = $characteristic->getImage(\JTL\Media\Image::SIZE_XS)}
+                        {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'T'
+                        && $img !== null
+                        && $img|strpos:$smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN === false
+                        && $img|strpos:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN === false}
+                            {include file='snippets/image.tpl'
+                                item=$characteristic
+                                square=false
+                                class='img-xs'
+                                srcSize='xs'
+                                sizes='24px'}
+                        {/if}
+                        {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'B'}
+                            <span class="text-truncate">
+                                {$characteristic->cName}
+                            </span>
+                        {/if}
+                    </span>
                 {/button}
                 {collapse
                     id="cllps-box{$oBox->getID()}-{$characteristic->getID()}"

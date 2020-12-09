@@ -55,7 +55,7 @@
                                 {include file='snippets/form_group_simple.tpl'
                                     options=[
                                         "email", "article_availability{$Artikel->kArtikel}_email", "email",
-                                        {$Benachrichtigung->cNachname|default:null}, {lang key='email' section='account data'},
+                                        {$Benachrichtigung->cMail|default:null}, {lang key='email' section='account data'},
                                         true, $fehlendeAngaben_benachrichtigung.email|default:null, "email"
                                     ]
                                 }

@@ -26,7 +26,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>{__('plz_ort_import_load')} <img src="{$shopURL}/{$smarty.const.PFAD_ADMIN}/templates/bootstrap/gfx/widgets/ajax-loader.gif"></h2>
+                <h2>{__('plz_ort_import_load')} <img src="{$adminURL}/templates/bootstrap/gfx/widgets/ajax-loader.gif"></h2>
             </div>
         </div>
     </div>

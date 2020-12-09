@@ -114,8 +114,7 @@ class ContentAuthor
             'SELECT tadminlogin.kAdminlogin, tadminlogin.cLogin, tadminlogin.cName, tadminlogin.cMail 
                 FROM tadminlogin
                 WHERE tadminlogin.bAktiv = 1
-                    AND COALESCE(tadminlogin.dGueltigBis, NOW()) >= NOW()
-                    AND tadminlogin.kAdminlogin > 1' . $filter,
+                    AND COALESCE(tadminlogin.dGueltigBis, NOW()) >= NOW()' . $filter,
             ReturnType::ARRAY_OF_OBJECTS
         );
     }

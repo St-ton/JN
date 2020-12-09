@@ -20187,6 +20187,24 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
     min-width: calc(100%/3);
   }
 }
+@media (max-width: 767.98px) {
+  .carousel:not(.slick-initialized).slick-type-three .product-wrapper {
+    width: 100%;
+    min-width: 100%;
+  }
+}
+@media (min-width: 768px) {
+  .carousel:not(.slick-initialized).slick-type-three .product-wrapper {
+    width: calc(100%/2);
+    min-width: calc(100%/2);
+  }
+}
+@media (min-width: 1300px) {
+  .carousel:not(.slick-initialized).slick-type-three .product-wrapper {
+    width: calc(100%/3);
+    min-width: calc(100%/3);
+  }
+}
 .carousel:not(.slick-initialized) .product-wrapper {
   padding: 0 1rem;
 }
@@ -20385,6 +20403,7 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
   .slick-type-product .slick-list,
 .slick-type-half .slick-list,
 .slick-type-news .slick-list,
+.slick-type-three .slick-list,
 .slick-type-box .slick-list {
     padding-right: 50px;
   }
@@ -22285,6 +22304,10 @@ aside .box-monthlynews a .value:hover {
   margin-bottom: 1rem;
 }
 
+.characteristic-collapse-btn-inner img {
+  margin-right: 0.25rem;
+}
+
 :root {
   --vh: 1vh;
 }
@@ -22448,8 +22471,9 @@ ul.partlist-items {
 }
 
 .img-xs {
-  max-width: 24px;
-  max-height: 24px;
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
 }
 
 .searchcloud, .tagcloud {

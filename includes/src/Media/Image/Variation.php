@@ -64,12 +64,12 @@ class Variation extends AbstractImage
     public static function getCustomName($mixed): string
     {
         if (isset($mixed->cPfad)) {
-            return \pathinfo($mixed->cPfad)['filename'];
+            $result = \pathinfo($mixed->cPfad)['filename'];
+        } elseif (isset($mixed->path)) {
+            $result = \pathinfo($mixed->path)['filename'];
+        } else {
+            $result = $mixed->cName;
         }
-        if (isset($mixed->path)) {
-            return \pathinfo($mixed->path)['filename'];
-        }
-        $result = $mixed->cName;
 
         return empty($result) ? 'image' : Image::getCleanFilename($result);
     }

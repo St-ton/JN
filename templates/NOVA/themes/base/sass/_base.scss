@@ -449,13 +449,18 @@ input.typeahead {
   min-height: 140px
 }
 
-.lazyload,
-.lazyloading {
+.lazyload {
   opacity: 0;
 }
-.lazyloaded {
+
+.lazyloading {
+  color: transparent;
   opacity: 1;
   transition: opacity 300ms;
+}
+
+.lazyloaded {
+  transition: none;
 }
 
 .list-group-wrapper.disabled{

@@ -331,6 +331,14 @@
 			}
 		}
 	}
+	.cfg-footnote {
+		text-align: center;
+		margin-top: 1.8rem;
+		color: $text-muted;
+	}
+	.modal-body {
+		padding: 1rem 0 0;
+	}
 }
 
 #cfg-modal-tabs {
@@ -367,7 +375,7 @@
 	padding-right: 17px;
 	border-bottom: 2px solid $border-color;
 	@include media-breakpoint-down(sm) {
-		height: calc((var(--vh, 1vh) * 87) - 3rem);
+		height: calc((var(--vh, 1vh) * 87) - 5rem);
 	}
 }
 

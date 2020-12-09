@@ -12,7 +12,7 @@
             {/if}
             <form method="post" action="kupons.php">
                 {$jtl_token}
-                <input type="hidden" name="cKuponTyp" id="cKuponTyp" value="{$cKuponTyp}">
+                <input type="hidden" name="cKuponTyp" id="cKuponTyp_{$cKuponTyp}" value="{$cKuponTyp}">
                 {if $oKupon_arr|@count > 0}
                     <div class="table-responsive">
                         <table class="list table table-align-top">
@@ -136,7 +136,7 @@
                             </div>
                         {/if}
                         <div class="{if !$oKupon_arr|@count > 0}ml-auto{/if} col-sm-6 col-xl-auto">
-                            {include file='tpl_inc/csv_import_btn.tpl' importerId="kupon"}
+                            {include file='tpl_inc/csv_import_btn.tpl' importerId="kupon_{$cKuponTyp}" importerType="kupon"}
                         </div>
                         <div class="col-sm-6 col-xl-auto">
                             <a href="kupons.php?kKupon=0&cKuponTyp={$cKuponTyp}&token={$smarty.session.jtl_token}"

@@ -267,10 +267,10 @@ class WarenkorbPers
             if ($this->kWarenkorbPers > 0) {
                 // Hole alle Positionen für eine WarenkorbPers
                 $oWarenkorbPersPos_arr = Shop::DB()->selectAll(
-                    'twarenkorbperspos', 
-                    'kWarenkorbPers', 
-                    (int)$this->kWarenkorbPers, 
-                    '*, date_format(dHinzugefuegt, \'%d.%m.%Y %H:%i\') AS dHinzugefuegt_de', 
+                    'twarenkorbperspos',
+                    'kWarenkorbPers',
+                    (int)$this->kWarenkorbPers,
+                    '*, date_format(dHinzugefuegt, \'%d.%m.%Y %H:%i\') AS dHinzugefuegt_de',
                     'kKonfigitem, kWarenkorbPersPos'
                 );
                 // Wenn Positionen vorhanden sind
@@ -347,23 +347,24 @@ class WarenkorbPers
         $cArtikel_arr = [];
         $kArtikel_arr = [];
         $hinweis      = '';
+        $db = Shop::DB();
         if (count($this->oWarenkorbPersPos_arr) > 0) {
             foreach ($this->oWarenkorbPersPos_arr as $WarenkorbPersPos) {
                 // Hat die Position einen Artikel
                 if ($WarenkorbPersPos->kArtikel > 0) {
                     // Prüfe auf kArtikel
-                    $oArtikelVorhanden = Shop::DB()->select('tartikel', 'kArtikel', (int)$WarenkorbPersPos->kArtikel);
+                    $oArtikelVorhanden = $db->select('tartikel', 'kArtikel', (int)$WarenkorbPersPos->kArtikel);
                     // Falls Artikel vorhanden
                     if (isset($oArtikelVorhanden->kArtikel) && $oArtikelVorhanden->kArtikel > 0) {
                         // Sichtbarkeit Prüfen
-                        $oSichtbarkeit = Shop::DB()->select(
+                        $oSichtbarkeit = $db->select(
                             'tartikelsichtbarkeit',
                             'kArtikel', (int)$WarenkorbPersPos->kArtikel,
                             'kKundengruppe', (int)$_SESSION['Kundengruppe']->kKundengruppe
                         );
                         if ($oSichtbarkeit === null || !isset($oSichtbarkeit->kArtikel) || !$oSichtbarkeit->kArtikel) {
                             // Prüfe welche kEigenschaft gesetzt ist
-                            $oEigenschaft_arr = Shop::DB()->selectAll(
+                            $oEigenschaft_arr = $db->selectAll(
                                 'teigenschaft',
                                 'kArtikel', (int)$WarenkorbPersPos->kArtikel,
                                 'kEigenschaft, cName, cTyp'
@@ -374,7 +375,7 @@ class WarenkorbPers
                                         if (count($WarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr) > 0) {
                                             foreach ($WarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr as $oWarenkorbPersPosEigenschaft) {
                                                 if ($oWarenkorbPersPosEigenschaft->kEigenschaft === $oEigenschaft->kEigenschaft) {
-                                                    $oEigenschaftWertVorhanden = Shop::DB()->select(
+                                                    $oEigenschaftWertVorhanden = $db->select(
                                                         'teigenschaftwert',
                                                         'kEigenschaftWert',
                                                         (int)$oWarenkorbPersPosEigenschaft->kEigenschaftWert,
@@ -383,8 +384,8 @@ class WarenkorbPers
                                                     );
                                                     // Prüfe ob die Eigenschaft vorhanden ist
                                                     if (!isset($oEigenschaftWertVorhanden->kEigenschaftWert) || !$oEigenschaftWertVorhanden->kEigenschaftWert) {
-                                                        Shop::DB()->delete('twarenkorbperspos', 'kWarenkorbPersPos', $WarenkorbPersPos->kWarenkorbPersPos);
-                                                        Shop::DB()->delete('twarenkorbpersposeigenschaft', 'kWarenkorbPersPos', $WarenkorbPersPos->kWarenkorbPersPos);
+                                                        $db->delete('twarenkorbperspos', 'kWarenkorbPersPos', $WarenkorbPersPos->kWarenkorbPersPos);
+                                                        $db->delete('twarenkorbpersposeigenschaft', 'kWarenkorbPersPos', $WarenkorbPersPos->kWarenkorbPersPos);
                                                         $cArtikel_arr[] = $WarenkorbPersPos->cArtikelName;
                                                         $hinweis .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
                                                     }
@@ -394,18 +395,19 @@ class WarenkorbPers
                                     }
                                 }
                             }
-                            $kArtikel_arr[] = $oArtikelVorhanden->kArtikel;
+                            $kArtikel_arr[] = $WarenkorbPersPos->kWarenkorbPersPos;
                         }
                     }
-                // Konfigitem ohne Artikelbezug?
+                    // Konfigitem ohne Artikelbezug?
                 } elseif ($WarenkorbPersPos->kArtikel === 0 && !empty($WarenkorbPersPos->kKonfigitem)) {
-                    $kArtikel_arr[] = $WarenkorbPersPos->kArtikel;
+                    $kArtikel_arr[] = $WarenkorbPersPos->kWarenkorbPersPos;
                 }
             }
             // Artikel aus dem Array Löschen, die nicht mehr Gültig sind
             if ($bForceDelete) {
+                $kArtikel_arr = $this->_checkForOrphanedConfigItems($kArtikel_arr, $db);
                 foreach ($this->oWarenkorbPersPos_arr as $i => $WarenkorbPersPos) {
-                    if (!in_array($WarenkorbPersPos->kArtikel, $kArtikel_arr)) {
+                    if (!in_array($WarenkorbPersPos->kWarenkorbPersPos, $kArtikel_arr)) {
                         $this->entfernePos($WarenkorbPersPos->kWarenkorbPersPos);
                         Jtllog::writeLog(
                             'Der Artikel ' . $WarenkorbPersPos->kArtikel . ' ist vom persistenten Warenkorb gelöscht worden.',
@@ -430,6 +432,65 @@ class WarenkorbPers
         $hinweis .= substr($tmp_str, 0, strlen($tmp_str) - 2);
 
         return $hinweis;
+    }
+
+    /**
+     * @param array $ids
+     * @param NiceDB $db
+     * @return array
+     */
+    private function _checkForOrphanedConfigItems(array $ids, NiceDB $db)
+    {
+        foreach ($this->oWarenkorbPersPos_arr as $item) {
+            if ((int)$item->kKonfigitem === 0) {
+                continue;
+            }
+
+            $mainKonfigProduct = array_values(
+                array_filter($this->oWarenkorbPersPos_arr, static function ($persItem) use ($item) {
+                    return $persItem->kWarenkorbPers === $item->kWarenkorbPers
+                        && $persItem->cUnique === $item->cUnique
+                        && (int)$persItem->kKonfigitem === 0;
+                })
+            );
+
+            //if main product not found, remove the child id
+            if (count($mainKonfigProduct) === 0) {
+                $ids = array_values(
+                    array_filter($ids, static function ($id) use ($item) {
+                        return (int)$id !== (int)$item->kWarenkorbPersPos;
+                    })
+                );
+                continue;
+            }
+            $configItem = $db->queryPrepared(
+                'SELECT * FROM tkonfigitem WHERE kKonfigitem=:konfigItemId ',
+                ['konfigItemId' => (int)$item->kKonfigitem],
+                1
+            );
+
+            $checkParentsExistence = $db->queryPrepared(
+                'SELECT * FROM tartikelkonfiggruppe 
+                    WHERE kArtikel =:parentID
+                    AND kKonfiggruppe=:configItemGroupId',
+                [
+                    'parentID' => $mainKonfigProduct[0]->kArtikel,
+                    'configItemGroupId' => $configItem->kKonfiggruppe,
+                ],
+                2
+            );
+
+            if (count($checkParentsExistence) === 0) {
+                $ids = array_values(
+                    array_filter($ids, static function ($id) use ($item, $mainKonfigProduct) {
+                        return (int)$id !== (int)$item->kWarenkorbPersPos
+                            && (int)$id !== $mainKonfigProduct[0]->kWarenkorbPersPos;
+                    })
+                );
+            }
+        }
+
+        return $ids;
     }
 
     /**

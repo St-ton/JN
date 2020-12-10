@@ -2856,7 +2856,9 @@ function gibArtikelsortierung($NaviFilter)
             $sort = 'tartikel.fGewicht, tartikel.cName';
             break;
         case SEARCH_SORT_DATEOFISSUE:
-            $sort = 'tartikel.dErscheinungsdatum DESC, tartikel.cName';
+            $sort = 'IF(COALESCE(tartikel.dErscheinungsdatum, NOW()) <= NOW(), 1, 0)
+            , IF(tartikel.dErscheinungsdatum <= NOW(), NULL, tartikel.dErscheinungsdatum) ASC
+            , tartikel.cName';
             break;
         case SEARCH_SORT_BESTSELLER:
             $sort = 'tbestseller.fAnzahl DESC, tartikel.cName';

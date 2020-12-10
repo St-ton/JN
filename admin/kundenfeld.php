@@ -19,9 +19,7 @@ $cf          = CustomerFields::getInstance($languageID);
 $step        = 'uebersicht';
 $alertHelper = Shop::Container()->getAlertService();
 $smarty->assign('cTab', $step ?? null);
-if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
-}
+
 if (Request::postInt('einstellungen') > 0) {
     $alertHelper->addAlert(
         Alert::TYPE_SUCCESS,

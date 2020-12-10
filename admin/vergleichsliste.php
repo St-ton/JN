@@ -17,9 +17,6 @@ $oAccount->permission('MODULE_COMPARELIST_VIEW', true, true);
 $db          = Shop::Container()->getDB();
 $settingIDs  = '(469, 470)';
 $alertHelper = Shop::Container()->getAlertService();
-if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
-}
 if (!isset($_SESSION['Vergleichsliste'])) {
     $_SESSION['Vergleichsliste'] = new stdClass();
 }

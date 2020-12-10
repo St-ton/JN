@@ -10,19 +10,19 @@
         <nav class="tabs-nav">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link {if !isset($cTab) || $cTab === 'suchspecials'} active{/if}" data-toggle="tab" role="tab" href="#suchspecials">
+                    <a class="nav-link {if $cTab === '' || $cTab === 'suchspecials'} active{/if}" data-toggle="tab" role="tab" href="#suchspecials">
                         {__('suchspecials')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'einstellungen'} active{/if}" data-toggle="tab" role="tab" href="#einstellungen">
+                    <a class="nav-link {if $cTab === 'einstellungen'} active{/if}" data-toggle="tab" role="tab" href="#einstellungen">
                         {__('settings')}
                     </a>
                 </li>
             </ul>
         </nav>
         <div class="tab-content">
-            <div id="suchspecials" class="tab-pane fade {if !isset($cTab) || $cTab === 'suchspecials'} active show{/if}">
+            <div id="suchspecials" class="tab-pane fade {if $cTab === '' || $cTab === 'suchspecials'} active show{/if}">
                 <form name="suchspecials" method="post" action="suchspecials.php">
                     {$jtl_token}
                     <div id="settings" class="settings">
@@ -79,7 +79,7 @@
                     </div>
                 </form>
             </div>
-            <div id="einstellungen" class="tab-pane fade {if isset($cTab) && $cTab === 'einstellungen'} active show{/if}">
+            <div id="einstellungen" class="tab-pane fade {if $cTab === 'einstellungen'} active show{/if}">
                 {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' a='saveSettings' action='suchspecials.php' buttonCaption=__('saveWithIcon') title=__('settings') tab='einstellungen'}
             </div>
         </div>

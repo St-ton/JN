@@ -167,6 +167,11 @@
         <div class="save-wrapper">
             <div class="row">
                 <div class="ml-auto col-sm-6 col-xl-auto">
+                    <a class="btn btn-outline-primary btn-block" href="shoptemplate.php">
+                        {__('cancelWithIcon')}
+                    </a>
+                </div>
+                <div class="col-sm-6 col-xl-auto">
                     {if isset($smarty.get.activate)}
                         <input type="hidden" name="activate" value="1" />
                         <input type="hidden" name="action" value="activate" />

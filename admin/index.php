@@ -136,7 +136,6 @@ $smarty->assign('bProfilerActive', $profilerState !== 0)
        ->assign('alertList', $alertHelper)
        ->assign('updateMessage', $updateMessage ?? null);
 
-
 /**
  * opens the dashboard
  * (prevents code duplication)

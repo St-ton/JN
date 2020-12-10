@@ -12,7 +12,7 @@
     {if !isset($noModule) || !$noModule}
         <form class="settings" method="post" action="auswahlassistent.php">
             {$jtl_token}
-            <input name="kSprache" type="hidden" value="{$smarty.session.kSprache}">
+            <input name="kSprache" type="hidden" value="{$languageID}">
             <input name="tab" type="hidden" value="gruppe">
             <input name="a" type="hidden" value="addGrp">
             {if (isset($oGruppe->kAuswahlAssistentGruppe) && $oGruppe->kAuswahlAssistentGruppe > 0) || (isset($kAuswahlAssistentGruppe) && $kAuswahlAssistentGruppe > 0)}

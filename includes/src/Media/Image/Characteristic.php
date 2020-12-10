@@ -21,7 +21,7 @@ class Characteristic extends AbstractImage
      * @var string
      */
     public const REGEX = '/^media\/image\/(?P<type>characteristic)'
-    . '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl)\/(?P<name>[a-zA-Z0-9\-_]+)'
+    . '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl)\/(?P<name>[a-zA-Z0-9\-_\.]+)'
     . '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**
@@ -71,7 +71,7 @@ class Characteristic extends AbstractImage
             case 2:
                 $result = $mixed->path ?? $mixed->cBildpfad ?? null;
                 if ($result !== null) {
-                    return \pathinfo($result)['filename'];
+                    $result = \pathinfo($result)['filename'];
                 }
                 break;
             case 1:
@@ -83,7 +83,7 @@ class Characteristic extends AbstractImage
                 break;
         }
         if ($result === null && $mixed->currentImagePath !== null) {
-            return \pathinfo($mixed->currentImagePath)['filename'];
+            $result = \pathinfo($mixed->currentImagePath)['filename'];
         }
 
         return empty($result) ? 'image' : Image::getCleanFilename((string)$result);

@@ -165,6 +165,13 @@ $jqcloud-classes: 7;
     }
   }
 }
+.sidepanel-left {
+  .box-normal {
+    .box-normal-link {
+      @extend .h3;
+    }
+  }
+}
 .box-filter-hr {
   margin-top: map-get($spacers, 2);
   margin-bottom: map-get($spacers, 2);
@@ -225,4 +232,9 @@ $jqcloud-classes: 7;
 .hr-no-top {
   margin-top: 0;
   margin-bottom: map-get($spacers, 3);
+}
+.characteristic-collapse-btn-inner {
+  img {
+    margin-right: map-get($spacers, 1);
+  }
 }

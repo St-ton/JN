@@ -21,7 +21,7 @@ class ConfigGroup extends AbstractImage
      * @var string
      */
     public const REGEX = '/^media\/image\/(?P<type>configgroup)'
-    . '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl)\/(?P<name>[a-zA-Z0-9\-_]+)'
+    . '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl)\/(?P<name>[a-zA-Z0-9\-_\.]+)'
     . '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**
@@ -70,9 +70,9 @@ class ConfigGroup extends AbstractImage
         } elseif (\method_exists($mixed, 'getSprache')) {
             $result = $mixed->getSprache()->getName();
         } elseif (isset($mixed->path)) {
-            return \pathinfo($mixed->path)['filename'];
+            $result = \pathinfo($mixed->path)['filename'];
         } elseif (isset($mixed->cBildpfad)) {
-            return \pathinfo($mixed->cBildpfad)['filename'];
+            $result = \pathinfo($mixed->cBildpfad)['filename'];
         }
 
         return empty($result) ? 'image' : Image::getCleanFilename($result);

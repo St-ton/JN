@@ -55,6 +55,7 @@ class Backend extends AbstractSession
         if (empty($_SESSION['Sprachen']) || \get_class($_SESSION['Sprachen'][0]) === stdClass::class) {
             $_SESSION['Sprachen'] = LanguageHelper::getInstance()->gibInstallierteSprachen();
         }
+        $this->initLanguageURLs();
     }
 
     private function setLanguage(): void
@@ -64,8 +65,10 @@ class Backend extends AbstractSession
             if ($set === false) {
                 $this->setLanguageFromDefault();
             }
-            $_SESSION['kSprache']    = $_SESSION['kSprache'] ?? 1;
-            $_SESSION['cISOSprache'] = $_SESSION['cISOSprache'] ?? 'ger';
+            $_SESSION['kSprache']         = $_SESSION['kSprache'] ?? 1;
+            $_SESSION['cISOSprache']      = $_SESSION['cISOSprache'] ?? 'ger';
+            $_SESSION['editLanguageID']   = $_SESSION['editLanguageID'] ?? $_SESSION['kSprache'];
+            $_SESSION['editLanguageCode'] = $_SESSION['editLanguageCode'] ?? $_SESSION['cISOSprache'];
         }
         Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
     }

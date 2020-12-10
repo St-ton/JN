@@ -24,7 +24,7 @@ class News extends AbstractImage
      * @var string
      */
     public const REGEX = '/^media\/image\/(?P<type>news)'
-    . '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl)\/(?P<name>[a-zA-Z0-9\-_]+)'
+    . '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl)\/(?P<name>[a-zA-Z0-9\-_\.]+)'
     . '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**
@@ -103,9 +103,10 @@ class News extends AbstractImage
             } else {
                 $result = $mixed;
             }
-            return \pathinfo($result)['filename'] ?? 'image';
+            $result = \pathinfo($result)['filename'] ?? 'image';
+        } else {
+            $result = \method_exists($mixed, 'getTitle') ? $mixed->getTitle() : $mixed->title;
         }
-        $result = \method_exists($mixed, 'getTitle') ? $mixed->getTitle() : $mixed->title;
 
         return empty($result) ? 'image' : Image::getCleanFilename($result);
     }

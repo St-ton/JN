@@ -78,17 +78,17 @@ if (Request::postInt('adminlogin') === 1) {
                 Backend::getInstance()->reHash();
                 $_SESSION['loginIsValid'] = true; // "enable" the "header.tpl"-navigation again
                 if (($conf['global']['global_wizard_done'] ?? 'Y') === 'N') {
-                    \header('Location: ' . Shop::getURL(true) . '/' . \PFAD_ADMIN . 'wizard.php');
+                    \header('Location: ' . Shop::getAdminURL(true) . '/wizard.php');
                     exit;
                 }
                 if ($oAccount->permission('SHOP_UPDATE_VIEW') && $oUpdater->hasPendingUpdates()) {
-                    header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . 'dbupdater.php');
+                    header('Location: ' . Shop::getAdminURL(true) . '/dbupdater.php');
                     exit;
                 }
                 if (isset($_REQUEST['uri']) && mb_strlen(trim($_REQUEST['uri'])) > 0) {
                     redirectToURI($_REQUEST['uri']);
                 }
-                header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . 'index.php');
+                header('Location: ' . Shop::getAdminURL(true) . '/index.php');
                 exit;
 
                 break;
@@ -136,7 +136,6 @@ $smarty->assign('bProfilerActive', $profilerState !== 0)
        ->assign('alertList', $alertHelper)
        ->assign('updateMessage', $updateMessage ?? null);
 
-
 /**
  * opens the dashboard
  * (prevents code duplication)
@@ -166,11 +165,11 @@ function openDashboard()
 /**
  * redirects to a given (base64-encoded) URI
  * (prevents code duplication)
- * @param string $szURI
+ * @param string $uri
  */
-function redirectToURI($szURI)
+function redirectToURI($uri)
 {
-    header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . base64_decode($szURI));
+    header('Location: ' . Shop::getAdminURL(true) . '/' . base64_decode($uri));
     exit;
 }
 

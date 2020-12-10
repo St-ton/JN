@@ -336,7 +336,6 @@ final class Controller
             $date    = DateTime::createFromFormat('Y-m-d H:i:s', $newsData->dGueltigVon);
             $month   = (int)$date->format('m');
             $year    = (int)$date->format('Y');
-            $langID  = (int)$newsData->kSprache;
             $newsIDs = $this->db->queryPrepared(
                 'SELECT kNews
                     FROM tnews
@@ -357,11 +356,9 @@ final class Controller
                             AND tseo.kKey = tnewsmonatsuebersicht.kNewsMonatsUebersicht
                             AND tseo.kSprache = tnewsmonatsuebersicht.kSprache
                         WHERE tnewsmonatsuebersicht.nMonat = :mnth
-                            AND tnewsmonatsuebersicht.nJahr = :yr
-                            AND tnewsmonatsuebersicht.kSprache = :lid',
+                            AND tnewsmonatsuebersicht.nJahr = :yr',
                     [
                         'cky'  => 'kNewsMonatsUebersicht',
-                        'lid'  => $langID,
                         'mnth' => $month,
                         'yr'   => $year
                     ],

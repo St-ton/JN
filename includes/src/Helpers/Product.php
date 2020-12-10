@@ -1050,7 +1050,6 @@ class Product
             } elseif (isset($missingData['email']) && $missingData['email'] === 3) {
                 $notices[] = Shop::Lang()->get('blockedEmail');
             } else {
-                Shop::Smarty()->assign('Anfrage', self::getProductQuestionFormDefaults());
                 $notices[] = Shop::Lang()->get('mandatoryFieldNotification', 'errorMessages');
             }
         } else {
@@ -1123,23 +1122,8 @@ class Product
      */
     public static function getProductQuestionFormDefaults(): stdClass
     {
-        $msg             = new stdClass();
+        $msg             = Form::getDefaultCustomerFormInputs();
         $msg->cNachricht = isset($_POST['nachricht']) ? Text::filterXSS($_POST['nachricht']) : null;
-        $msg->cAnrede    = isset($_POST['anrede']) ? Text::filterXSS($_POST['anrede']) : null;
-        $msg->cVorname   = isset($_POST['vorname']) ? Text::filterXSS($_POST['vorname']) : null;
-        $msg->cNachname  = isset($_POST['nachname']) ? Text::filterXSS($_POST['nachname']) : null;
-        $msg->cFirma     = isset($_POST['firma']) ? Text::filterXSS($_POST['firma']) : null;
-        $msg->cMail      = isset($_POST['email']) ? Text::filterXSS($_POST['email']) : null;
-        $msg->cFax       = isset($_POST['fax']) ? Text::filterXSS($_POST['fax']) : null;
-        $msg->cTel       = isset($_POST['tel']) ? Text::filterXSS($_POST['tel']) : null;
-        $msg->cMobil     = isset($_POST['mobil']) ? Text::filterXSS($_POST['mobil']) : null;
-        if (\mb_strlen($msg->cAnrede) === 1) {
-            if ($msg->cAnrede === 'm') {
-                $msg->cAnredeLocalized = Shop::Lang()->get('salutationM');
-            } elseif ($msg->cAnrede === 'w') {
-                $msg->cAnredeLocalized = Shop::Lang()->get('salutationW');
-            }
-        }
 
         return $msg;
     }
@@ -1283,7 +1267,6 @@ class Product
         } elseif (isset($missingData['email']) && $missingData['email'] === 3) {
             $notices[] = Shop::Lang()->get('blockedEmail');
         } else {
-            Shop::Smarty()->assign('Benachrichtigung', self::getAvailabilityFormDefaults());
             $notices[] = Shop::Lang()->get('mandatoryFieldNotification', 'errorMessages');
         }
 
@@ -1336,19 +1319,7 @@ class Product
      */
     public static function getAvailabilityFormDefaults(): stdClass
     {
-        $msg  = new stdClass();
-        $conf = Shop::getSettings([\CONF_ARTIKELDETAILS]);
-        if (!empty($_POST['vorname']) && $conf['artikeldetails']['benachrichtigung_abfragen_vorname'] !== 'N') {
-            $msg->cVorname = Text::filterXSS($_POST['vorname']);
-        }
-        if (!empty($_POST['nachname']) && $conf['artikeldetails']['benachrichtigung_abfragen_nachname'] !== 'N') {
-            $msg->cNachname = Text::filterXSS($_POST['nachname']);
-        }
-        if (!empty($_POST['email'])) {
-            $msg->cMail = Text::filterXSS($_POST['email']);
-        }
-
-        return $msg;
+        return Form::getDefaultCustomerFormInputs();
     }
 
     /**

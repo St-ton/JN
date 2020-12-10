@@ -336,7 +336,8 @@ ausgeführt. |br|
 
 Diese müssen *nicht mehr* in der ``info.xml`` definiert werden, sondern liegen im Unterordner ``Migrations/``
 des Plugin-Verzeichnisses. |br|
-Das Namensschema der Datei- und somit auch Klassennamen lautet ``Migration<YYYYMMDDHHmi>.php``.
+Das Namensschema der Datei- und somit auch Klassennamen lautet ``Migration<YYYYMMDDhhmmss>.php``
+(entspricht in PHP: ``date('YmdHis');``).
 
 .. code-block:: console
    :emphasize-lines: 6-8

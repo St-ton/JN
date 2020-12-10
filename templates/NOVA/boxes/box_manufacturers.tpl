@@ -38,10 +38,8 @@
                             {nav vertical=true}
                                 {foreach $oBox->getManufacturers() as $manufacturer}
                                     {if $manufacturer@index === 10}{break}{/if}
-                                    {navitem}
-                                        {link href=$manufacturer->cSeo title=$manufacturer->cName|escape:'html'}
-                                            {$manufacturer->cName|escape:'html'}
-                                        {/link}
+                                    {navitem href=$manufacturer->cSeo title=$manufacturer->cName|escape:'html'}
+                                        {$manufacturer->cName|escape:'html'}
                                     {/navitem}
                                 {/foreach}
                             {/nav}

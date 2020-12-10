@@ -21,7 +21,7 @@ class CharacteristicValue extends AbstractImage
      * @var string
      */
     public const REGEX = '/^media\/image\/(?P<type>characteristicvalue)'
-    . '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl)\/(?P<name>[a-zA-Z0-9\-_]+)'
+    . '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl)\/(?P<name>[a-zA-Z0-9\-_\.]+)'
     . '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**
@@ -71,13 +71,13 @@ class CharacteristicValue extends AbstractImage
             case 2:
                 $result = $mixed->path ?? $mixed->cBildpfad ?? $mixed->currentImagePath ?? null;
                 if ($result !== null) {
-                    return \pathinfo($result)['filename'];
+                    $result = \pathinfo($result)['filename'];
                 }
                 break;
             case 1:
                 $result = $mixed->seoPath ?? $mixed->val ?? null;
                 if ($result === null && !empty($mixed->currentImagePath)) {
-                    return \pathinfo($mixed->currentImagePath)['filename'];
+                    $result = \pathinfo($mixed->currentImagePath)['filename'];
                 }
                 break;
             case 0:

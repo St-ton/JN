@@ -30,10 +30,10 @@ a { transition: color $transition-base-duration $transition-base-timing; }
 }
 
 // Generate `.bg-*` color utilities
-@include bg-variant('.bg-success', $bg-success);
-@include bg-variant('.bg-danger', $bg-danger);
-@include bg-variant('.bg-warning', $bg-warning);
-@include bg-variant('.bg-info', $bg-info);
+@include bg-variant('.bg-success', $bg-success, true);
+@include bg-variant('.bg-danger', $bg-danger, true);
+@include bg-variant('.bg-warning', $bg-warning, true);
+@include bg-variant('.bg-info', $bg-info, true);
 
 .text-truncate          { @include text-truncate; }
 //.text-truncate-overflow { @include text-truncate-overflow; }
@@ -71,8 +71,9 @@ ul.partlist-items {
 }
 
 .img-xs {
-  max-width: 24px;
-  max-height: 24px;
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
 }
 
 .searchcloud, .tagcloud {
@@ -448,13 +449,18 @@ input.typeahead {
   min-height: 140px
 }
 
-.lazyload,
-.lazyloading {
+.lazyload {
   opacity: 0;
 }
-.lazyloaded {
+
+.lazyloading {
+  color: transparent;
   opacity: 1;
   transition: opacity 300ms;
+}
+
+.lazyloaded {
+  transition: none;
 }
 
 .list-group-wrapper.disabled{
@@ -508,4 +514,7 @@ input.typeahead {
 }
 .simple-captcha-wrapper {
   text-align: center;
+}
+.link-content {
+  margin-bottom: map-get($spacers, 3);
 }

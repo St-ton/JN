@@ -47,5 +47,5 @@ if (Request::verifyGPCDataInt('save') === 1 && Form::validateToken()) {
 }
 
 $smarty->assign('step', $step)
-    ->assign('oTrennzeichenAssoc_arr', Separator::getAll($_SESSION['kSprache']))
+    ->assign('oTrennzeichenAssoc_arr', Separator::getAll($_SESSION['editLanguageID']))
     ->display('trennzeichen.tpl');

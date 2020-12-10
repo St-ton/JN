@@ -16,7 +16,7 @@ function speicherTrennzeichen(array $post): bool
             $post['cTausenderZeichen_' . $nEinheit]
         )) {
             $trennzeichen = new Separator();
-            $trennzeichen->setSprache($_SESSION['kSprache'])
+            $trennzeichen->setSprache($_SESSION['editLanguageID'])
                           ->setEinheit($nEinheit)
                           ->setDezimalstellen($post['nDezimal_' . $nEinheit])
                           ->setDezimalZeichen($post['cDezZeichen_' . $nEinheit])

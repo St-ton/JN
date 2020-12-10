@@ -187,7 +187,7 @@
             <div class="row">
                 <div class="ml-auto col-sm-6 col-xl-auto">
                     <a class="btn btn-outline-primary btn-block" href="exportformate.php">
-                        {__('goBack')}
+                        {__('cancelWithIcon')}
                     </a>
                 </div>
                 <div class="col-sm-6 col-xl-auto">

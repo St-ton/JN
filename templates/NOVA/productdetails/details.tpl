@@ -240,20 +240,32 @@
                                 {/block}
                                 {*WARENKORB anzeigen wenn keine variationen mehr auf lager sind?!*}
                                 {if $Artikel->bHasKonfig}
-                                    {row}
-                                        {col cols=12 sm=6}
-                                            {button type="button"
-                                                class="start-configuration js-start-configuration"
-                                                value="{lang key='configure'}"
-                                                block=true
-                                                data=["toggle"=>"modal", "target"=>"#cfg-container"]
-                                                disabled=(isset($Artikel->Variationen) && $Artikel->Variationen|@count > 0)
-                                            }
-                                                <span>{lang key='configure'}</span> <i class="fas fa-cogs"></i>
-                                            {/button}
-                                        {/col}
-                                    {/row}
-
+                                    {block name='productdetails-details-config-button'}
+                                        {row}
+                                            {if isset($Artikel->Variationen) && $Artikel->Variationen|@count > 0}
+                                                {block name='productdetails-details-config-button-info'}
+                                                    {col cols=12 class="js-choose-variations-wrapper"}
+                                                        {alert variation="info" class="choose-variations"}
+                                                            {lang key='chooseVariations' section='messages'}
+                                                        {/alert}
+                                                    {/col}
+                                                {/block}
+                                            {/if}
+                                            {block name='productdetails-details-config-button-button'}
+                                                {col cols=12 sm=6}
+                                                    {button type="button"
+                                                        class="start-configuration js-start-configuration"
+                                                        value="{lang key='configure'}"
+                                                        block=true
+                                                        data=["toggle"=>"modal", "target"=>"#cfg-container"]
+                                                        disabled=(isset($Artikel->Variationen) && $Artikel->Variationen|@count > 0)
+                                                    }
+                                                        <span>{lang key='configure'}</span> <i class="fas fa-cogs"></i>
+                                                    {/button}
+                                                {/col}
+                                            {/block}
+                                        {/row}
+                                    {/block}
                                     {block name='productdetails-details-include-config-container'}
                                         {row id="product-configurator"}
                                             {include file='productdetails/config_container.tpl'}

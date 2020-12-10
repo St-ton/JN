@@ -28,6 +28,7 @@ $tab         = Kupon::TYPE_STANDARD;
 $languages   = LanguageHelper::getAllLanguages();
 $coupon      = null;
 $alertHelper = Shop::Container()->getAlertService();
+$errors      = [];
 $res         = handleCsvImportAction('kupon', static function ($obj, &$importDeleteDone, $importType = 2) {
     $db = Shop::Container()->getDB();
     if ($importType === 0 && $importDeleteDone === false) {
@@ -63,10 +64,12 @@ $res         = handleCsvImportAction('kupon', static function ($obj, &$importDel
     }
 
     return true;
-});
+}, [], null, 2, $errors);
 
 if ($res > 0) {
-    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorImportCSV') . ' ' . __('errorImportRow'), 'errorImportCSV');
+    foreach ($errors as $key => $error) {
+        $alertHelper->addAlert(Alert::TYPE_ERROR, $error, 'errorImportCSV_' . $key);
+    }
 } elseif ($res === 0) {
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successImportCSV'), 'successImportCSV');
 }

@@ -19,7 +19,7 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'slider_inc.php';
 $alertHelper = Shop::Container()->getAlertService();
 $db          = Shop::Container()->getDB();
 $_kSlider    = 0;
-$redirectUrl = Shop::getURL() . '/' . PFAD_ADMIN . 'slider.php';
+$redirectUrl = Shop::getAdminURL() . '/slider.php';
 $action      = isset($_REQUEST['action']) && Form::validateToken()
     ? $_REQUEST['action']
     : 'view';

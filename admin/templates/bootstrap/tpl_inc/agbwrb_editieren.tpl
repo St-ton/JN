@@ -12,7 +12,7 @@
             {/if}
             <div class="card">
                 <div class="card-header">
-                    <div class="subheading1">{__('agbwrb')} {foreach $availableLanguages as $language}{if $language->getId() === $smarty.session.kSprache}({$language->getLocalizedName()}){/if}{/foreach}{if isset($kKundengruppe)} {__('forCustomerGroup')} {$kKundengruppe} {__('edit')}{/if}</div>
+                    <div class="subheading1">{__('agbwrb')} {foreach $availableLanguages as $language}{if $language->getId() === $languageID}({$language->getLocalizedName()}){/if}{/foreach}{if isset($kKundengruppe)} {__('forCustomerGroup')} {$kKundengruppe} {__('edit')}{/if}</div>
                     <hr class="mb-n3">
                 </div>
                 <div class="card-body">

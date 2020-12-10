@@ -375,24 +375,24 @@ function setzeSprache()
         // Wähle explizit gesetzte Sprache als aktuelle Sprache
         $language = Shop::Container()->getDB()->select('tsprache', 'kSprache', Request::postInt('kSprache'));
         if ((int)$language->kSprache > 0) {
-            $_SESSION['kSprache']    = (int)$language->kSprache;
-            $_SESSION['cISOSprache'] = $language->cISO;
+            $_SESSION['editLanguageID']   = (int)$language->kSprache;
+            $_SESSION['editLanguageCode'] = $language->cISO;
         }
     }
 
-    if (!isset($_SESSION['kSprache'])) {
+    if (!isset($_SESSION['editLanguageID'])) {
         // Wähle Standardsprache als aktuelle Sprache
         $language = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
         if ((int)$language->kSprache > 0) {
-            $_SESSION['kSprache']    = (int)$language->kSprache;
-            $_SESSION['cISOSprache'] = $language->cISO;
+            $_SESSION['editLanguageID']   = (int)$language->kSprache;
+            $_SESSION['editLanguageCode'] = $language->cISO;
         }
     }
-    if (isset($_SESSION['kSprache']) && empty($_SESSION['cISOSprache'])) {
+    if (isset($_SESSION['editLanguageID']) && empty($_SESSION['editLanguageCode'])) {
         // Fehlendes cISO ergänzen
-        $language = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
+        $language = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$_SESSION['editLanguageID']);
         if ((int)$language->kSprache > 0) {
-            $_SESSION['cISOSprache'] = $language->cISO;
+            $_SESSION['editLanguageCode'] = $language->cISO;
         }
     }
 }

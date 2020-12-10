@@ -122,7 +122,7 @@
                 <div class="alert alert-warning">{__('warningDoBackupScript')}</div>
                 <div class="alert alert-warning">{__('warningUseConsoleScript')}</div>
                 <div class="alert alert-warning">{__('warningUseThisShopScript')}</div>
-                <form action="{$shopURL}/{$smarty.const.PFAD_ADMIN}/dbcheck.php" method="post">
+                <form action="{$adminURL}/dbcheck.php" method="post">
                     {$jtl_token}
                     <div class="btn-group">
                         <button class="btn btn-primary" name="update" value="script"><i class="fa fa-cogs"></i> {__('buttonCreateScript')}</button>

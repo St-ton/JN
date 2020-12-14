@@ -5,6 +5,7 @@ namespace JTL\Console;
 use JTL\Console\Command\Backup\DatabaseCommand;
 use JTL\Console\Command\Backup\FilesCommand;
 use JTL\Console\Command\Build\DBStructCommand;
+use JTL\Console\Command\Build\GetLastVersionTagCommand;
 use JTL\Console\Command\Build\VersionToArrayCommand;
 use JTL\Console\Command\Cache\ClearObjectCacheCommand;
 use JTL\Console\Command\Cache\DbesTmpCommand;
@@ -164,6 +165,7 @@ class Application extends BaseApplication
             $cmds[] = new ResetCommand();
             $cmds[] = new VersionToArrayCommand();
             $cmds[] = new DBStructCommand();
+            $cmds[] = new GetLastVersionTagCommand();
 
             if ($this->devMode) {
                 $cmds[] = new CreateCommand();

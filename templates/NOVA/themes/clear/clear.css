@@ -21112,11 +21112,6 @@ label {
 .page-link, .page-text {
   text-decoration: none;
 }
-@media (max-width: 767.98px) {
-  .page-link, .page-text {
-    color: #525252;
-  }
-}
 
 .pagination {
   margin-bottom: 0;

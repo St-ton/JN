@@ -21,9 +21,6 @@
 	}
 }
 .page-link {
-	@include media-breakpoint-down(sm) {
-		color: $dropdown-link-color;
-	}
 	text-decoration: none;
 }
 

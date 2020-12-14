@@ -166,15 +166,15 @@ class PriceRange extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function init($id): FilterInterface
+    public function init($value): FilterInterface
     {
-        if (empty($id)) {
-            $id = '0_0';
+        if (empty($value)) {
+            $value = '0_0';
         }
-        [$start, $end]     = \explode('_', $id);
+        [$start, $end]     = \explode('_', $value);
         $this->offsetStart = (float)$start;
         $this->offsetEnd   = (float)$end;
-        $this->setValue($id === '0_0' ? 0 : ($this->offsetStart . '_' . $this->offsetEnd));
+        $this->setValue($value === '0_0' ? 0 : ($this->offsetStart . '_' . $this->offsetEnd));
         $this->offsetStartLocalized = Preise::getLocalizedPriceWithoutFactor($this->offsetStart);
         $this->offsetEndLocalized   = Preise::getLocalizedPriceWithoutFactor($this->offsetEnd);
         $this->setName(\html_entity_decode($this->offsetStartLocalized . ' - ' . $this->offsetEndLocalized));

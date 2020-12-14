@@ -417,9 +417,9 @@ class Category implements CategoryInterface
     /**
      * @inheritdoc
      */
-    public function setNames(array $name): void
+    public function setNames(array $names): void
     {
-        $this->names = $name;
+        $this->names = $names;
     }
 
     /**

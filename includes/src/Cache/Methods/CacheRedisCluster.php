@@ -256,9 +256,9 @@ class CacheRedisCluster implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function keyExists($cacheID): bool
+    public function keyExists($key): bool
     {
-        return $this->redis->exists($cacheID);
+        return $this->redis->exists($key);
     }
 
     /**

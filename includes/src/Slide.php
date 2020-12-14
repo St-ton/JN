@@ -88,12 +88,12 @@ class Slide
     }
 
     /**
-     * @param string $type
+     * @param string $value
      * @return string|null
      */
-    private function getMapping(string $type): ?string
+    private function getMapping(string $value): ?string
     {
-        return self::$mapping[$type] ?? null;
+        return self::$mapping[$value] ?? null;
     }
 
     /**

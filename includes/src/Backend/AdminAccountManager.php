@@ -240,66 +240,67 @@ class AdminAccountManager
      */
     public function saveAttributes(stdClass $account, array $extAttribs, array &$errorMap): bool
     {
-        if (\is_array($extAttribs)) {
-            $result = true;
-            $this->validateAccount($extAttribs);
+        if (!\is_array($extAttribs)) {
+            return true;
+        }
+        $result = true;
+        $this->validateAccount($extAttribs);
 
-            \executeHook(\HOOK_BACKEND_ACCOUNT_EDIT, [
-                'oAccount' => $account,
-                'type'     => 'VALIDATE',
-                'attribs'  => &$extAttribs,
-                'messages' => &$this->messages,
-                'result'   => &$result
-            ]);
+        \executeHook(\HOOK_BACKEND_ACCOUNT_EDIT, [
+            'oAccount' => $account,
+            'type'     => 'VALIDATE',
+            'attribs'  => &$extAttribs,
+            'messages' => &$this->messages,
+            'result'   => &$result
+        ]);
 
-            if ($result !== true) {
-                $errorMap = \array_merge($errorMap, $result);
+        if ($result !== true) {
+            $errorMap = \array_merge($errorMap, $result);
 
-                return false;
-            }
+            return false;
+        }
 
-            $handledKeys = [];
-            foreach ($extAttribs as $key => $value) {
-                $key      = Text::filterXSS($key);
-                $longText = null;
-                if (\is_array($value) && count($value) > 0) {
-                    $shortText = Text::filterXSS($value[0]);
-                    if (count($value) > 1) {
-                        $longText = $value[1];
-                    }
-                } else {
-                    $shortText = Text::filterXSS($value);
+        $handledKeys = [];
+        foreach ($extAttribs as $key => $value) {
+            $key      = Text::filterXSS($key);
+            $longText = null;
+            if (\is_array($value) && count($value) > 0) {
+                $shortText = Text::filterXSS($value[0]);
+                if (count($value) > 1) {
+                    $longText = $value[1];
                 }
-                if ($this->db->queryPrepared(
-                    'INSERT INTO tadminloginattribut (kAdminlogin, cName, cAttribValue, cAttribText)
-                        VALUES (:loginID, :loginName, :attribVal, :attribText)
-                        ON DUPLICATE KEY UPDATE
-                        cAttribValue = :attribVal,
-                        cAttribText = :attribText',
-                    [
-                        'loginID'    => $account->kAdminlogin,
-                        'loginName'  => $key,
-                        'attribVal'  => $shortText,
-                        'attribText' => $longText ?? null
-                    ],
-                    ReturnType::DEFAULT
-                ) === 0) {
-                    $this->addError(\sprintf(__('errorKeyChange'), $key));
-                }
-                $handledKeys[] = $key;
+            } else {
+                $shortText = Text::filterXSS($value);
             }
-            // nicht (mehr) vorhandene Attribute löschen
-            $this->db->query(
-                'DELETE FROM tadminloginattribut
-                WHERE kAdminlogin = ' . (int)$account->kAdminlogin . "
-                    AND cName NOT IN ('" . \implode("', '", $handledKeys) . "')",
+            if ($this->db->queryPrepared(
+                'INSERT INTO tadminloginattribut (kAdminlogin, cName, cAttribValue, cAttribText)
+                    VALUES (:loginID, :loginName, :attribVal, :attribText)
+                    ON DUPLICATE KEY UPDATE
+                    cAttribValue = :attribVal,
+                    cAttribText = :attribText',
+                [
+                    'loginID'    => $account->kAdminlogin,
+                    'loginName'  => $key,
+                    'attribVal'  => $shortText,
+                    'attribText' => $longText ?? null
+                ],
                 ReturnType::DEFAULT
-            );
-
-            $adminAccount = Shop::Container()->getAdminAccount();
-            if ($account->kAdminlogin === $adminAccount->account()->kAdminlogin) {
-                $adminAccount->refreshAttributes();
+            ) === 0) {
+                $this->addError(\sprintf(__('errorKeyChange'), $key));
             }
+            $handledKeys[] = $key;
+        }
+        // nicht (mehr) vorhandene Attribute löschen
+        $this->db->query(
+            'DELETE FROM tadminloginattribut
+            WHERE kAdminlogin = ' . (int)$account->kAdminlogin . "
+                AND cName NOT IN ('" . \implode("', '", $handledKeys) . "')",
+            ReturnType::DEFAULT
+        );
+
+        $adminAccount = Shop::Container()->getAdminAccount();
+        if ($account->kAdminlogin === $adminAccount->account()->kAdminlogin) {
+            $adminAccount->refreshAttributes();
         }
 
         return true;
@@ -802,7 +803,9 @@ class AdminAccountManager
             }
         } elseif ($groupID > 0) {
             if ((int)$groupID === 1) {
-                \header('location: benutzerverwaltung.php?action=group_view&token=' . $_SESSION['jtl_token']);
+                \header('Location:  '
+                    . Shop::getAdminURL() . '/benutzerverwaltung.php?action=group_view&token='
+                    . $_SESSION['jtl_token']);
             }
             $this->smarty->assign('bDebug', $debug)
                 ->assign('oAdminGroup', $this->getAdminGroup($groupID))
@@ -909,7 +912,7 @@ class AdminAccountManager
             $urlParams = ['tab' => Text::filterXSS($tab)];
         }
 
-        \header('Location: benutzerverwaltung.php' . (\is_array($urlParams)
+        \header('Location: ' . Shop::getAdminURL() . '/benutzerverwaltung.php' . (\is_array($urlParams)
                 ? '?' . \http_build_query($urlParams, '', '&')
                 : ''));
         exit;

@@ -2,11 +2,13 @@
 
 namespace JTL\Recommendation;
 
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use \Illuminate\Support\Collection;
-use Exception;
+use Illuminate\Support\Collection;
 use JTL\Alert\Alert;
+use JTL\Exceptions\CircularReferenceException;
+use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
 
@@ -103,8 +105,8 @@ class Manager
      * @param string $scope
      * @return array
      * @throws GuzzleException
-     * @throws \JTL\Exceptions\CircularReferenceException
-     * @throws \JTL\Exceptions\ServiceNotFoundException
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
      */
     private function getJSONFromAPI(string $scope): array
     {

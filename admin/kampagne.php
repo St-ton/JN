@@ -43,10 +43,7 @@ if (!isset($_SESSION['Kampagne']->cSort)) {
 }
 
 $now = new DateTimeImmutable();
-// Tab
-if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
-}
+
 if (Request::verifyGPCDataInt('neu') === 1 && Form::validateToken()) {
     $step = 'kampagne_erstellen';
 } elseif (Request::verifyGPCDataInt('editieren') === 1

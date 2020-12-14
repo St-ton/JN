@@ -9,7 +9,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'group_view'} active{/if}" data-toggle="tab" role="tab" href="#group_view">
+                    <a class="nav-link {if $cTab === 'group_view'} active{/if}" data-toggle="tab" role="tab" href="#group_view">
                         {__('gruppenTab')}
                     </a>
                 </li>
@@ -109,7 +109,7 @@
                     </div>
                 </div>
             </div>
-            <div id="group_view" class="tab-pane fade{if isset($cTab) && $cTab === 'group_view'} active show{/if}">
+            <div id="group_view" class="tab-pane fade{if $cTab === 'group_view'} active show{/if}">
                 <div class="subheading1">{__('gruppenKategorie')}</div>
                 <hr class="mb-3">
                 <div class="table-responsive">

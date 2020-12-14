@@ -296,7 +296,7 @@ $adminMenu = [
                     'permissions' => 'EXPORT_SCHEDULE_VIEW',
                 ],
             ],
-            __('Payments')        => [
+//            __('Payments')        => [
                 __('Payment methods') => (object)[
                     'link'        => 'zahlungsarten.php',
                     'permissions' => 'ORDER_PAYMENT_VIEW',
@@ -305,7 +305,7 @@ $adminMenu = [
 //                    'link'   => 'zahlungsarten.php',
 //                    'permissions' => 'ORDER_PAYMENT_VIEW',
 //                ],
-            ],
+//            ],
             __('Shipments')       => [
                 __('Shipping methods')     => (object)[
                     'link'        => 'versandarten.php',

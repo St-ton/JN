@@ -11,7 +11,7 @@
             <input name="nFZ" type="hidden" value="1">
         {/if}
         {if isset($cSeite)}
-            <input type="hidden" name="{if isset($cTab) && $cTab === 'aktiv'}s2{else}s1{/if}" value="{$cSeite}" />
+            <input type="hidden" name="{if $cTab === 'aktiv'}s2{else}s1{/if}" value="{$cSeite}" />
         {/if}
         <input type="hidden" name="kNews" value="{$oNewsKommentar->getNewsID()}" />
         <input type="hidden" name="kNewsKommentar" value="{$oNewsKommentar->getID()}" />

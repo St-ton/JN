@@ -70,7 +70,7 @@
             <div class="card-footer save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        <a href="sprache.php?tab={$tab}" class="btn btn-outline-primary btn-block">{__('goBack')}</a>
+                        <a href="sprache.php?tab={$tab}" class="btn btn-outline-primary btn-block">{__('cancelWithIcon')}</a>
                     </div>
                     <div class="col-sm-6 col-xl-auto">
                         <button type="submit" class="btn btn-primary btn-block" name="action" value="savevar">

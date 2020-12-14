@@ -30,29 +30,29 @@
         <nav class="tabs-nav">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link {if !isset($cTab) || $cTab === 'export'} active{/if}" data-toggle="tab" role="tab" href="#export">
+                    <a class="nav-link {if $cTab === '' || $cTab === 'export'} active{/if}" data-toggle="tab" role="tab" href="#export">
                         {__('sitemapExport')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'downloads'} active{/if}" data-toggle="tab" role="tab" href="#downloads">
+                    <a class="nav-link {if $cTab === 'downloads'} active{/if}" data-toggle="tab" role="tab" href="#downloads">
                         {__('sitemapDownload')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'report'} active{/if}" data-toggle="tab" role="tab" href="#report">
+                    <a class="nav-link {if $cTab === 'report'} active{/if}" data-toggle="tab" role="tab" href="#report">
                         {__('sitemapReport')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'einstellungen'} active{/if}" data-toggle="tab" role="tab" href="#einstellungen">
+                    <a class="nav-link {if $cTab === 'einstellungen'} active{/if}" data-toggle="tab" role="tab" href="#einstellungen">
                         {__('settings')}
                     </a>
                 </li>
             </ul>
         </nav>
         <div class="tab-content">
-            <div id="export" class="tab-pane fade {if !isset($cTab) || $cTab === 'export'} active show{/if}">
+            <div id="export" class="tab-pane fade {if $cTab === '' || $cTab === 'export'} active show{/if}">
                 {if isset($errorNoWrite) && $errorNoWrite|strlen > 0}
                     <div class="alert alert-danger">{$errorNoWrite}</div>
                 {/if}
@@ -79,7 +79,7 @@
                     </div>
                 </div>
             </div>
-            <div id="downloads" class="tab-pane fade {if isset($cTab) && $cTab === 'downloads'} active show{/if}">
+            <div id="downloads" class="tab-pane fade {if $cTab === 'downloads'} active show{/if}">
                 <div class="toolbar">
                     <form id="formDeleteSitemapExport" method="post" action="sitemapexport.php">
                         {$jtl_token}
@@ -178,7 +178,7 @@
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
-            <div id="report" class="tab-pane fade {if isset($cTab) && $cTab === 'report'} active show{/if}">
+            <div id="report" class="tab-pane fade {if $cTab === 'report'} active show{/if}">
                 <div class="toolbar">
                     <form id="formDeleteSitemapReport" method="post" action="sitemapexport.php">
                         {$jtl_token}
@@ -298,7 +298,7 @@
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
-            <div id="einstellungen" class="tab-pane fade {if isset($cTab) && $cTab === 'einstellungen'} active show{/if}">
+            <div id="einstellungen" class="tab-pane fade {if $cTab === 'einstellungen'} active show{/if}">
                 {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='sitemapexport.php' buttonCaption=__('saveWithIcon') title=__('settings') tab='einstellungen'}
             </div>
         </div>

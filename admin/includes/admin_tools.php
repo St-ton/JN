@@ -119,7 +119,7 @@ function getAdminSectionSettings($configSectionID, bool $byName = false)
  * @param bool $byName
  * @return string
  */
-function saveAdminSettings(array $settingsIDs, array &$post, $tags = [CACHING_GROUP_OPTION], bool $byName = false)
+function saveAdminSettings(array $settingsIDs, array $post, $tags = [CACHING_GROUP_OPTION], bool $byName = false)
 {
     $db       = Shop::Container()->getDB();
     $where    = $byName
@@ -216,7 +216,7 @@ function bearbeiteListBox($listBoxes, $valueName, int $configSectionID)
  * @param array $tags
  * @return string
  */
-function saveAdminSectionSettings(int $configSectionID, array &$post, $tags = [CACHING_GROUP_OPTION])
+function saveAdminSectionSettings(int $configSectionID, array $post, $tags = [CACHING_GROUP_OPTION])
 {
     Shop::Container()->getGetText()->loadAdminLocale('configs/configs');
     if (!Form::validateToken()) {

@@ -445,7 +445,7 @@ function exportformatQueueActionErstellenEintragen(JTLSmarty $smarty, array &$me
  * @param string     $tab
  * @param array|null $messages
  */
-function exportformatQueueRedirect($tab = '', array &$messages = null): void
+function exportformatQueueRedirect($tab = '', array $messages = null): void
 {
     if (isset($messages['notice']) && !empty($messages['notice'])) {
         $_SESSION['exportformatQueue.notice'] = $messages['notice'];

@@ -46,6 +46,9 @@ if ($action === 'save') {
         ENT_COMPAT | ENT_HTML401,
         JTL_CHARSET
     );
+    if ($packaging->kSteuerklasse < 0) {
+        $packaging->kSteuerklasse = 0;
+    }
     if (!(isset($_POST[$nameIDX]) && mb_strlen($_POST[$nameIDX]) > 0)) {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorNameMissing'), 'errorNameMissing');
     }

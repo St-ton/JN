@@ -84,7 +84,6 @@ class FatalErrorException extends \ErrorException
 
     /**
      * @param $trace
-     * @throws \ReflectionException
      */
     protected function setTrace($trace)
     {

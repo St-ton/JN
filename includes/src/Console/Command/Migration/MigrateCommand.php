@@ -68,9 +68,11 @@ class MigrateCommand extends Command
             [$code, , $message] = $e->errorInfo;
             $manager->log($migration, IMigration::UP, $code, $message);
             $io->error($e->getMessage());
+            return 1;
         } catch (Exception $e) {
             $manager->log($migration, IMigration::UP, 'JTL01', $e->getMessage());
             $io->error($e->getMessage());
+            return 1;
         }
     }
 }

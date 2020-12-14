@@ -4,6 +4,8 @@ namespace JTL\Console;
 
 use JTL\Console\Command\Backup\DatabaseCommand;
 use JTL\Console\Command\Backup\FilesCommand;
+use JTL\Console\Command\Build\DBStructCommand;
+use JTL\Console\Command\Build\VersionToArrayCommand;
 use JTL\Console\Command\Cache\ClearObjectCacheCommand;
 use JTL\Console\Command\Cache\DbesTmpCommand;
 use JTL\Console\Command\Cache\DeleteFileCacheCommand;
@@ -160,6 +162,8 @@ class Application extends BaseApplication
             $cmds[] = new ClearObjectCacheCommand();
             $cmds[] = new CreateModelCommand();
             $cmds[] = new ResetCommand();
+            $cmds[] = new VersionToArrayCommand();
+            $cmds[] = new DBStructCommand();
 
             if ($this->devMode) {
                 $cmds[] = new CreateCommand();

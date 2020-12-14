@@ -205,23 +205,26 @@ build_create_config_file()
 
 build_migrate()
 {
-    php -r "
-    require_once '${REPOSITORY_DIR}/includes/globalinclude.php'; \
-      \$time    = date('YmdHis'); \
-      \$manager = new MigrationManager(Shop::Container()->getDB()); \
-      try { \
-          \$migrations = \$manager->migrate(\$time); \
-      } catch (Exception \$e) { \
-          \$migration = \$manager->getMigrationById(array_pop(array_reverse(\$manager->getPendingMigrations()))); \
-          \$result    = new IOError('Migration: '.\$migration->getName().' | Errorcode: '.\$e->getMessage()); \
-          echo \$result->message; \
-          return 1; \
-      } \
-    ";
-    if [[ $? -ne 0 ]]; then
-        exit 1;
-    fi
-
+    # php -r "
+    # require_once '${REPOSITORY_DIR}/includes/globalinclude.php'; \
+      # \$time    = date('YmdHis'); \
+      # \$manager = new MigrationManager(Shop::Container()->getDB()); \
+      # try { \
+          # \$migrations = \$manager->migrate(\$time); \
+      # } catch (Exception \$e) { \
+          # \$migration = \$manager->getMigrationById(array_pop(array_reverse(\$manager->getPendingMigrations()))); \
+          # \$result    = new IOError('Migration: '.\$migration->getName().' | Errorcode: '.\$e->getMessage()); \
+          # echo \$result->message; \
+          # return 1; \
+      # } \
+    # ";
+	
+    # if [[ $? -ne 0 ]]; then
+        # exit 1;
+    # fi
+	
+	php ${REPOSITORY_DIR}/cli migrate;
+	
     echo 'TRUNCATE tversion' | mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME};
     echo "INSERT INTO tversion (nVersion, nZeileVon, nZeileBis, nInArbeit, nFehler, nTyp, cFehlerSQL, dAktualisiert) VALUES ('${APPLICATION_VERSION_STR}', 1, 0, 0, 0, 0, '', NOW())" | mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME};
 }
@@ -230,39 +233,10 @@ build_create_db_struct()
 {
     local VERSION="${APPLICATION_VERSION_STR//[\/\.]/-}";
     local VERSION="${VERSION//^[v]/}";
-    local i=0;
-    local DB_STRUCTURE='{';
-    local TABLE_COUNT=$(($(mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "show tables;" | wc -l)-1));
     local SCHEMAJSON_PATH="${REPOSITORY_DIR}/admin/includes/shopmd5files/dbstruct_${VERSION}.json";
-
-    while ((i++)); read -r table;
-    do
-        DB_STRUCTURE+='"'${table}'":[';
-        local j=0;
-        local COLUMN_COUNT=$(($(mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "SHOW COLUMNS FROM ${table};" | wc -l)-1));
-
-        while ((j++)); read -r column;
-        do
-            local value=$(echo "${column}" | awk -F'\t' '{print $1}');
-            DB_STRUCTURE+='"'${value}'"';
-
-            if [[ ${j} -lt ${COLUMN_COUNT} ]]; then
-                DB_STRUCTURE+=',';
-            else
-                DB_STRUCTURE+=']';
-            fi
-        done< <(mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "SHOW COLUMNS FROM ${table};" | sed 1d);
-
-        if [[ ${i} -lt ${TABLE_COUNT} ]]; then
-            DB_STRUCTURE+=',';
-        else
-            DB_STRUCTURE+='}';
-        fi
-    done< <(mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "show tables;" | sed 1d);
-
-    echo "${DB_STRUCTURE}" > ${SCHEMAJSON_PATH};
-
-    echo "  Dbstruct file admin/includes/shopmd5files/dbstruct_${VERSION}.json";
+    
+	php ${REPOSITORY_DIR}/cli build:dbstruct ${DB_NAME} > ${SCHEMAJSON_PATH};
+    echo "] DBstruct file : admin/includes/shopmd5files/dbstruct_${VERSION}.json";
 }
 
 build_create_initial_schema()

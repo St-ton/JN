@@ -384,7 +384,7 @@
             <div class="row">
                 <div class="ml-auto col-sm-6 col-xl-auto">
                     <button type="button" class="btn btn-default btn-block" onclick="window.location.href = 'slider.php';" value="zurück">
-                        {__('goBack')}
+                        {__('cancelWithIcon')}
                     </button>
                 </div>
                 <div class="col-sm-6 col-xl-auto">

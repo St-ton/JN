@@ -18,9 +18,6 @@ $db          = Shop::Container()->getDB();
 $alertHelper = Shop::Container()->getAlertService();
 setzeSprache();
 $languageID = (int)$_SESSION['editLanguageID'];
-if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
-}
 if (Request::verifyGPCDataInt('einstellungen') === 1) {
     $alertHelper->addAlert(
         Alert::TYPE_SUCCESS,

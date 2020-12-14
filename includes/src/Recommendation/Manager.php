@@ -3,7 +3,6 @@
 namespace JTL\Recommendation;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use \Illuminate\Support\Collection;
 use Exception;

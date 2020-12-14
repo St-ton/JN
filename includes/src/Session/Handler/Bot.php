@@ -30,11 +30,11 @@ class Bot extends JTLDefault
     }
 
     /**
-     * @param string $save_path
+     * @param string $path
      * @param string $name
      * @return bool
      */
-    public function open($save_path, $name)
+    public function open($path, $name)
     {
         return true;
     }

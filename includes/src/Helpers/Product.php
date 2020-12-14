@@ -1939,11 +1939,11 @@ class Product
             $configGroups[$i] = (array)$data;
         }
         /** @var Group $configGroup */
-        foreach ($config->oKonfig_arr as $i => &$configGroup) {
+        foreach ($config->oKonfig_arr as $i => $configGroup) {
             $configGroup->bAktiv = false;
             $configGroupID       = $configGroup->getKonfiggruppe();
             $configItems         = $configGroups[$configGroupID] ?? [];
-            foreach ($configGroup->oItem_arr as $j => &$configItem) {
+            foreach ($configGroup->oItem_arr as $j => $configItem) {
                 $configItemID        = $configItem->getKonfigitem();
                 $configItem->fAnzahl = (float)(
                     $configGroupAmounts[$configItem->getKonfiggruppe()] ?? $configItem->getInitial()
@@ -1978,10 +1978,8 @@ class Product
                     }
                 }
             }
-            unset($configItem);
             $configGroup->oItem_arr = \array_values($configGroup->oItem_arr);
         }
-        unset($configGroup);
         if (Frontend::getCustomerGroup()->mayViewPrices()) {
             $config->cPreisLocalized = [
                 Preise::getLocalizedPriceString($config->fGesamtpreis[0]),
@@ -2012,7 +2010,7 @@ class Product
             $configItems        = [];
             $configItemAmounts  = [];
             $configGroupAmounts = [];
-            foreach ($cart->PositionenArr as &$item) {
+            foreach ($cart->PositionenArr as $item) {
                 if ($item->cUnique !== $baseItem->cUnique || !$item->istKonfigKind()) {
                     continue;
                 }
@@ -2025,8 +2023,6 @@ class Product
                     $configGroupAmounts[$configItem->getKonfiggruppe()] = $item->nAnzahl / $baseItem->nAnzahl;
                 }
             }
-            unset($item);
-
             $smarty->assign('fAnzahl', $baseItem->nAnzahl)
                    ->assign('kEditKonfig', $configID)
                    ->assign('nKonfigitem_arr', $configItems)

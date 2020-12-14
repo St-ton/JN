@@ -287,7 +287,7 @@ class Mailer
             $phpmailer->Body = $mail->getBodyText();
         }
         if (\mb_strlen($phpmailer->Body) === 0) {
-            Shop::Container()->getLogService()->warn('Empty body for mail ' . $phpmailer->Subject);
+            Shop::Container()->getLogService()->warning('Empty body for mail ' . $phpmailer->Subject);
         }
         $this->addAttachments($phpmailer, $mail);
         $sent = $phpmailer->send();

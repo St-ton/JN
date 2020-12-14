@@ -256,8 +256,8 @@ final class Installer
             if (!isset($hits1[0]) || \mb_strlen($hits1[0]) !== \mb_strlen($i)) {
                 continue;
             }
-            $xy          = \trim(\str_replace('attr', '', $i));
-            $sqlFile     = $versionNode[$xy]['SQL'] ?? '';
+            $xy      = \trim(\str_replace('attr', '', $i));
+            $sqlFile = $versionNode[$xy]['SQL'] ?? '';
             if ($sqlFile === '') {
                 continue;
             }

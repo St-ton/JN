@@ -154,13 +154,13 @@ class Slider implements IExtensionPoint
     }
 
     /**
-     * @param int $kSlider
+     * @param int $id
      * @return $this
      */
-    public function init($kSlider)
+    public function init($id)
     {
-        $loaded = $this->load($kSlider);
-        if ($kSlider > 0 && $loaded === true) {
+        $loaded = $this->load($id);
+        if ($id > 0 && $loaded === true) {
             Shop::Smarty()->assign('oSlider', $this);
         }
 
@@ -184,26 +184,26 @@ class Slider implements IExtensionPoint
     }
 
     /**
-     * @param int  $kSlider
+     * @param int  $int
      * @param bool $active
      * @return bool
      */
-    public function load(int $kSlider = 0, $active = true): bool
+    public function load(int $int = 0, $active = true): bool
     {
-        if ($kSlider <= 0 && $this->id <= 0) {
+        if ($int <= 0 && $this->id <= 0) {
             return false;
         }
         $activeSQL = $active ? ' AND bAktiv = 1 ' : '';
-        if ($kSlider === 0) {
-            $kSlider = $this->id;
+        if ($int === 0) {
+            $int = $this->id;
         }
         $data  = $this->db->queryPrepared(
             'SELECT *, tslider.kSlider AS id FROM tslider
                 LEFT JOIN tslide
                     ON tslider.kSlider = tslide.kSlider
-                WHERE tslider.kSlider = :kslider' . $activeSQL .
+                WHERE tslider.kSlider = :sliderID' . $activeSQL .
             ' ORDER BY tslide.nSort',
-            ['kslider' => $kSlider],
+            ['sliderID' => $int],
             ReturnType::ARRAY_OF_OBJECTS
         );
         $first = first($data);

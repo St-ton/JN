@@ -139,11 +139,8 @@ class Nice
     public function gibAlleMoeglichenModule(): array
     {
         Shop::Container()->getGetText()->loadAdminLocale('widgets');
-
         $modules = [];
-        if (!\defined(\SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
-            $this->initConstants();
-        }
+        $this->initConstants();
         $module           = new stdClass();
         $module->kModulId = \SHOP_ERWEITERUNG_AUSWAHLASSISTENT;
         $module->cName    = __('moduleSelectionWizard');

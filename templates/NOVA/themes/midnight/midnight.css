@@ -21203,6 +21203,14 @@ label {
 .productlist-page-nav.productlist-page-nav-header-m {
   margin-top: 3rem;
 }
+@media (min-width: 768px) {
+  .productlist-page-nav.productlist-page-nav-header-m {
+    margin-top: 2rem;
+  }
+  .productlist-page-nav.productlist-page-nav-header-m > .col {
+    margin-top: 1rem;
+  }
+}
 
 .productlist-page-nav-bottom {
   margin-bottom: 2rem;

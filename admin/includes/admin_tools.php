@@ -31,7 +31,7 @@ function getAdminSectionSettings($configSectionID, bool $byName = false)
     if (is_array($configSectionID)) {
         $where    = $byName
             ? "WHERE cWertName IN ('" . implode("','", $configSectionID) . "')"
-            : 'WHERE kEinstellungenConf IN (' . implode(',', \array_map('\intval', $configSectionID)) . ')';
+            : 'WHERE kEinstellungenConf IN (' . implode(',', array_map('\intval', $configSectionID)) . ')';
         $confData = $db->query(
             'SELECT *
                 FROM teinstellungenconf
@@ -124,7 +124,7 @@ function saveAdminSettings(array $settingsIDs, array $post, $tags = [CACHING_GRO
     $db       = Shop::Container()->getDB();
     $where    = $byName
         ? "WHERE cWertName IN ('" . implode("','", $settingsIDs) . "')"
-        : 'WHERE kEinstellungenConf IN (' . implode(',', \array_map('\intval', $settingsIDs)) . ')';
+        : 'WHERE kEinstellungenConf IN (' . implode(',', array_map('\intval', $settingsIDs)) . ')';
     $confData = $db->query(
         'SELECT *
             FROM teinstellungenconf

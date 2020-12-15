@@ -13173,6 +13173,10 @@ ul li:last-child, ol li:last-child {
   }
 }
 
+table.sortable thead {
+  cursor: pointer;
+}
+
 .tooltip-inner {
   background-color: #435a6b;
   color: #f5f7fa;
@@ -13695,6 +13699,12 @@ body {
 .shipping-method-country a {
   text-decoration: underline dotted;
   display: inline-block;
+}
+
+@media (min-width: 992px) {
+  .config-type-number {
+    max-width: 300px;
+  }
 }
 
 #content_wrapper {

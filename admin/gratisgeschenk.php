@@ -18,9 +18,7 @@ $settingsIDs = [
     'sonstiges_gratisgeschenk_anzahl',
     'sonstiges_gratisgeschenk_sortierung'
 ];
-if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
-}
+
 if (Request::verifyGPCDataInt('einstellungen') === 1) {
     Shop::Container()->getAlertService()->addAlert(
         Alert::TYPE_SUCCESS,

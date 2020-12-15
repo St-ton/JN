@@ -6,6 +6,7 @@ use JTL\Backend\Notification;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\License\Checker;
 use JTL\License\Manager;
@@ -24,6 +25,7 @@ $smarty             = JTLSmarty::getInstance(false, ContextType::BACKEND);
 $template           = AdminTemplate::getInstance();
 $config             = Shop::getSettings([CONF_GLOBAL]);
 $shopURL            = Shop::getURL();
+$adminURL           = Shop::getAdminURL();
 $db                 = Shop::Container()->getDB();
 $currentTemplateDir = $smarty->getTemplateUrlPath();
 $updates            = new Collection();
@@ -90,7 +92,7 @@ if (!$hasPendingUpdates) {
 
                     $link = (object)[
                         'cLinkname' => __($pluginLink->cName),
-                        'cURL'      => $shopURL . '/' . PFAD_ADMIN . 'plugin.php?kPlugin=' . $pluginID,
+                        'cURL'      => $adminURL . '/plugin.php?kPlugin=' . $pluginID,
                         'cRecht'    => 'PLUGIN_ADMIN_VIEW',
                         'key'       => $rootKey . $secondKey . $pluginID,
                     ];
@@ -125,8 +127,7 @@ if (!$hasPendingUpdates) {
                         if ($thirdEntry === 'DYNAMIC_JTL_SEARCH' && ($jtlSearch->kPlugin ?? 0) > 0) {
                             $link = (object)[
                                 'cLinkname' => 'JTL Search',
-                                'cURL'      => $shopURL . '/' . PFAD_ADMIN
-                                    . 'plugin.php?kPlugin=' . $jtlSearch->kPlugin,
+                                'cURL'      => $adminURL . '/plugin.php?kPlugin=' . $jtlSearch->kPlugin,
                                 'cRecht'    => 'PLUGIN_ADMIN_VIEW',
                                 'key'       => $rootKey . $secondKey . $thirdKey,
                             ];
@@ -207,19 +208,18 @@ if (empty($template->version)) {
     $adminTplVersion = $template->version;
 }
 $langTag = $_SESSION['AdminAccount']->language ?? Shop::Container()->getGetText()->getLanguage();
-
 $smarty->assign('URL_SHOP', $shopURL)
     ->assign('expiredLicenses', $expired)
     ->assign('jtl_token', Form::getTokenInput())
     ->assign('shopURL', $shopURL)
-    ->assign('adminURL', Shop::getAdminURL())
+    ->assign('adminURL', $adminURL)
     ->assign('adminTplVersion', $adminTplVersion)
     ->assign('PFAD_ADMIN', PFAD_ADMIN)
     ->assign('JTL_CHARSET', JTL_CHARSET)
     ->assign('session_name', session_name())
     ->assign('session_id', session_id())
     ->assign('currentTemplateDir', $currentTemplateDir)
-    ->assign('templateBaseURL', $shopURL . '/' . \PFAD_ADMIN . $currentTemplateDir)
+    ->assign('templateBaseURL', $adminURL . '/' . $currentTemplateDir)
     ->assign('lang', 'german')
     ->assign('admin_css', $resourcePaths['css'])
     ->assign('admin_js', $resourcePaths['js'])
@@ -240,6 +240,7 @@ $smarty->assign('URL_SHOP', $shopURL)
     ->assign('languageName', Locale::getDisplayLanguage($langTag, $langTag))
     ->assign('languages', Shop::Container()->getGetText()->getAdminLanguages())
     ->assign('faviconAdminURL', Shop::getFaviconURL(true))
+    ->assign('cTab', Text::filterXSS(Request::verifyGPDataString('tab')))
     ->assign(
         'wizardDone',
         (($conf['global']['global_wizard_done'] ?? 'Y') === 'Y'

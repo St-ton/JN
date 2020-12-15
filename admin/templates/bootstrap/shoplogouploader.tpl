@@ -15,17 +15,17 @@
                         fileAllowedExtensions=$allowedExtensions
                         fileID='shoplogo-upload'
                         fileName='shopLogo'
-                        fileUploadUrl="{$shopURL}/{$PFAD_ADMIN}shoplogouploader.php?token={$smarty.session.jtl_token}"
-                        fileDeleteUrl="{$shopURL}/{$PFAD_ADMIN}shoplogouploader.php?token={$smarty.session.jtl_token}"
+                        fileUploadUrl="{$adminURL}/shoplogouploader.php?token={$smarty.session.jtl_token}"
+                        fileDeleteUrl="{$adminURL}/shoplogouploader.php?token={$smarty.session.jtl_token}"
                         fileBrowseClear=true
                         fileSuccessMsg="{__('successLogoUpload')}"
-                        fileErrorMsg="{__('errorLogoUpload', $allowedExtensions|implode:', ', $smarty.const.PFAD_SHOPLOGO)}"
+                        fileErrorMsg="{__('errorLogoUpload', implode(', ', $allowedExtensions), $smarty.const.PFAD_SHOPLOGO)}"
                         fileInitialPreview="[
                                 '<img src=\"{$ShopLogoURL}\" class=\"file-preview-image img-fluid\" alt=\"Logo\" title=\"Logo\" />'
                             ]"
                         fileInitialPreviewConfig="[
                                 {
-                                    url: '{$shopURL}/{$PFAD_ADMIN}shoplogouploader.php',
+                                    url: '{$adminURL}/shoplogouploader.php',
                                     extra: {
                                     action: 'deleteLogo',
                                     logo: '{$ShopLogo}',

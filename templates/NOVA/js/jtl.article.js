@@ -235,7 +235,10 @@
                             return false;
                         }
                     });
-                that.configurator(true);
+                // timeout fixes problem with loading order of bootstrap dropdowns
+                setTimeout(function(){
+                    that.configurator(true);
+                },0);
             }
         },
 
@@ -333,31 +336,38 @@
         },
 
         registerHoverVariations: function ($wrapper) {
+            let delay=300, setTimeoutConst;
             $('.variations label.variation', $wrapper)
                 .on('mouseenter', function (e) {
-                    let mainImageHeight = $('.js-gallery-images').innerHeight();
-                        $('.variation-image-preview.vt' + $(this).data('value')).addClass('show d-md-block')
-                        .css('top', $(this).offset().top - $(this).closest('#content').position().top - mainImageHeight/2 -12);
+                    setTimeoutConst = setTimeout(function () {
+                        let mainImageHeight = $('.js-gallery-images').innerHeight();
+                        $('.variation-image-preview.vt' + $(e.currentTarget).data('value')).addClass('show d-md-block')
+                            .css('top', $(e.currentTarget).offset().top - $(e.currentTarget).closest('#content').position().top - mainImageHeight / 2 - 12);
+                    }, delay)
                 })
                 .on('mouseleave', function (e) {
+                    clearTimeout(setTimeoutConst);
                     $('.variation-image-preview.vt' + $(this).data('value')).removeClass('show d-md-block');
                 });
 
             $('.variations .selectpicker')
                 .on('show.bs.select', function () {
                     $(this).parent().find('li .variation')
-                        .on('mouseenter', function () {
-                            let mainImageHeight = $('.js-gallery-images').innerHeight();
-                            $('.variation-image-preview.vt' + $(this).find('span[data-value]').data("value"))
-                                .addClass('show d-md-block')
-                                .css('top', $(this).offset().top - $(this).closest('#content').position().top - mainImageHeight/2 -12);
+                        .on('mouseenter', function (e) {
+                            setTimeoutConst = setTimeout(function () {
+                                let mainImageHeight = $('.js-gallery-images').innerHeight();
+                                $('.variation-image-preview.vt' + $(e.currentTarget).find('span[data-value]').data("value"))
+                                    .addClass('show d-md-block')
+                                    .css('top', $(e.currentTarget).offset().top - $(e.currentTarget).closest('#content').position().top - mainImageHeight / 2 - 12);
+                            }, delay)
                         })
                         .on('mouseleave', function () {
+                            clearTimeout(setTimeoutConst);
                             $('.variation-image-preview.vt' + $(this).find('span[data-value]').data("value"))
                                 .removeClass('show d-md-block');
                     });
                 })
-                .on('hide.bs.select', function () {
+                .on('hide.bs.select', function () { 
                     $(this).parent().find('li .variation').off('mouseenter mouseleave');
                     $('.variation-image-preview').removeClass('show');
                 });
@@ -993,6 +1003,8 @@
                         enableQuantity,
                         nNetto,
                         quantityInput;
+                    $('.js-start-configuration').prop('disabled', !data.response.variationsSelected);
+                    $('.js-choose-variations-wrapper').toggleClass('d-none', data.response.variationsSelected);
                     $('.js-cfg-group').each(function (i, item) {
                         let iconChecked     = $(this).find('.js-group-checked'),
                             badgeInfoDanger = 'alert-info';
@@ -1066,10 +1078,12 @@
                 }, 200);
             });
             $('#cfg-accordion .js-cfg-group-collapse').on('shown.bs.collapse', function () {
-                $(this).prev()[0].scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
+                if (!$(this).find('select').is(":focus")) {
+                    $(this).prev()[0].scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
             });
             $('.js-cfg-next').on('click', function () {
                 $('button[data-target="' +  $(this).data('target') + '"]')

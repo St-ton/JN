@@ -310,23 +310,25 @@
                     {/block}
                 {/block}
                 {block name='checkout-inc-order-items-shipping'}
-                    {if isset($FavourableShipping)}
-                        {if $NettoPreise}
-                            {$shippingCosts = "`$FavourableShipping->cPriceLocalized[$NettoPreise]` {lang key='plus' section='basket'} {lang key='vat' section='productDetails'}"}
-                        {else}
-                            {$shippingCosts = $FavourableShipping->cPriceLocalized[$NettoPreise]}
+                    {if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}
+                        {if isset($FavourableShipping)}
+                            {if $NettoPreise}
+                                {$shippingCosts = "`$FavourableShipping->cPriceLocalized[$NettoPreise]` {lang key='plus' section='basket'} {lang key='vat' section='productDetails'}"}
+                            {else}
+                                {$shippingCosts = $FavourableShipping->cPriceLocalized[$NettoPreise]}
+                            {/if}
+                            {row class="shipping-costs text-right-util"}
+                               {col cols=12}
+                                    <small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$shippingCosts:$FavourableShipping->country->getName() key='shippingInformationSpecific' section='basket'}</small>
+                                {/col}
+                            {/row}
+                        {elseif empty($FavourableShipping) && empty($smarty.session.Versandart)}
+                            {row class="shipping-costs text-right-util"}
+                                {col cols=12}
+                                    <small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() key='shippingInformation' section='basket'}</small>
+                                {/col}
+                            {/row}
                         {/if}
-                        {row class="shipping-costs text-right-util"}
-                           {col cols=12}
-                                <small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$shippingCosts:$FavourableShipping->country->getName() key='shippingInformationSpecific' section='basket'}</small>
-                            {/col}
-                        {/row}
-                    {elseif empty($FavourableShipping) && empty($smarty.session.Versandart)}
-                        {row class="shipping-costs text-right-util"}
-                            {col cols=12}
-                                <small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() key='shippingInformation' section='basket'}</small>
-                            {/col}
-                        {/row}
                     {/if}
                 {/block}
                 {if !empty($smarty.session.Warenkorb->OrderAttributes)}

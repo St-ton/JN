@@ -17,6 +17,9 @@ msgstr "https://jtl-url.de/rcl9g"
 msgid "linkGroupMove"
 msgstr "In Linkgruppe verschieben"
 
+msgid "linkModificationOnlyRoot"
+msgstr "nur für Elemente des Root-Levels möglich"
+
 msgid "linkMove"
 msgstr "Unter Link einordnen"
 

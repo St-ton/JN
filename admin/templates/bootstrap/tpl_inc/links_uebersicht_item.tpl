@@ -37,14 +37,18 @@
                         <input type="hidden" name="kPlugin" value="{$kPlugin}" />
                     {/if}
                     {if $link->getParent() === 0}
-                    <select title="{__('linkGroupMove')}" class="custom-select" name="kLinkgruppe" onchange="document.forms['aenderlinkgruppe_{$link->getID()}_{$id}'].submit();">
-                        <option value="-1">{__('linkGroupMove')}</option>
-                        {foreach $linkgruppen as $linkgruppeTMP}
-                            {if $linkgruppeTMP->getID() != $id && $linkgruppeTMP->getID() > 0}
-                                <option value="{$linkgruppeTMP->getID()}">{$linkgruppeTMP->getName()}</option>
-                            {/if}
-                        {/foreach}
-                    </select>
+                        <select title="{__('linkGroupMove')}" class="custom-select" name="kLinkgruppe" onchange="document.forms['aenderlinkgruppe_{$link->getID()}_{$id}'].submit();">
+                            <option value="-1">{__('linkGroupMove')}</option>
+                            {foreach $linkgruppen as $linkgruppeTMP}
+                                {if $linkgruppeTMP->getID() != $id && $linkgruppeTMP->getID() > 0}
+                                    <option value="{$linkgruppeTMP->getID()}">{$linkgruppeTMP->getName()}</option>
+                                {/if}
+                            {/foreach}
+                        </select>
+                    {else}
+                        <select title="{__('linkGroupMove')}" class="custom-select" disabled>
+                            <option selected>{__('linkModificationOnlyRoot')}</option>
+                        </select>
                     {/if}
                 </form>
                 <form class="navbar-form2 col-lg-4 col-md-12 left px-1" method="post" action="links.php" name="kopiereinlinkgruppe_{$link->getID()}_{$id}">
@@ -54,15 +58,21 @@
                     {if $kPlugin > 0}
                         <input type="hidden" name="kPlugin" value="{$kPlugin}" />
                     {/if}
-                    {if $id > 0 && $link->getParent() === 0}
-                        <select title="{__('linkGroupCopy')}" class="custom-select" name="kLinkgruppe" onchange="document.forms['kopiereinlinkgruppe_{$link->getID()}_{$id}'].submit();">
-                            <option value="-1">{__('linkGroupCopy')}</option>
-                            {foreach $linkgruppen as $linkgruppeTMP}
-                                {if $linkgruppeTMP->getID() !== $id && $linkgruppeTMP->getID() > 0}
-                                    <option value="{$linkgruppeTMP->getID()}">{$linkgruppeTMP->getName()}</option>
-                                {/if}
-                            {/foreach}
-                        </select>
+                    {if $id > 0}
+                        {if $link->getParent() === 0}
+                            <select title="{__('linkGroupCopy')}" class="custom-select" name="kLinkgruppe" onchange="document.forms['kopiereinlinkgruppe_{$link->getID()}_{$id}'].submit();">
+                                <option value="-1">{__('linkGroupCopy')}</option>
+                                {foreach $linkgruppen as $linkgruppeTMP}
+                                    {if $linkgruppeTMP->getID() !== $id && $linkgruppeTMP->getID() > 0}
+                                        <option value="{$linkgruppeTMP->getID()}">{$linkgruppeTMP->getName()}</option>
+                                    {/if}
+                                {/foreach}
+                            </select>
+                        {else}
+                            <select title="{__('linkGroupCopy')}" class="custom-select" disabled>
+                                <option>{__('linkModificationOnlyRoot')}</option>
+                            </select>
+                        {/if}
                     {/if}
                 </form>
                 <form class="navbar-form2 col-lg-4 col-md-12 left px-1" method="post" action="links.php" name="aenderlinkvater_{$link->getID()}_{$id}">

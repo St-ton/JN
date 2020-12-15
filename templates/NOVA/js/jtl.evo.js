@@ -199,7 +199,7 @@
                 'gallery_preview' : {
                     lazyLoad:       'ondemand',
                     slidesToShow:   5,
-                    slidesToScroll: 5,
+                    slidesToScroll: 1,
                     asNavFor:       '#gallery',
                     dots:           false,
                     arrows:         true,
@@ -209,14 +209,14 @@
                             breakpoint: 768,
                             settings:   {
                                 slidesToShow: 4,
-                                slidesToScroll: 4,
+                                slidesToScroll: 1,
                             }
                         },
                         {
                             breakpoint: 576,
                             settings: {
                                 slidesToShow: 3,
-                                slidesToScroll: 3,
+                                slidesToScroll: 1,
                             }
                         }
                     ]

@@ -40,10 +40,7 @@ $_SESSION['Kundengruppe']  = new CustomerGroup((int)$customerGroup->kKundengrupp
 
 setzeSprache();
 $languageID = (int)$_SESSION['editLanguageID'];
-if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
-}
-$instance = new Newsletter($db, $conf);
+$instance   = new Newsletter($db, $conf);
 if (Form::validateToken()) {
     if (Request::postInt('einstellungen') === 1) {
         if (isset($_POST['speichern'])) {

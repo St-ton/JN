@@ -21,12 +21,12 @@
             </div>
             <div class="card-footer save-wrapper">
                 <div class="row">
-                    <div class="ml-4">
-                        <button type="submit" name="go-back" value="1" class="btn btn-outline-info btn-block" id="go-back">
+                    <div class="ml-auto">
+                        <button type="submit" name="go-back" value="1" class="btn btn-outline-primary btn-block" id="go-back">
                             {__('cancelWithIcon')}
                         </button>
                     </div>
-                    <div class="ml-auto col-sm-6 col-xl-auto">
+                    <div class="col-sm-6 col-xl-auto">
                         <button type="submit" name="save-model-continue" value="1" class="btn btn-outline-primary btn-block" id="save-and-continue">
                             <i class="fal fa-save"></i> {__('saveAndContinue')}
                         </button>

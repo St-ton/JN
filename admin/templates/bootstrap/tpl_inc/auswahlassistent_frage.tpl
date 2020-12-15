@@ -104,7 +104,7 @@ cDokuURL=__('auswahlassistentURL')}
                 <div class="card-footer save-wrapper">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <a href="auswahlassistent.php" class="btn btn-outline-primary btn-block">{__('goBack')}</a>
+                            <a href="auswahlassistent.php" class="btn btn-outline-primary btn-block">{__('cancelWithIcon')}</a>
                         </div>
                         <div class="col-sm-6 col-xl-auto">
                             <button name="speichernSubmit" type="submit" class="btn btn-primary btn-block">{__('saveWithIcon')}</button>

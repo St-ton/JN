@@ -1,4 +1,4 @@
-<div id="deaktiviert" class="tab-pane fade {if isset($cTab) && $cTab === 'deaktiviert'} active show{/if}">
+<div id="deaktiviert" class="tab-pane fade {if $cTab === 'deaktiviert'} active show{/if}">
     {if $pluginsDisabled->count() > 0}
         <form name="pluginverwaltung" method="post" action="pluginverwaltung.php" id="disbled-plugins">
             {$jtl_token}

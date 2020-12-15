@@ -96,3 +96,9 @@ body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; 
 		display: inline-block;
 	}
 }
+
+.config-type-number {
+	@include media-breakpoint-up(lg) {
+		max-width: 300px;
+	}
+}

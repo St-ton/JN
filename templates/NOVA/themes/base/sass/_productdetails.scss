@@ -138,7 +138,7 @@
 		#gallery_preview_wrapper {
 			width: 100%;
 			padding: map_get($spacers, 3);
-			max-width: 1200px;
+			max-width: 760px;
 			@include media-breakpoint-up(md) {
 				width: 80%;
 			}

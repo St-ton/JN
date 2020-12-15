@@ -150,7 +150,7 @@
                     otherElemHeight = 0,
                     current         = ($('#gallery .slick-current').data('slick-index')),
                     $galleryImages  = $('#gallery img, #gallery picture source'),
-                    previewHeight   = $('#gallery_preview_wrapper').length > 0 ? 230 : 30;
+                    previewHeight   = $('#gallery_preview_wrapper').length > 0 ? 170 : 30;
 
                 if (fullscreen) {
                     $imgWrapper.addClass('fullscreen');

@@ -26,7 +26,7 @@ class GetLastVersionTagCommand extends Command
     protected function configure(): void
     {
         $this->setName('build:get_last_version_tag')
-            ->setDescription('get the previous version based on the first param')
+            ->setDescription('get the previous version based on the version param')
             ->addArgument('version', InputArgument::REQUIRED, 'the default (new) version to check from')
             ->addArgument('tag_list_file_path', InputArgument::REQUIRED, 'the file (path), with a list of all previous tags (separated by semicolon)');
     }
@@ -41,52 +41,37 @@ class GetLastVersionTagCommand extends Command
         $io                 = $this->getIO();
         $localFilesystem = new Filesystem(new Local(\PFAD_ROOT, \LOCK_EX, Local::SKIP_LINKS));
         $parsedVersion = Parser::parse($version);
+
         if($localFilesystem->has($tag_list_file_path)){
             $contents = $localFilesystem->read($tag_list_file_path);
             $tags = explode(';',$contents);
-            $tags = $parsedVersion->hasPreRelease() ?
-                array_filter($tags,static function  ($tag) use ($version,$parsedVersion){
-                    try{
-                        $tagVersion = Parser::parse($tag);
-                        $tagHasPreRelease = $tagVersion->hasPreRelease();
-                    }catch(\Exception $e){
-                        return false;
-                    }
-                    return
-                        $version !== $tag
-                        && !empty($tag)
-                        && $tagHasPreRelease === true
-                        && Compare::smallerThan($tagVersion,$parsedVersion);
-                })
-                :
-                array_filter($tags,static function  ($tag) use ($version,$parsedVersion){
-                    try{
-                        $tagVersion = Parser::parse($tag);
-                        $tagHasPreRelease = $tagVersion->hasPreRelease();
-                    }catch(\Exception $e){
-                        return false;
-                    }
-                    return
-                        $version !== $tag
-                        && !empty($tag)
-                        && $tagHasPreRelease === false
-                        && Compare::smallerThan($tagVersion,$parsedVersion);
-                })
-            ;
+            $lastVersion = '';
+            foreach ($tags as $tag){
+                try{
+                    $tagVersion = Parser::parse($tag);
 
-            $sorted = Sort::sort($tags);
-            $i = count($sorted) - 1;
-            echo
-                $sorted[$i]->getMajor() . '.' . $sorted[$i]->getMinor() . '.' .  $sorted[$i]->getPatch() .
-                ($sorted[$i]->hasPreRelease()
-                    ?
-                    ' '.$sorted[$i]->getPreRelease()->getGreek() . ' ' . $sorted[$i]->getPreRelease()->getReleaseNumber()
-                    : '')
-            ;
+                    if( empty($tag)
+                        ||  $tagVersion->hasPreRelease() !== $parsedVersion->hasPreRelease()
+                        || Compare::greaterThan($tagVersion,$parsedVersion)
+                        || $tag === $version
+
+                    ){
+                        continue;
+                    }
+                    if(empty($lastVersion)){
+                        $lastVersion = $tag;
+                        continue;
+                    }
+                    $lastVersionParsed = Parser::parse($lastVersion);
+                    $lastVersion = Compare::greaterThan($tagVersion,$lastVersionParsed) ? $tag : $lastVersion;
+
+
+                }catch(\Exception $e){
+                    continue;
+                }
+            }
         }
-        //read the file,
-        //iterate
-        //use semver
-        //locate the latest previous version and return it.
+
+        echo $lastVersion;
     }
 }

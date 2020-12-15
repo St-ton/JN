@@ -30,17 +30,13 @@ $author         = ContentAuthor::getInstance();
 $controller     = new Controller($db, $smarty, Shop::Container()->getCache());
 $newsCategory   = new Category($db);
 $languages      = LanguageHelper::getAllLanguages();
-$defaultLang    = LanguageHelper::getDefaultLanguage();
 $adminID        = (int)$_SESSION['AdminAccount']->kAdminlogin;
 $adminName      = $db->select('tadminlogin', 'kAdminlogin', $adminID)->cName;
 
-$_SESSION['kSprache'] = $defaultLang->kSprache;
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
-    $backTab = Request::verifyGPDataString('tab');
-    $smarty->assign('cTab', $backTab)
-           ->assign('files', []);
+    $smarty->assign('files', []);
 
-    switch ($backTab) {
+    switch (Request::verifyGPDataString('tab')) {
         case 'inaktiv':
             if (Request::verifyGPCDataInt('s1') > 1) {
                 $smarty->assign('cBackPage', 'tab=inaktiv&s1=' . Request::verifyGPCDataInt('s1'))
@@ -321,5 +317,4 @@ Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $controller->g
 $smarty->assign('customerGroups', CustomerGroup::getGroups())
        ->assign('step', $controller->getStep())
        ->assign('nMaxFileSize', $maxFileSize)
-       ->assign('kSprache', (int)$_SESSION['kSprache'])
        ->display('news.tpl');

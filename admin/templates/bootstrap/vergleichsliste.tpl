@@ -6,24 +6,24 @@
         <nav class="tabs-nav">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link {if !isset($cTab) || $cTab === 'letztenvergleiche'} active{/if}" data-toggle="tab" role="tab" href="#letztenvergleiche">
+                    <a class="nav-link {if $cTab === '' || $cTab === 'letztenvergleiche'} active{/if}" data-toggle="tab" role="tab" href="#letztenvergleiche">
                         {__('last20Compares')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'topartikel'} active{/if}" data-toggle="tab" role="tab" href="#topartikel">
+                    <a class="nav-link {if $cTab === 'topartikel'} active{/if}" data-toggle="tab" role="tab" href="#topartikel">
                         {__('topCompareProducts')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'einstellungen'} active{/if}" data-toggle="tab" role="tab" href="#einstellungen">
+                    <a class="nav-link {if $cTab === 'einstellungen'} active{/if}" data-toggle="tab" role="tab" href="#einstellungen">
                         {__('compareSettings')}
                     </a>
                 </li>
             </ul>
         </nav>
         <div class="tab-content">
-            <div id="letztenvergleiche" class="tab-pane fade {if !isset($cTab) || $cTab === 'letztenvergleiche'} active show{/if}">
+            <div id="letztenvergleiche" class="tab-pane fade {if $cTab === '' || $cTab === 'letztenvergleiche'} active show{/if}">
                 {if $Letzten20Vergleiche && $Letzten20Vergleiche|@count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$pagination cAnchor='letztenvergleiche'}
                     <div class="settings table-responsive">
@@ -55,7 +55,7 @@
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
-            <div id="topartikel" class="tab-pane fade {if isset($cTab) && $cTab === 'topartikel'} active show{/if}">
+            <div id="topartikel" class="tab-pane fade {if $cTab === 'topartikel'} active show{/if}">
                 <div>
                     <form id="postzeitfilter" name="postzeitfilter" method="post" action="vergleichsliste.php">
                         {$jtl_token}
@@ -130,7 +130,7 @@
                     {/if}
                 </div>
             </div>
-            <div id="einstellungen" class="tab-pane fade {if isset($cTab) && $cTab === 'einstellungen'} active show{/if}">
+            <div id="einstellungen" class="tab-pane fade {if $cTab === 'einstellungen'} active show{/if}">
                 {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='vergleichsliste.php' buttonCaption=__('saveWithIcon') title=__('settings') tab='einstellungen'}
             </div>
         </div>

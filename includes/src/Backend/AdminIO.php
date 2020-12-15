@@ -57,7 +57,7 @@ class AdminIO extends IO
      * @return mixed
      * @throws \Exception
      */
-    public function execute($name, $params)
+    public function execute(string $name, $params)
     {
         if (!$this->exists($name)) {
             return new IOError('Function not registered');

@@ -364,11 +364,11 @@
                     <div class="ml-auto col-sm-6 col-xl-auto">
                         {if (isset($oNewslettervorlageStd->kNewsletterVorlage) && $oNewslettervorlageStd->kNewsletterVorlage > 0) || (isset($cPostVar_arr.kNewslettervorlage) && $cPostVar_arr.kNewslettervorlage > 0)}
                             <a class="btn btn-outline-primary btn-block" href="newsletter.php?tab=newslettervorlagen&token={$smarty.session.jtl_token}">
-                                {__('goBack')}
+                                {__('cancelWithIcon')}
                             </a>
                         {else}
                             <a class="btn btn-outline-primary btn-block" href="newsletter.php?tab=newslettervorlagenstd&token={$smarty.session.jtl_token}">
-                                {__('goBack')}
+                                {__('cancelWithIcon')}
                             </a>
                         {/if}
                     </div>

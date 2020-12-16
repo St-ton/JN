@@ -266,9 +266,33 @@ final class LinkAdmin
     }
 
     /**
+     * @param int $id
+     * @return array
+     */
+    public function getMissingLinkTranslations(int $id): array
+    {
+        return $this->db->queryPrepared(
+            'SELECT tlink.*, tsprache.*
+                FROM tlink
+                JOIN tsprache
+                LEFT JOIN tlinksprache
+                    ON tlink.kLink = tlinksprache.kLink
+                    AND tlinksprache.cISOSprache = tsprache.cISO
+                LEFT JOIN tsprache t2
+                    ON t2.cISO = tlinksprache.cISOSprache
+                    AND t2.cISO = tsprache.cISO
+                WHERE t2.cISO IS NULL
+                    AND tlink.reference = 0
+                    AND tlink.kLink = :lid',
+            ['lid' => $id],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+    }
+
+    /**
      * @return Collection
      */
-    public function getMissingLinkTranslations(): Collection
+    public function getUntranslatedPageIDs(): Collection
     {
         return $this->db->query(
             'SELECT DISTINCT tlink.kLink AS id

@@ -330,7 +330,7 @@ class Notification implements IteratorAggregate, Countable
             );
         }
 
-        if (($missingTranslations = $linkAdmin->getMissingLinkTranslations()->count()) > 0) {
+        if (($missingTranslations = $linkAdmin->getUntranslatedPageIDs()->count()) > 0) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,
                 __('Missing translations'),

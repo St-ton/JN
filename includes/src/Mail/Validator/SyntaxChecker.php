@@ -277,7 +277,7 @@ final class SyntaxChecker
             $this->hydrator->hydrate(null, $lang);
             $html = $this->renderer->renderHTML($templateID);
             $text = $this->renderer->renderText($templateID);
-            if ((\mb_strlen(trim($html)) === 0 || \mb_strlen(trim($text)) === 0)
+            if ((\mb_strlen(\trim($html)) === 0 || \mb_strlen(\trim($text)) === 0)
                 && !\in_array($moduleID, ['core_jtl_footer', 'core_jtl_header'], true)
             ) {
                 return __('Empty mail body');

@@ -224,7 +224,7 @@ function getEinstellungenExport(int $kExportformat)
  * @param object $export
  * @return array
  */
-function baueArtikelExportSQL(&$export)
+function baueArtikelExportSQL($export)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $sql          = [];

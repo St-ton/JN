@@ -2,7 +2,6 @@
 
 namespace JTL\Widgets;
 
-use JTL\Helpers\Text;
 use JTL\Shop;
 
 /**

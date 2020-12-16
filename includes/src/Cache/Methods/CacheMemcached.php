@@ -78,9 +78,9 @@ class CacheMemcached implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function storeMulti($keyValue, $expiration = null): bool
+    public function storeMulti($idContent, $expiration = null): bool
     {
-        return $this->memcached->setMulti($keyValue, $expiration ?? $this->options['lifetime']);
+        return $this->memcached->setMulti($idContent, $expiration ?? $this->options['lifetime']);
     }
 
     /**
@@ -130,9 +130,9 @@ class CacheMemcached implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function keyExists($cacheID): bool
+    public function keyExists($key): bool
     {
-        $res = $this->memcached->get($cacheID);
+        $res = $this->memcached->get($key);
 
         return ($res !== false || $this->memcached->getResultCode() === Memcached::RES_SUCCESS);
     }

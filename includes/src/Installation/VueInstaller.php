@@ -311,9 +311,9 @@ ini_set('display_errors', 0);" . "\n";
         foreach ($content as $i => $line) {
             $tsl = \trim($line);
             if ($line !== ''
-                && \substr($tsl, 0, 2) !== '/*'
-                && \substr($tsl, 0, 2) !== '--'
-                && \substr($tsl, 0, 1) !== '#'
+                && \strpos($tsl, '/*') !== 0
+                && \strpos($tsl, '--') !== 0
+                && \strpos($tsl, '#') !== 0
             ) {
                 $query .= $line;
                 if (\preg_match('/;\s*$/', $line)) {

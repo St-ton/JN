@@ -1260,7 +1260,7 @@ function loescheGewaehlteKampagnen(array $campaignIDs)
     if (count($campaignIDs) === 0) {
         return 0;
     }
-    foreach (\array_map('\intval', $campaignIDs) as $campaignID) {
+    foreach (array_map('\intval', $campaignIDs) as $campaignID) {
         if ($campaignID < 1000) {
             // Nur externe Kampagnen sind löschbar
             continue;

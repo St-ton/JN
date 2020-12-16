@@ -72,7 +72,7 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
             break;
         }
     }
-    foreach (\array_unique($cachesToClear) as $class) {
+    foreach (array_unique($cachesToClear) as $class) {
         /** @var IMedia $class */
         $class::clearCache();
     }

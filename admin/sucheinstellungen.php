@@ -154,7 +154,7 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && $kSektion > 0 && Form:
                 'SELECT @@ft_min_word_len AS ft_min_word_len',
                 ReturnType::SINGLE_OBJECT
             );
-            $_POST['suche_min_zeichen'] = $oValue ? $oValue->ft_min_word_len : $_POST['suche_min_zeichen'];
+            $_POST['suche_min_zeichen'] = $oValue->ft_min_word_len ?? $_POST['suche_min_zeichen'];
         }
     }
 

@@ -395,9 +395,9 @@ abstract class Job implements JobInterface
     /**
      * @inheritdoc
      */
-    public function setTableName(?string $tableName): void
+    public function setTableName(?string $table): void
     {
-        $this->tableName = $tableName;
+        $this->tableName = $table;
     }
 
     /**

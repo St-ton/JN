@@ -6,6 +6,7 @@ use JTL\Console\Command\Command;
 use JTLShop\SemVer\Version;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -21,7 +22,8 @@ class VersionToArrayCommand extends Command
     {
         $this->setName('build:version_to_array')
             ->setDescription('split a version string into semver like array.')
-            ->addArgument('version', InputArgument::REQUIRED, 'Version string to check');
+            ->addArgument('version', InputArgument::REQUIRED, 'Version string to check')
+            ->addOption('string', null,InputOption::VALUE_NONE, 'output version as a string');
     }
 
     /**
@@ -32,12 +34,24 @@ class VersionToArrayCommand extends Command
         $version = $input->getArgument('version');
         try {
             $semVer=Version::parse($version);
-            echo '' . $semVer->getMajor() .' '. $semVer->getMinor() . ' ' . $semVer->getPatch() .
+            $out = empty($this->getOption('string')) ?
+                ('' . $semVer->getMajor() .' '. $semVer->getMinor() . ' ' . $semVer->getPatch() .
                 ($semVer->hasPreRelease()
                     ?
                     ' '.$semVer->getPreRelease()->getGreek() . ' ' .$semVer->getPreRelease()->getReleaseNumber()
-                    : '');
+                    : '')
+                )
+            : ($semVer->getMajor() . '.' .  $semVer->getMinor() . '.' . $semVer->getPatch() .
+                    ($semVer->hasPreRelease()
+                        ?
+                        '-' . $semVer->getPreRelease()->getGreek() . '.' . $semVer->getPreRelease()->getReleaseNumber()
+                        : '')
+                );
+            echo $out;
+
+            return 0;
         }catch (\Exception $e){
+
             return 0;
         }
     }

@@ -25209,13 +25209,16 @@ header .nav-right .dropdown-menu {
     border-bottom: 1px solid #ebebeb;
     margin-bottom: 1rem;
   }
-  header .submenu-headline-toplevel + .dropdown-menu {
+  header .subcategory-wrapper .categories-recursive-dropdown {
     display: block;
     position: static !important;
     box-shadow: none;
   }
-  header .submenu-headline-toplevel + .dropdown-menu > .nav {
+  header .subcategory-wrapper .categories-recursive-dropdown > .nav {
     flex-direction: column;
+  }
+  header .subcategory-wrapper .categories-recursive-dropdown .categories-recursive-dropdown {
+    margin-left: 0.25rem;
   }
 }
 header .submenu-headline-image {

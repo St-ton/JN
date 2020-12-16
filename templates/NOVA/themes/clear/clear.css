@@ -21112,11 +21112,6 @@ label {
 .page-link, .page-text {
   text-decoration: none;
 }
-@media (max-width: 767.98px) {
-  .page-link, .page-text {
-    color: #525252;
-  }
-}
 
 .pagination {
   margin-bottom: 0;
@@ -21202,6 +21197,14 @@ label {
 }
 .productlist-page-nav.productlist-page-nav-header-m {
   margin-top: 3rem;
+}
+@media (min-width: 768px) {
+  .productlist-page-nav.productlist-page-nav-header-m {
+    margin-top: 2rem;
+  }
+  .productlist-page-nav.productlist-page-nav-header-m > .col {
+    margin-top: 1rem;
+  }
 }
 
 .productlist-page-nav-bottom {

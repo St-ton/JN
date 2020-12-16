@@ -23,7 +23,8 @@ class JSONBuildInfoFileCommand extends Command
     {
         $this->setName('build:json')
             ->setDescription('create or modify the build specific info file')
-            ->addArgument('file_path', InputArgument::REQUIRED, 'the json file path')
+            ->addArgument('root_path', InputArgument::REQUIRED, 'the root path to the file')
+            ->addArgument('file', InputArgument::REQUIRED, 'the json file path')
             ->addArgument('property', InputArgument::REQUIRED, 'the property to change')
             ->addArgument('value', InputArgument::OPTIONAL, 'value of the property')
             ->addOption('get', null,InputOption::VALUE_NONE, 'get a property value');
@@ -34,11 +35,13 @@ class JSONBuildInfoFileCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $file_path       = $input->getArgument('file_path');
+        $root_path       = $input->getArgument('root_path');
+        $file            = $input->getArgument('file');
         $property        = $input->getArgument('property');
         $value           = $input->getArgument('value');
         $io              = $this->getIO();
-        $localFilesystem = new Filesystem(new Local(\PFAD_ROOT, \LOCK_EX, Local::SKIP_LINKS));
+        $localFilesystem = new Filesystem(new Local($root_path));
+
         $get = empty($this->getOption('get')) ? false : true;
 
         if (!$get && empty($value)) {
@@ -46,12 +49,12 @@ class JSONBuildInfoFileCommand extends Command
             return 1;
         }
 
-        if (!$localFilesystem->has($file_path)) {
-            $io->error("File $file_path doesn't exist.");
+        if (!$localFilesystem->has($file)) {
+            $io->error("File $file doesn't exist.");
             return 1;
         }
 
-        $contents = $localFilesystem->read($file_path);
+        $contents = $localFilesystem->read($file);
         if (!empty($contents)) {
             try{
                 $contents = \json_decode($contents, true, 512, \JSON_THROW_ON_ERROR);
@@ -69,12 +72,9 @@ class JSONBuildInfoFileCommand extends Command
                 'patches' =>
                     [
                     'files' => [],
-                    'build_paths' => [],
                     'diffs' => [],
                     ],
-                'diffs'   => [
-                    'files' => [],
-                    'build_paths'=>[]
+                'diffs' => [
                 ],
             ];
         }
@@ -117,7 +117,7 @@ class JSONBuildInfoFileCommand extends Command
         }
 
         try {
-            $localFilesystem->put($file_path, \json_encode($contents, \JSON_THROW_ON_ERROR, 512));
+            $localFilesystem->put($file, \json_encode($contents, \JSON_THROW_ON_ERROR, 512));
         } catch(\Exception $e) {
             $io->error($e->getMessage());
             return 1;

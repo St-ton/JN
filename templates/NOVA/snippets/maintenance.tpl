@@ -119,6 +119,7 @@
                         {/col}
                     {/row}
                 {/block}
+                {if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_IMPRESSUM])}
                 {block name='snippets-maintenance-content-imprint'}
                     {row id="footer" class="flex-grow-1"}
                         {col cols=12 class="small" md=6 offset-md=3}
@@ -127,6 +128,7 @@
                         {/col}
                     {/row}
                 {/block}
+                {/if}
             {/container}
         </body>
         {/block}

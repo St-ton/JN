@@ -34,11 +34,9 @@ $adminID        = (int)$_SESSION['AdminAccount']->kAdminlogin;
 $adminName      = $db->select('tadminlogin', 'kAdminlogin', $adminID)->cName;
 
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
-    $backTab = Request::verifyGPDataString('tab');
-    $smarty->assign('cTab', $backTab)
-           ->assign('files', []);
+    $smarty->assign('files', []);
 
-    switch ($backTab) {
+    switch (Request::verifyGPDataString('tab')) {
         case 'inaktiv':
             if (Request::verifyGPCDataInt('s1') > 1) {
                 $smarty->assign('cBackPage', 'tab=inaktiv&s1=' . Request::verifyGPCDataInt('s1'))

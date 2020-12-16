@@ -15,7 +15,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('SETTINGS_CONTACTFORM_VIEW', true, true);
-$tab         = 'config';
 $step        = 'uebersicht';
 $alertHelper = Shop::Container()->getAlertService();
 $db          = Shop::Container()->getDB();
@@ -180,9 +179,10 @@ if ($step === 'betreff') {
         ->assign('gesetzteKundengruppen', getGesetzteKundengruppen($newSubject))
         ->assign('Betreffname', ($newSubject !== null) ? getNames($newSubject->kKontaktBetreff) : null);
 }
-
+if (isset($tab)) {
+    $smarty->assign('cTab', $tab);
+}
 $smarty->assign('step', $step)
-    ->assign('cTab', $tab)
     ->display('kontaktformular.tpl');
 
 /**

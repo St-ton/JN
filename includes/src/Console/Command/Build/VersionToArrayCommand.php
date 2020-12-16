@@ -3,9 +3,6 @@
 namespace JTL\Console\Command\Build;
 
 use JTL\Console\Command\Command;
-use JTL\DB\ReturnType;
-use JTL\Plugin\Admin\Validation\Items\SemVer;
-use JTL\Shop;
 use JTLShop\SemVer\Version;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -43,6 +40,5 @@ class VersionToArrayCommand extends Command
         }catch (\Exception $e){
             return 0;
         }
-
     }
 }

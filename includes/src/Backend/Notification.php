@@ -42,7 +42,7 @@ class Notification implements IteratorAggregate, Countable
      */
     public function __construct(DbInterface $db)
     {
-        $this->db = $db;
+        $this->db       = $db;
         self::$instance = $this;
     }
 

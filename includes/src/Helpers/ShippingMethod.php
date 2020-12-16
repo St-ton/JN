@@ -1035,9 +1035,8 @@ class ShippingMethod
                 break;
 
             case 'vm_versandberechnung_gewicht_jtl':
-                $totalWeight  = $product
-                    ? $product->fGewicht
-                    : Frontend::getCart()->getWeight($excludeShippingCostAttributes, $iso);
+                $totalWeight  = $product->fGewicht
+                    ?? Frontend::getCart()->getWeight($excludeShippingCostAttributes, $iso);
                 $totalWeight += $additionalProduct->fGewicht;
                 $shipping     = $db->queryPrepared(
                     'SELECT *

@@ -31,7 +31,7 @@ function getAdminSectionSettings($configSectionID, bool $byName = false)
     if (is_array($configSectionID)) {
         $where    = $byName
             ? "WHERE cWertName IN ('" . implode("','", $configSectionID) . "')"
-            : 'WHERE kEinstellungenConf IN (' . implode(',', \array_map('\intval', $configSectionID)) . ')';
+            : 'WHERE kEinstellungenConf IN (' . implode(',', array_map('\intval', $configSectionID)) . ')';
         $confData = $db->query(
             'SELECT *
                 FROM teinstellungenconf
@@ -119,12 +119,12 @@ function getAdminSectionSettings($configSectionID, bool $byName = false)
  * @param bool $byName
  * @return string
  */
-function saveAdminSettings(array $settingsIDs, array &$post, $tags = [CACHING_GROUP_OPTION], bool $byName = false)
+function saveAdminSettings(array $settingsIDs, array $post, $tags = [CACHING_GROUP_OPTION], bool $byName = false)
 {
     $db       = Shop::Container()->getDB();
     $where    = $byName
         ? "WHERE cWertName IN ('" . implode("','", $settingsIDs) . "')"
-        : 'WHERE kEinstellungenConf IN (' . implode(',', \array_map('\intval', $settingsIDs)) . ')';
+        : 'WHERE kEinstellungenConf IN (' . implode(',', array_map('\intval', $settingsIDs)) . ')';
     $confData = $db->query(
         'SELECT *
             FROM teinstellungenconf
@@ -216,7 +216,7 @@ function bearbeiteListBox($listBoxes, $valueName, int $configSectionID)
  * @param array $tags
  * @return string
  */
-function saveAdminSectionSettings(int $configSectionID, array &$post, $tags = [CACHING_GROUP_OPTION])
+function saveAdminSectionSettings(int $configSectionID, array $post, $tags = [CACHING_GROUP_OPTION])
 {
     Shop::Container()->getGetText()->loadAdminLocale('configs/configs');
     if (!Form::validateToken()) {

@@ -267,10 +267,10 @@ interface FilterInterface
     /**
      * set the filter's class name
      *
-     * @param string $name
+     * @param string $className
      * @return $this
      */
-    public function setClassName($name): FilterInterface;
+    public function setClassName($className): FilterInterface;
 
     /**
      * get the filter's nice name without namespace

@@ -288,7 +288,7 @@ function gibSuchspecialFilterOptionen($FilterSQL, $NaviFilter)
 function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return updateNaviFilter($NaviFilter)->getSearchQuery()->editSearchCache($kSpracheExt);
+    return updateNaviFilter($NaviFilter)->getSearchQuery()->editSearchCache((int)$kSpracheExt);
 }
 
 /**

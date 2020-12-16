@@ -941,8 +941,8 @@ function guessCsvDelimiter($filename)
 }
 
 /**
- * @param array $hookInfos
- * @param bool  $forceExit
+ * @param array|null $hookInfos
+ * @param bool       $forceExit
  * @return array
  * @deprecated since 5.0.0
  */
@@ -1035,11 +1035,11 @@ function doMainwordRedirect($NaviFilter, $count, $seo = false)
 /**
  * Converts price into given currency
  *
- * @param float  $price
- * @param string $iso - EUR / USD
- * @param int    $id - kWaehrung
- * @param bool   $useRounding
- * @param int    $precision
+ * @param float       $price
+ * @param string|null $iso - EUR / USD
+ * @param int|null    $id - kWaehrung
+ * @param bool        $useRounding
+ * @param int         $precision
  * @return float|bool
  * @deprecated since 5.0.0
  */
@@ -1128,7 +1128,7 @@ function gibUst(int $kSteuerklasse)
 }
 
 /**
- * @param string $countryCode
+ * @param string|null $countryCode
  * @deprecated since 5.0.0
  */
 function setzeSteuersaetze($countryCode = null)

@@ -97,13 +97,13 @@ class Option extends AbstractFilter
     }
 
     /**
-     * @param bool $isActive
+     * @param bool $active
      * @return $this
      */
-    public function setIsActive(bool $isActive): FilterInterface
+    public function setIsActive(bool $active): FilterInterface
     {
-        $this->isActive = $isActive;
-        $this->nAktiv   = (int)$isActive;
+        $this->isActive = $active;
+        $this->nAktiv   = (int)$active;
 
         return $this;
     }

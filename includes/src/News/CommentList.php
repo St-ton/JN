@@ -26,11 +26,6 @@ final class CommentList implements ItemListInterface
     private $newsID;
 
     /**
-     * @var array
-     */
-    private $itemIDs = [];
-
-    /**
      * @var Collection
      */
     private $items;
@@ -50,8 +45,8 @@ final class CommentList implements ItemListInterface
      */
     public function createItems(array $itemIDs, bool $activeOnly = true): Collection
     {
-        $this->itemIDs = \array_map('\intval', $itemIDs);
-        if (\count($this->itemIDs) === 0) {
+        $itemIDs = \array_map('\intval', $itemIDs);
+        if (\count($itemIDs) === 0) {
             return $this->items;
         }
         $data  = $this->db->queryPrepared(
@@ -59,7 +54,7 @@ final class CommentList implements ItemListInterface
                 FROM tnewskommentar
                 JOIN tnewssprache t 
                     ON t.kNews = tnewskommentar.kNews
-                WHERE kNewsKommentar IN (' . \implode(',', $this->itemIDs) . ')'
+                WHERE kNewsKommentar IN (' . \implode(',', $itemIDs) . ')'
                 . ($activeOnly ? ' AND nAktiv = 1 ' : '') . '
                 GROUP BY tnewskommentar.kNewsKommentar
                 ORDER BY tnewskommentar.dErstellt DESC',

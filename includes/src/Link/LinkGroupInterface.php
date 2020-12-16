@@ -34,9 +34,9 @@ interface LinkGroupInterface
     public function getNames(): array;
 
     /**
-     * @param array $name
+     * @param array $names
      */
-    public function setNames(array $name): void;
+    public function setNames(array $names): void;
 
     /**
      * @return int

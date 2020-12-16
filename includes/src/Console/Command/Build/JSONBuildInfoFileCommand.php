@@ -69,9 +69,13 @@ class JSONBuildInfoFileCommand extends Command
                 'patches' =>
                     [
                     'files' => [],
+                    'build_paths' => [],
                     'diffs' => [],
                     ],
-                'diffs'   => [],
+                'diffs'   => [
+                    'files' => [],
+                    'build_paths'=>[]
+                ],
             ];
         }
 

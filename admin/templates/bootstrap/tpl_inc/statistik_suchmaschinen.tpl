@@ -13,19 +13,19 @@
     <nav class="tabs-nav">
         <ul class="nav nav-tabs" role="tablist">
             <li class="nav-item">
-                <a class="nav-link {if !isset($cTab) || $cTab === 'uebersicht'} active{/if}" data-toggle="tab" role="tab" href="#uebersicht">
+                <a class="nav-link {if $cTab === '' || $cTab === 'uebersicht'} active{/if}" data-toggle="tab" role="tab" href="#uebersicht">
                     {__('statisticTitle')}
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {if isset($cTab) && $cTab === 'settings'} active{/if}" data-toggle="tab" role="tab" href="#settings">
+                <a class="nav-link {if $cTab === 'settings'} active{/if}" data-toggle="tab" role="tab" href="#settings">
                     {__('crawlerOverviewTitle')}
                 </a>
             </li>
         </ul>
     </nav>
     <div class="tab-content">
-        <div id="uebersicht" class="tab-pane fade {if !isset($cTab) || $cTab === 'uebersicht'} active show{/if}">
+        <div id="uebersicht" class="tab-pane fade {if $cTab === '' || $cTab === 'uebersicht'} active show{/if}">
             <div class="card">
                 <div class="card-body">
                     <div class="form-row">
@@ -94,7 +94,7 @@
                 </div>
             </div>
         </div>
-        <div id="settings" class="tab-pane fade {if isset($cTab) && $cTab === 'settings'} active show{/if}">
+        <div id="settings" class="tab-pane fade {if $cTab === 'settings'} active show{/if}">
             <div class="subheading1">{__('crawlerOverviewTitle')}</div>
             <hr class="mb-3">
             {include file='tpl_inc/pagination.tpl' pagination=$crawlerPagination cParam_arr=['s'=>$nTyp,'tab'=>'settings']}

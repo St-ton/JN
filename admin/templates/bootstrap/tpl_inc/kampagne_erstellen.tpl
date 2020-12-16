@@ -80,7 +80,7 @@
             <div class=row>
                 <div class="ml-auto col-sm-6 col-xl-auto">
                     <a href="kampagne.php?tab=uebersicht" class="button btn btn-outline-primary btn-block mb-2">
-                        {__('goBack')}
+                        {__('cancelWithIcon')}
                     </a>
                 </div>
                 <div class="col-sm-6 col-xl-auto">

@@ -5,29 +5,29 @@
         <nav class="tabs-nav">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link {if !isset($cTab) || $cTab === 'wunschlistepos'} active{/if}" data-toggle="tab" role="tab" href="#wunschlistepos">
+                    <a class="nav-link {if $cTab === '' || $cTab === 'wunschlistepos'} active{/if}" data-toggle="tab" role="tab" href="#wunschlistepos">
                         {__('wishlistTop100')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'wunschlisteartikel'} active{/if}" data-toggle="tab" role="tab" href="#wunschlisteartikel">
+                    <a class="nav-link {if $cTab === 'wunschlisteartikel'} active{/if}" data-toggle="tab" role="tab" href="#wunschlisteartikel">
                         {__('wishlistPosTop100')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'wunschlistefreunde'} active{/if}" data-toggle="tab" role="tab" href="#wunschlistefreunde">
+                    <a class="nav-link {if $cTab === 'wunschlistefreunde'} active{/if}" data-toggle="tab" role="tab" href="#wunschlistefreunde">
                         {__('wishlistSend')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'einstellungen'} active{/if}" data-toggle="tab" role="tab" href="#einstellungen">
+                    <a class="nav-link {if $cTab === 'einstellungen'} active{/if}" data-toggle="tab" role="tab" href="#einstellungen">
                         {__('settings')}
                     </a>
                 </li>
             </ul>
         </nav>
         <div class="tab-content">
-            <div id="wunschlistepos" class="tab-pane fade {if !isset($cTab) || $cTab === 'wunschlistepos'} active show{/if}">
+            <div id="wunschlistepos" class="tab-pane fade {if $cTab === '' || $cTab === 'wunschlistepos'} active show{/if}">
                 {if isset($CWunschliste_arr) && $CWunschliste_arr|@count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiPos cAnchor='wunschlistepos'}
                     <div class="table-responsive">
@@ -62,7 +62,7 @@
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
-            <div id="wunschlisteartikel" class="tab-pane fade {if isset($cTab) && $cTab === 'wunschlisteartikel'} active show{/if}">
+            <div id="wunschlisteartikel" class="tab-pane fade {if $cTab === 'wunschlisteartikel'} active show{/if}">
                 {if isset($CWunschlistePos_arr) && $CWunschlistePos_arr|@count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiArtikel cAnchor='wunschlisteartikel'}
                     <div class="table-responsive">
@@ -91,7 +91,7 @@
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
-            <div id="wunschlistefreunde" class="tab-pane fade {if isset($cTab) && $cTab === 'wunschlistefreunde'} active show{/if}">
+            <div id="wunschlistefreunde" class="tab-pane fade {if $cTab === 'wunschlistefreunde'} active show{/if}">
                 {if $CWunschlisteVersand_arr && $CWunschlisteVersand_arr|@count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiFreunde cAnchor='wunschlistefreunde'}
                     <div class="table-responsive">
@@ -124,7 +124,7 @@
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
-            <div id="einstellungen" class="tab-pane fade {if isset($cTab) && $cTab === 'einstellungen'} active show{/if}">
+            <div id="einstellungen" class="tab-pane fade {if $cTab === 'einstellungen'} active show{/if}">
                 {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='wunschliste.php' buttonCaption=__('saveWithIcon') title=__('settings') tab='einstellungen'}
             </div>
         </div>

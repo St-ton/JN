@@ -44,6 +44,13 @@
 				@include media-breakpoint-up(xl) { width: calc(100%/3); min-width: calc(100%/3);}
 			}
 		}
+		&.slick-type-three {
+			.product-wrapper {
+				@include media-breakpoint-down(sm) { width: 100%; min-width: 100%;}
+				@include media-breakpoint-up(md) { width: calc(100%/2); min-width: calc(100%/2);}
+				@include media-breakpoint-up(xl) { width: calc(100%/3); min-width: calc(100%/3);}
+			}
+		}
 		.product-wrapper {
 			padding: 0 $grid-gutter-width / 2;
 		}
@@ -159,6 +166,7 @@
 .slick-type-product ,
 .slick-type-half ,
 .slick-type-news ,
+.slick-type-three ,
 .slick-type-box {
 	.slick-list {
 		@include media-breakpoint-down(md) {

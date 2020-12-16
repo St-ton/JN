@@ -138,7 +138,7 @@
 		#gallery_preview_wrapper {
 			width: 100%;
 			padding: map_get($spacers, 3);
-			max-width: 1200px;
+			max-width: 760px;
 			@include media-breakpoint-up(md) {
 				width: 80%;
 			}
@@ -153,6 +153,7 @@
 		background: $white;
 		border: 3px solid $gray-medium;
 		opacity: 0;
+		transition: opacity 300ms;
 		border-radius: $border-radius;
 		@include box-shadow($box-shadow);
 		z-index: -5;
@@ -178,12 +179,12 @@
 			border-image: initial;
 		}
 		&::before {
-			margin-top: -18px;
+			margin-top: -($font-size-base * $line-height-base - $custom-control-indicator-size) / 2 ;
 			border-width: 14px 0px 14px 18px;
 			border-color: transparent transparent transparent $gray-medium;
 		}
 		&::after {
-			margin-top: -14px;
+			margin-top: -($font-size-base * $line-height-base - $custom-control-indicator-size) / 2 + rem(4px);
 			border-width: 10px 0px 10px 14px;
 			border-color: transparent transparent transparent $white;
 		}
@@ -331,6 +332,14 @@
 			}
 		}
 	}
+	.cfg-footnote {
+		text-align: center;
+		margin-top: 1.8rem;
+		color: $text-muted;
+	}
+	.modal-body {
+		padding: 1rem 0 0;
+	}
 }
 
 #cfg-modal-tabs {
@@ -367,7 +376,7 @@
 	padding-right: 17px;
 	border-bottom: 2px solid $border-color;
 	@include media-breakpoint-down(sm) {
-		height: calc((var(--vh, 1vh) * 87) - 3rem);
+		height: calc((var(--vh, 1vh) * 87) - 5rem);
 	}
 }
 
@@ -605,6 +614,13 @@
 .variations {
 	.custom-radio {
 		margin-bottom: map_get($spacers, 2);
+		&:hover {
+			@include hover-focus() {
+				color: $dropdown-link-hover-color;
+				text-decoration: none;
+				@include gradient-bg($dropdown-link-hover-bg);
+			}
+		}
 	}
 	.variation-badge {
 		white-space: nowrap;

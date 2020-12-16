@@ -70,7 +70,6 @@
                     arrows:         false,
                     lazyLoad:       'ondemand',
                     slidesToShow:   1,
-                    swipeToSlide:   true,
                     slidesToScroll: 1,
                     mobileFirst:    true,
                     responsive: [
@@ -85,14 +84,38 @@
                 'slider-half' : {
                     arrows:       true,
                     lazyLoad:     'ondemand',
-                    swipeToSlide: true,
                     mobileFirst:    true,
                     slidesToShow: 2,
+                    slidesToScroll: 2,
                     responsive:   [
                         {
                             breakpoint: 1300,
                             settings: {
                                 slidesToShow: 3,
+                                slidesToScroll: 3,
+                            }
+                        }
+                    ]
+                },
+                'slider-three' : {
+                    arrows:       true,
+                    lazyLoad:     'ondemand',
+                    mobileFirst:    true,
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    responsive:   [
+                        {
+                            breakpoint: 768,
+                            settings: {
+                                slidesToShow: 2,
+                                slidesToScroll: 2,
+                            }
+                        },
+                        {
+                            breakpoint: 1300,
+                            settings: {
+                                slidesToShow: 3,
+                                slidesToScroll: 3,
                             }
                         }
                     ]
@@ -103,14 +126,13 @@
                     lazyLoad:       'ondemand',
                     slidesToShow:   2,
                     slidesToScroll: 2,
-                    swipeToSlide:   true,
                     mobileFirst:    true,
                     responsive:     [
                         {
                             breakpoint: 768,
                             settings: {
                                 slidesToShow: 3,
-                                slidesToScroll: 1
+                                slidesToScroll: 3
                             }
                         },
                         {
@@ -118,7 +140,7 @@
                             settings: {
                                 slidesToShow:5,
                                 arrows: true,
-                                slidesToScroll: 1
+                                slidesToScroll: 5
                             }
                         },
                         {
@@ -126,7 +148,7 @@
                             settings: {
                                 slidesToShow:7,
                                 arrows: true,
-                                slidesToScroll: 1
+                                slidesToScroll: 7
                             }
                         }
                     ]
@@ -136,7 +158,6 @@
                     slidesToShow:   1,
                     slidesToScroll: 1,
                     arrows:         false,
-                    swipeToSlide:   true,
                     infinite:       false,
                     lazyLoad:       'ondemand',
                     mobileFirst:    true,
@@ -144,13 +165,15 @@
                         {
                             breakpoint: 768,
                             settings: {
-                                slidesToShow: 2
+                                slidesToShow: 2,
+                                slidesToScroll: 2,
                             }
                         },
                         {
                             breakpoint: 992,
                             settings: {
                                 slidesToShow:3,
+                                slidesToScroll: 3,
                                 arrows: true
                             }
                         },
@@ -158,6 +181,7 @@
                             breakpoint: 1300,
                             settings: {
                                 slidesToShow:5,
+                                slidesToScroll: 5,
                                 arrows: true
                             }
                         }
@@ -167,12 +191,12 @@
                     slidesToShow:   3,
                     slidesToScroll: 3,
                     infinite: false,
-                    swipeToSlide:   true,
                     responsive: [
                         {
                             breakpoint: 768,
                             settings: {
-                                slidesToShow: 2
+                                slidesToShow: 2,
+                                slidesToScroll: 2,
                             }
                         }
                     ]
@@ -181,7 +205,6 @@
                     lazyLoad: 'ondemand',
                     infinite: true,
                     dots:     false,
-                    swipeToSlide:   true,
                     arrows:   false,
                     speed: 500,
                     fade: true,
@@ -202,20 +225,21 @@
                     slidesToScroll: 1,
                     asNavFor:       '#gallery',
                     dots:           false,
-                    swipeToSlide:   true,
                     arrows:         true,
                     focusOnSelect:  true,
                     responsive:     [
                         {
                             breakpoint: 768,
                             settings:   {
-                                slidesToShow: 4
+                                slidesToShow: 4,
+                                slidesToScroll: 1,
                             }
                         },
                         {
                             breakpoint: 576,
                             settings: {
-                                slidesToShow: 3
+                                slidesToShow: 3,
+                                slidesToScroll: 1,
                             }
                         }
                     ]

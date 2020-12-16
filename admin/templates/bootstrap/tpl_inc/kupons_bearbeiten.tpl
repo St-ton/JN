@@ -528,7 +528,7 @@
         <div class="card-footer save-wrapper">
             <div class="row">
                 <div class="ml-auto col-sm-6 col-xl-auto">
-                    <a class="btn btn-outline-primary btn-block" href="kupons.php">
+                    <a class="btn btn-outline-primary btn-block" href="kupons.php?tab={$oKupon->cKuponTyp}">
                         {__('cancelWithIcon')}
                     </a>
                 </div>

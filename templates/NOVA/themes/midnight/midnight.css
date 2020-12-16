@@ -20187,6 +20187,24 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
     min-width: calc(100%/3);
   }
 }
+@media (max-width: 767.98px) {
+  .carousel:not(.slick-initialized).slick-type-three .product-wrapper {
+    width: 100%;
+    min-width: 100%;
+  }
+}
+@media (min-width: 768px) {
+  .carousel:not(.slick-initialized).slick-type-three .product-wrapper {
+    width: calc(100%/2);
+    min-width: calc(100%/2);
+  }
+}
+@media (min-width: 1300px) {
+  .carousel:not(.slick-initialized).slick-type-three .product-wrapper {
+    width: calc(100%/3);
+    min-width: calc(100%/3);
+  }
+}
 .carousel:not(.slick-initialized) .product-wrapper {
   padding: 0 1rem;
 }
@@ -20385,6 +20403,7 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
   .slick-type-product .slick-list,
 .slick-type-half .slick-list,
 .slick-type-news .slick-list,
+.slick-type-three .slick-list,
 .slick-type-box .slick-list {
     padding-right: 50px;
   }
@@ -21093,11 +21112,6 @@ label {
 .page-link, .page-text {
   text-decoration: none;
 }
-@media (max-width: 767.98px) {
-  .page-link, .page-text {
-    color: #ffffff;
-  }
-}
 
 .pagination {
   margin-bottom: 0;
@@ -21183,6 +21197,14 @@ label {
 }
 .productlist-page-nav.productlist-page-nav-header-m {
   margin-top: 3rem;
+}
+@media (min-width: 768px) {
+  .productlist-page-nav.productlist-page-nav-header-m {
+    margin-top: 2rem;
+  }
+  .productlist-page-nav.productlist-page-nav-header-m > .col {
+    margin-top: 1rem;
+  }
 }
 
 .productlist-page-nav-bottom {
@@ -22847,14 +22869,18 @@ input.typeahead:-ms-input-placeholder {
   min-height: 140px;
 }
 
-.lazyload,
-.lazyloading {
+.lazyload {
   opacity: 0;
 }
 
-.lazyloaded {
+.lazyloading {
+  color: transparent;
   opacity: 1;
   transition: opacity 300ms;
+}
+
+.lazyloaded {
+  transition: none;
 }
 
 .list-group-wrapper.disabled {
@@ -23838,6 +23864,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
     padding-left: 1rem;
     overflow: auto;
   }
+  .productlist-filter#collapseFilter .productlist-filter-wrapper .dropdown-menu .dropdown-item {
+    text-decoration: none;
+    white-space: normal;
+  }
   .productlist-filter#collapseFilter .productlist-filter-footer {
     background: #ffffff;
     box-shadow: 0 -0.5rem 1rem rgba(0, 0, 0, 0.15);
@@ -24230,7 +24260,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 #image_wrapper.fullscreen #gallery_preview_wrapper {
   width: 100%;
   padding: 1rem;
-  max-width: 1200px;
+  max-width: 760px;
 }
 @media (min-width: 768px) {
   #image_wrapper.fullscreen #gallery_preview_wrapper {
@@ -24246,6 +24276,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   background: #ffffff;
   border: 3px solid #ebebeb;
   opacity: 0;
+  transition: opacity 300ms;
   border-radius: 0.125rem;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
   z-index: -5;
@@ -24272,12 +24303,12 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   border-image: initial;
 }
 #image_wrapper .variation-image-preview::before {
-  margin-top: -18px;
+  margin-top: -0.15625rem;
   border-width: 14px 0px 14px 18px;
   border-color: transparent transparent transparent #ebebeb;
 }
 #image_wrapper .variation-image-preview::after {
-  margin-top: -14px;
+  margin-top: 0.09375rem;
   border-width: 10px 0px 10px 14px;
   border-color: transparent transparent transparent #ffffff;
 }
@@ -24412,6 +24443,14 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
     font-weight: 700;
   }
 }
+#cfg-container .cfg-footnote {
+  text-align: center;
+  margin-top: 1.8rem;
+  color: #707070;
+}
+#cfg-container .modal-body {
+  padding: 1rem 0 0;
+}
 
 #cfg-modal-tabs {
   margin-top: auto;
@@ -24451,7 +24490,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 @media (max-width: 767.98px) {
   #cfg-container-tab-panes {
-    height: calc((var(--vh, 1vh) * 87) - 3rem);
+    height: calc((var(--vh, 1vh) * 87) - 5rem);
   }
 }
 
@@ -24690,6 +24729,11 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 
 .variations .custom-radio {
   margin-bottom: 0.5rem;
+}
+.variations .custom-radio:hover:hover, .variations .custom-radio:hover:focus {
+  color: #ffffff;
+  text-decoration: none;
+  background-color: #44466a;
 }
 .variations .variation-badge {
   white-space: nowrap;

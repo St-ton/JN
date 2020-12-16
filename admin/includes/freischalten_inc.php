@@ -15,7 +15,7 @@ use JTL\Shop;
 function gibBewertungFreischalten(string $sql, $searchSQL, bool $checkLanguage = true): array
 {
     $cond = $checkLanguage === true
-        ? 'tbewertung.kSprache = ' . (int)$_SESSION['kSprache'] . ' AND '
+        ? 'tbewertung.kSprache = ' . (int)$_SESSION['editLanguageID'] . ' AND '
         : '';
 
     return Shop::Container()->getDB()->query(
@@ -39,7 +39,7 @@ function gibBewertungFreischalten(string $sql, $searchSQL, bool $checkLanguage =
 function gibSuchanfrageFreischalten(string $sql, $searchSQL, bool $checkLanguage = true): array
 {
     $cond = $checkLanguage === true
-        ? 'AND kSprache = ' . (int)$_SESSION['kSprache'] . ' '
+        ? 'AND kSprache = ' . (int)$_SESSION['editLanguageID'] . ' '
         : '';
 
     return Shop::Container()->getDB()->query(
@@ -60,7 +60,7 @@ function gibSuchanfrageFreischalten(string $sql, $searchSQL, bool $checkLanguage
 function gibNewskommentarFreischalten(string $sql, $searchSQL, bool $checkLanguage = true): array
 {
     $cond         = $checkLanguage === true
-        ? ' AND t.languageID = ' . (int)$_SESSION['kSprache'] . ' '
+        ? ' AND t.languageID = ' . (int)$_SESSION['editLanguageID'] . ' '
         : '';
     $newsComments = Shop::Container()->getDB()->query(
         "SELECT tnewskommentar.*, DATE_FORMAT(tnewskommentar.dErstellt, '%d.%m.%Y  %H:%i') AS dErstellt_de, 
@@ -94,7 +94,7 @@ function gibNewskommentarFreischalten(string $sql, $searchSQL, bool $checkLangua
 function gibNewsletterEmpfaengerFreischalten($sql, $searchSQL, bool $checkLanguage = true): array
 {
     $cond = $checkLanguage === true
-        ? ' AND kSprache = ' . (int)$_SESSION['kSprache']
+        ? ' AND kSprache = ' . (int)$_SESSION['editLanguageID']
         : '';
 
     return Shop::Container()->getDB()->query(
@@ -318,7 +318,7 @@ function mappeLiveSuche($queryIDs, $cMapping): int
             return 5; // Sie haben versucht auf eine nicht existierende Suchanfrage zu mappen
         }
         $mapping                 = new stdClass();
-        $mapping->kSprache       = $_SESSION['kSprache'];
+        $mapping->kSprache       = $_SESSION['editLanguageID'];
         $mapping->cSuche         = $oSuchanfrage->cSuche;
         $mapping->cSucheNeu      = $cMapping;
         $mapping->nAnzahlGesuche = $oSuchanfrage->nAnzahlGesuche;
@@ -335,7 +335,7 @@ function mappeLiveSuche($queryIDs, $cMapping): int
                     AND kSuchanfrage = :sid',
             [
                 'cnt' => $oSuchanfrage->nAnzahlGesuche,
-                'lid' => (int)$_SESSION['kSprache'],
+                'lid' => (int)$_SESSION['editLanguageID'],
                 'sid' => (int)$oSuchanfrageNeu->kSuchanfrage
             ],
             ReturnType::DEFAULT
@@ -363,7 +363,7 @@ function gibMaxBewertungen(): int
         'SELECT COUNT(*) AS nAnzahl
             FROM tbewertung
             WHERE nAktiv = 0
-                AND kSprache = ' . (int)$_SESSION['kSprache'],
+                AND kSprache = ' . (int)$_SESSION['editLanguageID'],
         ReturnType::SINGLE_OBJECT
     )->nAnzahl;
 }
@@ -377,7 +377,7 @@ function gibMaxSuchanfragen(): int
         'SELECT COUNT(*) AS nAnzahl
             FROM tsuchanfrage
             WHERE nAktiv = 0
-                AND kSprache = ' . (int)$_SESSION['kSprache'],
+                AND kSprache = ' . (int)$_SESSION['editLanguageID'],
         ReturnType::SINGLE_OBJECT
     )->nAnzahl;
 }
@@ -395,7 +395,7 @@ function gibMaxNewskommentare(): int
             JOIN tnewssprache t 
                 ON tnews.kNews = t.kNews
             WHERE tnewskommentar.nAktiv = 0
-                AND t.languageID = ' . (int)$_SESSION['kSprache'],
+                AND t.languageID = ' . (int)$_SESSION['editLanguageID'],
         ReturnType::SINGLE_OBJECT
     )->nAnzahl;
 }
@@ -409,7 +409,7 @@ function gibMaxNewsletterEmpfaenger(): int
         'SELECT COUNT(*) AS nAnzahl
             FROM tnewsletterempfaenger
             WHERE nAktiv = 0
-                AND kSprache = ' . (int)$_SESSION['kSprache'],
+                AND kSprache = ' . (int)$_SESSION['editLanguageID'],
         ReturnType::SINGLE_OBJECT
     )->nAnzahl;
 }

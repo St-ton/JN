@@ -1,6 +1,10 @@
 {block name='snippets-consent-manager'}
 <div id="consent-manager" class="d-none">
-	{$privacyURL = $oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL()}
+	{if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ])}
+		{$privacyURL = $oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL()}
+	{else}
+		{$privacyURL = ''}
+	{/if}
 	{block name='snippets-consent-manager-banner'}
 		<div id="consent-banner">
 			{block name='snippets-consent-manager-banner-icon'}

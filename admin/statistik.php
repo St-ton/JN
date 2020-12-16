@@ -58,10 +58,6 @@ if (in_array($statsType, $pie, true)) {
 if ($statsType === 3) {
     $controller = new Crawler\Controller($db, $cache, $alertService);
     if (($crawler = $controller->checkRequest()) === false) {
-        if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
-            $backTab = Request::verifyGPDataString('tab');
-            $smarty->assign('cTab', $backTab);
-        }
         $crawlerPagination = (new Pagination('crawler'))
             ->setItemArray($controller->getAllCrawlers())
             ->assemble();

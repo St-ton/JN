@@ -11,8 +11,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('SETTINGS_SITEMAP_VIEW', true, true);
-setzeSprache();
-
 if (isset($_POST['speichern']) && Form::validateToken()) {
     Shop::Container()->getAlertService()->addAlert(
         Alert::TYPE_SUCCESS,

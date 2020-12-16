@@ -16,11 +16,8 @@ $oAccount->permission('SETTINGS_SPECIALPRODUCTS_VIEW', true, true);
 $step        = 'suchspecials';
 $db          = Shop::Container()->getDB();
 $alertHelper = Shop::Container()->getAlertService();
-
 setzeSprache();
-if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
-}
+$languageID = (int)$_SESSION['editLanguageID'];
 if (Request::verifyGPCDataInt('einstellungen') === 1) {
     $alertHelper->addAlert(
         Alert::TYPE_SUCCESS,
@@ -31,8 +28,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
     $searchSpecials   = $db->selectAll(
         'tseo',
         ['cKey', 'kSprache'],
-        ['suchspecial',
-         (int)$_SESSION['kSprache']],
+        ['suchspecial', $languageID],
         '*',
         'kKey'
     );
@@ -218,7 +214,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
         $db->query(
             "DELETE FROM tseo
                 WHERE cKey = 'suchspecial'
-                    AND kSprache = " . (int)$_SESSION['kSprache'] . '
+                    AND kSprache = " . $languageID . '
                     AND kKey IN (' . implode(',', $ids) . ')',
             ReturnType::AFFECTED_ROWS
         );
@@ -227,7 +223,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
             $seo->cSeo     = $item->cSeo;
             $seo->cKey     = 'suchspecial';
             $seo->kKey     = $item->kKey;
-            $seo->kSprache = $_SESSION['kSprache'];
+            $seo->kSprache = $languageID;
 
             $db->insert('tseo', $seo);
         }
@@ -236,7 +232,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
         $db->query(
             "DELETE FROM tseo
                 WHERE cKey = 'suchspecial'
-                    AND kSprache = " . (int)$_SESSION['kSprache'] . '
+                    AND kSprache = " . $languageID . '
                     AND kKey IN (' . implode(',', $ssToDelete) . ')',
             ReturnType::AFFECTED_ROWS
         );
@@ -247,7 +243,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
 $ssSeoData      = $db->selectAll(
     'tseo',
     ['cKey', 'kSprache'],
-    ['suchspecial', (int)$_SESSION['kSprache']],
+    ['suchspecial', $languageID],
     '*',
     'kKey'
 );
@@ -257,9 +253,9 @@ foreach ($ssSeoData as $searchSpecial) {
 }
 
 $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_SUCHSPECIAL))
-       ->assign('oSuchSpecials_arr', $searchSpecials)
-       ->assign('step', $step)
-       ->display('suchspecials.tpl');
+    ->assign('oSuchSpecials_arr', $searchSpecials)
+    ->assign('step', $step)
+    ->display('suchspecials.tpl');
 
 /**
  * Prueft ob ein bestimmtes Suchspecial Seo schon vorhanden ist

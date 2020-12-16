@@ -14,7 +14,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('SETTINGS_NAVIGATION_FILTER_VIEW', true, true);
 
 $db = Shop::Container()->getDB();
-setzeSprache();
 if (isset($_POST['speichern']) && Form::validateToken()) {
     Shop::Container()->getAlertService()->addAlert(
         Alert::TYPE_SUCCESS,

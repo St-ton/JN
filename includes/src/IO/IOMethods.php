@@ -666,7 +666,10 @@ class IOMethods
             true
         );
         $net                = Frontend::getCustomerGroup()->getIsMerchant();
-        $product->fuelleArtikel($productID);
+
+        $options               = Artikel::getDefaultOptions();
+        $options->nVariationen = 1;
+        $product->fuelleArtikel($productID, $options);
         $fVKNetto                      = $product->gibPreis($amount, [], Frontend::getCustomerGroup()->getID());
         $fVK                           = [
             Tax::getGross($fVKNetto, $_SESSION['Steuersatz'][$product->kSteuerklasse]),
@@ -681,7 +684,7 @@ class IOMethods
         $configGroupCounts = $quantities;
         $configItemCounts  = $itemQuantities;
         foreach ($configGroups as $itemList) {
-            foreach ($itemList as $configItemID) {
+            foreach ($itemList ?? [] as $configItemID) {
                 $configItemID = (int)$configItemID;
                 // Falls ungültig, ignorieren
                 if ($configItemID <= 0) {
@@ -746,13 +749,22 @@ class IOMethods
             }
         }
 
-        $errors                = Configurator::validateCart($productID, $configItems ?? []);
-        $config->invalidGroups = \array_unique(\array_merge(
+        $errors                     = Configurator::validateCart($productID, $configItems ?? []);
+        $config->invalidGroups      = \array_unique(\array_merge(
             $invalidGroups,
             \array_keys(\is_array($errors) ? $errors : [])
         ));
-        $config->errorMessages = $itemErrors ?? [];
-        $config->valid         = empty($config->invalidGroups) && empty($config->errorMessages);
+        $config->errorMessages      = $itemErrors ?? [];
+        $config->valid              = empty($config->invalidGroups) && empty($config->errorMessages);
+        $config->variationsSelected = $product->kVaterArtikel > 0 || !\in_array(
+            \R_VARWAEHLEN,
+            CartHelper::addToCartCheck(
+                $product,
+                1,
+                Product::getSelectedPropertiesForArticle($productID, false)
+            ),
+            true
+        );
         $smarty->assign('oKonfig', $config)
                ->assign('NettoPreise', $net)
                ->assign('Artikel', $product);
@@ -898,14 +910,15 @@ class IOMethods
                 ? Shop::Lang()->get('priceAsConfigured', 'productDetails')
                 : Shop::Lang()->get('priceStarting');
         }
-
-        $objResponse->callEvoProductFunction(
-            'setPrice',
-            $fVK[$isNet],
-            $cVKLocalized[$isNet],
-            $cPriceLabel,
-            $wrapper
-        );
+        if (!$product->bHasKonfig) {
+            $objResponse->callEvoProductFunction(
+                'setPrice',
+                $fVK[$isNet],
+                $cVKLocalized[$isNet],
+                $cPriceLabel,
+                $wrapper
+            );
+        }
         $objResponse->callEvoProductFunction(
             'setArticleWeight',
             [

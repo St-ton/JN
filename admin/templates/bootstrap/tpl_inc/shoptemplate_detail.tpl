@@ -133,7 +133,7 @@
                                             {include file='tpl_inc/fileupload.tpl'
                                                 fileID="tpl-upload-{$setting@iteration}"
                                                 fileName="upload-{$setting@iteration}"
-                                                fileDeleteUrl="{$shopURL}/{$PFAD_ADMIN}shoptemplate.php?token={$smarty.session.jtl_token}"
+                                                fileDeleteUrl="{$adminURL}/shoptemplate.php?token={$smarty.session.jtl_token}"
                                                 fileExtraData='{id:1}'
                                                 fileMaxSize="{if !empty($setting->rawAttributes.maxFileSize)}{$setting->rawAttributes.maxFileSize}{else}1000{/if}"
                                                 fileAllowedExtensions="{if !empty($setting->rawAttributes.allowedFileExtensions)}{$setting->rawAttributes.allowedFileExtensions}{/if}"
@@ -143,7 +143,7 @@
                                                     {/if}
                                                 ]"
                                                 fileInitialPreviewConfig="[{
-                                                    url: '{$shopURL}/{$PFAD_ADMIN}shoptemplate.php',
+                                                    url: '{$adminURL}/shoptemplate.php',
                                                     extra: {
                                                             upload: '{$template->getDir()}/{$setting->rawAttributes.target}{$setting->value}',
                                                             id:     'upload-{$setting@iteration}',
@@ -167,6 +167,11 @@
         <div class="save-wrapper">
             <div class="row">
                 <div class="ml-auto col-sm-6 col-xl-auto">
+                    <a class="btn btn-outline-primary btn-block" href="shoptemplate.php">
+                        {__('cancelWithIcon')}
+                    </a>
+                </div>
+                <div class="col-sm-6 col-xl-auto">
                     {if isset($smarty.get.activate)}
                         <input type="hidden" name="activate" value="1" />
                         <input type="hidden" name="action" value="activate" />

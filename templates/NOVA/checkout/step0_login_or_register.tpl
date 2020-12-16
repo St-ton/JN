@@ -46,6 +46,7 @@
                     {/block}
                     {block name='checkout-step0-login-or-register-form-submit'}
                         {row class="checkout-button-row"}
+                            {if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ])}
                             {block name='checkout-step0-login-or-register-modal-privacy'}
                                 {col cols=12 class="checkout-register-form-buttons-privacy"}
                                     {link href=$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL() class="popup"}
@@ -53,6 +54,7 @@
                                     {/link}
                                 {/col}
                             {/block}
+                            {/if}
                             {block name='checkout-step0-login-or-register-submit-button'}
                                 {col cols=12 md=5 xl=4 class="checkout-button-row-submit"}
                                     {input type="hidden" name="checkout" value="1"}

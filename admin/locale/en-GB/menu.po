@@ -277,7 +277,7 @@ msgstr "Reset"
 
 # Mid Menu
 msgid "Search"
-msgstr "Search"
+msgstr "Search & item lists"
 
 msgid "Item overview"
 msgstr "Item overview"

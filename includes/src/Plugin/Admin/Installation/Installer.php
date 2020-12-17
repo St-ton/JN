@@ -256,13 +256,12 @@ final class Installer
             if (!isset($hits1[0]) || \mb_strlen($hits1[0]) !== \mb_strlen($i)) {
                 continue;
             }
-            $tmpVersion = (int)$versionData['nr'];
-            $xy         = \trim(\str_replace('attr', '', $i));
-            $sqlFile    = $versionNode[$xy]['SQL'] ?? '';
+            $xy      = \trim(\str_replace('attr', '', $i));
+            $sqlFile = $versionNode[$xy]['SQL'] ?? '';
             if ($sqlFile === '') {
                 continue;
             }
-            $code = $this->validateSQL($sqlFile, $tmpVersion, $plugin);
+            $code = $this->validateSQL($sqlFile, (int)$versionData['nr'], $plugin);
             if ($code !== InstallCode::OK) {
                 $hasSQLError = true;
                 break;

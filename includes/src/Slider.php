@@ -145,12 +145,12 @@ class Slider implements IExtensionPoint
     }
 
     /**
-     * @param string $type
+     * @param string $value
      * @return string|null
      */
-    private function getMapping(string $type): ?string
+    private function getMapping(string $value): ?string
     {
-        return self::$mapping[$type] ?? null;
+        return self::$mapping[$value] ?? null;
     }
 
     /**
@@ -184,18 +184,18 @@ class Slider implements IExtensionPoint
     }
 
     /**
-     * @param int  $sliderID
+     * @param int  $int
      * @param bool $active
      * @return bool
      */
-    public function load(int $sliderID = 0, bool $active = true): bool
+    public function load(int $int = 0, $active = true): bool
     {
-        if ($sliderID <= 0 && $this->id <= 0) {
+        if ($int <= 0 && $this->id <= 0) {
             return false;
         }
         $activeSQL = $active ? ' AND bAktiv = 1 ' : '';
-        if ($sliderID === 0) {
-            $sliderID = $this->id;
+        if ($int === 0) {
+            $int = $this->id;
         }
         $data  = $this->db->queryPrepared(
             'SELECT *, tslider.kSlider AS id 
@@ -204,7 +204,7 @@ class Slider implements IExtensionPoint
                     ON tslider.kSlider = tslide.kSlider
                 WHERE tslider.kSlider = :sliderID' . $activeSQL .
             ' ORDER BY tslide.nSort',
-            ['sliderID' => $sliderID],
+            ['sliderID' => $int],
             ReturnType::ARRAY_OF_OBJECTS
         );
         $first = first($data);

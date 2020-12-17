@@ -46,9 +46,11 @@
                 {if $Artikel->cEstimatedDelivery}
                     <li>
                         <div class="estimated-delivery"
-                             data-toggle="popover"
-                             data-placement="top"
-                             data-content="{if $Firma->country !== null}{lang|sprintf:$Firma->country->getName():$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() key='shippingInformation' section='productDetails'}{/if}">
+                            {if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}
+                                data-toggle="popover"
+                                data-placement="top"
+                                data-content="{if $Firma->country !== null}{lang|sprintf:$Firma->country->getName():$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() key='shippingInformation' section='productDetails'}{/if}"
+                            {/if}>
                             {if !isset($shippingTime)}{lang key='shippingTime'}:{/if}
                             <span class="a{$Artikel->Lageranzeige->nStatus}">
                                 {$Artikel->cEstimatedDelivery}

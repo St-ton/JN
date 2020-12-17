@@ -147,7 +147,7 @@ function getPlugins(string $query): Collection
     $pluginsInstalled = $listing->getInstalled();
 
     return $pluginsInstalled->filter(static function (ListingItem $e) use ($query) {
-        if (\stripos($e->getName(), $query) !== false) {
+        if (stripos($e->getName(), $query) !== false) {
             $e->setName(highlightSearchTerm($e->getName(), $query));
             return true;
         }

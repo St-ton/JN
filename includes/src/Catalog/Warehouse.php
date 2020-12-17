@@ -444,22 +444,22 @@ class Warehouse extends MainModel
     /**
      * @param int         $id
      * @param null|object $data
-     * @param int|null    $config
+     * @param int|null    $option
      */
-    public function load($id, $data = null, $config = null): void
+    public function load($id, $data = null, $option = null): void
     {
         if ($id !== null) {
             $id = (int)$id;
             if ($id > 0) {
                 $select = '';
                 $join   = '';
-                if ($config !== null && (int)$config > 0) {
-                    $config = (int)$config;
+                if ($option !== null && (int)$option > 0) {
+                    $option = (int)$option;
                     $select = ', IF (twarenlagersprache.cName IS NOT NULL, 
                     twarenlagersprache.cName, twarenlager.cName) AS cName';
                     $join   = ' LEFT JOIN twarenlagersprache 
                                     ON twarenlagersprache.kWarenlager = twarenlager.kWarenlager
-                                    AND twarenlagersprache.kSprache = ' . $config;
+                                    AND twarenlagersprache.kSprache = ' . $option;
                 }
 
                 $data = Shop::Container()->getDB()->query(

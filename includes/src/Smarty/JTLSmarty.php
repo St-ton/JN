@@ -361,8 +361,6 @@ class JTLSmarty extends SmartyBC
     }
 
     /**
-     * displays a Smarty template
-     *
      * @inheritDoc
      */
     public function display($template = null, $cacheID = null, $compileID = null, $parent = null)

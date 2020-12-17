@@ -111,14 +111,14 @@ class Visitor
     }
 
     /**
-     * @param object $vis
-     * @param int    $visitorID
-     * @param string $userAgent
-     * @param int    $botID
+     * @param stdClass $vis
+     * @param int      $visitorID
+     * @param string   $userAgent
+     * @param int      $botID
      * @return object
      * @since 5.0.0
      */
-    public static function updateVisitorObject($vis, int $visitorID, string $userAgent, int $botID)
+    public static function updateVisitorObject(stdClass $vis, int $visitorID, string $userAgent, int $botID)
     {
         $vis->kBesucher         = $visitorID;
         $vis->cIP               = (new IpAnonymizer(Request::getRealIP()))->anonymize();

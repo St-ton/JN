@@ -69,18 +69,18 @@ $conf       = Shop::getSettings([CONF_GLOBAL]);
 if (!empty($_COOKIE['JTLSHOP']) && empty($_SESSION['frontendUpToDate'])) {
     $adminToken   = $_SESSION['jtl_token'];
     $adminLangTag = $_SESSION['AdminAccount']->language;
-    $eSIdAdm      = \session_id();
-    \session_write_close();
-    \session_name('JTLSHOP');
-    \session_id($_COOKIE['JTLSHOP']);
-    \session_start();
+    $eSIdAdm      = session_id();
+    session_write_close();
+    session_name('JTLSHOP');
+    session_id($_COOKIE['JTLSHOP']);
+    session_start();
     $_SESSION['loggedAsAdmin'] = $loggedIn;
     $_SESSION['adminToken']    = $adminToken;
     $_SESSION['adminLangTag']  = $adminLangTag;
-    \session_write_close();
-    \session_name('eSIdAdm');
-    \session_id($eSIdAdm);
-    \session_start();
+    session_write_close();
+    session_name('eSIdAdm');
+    session_id($eSIdAdm);
+    session_start();
     $_SESSION['frontendUpToDate'] = true;
 }
 
@@ -92,7 +92,7 @@ if ($loggedIn
     && strpos($_SERVER['SCRIPT_FILENAME'], 'io.php') === false
     && $hasUpdates
 ) {
-    \header('Location: ' . Shop::getAdminURL(true) . '/dbupdater.php');
+    header('Location: ' . Shop::getAdminURL(true) . '/dbupdater.php');
     exit;
 }
 if ($loggedIn
@@ -101,7 +101,7 @@ if ($loggedIn
     && !$hasUpdates
     && !Backend::get('redirectedToWizard')
 ) {
-    \header('Location: ' . Shop::getAdminURL(true) . '/wizard.php');
+    header('Location: ' . Shop::getAdminURL(true) . '/wizard.php');
     exit;
 }
 

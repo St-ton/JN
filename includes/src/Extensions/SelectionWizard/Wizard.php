@@ -118,7 +118,7 @@ class Wizard
      * @param int    $languageID
      * @param bool   $activeOnly
      */
-    private function loadFromDB($keyName, int $id, int $languageID, bool $activeOnly = true): void
+    private function loadFromDB(string $keyName, int $id, int $languageID, bool $activeOnly = true): void
     {
         $cache   = Shop::Container()->getCache();
         $cacheID = 'jtl_sw_' . $keyName . '_' . $id . '_' . $languageID . '_' . (int)$activeOnly;

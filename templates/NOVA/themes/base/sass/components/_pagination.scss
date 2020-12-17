@@ -21,9 +21,6 @@
 	}
 }
 .page-link {
-	@include media-breakpoint-down(sm) {
-		color: $dropdown-link-color;
-	}
 	text-decoration: none;
 }
 
@@ -85,6 +82,12 @@
 	}
 	&.productlist-page-nav-header-m {
 		margin-top: map-get($spacers, 6);
+		@include media-breakpoint-up(md) {
+			margin-top: map-get($spacers, 5);
+			> .col {
+				margin-top: map-get($spacers, 3);
+			}
+		}
 	}
 }
 .productlist-page-nav-bottom {

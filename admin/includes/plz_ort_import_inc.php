@@ -197,7 +197,7 @@ function plzimportDoDownload($target, array $sessData, $result): void
         $result->message = sprintf(
             __('errorDownloadFileCreate'),
             $target,
-            \PLZIMPORT_URL
+            PLZIMPORT_URL
         );
 
         return;

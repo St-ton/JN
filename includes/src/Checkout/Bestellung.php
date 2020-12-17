@@ -735,7 +735,7 @@ class Bestellung
                 $note                = new Lieferschein((int)$note->kLieferschein, $sData);
                 $note->oPosition_arr = [];
                 /** @var Lieferscheinpos $lineItem */
-                foreach ($note->oLieferscheinPos_arr as &$lineItem) {
+                foreach ($note->oLieferscheinPos_arr as $lineItem) {
                     foreach ($this->Positionen as &$orderItem) {
                         $orderItem->nPosTyp     = (int)$orderItem->nPosTyp;
                         $orderItem->kBestellpos = (int)$orderItem->kBestellpos;
@@ -780,7 +780,6 @@ class Bestellung
                         }
                     }
                 }
-                unset($lineItem);
                 $this->oLieferschein_arr[] = $note;
             }
             // Wenn Konfig-Vater, alle Kinder ueberpruefen

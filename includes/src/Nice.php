@@ -140,7 +140,6 @@ class Nice
     public function gibAlleMoeglichenModule(): array
     {
         Shop::Container()->getGetText()->loadAdminLocale('widgets');
-
         $modules = [];
         $this->initConstants();
         $module           = new stdClass();

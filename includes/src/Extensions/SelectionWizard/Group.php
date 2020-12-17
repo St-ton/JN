@@ -4,7 +4,6 @@ namespace JTL\Extensions\SelectionWizard;
 
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use JTL\Helpers\GeneralObject;
 use JTL\Shop;
 use stdClass;
 

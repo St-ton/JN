@@ -616,8 +616,8 @@ function informCouponCustomers($coupon)
         : $coupon->fWert . ' %';
     $coupon->cLocalizedMBW  = Preise::getLocalizedPriceString($coupon->fMindestbestellwert, $defaultCurrency, false);
     // kKunde-Array aller auserwaehlten Kunden
-    $customerIDs  = Text::parseSSKint($coupon->cKunden);
-    $customerData = $db->query(
+    $customerIDs     = Text::parseSSKint($coupon->cKunden);
+    $customerData    = $db->query(
         'SELECT kKunde
             FROM tkunde
             WHERE TRUE
@@ -629,8 +629,9 @@ function informCouponCustomers($coupon)
             : 'AND kKunde IN (' . implode(',', $customerIDs) . ')'),
         ReturnType::ARRAY_OF_OBJECTS
     );
-    $productIDs   = [];
-    $itemNumbers  = Text::parseSSK($coupon->cArtikel);
+    $productIDs      = [];
+    $manufacturerIDs = Text::parseSSK($coupon->cHersteller);
+    $itemNumbers     = Text::parseSSK($coupon->cArtikel);
     if (count($itemNumbers) > 0) {
         $itemNumbers = array_map(static function ($e) {
             return '"' . $e . '"';
@@ -679,10 +680,15 @@ function informCouponCustomers($coupon)
             );
             $products[] = $product;
         }
+        $manufacturers = [];
+        foreach ($manufacturerIDs as $manufacturerID) {
+            $manufacturers[] = new Hersteller($manufacturerID, $customer->kSprache);
+        }
         // put all together
         $coupon->Kategorien      = $categories;
         $coupon->Artikel         = $products;
         $coupon->AngezeigterName = $localized->cName;
+        $coupon->Hersteller      = $manufacturers;
         $obj                     = new stdClass();
         $obj->tkupon             = $coupon;
         $obj->tkunde             = $customer;

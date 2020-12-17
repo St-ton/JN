@@ -288,9 +288,9 @@ class CacheRedis implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function keyExists($cacheID): bool
+    public function keyExists($key): bool
     {
-        return (bool)$this->redis->exists($cacheID);
+        return (bool)$this->redis->exists($key);
     }
 
     /**

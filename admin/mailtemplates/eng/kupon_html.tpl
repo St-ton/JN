@@ -114,7 +114,7 @@ Valid from {$Kupon->cGueltigAbLong}{if $Kupon->dGueltigBis != 0} until {$Kupon->
     {/foreach}
 {/if}<br>
 
-{if count($Kupon->Hersteller)>0 && !empty($Kupon->Hersteller[0]->getName())}
+{if is_array($Kupon->Hersteller) && count($Kupon->Hersteller)>0 && !empty($Kupon->Hersteller[0]->getName())}
 <br>
 	This coupon can be used for the following manufacturers:<br>
 	{foreach $Kupon->Hersteller as $Hersteller}

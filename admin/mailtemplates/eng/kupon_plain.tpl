@@ -37,7 +37,8 @@ Valid from {$Kupon->cGueltigAbLong}{if $Kupon->dGueltigBis != 0} until {$Kupon->
         {$Artikel->cURLFull}
     {/foreach}{/if}
 
-{if count($Kupon->Hersteller)>0 && !empty($Kupon->Hersteller[0]->getName())}This coupon can be used for the following manufacturers:
+{if is_array($Kupon->Hersteller) && count($Kupon->Hersteller)>0 && !empty($Kupon->Hersteller[0]->getName())}
+    This coupon can be used for the following manufacturers:
 
     {foreach $Kupon->Hersteller as $Hersteller}
         {$Hersteller->getName()} >

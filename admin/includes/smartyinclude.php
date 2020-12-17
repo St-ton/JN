@@ -72,7 +72,7 @@ if (!$hasPendingUpdates) {
             ];
 
             if ($secondEntry === 'DYNAMIC_PLUGINS') {
-                if (!$oAccount->permission('PLUGIN_ADMIN_VIEW')) {
+                if (!$oAccount->permission('PLUGIN_ADMIN_VIEW') || SAFE_MODE === true) {
                     continue;
                 }
                 $pluginLinks = $db->queryPrepared(
@@ -194,7 +194,7 @@ if (!$hasPendingUpdates) {
     $checker               = new Checker(Shop::Container()->getBackendLogService(), $db, $cache);
     $updates               = $checker->getUpdates($mapper);
     $licenseNoticeAccepted = (int)($_SESSION['licensenoticeaccepted'] ?? -1);
-    if ($licenseNoticeAccepted === -1) {
+    if ($licenseNoticeAccepted === -1 && SAFE_MODE === false) {
         $expired = $checker->getLicenseViolations($mapper);
     } else {
         $licenseNoticeAccepted++;

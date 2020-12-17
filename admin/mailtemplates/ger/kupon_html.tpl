@@ -97,7 +97,7 @@ Gültig vom {$Kupon->cGueltigAbLong}{if $Kupon->dGueltigBis != 0} bis zum {$Kupo
 {/if}
 
 {if $Kupon->nVerwendungen>0}
-	Bitte beachten Sie, dass dieser COupon auf eine maximale Verwendungsanzahl begrenzt ist.<br>
+	Bitte beachten Sie, dass dieser Coupon auf eine maximale Verwendungsanzahl begrenzt ist.<br>
 	<br>
 {/if}
 
@@ -113,7 +113,16 @@ Gültig vom {$Kupon->cGueltigAbLong}{if $Kupon->dGueltigBis != 0} bis zum {$Kupo
         <a href="{$Artikel->cURLFull}">{$Artikel->cName}</a><br>
     {/foreach}
 {/if}<br>
-<br>
+
+{if is_array($Kupon->Hersteller) && count($Kupon->Hersteller)>0 && !empty($Kupon->Hersteller[0]->getName())}
+	<br>
+	Der Coupon gilt für folgende Hersteller:<br>
+	{foreach $Kupon->Hersteller as $Hersteller}
+		<a href="{$Hersteller->cURL}">{$Hersteller->getName()}</a><br>
+	{/foreach}
+	<br>
+	<br>
+{/if}
 Sie lösen den Coupon ein, indem Sie beim Bestellvorgang den Couponcode in das vorgesehene Feld eintragen.<br>
 <br>
 Viel Spaß bei Ihrem nächsten Einkauf in unserem Shop.<br>

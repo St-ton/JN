@@ -582,12 +582,12 @@ class PriceRange extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function getOptions($data = null): array
+    public function getOptions($mixed = null): array
     {
         if ($this->options !== null) {
             return $this->options;
         }
-        $productCount = $data;
+        $productCount = $mixed;
         // Prüfe, ob es nur einen Artikel in der Artikelübersicht gibt
         // falls ja und es ist noch kein Preisspannenfilter gesetzt, dürfen keine Preisspannenfilter angezeigt werden
         if (($productCount === 1 && !$this->isInitialized())

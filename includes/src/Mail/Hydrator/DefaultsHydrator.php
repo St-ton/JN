@@ -59,7 +59,7 @@ class DefaultsHydrator implements HydratorInterface
     /**
      * @inheritdoc
      */
-    public function hydrate(?object $data, object $lang): void
+    public function hydrate(?object $data, object $language): void
     {
         $data         = $data ?? new stdClass();
         $data->tkunde = $data->tkunde ?? new Customer();
@@ -70,10 +70,10 @@ class DefaultsHydrator implements HydratorInterface
         $data->tfirma        = new Firma();
         $data->tkundengruppe = new CustomerGroup($data->tkunde->kKundengruppe);
         $customer            = $data->tkunde instanceof Customer
-            ? $data->tkunde->localize($lang)
-            : $this->localizeCustomer($lang, $data->tkunde);
+            ? $data->tkunde->localize($language)
+            : $this->localizeCustomer($language, $data->tkunde);
 
-        $this->smarty->assign('int_lang', $lang)
+        $this->smarty->assign('int_lang', $language)
             ->assign('Firma', $data->tfirma)
             ->assign('Kunde', $customer)
             ->assign('Kundengruppe', $data->tkundengruppe)

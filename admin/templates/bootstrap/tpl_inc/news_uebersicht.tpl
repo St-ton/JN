@@ -48,29 +48,29 @@
         <nav class="tabs-nav">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link {if !isset($cTab) || $cTab === 'inaktiv'} active{/if}" data-toggle="tab" role="tab" href="#inaktiv">
+                    <a class="nav-link {if $cTab === '' || $cTab === 'inaktiv'} active{/if}" data-toggle="tab" role="tab" href="#inaktiv">
                         {__('newsCommentActivate')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'aktiv'} active{/if}" data-toggle="tab" role="tab" href="#aktiv">
+                    <a class="nav-link {if $cTab === 'aktiv'} active{/if}" data-toggle="tab" role="tab" href="#aktiv">
                         {__('newsOverview')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'kategorien'} active{/if}" data-toggle="tab" role="tab" href="#kategorien">
+                    <a class="nav-link {if $cTab === 'kategorien'} active{/if}" data-toggle="tab" role="tab" href="#kategorien">
                         {__('newsCatOverview')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'einstellungen'} active{/if}" data-toggle="tab" role="tab" href="#einstellungen">
+                    <a class="nav-link {if $cTab === 'einstellungen'} active{/if}" data-toggle="tab" role="tab" href="#einstellungen">
                         {__('settings')}
                     </a>
                 </li>
             </ul>
         </nav>
         <div class="tab-content">
-            <div id="inaktiv" class="tab-pane fade{if !isset($cTab) || $cTab === 'inaktiv'} active show{/if}">
+            <div id="inaktiv" class="tab-pane fade{if $cTab === '' || $cTab === 'inaktiv'} active show{/if}">
                 {if $comments && $comments|@count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiKommentar cAnchor='inaktiv'}
                     <form method="post" action="news.php">
@@ -156,7 +156,7 @@
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
-            <div id="aktiv" class="tab-pane fade{if isset($cTab) && $cTab === 'aktiv'} active show{/if}">
+            <div id="aktiv" class="tab-pane fade{if $cTab === 'aktiv'} active show{/if}">
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiNews cAnchor='aktiv'}
                 <form name="news" method="post" action="news.php">
                     {$jtl_token}
@@ -271,7 +271,7 @@
                 </div>
             </div>
             <!-- #inaktiv -->
-            <div id="kategorien" class="tab-pane fade{if isset($cTab) && $cTab === 'kategorien'} active show{/if}">
+            <div id="kategorien" class="tab-pane fade{if $cTab === 'kategorien'} active show{/if}">
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiKats cAnchor='kategorien'}
                 <form name="news" method="post" action="news.php">
                     {$jtl_token}
@@ -365,7 +365,7 @@
                     </div>
                 </form>
             </div>
-            <div id="einstellungen" class="tab-pane fade{if isset($cTab) && $cTab === 'einstellungen'} active show{/if}">
+            <div id="einstellungen" class="tab-pane fade{if $cTab === 'einstellungen'} active show{/if}">
                 <form name="einstellen" method="post" action="news.php">
                     {$jtl_token}
                     <input type="hidden" name="einstellungen" value="1" />

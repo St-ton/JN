@@ -150,9 +150,23 @@ header {
 			&::after { display: none; }
 		}
 
-		.submenu-headline-toplevel { font-family: $font-accent; font-size: $font-size-lg; border-bottom: $border-width solid $border-color; margin-bottom: $spacer;
-			& + .dropdown-menu { display: block; position: static !important; box-shadow: none;
-				> .nav { flex-direction: column; }
+		.submenu-headline-toplevel {
+			font-family: $font-accent;
+			font-size: $font-size-lg;
+			border-bottom: $border-width solid $border-color;
+			margin-bottom: $spacer;
+		}
+		.subcategory-wrapper {
+			.categories-recursive-dropdown  {
+				display: block;
+				position: static !important;
+				box-shadow: none;
+				> .nav {
+					flex-direction: column;
+				}
+				.categories-recursive-dropdown {
+					margin-left: map-get($spacers, 1);
+				}
 			}
 		}
 	}

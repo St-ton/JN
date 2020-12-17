@@ -52,11 +52,11 @@ class CacheApc implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function storeMulti($keyValue, $expiration = null): bool
+    public function storeMulti($idContent, $expiration = null): bool
     {
         $func = $this->u ? 'apcu_store' : 'apc_store';
 
-        return $func($this->prefixArray($keyValue), null, $expiration ?? $this->options['lifetime']);
+        return $func($this->prefixArray($idContent), null, $expiration ?? $this->options['lifetime']);
     }
 
     /**
@@ -118,11 +118,11 @@ class CacheApc implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function keyExists($cacheID): bool
+    public function keyExists($key): bool
     {
         $func = $this->u ? 'apcu_exists' : 'apc_exists';
 
-        return $func($this->options['prefix'] . $cacheID);
+        return $func($this->options['prefix'] . $key);
     }
 
     /**

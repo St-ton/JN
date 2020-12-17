@@ -144,8 +144,7 @@ class ExtensionInstaller
                     $errorMsg .= \sprintf('%s: %s <br>', $license->getName(), $e->getMessage());
                 }
                 if (isset($installCode) && $installCode !== InstallCode::OK) {
-                    $mapper = new PluginValidation();
-                    $license->getName();
+                    $mapper    = new PluginValidation();
                     $errorMsg .= \sprintf('%s: %s <br>', $license->getName(), $mapper->map($installCode));
                 }
             }

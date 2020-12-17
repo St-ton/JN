@@ -112,7 +112,7 @@ class PluginCollection
         if (isset($params['section'], $params['key'])) {
             $cValue = $this->lang->get($params['key'], $params['section']);
             // Für vsprintf ein String der :: exploded wird
-            if (isset($params['printf']) && \mb_strlen($params['printf']) > 0) {
+            if (isset($params['printf']) && \is_string($params['printf']) && \mb_strlen($params['printf']) > 0) {
                 $cValue = \vsprintf($cValue, \explode(':::', $params['printf']));
             }
         }

@@ -101,21 +101,21 @@ class Visitor
      * @former dbLookupVisitor()
      * @since  5.0.0
      */
-    public static function dbLookup($userAgent, $ip): ?stdClass
+    public static function dbLookup(string $userAgent, string $ip): ?stdClass
     {
         return Shop::Container()->getDB()->select('tbesucher', 'cSessID', \session_id())
             ?? Shop::Container()->getDB()->select('tbesucher', 'cID', \md5($userAgent . $ip));
     }
 
     /**
-     * @param object $vis
-     * @param int    $visitorID
-     * @param string $userAgent
-     * @param int    $botID
+     * @param stdClass $vis
+     * @param int      $visitorID
+     * @param string   $userAgent
+     * @param int      $botID
      * @return object
      * @since 5.0.0
      */
-    public static function updateVisitorObject($vis, int $visitorID, $userAgent, int $botID)
+    public static function updateVisitorObject(stdClass $vis, int $visitorID, string $userAgent, int $botID)
     {
         $vis->kBesucher         = $visitorID;
         $vis->cIP               = (new IpAnonymizer(Request::getRealIP()))->anonymize();
@@ -139,7 +139,7 @@ class Visitor
      * @return stdClass
      * @since 5.0.0
      */
-    public static function createVisitorObject($userAgent, int $botID): stdClass
+    public static function createVisitorObject(string $userAgent, int $botID): stdClass
     {
         $vis                    = new stdClass();
         $vis->kBesucher         = 0;
@@ -165,22 +165,22 @@ class Visitor
     }
 
     /**
-     * @param object $visitor
+     * @param stdClass $visitor
      * @return int
      * @since since 5.0.0
      */
-    public static function dbInsert($visitor): int
+    public static function dbInsert(stdClass $visitor): int
     {
         return Shop::Container()->getDB()->insert('tbesucher', $visitor);
     }
 
     /**
-     * @param object $visitor
-     * @param int    $visitorID
+     * @param stdClass $visitor
+     * @param int      $visitorID
      * @return int
      * @since since 5.0.0
      */
-    public static function dbUpdate($visitor, int $visitorID): int
+    public static function dbUpdate(stdClass $visitor, int $visitorID): int
     {
         return Shop::Container()->getDB()->update('tbesucher', 'kBesucher', $visitorID, $visitor);
     }
@@ -380,7 +380,7 @@ class Visitor
      * @former istSpider()
      * @since  5.0.0
      */
-    public static function isSpider($userAgent): int
+    public static function isSpider(string $userAgent): int
     {
         $db         = Shop::Container()->getDB();
         $cache      = Shop::Container()->getCache();
@@ -406,7 +406,7 @@ class Visitor
      * @param string $userAgent
      * @return bool|int
      */
-    private static function isMobile($userAgent)
+    private static function isMobile(string $userAgent)
     {
         return \preg_match(
             '/android|avantgo|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile' .

@@ -445,7 +445,7 @@ function exportformatQueueActionErstellenEintragen(JTLSmarty $smarty, array &$me
  * @param string     $tab
  * @param array|null $messages
  */
-function exportformatQueueRedirect($tab = '', array &$messages = null): void
+function exportformatQueueRedirect($tab = '', array $messages = null): void
 {
     if (isset($messages['notice']) && !empty($messages['notice'])) {
         $_SESSION['exportformatQueue.notice'] = $messages['notice'];
@@ -516,6 +516,5 @@ function exportformatQueueFinalize($step, JTLSmarty $smarty, array &$messages): 
     Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $messages['notice'], 'expoFormatNote');
 
     $smarty->assign('step', $step)
-           ->assign('cTab', Request::verifyGPDataString('tab'))
            ->display('exportformat_queue.tpl');
 }

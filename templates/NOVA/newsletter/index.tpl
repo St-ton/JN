@@ -80,9 +80,11 @@
                                                         {button type="submit" variant="primary" block=true}
                                                             <span>{lang key='newsletterSendSubscribe' section='newsletter'}</span>
                                                         {/button}
+                                                        {if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ])}
                                                         <p class="info small newsletter-subscribe-consent">
                                                             {lang key='newsletterInformedConsent' section='newsletter' printf=$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL()}
                                                         </p>
+                                                        {/if}
                                                     {/col}
                                                 {/row}
                                             {/block}

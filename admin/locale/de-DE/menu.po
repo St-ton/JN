@@ -299,7 +299,7 @@ msgstr "Zurücksetzen"
 
 # Mid Menu
 msgid "Search"
-msgstr "Suche"
+msgstr "Suche & Artikellisten"
 
 msgid "Item overview"
 msgstr "Artikelübersicht"

@@ -6,6 +6,7 @@ use JTL\Backend\Notification;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\License\Checker;
 use JTL\License\Manager;
@@ -17,6 +18,8 @@ use JTL\Shop;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
 use JTL\Update\Updater;
+
+/** @global \JTL\Backend\AdminAccount $oAccount */
 
 require_once __DIR__ . '/admin_menu.php';
 
@@ -69,7 +72,7 @@ if (!$hasPendingUpdates) {
             ];
 
             if ($secondEntry === 'DYNAMIC_PLUGINS') {
-                if (!$oAccount->permission('PLUGIN_ADMIN_VIEW')) {
+                if (!$oAccount->permission('PLUGIN_ADMIN_VIEW') || SAFE_MODE === true) {
                     continue;
                 }
                 $pluginLinks = $db->queryPrepared(
@@ -191,7 +194,7 @@ if (!$hasPendingUpdates) {
     $checker               = new Checker(Shop::Container()->getBackendLogService(), $db, $cache);
     $updates               = $checker->getUpdates($mapper);
     $licenseNoticeAccepted = (int)($_SESSION['licensenoticeaccepted'] ?? -1);
-    if ($licenseNoticeAccepted === -1) {
+    if ($licenseNoticeAccepted === -1 && SAFE_MODE === false) {
         $expired = $checker->getLicenseViolations($mapper);
     } else {
         $licenseNoticeAccepted++;
@@ -239,9 +242,10 @@ $smarty->assign('URL_SHOP', $shopURL)
     ->assign('languageName', Locale::getDisplayLanguage($langTag, $langTag))
     ->assign('languages', Shop::Container()->getGetText()->getAdminLanguages())
     ->assign('faviconAdminURL', Shop::getFaviconURL(true))
+    ->assign('cTab', Text::filterXSS(Request::verifyGPDataString('tab')))
     ->assign(
         'wizardDone',
         (($conf['global']['global_wizard_done'] ?? 'Y') === 'Y'
-            || \strpos($_SERVER['SCRIPT_NAME'], 'wizard.php') === false)
+            || strpos($_SERVER['SCRIPT_NAME'], 'wizard.php') === false)
         && !Request::getVar('fromWizard')
     );

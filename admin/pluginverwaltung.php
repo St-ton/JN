@@ -76,7 +76,7 @@ $pluginsDisabled    = $pluginsInstalled->filter(static function (ListingItem $e)
     return $e->getState() === State::DISABLED;
 });
 $pluginsProblematic = $pluginsInstalled->filter(static function (ListingItem $e) {
-    return \in_array(
+    return in_array(
         $e->getState(),
         [State::ERRONEOUS, State::UPDATE_FAILED, State::LICENSE_KEY_MISSING,
             State::LICENSE_KEY_INVALID, State::ESX_LICENSE_EXPIRED, State::ESX_SUBSCRIPTION_EXPIRED],
@@ -99,7 +99,7 @@ if ($pluginUploaded === true) {
         ->assign('pluginsProblematic', $pluginsProblematic)
         ->assign('pluginsAvailable', $pluginsAvailable)
         ->assign('pluginsErroneous', $pluginsErroneous)
-        ->assign('shopVersion', Version::parse(\APPLICATION_VERSION));
+        ->assign('shopVersion', Version::parse(APPLICATION_VERSION));
 
     $html                  = new stdClass();
     $html->available       = $smarty->fetch('tpl_inc/pluginverwaltung_uebersicht_verfuegbar.tpl');
@@ -283,7 +283,7 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
     } elseif (Request::postInt('delete') === 1) {
         $dirs    = Request::postVar('cVerzeichnis', []);
         $res     = count($dirs) > 0;
-        $manager = new MountManager(['root' => new Filesystem(new Local(\PFAD_ROOT))]);
+        $manager = new MountManager(['root' => new Filesystem(new Local(PFAD_ROOT))]);
         $manager->mountFilesystem('plgn', Shop::Container()->get(\JTL\Filesystem\Filesystem::class));
         foreach ($dirs as $dir) {
             $dir  = basename($dir);
@@ -292,8 +292,8 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                 continue;
             }
             $dirName = (int)$test === 1
-                ? (\PLUGIN_DIR . $dir)
-                : (\PFAD_PLUGIN . $dir);
+                ? (PLUGIN_DIR . $dir)
+                : (PFAD_PLUGIN . $dir);
             $res     = @$manager->deleteDir('plgn://' . $dirName) && $res;
         }
         if ($res === true) {
@@ -444,5 +444,5 @@ $smarty->assign('hinweis64', base64_encode($notice))
     ->assign('pluginsProblematic', $pluginsProblematic)
     ->assign('pluginsDisabled', $pluginsDisabled)
     ->assign('allPluginItems', $pluginsAll)
-    ->assign('shopVersion', Version::parse(\APPLICATION_VERSION))
+    ->assign('shopVersion', Version::parse(APPLICATION_VERSION))
     ->display('pluginverwaltung.tpl');

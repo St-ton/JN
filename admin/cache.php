@@ -19,6 +19,7 @@ $step         = 'uebersicht';
 $tab          = 'uebersicht';
 $cache        = null;
 $opcacheStats = null;
+$options      = null;
 $action       = Form::validateToken() ? Request::postVar('a') : null;
 $cacheAction  = Request::postVar('cache-action', '');
 $db           = Shop::Container()->getDB();

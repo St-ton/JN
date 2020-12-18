@@ -251,6 +251,9 @@ msgstr "Lax"
 msgid "global_cookie_samesite_value(Strict)"
 msgstr "Strict"
 
+msgid "global_cookie_samesite_value(None)"
+msgstr "None"
+
 msgid "email_methode_value(mail)"
 msgstr "PHP mail()"
 

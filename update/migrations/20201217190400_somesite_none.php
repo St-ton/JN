@@ -19,9 +19,8 @@ class Migration_20201217190400 extends Migration implements IMigration
     {
         $sectionID                = (int)$this->getDB()->query(
             'SELECT kEinstellungenConf
-                FROM teinstellungenconfwerte
-                    WHERE cName = \'Lax\' 
-                    AND cWert = \'Lax\'',
+                FROM teinstellungenconf
+                    WHERE cWertName = \'global_cookie_samesite\'',
             ReturnType::SINGLE_OBJECT
         )->kEinstellungenConf;
         $conf                     = new stdClass();

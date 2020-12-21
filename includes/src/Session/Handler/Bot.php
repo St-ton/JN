@@ -72,7 +72,7 @@ class Bot extends JTLDefault
     public function write($id, $data)
     {
         if ($this->doSave === true) {
-            Shop::Container()->getCache()->set($this->sessionID, $sessData, [\CACHING_GROUP_CORE]);
+            Shop::Container()->getCache()->set($this->sessionID, $data, [\CACHING_GROUP_CORE]);
         }
 
         return true;

@@ -94,9 +94,9 @@ abstract class AbstractItem implements ItemInterface
     /**
      * @inheritDoc
      */
-    public function setOldPlugin($oldPlugin): void
+    public function setOldPlugin($plugin): void
     {
-        $this->oldPlugin = $oldPlugin;
+        $this->oldPlugin = $plugin;
     }
 
     /**

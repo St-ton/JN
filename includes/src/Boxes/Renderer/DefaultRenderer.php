@@ -58,9 +58,7 @@ class DefaultRenderer implements RendererInterface
             $html = $this->box->getTemplateFile() !== '' && $this->box->isBoxVisible($pageType, $pageID)
                 ? $this->smarty->fetch($this->box->getTemplateFile())
                 : '';
-        } catch (SmartyException $e) {
-            $html = $e->getMessage();
-        } catch (Exception $e) {
+        } catch (SmartyException | Exception $e) {
             $html = $e->getMessage();
         }
         $this->smarty->clearAssign('oBox');

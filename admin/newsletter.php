@@ -39,10 +39,8 @@ $customerGroup             = $db->select('tkundengruppe', 'cStandard', 'Y');
 $_SESSION['Kundengruppe']  = new CustomerGroup((int)$customerGroup->kKundengruppe);
 
 setzeSprache();
-if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
-}
-$instance = new Newsletter($db, $conf);
+$languageID = (int)$_SESSION['editLanguageID'];
+$instance   = new Newsletter($db, $conf);
 if (Form::validateToken()) {
     if (Request::postInt('einstellungen') === 1) {
         if (isset($_POST['speichern'])) {
@@ -172,7 +170,7 @@ if (Form::validateToken()) {
                     FROM tnewsletterhistory
                     WHERE kNewsletterHistory = :hid
                         AND kSprache = :lid",
-                ['hid' => $historyID, 'lid' => (int)$_SESSION['kSprache']],
+                ['hid' => $historyID, 'lid' => $languageID],
                 ReturnType::SINGLE_OBJECT
             );
 
@@ -609,13 +607,13 @@ if ($step === 'uebersicht') {
     $templateCount     = (int)$db->query(
         'SELECT COUNT(*) AS cnt
             FROM tnewslettervorlage
-            WHERE kSprache = ' . (int)$_SESSION['kSprache'],
+            WHERE kSprache = ' . $languageID,
         ReturnType::SINGLE_OBJECT
     )->cnt;
     $historyCount      = (int)$db->query(
         'SELECT COUNT(*) AS cnt
             FROM tnewsletterhistory
-            WHERE kSprache = ' . (int)$_SESSION['kSprache'],
+            WHERE kSprache = ' . $languageID,
         ReturnType::SINGLE_OBJECT
     )->cnt;
     $pagiInactive      = (new Pagination('inaktive'))
@@ -650,7 +648,7 @@ if ($step === 'uebersicht') {
             c.startDate DESC
         LIMIT " . $pagiQueue->getLimitSQL(),
         [
-            'langID' => (int)$_SESSION['kSprache'],
+            'langID' => $languageID,
         ],
         ReturnType::ARRAY_OF_OBJECTS
     );
@@ -668,14 +666,14 @@ if ($step === 'uebersicht') {
     $templates   = $db->query(
         'SELECT kNewsletterVorlage, kNewslettervorlageStd, cBetreff, cName
             FROM tnewslettervorlage
-            WHERE kSprache = ' . (int)$_SESSION['kSprache'] . '
+            WHERE kSprache = ' . $languageID . '
             ORDER BY kNewsletterVorlage DESC LIMIT ' . $pagiTemplates->getLimitSQL(),
         ReturnType::ARRAY_OF_OBJECTS
     );
     $defaultData = $db->query(
         'SELECT *
             FROM tnewslettervorlagestd
-            WHERE kSprache = ' . (int)$_SESSION['kSprache'] . '
+            WHERE kSprache = ' . $languageID . '
             ORDER BY cName',
         ReturnType::ARRAY_OF_OBJECTS
     );
@@ -715,7 +713,7 @@ if ($step === 'uebersicht') {
             WHERE kSprache = :lid
             ORDER BY dStart DESC
             LIMIT " . $pagiHistory->getLimitSQL(),
-        ['lid' => (int)$_SESSION['kSprache']],
+        ['lid' => $languageID],
         ReturnType::ARRAY_OF_OBJECTS
     );
     $customerGroupsByName = $db->query(

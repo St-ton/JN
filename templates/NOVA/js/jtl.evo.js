@@ -97,6 +97,29 @@
                         }
                     ]
                 },
+                'slider-three' : {
+                    arrows:       true,
+                    lazyLoad:     'ondemand',
+                    mobileFirst:    true,
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    responsive:   [
+                        {
+                            breakpoint: 768,
+                            settings: {
+                                slidesToShow: 2,
+                                slidesToScroll: 2,
+                            }
+                        },
+                        {
+                            breakpoint: 1300,
+                            settings: {
+                                slidesToShow: 3,
+                                slidesToScroll: 3,
+                            }
+                        }
+                    ]
+                },
                 'product-slider' : {
                     rows:           0,
                     arrows:         false,

@@ -134,30 +134,27 @@ class Staat
 
     /**
      * @param string $iso
-     * @return array|null
+     * @return self[]|null
      */
     public static function getRegions(string $iso): ?array
     {
-        if (\mb_strlen($iso) === 2) {
-            $countries = Shop::Container()->getDB()->selectAll('tstaat', 'cLandIso', $iso, '*', 'cName');
-            if (\is_array($countries) && \count($countries) > 0) {
-                $states = [];
-                foreach ($countries as $country) {
-                    $options = [
-                        'Staat'   => $country->kStaat,
-                        'LandIso' => $country->cLandIso,
-                        'Name'    => $country->cName,
-                        'Code'    => $country->cCode,
-                    ];
+        $countries = Shop::Container()->getDB()->selectAll('tstaat', 'cLandIso', $iso, '*', 'cName');
+        if (\count($countries) === 0) {
+            return null;
+        }
+        $states = [];
+        foreach ($countries as $country) {
+            $options = [
+                'Staat'   => $country->kStaat,
+                'LandIso' => $country->cLandIso,
+                'Name'    => $country->cName,
+                'Code'    => $country->cCode,
+            ];
 
-                    $states[] = new self($options);
-                }
-
-                return $states;
-            }
+            $states[] = new self($options);
         }
 
-        return null;
+        return $states;
     }
 
     /**
@@ -167,27 +164,24 @@ class Staat
      */
     public static function getRegionByIso(string $code, $countryISO = ''): ?Staat
     {
-        if (\mb_strlen($code) > 0) {
-            $key2 = null;
-            $val2 = null;
-            if (\mb_strlen($countryISO) > 0) {
-                $key2 = 'cLandIso';
-                $val2 = $countryISO;
-            }
-            $data = Shop::Container()->getDB()->select('tstaat', 'cCode', $code, $key2, $val2);
-            if (isset($data->kStaat) && $data->kStaat > 0) {
-                $options = [
-                    'Staat'   => $data->kStaat,
-                    'LandIso' => $data->cLandIso,
-                    'Name'    => $data->cName,
-                    'Code'    => $data->cCode,
-                ];
-
-                return new self($options);
-            }
+        $key2 = null;
+        $val2 = null;
+        if (\mb_strlen($countryISO) > 0) {
+            $key2 = 'cLandIso';
+            $val2 = $countryISO;
         }
+        $data = Shop::Container()->getDB()->select('tstaat', 'cCode', $code, $key2, $val2);
+        if (($data->kStaat ?? 0) <= 0) {
+            return null;
+        }
+        $options = [
+            'Staat'   => $data->kStaat,
+            'LandIso' => $data->cLandIso,
+            'Name'    => $data->cName,
+            'Code'    => $data->cCode,
+        ];
 
-        return null;
+        return new self($options);
     }
 
     /**
@@ -196,20 +190,17 @@ class Staat
      */
     public static function getRegionByName(string $name): ?Staat
     {
-        if (\mb_strlen($name) > 0) {
-            $data = Shop::Container()->getDB()->select('tstaat', 'cName', $name);
-            if (isset($data->kStaat) && $data->kStaat > 0) {
-                $options = [
-                    'Staat'   => $data->kStaat,
-                    'LandIso' => $data->cLandIso,
-                    'Name'    => $data->cName,
-                    'Code'    => $data->cCode,
-                ];
-
-                return new self($options);
-            }
+        $data = Shop::Container()->getDB()->select('tstaat', 'cName', $name);
+        if (($data->kStaat ?? 0) <= 0) {
+            return null;
         }
+        $options = [
+            'Staat'   => $data->kStaat,
+            'LandIso' => $data->cLandIso,
+            'Name'    => $data->cName,
+            'Code'    => $data->cCode,
+        ];
 
-        return null;
+        return new self($options);
     }
 }

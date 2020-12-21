@@ -107,9 +107,12 @@ class ImageMap implements IExtensionPoint
             return $imageMap;
         }
         [$imageMap->fWidth, $imageMap->fHeight] = \getimagesize(\PFAD_ROOT . \PFAD_IMAGEMAP . $imageMap->cBild);
-        foreach ($imageMap->oArea_arr as &$area) {
-            $area->oCoords = new stdClass();
-            $aMap          = \explode(',', $area->cCoords);
+        foreach ($imageMap->oArea_arr as $area) {
+            $area->kImageMapArea = (int)$area->kImageMapArea;
+            $area->kImageMap     = (int)$area->kImageMap;
+            $area->kArtikel      = (int)$area->kArtikel;
+            $area->oCoords       = new stdClass();
+            $aMap                = \explode(',', $area->cCoords);
             if (\count($aMap) === 4) {
                 $area->oCoords->x = (int)$aMap[0];
                 $area->oCoords->y = (int)$aMap[1];
@@ -118,7 +121,7 @@ class ImageMap implements IExtensionPoint
             }
 
             $area->oArtikel = null;
-            if ((int)$area->kArtikel > 0) {
+            if ($area->kArtikel > 0) {
                 $area->oArtikel = new Artikel();
                 if ($fill === true) {
                     $area->oArtikel->fuelleArtikel(

@@ -308,7 +308,7 @@ function checkNewsletterSend() {ldelim}
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
                             <a class="btn btn-outline-primary btn-block" href="newsletter.php?tab=newslettervorlagen&token={$smarty.session.jtl_token}">
-                                {__('goBack')}
+                                {__('cancelWithIcon')}
                             </a>
                         </div>
                         {if $cOption !== 'editieren'}

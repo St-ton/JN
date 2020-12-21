@@ -22,9 +22,6 @@ $settingsIDs = [
     'global_wunschliste_max_email',
     'global_wunschliste_artikel_loeschen_nach_kauf'
 ];
-if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
-}
 if (Request::verifyGPCDataInt('einstellungen') === 1) {
     $alertHelper->addAlert(
         Alert::TYPE_SUCCESS,

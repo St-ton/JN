@@ -84,7 +84,7 @@ class Category
             : $customerGroupID;
         $config          = Shop::getSettings([\CONF_GLOBAL, \CONF_TEMPLATE]);
         if (self::$instance !== null && self::$languageID !== $languageID) {
-            //reset cached categories when language or depth was changed
+            // reset cached categories when language or depth was changed
             self::$fullCategories = null;
             unset($_SESSION['oKategorie_arr_new']);
         }
@@ -481,7 +481,7 @@ class Category
      */
     public static function categoryExists(int $id): bool
     {
-        return Shop::Container()->getDB()->select('tkategorie', 'kKategorie', $id) !== null;
+        return self::getInstance()->getCategoryById($id) !== null;
     }
 
     /**

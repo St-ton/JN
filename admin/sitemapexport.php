@@ -30,10 +30,6 @@ if (!is_writable(PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml')) {
         'successSubjectDelete'
     );
 }
-// Tabs
-if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
-}
 
 if (Request::postInt('einstellungen') > 0) {
     $alertHelper->addAlert(

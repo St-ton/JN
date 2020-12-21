@@ -334,15 +334,15 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @return callable
+     * @inheritDoc
      */
-    public function getOnSave(): callable
+    public function getOnSave(): ?callable
     {
         return $this->onSave;
     }
 
     /**
-     * @param callable $onSave
+     * @inheritDoc
      */
     public function setOnSave(callable $onSave): void
     {
@@ -350,7 +350,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @return SelectOption[]
+     * @inheritDoc
      */
     public function getOptions(): array
     {
@@ -358,7 +358,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @param SelectOption[] $options
+     * @inheritDoc
      */
     public function setOptions(array $options): void
     {
@@ -366,7 +366,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     }
 
     /**
-     * @param SelectOption $option
+     * @inheritDoc
      */
     public function addOption(SelectOption $option): void
     {

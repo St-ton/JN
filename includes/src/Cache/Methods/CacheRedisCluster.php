@@ -85,11 +85,9 @@ class CacheRedisCluster implements ICachingMethod
                     break;
             }
             $this->masters = $redis->_masters();
-
-            $this->redis = $redis;
+            $this->redis   = $redis;
         } catch (RedisClusterException $e) {
             $this->setError($e->getMessage());
-            Shop::Container()->getLogService()->critical('RedisClusterException: ' . $e->getMessage());
         }
 
         return \count($this->masters) > 0;

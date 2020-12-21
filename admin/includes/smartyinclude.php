@@ -20,6 +20,7 @@ use JTL\Smarty\JTLSmarty;
 use JTL\Update\Updater;
 
 /** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global array $adminMenu */
 
 require_once __DIR__ . '/admin_menu.php';
 

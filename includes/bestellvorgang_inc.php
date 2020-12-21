@@ -555,7 +555,7 @@ function pruefeGuthabenNutzen(): void
 }
 
 /**
- * @param string $context
+ * @param string|null $context
  * @return bool
  */
 function pruefeFehlendeAngaben($context = null): bool

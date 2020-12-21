@@ -796,7 +796,7 @@ function plausiZahlungsartZusatz($paymentMethod, array $post)
 }
 
 /**
- * @param array $post
+ * @param array|null $post
  * @return array
  * @deprecated since 5.0.0
  */

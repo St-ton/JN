@@ -71,8 +71,9 @@ ul.partlist-items {
 }
 
 .img-xs {
-  max-width: 24px;
-  max-height: 24px;
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
 }
 
 .searchcloud, .tagcloud {
@@ -448,7 +449,7 @@ input.typeahead {
   min-height: 140px
 }
 
-.lazyload{
+.lazyload {
   opacity: 0;
 }
 

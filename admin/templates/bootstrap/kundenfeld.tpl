@@ -119,19 +119,19 @@
         <nav class="tabs-nav">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-items">
-                    <a class="nav-link {if !isset($cTab) || $cTab === 'uebersicht'} active{/if}" data-toggle="tab" role="tab" href="#overview">
+                    <a class="nav-link {if $cTab === '' || $cTab === 'uebersicht'} active{/if}" data-toggle="tab" role="tab" href="#overview">
                         {__('kundenfeld')}
                     </a>
                 </li>
                 <li class="nav-items">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'einstellungen'} active{/if}" data-toggle="tab" role="tab" href="#config">
+                    <a class="nav-link {if $cTab === 'einstellungen'} active{/if}" data-toggle="tab" role="tab" href="#config">
                         {__('settings')}
                     </a>
                 </li>
             </ul>
         </nav>
         <div class="tab-content">
-            <div id="overview" class="tab-pane fade{if !isset($cTab) || $cTab === 'uebersicht'} active show{/if}">
+            <div id="overview" class="tab-pane fade{if $cTab === '' || $cTab === 'uebersicht'} active show{/if}">
                 <form name="kundenfeld" method="post" action="kundenfeld.php">
                     {$jtl_token}
                     <input type="hidden" name="kundenfelder" value="1">
@@ -381,7 +381,7 @@
                     </div>
                 </div>
             </div>
-            <div id="config" class="tab-pane fade{if isset($cTab) && $cTab === 'einstellungen'} active show{/if}">
+            <div id="config" class="tab-pane fade{if $cTab === 'einstellungen'} active show{/if}">
                 {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' a='saveSettings' action='kundenfeld.php' buttonCaption=__('save') title=__('settings') tab='einstellungen'}
             </div>
         </div>

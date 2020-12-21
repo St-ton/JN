@@ -367,7 +367,7 @@
                                 .removeClass('show d-md-block');
                         });
                 })
-                .on('hide.bs.select', function () {
+                .on('hide.bs.select', function () { 
                     $(this).parent().find('li .variation').off('mouseenter mouseleave');
                     $('.variation-image-preview').removeClass('show');
                 });

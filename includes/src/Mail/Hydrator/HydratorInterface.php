@@ -14,9 +14,9 @@ interface HydratorInterface
 {
     /**
      * @param object|null $data
-     * @param object      $lang
+     * @param object      $language
      */
-    public function hydrate(?object $data, object $lang): void;
+    public function hydrate(?object $data, object $language): void;
 
     /**
      * @param string $variable

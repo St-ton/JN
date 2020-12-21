@@ -619,10 +619,10 @@ class CheckBox
             $data                = new stdClass();
             $data->oCheckBox     = $checkBox;
             $data->oKunde        = $customer;
-            $data->tkunde        = $customer;
             $data->cAnzeigeOrt   = $this->mappeCheckBoxOrte($location);
             $data->mail          = new stdClass();
             $data->mail->toEmail = $conf['emails']['email_master_absender'];
+            $data->mail->toName  = $conf['emails']['email_master_absender_name'];
 
             $mailer = Shop::Container()->get(Mailer::class);
             $mail   = new Mail();

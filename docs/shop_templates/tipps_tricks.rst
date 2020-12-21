@@ -378,6 +378,7 @@ in Smarty registriert:
     {
         public function boot(): void
         {
+            parent::boot();
             try {
                 $this->getSmarty()->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getPI', [$this, 'getPI']);
             } catch (\SmartyException $e) {
@@ -385,11 +386,12 @@ in Smarty registriert:
             }
         }
 
-        public function getPI($precision)
+        public function getPI($args)
         {
-            $iterator = 1;
-            $factor   = -1;
-            $nenner   = 3;
+            $precision = $args['precision'];
+            $iterator  = 1;
+            $factor    = -1;
+            $nenner    = 3;
 
             for ($i = 0; $i < $precision; $i++) {
                 $iterator = $iterator + $factor / $nenner;
@@ -404,7 +406,7 @@ in Smarty registriert:
 Funktionen nutzen
 +++++++++++++++++
 
-Die Funktion ``getPI()``  kann dann im Template z. B. mit ``{getPi(12)}`` verwendet werden.
+Die Funktion ``getPI()``  kann dann im Template z. B. mit ``{getPI precision=12}`` verwendet werden.
 
 
 Überschreiben bestehender Funktionen

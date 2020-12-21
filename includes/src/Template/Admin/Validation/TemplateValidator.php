@@ -113,7 +113,7 @@ class TemplateValidator implements ValidatorInterface
         $parent = $node['Parent'] ?? null;
         if ($parent !== null) {
             $parent = \basename($parent);
-            if (!\file_exists(\PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/template.xml')) {
+            if (!\file_exists(\PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/' . \TEMPLATE_XML)) {
                 return self::RES_PARENT_NOT_FOUND;
             }
         }

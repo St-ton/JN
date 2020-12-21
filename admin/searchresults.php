@@ -9,4 +9,4 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'suche_inc.php';
 
 $query = $_GET['cSuche'];
 
-adminSearch(\trim($query), true);
+adminSearch(trim($query), true);

@@ -10,7 +10,7 @@
         {row no-gutters=true class="{if $navid === 'header'}productlist-page-nav-header-m{/if} productlist-page-nav"}
             {if count($NaviFilter->getSearchResults()->getProducts()) > 0  && $navid === 'header'}
                 {block name='snippets-productlist-page-nav-result-options-sort'}
-                    {col cols=12 md="auto" class="displayoptions"}
+                    {col cols=12 xl="auto" class="displayoptions"}
                         {block name='snippets-productlist-page-nav-include-result-options'}
                             {if count($Suchergebnisse->getProducts()) > 0}
                                 {opcMountPoint id='opc_before_result_options'}

@@ -82,3 +82,6 @@ msgstr "Suche nach ID Range: %s"
 
 msgid "searchForName"
 msgstr "Suche nach Name: %s"
+
+msgid "prefDesc0"
+msgstr " "

@@ -261,7 +261,7 @@ if ($step === 'einstellungen bearbeiten') {
     }
 
     $smarty->assign('Sektion', $section)
-           ->assign('Conf', \mb_strlen($search) > 0
+           ->assign('Conf', mb_strlen($search) > 0
                ? $confData
                : filteredConfData($confData, Request::verifyGPDataString('group')))
            ->assign(

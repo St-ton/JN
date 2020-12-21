@@ -68,9 +68,9 @@ class CacheFile implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function storeMulti($keyValue, $expiration = null): bool
+    public function storeMulti($idContent, $expiration = null): bool
     {
-        foreach ($keyValue as $_key => $_value) {
+        foreach ($idContent as $_key => $_value) {
             $this->store($_key, $_value, $expiration);
         }
 

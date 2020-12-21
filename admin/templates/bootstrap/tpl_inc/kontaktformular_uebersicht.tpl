@@ -4,24 +4,24 @@
         <nav class="tabs-nav">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link {if !isset($cTab) || $cTab === 'config'} active{/if}" data-toggle="tab" role="tab" href="#config">
+                    <a class="nav-link {if $cTab === '' || $cTab === 'config'} active{/if}" data-toggle="tab" role="tab" href="#config">
                         {__('settings')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'subjects'} active{/if}" data-toggle="tab" role="tab" href="#subjects">
+                    <a class="nav-link {if $cTab === 'subjects'} active{/if}" data-toggle="tab" role="tab" href="#subjects">
                         {__('subjects')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'content'} active{/if}" data-toggle="tab" role="tab" href="#contents">
+                    <a class="nav-link {if $cTab === 'content'} active{/if}" data-toggle="tab" role="tab" href="#contents">
                         {__('contents')}
                     </a>
                 </li>
             </ul>
         </nav>
         <div class="tab-content">
-            <div id="config" class="tab-pane fade {if !isset($cTab) || $cTab === 'config'} active show{/if}">
+            <div id="config" class="tab-pane fade {if $cTab === '' || $cTab === 'config'} active show{/if}">
                 <form name="einstellen" method="post" action="kontaktformular.php">
                     {$jtl_token}
                     <input type="hidden" name="einstellungen" value="1" />
@@ -63,7 +63,7 @@
                     </div>
                 </form>
             </div>
-            <div id="subjects" class="tab-pane fade {if isset($cTab) && $cTab === 'subjects'} active show{/if}">
+            <div id="subjects" class="tab-pane fade {if $cTab === 'subjects'} active show{/if}">
                 <div class="alert alert-info">{__('contanctformSubjectDesc')}</div>
                 <div>
                     <div class="subheading1">{__('subjects')}</div>
@@ -126,7 +126,7 @@
                     </div>
                 </div>
             </div>
-            <div id="contents" class="tab-pane fade {if isset($cTab) && $cTab === 'content'} active show{/if}">
+            <div id="contents" class="tab-pane fade {if $cTab === 'content'} active show{/if}">
                 <form name="einstellen" method="post" action="kontaktformular.php">
                     {$jtl_token}
                     <input type="hidden" name="content" value="1" />

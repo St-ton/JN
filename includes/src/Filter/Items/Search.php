@@ -406,10 +406,9 @@ class Search extends AbstractFilter
     }
 
     /**
-     * @param null $data
-     * @return Option[]
+     * @inheritDoc
      */
-    public function getOptions($data = null): array
+    public function getOptions($mixed = null): array
     {
         if ($this->options !== null) {
             return $this->options;

@@ -14,9 +14,9 @@ use JTL\Shop;
 class Bestseller
 {
     /**
-     * @var array
+     * @var Collection
      */
-    protected $products = [];
+    protected $products;
 
     /**
      * @var int
@@ -38,6 +38,7 @@ class Bestseller
      */
     public function __construct(array $options = null)
     {
+        $this->products = new Collection();
         if (\is_array($options)) {
             $this->setOptions($options);
         }
@@ -80,7 +81,7 @@ class Bestseller
     }
 
     /**
-     * @return mixed
+     * @return int
      */
     public function getCustomergroup()
     {
@@ -137,35 +138,36 @@ class Bestseller
     }
 
     /**
-     * @return array
+     * @return int[]
      */
     public function fetch(): array
     {
         $products = [];
-        if ($this->customergrp !== null) {
-            $productsql = $this->getProducts()->isNotEmpty()
-                ? ' AND tartikel.kArtikel IN (' .
-                    \implode(',', $this->getProducts()->toArray()) . ') '
-                : '';
-            $storagesql = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-            $data       = Shop::Container()->getDB()->query(
-                'SELECT tartikel.kArtikel
-                    FROM tartikel
-                    JOIN tbestseller
-                        ON tbestseller.kArtikel = tartikel.kArtikel
-                    LEFT JOIN tartikelsichtbarkeit
-                        ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = ' . $this->customergrp . '
-                    WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                        AND ROUND(tbestseller.fAnzahl) >= ' . $this->minsales . ' ' . $storagesql .  $productsql . '
-                    GROUP BY tartikel.kArtikel
-                    ORDER BY tbestseller.fAnzahl DESC
-                    LIMIT ' . $this->limit,
-                ReturnType::ARRAY_OF_OBJECTS
-            );
-            foreach ($data as $item) {
-                $products[] = (int)$item->kArtikel;
-            }
+        if ($this->customergrp === null) {
+            return $products;
+        }
+        $productsql = $this->getProducts()->isNotEmpty()
+            ? ' AND tartikel.kArtikel IN (' .
+                \implode(',', $this->getProducts()->toArray()) . ') '
+            : '';
+        $storagesql = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
+        $data       = Shop::Container()->getDB()->query(
+            'SELECT tartikel.kArtikel
+                FROM tartikel
+                JOIN tbestseller
+                    ON tbestseller.kArtikel = tartikel.kArtikel
+                LEFT JOIN tartikelsichtbarkeit
+                    ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                    AND tartikelsichtbarkeit.kKundengruppe = ' . $this->customergrp . '
+                WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                    AND ROUND(tbestseller.fAnzahl) >= ' . $this->minsales . ' ' . $storagesql .  $productsql . '
+                GROUP BY tartikel.kArtikel
+                ORDER BY tbestseller.fAnzahl DESC
+                LIMIT ' . $this->limit,
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        foreach ($data as $item) {
+            $products[] = (int)$item->kArtikel;
         }
 
         return $products;
@@ -178,7 +180,7 @@ class Bestseller
      * @param bool      $onlykeys
      * @param int       $limit
      * @param int       $minsells
-     * @return array
+     * @return Artikel[]
      */
     public static function buildBestsellers(
         $products,
@@ -221,7 +223,7 @@ class Bestseller
     /**
      * @param array $products
      * @param array $bestsellers
-     * @return array
+     * @return int[]
      */
     public static function ignoreProducts(&$products, $bestsellers): array
     {

@@ -413,7 +413,7 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function getOptions($data = null): array
+    public function getOptions($mixed = null): array
     {
         return [];
     }

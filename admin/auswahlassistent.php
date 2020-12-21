@@ -21,14 +21,13 @@ $tab         = 'uebersicht';
 $alertHelper = Shop::Container()->getAlertService();
 
 Shop::Container()->getGetText()->loadConfigLocales();
-
+setzeSprache();
+$languageID = (int)$_SESSION['editLanguageID'];
 if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     $group    = new Group();
     $question = new Question();
     $step     = 'uebersicht';
     $csrfOK   = Form::validateToken();
-    setzeSprache();
-
     if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
         $tab = Request::verifyGPDataString('tab');
     }
@@ -79,7 +78,7 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
 
     if (isset($_POST['a']) && $csrfOK) {
         if ($_POST['a'] === 'addGrp') {
-            $group->kSprache      = (int)$_SESSION['kSprache'];
+            $group->kSprache      = $languageID;
             $group->cName         = htmlspecialchars(
                 $_POST['cName'],
                 ENT_COMPAT | ENT_HTML401,
@@ -127,7 +126,7 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     if ($step === 'uebersicht') {
         $smarty->assign(
             'oAuswahlAssistentGruppe_arr',
-            $group->getGroups($_SESSION['kSprache'], false, false, true)
+            $group->getGroups($languageID, false, false, true)
         );
     } elseif ($step === 'edit-group') {
         $smarty->assign('oLink_arr', Wizard::getLinks());
@@ -135,10 +134,10 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         $defaultLanguage = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
         $select          = 'tmerkmal.*';
         $join            = '';
-        if ((int)$defaultLanguage->kSprache !== (int)$_SESSION['kSprache']) {
+        if ((int)$defaultLanguage->kSprache !== $languageID) {
             $select = 'tmerkmalsprache.*';
             $join   = ' JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
-                            AND tmerkmalsprache.kSprache = ' . (int)$_SESSION['kSprache'];
+                            AND tmerkmalsprache.kSprache = ' . $languageID;
         }
         $attributes = Shop::Container()->getDB()->query(
             'SELECT ' . $select . '
@@ -150,7 +149,7 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         $smarty->assign('oMerkmal_arr', $attributes)
             ->assign(
                 'oAuswahlAssistentGruppe_arr',
-                $group->getGroups($_SESSION['kSprache'], false, false, true)
+                $group->getGroups($languageID, false, false, true)
             );
     }
 } else {
@@ -158,5 +157,6 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
 }
 $smarty->assign('step', $step)
     ->assign('cTab', $tab)
+    ->assign('languageID', $languageID)
     ->assign('oConfig_arr', getAdminSectionSettings(CONF_AUSWAHLASSISTENT))
     ->display('auswahlassistent.tpl');

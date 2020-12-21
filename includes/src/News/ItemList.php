@@ -20,11 +20,6 @@ final class ItemList implements ItemListInterface
     private $db;
 
     /**
-     * @var int[]
-     */
-    private $itemIDs;
-
-    /**
      * @var Collection
      */
     private $items;
@@ -44,11 +39,11 @@ final class ItemList implements ItemListInterface
      */
     public function createItems(array $itemIDs, bool $activeOnly = true): Collection
     {
-        $this->itemIDs = \array_map('\intval', $itemIDs);
-        if (\count($this->itemIDs) === 0) {
+        $itemIDs = \array_map('\intval', $itemIDs);
+        if (\count($itemIDs) === 0) {
             return $this->items;
         }
-        $itemList      = \implode(',', $this->itemIDs);
+        $itemList      = \implode(',', $itemIDs);
         $itemLanguages = $this->db->query(
             'SELECT tnewssprache.languageID,
             tnewssprache.languageCode,

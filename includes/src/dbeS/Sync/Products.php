@@ -511,13 +511,12 @@ final class Products extends AbstractSync
             return;
         }
         $uploads = $this->mapper->mapArray($xml['tartikel'], 'tartikelupload', 'mArtikelUpload');
-        foreach ($uploads as &$upload) {
+        foreach ($uploads as $upload) {
             $upload->nTyp          = 3;
             $upload->kUploadSchema = $upload->kArtikelUpload;
             $upload->kCustomID     = $upload->kArtikel;
             unset($upload->kArtikelUpload, $upload->kArtikel);
         }
-        unset($upload);
         $this->upsert('tuploadschema', $uploads, 'kUploadSchema', 'kCustomID');
         $ulCount = \count($uploads);
         if ($ulCount < 2) {

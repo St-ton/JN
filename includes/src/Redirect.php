@@ -717,8 +717,8 @@ class Redirect
      */
     public static function urlNotFoundRedirect(array $hookInfos = null, bool $forceExit = false): array
     {
-        $shopSubPath = \parse_url(Shop::getURL(), \PHP_URL_PATH);
-        $url         = \preg_replace('/^' . \preg_quote($shopSubPath, '/') . '/', '', $_SERVER['REQUEST_URI'], 1);
+        $shopSubPath = \parse_url(Shop::getURL(), \PHP_URL_PATH) ?? '';
+        $url         = \preg_replace('/^' . \preg_quote($shopSubPath, '/') . '/', '', $_SERVER['REQUEST_URI'] ?? '', 1);
         $redirect    = new self;
         $redirectUrl = $redirect->test($url);
         if ($redirectUrl !== false && $redirectUrl !== $url && '/' . $redirectUrl !== $url) {

@@ -1308,7 +1308,7 @@ class IOMethods
      * @param array  $selection
      * @return IOResponse
      */
-    public function setSelectionWizardAnswers($keyName, $id, $languageID, $selection): IOResponse
+    public function setSelectionWizardAnswers(string $keyName, int $id, int $languageID, array $selection): IOResponse
     {
         $smarty   = Shop::Smarty();
         $response = new IOResponse();
@@ -1316,10 +1316,10 @@ class IOMethods
         if ($wizard !== null) {
             $oLastSelectedValue = $wizard->getLastSelectedValue();
             $NaviFilter         = $wizard->getNaviFilter();
-
-            if (($oLastSelectedValue !== null && $oLastSelectedValue->nAnzahl === 1)
+            if (($oLastSelectedValue !== null && $oLastSelectedValue->getCount() === 1)
                 || $wizard->getCurQuestion() === $wizard->getQuestionCount()
-                || $wizard->getQuestion($wizard->getCurQuestion())->nTotalResultCount === 0) {
+                || $wizard->getQuestion($wizard->getCurQuestion())->nTotalResultCount === 0
+            ) {
                 $response->setClientRedirect($NaviFilter->getFilterURL()->getURL());
             } else {
                 $response->assignDom('selectionwizard', 'innerHTML', $wizard->fetchForm($smarty));

@@ -86,7 +86,7 @@ class CacheRedis implements ICachingMethod
         }
         if ($database !== null && $database !== '') {
             try {
-                $res = $redis->select((int)$database);
+                $res = $redis->select($database);
             } catch (RedisException $e) {
                 $this->setError($e->getMessage());
                 $res = false;

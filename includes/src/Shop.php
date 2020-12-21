@@ -1910,6 +1910,14 @@ final class Shop
     }
 
     /**
+     * @param array $urls
+     */
+    public static function setURLs(array $urls): void
+    {
+        self::$url = $urls;
+    }
+
+    /**
      * @param bool     $forceSSL
      * @param int|null $langID
      * @return string - the shop URL without trailing slash
@@ -1921,25 +1929,10 @@ final class Shop
         if (isset(self::$url[$langID][$idx])) {
             return self::$url[$langID][$idx];
         }
-        $shopURL   = \URL_SHOP;
-        $sslStatus = Request::checkSSL();
-        if ($sslStatus === 2) {
-            $shopURL = \str_replace('http://', 'https://', $shopURL);
-        } elseif ($sslStatus === 4 || ($sslStatus === 3 && $forceSSL)) {
-            $shopURL = \str_replace('http://', 'https://', $shopURL);
-        }
-        $url                      = \rtrim($shopURL, '/');
+        $url                      = self::buildBaseURL($forceSSL);
         self::$url[$langID][$idx] = $url;
 
         return $url;
-    }
-
-    /**
-     * @param array $urls
-     */
-    public static function setURLs(array $urls): void
-    {
-        self::$url = $urls;
     }
 
     /**
@@ -1948,7 +1941,26 @@ final class Shop
      */
     public static function getAdminURL(bool $forceSSL = false): string
     {
-        return \rtrim(static::getURL($forceSSL) . '/' . \PFAD_ADMIN, '/');
+        return \rtrim(self::buildBaseURL($forceSSL) . '/' . \PFAD_ADMIN, '/');
+    }
+
+    /**
+     * @param bool $forceSSL
+     * @return string
+     */
+    private static function buildBaseURL(bool $forceSSL): string
+    {
+        $url = \URL_SHOP;
+        if (\mb_strpos($url, 'http://') === 0) {
+            $sslStatus = Request::checkSSL();
+            if ($sslStatus === 2) {
+                $url = \str_replace('http://', 'https://', $url);
+            } elseif ($sslStatus === 4 || ($sslStatus === 3 && $forceSSL)) {
+                $url = \str_replace('http://', 'https://', $url);
+            }
+        }
+
+        return \rtrim($url, '/');
     }
 
     /**

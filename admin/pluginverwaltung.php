@@ -422,7 +422,7 @@ if ($step === 'pluginverwaltung_uebersicht') {
 
 if ($reload === true) {
     $_SESSION['plugin_msg'] = $notice;
-    header('Location: ' . Shop::getURL() . '/' . PFAD_ADMIN . 'pluginverwaltung.php', true, 303);
+    header('Location: ' . Shop::getAdminURL() . '/pluginverwaltung.php', true, 303);
     exit();
 }
 

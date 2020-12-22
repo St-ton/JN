@@ -29,7 +29,7 @@ class SimpleCaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @return bool
+     * @inheritDoc
      */
     public function isConfigured(): bool
     {
@@ -37,7 +37,7 @@ class SimpleCaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @return bool
+     * @inheritDoc
      */
     public function isEnabled(): bool
     {
@@ -45,8 +45,7 @@ class SimpleCaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @param JTLSmarty|JTLSmartyTemplateClass $smarty
-     * @return string
+     * @inheritDoc
      */
     public function getHeadMarkup($smarty): string
     {
@@ -54,9 +53,7 @@ class SimpleCaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @param JTLSmarty|JTLSmartyTemplateClass $smarty
-     * @return string
-     * @throws \SmartyException
+     * @inheritDoc
      */
     public function getBodyMarkup($smarty): string
     {
@@ -85,8 +82,7 @@ class SimpleCaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @param  array $requestData
-     * @return bool
+     * @inheritDoc
      */
     public function validate(array $requestData): bool
     {
@@ -110,7 +106,6 @@ class SimpleCaptchaService implements CaptchaServiceInterface
             && isset($requestData[$token])
             && ($requestData[$token] === \sha1($code));
     }
-
 
     /**
      * @param string $plain

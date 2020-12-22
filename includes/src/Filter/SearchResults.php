@@ -653,7 +653,7 @@ class SearchResults implements SearchResultsInterface
      * @param FilterInterface[] $activeFilters
      * @param FilterInterface[] $availableFilters
      */
-    private function autoActivateOptions($activeFilters, $availableFilters): void
+    private function autoActivateOptions(array $activeFilters, array $availableFilters): void
     {
         foreach ($activeFilters as $activeFilter) {
             $class        = $activeFilter->getClassName();
@@ -675,7 +675,7 @@ class SearchResults implements SearchResultsInterface
      * @param FilterInterface $filter
      * @param array           $values
      */
-    private function updateOptions(FilterInterface $filter, $values): void
+    private function updateOptions(FilterInterface $filter, array $values): void
     {
         invoke(filter($filter->getOptions(), static function (Option $e) use ($values) {
             return \in_array($e->getValue(), $values, true);
@@ -685,10 +685,10 @@ class SearchResults implements SearchResultsInterface
     /**
      * @param FilterInterface[] $filters
      * @param string            $class
-     * @param array             $activeValues
+     * @param Option            $activeValues
      * @return array
      */
-    private function getActiveFiltersByClassName($filters, $class, $activeValues): array
+    private function getActiveFiltersByClassName(array $filters, string $class, Option $activeValues): array
     {
         return filter($filters, static function (FilterInterface $f) use ($class, $activeValues) {
             return $f->getClassName() === $class && $f->getActiveValues() === $activeValues;

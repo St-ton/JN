@@ -8,6 +8,7 @@ use JTL\Checkout\ZipValidator;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
+use JTL\Language\LanguageModel;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
@@ -191,8 +192,8 @@ function gibGesetzteKundengruppen($customerGroupsString)
 }
 
 /**
- * @param int   $shippingMethodID
- * @param array $languages
+ * @param int             $shippingMethodID
+ * @param LanguageModel[] $languages
  * @return array
  */
 function getShippingLanguage(int $shippingMethodID, array $languages)
@@ -204,7 +205,7 @@ function getShippingLanguage(int $shippingMethodID, array $languages)
         $shippingMethodID
     );
     foreach ($languages as $language) {
-        $localized[$language->cISO] = new stdClass();
+        $localized[$language->getCode()] = new stdClass();
     }
     foreach ($localizedMethods as $localizedMethod) {
         if (isset($localizedMethod->kVersandart) && $localizedMethod->kVersandart > 0) {
@@ -392,7 +393,6 @@ function saveShippingSurcharge(array $data): object
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorListPriceMissing'), 'errorListPriceMissing');
     }
     if (!$alertHelper->alertTypeExists(Alert::TYPE_ERROR)) {
-        $languages = Sprache::getAllLanguages();
         if (empty($post['kVersandzuschlag'])) {
             $surchargeTMP = (new ShippingSurcharge())
                 ->setISO($post['cISO'])
@@ -404,9 +404,10 @@ function saveShippingSurcharge(array $data): object
                 ->setTitle($post['cName'])
                 ->setSurcharge($surcharge);
         }
-        foreach ($languages as $lang) {
-            if (isset($post['cName_' . $lang->cISO])) {
-                $surchargeTMP->setName($post['cName_' . $lang->cISO] ?: $post['cName'], $lang->kSprache);
+        foreach (Sprache::getAllLanguages() as $lang) {
+            $idx = 'cName_' . $lang->getCode();
+            if (isset($post[$idx])) {
+                $surchargeTMP->setName($post[$idx] ?: $post['cName'], $lang->getId());
             }
         }
         $surchargeTMP->save();

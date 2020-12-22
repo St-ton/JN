@@ -254,32 +254,34 @@ if (Form::validateToken()) {
 
                 $versandSprache->kVersandart = $kVersandart;
                 foreach ($languages as $language) {
-                    $versandSprache->cISOSprache = $language->cISO;
+                    $code = $language->getCode();
+
+                    $versandSprache->cISOSprache = $code;
                     $versandSprache->cName       = $shippingMethod->cName;
-                    if ($_POST['cName_' . $language->cISO]) {
+                    if ($_POST['cName_' . $code]) {
                         $versandSprache->cName = htmlspecialchars(
-                            $_POST['cName_' . $language->cISO],
+                            $_POST['cName_' . $code],
                             ENT_COMPAT | ENT_HTML401,
                             JTL_CHARSET
                         );
                     }
                     $versandSprache->cLieferdauer = '';
-                    if ($_POST['cLieferdauer_' . $language->cISO]) {
+                    if ($_POST['cLieferdauer_' . $code]) {
                         $versandSprache->cLieferdauer = htmlspecialchars(
-                            $_POST['cLieferdauer_' . $language->cISO],
+                            $_POST['cLieferdauer_' . $code],
                             ENT_COMPAT | ENT_HTML401,
                             JTL_CHARSET
                         );
                     }
                     $versandSprache->cHinweistext = '';
-                    if ($_POST['cHinweistext_' . $language->cISO]) {
-                        $versandSprache->cHinweistext = $_POST['cHinweistext_' . $language->cISO];
+                    if ($_POST['cHinweistext_' . $code]) {
+                        $versandSprache->cHinweistext = $_POST['cHinweistext_' . $code];
                     }
                     $versandSprache->cHinweistextShop = '';
-                    if ($_POST['cHinweistextShop_' . $language->cISO]) {
-                        $versandSprache->cHinweistextShop = $_POST['cHinweistextShop_' . $language->cISO];
+                    if ($_POST['cHinweistextShop_' . $code]) {
+                        $versandSprache->cHinweistextShop = $_POST['cHinweistextShop_' . $code];
                     }
-                    $db->delete('tversandartsprache', ['kVersandart', 'cISOSprache'], [$kVersandart, $language->cISO]);
+                    $db->delete('tversandartsprache', ['kVersandart', 'cISOSprache'], [$kVersandart, $code]);
                     $db->insert('tversandartsprache', $versandSprache);
                 }
                 $step = 'uebersicht';

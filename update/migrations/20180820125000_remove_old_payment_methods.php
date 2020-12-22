@@ -77,7 +77,7 @@ class Migration_20180820125000 extends Migration implements IMigration
         );
         $this->execute(
             'DELETE FROM tzahlungsartsprache
-	            WHERE kZahlungsart NOT IN (SELECT kZahlungsart FROM tzahlungsart)'
+                WHERE kZahlungsart NOT IN (SELECT kZahlungsart FROM tzahlungsart)'
         );
         $this->removeLocalization('ipaymentDesc');
         $this->removeLocalization('payWithIpayment');

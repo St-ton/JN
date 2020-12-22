@@ -44,7 +44,6 @@ class Migration_20170116112800 extends Migration implements IMigration
                                                 AND `wkp`.`kWarenkorb` = `wpv`.`kWarenkorb`
                                                 AND `wpv`.`kWarenkorb` IN
                                                 (SELECT `kWarenkorb` 
-	
                                                     FROM `twarenkorbpos` 
                                                     WHERE `nPosTyp` = 3
                                                     AND `fPreisEinzelNetto` = 0))

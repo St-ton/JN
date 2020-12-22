@@ -26,7 +26,7 @@ class Migration_20171213093514 extends Migration implements IMigration
             $keys = $this->fetchAll(
                 "SHOW INDEX FROM `{$table}` 
                     WHERE Index_type = 'FULLTEXT' 
-	                    AND Column_name IN ('cBeschreibung', 'cKurzBeschreibung')
+                        AND Column_name IN ('cBeschreibung', 'cKurzBeschreibung')
                         AND Key_name != 'idx_{$table}_fulltext'"
             );
             if (is_array($keys)) {

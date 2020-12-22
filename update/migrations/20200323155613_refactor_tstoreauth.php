@@ -24,9 +24,9 @@ class Migration_20200323155613 extends Migration implements IMigration
     {
         $this->execute(
             'ALTER TABLE tstoreauth
-	            ADD owner       INT             NOT NULL FIRST,
-	            ADD verified    VARCHAR(128)    NOT NULL,
-	            ADD CONSTRAINT tstoreauth_pk PRIMARY KEY (owner)');
+                ADD owner       INT             NOT NULL FIRST,
+                ADD verified    VARCHAR(128)    NOT NULL,
+                ADD CONSTRAINT tstoreauth_pk PRIMARY KEY (owner)');
     }
 
     /**

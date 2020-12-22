@@ -43,7 +43,7 @@ class Migration_20180319103900 extends Migration implements IMigration
                 LEFT JOIN teinstellungenconf
                     ON teinstellungenconf.cWertName = teinstellungen.cName
                     AND teinstellungenconf.kEinstellungenSektion = teinstellungen.kEinstellungenSektion
-				WHERE teinstellungenconf.cWertName IS NULL)");
+                WHERE teinstellungenconf.cWertName IS NULL)");
         $this->setConfig(
             'admin_login_logger_mode',
             '1',

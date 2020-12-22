@@ -17,12 +17,18 @@ class Migration_20170808091900 extends Migration implements IMigration
     protected $author      = 'ms';
     protected $description = 'changes matrix option names in configuration';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute("UPDATE teinstellungenconfwerte SET cName='Hochformat (nur bis zu 2 Variationen möglich)' WHERE kEinstellungenConf = 1330 AND cWert = 'H'");
         $this->execute("UPDATE teinstellungenconfwerte SET cName='Querformat (nur bis zu 2 Variationen möglich)' WHERE kEinstellungenConf = 1330 AND cWert = 'Q'");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("UPDATE teinstellungenconfwerte SET cName='Hochformat (nur bei 1 Variation möglich)' WHERE kEinstellungenConf = 1330 AND cWert = 'H'");

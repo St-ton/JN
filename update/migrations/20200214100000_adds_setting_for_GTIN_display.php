@@ -18,6 +18,9 @@ class Migration_20200214100000 extends Migration implements IMigration
     protected $author      = 'ms';
     protected $description = 'adds setting for GTIN display';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setConfig(
@@ -39,6 +42,9 @@ class Migration_20200214100000 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeConfig('gtin_display');

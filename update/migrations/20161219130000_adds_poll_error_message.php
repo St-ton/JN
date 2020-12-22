@@ -16,12 +16,18 @@ class Migration_20161219130000 extends Migration implements IMigration
 {
     protected $author = 'ms';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'messages', 'pollError', 'Bei der Auswertung ist ein Fehler aufgetreten.');
         $this->setLocalization('eng', 'messages', 'pollError', 'An error occured during validation.');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('pollError');

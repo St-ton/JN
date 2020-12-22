@@ -19,8 +19,7 @@ class Migration_20200717121600 extends Migration implements IMigration
     protected $description = 'Add canary islands';
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
@@ -31,8 +30,7 @@ class Migration_20200717121600 extends Migration implements IMigration
     }
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function down()
     {

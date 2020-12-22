@@ -17,6 +17,9 @@ class Migration_20190605081705 extends Migration implements IMigration
     protected $author = 'cr';
     protected $description = 'Add NL cron setting';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setConfig(
@@ -34,6 +37,9 @@ class Migration_20190605081705 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeConfig('newsletter_send_delay');

@@ -17,6 +17,9 @@ class Migration_20190312160200 extends Migration implements IMigration
     protected $author = 'fm';
     protected $description = 'add cron config';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setConfig(
@@ -51,6 +54,9 @@ class Migration_20190312160200 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeConfig('cron_type');

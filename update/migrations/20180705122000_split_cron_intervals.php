@@ -19,6 +19,9 @@ class Migration_20180705122000 extends Migration implements IMigration
     protected $author      = 'fm';
     protected $description = 'Split cron intervals';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $statusMail = $this->getDB()->query('SELECT * FROM tstatusemail', ReturnType::SINGLE_OBJECT);
@@ -56,6 +59,9 @@ class Migration_20180705122000 extends Migration implements IMigration
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
     }

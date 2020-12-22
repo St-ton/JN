@@ -17,6 +17,9 @@ class Migration_20181115115500 extends Migration implements IMigration
     protected $author      = 'ms';
     protected $description = 'adds aria language section and variables';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('INSERT INTO tsprachsektion (cName) VALUES ("aria");');
@@ -40,6 +43,9 @@ class Migration_20181115115500 extends Migration implements IMigration
         $this->setLocalization('eng', 'aria', 'info', 'information context');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('primary');

@@ -17,6 +17,9 @@ class Migration_20180820125000 extends Migration implements IMigration
     protected $author      = 'fm';
     protected $description = 'Remove old payment methods';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -87,6 +90,9 @@ class Migration_20180820125000 extends Migration implements IMigration
         $this->removeLocalization('iclearError');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
     }

@@ -16,6 +16,9 @@ class Migration_20190909161500 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Remove box scroll configs';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->removeConfig('box_bestseller_scrollen');
@@ -80,6 +83,9 @@ class Migration_20190909161500 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->setConfig(

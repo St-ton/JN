@@ -17,6 +17,9 @@ class Migration_20190710155200 extends Migration implements IMigration
     protected $author      = 'ms';
     protected $description = 'Add aria labels';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'aria', 'scrollMenuRight', 'nach rechts scrollen');
@@ -35,6 +38,9 @@ class Migration_20190710155200 extends Migration implements IMigration
         $this->setLocalization('eng', 'productOverview', 'differentialPriceTo', 'price ends at');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('scrollMenuRight');

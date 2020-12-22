@@ -36,6 +36,9 @@ class Migration_20180416103817 extends Migration implements IMigration
         ]);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeConfig('articleoverview_pricerange_width');

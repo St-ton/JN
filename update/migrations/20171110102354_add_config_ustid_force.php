@@ -17,6 +17,9 @@ class Migration_20171110102354 extends Migration implements IMigration
     protected $author      = 'cr';
     protected $description = 'Add vars and settings for the UstID-check via VIES';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         // add config-setting to force remote UstID-check
@@ -102,6 +105,9 @@ class Migration_20171110102354 extends Migration implements IMigration
         $this->setLocalization('eng', 'global', 'ustIDError200', 'The VIES-service of your country is not reachable till ');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeConfig('shop_ustid_force_remote_check');

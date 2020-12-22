@@ -17,6 +17,9 @@ class Migration_20190507095430 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Remove product tags';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->removeConfig('configgroup_110_tag_filter');
@@ -62,6 +65,9 @@ class Migration_20190507095430 extends Migration implements IMigration
         $this->execute("DELETE FROM `tseo` WHERE `cKey` = 'kTag'");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->setConfig(

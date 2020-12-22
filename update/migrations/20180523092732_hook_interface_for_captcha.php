@@ -26,8 +26,7 @@ class Migration_20180523092732 extends Migration implements IMigration
     ];
 
     /**
-     * @return bool|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
@@ -42,8 +41,7 @@ class Migration_20180523092732 extends Migration implements IMigration
     }
 
     /**
-     * @return bool|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function down()
     {

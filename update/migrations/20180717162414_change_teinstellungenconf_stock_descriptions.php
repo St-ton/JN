@@ -17,6 +17,9 @@ class Migration_20180717162414 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Change teinstellungenconf stock descriptions';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute("UPDATE teinstellungenconf SET cBeschreibung='So wird der Lagerbestand eines Artikels angezeigt. (Einzelansicht)' WHERE kEinstellungenConf = 110");
@@ -29,6 +32,9 @@ class Migration_20180717162414 extends Migration implements IMigration
         $this->execute("UPDATE teinstellungenconf SET cBeschreibung='Bis zu diesem Lagerbestand steht die Lagerbestandsampel auf rot. Zwischen diesem Wert und Lagerbestandsampel grün, steht die Lagerbestandsampel auf gelb.' WHERE kEinstellungenConf = 111");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("UPDATE teinstellungenconf SET cBeschreibung='So wird der Lagerbestand eines Artikels angezeigt' WHERE kEinstellungenConf = 110");

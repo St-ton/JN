@@ -17,6 +17,9 @@ class Migration_20171103125032 extends Migration implements IMigration
     protected $author      = 'cr';
     protected $description = 're-create the table tstaat, transfer to valid ISO 3166-2';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('DROP TABLE IF EXISTS `tstaat`');
@@ -1231,6 +1234,9 @@ class Migration_20171103125032 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $szSql = <<<SQL

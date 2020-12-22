@@ -17,6 +17,9 @@ class Migration_20190704092700 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Add portlet lang vars';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'global', 'days', 'Tage');
@@ -29,6 +32,9 @@ class Migration_20190704092700 extends Migration implements IMigration
         $this->setLocalization('eng', 'global', 'seconds', 'Seconds');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('days');

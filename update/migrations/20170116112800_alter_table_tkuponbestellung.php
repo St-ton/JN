@@ -17,6 +17,9 @@ class Migration_20170116112800 extends Migration implements IMigration
     protected $author      = 'msc';
     protected $description = 'Alter table tkuponbestellung';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -116,6 +119,9 @@ class Migration_20170116112800 extends Migration implements IMigration
                             `kbg`.`dErstellt` = `mergetable`.`dErstellt`");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('ALTER TABLE `tkuponbestellung` DROP `kKunde`, DROP `cBestellNr`, DROP `fGesamtsummeBrutto`, DROP `fKuponwertBrutto`, DROP `cKuponTyp`, DROP `dErstellt`');

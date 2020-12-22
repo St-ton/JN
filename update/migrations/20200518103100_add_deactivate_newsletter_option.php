@@ -18,8 +18,7 @@ class Migration_20200518103100 extends Migration implements IMigration
     protected $description = 'Add newsletter active option';
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
@@ -43,7 +42,7 @@ class Migration_20200518103100 extends Migration implements IMigration
     }
 
     /**
-     * @return mixed|void
+     * @inheritDoc
      */
     public function down()
     {

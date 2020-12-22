@@ -15,11 +15,17 @@ class Migration_20190930162800 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Remove financial proposal config';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->removeConfig('artikeluebersicht_finanzierung_anzeigen');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->setConfig(

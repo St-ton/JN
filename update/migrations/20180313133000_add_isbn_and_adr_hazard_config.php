@@ -15,8 +15,7 @@ class Migration_20180313133000 extends Migration implements IMigration
     protected $description = 'Add ISBN and ADR hazard config';
 
     /**
-     * @return bool|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
@@ -64,7 +63,7 @@ class Migration_20180313133000 extends Migration implements IMigration
     }
 
     /**
-     * @return bool|void
+     * @inheritDoc
      */
     public function down()
     {

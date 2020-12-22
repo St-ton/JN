@@ -17,11 +17,17 @@ class Migration_20200923090629 extends Migration implements IMigration
     protected $author      = 'fp';
     protected $description = 'Change nSort to INT instead of TINYINT.';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('ALTER TABLE tsuchcachetreffer MODIFY nSort int signed DEFAULT 0 NOT NULL');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('TRUNCATE TABLE tsuchcachetreffer');

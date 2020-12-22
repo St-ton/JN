@@ -17,6 +17,9 @@ class Migration_20190129150943 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'remove unused lang variables';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->removeLocalization('goToContactForm');
@@ -28,6 +31,9 @@ class Migration_20190129150943 extends Migration implements IMigration
         $this->execute('DELETE FROM tsprachwerte WHERE cName="previous" AND `kSprachsektion`=12');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->setLocalization('eng', 'global', 'goToContactForm', 'Contact us');

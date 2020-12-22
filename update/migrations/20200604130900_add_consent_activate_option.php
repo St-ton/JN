@@ -17,8 +17,7 @@ class Migration_20200604130900 extends Migration implements IMigration
     protected $description = 'Add consent activate option';
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
@@ -40,7 +39,7 @@ class Migration_20200604130900 extends Migration implements IMigration
     }
 
     /**
-     * @return mixed|void
+     * @inheritDoc
      */
     public function down()
     {

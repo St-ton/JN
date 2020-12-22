@@ -16,6 +16,9 @@ class Migration_20180820112605 extends Migration implements IMigration
     protected $author      = 'fp';
     protected $description = 'Refactor data types for kKundengruppe';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $columns = $this->fetchAll(
@@ -39,6 +42,9 @@ class Migration_20180820112605 extends Migration implements IMigration
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         // can not be undone...

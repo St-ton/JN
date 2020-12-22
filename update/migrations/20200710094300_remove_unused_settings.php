@@ -18,8 +18,7 @@ class Migration_20200710094300 extends Migration implements IMigration
     protected $description = 'Remove unused settings';
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
@@ -49,8 +48,7 @@ class Migration_20200710094300 extends Migration implements IMigration
     }
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function down()
     {

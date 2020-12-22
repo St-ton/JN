@@ -18,8 +18,7 @@ class Migration_20180316183500 extends Migration implements IMigration
     protected $description = 'Add redis cluster config';
 
     /**
-     * @return bool|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
@@ -62,8 +61,7 @@ class Migration_20180316183500 extends Migration implements IMigration
     }
 
     /**
-     * @return bool|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function down()
     {

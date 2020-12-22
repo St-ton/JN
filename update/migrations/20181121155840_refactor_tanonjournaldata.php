@@ -17,6 +17,9 @@ class Migration_20181121155840 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Refactor tanonjournaldata';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('DROP TABLE IF EXISTS `tanondatajournal`');
@@ -70,6 +73,9 @@ class Migration_20181121155840 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('DROP TABLE IF EXISTS `tanondatajournal`');

@@ -17,6 +17,9 @@ class Migration_20170109114728 extends Migration implements IMigration
     protected $author      = 'fp';
     protected $description = 'Enable article fulltext search';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setConfig(
@@ -49,6 +52,9 @@ class Migration_20170109114728 extends Migration implements IMigration
         ], true);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->setConfig(

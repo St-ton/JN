@@ -17,6 +17,9 @@ class Migration_20171213093514 extends Migration implements IMigration
     protected $author      = 'fpr';
     protected $description = 'Delete unused fulltext keys';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         foreach (['tartikel', 'tartikelsprache'] as $table) {
@@ -34,6 +37,9 @@ class Migration_20171213093514 extends Migration implements IMigration
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         foreach (['tartikel', 'tartikelsprache'] as $table) {

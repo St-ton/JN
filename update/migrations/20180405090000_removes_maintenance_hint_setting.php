@@ -17,11 +17,17 @@ class Migration_20180405090000 extends Migration implements IMigration
     protected $author      = 'ms';
     protected $description = 'removes maintenance hint setting';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->removeConfig('wartungsmodus_hinweis');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->setConfig(

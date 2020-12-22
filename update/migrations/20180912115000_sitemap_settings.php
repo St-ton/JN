@@ -105,6 +105,9 @@ class Migration_20180912115000 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeConfig('sitemap_images_categories');

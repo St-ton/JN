@@ -15,8 +15,7 @@ class Migration_20180109100600 extends Migration implements IMigration
     protected $description = 'Add product filter config';
 
     /**
-     * @return bool|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
@@ -83,7 +82,7 @@ class Migration_20180109100600 extends Migration implements IMigration
     }
 
     /**
-     * @return bool|void
+     * @inheritDoc
      */
     public function down()
     {

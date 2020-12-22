@@ -19,17 +19,16 @@ class Migration_20191202111100 extends Migration implements IMigration
     protected $description = 'Remove tadminrechtemodul';
 
     /**
-     * @return mixed|void
+     * @inheritDoc
      */
     public function up()
     {
         $this->execute('DROP TABLE IF EXISTS `tadminrechtemodul`');
-
         $this->execute('ALTER TABLE `tadminrecht` DROP COLUMN `kAdminrechtemodul`');
     }
 
     /**
-     * @return mixed|void
+     * @inheritDoc
      */
     public function down()
     {

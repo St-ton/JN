@@ -17,6 +17,9 @@ class Migration_20190614094900 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Add lang var for wishlist/comparelist buttons';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'global', 'onWishlist', 'Auf Wunschzettel');
@@ -29,6 +32,9 @@ class Migration_20190614094900 extends Migration implements IMigration
         $this->setLocalization('eng', 'global', 'notOnComparelist', 'Not on comparelist');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('onWishlist');

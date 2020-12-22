@@ -19,7 +19,7 @@ class Migration_20191127142400 extends Migration implements IMigration
     protected $description = 'Add admin permissions';
 
     /**
-     * @return mixed|void
+     * @inheritDoc
      */
     public function up()
     {
@@ -34,7 +34,7 @@ class Migration_20191127142400 extends Migration implements IMigration
     }
 
     /**
-     * @return mixed|void
+     * @inheritDoc
      */
     public function down()
     {

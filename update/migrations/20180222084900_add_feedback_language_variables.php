@@ -14,6 +14,9 @@ class Migration_20180222084900 extends Migration implements IMigration
     protected $author      = 'fg';
     protected $description = 'Add language variables for product rating';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'product rating', 'feedback activated', 'Bewertung ist freigeschaltet!');

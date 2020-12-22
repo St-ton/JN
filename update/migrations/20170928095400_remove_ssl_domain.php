@@ -16,6 +16,9 @@ class Migration_20170928095400 extends Migration implements IMigration
 {
     protected $author = 'fm';
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->setConfig(
@@ -35,6 +38,9 @@ class Migration_20170928095400 extends Migration implements IMigration
         ]);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->removeConfig('global_ssl_www');

@@ -17,6 +17,9 @@ class Migration_20180613151322 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Removes Yatego Export from admin menu';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute("DELETE FROM tadminmenu WHERE cURL = 'yatego.export.php'");
@@ -24,6 +27,9 @@ class Migration_20180613151322 extends Migration implements IMigration
         $this->execute("DELETE FROM tadminrechtegruppe WHERE cRecht = 'EXPORT_YATEGO_VIEW'");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("INSERT INTO `tadminmenu` 

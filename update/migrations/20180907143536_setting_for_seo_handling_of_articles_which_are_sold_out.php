@@ -42,6 +42,9 @@ class Migration_20180907143536 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeConfig('artikel_artikelanzeigefilter_seo');

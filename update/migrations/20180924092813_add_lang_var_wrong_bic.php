@@ -17,6 +17,9 @@ class Migration_20180924092813 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Add lang var wrongBic';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'checkout', 'wrongBIC', 'Die eingegebene BIC hat ein ungültiges Format');
@@ -45,6 +48,9 @@ class Migration_20180924092813 extends Migration implements IMigration
         $this->removeConfig('zahlungsart_lastschrift_blz_abfrage');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('wrongBIC');

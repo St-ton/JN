@@ -17,6 +17,9 @@ class Migration_20191009112100 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Add nova lang vars';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'global', 'selectChoose', 'Auswählen');
@@ -29,6 +32,9 @@ class Migration_20191009112100 extends Migration implements IMigration
         $this->setLocalization('eng', 'global', 'status', 'Status');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('selectChoose');

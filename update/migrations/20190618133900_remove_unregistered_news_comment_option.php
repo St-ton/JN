@@ -15,11 +15,17 @@ class Migration_20190618133900 extends Migration implements IMigration
     protected $author      = 'fm';
     protected $description = 'Remove option to allow news comments for unregistered users';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->removeConfig('news_kommentare_eingeloggt');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->setConfig(

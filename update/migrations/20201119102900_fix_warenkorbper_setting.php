@@ -12,8 +12,7 @@ class Migration_20201119102900 extends Migration implements IMigration
     protected $description = 'Fix warenkorbpers_nutzen setting';
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
@@ -36,8 +35,7 @@ class Migration_20201119102900 extends Migration implements IMigration
     }
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function down()
     {

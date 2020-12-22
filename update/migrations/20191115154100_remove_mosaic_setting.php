@@ -18,8 +18,7 @@ class Migration_20191115154100 extends Migration implements IMigration
     protected $description = 'Remove mosaic setting';
 
     /**
-     * @return bool|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
@@ -82,8 +81,7 @@ class Migration_20191115154100 extends Migration implements IMigration
     }
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function down()
     {

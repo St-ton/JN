@@ -17,6 +17,9 @@ class Migration_20190617160000 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Separate manufacturer conf';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute("UPDATE `teinstellungenconf` SET nSort=112 WHERE cWertName='search_special_filter_type'");
@@ -52,6 +55,9 @@ class Migration_20190617160000 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("UPDATE `teinstellungenconf` SET nSort=141 WHERE cWertName='search_special_filter_type'");

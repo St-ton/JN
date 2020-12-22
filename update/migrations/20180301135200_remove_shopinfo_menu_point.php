@@ -17,11 +17,17 @@ class Migration_20180301135200 extends Migration implements IMigration
     protected $author      = 'mschop';
     protected $description = 'remove-shopinfo-menu-point';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute("DELETE FROM tadminmenu WHERE cLinkname = 'Shopinfo (elm@ar)'");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("

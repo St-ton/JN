@@ -17,12 +17,18 @@ class Migration_20181220104200 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'remove Google Analytics';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->removeConfig('global_google_analytics_id');
         $this->removeConfig('global_google_ecommerce');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->setConfig(

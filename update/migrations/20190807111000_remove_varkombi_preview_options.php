@@ -17,6 +17,9 @@ class Migration_20190807111000 extends Migration implements IMigration
     protected $author = 'fm';
     protected $description = 'Remove varkombi preview options';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->removeConfig('artikeluebersicht_varikombi_anzahl');
@@ -24,6 +27,9 @@ class Migration_20190807111000 extends Migration implements IMigration
         $this->removeConfig('artikeldetails_varikombi_vorschautext');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->setConfig(

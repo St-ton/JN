@@ -17,6 +17,9 @@ class Migration_20190913100700 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Change some frontend language variables (NOVA)';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'global', 'filterGo', 'Filtern');
@@ -33,6 +36,9 @@ class Migration_20190913100700 extends Migration implements IMigration
         $this->setLocalization('eng', 'news', 'commentWillBeValidated', 'All comments are reviewed before they are published.');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->setLocalization('ger', 'global', 'filterGo', 'Los');

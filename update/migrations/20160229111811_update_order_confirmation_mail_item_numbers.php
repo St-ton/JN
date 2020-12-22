@@ -29,6 +29,9 @@ class Migration_20160229111811 extends Migration implements IMigration
  WHERE kEmailvorlage = (SELECT kEmailvorlage FROM temailvorlage WHERE cModulId="core_jtl_bestellbestaetigung")');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('UPDATE temailvorlagesprache SET `cContentHtml`=REPLACE(`cContentHtml`,"{$Position->Artikel->cArtNr}","{$Position->cArtNr}"),

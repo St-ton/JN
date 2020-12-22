@@ -17,6 +17,9 @@ class Migration_20190507095444 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Remove tag tables';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('DROP TABLE IF EXISTS `ttag`');
@@ -25,6 +28,9 @@ class Migration_20190507095444 extends Migration implements IMigration
         $this->execute('DROP TABLE IF EXISTS `ttagmapping`');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('

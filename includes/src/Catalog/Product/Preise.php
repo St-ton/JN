@@ -562,10 +562,10 @@ class Preise
     }
 
     /**
-     * @param float       $price
-     * @param object|null $currency
-     * @param bool        $html
-     * @param int         $decimals
+     * @param float|string $price
+     * @param object|null  $currency
+     * @param bool         $html
+     * @param int          $decimals
      * @return string
      * @former self::getLocalizedPriceString()
      */

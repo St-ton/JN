@@ -25,7 +25,7 @@ class Migration_20190605081705 extends Migration implements IMigration
         $this->setConfig(
             'newsletter_send_delay',
             '1',
-            \CONF_NEWSLETTER,
+            CONF_NEWSLETTER,
             'Newsletter Sendeverzögerung',
             'number',
             130,

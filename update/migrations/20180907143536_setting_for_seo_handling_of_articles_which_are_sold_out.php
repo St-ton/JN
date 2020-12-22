@@ -26,7 +26,7 @@ class Migration_20180907143536 extends Migration implements IMigration
         $this->setConfig(
             'artikel_artikelanzeigefilter_seo',
             'seo',
-            \CONF_GLOBAL,
+            CONF_GLOBAL,
             'Direktaufruf ausverkaufter Artikel',
             'selectbox',
             215,

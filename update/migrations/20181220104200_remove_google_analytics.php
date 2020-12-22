@@ -34,7 +34,7 @@ class Migration_20181220104200 extends Migration implements IMigration
         $this->setConfig(
             'global_google_analytics_id',
             '',
-            \CONF_GLOBAL,
+            CONF_GLOBAL,
             'Google Analytics ID',
             'text',
             520,
@@ -46,7 +46,7 @@ class Migration_20181220104200 extends Migration implements IMigration
         $this->setConfig(
             'global_google_ecommerce',
             0,
-            \CONF_GLOBAL,
+            CONF_GLOBAL,
             'Google Analytics eCommerce Erweiterung nutzen',
             'selectbox',
             520,

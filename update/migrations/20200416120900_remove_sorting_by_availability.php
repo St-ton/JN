@@ -35,7 +35,7 @@ class Migration_20200416120900 extends Migration implements IMigration
         $this->setConfig(
             'suche_sortierprio_lagerbestand',
             '6',
-            \CONF_ARTIKELUEBERSICHT,
+            CONF_ARTIKELUEBERSICHT,
             'Priorität der Suchtreffersortierung: Verfügbarkeit',
             'number',
             240,

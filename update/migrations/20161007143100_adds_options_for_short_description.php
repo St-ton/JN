@@ -24,7 +24,7 @@ class Migration_20161007143100 extends Migration implements IMigration
         $this->setConfig(
             'artikeldetails_kurzbeschreibung_anzeigen',
             'Y',
-            \CONF_ARTIKELDETAILS,
+            CONF_ARTIKELDETAILS,
             'Kurzbeschreibung anzeigen',
             'selectbox',
             365,
@@ -39,7 +39,7 @@ class Migration_20161007143100 extends Migration implements IMigration
         $this->setConfig(
             'artikeluebersicht_kurzbeschreibung_anzeigen',
             'N',
-            \CONF_ARTIKELUEBERSICHT,
+            CONF_ARTIKELUEBERSICHT,
             'Kurzbeschreibung anzeigen',
             'selectbox',
             315,

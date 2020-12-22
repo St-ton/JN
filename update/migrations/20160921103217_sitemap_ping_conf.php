@@ -25,7 +25,7 @@ class Migration_20160921103217 extends Migration implements IMigration
         $this->setConfig(
             'sitemap_google_ping',
             'N',
-            \CONF_SITEMAP,
+            CONF_SITEMAP,
             'Sitemap an Google und Bing &uuml;bermitteln nach Export',
             'selectbox',
             180,

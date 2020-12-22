@@ -34,7 +34,7 @@ class Migration_20200710094300 extends Migration implements IMigration
             'cWertName',
             'warenkorbpers_nutzen',
             (object)[
-                'kEinstellungenSektion' => \CONF_KAUFABWICKLUNG,
+                'kEinstellungenSektion' => CONF_KAUFABWICKLUNG,
                 'nSort'                 => 275,
                 'nModul'                => 0
                 ]
@@ -43,7 +43,7 @@ class Migration_20200710094300 extends Migration implements IMigration
             'teinstellungen',
             'cName',
             'warenkorbpers_nutzen',
-            (object)['kEinstellungenSektion' => \CONF_KAUFABWICKLUNG]
+            (object)['kEinstellungenSektion' => CONF_KAUFABWICKLUNG]
             );
     }
 
@@ -55,7 +55,7 @@ class Migration_20200710094300 extends Migration implements IMigration
         $this->setConfig(
             'news_kategorie_boxanzeigen',
             'Y',
-            \CONF_NEWS,
+            CONF_NEWS,
             'Newskategorien in einer Box anzeigen',
             'selectbox',
             110,
@@ -70,7 +70,7 @@ class Migration_20200710094300 extends Migration implements IMigration
         $this->setConfig(
             'news_sicherheitscode',
             'Y',
-            \CONF_NEWS,
+            CONF_NEWS,
             'Spamschutz aktivieren',
             'selectbox',
             115,
@@ -85,7 +85,7 @@ class Migration_20200710094300 extends Migration implements IMigration
         $this->setConfig(
             'artikeldetails_anzahl_pfeile',
             'Y',
-            \CONF_ARTIKELDETAILS,
+            CONF_ARTIKELDETAILS,
             'Pfeilbuttons für die Artikelanzahl',
             'selectbox',
             490,
@@ -101,7 +101,7 @@ class Migration_20200710094300 extends Migration implements IMigration
         $this->setConfig(
             'artikeluebersicht_anzahl_pfeile',
             'Y',
-            \CONF_ARTIKELUEBERSICHT,
+            CONF_ARTIKELUEBERSICHT,
             'Pfeilbuttons für die Artikelanzahl',
             'selectbox',
             460,
@@ -117,7 +117,7 @@ class Migration_20200710094300 extends Migration implements IMigration
         $this->setConfig(
             'sitemap_weitereseiten_artikeluebersicht',
             'Y',
-            \CONF_SITEMAP,
+            CONF_SITEMAP,
             'Seiten der Artikelübersichten in Sitemap aufnehmen',
             'selectbox',
             90,
@@ -132,7 +132,7 @@ class Migration_20200710094300 extends Migration implements IMigration
         $this->setConfig(
             'configgroup_1_saved_cart',
             'Gespeicherter Warenkorb',
-            \CONF_GLOBAL,
+            CONF_GLOBAL,
             'Gespeicherter Warenkorb',
             null,
             800,
@@ -144,7 +144,7 @@ class Migration_20200710094300 extends Migration implements IMigration
             'cWertName',
             'warenkorbpers_nutzen',
             (object)[
-                'kEinstellungenSektion' => \CONF_GLOBAL,
+                'kEinstellungenSektion' => CONF_GLOBAL,
                 'nSort'                 => 810,
                 'nModul'                => 1
             ]
@@ -153,7 +153,7 @@ class Migration_20200710094300 extends Migration implements IMigration
             'teinstellungen',
             'cName',
             'warenkorbpers_nutzen',
-            (object)['kEinstellungenSektion' => \CONF_GLOBAL]
+            (object)['kEinstellungenSektion' => CONF_GLOBAL]
         );
     }
 }

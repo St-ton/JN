@@ -28,7 +28,7 @@ class Migration_20180924092813 extends Migration implements IMigration
         $this->setConfig(
             'zahlungsart_lastschrift_kreditinstitut_abfrage',
             'O',
-            \CONF_ZAHLUNGSARTEN,
+            CONF_ZAHLUNGSARTEN,
             'Kreditinstitut abfragen',
             'selectbox',
             590,
@@ -58,7 +58,7 @@ class Migration_20180924092813 extends Migration implements IMigration
         $this->setConfig(
             'zahlungsart_lastschrift_iban_abfrage',
             'O',
-            \CONF_ZAHLUNGSARTEN,
+            CONF_ZAHLUNGSARTEN,
             'IBAN abfragen',
             'selectbox',
             550,
@@ -75,7 +75,7 @@ class Migration_20180924092813 extends Migration implements IMigration
         $this->setConfig(
             'zahlungsart_lastschrift_kontonummer_abfrage',
             'Y',
-            \CONF_ZAHLUNGSARTEN,
+            CONF_ZAHLUNGSARTEN,
             'Kontonummer abfragen',
             'selectbox',
             570,
@@ -93,7 +93,7 @@ class Migration_20180924092813 extends Migration implements IMigration
         $this->setConfig(
             'zahlungsart_lastschrift_blz_abfrage',
             'Y',
-            \CONF_ZAHLUNGSARTEN,
+            CONF_ZAHLUNGSARTEN,
             'BLZ abfragen',
             'selectbox',
             580,

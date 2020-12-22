@@ -47,7 +47,7 @@ class Migration_20180319103900 extends Migration implements IMigration
         $this->setConfig(
             'admin_login_logger_mode',
             '1',
-            \CONF_GLOBAL,
+            CONF_GLOBAL,
             'Adminloginversuche loggen?',
             'listbox',
             1503,

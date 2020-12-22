@@ -34,7 +34,7 @@ class Migration_20200430113000 extends Migration implements IMigration
         $this->setConfig(
             'bilder_skalieren',
             'N',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Bilder hochskalieren?',
             'selectbox',
             580,

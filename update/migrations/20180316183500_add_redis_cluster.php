@@ -25,7 +25,7 @@ class Migration_20180316183500 extends Migration implements IMigration
         $this->setConfig(
             'caching_rediscluster_hosts',
             '',
-            \CONF_CACHING,
+            CONF_CACHING,
             'Cluster-Hosts',
             'text',
             110,
@@ -37,7 +37,7 @@ class Migration_20180316183500 extends Migration implements IMigration
         $this->setConfig(
             'caching_rediscluster_strategy',
             'N',
-            \CONF_CACHING,
+            CONF_CACHING,
             'Strategie',
             'selectbox',
             111,

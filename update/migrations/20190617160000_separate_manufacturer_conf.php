@@ -30,7 +30,7 @@ class Migration_20190617160000 extends Migration implements IMigration
         $this->setConfig(
             'configgroup_110_manufacturer_filter',
             'Herstellerfilter',
-            \CONF_NAVIGATIONSFILTER,
+            CONF_NAVIGATIONSFILTER,
             'Herstellerfilter',
             null,
             120,
@@ -40,7 +40,7 @@ class Migration_20190617160000 extends Migration implements IMigration
         $this->setConfig(
             'hersteller_anzeigen_als',
             'T',
-            \CONF_NAVIGATIONSFILTER,
+            CONF_NAVIGATIONSFILTER,
             'Hersteller anzeigen als',
             'selectbox',
             127,

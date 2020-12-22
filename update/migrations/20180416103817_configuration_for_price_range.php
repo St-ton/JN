@@ -26,7 +26,7 @@ class Migration_20180416103817 extends Migration implements IMigration
         $this->setConfig(
             'articleoverview_pricerange_width',
             '150',
-            \CONF_ARTIKELUEBERSICHT,
+            CONF_ARTIKELUEBERSICHT,
             'Max. Abweichung (%) für Preis-Range Anzeige',
             'number',
             372,

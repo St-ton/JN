@@ -33,7 +33,7 @@ class Migration_20180405090000 extends Migration implements IMigration
         $this->setConfig(
             'wartungsmodus_hinweis',
             'Dieser Shop befindet sich im Wartungsmodus.',
-            \CONF_GLOBAL,
+            CONF_GLOBAL,
             'Wartungsmodus Hinweis',
             'text',
             1020,

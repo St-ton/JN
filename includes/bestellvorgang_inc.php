@@ -749,7 +749,7 @@ function gibStepZahlung()
                 'kVersandart' => $shippingMethod,
             ];
         }
-        $selectablePayments = \array_filter(
+        $selectablePayments = array_filter(
             $paymentMethods,
             static function ($method) {
                 $paymentMethod = LegacyMethod::create($method->cModulId);
@@ -2164,7 +2164,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
         }
     }
     if (isset($data['geburtstag'])) {
-        $enDate = \DateTime::createFromFormat('Y-m-d', $data['geburtstag']);
+        $enDate = DateTime::createFromFormat('Y-m-d', $data['geburtstag']);
         if (($errCode = Text::checkDate(
             $enDate === false ? $data['geburtstag'] : $enDate->format('d.m.Y'),
             $conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y'

@@ -23,7 +23,7 @@ class Migration_20190926130300 extends Migration implements IMigration
         $this->setConfig(
             'bilder_hersteller_namen',
             '1',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Bildnamen von Herstellerbildern:',
             'selectbox',
             542,
@@ -39,7 +39,7 @@ class Migration_20190926130300 extends Migration implements IMigration
         $this->setConfig(
             'bilder_merkmal_namen',
             '1',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Bildnamen von Merkmalbildern:',
             'selectbox',
             544,
@@ -55,7 +55,7 @@ class Migration_20190926130300 extends Migration implements IMigration
         $this->setConfig(
             'bilder_merkmalwert_namen',
             '1',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Bildnamen von Merkmalwertbildern:',
             'selectbox',
             546,

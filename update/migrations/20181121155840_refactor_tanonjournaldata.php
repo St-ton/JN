@@ -65,7 +65,7 @@ class Migration_20181121155840 extends Migration implements IMigration
         $this->setConfig(
             'global_cancellation_time',
             14,
-            \CONF_GLOBAL,
+            CONF_GLOBAL,
             'Retourenfrist',
             'number',
             650,

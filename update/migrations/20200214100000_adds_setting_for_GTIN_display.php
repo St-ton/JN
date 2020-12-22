@@ -26,7 +26,7 @@ class Migration_20200214100000 extends Migration implements IMigration
         $this->setConfig(
             'gtin_display',
             'always',
-            \CONF_ARTIKELDETAILS,
+            CONF_ARTIKELDETAILS,
             'GTIN anzeigen',
             'selectbox',
             499,

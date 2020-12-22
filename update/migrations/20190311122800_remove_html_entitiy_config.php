@@ -33,7 +33,7 @@ class Migration_20190311122800 extends Migration implements IMigration
         $this->setConfig(
             'global_artikelname_htmlentities',
             'N',
-            \CONF_GLOBAL,
+            CONF_GLOBAL,
             'HTML-Code Umwandlung bei Artikelnamen',
             'selectbox',
             280,

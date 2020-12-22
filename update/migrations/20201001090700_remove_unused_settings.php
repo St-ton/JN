@@ -40,7 +40,7 @@ class Migration_20201001090700 extends Migration implements IMigration
         $this->setConfig(
             'bilder_kategorien_skalieren',
             'N',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Kategoriebilder skalieren',
             'selectbox',
             109,
@@ -55,7 +55,7 @@ class Migration_20201001090700 extends Migration implements IMigration
         $this->setConfig(
             'bilder_variationen_gross_skalieren',
             'N',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Variationsbilder Größe skalieren',
             'selectbox',
             127,
@@ -70,7 +70,7 @@ class Migration_20201001090700 extends Migration implements IMigration
         $this->setConfig(
             'bilder_variationen_skalieren',
             'N',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Variationsbilder skalieren',
             'selectbox',
             130,
@@ -85,7 +85,7 @@ class Migration_20201001090700 extends Migration implements IMigration
         $this->setConfig(
             'bilder_variationen_mini_skalieren',
             'N',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Produktbilder Größe skalieren',
             'selectbox',
             142,
@@ -100,7 +100,7 @@ class Migration_20201001090700 extends Migration implements IMigration
         $this->setConfig(
             'bilder_artikel_gross_skalieren',
             'N',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Produktbilder Groß skalieren',
             'selectbox',
             149,
@@ -115,7 +115,7 @@ class Migration_20201001090700 extends Migration implements IMigration
         $this->setConfig(
             'bilder_artikel_normal_skalieren',
             'N',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Produktbilder Normal skalieren',
             'selectbox',
             169,
@@ -130,7 +130,7 @@ class Migration_20201001090700 extends Migration implements IMigration
         $this->setConfig(
             'bilder_artikel_klein_skalieren',
             'N',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Produktbilder Klein skalieren',
             'selectbox',
             189,
@@ -145,7 +145,7 @@ class Migration_20201001090700 extends Migration implements IMigration
         $this->setConfig(
             'bilder_artikel_mini_skalieren',
             'N',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Produktbilder Mini skalieren',
             'selectbox',
             202,
@@ -160,7 +160,7 @@ class Migration_20201001090700 extends Migration implements IMigration
         $this->setConfig(
             'bilder_hersteller_normal_skalieren',
             'N',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Herstellerbilder Normal skalieren',
             'selectbox',
             209,
@@ -175,7 +175,7 @@ class Migration_20201001090700 extends Migration implements IMigration
         $this->setConfig(
             'bilder_hersteller_klein_skalieren',
             'N',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Herstellerbilder Klein skalieren',
             'selectbox',
             229,
@@ -190,7 +190,7 @@ class Migration_20201001090700 extends Migration implements IMigration
         $this->setConfig(
             'bilder_merkmal_normal_skalieren',
             'N',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Merkmalbilder Normal skalieren',
             'selectbox',
             249,
@@ -205,7 +205,7 @@ class Migration_20201001090700 extends Migration implements IMigration
         $this->setConfig(
             'bilder_merkmal_klein_skalieren',
             'N',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Merkmalbilder Klein skalieren',
             'selectbox',
             269,
@@ -220,7 +220,7 @@ class Migration_20201001090700 extends Migration implements IMigration
         $this->setConfig(
             'bilder_merkmalwert_normal_skalieren',
             'N',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Merkmalwertbilder Normal skalieren',
             'selectbox',
             289,
@@ -235,7 +235,7 @@ class Migration_20201001090700 extends Migration implements IMigration
         $this->setConfig(
             'bilder_merkmalwert_klein_skalieren',
             'N',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Merkmalwertbilder Klein skalieren',
             'selectbox',
             309,

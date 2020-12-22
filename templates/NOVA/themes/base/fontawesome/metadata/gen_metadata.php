@@ -1,7 +1,7 @@
 <?php
 
 $yamlPath = __DIR__ . '/icons.yml';
-$yamlTxt  = \file_get_contents($yamlPath);
+$yamlTxt  = file_get_contents($yamlPath);
 $yaml     = \Symfony\Component\Yaml\Yaml::parse($yamlTxt);
 $faMap    = [];
 

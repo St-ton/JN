@@ -24,7 +24,7 @@ class Migration_20160614152525 extends Migration implements IMigration
         $this->setConfig(
             'artikeldetails_xselling_kauf_parent',
             'N',
-            \CONF_ARTIKELDETAILS,
+            CONF_ARTIKELDETAILS,
             'Immer Vaterartikel anzeigen',
             'selectbox',
             230,

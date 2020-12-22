@@ -25,7 +25,7 @@ class Migration_20190312160200 extends Migration implements IMigration
         $this->setConfig(
             'cron_type',
             'N',
-            \CONF_CRON,
+            CONF_CRON,
             'Pseudo-Cron Methode',
             'selectbox',
             1,
@@ -42,7 +42,7 @@ class Migration_20190312160200 extends Migration implements IMigration
         $this->setConfig(
             'cron_freq',
             '10',
-            \CONF_CRON,
+            CONF_CRON,
             'Server-to-Server jeden X-ten Aufruf starten',
             'number',
             2,

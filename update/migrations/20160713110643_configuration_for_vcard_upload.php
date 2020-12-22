@@ -24,7 +24,7 @@ class Migration_20160713110643 extends Migration implements IMigration
         $this->setConfig(
             'kundenregistrierung_vcardupload',
             'Y',
-            \CONF_KUNDEN,
+            CONF_KUNDEN,
             'vCard Upload erlauben',
             'selectbox',
             240,

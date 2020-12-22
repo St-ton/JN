@@ -24,7 +24,7 @@ class Migration_20170928095400 extends Migration implements IMigration
         $this->setConfig(
             'global_ssl_www',
             '',
-            \CONF_GLOBAL,
+            CONF_GLOBAL,
             'Zertifikat ausgestellt auf',
             'selectbox',
             541,

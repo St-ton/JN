@@ -25,7 +25,7 @@ class Migration_20191115154100 extends Migration implements IMigration
         $this->setConfig(
             'products_per_page_gallery',
             '10,20,30,40,50',
-            \CONF_ARTIKELUEBERSICHT,
+            CONF_ARTIKELUEBERSICHT,
             'Auswahloptionen Artikel pro Seite in Gallerieansicht',
             'text',
             855,
@@ -37,7 +37,7 @@ class Migration_20191115154100 extends Migration implements IMigration
         $this->setConfig(
             'artikeluebersicht_anzahl_darstellung1',
             '10',
-            \CONF_ARTIKELUEBERSICHT,
+            CONF_ARTIKELUEBERSICHT,
             'Anzahl Artikel in Listendarstellung',
             'number',
             840,
@@ -50,7 +50,7 @@ class Migration_20191115154100 extends Migration implements IMigration
         $this->setConfig(
             'artikeluebersicht_anzahl_darstellung2',
             '20',
-            \CONF_ARTIKELUEBERSICHT,
+            CONF_ARTIKELUEBERSICHT,
             'Anzahl Artikel in Galeriedarstellung',
             'number',
             850,
@@ -63,7 +63,7 @@ class Migration_20191115154100 extends Migration implements IMigration
         $this->setConfig(
             'artikeluebersicht_erw_darstellung_stdansicht',
             '2',
-            \CONF_ARTIKELUEBERSICHT,
+            CONF_ARTIKELUEBERSICHT,
             'Standard-Darstellung für Artikelübersicht',
             'selectbox',
             835,
@@ -88,7 +88,7 @@ class Migration_20191115154100 extends Migration implements IMigration
         $this->setConfig(
             'products_per_page_gallery',
             '9,12,15,18,21',
-            \CONF_ARTIKELUEBERSICHT,
+            CONF_ARTIKELUEBERSICHT,
             'Auswahloptionen Artikel pro Seite in Gallerieansicht',
             'text',
             855,
@@ -100,7 +100,7 @@ class Migration_20191115154100 extends Migration implements IMigration
         $this->setConfig(
             'artikeluebersicht_erw_darstellung_stdansicht',
             '2',
-            \CONF_ARTIKELUEBERSICHT,
+            CONF_ARTIKELUEBERSICHT,
             'Standard-Darstellung für Artikelübersicht',
             'selectbox',
             835,
@@ -119,7 +119,7 @@ class Migration_20191115154100 extends Migration implements IMigration
         $this->setConfig(
             'artikeluebersicht_anzahl_darstellung3',
             '40',
-            \CONF_ARTIKELUEBERSICHT,
+            CONF_ARTIKELUEBERSICHT,
             'Artikelanzahl in Mosaikdarstellung',
             'number',
             860,

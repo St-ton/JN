@@ -26,7 +26,7 @@ class Migration_20171110102354 extends Migration implements IMigration
         $this->setConfig(
             'shop_ustid_force_remote_check',
             'Y',
-            \CONF_KUNDEN,
+            CONF_KUNDEN,
             'Kundenregistrierung nur mit MIAS-Best&auml;tigung',
             'selectbox',
             430,
@@ -45,7 +45,7 @@ class Migration_20171110102354 extends Migration implements IMigration
         $this->setConfig(
             'shop_ustid_bzstpruefung',
             'N',
-            \CONF_KUNDEN,
+            CONF_KUNDEN,
             'UStID-Nummer Pr&uuml;fung durch MIAS-System aktivieren',
             'selectbox',
             420,
@@ -116,7 +116,7 @@ class Migration_20171110102354 extends Migration implements IMigration
         $this->setConfig(
             'shop_ustid_bzstpruefung',
             'N',
-            \CONF_KUNDEN,
+            CONF_KUNDEN,
             'USt-ID Pr&uuml;fung des Bundeszentralamts f&uuml;r Steuern aktivieren',
             'selectbox',
             430,

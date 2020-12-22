@@ -24,7 +24,7 @@ class Migration_20200604130900 extends Migration implements IMigration
         $this->setConfig(
             'consent_manager_active',
             'Y',
-            \CONF_CONSENTMANAGER,
+            CONF_CONSENTMANAGER,
             'Consent Manager aktivieren',
             'selectbox',
             100,

@@ -26,7 +26,7 @@ class Migration_20200124113400 extends Migration implements IMigration
         $this->setConfig(
             'general_child_item_bulk_pricing',
             'N',
-            \CONF_KAUFABWICKLUNG,
+            CONF_KAUFABWICKLUNG,
             'Variationsübergreifende Staffelpreise',
             'selectbox',
             280,

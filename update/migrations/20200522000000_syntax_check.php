@@ -30,7 +30,7 @@ class Migration_20200522000000 extends Migration implements IMigration
      */
     public function up()
     {
-        if (\PHP_SAPI === 'cli') {
+        if (PHP_SAPI === 'cli') {
             // removed in cli environment due to runtime reasons
             return;
         }

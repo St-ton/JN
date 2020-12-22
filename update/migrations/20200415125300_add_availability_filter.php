@@ -69,7 +69,7 @@ class Migration_20200415125300 extends Migration implements IMigration
         $this->setConfig(
             'allgemein_availabilityfilter_benutzen',
             'Y',
-            \CONF_NAVIGATIONSFILTER,
+            CONF_NAVIGATIONSFILTER,
             'Verfügbarkeitsfilter benutzen',
             'selectbox',
             117,
@@ -86,7 +86,7 @@ class Migration_20200415125300 extends Migration implements IMigration
         $this->setConfig(
             'configgroup_110_availability_filter',
             'Verfügbarkeitsfilter',
-            \CONF_NAVIGATIONSFILTER,
+            CONF_NAVIGATIONSFILTER,
             'Verfügbarkeitsfilter',
             null,
             115,

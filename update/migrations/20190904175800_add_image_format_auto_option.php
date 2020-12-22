@@ -63,7 +63,7 @@ class Migration_20190904175800 extends Migration implements IMigration
         $this->setConfig(
             'bilder_hersteller_mini_breite',
             '120',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Herstellerbilder Mini Breite',
             'number',
             100
@@ -71,7 +71,7 @@ class Migration_20190904175800 extends Migration implements IMigration
         $this->setConfig(
             'bilder_hersteller_mini_hoehe',
             '40',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Herstellerbilder Mini Höhe',
             'number',
             100
@@ -79,7 +79,7 @@ class Migration_20190904175800 extends Migration implements IMigration
         $this->setConfig(
             'bilder_hersteller_gross_breite',
             '1800',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Herstellerbilder Groß Breite',
             'number',
             100
@@ -87,7 +87,7 @@ class Migration_20190904175800 extends Migration implements IMigration
         $this->setConfig(
             'bilder_hersteller_gross_hoehe',
             '600',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Herstellerbilder Groß Höhe',
             'number',
             100
@@ -95,7 +95,7 @@ class Migration_20190904175800 extends Migration implements IMigration
         $this->setConfig(
             'bilder_merkmal_mini_breite',
             '120',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Herstellerbilder Mini Breite',
             'number',
             100
@@ -103,7 +103,7 @@ class Migration_20190904175800 extends Migration implements IMigration
         $this->setConfig(
             'bilder_merkmal_mini_hoehe',
             '40',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Merkmalbilder Mini Höhe',
             'number',
             100
@@ -111,7 +111,7 @@ class Migration_20190904175800 extends Migration implements IMigration
         $this->setConfig(
             'bilder_merkmal_gross_breite',
             '1800',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Merkmalbilder Groß Breite',
             'number',
             100
@@ -119,7 +119,7 @@ class Migration_20190904175800 extends Migration implements IMigration
         $this->setConfig(
             'bilder_merkmal_gross_hoehe',
             '600',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Merkmalbilder Groß Höhe',
             'number',
             100
@@ -128,7 +128,7 @@ class Migration_20190904175800 extends Migration implements IMigration
         $this->setConfig(
             'bilder_merkmalwert_mini_breite',
             '40',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Merkmalwertbilder Mini Breite',
             'number',
             100
@@ -136,7 +136,7 @@ class Migration_20190904175800 extends Migration implements IMigration
         $this->setConfig(
             'bilder_merkmalwert_mini_hoehe',
             '40',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Merkmalwertbilder Mini Höhe',
             'number',
             100
@@ -144,7 +144,7 @@ class Migration_20190904175800 extends Migration implements IMigration
         $this->setConfig(
             'bilder_merkmalwert_gross_breite',
             '1800',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Merkmalwertbilder Groß Breite',
             'number',
             100
@@ -152,7 +152,7 @@ class Migration_20190904175800 extends Migration implements IMigration
         $this->setConfig(
             'bilder_merkmalwert_gross_hoehe',
             '600',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Merkmalwertbilder Groß Höhe',
             'number',
             100
@@ -161,7 +161,7 @@ class Migration_20190904175800 extends Migration implements IMigration
         $this->setConfig(
             'bilder_konfiggruppe_mini_breite',
             '120',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Konfiggruppenbilder Mini Breite',
             'number',
             100
@@ -169,7 +169,7 @@ class Migration_20190904175800 extends Migration implements IMigration
         $this->setConfig(
             'bilder_konfiggruppe_mini_hoehe',
             '40',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Konfiggruppenbilder Mini Höhe',
             'number',
             100
@@ -178,7 +178,7 @@ class Migration_20190904175800 extends Migration implements IMigration
         $this->setConfig(
             'bilder_konfiggruppe_normal_breite',
             '1200',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Konfiggruppenbilder Normal Breite',
             'number',
             100
@@ -186,7 +186,7 @@ class Migration_20190904175800 extends Migration implements IMigration
         $this->setConfig(
             'bilder_konfiggruppe_normal_hoehe',
             '400',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Konfiggruppenbilder Normal Höhe',
             'number',
             100
@@ -194,7 +194,7 @@ class Migration_20190904175800 extends Migration implements IMigration
         $this->setConfig(
             'bilder_konfiggruppe_gross_breite',
             '1800',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Konfiggruppenbilder Groß Breite',
             'number',
             100
@@ -202,7 +202,7 @@ class Migration_20190904175800 extends Migration implements IMigration
         $this->setConfig(
             'bilder_konfiggruppe_gross_hoehe',
             '600',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Konfiggruppenbilder Groß Höhe',
             'number',
             100
@@ -211,7 +211,7 @@ class Migration_20190904175800 extends Migration implements IMigration
         $this->setConfig(
             'bilder_kategorien_mini_breite',
             '120',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Kategoriebilder Mini Breite',
             'number',
             100
@@ -219,7 +219,7 @@ class Migration_20190904175800 extends Migration implements IMigration
         $this->setConfig(
             'bilder_kategorien_mini_hoehe',
             '40',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Kategoriebilder Mini Höhe',
             'number',
             100
@@ -227,7 +227,7 @@ class Migration_20190904175800 extends Migration implements IMigration
         $this->setConfig(
             'bilder_kategorien_gross_breite',
             '1800',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Kategoriebilder Groß Breite',
             'number',
             100
@@ -235,7 +235,7 @@ class Migration_20190904175800 extends Migration implements IMigration
         $this->setConfig(
             'bilder_kategorien_gross_hoehe',
             '600',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Kategoriebilder Groß Höhe',
             'number',
             100
@@ -243,7 +243,7 @@ class Migration_20190904175800 extends Migration implements IMigration
         $this->setConfig(
             'bilder_kategorien_klein_breite',
             '600',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Kategoriebilder Klein Breite',
             'number',
             100
@@ -251,7 +251,7 @@ class Migration_20190904175800 extends Migration implements IMigration
         $this->setConfig(
             'bilder_kategorien_klein_hoehe',
             '200',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Kategoriebilder Klein Höhe',
             'number',
             100
@@ -259,7 +259,7 @@ class Migration_20190904175800 extends Migration implements IMigration
         $this->setConfig(
             'bilder_variationen_klein_breite',
             '200',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Variationsbilder Klein Breite',
             'number',
             100
@@ -267,7 +267,7 @@ class Migration_20190904175800 extends Migration implements IMigration
         $this->setConfig(
             'bilder_variationen_klein_hoehe',
             '200',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Variationsbilder Klein Höhe',
             'number',
             100

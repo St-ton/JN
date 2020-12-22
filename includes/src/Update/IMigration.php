@@ -21,39 +21,39 @@ interface IMigration
     public const DOWN = 'down';
 
     /**
-     * @return mixed
+     * @return mixed|void
      */
     public function up();
 
     /**
-     * @return mixed
+     * @return mixed|void
      */
     public function down();
 
     /**
-     * @return int
+     * @return string|null
      */
     public function getId();
 
     /**
      * @return string
      */
-    public function getName();
+    public function getName(): string;
+
+    /**
+     * @return string|null
+     */
+    public function getAuthor(): ?string;
 
     /**
      * @return string
      */
-    public function getAuthor();
-
-    /**
-     * @return null|string
-     */
-    public function getDescription();
+    public function getDescription(): string;
 
     /**
      * @return DateTime
      */
-    public function getCreated();
+    public function getCreated(): DateTime;
 
     /**
      * @return bool

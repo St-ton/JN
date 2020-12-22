@@ -801,10 +801,10 @@ class ShippingMethod
     }
 
     /**
-     * @param string  $country
-     * @param Artikel $product
-     * @param int     $amount
-     * @param bool    $checkDeliveryAddress
+     * @param string    $country
+     * @param Artikel   $product
+     * @param int|float $amount
+     * @param bool      $checkDeliveryAddress
      * @return bool|stdClass
      */
     public static function gibArtikelabhaengigeVersandkosten(

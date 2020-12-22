@@ -65,10 +65,10 @@ class WishlistItem
 
     /**
      * WishlistItem constructor.
-     * @param int    $productID
-     * @param string $productName
-     * @param float  $qty
-     * @param int    $wihlistID
+     * @param int          $productID
+     * @param string       $productName
+     * @param float|string $qty
+     * @param int          $wihlistID
      */
     public function __construct(int $productID, string $productName, $qty, int $wihlistID)
     {

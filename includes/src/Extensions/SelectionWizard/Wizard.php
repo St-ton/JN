@@ -336,7 +336,7 @@ class Wizard
 
     /**
      * @param int $questionID
-     * @return array|null
+     * @return Option|mixed
      */
     public function getSelectedValue(int $questionID)
     {

@@ -13,8 +13,8 @@ use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
 
 /**
- * @param float $price
- * @param float $taxRate
+ * @param float|string $price
+ * @param float|string $taxRate
  * @return float
  */
 function berechneVersandpreisBrutto($price, $taxRate)
@@ -25,8 +25,8 @@ function berechneVersandpreisBrutto($price, $taxRate)
 }
 
 /**
- * @param float $price
- * @param float $taxRate
+ * @param float|string $price
+ * @param float|string $taxRate
  * @return float
  */
 function berechneVersandpreisNetto($price, $taxRate)

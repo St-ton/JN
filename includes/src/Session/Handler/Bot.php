@@ -30,9 +30,7 @@ class Bot extends JTLDefault
     }
 
     /**
-     * @param string $path
-     * @param string $name
-     * @return bool
+     * @inheritDoc
      */
     public function open($path, $name)
     {
@@ -40,7 +38,7 @@ class Bot extends JTLDefault
     }
 
     /**
-     * @return bool
+     * @inheritDoc
      */
     public function close()
     {
@@ -48,9 +46,7 @@ class Bot extends JTLDefault
     }
 
     /**
-     * @param string $id
-     * @return mixed|string
-     * @throws \Exception
+     * @inheritDoc
      */
     public function read($id)
     {
@@ -65,9 +61,7 @@ class Bot extends JTLDefault
     }
 
     /**
-     * @param string $id
-     * @param array  $data
-     * @return bool
+     * @inheritDoc
      */
     public function write($id, $data)
     {
@@ -79,8 +73,7 @@ class Bot extends JTLDefault
     }
 
     /**
-     * @param string $id
-     * @return bool
+     * @inheritDoc
      */
     public function destroy($id)
     {
@@ -88,8 +81,7 @@ class Bot extends JTLDefault
     }
 
     /**
-     * @param int $max_lifetime
-     * @return bool
+     * @inheritDoc
      */
     public function gc($max_lifetime)
     {

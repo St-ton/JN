@@ -1760,7 +1760,7 @@ function pruefeZahlungsartMinBestellungen(int $minOrders): bool
 }
 
 /**
- * @param float $minOrderValue
+ * @param float|string $minOrderValue
  * @return bool
  */
 function pruefeZahlungsartMinBestellwert($minOrderValue): bool
@@ -1780,7 +1780,7 @@ function pruefeZahlungsartMinBestellwert($minOrderValue): bool
 }
 
 /**
- * @param float $maxOrderValue
+ * @param float|string $maxOrderValue
  * @return bool
  */
 function pruefeZahlungsartMaxBestellwert($maxOrderValue): bool
@@ -1801,8 +1801,8 @@ function pruefeZahlungsartMaxBestellwert($maxOrderValue): bool
 }
 
 /**
- * @param int $shippingMethodID
- * @param int $formValues
+ * @param int       $shippingMethodID
+ * @param int|array $formValues
  * @return bool
  */
 function versandartKorrekt(int $shippingMethodID, $formValues = 0)

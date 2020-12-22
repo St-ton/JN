@@ -1344,7 +1344,7 @@ class ShippingMethod
     }
 
     /**
-     * @param Versandart $shippingMethod
+     * @param Versandart|stdClass $shippingMethod
      * @return string
      * @former baueVersandkostenfreiLaenderString()
      */

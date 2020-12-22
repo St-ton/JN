@@ -28,7 +28,6 @@ class Migration_20180705122000 extends Migration implements IMigration
         $updates    = [];
         if ($statusMail !== false) {
             foreach (Text::parseSSKint($statusMail->cIntervall) as $interval) {
-                $interval       = (int)$interval;
                 $upd            = new stdClass();
                 $upd->cEmail    = $statusMail->cEmail;
                 $upd->nInterval = $interval;

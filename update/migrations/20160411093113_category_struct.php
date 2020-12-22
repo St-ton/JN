@@ -32,7 +32,7 @@ class Migration_20160411093113 extends Migration implements IMigration
         $result = $this->getDB()->query(
             'SELECT kKategorie 
                 FROM tkategorie 
-                WHERE kOberKategorie = ' . (int)$parent_id . ' 
+                WHERE kOberKategorie = ' . $parent_id . ' 
                 ORDER BY nSort, cName',
             ReturnType::ARRAY_OF_OBJECTS
         );

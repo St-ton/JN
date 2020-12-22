@@ -46,7 +46,7 @@ class Migration_20171213093514 extends Migration implements IMigration
             foreach (['cBeschreibung', 'cKurzBeschreibung'] as $fieldName) {
                 $this->execute(
                     "ALTER TABLE `{$table}`
-	                    ADD FULLTEXT KEY `{$fieldName}` (`{$fieldName}`)"
+                        ADD FULLTEXT KEY `{$fieldName}` (`{$fieldName}`)"
                 );
             }
         }

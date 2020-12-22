@@ -17,6 +17,9 @@ class Migration_20160523153200 extends Migration implements IMigration
 {
     protected $author = 'ms';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('DELETE data1 FROM `tverfuegbarkeitsbenachrichtigung` data1, `tverfuegbarkeitsbenachrichtigung` data2 
@@ -26,6 +29,9 @@ class Migration_20160523153200 extends Migration implements IMigration
         MigrationHelper::createIndex('tverfuegbarkeitsbenachrichtigung', ['cMail', 'kArtikel'], 'idx_cMail_kArtikel', true);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         MigrationHelper::dropIndex('tverfuegbarkeitsbenachrichtigung', 'idx_cMail_kArtikel');

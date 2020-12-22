@@ -16,6 +16,9 @@ class Migration_20160713110643 extends Migration implements IMigration
 {
     protected $author = 'fp';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setConfig(
@@ -39,6 +42,9 @@ class Migration_20160713110643 extends Migration implements IMigration
         $this->setLocalization('eng', 'account data', 'uploadVCard', 'Upload vCard');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeConfig('kundenregistrierung_vcardupload');

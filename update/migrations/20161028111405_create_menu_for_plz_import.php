@@ -30,6 +30,9 @@ class Migration_20161028111405 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->reorderMenu(11);
@@ -53,6 +56,9 @@ class Migration_20161028111405 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute(

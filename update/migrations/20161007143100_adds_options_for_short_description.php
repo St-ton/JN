@@ -16,6 +16,9 @@ class Migration_20161007143100 extends Migration implements IMigration
 {
     protected $author = 'ms';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setConfig(
@@ -50,6 +53,9 @@ class Migration_20161007143100 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeConfig('artikeldetails_kurzbeschreibung_anzeigen');

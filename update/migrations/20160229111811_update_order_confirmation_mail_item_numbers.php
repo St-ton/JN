@@ -16,6 +16,9 @@ class Migration_20160229111811 extends Migration implements IMigration
 {
     protected $author = 'sh';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('UPDATE temailvorlagesprache SET `cContentHtml`=REPLACE(`cContentHtml`,"{$Position->cArtNr}","{$Position->Artikel->cArtNr}"),

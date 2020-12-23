@@ -14,7 +14,6 @@ use JTL\Mail\Mailer;
 use JTL\Mail\Template\Model;
 use JTL\Mail\Template\TemplateFactory;
 use JTL\Mail\Template\TemplateInterface;
-use JTL\Mail\Validator\SyntaxChecker;
 use PHPMailer\PHPMailer\Exception;
 use stdClass;
 
@@ -27,8 +26,6 @@ final class Controller
     public const OK = 0;
 
     public const ERROR_NO_TEMPLATE = 1;
-
-    public const ERROR_SMARTY = 2;
 
     public const ERROR_UPLOAD_FILE_NAME = 3;
 
@@ -239,47 +236,29 @@ final class Controller
     public function updateTemplate(int $templateID, array $post, array $files): int
     {
         $this->model = $this->getTemplateByID($templateID);
-        $tmpModel    = $this->getTemplateByID($templateID);
-        if ($tmpModel === null) {
+        if ($this->model === null) {
             throw new InvalidArgumentException('Cannot find model with ID ' . $templateID);
         }
         $languages = LanguageHelper::getAllLanguages();
         foreach ($languages as $lang) {
             $langID = $lang->getId();
-            foreach ($tmpModel->getMapping() as $field => $method) {
+            foreach ($this->model->getMapping() as $field => $method) {
                 $method         = 'set' . $method;
                 $localizedIndex = $field . '_' . $langID;
                 if (isset($post[$field])) {
-                    $tmpModel->$method($post[$field]);
+                    $this->model->$method($post[$field]);
                 } elseif (isset($post[$localizedIndex])) {
-                    $tmpModel->$method($post[$localizedIndex], $langID);
+                    $this->model->$method($post[$localizedIndex], $langID);
                 }
             }
         }
-        $res = $this->updateUploads($tmpModel, $languages, $post, $files);
+        $res = $this->updateUploads($this->model, $languages, $post, $files);
         if ($res !== self::OK) {
             return $res;
         }
-        $checker = new SyntaxChecker(
-            $this->db,
-            $this->factory,
-            $this->mailer->getRenderer(),
-            $this->mailer->getHydrator()
-        );
-        $tmpModel->setHasError(false);
-        $tmpModel->save();
-        $check = $checker->checkSyntax($tmpModel->getModuleID());
-        if (count($check) > 0) {
-            $this->setErrorMessages($check);
-            $tmpModel->setHasError(true);
-            $this->model->save();
-            $this->model = $tmpModel;
-
-            return self::ERROR_SMARTY;
-        }
-
-        $this->model = $tmpModel;
-        unset($_SESSION['emailSyntaxErrorCount']);
+        $this->model->setHasError(false);
+        $this->model->setSyntaxCheck(Model::SYNTAX_NOT_CHECKED);
+        $this->model->save();
 
         return self::OK;
     }

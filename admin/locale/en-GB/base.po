@@ -749,6 +749,9 @@ msgstr "Company Ltd."
 msgid "faulty"
 msgstr "Faulty"
 
+msgid "untested"
+msgstr "Untested"
+
 msgid "week"
 msgstr "Week"
 

@@ -113,6 +113,13 @@ msgstr "Fehler in E-Mail-Vorlage"
 msgid "getEmailTemplateSyntaxErrorCountMessage"
 msgstr "In %d E-Mail-Vorlage(n) sind Syntax-Fehler vorhanden."
 
+#placeholder: number of affected email templates
+msgid "getEmailTemplateSyntaxUncheckedCountMessage"
+msgstr "%d E-Mail-Vorlage(n) sind ohne Syntax-Prüfung."
+
+msgid "getEmailTemplateSyntaxUncheckedCountTitle"
+msgstr "Ungeprüfte E-Mail-Vorlage"
+
 msgid "duplicateSpecialLinkTitle"
 msgstr "Spezialseite mehrmals angelegt"
 

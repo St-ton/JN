@@ -10,6 +10,7 @@ use IteratorAggregate;
 use JTL\DB\ReturnType;
 use JTL\IO\IOResponse;
 use JTL\Link\Admin\LinkAdmin;
+use JTL\Mail\Template\Model;
 use JTL\Shop;
 use JTL\SingletonTrait;
 use function Functional\pluck;
@@ -309,12 +310,23 @@ class Notification implements IteratorAggregate, Countable
             );
         }
 
-        if (($emailSyntaxErrorCount = $status->getEmailTemplateSyntaxErrorCount()) > 0) {
+        if (($emailSyntaxErrCount = $status->getEmailTemplateSyntaxErrorCount()) > 0) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,
                 __('getEmailTemplateSyntaxErrorCountTitle'),
-                \sprintf(__('getEmailTemplateSyntaxErrorCountMessage'), $emailSyntaxErrorCount),
+                \sprintf(__('getEmailTemplateSyntaxErrorCountMessage'), $emailSyntaxErrCount),
                 'emailvorlagen.php'
+            );
+        }
+
+        $hash = 'hasUncheckedEmailTemplates';
+        if (($emailSyntaxErrCount = $status->getEmailTemplateSyntaxErrorCount(Model::SYNTAX_NOT_CHECKED, $hash)) > 0) {
+            $this->add(
+                NotificationEntry::TYPE_WARNING,
+                __('getEmailTemplateSyntaxUncheckedCountTitle'),
+                \sprintf(__('getEmailTemplateSyntaxUncheckedCountMessage'), $emailSyntaxErrCount),
+                'emailvorlagen.php',
+                $hash
             );
         }
 

@@ -749,6 +749,9 @@ msgstr "Muster GmbH"
 msgid "faulty"
 msgstr "Fehlerhaft"
 
+msgid "untested"
+msgstr "Ungeprüft"
+
 msgid "week"
 msgstr "Woche"
 

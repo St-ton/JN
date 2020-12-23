@@ -113,6 +113,13 @@ msgstr "Error in email template"
 msgid "getEmailTemplateSyntaxErrorCountMessage"
 msgstr "%d email template(s) contain(s) syntax errors."
 
+#placeholder: number of affected email templates
+msgid "getEmailTemplateSyntaxUncheckedCountMessage"
+msgstr "%d email template(s) are without syntax check."
+
+msgid "getEmailTemplateSyntaxUncheckedCountTitle"
+msgstr "Unchecked email template"
+
 msgid "duplicateSpecialLinkTitle"
 msgstr "Special page created multiple times"
 

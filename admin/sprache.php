@@ -29,6 +29,7 @@ $step        = 'overview';
 $lang        = LanguageHelper::getInstance($db, $cache);
 setzeSprache();
 $langCode = $_SESSION['editLanguageCode'];
+$variable = null;
 
 if (isset($_FILES['csvfile']['tmp_name'])
     && Form::validateToken()

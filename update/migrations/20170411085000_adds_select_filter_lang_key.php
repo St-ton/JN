@@ -17,12 +17,18 @@ class Migration_20170411085000 extends Migration implements IMigration
     protected $author      = 'ms';
     protected $description = 'add lang key select filter';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'global', 'selectFilter', 'Beliebig');
         $this->setLocalization('eng', 'global', 'selectFilter', 'Any');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('selectFilter');

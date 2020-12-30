@@ -16,6 +16,9 @@ class Migration_20160607140140 extends Migration implements IMigration
 {
     protected $author = 'aj';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -32,6 +35,9 @@ class Migration_20160607140140 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('DROP TABLE IF EXISTS `tartikelpicthistory`');

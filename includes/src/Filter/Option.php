@@ -155,7 +155,7 @@ class Option extends AbstractFilter
     }
 
     /**
-     * @param string $url
+     * @param string|null $url
      * @return $this
      */
     public function setURL($url): FilterInterface

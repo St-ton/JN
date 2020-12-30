@@ -19,13 +19,15 @@ class Migration_20180705122000 extends Migration implements IMigration
     protected $author      = 'fm';
     protected $description = 'Split cron intervals';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $statusMail = $this->getDB()->query('SELECT * FROM tstatusemail', ReturnType::SINGLE_OBJECT);
         $updates    = [];
         if ($statusMail !== false) {
             foreach (Text::parseSSKint($statusMail->cIntervall) as $interval) {
-                $interval       = (int)$interval;
                 $upd            = new stdClass();
                 $upd->cEmail    = $statusMail->cEmail;
                 $upd->nInterval = $interval;
@@ -56,6 +58,9 @@ class Migration_20180705122000 extends Migration implements IMigration
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
     }

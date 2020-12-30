@@ -19,8 +19,7 @@ class Migration_20200812145300 extends Migration implements IMigration
     protected $description = 'Add lang var note';
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
@@ -29,7 +28,7 @@ class Migration_20200812145300 extends Migration implements IMigration
     }
 
     /**
-     * @return mixed|void
+     * @inheritDoc
      */
     public function down()
     {

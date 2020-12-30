@@ -183,7 +183,7 @@ class Characteristic extends BaseCharacteristic
                 if ($language->kSprache === $seo->kSprache) {
                     $this->cSeo[$language->kSprache] = $seo->cSeo;
                     if ($language->kSprache === $currentLangID) {
-                        $this->setID($seo->kMerkmal)
+                        $this->setID((int)$seo->kMerkmal)
                             ->setName($seo->cWert)
                             ->setFrontendName($seo->cWert);
                     }

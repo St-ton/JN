@@ -17,6 +17,9 @@ class Migration_20181115131359 extends Migration implements IMigration
     protected $author      = 'fp';
     protected $description = 'Change setting for restriction to only delivery countries';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -26,6 +29,9 @@ class Migration_20181115131359 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute(

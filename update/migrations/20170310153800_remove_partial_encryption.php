@@ -17,6 +17,9 @@ class Migration_20170310153800 extends Migration implements IMigration
     protected $author      = 'fm';
     protected $description = 'Remove partial https encryption option';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -34,6 +37,9 @@ class Migration_20170310153800 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute(

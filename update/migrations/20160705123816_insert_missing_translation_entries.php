@@ -16,6 +16,9 @@ class Migration_20160705123816 extends Migration implements IMigration
 {
     protected $author = 'fp';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('eng', 'global', 'invalidToken', 'Invalid securitycode');
@@ -26,6 +29,9 @@ class Migration_20160705123816 extends Migration implements IMigration
         $this->execute("DELETE FROM `tsprachwerte` WHERE `kSprachsektion` = 1 AND `cName` = 'payWithUos';");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->setLocalization('ger', 'global', 'payWithUos', 'jetzt mit United Online Services bezahlen');

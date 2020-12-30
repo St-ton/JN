@@ -84,14 +84,14 @@ class PersistentCartItem
 
     /**
      * PersistentCartItem constructor.
-     * @param int        $productID
-     * @param string     $productName
-     * @param float      $qty
-     * @param int        $cartItemID
-     * @param string     $unique
-     * @param int        $configItemID
-     * @param int|string $type
-     * @param string     $responsibility
+     * @param int          $productID
+     * @param string       $productName
+     * @param float|string $qty
+     * @param int          $cartItemID
+     * @param string       $unique
+     * @param int          $configItemID
+     * @param int|string   $type
+     * @param string       $responsibility
      */
     public function __construct(
         int $productID,

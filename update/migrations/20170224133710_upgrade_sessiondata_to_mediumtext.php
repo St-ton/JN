@@ -17,6 +17,9 @@ class Migration_20170224133710 extends Migration implements IMigration
     protected $author      = 'fp';
     protected $description = 'Upgrade sessiondata to MEDIUMTEXT';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -25,6 +28,9 @@ class Migration_20170224133710 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         // In case of downgrade all sessions will be deleted to prevent invalid session data by truncating.

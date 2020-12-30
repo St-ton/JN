@@ -16,11 +16,17 @@ class Migration_20160510150906 extends Migration implements IMigration
 {
     protected $author = 'dr';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('ALTER TABLE tnewskategorie ADD `cPreviewImage` VARCHAR(255)');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->dropColumn('tnewskategorie', 'cPreviewImage');

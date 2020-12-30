@@ -11,6 +11,9 @@ class Migration_20181102102400 extends Migration implements IMigration
     protected $author      = 'dr';
     protected $description = 'Change OPC page id type';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('ALTER TABLE topcpage DROP INDEX cPageId');
@@ -18,6 +21,9 @@ class Migration_20181102102400 extends Migration implements IMigration
         $this->execute('ALTER TABLE topcpage ADD UNIQUE INDEX (cPageId(255), dPublishFrom)');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('ALTER TABLE topcpage DROP INDEX cPageId');

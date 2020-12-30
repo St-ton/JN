@@ -17,6 +17,9 @@ class Migration_20170118152400 extends Migration implements IMigration
     protected $author      = 'ms';
     protected $description = 'Adds language variables account section';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'account data', 'accountOverview', 'Übersicht');
@@ -32,6 +35,9 @@ class Migration_20170118152400 extends Migration implements IMigration
         $this->setLocalization('eng', 'account data', 'wishlists', 'Wishlists');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('accountOverview');

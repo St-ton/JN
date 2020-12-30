@@ -19,8 +19,7 @@ class Migration_20200717123600 extends Migration implements IMigration
     protected $description = 'Increase versandklasse varchar size';
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
@@ -30,8 +29,7 @@ class Migration_20200717123600 extends Migration implements IMigration
     }
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function down()
     {

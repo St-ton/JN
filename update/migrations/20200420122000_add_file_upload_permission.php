@@ -18,8 +18,7 @@ class Migration_20200420122000 extends Migration implements IMigration
     protected $description = 'Add file upload permission';
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
@@ -27,8 +26,7 @@ class Migration_20200420122000 extends Migration implements IMigration
     }
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function down()
     {

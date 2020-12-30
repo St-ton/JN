@@ -17,6 +17,9 @@ class Migration_20170228163100 extends Migration implements IMigration
     protected $author      = 'ms';
     protected $description = 'sets nofollow for special pages';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -24,6 +27,9 @@ class Migration_20170228163100 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute(

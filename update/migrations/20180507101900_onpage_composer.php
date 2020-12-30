@@ -14,6 +14,9 @@ class Migration_20180507101900 extends Migration implements IMigration
     protected $author      = 'ms';
     protected $description = 'Add OnPage Composer tables';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('CREATE TABLE topcportlet (
@@ -106,6 +109,9 @@ class Migration_20180507101900 extends Migration implements IMigration
             VALUES (0, 'Flipcard', 'Flipcard', 'layout')");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('DROP TABLE topcportlet');

@@ -16,12 +16,18 @@ class Migration_20160406093712 extends Migration implements IMigration
 {
     protected $author = 'ms';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'news', 'newsRestricted', 'Dieser Beitrag unterliegt Beschr&auml;nkungen.');
         $this->setLocalization('eng', 'news', 'newsRestricted', 'This post is subject to restrictions.');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("DELETE FROM `tsprachwerte` WHERE `kSprachsektion` = 14 AND `cName` = 'newsRestricted';");

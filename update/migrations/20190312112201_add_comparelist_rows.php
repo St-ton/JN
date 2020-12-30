@@ -17,6 +17,9 @@ class Migration_20190312112201 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Add comparelist rows';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setConfig('vergleichsliste_verfuegbarkeit', 7, 106, 'Anzeigepriorität Verfügbarkeit', 'number', 113);
@@ -30,6 +33,9 @@ class Migration_20190312112201 extends Migration implements IMigration
         $this->setLocalization('eng', 'comparelist', 'productNumberHint', 'Please add at least two products to compare.');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeConfig('vergleichsliste_verfuegbarkeit');

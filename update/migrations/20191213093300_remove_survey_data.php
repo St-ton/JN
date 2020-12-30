@@ -18,7 +18,7 @@ class Migration_20191213093300 extends Migration implements IMigration
     protected $description = 'Remove survey data';
 
     /**
-     * @return mixed|void
+     * @inheritDoc
      */
     public function up()
     {
@@ -69,8 +69,7 @@ class Migration_20191213093300 extends Migration implements IMigration
     }
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function down()
     {

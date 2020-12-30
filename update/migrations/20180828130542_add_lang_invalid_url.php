@@ -17,12 +17,18 @@ class Migration_20180828130542 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Add lang variable invalidURL';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'global', 'invalidURL', 'Bitte geben Sie eine valide URL ein.');
         $this->setLocalization('eng', 'global', 'invalidURL', 'Please enter a valid url.');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('invalidURL');

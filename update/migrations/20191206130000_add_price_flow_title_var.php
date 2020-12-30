@@ -18,12 +18,18 @@ class Migration_20191206130000 extends Migration implements IMigration
     protected $author      = 'ms';
     protected $description = 'adds lang var for price flow title';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'productDetails', 'PriceFlowTitle', 'Preisverlauf der letzten %s Monate');
         $this->setLocalization('eng', 'productDetails', 'PriceFlowTitle', 'price flow of the last %s months');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('PriceFlowTitle');

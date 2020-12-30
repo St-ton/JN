@@ -16,11 +16,17 @@ class Migration_20160523161900 extends Migration implements IMigration
 {
     protected $author = 'ms';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('ALTER TABLE `tlink` ADD COLUMN `bIsActive` TINYINT(1) NOT NULL DEFAULT 1;');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('ALTER TABLE `tlink` DROP COLUMN `bIsActive`;');

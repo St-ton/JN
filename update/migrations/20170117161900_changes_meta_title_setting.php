@@ -16,11 +16,17 @@ class Migration_20170117161900 extends Migration implements IMigration
 {
     protected $author = 'ms';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute("UPDATE teinstellungenconf SET cName='Meta Title an Produktseiten anhängen' WHERE kEinstellungenConf='140';");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("UPDATE teinstellungenconf SET cName='Meta Title überall anhängen' WHERE kEinstellungenConf='140';");

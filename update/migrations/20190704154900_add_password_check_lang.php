@@ -17,6 +17,9 @@ class Migration_20190704154900 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Add password check lang';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'login', 'passwordTooShort', 'Das Passwort muss aus mindestens %s Zeichen bestehen.');
@@ -39,6 +42,9 @@ class Migration_20190704154900 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('passwordTooShort');

@@ -17,6 +17,9 @@ class Migration_20170118165103 extends Migration implements IMigration
     protected $author      = 'msc';
     protected $description = 'Execute migration 20160415120218 a second time.';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'global', 'couponErr2', 'Der Kupon ist nicht mehr gültig.');
@@ -30,6 +33,9 @@ class Migration_20170118165103 extends Migration implements IMigration
         $this->setLocalization('ger', 'global', 'couponErr99', 'Leider sind die Voraussetzungen für den Kupon nicht erfüllt.');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
     }

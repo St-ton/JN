@@ -17,11 +17,17 @@ class Migration_20190205145948 extends Migration implements IMigration
     protected $author      = 'cr';
     protected $description = 'associate UstId-settings';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('UPDATE teinstellungenconf SET nSort = 415 WHERE kEinstellungenConf = 6');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('UPDATE teinstellungenconf SET nSort = 140 WHERE kEinstellungenConf = 6');

@@ -17,6 +17,9 @@ class Migration_20180801124135 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Enable semantic versioning for templates';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -39,6 +42,9 @@ class Migration_20180801124135 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("UPDATE `ttemplate` SET `version` = SUBSTRING_INDEX(`version`, '.', 2)");

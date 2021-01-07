@@ -17,6 +17,9 @@ class Migration_20170321114600 extends Migration implements IMigration
     protected $author      = 'dr';
     protected $description = 'Add news count config in news overview';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setConfig(
@@ -33,6 +36,9 @@ class Migration_20170321114600 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeConfig('news_anzahl_uebersicht');

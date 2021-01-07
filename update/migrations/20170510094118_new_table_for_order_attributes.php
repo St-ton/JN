@@ -17,6 +17,9 @@ class Migration_20170510094118 extends Migration implements IMigration
     protected $author      = 'fp';
     protected $description = 'New Table for order attributes';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -31,6 +34,9 @@ class Migration_20170510094118 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('DROP TABLE tbestellattribut');

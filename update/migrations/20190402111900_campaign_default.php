@@ -15,6 +15,9 @@ class Migration_20190402111900 extends Migration implements IMigration
     protected $author      = 'fm';
     protected $description = 'kKampgne default value';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -23,6 +26,9 @@ class Migration_20190402111900 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('ALTER TABLE `timagemap` CHANGE COLUMN `kKampagne` `kKampagne` INT(10) UNSIGNED NOT NULL');

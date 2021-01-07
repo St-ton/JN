@@ -11,6 +11,9 @@ class Migration_20171214175900 extends Migration implements IMigration
 {
     protected $author = 'fm';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -21,6 +24,9 @@ class Migration_20171214175900 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute(

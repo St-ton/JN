@@ -16,12 +16,18 @@ class Migration_20161110101100 extends Migration implements IMigration
 {
     protected $author = 'fm';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute("UPDATE teinstellungenconf SET cInputTyp = 'pass' WHERE cWertName = 'newsletter_smtp_pass'");
         $this->execute("UPDATE teinstellungenconf SET cInputTyp = 'pass' WHERE cWertName = 'caching_redis_pass'");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("UPDATE teinstellungenconf SET cInputTyp = 'text' WHERE cWertName = 'newsletter_smtp_pass'");

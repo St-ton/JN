@@ -16,6 +16,9 @@ class Migration_20161013102200 extends Migration implements IMigration
 {
     protected $author = 'ms';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('INSERT INTO tsprachsektion (cName) VALUES ("productDownloads");');
@@ -36,6 +39,9 @@ class Migration_20161013102200 extends Migration implements IMigration
         $this->setLocalization('eng', 'productDownloads', 'downloadPreview', 'Preview');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('downloadSection');

@@ -25,9 +25,12 @@ class Migration_20200522000000 extends Migration implements IMigration
     protected $author      = 'fm';
     protected $description = 'Syntax checks';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
-        if (\PHP_SAPI === 'cli') {
+        if (PHP_SAPI === 'cli') {
             // removed in cli environment due to runtime reasons
             return;
         }
@@ -49,6 +52,9 @@ class Migration_20200522000000 extends Migration implements IMigration
         $ef->checkAll();
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         unset($_SESSION['emailSyntaxErrorCount'], $_SESSION['exportSyntaxErrorCount']);

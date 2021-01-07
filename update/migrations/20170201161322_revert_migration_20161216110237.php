@@ -17,6 +17,9 @@ class Migration_20170201161322 extends Migration implements IMigration
     protected $author      = 'fp';
     protected $description = 'Revert Migration_20161216110237';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         // The up-function will only be executed if Migration_20161216110237 is installed.
@@ -32,6 +35,9 @@ class Migration_20170201161322 extends Migration implements IMigration
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         // This migration will undo the changes from Migration_20161216110237 in beta installations.

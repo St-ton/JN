@@ -19,8 +19,7 @@ class Migration_20180319160200 extends Migration implements IMigration
     protected $description = 'adds options for new filters';
 
     /**
-     * @return bool|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
@@ -285,8 +284,7 @@ class Migration_20180319160200 extends Migration implements IMigration
     }
 
     /**
-     * @return bool|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function down()
     {

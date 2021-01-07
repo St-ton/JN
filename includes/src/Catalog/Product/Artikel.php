@@ -1154,12 +1154,12 @@ class Artikel
     }
 
     /**
-     * @param int   $amount
-     * @param array $attributes
-     * @param int   $customerGroupID
+     * @param int|float $amount
+     * @param array     $attributes
+     * @param int       $customerGroupID
      * @return float|null
      */
-    public function gibPreis($amount, array $attributes, $customerGroupID = 0)
+    public function gibPreis($amount, array $attributes, int $customerGroupID = 0)
     {
         if (!Frontend::getCustomerGroup()->mayViewPrices()) {
             return null;
@@ -1167,7 +1167,6 @@ class Artikel
         if ($this->kArtikel === null) {
             return 0;
         }
-        $customerGroupID = (int)$customerGroupID;
         if (!$customerGroupID) {
             $customerGroupID = Frontend::getCustomerGroup()->getID();
         }

@@ -510,10 +510,7 @@ class Zahlungsart extends MainModel
         if ($id <= 0) {
             return $this;
         }
-        $iso = $option['iso'] ?? $_SESSION['cISOSprache'] ?? null;
-        if ($option !== null) {
-            $iso = LanguageHelper::getDefaultLanguage()->cISO;
-        }
+        $iso  = $option['iso'] ?? Shop::getLanguageCode() ?? LanguageHelper::getDefaultLanguage()->getCode();
         $data = Shop::Container()->getDB()->queryPrepared(
             'SELECT *
                 FROM tzahlungsart AS z
@@ -544,11 +541,8 @@ class Zahlungsart extends MainModel
     {
         $payments = [];
         $where    = $active ? ' WHERE z.nActive = 1' : '';
-        if ($iso === null) {
-            $iso = Shop::getLanguageCode() ?? LanguageHelper::getDefaultLanguage()->getCode();
-        }
-
-        $objs = Shop::Container()->getDB()->queryPrepared(
+        $iso      = $iso ?? Shop::getLanguageCode() ?? LanguageHelper::getDefaultLanguage()->getCode();
+        $data     = Shop::Container()->getDB()->queryPrepared(
             'SELECT *
                 FROM tzahlungsart AS z
                 LEFT JOIN tzahlungsartsprache AS s 
@@ -557,8 +551,7 @@ class Zahlungsart extends MainModel
             ['iso' => $iso],
             ReturnType::ARRAY_OF_OBJECTS
         );
-
-        foreach ($objs as $obj) {
+        foreach ($data as $obj) {
             $payments[] = new self(null, $obj);
         }
 

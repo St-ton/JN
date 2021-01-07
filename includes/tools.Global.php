@@ -971,9 +971,9 @@ function getDeliverytimeEstimationText($minDeliveryDays, $maxDeliveryDays)
 }
 
 /**
- * @param string      $metaProposal - the proposed meta text value.
- * @param string|null $metaSuffix - append suffix to meta value that wont be shortened
- * @param int|null    $maxLength - $metaProposal will be truncated to $maxlength - mb_strlen($metaSuffix) characters
+ * @param string      $metaProposal the proposed meta text value.
+ * @param string|null $metaSuffix append suffix to meta value that wont be shortened
+ * @param int|null    $maxLength $metaProposal will be truncated to $maxlength - mb_strlen($metaSuffix) characters
  * @return string truncated meta value with optional suffix (always appended if set),
  * @deprecated since 5.0.0
  */

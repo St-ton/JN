@@ -17,6 +17,9 @@ class Migration_20190507095430 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Remove product tags';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->removeConfig('configgroup_110_tag_filter');
@@ -62,12 +65,15 @@ class Migration_20190507095430 extends Migration implements IMigration
         $this->execute("DELETE FROM `tseo` WHERE `cKey` = 'kTag'");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->setConfig(
             'configgroup_110_tag_filter',
             'Tagfilter',
-            \CONF_NAVIGATIONSFILTER,
+            CONF_NAVIGATIONSFILTER,
             'Tagfilter',
             null,
             170,
@@ -76,7 +82,7 @@ class Migration_20190507095430 extends Migration implements IMigration
         $this->setConfig(
             'configgroup_5_product_tagging',
             'Produkttagging',
-            \CONF_ARTIKELDETAILS,
+            CONF_ARTIKELDETAILS,
             'Produkttagging',
             null,
             1000,
@@ -85,7 +91,7 @@ class Migration_20190507095430 extends Migration implements IMigration
         $this->setConfig(
             'configgroup_8_box_tagcloud',
             'Tagwolke',
-            \CONF_BOXEN,
+            CONF_BOXEN,
             'Tagwolke',
             null,
             1000,
@@ -94,7 +100,7 @@ class Migration_20190507095430 extends Migration implements IMigration
         $this->setConfig(
             'configgroup_10_tagging_overview',
             'Tagging Übersicht',
-            \CONF_SONSTIGES,
+            CONF_SONSTIGES,
             'Tagging Übersicht',
             null,
             100,
@@ -103,7 +109,7 @@ class Migration_20190507095430 extends Migration implements IMigration
         $this->setConfig(
             'allgemein_tagfilter_benutzen',
             'Y',
-            \CONF_NAVIGATIONSFILTER,
+            CONF_NAVIGATIONSFILTER,
             'Tagfilter benutzen',
             'selectbox',
             172,
@@ -120,7 +126,7 @@ class Migration_20190507095430 extends Migration implements IMigration
         $this->setConfig(
             'tag_filter_type',
             'Y',
-            \CONF_NAVIGATIONSFILTER,
+            CONF_NAVIGATIONSFILTER,
             'Typ des Tagfilters',
             'selectbox',
             176,
@@ -135,7 +141,7 @@ class Migration_20190507095430 extends Migration implements IMigration
         $this->setConfig(
             'tagfilter_max_anzeige',
             'Y',
-            \CONF_NAVIGATIONSFILTER,
+            CONF_NAVIGATIONSFILTER,
             'Maximale Anzahl an Tags in der Filterung',
             'number',
             175,
@@ -144,7 +150,7 @@ class Migration_20190507095430 extends Migration implements IMigration
         $this->setConfig(
             'tagging_freischaltung',
             'Y',
-            \CONF_ARTIKELDETAILS,
+            CONF_ARTIKELDETAILS,
             'Produkttags Eingabe anzeigen',
             'selectbox',
             1010,
@@ -160,7 +166,7 @@ class Migration_20190507095430 extends Migration implements IMigration
         $this->setConfig(
             'tagging_anzeigen',
             'Y',
-            \CONF_ARTIKELDETAILS,
+            CONF_ARTIKELDETAILS,
             'Produkttags beim Artikel anzeigen',
             'selectbox',
             1020,
@@ -175,7 +181,7 @@ class Migration_20190507095430 extends Migration implements IMigration
         $this->setConfig(
             'tagging_max_count',
             'Y',
-            \CONF_ARTIKELDETAILS,
+            CONF_ARTIKELDETAILS,
             'Anzahl angezeigter Produkttags',
             'number',
             1030,
@@ -184,7 +190,7 @@ class Migration_20190507095430 extends Migration implements IMigration
         $this->setConfig(
             'tagging_max_ip_count',
             'Y',
-            \CONF_ARTIKELDETAILS,
+            CONF_ARTIKELDETAILS,
             'Maximale Einträge pro Besucher und Tag',
             'number',
             1040,
@@ -193,7 +199,7 @@ class Migration_20190507095430 extends Migration implements IMigration
         $this->setConfig(
             'boxen_tagging_anzeigen',
             'Y',
-            \CONF_BOXEN,
+            CONF_BOXEN,
             'Box anzeigen',
             'selectbox',
             1005,
@@ -209,7 +215,7 @@ class Migration_20190507095430 extends Migration implements IMigration
         $this->setConfig(
             'boxen_tagging_count',
             'Y',
-            \CONF_BOXEN,
+            CONF_BOXEN,
             'Anzahl angezeigte Tagbegriffe',
             'number',
             1010,
@@ -221,7 +227,7 @@ class Migration_20190507095430 extends Migration implements IMigration
         $this->setConfig(
             'sonstiges_tagging_all_count',
             'Y',
-            \CONF_SONSTIGES,
+            CONF_SONSTIGES,
             'Anzahl angezeigte Tagbegriffe in der Übersicht',
             'number',
             110,
@@ -233,7 +239,7 @@ class Migration_20190507095430 extends Migration implements IMigration
         $this->setConfig(
             'sitemap_tags_anzeigen',
             'Y',
-            \CONF_SITEMAP,
+            CONF_SITEMAP,
             'Tags anzeigen',
             'selectbox',
             100,

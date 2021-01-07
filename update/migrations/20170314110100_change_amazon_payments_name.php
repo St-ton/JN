@@ -17,11 +17,17 @@ class Migration_20170314110100 extends Migration implements IMigration
     protected $author      = 'dr';
     protected $description = 'Change "Amazon Payments" to "Amazon Pay"';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute("UPDATE tadminmenu SET cLinkname = 'Amazon Pay' WHERE cLinkname = 'Amazon Payments'");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("UPDATE tadminmenu SET cLinkname = 'Amazon Payments' WHERE cLinkname = 'Amazon Pay'");

@@ -228,9 +228,9 @@ class Tax
     }
 
     /**
-     * @param float $price
-     * @param float $taxRate
-     * @param int   $precision
+     * @param float|string $price
+     * @param float|string $taxRate
+     * @param int          $precision
      * @return float
      * @since since 5.0.0
      */
@@ -240,9 +240,9 @@ class Tax
     }
 
     /**
-     * @param float $price
-     * @param float $taxRate
-     * @param int   $precision
+     * @param float|string $price
+     * @param float|string $taxRate
+     * @param int          $precision
      * @return float
      * @since since 5.0.0
      */

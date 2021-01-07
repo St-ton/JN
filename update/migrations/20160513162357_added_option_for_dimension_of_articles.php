@@ -16,6 +16,9 @@ class Migration_20160513162357 extends Migration implements IMigration
 {
     protected $author = 'msc';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -38,6 +41,9 @@ class Migration_20160513162357 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeConfig('artikeldetails_abmessungen_anzeigen');

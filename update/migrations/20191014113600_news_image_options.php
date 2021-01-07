@@ -24,7 +24,7 @@ class Migration_20191014113600 extends Migration implements IMigration
         $this->setConfig(
             'bilder_news_mini_breite',
             '120',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Newsbilder Mini Breite',
             'number',
             500
@@ -32,7 +32,7 @@ class Migration_20191014113600 extends Migration implements IMigration
         $this->setConfig(
             'bilder_news_mini_hoehe',
             '40',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Newsbilder Mini Höhe',
             'number',
             501
@@ -40,7 +40,7 @@ class Migration_20191014113600 extends Migration implements IMigration
         $this->setConfig(
             'bilder_news_klein_breite',
             '600',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Newsbilder Klein Breite',
             'number',
             502
@@ -48,7 +48,7 @@ class Migration_20191014113600 extends Migration implements IMigration
         $this->setConfig(
             'bilder_news_klein_hoehe',
             '200',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Newsbilder Klein Höhe',
             'number',
             503
@@ -56,7 +56,7 @@ class Migration_20191014113600 extends Migration implements IMigration
         $this->setConfig(
             'bilder_news_normal_breite',
             '1200',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Newsbilder Normal Breite',
             'number',
             504
@@ -64,7 +64,7 @@ class Migration_20191014113600 extends Migration implements IMigration
         $this->setConfig(
             'bilder_news_normal_hoehe',
             '400',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Newsbilder Normal Höhe',
             'number',
             505
@@ -72,7 +72,7 @@ class Migration_20191014113600 extends Migration implements IMigration
         $this->setConfig(
             'bilder_news_gross_breite',
             '1800',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Newsbilder Groß Breite',
             'number',
             506
@@ -80,7 +80,7 @@ class Migration_20191014113600 extends Migration implements IMigration
         $this->setConfig(
             'bilder_news_gross_hoehe',
             '600',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Newsbilder Groß Höhe',
             'number',
             507
@@ -88,7 +88,7 @@ class Migration_20191014113600 extends Migration implements IMigration
         $this->setConfig(
             'bilder_newskategorie_mini_breite',
             '120',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Newskategoriebilder Mini Breite',
             'number',
             500
@@ -96,7 +96,7 @@ class Migration_20191014113600 extends Migration implements IMigration
         $this->setConfig(
             'bilder_newskategorie_mini_hoehe',
             '40',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Newskategoriebilder Mini Höhe',
             'number',
             501
@@ -104,7 +104,7 @@ class Migration_20191014113600 extends Migration implements IMigration
         $this->setConfig(
             'bilder_newskategorie_klein_breite',
             '600',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Newskategoriebilder Klein Breite',
             'number',
             502
@@ -112,7 +112,7 @@ class Migration_20191014113600 extends Migration implements IMigration
         $this->setConfig(
             'bilder_newskategorie_klein_hoehe',
             '200',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Newskategoriebilder Klein Höhe',
             'number',
             503
@@ -120,7 +120,7 @@ class Migration_20191014113600 extends Migration implements IMigration
         $this->setConfig(
             'bilder_newskategorie_normal_breite',
             '1200',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Newskategoriebilder Normal Breite',
             'number',
             504
@@ -128,7 +128,7 @@ class Migration_20191014113600 extends Migration implements IMigration
         $this->setConfig(
             'bilder_newskategorie_normal_hoehe',
             '400',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Newskategoriebilder Normal Höhe',
             'number',
             505
@@ -136,7 +136,7 @@ class Migration_20191014113600 extends Migration implements IMigration
         $this->setConfig(
             'bilder_newskategorie_gross_breite',
             '1800',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Newskategoriebilder Groß Breite',
             'number',
             506
@@ -144,7 +144,7 @@ class Migration_20191014113600 extends Migration implements IMigration
         $this->setConfig(
             'bilder_newskategorie_gross_hoehe',
             '600',
-            \CONF_BILDER,
+            CONF_BILDER,
             'Newskategoriebilder Groß Höhe',
             'number',
             507

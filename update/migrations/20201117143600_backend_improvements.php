@@ -11,6 +11,9 @@ class Migration_20201117143600 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Backend improvements';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute("UPDATE `teinstellungenconf` SET nSort=50 WHERE cWertName='configgroup_110_general'");
@@ -25,6 +28,9 @@ class Migration_20201117143600 extends Migration implements IMigration
         $this->execute("UPDATE `teinstellungenconf` SET nSort=75 WHERE cWertName='unterkategorien_beschreibung_anzeigen'");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("UPDATE `teinstellungenconf` SET nSort=100 WHERE cWertName='configgroup_110_general'");

@@ -17,6 +17,9 @@ class Migration_20190621091000 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Add lang nova checkout';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'global', 'change', 'Ändern');
@@ -29,6 +32,9 @@ class Migration_20190621091000 extends Migration implements IMigration
         $this->setLocalization('eng', 'checkout', 'guestOrRegistered', 'Proceed as guest or create a new account.');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('change');

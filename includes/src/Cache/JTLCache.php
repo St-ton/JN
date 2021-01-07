@@ -585,7 +585,7 @@ final class JTLCache implements JTLCacheInterface
     public function setCacheLifetime(int $lifetime): JTLCacheInterface
     {
         $this->options['lifetime'] = $lifetime > 0
-            ? (int)$lifetime
+            ? $lifetime
             : self::DEFAULT_LIFETIME;
 
         return $this;

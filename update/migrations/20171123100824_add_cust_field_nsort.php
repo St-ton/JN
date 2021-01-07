@@ -17,6 +17,9 @@ class Migration_20171123100824 extends Migration implements IMigration
     protected $author      = 'cr';
     protected $description = 'Add customer-fields nSort';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('
@@ -27,6 +30,9 @@ class Migration_20171123100824 extends Migration implements IMigration
         ');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('

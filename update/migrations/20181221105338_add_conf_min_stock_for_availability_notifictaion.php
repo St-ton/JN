@@ -17,6 +17,9 @@ class Migration_20181221105338 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'add conf min stock for availability notifictaion';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setConfig(
@@ -29,6 +32,9 @@ class Migration_20181221105338 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeConfig('benachrichtigung_min_lagernd');

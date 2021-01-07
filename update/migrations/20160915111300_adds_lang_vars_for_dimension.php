@@ -16,6 +16,9 @@ class Migration_20160915111300 extends Migration implements IMigration
 {
     protected $author = 'ms';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'productDetails', 'dimension_height', 'Höhe');
@@ -30,6 +33,9 @@ class Migration_20160915111300 extends Migration implements IMigration
         $this->removeLocalization('dimensions2d');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('dimension_height');

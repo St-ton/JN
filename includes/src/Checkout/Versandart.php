@@ -285,7 +285,7 @@ class Versandart
      * @param int    $value
      * @return array
      */
-    private static function getShippingSection($table, $key, int $value): array
+    private static function getShippingSection(string $table, string $key, int $value): array
     {
         if ($value > 0 && \mb_strlen($table) > 0 && \mb_strlen($key) > 0) {
             $Objs = Shop::Container()->getDB()->selectAll($table, $key, $value);

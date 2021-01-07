@@ -16,6 +16,9 @@ class Migration_20160412095929 extends Migration implements IMigration
 {
     protected $author = 'wp';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute("UPDATE `tzahlungsart` SET `nActive` = 0 WHERE `cModulId` = 'za_clickandbuy_jtl'");
@@ -27,6 +30,9 @@ class Migration_20160412095929 extends Migration implements IMigration
         $this->execute('DELETE FROM `tadminmenu` WHERE `kAdminmenu` = 52');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("UPDATE `tzahlungsart` SET `nActive` = 1 WHERE `cModulId` = 'za_clickandbuy_jtl'");

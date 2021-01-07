@@ -17,11 +17,17 @@ class Migration_20180214132451 extends Migration implements IMigration
     protected $author      = 'mschop';
     protected $description = 'Increase revisions content length';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('ALTER TABLE trevisions MODIFY content LONGTEXT');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('ALTER TABLE trevisions MODIFY content TEXT');

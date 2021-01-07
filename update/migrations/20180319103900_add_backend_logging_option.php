@@ -3,6 +3,7 @@
  * Add backend logging option
  */
 
+use JTL\Backend\AdminLoginConfig;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 use Monolog\Logger;
@@ -16,8 +17,7 @@ class Migration_20180319103900 extends Migration implements IMigration
     protected $description = 'Add backend logging option, removed old options';
 
     /**
-     * @return bool|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
@@ -43,19 +43,19 @@ class Migration_20180319103900 extends Migration implements IMigration
                 LEFT JOIN teinstellungenconf
                     ON teinstellungenconf.cWertName = teinstellungen.cName
                     AND teinstellungenconf.kEinstellungenSektion = teinstellungen.kEinstellungenSektion
-				WHERE teinstellungenconf.cWertName IS NULL)");
+                WHERE teinstellungenconf.cWertName IS NULL)");
         $this->setConfig(
             'admin_login_logger_mode',
             '1',
-            \CONF_GLOBAL,
+            CONF_GLOBAL,
             'Adminloginversuche loggen?',
             'listbox',
             1503,
             (object)[
                 'cBeschreibung' => 'Sollen Backend-Loginversuche geloggt werden?',
                 'inputOptions'  => [
-                    \JTL\Backend\AdminLoginConfig::CONFIG_DB   => 'in Datenbank',
-                    \JTL\Backend\AdminLoginConfig::CONFIG_FILE => 'in Textdatei'
+                    AdminLoginConfig::CONFIG_DB   => 'in Datenbank',
+                    AdminLoginConfig::CONFIG_FILE => 'in Textdatei'
                 ]
             ]
         );
@@ -82,7 +82,7 @@ class Migration_20180319103900 extends Migration implements IMigration
     }
 
     /**
-     * @return bool|void
+     * @inheritDoc
      */
     public function down()
     {

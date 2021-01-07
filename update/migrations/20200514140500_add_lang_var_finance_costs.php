@@ -17,8 +17,7 @@ class Migration_20200514140500 extends Migration implements IMigration
     protected $description = 'Add lang var for finance costs';
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
@@ -28,7 +27,7 @@ class Migration_20200514140500 extends Migration implements IMigration
     }
 
     /**
-     * @return mixed|void
+     * @inheritDoc
      */
     public function down()
     {

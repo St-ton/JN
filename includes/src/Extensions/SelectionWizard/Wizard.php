@@ -98,7 +98,7 @@ class Wizard
      * @param int    $languageID
      * @param bool   $activeOnly
      */
-    public function __construct($keyName, int $id, int $languageID = 0, bool $activeOnly = true)
+    public function __construct(string $keyName, int $id, int $languageID = 0, bool $activeOnly = true)
     {
         $this->config = Shop::getSettings(\CONF_AUSWAHLASSISTENT)['auswahlassistent'];
         $languageID   = $languageID ?: Shop::getLanguageID();
@@ -353,7 +353,7 @@ class Wizard
 
     /**
      * @param int $questionID
-     * @return array|null
+     * @return Option|mixed
      */
     public function getSelectedValue(int $questionID)
     {
@@ -411,7 +411,7 @@ class Wizard
      * @return self|null
      */
     public static function startIfRequired(
-        $keyName,
+        string $keyName,
         int $id,
         int $languageID = 0,
         $smarty = null,

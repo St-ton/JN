@@ -14,6 +14,9 @@ class Migration_20180222084900 extends Migration implements IMigration
     protected $author      = 'fg';
     protected $description = 'Add language variables for product rating';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'product rating', 'feedback activated', 'Bewertung ist freigeschaltet!');
@@ -34,6 +37,10 @@ class Migration_20180222084900 extends Migration implements IMigration
         $this->setLocalization('ger', 'product rating', 'no feedback', 'Noch keine Bewertung abgegeben');
         $this->setLocalization('eng', 'product rating', 'no feedback', 'No feedback was given yet');
     }
+
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('feedback activated');

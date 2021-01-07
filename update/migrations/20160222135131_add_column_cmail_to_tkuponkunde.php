@@ -16,11 +16,17 @@ class Migration_20160222135131 extends Migration implements IMigration
 {
     protected $author = 'sh';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('ALTER TABLE tkuponkunde ADD `cMail` VARCHAR(255) AFTER `kKunde`');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->dropColumn('tkuponkunde', 'cMail');

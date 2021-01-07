@@ -12,6 +12,9 @@ class Migration_20190425100000 extends Migration implements IMigration
     protected $author      = 'ms';
     protected $description = 'adds language variables for product ribbons';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'productOverview', 'ribbon-1', 'Bestseller');
@@ -34,6 +37,9 @@ class Migration_20190425100000 extends Migration implements IMigration
         $this->setLocalization('eng', 'productOverview', 'ribbon-9', 'pre order');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('ribbon-1');

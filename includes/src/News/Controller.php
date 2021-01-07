@@ -485,7 +485,7 @@ class Controller
         foreach ($dateData as $date) {
             $item        = new stdClass();
             $item->cWert = $date->nMonat . '-' . $date->nJahr;
-            $item->cName = self::mapDateName((string)$date->nMonat, (int)$date->nJahr, Shop::getLanguageCode());
+            $item->cName = self::mapDateName((int)$date->nMonat, (int)$date->nJahr, Shop::getLanguageCode());
             $dates[]     = $item;
         }
 
@@ -493,44 +493,46 @@ class Controller
     }
 
     /**
-     * @param string $month
-     * @param string $year
+     * @param string|int $month
+     * @param string|int $year
      * @param string $langCode
      * @return string
      */
-    public static function mapDateName($month, $year, $langCode): string
+    public static function mapDateName($month, $year, string $langCode): string
     {
+        $month = (int)$month;
+        $year  = (int)$year;
+        $name  = '';
         // @todo: i18n!
-        $name = '';
         if ($langCode === 'ger') {
             switch ($month) {
-                case '01':
+                case 1:
                     return Shop::Lang()->get('january', 'news') . ',' . $year;
-                case '02':
+                case 2:
                     return Shop::Lang()->get('february', 'news') . ' ' . $year;
-                case '03':
+                case 3:
                     return Shop::Lang()->get('march', 'news') . ' ' . $year;
-                case '04':
+                case 4:
                     return Shop::Lang()->get('april', 'news') . ' ' . $year;
-                case '05':
+                case 5:
                     return Shop::Lang()->get('may', 'news') . ' ' . $year;
-                case '06':
+                case 6:
                     return Shop::Lang()->get('june', 'news') . ' ' . $year;
-                case '07':
+                case 7:
                     return Shop::Lang()->get('july', 'news') . ' ' . $year;
-                case '08':
+                case 8:
                     return Shop::Lang()->get('august', 'news') . ' ' . $year;
-                case '09':
+                case 9:
                     return Shop::Lang()->get('september', 'news') . ' ' . $year;
-                case '10':
+                case 10:
                     return Shop::Lang()->get('october', 'news') . ' ' . $year;
-                case '11':
+                case 11:
                     return Shop::Lang()->get('november', 'news') . ' ' . $year;
-                case '12':
+                case 12:
                     return Shop::Lang()->get('december', 'news') . ' ' . $year;
             }
         } else {
-            $name .= \date('F', \mktime(0, 0, 0, (int)$month, 1, $year)) . ', ' . $year;
+            $name .= \date('F', \mktime(0, 0, 0, $month, 1, $year)) . ', ' . $year;
         }
 
         return $name;

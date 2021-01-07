@@ -20,6 +20,9 @@ class Migration_20190604122745 extends Migration implements IMigration
     protected $author      = 'cr';
     protected $description = 'Transfer NL subscribers into optin table';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $nlSubscribers = $this->getDB()->queryPrepared(
@@ -72,6 +75,9 @@ class Migration_20190604122745 extends Migration implements IMigration
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("DELETE FROM toptin WHERE kOptinClass = '" . quotemeta(OptinNewsletter::class) . "'");

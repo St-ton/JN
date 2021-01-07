@@ -17,12 +17,18 @@ class Migration_20170510145300 extends Migration implements IMigration
     protected $author      = 'ms';
     protected $description = 'adds paymentNotNecessary language variable';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'checkout', 'paymentNotNecessary', 'Keine Zahlung notwendig');
         $this->setLocalization('eng', 'checkout', 'paymentNotNecessary', 'Payment not necessary');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('paymentNotNecessary');

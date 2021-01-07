@@ -441,7 +441,7 @@ class Image
      */
     public static function getImageDriver(): string
     {
-        return \extension_loaded('imagick') ? 'imagick' : 'gd';
+        return \extension_loaded('imagick') && !\FORCE_IMAGEDRIVER_GD ? 'imagick' : 'gd';
     }
 
     /**

@@ -16,11 +16,17 @@ class Migration_20160303095445 extends Migration implements IMigration
 {
     protected $author = 'ms';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute("INSERT INTO `tadminrecht` (`cRecht`, `cBeschreibung`, `kAdminrechtemodul`) VALUES ('STATS_LANDINGPAGES_VIEW', 'Einstiegsseiten', '10');");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("DELETE FROM `tadminrecht` WHERE `cRecht`='STATS_LANDINGPAGES_VIEW';");

@@ -9,29 +9,29 @@
         <nav class="tabs-nav">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link {if !isset($cTab) || $cTab === 'freischalten'} active{/if}" data-toggle="tab" role="tab" href="#freischalten">
+                    <a class="nav-link {if $cTab === '' || $cTab === 'freischalten'} active{/if}" data-toggle="tab" role="tab" href="#freischalten">
                         {__('ratingsInaktive')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'letzten50'} active{/if}" data-toggle="tab" role="tab" href="#letzten50">
+                    <a class="nav-link {if $cTab === 'letzten50'} active{/if}" data-toggle="tab" role="tab" href="#letzten50">
                         {__('ratingLast50')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'artikelbewertung'} active{/if}" data-toggle="tab" role="tab" href="#artikelbewertung">
+                    <a class="nav-link {if $cTab === 'artikelbewertung'} active{/if}" data-toggle="tab" role="tab" href="#artikelbewertung">
                         {__('ratingForProduct')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'einstellungen'} active{/if}" data-toggle="tab" role="tab" href="#einstellungen">
+                    <a class="nav-link {if $cTab === 'einstellungen'} active{/if}" data-toggle="tab" role="tab" href="#einstellungen">
                         {__('settings')}
                     </a>
                 </li>
             </ul>
         </nav>
         <div class="tab-content">
-            <div id="freischalten" class="tab-pane fade {if !isset($cTab) || $cTab === 'freischalten'} active show{/if}">
+            <div id="freischalten" class="tab-pane fade {if $cTab === '' || $cTab === 'freischalten'} active show{/if}">
                 {if $inactiveReviews|count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiInaktiv cAnchor='freischalten'}
                     <form method="post" action="bewertung.php">
@@ -116,7 +116,7 @@
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
-            <div id="letzten50" class="tab-pane fade {if isset($cTab) && $cTab === 'letzten50'} active show{/if}">
+            <div id="letzten50" class="tab-pane fade {if $cTab === 'letzten50'} active show{/if}">
                 {if $activeReviews|count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiAktiv cAnchor='letzten50'}
                     <form name="letzten50" method="post" action="bewertung.php">
@@ -221,7 +221,7 @@
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
-            <div id="artikelbewertung" class="tab-pane fade {if isset($cTab) && $cTab === 'artikelbewertung'} active show{/if}">
+            <div id="artikelbewertung" class="tab-pane fade {if $cTab === 'artikelbewertung'} active show{/if}">
                 <form name="artikelbewertung" method="post" action="bewertung.php">
                     <div class="mb-3">
                         {$jtl_token}
@@ -313,7 +313,7 @@
                     {/if}
                 </form>
             </div>
-            <div id="einstellungen" class="tab-pane fade {if isset($cTab) && $cTab === 'einstellungen'} active show{/if}">
+            <div id="einstellungen" class="tab-pane fade {if $cTab === 'einstellungen'} active show{/if}">
                 <form name="einstellen" method="post" action="bewertung.php">
                     {$jtl_token}
                     <input type="hidden" name="einstellungen" value="1" />

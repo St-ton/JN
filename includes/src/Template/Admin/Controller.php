@@ -360,7 +360,7 @@ class Controller
         $current      = $service->loadFull(['cTemplate' => $this->currentTemplateDir]);
         $parentFolder = null;
         Shop::Container()->getGetText()->loadTemplateLocale('base', $current);
-        if ($tplXML !== null && !empty($tplXML->Parent)) {
+        if (!empty($tplXML->Parent)) {
             $parentFolder = (string)$tplXML->Parent;
         }
         $templateConfig = $this->config->getConfigXML($reader, $parentFolder);

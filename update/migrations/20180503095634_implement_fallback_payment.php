@@ -19,6 +19,9 @@ class Migration_20180503095634 extends Migration implements IMigration
 
     protected $szPaymentModuleId = 'za_null_jtl';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('INSERT INTO `tzahlungsart`(`kZahlungsart`, `cName`, `cModulId`, `cKundengruppen`, `cBild`, `nMailSenden`, `cAnbieter`, `cTSCode`, `nWaehrendBestellung`)
@@ -33,6 +36,9 @@ class Migration_20180503095634 extends Migration implements IMigration
             "There is no further payment needed. Your shop-credit was billed.")');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $oPaymentEntry = $this->fetchOne('SELECT * FROM `tzahlungsart` WHERE `cModulId` = "' . $this->szPaymentModuleId . '"');

@@ -986,15 +986,15 @@ class LanguageHelper
      */
     public static function isDefaultLanguageActive(bool $shop = false, int $languageID = null): bool
     {
-        $langToCheckAgainst = $languageID !== null ? (int)$languageID : Shop::getLanguageID();
+        $langToCheckAgainst = $languageID ?? Shop::getLanguageID();
         if ($langToCheckAgainst <= 0) {
             return true;
         }
         foreach (Frontend::getLanguages() as $language) {
-            if ($language->cStandard === 'Y' && $language->kSprache === $langToCheckAgainst && !$shop) {
+            if ($language->isDefault() === 'Y' && $language->getId() === $langToCheckAgainst && !$shop) {
                 return true;
             }
-            if ($language->cShopStandard === 'Y' && $language->kSprache === $langToCheckAgainst && $shop) {
+            if ($language->isShopDefault() === 'Y' && $language->getId() === $langToCheckAgainst && $shop) {
                 return true;
             }
         }

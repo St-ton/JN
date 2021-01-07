@@ -32,7 +32,7 @@
                                 {link href="{if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}?shipping_calculator=0{/if}" rel="nofollow" class="shipment popup"}
                                     {lang key='shipping' section='basket'}{/link}
                             {/block}
-                        {else}
+                        {elseif isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}
                             {block name='snippets-shipping-tax-info-zzgl-show-shipping-free-free-link'}
                                 {link href="{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}?shipping_calculator=0"
                                     rel="nofollow"

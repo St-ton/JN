@@ -16,12 +16,18 @@ class Migration_20160425091420 extends Migration implements IMigration
 {
     protected $author = 'msc';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'productDetails', 'dimensions', 'Abmessungen(LxBxH)');
         $this->setLocalization('eng', 'productDetails', 'dimensions', 'Dimensions(LxWxH)');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->setLocalization('ger', 'productDetails', 'dimensions', 'Abmessungen');

@@ -555,7 +555,7 @@ function pruefeGuthabenNutzen(): void
 }
 
 /**
- * @param string $context
+ * @param string|null $context
  * @return bool
  */
 function pruefeFehlendeAngaben($context = null): bool
@@ -749,7 +749,7 @@ function gibStepZahlung()
                 'kVersandart' => $shippingMethod,
             ];
         }
-        $selectablePayments = \array_filter(
+        $selectablePayments = array_filter(
             $paymentMethods,
             static function ($method) {
                 $paymentMethod = LegacyMethod::create($method->cModulId);
@@ -1760,7 +1760,7 @@ function pruefeZahlungsartMinBestellungen(int $minOrders): bool
 }
 
 /**
- * @param float $minOrderValue
+ * @param float|string $minOrderValue
  * @return bool
  */
 function pruefeZahlungsartMinBestellwert($minOrderValue): bool
@@ -1780,7 +1780,7 @@ function pruefeZahlungsartMinBestellwert($minOrderValue): bool
 }
 
 /**
- * @param float $maxOrderValue
+ * @param float|string $maxOrderValue
  * @return bool
  */
 function pruefeZahlungsartMaxBestellwert($maxOrderValue): bool
@@ -1801,8 +1801,8 @@ function pruefeZahlungsartMaxBestellwert($maxOrderValue): bool
 }
 
 /**
- * @param int $shippingMethodID
- * @param int $formValues
+ * @param int       $shippingMethodID
+ * @param int|array $formValues
  * @return bool
  */
 function versandartKorrekt(int $shippingMethodID, $formValues = 0)
@@ -2164,7 +2164,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
         }
     }
     if (isset($data['geburtstag'])) {
-        $enDate = \DateTime::createFromFormat('Y-m-d', $data['geburtstag']);
+        $enDate = DateTime::createFromFormat('Y-m-d', $data['geburtstag']);
         if (($errCode = Text::checkDate(
             $enDate === false ? $data['geburtstag'] : $enDate->format('d.m.Y'),
             $conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y'

@@ -14,6 +14,7 @@
             {/if}
             {block name='register-form-submit'}
                 {row class="checkout-button-row"}
+                    {if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ])}
                     {col cols=12 class="checkout-register-form-buttons-privacy"}
                         {block name='register-form-submit-privacy'}
                             {link href=$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL() class="popup"}
@@ -21,6 +22,7 @@
                             {/link}
                         {/block}
                     {/col}
+                    {/if}
                     {col cols=12 md=4 xl=3 class="checkout-button-row-submit"}
                         {input type="hidden" name="checkout" value=$checkout|default:''}
                         {input type="hidden" name="form" value="1"}

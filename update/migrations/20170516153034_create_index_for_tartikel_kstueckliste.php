@@ -19,11 +19,17 @@ class Migration_20170516153034 extends Migration implements IMigration
     protected $description = /** @lang text */
         'Create index for tartikel.kStueckliste';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         MigrationHelper::createIndex('tartikel', ['kStueckliste'], 'idx_tartikel_kStueckliste');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         MigrationHelper::dropIndex('tartikel', 'idx_tartikel_kStueckliste');

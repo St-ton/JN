@@ -751,10 +751,10 @@ function pruefeKampagnenParameter()
 }
 
 /**
- * @param int $definitionID
- * @param int $key
- * @param float $value
- * @param string $customData
+ * @param int         $definitionID
+ * @param int         $key
+ * @param float       $value
+ * @param string|null $customData
  * @return int
  * @deprecated since 5.0.0
  */
@@ -941,8 +941,8 @@ function guessCsvDelimiter($filename)
 }
 
 /**
- * @param array $hookInfos
- * @param bool  $forceExit
+ * @param array|null $hookInfos
+ * @param bool       $forceExit
  * @return array
  * @deprecated since 5.0.0
  */
@@ -971,9 +971,9 @@ function getDeliverytimeEstimationText($minDeliveryDays, $maxDeliveryDays)
 }
 
 /**
- * @param string $metaProposal the proposed meta text value.
- * @param string $metaSuffix append suffix to meta value that wont be shortened
- * @param int $maxLength $metaProposal will be truncated to $maxlength - mb_strlen($metaSuffix) characters
+ * @param string      $metaProposal the proposed meta text value.
+ * @param string|null $metaSuffix append suffix to meta value that wont be shortened
+ * @param int|null    $maxLength $metaProposal will be truncated to $maxlength - mb_strlen($metaSuffix) characters
  * @return string truncated meta value with optional suffix (always appended if set),
  * @deprecated since 5.0.0
  */
@@ -1035,11 +1035,11 @@ function doMainwordRedirect($NaviFilter, $count, $seo = false)
 /**
  * Converts price into given currency
  *
- * @param float  $price
- * @param string $iso - EUR / USD
- * @param int    $id - kWaehrung
- * @param bool   $useRounding
- * @param int    $precision
+ * @param float       $price
+ * @param string|null $iso - EUR / USD
+ * @param int|null    $id - kWaehrung
+ * @param bool        $useRounding
+ * @param int         $precision
  * @return float|bool
  * @deprecated since 5.0.0
  */
@@ -1128,7 +1128,7 @@ function gibUst(int $kSteuerklasse)
 }
 
 /**
- * @param string $countryCode
+ * @param string|null $countryCode
  * @deprecated since 5.0.0
  */
 function setzeSteuersaetze($countryCode = null)

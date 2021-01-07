@@ -801,10 +801,10 @@ class ShippingMethod
     }
 
     /**
-     * @param string  $country
-     * @param Artikel $product
-     * @param int     $amount
-     * @param bool    $checkDeliveryAddress
+     * @param string    $country
+     * @param Artikel   $product
+     * @param int|float $amount
+     * @param bool      $checkDeliveryAddress
      * @return bool|stdClass
      */
     public static function gibArtikelabhaengigeVersandkosten(
@@ -1035,9 +1035,8 @@ class ShippingMethod
                 break;
 
             case 'vm_versandberechnung_gewicht_jtl':
-                $totalWeight  = $product
-                    ? $product->fGewicht
-                    : Frontend::getCart()->getWeight($excludeShippingCostAttributes, $iso);
+                $totalWeight  = $product->fGewicht
+                    ?? Frontend::getCart()->getWeight($excludeShippingCostAttributes, $iso);
                 $totalWeight += $additionalProduct->fGewicht;
                 $shipping     = $db->queryPrepared(
                     'SELECT *
@@ -1345,7 +1344,7 @@ class ShippingMethod
     }
 
     /**
-     * @param Versandart $shippingMethod
+     * @param Versandart|stdClass $shippingMethod
      * @return string
      * @former baueVersandkostenfreiLaenderString()
      */

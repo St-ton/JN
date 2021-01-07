@@ -17,6 +17,9 @@ class Migration_20200923142833 extends Migration implements IMigration
     protected $author      = 'fp';
     protected $description = 'Create notifications ignore table.';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('CREATE TABLE tnotificationsignore (
@@ -29,6 +32,9 @@ class Migration_20200923142833 extends Migration implements IMigration
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('DROP TABLE IF EXISTS tnotificationsignore');

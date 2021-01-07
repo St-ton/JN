@@ -69,7 +69,7 @@ class Recommendation
     private $links = [];
 
     /**
-     * @var \Parsedown
+     * @var Parsedown
      */
     public $parseDown;
 

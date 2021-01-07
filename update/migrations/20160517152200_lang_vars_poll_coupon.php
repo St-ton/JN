@@ -16,12 +16,18 @@ class Migration_20160517152200 extends Migration implements IMigration
 {
     protected $author = 'ms';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'messages', 'pollCoupon', 'Vielen Dank für die Teilnahme an unserer Umfrage. Für Ihre nächste Bestellung steht Ihnen der folgende Kuponcode zur Verfügung: %s.');
         $this->setLocalization('eng', 'messages', 'pollCoupon', 'Thank you for taking part in our poll. For your next order, feel free to use the following coupon code: %s.');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->setLocalization('ger', 'messages', 'pollCoupon', 'Vielen Dank für die Teilnahme an unserer Umfrage. Ihnen wurde der Kupon %s gutgeschrieben.');

@@ -18,12 +18,15 @@ class Migration_20200124113400 extends Migration implements IMigration
     protected $author      = 'ms';
     protected $description = 'adds child item bulk price setting';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setConfig(
             'general_child_item_bulk_pricing',
             'N',
-            \CONF_KAUFABWICKLUNG,
+            CONF_KAUFABWICKLUNG,
             'Variationsübergreifende Staffelpreise',
             'selectbox',
             280,
@@ -37,6 +40,9 @@ class Migration_20200124113400 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeConfig('general_child_item_bulk_pricing');

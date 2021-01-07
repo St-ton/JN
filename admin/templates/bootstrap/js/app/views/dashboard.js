@@ -15,8 +15,8 @@ const Classes = {
 
 const $body			= $('body')
 
-const dragDelay		= 200
-const saveDelay		= 1000
+const dragDelay		= 0
+const saveDelay		= 0
 
 
 let to = false

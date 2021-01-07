@@ -103,9 +103,10 @@ class News extends AbstractImage
             } else {
                 $result = $mixed;
             }
-            return \pathinfo($result)['filename'] ?? 'image';
+            $result = \pathinfo($result)['filename'] ?? 'image';
+        } else {
+            $result = \method_exists($mixed, 'getTitle') ? $mixed->getTitle() : $mixed->title;
         }
-        $result = \method_exists($mixed, 'getTitle') ? $mixed->getTitle() : $mixed->title;
 
         return empty($result) ? 'image' : Image::getCleanFilename($result);
     }

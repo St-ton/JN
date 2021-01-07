@@ -3,7 +3,6 @@
     {if !isset($i)}
         {assign var=i value=0}
     {/if}
-    {assign var=max_subsub_items value=4}
 
     {block name='snippets-categories-mega-categories'}
     {if $Einstellungen.template.megamenu.show_categories !== 'N'
@@ -41,7 +40,7 @@
                             {/link}
                             <div class="dropdown-menu">
                                 <div class="dropdown-body">
-                                    {container}
+                                    {container class="subcategory-wrapper"}
                                         {row class="lg-row-lg nav"}
                                             {col lg=4 xl=3 class="nav-item-lg-m nav-item dropdown d-lg-none"}
                                                 {link href=$category->getURL() rel="nofollow"}
@@ -58,7 +57,7 @@
                                                     {foreach $sub_categories as $sub}
                                                         {col lg=4 xl=3 class="nav-item-lg-m nav-item {if $sub->hasChildren()}dropdown{/if}"}
                                                             {block name='snippets-categories-mega-category-child-body-include-categories-mega-recursive'}
-                                                                {include file='snippets/categories_mega_recursive.tpl' mainCategory=$sub firstChild=true}
+                                                                {include file='snippets/categories_mega_recursive.tpl' mainCategory=$sub firstChild=true subCategory=$i + 1}
                                                             {/block}
                                                         {/col}
                                                     {/foreach}

@@ -53,7 +53,7 @@
                 <label class="col col-sm-3 col-form-label text-sm-right" for="kSteuerklasse">{__('zusatzverpackungTaxClass')}:</label>
                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                     <select id="kSteuerklasse" name="kSteuerklasse" class="custom-select combo">
-                        <option value="-1">{__('zusatzverpackungAutoTax')}</option>
+                        <option value="0">{__('zusatzverpackungAutoTax')}</option>
                         {foreach $taxClasses as $taxClass}
                             <option value="{$taxClass->kSteuerklasse}" {if isset($oVerpackungEdit) && (int)$taxClass->kSteuerklasse === (int)$oVerpackungEdit->kSteuerklasse} selected{/if}>{$taxClass->cName}</option>
                         {/foreach}

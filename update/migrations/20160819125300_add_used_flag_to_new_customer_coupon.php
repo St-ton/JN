@@ -16,11 +16,17 @@ class Migration_20160819125300 extends Migration implements IMigration
 {
     protected $author = 'ms';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute("ALTER TABLE `tkuponneukunde` ADD COLUMN `cVerwendet` VARCHAR(1) NOT NULL DEFAULT 'N';");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->dropColumn('tkuponneukunde', 'cVerwendet');

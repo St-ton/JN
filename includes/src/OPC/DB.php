@@ -238,7 +238,6 @@ class DB
                 ->setGroup($portletDB->cGroup)
                 ->setActive((int)$portletDB->bActive === 1);
         }
-        /** @var MissingPortlet $portlet */
         $portlet = (new MissingPortlet('MissingPortlet', 0, 0))
             ->setMissingClass($class)
             ->setTitle('Missing Portlet "' . $class . '"')

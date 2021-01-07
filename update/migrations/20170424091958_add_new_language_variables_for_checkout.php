@@ -17,6 +17,9 @@ class Migration_20170424091958 extends Migration implements IMigration
     protected $author      = 'fp';
     protected $description = 'Add new language variables for checkout';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'global', 'addressData', 'Adressdaten');
@@ -41,6 +44,9 @@ class Migration_20170424091958 extends Migration implements IMigration
         $this->setLocalization('eng', 'global', 'paymentOptions', 'Payment options');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('addressData');

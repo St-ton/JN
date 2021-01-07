@@ -651,9 +651,9 @@ class Product
     }
 
     /**
-     * @param Artikel $product
-     * @param float   $price
-     * @param int     $amount
+     * @param Artikel    $product
+     * @param float|null $price
+     * @param int|null   $amount
      * @return stdClass
      */
     public static function getBasePriceUnit(Artikel $product, $price, $amount): stdClass
@@ -1248,8 +1248,8 @@ class Product
                 $dbHandler = Shop::Container()->getDB();
                 $refData   = (new OptinRefData())
                     ->setSalutation('')
-                    ->setFirstName('')
-                    ->setLastName('')
+                    ->setFirstName(Text::filterXSS($dbHandler->escape(\strip_tags($_POST['vorname']))) ?: '')
+                    ->setLastName(Text::filterXSS($dbHandler->escape(\strip_tags($_POST['nachname']))) ?: '')
                     ->setProductId(Request::postInt('a'))
                     ->setEmail(Text::filterXSS($dbHandler->escape(\strip_tags($_POST['email']))) ?: '')
                     ->setLanguageID(Shop::getLanguageID())
@@ -1939,11 +1939,11 @@ class Product
             $configGroups[$i] = (array)$data;
         }
         /** @var Group $configGroup */
-        foreach ($config->oKonfig_arr as $i => &$configGroup) {
+        foreach ($config->oKonfig_arr as $i => $configGroup) {
             $configGroup->bAktiv = false;
             $configGroupID       = $configGroup->getKonfiggruppe();
             $configItems         = $configGroups[$configGroupID] ?? [];
-            foreach ($configGroup->oItem_arr as $j => &$configItem) {
+            foreach ($configGroup->oItem_arr as $j => $configItem) {
                 $configItemID        = $configItem->getKonfigitem();
                 $configItem->fAnzahl = (float)(
                     $configGroupAmounts[$configItem->getKonfiggruppe()] ?? $configItem->getInitial()
@@ -1978,10 +1978,8 @@ class Product
                     }
                 }
             }
-            unset($configItem);
             $configGroup->oItem_arr = \array_values($configGroup->oItem_arr);
         }
-        unset($configGroup);
         if (Frontend::getCustomerGroup()->mayViewPrices()) {
             $config->cPreisLocalized = [
                 Preise::getLocalizedPriceString($config->fGesamtpreis[0]),
@@ -2012,7 +2010,7 @@ class Product
             $configItems        = [];
             $configItemAmounts  = [];
             $configGroupAmounts = [];
-            foreach ($cart->PositionenArr as &$item) {
+            foreach ($cart->PositionenArr as $item) {
                 if ($item->cUnique !== $baseItem->cUnique || !$item->istKonfigKind()) {
                     continue;
                 }
@@ -2025,8 +2023,6 @@ class Product
                     $configGroupAmounts[$configItem->getKonfiggruppe()] = $item->nAnzahl / $baseItem->nAnzahl;
                 }
             }
-            unset($item);
-
             $smarty->assign('fAnzahl', $baseItem->nAnzahl)
                    ->assign('kEditKonfig', $configID)
                    ->assign('nKonfigitem_arr', $configItems)

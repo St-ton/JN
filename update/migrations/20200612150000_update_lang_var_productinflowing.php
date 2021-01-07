@@ -18,8 +18,7 @@ class Migration_20200612150000 extends Migration implements IMigration
     protected $description = 'Update lang var productInflowing';
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
@@ -28,7 +27,7 @@ class Migration_20200612150000 extends Migration implements IMigration
     }
 
     /**
-     * @return mixed|void
+     * @inheritDoc
      */
     public function down()
     {

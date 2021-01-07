@@ -17,15 +17,21 @@ class Migration_20200323155613 extends Migration implements IMigration
     protected $author = 'fp';
     protected $description = 'Refactor tstoreauth';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
             'ALTER TABLE tstoreauth
-	            ADD owner       INT             NOT NULL FIRST,
-	            ADD verified    VARCHAR(128)    NOT NULL,
-	            ADD CONSTRAINT tstoreauth_pk PRIMARY KEY (owner)');
+                ADD owner       INT             NOT NULL FIRST,
+                ADD verified    VARCHAR(128)    NOT NULL,
+                ADD CONSTRAINT tstoreauth_pk PRIMARY KEY (owner)');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute(

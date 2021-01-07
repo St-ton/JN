@@ -14,11 +14,17 @@ class Migration_20160912155300 extends Migration implements IMigration
 {
     protected $author = 'ms';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('ALTER TABLE `twarenkorbperspos` ADD COLUMN `nPosTyp` TINYINT(3) UNSIGNED NOT NULL DEFAULT 1');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('ALTER TABLE `twarenkorbperspos` DROP COLUMN `nPosTyp`');

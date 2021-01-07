@@ -16,6 +16,9 @@ class Migration_20160517103100 extends Migration implements IMigration
 {
     protected $author = 'fm';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -30,6 +33,9 @@ class Migration_20160517103100 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("DELETE FROM `tspezialseite` WHERE `nLinkart` = '32' OR `nLinkart` = '33'");

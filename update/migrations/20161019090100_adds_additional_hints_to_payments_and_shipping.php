@@ -16,6 +16,9 @@ class Migration_20161019090100 extends Migration implements IMigration
 {
     protected $author = 'ms';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('ALTER TABLE tversandartsprache ADD COLUMN cHinweistextShop TEXT NULL DEFAULT NULL AFTER cHinweistext;');
@@ -25,6 +28,9 @@ class Migration_20161019090100 extends Migration implements IMigration
         $this->execute('UPDATE tzahlungsartsprache SET cHinweisTextShop = cHinweisText;');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->dropColumn('tversandartsprache', 'cHinweistextShop');

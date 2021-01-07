@@ -17,12 +17,18 @@ class Migration_20170127165900 extends Migration implements IMigration
     protected $author      = 'dr';
     protected $description = 'Add language var "show all reviews" to reset review filter';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'product rating', 'allReviews', 'Alle Bewertungen');
         $this->setLocalization('eng', 'product rating', 'allReviews', 'All reviews');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('allReviews');

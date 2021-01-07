@@ -17,6 +17,9 @@ class Migration_20170309151222 extends Migration implements IMigration
     protected $author      = 'fp';
     protected $description = 'Change text to mediumtext for tnewsletter';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -26,6 +29,9 @@ class Migration_20170309151222 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute(

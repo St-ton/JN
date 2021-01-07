@@ -26,32 +26,32 @@
             <nav class="tabs-nav">
                 <ul class="nav nav-tabs" role="tablist">
                     <li class="nav-item">
-                        <a class="nav-link {if !isset($cTab) || $cTab === 'aktiviert'} active{/if}" data-toggle="tab" role="tab" href="#aktiviert">
+                        <a class="nav-link {if $cTab === '' || $cTab === 'aktiviert'} active{/if}" data-toggle="tab" role="tab" href="#aktiviert">
                             {__('activated')}<span class="badge">{$pluginsInstalled->count()}</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {if isset($cTab) && $cTab === 'deaktiviert'} active{/if}" data-toggle="tab" role="tab" href="#deaktiviert">
+                        <a class="nav-link {if $cTab === 'deaktiviert'} active{/if}" data-toggle="tab" role="tab" href="#deaktiviert">
                             {__('deactivated')} <span class="badge">{$pluginsDisabled->count()}</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {if isset($cTab) && $cTab === 'probleme'} active{/if}" data-toggle="tab" role="tab" href="#probleme">
+                        <a class="nav-link {if $cTab === 'probleme'} active{/if}" data-toggle="tab" role="tab" href="#probleme">
                             {__('problems')} <span class="badge">{$pluginsProblematic->count()}</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {if isset($cTab) && $cTab === 'verfuegbar'} active{/if}" data-toggle="tab" role="tab" href="#verfuegbar">
+                        <a class="nav-link {if $cTab === 'verfuegbar'} active{/if}" data-toggle="tab" role="tab" href="#verfuegbar">
                             {__('available')} <span class="badge">{$pluginsAvailable->count()}</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {if isset($cTab) && $cTab === 'fehlerhaft'} active{/if}" data-toggle="tab" role="tab" href="#fehlerhaft">
+                        <a class="nav-link {if $cTab === 'fehlerhaft'} active{/if}" data-toggle="tab" role="tab" href="#fehlerhaft">
                             {__('faulty')} <span class="badge">{$pluginsErroneous->count()}</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {if isset($cTab) && $cTab === 'upload'} active{/if}" data-toggle="tab" role="tab" href="#upload">{__('upload')}</a>
+                        <a class="nav-link {if $cTab === 'upload'} active{/if}" data-toggle="tab" role="tab" href="#upload">{__('upload')}</a>
                     </li>
                 </ul>
             </nav>

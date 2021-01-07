@@ -246,6 +246,7 @@
                             {opcMountPoint id='opc_before_submit'}
                             {block name='contact-index-form-submit'}
                                 {row}
+                                    {if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ])}
                                     {col cols=12 class="contact-form-privacy"}
                                         {block name='contact-index-form-submit-privacy'}
                                             {link href=$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL() class="popup"}
@@ -253,6 +254,7 @@
                                             {/link}
                                         {/block}
                                     {/col}
+                                    {/if}
                                     {col cols=12 lg=8 offset-lg=4}
                                         {block name='contact-index-form-submit-button'}
                                             {row}

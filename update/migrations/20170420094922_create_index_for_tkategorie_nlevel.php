@@ -19,11 +19,17 @@ class Migration_20170420094922 extends Migration implements IMigration
     protected $description = /** @lang text */
         'Create index for tkategorie.nLevel';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         MigrationHelper::createIndex('tkategorie', ['nLevel'], 'idx_tkategorie_nLevel');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         MigrationHelper::dropIndex('tkategorie', 'idx_tkategorie_nLevel');

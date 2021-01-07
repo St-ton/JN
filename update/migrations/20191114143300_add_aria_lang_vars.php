@@ -18,6 +18,9 @@ class Migration_20191114143300 extends Migration implements IMigration
     protected $author      = 'ms';
     protected $description = 'add lang vars for increase decrease buttons';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'aria', 'increaseQuantity', 'Menge erhöhen');
@@ -27,6 +30,9 @@ class Migration_20191114143300 extends Migration implements IMigration
         $this->setLocalization('eng', 'aria', 'decreaseQuantity', 'decrease quantity');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('increaseQuantity');

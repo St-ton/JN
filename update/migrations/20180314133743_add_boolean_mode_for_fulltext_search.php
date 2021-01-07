@@ -18,14 +18,13 @@ class Migration_20180314133743 extends Migration implements IMigration
     protected $description = 'Add boolean mode for fulltext search';
 
     /**
-     * @return bool|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
         $this->execute(
             "INSERT INTO teinstellungenconfwerte (
-	            SELECT teinstellungenconf.kEinstellungenConf, 'Volltextsuche (Boolean Mode)', 'B', 3
+                SELECT teinstellungenconf.kEinstellungenConf, 'Volltextsuche (Boolean Mode)', 'B', 3
                 FROM teinstellungenconf
                 WHERE teinstellungenconf.cWertName = 'suche_fulltext'
             )"
@@ -33,17 +32,17 @@ class Migration_20180314133743 extends Migration implements IMigration
     }
 
     /**
-     * @return bool|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function down()
     {
         $this->execute(
             "DELETE teinstellungenconfwerte 
                 FROM teinstellungenconfwerte 
-                INNER JOIN teinstellungenconf ON teinstellungenconf.kEinstellungenConf = teinstellungenconfwerte.kEinstellungenConf
+                INNER JOIN teinstellungenconf 
+                    ON teinstellungenconf.kEinstellungenConf = teinstellungenconfwerte.kEinstellungenConf
                 WHERE teinstellungenconf.cWertName = 'suche_fulltext'
-	                AND teinstellungenconfwerte.cWert = 'B'"
+                    AND teinstellungenconfwerte.cWert = 'B'"
         );
     }
 }

@@ -93,11 +93,13 @@
                                             {lang key='newsletter' section='newsletter'} {lang key='newsletterSendSubscribe' section='newsletter'}
                                         </div>
                                     {/block}
+                                    {if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ])}
                                     {block name='layout-footer-newsletter-info'}
                                         <p class="info">
                                             {lang key='newsletterInformedConsent' section='newsletter' printf=$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL()}
                                         </p>
                                     {/block}
+                                    {/if}
                                 {/col}
                                 {col cols=12 lg=6}
                                     {block name='layout-footer-form'}
@@ -230,10 +232,12 @@
                         {else}
                             {lang key='footnoteInclusiveVat' assign='footnoteVat'}
                         {/if}
-                        {if $Einstellungen.global.global_versandhinweis === 'zzgl'}
-                            {lang key='footnoteExclusiveShipping' printf=$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() assign='footnoteShipping'}
-                        {elseif $Einstellungen.global.global_versandhinweis === 'inkl'}
-                            {lang key='footnoteInclusiveShipping' printf=$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() assign='footnoteShipping'}
+                        {if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}
+                            {if $Einstellungen.global.global_versandhinweis === 'zzgl'}
+                                {lang key='footnoteExclusiveShipping' printf=$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() assign='footnoteShipping'}
+                            {elseif $Einstellungen.global.global_versandhinweis === 'inkl'}
+                                {lang key='footnoteInclusiveShipping' printf=$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() assign='footnoteShipping'}
+                            {/if}
                         {/if}
                         {block name='footer-vat-notice'}
                             <span class="small">* {$footnoteVat}{if isset($footnoteShipping)}{$footnoteShipping}{/if}</span>

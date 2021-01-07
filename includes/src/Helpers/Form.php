@@ -225,13 +225,13 @@ class Form
         $mailData->toName       = $conf['global']['global_shopname'];
         $mailData->replyToEmail = $data->tnachricht->cMail;
         $mailData->replyToName  = '';
-        if (isset($data->tnachricht->cVorname)) {
+        if (!empty($data->tnachricht->cVorname)) {
             $mailData->replyToName .= $data->tnachricht->cVorname . ' ';
         }
-        if (isset($data->tnachricht->cNachname)) {
+        if (!empty($data->tnachricht->cNachname)) {
             $mailData->replyToName .= $data->tnachricht->cNachname;
         }
-        if (isset($data->tnachricht->cFirma)) {
+        if (!empty($data->tnachricht->cFirma)) {
             $mailData->replyToName .= ' - ' . $data->tnachricht->cFirma;
         }
         $data->mail = $mailData;

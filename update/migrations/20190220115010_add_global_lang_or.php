@@ -17,12 +17,18 @@ class Migration_20190220115010 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'add global lang var or';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'global', 'or', 'oder');
         $this->setLocalization('eng', 'global', 'or', 'or');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('or');

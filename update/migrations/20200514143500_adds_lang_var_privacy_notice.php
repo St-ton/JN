@@ -17,8 +17,7 @@ class Migration_20200514143500 extends Migration implements IMigration
     protected $description = 'Adds lang var for privacy notice';
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
@@ -27,7 +26,7 @@ class Migration_20200514143500 extends Migration implements IMigration
     }
 
     /**
-     * @return mixed|void
+     * @inheritDoc
      */
     public function down()
     {

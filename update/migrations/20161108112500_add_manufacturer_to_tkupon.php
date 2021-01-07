@@ -11,6 +11,9 @@ class Migration_20161108112500 extends Migration implements IMigration
 {
     protected $author = 'ms';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('ALTER TABLE tkupon ADD COLUMN cHersteller TEXT NOT NULL AFTER cArtikel;');
@@ -19,6 +22,9 @@ class Migration_20161108112500 extends Migration implements IMigration
         $this->setLocalization('eng', 'global', 'couponErr12', 'This coupon is invalid for your cart (valid only for specific manufacturers).');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->dropColumn('tkupon', 'cHersteller');

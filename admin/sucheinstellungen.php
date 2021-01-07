@@ -19,8 +19,9 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
 $oAccount->permission('SETTINGS_ARTICLEOVERVIEW_VIEW', true, true);
 $kSektion         = CONF_ARTIKELUEBERSICHT;
 $conf             = Shop::getSettings([$kSektion]);
-$standardwaehrung = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
-$mysqlVersion     = Shop::Container()->getDB()->query(
+$db               = Shop::Container()->getDB();
+$standardwaehrung = $db->select('twaehrung', 'cStandard', 'Y');
+$mysqlVersion     = $db->query(
     "SHOW VARIABLES LIKE 'innodb_version'",
     ReturnType::SINGLE_OBJECT
 )->Value;
@@ -47,11 +48,11 @@ if (Request::getVar('action') === 'createIndex') {
     }
 
     try {
-        if (Shop::Container()->getDB()->query(
+        if ($db->query(
             "SHOW INDEX FROM $index WHERE KEY_NAME = 'idx_{$index}_fulltext'",
             ReturnType::SINGLE_OBJECT
         )) {
-            Shop::Container()->getDB()->executeQuery(
+            $db->executeQuery(
                 "ALTER TABLE $index DROP KEY idx_{$index}_fulltext",
                 ReturnType::QUERYSINGLE
             );
@@ -89,11 +90,11 @@ if (Request::getVar('action') === 'createIndex') {
         }
 
         try {
-            Shop::Container()->getDB()->executeQuery(
+            $db->executeQuery(
                 'UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)',
                 ReturnType::QUERYSINGLE
             );
-            $res = Shop::Container()->getDB()->executeQuery(
+            $res = $db->executeQuery(
                 "ALTER TABLE $index
                     ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $rows) . ')',
                 ReturnType::QUERYSINGLE
@@ -149,11 +150,11 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && $kSektion > 0 && Form:
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFulltextSearchMYSQL'), 'errorFulltextSearchMYSQL');
         } else {
             // Bei Volltextsuche die Mindeswortlänge an den DB-Parameter anpassen
-            $oValue                     = Shop::Container()->getDB()->query(
+            $oValue                     = $db->query(
                 'SELECT @@ft_min_word_len AS ft_min_word_len',
                 ReturnType::SINGLE_OBJECT
             );
-            $_POST['suche_min_zeichen'] = $oValue ? $oValue->ft_min_word_len : $_POST['suche_min_zeichen'];
+            $_POST['suche_min_zeichen'] = $oValue->ft_min_word_len ?? $_POST['suche_min_zeichen'];
         }
     }
 
@@ -200,13 +201,13 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && $kSektion > 0 && Form:
     $conf = Shop::getSettings([$kSektion]);
 }
 
-$section = Shop::Container()->getDB()->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
+$section = $db->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
 if ($conf['artikeluebersicht']['suche_fulltext'] !== 'N'
-    && (!Shop::Container()->getDB()->query(
+    && (!$db->query(
         "SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'",
         ReturnType::SINGLE_OBJECT
     )
-    || !Shop::Container()->getDB()->query(
+    || !$db->query(
         "SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'",
         ReturnType::SINGLE_OBJECT
     ))) {
@@ -216,7 +217,7 @@ if ($conf['artikeluebersicht']['suche_fulltext'] !== 'N'
         '<a href="sucheinstellungen.php" title="Aktualisieren"><i class="alert-danger fa fa-refresh"></i></a>',
         'errorCreateTime'
     );
-    Notification::getInstance()->add(
+    Notification::getInstance($db)->add(
         NotificationEntry::TYPE_WARNING,
         __('indexCreate'),
         'sucheinstellungen.php'

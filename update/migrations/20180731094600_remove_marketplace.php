@@ -14,12 +14,18 @@ class Migration_20180731094600 extends Migration implements IMigration
     protected $author      = 'dr';
     protected $description = 'Remove marketplace admin menu entry and widget';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute("DELETE FROM tadminmenu WHERE cURL = 'marktplatz.php'");
         $this->execute("DELETE FROM tadminwidgets WHERE cClass = 'Marketplace'");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute(

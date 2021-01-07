@@ -288,7 +288,7 @@ function gibSuchspecialFilterOptionen($FilterSQL, $NaviFilter)
 function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return updateNaviFilter($NaviFilter)->getSearchQuery()->editSearchCache($kSpracheExt);
+    return updateNaviFilter($NaviFilter)->getSearchQuery()->editSearchCache((int)$kSpracheExt);
 }
 
 /**
@@ -421,8 +421,8 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $languageID = 0, $bCanon
 }
 
 /**
- * @param object       $oPreis
- * @param object|array $priceRangeFilter
+ * @param object            $oPreis
+ * @param object|array|null $priceRangeFilter
  * @return string
  * @deprecated since 5.0.0
  */

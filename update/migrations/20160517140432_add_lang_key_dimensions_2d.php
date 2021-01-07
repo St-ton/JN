@@ -16,12 +16,18 @@ class Migration_20160517140432 extends Migration implements IMigration
 {
     protected $author = 'msc';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'productDetails', 'dimensions2d', 'Abmessungen (L&times;H)');
         $this->setLocalization('eng', 'productDetails', 'dimensions2d', 'Dimensions (L&times;H)');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("DELETE FROM `tsprachwerte` WHERE cName = 'dimensions2d'");

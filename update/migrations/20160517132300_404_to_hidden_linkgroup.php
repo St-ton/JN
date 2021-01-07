@@ -16,6 +16,9 @@ class Migration_20160517132300 extends Migration implements IMigration
 {
     protected $author = 'ms';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -24,6 +27,9 @@ class Migration_20160517132300 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("UPDATE `tlink` SET `kLinkgruppe`='0' WHERE `nLinkart`= '29';");

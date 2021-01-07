@@ -278,9 +278,8 @@ class Cart
     }
 
     /**
-     * fuegt eine neue Position hinzu
      * @param int         $productID
-     * @param int         $qty   Anzahl des Artikel fuer die neue Position
+     * @param int|float   $qty
      * @param array       $attributeValues
      * @param int         $type
      * @param string|bool $unique
@@ -1028,7 +1027,7 @@ class Cart
      * @param bool   $name
      * @return $this
      */
-    public function setzeKonfig(&$item, bool $prices = true, bool $name = true): self
+    public function setzeKonfig($item, bool $prices = true, bool $name = true): self
     {
         // Falls Konfigitem gesetzt Preise + Name ueberschreiben
         if ((int)$item->kKonfigitem <= 0 || !\class_exists('Konfigitem')) {

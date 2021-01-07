@@ -16,6 +16,9 @@ class Migration_20160708141428 extends Migration implements IMigration
 {
     protected $author = 'msc';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'global', 'sortPriceAsc', 'Preis aufsteigend');
@@ -24,6 +27,9 @@ class Migration_20160708141428 extends Migration implements IMigration
         $this->setLocalization('eng', 'global', 'sortPriceDesc', 'Price descending');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->setLocalization('ger', 'global', 'sortPriceAsc', 'Preis 1..9');

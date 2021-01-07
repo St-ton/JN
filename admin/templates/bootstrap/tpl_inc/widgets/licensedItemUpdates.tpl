@@ -114,9 +114,10 @@
             </div>
         {/if}
     {else}
-        <div class="col-md-12">
-            <div class="alert alert-default" role="alert">{__('storeNotLinkedDesc')}</div>
-        </div>
+        <div class="alert alert-default" role="alert">{__('storeNotLinkedDesc')}</div>
     {/if}
+<a href="{__('extensionStoreURL')}" class="btn btn-outline-primary btn-block mt-3" target="_blank">
+    {__('btnExploreExtensionStore')}
+</a>
 <hr class="mb-3">
 <p class="text-right"><small>{__('last update')} {$lastUpdate|date_format:'%d.%m.%Y %H:%M:%S'}</small></p>

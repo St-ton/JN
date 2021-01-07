@@ -70,3 +70,6 @@ msgstr[1] "%d days left"
 
 msgid "storeNotLinkedDesc"
 msgstr "In order to access contents of JTL-Extension&nbsp;Store, connect your JTL account to the online shop first."
+
+msgid "btnExploreExtensionStore"
+msgstr "Explore JTL-Extension Store"

@@ -16,6 +16,9 @@ class Migration_20190405115700 extends Migration implements IMigration
     protected $author      = 'fm';
     protected $description = 'remove trusted shops';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $boxIDs = $this->getDB()->query(
@@ -41,6 +44,9 @@ class Migration_20190405115700 extends Migration implements IMigration
         $this->execute("DELETE FROM tadminrechtegruppe WHERE cRecht = 'ORDER_TRUSTEDSHOPS_VIEW'");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
     }

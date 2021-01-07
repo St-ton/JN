@@ -16,11 +16,17 @@ class Migration_20161024124100 extends Migration implements IMigration
 {
     protected $author = 'ms';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('ALTER TABLE tslider ADD COLUMN bUseKB TINYINT(1) NOT NULL AFTER bRandomStart;');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('ALTER TABLE tslider DROP COLUMN bUseKB');

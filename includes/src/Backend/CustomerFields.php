@@ -47,8 +47,6 @@ class CustomerFields
     {
         if ($langID === null || $langID === 0) {
             $langID = (int)$_SESSION['kSprache'];
-        } else {
-            $langID = (int)$langID;
         }
 
         if (!isset(self::$instances[$langID])) {

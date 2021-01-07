@@ -88,25 +88,25 @@ function lang_warenkorb_Artikelanzahl($count)
 }
 
 /**
- * @param int $laenge
+ * @param int $length
  * @return string
  */
-function lang_passwortlaenge($laenge)
+function lang_passwortlaenge($length)
 {
-    return $laenge . ' ' . Shop::Lang()->get('min', 'characters') . '!';
+    return $length . ' ' . Shop::Lang()->get('min', 'characters') . '!';
 }
 
 /**
- * @param int  $ust
- * @param bool $netto
+ * @param int|string $ust
+ * @param bool       $net
  * @return string
  */
-function lang_steuerposition($ust, $netto)
+function lang_steuerposition($ust, $net)
 {
     if ($ust == (int)$ust) {
         $ust = (int)$ust;
     }
-    return $netto
+    return $net
         ? Shop::Lang()->get('plus', 'productDetails') . ' ' . $ust . '% ' . Shop::Lang()->get('vat', 'productDetails')
         : Shop::Lang()->get('incl', 'productDetails') . ' ' . $ust . '% ' . Shop::Lang()->get('vat', 'productDetails');
 }

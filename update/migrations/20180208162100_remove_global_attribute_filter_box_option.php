@@ -18,23 +18,14 @@ class Migration_20180208162100 extends Migration implements IMigration
     protected $description = 'Remove global attribute filter box option';
 
     /**
-     * @return bool|void
-     */
-    public function up()
-    {
-        $this->removeConfig('allgemein_globalmerkmalfilter_benutzen');
-    }
-
-    /**
-     * @return bool|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function down()
     {
         $this->setConfig(
             'allgemein_globalmerkmalfilter_benutzen',
             'Y',
-            \CONF_NAVIGATIONSFILTER,
+            CONF_NAVIGATIONSFILTER,
             'Globale Merkmalbox benutzen',
             'selectbox',
             110,
@@ -46,5 +37,13 @@ class Migration_20180208162100 extends Migration implements IMigration
                 ]
             ]
         );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function up()
+    {
+        $this->removeConfig('allgemein_globalmerkmalfilter_benutzen');
     }
 }

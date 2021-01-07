@@ -17,6 +17,9 @@ class Migration_20180831090330 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'add lang var termsAndConditionsNotice';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'checkout', 'termsAndConditionsNotice', 'Ich habe die <a href="%s" %s>AGB/Kundeninformationen</a> gelesen und erkläre mit dem Absenden der Bestellung mein Einverständnis.');
@@ -26,6 +29,9 @@ class Migration_20180831090330 extends Migration implements IMigration
         $this->setLocalization('eng', 'checkout', 'cancellationPolicyNotice', 'Please take note of our <a href="%s" %s>Instructions for cancellation.</a>');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('termsAndConditionsNotice');

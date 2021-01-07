@@ -26,8 +26,7 @@ class Migration_20180523092732 extends Migration implements IMigration
     ];
 
     /**
-     * @return bool|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
@@ -42,15 +41,14 @@ class Migration_20180523092732 extends Migration implements IMigration
     }
 
     /**
-     * @return bool|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function down()
     {
         $this->setConfig(
             'anti_spam_method',
             'N',
-            \CONF_GLOBAL,
+            CONF_GLOBAL,
             'Spamschutz-Methode',
             'selectbox',
             520,
@@ -71,7 +69,7 @@ class Migration_20180523092732 extends Migration implements IMigration
         $this->setConfig(
             'global_google_recaptcha_public',
             '',
-            \CONF_GLOBAL,
+            CONF_GLOBAL,
             'Google reCAPTCHA Websiteschlüssel',
             'text',
             522,
@@ -83,7 +81,7 @@ class Migration_20180523092732 extends Migration implements IMigration
         $this->setConfig(
             'global_google_recaptcha_private',
             '',
-            \CONF_GLOBAL,
+            CONF_GLOBAL,
             'Google reCAPTCHA Geheimer Schlüssel',
             'text',
             523,
@@ -95,6 +93,6 @@ class Migration_20180523092732 extends Migration implements IMigration
 
         $this->removeLocalization('captcha_code_active');
 
-        Shop::Container()->getCache()->flushTags(\CACHING_GROUP_OPTION);
+        Shop::Container()->getCache()->flushTags(CACHING_GROUP_OPTION);
     }
 }

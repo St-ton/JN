@@ -18,11 +18,17 @@ class Migration_20180827091116 extends Migration implements IMigration
     protected $author      = 'msc';
     protected $description = 'Update admin bootstrap template in database';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         // Moved to Migration_20180801124135
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
     }

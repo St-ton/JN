@@ -17,6 +17,9 @@ class Migration_20190117093118 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'language vars for new alerts';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'errorMessages', 'statusOrderNotFound', 'Keine passende Bestellung gefunden.');
@@ -35,6 +38,9 @@ class Migration_20190117093118 extends Migration implements IMigration
         $this->setLocalization('eng', 'messages', 'continueAfterActivation', 'You can continue with your order after your account has been activated.');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('statusOrderNotFound');

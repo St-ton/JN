@@ -651,9 +651,9 @@ class Product
     }
 
     /**
-     * @param Artikel $product
-     * @param float   $price
-     * @param int     $amount
+     * @param Artikel    $product
+     * @param float|null $price
+     * @param int|null   $amount
      * @return stdClass
      */
     public static function getBasePriceUnit(Artikel $product, $price, $amount): stdClass

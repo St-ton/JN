@@ -25,6 +25,9 @@ class Migration_20190403115519 extends Migration implements IMigration
     protected $author = 'mh';
     protected $description = 'Add nFehlerhaft to texportformat, tpluginemailvorlage';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $id = $this->getDB()->query(
@@ -74,6 +77,9 @@ class Migration_20190403115519 extends Migration implements IMigration
             CHANGE COLUMN `cDateiname` `cPDFNames` VARCHAR(255) NULL DEFAULT NULL');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('ALTER TABLE texportformat DROP COLUMN nFehlerhaft');

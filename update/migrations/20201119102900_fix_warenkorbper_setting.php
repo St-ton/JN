@@ -12,8 +12,7 @@ class Migration_20201119102900 extends Migration implements IMigration
     protected $description = 'Fix warenkorbpers_nutzen setting';
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
@@ -22,7 +21,7 @@ class Migration_20201119102900 extends Migration implements IMigration
             'cWertName',
             'warenkorbpers_nutzen',
             (object)[
-                'kEinstellungenSektion' => \CONF_KAUFABWICKLUNG,
+                'kEinstellungenSektion' => CONF_KAUFABWICKLUNG,
                 'nSort'                 => 275,
                 'nModul'                => 0
             ]
@@ -31,13 +30,12 @@ class Migration_20201119102900 extends Migration implements IMigration
             'teinstellungen',
             'cName',
             'warenkorbpers_nutzen',
-            (object)['kEinstellungenSektion' => \CONF_KAUFABWICKLUNG]
+            (object)['kEinstellungenSektion' => CONF_KAUFABWICKLUNG]
         );
     }
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function down()
     {
@@ -46,7 +44,7 @@ class Migration_20201119102900 extends Migration implements IMigration
             'cWertName',
             'warenkorbpers_nutzen',
             (object)[
-                'kEinstellungenSektion' => \CONF_GLOBAL,
+                'kEinstellungenSektion' => CONF_GLOBAL,
                 'nSort'                 => 810,
                 'nModul'                => 1
             ]
@@ -55,7 +53,7 @@ class Migration_20201119102900 extends Migration implements IMigration
             'teinstellungen',
             'cName',
             'warenkorbpers_nutzen',
-            (object)['kEinstellungenSektion' => \CONF_GLOBAL]
+            (object)['kEinstellungenSektion' => CONF_GLOBAL]
         );
     }
 }

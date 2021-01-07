@@ -17,11 +17,17 @@ class Migration_20160822103020 extends Migration implements IMigration
 {
     protected $author = 'fp';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         MigrationHelper::createIndex('tpreis', ['kKunde'], 'idx_tpreis_kKunde');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         MigrationHelper::dropIndex('tpreis', 'idx_tpreis_kKunde');

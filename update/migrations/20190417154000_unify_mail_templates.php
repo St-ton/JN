@@ -17,6 +17,9 @@ class Migration_20190417154000 extends Migration implements IMigration
     protected $author      = 'fm';
     protected $description = 'Unify mail template tables';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('ALTER TABLE temailvorlage ADD COLUMN `kPlugin` INT(10) UNSIGNED NOT NULL DEFAULT 0');
@@ -40,6 +43,9 @@ class Migration_20190417154000 extends Migration implements IMigration
         $this->execute('DROP TABLE IF EXISTS tpluginemailvorlagespracheoriginal');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("CREATE TABLE `temailvorlageoriginal` (

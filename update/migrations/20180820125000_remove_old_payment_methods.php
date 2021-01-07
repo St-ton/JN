@@ -17,6 +17,9 @@ class Migration_20180820125000 extends Migration implements IMigration
     protected $author      = 'fm';
     protected $description = 'Remove old payment methods';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -74,7 +77,7 @@ class Migration_20180820125000 extends Migration implements IMigration
         );
         $this->execute(
             'DELETE FROM tzahlungsartsprache
-	            WHERE kZahlungsart NOT IN (SELECT kZahlungsart FROM tzahlungsart)'
+                WHERE kZahlungsart NOT IN (SELECT kZahlungsart FROM tzahlungsart)'
         );
         $this->removeLocalization('ipaymentDesc');
         $this->removeLocalization('payWithIpayment');
@@ -87,6 +90,9 @@ class Migration_20180820125000 extends Migration implements IMigration
         $this->removeLocalization('iclearError');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
     }

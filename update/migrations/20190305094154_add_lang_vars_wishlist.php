@@ -17,6 +17,9 @@ class Migration_20190305094154 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Add lang vars wishlist';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('INSERT INTO tsprachsektion (cName) VALUES ("wishlist");');
@@ -37,6 +40,9 @@ class Migration_20190305094154 extends Migration implements IMigration
         $this->setLocalization('eng', 'wishlist', 'addNew', 'Create new');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('DELETE FROM tsprachsektion WHERE cName = "wishlist";');

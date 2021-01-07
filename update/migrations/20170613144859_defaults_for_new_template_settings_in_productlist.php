@@ -27,7 +27,7 @@ class Migration_20170613144859 extends Migration implements IMigration
     {
         $template = Shop::Container()->getTemplateService()->getActiveTemplate(false);
         $config   = new Config($template->getDir(), $this->getDB());
-        $settings = Shop::getSettings([\CONF_TEMPLATE])['template'];
+        $settings = Shop::getSettings([CONF_TEMPLATE])['template'];
         if ($template->getName() === 'Evo' || $template->getParent() === 'Evo') {
             if (!isset($settings['productlist']['variation_select_productlist'])) {
                 $config->updateConfigInDB('productlist', 'variation_select_productlist', 'N');

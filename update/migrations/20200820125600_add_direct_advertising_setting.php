@@ -19,7 +19,7 @@ class Migration_20200820125600 extends Migration implements IMigration
         $this->setConfig(
             'direct_advertising',
             'N',
-            \CONF_KUNDEN,
+            CONF_KUNDEN,
             'Hinweis auf Direktwerbung anzeigen',
             'selectbox',
             240,

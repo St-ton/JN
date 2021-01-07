@@ -17,6 +17,9 @@ class Migration_20190319092706 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Add optional salutation';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -92,6 +95,9 @@ class Migration_20190319092706 extends Migration implements IMigration
         $this->setLocalization('eng', 'global', 'noSalutation', 'No salutation');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute(

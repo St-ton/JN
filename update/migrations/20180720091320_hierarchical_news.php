@@ -17,6 +17,9 @@ class Migration_20180720091320 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Hierarchical news';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -26,6 +29,9 @@ class Migration_20180720091320 extends Migration implements IMigration
         $this->execute('ALTER TABLE `tnewskategorie` ADD INDEX `kParent` (kParent)');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('ALTER TABLE `tnewskategorie`DROP COLUMN `kParent`');

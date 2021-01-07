@@ -18,6 +18,9 @@ class Migration_20200123122500 extends Migration implements IMigration
     protected $author      = 'ms';
     protected $description = 'adds config lang var';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'productDetails', 'applyConfiguration', 'Konfiguration übernehmen');
@@ -39,6 +42,9 @@ class Migration_20200123122500 extends Migration implements IMigration
         $this->setLocalization('eng', 'productDetails', 'configChooseMinMaxComponents', 'Please select at least %d and a maximum of %d.');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('applyConfiguration');

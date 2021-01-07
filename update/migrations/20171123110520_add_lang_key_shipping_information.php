@@ -17,6 +17,9 @@ class Migration_20171123110520 extends Migration implements IMigration
     protected $author      = 'msc';
     protected $description = 'add_lang_key_shipping_information';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'basket', 'shippingInformationSpecific', 'Zzgl. <a href="%1$s" class="shipment popup">Versandkosten</a> ab %2$s bei Lieferung nach %3$s');
@@ -25,6 +28,9 @@ class Migration_20171123110520 extends Migration implements IMigration
         $this->setLocalization('eng', 'basket', 'shippingInformation', 'Plus <a href="%1$s" class="shipment popup">shipping costs</a>');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('shippingInformationSpecific');

@@ -87,6 +87,9 @@ class Controller
      */
     public function getByUserAgent(string $userAgent)
     {
+        if ($userAgent === '') {
+            return false;
+        }
         $crawlers = $this->getAllCrawlers();
         $result   = \array_filter($crawlers, static function ($item) use ($userAgent) {
             return \mb_stripos($item->cUserAgent, $userAgent) !== false;

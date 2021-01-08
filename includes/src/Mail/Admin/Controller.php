@@ -364,10 +364,8 @@ final class Controller
             $convertText        = \mb_detect_encoding($upd->cContentText, ['UTF-8'], true) !== 'UTF-8';
             $upd->cContentHtml  = $convertHTML === true ? Text::convertUTF8($upd->cContentHtml) : $upd->cContentHtml;
             $upd->cContentText  = $convertText === true ? Text::convertUTF8($upd->cContentText) : $upd->cContentText;
-            $updCount           = $this->db->update(
+            $updCount           = $this->db->upsert(
                 'temailvorlagesprache',
-                ['kEmailVorlage', 'kSprache'],
-                [$templateID, $lang->getId()],
                 $upd
             );
             $affected          += $updCount > 0 ? $updCount : 0;

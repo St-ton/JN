@@ -29,7 +29,7 @@
             window.clearTimeout(doNotify);
         }
         doNotify = window.setTimeout(function () {
-            ioCall('notificationAction', ['update'], undefined, undefined, undefined, true);
+            ioCall('notificationAction', ['refresh'], undefined, undefined, undefined, true);
             doNotify = null;
         }, 1500);
     }
@@ -52,7 +52,7 @@
                 }, {
                     allow_dismiss: true,
                     type: 'danger',
-                    delay: info ? 5000 : 0
+                    delay: 0
                 });
             }
             if (result.result && typeof result.result === 'object') {

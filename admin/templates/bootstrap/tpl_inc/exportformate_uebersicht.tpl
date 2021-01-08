@@ -117,18 +117,20 @@
                             <td class="text-center">{$exportformat->Waehrung->cName}</td>
                             <td class="text-center">{$exportformat->Kundengruppe->cName}</td>
                             <td class="text-center">{if !empty($exportformat->dZuletztErstellt)}{$exportformat->dZuletztErstellt}{else}-{/if}</td>
-                            <td class="text-center">
-                                {if $exportformat->nFehlerhaft === 1}
-                                    <i class="fal fa-times text-danger"></i>
-                                {else}
-                                    <i class="fal fa-check text-success"></i>
-                                {/if}
+                            <td class="text-center" id="exFormat_{$exportformat->kExportformat}">
+                                {include file='snippets/exportformat_state.tpl' exportformat=$exportformat}
                             </td>
                             <td class="text-center">
                                 <form method="post" action="exportformate.php">
                                     {$jtl_token}
                                     <input type="hidden" name="kExportformat" value="{$exportformat->kExportformat}" />
                                     <div class="btn-group">
+                                        <button type="button" data-id="{$exportformat->kExportformat}" class="btn btn-link px-1 btn-syntaxcheck" title="{__('Check syntax')}" data-toggle="tooltip">
+                                            <span class="icon-hover">
+                                                <span class="fal fa-check"></span>
+                                                <span class="fas fa-check"></span>
+                                            </span>
+                                        </button>
                                         <button name="action" value="delete" class="btn btn-link px-1 remove notext" title="{__('delete')}" onclick="return confirm('{__('sureDeleteFormat')}');" data-toggle="tooltip">
                                             <span class="icon-hover">
                                                 <span class="fal fa-trash-alt"></span>
@@ -173,6 +175,11 @@
         <div class="card-footer save-wrapper">
             <div class="row">
                 <div class="ml-auto col-sm-6 col-xl-auto">
+                    <a class="btn btn-outline-primary btn-block" href="#" id="syntaxcheckall">
+                        <i class="fa fa-check"></i> {__('Check syntax')}
+                    </a>
+                </div>
+                <div class="col-sm-6 col-xl-auto">
                     <a class="btn btn-outline-primary btn-block" href="#" id="exportall">
                         {__('exportAll')}
                     </a>
@@ -186,3 +193,94 @@
         </div>
     </div>
 </div>
+<script>
+    {literal}
+    function updateSyntaxNotify() {
+        if (doNotify) {
+            window.clearTimeout(doNotify);
+        }
+        doNotify = window.setTimeout(function () {
+            ioCall('notificationAction', ['refresh'], undefined, undefined, undefined, true);
+            doNotify = null;
+        }, 1500);
+    }
+    function validateExportFormatSyntax(tplID) {
+        $('#exFormat_' + tplID).html('<span class="fa fa-spinner fa-spin"></span>');
+        simpleAjaxCall('io.php', {
+            jtl_token: JTL_TOKEN,
+            io : JSON.stringify({
+                name: 'exportformatSyntaxCheck',
+                params : [tplID]
+            })
+        }, function (result) {
+            if (result.state && result.state !== '') {
+                $('#exFormat_' + tplID).html(result.state);
+            }
+            if (result.message && result.message !== '') {
+                createNotify({
+                    title: '{/literal}{__('smartySyntaxError')}{literal}',
+                    message: result.message,
+                }, {
+                    allow_dismiss: true,
+                    type: 'danger',
+                    delay: 0
+                });
+            }
+            if (result.result && typeof result.result === 'object') {
+                for (var res in result.result) {
+                    var lang = result.result[res];
+                    if (lang.message && lang.state && lang.state !== 'ok') {
+                        createNotify({
+                            title: res + ': {/literal}{__('smartySyntaxError')}{literal}',
+                            message: lang.message,
+                        }, {
+                            allow_dismiss: true,
+                            type: 'danger',
+                            delay: 0
+                        });
+                    }
+                }
+            }
+            updateSyntaxNotify();
+        }, function (result) {
+            $('#exFormat_' + tplID).html('<span class="label text-warning">{/literal}{__('untested')}{literal}</span>');
+            updateSyntaxNotify();
+            if (result.statusText) {
+                let msg = result.statusText;
+                if (result.responseJSON && result.responseJSON.error.message !== '') {
+                    msg += '<br>' + result.responseJSON.error.message;
+                }
+                createNotify({
+                    title: '{/literal}{__('Syntax check fail')}{literal}',
+                    message: msg,
+                }, {
+                    allow_dismiss: true,
+                    type: 'warning',
+                    delay: 0
+                });
+            }
+        }, undefined, true);
+    }
+    var doCheckTpl = {/literal}{$checkTemplate}{literal};
+    var doNotify = null;
+    if (doCheckTpl && doCheckTpl > 0) {
+        validateExportFormatSyntax(doCheckTpl);
+    }
+    $('.btn-syntaxcheck').on('click', function (e) {
+        let id = $(this).data('id');
+        if (id) {
+            validateExportFormatSyntax(id);
+        }
+    });
+    $('#syntaxcheckall').on('click', function (e) {
+        $('.btn-syntaxcheck').each(function (e) {
+            let id = $(this).data('id');
+            if (id) {
+                validateExportFormatSyntax(id);
+            }
+        });
+
+        return false;
+    })
+    {/literal}
+</script>

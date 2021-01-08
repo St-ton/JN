@@ -181,12 +181,13 @@ final class SyntaxChecker
             'state'   => '<span class="label text-warning">' . __('untested') . '</span>',
         ];
 
-        \register_shutdown_function(static function () {
+        $db    = Shop::Container()->getDB();
+        $model = new Model($db);
+        \register_shutdown_function(static function () use ($model) {
             $err = \error_get_last();
             if ($err !== null && ($err['type'] & !(\E_NOTICE | \E_STRICT | \E_DEPRECATED) !== 0)) {
-                $model = self::getRegisteredModel();
-                $out   = \ob_get_clean();
-                $res   = (object)[
+                $out = \ob_get_clean();
+                $res = (object)[
                     'result'  => 'fail',
                     'state'   => '<span class="label text-warning">' . __('untested') . '</span>',
                     'message' => self::stripMessage($out, $err['message']),
@@ -202,14 +203,12 @@ final class SyntaxChecker
             }
         });
         \session_write_close();
-        $db = Shop::Container()->getDB();
+
         try {
             $renderer = new SmartyRenderer(new MailSmarty($db));
             $hydrator = new TestHydrator($renderer->getSmarty(), $db, Shopsetting::getInstance());
-            $model    = new Model($db);
             $sc       = new self($db, new TemplateFactory($db), $renderer, $hydrator);
             $template = $sc->factory->getTemplateByID($templateID);
-            self::registerModel($model);
 
             if ($template === null) {
                 $res->result  = 'fail';
@@ -227,7 +226,7 @@ final class SyntaxChecker
             }
 
             $res->state = self::getHTMLState($model);
-        } catch (\SmartyException $e) {
+        } catch (SmartyException $e) {
             $res->result  = 'fail';
             $res->message = __($e->getMessage());
         }
@@ -258,21 +257,5 @@ final class SyntaxChecker
     public function doCheckSyntax(LanguageModel $lang, string $templateID, string $moduleID): string
     {
         return '';
-    }
-
-    /**
-     * @param Model $model
-     */
-    public static function registerModel(Model $model): void
-    {
-        self::$model = $model;
-    }
-
-    /**
-     * @return Model|null
-     */
-    public static function getRegisteredModel(): ?Model
-    {
-        return self::$model;
     }
 }

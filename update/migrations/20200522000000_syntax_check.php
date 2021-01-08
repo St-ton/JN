@@ -35,6 +35,5 @@ class Migration_20200522000000 extends Migration implements IMigration
 
     public function down()
     {
-        unset($_SESSION['emailSyntaxErrorCount'], $_SESSION['exportSyntaxErrorCount']);
     }
 }

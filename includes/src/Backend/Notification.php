@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Support\Collection;
 use IteratorAggregate;
 use JTL\DB\ReturnType;
+use JTL\Exportformat;
 use JTL\IO\IOResponse;
 use JTL\Link\Admin\LinkAdmin;
 use JTL\Mail\Template\Model;
@@ -301,12 +302,23 @@ class Notification implements IteratorAggregate, Countable
             );
         }
 
-        if (($exportSyntaxErrorCount = $status->getExportFormatErrorCount()) > 0) {
+        if (($expSyntaxErrorCount = $status->getExportFormatErrorCount()) > 0) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,
                 __('getExportFormatErrorCountTitle'),
-                \sprintf(__('getExportFormatErrorCountMessage'), $exportSyntaxErrorCount),
+                \sprintf(__('getExportFormatErrorCountMessage'), $expSyntaxErrorCount),
                 'exportformate.php'
+            );
+        }
+
+        $hash = 'hasUncheckedExportTemplates';
+        if (($expSyntaxErrorCount = $status->getExportFormatErrorCount(Exportformat::SYNTAX_NOT_CHECKED, $hash)) > 0) {
+            $this->add(
+                NotificationEntry::TYPE_WARNING,
+                __('getExportFormatUncheckedCountTitle'),
+                \sprintf(__('getExportFormatUncheckedCountMessage'), $expSyntaxErrorCount),
+                'exportformate.php',
+                $hash
             );
         }
 

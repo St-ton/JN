@@ -23,7 +23,7 @@ class Migration_20210105093753 extends Migration implements IMigration
     public function up()
     {
         $this->execute(
-            "DELETE FROM `teinstellungenconf` WHERE kEinstellungenConf = 626 AND cWertName = 'configgroup_5_product_tagging'"
+            "DELETE FROM `teinstellungenconf` WHERE kEinstellungenSektion = 5 AND cWertName = 'configgroup_5_product_tagging'"
         );
     }
 

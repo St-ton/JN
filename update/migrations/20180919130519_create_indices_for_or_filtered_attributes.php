@@ -18,6 +18,9 @@ class Migration_20180919130519 extends Migration implements IMigration
     protected $author      = 'fp';
     protected $description = 'Create indices for or-filtered attributes';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $duplicates = $this->getDB()->query(
@@ -52,6 +55,9 @@ class Migration_20180919130519 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('ALTER TABLE tartikelmerkmal DROP INDEX kArtikelMerkmalWert_UQ');

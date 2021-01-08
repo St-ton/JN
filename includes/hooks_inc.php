@@ -1960,7 +1960,7 @@ define('HOOK_CALCULATESHIPPINGFEES', 307);
  * @since 5.0.0
  * @file includes/src/Cart/Cart.php
  * @param int productID
- * @param \JTL\Cart\CartItem[] positionItems
+ * @param CartItem[] positionItems
  * @param float qty
  */
 define('HOOK_WARENKORB_ERSTELLE_SPEZIAL_POS', 310);

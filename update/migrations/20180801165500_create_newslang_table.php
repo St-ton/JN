@@ -17,6 +17,9 @@ class Migration_20180801165500 extends Migration implements IMigration
     protected $author      = 'fm';
     protected $description = 'Create news language table';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $db = $this->getDB();
@@ -118,6 +121,9 @@ class Migration_20180801165500 extends Migration implements IMigration
         $this->execute('DELETE FROM tspezialseite WHERE nLinkart = 20');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('DROP TABLE tnewssprache');

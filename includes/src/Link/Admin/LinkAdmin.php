@@ -118,7 +118,7 @@ final class LinkAdmin
      * @param array $post
      * @return stdClass
      */
-    public function createOrUpdateLinkGroup(int $id, $post): stdClass
+    public function createOrUpdateLinkGroup(int $id, array $post): stdClass
     {
         $linkGroup                = new stdClass();
         $linkGroup->kLinkgruppe   = (int)$post['kLinkgruppe'];
@@ -287,6 +287,29 @@ final class LinkAdmin
             ['lid' => $id],
             ReturnType::ARRAY_OF_OBJECTS
         );
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getUntranslatedPageIDs(): Collection
+    {
+        return $this->db->query(
+            'SELECT DISTINCT tlink.kLink AS id
+                FROM tlink
+                JOIN tsprache
+                LEFT JOIN tlinksprache loc
+                    ON tlink.kLink = loc.kLink
+                    AND loc.cISOSprache = tsprache.cISO
+                LEFT JOIN tsprache t2
+                    ON t2.cISO = loc.cISOSprache
+                    AND t2.cISO = tsprache.cISO
+                WHERE t2.cISO IS NULL
+                    AND tlink.reference = 0',
+            ReturnType::COLLECTION
+        )->map(function (stdClass $e) {
+            return (int)$e->id;
+        });
     }
 
     /**

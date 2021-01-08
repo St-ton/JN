@@ -16,6 +16,9 @@ class Migration_20160831125500 extends Migration implements IMigration
 {
     protected $author = 'ms';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'global', 'footnoteInclusiveShipping', ', inkl. <a href="%s">Versand</a>');
@@ -31,6 +34,9 @@ class Migration_20160831125500 extends Migration implements IMigration
         $this->setLocalization('eng', 'global', 'footnoteExclusiveVat', 'All prices exclusive legal <abbr title="value added tax">VAT</abbr>');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('footnoteInclusiveShipping');

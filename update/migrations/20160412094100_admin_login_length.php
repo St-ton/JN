@@ -16,11 +16,17 @@ class Migration_20160412094100 extends Migration implements IMigration
 {
     protected $author = 'fm';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('ALTER TABLE `tadminlogin` CHANGE COLUMN `cLogin` `cLogin` VARCHAR(255) NULL DEFAULT NULL;');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('ALTER TABLE `tadminlogin` CHANGE COLUMN `cLogin` `cLogin` VARCHAR(20) NULL DEFAULT NULL;');

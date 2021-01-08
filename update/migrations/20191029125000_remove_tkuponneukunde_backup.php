@@ -43,6 +43,5 @@ class Migration_20191029125000 extends Migration implements IMigration
      */
     public function down()
     {
-        // nothing to do...
     }
 }

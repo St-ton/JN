@@ -17,6 +17,9 @@ class Migration_20190219090154 extends Migration implements IMigration
     protected $author      = 'fp';
     protected $description = 'Create new Varkombi index';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -25,6 +28,9 @@ class Migration_20190219090154 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute(

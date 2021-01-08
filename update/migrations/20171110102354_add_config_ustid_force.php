@@ -17,13 +17,16 @@ class Migration_20171110102354 extends Migration implements IMigration
     protected $author      = 'cr';
     protected $description = 'Add vars and settings for the UstID-check via VIES';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         // add config-setting to force remote UstID-check
         $this->setConfig(
             'shop_ustid_force_remote_check',
             'Y',
-            \CONF_KUNDEN,
+            CONF_KUNDEN,
             'Kundenregistrierung nur mit MIAS-Best&auml;tigung',
             'selectbox',
             430,
@@ -42,7 +45,7 @@ class Migration_20171110102354 extends Migration implements IMigration
         $this->setConfig(
             'shop_ustid_bzstpruefung',
             'N',
-            \CONF_KUNDEN,
+            CONF_KUNDEN,
             'UStID-Nummer Pr&uuml;fung durch MIAS-System aktivieren',
             'selectbox',
             420,
@@ -102,6 +105,9 @@ class Migration_20171110102354 extends Migration implements IMigration
         $this->setLocalization('eng', 'global', 'ustIDError200', 'The VIES-service of your country is not reachable till ');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeConfig('shop_ustid_force_remote_check');
@@ -110,7 +116,7 @@ class Migration_20171110102354 extends Migration implements IMigration
         $this->setConfig(
             'shop_ustid_bzstpruefung',
             'N',
-            \CONF_KUNDEN,
+            CONF_KUNDEN,
             'USt-ID Pr&uuml;fung des Bundeszentralamts f&uuml;r Steuern aktivieren',
             'selectbox',
             430,

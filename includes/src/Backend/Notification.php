@@ -7,13 +7,13 @@ use Countable;
 use Exception;
 use Illuminate\Support\Collection;
 use IteratorAggregate;
+use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Exportformat;
 use JTL\IO\IOResponse;
 use JTL\Link\Admin\LinkAdmin;
 use JTL\Mail\Template\Model;
 use JTL\Shop;
-use JTL\SingletonTrait;
 use function Functional\pluck;
 
 /**
@@ -22,12 +22,40 @@ use function Functional\pluck;
  */
 class Notification implements IteratorAggregate, Countable
 {
-    use SingletonTrait;
-
     /**
      * @var NotificationEntry[]
      */
     private $array = [];
+
+    /**
+     * @var DbInterface
+     */
+    private $db;
+
+    /**
+     * @var Notification
+     */
+    private static $instance;
+
+    /**
+     * Notification constructor.
+     * @param DbInterface $db
+     */
+    public function __construct(DbInterface $db)
+    {
+        $this->db       = $db;
+        self::$instance = $this;
+    }
+
+    /**
+     * @param DbInterface|null $db
+     * @return $this
+     */
+    public static function getInstance(DbInterface $db = null): self
+    {
+
+        return static::$instance ?? new self($db ?? Shop::Container()->getDB());
+    }
 
     /**
      * @param int         $type
@@ -111,10 +139,10 @@ class Notification implements IteratorAggregate, Countable
      */
     public function buildDefault(bool $flushCache = false): self
     {
-        $db        = Shop::Container()->getDB();
+        $adminURL  = Shop::getAdminURL() . '/';
         $cache     = Shop::Container()->getCache();
-        $status    = Status::getInstance($db, $cache, $flushCache);
-        $linkAdmin = new LinkAdmin($db, $cache);
+        $status    = Status::getInstance($this->db, $cache, $flushCache);
+        $linkAdmin = new LinkAdmin($this->db, $cache);
 
         Shop::Container()->getGetText()->loadAdminLocale('notifications');
 
@@ -123,7 +151,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_DANGER,
                 __('hasPendingUpdatesTitle'),
                 __('hasPendingUpdatesMessage'),
-                'dbupdater.php'
+                $adminURL . 'dbupdater.php'
             );
             return $this;
         }
@@ -134,7 +162,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_DANGER,
                 __('validFolderPermissionsTitle'),
                 __('validFolderPermissionsMessage'),
-                'permissioncheck.php',
+                $adminURL . 'permissioncheck.php',
                 $hash
             );
         }
@@ -152,7 +180,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_WARNING,
                 __('validDatabaseStructTitle'),
                 __('validDatabaseStructMessage'),
-                'dbcheck.php'
+                $adminURL . 'dbcheck.php'
             );
         }
 
@@ -162,7 +190,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_WARNING,
                 __('validModifiedFileStructTitle'),
                 __('validModifiedFileStructMessage'),
-                'filecheck.php',
+                $adminURL . 'filecheck.php',
                 $hash
             );
         }
@@ -172,7 +200,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_INFO,
                 __('hasMobileTemplateIssueTitle'),
                 __('hasMobileTemplateIssueMessage'),
-                'shoptemplate.php'
+                $adminURL . 'shoptemplate.php'
             );
         }
 
@@ -181,7 +209,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_WARNING,
                 __('hasStandardTemplateIssueTitle'),
                 __('hasStandardTemplateIssueMessage'),
-                'shoptemplate.php'
+                $adminURL . 'shoptemplate.php'
             );
         }
 
@@ -198,7 +226,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_WARNING,
                 __('hasNewPluginVersionsTitle'),
                 __('hasNewPluginVersionsMessage'),
-                'pluginverwaltung.php'
+                $adminURL . 'pluginverwaltung.php'
             );
         }
 
@@ -208,7 +236,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_WARNING,
                 __('hasLicenseExpirationsTitle'),
                 __('hasLicenseExpirationsMessage'),
-                'licenses.php',
+                $adminURL . 'licenses.php',
                 $hash
             );
         }
@@ -240,7 +268,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_WARNING,
                 __('hasFullTextIndexErrorTitle'),
                 __('hasFullTextIndexErrorMessage'),
-                'sucheinstellungen.php'
+                $adminURL . 'sucheinstellungen.php'
             );
         }
 
@@ -248,7 +276,8 @@ class Notification implements IteratorAggregate, Countable
             $this->add(
                 NotificationEntry::TYPE_WARNING,
                 __('hasInvalidPasswordResetMailTemplateTitle'),
-                __('hasInvalidPasswordResetMailTemplateMessage')
+                __('hasInvalidPasswordResetMailTemplateMessage'),
+                $adminURL . 'emailvorlagen',
             );
         }
 
@@ -258,7 +287,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_DANGER,
                 __('hasInsecureMailConfigTitle'),
                 __('hasInsecureMailConfigMessage'),
-                Shop::getURL() . '/' . \PFAD_ADMIN . 'einstellungen.php?kSektion=3',
+                $adminURL . 'einstellungen.php?kSektion=3',
                 $hash
             );
         }
@@ -269,7 +298,7 @@ class Notification implements IteratorAggregate, Countable
                     NotificationEntry::TYPE_DANGER,
                     __('needPasswordRehash2FATryTitle'),
                     __('needPasswordRehash2FATryMessage'),
-                    'benutzerverwaltung.php'
+                    $adminURL . 'benutzerverwaltung.php'
                 );
             }
         } catch (Exception $e) {
@@ -277,7 +306,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_DANGER,
                 __('needPasswordRehash2FACatchTitle'),
                 __('needPasswordRehash2FACatchMessage'),
-                'dbupdater.php'
+                $adminURL . 'dbupdater.php'
             );
         }
 
@@ -289,7 +318,7 @@ class Notification implements IteratorAggregate, Countable
                     __('getDuplicateLinkGroupTemplateNamesMessage'),
                     \implode(', ', pluck($status->getDuplicateLinkGroupTemplateNames(), 'cName'))
                 ),
-                'links.php'
+                $adminURL . 'links.php'
             );
         }
 
@@ -298,7 +327,16 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_DANGER,
                 __('duplicateSpecialLinkTitle'),
                 __('duplicateSpecialLinkDesc'),
-                'links.php'
+                $adminURL . 'links.php'
+            );
+        }
+
+        if (($missingTranslations = $linkAdmin->getUntranslatedPageIDs()->count()) > 0) {
+            $this->add(
+                NotificationEntry::TYPE_DANGER,
+                __('Missing translations'),
+                \sprintf(__('%d pages are not translated in all available languages.'), $missingTranslations),
+                $adminURL . 'links.php'
             );
         }
 
@@ -307,7 +345,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_DANGER,
                 __('getExportFormatErrorCountTitle'),
                 \sprintf(__('getExportFormatErrorCountMessage'), $expSyntaxErrorCount),
-                'exportformate.php'
+                $adminURL . 'exportformate.php'
             );
         }
 
@@ -317,7 +355,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_WARNING,
                 __('getExportFormatUncheckedCountTitle'),
                 \sprintf(__('getExportFormatUncheckedCountMessage'), $expSyntaxErrorCount),
-                'exportformate.php',
+                $adminURL . 'exportformate.php',
                 $hash
             );
         }
@@ -327,7 +365,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_DANGER,
                 __('getEmailTemplateSyntaxErrorCountTitle'),
                 \sprintf(__('getEmailTemplateSyntaxErrorCountMessage'), $emailSyntaxErrCount),
-                'emailvorlagen.php'
+                $adminURL . 'emailvorlagen.php'
             );
         }
 
@@ -337,7 +375,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_WARNING,
                 __('getEmailTemplateSyntaxUncheckedCountTitle'),
                 \sprintf(__('getEmailTemplateSyntaxUncheckedCountMessage'), $emailSyntaxErrCount),
-                'emailvorlagen.php',
+                $adminURL . 'emailvorlagen.php',
                 $hash
             );
         }
@@ -347,9 +385,10 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_INFO,
                 __('ustIdMiasCheckTitle'),
                 __('ustIdMiasCheckMessage'),
-                Shop::getAdminURL().'/einstellungen.php?kSektion=6'
+                $adminURL . 'einstellungen.php?kSektion=6'
             );
         }
+
 
         return $this;
     }
@@ -362,7 +401,7 @@ class Notification implements IteratorAggregate, Countable
      */
     protected function ignoreNotification(IOResponse $response, string $hash): void
     {
-        Shop::Container()->getDB()->upsert('tnotificationsignore', (object)[
+        $this->db->upsert('tnotificationsignore', (object)[
             'user_id'           => Shop::Container()->getAdminAccount()->getID(),
             'notification_hash' => $hash,
             'created'           => 'NOW()',
@@ -378,7 +417,7 @@ class Notification implements IteratorAggregate, Countable
      */
     protected function resetIgnoredNotifications(IOResponse $response): void
     {
-        Shop::Container()->getDB()->delete(
+        $this->db->delete(
             'tnotificationsignore',
             'user_id',
             Shop::Container()->getAdminAccount()->getID()
@@ -396,9 +435,8 @@ class Notification implements IteratorAggregate, Countable
     protected function updateNotifications(IOResponse $response, bool $flushCache = false): void
     {
         Shop::fire('backend.notification', $this->buildDefault($flushCache));
-        $db = Shop::Container()->getDB();
         /** @var Collection $res */
-        $res = $db->queryPrepared(
+        $res = $this->db->queryPrepared(
             'SELECT notification_hash
                 FROM tnotificationsignore
                 WHERE user_id = :userID', // AND NOW() < DATE_ADD(created, INTERVAL 7 DAY)',
@@ -422,7 +460,7 @@ class Notification implements IteratorAggregate, Countable
             }
         }
         if ($hashes->count() > 0) {
-            $db->query(
+            $this->db->query(
                 "DELETE FROM tnotificationsignore
                     WHERE notification_hash IN ('" . $hashes->implode('notification_hash', "', '") . "')",
                 ReturnType::DEFAULT

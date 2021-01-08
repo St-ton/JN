@@ -17,11 +17,17 @@ class Migration_20160727141407 extends Migration implements IMigration
 {
     protected $author = 'cr';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute("ALTER TABLE tadminlogin ADD b2FAauth tinyint(1) default 0, ADD c2FAauthSecret varchar(100) default '';");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->dropColumn('tadminlogin', 'b2FAauth');

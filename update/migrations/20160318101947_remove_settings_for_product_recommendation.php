@@ -16,6 +16,9 @@ class Migration_20160318101947 extends Migration implements IMigration
 {
     protected $author = 'wp';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute("DELETE FROM `teinstellungen` WHERE `cName` IN ('artikeldetails_artikelweiterempfehlen_anzeigen','artikeldetails_artikelweiterempfehlen_sperreminuten','artikeldetails_artikelweiterempfehlen_captcha')");
@@ -23,6 +26,9 @@ class Migration_20160318101947 extends Migration implements IMigration
         $this->execute('DELETE FROM `teinstellungenconfwerte` WHERE `kEinstellungenConf` IN (609,610,611,1471)');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("INSERT INTO `teinstellungen` (`kEinstellungenSektion`, `cName`, `cWert`, `cModulId`) VALUES

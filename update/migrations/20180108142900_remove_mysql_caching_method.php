@@ -15,7 +15,7 @@ class Migration_20180108142900 extends Migration implements IMigration
     protected $description = 'Remove caching method mysql';
 
     /**
-     * @return bool|void
+     * @inheritDoc
      */
     public function up()
     {
@@ -24,7 +24,7 @@ class Migration_20180108142900 extends Migration implements IMigration
     }
 
     /**
-     * @return bool|void
+     * @inheritDoc
      */
     public function down()
     {

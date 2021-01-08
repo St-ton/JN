@@ -65,14 +65,12 @@ class UnitsOfMeasure
     ];
 
     /**
-     * @param string $ucumCode
-     * @return mixed
+     * @param string|null $ucumCode
+     * @return string
      */
-    public static function getPrintAbbreviation($ucumCode)
+    public static function getPrintAbbreviation(?string $ucumCode): string
     {
-        return ($ucumCode !== null && !empty(self::$UCUMcodeToPrint[$ucumCode]))
-            ? self::$UCUMcodeToPrint[$ucumCode]
-            : '';
+        return self::$UCUMcodeToPrint[$ucumCode] ?? '';
     }
 
     /**
@@ -90,7 +88,7 @@ class UnitsOfMeasure
                 ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($units_tmp as $unit) {
-                $units[$unit->kMassEinheit] = $unit;
+                $units[(int)$unit->kMassEinheit] = $unit;
             }
         }
 
@@ -113,10 +111,9 @@ class UnitsOfMeasure
      * @param string $unitTo
      * @return int|null|string
      */
-    private static function iGetConversionFaktor($unitFrom, $unitTo)
+    private static function iGetConversionFaktor(string $unitFrom, string $unitTo)
     {
         $result = null;
-
         if (isset(self::$conversionTable[$unitFrom])) {
             $result = \key(self::$conversionTable[$unitFrom]);
             $nextTo = \current(self::$conversionTable[$unitFrom]);
@@ -135,10 +132,9 @@ class UnitsOfMeasure
      * @param string $unitTo
      * @return int|float|null
      */
-    public static function getConversionFaktor($unitFrom, $unitTo)
+    public static function getConversionFaktor(string $unitFrom, string $unitTo)
     {
         $result = self::iGetConversionFaktor($unitFrom, $unitTo);
-
         if ($result === null) {
             $result = self::iGetConversionFaktor($unitTo, $unitFrom);
 

@@ -829,7 +829,7 @@ class Kupon
             }
             if (isset($item->Artikel->cHersteller) && \mb_strlen($item->Artikel->cHersteller) > 0) {
                 $manufQry .= " OR FIND_IN_SET('" .
-                    \str_replace('%', '\%', $db->escape($item->Artikel->kHersteller))
+                    \str_replace('%', '\%', (int)$item->Artikel->kHersteller)
                     . "', REPLACE(cHersteller, ';', ',')) > 0";
             }
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL

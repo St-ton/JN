@@ -16,6 +16,9 @@ class Migration_20160823155500 extends Migration implements IMigration
 {
     protected $author = 'fm';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -39,6 +42,9 @@ class Migration_20160823155500 extends Migration implements IMigration
         $this->setLocalization('eng', 'global', 'wrbform', 'Model withdrawal form');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->dropColumn('ttext', 'cWRBFormContentHtml');

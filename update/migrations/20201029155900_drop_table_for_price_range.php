@@ -17,6 +17,9 @@ class Migration_20201029155900 extends Migration implements IMigration
     protected $author      = 'fp';
     protected $description = 'Drop the table for price range';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -24,6 +27,9 @@ class Migration_20201029155900 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute(

@@ -16,11 +16,17 @@ class Migration_20160406092155 extends Migration implements IMigration
 {
     protected $author = 'wp';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('DROP TABLE IF EXISTS `tartikelweiterempfehlenhistory`;');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('CREATE TABLE `tartikelweiterempfehlenhistory` (

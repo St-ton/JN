@@ -17,6 +17,9 @@ class Migration_20190130130822 extends Migration implements IMigration
     protected $author      = 'cr';
     protected $description = 'add setting "review reminder bound to newsletter"';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -48,6 +51,9 @@ class Migration_20190130130822 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("DELETE w FROM teinstellungenconfwerte w JOIN teinstellungenconf c

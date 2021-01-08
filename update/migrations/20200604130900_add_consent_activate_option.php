@@ -17,15 +17,14 @@ class Migration_20200604130900 extends Migration implements IMigration
     protected $description = 'Add consent activate option';
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
         $this->setConfig(
             'consent_manager_active',
             'Y',
-            \CONF_CONSENTMANAGER,
+            CONF_CONSENTMANAGER,
             'Consent Manager aktivieren',
             'selectbox',
             100,
@@ -40,7 +39,7 @@ class Migration_20200604130900 extends Migration implements IMigration
     }
 
     /**
-     * @return mixed|void
+     * @inheritDoc
      */
     public function down()
     {

@@ -37,7 +37,7 @@ class Migration_20171116114700 extends Migration implements IMigration
     private $languages = [];
 
     /**
-     *
+     * @inheritDoc
      */
     public function up()
     {
@@ -70,7 +70,7 @@ class Migration_20171116114700 extends Migration implements IMigration
      * @param string $seoGER
      * @param string $seoENG
      */
-    private function createSeo($linkType, $cmsName, $seoGER, $seoENG)
+    private function createSeo(int $linkType, string $cmsName, string $seoGER, string $seoENG): void
     {
         $links = $this->fetchOne(
             "SELECT tlink.kLink, tseo.cSeo, tsprache.cISO 
@@ -136,7 +136,7 @@ class Migration_20171116114700 extends Migration implements IMigration
     }
 
     /**
-     *
+     * @inheritDoc
      */
     public function down()
     {

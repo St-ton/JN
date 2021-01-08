@@ -140,3 +140,9 @@ msgstr "Prüfung der USt.-IdNr."
 
 msgid "ustIdMiasCheckMessage"
 msgstr "Wenn Sie die europaweite Umsatzsteuerprüfung durch das MIAS-System der EU verwenden wollen, installieren Sie bitte das PHP-Modul 'php_soap'."
+
+msgid "Missing translations"
+msgstr "Fehlende Übersetzungen"
+
+msgid "%d pages are not translated in all available languages."
+msgstr "%d Seiten sind nicht in alle verfügbaren Sprachen übersetzt."

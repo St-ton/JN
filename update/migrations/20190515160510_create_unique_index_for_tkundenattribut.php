@@ -28,6 +28,9 @@ class Migration_20190515160510 extends Migration implements IMigration
     protected $author = 'fp';
     protected $description = 'Create unique index for tkundenattribut';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -46,6 +49,9 @@ class Migration_20190515160510 extends Migration implements IMigration
         $this->execute('CREATE UNIQUE INDEX kKundenfeld ON tkundenattribut(kKunde, kKundenfeld)');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         if ($this->fetchOne("SHOW INDEX FROM tkundenattribut WHERE KEY_NAME = 'kKundenfeld'")) {

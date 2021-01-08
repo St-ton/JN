@@ -140,3 +140,9 @@ msgstr "VAT ID check"
 
 msgid "ustIdMiasCheckMessage"
 msgstr "If you want to use the European VAT check by the EU VAT Information Exchange System, please install the PHP module \"php_soap\"."
+
+msgid "Missing translations"
+msgstr "Missing translations"
+
+msgid "%d pages are not translated in all available languages."
+msgstr "%d pages are not translated in all available languages."

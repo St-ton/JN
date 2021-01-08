@@ -18,6 +18,9 @@ class Migration_20191023142000 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'add lang vars for nova menu';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'global', 'menuShow', '%s anzeigen');
@@ -26,6 +29,9 @@ class Migration_20191023142000 extends Migration implements IMigration
         $this->setLocalization('eng', 'global', 'menuName', 'Menu');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('menuShow');

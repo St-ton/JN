@@ -1244,6 +1244,11 @@ class Wishlist
      */
     public static function getWishlists(): Collection
     {
+        $customerID = Frontend::getCustomer()->getID();
+        if ($customerID === 0) {
+            return new Collection();
+        }
+
         return Shop::Container()->getDB()->queryPrepared(
             'SELECT tw.*, COUNT(twp.kArtikel) AS productCount
                 FROM twunschliste AS tw
@@ -1251,7 +1256,7 @@ class Wishlist
                 WHERE kKunde = :customerID
                 GROUP BY tw.kWunschliste
                 ORDER BY tw.nStandard DESC',
-            ['customerID' => Frontend::getCustomer()->getID()],
+            ['customerID' => $customerID],
             ReturnType::COLLECTION
         )->map(static function ($list) {
             $list->kWunschliste = (int)$list->kWunschliste;

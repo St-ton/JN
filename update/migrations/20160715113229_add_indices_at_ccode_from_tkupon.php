@@ -16,11 +16,17 @@ class Migration_20160715113229 extends Migration implements IMigration
 {
     protected $author = 'msc';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('ALTER TABLE `tkupon` ADD INDEX(`cCode`)');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('ALTER TABLE tkupon DROP INDEX cCode');

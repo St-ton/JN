@@ -11,11 +11,17 @@ class Migration_20171211131600 extends Migration implements IMigration
 {
     protected $author = 'ms';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute("UPDATE tkupon SET cHersteller = '-1' WHERE cHersteller = '';");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
     }

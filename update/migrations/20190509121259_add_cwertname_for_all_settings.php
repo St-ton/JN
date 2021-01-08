@@ -17,6 +17,9 @@ class Migration_20190509121259 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Add cWertName for all settings';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -122,6 +125,9 @@ class Migration_20190509121259 extends Migration implements IMigration
         $this->execute("UPDATE `teinstellungenconf` SET cWertName = 'configgroup_122_returns' WHERE COALESCE(cWertName, '') = '' AND kEinstellungenSektion = 122 AND cName='Warenrücksendung'");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("UPDATE `teinstellungenconf` SET cWertName = NULL WHERE cWertName LIKE 'configgroup_%'");

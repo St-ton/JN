@@ -29,7 +29,7 @@ class Migration_20200825095900 extends Migration implements IMigration
         $this->setConfig(
             'upload_modul_limit',
             '10',
-            \CONF_ARTIKELDETAILS,
+            CONF_ARTIKELDETAILS,
             'Erlaubte Datei-Uploads pro Stunde',
             'number',
             499,

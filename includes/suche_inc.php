@@ -14,8 +14,8 @@ function gibSuchSpalten()
 }
 
 /**
- * @param array $exclude
- * @param array $conf
+ * @param array      $exclude
+ * @param array|null $conf
  * @return string
  * @deprecated since 5.0.0
  */

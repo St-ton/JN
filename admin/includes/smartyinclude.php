@@ -20,6 +20,7 @@ use JTL\Smarty\JTLSmarty;
 use JTL\Update\Updater;
 
 /** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global array $adminMenu */
 
 require_once __DIR__ . '/admin_menu.php';
 
@@ -231,7 +232,7 @@ $smarty->assign('URL_SHOP', $shopURL)
     ->assign('Einstellungen', $config)
     ->assign('oLinkOberGruppe_arr', $mainGroups)
     ->assign('currentMenuPath', [$currentToplevel, $currentSecondLevel, $currentThirdLevel])
-    ->assign('notifications', Notification::getInstance())
+    ->assign('notifications', Notification::getInstance($db))
     ->assign('licenseItemUpdates', $updates)
     ->assign('alertList', Shop::Container()->getAlertService())
     ->assign('favorites', $oAccount->favorites())

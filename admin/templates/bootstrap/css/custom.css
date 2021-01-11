@@ -1967,7 +1967,7 @@ pre#debug b {
   opacity: 1;
 }
 .content-header .description a {
-  text-decoration: underline dotted;
+  text-decoration: underline;
 }
 .dropdown.avatar > a {
   padding: 0;

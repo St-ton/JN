@@ -40,7 +40,7 @@ sortable.on('drag:start', (evt) => {
 
 	clearTimeout(to)
 
-	if($target.parents(`[${Data.ignore}]`).length > 0 || $target.is(`[${Data.ignore}]`)) {
+	if($target.parents(`[${Data.ignore}], a`).length > 0 || $target.is(`[${Data.ignore}], a`)) {
 		sortable.dragging = false
 		evt.cancel()
 	} else {

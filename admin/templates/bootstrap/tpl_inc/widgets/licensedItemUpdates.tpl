@@ -116,8 +116,8 @@
     {else}
         <div class="alert alert-default" role="alert">{__('storeNotLinkedDesc')}</div>
     {/if}
-<a href="{__('extensionStoreURL')}" class="btn btn-outline-primary btn-block mt-3" target="_blank">
-    {__('btnExploreExtensionStore')}
+<a href="{__('extensionStoreURL')}" class="btn btn-outline-primary btn-block my-3" target="_blank">
+    {if $hasAuth}{__('btnAdditionalExtensionStore')}{else}{__('btnExploreExtensionStore')}{/if}
 </a>
 <hr class="mb-3">
 <p class="text-right"><small>{__('last update')} {$lastUpdate|date_format:'%d.%m.%Y %H:%M:%S'}</small></p>

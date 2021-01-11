@@ -87,7 +87,7 @@ msgid "Warning: only valid until %s"
 msgstr "Caution: only valid until %s"
 
 msgid "pageDesc"
-msgstr "Explore all extensions in our <a href=\"https://jtl-url.de/exs\" target=\"_blank\">JTL-Extension Store</a>. On this page you can view your purchased licenses and subscriptions."
+msgstr "On this page you can view your purchased licences and subscriptions. Visit the <a href=\"https://jtl-url.de/exs\" target=\"_blank\">JTL-Extension Store</a> to explore our range of extensions."
 
 msgid "ID"
 msgstr "ID"
@@ -180,4 +180,4 @@ msgid "License for extension already bound to domain"
 msgstr "License for extension already bound to domain"
 
 msgid "btnExploreExtensionStore"
-msgstr "Explore JTL-Extension Store"
+msgstr "Go to JTL-Extension Store"

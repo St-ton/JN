@@ -2062,3 +2062,6 @@ msgstr "Artikelnummer %s konnte nicht im Shop gefunden werden."
 
 msgid "csvImportSaveError"
 msgstr "Zeile %s konnte nicht gespeichert werden."
+
+msgid "extensionStoreURL"
+msgstr "https://jtl-url.de/exs"

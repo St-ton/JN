@@ -66,7 +66,7 @@ class Consent extends AbstractItem
                     $localization->description   = $localized['Description'];
                     $localization->privacyPolicy = $localized['PrivacyPolicy'];
                     $this->db->insert('tconsentlocalization', $localization);
-                    if ($localization->languageID === $defaultLanguage->getId() || $defaultLocalization === null) {
+                    if ($defaultLocalization === null || $localization->languageID === $defaultLanguage->getId()) {
                         $defaultLocalization = clone $localization;
                     }
                 }

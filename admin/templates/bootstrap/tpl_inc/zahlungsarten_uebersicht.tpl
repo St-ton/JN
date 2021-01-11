@@ -60,15 +60,27 @@
                                             <span class="fas fa-hand-holding-usd"></span>
                                         </span>
                                     </a>
-                                    <a href="zahlungsarten.php?kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"
-                                       class="btn btn-link sx-2"
-                                       title="{__('edit')}"
-                                       data-toggle="tooltip">
-                                        <span class="icon-hover">
-                                            <span class="fal fa-edit"></span>
-                                            <span class="fas fa-edit"></span>
-                                        </span>
-                                    </a>
+                                    {if $zahlungsart->markedForDelete}
+                                        <a href="zahlungsarten.php?a=del&kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"
+                                           class="btn btn-link sx-2"
+                                           title="{__('delete')}"
+                                           data-toggle="tooltip">
+                                            <span class="icon-hover">
+                                                <span class="fal fa-trash"></span>
+                                                <span class="fas fa-trash"></span>
+                                            </span>
+                                        </a>
+                                    {else}
+                                        <a href="zahlungsarten.php?kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"
+                                           class="btn btn-link sx-2"
+                                           title="{__('edit')}"
+                                           data-toggle="tooltip">
+                                            <span class="icon-hover">
+                                                <span class="fal fa-edit"></span>
+                                                <span class="fas fa-edit"></span>
+                                            </span>
+                                        </a>
+                                    {/if}
                                 </div>
                             </td>
                         </tr>

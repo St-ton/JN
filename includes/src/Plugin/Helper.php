@@ -2,6 +2,7 @@
 
 namespace JTL\Plugin;
 
+use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
@@ -131,7 +132,11 @@ class Helper
                 ? new PluginLoader($db, $cache)
                 : new LegacyPluginLoader($db, $cache);
 
-            return $loader->init((int)$plugin->kPlugin, false, $langID);
+            try {
+                return $loader->init((int)$plugin->kPlugin, false, $langID);
+            } catch (InvalidArgumentException $e) {
+                return null;
+            }
         }
 
         return null;
@@ -447,8 +452,12 @@ class Helper
     public static function bootstrap(int $id, LoaderInterface $loader): ?BootstrapperInterface
     {
         if (!isset(self::$bootstrapper[$id])) {
-            $plugin = $loader->init($id);
-            if ($plugin === null || $plugin->isBootstrap() === false) {
+            try {
+                $plugin = $loader->init($id);
+            } catch (InvalidArgumentException $e) {
+                return null;
+            }
+            if ($plugin->isBootstrap() === false) {
                 return null;
             }
             if ($loader instanceof LegacyPluginLoader) {

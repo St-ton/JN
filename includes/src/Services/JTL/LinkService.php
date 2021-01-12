@@ -11,6 +11,7 @@ use JTL\Link\LinkGroupInterface;
 use JTL\Link\LinkGroupList;
 use JTL\Link\LinkGroupListInterface;
 use JTL\Link\LinkInterface;
+use JTL\Link\SpecialPageNotFoundException;
 use JTL\Shop;
 use stdClass;
 use function Functional\first;
@@ -223,11 +224,13 @@ final class LinkService implements LinkServiceInterface
     {
         $lg = $this->getLinkGroupByName('specialpages');
 
-        return $lg !== null
-            ? $lg->getLinks()->first(static function (LinkInterface $l) use ($linkType) {
-                return $l->getLinkType() === $linkType;
-            })
-            : null;
+        if ($lg === null || ($lt = $lg->getLinks()->first(static function (LinkInterface $l) use ($linkType) {
+            return $l->getLinkType() === $linkType;
+        })) === null) {
+            throw new SpecialPageNotFoundException($linkType);
+        }
+
+        return $lt;
     }
 
     /**
@@ -235,7 +238,12 @@ final class LinkService implements LinkServiceInterface
      */
     public function getSpecialPageID(int $linkType, bool $fallback = true)
     {
-        $link = $this->getSpecialPage($linkType);
+        try {
+            $link = $this->getSpecialPage($linkType);
+        } catch (SpecialPageNotFoundException $e) {
+            Shop::Container()->getLogService()->warning($e->getMessage());
+            $link = null;
+        }
         if ($link !== null) {
             return $link->getID();
         }

@@ -271,7 +271,7 @@ class Visitor
      */
     public static function getBot(): string
     {
-        $agent = \mb_convert_case($_SERVER['HTTP_USER_AGENT'], \MB_CASE_LOWER);
+        $agent = \mb_convert_case($_SERVER['HTTP_USER_AGENT'] ?? '', \MB_CASE_LOWER);
         if (\mb_strpos($agent, 'googlebot') !== false) {
             return 'Google';
         }
@@ -388,7 +388,7 @@ class Visitor
         $controller = new Crawler\Controller(Shop::Container()->getDB(), Shop::Container()->getCache());
         $bot        = $controller->getByUserAgent($userAgent);
 
-        return $bot === false ? 0 : (int)$bot->kBesucherBot;
+        return (int)($bot->kBesucherBot ?? 0);
     }
 
     /**
@@ -446,7 +446,10 @@ class Visitor
      */
     private static function getBrowserData(stdClass $browser, string $userAgent): stdClass
     {
-        if (\stripos($userAgent, 'MSIE') !== false && \stripos($userAgent, 'Opera') === false) {
+        if ($userAgent === '') {
+            return $browser;
+        }
+        if (\stripos($userAgent, 'MSIE') && \stripos($userAgent, 'Opera') === false) {
             $browser->nType    = \BROWSER_MSIE;
             $browser->cName    = 'Internet Explorer';
             $browser->cBrowser = 'msie';
@@ -493,7 +496,7 @@ class Visitor
      */
     public static function getBrowserForUserAgent($userAgent = null): stdClass
     {
-        $userAgent          = $userAgent ?? $_SERVER['HTTP_USER_AGENT'] ?? null;
+        $userAgent          = $userAgent ?? $_SERVER['HTTP_USER_AGENT'] ?? '';
         $browser            = new stdClass();
         $browser->nType     = 0;
         $browser->bMobile   = false;

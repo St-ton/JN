@@ -108,9 +108,15 @@ $kPlugin = isset($bestellung->Zahlungsart->cModulId)
     : 0;
 if ($kPlugin > 0) {
     $loader = Helper::getLoaderByPluginID($kPlugin, $db);
-    $plugin = $loader->init($kPlugin);
-    $smarty->assign('oPlugin', $plugin)
-        ->assign('plugin', $plugin);
+    try {
+        $plugin = $loader->init($kPlugin);
+        $smarty->assign('oPlugin', $plugin)
+               ->assign('plugin', $plugin);
+    } catch (InvalidArgumentException $e) {
+        Shop::Container()->getLogService()->error(
+            'Associated plugin for payment method ' . $bestellung->Zahlungsart->cModulId . ' not found'
+        );
+    }
 }
 if (empty($_SESSION['Zahlungsart']->nWaehrendBestellung) || isset($_GET['i'])) {
     $session->cleanUp();

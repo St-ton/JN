@@ -6013,11 +6013,11 @@ class Artikel
             case Image::SIZE_XS:
                 return $from->cURLMini;
             case Image::SIZE_SM:
-                return $from->cPfadKlein;
+                return $from->cURLKlein;
             case Image::SIZE_MD:
-                return $from->cPfadNormal;
+                return $from->cURLNormal;
             case Image::SIZE_LG:
-                return $from->cPfadGross;
+                return $from->cURLGross;
             default:
                 return null;
         }

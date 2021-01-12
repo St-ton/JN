@@ -512,7 +512,10 @@ class Zahlungsart extends MainModel
         }
         $iso  = $option['iso'] ?? Shop::getLanguageCode() ?? LanguageHelper::getDefaultLanguage()->getCode();
         $data = Shop::Container()->getDB()->queryPrepared(
-            'SELECT *
+            'SELECT z.kZahlungsart, COALESCE(s.cName, z.cName) AS cName, z.cModulId, z.cKundengruppen,
+                    z.cZusatzschrittTemplate, z.cPluginTemplate, z.cBild, z.nSort, z.nMailSenden, z.nActive,
+                    z.cAnbieter, z.cTSCode, z.nWaehrendBestellung, z.nCURL, z.nSOAP, z.nSOCKETS, z.nNutzbar,
+                    s.cISOSprache, s.cGebuehrname, s.cHinweisText, s.cHinweisTextShop
                 FROM tzahlungsart AS z
                 LEFT JOIN tzahlungsartsprache AS s 
                     ON s.kZahlungsart = z.kZahlungsart

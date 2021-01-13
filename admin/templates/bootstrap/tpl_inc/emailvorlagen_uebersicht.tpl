@@ -33,7 +33,7 @@
             doNotify = null;
         }, 1500);
     }
-    function validateTemplateSyntax(tplID) {
+    function validateTemplateSyntax(tplID, massCheck) {
         $('#tplState_' + tplID).html('<span class="fa fa-spinner fa-spin"></span>');
         simpleAjaxCall('io.php', {
             jtl_token: JTL_TOKEN,
@@ -56,9 +56,11 @@
                 });
             }
             if (result.result && typeof result.result === 'object') {
+                let ok = true;
                 for (var res in result.result) {
                     var lang = result.result[res];
                     if (lang.message && lang.state && lang.state !== 'ok') {
+                        ok = false;
                         createNotify({
                             title: res + ': {/literal}{__('smartySyntaxError')}{literal}',
                             message: lang.message,
@@ -68,6 +70,16 @@
                             delay: 0
                         });
                     }
+                }
+                if (ok && !massCheck) {
+                    createNotify({
+                        title: '{/literal}{__('Check syntax')}{literal}',
+                        message: '{/literal}{__('Smarty syntax ok')}{literal}',
+                    }, {
+                        allow_dismiss: true,
+                        type: 'success',
+                        delay: 1500
+                    });
                 }
             }
             updateSyntaxNotify();
@@ -105,7 +117,7 @@
         $('.btn-syntaxcheck').each(function (e) {
             let id = $(this).data('id');
             if (id) {
-                validateTemplateSyntax(id);
+                validateTemplateSyntax(id, true);
             }
         });
     })

@@ -6,7 +6,7 @@ msgid "suchspecialoverlay"
 msgstr "Artikelsticker für besondere Artikel"
 
 msgid "suchspecialoverlayDesc"
-msgstr "Besondere Artikel können in JTL-Shop optisch mit einem Sticker auf ihrem Artikelbild hervorgehoben werden. Hier stellen Sie die einzelnen Sticker für die verschiedenen Arten an besonderen Artikeln ein."
+msgstr "Besondere Artikel können in JTL-Shop optisch mit einem Sticker auf ihrem Artikelbild hervorgehoben werden. Hier stellen Sie die einzelnen Sticker für die verschiedenen Arten an besonderen Artikeln ein. Beachten Sie, dass bei Verwendung des NOVA-Templates nur die Einstellungen „Sticker-Funktion aktiv“ und „Priorität“ die Darstellung der Sticker beeinflussen. Die Texte der Artikelsticker können Sie für das NOVA-Template in den Sprachvariablen ändern (Suche nach „ribbon“); die Darstellung der Sticker ist über CSS-Anweisungen beeinflussbar."
 
 msgid "suchspecialoverlayUrl"
 msgstr "https://jtl-url.de/538df"

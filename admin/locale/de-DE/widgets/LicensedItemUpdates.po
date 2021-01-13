@@ -70,3 +70,9 @@ msgstr[1] "%d Tage verbleiben"
 
 msgid "storeNotLinkedDesc"
 msgstr "Um auf Inhalte von JTL-Extension Store zugreifen zu können, müssen Sie zunächst Ihr JTL-Konto mit Ihrem Onlineshop verknüpfen."
+
+msgid "btnExploreExtensionStore"
+msgstr "Zum JTL-Extension Store"
+
+msgid "btnAdditionalExtensionStore"
+msgstr "Weitere Extensions entdecken"

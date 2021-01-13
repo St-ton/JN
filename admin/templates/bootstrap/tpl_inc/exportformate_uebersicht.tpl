@@ -125,39 +125,39 @@
                                     {$jtl_token}
                                     <input type="hidden" name="kExportformat" value="{$exportformat->kExportformat}" />
                                     <div class="btn-group">
-                                        <button type="button" data-id="{$exportformat->kExportformat}" class="btn btn-link px-1 btn-syntaxcheck" title="{__('Check syntax')}" data-toggle="tooltip">
+                                        <button type="button" data-id="{$exportformat->kExportformat}" class="btn btn-link px-1 btn-syntaxcheck" title="{__('Check syntax')}" data-toggle="tooltip" data-placement="top">
                                             <span class="icon-hover">
                                                 <span class="fal fa-check"></span>
                                                 <span class="fas fa-check"></span>
                                             </span>
                                         </button>
-                                        <button name="action" value="delete" class="btn btn-link px-1 remove notext" title="{__('delete')}" onclick="return confirm('{__('sureDeleteFormat')}');" data-toggle="tooltip">
+                                        <button name="action" value="delete" class="btn btn-link px-1 remove notext" title="{__('delete')}" onclick="return confirm('{__('sureDeleteFormat')}');" data-toggle="tooltip" data-placement="top">
                                             <span class="icon-hover">
                                                 <span class="fal fa-trash-alt"></span>
                                                 <span class="fas fa-trash-alt"></span>
                                             </span>
                                         </button>
-                                        <button name="action" value="export" class="btn btn-link px-1 extract notext" title="{__('createExportFile')}" data-toggle="tooltip">
+                                        <button name="action" value="export" class="btn btn-link px-1 extract notext" title="{__('createExportFile')}" data-toggle="tooltip" data-placement="top">
                                             <span class="icon-hover">
                                                 <span class="fal fa-plus"></span>
                                                 <span class="fas fa-plus"></span>
                                             </span>
                                         </button>
-                                        <button name="action" value="download" class="btn btn-link px-1 download notext" title="{__('download')}" data-toggle="tooltip">
+                                        <button name="action" value="download" class="btn btn-link px-1 download notext" title="{__('download')}" data-toggle="tooltip" data-placement="top">
                                             <span class="icon-hover">
                                                 <span class="fal fa-download"></span>
                                                 <span class="fas fa-download"></span>
                                             </span>
                                         </button>
                                         {if !$exportformat->bPluginContentExtern}
-                                            <a href="#" class="btn btn-link px-1 extract_async notext" title="{__('createExportFileAsync')}" data-toggle="tooltip" data-exportid="{$exportformat->kExportformat}" id="start-export-{$exportformat->kExportformat}">
+                                            <a href="#" class="btn btn-link px-1 extract_async notext" title="{__('createExportFileAsync')}" data-toggle="tooltip" data-placement="top" data-exportid="{$exportformat->kExportformat}" id="start-export-{$exportformat->kExportformat}">
                                                 <span class="icon-hover">
                                                     <span class="fal fa-plus-square"></span>
                                                     <span class="fas fa-plus-square"></span>
                                                 </span>
                                             </a>
                                         {/if}
-                                        <button name="action" value="edit" class="btn btn-link px-1 edit notext" title="{__('edit')}" data-toggle="tooltip">
+                                        <button name="action" value="edit" class="btn btn-link px-1 edit notext" title="{__('edit')}" data-toggle="tooltip" data-placement="top">
                                             <span class="icon-hover">
                                                 <span class="fal fa-edit"></span>
                                                 <span class="fas fa-edit"></span>
@@ -204,7 +204,7 @@
             doNotify = null;
         }, 1500);
     }
-    function validateExportFormatSyntax(tplID) {
+    function validateExportFormatSyntax(tplID, massCheck) {
         $('#exFormat_' + tplID).html('<span class="fa fa-spinner fa-spin"></span>');
         simpleAjaxCall('io.php', {
             jtl_token: JTL_TOKEN,
@@ -225,21 +225,15 @@
                     type: 'danger',
                     delay: 0
                 });
-            }
-            if (result.result && typeof result.result === 'object') {
-                for (var res in result.result) {
-                    var lang = result.result[res];
-                    if (lang.message && lang.state && lang.state !== 'ok') {
-                        createNotify({
-                            title: res + ': {/literal}{__('smartySyntaxError')}{literal}',
-                            message: lang.message,
-                        }, {
-                            allow_dismiss: true,
-                            type: 'danger',
-                            delay: 0
-                        });
-                    }
-                }
+            } else if (result.result && result.result === 'ok' && !massCheck) {
+                createNotify({
+                    title: '{/literal}{__('Check syntax')}{literal}',
+                    message: '{/literal}{__('Smarty syntax ok')}{literal}',
+                }, {
+                    allow_dismiss: true,
+                    type: 'success',
+                    delay: 1500
+                });
             }
             updateSyntaxNotify();
         }, function (result) {
@@ -276,7 +270,7 @@
         $('.btn-syntaxcheck').each(function (e) {
             let id = $(this).data('id');
             if (id) {
-                validateExportFormatSyntax(id);
+                validateExportFormatSyntax(id, true);
             }
         });
 

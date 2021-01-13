@@ -106,3 +106,9 @@ msgstr "Delete export format?"
 
 msgid "useCache"
 msgstr "Use cache"
+
+msgid "Check syntax"
+msgstr "Check email sytnax"
+
+msgid "Syntax check fail"
+msgstr "Email syntax check failed"

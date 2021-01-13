@@ -100,22 +100,23 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
      */
     public function activateOptin(): void
     {
-        $inquiry            = Product::getAvailabilityFormDefaults();
-        $inquiry->kSprache  = Shop::getLanguageID();
-        $inquiry->cIP       = Request::getRealIP();
-        $inquiry->dErstellt = 'NOW()';
-        $inquiry->nStatus   = 0;
-        $inquiry->kArtikel  = $this->refData->getProductId();
-        $inquiry->cMail     = $this->refData->getEmail();
-        $inquiry->cVorname  = $this->refData->getFirstName();
-        $inquiry->cNachname = $this->refData->getLastName();
-        $checkBox           = new CheckBox();
-        $customerGroupID    = Frontend::getCustomerGroup()->getID();
+        $inquiry         = Product::getAvailabilityFormDefaults();
+        $data            = new stdClass();
+        $data->kSprache  = Shop::getLanguageID();
+        $data->cIP       = Request::getRealIP();
+        $data->dErstellt = 'NOW()';
+        $data->nStatus   = 0;
+        $data->kArtikel  = $this->refData->getProductId();
+        $data->cMail     = $this->refData->getEmail();
+        $data->cVorname  = $this->refData->getFirstName();
+        $data->cNachname = $this->refData->getLastName();
+        $checkBox        = new CheckBox();
+        $customerGroupID = Frontend::getCustomerGroup()->getID();
         if (empty($inquiry->cNachname)) {
-            $inquiry->cNachname = '';
+            $data->cNachname = '';
         }
         if (empty($inquiry->cVorname)) {
-            $inquiry->cVorname = '';
+            $data->cVorname = '';
         }
         \executeHook(\HOOK_ARTIKEL_INC_BENACHRICHTIGUNG, ['Benachrichtigung' => $inquiry]);
         $checkBox->triggerSpecialFunction(
@@ -133,7 +134,7 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
                 ON DUPLICATE KEY UPDATE
                     cVorname = :cVorname, cNachname = :cNachname, ksprache = :kSprache,
                     cIP = :cIP, dErstellt = NOW(), nStatus = :nStatus',
-            \get_object_vars($inquiry),
+            \get_object_vars($data),
             ReturnType::LAST_INSERTED_ID
         );
         if (isset($_SESSION['Kampagnenbesucher'])) {

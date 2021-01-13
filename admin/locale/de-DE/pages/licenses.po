@@ -87,7 +87,7 @@ msgid "Bound licenses"
 msgstr "Gebundene Lizenzen"
 
 msgid "pageDesc"
-msgstr "Hier können Sie Ihre Lizenzen und Subscriptions einsehen."
+msgstr "Auf dieser Seite werden die von Ihnen erworbenen Lizenzen und Subscriptions gelistet. Im <a href=\"https://jtl-url.de/exs\" target=\"_blank\">JTL-Extension Store</a> finden Sie zahlreiche Erweiterungen für Ihren JTL-Shop."
 
 msgid "ID"
 msgstr "ID"
@@ -181,3 +181,6 @@ msgstr "Token manuell eingeben"
 
 msgid "License for extension already bound to domain"
 msgstr "Eine Lizenz für diese Extension wurde bereits an den aktuellen Shop gebunden"
+
+msgid "btnExploreExtensionStore"
+msgstr "Zum JTL-Extension Store"

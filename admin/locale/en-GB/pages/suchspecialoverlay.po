@@ -6,7 +6,7 @@ msgid "suchspecialoverlay"
 msgstr "Image badges for special items"
 
 msgid "suchspecialoverlayDesc"
-msgstr "Special items can also be visually set off by adding a badge to the item image. Here you can manage the badges for the different types of special items."
+msgstr "Special items can also be visually set off by adding a badge to the item image. Here you can manage the badges for the different types of special items. Please note that for the NOVA template, only the settings \"Badge function active\" and \"Priority\" have any effects. You can edit the badge texts for the NOVA template under Language variables (search for \"ribbon\") and change the appearance of the badges using CSS commands."
 
 msgid "suchspecialoverlayUrl"
 msgstr "https://jtl-url.de/q6a35"

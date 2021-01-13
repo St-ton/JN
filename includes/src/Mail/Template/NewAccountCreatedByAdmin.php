@@ -2,6 +2,7 @@
 
 namespace JTL\Mail\Template;
 
+use JTL\Link\SpecialPageNotFoundException;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 
@@ -20,9 +21,15 @@ class NewAccountCreatedByAdmin extends AbstractTemplate
     {
         parent::preRender($smarty, $data);
 
+        try {
+            $link = Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_PASSWORD_VERGESSEN)->getURL();
+        } catch (SpecialPageNotFoundException $e) {
+            Shop::Container()->getLogService()->warning($e->getMessage());
+            $link = Shop::getURL() . '/pass.php';
+        }
         $smarty->assign(
             'newPasswordURL',
-            Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_PASSWORD_VERGESSEN)->getURL()
+            $link
         );
     }
 }

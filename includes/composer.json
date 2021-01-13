@@ -43,7 +43,7 @@
         "psr/container": "1.0.0",
         "lstrojny/functional-php": "^1.14",
         "monolog/monolog": "^2.1",
-        "mrclay/minify": "~3.0.0",
+        "jtl/minify": "dev-master",
         "myclabs/php-enum": "^1.6",
         "jtlshop/semver": "~0.0.7",
         "jtlshop/wizard": "dev-master",
@@ -113,6 +113,10 @@
         {
             "type": "vcs",
             "url": "https://gitlab.com/jtl-software/jtl-shop/tools/semver.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://gitlab.com/felix.jtl/minify.git"
         }
 
     ],

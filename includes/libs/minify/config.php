@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Configuration for "min", the default application built with the Minify
  * library
@@ -9,6 +9,9 @@
 /**
  * Enable the static serving feature
  */
+
+use Minify\Minify;
+
 $min_enableStatic = true;
 
 
@@ -195,7 +198,7 @@ $min_uploaderHoursBehind = 0;
 /**
  * Advanced: you can replace some of the PHP classes Minify uses to serve requests.
  * To do this, assign a callable to one of the elements of the $min_factories array.
- *
+ *6
  * You can see the default implementations (and what gets passed in) in index.php.
  */
 //$min_factories['minify'] = ... a callable accepting a Minify\App object
@@ -206,7 +209,8 @@ $min_uploaderHoursBehind = 0;
  * @param string $type
  * @return string
  */
-function removeSourceMaps($content, $type) {
+function removeSourceMaps(string $content, string $type): string
+{
     if ($type === Minify::TYPE_JS || $type === Minify::TYPE_CSS) {
         $regex = '~//[#@]\s(source(?:Mapping)?URL)=\s*(\S+)~';
 

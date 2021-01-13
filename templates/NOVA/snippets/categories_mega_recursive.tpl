@@ -6,8 +6,7 @@
             aria=["expanded"=>"false"]}
             {if $firstChild
                 && $Einstellungen.template.megamenu.show_category_images !== 'N'
-                && (!$isMobile || $isTablet)
-                && !empty($mainCategory->getImage(\JTL\Media\Image::SIZE_XS))}
+                && (!$isMobile || $isTablet)}
                 {include file='snippets/image.tpl'
                     class='submenu-headline-image'
                     item=$mainCategory

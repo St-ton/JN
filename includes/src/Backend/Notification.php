@@ -276,7 +276,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_WARNING,
                 __('hasInvalidPasswordResetMailTemplateTitle'),
                 __('hasInvalidPasswordResetMailTemplateMessage'),
-                $adminURL . 'emailvorlagen',
+                $adminURL . 'emailvorlagen'
             );
         }
 

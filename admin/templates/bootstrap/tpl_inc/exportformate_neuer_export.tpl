@@ -93,8 +93,8 @@
                     <label class="col col-sm-4 col-form-label text-sm-right" for="nUseCache">{__('useCache')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <select class="custom-select" name="nUseCache" id="nUseCache">
-                            <option value="1" {if (isset($Exportformat->nUseCache) && $Exportformat->nUseCache === '1')}selected{/if}>{__('yes')}</option>
-                            <option value="0" {if (!isset($Exportformat->nUseCache) || $Exportformat->nUseCache === '0')}selected{/if}>{__('no')}</option>
+                            <option value="1" {if (isset($Exportformat->nUseCache) && $Exportformat->nUseCache === 1)}selected{/if}>{__('yes')}</option>
+                            <option value="0" {if (!isset($Exportformat->nUseCache) || $Exportformat->nUseCache === 0)}selected{/if}>{__('no')}</option>
                         </select>
                     </div>
                 </div>

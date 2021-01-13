@@ -170,7 +170,9 @@ abstract class OptinBase extends OptinFactory
         $newRow->kOptinCode   = $this->foundOptinTupel->kOptinCode;
         $newRow->kOptinClass  = $this->foundOptinTupel->kOptinClass;
         $newRow->cMail        = 'anonym'; // anonymized for history
-        $newRow->cRefData     = \serialize($this->refData->anonymized()); // anonymized for history
+        $newRow->cRefData     = \is_a($this->refData, OptinRefData::class)
+            ? \serialize($this->refData->anonymized()) // anonymized for history
+            : '';
         $newRow->dCreated     = $this->foundOptinTupel->dCreated;
         $newRow->dActivated   = $this->foundOptinTupel->dActivated;
         $newRow->dDeActivated = $this->nowDataTime->format('Y-m-d H:i:s');

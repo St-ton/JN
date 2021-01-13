@@ -176,6 +176,7 @@
                 {if !empty($smarty.session.Vergleichsliste->oArtikel_arr)}{$smarty.session.Vergleichsliste->oArtikel_arr|count}{else}0{/if}
             {/badge}
         {/navitem}
+        {if $linkgroups->getLinkGroupByTemplate('Kopf') !== null}
         {block name='snippets-categories-mega-top-links'}
             {foreach $linkgroups->getLinkGroupByTemplate('Kopf')->getLinks() as $Link}
                 {navitem class="nav-scrollbar-item" active=$Link->getIsActive() href=$Link->getURL() title=$Link->getTitle()}
@@ -183,6 +184,7 @@
                 {/navitem}
             {/foreach}
         {/block}
+        {/if}
         {block name='layout-header-top-bar-user-settings'}
             {block name='layout-header-top-bar-user-settings-currency'}
                 {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}

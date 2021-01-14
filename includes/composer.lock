@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "60880faffcb7aaf007c3762882b19763",
+    "content-hash": "3c8e99ccd47517c5a2d32ef3a4f8279c",
     "packages": [
         {
             "name": "chamilo/pclzip",

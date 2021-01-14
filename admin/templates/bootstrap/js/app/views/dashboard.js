@@ -51,8 +51,8 @@ sortable.on('drag:start', (evt) => {
 sortable.on('sortable:stop', (evt) => {
 	to = setTimeout(() => {
 		$body.removeClass('draggable--show-grid')
-		// widget anordnung speichern
-	}, saveDelay)
+        // widget anordnung speichern
+    }, saveDelay)
 })
 
 window.a = sortable

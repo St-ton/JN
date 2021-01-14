@@ -26322,6 +26322,9 @@ header #burger-menu {
 .productlist-applied-filter {
   margin-bottom: 2rem;
 }
+.productlist-applied-filter.productlist-applied-filter-top {
+  margin-bottom: 0;
+}
 
 .productlist-filter-footer {
   padding-left: 1rem;

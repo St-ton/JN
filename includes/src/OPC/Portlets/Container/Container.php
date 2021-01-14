@@ -61,6 +61,11 @@ class Container extends Portlet
                             'label' => __('backgroundImage'),
                             'type'  => InputType::IMAGE,
                         ],
+                        'parallax-hint' => [
+                            'type'  => InputType::HINT,
+                            'class' => 'danger',
+                            'text'  => __('parallaxNote'),
+                        ]
                     ],
                     'video' => [
                         'video-src' => [

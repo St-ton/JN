@@ -28,3 +28,6 @@ msgstr "Placeholder image"
 
 msgid "boxedContainerDesc"
 msgstr "Responsive container with fixed width"
+
+msgid "parallaxNote"
+msgstr "Attention: Do not place a Container with a parallax background below other Portlets that change their own height, such like Accordions or Tabs. Because of technical limitations the positioning of parallax backgrounds only works properly with a fixed page layout."

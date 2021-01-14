@@ -244,9 +244,6 @@ class Category
                 ORDER BY node.lft',
             ReturnType::COLLECTION
         )->each(static function ($item) {
-            $item->kKategorie       = (int)$item->kKategorie;
-            $item->kOberKategorie   = (int)$item->kOberKategorie;
-            $item->cnt              = (int)$item->cnt;
             $item->bUnterKategorien = false;
             $item->Unterkategorien  = [];
         })->mapInto(MenuItem::class)
@@ -408,7 +405,7 @@ class Category
             $item->functionAttributes  = $functionAttributes;
             $item->localizedAttributes = $localizedAttributes;
         })->mapInto(MenuItem::class)
-            ->toArray();
+          ->toArray();
 
         if ($filterEmpty) {
             $nodes = $this->removeRelicts($this->filterEmpty($nodes));

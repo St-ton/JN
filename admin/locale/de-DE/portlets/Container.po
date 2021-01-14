@@ -28,3 +28,6 @@ msgstr "Platzhalterbild"
 
 msgid "boxedContainerDesc"
 msgstr "Responsiver Container mit konstanter Breite"
+
+msgid "parallaxNote"
+msgstr "Achtung: Platzieren Sie den Container mit einem mitlaufendem Hintergrund nicht unterhalb von anderen Portlets, die ihre Höhe ändern können wie Akkordeons oder Registerkarten. Auf Grund von technischen Einschränkungen funktioniert die Positionierung des parallax Hintergrundes nur fehlerfrei mit einem feststehenden Seitenlayout."

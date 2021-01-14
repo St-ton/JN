@@ -25296,7 +25296,7 @@ header #burger-menu {
 }
 @media (min-width: 992px) {
   .is-checkout header, .is-checkout .navbar {
-    height: 4.325rem;
+    height: 4.2625rem;
   }
 }
 .is-checkout .search-form-wrapper-fixed, .is-checkout .fixed-search {

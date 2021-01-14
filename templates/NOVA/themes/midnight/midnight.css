@@ -24257,6 +24257,9 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   -webkit-transform: initial;
   transform: initial;
 }
+#image_wrapper.fullscreen #gallery .slick-arrow {
+  display: block !important;
+}
 #image_wrapper.fullscreen #gallery_preview_wrapper {
   width: 100%;
   padding: 1rem;
@@ -24325,6 +24328,13 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 #image_wrapper #gallery .slick-slide {
   padding: 0;
+}
+#image_wrapper #gallery .slick-arrow {
+  display: none !important;
+  background-color: transparent;
+}
+#image_wrapper #gallery .slick-arrow:hover {
+  background-color: #1973D3;
 }
 #image_wrapper .product-thumbnails .square-image {
   margin-bottom: 0;

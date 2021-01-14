@@ -19,15 +19,14 @@ class Migration_20180130094200 extends Migration implements IMigration
     protected $description = 'Add products per page options';
 
     /**
-     * @return bool|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
         $this->setConfig(
             'products_per_page_list',
             '10,20,30,40,50',
-            \CONF_ARTIKELUEBERSICHT,
+            CONF_ARTIKELUEBERSICHT,
             'Auswahloptionen Artikel pro Seite in Listenansicht',
             'text',
             845,
@@ -38,7 +37,7 @@ class Migration_20180130094200 extends Migration implements IMigration
         $this->setConfig(
             'products_per_page_gallery',
             '9,12,15,18,21',
-            \CONF_ARTIKELUEBERSICHT,
+            CONF_ARTIKELUEBERSICHT,
             'Auswahloptionen Artikel pro Seite in Gallerieansicht',
             'text',
             855,
@@ -50,7 +49,7 @@ class Migration_20180130094200 extends Migration implements IMigration
     }
 
     /**
-     * @return bool|void
+     * @inheritDoc
      */
     public function down()
     {

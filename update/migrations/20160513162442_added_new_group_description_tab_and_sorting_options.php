@@ -16,6 +16,9 @@ class Migration_20160513162442 extends Migration implements IMigration
 {
     protected $author = 'msc';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -30,6 +33,9 @@ class Migration_20160513162442 extends Migration implements IMigration
         $this->execute('UPDATE `teinstellungenconf` SET nSort=1500 WHERE kEinstellungenConf=219');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('DELETE FROM `teinstellungenconf` WHERE `teinstellungenconf`.`kEinstellungenConf` = 1650');

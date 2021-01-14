@@ -18,8 +18,7 @@ class Migration_20200319162500 extends Migration implements IMigration
     protected $description = 'Remove cron type tpl';
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
@@ -32,7 +31,7 @@ class Migration_20200319162500 extends Migration implements IMigration
         $this->setConfig(
             'cron_type',
             ($useCron->cWert  ?? 'N') === 'N' ? 'N' : 's2s',
-            \CONF_CRON,
+            CONF_CRON,
             'Pseudo-Cron Methode',
             'selectbox',
             1,
@@ -48,15 +47,14 @@ class Migration_20200319162500 extends Migration implements IMigration
     }
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function down()
     {
         $this->setConfig(
             'cron_type',
             'N',
-            \CONF_CRON,
+            CONF_CRON,
             'Pseudo-Cron Methode',
             'selectbox',
             1,

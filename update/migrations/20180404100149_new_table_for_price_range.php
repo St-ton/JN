@@ -17,6 +17,9 @@ class Migration_20180404100149 extends Migration implements IMigration
     protected $author      = 'fp';
     protected $description = 'New table for price range';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -37,6 +40,9 @@ class Migration_20180404100149 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('DROP TABLE `tpricerange`');

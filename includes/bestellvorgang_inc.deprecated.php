@@ -749,7 +749,7 @@ function kuponAnnehmen($coupon)
  */
 function getKundenattributeNichtEditierbar(): array
 {
-    \trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return (new CustomerFields())->getNonEditableFields();
 }
 
@@ -759,7 +759,7 @@ function getKundenattributeNichtEditierbar(): array
  */
 function getNonEditableCustomerFields(): array
 {
-    \trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return (new CustomerFields())->getNonEditableFields();
 }
 
@@ -796,7 +796,7 @@ function plausiZahlungsartZusatz($paymentMethod, array $post)
 }
 
 /**
- * @param array $post
+ * @param array|null $post
  * @return array
  * @deprecated since 5.0.0
  */

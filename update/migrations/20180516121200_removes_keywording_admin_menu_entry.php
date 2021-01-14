@@ -16,11 +16,17 @@ class Migration_20180516121200 extends Migration implements IMigration
 {
     protected $author = 'fm';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute("DELETE FROM tadminmenu WHERE cURL = 'keywording.php'");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("INSERT INTO `tadminmenu` 

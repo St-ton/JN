@@ -17,6 +17,9 @@ class Migration_20161220105242 extends Migration implements IMigration
     protected $author      = 'fp';
     protected $description = 'Refactor category nested set level';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -37,6 +40,9 @@ class Migration_20161220105242 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute(

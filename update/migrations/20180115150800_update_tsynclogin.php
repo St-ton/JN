@@ -18,6 +18,9 @@ class Migration_20180115150800 extends Migration implements IMigration
     protected $author      = 'fm';
     protected $description = 'Update tsynclogin table';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $values = $this->getDB()->select('tsynclogin', [], []);
@@ -44,6 +47,9 @@ class Migration_20180115150800 extends Migration implements IMigration
         $this->getDB()->insert('tsynclogin', $values);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $columns = $this->getDB()->query("SHOW COLUMNS FROM tsynclogin LIKE 'kSynclogin'", ReturnType::SINGLE_OBJECT);

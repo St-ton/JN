@@ -83,7 +83,7 @@ class Migration implements JsonSerializable
      */
     public function getDescription(): string
     {
-        return $this->description ?? $this->info;
+        return $this->description ?? $this->info ?? '';
     }
 
     /**

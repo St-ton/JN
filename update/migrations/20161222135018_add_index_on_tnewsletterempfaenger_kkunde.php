@@ -17,11 +17,17 @@ class Migration_20161222135018 extends Migration implements IMigration
     protected $author      = 'fp';
     protected $description = 'Add index on tnewsletterempfaenger.kKunde';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('ALTER TABLE tnewsletterempfaenger ADD INDEX kKunde (kKunde)');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('ALTER TABLE tnewsletterempfaenger DROP INDEX kKunde');

@@ -16,11 +16,17 @@ class Migration_20161007161900 extends Migration implements IMigration
 {
     protected $author = 'dr';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('ALTER TABLE tuploadschemasprache MODIFY cBeschreibung TEXT NOT NULL');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('ALTER TABLE tuploadschemasprache MODIFY cBeschreibung VARCHAR(45) NOT NULL');

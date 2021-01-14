@@ -17,6 +17,9 @@ class Migration_20190524122322 extends Migration implements IMigration
     protected $author = 'fp';
     protected $description = 'Create lang var for price change during checkout.';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'checkout', 'priceHasChanged', 'Der Preis für den Artikel "%s" in Ihrem Warenkorb '
@@ -25,6 +28,9 @@ class Migration_20190524122322 extends Migration implements IMigration
             . 'changed in the meantime. Please check your order items.');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('priceHasChanged');

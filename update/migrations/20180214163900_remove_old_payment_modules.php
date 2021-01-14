@@ -17,6 +17,9 @@ class Migration_20180214163900 extends Migration implements IMigration
     protected $author      = 'fm';
     protected $description = 'Remove old payment modules';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute("DELETE FROM teinstellungen WHERE cModulId LIKE 'za_mbqc_%_jtl' OR cModulId = 'za_dresdnercetelem_jtl' OR cModulId = 'za_clickandbuy_jtl'");
@@ -38,6 +41,9 @@ class Migration_20180214163900 extends Migration implements IMigration
           'clickandbuy2hsError', 'desdnercetelemDesc', 'payWithDresdnercetelem')");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
     }

@@ -17,11 +17,17 @@ class Migration_20190605111857 extends Migration implements IMigration
     protected $author      = 'cr';
     protected $description = 'Remove table tnewsletterqueue';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('DROP TABLE tnewsletterqueue');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute(

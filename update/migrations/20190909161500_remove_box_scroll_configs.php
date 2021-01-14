@@ -16,6 +16,9 @@ class Migration_20190909161500 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Remove box scroll configs';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->removeConfig('box_bestseller_scrollen');
@@ -33,7 +36,7 @@ class Migration_20190909161500 extends Migration implements IMigration
         $this->setConfig(
             'box_erscheinende_anzahl_basis',
             '10',
-            \CONF_BOXEN,
+            CONF_BOXEN,
             'Basisanzahl Produkte',
             'number',
             830,
@@ -45,7 +48,7 @@ class Migration_20190909161500 extends Migration implements IMigration
         $this->setConfig(
             'box_sonderangebote_anzahl_basis',
             '10',
-            \CONF_BOXEN,
+            CONF_BOXEN,
             'Basisanzahl Produkte',
             'number',
             230,
@@ -57,7 +60,7 @@ class Migration_20190909161500 extends Migration implements IMigration
         $this->setConfig(
             'box_neuimsortiment_anzahl_basis',
             '10',
-            \CONF_BOXEN,
+            CONF_BOXEN,
             'Basisanzahl Produkte',
             'number',
             325,
@@ -69,7 +72,7 @@ class Migration_20190909161500 extends Migration implements IMigration
         $this->setConfig(
             'box_topangebot_anzahl_basis',
             '10',
-            \CONF_BOXEN,
+            CONF_BOXEN,
             'Basisanzahl Produkte',
             'number',
             430,
@@ -80,12 +83,15 @@ class Migration_20190909161500 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->setConfig(
             'box_bestseller_scrollen',
             '0',
-            \CONF_BOXEN,
+            CONF_BOXEN,
             'Scrolling benutzen',
             'selectbox',
             115,
@@ -102,7 +108,7 @@ class Migration_20190909161500 extends Migration implements IMigration
         $this->setConfig(
             'box_sonderangebote_scrollen',
             '0',
-            \CONF_BOXEN,
+            CONF_BOXEN,
             'Scrolling benutzen',
             'selectbox',
             215,
@@ -119,7 +125,7 @@ class Migration_20190909161500 extends Migration implements IMigration
         $this->setConfig(
             'box_neuimsortiment_scrollen',
             '0',
-            \CONF_BOXEN,
+            CONF_BOXEN,
             'Scrolling benutzen',
             'selectbox',
             315,
@@ -136,7 +142,7 @@ class Migration_20190909161500 extends Migration implements IMigration
         $this->setConfig(
             'box_topangebot_scrollen',
             '0',
-            \CONF_BOXEN,
+            CONF_BOXEN,
             'Scrolling benutzen',
             'selectbox',
             415,
@@ -153,7 +159,7 @@ class Migration_20190909161500 extends Migration implements IMigration
         $this->setConfig(
             'box_erscheinende_scrollen',
             '0',
-            \CONF_BOXEN,
+            CONF_BOXEN,
             'Scrolling benutzen',
             'selectbox',
             815,
@@ -170,7 +176,7 @@ class Migration_20190909161500 extends Migration implements IMigration
         $this->setConfig(
             'boxen_topbewertet_scrollbar',
             '0',
-            \CONF_BOXEN,
+            CONF_BOXEN,
             'Scrolling benutzen',
             'selectbox',
             1320,
@@ -187,7 +193,7 @@ class Migration_20190909161500 extends Migration implements IMigration
         $this->setConfig(
             'boxen_preisradar_scrollbar',
             '0',
-            \CONF_BOXEN,
+            CONF_BOXEN,
             'Scrolling benutzen',
             'selectbox',
             1410,
@@ -205,7 +211,7 @@ class Migration_20190909161500 extends Migration implements IMigration
         $this->setConfig(
             'boxen_preisradar_anzahl',
             '3',
-            \CONF_BOXEN,
+            CONF_BOXEN,
             'Anzahl Artikel anzeigen',
             'number',
             1420,
@@ -217,7 +223,7 @@ class Migration_20190909161500 extends Migration implements IMigration
         $this->setConfig(
             'boxen_preisradar_anzahltage',
             '30',
-            \CONF_BOXEN,
+            CONF_BOXEN,
             'Wieviele Tage sollen beachtet werden?',
             'number',
             1430,
@@ -229,7 +235,7 @@ class Migration_20190909161500 extends Migration implements IMigration
         $this->setConfig(
             'configgroup_8_box_priceradar',
             'Box: Preisradar',
-            \CONF_BOXEN,
+            CONF_BOXEN,
             'Box: Preisradar',
             null,
             1400,

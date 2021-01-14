@@ -32,7 +32,7 @@ if ($floodProtection === 0) {
     $sitemapTracker->cSitemap     = basename($cDatei);
     $sitemapTracker->kBesucherBot = getRequestBot();
     $sitemapTracker->cIP          = $ip;
-    $sitemapTracker->cUserAgent   = Text::filterXSS($_SERVER['HTTP_USER_AGENT']);
+    $sitemapTracker->cUserAgent   = Text::filterXSS($_SERVER['HTTP_USER_AGENT'] ?? '');
     $sitemapTracker->dErstellt    = 'NOW()';
 
     Shop::Container()->getDB()->insert('tsitemaptracker', $sitemapTracker);
@@ -46,7 +46,7 @@ sendRequestFile($cDatei);
 function getRequestBot(): int
 {
     $controller = new Controller(Shop::Container()->getDB(), Shop::Container()->getCache());
-    $bot        = $controller->getByUserAgent($_SERVER['HTTP_USER_AGENT'] ?? null);
+    $bot        = $controller->getByUserAgent($_SERVER['HTTP_USER_AGENT'] ?? '');
 
     return (int)($bot->kBesucherBot ?? 0);
 }

@@ -7,6 +7,7 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Product\Artikel;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Link\SpecialPageNotFoundException;
 use JTL\Mapper\PageTypeToLinkType;
 use JTL\News\Category;
 use JTL\News\Item;
@@ -986,15 +987,15 @@ class LanguageHelper
      */
     public static function isDefaultLanguageActive(bool $shop = false, int $languageID = null): bool
     {
-        $langToCheckAgainst = $languageID !== null ? (int)$languageID : Shop::getLanguageID();
-        if ($langToCheckAgainst <= 0) {
+        $languageID = $languageID ?? Shop::getLanguageID();
+        if ($languageID <= 0) {
             return true;
         }
         foreach (Frontend::getLanguages() as $language) {
-            if ($language->cStandard === 'Y' && $language->kSprache === $langToCheckAgainst && !$shop) {
+            if (!$shop && $language->isDefault() && $language->getId() === $languageID) {
                 return true;
             }
-            if ($language->cShopStandard === 'Y' && $language->kSprache === $langToCheckAgainst && $shop) {
+            if ($shop && $language->isShopDefault() && $language->getId() === $languageID) {
                 return true;
             }
         }
@@ -1044,11 +1045,16 @@ class LanguageHelper
         if ($pageID !== null && $pageID > 0) {
             $linkID = $pageID;
         }
-        $ls          = Shop::Container()->getLinkService();
-        $mapper      = new PageTypeToLinkType();
-        $mapped      = $mapper->map(Shop::getPageType());
-        $specialPage = $mapped > 0 ? $ls->getSpecialPage($mapped) : null;
-        $page        = $linkID > 0 ? $ls->getPageLink($linkID) : null;
+        $ls     = Shop::Container()->getLinkService();
+        $mapper = new PageTypeToLinkType();
+        $mapped = $mapper->map(Shop::getPageType());
+        try {
+            $specialPage = $mapped > 0 ? $ls->getSpecialPage($mapped) : null;
+        } catch (SpecialPageNotFoundException $e) {
+            Shop::Container()->getLogService()->warning($e->getMessage());
+            $specialPage = null;
+        }
+        $page = $linkID > 0 ? $ls->getPageLink($linkID) : null;
         if (\count(Frontend::getLanguages()) > 1) {
             /** @var Artikel $AktuellerArtikel */
             foreach (Frontend::getLanguages() as $lang) {

@@ -96,7 +96,12 @@ if ($step === 'plugin_uebersicht' && $pluginID > 0) {
         }
         $loader = Helper::getLoaderByPluginID($pluginID, $db, $cache);
         if ($loader !== null) {
-            $plugin = $loader->init($pluginID, $invalidateCache);
+            try {
+                $plugin = $loader->init($pluginID, $invalidateCache);
+            } catch (InvalidArgumentException $e) {
+                $pluginNotFound = true;
+            }
+
             if ($plugin !== null && $plugin->isBootstrap()) {
                 Helper::updatePluginInstance($plugin);
             }
@@ -194,7 +199,7 @@ if ($plugin !== null && $plugin->getState() === State::DISABLED) {
 
 $smarty->assign('oPlugin', $plugin)
     ->assign('step', $step)
-    ->assign('pluginNotFound', $pluginNotFound)
+    ->assign('pluginNotFound', $pluginNotFound || $plugin === null)
     ->assign('hasDifferentVersions', false)
     ->assign('currentDatabaseVersion', 0)
     ->assign('currentFileVersion', 0)

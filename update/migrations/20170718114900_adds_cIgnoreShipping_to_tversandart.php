@@ -17,6 +17,9 @@ class Migration_20170718114900 extends Migration implements IMigration
     protected $author      = 'ms';
     protected $description = 'adds cIgnoreShippingProposal to tversandart';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute("ALTER TABLE tversandart
@@ -35,6 +38,9 @@ class Migration_20170718114900 extends Migration implements IMigration
                                                 WHERE nvz.kVersandart = v.kVersandart) = 1;");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('ALTER TABLE tversandart DROP COLUMN cIgnoreShippingProposal');

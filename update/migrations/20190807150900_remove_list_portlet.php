@@ -15,11 +15,17 @@ class Migration_20190807150900 extends Migration implements IMigration
     protected $author      = 'dr';
     protected $description = 'Remove List Portlet';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute("DELETE FROM topcportlet WHERE cClass = 'ListPortlet'");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("

@@ -17,6 +17,9 @@ class Migration_20180529125038 extends Migration implements IMigration
     protected $author      = 'fp';
     protected $description = 'Add LastArticleID to texportqueue';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -27,6 +30,9 @@ class Migration_20180529125038 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute(

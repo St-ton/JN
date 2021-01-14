@@ -16,11 +16,17 @@ class Migration_20161109111800 extends Migration implements IMigration
 {
     protected $author = 'ms';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute("ALTER TABLE tlinkgruppesprache CHANGE COLUMN kLinkgruppe kLinkgruppe INT UNSIGNED NOT NULL DEFAULT '0';");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("ALTER TABLE tlinkgruppesprache CHANGE COLUMN kLinkgruppe kLinkgruppe TINYINT(3) UNSIGNED NOT NULL DEFAULT '0';");

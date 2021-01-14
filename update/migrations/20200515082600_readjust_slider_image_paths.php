@@ -18,7 +18,7 @@ class Migration_20200515082600 extends Migration implements IMigration
      */
     public function up()
     {
-        $mediafilesPath = \PFAD_MEDIAFILES;
+        $mediafilesPath = PFAD_MEDIAFILES;
 
         $rows = $this->__execute(
             "UPDATE tslide
@@ -28,7 +28,7 @@ class Migration_20200515082600 extends Migration implements IMigration
             ReturnType::DEFAULT
         );
 
-        $shopPath = \parse_url(Shop::getURL() . '/', \PHP_URL_PATH);
+        $shopPath = parse_url(Shop::getURL() . '/', PHP_URL_PATH);
 
         $rows = $this->__execute(
             "UPDATE tslide

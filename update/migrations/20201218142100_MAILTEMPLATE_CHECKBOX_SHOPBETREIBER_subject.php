@@ -22,7 +22,7 @@ class Migration_20201218142100 extends Migration implements IMigration
             'SELECT kEmailvorlage AS id
                 FROM temailvorlage
                 WHERE cModulId = :nm',
-            ['nm' => \MAILTEMPLATE_CHECKBOX_SHOPBETREIBER],
+            ['nm' => MAILTEMPLATE_CHECKBOX_SHOPBETREIBER],
             ReturnType::SINGLE_OBJECT
         );
         if ($tplID === false) {

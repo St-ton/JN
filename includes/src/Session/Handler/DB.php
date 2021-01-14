@@ -39,9 +39,7 @@ class DB extends JTLDefault
     }
 
     /**
-     * @param string $path
-     * @param string $name
-     * @return bool
+     * @inheritDoc
      */
     public function open($path, $name)
     {
@@ -51,7 +49,7 @@ class DB extends JTLDefault
     }
 
     /**
-     * @return bool
+     * @inheritDoc
      */
     public function close()
     {
@@ -59,8 +57,7 @@ class DB extends JTLDefault
     }
 
     /**
-     * @param string $id
-     * @return string
+     * @inheritDoc
      */
     public function read($id)
     {
@@ -79,9 +76,7 @@ class DB extends JTLDefault
     }
 
     /**
-     * @param string $id
-     * @param string $data
-     * @return bool
+     * @inheritDoc
      */
     public function write($id, $data)
     {
@@ -113,10 +108,7 @@ class DB extends JTLDefault
     }
 
     /**
-     * delete session data
-     *
-     * @param string $sessID
-     * @return bool
+     * @inheritDoc
      */
     public function destroy($sessID)
     {
@@ -125,10 +117,7 @@ class DB extends JTLDefault
     }
 
     /**
-     * delete old sessions
-     *
-     * @param int $max_lifetime
-     * @return int
+     * @inheritDoc
      */
     public function gc($max_lifetime)
     {

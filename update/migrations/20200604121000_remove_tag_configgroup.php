@@ -17,8 +17,7 @@ class Migration_20200604121000 extends Migration implements IMigration
     protected $description = 'Remove tag configgroup';
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
@@ -27,8 +26,7 @@ class Migration_20200604121000 extends Migration implements IMigration
     }
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function down()
     {

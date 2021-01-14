@@ -1154,12 +1154,12 @@ class Artikel
     }
 
     /**
-     * @param int   $amount
-     * @param array $attributes
-     * @param int   $customerGroupID
+     * @param int|float $amount
+     * @param array     $attributes
+     * @param int       $customerGroupID
      * @return float|null
      */
-    public function gibPreis($amount, array $attributes, $customerGroupID = 0)
+    public function gibPreis($amount, array $attributes, int $customerGroupID = 0)
     {
         if (!Frontend::getCustomerGroup()->mayViewPrices()) {
             return null;
@@ -1167,7 +1167,6 @@ class Artikel
         if ($this->kArtikel === null) {
             return 0;
         }
-        $customerGroupID = (int)$customerGroupID;
         if (!$customerGroupID) {
             $customerGroupID = Frontend::getCustomerGroup()->getID();
         }
@@ -4096,7 +4095,7 @@ class Artikel
                 ? $this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_GELB]
                 : Shop::Lang()->get('ampelGelb');
             $this->setToParentStockText(\ART_ATTRIBUT_AMPELTEXT_GELB, 'ampelGelb');
-            
+
             if ($this->fLagerbestand <= (int)$this->conf['global']['artikel_lagerampel_rot']) {
                 $this->Lageranzeige->nStatus   = 0;
                 $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_ROT])
@@ -6015,11 +6014,11 @@ class Artikel
             case Image::SIZE_XS:
                 return $from->cURLMini;
             case Image::SIZE_SM:
-                return $from->cPfadKlein;
+                return $from->cURLKlein;
             case Image::SIZE_MD:
-                return $from->cPfadNormal;
+                return $from->cURLNormal;
             case Image::SIZE_LG:
-                return $from->cPfadGross;
+                return $from->cURLGross;
             default:
                 return null;
         }

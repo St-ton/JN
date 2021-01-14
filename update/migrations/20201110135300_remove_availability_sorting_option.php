@@ -11,6 +11,9 @@ class Migration_20201110135300 extends Migration implements IMigration
     protected $author      = 'fm';
     protected $description = 'Remove availability sorting option';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -18,6 +21,9 @@ class Migration_20201110135300 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute(

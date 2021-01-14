@@ -17,6 +17,9 @@ class Migration_20190509121204 extends Migration implements IMigration
     protected $author = 'cr';
     protected $description = 'fix msg-id spelling for optin';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->removeLocalization('optinSuccededAgain');
@@ -39,6 +42,9 @@ class Migration_20190509121204 extends Migration implements IMigration
             is available again.');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('optinSucceeded');

@@ -320,9 +320,9 @@ class Preise
      * This is necessary for having consistent gross prices in case of
      * threshold delivery (Tax rate != default tax rate).
      *
-     * @param double $netPrice      the product net price
-     * @param double $defaultTax    the default tax factor of the product e.g. 19 for 19% vat
-     * @param double $conversionTax the taxFactor of the delivery country / delivery threshold
+     * @param float|string $netPrice      the product net price
+     * @param float|string $defaultTax    the default tax factor of the product e.g. 19 for 19% vat
+     * @param float|string $conversionTax the taxFactor of the delivery country / delivery threshold
      * @return double - calculated net price based on a rounded(!!!) DEFAULT gross price.
      */
     private function getRecalculatedNetPrice($netPrice, $defaultTax, $conversionTax)
@@ -562,10 +562,10 @@ class Preise
     }
 
     /**
-     * @param float       $price
-     * @param object|null $currency
-     * @param bool        $html
-     * @param int         $decimals
+     * @param float|string $price
+     * @param object|null  $currency
+     * @param bool         $html
+     * @param int          $decimals
      * @return string
      * @former self::getLocalizedPriceString()
      */

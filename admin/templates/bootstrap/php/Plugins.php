@@ -6,8 +6,8 @@ use DateTime;
 use JTL\Backend\Revision;
 use JTL\Catalog\Currency;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use JTL\Update\Updater;
+use Smarty_Internal_Template;
 
 /**
  * Class Plugins
@@ -16,8 +16,8 @@ use JTL\Update\Updater;
 class Plugins
 {
     /**
-     * @param array     $params
-     * @param JTLSmarty $smarty
+     * @param array                    $params
+     * @param Smarty_Internal_Template $smarty
      * @return string
      */
     public function getRevisions(array $params, $smarty): string
@@ -27,10 +27,10 @@ class Plugins
         $revision  = new Revision(Shop::Container()->getDB());
 
         return $smarty->assign('revisions', $revision->getRevisions($params['type'], $params['key']))
-                      ->assign('secondary', $secondary)
-                      ->assign('data', $data)
-                      ->assign('show', $params['show'])
-                      ->fetch('tpl_inc/revisions.tpl');
+            ->assign('secondary', $secondary)
+            ->assign('data', $data)
+            ->assign('show', $params['show'])
+            ->fetch('tpl_inc/revisions.tpl');
     }
 
     /**
@@ -39,7 +39,7 @@ class Plugins
      */
     public function getCurrencyConversionSmarty(array $params): string
     {
-        $bForceSteuer = !(isset($params['bSteuer']) && $params['bSteuer'] === false);
+        $forceTax = !(isset($params['bSteuer']) && $params['bSteuer'] === false);
         if (!isset($params['fPreisBrutto'])) {
             $params['fPreisBrutto'] = 0;
         }
@@ -54,13 +54,13 @@ class Plugins
             $params['fPreisNetto'],
             $params['fPreisBrutto'],
             $params['cClass'],
-            $bForceSteuer
+            $forceTax
         );
     }
 
     /**
-     * @param array     $params
-     * @param JTLSmarty $smarty
+     * @param array                    $params
+     * @param Smarty_Internal_Template $smarty
      * @return string
      */
     public function getCurrencyConversionTooltipButton(array $params, $smarty): string
@@ -80,8 +80,8 @@ class Plugins
     }
 
     /**
-     * @param array     $params
-     * @param JTLSmarty $smarty
+     * @param array                    $params
+     * @param Smarty_Internal_Template $smarty
      */
     public function getCurrentPage($params, $smarty): void
     {
@@ -94,8 +94,8 @@ class Plugins
     }
 
     /**
-     * @param array     $params
-     * @param JTLSmarty $smarty
+     * @param array                    $params
+     * @param Smarty_Internal_Template $smarty
      * @return string
      */
     public function getHelpDesc(array $params, $smarty): string
@@ -108,10 +108,10 @@ class Plugins
             : null;
 
         return $smarty->assign('placement', $placement)
-                      ->assign('cID', $cID)
-                      ->assign('description', $description)
-                      ->assign('iconQuestion', $iconQuestion)
-                      ->fetch('tpl_inc/help_description.tpl');
+            ->assign('cID', $cID)
+            ->assign('description', $description)
+            ->assign('iconQuestion', $iconQuestion)
+            ->fetch('tpl_inc/help_description.tpl');
     }
 
     /**
@@ -121,16 +121,17 @@ class Plugins
     public function permission($cRecht): bool
     {
         $ok = false;
-        if (isset($_SESSION['AdminAccount'])) {
-            if ((int)$_SESSION['AdminAccount']->oGroup->kAdminlogingruppe === \ADMINGROUP) {
-                $ok = true;
-            } else {
-                $orExpressions = \explode('|', $cRecht);
-                foreach ($orExpressions as $flag) {
-                    $ok = \in_array($flag, $_SESSION['AdminAccount']->oGroup->oPermission_arr, true);
-                    if ($ok) {
-                        break;
-                    }
+        if (!isset($_SESSION['AdminAccount'])) {
+            return false;
+        }
+        if ((int)$_SESSION['AdminAccount']->oGroup->kAdminlogingruppe === \ADMINGROUP) {
+            $ok = true;
+        } else {
+            $orExpressions = \explode('|', $cRecht);
+            foreach ($orExpressions as $flag) {
+                $ok = \in_array($flag, $_SESSION['AdminAccount']->oGroup->oPermission_arr, true);
+                if ($ok) {
+                    break;
                 }
             }
         }
@@ -139,8 +140,8 @@ class Plugins
     }
 
     /**
-     * @param array     $params
-     * @param JTLSmarty $smarty
+     * @param array                    $params
+     * @param Smarty_Internal_Template $smarty
      * @return string
      */
     public function SmartyConvertDate(array $params, $smarty)
@@ -166,8 +167,8 @@ class Plugins
     /**
      * Map marketplace categoryId to localized category name
      *
-     * @param array     $params
-     * @param JTLSmarty $smarty
+     * @param array                    $params
+     * @param Smarty_Internal_Template $smarty
      */
     public function getExtensionCategory(array $params, $smarty): void
     {
@@ -226,8 +227,8 @@ class Plugins
     }
 
     /**
-     * @param array     $params
-     * @param JTLSmarty $smarty
+     * @param array                    $params
+     * @param Smarty_Internal_Template $smarty
      * @return string
      */
     public function captchaMarkup(array $params, $smarty): string

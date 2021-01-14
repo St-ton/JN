@@ -78,7 +78,7 @@ class NetSyncHandler
      * @param int        $code
      * @param null|mixed $data
      */
-    protected static function throwResponse($code, $data = null): void
+    protected static function throwResponse(int $code, $data = null): void
     {
         $response         = new stdClass();
         $response->nCode  = $code;

@@ -1047,10 +1047,9 @@ class Bestellung
             'longestMax' => 0,
         ];
         if ($minDelivery !== null && $maxDelivery !== null) {
-            $this->oEstimatedDelivery->longestMin = (int)$minDelivery;
-            $this->oEstimatedDelivery->longestMax = (int)$maxDelivery;
-
-            $this->oEstimatedDelivery->localized = (!empty($this->oEstimatedDelivery->longestMin)
+            $this->oEstimatedDelivery->longestMin = $minDelivery;
+            $this->oEstimatedDelivery->longestMax = $maxDelivery;
+            $this->oEstimatedDelivery->localized  = (!empty($this->oEstimatedDelivery->longestMin)
                 && !empty($this->oEstimatedDelivery->longestMax))
                 ? ShippingMethod::getDeliverytimeEstimationText(
                     $this->oEstimatedDelivery->longestMin,

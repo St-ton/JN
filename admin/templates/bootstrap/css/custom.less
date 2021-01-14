@@ -2358,14 +2358,21 @@ pre#debug b {
     color: #E04000;
 }
 
-.content-header .actions {
-    opacity: 0.25;
-    transition: opacity 300ms ease-in-out;
-    -webkit-transition: opacity 300ms ease-in-out;
-}
-
-.content-header:hover .actions {
-    opacity: 1;
+.content-header {
+    margin-top: 0;
+    .actions {
+        opacity: 0.25;
+        transition: opacity 300ms ease-in-out;
+        -webkit-transition: opacity 300ms ease-in-out;
+    }
+    &:hover .actions {
+        opacity: 1;
+    }
+    .description {
+        a {
+            text-decoration: underline;
+        }
+    }
 }
 
 .dropdown.avatar > a {
@@ -2958,9 +2965,6 @@ div.markdown thead tr td {
 }
 
 //override in app.css
-.content-header {
-    margin-top: 0;
-}
 .kv-upload-progress {
     margin-bottom: 1rem;
 }

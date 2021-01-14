@@ -17,6 +17,9 @@ class Migration_20180622122900 extends Migration implements IMigration
     protected $author      = 'fm';
     protected $description = 'Remove EOS payment method';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute("DELETE FROM teinstellungen WHERE cModulId LIKE 'za_eos_%'");
@@ -25,6 +28,9 @@ class Migration_20180622122900 extends Migration implements IMigration
         $this->execute("DELETE FROM tsprachwerte WHERE bSystem = 1 AND cName LIKE 'eos%'");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
     }

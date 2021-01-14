@@ -16,11 +16,17 @@ class Migration_20160407111423 extends Migration implements IMigration
 {
     protected $author = 'fm';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('DELETE FROM `teinstellungenconf` WHERE kEinstellungenSektion = 123;');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("INSERT INTO `teinstellungenconf` VALUES 

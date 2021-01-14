@@ -16,6 +16,9 @@ class Migration_20160912173000 extends Migration implements IMigration
 {
     protected $author = 'fm';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'global', 'paginationEntryPagination', 'Einträge %d &ndash; %d von %d');
@@ -43,6 +46,9 @@ class Migration_20160912173000 extends Migration implements IMigration
         $this->setLocalization('eng', 'global', 'paginationOrderUsefulness', 'Usefulness');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute(

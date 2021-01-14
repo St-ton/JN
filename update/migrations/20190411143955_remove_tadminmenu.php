@@ -17,12 +17,18 @@ class Migration_20190411143955 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Remove tadminmenu, tadminmenugruppe';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('DROP TABLE IF EXISTS `tadminmenu`;');
         $this->execute('DROP TABLE IF EXISTS `tadminmenugruppe`;');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute(

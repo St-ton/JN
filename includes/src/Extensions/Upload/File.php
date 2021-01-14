@@ -194,9 +194,7 @@ class File
     public static function send_file_to_browser(string $filename, string $mimetype, string $downloadName): void
     {
         $browser   = 'other';
-        $userAgent = !empty($_SERVER['HTTP_USER_AGENT'])
-            ? $_SERVER['HTTP_USER_AGENT']
-            : '';
+        $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
         if (\preg_match('/Opera\/([0-9].[0-9]{1,2})/', $userAgent, $log_version)) {
             $browser = 'opera';
         } elseif (\preg_match('/MSIE ([0-9].[0-9]{1,2})/', $userAgent, $log_version)) {

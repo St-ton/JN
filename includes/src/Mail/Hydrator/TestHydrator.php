@@ -500,9 +500,9 @@ class TestHydrator extends DefaultsHydrator
             $order->oEstimatedDelivery->longestMax
         );
         $order->cEstimatedDeliveryEx          = Date::dateAddWeekday(
-                $order->dErstellt,
-                $order->oEstimatedDelivery->longestMin
-            )->format('d.m.Y') . ' - ' .
+            $order->dErstellt,
+            $order->oEstimatedDelivery->longestMin
+        )->format('d.m.Y') . ' - ' .
             Date::dateAddWeekday(
                 $order->dErstellt,
                 $order->oEstimatedDelivery->longestMax

@@ -18,10 +18,10 @@ class OPC extends AbstractImage
     /**
      * @var string
      */
-    public const REGEX = '/^media\/image\/'
-    . '(?P<type>opc)'
+    public const REGEX = '/^media\/image'
+    . '\/(?P<type>opc)'
     . '\/(?P<size>xs|sm|md|lg|xl)'
-    . '\/(?P<name>[a-zA-Z0-9\-_\. äööüÄÖÜß\/]+)'
+    . '\/(?P<name>(' . self::REGEX_ALLOWED_CHARSET . '|\/)+)'
     . '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**

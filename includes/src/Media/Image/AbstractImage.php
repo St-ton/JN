@@ -31,6 +31,11 @@ abstract class AbstractImage implements IMedia
     public const REGEX = '';
 
     /**
+     * @var string
+     */
+    public const REGEX_ALLOWED_CHARSET = '[a-zA-Z0-9 äööüÄÖÜß\$\-\_\.\+\!\*\\\'\(\)\,]';
+
+    /**
      * @var array
      */
     protected static $imageExtensions = ['jpg', 'jpeg', 'webp', 'gif', 'png', 'bmp'];

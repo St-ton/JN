@@ -74,7 +74,7 @@ if ($loggedIn
 ) {
     if ($GLOBALS['plgSafeMode']) {
         touch(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR . 'safemode.lck');
-    } else {
+    } elseif (file_exists(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR . 'safemode.lck')) {
         unlink(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR . 'safemode.lck');
     }
 }

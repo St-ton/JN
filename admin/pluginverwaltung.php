@@ -437,12 +437,7 @@ if ($reload === true) {
     exit();
 }
 
-
 $alert = Shop::Container()->getAlertService();
-if (SAFE_MODE) {
-    $alert->addAlert(Alert::TYPE_WARNING, __('Safe mode enabled.'), 'warnSafeMode');
-}
-
 $alert->addAlert(Alert::TYPE_ERROR, $errorMsg, 'errorPlugin');
 $alert->addAlert(Alert::TYPE_NOTE, $notice, 'noticePlugin');
 

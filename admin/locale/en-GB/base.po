@@ -2065,3 +2065,9 @@ msgstr "Line %s could not be saved."
 
 msgid "extensionStoreURL"
 msgstr "https://jtl-url.de/exs"
+
+msgid "Safe mode"
+msgstr "Safe plugin mode"
+
+msgid "Safe mode enabled."
+msgstr "Safe mode active. Some functions might not be available."

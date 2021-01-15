@@ -119,9 +119,6 @@ msgstr "Spezialseite mehrmals angelegt"
 msgid "duplicateSpecialLinkDesc"
 msgstr "Mindestens eine Spezialseite wurde mehrmals für die gleiche(n) Kundengruppe(n) angelegt."
 
-msgid "Safe mode enabled."
-msgstr "Abgesicherter Modus aktiv. Gewisse Funktionalitäten stehen nicht zur Verfügung."
-
 msgid "ustIdMiasCheckTitle"
 msgstr "Prüfung der USt.-IdNr."
 

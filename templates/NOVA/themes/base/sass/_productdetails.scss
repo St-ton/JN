@@ -133,6 +133,9 @@
 					}
 				}
 			}
+			.slick-arrow {
+				display: block !important;
+			}
 		}
 
 		#gallery_preview_wrapper {
@@ -202,6 +205,13 @@
 		}
 		.slick-slide {
 			padding: 0;
+		}
+		.slick-arrow {
+			display: none !important;
+			background-color: transparent;
+			&:hover {
+				background-color: $primary;
+			}
 		}
 	}
 

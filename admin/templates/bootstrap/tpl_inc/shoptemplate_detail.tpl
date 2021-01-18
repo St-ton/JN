@@ -80,8 +80,8 @@
                                                 {include file='tpl_inc/option_optgroup.tpl' setting=$setting section=$section}
                                             {elseif $setting->cType === 'colorpicker'}
                                                 {include file='snippets/colorpicker.tpl'
-                                                cpID="{$section->elementID}"
-                                                cpName="{$section->elementID}"
+                                                cpID="{$setting->elementID}"
+                                                cpName="{$setting->elementID}"
                                                 cpValue=$setting->value}
                                             {elseif $setting->cType === 'number'}
                                                 {include file='tpl_inc/option_number.tpl' setting=$setting section=$section}

@@ -481,3 +481,13 @@ hr {
 .navbar .container {
   display: block;
 }
+
+/* image loading indicator */
+
+.lazyloading {
+  color: transparent;
+  opacity: 1;
+  transition: opacity 300ms;
+  width: 40px;
+  height: 40px;
+}

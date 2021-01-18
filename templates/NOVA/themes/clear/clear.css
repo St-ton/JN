@@ -20609,6 +20609,13 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
   max-height: 100%;
   object-fit: contain;
 }
+.square-image .inner img.lazyloading {
+  color: transparent;
+  opacity: 1;
+  transition: opacity 300ms;
+  width: 40px;
+  height: 40px;
+}
 
 .square-inner, .productbox-image-wrapper-inner {
   position: absolute;
@@ -22877,6 +22884,8 @@ input.typeahead:-ms-input-placeholder {
   color: transparent;
   opacity: 1;
   transition: opacity 300ms;
+  width: 40px;
+  height: 40px;
 }
 
 .lazyloaded {

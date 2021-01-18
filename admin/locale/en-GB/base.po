@@ -284,6 +284,9 @@ msgstr "Please enter a valid date."
 msgid "smartySyntaxError"
 msgstr "Smarty syntax error"
 
+msgid "Smarty syntax ok"
+msgstr "Smarty Syntax is correct."
+
 msgid "errorCheckInput"
 msgstr "Please check your inputs."
 
@@ -748,6 +751,9 @@ msgstr "Company Ltd."
 
 msgid "faulty"
 msgstr "Faulty"
+
+msgid "untested"
+msgstr "Untested"
 
 msgid "week"
 msgstr "Week"

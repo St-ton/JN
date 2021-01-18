@@ -7,8 +7,11 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\Checkout\ZahlungsLog;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Exportformat;
 use JTL\License\Manager;
 use JTL\License\Mapper;
+use JTL\Mail\Template\Model as MailTplModel;
+use JTL\Mail\Template\TemplateFactory;
 use JTL\Media\Image\Product;
 use JTL\Media\Image\StatsItem;
 use JTL\Nice;
@@ -46,6 +49,8 @@ class Status
     public const CACHE_ID_DATABASE_STRUCT      = 'validDatabaseStruct';
     public const CACHE_ID_MODIFIED_FILE_STRUCT = 'validModifiedFileStruct';
     public const CACHE_ID_ORPHANED_FILE_STRUCT = 'validOrphanedFilesStruct';
+    public const CACHE_ID_EMAIL_SYNTAX_CHECK   = 'validEMailSyntaxCheck';
+    public const CACHE_ID_EXPORT_SYNTAX_CHECK  = 'validExportSyntaxCheck';
 
     /**
      * Status constructor.
@@ -562,33 +567,59 @@ class Status
     }
 
     /**
+     * @param int         $type
+     * @param string|null $hash
      * @return int
      */
-    public function getExportFormatErrorCount(): int
+    public function getExportFormatErrorCount(int $type = Exportformat::SYNTAX_FAIL, ?string &$hash = null): int
     {
-        if (!isset($_SESSION['exportSyntaxErrorCount'])) {
-            $_SESSION['exportSyntaxErrorCount'] = (int)$this->db->query(
-                'SELECT COUNT(*) AS cnt FROM texportformat WHERE nFehlerhaft = 1',
+        $cacheKey = self::CACHE_ID_EXPORT_SYNTAX_CHECK . $type;
+        if (($syntaxErrCnt = $this->cache->get($cacheKey)) === false) {
+            $syntaxErrCnt = (int)$this->db->queryPrepared(
+                'SELECT COUNT(*) AS cnt FROM texportformat WHERE nFehlerhaft = :type',
+                ['type' => $type],
                 ReturnType::SINGLE_OBJECT
             )->cnt;
+
+            $this->cache->set($cacheKey, $syntaxErrCnt, [\CACHING_GROUP_STATUS, self::CACHE_ID_EXPORT_SYNTAX_CHECK]);
         }
 
-        return $_SESSION['exportSyntaxErrorCount'];
+        $hash = \md5($hash . $syntaxErrCnt);
+
+        return $syntaxErrCnt;
     }
 
     /**
+     * @param int         $type
+     * @param string|null $hash
      * @return int
      */
-    public function getEmailTemplateSyntaxErrorCount(): int
+    public function getEmailTemplateSyntaxErrorCount(int $type = MailTplModel::SYNTAX_FAIL, ?string &$hash = null): int
     {
-        if (!isset($_SESSION['emailSyntaxErrorCount'])) {
-            $_SESSION['emailSyntaxErrorCount'] = (int)$this->db->query(
-                'SELECT COUNT(*) AS cnt FROM temailvorlage WHERE nFehlerhaft = 1',
-                ReturnType::SINGLE_OBJECT
-            )->cnt;
+        $cacheKey = self::CACHE_ID_EMAIL_SYNTAX_CHECK . $type;
+        if (($syntaxErrCnt = $this->cache->get($cacheKey)) === false) {
+            $syntaxErrCnt = 0;
+            /** @var array $templates */
+            $templates = $this->db->queryPrepared(
+                'SELECT cModulId, kPlugin FROM temailvorlage WHERE nFehlerhaft = :type',
+                ['type' => $type],
+                ReturnType::ARRAY_OF_OBJECTS
+            );
+            $factory   = new TemplateFactory($this->db);
+            foreach ($templates as $template) {
+                $module = $template->cModulId;
+                if ($template->kPlugin > 0) {
+                    $module = 'kPlugin_' . $template->kPlugin . '_' . $template->cModulId;
+                }
+                $syntaxErrCnt += $factory->getTemplate($module) !== null ? 1 : 0;
+            }
+
+            $this->cache->set($cacheKey, $syntaxErrCnt, [\CACHING_GROUP_STATUS, self::CACHE_ID_EMAIL_SYNTAX_CHECK]);
         }
 
-        return $_SESSION['emailSyntaxErrorCount'];
+        $hash = \md5($hash . $syntaxErrCnt);
+
+        return $syntaxErrCnt;
     }
 
     /**

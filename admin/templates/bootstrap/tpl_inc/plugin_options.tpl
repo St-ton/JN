@@ -94,6 +94,17 @@
                                 </label> <br />
                             {/foreach}
                         </div>
+                        {elseif in_array($confItem->inputType, [JTL\Plugin\Admin\InputType::COLOR,
+                        JTL\Plugin\Admin\InputType::EMAIL,
+                        JTL\Plugin\Admin\InputType::RANGE,
+                        JTL\Plugin\Admin\InputType::DATE,
+                        JTL\Plugin\Admin\InputType::MONTH,
+                        JTL\Plugin\Admin\InputType::WEEK,
+                        JTL\Plugin\Admin\InputType::TEL,
+                        JTL\Plugin\Admin\InputType::TIME,
+                        JTL\Plugin\Admin\InputType::URL
+                        ], true)}
+                            <input class="form-control" id="{$confItem->valueID}" name="{$confItem->valueID}" type="{$confItem->inputType}" value="{$confItem->value|escape:'html'}" />
                         {else}
                             <input class="form-control" id="{$confItem->valueID}" name="{$confItem->valueID}" type="text" value="{$confItem->value|escape:'html'}" />
                         {/if}

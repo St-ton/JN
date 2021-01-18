@@ -102,9 +102,15 @@ msgstr "Eine oder mehrere Linkgruppen nutzen keine eindeutigen Template-Namen: %
 msgid "getExportFormatErrorCountTitle"
 msgstr "Fehler in Exportvorlage"
 
+msgid "getExportFormatUncheckedCountTitle"
+msgstr "Ungeprüfte Exportvorlage"
+
 #placeholder: number of affected export formats
 msgid "getExportFormatErrorCountMessage"
 msgstr "In %d Exportvorlage(n) sind Syntax-Fehler vorhanden."
+
+msgid "getExportFormatUncheckedCountMessage"
+msgstr "%d Exportvorlage(n) sind ohne Syntax-Prüfung."
 
 msgid "getEmailTemplateSyntaxErrorCountTitle"
 msgstr "Fehler in E-Mail-Vorlage"
@@ -112,6 +118,13 @@ msgstr "Fehler in E-Mail-Vorlage"
 #placeholder: number of affected email templates
 msgid "getEmailTemplateSyntaxErrorCountMessage"
 msgstr "In %d E-Mail-Vorlage(n) sind Syntax-Fehler vorhanden."
+
+#placeholder: number of affected email templates
+msgid "getEmailTemplateSyntaxUncheckedCountMessage"
+msgstr "%d E-Mail-Vorlage(n) sind ohne Syntax-Prüfung."
+
+msgid "getEmailTemplateSyntaxUncheckedCountTitle"
+msgstr "Ungeprüfte E-Mail-Vorlage"
 
 msgid "duplicateSpecialLinkTitle"
 msgstr "Spezialseite mehrmals angelegt"

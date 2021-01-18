@@ -17,6 +17,10 @@ use function Functional\tail;
  */
 final class Model
 {
+    public const SYNTAX_OK          = 0;
+    public const SYNTAX_FAIL        = 1;
+    public const SYNTAX_NOT_CHECKED = -1;
+
     /**
      * @var int
      */
@@ -78,9 +82,9 @@ final class Model
     private $showDSE = true;
 
     /**
-     * @var bool
+     * @var int - one of the SYNTAX_-constants
      */
-    private $hasError = false;
+    private $hasError = self::SYNTAX_OK;
 
     /**
      * @var int
@@ -143,7 +147,7 @@ final class Model
         'nWRB'          => 'ShowWRB',
         'nWRBForm'      => 'ShowWRBForm',
         'nDSE'          => 'ShowDSE',
-        'nFehlerhaft'   => 'HasError',
+        'nFehlerhaft'   => 'SyntaxCheck',
         'kPlugin'       => 'PluginID'
     ];
 
@@ -416,7 +420,7 @@ final class Model
      */
     public function getHasError(): bool
     {
-        return $this->hasError;
+        return $this->hasError === self::SYNTAX_FAIL;
     }
 
     /**
@@ -424,10 +428,30 @@ final class Model
      */
     public function setHasError($hasError): void
     {
-        $this->hasError = (bool)$hasError;
-        if ($this->hasError) {
+        $this->hasError = (int)$hasError > 0 ? self::SYNTAX_FAIL : self::SYNTAX_OK;
+        if ($this->hasError === self::SYNTAX_FAIL) {
             $this->setActive(false);
         }
+    }
+
+    /**
+     * @param bool|int $checked
+     */
+    public function setSyntaxCheck($checked): void
+    {
+        if ((int)$checked >= 0) {
+            $this->setHasError($checked);
+        } else {
+            $this->hasError = self::SYNTAX_NOT_CHECKED;
+        }
+    }
+
+    /**
+     * @return int
+     */
+    public function getSyntaxCheck(): int
+    {
+        return $this->hasError;
     }
 
     /**

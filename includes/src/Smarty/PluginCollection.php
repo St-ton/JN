@@ -36,7 +36,7 @@ class PluginCollection
      * @param array $params
      * @return string
      */
-    public function compilerModifierDefault($params): string
+    public function compilerModifierDefault(array $params): string
     {
         $output = $params[0];
         if (!isset($params[1])) {
@@ -57,7 +57,7 @@ class PluginCollection
     public function replaceDelimiters(string $string): string
     {
         $replace = $this->config['global']['global_dezimaltrennzeichen_sonstigeangaben'];
-        if ($replace !== ',' || $replace !== '.' || $replace === '') {
+        if ($replace !== ',' && $replace !== '.') {
             $replace = ',';
         }
 
@@ -105,24 +105,23 @@ class PluginCollection
      */
     public function translate(array $params, \Smarty_Internal_Template $template)
     {
-        $cValue = '';
-        if (!isset($params['section'])) {
-            $params['section'] = 'global';
-        }
-        if (isset($params['section'], $params['key'])) {
-            $cValue = $this->lang->get($params['key'], $params['section']);
+        $res     = '';
+        $section = $params['section'] ?? 'global';
+        $key     = $params['key'] ?? '';
+        if ($key !== '') {
+            $res = $this->lang->get($key, $section);
             // Für vsprintf ein String der :: exploded wird
-            if (isset($params['printf']) && \is_string($params['printf']) && \mb_strlen($params['printf']) > 0) {
-                $cValue = \vsprintf($cValue, \explode(':::', $params['printf']));
+            if (isset($params['printf'])) {
+                $res = \vsprintf($res, \explode(':::', $params['printf']));
             }
         }
         if (\SMARTY_SHOW_LANGKEY) {
-            $cValue = '#' . $params['section'] . '.' . $params['key'] . '#';
+            $res = '#' . $section . '.' . $key . '#';
         }
         if (isset($params['assign'])) {
-            $template->assign($params['assign'], $cValue);
+            $template->assign($params['assign'], $res);
         } else {
-            return $cValue;
+            return $res;
         }
     }
 
@@ -132,7 +131,7 @@ class PluginCollection
      */
     public function countCharacters(?string $text): int
     {
-        return $text === null ? 0 : \mb_strlen($text);
+        return \mb_strlen($text ?? '');
     }
 
     /**

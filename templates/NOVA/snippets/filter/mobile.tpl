@@ -3,6 +3,11 @@
         <span class="h2 snippets-filter-mobile-heading" id="productlist-filter">{lang key='filterAndSort'}</span>
     {/if}
     <div class="productlist-filter-wrapper dropdown-full-width">
+        {block name='snippets-filter-mobile-top-include-active-filter'}
+            <div class="productlist-applied-filter productlist-applied-filter-top">
+                {include file='snippets/filter/active_filter.tpl'}
+            </div>
+        {/block}
         <ul class="productlist-filter-accordion border-md-bottom border-lg-bottom-0">
         {block name='snippets-filter-mobile-sorting'}
             <li class="snippets-filter-mobile-sorting">

@@ -2,6 +2,7 @@
 
 namespace JTL\Mail\Hydrator;
 
+use DateTime;
 use JTL\Catalog\Product\Preise;
 use JTL\CheckBox;
 use JTL\Checkout\Kupon;
@@ -63,6 +64,7 @@ class TestHydrator extends DefaultsHydrator
             ->assign('DSE', $oAGBWRB)
             ->assign('URL_SHOP', Shop::getURL() . '/')
             ->assign('Kupon', $this->getCoupon())
+            ->assign('Optin', $this->getOptin())
             ->assign('couponTypes', Kupon::getCouponTypes())
             ->assign('Nachricht', $msg)
             ->assign('Artikel', $this->getProduct())
@@ -103,8 +105,8 @@ class TestHydrator extends DefaultsHydrator
         $mail->nAnzahlZahlungseingaengeVonBestellungen  = 5;
         $mail->nAnzahlNewsletterAbmeldungen             = 6;
         $mail->nAnzahlNewsletterAnmeldungen             = 6;
-        $mail->dVon                                     = '01.01.2019';
-        $mail->dBis                                     = '31.01.2019';
+        $mail->dVon                                     = '01.01.2020';
+        $mail->dBis                                     = '31.01.2020';
         $mail->oLogEntry_arr                            = [];
         $mail->cIntervall                               = 'Monatliche Status-Email';
 
@@ -157,7 +159,7 @@ class TestHydrator extends DefaultsHydrator
         $msg->cVorname         = 'Max';
         $msg->cNachname        = 'Mustermann';
         $msg->cFirma           = 'Musterfirma';
-        $msg->cMail            = 'max@musterman.de';
+        $msg->cMail            = 'info@example.com';
         $msg->cFax             = '34782034';
         $msg->cTel             = '34782035';
         $msg->cMobil           = '34782036';
@@ -188,7 +190,7 @@ class TestHydrator extends DefaultsHydrator
         $item->cArtikelName                   = 'Hansu Televsion';
         $item->fAnzahl                        = 2;
         $item->cKommentar                     = 'Television';
-        $item->dHinzugefuegt                  = '2009-07-12 13:55:11';
+        $item->dHinzugefuegt                  = '2019-07-12 13:55:11';
         $item->Artikel                        = new stdClass();
         $item->Artikel->cName                 = 'LAN Festplatte IPDrive';
         $item->Artikel->cEinheit              = 'Stck.';
@@ -210,7 +212,7 @@ class TestHydrator extends DefaultsHydrator
         $item->cArtikelName                   = 'Hansu Phone';
         $item->fAnzahl                        = 1;
         $item->cKommentar                     = 'Phone';
-        $item->dHinzugefuegt                  = '2009-07-12 13:55:18';
+        $item->dHinzugefuegt                  = '2019-07-12 13:55:18';
         $item->Artikel                        = new stdClass();
         $item->Artikel->cName                 = 'USB Connector';
         $item->Artikel->cEinheit              = 'Stck.';
@@ -243,14 +245,18 @@ class TestHydrator extends DefaultsHydrator
      */
     private function getCoupon(): stdClass
     {
+        $now                           = (new DateTime())->format('Y-m-d H:i:s');
+        $until                         = (new DateTime())->modify('+28 days')->format('Y-m-d H:i:s');
         $coupon                        = new stdClass();
         $coupon->cName                 = 'Kuponname';
         $coupon->fWert                 = 5;
         $coupon->cWertTyp              = 'festpreis';
-        $coupon->dGueltigAb            = '2019-01-01 17:05:00';
-        $coupon->GueltigAb             = '2019-01-01 17:05:00';
-        $coupon->dGueltigBis           = '2019-12-31 17:05:00';
-        $coupon->GueltigBis            = '2019-12-31 17:05:00';
+        $coupon->dGueltigAb            = $now;
+        $coupon->cGueltigAbLong        = $now;
+        $coupon->GueltigAb             = $now;
+        $coupon->dGueltigBis           = $until;
+        $coupon->cGueltigBisLong       = $until;
+        $coupon->GueltigBis            = $until;
         $coupon->cCode                 = 'geheimcode';
         $coupon->nVerwendungen         = 100;
         $coupon->nVerwendungenProKunde = 2;
@@ -263,16 +269,18 @@ class TestHydrator extends DefaultsHydrator
         $coupon->Artikel[0]            = new stdClass();
         $coupon->Artikel[1]            = new stdClass();
         $coupon->Artikel[0]->cName     = 'Artikel eins';
-        $coupon->Artikel[0]->cURL      = 'http://meinshop.de/artikel=1';
+        $coupon->Artikel[0]->cURL      = 'http://example.com/artikel1';
+        $coupon->Artikel[0]->cURLFull  = 'http://example.com/artikel1';
         $coupon->Artikel[1]->cName     = 'Artikel zwei';
-        $coupon->Artikel[1]->cURL      = 'http://meinshop.de/artikel=2';
+        $coupon->Artikel[1]->cURL      = 'http://example.com/artikel2';
+        $coupon->Artikel[1]->cURLFull  = 'http://example.com/artikel2';
         $coupon->Kategorien            = [];
         $coupon->Kategorien[0]         = new stdClass();
         $coupon->Kategorien[1]         = new stdClass();
         $coupon->Kategorien[0]->cName  = 'Kategorie eins';
-        $coupon->Kategorien[0]->cURL   = 'http://meinshop.de/kat=1';
+        $coupon->Kategorien[0]->cURL   = 'http://example.com/kat1';
         $coupon->Kategorien[1]->cName  = 'Kategorie zwei';
-        $coupon->Kategorien[1]->cURL   = 'http://meinshop.de/kat=2';
+        $coupon->Kategorien[1]->cURL   = 'http://example.com/kat2';
 
         return $coupon;
     }
@@ -334,18 +342,18 @@ class TestHydrator extends DefaultsHydrator
         $order->cVersandartName  = 'DHL bis 10kg';
         $order->cZahlungsartName = 'Nachnahme';
         $order->cStatus          = 1;
-        $order->dVersandDatum    = '2010-10-21';
-        $order->dErstellt        = '2010-10-12 09:28:38';
-        $order->dBezahltDatum    = '2010-10-20';
+        $order->dVersandDatum    = '2020-10-21';
+        $order->dErstellt        = '2020-10-12 09:28:38';
+        $order->dBezahltDatum    = '2020-10-20';
 
         $order->cLogistiker            = 'DHL';
         $order->cTrackingURL           = 'http://dhl.de/linkzudhl.php';
-        $order->dVersanddatum_de       = '21.10.2007';
-        $order->dBezahldatum_de        = '20.10.2007';
-        $order->dErstelldatum_de       = '12.10.2007';
-        $order->dVersanddatum_en       = '21st October 2010';
-        $order->dBezahldatum_en        = '20th October 2010';
-        $order->dErstelldatum_en       = '12th October 2010';
+        $order->dVersanddatum_de       = '21.10.2020';
+        $order->dBezahldatum_de        = '20.10.2020';
+        $order->dErstelldatum_de       = '12.10.2020';
+        $order->dVersanddatum_en       = '21st October 2020';
+        $order->dBezahldatum_en        = '20th October 2020';
+        $order->dErstelldatum_en       = '12th October 2020';
         $order->cBestellwertLocalized  = '511,00 EUR';
         $order->GuthabenNutzen         = 1;
         $order->GutscheinLocalized     = '5,00 EUR';
@@ -559,5 +567,17 @@ class TestHydrator extends DefaultsHydrator
         $bonus->fGuthabenBonusLocalized = Preise::getLocalizedPriceString(2.00);
 
         return $bonus;
+    }
+
+    /**
+     * @return stdClass
+     */
+    private function getOptin(): stdClass
+    {
+        $optin                  = new stdClass();
+        $optin->activationURL   = 'http://example.com/testproduct?oc=ac123456789';
+        $optin->deactivationURL = 'http://example.com/testproduct?oc=dc123456789';
+
+        return $optin;
     }
 }

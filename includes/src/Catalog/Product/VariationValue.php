@@ -110,6 +110,11 @@ class VariationValue
     /**
      * @var string
      */
+    public $cPfad;
+
+    /**
+     * @var string
+     */
     public $cBildPfad;
 
     /**
@@ -266,6 +271,7 @@ class VariationValue
         if (!$path || !\file_exists(\PFAD_ROOT . \PFAD_VARIATIONSBILDER_NORMAL . $path)) {
             return false;
         }
+        $this->cPfad = $path;
         $this->generateAllImageSizes(true, 1, $path);
 
         $this->cBildPfadMini  = \PFAD_VARIATIONSBILDER_MINI . $path;

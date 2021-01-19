@@ -529,6 +529,8 @@ class PortletInstance implements \JsonSerializable
         $sizes      = \is_file($filepath) ? \getimagesize($filepath) : [0, 0];
         $realWidth  = $sizes[0];
         $realHeight = $sizes[1];
+        $portrait   = $realWidth < $realHeight;
+        $aspect     = $realWidth / $realHeight;
 
         if (empty($src)) {
             return [
@@ -541,15 +543,33 @@ class PortletInstance implements \JsonSerializable
                 'realHeight' => $realHeight,
             ];
         }
+
+        $imgSettings = Image::getSettings()[Image::TYPE_OPC];
         $this->generateAllImageSizes(true, 1, \rawurldecode($src));
+
         foreach ($this->getImages()[1] as $size => $url) {
-            $url   = \str_replace(' ', '%20', $url);
-            $width = self::$dirSizes[$size] ?? null;
-            if ($width !== null) {
-                $srcset .= $url . ' ' . $width . 'w,';
+            $url = \str_replace(' ', '%20', $url);
+
+            if ($size === 'xl') {
+                $srcset .= $url . ' ' . $realWidth . 'w,';
+            } elseif ($portrait) {
+                $width = $imgSettings[$size]['width'] ?? null;
+                if ($width !== null) {
+                    $width  *= $aspect;
+                    $width   = (int)\round($width);
+                    $srcset .= $url . ' ' . $width . 'w,';
+                }
+            } else {
+                $width = $imgSettings[$size]['width'] ?? null;
+                if ($width !== null) {
+                    $srcset .= $url . ' ' . $width . 'w,';
+                }
             }
         }
         $srcset = \mb_substr($srcset, 0, -1); // remove trailing comma
+
+        /* TODO: Width-Heuristik Nutzen prüfen (SHOP-4879)
+        /*
         foreach ($this->widthHeuristics as $breakpoint => $col) {
             if (!empty($col)) {
                 $factor = 1;
@@ -584,6 +604,7 @@ class PortletInstance implements \JsonSerializable
                 }
             }
         }
+        */
 
         $srcsizes .= '100vw';
 

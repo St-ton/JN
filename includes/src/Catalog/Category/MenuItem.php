@@ -249,6 +249,15 @@ class MenuItem
     }
 
     /**
+     * @param string $name
+     * @return mixed|null
+     */
+    public function getFunctionalAttribute(string $name)
+    {
+        return $this->functionalAttributes[$name] ?? null;
+    }
+
+    /**
      * @param array $functionalAttributes
      */
     public function setFunctionalAttributes(array $functionalAttributes): void

@@ -17,17 +17,6 @@ class PortletInstance implements \JsonSerializable
     use MultiSizeImage;
 
     /**
-     * @var array
-     */
-    protected static $dirSizes = [
-        Image::SIZE_XL => \WIDTH_OPC_IMAGE_XL,
-        Image::SIZE_LG => \WIDTH_OPC_IMAGE_LG,
-        Image::SIZE_MD => \WIDTH_OPC_IMAGE_MD,
-        Image::SIZE_SM => \WIDTH_OPC_IMAGE_SM,
-        Image::SIZE_XS => \WIDTH_OPC_IMAGE_XS,
-    ];
-
-    /**
      * @var Portlet
      */
     protected $portlet;

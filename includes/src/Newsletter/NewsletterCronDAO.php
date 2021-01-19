@@ -2,7 +2,9 @@
 
 namespace JTL\Newsletter;
 
+use DateTime;
 use JTL\Shop;
+use stdClass;
 
 /**
  * Class NewsletterCronDAO
@@ -73,15 +75,15 @@ class NewsletterCronDAO
         $this->tableName    = 'tnewsletter';
         $this->name         = 'Newsletter';
         $this->jobType      = 'newsletter';
-        $this->startDate    = (new \DateTime())->format('Y-m-d H:i:s');
-        $this->startTime    = (new \DateTime())->format('H:i:s');
+        $this->startDate    = (new DateTime())->format('Y-m-d H:i:s');
+        $this->startTime    = (new DateTime())->format('H:i:s');
         $this->lastStart    = '_DBNULL_';
         $this->lastFinish   = '_DBNULL_';
         $this->frequency    = Shop::getConfigValue(\CONF_NEWSLETTER, 'newsletter_send_delay');
     }
 
     /**
-     * @return null
+     * @return int
      */
     public function getForeignKeyID()
     {
@@ -89,7 +91,7 @@ class NewsletterCronDAO
     }
 
     /**
-     * @param null $foreignKeyID
+     * @param int $foreignKeyID
      * @return NewsletterCronDAO
      */
     public function setForeignKeyID($foreignKeyID): self
@@ -157,7 +159,7 @@ class NewsletterCronDAO
     }
 
     /**
-     * @return null
+     * @return string|null
      */
     public function getStartDate()
     {
@@ -165,7 +167,7 @@ class NewsletterCronDAO
     }
 
     /**
-     * @param null $startDate
+     * @param string|null $startDate
      * @return NewsletterCronDAO
      */
     public function setStartDate($startDate): self
@@ -176,7 +178,7 @@ class NewsletterCronDAO
     }
 
     /**
-     * @return null
+     * @return string|null
      */
     public function getStartTime()
     {
@@ -184,7 +186,7 @@ class NewsletterCronDAO
     }
 
     /**
-     * @param null $startTime
+     * @param string|null $startTime
      * @return NewsletterCronDAO
      */
     public function setStartTime($startTime): self
@@ -195,7 +197,7 @@ class NewsletterCronDAO
     }
 
     /**
-     * @return null
+     * @return null|string
      */
     public function getLastStart()
     {
@@ -203,7 +205,7 @@ class NewsletterCronDAO
     }
 
     /**
-     * @param null $lastStart
+     * @param string|null $lastStart
      * @return NewsletterCronDAO
      */
     public function setLastStart($lastStart): self
@@ -214,7 +216,7 @@ class NewsletterCronDAO
     }
 
     /**
-     * @return null
+     * @return string|null
      */
     public function getLastFinish()
     {
@@ -222,7 +224,7 @@ class NewsletterCronDAO
     }
 
     /**
-     * @param null $lastFinish
+     * @param string|null $lastFinish
      * @return NewsletterCronDAO
      */
     public function setLastFinish($lastFinish): self
@@ -230,5 +232,18 @@ class NewsletterCronDAO
         $this->lastFinish = $lastFinish;
 
         return $this;
+    }
+
+    /**
+     * @return stdClass
+     */
+    public function getData(): stdClass
+    {
+        $res = new stdClass();
+        foreach (\get_object_vars($this) as $k => $v) {
+            $res->$k = $v;
+        }
+
+        return $res;
     }
 }

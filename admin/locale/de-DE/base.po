@@ -749,6 +749,9 @@ msgstr "Muster GmbH"
 msgid "faulty"
 msgstr "Fehlerhaft"
 
+msgid "untested"
+msgstr "Ungeprüft"
+
 msgid "week"
 msgstr "Woche"
 
@@ -2035,6 +2038,9 @@ msgstr "Template deaktivieren"
 
 msgid "Smarty syntax error"
 msgstr "Smarty Syntax-Fehler"
+
+msgid "Smarty syntax ok"
+msgstr "Smarty Syntax in Ordnung."
 
 msgid "weRecommend"
 msgstr "Wir empfehlen:"

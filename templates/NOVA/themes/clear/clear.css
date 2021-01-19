@@ -19008,7 +19008,7 @@ Supports Thumbs: false
   font-family: "Montserrat";
   font-style: normal;
   font-weight: 600;
-  src: local("Montserrat"), local("Montserrat"), url("../base/fonts/montserrat/Montserrat-SemiBold.eot?") format("eot"), url("../base/fonts/montserrat/Montserrat-SemiBold.woff2") format("woff2"), url("../base/fonts/montserrat/Montserrat-SemiBold.woff") format("woff"), url("../base/fonts/montserrat/Montserrat-SemiBold.ttf") format("truetype"), url("../base/fonts/montserrat/Montserrat-SemiBold.svg#Montserrat") format("svg");
+  src: local("Montserrat"), local("Montserrat"), url("../base/fonts/montserrat/Montserrat-SemiBold.woff2") format("woff2"), url("../base/fonts/montserrat/Montserrat-SemiBold.ttf") format("truetype");
   font-display: swap;
 }
 .container-fluid-xl {
@@ -20608,6 +20608,15 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
+}
+.square-image .inner img.lazyloading {
+  color: transparent;
+  opacity: 1;
+  transition: opacity 300ms;
+  width: auto;
+  height: auto;
+  max-width: 40px;
+  max-height: 40px;
 }
 
 .square-inner, .productbox-image-wrapper-inner {
@@ -22877,6 +22886,10 @@ input.typeahead:-ms-input-placeholder {
   color: transparent;
   opacity: 1;
   transition: opacity 300ms;
+  width: auto;
+  height: auto;
+  max-width: 40px;
+  max-height: 40px;
 }
 
 .lazyloaded {
@@ -24257,6 +24270,9 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   -webkit-transform: initial;
   transform: initial;
 }
+#image_wrapper.fullscreen #gallery .slick-arrow {
+  display: block !important;
+}
 #image_wrapper.fullscreen #gallery_preview_wrapper {
   width: 100%;
   padding: 1rem;
@@ -24325,6 +24341,13 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 #image_wrapper #gallery .slick-slide {
   padding: 0;
+}
+#image_wrapper #gallery .slick-arrow {
+  display: none !important;
+  background-color: transparent;
+}
+#image_wrapper #gallery .slick-arrow:hover {
+  background-color: #F8BF00;
 }
 #image_wrapper .product-thumbnails .square-image {
   margin-bottom: 0;
@@ -25296,7 +25319,7 @@ header #burger-menu {
 }
 @media (min-width: 992px) {
   .is-checkout header, .is-checkout .navbar {
-    height: 4.325rem;
+    height: 4.2625rem;
   }
 }
 .is-checkout .search-form-wrapper-fixed, .is-checkout .fixed-search {
@@ -26321,6 +26344,9 @@ header #burger-menu {
 /* mobile */
 .productlist-applied-filter {
   margin-bottom: 2rem;
+}
+.productlist-applied-filter.productlist-applied-filter-top {
+  margin-bottom: 0;
 }
 
 .productlist-filter-footer {

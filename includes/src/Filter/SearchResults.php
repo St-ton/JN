@@ -685,10 +685,10 @@ class SearchResults implements SearchResultsInterface
     /**
      * @param FilterInterface[] $filters
      * @param string            $class
-     * @param Option            $activeValues
+     * @param Option|Option[]   $activeValues
      * @return array
      */
-    private function getActiveFiltersByClassName(array $filters, string $class, Option $activeValues): array
+    private function getActiveFiltersByClassName(array $filters, string $class, $activeValues): array
     {
         return filter($filters, static function (FilterInterface $f) use ($class, $activeValues) {
             return $f->getClassName() === $class && $f->getActiveValues() === $activeValues;

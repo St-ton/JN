@@ -29,6 +29,7 @@ use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
+use JTL\Link\SpecialPageNotFoundException;
 use JTL\Pagination\Pagination;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Services\JTL\LinkServiceInterface;
@@ -142,9 +143,15 @@ class AccountController
                 ['showInAlertListTemplate' => false]
             );
         }
+        try {
+            $link = $this->linkService->getSpecialPage(\LINKTYP_LOGIN);
+        } catch (SpecialPageNotFoundException $e) {
+            Shop::Container()->getLogService()->error($e->getMessage());
+            $link = null;
+        }
         $this->smarty->assign('alertNote', $alertNote)
-            ->assign('step', $step)
-            ->assign('Link', $this->linkService->getSpecialPage(\LINKTYP_LOGIN));
+                     ->assign('step', $step)
+                     ->assign('Link', $link);
     }
 
     /**

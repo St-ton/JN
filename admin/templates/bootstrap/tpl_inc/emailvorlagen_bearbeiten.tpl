@@ -253,3 +253,70 @@
         {getRevisions type='mail' key=$mailTemplate->getID() show=['cContentText','cContentHtml'] secondary=true data=$mailTemplate->viewCompat()}
     {/if}
 </div>
+<script>
+    {literal}
+    function validateTemplateSyntax(tplID) {
+        simpleAjaxCall('io.php', {
+            jtl_token: JTL_TOKEN,
+            io : JSON.stringify({
+                name: 'mailvorlageSyntaxCheck',
+                params : [tplID]
+            })
+        }, function (result) {
+            if (result.message && result.message !== '') {
+                createNotify({
+                    title: '{/literal}{__('smartySyntaxError')}{literal}',
+                    message: result.message,
+                }, {
+                    allow_dismiss: true,
+                    type: 'danger',
+                    delay: 0
+                });
+            }
+            if (result.result && typeof result.result === 'object') {
+                let ok = true;
+                for (var res in result.result) {
+                    var lang = result.result[res];
+                    if (lang.message && lang.state && lang.state !== 'ok') {
+                        ok = false;
+                        createNotify({
+                            title: res + ': {/literal}{__('smartySyntaxError')}{literal}',
+                            message: lang.message,
+                        }, {
+                            allow_dismiss: true,
+                            type: 'danger',
+                            delay: 0
+                        });
+                    }
+                }
+                if (ok) {
+                    createNotify({
+                        title: '{/literal}{__('Check syntax')}{literal}',
+                        message: '{/literal}{__('Smarty syntax ok')}{literal}',
+                    }, {
+                        allow_dismiss: true,
+                        type: 'success',
+                        delay: 1500
+                    });
+                }
+            }
+        }, function (result) {
+            if (result.statusText) {
+                let msg = result.statusText;
+                if (result.responseJSON && result.responseJSON.error.message !== '') {
+                    msg += '<br>' + result.responseJSON.error.message;
+                }
+                createNotify({
+                    title: '{/literal}{__('Syntax check fail')}{literal}',
+                    message: msg,
+                }, {
+                    allow_dismiss: true,
+                    type: 'warning',
+                    delay: 0
+                });
+            }
+        }, undefined, true);
+    }
+    validateTemplateSyntax({/literal}{$mailTemplate->getID()}{literal});
+    {/literal}
+</script>

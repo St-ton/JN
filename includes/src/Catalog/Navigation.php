@@ -298,11 +298,16 @@ class Navigation
             case \PAGE_ARTIKELLISTE:
                 $elemCount = \count($this->categoryList->elemente ?? []);
                 for ($i = $elemCount - 1; $i >= 0; $i--) {
-                    $ele = new NavigationEntry();
-                    $ele->setName($this->categoryList->elemente[$i]->cKurzbezeichnung);
-                    $ele->setURL($this->categoryList->elemente[$i]->cURL);
-                    $ele->setURLFull($this->categoryList->elemente[$i]->cURLFull);
-                    $breadCrumb[] = $ele;
+                    if (isset(
+                        $this->categoryList->elemente[$i]->cKurzbezeichnung,
+                        $this->categoryList->elemente[$i]->cURL
+                    )) {
+                        $ele = new NavigationEntry();
+                        $ele->setName($this->categoryList->elemente[$i]->cKurzbezeichnung);
+                        $ele->setURL($this->categoryList->elemente[$i]->cURL);
+                        $ele->setURLFull($this->categoryList->elemente[$i]->cURLFull);
+                        $breadCrumb[] = $ele;
+                    }
                 }
                 if ($elemCount === 0 && $this->getProductFilter() !== null) {
                     $ele = new NavigationEntry();

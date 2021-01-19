@@ -17,6 +17,7 @@ use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
+use JTL\Link\SpecialPageNotFoundException;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
@@ -1962,10 +1963,16 @@ class Cart
             return;
         }
         if ($this->oFavourableShipping === null) {
-            $this->favourableShippingString = \sprintf(
-                Shop::Lang()->get('shippingInformation', 'basket'),
-                Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_VERSAND)->getURL()
-            );
+            try {
+                $this->favourableShippingString = \sprintf(
+                    Shop::Lang()->get('shippingInformation', 'basket'),
+                    Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_VERSAND)->getURL()
+                );
+            } catch (SpecialPageNotFoundException $e) {
+                $this->favourableShippingString = '';
+                Shop::Container()->getLogService()->error($e->getMessage());
+            }
+
             return;
         }
         $isMerchant    = Frontend::getCustomerGroup()->getIsMerchant();
@@ -1979,20 +1986,25 @@ class Cart
                 Shop::Lang()->get('vat', 'productDetails')
             );
         }
-        if ($possibleShippingMethods === 1) {
-            $this->favourableShippingString = \sprintf(
-                Shop::Lang()->get('shippingInformationSpecificSingle', 'basket'),
-                Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_VERSAND)->getURL(),
-                $shippingCosts,
-                $this->oFavourableShipping->country->getName()
-            );
-        } else {
-            $this->favourableShippingString = \sprintf(
-                Shop::Lang()->get('shippingInformationSpecific', 'basket'),
-                Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_VERSAND)->getURL(),
-                $shippingCosts,
-                $this->oFavourableShipping->country->getName()
-            );
+        try {
+            if ($possibleShippingMethods === 1) {
+                $this->favourableShippingString = \sprintf(
+                    Shop::Lang()->get('shippingInformationSpecificSingle', 'basket'),
+                    Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_VERSAND)->getURL(),
+                    $shippingCosts,
+                    $this->oFavourableShipping->country->getName()
+                );
+            } else {
+                $this->favourableShippingString = \sprintf(
+                    Shop::Lang()->get('shippingInformationSpecific', 'basket'),
+                    Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_VERSAND)->getURL(),
+                    $shippingCosts,
+                    $this->oFavourableShipping->country->getName()
+                );
+            }
+        } catch (SpecialPageNotFoundException $e) {
+            $this->favourableShippingString = '';
+            Shop::Container()->getLogService()->error($e->getMessage());
         }
     }
 

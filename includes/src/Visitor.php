@@ -43,6 +43,10 @@ class Visitor
             }
             // get back the new ID of that visitor (and write it back into the session)
             $visitor->kBesucher = self::dbInsert($visitor);
+            // store search-string from search-engine too
+            if ($visitor->cReferer !== '') {
+                self::analyzeReferer($visitor->kBesucher, $visitor->cReferer);
+            }
             // allways increment the visitor-counter (if no bot)
             Shop::Container()->getDB()->query(
                 'UPDATE tbesucherzaehler SET nZaehler = nZaehler + 1',
@@ -156,10 +160,6 @@ class Visitor
         $vis->dLetzteAktivitaet = (new DateTime())->format('Y-m-d H:i:s');
         $vis->dZeit             = (new DateTime())->format('Y-m-d H:i:s');
         $vis->kBesucherBot      = $botID;
-        // store search-string from search-engine too
-        if ($vis->cReferer !== '') {
-            self::analyzeReferer($vis->kBesucher, $vis->cReferer);
-        }
 
         return $vis;
     }
@@ -314,7 +314,7 @@ class Visitor
         $ref             = $_SERVER['HTTP_REFERER'] ?? '';
         $term            = new stdClass();
         $term->kBesucher = $visitorID;
-        $term->cRohdaten = Text::filterXSS($_SERVER['HTTP_REFERER']);
+        $term->cRohdaten = \mb_substr(Text::filterXSS($_SERVER['HTTP_REFERER']), 0, 255);
         $param           = '';
         if (\mb_strpos($referer, '.google.') !== false
             || \mb_strpos($referer, 'suche.t-online.') !== false

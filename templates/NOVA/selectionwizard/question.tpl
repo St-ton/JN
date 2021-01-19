@@ -15,8 +15,7 @@
                     {col cols=4 sm=4 md=3 xl=2 class="selection-wizard-question-item"}
                         <span class="selection-wizard-answer">
                             {$characteristicValue = $AWA->getSelectedValue($nQuestion)}
-                            {$img = $characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)}
-                            {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['B', 'BT']:true && $img !== null}
+                            {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['B', 'BT']:true}
                                 {include file='snippets/image.tpl' item=$characteristicValue srcSize='sm'}
                             {/if}
                             {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['T', 'BT', 'S']:true}
@@ -51,8 +50,7 @@
                             {col cols=4 sm=4 md=3 xl=2 class="selection-wizard-question-item"}
                                 {if $characteristicValue->getCount() > 0}
                                     {link class="selection-wizard-answer text-decoration-none-util" href="#" data=["value"=>$characteristicValue->getID()]}
-                                        {$img = $characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)}
-                                        {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['B', 'BT']:true && $img !== null}
+                                        {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['B', 'BT']:true}
                                             {include file='snippets/image.tpl' item=$characteristicValue srcSize='sm'}
                                         {/if}
                                         {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['T', 'BT']:true}
@@ -84,9 +82,8 @@
                         {foreach $oFrage->oWert_arr as $characteristicValue}
                             {col cols=4 sm=4 md=3 xl=2 class="selection-wizard-question-item"}
                                 {if $characteristicValue->getCount() > 0}
-                                    {$img = $characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)}
                                     <span class="selection-wizard-answer">
-                                        {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['B', 'BT']:true && $img !== null}
+                                        {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['B', 'BT']:true}
                                             {include file='snippets/image.tpl' item=$characteristicValue srcSize='sm'}
                                         {/if}
                                         {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['T', 'BT']:true}

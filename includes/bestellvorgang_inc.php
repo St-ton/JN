@@ -1693,7 +1693,11 @@ function zahlungsartGueltig($paymentMethod): bool
     $pluginID = PluginHelper::getIDByModuleID($moduleID);
     if ($pluginID > 0) {
         $loader = PluginHelper::getLoaderByPluginID($pluginID);
-        $plugin = $loader->init($pluginID);
+        try {
+            $plugin = $loader->init($pluginID);
+        } catch (InvalidArgumentException $e) {
+            return false;
+        }
         if ($plugin === null || $plugin->getState() !== State::ACTIVATED) {
             return false;
         }

@@ -106,3 +106,9 @@ msgstr "Möchten Sie das Exportformat wirklich löschen?"
 
 msgid "useCache"
 msgstr "Cache nutzen"
+
+msgid "Check syntax"
+msgstr "E-Mail-Sytnax prüfen"
+
+msgid "Syntax check fail"
+msgstr "E-Mail Syntaxprüfung fehlgeschlagen"

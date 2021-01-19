@@ -244,9 +244,6 @@ class Category
                 ORDER BY node.lft',
             ReturnType::COLLECTION
         )->each(static function ($item) {
-            $item->kKategorie       = (int)$item->kKategorie;
-            $item->kOberKategorie   = (int)$item->kOberKategorie;
-            $item->cnt              = (int)$item->cnt;
             $item->bUnterKategorien = false;
             $item->Unterkategorien  = [];
         })->mapInto(MenuItem::class)
@@ -378,6 +375,17 @@ class Category
             $visibilityJoin        = '';
             $visibilityWhere       = '';
         }
+
+        foreach ($this->getAttributes($categoryID) as $catAttribute) {
+            $catID = $catAttribute->kKategorie;
+            $idx   = \mb_convert_case($catAttribute->cName, \MB_CASE_LOWER);
+            if ($catAttribute->bIstFunktionsAttribut) {
+                $functionAttributes[$catID][$idx] = $catAttribute->cWert;
+            } else {
+                $localizedAttributes[$catID][$idx] = $catAttribute;
+            }
+        }
+
         $nodes = self::$db->query(
             'SELECT parent.kKategorie, parent.kOberKategorie' . $nameSelect .
             $descriptionSelect . $imageSelect . $seoSelect . $countSelect . '
@@ -391,27 +399,14 @@ class Category
                     AND node.kKategorie = ' . $categoryID . $visibilityWhere . '                    
                 GROUP BY parent.kKategorie
                 ORDER BY parent.lft',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        foreach ($this->getAttributes($categoryID) as $catAttribute) {
-            $catID = $catAttribute->kKategorie;
-            $idx   = \mb_convert_case($catAttribute->cName, \MB_CASE_LOWER);
-            if ($catAttribute->bIstFunktionsAttribut) {
-                $functionAttributes[$catID][$idx] = $catAttribute->cWert;
-            } else {
-                $localizedAttributes[$catID][$idx] = $catAttribute;
-            }
-        }
-        foreach ($nodes as $cat) {
-            $cat->kKategorie     = (int)$cat->kKategorie;
-            $cat->kOberKategorie = (int)$cat->kOberKategorie;
-            $cat->cnt            = (int)$cat->cnt;
-            $cat                 = new MenuItem($cat);
-            $cat->setURL(URL::buildURL($cat, \URLART_KATEGORIE, true));
-            $cat->setFunctionalAttributes($functionAttributes[$cat->getID()] ?? []);
-            $cat->setAttributes($localizedAttributes[$cat->getID()] ?? []);
-            $cat->setShortName($cat->getAttribute(\ART_ATTRIBUT_SHORTNAME)->cWert ?? $cat->getName());
-        }
+            ReturnType::COLLECTION
+        )->each(static function ($item) use ($functionAttributes, $localizedAttributes) {
+            $item->cSeo                = URL::buildURL($item, \URLART_KATEGORIE, true);
+            $item->functionAttributes  = $functionAttributes;
+            $item->localizedAttributes = $localizedAttributes;
+        })->mapInto(MenuItem::class)
+          ->toArray();
+
         if ($filterEmpty) {
             $nodes = $this->removeRelicts($this->filterEmpty($nodes));
         }

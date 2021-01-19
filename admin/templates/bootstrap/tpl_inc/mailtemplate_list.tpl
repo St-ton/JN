@@ -19,14 +19,8 @@
                     <tr>
                         <td>{__('name_'|cat:$template->getModuleID())}</td>
                         <td class="text-center">{$template->getType()}</td>
-                        <td class="text-center">
-                            {if $template->getActive()}
-                                <span class="fal fa-check text-success"></span>
-                            {elseif $template->getHasError()}
-                                <span class="label text-danger">{__('faulty')}</span>
-                            {else}
-                                <span class="fal fa-times text-danger"></span>
-                            {/if}
+                        <td class="text-center" id="tplState_{$template->getID()}">
+                            {include file='snippets/mailtemplate_state.tpl' template=$template}
                         </td>
                         <td class="text-center">
                             <form method="post" action="emailvorlagen.php">
@@ -35,19 +29,25 @@
                                 {/if}
                                 {$jtl_token}
                                 <div class="btn-group">
-                                    <button type="submit" name="resetConfirm" value="{$template->getID()}" class="btn btn-link px-2 reset" title="{__('reset')}" data-toggle="tooltip">
+                                    <button type="button" data-id="{$template->getID()}" class="btn btn-link px-2 btn-syntaxcheck" title="{__('Check syntax')}" data-toggle="tooltip" data-placement="top" >
+                                        <span class="icon-hover">
+                                            <span class="fal fa-check"></span>
+                                            <span class="fas fa-check"></span>
+                                        </span>
+                                    </button>
+                                    <button type="submit" name="resetConfirm" value="{$template->getID()}" class="btn btn-link px-2 reset" title="{__('reset')}" data-toggle="tooltip" data-placement="top" >
                                         <span class="icon-hover">
                                             <span class="fal fa-refresh"></span>
                                             <span class="fas fa-refresh"></span>
                                         </span>
                                     </button>
-                                    <button type="submit" name="preview" value="{$template->getID()}" title="{__('testmail')}" class="btn btn-link px-2 mail" data-toggle="tooltip">
+                                    <button type="submit" name="preview" value="{$template->getID()}" title="{__('testmail')}" class="btn btn-link px-2 mail" data-toggle="tooltip" data-placement="top" >
                                         <span class="icon-hover">
                                             <span class="fal fa-envelope"></span>
                                             <span class="fas fa-envelope"></span>
                                         </span>
                                     </button>
-                                    <button type="submit" name="kEmailvorlage" value="{$template->getID()}" class="btn btn-link px-2" title="{__('modify')}" data-toggle="tooltip">
+                                    <button type="submit" name="kEmailvorlage" value="{$template->getID()}" class="btn btn-link px-2" title="{__('modify')}" data-toggle="tooltip" data-placement="top" >
                                         <span class="icon-hover">
                                             <span class="fal fa-edit"></span>
                                             <span class="fas fa-edit"></span>

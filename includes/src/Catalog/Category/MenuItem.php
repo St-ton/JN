@@ -249,6 +249,15 @@ class MenuItem
     }
 
     /**
+     * @param string $name
+     * @return mixed|null
+     */
+    public function getFunctionalAttribute(string $name)
+    {
+        return $this->functionalAttributes[$name] ?? null;
+    }
+
+    /**
      * @param array $functionalAttributes
      */
     public function setFunctionalAttributes(array $functionalAttributes): void
@@ -335,8 +344,8 @@ class MenuItem
     public function __construct(stdClass $data)
     {
         $this->setImageType(Image::TYPE_CATEGORY);
-        $this->setID($data->kKategorie);
-        $this->setParentID($data->kOberKategorie);
+        $this->setID((int)$data->kKategorie);
+        $this->setParentID((int)$data->kOberKategorie);
         if (empty($data->cName_spr)) {
             $this->setName($data->cName);
         } else {
@@ -353,6 +362,9 @@ class MenuItem
         $this->setURL($data->cSeo ?? '');
         $this->setImageURL($data->cPfad ?? '');
         $this->generateAllImageSizes(true, 1, $data->cPfad ?? null);
-        $this->setProductCount($data->cnt);
+        $this->setProductCount((int)$data->cnt);
+        $this->setFunctionalAttributes($data->functionAttributes[$this->getID()] ?? []);
+        $this->setAttributes($data->localizedAttributes[$this->getID()] ?? []);
+        $this->setShortName($this->getAttribute(\ART_ATTRIBUT_SHORTNAME)->cWert ?? $this->getName());
     }
 }

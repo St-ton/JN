@@ -321,6 +321,7 @@ abstract class AbstractBox implements BoxInterface
             // may be overridden in concrete classes' __construct
             $this->setShow($this->isActive());
         }
+        $this->init();
     }
 
     /**
@@ -883,5 +884,12 @@ abstract class AbstractBox implements BoxInterface
         $res['config'] = '*truncated*';
 
         return $res;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function init(): void
+    {
     }
 }

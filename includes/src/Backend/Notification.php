@@ -9,10 +9,11 @@ use Illuminate\Support\Collection;
 use IteratorAggregate;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Exportformat;
 use JTL\IO\IOResponse;
 use JTL\Link\Admin\LinkAdmin;
+use JTL\Mail\Template\Model;
 use JTL\Shop;
-use JTL\SingletonTrait;
 use function Functional\pluck;
 
 /**
@@ -276,7 +277,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_WARNING,
                 __('hasInvalidPasswordResetMailTemplateTitle'),
                 __('hasInvalidPasswordResetMailTemplateMessage'),
-                $adminURL . 'emailvorlagen',
+                $adminURL . 'emailvorlagen'
             );
         }
 
@@ -339,21 +340,43 @@ class Notification implements IteratorAggregate, Countable
             );
         }
 
-        if (($exportSyntaxErrorCount = $status->getExportFormatErrorCount()) > 0) {
+        if (($expSyntaxErrorCount = $status->getExportFormatErrorCount()) > 0) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,
                 __('getExportFormatErrorCountTitle'),
-                \sprintf(__('getExportFormatErrorCountMessage'), $exportSyntaxErrorCount),
+                \sprintf(__('getExportFormatErrorCountMessage'), $expSyntaxErrorCount),
                 $adminURL . 'exportformate.php'
             );
         }
 
-        if (($emailSyntaxErrorCount = $status->getEmailTemplateSyntaxErrorCount()) > 0) {
+        $hash = 'hasUncheckedExportTemplates';
+        if (($expSyntaxErrorCount = $status->getExportFormatErrorCount(Exportformat::SYNTAX_NOT_CHECKED, $hash)) > 0) {
+            $this->add(
+                NotificationEntry::TYPE_WARNING,
+                __('getExportFormatUncheckedCountTitle'),
+                \sprintf(__('getExportFormatUncheckedCountMessage'), $expSyntaxErrorCount),
+                $adminURL . 'exportformate.php',
+                $hash
+            );
+        }
+
+        if (($emailSyntaxErrCount = $status->getEmailTemplateSyntaxErrorCount()) > 0) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,
                 __('getEmailTemplateSyntaxErrorCountTitle'),
-                \sprintf(__('getEmailTemplateSyntaxErrorCountMessage'), $emailSyntaxErrorCount),
+                \sprintf(__('getEmailTemplateSyntaxErrorCountMessage'), $emailSyntaxErrCount),
                 $adminURL . 'emailvorlagen.php'
+            );
+        }
+
+        $hash = 'hasUncheckedEmailTemplates';
+        if (($emailSyntaxErrCount = $status->getEmailTemplateSyntaxErrorCount(Model::SYNTAX_NOT_CHECKED, $hash)) > 0) {
+            $this->add(
+                NotificationEntry::TYPE_WARNING,
+                __('getEmailTemplateSyntaxUncheckedCountTitle'),
+                \sprintf(__('getEmailTemplateSyntaxUncheckedCountMessage'), $emailSyntaxErrCount),
+                $adminURL . 'emailvorlagen.php',
+                $hash
             );
         }
 

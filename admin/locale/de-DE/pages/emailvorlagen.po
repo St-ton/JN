@@ -231,3 +231,9 @@ msgstr "E-Mail-Benachrichtigung, wenn Artikel wieder verfügbar (Bestätigung na
 
 msgid "Empty mail body"
 msgstr "E-Mail-Body ist leer"
+
+msgid "Check syntax"
+msgstr "E-Mail-Sytnax prüfen"
+
+msgid "Syntax check fail"
+msgstr "E-Mail Syntaxprüfung fehlgeschlagen"

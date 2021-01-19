@@ -66,13 +66,13 @@ class Consent extends AbstractItem
                     $localization->description   = $localized['Description'];
                     $localization->privacyPolicy = $localized['PrivacyPolicy'];
                     $this->db->insert('tconsentlocalization', $localization);
-                    if ($localization->languageID === $defaultLanguage->getId()) {
+                    if ($defaultLocalization === null || $localization->languageID === $defaultLanguage->getId()) {
                         $defaultLocalization = clone $localization;
                     }
                 }
             }
             $missingLanguages = $allLanguages->filter(static function (LanguageModel $e) use ($addedLanguages) {
-                return !\in_array($e->getId(), $addedLanguages);
+                return !\in_array($e->getId(), $addedLanguages, true);
             });
             $this->addMissingTranslations($missingLanguages->toArray(), $defaultLocalization);
         }

@@ -749,6 +749,9 @@ msgstr "Muster GmbH"
 msgid "faulty"
 msgstr "Fehlerhaft"
 
+msgid "untested"
+msgstr "Ungeprüft"
+
 msgid "week"
 msgstr "Woche"
 
@@ -2036,6 +2039,9 @@ msgstr "Template deaktivieren"
 msgid "Smarty syntax error"
 msgstr "Smarty Syntax-Fehler"
 
+msgid "Smarty syntax ok"
+msgstr "Smarty Syntax in Ordnung."
+
 msgid "weRecommend"
 msgstr "Wir empfehlen:"
 
@@ -2062,3 +2068,6 @@ msgstr "Artikelnummer %s konnte nicht im Shop gefunden werden."
 
 msgid "csvImportSaveError"
 msgstr "Zeile %s konnte nicht gespeichert werden."
+
+msgid "extensionStoreURL"
+msgstr "https://jtl-url.de/exs"

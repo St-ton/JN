@@ -205,7 +205,7 @@
                     lazyLoad: 'ondemand',
                     infinite: true,
                     dots:     false,
-                    arrows:   false,
+                    arrows:   true,
                     speed: 500,
                     fade: true,
                     cssEase: 'linear',

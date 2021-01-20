@@ -784,3 +784,9 @@ msgstr "Subscription expired"
 
 msgid "Unbekannt"
 msgstr "Unknown"
+
+msgid "Safe mode restrictions."
+msgstr "Attention! Deactivation and deinstallation of plugins in safe mode are possible. However the deactivation or deinstallation routines implemented by the plugin will not be executed! This can cause in incompletely installed dependencies!"
+
+msgid "Plugin probably flawed"
+msgstr "Plugin probably produce error: "

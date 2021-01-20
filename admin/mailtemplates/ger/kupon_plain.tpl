@@ -2,26 +2,26 @@
 
 Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
 
-wir freuen uns Ihnen mitteilen zu dürfen, dass in unserem Onlineshop folgenden Kupon ({$Kupon->AngezeigterName}) verwenden dürfen:
+wir freuen uns Ihnen mitteilen zu dï¿½rfen, dass in unserem Onlineshop folgenden Kupon ({$Kupon->AngezeigterName}) verwenden dï¿½rfen:
 
-{if $Kupon->cKuponTyp=="standard"}Kuponwert: {$Kupon->cLocalizedWert} {if $Kupon->cWertTyp=="prozent"}Rabatt auf den gesamten Einkauf{/if}{/if}{if $Kupon->cKuponTyp=="versandkupon"}Mit diesem Kupon können Sie versandkostenfrei bei uns einkaufen!
-Er gilt für folgende Lieferländer: {$Kupon->cLieferlaender|upper}{/if}
+{if $Kupon->cKuponTyp=="standard"}Kuponwert: {$Kupon->cLocalizedWert} {if $Kupon->cWertTyp=="prozent"}Rabatt auf den gesamten Einkauf{/if}{/if}{if $Kupon->cKuponTyp=="versandkupon"}Mit diesem Kupon kï¿½nnen Sie versandkostenfrei bei uns einkaufen!
+Er gilt fï¿½r folgende Lieferlï¿½nder: {$Kupon->cLieferlaender|upper}{/if}
 
 Kuponcode: {$Kupon->cCode}
 
-Gültig vom {$Kupon->cGueltigAbLong}{if $Kupon->dGueltigBis != 0} bis {$Kupon->cGueltigBisLong}{/if}
+Gï¿½ltig vom {$Kupon->cGueltigAbLong}{if $Kupon->dGueltigBis != 0} bis {$Kupon->cGueltigBisLong}{/if}
 
 {if $Kupon->fMindestbestellwert>0}Mindestbestellwert: {$Kupon->cLocalizedMBW}
 
 {else}Es gibt keinen Mindestbestellwert!
 
-{/if}{if $Kupon->nVerwendungenProKunde>1}Sie dürfen diesen Kupon bei insgesamt {$Kupon->nVerwendungenProKunde} Einkäufen bei uns nutzen.
+{/if}{if $Kupon->nVerwendungenProKunde>1}Sie dï¿½rfen diesen Kupon bei insgesamt {$Kupon->nVerwendungenProKunde} Einkï¿½ufen bei uns nutzen.
 
-{elseif $Kupon->nVerwendungenProKunde==0}Sie dürfen diesen Kupon bei beliebig vielen Einkäufen bei uns nutzen.
+{elseif $Kupon->nVerwendungenProKunde==0}Sie dï¿½rfen diesen Kupon bei beliebig vielen Einkï¿½ufen bei uns nutzen.
 
 {/if}{if $Kupon->nVerwendungen>0}Bitte beachten Sie, dass dieser Kupon auf eine maximale Verwendungsanzahl hat.
 
-{/if}{if count($Kupon->Kategorien)>0}Der Kupon gilt für folgende Kategorien:
+{/if}{if count($Kupon->Kategorien)>0}Der Kupon gilt fï¿½r folgende Kategorien:
 
 
 {foreach name=art from=$Kupon->Kategorien item=Kategorie}
@@ -29,7 +29,7 @@ Gültig vom {$Kupon->cGueltigAbLong}{if $Kupon->dGueltigBis != 0} bis {$Kupon->cG
 {$Kategorie->cURL}
 {/foreach}{/if}
 
-{if count($Kupon->Artikel)>0}Der Kupon gilt für folgende Artikel:
+{if count($Kupon->Artikel)>0}Der Kupon gilt fï¿½r folgende Artikel:
 
 
 {foreach name=art from=$Kupon->Artikel item=Artikel}
@@ -37,12 +37,19 @@ Gültig vom {$Kupon->cGueltigAbLong}{if $Kupon->dGueltigBis != 0} bis {$Kupon->cG
 {$Artikel->cURL}
 {/foreach}{/if}
 
+{if is_array($Kupon->Hersteller) && count($Kupon->Hersteller)>0 && !empty($Kupon->Hersteller[0]->cName)}
+    Der Coupon gilt fÃ¼r folgende Hersteller:
 
-Sie lösen den Kupon ein, indem Sie beim Bestellvorgang den Kuponcode in das vorgesehene Feld eintragen.
+    {foreach $Kupon->Hersteller as $Hersteller}
+        {$Hersteller->cName} >
+        {$Hersteller->cURL}
+    {/foreach}{/if}
 
-Viel Spaß bei Ihrem nächsten Einkauf in unserem Shop.
+Sie lï¿½sen den Kupon ein, indem Sie beim Bestellvorgang den Kuponcode in das vorgesehene Feld eintragen.
 
-Mit freundlichem Gruß,
+Viel Spaï¿½ bei Ihrem nï¿½chsten Einkauf in unserem Shop.
+
+Mit freundlichem Gruï¿½,
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=plain}

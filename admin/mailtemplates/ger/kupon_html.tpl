@@ -2,7 +2,7 @@
 
 Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br>
 <br>
-wir freuen uns Ihnen mitteilen zu dürfen, dass in unserem Onlineshop folgenden Kupon ({$Kupon->AngezeigterName}) verwenden dürfen:<br>
+wir freuen uns Ihnen mitteilen zu dï¿½rfen, dass in unserem Onlineshop folgenden Kupon ({$Kupon->AngezeigterName}) verwenden dï¿½rfen:<br>
 <br>
 {if $Kupon->cKuponTyp=="standard"}
 <table cellpadding="0" cellspacing="0" border="0" width="100%">
@@ -81,18 +81,18 @@ wir freuen uns Ihnen mitteilen zu dürfen, dass in unserem Onlineshop folgenden K
 </table><br>
 {/if}
 {if $Kupon->cKuponTyp=="versandkupon"}
-	Mit diesem Kupon können Sie versandkostenfrei bei uns einkaufen!<br>
-	Er gilt für folgende Lieferländer: {$Kupon->cLieferlaender|upper}<br>
+	Mit diesem Kupon kï¿½nnen Sie versandkostenfrei bei uns einkaufen!<br>
+	Er gilt fï¿½r folgende Lieferlï¿½nder: {$Kupon->cLieferlaender|upper}<br>
 	<br>
 {/if}
 
-Gültig vom {$Kupon->cGueltigAbLong}{if $Kupon->dGueltigBis != 0} bis {$Kupon->cGueltigBisLong}{/if}<br>
+Gï¿½ltig vom {$Kupon->cGueltigAbLong}{if $Kupon->dGueltigBis != 0} bis {$Kupon->cGueltigBisLong}{/if}<br>
 <br>
 {if $Kupon->nVerwendungenProKunde>1}
-	Sie dürfen diesen Kupon bei insgesamt {$Kupon->nVerwendungenProKunde} Einkäufen bei uns nutzen.<br>
+	Sie dï¿½rfen diesen Kupon bei insgesamt {$Kupon->nVerwendungenProKunde} Einkï¿½ufen bei uns nutzen.<br>
 	<br>
 {elseif $Kupon->nVerwendungenProKunde==0}
-	Sie dürfen diesen Kupon bei beliebig vielen Einkäufen bei uns nutzen.<br>
+	Sie dï¿½rfen diesen Kupon bei beliebig vielen Einkï¿½ufen bei uns nutzen.<br>
 	<br>
 {/if}
 
@@ -102,23 +102,33 @@ Gültig vom {$Kupon->cGueltigAbLong}{if $Kupon->dGueltigBis != 0} bis {$Kupon->cG
 {/if}
 
 {if count($Kupon->Kategorien)>0}
-	Der Kupon gilt für folgende Kategorien:<br>
+	Der Kupon gilt fï¿½r folgende Kategorien:<br>
     {foreach name=art from=$Kupon->Kategorien item=Kategorie}
         <a href="{$Kategorie->cURL}">{$Kategorie->cName}</a><br>
     {/foreach}
 {/if}
 <br>
-{if count($Kupon->Artikel)>0}Der Kupon gilt für folgende Artikel:<br>
+{if count($Kupon->Artikel)>0}Der Kupon gilt fï¿½r folgende Artikel:<br>
     {foreach name=art from=$Kupon->Artikel item=Artikel}
         <a href="{$Artikel->cURL}">{$Artikel->cName}</a><br>
     {/foreach}
 {/if}<br>
 <br>
-Sie lösen den Kupon ein, indem Sie beim Bestellvorgang den Kuponcode in das vorgesehene Feld eintragen.<br>
+{if is_array($Kupon->Hersteller) && count($Kupon->Hersteller)>0 && !empty($Kupon->Hersteller[0]->cName)}
+	<br>
+	Der Coupon gilt fÃ¼r folgende Hersteller:<br>
+	{foreach $Kupon->Hersteller as $Hersteller}
+		<a href="{$Hersteller->cURL}">{$Hersteller->cName}</a><br>
+	{/foreach}
+	<br>
+	<br>
+{/if}
+
+Sie lï¿½sen den Kupon ein, indem Sie beim Bestellvorgang den Kuponcode in das vorgesehene Feld eintragen.<br>
 <br>
-Viel Spaß bei Ihrem nächsten Einkauf in unserem Shop.<br>
+Viel Spaï¿½ bei Ihrem nï¿½chsten Einkauf in unserem Shop.<br>
 <br>
-Mit freundlichem Gruß,<br>
+Mit freundlichem Gruï¿½,<br>
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=html}

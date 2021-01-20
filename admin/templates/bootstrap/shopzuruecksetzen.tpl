@@ -73,7 +73,7 @@
                 <label for="ALLMSGS2">Alle ausw&auml;hlen</label>
             </div>
         </div>
-        
+
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">Shopkunden & Bestellungen & Kupons</h3>
@@ -81,7 +81,7 @@
             <div class="panel-body">
                 <div class="item">
                     <input type="checkbox" name="cOption_arr[]" value="shopkunden" tabindex="14" id="Shopkunden" />
-                    <label for="Shopkunden">Shopkunden l&ouml;schen</label>
+                    <label for="Shopkunden">Shopkunden und Bestellungen l&ouml;schen</label>
                 </div>
                 <div class="item">
                     <input type="checkbox" name="cOption_arr[]" value="kwerbenk" tabindex="14" id="KwerbenK" />

@@ -87,7 +87,7 @@ ul.partlist-items {
 }
 
 /* SIGNAL */
-.delivery-status {
+.delivery-status, .signal_image {
   .status-0 {
     color: $danger;
   }
@@ -457,6 +457,10 @@ input.typeahead {
   color: transparent;
   opacity: 1;
   transition: opacity 300ms;
+  width: auto;
+  height: auto;
+  max-width: 40px;
+  max-height: 40px;
 }
 
 .lazyloaded {

@@ -20609,6 +20609,15 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
   max-height: 100%;
   object-fit: contain;
 }
+.square-image .inner img.lazyloading {
+  color: transparent;
+  opacity: 1;
+  transition: opacity 300ms;
+  width: auto;
+  height: auto;
+  max-width: 40px;
+  max-height: 40px;
+}
 
 .square-inner, .productbox-image-wrapper-inner {
   position: absolute;
@@ -22491,13 +22500,13 @@ ul.partlist-items {
 }
 
 /* SIGNAL */
-.delivery-status .status-0 {
+.delivery-status .status-0, .signal_image .status-0 {
   color: #b90000;
 }
-.delivery-status .status-1 {
+.delivery-status .status-1, .signal_image .status-1 {
   color: #f39932;
 }
-.delivery-status .status-2 {
+.delivery-status .status-2, .signal_image .status-2 {
   color: #1C871E;
 }
 
@@ -22877,6 +22886,10 @@ input.typeahead:-ms-input-placeholder {
   color: transparent;
   opacity: 1;
   transition: opacity 300ms;
+  width: auto;
+  height: auto;
+  max-width: 40px;
+  max-height: 40px;
 }
 
 .lazyloaded {

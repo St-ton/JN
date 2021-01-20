@@ -93,8 +93,8 @@ if (!empty($_COOKIE['JTLSHOP']) && empty($_SESSION['frontendUpToDate'])) {
     session_write_close();
     session_name('eSIdAdm');
     session_id($eSIdAdm);
-    session_start();
-    $_SESSION['frontendUpToDate'] = true;
+    $session = new Backend();
+    $session::set('frontendUpToDate', true);
 }
 
 if ($loggedIn

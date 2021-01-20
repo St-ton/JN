@@ -115,16 +115,74 @@ function getWidgets(bool $bActive = true): array
 }
 
 /**
- * @param int    $kWidget
- * @param string $eContainer
+ * @param int    $widgetId
+ * @param string $container
  * @param int    $pos
  */
-function setWidgetPosition(int $kWidget, string $eContainer, int $pos): void
+function setWidgetPosition(int $widgetId, string $container, int $pos): void
 {
+    $db              = Shop::Container()->getDB();
     $upd             = new stdClass();
-    $upd->eContainer = $eContainer;
+    $upd->eContainer = $container;
     $upd->nPos       = $pos;
-    Shop::Container()->getDB()->update('tadminwidgets', 'kWidget', $kWidget, $upd);
+
+    $current = $db->select('tadminwidgets', 'kWidget', $widgetId);
+    if ($current->eContainer === $container) {
+        if ($current->nPos < $pos) {
+            $db->queryPrepared(
+                'UPDATE tadminwidgets
+                    SET nPos = nPos - 1
+                    WHERE eContainer = :currentContainer
+                      AND nPos > :currentPos
+                      AND nPos <= :newPos',
+                [
+                    'currentPos'       => $current->nPos,
+                    'newPos'           => $pos,
+                    'currentContainer' => $current->eContainer
+                ],
+                ReturnType::DEFAULT
+            );
+        } else {
+            $db->queryPrepared(
+                'UPDATE tadminwidgets
+                    SET nPos = nPos + 1
+                    WHERE eContainer = :currentContainer
+                      AND nPos < :currentPos
+                      AND nPos >= :newPos',
+                [
+                    'currentPos'       => $current->nPos,
+                    'newPos'           => $pos,
+                    'currentContainer' => $current->eContainer
+                ],
+                ReturnType::DEFAULT
+            );
+        }
+    } else {
+        $db->queryPrepared(
+            'UPDATE tadminwidgets
+                SET nPos = nPos - 1
+                WHERE eContainer = :currentContainer
+                  AND nPos > :currentPos',
+            [
+                'currentPos'       => $current->nPos,
+                'currentContainer' => $current->eContainer
+            ],
+            ReturnType::DEFAULT
+        );
+        $db->queryPrepared(
+            'UPDATE tadminwidgets
+                SET nPos = nPos + 1
+                WHERE eContainer = :newContainer
+                  AND nPos >= :newPos',
+            [
+                'newPos'       => $pos,
+                'newContainer' => $container
+            ],
+            ReturnType::DEFAULT
+        );
+    }
+
+    $db->update('tadminwidgets', 'kWidget', $widgetId, $upd);
 }
 
 /**

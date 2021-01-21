@@ -24,7 +24,7 @@ class ConfigGroup extends AbstractImage
     . '\/(?P<type>configgroup)'
     . '\/(?P<id>\d+)'
     . '\/(?P<size>xs|sm|md|lg|xl)'
-    . '\/(?P<name>' . self::REGEX_ALLOWED_CHARSET . '+)'
+    . '\/(?P<name>[' . self::REGEX_ALLOWED_CHARS . ']+)'
     . '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**

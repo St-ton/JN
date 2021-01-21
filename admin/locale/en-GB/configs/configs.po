@@ -2992,3 +2992,9 @@ msgstr "Allowed file uploads per hour"
 
 msgid "upload_modul_limit_desc"
 msgstr "Specify the maximum number of files that a user can upload per hour when the Upload Module is activated."
+
+msgid "consent_manager_show_banner_name"
+msgstr "Banner Option"
+
+msgid "consent_manager_show_banner_desc"
+msgstr "Use this option to display the consent banner immediately to your visitors or to display the banner only on second / third page view."

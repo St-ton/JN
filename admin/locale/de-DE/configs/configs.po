@@ -2992,3 +2992,9 @@ msgstr "Erlaubte Datei-Uploads pro Stunde"
 
 msgid "upload_modul_limit_desc"
 msgstr "Hier legen Sie fest, wie viele Dateien ein Benutzer bei aktiviertem Uploadmodul pro Stunde maximal hochladen darf."
+
+msgid "consent_manager_show_banner_name"
+msgstr "Banneranzeige"
+
+msgid "consent_manager_show_banner_desc"
+msgstr "Legen Sie hier fest, ob der Banner zum Erteilen oder Ablehnen einer globalen Einwilligung dem Besucher sofort angezeigt werden soll oder ob der Besucher erst auf der zweiten oder dritten Seite mit dem Banner konfrontiert werden soll."

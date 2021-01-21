@@ -76,6 +76,7 @@
                                     class="btn btn-outline-primary btn-sm btn-block{if $Einstellungen.vergleichsliste.vergleichsliste_target === 'popup'} popup{/if}"
                                     href="{get_static_route id='vergleichsliste.php'}"
                                     target="{if $Einstellungen.vergleichsliste.vergleichsliste_target === 'blank'}_blank{else}_self{/if}"
+                                    data=["modal-classes"=>"modal-fullwidth"]
                                 }
                                    {lang key='gotToCompare'}
                                 {/link}

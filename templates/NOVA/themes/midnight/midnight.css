@@ -20960,6 +20960,10 @@ label {
   display: none;
 }
 
+.modal-fullwidth {
+  max-width: 96vw;
+}
+
 .newsbox {
   display: flex;
   flex-direction: column;

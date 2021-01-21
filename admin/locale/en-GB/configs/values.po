@@ -2415,10 +2415,10 @@ msgid "direct_advertising_value(Y)"
 msgstr "Yes"
 
 msgid "consent_manager_show_banner_value(1)"
-msgstr "Show on first page impression (1)"
+msgstr "Show at first page view (1)"
 
 msgid "consent_manager_show_banner_value(2)"
-msgstr "Show on second page view (2)"
+msgstr "Show at second page view (2)"
 
 msgid "consent_manager_show_banner_value(3)"
-msgstr "Show on third page view (3)"
+msgstr "Show at third page view (3)"

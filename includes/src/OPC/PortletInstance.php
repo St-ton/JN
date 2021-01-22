@@ -519,7 +519,7 @@ class PortletInstance implements \JsonSerializable
         $realWidth  = $sizes[0];
         $realHeight = $sizes[1];
         $portrait   = $realWidth < $realHeight;
-        $aspect     = $realWidth / $realHeight;
+        $aspect     = $realWidth > 0 ? $realWidth / $realHeight : 1.0;
 
         if (empty($src)) {
             return [

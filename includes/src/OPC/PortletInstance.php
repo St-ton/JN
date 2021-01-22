@@ -555,10 +555,9 @@ class PortletInstance implements \JsonSerializable
                 }
             }
         }
+        
         $srcset = \mb_substr($srcset, 0, -1); // remove trailing comma
 
-        /* TODO: Width-Heuristik Nutzen prüfen (SHOP-4879)
-        /*
         foreach ($this->widthHeuristics as $breakpoint => $col) {
             if (!empty($col)) {
                 $factor = 1;
@@ -569,31 +568,26 @@ class PortletInstance implements \JsonSerializable
 
                 switch ($breakpoint) {
                     case 'xs':
-                        $breakpoint = 767;
-                        $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
+                        $srcsizes .= '(max-width: 767px) '
                             . (int)($col * 100 * $factor) . 'vw, ';
                         break;
                     case 'sm':
-                        $breakpoint = 991;
-                        $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
-                            . (int)($col * $breakpoint * $factor) . 'px, ';
+                        $srcsizes .= '(max-width: 991px) '
+                            . (int)($col * 100 * $factor) . 'vw, ';
                         break;
                     case 'md':
-                        $breakpoint = 1199;
-                        $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
-                            . (int)($col * $breakpoint * $factor) . 'px, ';
+                        $srcsizes .= '(max-width: 1299px) '
+                            . (int)($col * 100 * $factor) . 'vw, ';
                         break;
                     case 'lg':
-                        $breakpoint = 1200;
-                        $srcsizes  .= '(min-width: ' . $breakpoint . 'px) '
-                            . (int)($col * $breakpoint * $factor) . 'px, ';
+                        $srcsizes .= '(min-width: 1300px) '
+                            . (int)($col * 100 * $factor) . 'vw, ';
                         break;
                     default:
                         break;
                 }
             }
         }
-        */
 
         $srcsizes .= '100vw';
 

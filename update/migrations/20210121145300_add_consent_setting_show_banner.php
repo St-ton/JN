@@ -28,9 +28,9 @@ class Migration_20210121145300 extends Migration implements IMigration
                     ' Einwilligung dem Besucher sofort angezeigt werden soll oder ob der Besucher erst auf der' .
                     ' zweiten oder dritten Seite mit dem Banner konfrontiert werden soll.',
                 'inputOptions'  => [
-                    '1' => 'Ja',
-                    '2' => 'Nein',
-                    '3' => 'Nein',
+                    '1' => 'Beim ersten Seitenaufruf (1)',
+                    '2' => 'Beim zweiten Seitenaufruf (2)',
+                    '3' => 'Beim dritten Seitenaufruf (3)',
                 ],
             ]
         );

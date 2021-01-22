@@ -61,13 +61,10 @@
         {/if}
         <div class="backend-main {if !$hasPendingUpdates && $wizardDone}sidebar-offset{/if}">
             {if $smarty.const.SAFE_MODE}
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <div class="alert alert-warning fade show" role="alert">
                 <i class="fal fa-exclamation-triangle mr-2"></i>
                 {__('Safe mode enabled.')}
                 <a href="./?safemode=off" class="btn btn-light"><span class="fas fa-exclamation-circle mr-0 mr-lg-2"></span><span>{__('deactivate')}</span></a>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
             </div>
             {/if}
             <div id="topbar" class="backend-navbar row mx-0 align-items-center topbar flex-nowrap">

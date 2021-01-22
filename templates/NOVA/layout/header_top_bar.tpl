@@ -33,13 +33,15 @@
             {/block}
         {/if}
         {/nav}
-        {block name='layout-header-top-bar-note'}
-            {$topbarLang = {lang key='topbarNote'}}
-            {if $topbarLang !== ''}
-                {nav tag='ul' class='topbar-note nav-dividers'}
-                    {navitem id="topbarNote"}{$topbarLang}{/navitem}
-                {/nav}
-            {/if}
-        {/block}
+        {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}
+            {block name='layout-header-top-bar-note'}
+                {$topbarLang = {lang key='topbarNote'}}
+                {if $topbarLang !== ''}
+                    {nav tag='ul' class='topbar-note nav-dividers'}
+                        {navitem id="topbarNote"}{$topbarLang}{/navitem}
+                    {/nav}
+                {/if}
+            {/block}
+        {/if}
     {/strip}
 {/block}

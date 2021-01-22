@@ -37,6 +37,14 @@ Valid from {$Kupon->cGueltigAbLong}{if $Kupon->dGueltigBis != 0} until {$Kupon->
         {$Artikel->cURL}
     {/foreach}{/if}
 
+{if is_array($Kupon->Hersteller) && count($Kupon->Hersteller)>0 && !empty($Kupon->Hersteller[0]->cName)}
+    This coupon can be used for the following manufacturers:
+
+    {foreach $Kupon->Hersteller as $Hersteller}
+        {$Hersteller->cName} >
+        {$Hersteller->cURL}
+    {/foreach}{/if}
+
 You need to type in the coupon code in the checkout process to use it.
 
 Enjoy your next purchase in our shop.

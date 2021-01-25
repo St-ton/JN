@@ -7,6 +7,7 @@ use Imagick;
 use Intervention\Image\Constraint;
 use Intervention\Image\Image as InImage;
 use Intervention\Image\ImageManager;
+use JTL\Media\Image\AbstractImage;
 use JTL\Shop;
 
 /**
@@ -315,7 +316,7 @@ class Image
         $replace  = ['-', '-', '-', 'ae', 'oe', 'ue', 'ss'];
         $filename = \str_replace($source, $replace, \mb_convert_case($filename, \MB_CASE_LOWER));
 
-        return \preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $filename);
+        return \preg_replace('/[^' . AbstractImage::REGEX_ALLOWED_CHARS . ']/', '', $filename);
     }
 
     /**

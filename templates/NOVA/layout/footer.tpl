@@ -1,6 +1,7 @@
 {block name='layout-footer'}
     {block name='layout-footer-consent-manager'}
         {if $Einstellungen.consentmanager.consent_manager_active === 'Y' && !$isAjax && $consentItems->isNotEmpty()}
+            <input id="consent-manager-show-banner" type="hidden" value="{$Einstellungen.consentmanager.consent_manager_show_banner}">
             {include file='snippets/consent_manager.tpl'}
             {inline_script}
                 <script>

@@ -23,7 +23,12 @@ class Product extends AbstractImage
     /**
      * @var string
      */
-    public const REGEX = \MEDIAIMAGE_REGEX;
+    public const REGEX = '/^media\/image'
+    . '\/(?P<type>product)'
+    . '\/(?P<id>\d+)'
+    . '\/(?P<size>xs|sm|md|lg|xl|os)'
+    . '\/(?P<name>[' . self::REGEX_ALLOWED_CHARS . ']+)'
+    . '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**
      * @inheritdoc

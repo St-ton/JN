@@ -101,9 +101,18 @@
                                 {captchaMarkup getBody=true}
                             {/if}
                         {/if}
+                        <div id="collapseExtended" class="collapse input-group mt-2 form-group form-row align-items-center{if $plgSafeMode === true} show{/if}" aria-labelledby="headingExtended">
+                            <input id="safemode" class="col col-sm-auto ml-2" type="checkbox" name="safemode" value="on"{if $plgSafeMode === true} checked="checked"{/if}>
+                            <label for="safemode" class="col col-sm-auto col-form-label text-sm-right" title="{__('Safe mode enabled.')}" data-toggle="tooltip">{__('Safe mode')}</label>
+                        </div>
                         <button type="submit" value="Anmelden" tabindex="100" class="btn btn-primary btn-block mt-3">{__('login')}</button>
                         {if isset($smarty.session.AdminAccount->TwoFA_active) && true === $smarty.session.AdminAccount->TwoFA_active }
                             <button type="button" tabindex="110" class="btn btn-default btn-block btn-md" onclick="switchUser();">{__('changerUser')}</button>
+                        {/if}
+                        {if $plgSafeMode !== true}
+                            <div id="headingExtended" class="mt-3 text-right small">
+                                <a href="#" data-toggle="collapse" data-target="#collapseExtended" aria-expanded="false" aria-controls="collapseExtended">{__('extended')}</a>
+                            </div>
                         {/if}
                     </form>
                 </div>

@@ -4,7 +4,7 @@
         {row id='reviews-overview'}
             {block name='productdetails-reviews-overview'}
                 {if $Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0}
-                    {col cols=12 md=4 order=1 order-md=0}
+                    {col cols=12 md=6 lg=4 order=1 order-md=0}
                         {card}
                             {block name='productdetails-reviews-heading'}
                                 <div class="card-title">
@@ -70,7 +70,7 @@
                 {/if}
             {/block}
             {block name='productdetails-reviews-votes'}
-                {col cols=12 md=8  order=0 order-md=1}
+                {col cols=12 md=6 lg=8  order=0 order-md=1}
                     {form method="post" action="{get_static_route id='bewertung.php'}#tab-votes" id="article_rating" slide=true}
                         <div class="subheadline">
                             {if $Artikel->Bewertungen->oBewertungGesamt->nAnzahl == 0}

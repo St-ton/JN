@@ -2076,4 +2076,4 @@ msgid "Safe mode"
 msgstr "Safe mode"
 
 msgid "Safe mode enabled."
-msgstr "Safe mode active. Some functions might not be available."
+msgstr "Safe mode active. Functionality might be impaired."

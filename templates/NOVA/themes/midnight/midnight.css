@@ -24999,6 +24999,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   display: flex;
   flex-direction: column;
 }
+.comparelist .comparelist-label-button th {
+  padding: 0;
+  border: 0;
+}
 
 .custom-checkbox + .description {
   margin-left: 1.5rem;

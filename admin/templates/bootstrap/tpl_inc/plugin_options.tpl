@@ -86,10 +86,10 @@
                         {elseif $confItem->inputType === JTL\Plugin\Admin\InputType::RADIO}
                             <div class="input-group-checkbox-wrap">
                             {foreach $confItem->options as $option}
-                                <input id="opt-{$option->id}-{$option@iteration}"
+                                <input id="opt-{$confItem->valueID}-{$option@iteration}"
                                        type="radio" name="{$confItem->valueID}[]"
                                        value="{$option->value}"{if $confItem->value == $option->value} checked="checked"{/if} />
-                                <label for="opt-{$option->kPluginEinstellungenConf}-{$option@iteration}">
+                                <label for="opt-{$confItem->valueID}-{$option@iteration}">
                                     {__($option->niceName)}
                                 </label> <br />
                             {/foreach}

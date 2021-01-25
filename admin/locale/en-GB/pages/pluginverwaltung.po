@@ -784,3 +784,9 @@ msgstr "Subscription expired"
 
 msgid "Unbekannt"
 msgstr "Unknown"
+
+msgid "Safe mode restrictions."
+msgstr "Please note: In safe mode, plug-ins might not be fully deactivated or uninstalled. This could lead to unused data remaining in the database."
+
+msgid "Plugin probably flawed"
+msgstr "The plug-in might cause failures: "

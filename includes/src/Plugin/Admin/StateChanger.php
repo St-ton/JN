@@ -122,11 +122,13 @@ class StateChanger
             return InstallCode::WRONG_PARAM;
         }
         $pluginData = $this->db->select('tplugin', 'kPlugin', $pluginID);
-        $loader     = (int)$pluginData->bExtension === 1
-            ? new PluginLoader($this->db, $this->cache)
-            : new LegacyPluginLoader($this->db, $this->cache);
-        if (($p = Helper::bootstrap($pluginID, $loader)) !== null) {
-            $p->disabled();
+        if (!\SAFE_MODE) {
+            $loader = (int)$pluginData->bExtension === 1
+                ? new PluginLoader($this->db, $this->cache)
+                : new LegacyPluginLoader($this->db, $this->cache);
+            if (($p = Helper::bootstrap($pluginID, $loader)) !== null) {
+                $p->disabled();
+            }
         }
         $this->db->update('tplugin', 'kPlugin', $pluginID, (object)['nStatus' => $newState]);
         $this->db->update('tlink', 'kPlugin', $pluginID, (object)['bIsActive' => 0]);

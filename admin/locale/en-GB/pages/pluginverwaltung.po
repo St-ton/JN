@@ -786,7 +786,7 @@ msgid "Unbekannt"
 msgstr "Unknown"
 
 msgid "Safe mode restrictions."
-msgstr "Attention! Deactivation and deinstallation of plugins in safe mode are possible. However the deactivation or deinstallation routines implemented by the plugin will not be executed! This can cause in incompletely installed dependencies!"
+msgstr "Please note: In safe mode, plug-ins might not be fully deactivated or uninstalled. This could lead to unused data remaining in the database."
 
 msgid "Plugin probably flawed"
-msgstr "Plugin probably produce error: "
+msgstr "The plug-in might cause failures: "

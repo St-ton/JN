@@ -786,7 +786,7 @@ msgid "Unbekannt"
 msgstr "Unbekannt"
 
 msgid "Safe mode restrictions."
-msgstr "Achtung! Das Deaktivieren bzw. Deinstallieren von Plugins im Abgesicherten Modus ist zwar möglich, die Deaktivierungs- bzw. Deinstallationsroutinen des Plugins werden jedoch nicht ausgeführt. Das kann zu unvollständig installierten Abhängigkeiten führen!"
+msgstr "Hinweis: Im abgesicherten Modus werden Plugins gegebenenfalls nicht vollständig deaktiviert oder deinstalliert. Dies kann dazu führen, dass nicht mehr benötigte Daten in der Datenbank verbleiben."
 
 msgid "Plugin probably flawed"
 msgstr "Das Plugin verursacht mglws. Fehler: "

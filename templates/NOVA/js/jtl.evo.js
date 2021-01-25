@@ -57,7 +57,7 @@
                         mainNode.find('.product-wrapper').removeClass('m-auto ml-auto mr-auto');
                         self.initSlick(mainNode, mainNode.data('slick-type'));
                         if(mainNode.slick('getSlick').slideCount > mainNode.slick('slickGetOption', 'slidesToShow')) {
-                            mainNode.slick('slickGoTo', 1);
+                            mainNode.slick('slickGoTo', 2);
                         }
                     }
                 }, supportsPassive ? { passive: true } : false);

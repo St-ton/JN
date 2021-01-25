@@ -56,8 +56,20 @@
                         mainNode.removeClass('slick-lazy');
                         mainNode.find('.product-wrapper').removeClass('m-auto ml-auto mr-auto');
                         self.initSlick(mainNode, mainNode.data('slick-type'));
-                        if(mainNode.slick('getSlick').slideCount > mainNode.slick('slickGetOption', 'slidesToShow')) {
-                            mainNode.slick('slickGoTo', 2);
+                        let slickOptions = mainNode.slick('getSlick');
+                        if(slickOptions.slideCount > mainNode.slick('slickGetOption', 'slidesToShow')) {
+                            let goTo;
+                            $.each(slickOptions.originalSettings.responsive, function (key, value) {
+                                if (value.breakpoint === slickOptions.activeBreakpoint
+                                    && value.settings.slidesToShow !== undefined
+                                ) {
+                                    goTo = value.settings.slidesToShow;
+                                }
+                            });
+                            if (goTo === undefined) {
+                                goTo = slickOptions.originalSettings.slidesToScroll
+                            }
+                            mainNode.slick('slickGoTo', goTo || 2);
                         }
                     }
                 }, supportsPassive ? { passive: true } : false);

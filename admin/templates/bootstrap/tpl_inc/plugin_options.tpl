@@ -88,7 +88,7 @@
                             {foreach $confItem->options as $option}
                                 <input id="opt-{$option->id}-{$option@iteration}"
                                        type="radio" name="{$confItem->valueID}[]"
-                                       value="{$option->value}"{if $confItem->value == $option->cWert} checked="checked"{/if} />
+                                       value="{$option->value}"{if $confItem->value == $option->value} checked="checked"{/if} />
                                 <label for="opt-{$option->kPluginEinstellungenConf}-{$option@iteration}">
                                     {__($option->niceName)}
                                 </label> <br />

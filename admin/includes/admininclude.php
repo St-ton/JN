@@ -69,9 +69,7 @@ $updater    = new Updater($db);
 $hasUpdates = $updater->hasPendingUpdates();
 $conf       = Shop::getSettings([CONF_GLOBAL]);
 
-if ($loggedIn
-    && isset($GLOBALS['plgSafeMode'])
-) {
+if ($loggedIn && isset($GLOBALS['plgSafeMode'])) {
     if ($GLOBALS['plgSafeMode']) {
         touch(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR . 'safemode.lck');
     } elseif (file_exists(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR . 'safemode.lck')) {

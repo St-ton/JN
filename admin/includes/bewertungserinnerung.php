@@ -113,7 +113,7 @@ function baueBewertungsErinnerung()
                     } else {
                         Jtllog::writeLog(
                             "Es wurden keine Bestellungen fuer Bewertungserinnerungen gefunden. SQL:
-                            <code>{$cQuery}</code>", JTLLOG_LEVEL_NOTICE, true, 'Bewertungserinnerung'
+                            <code>{$cQuery}</code>", JTLLOG_LEVEL_DEBUG, false, 'Bewertungserinnerung'
                         );
                     }
                 }

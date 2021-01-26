@@ -620,8 +620,9 @@ function informCouponCustomers($oKupon)
         2
     );
     // Artikel-Nummern
-    $oArtikelDB_arr = [];
-    $cArtNr_arr     = StringHandler::parseSSK($oKupon->cArtikel);
+    $oArtikelDB_arr  = [];
+    $cArtNr_arr      = StringHandler::parseSSK($oKupon->cArtikel);
+    $manufacturerIDs = StringHandler::parseSSK($oKupon->cHersteller);
 
     if (count($cArtNr_arr) > 0) {
         $oArtikelDB_arr = Shop::DB()->query("
@@ -668,10 +669,16 @@ function informCouponCustomers($oKupon)
             );
             $oArtikel_arr[] = $oArtikel;
         }
+        $manufacturers = [];
+        foreach ($manufacturerIDs as $manufacturerID) {
+            $manufacturers[] = new Hersteller($manufacturerID, $oKunde->kSprache);
+        }
+
         // put all together
         $oKupon->Kategorien      = $oKategorie_arr;
         $oKupon->Artikel         = $oArtikel_arr;
         $oKupon->AngezeigterName = $oKuponsprache->cName;
+        $oKupon->Hersteller      = $manufacturers;
         $obj                     = new stdClass();
         $obj->tkupon             = $oKupon;
         $obj->tkunde             = $oKunde;

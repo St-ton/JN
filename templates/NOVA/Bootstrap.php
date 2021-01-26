@@ -62,8 +62,7 @@ class Bootstrap extends Bootstrapper
             ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getStates', [$plugins, 'getStates'])
             ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getDecimalLength', [$plugins, 'getDecimalLength'])
             ->registerPlugin(Smarty::PLUGIN_MODIFIER, 'seofy', [$plugins, 'seofy'])
-            ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getUploaderLang', [$plugins, 'getUploaderLang'])
-            ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getSpecialPage', [$plugins, 'getSpecialPage']);
+            ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getUploaderLang', [$plugins, 'getUploaderLang']);
     }
 
     /**

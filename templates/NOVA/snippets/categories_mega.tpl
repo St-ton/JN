@@ -90,7 +90,10 @@
             && $smarty.session.Kunde->kKunde != 0)}
         {get_manufacturers assign='manufacturers'}
         {if !empty($manufacturers)}
-            {getSpecialPage linkType=$smarty.const.LINKTYP_HERSTELLER assign="manufacturerOverview"}
+            {assign var=manufacturerOverview value=null}
+            {if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_HERSTELLER])}
+                {$manufacturerOverview=$oSpezialseiten_arr[$smarty.const.LINKTYP_HERSTELLER]}
+            {/if}
             {block name='snippets-categories-mega-manufacturers-inner'}
                 <li class="nav-item nav-scrollbar-item dropdown dropdown-full {if $nSeitenTyp === $smarty.const.PAGE_HERSTELLER}active{/if}">
                     {link href="{if $manufacturerOverview !== null}{$manufacturerOverview->getURL()}{else}#{/if}" title={lang key='manufacturers'} class="nav-link dropdown-toggle" target="_self"}

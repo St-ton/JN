@@ -323,8 +323,10 @@ class Product
             ReturnType::ARRAY_OF_OBJECTS
         );
 
+
         $oEigenschaftTMP_arr = $db->query(
-            'SELECT teigenschaft.kEigenschaft,teigenschaft.cName,teigenschaft.cTyp
+            'SELECT teigenschaft.kEigenschaft, teigenschaft.cName, teigenschaft.cTyp, 
+                teigenschaft.kArtikel, 0 AS kEigenschaftWert
                 FROM teigenschaft
                 LEFT JOIN teigenschaftsichtbarkeit
                     ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft

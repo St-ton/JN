@@ -5850,7 +5850,7 @@ class Artikel
             foreach ($propValues as $propValueID) {
                 $propValueID = (int)$propValueID;
                 if (!\in_array($propValueID, (array)$possibleVariationsForSelection[$propID], true)) {
-                    if (!\is_array($invalidVariations[$propID])) {
+                    if (!isset($invalidVariations[$propID]) || !\is_array($invalidVariations[$propID])) {
                         $invalidVariations[$propID] = [];
                     }
                     $invalidVariations[$propID][] = $propValueID;

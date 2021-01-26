@@ -18,6 +18,8 @@ use JTL\Helpers\Seo;
 use JTL\Helpers\Tax;
 use JTL\Link\Link;
 use JTL\Link\LinkGroupInterface;
+use JTL\Link\LinkInterface;
+use JTL\Link\SpecialPageNotFoundException;
 use JTL\Media\Image;
 use JTL\Media\Image\Product;
 use JTL\Session\Frontend;
@@ -771,5 +773,27 @@ class Plugins
         ];
 
         $smarty->assign($params['assign'], \in_array($params['iso'], $availableLocales, true) ? $params['iso'] : 'LANG');
+    }
+
+    /**
+     * @param array $params
+     * @param \Smarty_Internal_TemplateBase $smarty
+     * @return void|LinkInterface|null
+     */
+    public function getSpecialPage($params, $smarty)
+    {
+        try {
+            $result = Shop::Container()->getLinkService()->getSpecialPage((int)$params['linkType']);
+        } catch (SpecialPageNotFoundException $e) {
+            $result = null;
+        }
+
+        if (isset($params['assign'])) {
+            $smarty->assign($params['assign'], $result);
+
+            return;
+        }
+
+        return $result;
     }
 }

@@ -90,7 +90,7 @@
             && $smarty.session.Kunde->kKunde != 0)}
         {get_manufacturers assign='manufacturers'}
         {if !empty($manufacturers)}
-            {assign var=manufacturerOverview value=\JTL\Shop::Container()->getLinkService()->getSpecialPage(LINKTYP_HERSTELLER)}
+            {getSpecialPage linkType=$smarty.const.LINKTYP_HERSTELLER assign="manufacturerOverview"}
             {block name='snippets-categories-mega-manufacturers-inner'}
                 <li class="nav-item nav-scrollbar-item dropdown dropdown-full {if $nSeitenTyp === $smarty.const.PAGE_HERSTELLER}active{/if}">
                     {link href="{if $manufacturerOverview !== null}{$manufacturerOverview->getURL()}{else}#{/if}" title={lang key='manufacturers'} class="nav-link dropdown-toggle" target="_self"}

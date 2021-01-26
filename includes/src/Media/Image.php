@@ -334,9 +334,12 @@ class Image
         $thumbnail = $req->getThumb($req->getSize(), true);
         $manager   = new ImageManager(['driver' => self::getImageDriver()]);
         $img       = $manager->make($rawPath);
-        $canvas    = $manager->canvas($img->width(), $img->height(), $settings['background']);
-        $canvas->insert($img);
-        $img = $canvas;
+        $regExt    = $req->getExt();
+        if (($regExt === 'jpg' || $regExt === 'jpeg') && $settings['container'] === true) {
+            $canvas    = $manager->canvas($img->width(), $img->height(), $settings['background']);
+            $canvas->insert($img);
+            $img = $canvas;
+        }
         self::checkDirectory($thumbnail);
         self::resize($req, $img, $settings);
         self::addBranding($manager, $req, $img);

@@ -20569,6 +20569,10 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
   width: 100%;
 }
 
+.dropdown-toggle, [data-toggle=collapse]:not(.navbar-toggler) {
+  white-space: initial;
+}
+
 .slick-slide .square, .slick-slide .productbox-image-wrapper {
   display: flex !important;
 }

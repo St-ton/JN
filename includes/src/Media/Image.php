@@ -336,7 +336,7 @@ class Image
         $img       = $manager->make($rawPath);
         $regExt    = $req->getExt();
         if (($regExt === 'jpg' || $regExt === 'jpeg') && $settings['container'] === true) {
-            $canvas    = $manager->canvas($img->width(), $img->height(), $settings['background']);
+            $canvas = $manager->canvas($img->width(), $img->height(), $settings['background']);
             $canvas->insert($img);
             $img = $canvas;
         }

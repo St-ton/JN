@@ -295,32 +295,37 @@ class Page
 
     computePortletWidthHeuristics(portlet)
     {
-        var elm             = portlet;
-        var widthHeuristics = {xs: null, sm: null, md: null, lg: null};
+        let elm             = portlet;
+        let widthHeuristics = {xs: 1, sm: 1, md: 1, lg: 1};
 
-        while(!elm.is(this.rootAreas) && !elm.is(this.offscreenAreas)) {
-            var clsStr = elm.attr('class');
-            var cls    = typeof clsStr === 'string' ? clsStr.split(/\s+/) : [];
+        console.log('computePortletWidthHeuristics for', portlet.data('portlet').class);
 
-            cls.forEach(item => {
-                var match = item.match(/col-(xs|sm|md|lg)-([0-9]+)/);
+        while (!elm.is(this.rootAreas) && !elm.is(this.offscreenAreas)) {
+            if (elm[0].classList.contains('opc-col')) {
+                let areaId = elm.data('area-id').match(/^col-([0-9])+$/)[1];
+                elm        = elm.parent();
+                let data   = elm.data('portlet');
 
-                if(Array.isArray(match)) {
-                    var size = match[1];
-                    var cols = parseFloat(match[2]);
+                if (data) {
+                    let cls = data.class;
 
-                    widthHeuristics[size] = widthHeuristics[size] === null ? 1 : widthHeuristics[size];
-                    widthHeuristics[size] *= cols / 12;
+                    if (cls === 'Row') {
+                        let layout = data.properties.layout;
+                        let xs     = layout.xs.split('+')[areaId] || 12;
+                        let sm     = layout.sm.split('+')[areaId] || 12;
+                        let md     = layout.md.split('+')[areaId] || 12;
+                        let lg     = layout.lg.split('+')[areaId] || 12;
+
+                        widthHeuristics.xs *= xs / 12;
+                        widthHeuristics.sm *= sm / 12;
+                        widthHeuristics.md *= md / 12;
+                        widthHeuristics.lg *= lg / 12;
+                    }
                 }
-            });
+            }
 
             elm = elm.parent();
         }
-
-        if(widthHeuristics.xs === null) widthHeuristics.xs = 1;
-        if(widthHeuristics.sm === null) widthHeuristics.sm = widthHeuristics.xs;
-        if(widthHeuristics.md === null) widthHeuristics.md = widthHeuristics.sm;
-        if(widthHeuristics.lg === null) widthHeuristics.lg = widthHeuristics.md;
 
         return widthHeuristics;
     }

@@ -79,7 +79,7 @@ final class Uninstaller
             // Plugin wird nur teilweise deinstalliert, weil es danach ein Update gibt
             $this->doSQLDelete($pluginID, $update, $newID);
         } else {
-            if (($p = Helper::bootstrap($pluginID, $loader)) !== null) {
+            if (!\SAFE_MODE && ($p = Helper::bootstrap($pluginID, $loader)) !== null) {
                 $p->uninstalled($deleteData);
             }
             $this->executeMigrations($plugin, $deleteData);

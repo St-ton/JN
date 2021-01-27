@@ -1,5 +1,7 @@
 {block name='snippets-categories-mega-recursive'}
-    {$max_subsub_items="{if $isMobile}5{else}2{/if}"}
+    {block name='snippets-categories-mega-recursive-max-subsub-items'}
+        {$max_subsub_items="{if $isMobile}5{else}2{/if}"}
+    {/block}
     {block name='snippets-categories-mega-recursive-main-link'}
         {link href=$mainCategory->getURL()
             class="categories-recursive-link d-lg-block {if $firstChild}submenu-headline submenu-headline-toplevel{/if} {$subCategory} {if $mainCategory->hasChildren() && $subCategory < $max_subsub_items && $Einstellungen.template.megamenu.show_subcategories !== 'N'}nav-link dropdown-toggle{/if}"

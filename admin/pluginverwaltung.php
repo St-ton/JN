@@ -164,6 +164,10 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
         $deleteFiles = Request::postInt('delete-files', 1) === 1;
         foreach ($pluginIDs as $pluginID) {
             if (isset($_POST['aktivieren'])) {
+                if (SAFE_MODE) {
+                    $errorMsg = __('Safe mode enabled.') . ' - ' . __('activate');
+                    break;
+                }
                 $res = $stateChanger->activate($pluginID);
                 switch ($res) {
                     case InstallCode::OK:
@@ -273,7 +277,9 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
         $step = 'pluginverwaltung_sprachvariablen';
     } elseif (isset($_POST['installieren'])) {
         $dirs = $_POST['cVerzeichnis'];
-        if (is_array($dirs)) {
+        if (SAFE_MODE) {
+            $errorMsg = __('Safe mode enabled.') . ' - ' . __('pluginBtnInstall');
+        } elseif (is_array($dirs)) {
             foreach ($dirs as $dir) {
                 $installer->setDir(basename($dir));
                 $res = $installer->prepare();

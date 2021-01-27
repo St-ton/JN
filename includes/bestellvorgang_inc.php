@@ -2126,7 +2126,7 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
             $oUstID = new UstID(
                 $conf['kunden']['shop_ustid'],
                 StringHandler::filterXSS($data['ustid']),
-                StringHandler::filterXSS($data['firma']),
+                (array_key_exists('firma', $data) ? StringHandler::filterXSS($data['firma']) : ''),   // 'firma' seems obsolete
                 StringHandler::filterXSS($data['ort']),
                 StringHandler::filterXSS($data['plz']),
                 StringHandler::filterXSS($data['strasse']),

@@ -26340,6 +26340,11 @@ header #burger-menu {
 .snippets-wishlist .wishlist-count {
   margin-left: auto;
 }
+.snippets-wishlist .product-characteristics .col {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 /* mobile */
 .productlist-applied-filter {

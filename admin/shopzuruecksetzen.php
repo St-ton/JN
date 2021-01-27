@@ -168,28 +168,29 @@ if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && vali
                     break;
 
                 // Shopkunden & Kunden werben Kunden & Bestellungen & Kupons
-                case 'shopkunden':
-                    Shop::DB()->query("TRUNCATE tkunde", 4);
-                    Shop::DB()->query("TRUNCATE tkundenattribut", 4);
-                    Shop::DB()->query("TRUNCATE tkundendatenhistory", 4);
-                    Shop::DB()->query("TRUNCATE tkundenfeld", 4);
-                    Shop::DB()->query("TRUNCATE tkundenfeldwert", 4);
-                    Shop::DB()->query("TRUNCATE tkundenherkunft", 4);
-                    Shop::DB()->query("TRUNCATE tkundenkontodaten", 4);
-                    Shop::DB()->query("TRUNCATE tkundenwerbenkunden", 4);
-                    Shop::DB()->query("TRUNCATE tlieferadresse", 4);
-                    Shop::DB()->query("TRUNCATE twarenkorbpers", 4);
-                    Shop::DB()->query("TRUNCATE twarenkorbperspos", 4);
-                    Shop::DB()->query("TRUNCATE twarenkorbpersposeigenschaft", 4);
-                    Shop::DB()->query("TRUNCATE twunschliste", 4);
-                    Shop::DB()->query("TRUNCATE twunschlistepos", 4);
-                    Shop::DB()->query("TRUNCATE twunschlisteposeigenschaft", 4);
-                    break;
                 case 'kwerbenk':
                     Shop::DB()->query("TRUNCATE tkundenwerbenkunden", 4);
                     Shop::DB()->query("TRUNCATE tkundenwerbenkundenbonus", 4);
                     break;
                 case 'bestellungen':
+                case 'shopkunden':
+                    if ($cOption === 'shopkunden') {
+                        Shop::DB()->query("TRUNCATE tkunde", 4);
+                        Shop::DB()->query("TRUNCATE tkundenattribut", 4);
+                        Shop::DB()->query("TRUNCATE tkundendatenhistory", 4);
+                        Shop::DB()->query("TRUNCATE tkundenfeld", 4);
+                        Shop::DB()->query("TRUNCATE tkundenfeldwert", 4);
+                        Shop::DB()->query("TRUNCATE tkundenherkunft", 4);
+                        Shop::DB()->query("TRUNCATE tkundenkontodaten", 4);
+                        Shop::DB()->query("TRUNCATE tkundenwerbenkunden", 4);
+                        Shop::DB()->query("TRUNCATE tlieferadresse", 4);
+                        Shop::DB()->query("TRUNCATE twarenkorbpers", 4);
+                        Shop::DB()->query("TRUNCATE twarenkorbperspos", 4);
+                        Shop::DB()->query("TRUNCATE twarenkorbpersposeigenschaft", 4);
+                        Shop::DB()->query("TRUNCATE twunschliste", 4);
+                        Shop::DB()->query("TRUNCATE twunschlistepos", 4);
+                        Shop::DB()->query("TRUNCATE twunschlisteposeigenschaft", 4);
+                    }
                     Shop::DB()->query("TRUNCATE tbestellid", 4);
                     Shop::DB()->query("TRUNCATE tbestellstatus", 4);
                     Shop::DB()->query("TRUNCATE tbestellung", 4);

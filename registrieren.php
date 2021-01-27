@@ -42,7 +42,7 @@ if (isset($_POST['editRechnungsadresse'])) {
     $editRechnungsadresse = (int)$_POST['editRechnungsadresse'];
 }
 // Kunde speichern
-if (isset($_POST['form']) && (int)$_POST['form'] === 1) {
+if (isset($_POST['form']) && (int)$_POST['form'] === 1 && validateToken()) {
     kundeSpeichern($_POST);
 }
 // Kunde ändern

@@ -296,6 +296,7 @@ define('R_AUFANFRAGE', 16);
 define('R_EMPTY_TAG', 17);
 define('R_EMPTY_VARIBOX', 18);
 define('R_LOGIN_RMA', 19);
+define('R_MISSING_TOKEN', 20);
 // Kategorietiefe
 // 0 = Aus
 // 1 = Tiefe 0 (Hauptkategorien)

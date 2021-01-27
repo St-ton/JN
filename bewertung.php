@@ -14,7 +14,7 @@ Shop::setPageType(PAGE_BEWERTUNG);
 $cParameter_arr = Shop::getParameters();
 $Einstellungen  = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_BEWERTUNG]);
 // Bewertung in die Datenbank speichern
-if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
+if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1 && validateToken()) {
     if (pruefeKundeArtikelBewertet($cParameter_arr['kArtikel'], $_SESSION['Kunde']->kKunde)) {
         $artikel = new Artikel();
         $artikel->fuelleArtikel($cParameter_arr['kArtikel'], Artikel::getDefaultOptions());
@@ -35,7 +35,7 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
             $cParameter_arr['nSterne']
         );
     }
-} elseif (isset($_POST['bhjn']) && (int)$_POST['bhjn'] === 1) { // Hilfreich abspeichern
+} elseif (isset($_POST['bhjn']) && (int)$_POST['bhjn'] === 1 && validateToken()) { // Hilfreich abspeichern
     // Bewertungen holen
     $bewertung_seite  = verifyGPCDataInteger('btgseite');
     $bewertung_sterne = verifyGPCDataInteger('btgsterne');

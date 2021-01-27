@@ -103,6 +103,7 @@
             // this.registerImageSwitch($wrapper);
             //this.registerArticleOverlay($wrapper);
             this.registerFinish($wrapper);
+            window.initNumberInput();
         },
 
         registerAccordion: function() {
@@ -1264,8 +1265,6 @@
                         history.pushState({a: id, a2: variation, url: url, variations: variations}, "", url);
                     }
                     $.evo.extended().stopSpinner();
-
-                    window.initNumberInput();
                 }, function () {
                     $.evo.error('Error loading ' + url);
                     $.evo.extended().stopSpinner();
@@ -1293,8 +1292,6 @@
                         $.evo.extended().autoheight();
                     }
                     $.evo.extended().stopSpinner();
-
-                    window.initNumberInput();
 
                     $(wrapper + ' .list-gallery:not(.slick-initialized)').slick({
                         lazyLoad: 'ondemand',

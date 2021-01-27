@@ -560,8 +560,8 @@
                         Zentralasien = ['AF', 'KZ', 'KG', 'TJ', 'TM', 'ZU'],
                         Asien = ['MN', 'RU', 'CN', 'TW', 'JP', 'KP', 'KR', 'BD', 'BT', 'IN', 'MV', 'NP', 'PK', 'LK', 'BN', 'ID', 'KH', 'LA', 'MY', 'MM', 'PH', 'SG', 'TH', 'TL', 'VN', 'EG', 'AM', 'AZ', 'BH', 'GE', 'IQ', 'IR', 'IL', 'YE', 'JO', 'QA', 'KW', 'LB', 'OM', 'PS', 'SA', 'SY', 'TR', 'AE', 'AF', 'KG', 'TJ', 'TM'],
                         Europa = ['AL', 'AD', 'BE', 'BA', 'BG', 'DK', 'DE', 'EE', 'FI', 'FR', 'GR', 'IE', 'IT', 'KZ', 'HR', 'LV', 'LI', 'LT', 'LU', 'MT', 'MK', 'MD', 'MC', 'ME', 'NL', 'NO', 'AT', 'PL', 'PT', 'RO', 'RU', 'SM', 'SE', 'CH', 'RS', 'SK', 'SI', 'ES', 'CZ', 'TR', 'UA', 'HU', 'GB', 'VA', 'BY', 'FO', 'GI', 'SJ', 'CY', 'IS', 'YU'],
-                        Europa_EU = ['BE', 'BG', 'DK', 'DE', 'EE', 'FI', 'FR', 'GR', 'HR', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'AT', 'PL', 'PT', 'RO', 'SE', 'SK', 'SI', 'ES', 'CZ', 'HU', 'GB', 'CY'],
-                        Europa_nichtEU = ['AL', 'AD', 'BA', 'CH', 'IL', 'KZ', 'LI', 'MK', 'MD', 'MC', 'ME', 'NO', 'RU', 'SM', 'CH', 'RS', 'TR', 'UA', 'VA', 'BY', 'FO', 'GI', 'SJ', 'IS', 'YU'],
+                        Europa_EU = ['BE', 'BG', 'DK', 'DE', 'EE', 'FI', 'FR', 'GR', 'HR', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'AT', 'PL', 'PT', 'RO', 'SE', 'SK', 'SI', 'ES', 'CZ', 'HU', 'CY'],
+                        Europa_nichtEU = ['AL', 'AD', 'BA', 'CH', 'GB', 'IL', 'KZ', 'LI', 'MK', 'MD', 'MC', 'ME', 'NO', 'RU', 'SM', 'CH', 'RS', 'TR', 'UA', 'VA', 'BY', 'FO', 'GI', 'SJ', 'IS', 'YU'],
                         Afrika = ['EG', 'DZ', 'AO', 'GQ', 'ET', 'BJ', 'BW', 'BF', 'BI', 'DJ', 'CI', 'ER', 'GA', 'GM', 'GH', 'GN', 'GW', 'CM', 'CV', 'KE', 'KM', 'CD', 'CG', 'LS', 'LR', 'LY', 'MG', 'MW', 'ML', 'MA', 'MR', 'MU', 'MZ', 'NA', 'NE', 'NG', 'RW', 'ZM', 'ST', 'SN', 'SC', 'SL', 'ZW', 'SO', 'ZA', 'SD', 'SZ', 'TZ', 'TG', 'TD', 'TN', 'UG', 'CF'],
                         Nordamerika = ['CA', 'MX', 'US', 'BM', 'GL', 'PM'],
                         Mittelamerika = ['BZ', 'CR', 'SV', 'GT', 'HN', 'NI', 'PA'],
@@ -588,7 +588,7 @@
                                     break;
                                 case 'Europa':
                                     for (i = 0; i < document.versandart_neu.elements['land[]'].length; i++) {
-                                        if (Europa_EU.contains(document.versandart_neu.elements['land[]'][i].value))
+                                        if (Europa.contains(document.versandart_neu.elements['land[]'][i].value))
                                             document.versandart_neu.elements['land[]'][i].checked = true;
                                     }
                                     break;

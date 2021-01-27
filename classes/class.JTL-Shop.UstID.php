@@ -327,19 +327,6 @@ class UstID
                     $oReturn->nRichtig = 1;
                 }
                 break;
-            case 'GB':
-                if (
-                    (preg_match('/^[0-9]{9}$/', $cIDNummer) === 1) ||
-                    (preg_match('/^[0-9]{12}$/', $cIDNummer) === 1) ||
-                    (preg_match('/^[0-9]{3}[ ]{1}[0-9]{4}[ ]{1}[0-9]{2}$/', $cIDNummer) === 1) ||
-                    (preg_match('/^[0-9]{3}[ ]{1}[0-9]{4}[ ]{1}[0-9]{2}[0-9]{3}$/', $cIDNummer) === 1) ||
-                    (preg_match('/^[0-9A-Z]{5}$/', $cIDNummer) === 1)
-                ) {
-                    $oReturn->nRichtig = 1;
-                } else {
-                    $oReturn->cError = 'GB999999999 oder GB999999999999 GB999 9999 99 oder GB999 9999 99 999 oder GBGD999 oder GBHA999';
-                }
-                break;
             case 'HU':
                 if (preg_match('/^[0-9]{8}$/', $cIDNummer) !== 1) {
                     $oReturn->cError = 'HU99999999';

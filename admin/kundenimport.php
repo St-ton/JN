@@ -35,4 +35,3 @@ $smarty->assign('kundengruppen', Shop::Container()->getDB()->query(
 ))
     ->assign('step', $step ?? null)
     ->display('kundenimport.tpl');
-

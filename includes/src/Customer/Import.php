@@ -170,7 +170,7 @@ class Import
     protected function processImport(array $fmt, array $data): string
     {
         $customer = $this->getCustomer();
-        $cnt                     = \count($data);
+        $cnt      = \count($data);
         for ($i = 0; $i < $cnt; $i++) {
             if (!empty($fmt[$i])) {
                 $customer->{$fmt[$i]} = $data[$i];

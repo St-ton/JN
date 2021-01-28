@@ -50,6 +50,11 @@
                         {/block}
                     </div>
                 {/block}
+                <div>
+                    <p class="privacy text-muted text-right">
+                        <a href="{$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->cURL}" class="popup">{lang key="privacyNotice" section="global"}</a>
+                    </p>
+                </div>
                 <div class="text-right">
                     <input type="hidden" name="checkout" value="1">
                     <input type="hidden" name="form" value="1">

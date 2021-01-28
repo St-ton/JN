@@ -329,7 +329,7 @@
                     {if $fehlendeAngaben.ustid == 1}
                         {lang key="fillOut" section="global"}
                     {elseif $fehlendeAngaben.ustid == 2}
-                        {lang key="ustIDCaseTwo" section="global"}. {if $fehlendeAngaben.ustid_err|count > 0 && $fehlendeAngaben.ustid_err !== false}{lang key="ustIDCaseTwoB" section="global"}: {$fehlendeAngaben.ustid_err}{/if}
+                        {lang key="ustIDCaseTwo" section="global"}. {if $fehlendeAngaben|count > 0 && $fehlendeAngaben.ustid_err !== false}{lang key="ustIDCaseTwoB" section="global"}: {$fehlendeAngaben.ustid_err}{/if}
                     {elseif $fehlendeAngaben.ustid == 5}
                         {lang key="ustIDCaseFive" section="global"}.
                     {/if}

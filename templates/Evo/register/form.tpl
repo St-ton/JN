@@ -17,6 +17,9 @@
     {if isset($checkout)}
         {include file='checkout/inc_shipping_address.tpl'}
     {/if}
+    <p class="privacy text-muted text-right">
+        <a href="{$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->cURL}" class="popup">{lang key="privacyNotice" section="global"}</a>
+    </p>
     <input type="hidden" name="checkout" value="{if isset($checkout)}{$checkout}{/if}">
     <input type="hidden" name="form" value="1">
     <input type="hidden" name="editRechnungsadresse" value="{$editRechnungsadresse}">

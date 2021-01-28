@@ -39,7 +39,7 @@ if (isset($cParameter_arr['kUmfrage']) && $cParameter_arr['kUmfrage'] > 0) {
             if (pruefeUserUmfrage($oUmfrage->kUmfrage, $_SESSION['Kunde']->kKunde, $_SESSION['oBesucher']->cID)) {
                 $step = 'umfrage_durchfuehren';
                 // Auswertung
-                if (isset($_POST['end'])) {
+                if (isset($_POST['end']) && validateToken()) {
                     speicherFragenInSession($_POST);
 
                     if (pruefeEingabe($_POST) > 0) {

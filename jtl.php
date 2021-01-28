@@ -260,7 +260,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         }
     }
     // neue Wunschliste speichern
-    if (isset($_POST['wlh']) && (int)$_POST['wlh'] > 0) {
+    if (isset($_POST['wlh']) && (int)$_POST['wlh'] > 0 && validateToken()) {
         $step             = 'mein Konto';
         $cWunschlisteName = StringHandler::htmlentities(StringHandler::filterXSS($_POST['cWunschlisteName']));
         $cHinweis        .= wunschlisteSpeichern($cWunschlisteName);
@@ -288,7 +288,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             ) {
                 $step = 'wunschliste anzeigen';
                 // Soll die Wunschliste nun an die Emailempfaenger geschickt werden?
-                if (isset($_POST['send']) && (int)$_POST['send'] === 1) {
+                if (isset($_POST['send']) && (int)$_POST['send'] === 1 && validateToken()) {
                     if ($Einstellungen['global']['global_wunschliste_anzeigen'] === 'Y') {
                         $cEmail_arr = explode(' ', StringHandler::htmlentities(StringHandler::filterXSS($_POST['email'])));
                         $cHinweis  .= wunschlisteSenden($cEmail_arr, $kWunschliste);
@@ -818,7 +818,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
 
     if ($step === 'rechnungsdaten') {
         $knd = $_SESSION['Kunde'];
-        if (isset($_POST['edit']) && (int)$_POST['edit'] === 1) {
+        if (isset($_POST['edit']) && (int)$_POST['edit'] === 1 && validateToken()) {
             $knd                 = getKundendaten($_POST, 0, 0);
             $cKundenattribut_arr = getKundenattribute($_POST);
         } else {

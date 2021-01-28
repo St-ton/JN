@@ -12,7 +12,7 @@
             <h2>{$Spezialcontent->titel}</h2>
         </div>
     {/if}
-    
+
     {include file="snippets/extension.tpl"}
     {if isset($step)}
         {if $step === 'formular'}
@@ -47,7 +47,7 @@
                                 </div>
                             {/if}
                         </div>
-    
+
                         {if $Einstellungen.kontakt.kontakt_abfragen_vorname !== 'N' || $Einstellungen.kontakt.kontakt_abfragen_nachname !== 'N'}
                             <div class="row">
                                 {if $Einstellungen.kontakt.kontakt_abfragen_vorname !== 'N'}
@@ -70,7 +70,7 @@
                                 {/if}
                             </div>
                         {/if}
-    
+
                         {if $Einstellungen.kontakt.kontakt_abfragen_firma !== 'N'}
                             <div class="row">
                                 <div class="col-xs-12 col-md-6">
@@ -111,7 +111,7 @@
                                 {/if}
                             </div>
                         {/if}
-    
+
                         {if $Einstellungen.kontakt.kontakt_abfragen_fax !== 'N'}
                             <div class="row">
                                 <div class="col-xs-12 col-md-6">
@@ -125,9 +125,9 @@
                             {assign var=cPost_arr value=array()}
                         {/if}
                         {include file='snippets/checkbox.tpl' nAnzeigeOrt=$nAnzeigeOrt cPlausi_arr=$fehlendeAngaben cPost_arr=$cPost_arr}
-    
+
                     </fieldset>
-    
+
                     <fieldset>
                         <legend>{lang key="message" section="contact"}</legend>
                         {if $betreffs}
@@ -170,7 +170,7 @@
                         </div>
                     </fieldset>
                     {if (!isset($smarty.session.bAnti_spam_already_checked) || $smarty.session.bAnti_spam_already_checked !== true) &&
-                        isset($Einstellungen.global.anti_spam_method) && $Einstellungen.global.anti_spam_method !== 'N' && 
+                        isset($Einstellungen.global.anti_spam_method) && $Einstellungen.global.anti_spam_method !== 'N' &&
                         isset($Einstellungen.kontakt.kontakt_abfragen_captcha) && $Einstellungen.kontakt.kontakt_abfragen_captcha !== 'N' && empty($smarty.session.Kunde->kKunde)}
                         <hr>
                         <div class="row">
@@ -183,6 +183,9 @@
                             </div>
                         </div>
                     {/if}
+                    <p class="privacy text-muted small">
+                        <a href="{$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->cURL}" class="popup">{lang key="privacyNotice" section="global"}</a>
+                    </p>
                     <input type="hidden" name="kontakt" value="1" />
                     <button type="submit" class="btn btn-primary">{lang key="sendMessage" section="contact"}</button>
                 </form>

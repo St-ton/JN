@@ -24,7 +24,10 @@ $step                 = 'formular';
 $hinweis              = '';
 $cFehler              = '';
 //loginbenutzer?
-if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwort_vergessen'] === 1) {
+if (isset($_POST['passwort_vergessen'], $_POST['email'])
+    && (int)$_POST['passwort_vergessen'] === 1
+    && validateToken()
+) {
     $kunde = Shop::DB()->select(
         'tkunde',
         'cMail',
@@ -47,7 +50,7 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
     } else {
         $hinweis = Shop::Lang()->get('incorrectEmail');
     }
-} elseif (isset($_POST['pw_new'], $_POST['pw_new_confirm'], $_POST['fpwh'])) {
+} elseif (isset($_POST['pw_new'], $_POST['pw_new_confirm'], $_POST['fpwh']) && validateToken()) {
     if ($_POST['pw_new'] === $_POST['pw_new_confirm']) {
         $resetItem = Shop::DB()->select('tpasswordreset', 'cKey', $_POST['fpwh']);
         if ($resetItem) {

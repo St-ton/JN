@@ -178,9 +178,9 @@
             </div>
         {/if}
 
-        {if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'P' && !empty($oSpezialseiten_arr[12]->cName)}
+        {if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'P' && !empty($oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->cName)}
             <p class="privacy text-muted small">
-                <a href="{$oSpezialseiten_arr[12]->cURL}" class="popup">{$oSpezialseiten_arr[12]->cName}</a>
+                <a href="{$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->cURL}" class="popup">{lang key="privacyNotice" section="global"}</a>
             </p>
         {/if}
         <input type="hidden" name="a" value="{$Artikel->kArtikel}" />

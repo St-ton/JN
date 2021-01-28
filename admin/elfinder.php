@@ -61,6 +61,8 @@ if (validateToken()) {
             'roots' => [
                 // Items volume
                 [
+                    // make the thumbnails 120px wide, suitable for the nivo slider
+                    'tmbSize' => 120,
                     // driver for accessing file system (REQUIRED)
                     'driver'        => 'LocalFileSystem',
                     // path to files (REQUIRED)

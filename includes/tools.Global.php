@@ -1268,9 +1268,10 @@ function findeKindArtikelZuEigenschaft($kArtikel, $kEigenschaft0, $kEigenschaftW
  * @param int            $anzahl
  * @param array          $oEigenschaftwerte_arr
  * @param int            $nGenauigkeit
+ * @param string|null    $token
  * @return array
  */
-function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $nGenauigkeit = 2)
+function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $nGenauigkeit = 2, $token = null)
 {
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     $kArtikel      = $Artikel->kArtikel; // relevant für die Berechnung von Artikelsummen im Warenkorb
@@ -1400,7 +1401,7 @@ function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $n
             }
         }
     }
-    if (!validateToken()) {
+    if (!validateToken($token)) {
         $redirectParam[] = R_MISSING_TOKEN;
     }
 
@@ -6412,13 +6413,16 @@ function getTokenInput()
 /**
  * validate token from POST/GET
  *
+ * @param string $token
  * @return bool
  */
-function validateToken()
+function validateToken($token = null)
 {
     return isset($_SESSION['jtl_token']) && (
-        filter_input(INPUT_POST, 'jtl_token') === $_SESSION['jtl_token'] ||
-        filter_input(INPUT_GET, 'token') === $_SESSION['jtl_token']);
+        ($token !== null && $token === $_SESSION['jtl_token'])
+        || filter_input(INPUT_POST, 'jtl_token') === $_SESSION['jtl_token']
+        || filter_input(INPUT_GET, 'token') === $_SESSION['jtl_token']
+    );
 }
 
 /**

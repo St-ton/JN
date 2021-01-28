@@ -17,6 +17,9 @@ class Migration_20180202145224 extends Migration implements IMigration
     protected $author      = 'mschop';
     protected $description = 'Add Table tpasswordreset';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -31,6 +34,9 @@ class Migration_20180202145224 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('DROP TABLE tpasswordreset');

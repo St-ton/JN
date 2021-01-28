@@ -4,7 +4,9 @@ use JTL\Consent\ConsentModel;
 use JTL\Model\GenericAdmin;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
 /** @global \JTL\Smarty\JTLSmarty $smarty */
+
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 
 $admin = new GenericAdmin(

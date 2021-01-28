@@ -1,5 +1,6 @@
 <?php
 
+use JTL\Alert\Alert;
 use JTL\Backend\AdminFavorite;
 use JTL\Backend\Notification;
 use JTL\Campaign;
@@ -19,25 +20,29 @@ use JTL\XMLParser;
 
 /**
  * @param int|array $configSectionID
+ * @param bool $byName
  * @return array
  */
-function getAdminSectionSettings($configSectionID)
+function getAdminSectionSettings($configSectionID, bool $byName = false)
 {
     $gettext = Shop::Container()->getGetText();
     $gettext->loadConfigLocales();
     $db = Shop::Container()->getDB();
     if (is_array($configSectionID)) {
+        $where    = $byName
+            ? "WHERE cWertName IN ('" . implode("','", $configSectionID) . "')"
+            : 'WHERE kEinstellungenConf IN (' . implode(',', array_map('\intval', $configSectionID)) . ')';
         $confData = $db->query(
             'SELECT *
                 FROM teinstellungenconf
-                WHERE kEinstellungenConf IN (' . implode(',', array_map('\intval', $configSectionID)) . ')
+                ' . $where . '
                 ORDER BY nSort',
             ReturnType::ARRAY_OF_OBJECTS
         );
     } else {
         $confData = $db->selectAll(
             'teinstellungenconf',
-            'kEinstellungenSektion',
+            $byName ? 'cWertName' : 'kEinstellungenSektion',
             $configSectionID,
             '*',
             'nSort'
@@ -111,15 +116,19 @@ function getAdminSectionSettings($configSectionID)
  * @param array $settingsIDs
  * @param array $post
  * @param array $tags
+ * @param bool $byName
  * @return string
  */
-function saveAdminSettings(array $settingsIDs, array &$post, $tags = [CACHING_GROUP_OPTION])
+function saveAdminSettings(array $settingsIDs, array $post, $tags = [CACHING_GROUP_OPTION], bool $byName = false)
 {
     $db       = Shop::Container()->getDB();
+    $where    = $byName
+        ? "WHERE cWertName IN ('" . implode("','", $settingsIDs) . "')"
+        : 'WHERE kEinstellungenConf IN (' . implode(',', array_map('\intval', $settingsIDs)) . ')';
     $confData = $db->query(
         'SELECT *
             FROM teinstellungenconf
-            WHERE kEinstellungenConf IN (' . implode(',', \array_map('\intval', $settingsIDs)) . ')
+            ' . $where . '
             ORDER BY nSort',
         ReturnType::ARRAY_OF_OBJECTS
     );
@@ -207,12 +216,14 @@ function bearbeiteListBox($listBoxes, $valueName, int $configSectionID)
  * @param array $tags
  * @return string
  */
-function saveAdminSectionSettings(int $configSectionID, array &$post, $tags = [CACHING_GROUP_OPTION])
+function saveAdminSectionSettings(int $configSectionID, array $post, $tags = [CACHING_GROUP_OPTION])
 {
+    Shop::Container()->getGetText()->loadAdminLocale('configs/configs');
     if (!Form::validateToken()) {
         return __('errorCSRF');
     }
     $db       = Shop::Container()->getDB();
+    $invalid  = 0;
     $confData = $db->selectAll(
         'teinstellungenconf',
         ['kEinstellungenSektion', 'cConf'],
@@ -220,14 +231,12 @@ function saveAdminSectionSettings(int $configSectionID, array &$post, $tags = [C
         '*',
         'nSort'
     );
-    if (count($confData) === 0) {
-        return __('errorConfigSave');
-    }
     foreach ($confData as $config) {
         $val                        = new stdClass();
         $val->cWert                 = $post[$config->cWertName] ?? null;
         $val->cName                 = $config->cWertName;
         $val->kEinstellungenSektion = $configSectionID;
+        $valid                      = true;
         switch ($config->cInputTyp) {
             case 'kommazahl':
                 $val->cWert = (float)str_replace(',', '.', $val->cWert);
@@ -235,6 +244,7 @@ function saveAdminSectionSettings(int $configSectionID, array &$post, $tags = [C
             case 'zahl':
             case 'number':
                 $val->cWert = (int)$val->cWert;
+                $valid      = validateSetting($val);
                 break;
             case 'text':
                 $val->cWert = mb_substr($val->cWert, 0, 255);
@@ -245,7 +255,7 @@ function saveAdminSectionSettings(int $configSectionID, array &$post, $tags = [C
                 break;
         }
 
-        if ($config->cInputTyp !== 'listbox' && $config->cInputTyp !== 'selectkdngrp') {
+        if ($valid && $config->cInputTyp !== 'listbox' && $config->cInputTyp !== 'selectkdngrp') {
             $db->delete(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
@@ -253,10 +263,56 @@ function saveAdminSectionSettings(int $configSectionID, array &$post, $tags = [C
             );
             $db->insert('teinstellungen', $val);
         }
+        if (!$valid) {
+            $invalid++;
+        }
     }
     Shop::Container()->getCache()->flushTags($tags);
 
+    if ($invalid > 0 || count($confData) === 0) {
+        return __('errorConfigSave');
+    }
+
     return __('successConfigSave');
+}
+
+/**
+ * @param $setting
+ * @return bool
+ */
+function validateSetting($setting): bool
+{
+    $valid = true;
+    switch ($setting->cName) {
+        case 'bilder_jpg_quali':
+            $valid = validateNumberRange(0, 100, $setting);
+            break;
+        default:
+            break;
+    }
+
+    return $valid;
+}
+
+/**
+ * @param int $min
+ * @param int $max
+ * @param $setting
+ * @return bool
+ */
+function validateNumberRange(int $min, int $max, $setting): bool
+{
+    $valid = $min <= $setting->cWert && $setting->cWert <= $max;
+
+    if (!$valid) {
+        Shop::Container()->getAlertService()->addAlert(
+            Alert::TYPE_DANGER,
+            sprintf(__('errrorNumberRange'), __($setting->cName . '_name'), $min, $max),
+            'errrorNumberRange'
+        );
+    }
+
+    return $valid;
 }
 
 /**
@@ -319,24 +375,24 @@ function setzeSprache()
         // Wähle explizit gesetzte Sprache als aktuelle Sprache
         $language = Shop::Container()->getDB()->select('tsprache', 'kSprache', Request::postInt('kSprache'));
         if ((int)$language->kSprache > 0) {
-            $_SESSION['kSprache']    = (int)$language->kSprache;
-            $_SESSION['cISOSprache'] = $language->cISO;
+            $_SESSION['editLanguageID']   = (int)$language->kSprache;
+            $_SESSION['editLanguageCode'] = $language->cISO;
         }
     }
 
-    if (!isset($_SESSION['kSprache'])) {
+    if (!isset($_SESSION['editLanguageID'])) {
         // Wähle Standardsprache als aktuelle Sprache
         $language = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
         if ((int)$language->kSprache > 0) {
-            $_SESSION['kSprache']    = (int)$language->kSprache;
-            $_SESSION['cISOSprache'] = $language->cISO;
+            $_SESSION['editLanguageID']   = (int)$language->kSprache;
+            $_SESSION['editLanguageCode'] = $language->cISO;
         }
     }
-    if (isset($_SESSION['kSprache']) && empty($_SESSION['cISOSprache'])) {
+    if (isset($_SESSION['editLanguageID']) && empty($_SESSION['editLanguageCode'])) {
         // Fehlendes cISO ergänzen
-        $language = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
+        $language = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$_SESSION['editLanguageID']);
         if ((int)$language->kSprache > 0) {
-            $_SESSION['cISOSprache'] = $language->cISO;
+            $_SESSION['editLanguageCode'] = $language->cISO;
         }
     }
 }

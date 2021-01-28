@@ -24,7 +24,7 @@ $alertHelper = Shop::Container()->getAlertService();
 $linkHelper  = Shop::Container()->getLinkService();
 $kLink       = $linkHelper->getSpecialPageID(LINKTYP_NEWSLETTER, false);
 $valid       = Form::validateToken();
-$controller  = new Controller($db, Shop::getSettings([\CONF_NEWSLETTER]));
+$controller  = new Controller($db, Shop::getSettings([CONF_NEWSLETTER]));
 if ($kLink === false) {
     $bFileNotFound       = true;
     Shop::$kLink         = $linkHelper->getSpecialPageID(LINKTYP_404);

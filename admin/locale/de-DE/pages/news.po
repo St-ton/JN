@@ -141,7 +141,7 @@ msgid "errorAtLeastOneNewsComment"
 msgstr "Bitte markieren Sie mindestens einen Blogkommentar."
 
 msgid "goOnEdit"
-msgstr " und weiter bearbeiten"
+msgstr " und weiterbearbeiten"
 
 msgid "mainCategory"
 msgstr "Hauptkategorie"
@@ -177,4 +177,4 @@ msgid "authorNotAvailable"
 msgstr "Nicht verfügbar"
 
 msgid "noNewsAuthor"
-msgstr "Kein Autor vorhanden. Falls Sie explizit für den Beitrag einen verantwortlichen Autoren angeben wollen, erstellen Sie bitte einen entsprechenden Benutzer mit Zugriffsrechten für das Blogsystem."
+msgstr "Kein Autor vorhanden. Kein Autor vorhanden. Falls Sie für den Beitrag einen verantwortlichen Autor angeben wollen, erstellen Sie bitte zuerst einen entsprechenden Benutzer mit Zugriffsrechten für den Blog."

@@ -29,6 +29,7 @@ use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
+use JTL\Link\SpecialPageNotFoundException;
 use JTL\Pagination\Pagination;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Services\JTL\LinkServiceInterface;
@@ -142,8 +143,15 @@ class AccountController
                 ['showInAlertListTemplate' => false]
             );
         }
+        try {
+            $link = $this->linkService->getSpecialPage(\LINKTYP_LOGIN);
+        } catch (SpecialPageNotFoundException $e) {
+            Shop::Container()->getLogService()->error($e->getMessage());
+            $link = null;
+        }
         $this->smarty->assign('alertNote', $alertNote)
-            ->assign('step', $step);
+                     ->assign('step', $step)
+                     ->assign('Link', $link);
     }
 
     /**
@@ -291,7 +299,6 @@ class AccountController
         $this->smarty->assign('Kunde', $_SESSION['Kunde'])
             ->assign('customerAttributes', $_SESSION['Kunde']->getCustomerAttributes())
             ->assign('bewertungen', $ratings)
-            ->assign('Link', $this->linkService->getSpecialPage(\LINKTYP_LOGIN))
             ->assign('BESTELLUNG_STATUS_BEZAHLT', \BESTELLUNG_STATUS_BEZAHLT)
             ->assign('BESTELLUNG_STATUS_VERSANDT', \BESTELLUNG_STATUS_VERSANDT)
             ->assign('BESTELLUNG_STATUS_OFFEN', \BESTELLUNG_STATUS_OFFEN)
@@ -707,8 +714,9 @@ class AccountController
                 }
             } else {
                 $tmpProduct = new Artikel();
-                $tmpProduct->fuelleArtikel($item->kArtikel, Artikel::getDefaultOptions());
-
+                $tmpProduct->fuelleArtikel($item->kArtikel, (int)$item->kKonfigitem === 0
+                    ? Artikel::getDefaultOptions()
+                    : Artikel::getDefaultConfigOptions());
                 if ((int)$tmpProduct->kArtikel > 0 && \count(CartHelper::addToCartCheck(
                     $tmpProduct,
                     $item->fAnzahl,

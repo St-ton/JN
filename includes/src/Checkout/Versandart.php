@@ -285,7 +285,7 @@ class Versandart
      * @param int    $value
      * @return array
      */
-    private static function getShippingSection($table, $key, int $value): array
+    private static function getShippingSection(string $table, string $key, int $value): array
     {
         if ($value > 0 && \mb_strlen($table) > 0 && \mb_strlen($key) > 0) {
             $Objs = Shop::Container()->getDB()->selectAll($table, $key, $value);
@@ -368,7 +368,7 @@ class Versandart
             ['kVersandart' => $this->kVersandart],
             ReturnType::COLLECTION
         )->map(static function ($surcharge) {
-            return new ShippingSurcharge($surcharge->kVersandzuschlag);
+            return new ShippingSurcharge((int)$surcharge->kVersandzuschlag);
         }));
 
         $cache->set($cacheID, $this->getShippingSurcharges(), [\CACHING_GROUP_OBJECT]);

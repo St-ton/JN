@@ -6,7 +6,7 @@ msgid "docURL"
 msgstr ""
 
 msgid "errorFetchLicenseAPI"
-msgstr "Konnte keine Daten von der Store API holen."
+msgstr "Verbindung zur API von JTL-Extension Store konnte nicht hergestellt werden."
 
 msgid "Error code: %d"
 msgstr "Fehlercode: %d"
@@ -21,7 +21,7 @@ msgid "Update"
 msgstr "Aktualisieren"
 
 msgid "Update all"
-msgstr "Alle aktualisieren"
+msgstr "Alle Extensions aktualisieren"
 
 msgid "Install"
 msgstr "Installieren"
@@ -30,7 +30,7 @@ msgid "Install all"
 msgstr "Alle installieren"
 
 msgid "Refresh"
-msgstr "Erneut prüfen"
+msgstr "Lizenzen erneut prüfen"
 
 msgid "Unbound licenses"
 msgstr "Ungebundene Lizenzen"
@@ -42,7 +42,7 @@ msgid "prod"
 msgstr "produktiv"
 
 msgid "test"
-msgstr "test"
+msgstr "Test"
 
 msgid "dev"
 msgstr "Entwicklung"
@@ -87,7 +87,7 @@ msgid "Bound licenses"
 msgstr "Gebundene Lizenzen"
 
 msgid "pageDesc"
-msgstr "Hier können Sie Ihre verfügbaren und aktiven Lizenzen einsehen."
+msgstr "Auf dieser Seite werden die von Ihnen erworbenen Lizenzen und Subscriptions gelistet. Im <a href=\"https://jtl-url.de/exs\" target=\"_blank\">JTL-Extension Store</a> finden Sie zahlreiche Erweiterungen für Ihren JTL-Shop."
 
 msgid "ID"
 msgstr "ID"
@@ -111,7 +111,7 @@ msgid "Subscription"
 msgstr "Subscription"
 
 msgid "Developer"
-msgstr "Entwickler"
+msgstr "Entwickelt von"
 
 msgid "documentation"
 msgstr "Dokumentation"
@@ -120,37 +120,37 @@ msgid "extendSubscription"
 msgstr "Subscription verlängern"
 
 msgid "extendLicense"
-msgstr "Lizenz verlängern"
+msgstr "Testlizenz verlängern"
 
 msgid "extendTestLicense"
 msgstr "Testlizenz verlängern"
-
-msgid "Clear binding"
-msgstr "Vom aktuellen Shop lösen"
 
 msgid "itemDetails"
 msgstr "Details"
 
 msgid "setBinding"
-msgstr "An diesen Shop binden"
+msgstr "An diesen Onlineshop binden"
+
+msgid "upgradeLicense"
+msgstr "Lizenz kaufen"
 
 msgid "Update to version %s available"
 msgstr "Aktualisierung auf Version %s verfügbar"
 
 msgid "storeNotLinkedDesc"
-msgstr "Um auf Inhalte von JTL-Extension Store zugreifen zu können, müssen Sie zunächst Ihr JTL-Konto mit Ihrem Shop verknüpfen."
+msgstr "Um auf Inhalte von JTL-Extension Store zugreifen zu können, müssen Sie zunächst Ihr JTL-Konto mit Ihrem Onlineshop verknüpfen."
 
 msgid "storeLink"
 msgstr "Konto verknüpfen"
 
 msgid "unlink"
-msgstr "Verknüpfung aufheben"
+msgstr "Kontoverknüpfung aufheben"
 
 msgid "Validity"
 msgstr "Gültigkeit"
 
 msgid "updates available"
-msgstr "Updates verfügbar"
+msgstr "Update(s) verfügbar"
 
 msgid "Licensed items"
 msgstr "Lizenzen"
@@ -159,10 +159,10 @@ msgid "last update"
 msgstr "Zuletzt aktualisiert"
 
 msgid "Archive checksum validation failed"
-msgstr "Validierung der Prüfsumme fehlgeschlagen"
+msgstr "Validierung der Prüfsumme fehlgeschlagen. Bitte wenden Sie sich an den Support."
 
 msgid "Could not validate archive"
-msgstr "Archiv konnte nicht validiert werden"
+msgstr "Archiv konnte nicht validiert werden. Bitte wenden Sie sich an den Support."
 
 msgid "Managed by %s"
 msgstr "Wird von %s verwaltet"
@@ -170,8 +170,17 @@ msgstr "Wird von %s verwaltet"
 msgid "Successfully extended."
 msgstr "Erfolgreich verlängert."
 
+msgid "Successfully executed."
+msgstr "Erfolgreich ausgeführt."
+
 msgid "Enter token"
 msgstr "Token hinzufügen"
 
 msgid "Manually enter token"
 msgstr "Token manuell eingeben"
+
+msgid "License for extension already bound to domain"
+msgstr "Eine Lizenz für diese Extension wurde bereits an den aktuellen Shop gebunden"
+
+msgid "btnExploreExtensionStore"
+msgstr "Zum JTL-Extension Store"

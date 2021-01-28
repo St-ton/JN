@@ -149,14 +149,14 @@ class Sort extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function getOptions($data = null): array
+    public function getOptions($mixed = null): array
     {
         if ($this->options !== null) {
             return $this->options;
         }
         $options          = [];
         $additionalFilter = new self($this->productFilter);
-        $activeSortType   = $_SESSION['Usersortierung'] ?? -1;
+        $activeSortType   = (int)($_SESSION['Usersortierung'] ?? -1);
         foreach ($this->sortingOptions as $i => $sortingOption) {
             if (\get_class($sortingOption) === SortDefault::class) {
                 continue;

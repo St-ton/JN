@@ -44,7 +44,7 @@
     </div>
     {if $orphanedFiles|count > 0}
         <div class="card-body  collapse" id="pageCheckOrphanedFiles">
-            <p class="small text-muted">{__('fileCheckOrphanedFilesNote')}</p>
+            <p class="alert alert-info">{__('fileCheckOrphanedFilesNote')}</p>
             <div id="contentOrphanedFilesCheck">
                 <table class="table table-sm table-borderless req">
                     <thead>
@@ -60,20 +60,28 @@
                         </tr>
                     {/foreach}
                 </table>
-                <form method="post">
-                    {$jtl_token}
-                    <button class="btn btn-danger" name="delete-orphans" value="1" onclick="return confirmDelete();">
-                        <i class="fa fas fa-trash"></i> {__('delete')}
-                    </button>
-                    <button class="btn btn-danger" type="button" data-toggle="collapse" data-target="#show-script" aria-expanded="false" aria-controls="show-script">
-                        <i class="fa fas fa-terminal"></i> {__('showDeleteScript')}
-                    </button>
-                    <div class="collapse" id="show-script">
-                        <div class="card card-body">
-                            <pre style="margin-top:1em;">{$deleteScript}</pre>
+                <div class="save-wrapper">
+                    <form method="post">
+                        {$jtl_token}
+                        <div class="row">
+                            <div class="ml-auto col-sm-6 col-xl-auto">
+                                <button class="btn btn-danger btn-block" name="delete-orphans" value="1" onclick="return confirmDelete();">
+                                    <i class="fa fas fa-trash"></i> {__('delete')}
+                                </button>
+                            </div>
+                            <div class="col-sm-6 col-xl-auto">
+                                <button class="btn btn-primary btn-block" type="button" data-toggle="collapse" data-target="#show-script" aria-expanded="false" aria-controls="show-script">
+                                    <i class="fa fas fa-terminal"></i> {__('showDeleteScript')}
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                </form>
+                        <div class="collapse" id="show-script">
+                            <div class="card card-body">
+                                <pre style="margin-top:1em;">{$deleteScript}</pre>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     {/if}

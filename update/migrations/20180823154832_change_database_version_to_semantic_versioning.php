@@ -18,6 +18,9 @@ class Migration_20180823154832 extends Migration implements IMigration
     protected $author      = 'msc';
     protected $description = 'Change database version to semantic versioning';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->getDB()->query(
@@ -26,6 +29,9 @@ class Migration_20180823154832 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->getDB()->query(

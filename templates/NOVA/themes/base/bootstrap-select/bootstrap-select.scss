@@ -11,10 +11,10 @@
           box-sizing: $fmt;
 }
 
-@mixin box-shadow($fmt) {
-  -webkit-box-shadow: $fmt;
-          box-shadow: $fmt;
-}
+//@mixin box-shadow($fmt) {
+//  -webkit-box-shadow: $fmt;
+//          box-shadow: $fmt;
+//}
 
 @function fade($color, $amnt) {
   @if $amnt > 1 {

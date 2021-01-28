@@ -13,8 +13,10 @@ use function Functional\map;
 use function Functional\reindex;
 
 require_once __DIR__ . '/includes/admininclude.php';
-$oAccount->permission('BOXES_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
+/** @global \JTL\Backend\AdminAccount $oAccount */
+
+$oAccount->permission('BOXES_VIEW', true, true);
 
 $boxService  = Shop::Container()->getBoxService();
 $alertHelper = Shop::Container()->getAlertService();

@@ -8,9 +8,10 @@ use JTL\Shop;
 use JTL\Shopsetting;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('SETTINGS_SITEMAP_VIEW', true, true);
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 $shopSettings = Shopsetting::getInstance();
 if (isset($_POST['speichern']) && Form::validateToken()) {
     $oldConfig = $shopSettings->getSettings([CONF_BILDER])['bilder'];
@@ -71,7 +72,7 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
             break;
         }
     }
-    foreach (\array_unique($cachesToClear) as $class) {
+    foreach (array_unique($cachesToClear) as $class) {
         /** @var IMedia $class */
         $class::clearCache();
     }

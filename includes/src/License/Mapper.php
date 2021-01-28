@@ -64,18 +64,20 @@ class Mapper
         switch ($esxLicense->getType()) {
             case ExsLicense::TYPE_PLUGIN:
             case ExsLicense::TYPE_PORTLET:
-                $plugin = new ReferencedPlugin(
+                $plugin = new ReferencedPlugin();
+                $plugin->initByExsID(
                     $this->manager->getDB(),
                     $license,
-                    $esxLicense->getReleases()->getAvailable()
+                    $esxLicense->getReleases()->getLatest() ?? $esxLicense->getReleases()->getAvailable()
                 );
                 $esxLicense->setReferencedItem($plugin);
                 break;
             case ExsLicense::TYPE_TEMPLATE:
-                $template = new ReferencedTemplate(
+                $template = new ReferencedTemplate();
+                $template->initByExsID(
                     $this->manager->getDB(),
                     $license,
-                    $esxLicense->getReleases()->getAvailable()
+                    $esxLicense->getReleases()->getLatest() ?? $esxLicense->getReleases()->getAvailable()
                 );
                 $esxLicense->setReferencedItem($template);
                 break;

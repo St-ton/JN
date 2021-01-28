@@ -86,14 +86,25 @@
                         {elseif $confItem->inputType === JTL\Plugin\Admin\InputType::RADIO}
                             <div class="input-group-checkbox-wrap">
                             {foreach $confItem->options as $option}
-                                <input id="opt-{$option->id}-{$option@iteration}"
+                                <input id="opt-{$confItem->valueID}-{$option@iteration}"
                                        type="radio" name="{$confItem->valueID}[]"
-                                       value="{$option->value}"{if $confItem->value == $option->cWert} checked="checked"{/if} />
-                                <label for="opt-{$option->kPluginEinstellungenConf}-{$option@iteration}">
+                                       value="{$option->value}"{if $confItem->value == $option->value} checked="checked"{/if} />
+                                <label for="opt-{$confItem->valueID}-{$option@iteration}">
                                     {__($option->niceName)}
                                 </label> <br />
                             {/foreach}
                         </div>
+                        {elseif in_array($confItem->inputType, [JTL\Plugin\Admin\InputType::COLOR,
+                        JTL\Plugin\Admin\InputType::EMAIL,
+                        JTL\Plugin\Admin\InputType::RANGE,
+                        JTL\Plugin\Admin\InputType::DATE,
+                        JTL\Plugin\Admin\InputType::MONTH,
+                        JTL\Plugin\Admin\InputType::WEEK,
+                        JTL\Plugin\Admin\InputType::TEL,
+                        JTL\Plugin\Admin\InputType::TIME,
+                        JTL\Plugin\Admin\InputType::URL
+                        ], true)}
+                            <input class="form-control" id="{$confItem->valueID}" name="{$confItem->valueID}" type="{$confItem->inputType}" value="{$confItem->value|escape:'html'}" />
                         {else}
                             <input class="form-control" id="{$confItem->valueID}" name="{$confItem->valueID}" type="text" value="{$confItem->value|escape:'html'}" />
                         {/if}

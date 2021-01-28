@@ -16,12 +16,18 @@ class Migration_20160808121633 extends Migration implements IMigration
 {
     protected $author = 'msc';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute("DELETE FROM `tland` WHERE `cISO` = 'YU'");
         $this->execute("UPDATE `tland` SET `cEnglisch` = 'Serbia' WHERE `cISO` = 'RS'");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("INSERT INTO `tland` (`cISO`, `cDeutsch`, `cEnglisch`, `nEU`, `cKontinent`) VALUES('YU', 'Serbien und Montenegro', 'Serbia and Montenegro', 0, 'Europa')");

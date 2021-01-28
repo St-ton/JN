@@ -305,6 +305,9 @@ abstract class AbstractBox implements BoxInterface
                 if (!\is_array($this->content)) {
                     $this->content = [];
                 }
+                if (!\is_array($this->title)) {
+                    $this->title = [];
+                }
                 $this->content[(int)$box->kSprache] = $box->cInhalt;
                 $this->title[(int)$box->kSprache]   = $box->cTitel;
             }
@@ -318,6 +321,7 @@ abstract class AbstractBox implements BoxInterface
             // may be overridden in concrete classes' __construct
             $this->setShow($this->isActive());
         }
+        $this->init();
     }
 
     /**
@@ -880,5 +884,12 @@ abstract class AbstractBox implements BoxInterface
         $res['config'] = '*truncated*';
 
         return $res;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function init(): void
+    {
     }
 }

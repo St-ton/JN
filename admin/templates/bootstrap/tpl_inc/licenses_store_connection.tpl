@@ -53,20 +53,29 @@
                                 <div class="text-center">
                                     <h2>{$lastUpdate|date_format:"%d.%m.%Y %H:%M:%S"}</h2>
                                     <p>{__('last update')}</p>
-                                    <button class="btn btn-default" id="recheck" name="action" value="recheck">
+                                    <button class="btn btn-default btn-block" id="recheck" name="action" value="recheck">
                                         <i class="fas fa-refresh"></i> {__('Refresh')}
                                     </button>
                                 </div>
                             </div>
                         {else}
-                            <div class="col-md-12">
+                            <div class="col-12">
                                 <div class="alert alert-default" role="alert">{__('storeNotLinkedDesc')}</div>
-                                <button name="action" value="redirect" class="btn btn-primary">
+                            </div>
+                            <div class="col-sm-6 col-xl-auto mb-2">
+                                <button name="action" value="redirect" class="btn btn-primary btn-block">
                                     <i class="fas fa-link"></i> {__('storeLink')}
                                 </button>
-                                <button name="action" value="entertoken" class="btn btn-secondary">
+                            </div>
+                            <div class="col-sm-6 col-xl-auto mb-2">
+                                <button name="action" value="entertoken" class="btn btn-secondary btn-block">
                                     {__('Manually enter token')}
                                 </button>
+                            </div>
+                            <div class="col-sm-6 col-xl-auto ml-auto mb-2">
+                                <a href="{__('extensionStoreURL')}" class="btn btn-outline-primary btn-block ml-auto" target="_blank">
+                                    {__('btnExploreExtensionStore')}
+                                </a>
                             </div>
                         {/if}
                     </div>

@@ -3,12 +3,8 @@
 namespace JTL\Mail\Validator;
 
 use Exception;
-use GuzzleHttp\Client;
-use GuzzleHttp\Cookie\CookieJar;
-use GuzzleHttp\Exception\GuzzleException;
+use JTL\Backend\AdminIO;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
-use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Language\LanguageModel;
 use JTL\Mail\Hydrator\HydratorInterface;
@@ -20,8 +16,8 @@ use JTL\Mail\Template\TemplateFactory;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\MailSmarty;
+use SmartyException;
 use stdClass;
-use Symfony\Component\Process\PhpProcess;
 
 /**
  * Class SyntaxChecker
@@ -50,6 +46,11 @@ final class SyntaxChecker
     private $factory;
 
     /**
+     * @var Model
+     */
+    private static $model;
+
+    /**
      * SyntaxChecker constructor.
      * @param DbInterface       $db
      * @param TemplateFactory   $factory
@@ -69,199 +70,180 @@ final class SyntaxChecker
     }
 
     /**
-     *
+     * @param bool $uncheckedOnly
+     * @deprecated since 5.0.1 - do syntax check only with io-method because smarty syntax check can throw fatal error
      */
-    public function checkAll(): void
+    public function checkAll(bool $uncheckedOnly = false): void
     {
-        $items = $this->db->query(
-            'SELECT cModulId AS id, kPlugin AS pluginID FROM temailvorlage',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
+    }
 
-        foreach ($items as $template) {
-            $this->checkSyntax($template->id, (int)$template->pluginID);
+    /**
+     * @param Model $model
+     * @return string
+     */
+    private static function getHTMLState(Model $model): string
+    {
+        try {
+            return Shop::Smarty()->assign('template', $model)->fetch('snippets/mailtemplate_state.tpl');
+        } catch (SmartyException | Exception $e) {
+            return '';
         }
     }
 
     /**
-     * @param int $langID
-     * @param string $templateID
-     * @param string $moduleID
-     * @return stdClass
-     * @throws Exception
+     * @param string $out
+     * @param string $message
+     * @return string
      */
-    public static function ioCheckSyntax(int $langID, string $templateID, string $moduleID): stdClass
+    private static function stripMessage(string $out, string $message): string
     {
-        \ini_set('html_errors', '0');
-        \ini_set('display_errors', '1');
-        \ini_set('log_errors', '0');
-        \error_reporting(\E_ALL & ~\E_NOTICE & ~\E_STRICT & ~\E_DEPRECATED);
+        $message = \strip_tags($message);
+        // strip possible call stack
+        if (\preg_match('/(Stack trace|Call Stack):/', $message, $hits)) {
+            $callstackPos = \mb_strpos($message, $hits[0]);
+            if ($callstackPos !== false) {
+                $message = \mb_substr($message, 0, $callstackPos);
+            }
+        }
+        $errText  = '';
+        $fatalPos = \mb_strlen($out);
+        // strip smarty output if fatal error occurs
+        if (\preg_match('/((Recoverable )?Fatal error|Uncaught Error):/ui', $out, $hits)) {
+            $fatalPos = \mb_strpos($out, $hits[0]);
+            if ($fatalPos !== false) {
+                $errText = \mb_substr($out, 0, $fatalPos);
+            }
+        }
+        // strip possible error position from smarty output
+        $errText = (string)\preg_replace('/[\t\n]/', ' ', \mb_substr($errText, 0, $fatalPos));
+        $len     = \mb_strlen($errText);
+        if ($len > 75) {
+            $errText = '...' . \mb_substr($errText, $len - 75);
+        }
 
-        $db       = Shop::Container()->getDB();
-        $renderer = new SmartyRenderer(new MailSmarty($db));
-        $hydrator = new TestHydrator($renderer->getSmarty(), $db, Shopsetting::getInstance());
-        $sc       = new self($db, new TemplateFactory($db), $renderer, $hydrator);
-        $lang     = LanguageHelper::getInstance($db, Shop::Container()->getCache())->getLanguageByID($langID);
-        $check    = $sc->doCheckSyntax($lang, $templateID, $moduleID);
-        $res      = new stdClass();
-        if ($check === '') {
-            $res->result = 'ok';
-        } else {
-            $res->result  = 'failure';
-            $res->message = $check;
+        return \htmlentities($message) . ($len > 0 ? '<br/>on line: ' . \htmlentities($errText) : '');
+    }
+
+    /**
+     * @param LanguageModel $lang
+     * @param Model         $model
+     * @return stdClass
+     */
+    private function doCheck(LanguageModel $lang, Model $model): stdClass
+    {
+        $res = (object)[
+            'state'   => 'ok',
+            'message' => '',
+        ];
+
+        $id       = $model->getID() . '_' . $lang->getId();
+        $moduleID = $model->getModuleID();
+        try {
+            $this->hydrator->getSmarty()->setErrorReporting(\E_ALL & ~\E_NOTICE & ~\E_STRICT & ~\E_DEPRECATED);
+            $this->hydrator->hydrate(null, $lang);
+            $html = $this->renderer->renderHTML($id);
+            $text = $this->renderer->renderText($id);
+            if (!\in_array($moduleID, ['core_jtl_footer', 'core_jtl_header'], true)
+                && (\mb_strlen(trim($html)) === 0 || \mb_strlen(trim($text)) === 0)
+            ) {
+                $model->setHasError(true);
+                $res->state   = 'fail';
+                $res->message = __('Empty mail body');
+            } elseif (!$model->getHasError()) {
+                $model->setHasError(false);
+            }
+        } catch (Exception $e) {
+            $model->setHasError(true);
+            $res->state   = 'fail';
+            $res->message = __($e->getMessage());
+        } finally {
+            $model->save();
         }
 
         return $res;
     }
 
     /**
-     * @param string $text
-     * @param Model $model
-     * @return string
+     * @param int $templateID
+     * @return stdClass
+     * @throws Exception
      */
-    private function finishSyntaxcheck(string $text, Model $model): string
+    public static function ioCheckSyntax(int $templateID): stdClass
     {
-        $result = \json_decode($text, false);
-        if (\json_last_error() !== \JSON_ERROR_NONE) {
-            $text = \strip_tags($text);
-            // strip possible call stack
-            if (\preg_match('/(Stack trace|Call Stack):/', $text, $hits)) {
-                $callstackPos = \mb_strpos($text, 'Call Stack:');
-                if ($callstackPos !== false) {
-                    $text = \mb_substr($text, 0, $callstackPos);
+        \ini_set('html_errors', '0');
+        \ini_set('display_errors', '1');
+        \ini_set('log_errors', '0');
+        \error_reporting(\E_ALL & ~\E_NOTICE & ~\E_STRICT & ~\E_DEPRECATED);
+
+        Shop::Container()->getGetText()->loadAdminLocale('pages/emailvorlagen');
+        $res = (object)[
+            'result'  => [],
+            'state'   => '<span class="label text-warning">' . __('untested') . '</span>',
+        ];
+
+        $db    = Shop::Container()->getDB();
+        $model = new Model($db);
+        \register_shutdown_function(static function () use ($model) {
+            $err = \error_get_last();
+            if ($err !== null && ($err['type'] & !(\E_NOTICE | \E_STRICT | \E_DEPRECATED) !== 0)) {
+                $out = \ob_get_clean();
+                $res = (object)[
+                    'result'  => 'fail',
+                    'state'   => '<span class="label text-warning">' . __('untested') . '</span>',
+                    'message' => self::stripMessage($out, $err['message']),
+                ];
+                if ($model !== null) {
+                    $model->setHasError(true);
+                    $model->save();
+                    $res->state = self::getHTMLState($model);
                 }
+
+                $io = AdminIO::getInstance();
+                $io->respondAndExit($res);
             }
-            $errText  = '';
-            $fatalPos = \mb_strlen($text);
-            // strip smarty output if fatal error occurs
-            if (\preg_match('/((Recoverable )?Fatal error):/ui', $text, $hits)) {
-                $fatalPos = \mb_strpos($text, $hits[1]);
-                if ($fatalPos !== false) {
-                    $errText = \mb_substr($text, $fatalPos);
-                }
+        });
+        \session_write_close();
+
+        try {
+            $renderer = new SmartyRenderer(new MailSmarty($db));
+            $hydrator = new TestHydrator($renderer->getSmarty(), $db, Shopsetting::getInstance());
+            $sc       = new self($db, new TemplateFactory($db), $renderer, $hydrator);
+            $template = $sc->factory->getTemplateByID($templateID);
+
+            if ($template === null) {
+                $res->result  = 'fail';
+                $res->message = __('errorTemplateMissing');
+
+                return $res;
             }
-            // strip possible error position from smarty output
-            $text = (string)\preg_replace('/[\t\n]/', ' ', \mb_substr($text, 0, $fatalPos));
-            $len  = \mb_strlen($text);
-            if ($len > 75) {
-                $text = '...' . \mb_substr($text, $len - 75);
-            }
-            $result = (object)[
-                'result'  => 'failure',
-                'message' => \htmlentities($errText) . ($len > 0 ? '<br/>on line: ' . \htmlentities($text) : ''),
-            ];
-        }
-        if ($result->result !== 'ok') {
-            $error  = '<strong>' . __('Smarty syntax error') . ':</strong><br />';
-            $error .= '<pre class="alert-danger">' . $result->message . '</pre>';
-            $model->setHasError(true);
-            $model->setActive(false);
+            $model->load($template->getID());
+            $model->setSyntaxCheck($model::SYNTAX_NOT_CHECKED);
             $model->save();
 
-            return $error;
+            foreach (LanguageHelper::getAllLanguages() as $lang) {
+                $template->load($lang->getId(), 1);
+                $res->result[$lang->getCode()] = $sc->doCheck($lang, $model);
+            }
+
+            $res->state = self::getHTMLState($model);
+        } catch (SmartyException $e) {
+            $res->result  = 'fail';
+            $res->message = __($e->getMessage());
         }
 
-        return '';
+        return $res;
     }
 
     /**
      * @param string $templateID
      * @param int    $pluginID
      * @return string[]
+     * @deprecated since 5.0.1 - do syntax check only with io-method because smarty syntax check can throw fatal error
+     * @noinspection PhpUnusedParameterInspection
      */
     public function checkSyntax(string $templateID, int $pluginID = 0): array
     {
-        if ($pluginID > 0) {
-            $templateID = 'kPlugin_' . $pluginID . '_' . $templateID;
-        }
-        $template = $this->factory->getTemplate($templateID);
-        $result   = [];
-        if ($template === null) {
-            return $result;
-        }
-
-        foreach (LanguageHelper::getAllLanguages() as $lang) {
-            $template->load($lang->getId(), 1);
-            $model = $template->getModel();
-            if ($model === null) {
-                continue;
-            }
-            $id = $model->getID() . '_' . $lang->getId();
-
-            if (\PHP_SAPI !== 'cli') {
-                $testUrl = Shop::getAdminURL() . '/io.php?io=' .
-                    \urlencode(
-                        \json_encode([
-                            'name'   => 'mailvorlageSyntaxCheck',
-                            'params' => [$lang->getId(), $id, $model->getModuleID()],
-                        ])
-                    ) . '&token=' . Text::filterXSS($_SESSION['jtl_token']);
-                \session_write_close();
-                $client = new Client(['verify' => \DEFAULT_CURL_OPT_VERIFYPEER]);
-                $jar    = CookieJar::fromArray($_COOKIE, '.' . \parse_url(\URL_SHOP)['host']);
-                try {
-                    $res = (string)$client->request('POST', $testUrl, ['cookies' => $jar])->getBody();
-                } catch (Exception | GuzzleException $e) {
-                    $res = $this->finishSyntaxcheck($e->getMessage(), $model);
-                } finally {
-                    \session_start();
-                }
-
-                $error = $this->finishSyntaxcheck(\is_string($res) ? $res : __('somethingHappend'), $model);
-                if ($error !== '') {
-                    $result[] = $error;
-                }
-            } else {
-                $phpProcess = new PhpProcess(
-                    '<?php declare(strict_types=1);
-
-                    use JTL\Language\LanguageHelper;
-                    use JTL\Mail\Hydrator\TestHydrator;
-                    use JTL\Mail\Renderer\SmartyRenderer;
-                    use JTL\Mail\Template\TemplateFactory;
-                    use JTL\Mail\Validator\SyntaxChecker;
-                    use JTL\Shop;
-                    use JTL\Shopsetting;
-                    use JTL\Smarty\MailSmarty;
-
-                    require __DIR__ . \'/includes/globalinclude.php\';
-                    ini_set(\'html_errors\', \'0\');
-                    ini_set(\'display_errors\', \'1\');
-                    ini_set(\'log_errors\', \'0\');
-                    error_reporting(\E_ALL & ~\E_NOTICE & ~\E_STRICT & ~\E_DEPRECATED);
-
-                    $langID     = ' . $lang->getId() . ';
-                    $templateID = \'' . $id . '\';
-                    $moduleID   = \'' . $model->getModuleID() . '\';
-
-                    $db       = Shop::Container()->getDB();
-                    $renderer = new SmartyRenderer(new MailSmarty($db));
-                    $hydrator = new TestHydrator($renderer->getSmarty(), $db, Shopsetting::getInstance());
-                    $sc       = new SyntaxChecker($db, new TemplateFactory($db), $renderer, $hydrator);
-                    $lang     = LanguageHelper::getInstance($db, Shop::Container()->getCache())->getLanguageByID($langID);
-                    $check    = $sc->doCheckSyntax($lang, $templateID, $moduleID);
-                    $res      = new stdClass();
-                    if ($check === \'\') {
-                        $res->result = \'ok\';
-                    } else {
-                        $res->result  = \'failure\';
-                        $res->message = $check;
-                    }
-
-                    echo json_encode($res);',
-                    \PFAD_ROOT,
-                    null,
-                    600
-                );
-                $phpProcess->run();
-                $error = $this->finishSyntaxcheck($phpProcess->getOutput(), $model);
-                if ($error !== '') {
-                    $result[] = $error;
-                }
-            }
-        }
-
-        return $result;
+        return [];
     }
 
     /**
@@ -269,23 +251,11 @@ final class SyntaxChecker
      * @param string $templateID
      * @param string $moduleID
      * @return string
+     * @deprecated since 5.0.1 - do syntax check only with io-method because smarty syntax check can throw fatal error
+     * @noinspection PhpUnusedParameterInspection
      */
     public function doCheckSyntax(LanguageModel $lang, string $templateID, string $moduleID): string
     {
-        try {
-            $this->hydrator->getSmarty()->setErrorReporting(\E_ALL & ~\E_NOTICE & ~\E_STRICT & ~\E_DEPRECATED);
-            $this->hydrator->hydrate(null, $lang);
-            $html = $this->renderer->renderHTML($templateID);
-            $text = $this->renderer->renderText($templateID);
-            if ((\mb_strlen(trim($html)) === 0 || \mb_strlen(trim($text)) === 0)
-                && !\in_array($moduleID, ['core_jtl_footer', 'core_jtl_header'], true)
-            ) {
-                return __('Empty mail body');
-            }
-        } catch (Exception $e) {
-            return $e->getMessage();
-        }
-
         return '';
     }
 }

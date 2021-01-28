@@ -777,10 +777,10 @@ class CartHelper
 
     /**
      * @param Artikel|object $product
-     * @param int $qty
-     * @param array $attributes
-     * @param int $accuracy
-     * @param string|null $token
+     * @param int|float      $qty
+     * @param array          $attributes
+     * @param int            $accuracy
+     * @param string|null    $token
      * @return array
      * @throws CircularReferenceException
      * @throws ServiceNotFoundException
@@ -871,7 +871,7 @@ class CartHelper
             $exists = false;
             foreach ($attributes as $oEigenschaftwerte) {
                 $oEigenschaftwerte->kEigenschaft = (int)$oEigenschaftwerte->kEigenschaft;
-                if ($oEigenschaftwerte->kEigenschaft === $var->kEigenschaft) {
+                if ($oEigenschaftwerte->kEigenschaft !== $var->kEigenschaft) {
                     continue;
                 }
                 if ($var->cTyp === 'PFLICHT-FREIFELD') {
@@ -1384,15 +1384,15 @@ class CartHelper
     }
 
     /**
-     * @param int $productID
-     * @param int $qty
-     * @param array $attrValues
-     * @param int $redirect
-     * @param string $unique
-     * @param int $configItemID
-     * @param stdClass|null $options
-     * @param bool $setzePositionsPreise
-     * @param string $responsibility
+     * @param int              $productID
+     * @param int|string|float $qty
+     * @param array            $attrValues
+     * @param int              $redirect
+     * @param string           $unique
+     * @param int              $configItemID
+     * @param stdClass|null    $options
+     * @param bool             $setzePositionsPreise
+     * @param string           $responsibility
      * @return bool
      * @throws CircularReferenceException
      * @throws ServiceNotFoundException
@@ -2036,8 +2036,8 @@ class CartHelper
     }
 
     /**
-     * @param float $quantity
-     * @param float $multiple
+     * @param float|string $quantity
+     * @param float|string $multiple
      * @return bool
      */
     public static function isMultiple(float $quantity, float $multiple): bool

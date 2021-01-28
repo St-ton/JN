@@ -992,6 +992,11 @@ class Artikel
     public $originalSeo = '';
 
     /**
+     * @var string|null
+     */
+    public $customImgName;
+
+    /**
      * @var int
      */
     private $kSprache;
@@ -1149,12 +1154,12 @@ class Artikel
     }
 
     /**
-     * @param int   $amount
-     * @param array $attributes
-     * @param int   $customerGroupID
+     * @param int|float $amount
+     * @param array     $attributes
+     * @param int       $customerGroupID
      * @return float|null
      */
-    public function gibPreis($amount, array $attributes, $customerGroupID = 0)
+    public function gibPreis($amount, array $attributes, int $customerGroupID = 0)
     {
         if (!Frontend::getCustomerGroup()->mayViewPrices()) {
             return null;
@@ -1162,7 +1167,6 @@ class Artikel
         if ($this->kArtikel === null) {
             return 0;
         }
-        $customerGroupID = (int)$customerGroupID;
         if (!$customerGroupID) {
             $customerGroupID = Frontend::getCustomerGroup()->getID();
         }
@@ -1278,6 +1282,9 @@ class Artikel
                     ORDER BY nNr',
                 ReturnType::ARRAY_OF_OBJECTS
             );
+        }
+        if (isset($this->FunktionsAttribute[\FKT_ATTRIBUT_BILDNAME])) {
+            $this->customImgName = $this->FunktionsAttribute[\FKT_ATTRIBUT_BILDNAME];
         }
         if (\count($images) === 0) {
             $image               = new stdClass();
@@ -1627,8 +1634,10 @@ class Artikel
                 $product = new self();
                 $product->fuelleArtikel((int)$bundle->kArtikel, $options);
 
-                $this->oProduktBundle_arr[]           = $product;
-                $this->oProduktBundlePrice->fVKNetto += $product->Preise->fVKNetto * $bundle->fAnzahl;
+                if ($product->kArtikel > 0) {
+                    $this->oProduktBundle_arr[]           = $product;
+                    $this->oProduktBundlePrice->fVKNetto += $product->Preise->fVKNetto * $bundle->fAnzahl;
+                }
             }
 
             $this->oProduktBundlePrice->fPriceDiff         = $this->oProduktBundlePrice->fVKNetto -
@@ -3074,6 +3083,17 @@ class Artikel
     /**
      * @return stdClass
      */
+    public static function getDefaultConfigOptions(): stdClass
+    {
+        $options                             = static::getDefaultOptions();
+        $options->nKeineSichtbarkeitBeachten = 1;
+
+        return $options;
+    }
+
+    /**
+     * @return stdClass
+     */
     public static function getExportOptions(): stdClass
     {
         $options                            = new stdClass();
@@ -4074,12 +4094,14 @@ class Artikel
             $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_GELB])
                 ? $this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_GELB]
                 : Shop::Lang()->get('ampelGelb');
+            $this->setToParentStockText(\ART_ATTRIBUT_AMPELTEXT_GELB, 'ampelGelb');
 
             if ($this->fLagerbestand <= (int)$this->conf['global']['artikel_lagerampel_rot']) {
                 $this->Lageranzeige->nStatus   = 0;
                 $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_ROT])
                     ? $this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_ROT]
                     : Shop::Lang()->get('ampelRot');
+                $this->setToParentStockText(\ART_ATTRIBUT_AMPELTEXT_ROT, 'ampelRot');
             }
             if ($this->fLagerbestand >= (int)$this->conf['global']['artikel_lagerampel_gruen']
                 || ($this->cLagerKleinerNull === 'Y' && $this->conf['global']['artikel_ampel_lagernull_gruen'] === 'Y')
@@ -4088,6 +4110,7 @@ class Artikel
                 $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_GRUEN])
                     ? $this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_GRUEN]
                     : Shop::Lang()->get('ampelGruen');
+                $this->setToParentStockText(\ART_ATTRIBUT_AMPELTEXT_GRUEN, 'ampelGruen');
             }
         } else {
             $this->Lageranzeige->nStatus = (int)$this->conf['global']['artikel_lagerampel_keinlager'];
@@ -4097,17 +4120,20 @@ class Artikel
                     $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_GELB])
                         ? $this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_GELB]
                         : Shop::Lang()->get('ampelGelb');
+                    $this->setToParentStockText(\ART_ATTRIBUT_AMPELTEXT_GELB, 'ampelGelb');
                     break;
                 case 0:
                     $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_ROT])
                         ? $this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_ROT]
                         : Shop::Lang()->get('ampelRot');
+                    $this->setToParentStockText(\ART_ATTRIBUT_AMPELTEXT_ROT, 'ampelRot');
                     break;
                 default:
                     $this->Lageranzeige->nStatus   = 2;
                     $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_GRUEN])
                         ? $this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_GRUEN]
                         : Shop::Lang()->get('ampelGruen');
+                    $this->setToParentStockText(\ART_ATTRIBUT_AMPELTEXT_GRUEN, 'ampelGruen');
                     break;
             }
         }
@@ -4122,6 +4148,25 @@ class Artikel
         }
 
         return $this;
+    }
+
+    /**
+     * Set stock text to parent product if it's a child and ampel_text_ attribute is set
+     *
+     * @param string $stockTextConstant
+     * @param string $stockTextLangVar
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
+     */
+    private function setToParentStockText(string $stockTextConstant, string $stockTextLangVar): void
+    {
+        if ($this->kVaterArtikel > 0 && empty($this->AttributeAssoc[$stockTextConstant])) {
+            $parentProduct = new self();
+            $parentProduct->fuelleArtikel($this->kVaterArtikel, self::getDefaultOptions());
+            $this->Lageranzeige->AmpelText = (!empty($parentProduct->AttributeAssoc[$stockTextConstant]))
+                ? $parentProduct->AttributeAssoc[$stockTextConstant]
+                : Shop::Lang()->get($stockTextLangVar, 'global');
+        }
     }
 
     /**
@@ -5325,6 +5370,8 @@ class Artikel
      */
     public function gibMwStVersandLaenderString($asString = true)
     {
+        static $allCountries = [];
+
         if ($this->conf['global']['global_versandfrei_anzeigen'] !== 'Y') {
             return $asString ? '' : [];
         }
@@ -5345,7 +5392,7 @@ class Artikel
             return \trim($e);
         }));
         $cacheID = 'jtl_ola_' . \md5($shippingFreeCountries);
-        if (($countries = Shop::Container()->getCache()->get($cacheID)) === false) {
+        if (($countries = $allCountries[$cacheID] ?? Shop::Container()->getCache()->get($cacheID)) === false) {
             $countries = Shop::Container()->getCountryService()->getFilteredCountryList($codes)->mapWithKeys(
                 static function (Country $country) {
                     return [$country->getISO() => $country->getName()];
@@ -5358,6 +5405,7 @@ class Artikel
                 [\CACHING_GROUP_CORE, \CACHING_GROUP_CATEGORY, \CACHING_GROUP_OPTION]
             );
         }
+        $allCountries[$cacheID] = $countries;
 
         return $asString
             ? Shop::Lang()->get('noShippingCostsAtExtended', 'basket', \implode(', ', $countries))
@@ -5803,7 +5851,7 @@ class Artikel
             foreach ($propValues as $propValueID) {
                 $propValueID = (int)$propValueID;
                 if (!\in_array($propValueID, (array)$possibleVariationsForSelection[$propID], true)) {
-                    if (!\is_array($invalidVariations[$propID])) {
+                    if (!isset($invalidVariations[$propID]) || !\is_array($invalidVariations[$propID])) {
                         $invalidVariations[$propID] = [];
                     }
                     $invalidVariations[$propID][] = $propValueID;
@@ -5966,11 +6014,11 @@ class Artikel
             case Image::SIZE_XS:
                 return $from->cURLMini;
             case Image::SIZE_SM:
-                return $from->cPfadKlein;
+                return $from->cURLKlein;
             case Image::SIZE_MD:
-                return $from->cPfadNormal;
+                return $from->cURLNormal;
             case Image::SIZE_LG:
-                return $from->cPfadGross;
+                return $from->cURLGross;
             default:
                 return null;
         }

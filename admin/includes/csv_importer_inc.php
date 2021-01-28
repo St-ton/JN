@@ -3,6 +3,8 @@
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Helpers\URL;
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
 
 /**
@@ -20,78 +22,183 @@ use JTL\Shop;
  *      0 = clear table, then import (careful!!! again: this will clear the table denoted by $target)
  *      1 = insert new, overwrite existing
  *      2 = insert only non-existing
+ * @param string[] - output a list of error messages
  * @return int - -1 if importer-id-mismatch / 0 on success / >1 import error count
+ * @throws TypeError
+ * @throws InvalidArgumentException
  */
-function handleCsvImportAction($importerId, $target, $fields = [], $delim = null, $importType = 2)
-{
-    if (Form::validateToken() && Request::verifyGPDataString('importcsv') === $importerId) {
-        if (isset($_FILES['csvfile']['type'])
-            && (
-                $_FILES['csvfile']['type'] === 'application/vnd.ms-excel'
-                || $_FILES['csvfile']['type'] === 'text/csv'
-                || $_FILES['csvfile']['type'] === 'application/csv'
-                || $_FILES['csvfile']['type'] === 'application/vnd.msexcel'
-            )
-        ) {
-            $csvFilename = $_FILES['csvfile']['tmp_name'];
-            $fs          = fopen($_FILES['csvfile']['tmp_name'], 'rb');
-            $nErrors     = 0;
+function handleCsvImportAction(
+    string $importerId,
+    $target,
+    array $fields = [],
+    $delim = null,
+    int $importType = 2,
+    &$errors = []
+) {
+    if (Form::validateToken() === false || Request::verifyGPDataString('importcsv') !== $importerId) {
+        return -1;
+    }
 
-            if ($delim === null) {
-                $delim = getCsvDelimiter($csvFilename);
-            }
+    if (!is_string($target) && !is_callable($target)) {
+        throw new TypeError('argument $target must be either a string or a callable');
+    }
 
-            if (count($fields) === 0) {
-                $fields = fgetcsv($fs, 0, $delim);
-            }
+    if (isset($_REQUEST['importType'])) {
+        $importType = Request::verifyGPCDataInt('importType');
+    }
 
-            if (isset($_REQUEST['importType'])) {
-                $importType = Request::verifyGPCDataInt('importType');
-            }
+    if ($importType !== 0 && $importType !== 1 && $importType !== 2) {
+        throw new InvalidArgumentException('$importType must be 0, 1 or 2');
+    }
 
-            if ($importType === 0 && is_string($target)) {
-                Shop::Container()->getDB()->query('TRUNCATE ' . $target, ReturnType::AFFECTED_ROWS);
-            }
-            $importDeleteDone = false;
-            while (($row = fgetcsv($fs, 0, $delim)) !== false) {
-                $obj = new stdClass();
+    $csvMime = $_FILES['csvfile']['type'] ?? null;
 
-                foreach ($fields as $i => $field) {
-                    $row[$i]     = Shop::Container()->getDB()->escape($row[$i]);
-                    $obj->$field = $row[$i];
-                }
-
-                if (is_callable($target)) {
-                    $res = $target($obj, $importDeleteDone, $importType);
-
-                    if ($res === false) {
-                        ++$nErrors;
-                    }
-                } elseif (is_string($target)) {
-                    $table = $target;
-
-                    if ($importType === 0 || $importerId === 2) {
-                        $res = Shop::Container()->getDB()->insert($table, $obj);
-
-                        if ($res === 0) {
-                            ++$nErrors;
-                        }
-                    } elseif ($importType === 1) {
-                        Shop::Container()->getDB()->delete($target, $fields, $row);
-                        $res = Shop::Container()->getDB()->insert($table, $obj);
-
-                        if ($res === 0) {
-                            ++$nErrors;
-                        }
-                    }
-                }
-            }
-
-            return $nErrors;
-        }
-
+    if ($csvMime !== 'application/vnd.ms-excel'
+        && $csvMime !== 'text/csv'
+        && $csvMime !== 'application/csv'
+        && $csvMime !== 'application/vnd.msexcel'
+    ) {
+        $errors[] = __('csvImportInvalidMime');
         return 1;
     }
 
-    return -1;
+    $csvFilename       = $_FILES['csvfile']['tmp_name'];
+    $fs                = fopen($_FILES['csvfile']['tmp_name'], 'rb');
+    $nErrors           = 0;
+    $importDeleteDone  = false;
+    $oldRedirectFormat = false;
+    $defLanguage       = LanguageHelper::getDefaultLanguage();
+    $rowIndex          = 2;
+
+    if ($delim === null) {
+        $delim = getCsvDelimiter($csvFilename);
+    }
+
+    if (count($fields) === 0) {
+        $fields = fgetcsv($fs, 0, $delim);
+    }
+
+    $articleNumberPresent = false;
+    $destUrlPresent       = false;
+
+    foreach ($fields as &$field) {
+        if ($field === 'sourceurl') {
+            $field             = 'cFromUrl';
+            $oldRedirectFormat = true;
+        } elseif ($field === 'destinationurl') {
+            $field             = 'cToUrl';
+            $oldRedirectFormat = true;
+            $destUrlPresent    = true;
+        } elseif ($field === 'articlenumber') {
+            $field                = 'cArtNr';
+            $oldRedirectFormat    = true;
+            $articleNumberPresent = true;
+        } elseif ($field === 'languageiso') {
+            $field             = 'cIso';
+            $oldRedirectFormat = true;
+        }
+    }
+
+    unset($field);
+
+    if ($oldRedirectFormat) {
+        if ($destUrlPresent === false && $articleNumberPresent === false) {
+            $errors[] = __('csvImportNoArtNrOrDestUrl');
+            return 1;
+        }
+
+        if ($destUrlPresent === true && $articleNumberPresent === true) {
+            $errors[] = __('csvImportArtNrAndDestUrlError');
+            return 1;
+        }
+    }
+
+    if ($importType === 0 && is_string($target)) {
+        Shop::Container()->getDB()->query('TRUNCATE ' . $target, ReturnType::AFFECTED_ROWS);
+    }
+
+    while (($row = fgetcsv($fs, 0, $delim)) !== false) {
+        $obj = new stdClass();
+
+        foreach ($fields as $i => $field) {
+            $obj->$field = Shop::Container()->getDB()->escape($row[$i]);
+        }
+
+        if ($oldRedirectFormat) {
+            $parsed = parse_url($obj->cFromUrl);
+            $from   = $parsed['path'];
+
+            if (isset($parsed['query'])) {
+                $from .= '?' . $parsed['query'];
+            }
+
+            $obj->cFromUrl = $from;
+        }
+
+        if ($articleNumberPresent) {
+            $obj->cToUrl = getArtNrUrl($obj->cArtNr, $obj->cIso ?? $defLanguage->cISO);
+
+            if (empty($obj->cToUrl)) {
+                ++$nErrors;
+                $errors[] = sprintf(__('csvImportArtNrNotFound'), $obj->cArtNr);
+                continue;
+            }
+
+            unset($obj->cArtNr, $obj->cIso);
+        }
+
+        if (is_callable($target)) {
+            $res = $target($obj, $importDeleteDone, $importType);
+
+            if ($res === false) {
+                ++$nErrors;
+            }
+        } else { // is_string($target)
+            $table = $target;
+
+            if ($importType === 1) {
+                Shop::Container()->getDB()->delete($target, $fields, $row);
+            }
+
+            $res = Shop::Container()->getDB()->insert($table, $obj);
+
+            if ($res === 0) {
+                ++$nErrors;
+                $errors[] = sprintf(__('csvImportSaveError'), $rowIndex);
+            }
+        }
+
+        ++$rowIndex;
+    }
+
+    return $nErrors;
+}
+
+/**
+ * @param string $artNo
+ * @param string $iso
+ * @return string|null
+ */
+function getArtNrUrl(string $artNo, string $iso): ?string
+{
+    if ($artNo === '') {
+        return null;
+    }
+
+    $item = Shop::Container()->getDB()->executeQueryPrepared(
+        "SELECT tartikel.kArtikel, tseo.cSeo
+            FROM tartikel
+            LEFT JOIN tsprache
+                ON tsprache.cISO = :iso
+            LEFT JOIN tseo
+                ON tseo.kKey = tartikel.kArtikel
+                AND tseo.cKey = 'kArtikel'
+                AND tseo.kSprache = tsprache.kSprache
+            WHERE tartikel.cArtNr = :artno
+            LIMIT 1",
+        ['iso' => mb_convert_case($iso, MB_CASE_LOWER), 'artno' => $artNo],
+        ReturnType::SINGLE_OBJECT
+    );
+
+    return URL::buildURL($item, URLART_ARTIKEL);
 }

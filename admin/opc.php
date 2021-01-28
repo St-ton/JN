@@ -7,11 +7,12 @@ use JTL\Shop;
 /**
  * @global \JTL\Smarty\JTLSmarty     $smarty
  * @global \JTL\Backend\AdminAccount $oAccount
+ * @global string                    $currentTemplateDir
+ * @global bool                      $hasUpdates
  */
 
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
-
 $pageKey      = Request::verifyGPCDataInt('pageKey');
 $pageId       = Request::verifyGPDataString('pageId');
 $pageUrl      = Request::verifyGPDataString('pageUrl');
@@ -19,17 +20,19 @@ $pageName     = Request::verifyGPDataString('pageName');
 $adoptFromKey = Request::verifyGPCDataInt('adoptFromKey');
 $action       = Request::verifyGPDataString('action');
 $draftKeys    = array_map('\intval', $_POST['draftKeys'] ?? []);
-$shopUrl      = Shop::getURL();
+$shopURL      = Shop::getURL();
+$adminURL     = Shop::getAdminURL();
 $error        = null;
 
 $opc       = Shop::Container()->getOPC();
 $opcPage   = Shop::Container()->getOPCPageService();
 $opcPageDB = Shop::Container()->getOPCPageDB();
 
-$templateUrl = $shopUrl . '/' . PFAD_ADMIN . $currentTemplateDir;
-$fullPageUrl = $shopUrl . $pageUrl;
+$templateUrl = $adminURL . '/' . $currentTemplateDir;
+$fullPageUrl = $shopURL . $pageUrl;
 
-$smarty->assign('shopUrl', $shopUrl)
+$smarty->assign('shopUrl', $shopURL)
+       ->assign('adminUrl', $adminURL)
        ->assign('templateUrl', $templateUrl)
        ->assign('pageKey', $pageKey)
        ->assign('opc', $opc);
@@ -40,7 +43,7 @@ if ($hasUpdates) {
     $smarty
         ->assign('error', [
             'heading' => __('dbUpdate') . ' ' . __('required'),
-            'desc' => sprintf(__('dbUpdateNeeded'), $shopUrl),
+            'desc' => sprintf(__('dbUpdateNeeded'), $shopURL),
         ])
         ->display(PFAD_ROOT . PFAD_ADMIN . '/opc/tpl/editor.tpl');
 } elseif ($action === 'edit') {
@@ -49,6 +52,7 @@ if ($hasUpdates) {
         $page = $opcPage->getDraft($pageKey);
     } catch (Exception $e) {
         $error = $e->getMessage();
+        $page  = null;
     }
 
     Shop::Container()->getGetText()->loadAdminLocale('pages/opc/tutorials');
@@ -73,7 +77,7 @@ if ($hasUpdates) {
         $error = $e->getMessage();
     }
 
-    header('Location: ' . $shopUrl . '/' . PFAD_ADMIN . 'opc.php?pageKey=' . $pageKey . '&action=edit');
+    header('Location: ' . $adminURL . '/opc.php?pageKey=' . $pageKey . '&action=edit');
     exit();
 } elseif ($action === 'adopt') {
     // Adopt new draft from another draft
@@ -92,7 +96,7 @@ if ($hasUpdates) {
         $error = $e->getMessage();
     }
 
-    header('Location: ' . $shopUrl . '/' . PFAD_ADMIN . 'opc.php?pageKey=' . $pageKey . '&action=edit');
+    header('Location: ' . $adminURL . '/opc.php?pageKey=' . $pageKey . '&action=edit');
     exit();
 } elseif ($action === 'duplicate-bulk') {
     // duplicate multiple drafts from existing drafts

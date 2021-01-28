@@ -16,12 +16,18 @@ class Migration_20160907121100 extends Migration implements IMigration
 {
     protected $author = 'fm';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('DELETE FROM `teinstellungenconf` WHERE kEinstellungenConf = 1562 OR kEinstellungenConf = 1563 OR kEinstellungenConf = 1564');
         $this->execute('DELETE FROM `teinstellungenconfwerte` WHERE kEinstellungenConf = 1562 OR kEinstellungenConf = 1563 OR kEinstellungenConf = 1564');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute(

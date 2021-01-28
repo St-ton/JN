@@ -15,7 +15,7 @@ use JTL\Widgets\AbstractWidget;
  * @param bool $bActive
  * @return array
  */
-function getWidgets(bool $bActive = true)
+function getWidgets(bool $bActive = true): array
 {
     $cache        = Shop::Container()->getCache();
     $db           = Shop::Container()->getDB();
@@ -115,22 +115,80 @@ function getWidgets(bool $bActive = true)
 }
 
 /**
- * @param int    $kWidget
- * @param string $eContainer
+ * @param int    $widgetId
+ * @param string $container
  * @param int    $pos
  */
-function setWidgetPosition(int $kWidget, $eContainer, int $pos)
+function setWidgetPosition(int $widgetId, string $container, int $pos): void
 {
+    $db              = Shop::Container()->getDB();
     $upd             = new stdClass();
-    $upd->eContainer = $eContainer;
+    $upd->eContainer = $container;
     $upd->nPos       = $pos;
-    Shop::Container()->getDB()->update('tadminwidgets', 'kWidget', $kWidget, $upd);
+
+    $current = $db->select('tadminwidgets', 'kWidget', $widgetId);
+    if ($current->eContainer === $container) {
+        if ($current->nPos < $pos) {
+            $db->queryPrepared(
+                'UPDATE tadminwidgets
+                    SET nPos = nPos - 1
+                    WHERE eContainer = :currentContainer
+                      AND nPos > :currentPos
+                      AND nPos <= :newPos',
+                [
+                    'currentPos'       => $current->nPos,
+                    'newPos'           => $pos,
+                    'currentContainer' => $current->eContainer
+                ],
+                ReturnType::DEFAULT
+            );
+        } else {
+            $db->queryPrepared(
+                'UPDATE tadminwidgets
+                    SET nPos = nPos + 1
+                    WHERE eContainer = :currentContainer
+                      AND nPos < :currentPos
+                      AND nPos >= :newPos',
+                [
+                    'currentPos'       => $current->nPos,
+                    'newPos'           => $pos,
+                    'currentContainer' => $current->eContainer
+                ],
+                ReturnType::DEFAULT
+            );
+        }
+    } else {
+        $db->queryPrepared(
+            'UPDATE tadminwidgets
+                SET nPos = nPos - 1
+                WHERE eContainer = :currentContainer
+                  AND nPos > :currentPos',
+            [
+                'currentPos'       => $current->nPos,
+                'currentContainer' => $current->eContainer
+            ],
+            ReturnType::DEFAULT
+        );
+        $db->queryPrepared(
+            'UPDATE tadminwidgets
+                SET nPos = nPos + 1
+                WHERE eContainer = :newContainer
+                  AND nPos >= :newPos',
+            [
+                'newPos'       => $pos,
+                'newContainer' => $container
+            ],
+            ReturnType::DEFAULT
+        );
+    }
+
+    $db->update('tadminwidgets', 'kWidget', $widgetId, $upd);
 }
 
 /**
  * @param int $kWidget
  */
-function closeWidget(int $kWidget)
+function closeWidget(int $kWidget): void
 {
     Shop::Container()->getDB()->update('tadminwidgets', 'kWidget', $kWidget, (object)['bActive' => 0]);
 }
@@ -138,7 +196,7 @@ function closeWidget(int $kWidget)
 /**
  * @param int $kWidget
  */
-function addWidget(int $kWidget)
+function addWidget(int $kWidget): void
 {
     Shop::Container()->getDB()->update('tadminwidgets', 'kWidget', $kWidget, (object)['bActive' => 1]);
 }
@@ -147,7 +205,7 @@ function addWidget(int $kWidget)
  * @param int $kWidget
  * @param int $bExpand
  */
-function expandWidget(int $kWidget, int $bExpand)
+function expandWidget(int $kWidget, int $bExpand): void
 {
     Shop::Container()->getDB()->update('tadminwidgets', 'kWidget', $kWidget, (object)['bExpanded' => $bExpand]);
 }
@@ -158,7 +216,7 @@ function expandWidget(int $kWidget, int $bExpand)
  * @return mixed|string
  * @deprecated since 4.06
  */
-function getRemoteData($url, $timeout = 15)
+function getRemoteData(string $url, int $timeout = 15)
 {
     $data = '';
     if (function_exists('curl_init')) {
@@ -187,15 +245,15 @@ function getRemoteData($url, $timeout = 15)
 }
 
 /**
- * @param string $url
- * @param string $dataName
- * @param string $tpl
- * @param string $wrapperID
- * @param string $post
+ * @param string      $url
+ * @param string      $dataName
+ * @param string      $tpl
+ * @param string      $wrapperID
+ * @param string|null $post
  * @return IOResponse
  * @throws SmartyException
  */
-function getRemoteDataIO($url, $dataName, $tpl, $wrapperID, $post = null)
+function getRemoteDataIO(string $url, string $dataName, string $tpl, string $wrapperID, $post = null): IOResponse
 {
     Shop::Container()->getGetText()->loadAdminLocale('widgets');
     $response    = new IOResponse();
@@ -227,7 +285,7 @@ function getRemoteDataIO($url, $dataName, $tpl, $wrapperID, $post = null)
  * @return IOResponse
  * @throws SmartyException
  */
-function getShopInfoIO($tpl, $wrapperID)
+function getShopInfoIO(string $tpl, string $wrapperID): IOResponse
 {
     Shop::Container()->getGetText()->loadAdminLocale('widgets');
 
@@ -252,12 +310,12 @@ function getShopInfoIO($tpl, $wrapperID)
  * @return IOResponse
  * @throws SmartyException
  */
-function getAvailableWidgetsIO()
+function getAvailableWidgetsIO(): IOResponse
 {
     $response         = new IOResponse();
     $availableWidgets = getWidgets(false);
     $wrapper          = Shop::Smarty()->assign('oAvailableWidget_arr', $availableWidgets)
                                       ->fetch('tpl_inc/widget_selector.tpl');
 
-    return $response->assignDom('settings', 'innerHTML', $wrapper);
+    return $response->assignDom('available-widgets', 'innerHTML', $wrapper);
 }

@@ -18,12 +18,18 @@ class Migration_20180124162000 extends Migration implements IMigration
     protected $author      = 'fm';
     protected $description = 'Rebuild ttrennzeichen and add unique index';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         Separator::migrateUpdate();
         $this->execute('ALTER TABLE `ttrennzeichen` ADD UNIQUE INDEX `unique_lang_unit` (`kSprache`, `nEinheit`)');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('ALTER TABLE `ttrennzeichen` DROP INDEX `unique_lang_unit`');

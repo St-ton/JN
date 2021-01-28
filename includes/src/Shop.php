@@ -308,7 +308,7 @@ final class Shop
 
     /**
      * @var bool
-     * @deprecated since 5.0
+     * @deprecated since 5.0.0
      */
     public static $isSeoMainword = false;
 
@@ -1751,7 +1751,7 @@ final class Shop
      * @param array                     $params
      * @param object|null|ProductFilter $productFilter
      * @return ProductFilter
-     * @deprecated since 5.0
+     * @deprecated since 5.0.0
      */
     public static function buildNaviFilter(array $params, $productFilter = null): ProductFilter
     {
@@ -1764,14 +1764,18 @@ final class Shop
     }
 
     /**
-     * build navigation filter object from parameters
+     * build product filter object from parameters
      *
      * @param array                       $params
      * @param stdClass|null|ProductFilter $productFilter
+     * @param bool                        $validate
      * @return ProductFilter
      */
-    public static function buildProductFilter(array $params, $productFilter = null): ProductFilter
-    {
+    public static function buildProductFilter(
+        array $params,
+        $productFilter = null,
+        bool $validate = true
+    ): ProductFilter {
         $pf = new ProductFilter(
             Config::getDefault(),
             self::Container()->getDB(),
@@ -1783,12 +1787,12 @@ final class Shop
             }
         }
 
-        return $pf->initStates($params);
+        return $pf->initStates($params, $validate);
     }
 
     /**
      * @return ProductFilter
-     * @deprecated since 5.0
+     * @deprecated since 5.0.0
      */
     public static function getNaviFilter(): ProductFilter
     {
@@ -1822,7 +1826,7 @@ final class Shop
 
     /**
      * @param null|ProductFilter $productFilter
-     * @deprecated since 5.0 - this is done in ProductFilter:validate()
+     * @deprecated since 5.0.0 - this is done in ProductFilter:validate()
      */
     public static function checkNaviFilter($productFilter = null): void
     {
@@ -1906,6 +1910,14 @@ final class Shop
     }
 
     /**
+     * @param array $urls
+     */
+    public static function setURLs(array $urls): void
+    {
+        self::$url = $urls;
+    }
+
+    /**
      * @param bool     $forceSSL
      * @param int|null $langID
      * @return string - the shop URL without trailing slash
@@ -1917,25 +1929,10 @@ final class Shop
         if (isset(self::$url[$langID][$idx])) {
             return self::$url[$langID][$idx];
         }
-        $shopURL   = \URL_SHOP;
-        $sslStatus = Request::checkSSL();
-        if ($sslStatus === 2) {
-            $shopURL = \str_replace('http://', 'https://', $shopURL);
-        } elseif ($sslStatus === 4 || ($sslStatus === 3 && $forceSSL)) {
-            $shopURL = \str_replace('http://', 'https://', $shopURL);
-        }
-        $url                      = \rtrim($shopURL, '/');
+        $url                      = self::buildBaseURL($forceSSL);
         self::$url[$langID][$idx] = $url;
 
         return $url;
-    }
-
-    /**
-     * @param array $urls
-     */
-    public static function setURLs(array $urls): void
-    {
-        self::$url = $urls;
     }
 
     /**
@@ -1944,7 +1941,26 @@ final class Shop
      */
     public static function getAdminURL(bool $forceSSL = false): string
     {
-        return \rtrim(static::getURL($forceSSL, false) . '/' . \PFAD_ADMIN, '/');
+        return \rtrim(self::buildBaseURL($forceSSL) . '/' . \PFAD_ADMIN, '/');
+    }
+
+    /**
+     * @param bool $forceSSL
+     * @return string
+     */
+    private static function buildBaseURL(bool $forceSSL): string
+    {
+        $url = \URL_SHOP;
+        if (\mb_strpos($url, 'http://') === 0) {
+            $sslStatus = Request::checkSSL();
+            if ($sslStatus === 2) {
+                $url = \str_replace('http://', 'https://', $url);
+            } elseif ($sslStatus === 4 || ($sslStatus === 3 && $forceSSL)) {
+                $url = \str_replace('http://', 'https://', $url);
+            }
+        }
+
+        return \rtrim($url, '/');
     }
 
     /**

@@ -17,13 +17,16 @@ class Migration_20171213093514 extends Migration implements IMigration
     protected $author      = 'fpr';
     protected $description = 'Delete unused fulltext keys';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         foreach (['tartikel', 'tartikelsprache'] as $table) {
             $keys = $this->fetchAll(
                 "SHOW INDEX FROM `{$table}` 
                     WHERE Index_type = 'FULLTEXT' 
-	                    AND Column_name IN ('cBeschreibung', 'cKurzBeschreibung')
+                        AND Column_name IN ('cBeschreibung', 'cKurzBeschreibung')
                         AND Key_name != 'idx_{$table}_fulltext'"
             );
             if (is_array($keys)) {
@@ -34,13 +37,16 @@ class Migration_20171213093514 extends Migration implements IMigration
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         foreach (['tartikel', 'tartikelsprache'] as $table) {
             foreach (['cBeschreibung', 'cKurzBeschreibung'] as $fieldName) {
                 $this->execute(
                     "ALTER TABLE `{$table}`
-	                    ADD FULLTEXT KEY `{$fieldName}` (`{$fieldName}`)"
+                        ADD FULLTEXT KEY `{$fieldName}` (`{$fieldName}`)"
                 );
             }
         }

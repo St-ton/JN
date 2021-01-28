@@ -23,7 +23,7 @@ trait PortletHtml
 
     /**
      * @param PortletInstance $instance
-     * @param bool $inContainer
+     * @param bool            $inContainer
      * @return string
      * @throws \Exception
      */
@@ -109,7 +109,7 @@ trait PortletHtml
 
     /**
      * @param PortletInstance $instance
-     * @param bool $inContainer
+     * @param bool            $inContainer
      * @return string
      * @throws \SmartyException
      */
@@ -201,8 +201,8 @@ trait PortletHtml
 
     /**
      * @param PortletInstance $instance
-     * @param string $tag
-     * @param string $innerHtml
+     * @param string          $tag
+     * @param string          $innerHtml
      * @return string
      */
     final protected function getPreviewRootHtml(
@@ -213,13 +213,13 @@ trait PortletHtml
         $attributes    = $instance->getAttributeString();
         $dataAttribute = $instance->getDataAttributeString();
 
-        return '<' . $tag . ' ' . $attributes . ' ' . $dataAttribute. '>' . $innerHtml . '</' . $tag . '>';
+        return '<' . $tag . ' ' . $attributes . ' ' . $dataAttribute . '>' . $innerHtml . '</' . $tag . '>';
     }
 
     /**
      * @param PortletInstance $instance
-     * @param string $tag
-     * @param string $innerHtml
+     * @param string          $tag
+     * @param string          $innerHtml
      * @return string
      */
     final protected function getFinalRootHtml(

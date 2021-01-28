@@ -4,7 +4,6 @@ namespace JTL\Extensions\SelectionWizard;
 
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use JTL\Helpers\GeneralObject;
 use JTL\Shop;
 use stdClass;
 
@@ -167,19 +166,17 @@ class Group
         if (\count($checks) !== 0) {
             return $checks;
         }
-        $data = GeneralObject::copyMembers($this);
-
         $this->nAktiv                  = (int)$this->nAktiv;
         $this->kSprache                = (int)$this->kSprache;
         $this->nStartseite             = (int)$this->nStartseite;
         $this->kAuswahlAssistentGruppe = (int)$this->kAuswahlAssistentGruppe;
-        unset(
-            $data->cSprache,
-            $data->nStartseite,
-            $data->cKategorie,
-            $data->oAuswahlAssistentOrt_arr,
-            $data->oAuswahlAssistentFrage_arr
-        );
+
+        $data                = new stdClass();
+        $data->kSprache      = $this->kSprache;
+        $data->cName         = $this->cName;
+        $data->cBeschreibung = $this->cBeschreibung;
+        $data->nAktiv        = $this->nAktiv;
+
         $groupID = $this->db->insert('tauswahlassistentgruppe', $data);
         if ($groupID > 0) {
             $location = new Location();

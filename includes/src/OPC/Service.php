@@ -93,7 +93,7 @@ class Service
             'dbUpdateNeeded',
         ];
 
-        foreach ([13,14,7] as $i => $stepcount) {
+        foreach ([13, 14, 7] as $i => $stepcount) {
             for ($j = 0; $j < $stepcount; $j++) {
                 $messageNames[] = 'tutStepTitle_' . $i . '_' . $j;
                 $messageNames[] = 'tutStepText_' . $i . '_' . $j;
@@ -226,7 +226,7 @@ class Service
 
     /**
      * @param string $name
-     * @param array $data
+     * @param array  $data
      * @throws Exception
      */
     public function saveBlueprint($name, $data): void
@@ -249,7 +249,7 @@ class Service
      * @return PortletInstance
      * @throws Exception
      */
-    public function createPortletInstance($class): PortletInstance
+    public function createPortletInstance(string $class): PortletInstance
     {
         $portlet = $this->db->getPortlet($class);
 
@@ -289,7 +289,7 @@ class Service
     /**
      * @param string $portletClass
      * @param string $missingClass
-     * @param array $props
+     * @param array  $props
      * @return string
      * @throws Exception
      */

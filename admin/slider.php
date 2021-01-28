@@ -11,13 +11,15 @@ use JTL\Slide;
 use JTL\Slider;
 
 require_once __DIR__ . '/includes/admininclude.php';
-$oAccount->permission('SLIDER_VIEW', true, true);
+/** @global \JTL\Backend\AdminAccount $oAccount */
 /** @global \JTL\Smarty\JTLSmarty $smarty */
+
+$oAccount->permission('SLIDER_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'slider_inc.php';
 $alertHelper = Shop::Container()->getAlertService();
 $db          = Shop::Container()->getDB();
 $_kSlider    = 0;
-$redirectUrl = Shop::getURL() . '/' . PFAD_ADMIN . 'slider.php';
+$redirectUrl = Shop::getAdminURL() . '/slider.php';
 $action      = isset($_REQUEST['action']) && Form::validateToken()
     ? $_REQUEST['action']
     : 'view';

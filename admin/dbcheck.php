@@ -13,9 +13,10 @@ use JTL\Shop;
 use JTL\Update\DBMigrationHelper;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
 
 $oAccount->permission('DBCHECK_VIEW', true, true);
-$cache->flush(Status::CACHE_ID_DATABASE_STRUCT);
+Shop::Container()->getCache()->flush(Status::CACHE_ID_DATABASE_STRUCT);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php';
 

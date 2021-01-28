@@ -18,6 +18,9 @@ class Migration_20190305095116 extends Migration implements IMigration
     protected $description = /** @lang text */
         'Create index for tzahlungslog';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -26,6 +29,9 @@ class Migration_20190305095116 extends Migration implements IMigration
     }
 
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute(

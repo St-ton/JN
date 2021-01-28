@@ -1,29 +1,34 @@
 {block name='snippets-filter-mobile'}
     {if $isMobile && !$isTablet}
-        <span class="h2 mt-3 border-0 px-3" id="productlist-filter">{lang key='filterAndSort'}</span>
+        <span class="h2 snippets-filter-mobile-heading" id="productlist-filter">{lang key='filterAndSort'}</span>
     {/if}
     <div class="productlist-filter-wrapper dropdown-full-width">
+        {block name='snippets-filter-mobile-top-include-active-filter'}
+            <div class="productlist-applied-filter productlist-applied-filter-top">
+                {include file='snippets/filter/active_filter.tpl'}
+            </div>
+        {/block}
         <ul class="productlist-filter-accordion border-md-bottom border-lg-bottom-0">
         {block name='snippets-filter-mobile-sorting'}
-            <li>
-                {link class="text-decoration-none text-left filter-type-FilterItemSort"
-                data=["toggle"=> "collapse", "target"=>"#sorting-collapse"]}
-                {lang key='sorting' section='productOverview'}
-                    <span class="float-right mx-3 font-italic text-right text-truncate w-40 pr-1">
-                    {foreach $Suchergebnisse->getSortingOptions() as $option}
-                        {if $option->isActive()} {$option->getName()}{/if}
-                    {/foreach}
-                </span>
+            <li class="snippets-filter-mobile-sorting">
+                {link class="snippets-filter-mobile-sorting-link filter-type-FilterItemSort"
+                    data=["toggle"=> "collapse", "target"=>"#sorting-collapse"]}
+                    {lang key='sorting' section='productOverview'}
+                    <span class="font-italic text-truncate">
+                        {foreach $Suchergebnisse->getSortingOptions() as $option}
+                            {if $option->isActive()} {$option->getName()}{/if}
+                        {/foreach}
+                    </span>
                 {/link}
-                {collapse id="sorting-collapse" class="my-2"}
-                {foreach $Suchergebnisse->getSortingOptions() as $option}
-                    {dropdownitem class="filter-item py-1"
-                    active=$option->isActive()
-                    href=$option->getURL()
-                    rel='nofollow'}
-                    {$option->getName()}
-                    {/dropdownitem}
-                {/foreach}
+                {collapse id="sorting-collapse" class="snippets-filter-mobile-sorting-collapse"}
+                    {foreach $Suchergebnisse->getSortingOptions() as $option}
+                        {dropdownitem class="filter-item"
+                            active=$option->isActive()
+                            href=$option->getURL()
+                            rel='nofollow'}
+                        {$option->getName()}
+                        {/dropdownitem}
+                    {/foreach}
                 {/collapse}
             </li>
         {/block}
@@ -36,19 +41,35 @@
                                 {if $subFilter->getVisibility() !== \JTL\Filter\Visibility::SHOW_NEVER
                                     && $subFilter->getVisibility() !== \JTL\Filter\Visibility::SHOW_BOX
                                     && $filter->getOptions()|count > 0}
-                                    <li>
+                                    <li class="snippets-filter-mobile-item">
                                         {block name='snippets-filter-mobile-filters-button'}
                                             {link class="collapsed"
                                                 data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$subFilter->getFrontendName()|@seofy}"]}
-                                                <span class="text-truncate">{$subFilter->getFrontendName()}</span>
+                                                <span class="characteristic-collapse-btn-inner">
+                                                    {$img = $subFilter->getImage(\JTL\Media\Image::SIZE_XS)}
+                                                    {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'T'
+                                                    && $img !== null
+                                                    && $img|strpos:$smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN === false
+                                                    && $img|strpos:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN === false}
+                                                        {include file='snippets/image.tpl'
+                                                        item=$subFilter
+                                                        square=false
+                                                        class='img-xs'
+                                                        srcSize='xs'
+                                                        sizes='24px'}
+                                                    {/if}
+                                                    {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'B'}
+                                                        <span class="text-truncate">{$subFilter->getFrontendName()}</span>
+                                                    {/if}
+                                                </span>
                                             {/link}
                                         {/block}
                                         {block name='snippets-filter-mobile-filters-collapse'}
                                             {collapse id="filter-collapse-{$subFilter->getFrontendName()|@seofy}"
-                                                class="my-2"
+                                                class="snippets-filter-mobile-item-collapse"
                                                 visible=$subFilter->isActive() || $Einstellungen.template.productlist.filter_items_always_visible === 'Y'}
                                                 {if ($subFilter->getData('cTyp') === 'SELECTBOX') && $subFilter->getOptions()|@count > 0}
-                                                    {dropdown variant="outline-secondary" text="{lang key='selectFilter' section='global'} " toggle-class="btn-block text-left"}
+                                                    {dropdown variant="outline-secondary" text="{lang key='selectFilter' section='global'} " toggle-class="btn-block"}
                                                         {include file='snippets/filter/characteristic.tpl' Merkmal=$subFilter sub=true}
                                                     {/dropdown}
                                                 {else}
@@ -60,7 +81,7 @@
                                 {/if}
                             {/foreach}
                         {elseif $filter->getOptions()|count > 0}
-                            <li>
+                            <li class="snippets-filter-mobile-item">
                                 {if $filter->getClassName() === "JTL\Filter\Items\PriceRange"}
                                     {block name='snippets-filter-mobile-filters-price-range'}
                                         {link class="collapsed"
@@ -68,7 +89,7 @@
                                             {$filter->getFrontendName()}
                                         {/link}
                                         {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}"
-                                            class="my-2 py-2"
+                                            class="snippets-filter-mobile-item-collapse"
                                             visible=true}
                                             {block name='snippets-filter-mobile-include-price-slider'}
                                                 {input data=['id'=>'js-price-range-url'] type="hidden" value="{$NaviFilter->getFilterURL()->getURL()}"}
@@ -83,7 +104,7 @@
                                             {$filter->getFrontendName()}
                                         {/link}
                                         {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}"
-                                            class="my-2 py-2"
+                                            class="snippets-filter-mobile-item-collapse"
                                             visible=$filter->isActive() || $Einstellungen.template.productlist.filter_items_always_visible === 'Y'}
                                             {block name='snippets-filter-mobile-include-search'}
                                                 {include file='snippets/filter/search.tpl'}
@@ -97,7 +118,7 @@
                                             <span class="text-truncate">{$filter->getFrontendName()}</span>
                                         {/link}
                                         {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}"
-                                            class="my-2 py-2"
+                                            class="snippets-filter-mobile-item-collapse"
                                             visible=$filter->isActive() || $Einstellungen.template.productlist.filter_items_always_visible === 'Y'}
                                             {block name='snippets-filter-mobile-include-manufacturer'}
                                                 {include file='snippets/filter/manufacturer.tpl'}
@@ -110,7 +131,7 @@
                                             <span class="text-truncate">{$filter->getFrontendName()}</span>
                                         {/link}
                                         {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}"
-                                            class="my-2"
+                                            class="snippets-filter-mobile-item-collapse"
                                             visible=$filter->isActive() || $Einstellungen.template.productlist.filter_items_always_visible === 'Y'}
                                             {block name='snippets-filter-mobile-include-generic-filter-item'}
                                                 {include file='snippets/filter/genericFilterItem.tpl' filter=$filter}
@@ -126,18 +147,18 @@
         {/if}
         </ul>
         {block name='snippets-filter-mobile-include-active-filter'}
-            <div class="productlist-applied-filter mb-5">
+            <div class="productlist-applied-filter">
                 {include file='snippets/filter/active_filter.tpl'}
             </div>
         {/block}
     </div>
     {block name='snippets-filter-mobile-footer-buttons'}
-        <div class="productlist-filter-footer px-3 mt-auto">
-            {formrow class="justify-content-end align-items-center"}
+        <div class="productlist-filter-footer">
+            {formrow class="snippets-filter-mobile-buttons"}
                 {col}
                     {button block=true
                         variant="outline-primary"
-                        class="my-1 no-caret"
+                        class="no-caret"
                         data=['toggle'=>'collapse', 'dismiss'=>'modal']
                         href="#collapseFilter"
                         aria=['expanded'=>'true','controls'=>'collapseFilter']}
@@ -148,7 +169,7 @@
                     {button type="link"
                         block=true
                         variant="primary"
-                        class="min-w-sm my-1 text-nowrap"
+                        class="min-w-sm text-nowrap-util"
                         href="{$NaviFilter->getURL()->getCategories()}"}
                         {lang key='filterShowItem' printf=$itemCount}
                     {/button}

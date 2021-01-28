@@ -7,11 +7,10 @@ use JTL\Helpers\GeneralObject;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('SETTINGS_SITEMAP_VIEW', true, true);
-/** @global \JTL\Smarty\JTLSmarty $smarty */
-setzeSprache();
-
 if (isset($_POST['speichern']) && Form::validateToken()) {
     Shop::Container()->getAlertService()->addAlert(
         Alert::TYPE_SUCCESS,

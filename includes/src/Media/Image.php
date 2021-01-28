@@ -7,6 +7,7 @@ use Imagick;
 use Intervention\Image\Constraint;
 use Intervention\Image\Image as InImage;
 use Intervention\Image\ImageManager;
+use JTL\Media\Image\AbstractImage;
 use JTL\Shop;
 
 /**
@@ -315,7 +316,7 @@ class Image
         $replace  = ['-', '-', '-', 'ae', 'oe', 'ue', 'ss'];
         $filename = \str_replace($source, $replace, \mb_convert_case($filename, \MB_CASE_LOWER));
 
-        return \preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $filename);
+        return \preg_replace('/[^' . AbstractImage::REGEX_ALLOWED_CHARS . ']/', '', $filename);
     }
 
     /**
@@ -333,18 +334,24 @@ class Image
         $thumbnail = $req->getThumb($req->getSize(), true);
         $manager   = new ImageManager(['driver' => self::getImageDriver()]);
         $img       = $manager->make($rawPath);
+        $regExt    = $req->getExt();
+        if (($regExt === 'jpg' || $regExt === 'jpeg') && $settings['container'] === true) {
+            $canvas = $manager->canvas($img->width(), $img->height(), $settings['background']);
+            $canvas->insert($img);
+            $img = $canvas;
+        }
         self::checkDirectory($thumbnail);
         self::resize($req, $img, $settings);
         self::addBranding($manager, $req, $img);
-        self::optimizeImage($img, $req->getExt());
+        self::optimizeImage($img, $regExt);
         \executeHook(\HOOK_IMAGE_RENDER, [
             'image'    => $img,
             'settings' => $settings,
             'path'     => $thumbnail
         ]);
-        $img->save($thumbnail, $settings['quality'], $req->getExt());
+        $img->save($thumbnail, $settings['quality'], $regExt);
         if ($streamOutput) {
-            echo $img->response($req->getExt());
+            echo $img->response($regExt);
         }
     }
 
@@ -438,7 +445,7 @@ class Image
      */
     public static function getImageDriver(): string
     {
-        return \extension_loaded('imagick') ? 'imagick' : 'gd';
+        return \extension_loaded('imagick') && !\FORCE_IMAGEDRIVER_GD ? 'imagick' : 'gd';
     }
 
     /**

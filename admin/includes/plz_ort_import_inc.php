@@ -56,7 +56,7 @@ function plzimportGetPLZOrt(): array
  */
 function plzimportDoImport($target, array $sessData, $result): void
 {
-    $sessData['status'] = 'Importiere Daten aus ' . $target;
+    $sessData['status'] = sprintf(__('importDataFrom'), $target);
     $runtime            = (int)ini_get('max_execution_time');
     $endTime            = time() + $runtime - 5; // 5 sek. Reserve
     $fHandle            = fopen(PFAD_UPLOADS . $target, 'r');
@@ -118,7 +118,7 @@ function plzimportDoImport($target, array $sessData, $result): void
                     plzimportWriteSession('Import', $sessData);
                     fclose($fHandle);
 
-                    $cRedirectUrl = Shop::getURL() . '/' . PFAD_ADMIN . 'io.php?io=' .
+                    $cRedirectUrl = Shop::getAdminURL() . '/io.php?io=' .
                         urlencode(
                             json_encode(
                                 [
@@ -134,7 +134,7 @@ function plzimportDoImport($target, array $sessData, $result): void
         }
 
         $sessData['step']   = 90;
-        $sessData['status'] = 'Erstelle Backup von ' . $isoLand . '...';
+        $sessData['status'] = sprintf(__('createBackupFrom'), $isoLand);
         plzimportWriteSession('Import', $sessData);
 
         $db->delete('tplz_backup', 'cLandISO', $isoLand);
@@ -173,7 +173,7 @@ function plzimportDoImport($target, array $sessData, $result): void
  */
 function plzimportDoDownload($target, array $sessData, $result): void
 {
-    $sessData['status'] = 'Download von ' . $target;
+    $sessData['status'] = sprintf(__('downloadFrom'), $target);
     $runtime            = (int)ini_get('max_execution_time');
     $endTime            = time() + $runtime - 5; // 5 sek. Reserve
     $partSize           = 8 * 1024; // 8 KBytes
@@ -197,7 +197,7 @@ function plzimportDoDownload($target, array $sessData, $result): void
         $result->message = sprintf(
             __('errorDownloadFileCreate'),
             $target,
-            \PLZIMPORT_URL
+            PLZIMPORT_URL
         );
 
         return;
@@ -260,7 +260,7 @@ function plzimportDoDownload($target, array $sessData, $result): void
     $result->type    = 'success';
     $result->message = sprintf(__('successDownload'), $target);
     // Download fertig - weiter mit dem Import
-    $cRedirectUrl = Shop::getURL() . '/' . PFAD_ADMIN . 'io.php?io=' .
+    $cRedirectUrl = Shop::getAdminURL() . '/io.php?io=' .
         urlencode(
             json_encode(
                 [
@@ -331,7 +331,7 @@ function plzimportActionDoImport($target = '', $part = '', $step = 0): stdClass
                 'running' => true,
                 'start'   => time(),
                 'step'    => 0,
-                'status'  => 'Import ' . $target . '...',
+                'status'  => sprintf(__('importPending'), $target),
             ];
         } else {
             $sessData         = plzimportReadSession('Import');

@@ -5,9 +5,10 @@ use JTL\Helpers\Request;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('MODULE_PRICECHART_VIEW', true, true);
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 if (Request::postInt('einstellungen') === 1) {
     Shop::Container()->getAlertService()->addAlert(

@@ -18,16 +18,15 @@ class Migration_20200518103100 extends Migration implements IMigration
     protected $description = 'Add newsletter active option';
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
-        if(Shopsetting::getInstance()->getValue(\CONF_NEWSLETTER, 'newsletter_active') === null) {
+        if(Shopsetting::getInstance()->getValue(CONF_NEWSLETTER, 'newsletter_active') === null) {
             $this->setConfig(
                 'newsletter_active',
                 'Y',
-                \CONF_NEWSLETTER,
+                CONF_NEWSLETTER,
                 'Newsletter aktivieren',
                 'selectbox',
                 15,
@@ -43,7 +42,7 @@ class Migration_20200518103100 extends Migration implements IMigration
     }
 
     /**
-     * @return mixed|void
+     * @inheritDoc
      */
     public function down()
     {

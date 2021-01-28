@@ -21,7 +21,7 @@ msgid "presentationSlider"
 msgstr "Slider mit Namen und Preisen"
 
 msgid "presentationBoxSlider"
-msgstr "Einzelproduktslider mit Namen und Preisen"
+msgstr "Einzelprodukt-Slider mit Name und Preis"
 
 msgid "itemFilter"
 msgstr "Artikelfilter"

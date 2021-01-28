@@ -7,11 +7,11 @@ use sccbs3\Bs3sccRenderer;
 
 require_once __DIR__ . '/Plugins.php';
 
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $plugins = new Plugins();
 $scc     = new DefaultComponentRegistrator(new Bs3sccRenderer($smarty));
 $scc->registerComponents();
 
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 $smarty->registerPlugin(
             Smarty::PLUGIN_FUNCTION,
             'getCurrencyConversionSmarty',

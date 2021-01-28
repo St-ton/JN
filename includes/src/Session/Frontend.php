@@ -116,31 +116,6 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * pre-calculate all the localized shop base URLs
-     */
-    private function initLanguageURLs(): void
-    {
-        if (\EXPERIMENTAL_MULTILANG_SHOP !== true) {
-            return;
-        }
-        $urls      = [];
-        $sslStatus = Request::checkSSL();
-        foreach ($_SESSION['Sprachen'] ?? [] as $language) {
-            $code    = \mb_convert_case($language->getCode(), \MB_CASE_UPPER);
-            $shopURL = \defined('URL_SHOP_' . $code) ? \constant('URL_SHOP_' . $code) : \URL_SHOP;
-            foreach ([0, 1] as $forceSSL) {
-                if ($sslStatus === 2) {
-                    $shopURL = \str_replace('http://', 'https://', $shopURL);
-                } elseif ($sslStatus === 4 || ($sslStatus === 3 && $forceSSL)) {
-                    $shopURL = \str_replace('http://', 'https://', $shopURL);
-                }
-                $urls[$language->getId()][$forceSSL] = \rtrim($shopURL, '/');
-            }
-        }
-        Shop::setURLs($urls);
-    }
-
-    /**
      * @return bool
      */
     private function checkLanguageUpdate(): bool
@@ -230,19 +205,13 @@ class Frontend extends AbstractSession
         if (!isset($_SESSION['jtl_token'])) {
             $_SESSION['jtl_token'] = Shop::Container()->getCryptoService()->randomString(32);
         }
-        \array_map(static function ($lang) {
-            $lang->kSprache = (int)$lang->kSprache;
-
-            return $lang;
-        }, $_SESSION['Sprachen']);
         $defaultLang = '';
         $allowed     = [];
         foreach ($_SESSION['Sprachen'] as $language) {
-            /** @var LanguageModel $language */
-            $iso = Text::convertISO2ISO639($language->cISO);
+            $iso = Text::convertISO2ISO639($language->getCode());
             $language->setIso639($iso);
             $allowed[] = $iso;
-            if ($language->cShopStandard === 'Y') {
+            if ($language->isShopDefault()) {
                 $defaultLang = $iso;
             }
         }

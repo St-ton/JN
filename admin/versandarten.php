@@ -16,11 +16,12 @@ use JTL\Plugin\Helper as PluginHelper;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('ORDER_SHIPMENT_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'versandarten_inc.php';
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 Tax::setTaxRates();
 $db              = Shop::Container()->getDB();
 $defaultCurrency = $db->select('twaehrung', 'cStandard', 'Y');
@@ -31,6 +32,7 @@ $taxRateKeys     = array_keys($_SESSION['Steuersatz']);
 $alertHelper     = Shop::Container()->getAlertService();
 $countryHelper   = Shop::Container()->getCountryService();
 $languages       = LanguageHelper::getAllLanguages();
+$getText         = Shop::Container()->getGetText();
 
 $missingShippingClassCombis = getMissingShippingClassCombi();
 $smarty->assign('missingShippingClassCombis', $missingShippingClassCombis);
@@ -253,32 +255,34 @@ if (Form::validateToken()) {
 
                 $versandSprache->kVersandart = $kVersandart;
                 foreach ($languages as $language) {
-                    $versandSprache->cISOSprache = $language->cISO;
+                    $code = $language->getCode();
+
+                    $versandSprache->cISOSprache = $code;
                     $versandSprache->cName       = $shippingMethod->cName;
-                    if ($_POST['cName_' . $language->cISO]) {
+                    if ($_POST['cName_' . $code]) {
                         $versandSprache->cName = htmlspecialchars(
-                            $_POST['cName_' . $language->cISO],
+                            $_POST['cName_' . $code],
                             ENT_COMPAT | ENT_HTML401,
                             JTL_CHARSET
                         );
                     }
                     $versandSprache->cLieferdauer = '';
-                    if ($_POST['cLieferdauer_' . $language->cISO]) {
+                    if ($_POST['cLieferdauer_' . $code]) {
                         $versandSprache->cLieferdauer = htmlspecialchars(
-                            $_POST['cLieferdauer_' . $language->cISO],
+                            $_POST['cLieferdauer_' . $code],
                             ENT_COMPAT | ENT_HTML401,
                             JTL_CHARSET
                         );
                     }
                     $versandSprache->cHinweistext = '';
-                    if ($_POST['cHinweistext_' . $language->cISO]) {
-                        $versandSprache->cHinweistext = $_POST['cHinweistext_' . $language->cISO];
+                    if ($_POST['cHinweistext_' . $code]) {
+                        $versandSprache->cHinweistext = $_POST['cHinweistext_' . $code];
                     }
                     $versandSprache->cHinweistextShop = '';
-                    if ($_POST['cHinweistextShop_' . $language->cISO]) {
-                        $versandSprache->cHinweistextShop = $_POST['cHinweistextShop_' . $language->cISO];
+                    if ($_POST['cHinweistextShop_' . $code]) {
+                        $versandSprache->cHinweistextShop = $_POST['cHinweistextShop_' . $code];
                     }
-                    $db->delete('tversandartsprache', ['kVersandart', 'cISOSprache'], [$kVersandart, $language->cISO]);
+                    $db->delete('tversandartsprache', ['kVersandart', 'cISOSprache'], [$kVersandart, $code]);
                     $db->insert('tversandartsprache', $versandSprache);
                 }
                 $step = 'uebersicht';
@@ -349,10 +353,28 @@ if ($step === 'neue Versandart') {
     foreach ($zahlungsarten as $zahlungsart) {
         $pluginID = PluginHelper::getIDByModuleID($zahlungsart->cModulId);
         if ($pluginID > 0) {
-            Shop::Container()->getGetText()->loadPluginLocale(
-                'base',
-                PluginHelper::getLoaderByPluginID($pluginID)->init($pluginID)
-            );
+            try {
+                Shop::Container()->getGetText()->loadPluginLocale(
+                    'base',
+                    PluginHelper::getLoaderByPluginID($pluginID)->init($pluginID)
+                );
+            } catch (InvalidArgumentException $e) {
+                $getText->loadAdminLocale('pages/zahlungsarten');
+                $alertHelper->addAlert(
+                    Alert::TYPE_WARNING,
+                    sprintf(
+                        __('Plugin for payment method not found'),
+                        $zahlungsart->cName,
+                        $zahlungsart->cAnbieter
+                    ),
+                    'notfound_' . $pluginID,
+                    [
+                        'linkHref' => Shop::getAdminURL(true) . '/zahlungsarten.php',
+                        'linkText' => __('paymentTypesOverview')
+                    ]
+                );
+                continue;
+            }
         }
         $zahlungsart->cName     = __($zahlungsart->cName);
         $zahlungsart->cAnbieter = __($zahlungsart->cAnbieter);
@@ -407,10 +429,28 @@ if ($step === 'uebersicht') {
             $smp->cAufpreisTyp = $smp->cAufpreisTyp === 'prozent' ? '%' : '';
             $pluginID          = PluginHelper::getIDByModuleID($smp->zahlungsart->cModulId);
             if ($pluginID > 0) {
-                Shop::Container()->getGetText()->loadPluginLocale(
-                    'base',
-                    PluginHelper::getLoaderByPluginID($pluginID)->init($pluginID)
-                );
+                try {
+                    $getText->loadPluginLocale(
+                        'base',
+                        PluginHelper::getLoaderByPluginID($pluginID)->init($pluginID)
+                    );
+                } catch (InvalidArgumentException $e) {
+                    $getText->loadAdminLocale('pages/zahlungsarten');
+                    $alertHelper->addAlert(
+                        Alert::TYPE_WARNING,
+                        sprintf(
+                            __('Plugin for payment method not found'),
+                            $smp->zahlungsart->cName,
+                            $smp->zahlungsart->cAnbieter
+                        ),
+                        'notfound_' . $pluginID,
+                        [
+                            'linkHref' => Shop::getAdminURL(true) . '/zahlungsarten.php',
+                            'linkText' => __('paymentTypesOverview')
+                        ]
+                    );
+                    continue;
+                }
             }
             $smp->zahlungsart->cName     = __($smp->zahlungsart->cName);
             $smp->zahlungsart->cAnbieter = __($smp->zahlungsart->cAnbieter);
@@ -452,15 +492,16 @@ if ($step === 'uebersicht') {
         if ($method->versandberechnung->cModulId === 'vm_versandberechnung_artikelanzahl_jtl') {
             $method->einheit = 'Stück';
         }
-        $countries                          = explode(' ', trim($method->cLaender));
         $method->countries                  = new Collection();
         $method->shippingSurchargeCountries = array_column($db->queryPrepared(
             'SELECT DISTINCT cISO FROM tversandzuschlag WHERE kVersandart = :shippingMethodID',
             ['shippingMethodID' => (int)$method->kVersandart],
             ReturnType::ARRAY_OF_ASSOC_ARRAYS
         ), 'cISO');
-        foreach ($countries as $country) {
-            $method->countries->push($countryHelper->getCountry($country));
+        foreach (explode(' ', trim($method->cLaender)) as $item) {
+            if (($country = $countryHelper->getCountry($item)) !== null) {
+                $method->countries->push($country);
+            }
         }
         $method->countries               = $method->countries->sortBy(static function (Country $country) {
             return $country->getName();

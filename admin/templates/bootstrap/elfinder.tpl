@@ -39,6 +39,7 @@
 					},
                     uiOptions: {
 					    toolbar: [
+                            ['mkdir'],
 					        ['info', 'quicklook', 'upload'],
                             ['rm', 'duplicate', 'rename'],
                             ['view'],

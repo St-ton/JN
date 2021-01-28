@@ -323,8 +323,10 @@ class Product
             ReturnType::ARRAY_OF_OBJECTS
         );
 
+
         $oEigenschaftTMP_arr = $db->query(
-            'SELECT teigenschaft.kEigenschaft,teigenschaft.cName,teigenschaft.cTyp
+            'SELECT teigenschaft.kEigenschaft, teigenschaft.cName, teigenschaft.cTyp, 
+                teigenschaft.kArtikel, 0 AS kEigenschaftWert
                 FROM teigenschaft
                 LEFT JOIN teigenschaftsichtbarkeit
                     ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
@@ -651,9 +653,9 @@ class Product
     }
 
     /**
-     * @param Artikel $product
-     * @param float   $price
-     * @param int     $amount
+     * @param Artikel    $product
+     * @param float|null $price
+     * @param int|null   $amount
      * @return stdClass
      */
     public static function getBasePriceUnit(Artikel $product, $price, $amount): stdClass
@@ -1050,7 +1052,6 @@ class Product
             } elseif (isset($missingData['email']) && $missingData['email'] === 3) {
                 $notices[] = Shop::Lang()->get('blockedEmail');
             } else {
-                Shop::Smarty()->assign('Anfrage', self::getProductQuestionFormDefaults());
                 $notices[] = Shop::Lang()->get('mandatoryFieldNotification', 'errorMessages');
             }
         } else {
@@ -1123,23 +1124,8 @@ class Product
      */
     public static function getProductQuestionFormDefaults(): stdClass
     {
-        $msg             = new stdClass();
+        $msg             = Form::getDefaultCustomerFormInputs();
         $msg->cNachricht = isset($_POST['nachricht']) ? Text::filterXSS($_POST['nachricht']) : null;
-        $msg->cAnrede    = isset($_POST['anrede']) ? Text::filterXSS($_POST['anrede']) : null;
-        $msg->cVorname   = isset($_POST['vorname']) ? Text::filterXSS($_POST['vorname']) : null;
-        $msg->cNachname  = isset($_POST['nachname']) ? Text::filterXSS($_POST['nachname']) : null;
-        $msg->cFirma     = isset($_POST['firma']) ? Text::filterXSS($_POST['firma']) : null;
-        $msg->cMail      = isset($_POST['email']) ? Text::filterXSS($_POST['email']) : null;
-        $msg->cFax       = isset($_POST['fax']) ? Text::filterXSS($_POST['fax']) : null;
-        $msg->cTel       = isset($_POST['tel']) ? Text::filterXSS($_POST['tel']) : null;
-        $msg->cMobil     = isset($_POST['mobil']) ? Text::filterXSS($_POST['mobil']) : null;
-        if (\mb_strlen($msg->cAnrede) === 1) {
-            if ($msg->cAnrede === 'm') {
-                $msg->cAnredeLocalized = Shop::Lang()->get('salutationM');
-            } elseif ($msg->cAnrede === 'w') {
-                $msg->cAnredeLocalized = Shop::Lang()->get('salutationW');
-            }
-        }
 
         return $msg;
     }
@@ -1264,8 +1250,8 @@ class Product
                 $dbHandler = Shop::Container()->getDB();
                 $refData   = (new OptinRefData())
                     ->setSalutation('')
-                    ->setFirstName('')
-                    ->setLastName('')
+                    ->setFirstName(Text::filterXSS($dbHandler->escape(\strip_tags($_POST['vorname']))) ?: '')
+                    ->setLastName(Text::filterXSS($dbHandler->escape(\strip_tags($_POST['nachname']))) ?: '')
                     ->setProductId(Request::postInt('a'))
                     ->setEmail(Text::filterXSS($dbHandler->escape(\strip_tags($_POST['email']))) ?: '')
                     ->setLanguageID(Shop::getLanguageID())
@@ -1283,7 +1269,6 @@ class Product
         } elseif (isset($missingData['email']) && $missingData['email'] === 3) {
             $notices[] = Shop::Lang()->get('blockedEmail');
         } else {
-            Shop::Smarty()->assign('Benachrichtigung', self::getAvailabilityFormDefaults());
             $notices[] = Shop::Lang()->get('mandatoryFieldNotification', 'errorMessages');
         }
 
@@ -1336,19 +1321,7 @@ class Product
      */
     public static function getAvailabilityFormDefaults(): stdClass
     {
-        $msg  = new stdClass();
-        $conf = Shop::getSettings([\CONF_ARTIKELDETAILS]);
-        if (!empty($_POST['vorname']) && $conf['artikeldetails']['benachrichtigung_abfragen_vorname'] !== 'N') {
-            $msg->cVorname = Text::filterXSS($_POST['vorname']);
-        }
-        if (!empty($_POST['nachname']) && $conf['artikeldetails']['benachrichtigung_abfragen_nachname'] !== 'N') {
-            $msg->cNachname = Text::filterXSS($_POST['nachname']);
-        }
-        if (!empty($_POST['email'])) {
-            $msg->cMail = Text::filterXSS($_POST['email']);
-        }
-
-        return $msg;
+        return Form::getDefaultCustomerFormInputs();
     }
 
     /**
@@ -1968,11 +1941,11 @@ class Product
             $configGroups[$i] = (array)$data;
         }
         /** @var Group $configGroup */
-        foreach ($config->oKonfig_arr as $i => &$configGroup) {
+        foreach ($config->oKonfig_arr as $i => $configGroup) {
             $configGroup->bAktiv = false;
             $configGroupID       = $configGroup->getKonfiggruppe();
             $configItems         = $configGroups[$configGroupID] ?? [];
-            foreach ($configGroup->oItem_arr as $j => &$configItem) {
+            foreach ($configGroup->oItem_arr as $j => $configItem) {
                 $configItemID        = $configItem->getKonfigitem();
                 $configItem->fAnzahl = (float)(
                     $configGroupAmounts[$configItem->getKonfiggruppe()] ?? $configItem->getInitial()
@@ -2007,10 +1980,8 @@ class Product
                     }
                 }
             }
-            unset($configItem);
             $configGroup->oItem_arr = \array_values($configGroup->oItem_arr);
         }
-        unset($configGroup);
         if (Frontend::getCustomerGroup()->mayViewPrices()) {
             $config->cPreisLocalized = [
                 Preise::getLocalizedPriceString($config->fGesamtpreis[0]),
@@ -2041,7 +2012,7 @@ class Product
             $configItems        = [];
             $configItemAmounts  = [];
             $configGroupAmounts = [];
-            foreach ($cart->PositionenArr as &$item) {
+            foreach ($cart->PositionenArr as $item) {
                 if ($item->cUnique !== $baseItem->cUnique || !$item->istKonfigKind()) {
                     continue;
                 }
@@ -2054,8 +2025,6 @@ class Product
                     $configGroupAmounts[$configItem->getKonfiggruppe()] = $item->nAnzahl / $baseItem->nAnzahl;
                 }
             }
-            unset($item);
-
             $smarty->assign('fAnzahl', $baseItem->nAnzahl)
                    ->assign('kEditKonfig', $configID)
                    ->assign('nKonfigitem_arr', $configItems)

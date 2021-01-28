@@ -2,7 +2,7 @@
     {if isset($oImageMap)}
         {container fluid=$isFluid}
             {opcMountPoint id='opc_before_banner'}
-            <div class="banner mb-5">
+            <div class="banner snippets-banner">
                 {block name='snippets-banner-image'}
                     {image fluid=true lazy=true src=$oImageMap->cBildPfad alt=$oImageMap->cTitel}
                 {/block}
@@ -15,24 +15,16 @@
                                     {assign var=oArtikel value=$oImageMapArea->oArtikel}
                                     <div class="area-desc">
                                         {block name='snippets-banner-map-area-image'}
-                                            <div class="text-center mb-3">
+                                            <div class="snippets-banner-image">
                                                 {if $oArtikel !== null}
-                                                    {image fluid=true webp=true
-                                                        src=$oArtikel->Bilder[0]->cURLMini
-                                                        srcset="{$oArtikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                            {$oArtikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                            {$oArtikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                                        alt=$oArtikel->cName|strip_tags|escape:'quotes'|truncate:60
-                                                        sizes="auto"
-                                                        class="mx-auto"
-                                                    }
+                                                    {include file='snippets/image.tpl' item=$oArtikel square=false}
                                                 {/if}
                                             </div>
                                             {*{if $oArtikel !== null}
                                                 {include file='productdetails/price.tpl' Artikel=$oArtikel tplscope='box'}
                                             {/if}*}
                                             {if $oImageMapArea->cBeschreibung|@strlen > 0}
-                                                <p>
+                                                <p class="snippets-banner-desc">
                                                     {$oImageMapArea->cBeschreibung}
                                                 </p>
                                             {/if}

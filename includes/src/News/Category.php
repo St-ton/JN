@@ -54,7 +54,7 @@ class Category implements CategoryInterface
     /**
      * @var int
      */
-    private $rght = 0;
+    protected $rght = 0;
 
     /**
      * @var int
@@ -417,9 +417,9 @@ class Category implements CategoryInterface
     /**
      * @inheritdoc
      */
-    public function setNames(array $name): void
+    public function setNames(array $names): void
     {
-        $this->names = $name;
+        $this->names = $names;
     }
 
     /**

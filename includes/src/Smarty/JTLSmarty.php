@@ -92,8 +92,11 @@ class JTLSmarty extends SmartyBC
     {
         $parent = null;
         if ($this->context !== ContextType::BACKEND) {
-            $container  = Shop::Container();
-            $model      = $container->getTemplateService()->getActiveTemplate();
+            $container = Shop::Container();
+            $model     = $container->getTemplateService()->getActiveTemplate();
+            if ($model->getTemplate() === null) {
+                throw new RuntimeException('Cannot load template ' . ($model->getName() ?? ''));
+            }
             $tplDir     = $model->getDir();
             $parent     = $model->getParent();
             $compileDir = \PFAD_ROOT . \PFAD_COMPILEDIR . $tplDir . '/';
@@ -358,25 +361,17 @@ class JTLSmarty extends SmartyBC
     }
 
     /**
-     * displays a Smarty template
-     *
-     * @param string $template the resource handle of the template file or template object
-     * @param mixed  $cacheID cache id to be used with this template
-     * @param mixed  $compileID compile id to be used with this template
-     * @param object $parent next higher level of Smarty variables
-     * @throws \SmartyException
+     * @inheritDoc
      */
     public function display($template = null, $cacheID = null, $compileID = null, $parent = null)
     {
         if ($this->context === ContextType::FRONTEND) {
             $this->registerFilter('output', [$this, 'outputFilter']);
         }
-        $res = parent::display($this->getResourceName($template), $cacheID, $compileID, $parent);
+        parent::display($this->getResourceName($template), $cacheID, $compileID, $parent);
         if ($this->context === ContextType::BACKEND) {
             require \PFAD_ROOT . \PFAD_INCLUDES . 'profiler_inc.php';
         }
-
-        return $res;
     }
 
     /**

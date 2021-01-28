@@ -16,6 +16,9 @@ class Migration_20160415120218 extends Migration implements IMigration
 {
     protected $author = 'msc';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'global', 'couponErr1', 'Der Kupon ist nicht aktiv.');
@@ -42,6 +45,9 @@ class Migration_20160415120218 extends Migration implements IMigration
         $this->setLocalization('eng', 'global', 'couponErr99', 'Unfortunately, the conditions for the coupon are not met.');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("DELETE FROM `tsprachwerte` WHERE cName = 'couponErr5';");

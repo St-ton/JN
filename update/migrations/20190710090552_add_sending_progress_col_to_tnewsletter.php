@@ -17,6 +17,9 @@ class Migration_20190710090552 extends Migration implements IMigration
     protected $author      = 'cr';
     protected $description = 'Add sending progress col to tnewsletter';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute("
@@ -29,6 +32,9 @@ class Migration_20190710090552 extends Migration implements IMigration
         ");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('ALTER TABLE `tnewsletter` DROP COLUMN `dLastSendings`');

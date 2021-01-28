@@ -256,13 +256,12 @@ final class Installer
             if (!isset($hits1[0]) || \mb_strlen($hits1[0]) !== \mb_strlen($i)) {
                 continue;
             }
-            $nVersionTMP = (int)$versionData['nr'];
-            $xy          = \trim(\str_replace('attr', '', $i));
-            $sqlFile     = $versionNode[$xy]['SQL'] ?? '';
+            $xy      = \trim(\str_replace('attr', '', $i));
+            $sqlFile = $versionNode[$xy]['SQL'] ?? '';
             if ($sqlFile === '') {
                 continue;
             }
-            $code = $this->validateSQL($sqlFile, $nVersionTMP, $plugin);
+            $code = $this->validateSQL($sqlFile, (int)$versionData['nr'], $plugin);
             if ($code !== InstallCode::OK) {
                 $hasSQLError = true;
                 break;
@@ -374,7 +373,7 @@ final class Installer
      * @param int    $pluginVersion
      * @return array
      */
-    private function parseSQLFile(string $sqlFile, string $pluginName, $pluginVersion): array
+    private function parseSQLFile(string $sqlFile, string $pluginName, int $pluginVersion): array
     {
         $file = \PFAD_ROOT . \PFAD_PLUGIN . $pluginName . '/' .
             \PFAD_PLUGIN_VERSION . $pluginVersion . '/' .
@@ -436,10 +435,10 @@ final class Installer
      * @throws ServiceNotFoundException
      * @former logikSQLDatei()
      */
-    private function validateSQL(string $sqlFile, $version, stdClass $plugin): int
+    private function validateSQL(string $sqlFile, int $version, stdClass $plugin): int
     {
         if (empty($sqlFile)
-            || (int)$version < 100
+            || $version < 100
             || (int)$plugin->kPlugin <= 0
             || empty($plugin->cPluginID)
         ) {
@@ -845,7 +844,14 @@ final class Installer
             }
         }
         $this->db->query(
-            'DELETE FROM tzahlungsartsprache 
+            'DELETE FROM tzahlungsartsprache
+                WHERE kZahlungsart NOT IN (
+                    SELECT kZahlungsart FROM tzahlungsart
+                )',
+            ReturnType::DEFAULT
+        );
+        $this->db->query(
+            'DELETE FROM tversandartzahlungsart
                 WHERE kZahlungsart NOT IN (
                     SELECT kZahlungsart FROM tzahlungsart
                 )',

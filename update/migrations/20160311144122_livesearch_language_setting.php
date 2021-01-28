@@ -16,12 +16,18 @@ class Migration_20160311144122 extends Migration implements IMigration
 {
     protected $author = 'fp';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'global', 'noDataAvailable', 'Keine Daten verf&uuml;gbar!');
         $this->setLocalization('eng', 'global', 'noDataAvailable', 'No data available!');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("DELETE FROM `tsprachwerte` WHERE `kSprachsektion` = 1 AND `cName` = 'noDataAvailable';");

@@ -12,6 +12,10 @@
     }
   }
 
+  .colorpicker-input:placeholder-shown ~ .input-group-append i {
+    visibility: hidden !important;
+  }
+
   .product-filter-config {
     label {
       display: block;

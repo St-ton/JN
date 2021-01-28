@@ -11,6 +11,9 @@ class Migration_20180919103846 extends Migration implements IMigration
     protected $author      = 'cr';
     protected $description = 'add anonymizing settings';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         // remove the old "IPs speichern" settings (teinstellungenconf::kEinstellungenConf=335,1133)
@@ -42,6 +45,9 @@ class Migration_20180919103846 extends Migration implements IMigration
         ");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         // remove the journal-table

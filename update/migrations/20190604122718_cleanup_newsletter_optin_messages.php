@@ -17,6 +17,9 @@ class Migration_20190604122718 extends Migration implements IMigration
     protected $author      = 'cr';
     protected $description = 'Cleanup newsletter optin messages';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->removeLocalization('newsletterExists');
@@ -26,6 +29,9 @@ class Migration_20190604122718 extends Migration implements IMigration
         $this->setLocalization('eng', 'messages', 'optinSucceededMailSent', 'The mail with your activation-code was already sent.');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('optinSucceededMailSent');

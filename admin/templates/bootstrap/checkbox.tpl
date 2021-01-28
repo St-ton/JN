@@ -36,19 +36,19 @@
         <nav class="tabs-nav">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link {if !isset($cTab) || $cTab === 'uebersicht'} active{/if}" data-toggle="tab" role="tab" href="#uebersicht">
+                    <a class="nav-link {if $cTab === '' || $cTab === 'uebersicht'} active{/if}" data-toggle="tab" role="tab" href="#uebersicht">
                         {__('overview')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'erstellen'} active{/if}" data-toggle="tab" role="tab" href="#erstellen">
+                    <a class="nav-link {if $cTab === 'erstellen'} active{/if}" data-toggle="tab" role="tab" href="#erstellen">
                         {__('create')}
                     </a>
                 </li>
             </ul>
         </nav>
         <div class="tab-content">
-            <div id="uebersicht" class="tab-pane fade {if !isset($cTab) || $cTab === 'uebersicht'} active show{/if}">
+            <div id="uebersicht" class="tab-pane fade {if $cTab === '' || $cTab === 'uebersicht'} active show{/if}">
                 {if isset($oCheckBox_arr) && $oCheckBox_arr|@count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$pagination cAnchor='uebersicht'}
                     <div id="tabellenLivesuche">
@@ -164,7 +164,7 @@
                     </form>
                 {/if}
             </div>
-            <div id="erstellen" class="tab-pane fade {if isset($cTab) && $cTab === 'erstellen'} active show{/if}">
+            <div id="erstellen" class="tab-pane fade {if $cTab === 'erstellen'} active show{/if}">
                 <div>
                     <div class="subheading1">{if isset($oCheckBox->kCheckBox) && $oCheckBox->kCheckBox > 0}{__('edit')}{else}{__('create')}{/if}</div>
                         <hr class="mb-3">
@@ -387,6 +387,11 @@
                         <div class="card-footer save-wrapper">
                             <div class="row">
                                 <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <a class="btn btn-outline-primary btn-block" href="checkbox.php">
+                                        {__('cancelWithIcon')}
+                                    </a>
+                                </div>
+                                <div class="col-sm-6 col-xl-auto">
                                     <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary btn-block">
                                         {__('saveWithIcon')}
                                     </button>

@@ -16,11 +16,10 @@ use stdClass;
 class ReferencedTemplate extends ReferencedItem
 {
     /**
-     * ReferencedTemplate constructor.
      * @inheritDoc
      * @throws \Exception
      */
-    public function __construct(DbInterface $db, stdClass $license, ?Release $release)
+    public function initByExsID(DbInterface $db, stdClass $license, ?Release $release): void
     {
         $exsid = $license->exsid;
         $data  = $db->select('ttemplate', 'eTyp', 'standard');

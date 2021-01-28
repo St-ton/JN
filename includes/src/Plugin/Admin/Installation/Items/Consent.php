@@ -55,23 +55,24 @@ class Consent extends AbstractItem
                     $langCode = \mb_convert_case($localized['iso'], \MB_CASE_LOWER);
                     $mapped   = LanguageHelper::getLangIDFromIso($langCode);
                     if ($mapped === null) {
+                        $localization->languageID = 0;
                         continue;
                     }
-                    $localization->languageID = $mapped->kSprachISO;
-                    $addedLanguages[]         = $mapped->kSprachISO;
-                } elseif (\mb_strlen($hits2[0]) === \mb_strlen($l)) {
+                    $localization->languageID = $mapped->kSprache;
+                    $addedLanguages[]         = $mapped->kSprache;
+                } elseif ($localization->languageID > 0 && \mb_strlen($hits2[0]) === \mb_strlen($l)) {
                     $localization->name          = $localized['Name'];
                     $localization->purpose       = $localized['Purpose'];
                     $localization->description   = $localized['Description'];
                     $localization->privacyPolicy = $localized['PrivacyPolicy'];
                     $this->db->insert('tconsentlocalization', $localization);
-                    if ($localization->languageID === $defaultLanguage->getId()) {
+                    if ($defaultLocalization === null || $localization->languageID === $defaultLanguage->getId()) {
                         $defaultLocalization = clone $localization;
                     }
                 }
             }
             $missingLanguages = $allLanguages->filter(static function (LanguageModel $e) use ($addedLanguages) {
-                return !\in_array($e->getId(), $addedLanguages);
+                return !\in_array($e->getId(), $addedLanguages, true);
             });
             $this->addMissingTranslations($missingLanguages->toArray(), $defaultLocalization);
         }

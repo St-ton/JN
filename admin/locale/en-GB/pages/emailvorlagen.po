@@ -51,7 +51,7 @@ msgid "emailAddWRBForm"
 msgstr "Attach model withdrawal form"
 
 msgid "emailAddDSE"
-msgstr "Attach data privacy statement"
+msgstr "Attach data privacy notice"
 
 msgid "emailActive"
 msgstr "Send email"
@@ -231,3 +231,9 @@ msgstr "Back in stock notification email (double opt-in confirmation)"
 
 msgid "Empty mail body"
 msgstr "Empty email body"
+
+msgid "Check syntax"
+msgstr "Check email sytnax"
+
+msgid "Syntax check fail"
+msgstr "Email syntax check failed"

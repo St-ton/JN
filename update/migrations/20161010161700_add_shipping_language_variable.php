@@ -16,6 +16,9 @@ class Migration_20161010161700 extends Migration implements IMigration
 {
     protected $author = 'msc';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'checkout', 'productShippingDesc', 'Gesonderte Versandkosten');
@@ -24,6 +27,9 @@ class Migration_20161010161700 extends Migration implements IMigration
         $this->setLocalization('eng', 'global', 'shippingMethods', 'Shipping methods');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->setLocalization('ger', 'checkout', 'productShippingDesc', 'Für folgende Artikel gelten folgende Versandkosten');

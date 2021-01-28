@@ -17,6 +17,9 @@ class Migration_20181211120813 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'make overlays template specific';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('ALTER TABLE `tsuchspecialoverlaysprache`
@@ -26,6 +29,9 @@ class Migration_20181211120813 extends Migration implements IMigration
         $this->execute("UPDATE `tsuchspecialoverlaysprache` SET `cTemplate` = 'default'");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("DELETE FROM `tsuchspecialoverlaysprache` WHERE `cTemplate` != 'default'");

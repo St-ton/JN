@@ -62,6 +62,11 @@
             <div class="card-footer save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
+                        <button type="button" onclick="window.location.href='kontaktformular.php?tab=subjects'" class="btn btn-outline-primary btn-block">
+                            {__('cancelWithIcon')}
+                        </button>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
                         <button type="submit" value="{__('save')}" class="btn btn-primary btn-block">
                             {__('saveWithIcon')}
                         </button>

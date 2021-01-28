@@ -11,7 +11,7 @@ use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-setzeSprache();
+/** @global \JTL\Backend\AdminAccount $oAccount */
 $oAccount->permission('OBJECTCACHE_VIEW', true, true);
 $notice       = '';
 $error        = '';
@@ -19,6 +19,7 @@ $step         = 'uebersicht';
 $tab          = 'uebersicht';
 $cache        = null;
 $opcacheStats = null;
+$options      = null;
 $action       = Form::validateToken() ? Request::postVar('a') : null;
 $cacheAction  = Request::postVar('cache-action', '');
 $db           = Shop::Container()->getDB();

@@ -10,9 +10,10 @@ use JTL\Pagination\Pagination;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('STATS_CAMPAIGN_VIEW', true, true);
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'kampagne_inc.php';
 
 $campaignID   = 0;
@@ -42,10 +43,7 @@ if (!isset($_SESSION['Kampagne']->cSort)) {
 }
 
 $now = new DateTimeImmutable();
-// Tab
-if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
-}
+
 if (Request::verifyGPCDataInt('neu') === 1 && Form::validateToken()) {
     $step = 'kampagne_erstellen';
 } elseif (Request::verifyGPCDataInt('editieren') === 1

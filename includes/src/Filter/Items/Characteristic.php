@@ -183,7 +183,7 @@ class Characteristic extends BaseCharacteristic
                 if ($language->kSprache === $seo->kSprache) {
                     $this->cSeo[$language->kSprache] = $seo->cSeo;
                     if ($language->kSprache === $currentLangID) {
-                        $this->setID($seo->kMerkmal)
+                        $this->setID((int)$seo->kMerkmal)
                             ->setName($seo->cWert)
                             ->setFrontendName($seo->cWert);
                     }
@@ -417,16 +417,15 @@ class Characteristic extends BaseCharacteristic
     }
 
     /**
-     * @param null|array $data
-     * @return Option[]
+     * @inheritDoc
      */
-    public function getOptions($data = null): array
+    public function getOptions($mixed = null): array
     {
         if ($this->options !== null) {
             return $this->options;
         }
         $conf                    = $this->getConfig('navigationsfilter');
-        $force                   = $data['bForce'] ?? false;
+        $force                   = $mixed['bForce'] ?? false;
         $characteristicFilters   = [];
         $useCharacteristicFilter = $conf['merkmalfilter_verwenden'] !== 'N';
         $limit                   = $force === true
@@ -438,7 +437,7 @@ class Characteristic extends BaseCharacteristic
         if (!$force && !$useCharacteristicFilter) {
             return $characteristicFilters;
         }
-        $state     = $this->getState($data['oAktuelleKategorie'] ?? null);
+        $state     = $this->getState($mixed['oAktuelleKategorie'] ?? null);
         $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($state);
         $cacheID   = $this->getCacheID($baseQuery);
         if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {

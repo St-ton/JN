@@ -17,6 +17,9 @@ class Migration_20190611113700 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Remove global attributes data';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -31,6 +34,9 @@ class Migration_20190611113700 extends Migration implements IMigration
         $this->removeConfig('sitemap_globalemerkmale_anzeigen');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute(
@@ -39,7 +45,7 @@ class Migration_20190611113700 extends Migration implements IMigration
         $this->setConfig(
             'sitemap_globalemerkmale_anzeigen',
             'Y',
-            \CONF_SITEMAP,
+            CONF_SITEMAP,
             'Globale Merkmale anzeigen',
             'selectbox',
             40,

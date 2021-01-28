@@ -16,6 +16,9 @@ class Migration_20161011161100 extends Migration implements IMigration
 {
     protected $author = 'ms';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'basket', 'noShippingCostsAt', 'Noch %s und wir versenden kostenfrei mit %s %s');
@@ -28,6 +31,9 @@ class Migration_20161011161100 extends Migration implements IMigration
         $this->setLocalization('eng', 'basket', 'noShippingCostsReached', 'Your order has no shipping costs with %s %s');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->setLocalization('ger', 'basket', 'noShippingCostsAt', 'Noch %s und wir versenden kostenfrei');

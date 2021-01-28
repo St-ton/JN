@@ -14,11 +14,12 @@
             <div class="modal-footer">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto submit">
-                        <button type="button" class="btn btn-danger btn-bock" name="yes" data-dismiss="modal">
+                        <button type="button" class="delete-plugindata-yes btn btn-danger btn-bock">
                             <i class="fa fa-close"></i>&nbsp;{__('deletePluginDataYes')}
                         </button>
-                    </div> <div class="col-sm-6 col-xl-auto submit">
-                        <button type="button" class="btn btn-outline-primary" name="no" data-dismiss="modal">
+                    </div>
+                    <div class="col-sm-6 col-xl-auto submit">
+                        <button type="button" class="delete-plugindata-no btn btn-outline-primary">
                             <i class="fa fa-close"></i>&nbsp;{__('deletePluginDataNo')}
                         </button>
                     </div>
@@ -39,25 +40,32 @@
             disModal.modal('show');
             return false;
         });
-        disModal.on('hide.bs.modal', function(event) {
-            if (document.activeElement.name === 'yes' || document.activeElement.name === 'no') {
-                var data = $('{$selector}').serialize();
-                data += '&deinstallieren=1&delete-data=';
-                if (document.activeElement.name === 'yes') {
-                    data += '1';
-                } else {
-                    data += '0';
-                }
-                data += '&delete-files=';
-                if (document.getElementById('delete-files-{$context}').checked) {
-                    data += '1'
-                } else {
-                    data += '0'
-                }
-                simpleAjaxCall('pluginverwaltung.php', data, function () {
-                    location.reload();
-                });
-            }
+        $('#uninstall-{$context}-modal .delete-plugindata-yes').on('click', function (event) {
+            disModal.modal('hide');
+            uninstall(true);
         });
+        $('#uninstall-{$context}-modal .delete-plugindata-no').on('click', function (event) {
+            disModal.modal('hide');
+            uninstall(false);
+        });
+        function uninstall(deleteData) {
+            var data = $('{$selector}').serialize();
+            data += '&deinstallieren=1&delete-data=';
+            if (deleteData === true) {
+                data += '1';
+            } else {
+                data += '0';
+            }
+            data += '&delete-files=';
+            if (document.getElementById('delete-files-{$context}').checked) {
+                data += '1'
+            } else {
+                data += '0'
+            }
+            simpleAjaxCall('pluginverwaltung.php', data, function () {
+                location.reload();
+            });
+            return false;
+        }
     });
 </script>

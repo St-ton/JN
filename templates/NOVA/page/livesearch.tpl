@@ -5,7 +5,7 @@
             {row id="livesearch" class="mt-4"}
                 {block name='page-livesearch-top-searches'}
                     {col}
-                        <div class="h2 font-weight-bold">{lang key='topsearch'}{$Einstellungen.sonstiges.sonstiges_livesuche_all_top_count}</div>
+                        <div class="h2">{lang key='topsearch'}{$Einstellungen.sonstiges.sonstiges_livesuche_all_top_count}</div>
                         <ul class="list-unstyled">
                             {if count($LivesucheTop) > 0}
                                 {foreach $LivesucheTop as $suche}
@@ -22,7 +22,7 @@
                 {/block}
                 {block name='page-livesearch-latest-searches'}
                     {col}
-                        <div class="h2 font-weight-bold">{lang key='lastsearch'}</div>
+                        <div class="h2">{lang key='lastsearch'}</div>
                         <ul class="list-unstyled">
                             {if count($LivesucheLast) > 0}
                                 {foreach $LivesucheLast as $suche}

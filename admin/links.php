@@ -15,9 +15,10 @@ use JTL\PlausiCMS;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 $step        = 'uebersicht';
 $link        = null;
 $uploadDir   = PFAD_ROOT . PFAD_BILDER . PFAD_LINKBILDER;
@@ -315,8 +316,9 @@ if ($step === 'loesch_linkgruppe' && $linkGroupID > 0) {
     }
     $_POST = [];
 } elseif ($step === 'edit-link') {
-    $step    = 'neuer Link';
-    $link    = (new Link($db))->load($linkID);
+    $step = 'neuer Link';
+    $link = (new Link($db))->load($linkID);
+    $link->deref();
     $dirName = $uploadDir . $link->getID();
     $files   = [];
     if (Request::verifyGPCDataInt('delpic') === 1) {

@@ -288,7 +288,7 @@ msgid "startseite_neuimsortiment_anzahl_name"
 msgstr "\"New in product range\": Number of items"
 
 msgid "startseite_neuimsortiment_anzahl_desc"
-msgstr "Specify the number of items per box. Enter 0 if you do not want this box to be displayed. See the settings tab in \"Standard elements > Footers/Boxes\" for additional settings."
+msgstr "Specify the number of items per box. Enter 0 if you do not want this box to be displayed. Fur further settings regarding the slider „New in product range“, please see the \"Settings\" tab in \"Standard elements > Footers/Boxes\"."
 
 msgid "startseite_neuimsortiment_sortnr_name"
 msgstr "\"New in product range\": Sort number"
@@ -348,13 +348,13 @@ msgid "email_smtp_hostname_name"
 msgstr "SMTP host name"
 
 msgid "email_smtp_hostname_desc"
-msgstr "If you have selected the \"SMTP\" option under \"Send emails via\", enter the host name here."
+msgstr "If you have selected the \"SMTP\" option under \"Send emails via\", enter the name of the host here."
 
 msgid "email_smtp_port_name"
 msgstr "SMTP port"
 
 msgid "email_smtp_port_desc"
-msgstr "If you have selected the \"SMTP\" option under \"Send emails via\", enter the port number here."
+msgstr "If you have selected the \"SMTP\" option under \"Send emails via\", enter the number of the port here."
 
 msgid "email_smtp_auth_name"
 msgstr "Use SMTP Auth"
@@ -390,7 +390,7 @@ msgid "email_master_absender_name_name"
 msgstr "Sender for master email address"
 
 msgid "email_master_absender_name_desc"
-msgstr "Instead of the master email address, email recipients will see the information entered here. Please note: some providers (e.g. Office365) do not allow any deviations and require the input of the exact master email address."
+msgstr "Specify which sender is to be used for emails."
 
 msgid "suche_fulltext_name"
 msgstr "Use full-text search"
@@ -465,19 +465,19 @@ msgid "suche_sortierprio_name_desc"
 msgstr "The smaller the number, the higher up the sorting option will be displayed. Enter 0 if you do not want this option to be displayed."
 
 msgid "suche_sortierprio_name_ab_name"
-msgstr "Priority of sorting options: name from Z to A"
+msgstr "Priority of sorting options: Name from Z to A"
 
 msgid "suche_sortierprio_name_ab_desc"
 msgstr "The smaller the number, the higher up the sorting option will be displayed. Enter 0 if you do not want this option to be displayed."
 
 msgid "suche_sortierprio_preis_name"
-msgstr "Priority of sorting options: price low to high"
+msgstr "Priority of sorting options: Price low to high"
 
 msgid "suche_sortierprio_preis_desc"
 msgstr "The smaller the number, the higher up the sorting option will be displayed. Enter 0 if you do not want this option to be displayed."
 
 msgid "suche_sortierprio_preis_ab_name"
-msgstr "Priority of sorting options: price high to low"
+msgstr "Priority of sorting options: Price high to low"
 
 msgid "suche_sortierprio_preis_ab_desc"
 msgstr "The smaller the number, the higher up the sorting option will be displayed. Enter 0 if you do not want this option to be displayed."
@@ -501,25 +501,25 @@ msgid "suche_sortierprio_artikelnummer_desc"
 msgstr "The smaller the number, the higher up the sorting option will be displayed. Enter 0 if you do not want this option to be displayed."
 
 msgid "suche_sortierprio_gewicht_name"
-msgstr "Priority of sorting options: weight"
+msgstr "Priority of sorting options: Weight"
 
 msgid "suche_sortierprio_gewicht_desc"
 msgstr "The smaller the number, the higher up the sorting option will be displayed. Enter 0 if you do not want this option to be displayed."
 
 msgid "suche_sortierprio_erscheinungsdatum_name"
-msgstr "Priority of sorting options: release date"
+msgstr "Priority of sorting options: Release date"
 
 msgid "suche_sortierprio_erscheinungsdatum_desc"
 msgstr "The smaller the number, the higher up the sorting option will be displayed. Enter 0 if you do not want this option to be displayed."
 
 msgid "suche_sortierprio_bestseller_name"
-msgstr "Priority of sorting options: bestsellers"
+msgstr "Priority of sorting options: Bestsellers"
 
 msgid "suche_sortierprio_bestseller_desc"
 msgstr "The smaller the number, the higher up the sorting option will be displayed. Enter 0 if you do not want this option to be displayed."
 
 msgid "suche_sortierprio_bewertung_name"
-msgstr "Priority of sorting options: reviews"
+msgstr "Priority of sorting options: Customer reviews"
 
 msgid "suche_sortierprio_bewertung_desc"
 msgstr "The smaller the number, the higher up the sorting option will be displayed. Enter 0 if you do not want this option to be displayed."
@@ -636,7 +636,7 @@ msgid "artikeluebersicht_vergleichsliste_anzeigen_name"
 msgstr "Show comparison list button"
 
 msgid "artikeluebersicht_vergleichsliste_anzeigen_desc"
-msgstr "Specify whether to show a button in the item list that allows adding items to the comparison list."
+msgstr "Specify whether to show a button in the item list that allows adding items to the comparison list. For this to work, the option \"Hover/Tap for additional item information\" must be enabled in the template settings."
 
 msgid "artikeluebersicht_wunschzettel_anzeigen_name"
 msgstr "Show wish list button"
@@ -657,10 +657,10 @@ msgid "livesuche_max_ip_count_desc"
 msgstr "Specify the maximum number of entries per visitor and hour that is saved in the search queries. This allows you to prevent manipulation of the search queries."
 
 msgid "suchfilter_anzeigen_ab_name"
-msgstr "Show filters in content area from"
+msgstr "Show filters in \"Content\" area from"
 
 msgid "suchfilter_anzeigen_ab_desc"
-msgstr "Specify the minimum number of items that must be displayed in the search results to show filters in the content area."
+msgstr "Specify the minimum number of items that must be displayed in the search results for the filters to be displayed in the content area."
 
 msgid "artikeluebersicht_erw_darstellung_name"
 msgstr "Use expanded item overview"
@@ -684,7 +684,7 @@ msgid "products_per_page_list_name"
 msgstr "Item selection options per page in list view"
 
 msgid "products_per_page_list_desc"
-msgstr "Enter the values for the frontend from which the customer can choose how many items they want to view per page. Enter \"-1\" if you want to display the option to display all items on one page."
+msgstr "Enter the values for the front end from which the customer can choose the number of items that they want to view per page. Enter \"-1\" if you want to display the option to display all items on one page."
 
 msgid "artikeluebersicht_anzahl_darstellung2_name"
 msgstr "Number of items in gallery view"
@@ -696,7 +696,7 @@ msgid "products_per_page_gallery_name"
 msgstr "Item selection options per page in gallery view"
 
 msgid "products_per_page_gallery_desc"
-msgstr "Enter the values for the frontend from which the customer can choose how many items they want to view per page. Enter \"-1\" if you want to display the option to display all items on one page."
+msgstr "Enter the values for the front end from which the customer can choose the number of items that they want to view per page. Enter \"-1\" if you want to display the option to display all items on one page."
 
 msgid "artikeldetails_xselling_standard_anzeigen_name"
 msgstr "Show default cross-selling"
@@ -1020,7 +1020,7 @@ msgid "artikeldetails_attribute_anhaengen_name"
 msgstr "Add item attributes to description"
 
 msgid "artikeldetails_attribute_anhaengen_desc"
-msgstr "Specify whether to display item attributes saved in JTL-Wawi on the item detail page in the pattern Attribute name: Attribute value."
+msgstr "Specify whether to display in JTL-Wawi item attributes that follow the pattern Attribute name: Attribute value on the item detail page."
 
 msgid "kundenregistrierung_abfragen_titel_name"
 msgstr "Prompt academic title"
@@ -1728,13 +1728,13 @@ msgid "bilder_dateiformat_name"
 msgstr "File format"
 
 msgid "bilder_dateiformat_desc"
-msgstr "Specify whether images are to be saved in the JPEG or PNG format. If 'Auto' is selected and the server allows this, all images are also saved in the webp format. While this requires more storage space on the server, webp images are significantly smaller and lead to better front-end performance"
+msgstr "Specify whether to save images in PNG or JPEG format. If \"Automatically\" is selected and the server allows this, all images are also saved in the webp format. While this requires more storage space on the server, webp images are significantly smaller and lead to better front-end performance."
 
 msgid "bilder_hintergrundfarbe_name"
 msgstr "Background colour"
 
 msgid "bilder_hintergrundfarbe_desc"
-msgstr "Select a backgorund color for images. Only in connection with setting \"Match image size to container size - Yes\"."
+msgstr "Select a background colour for images. The colour is only visible if the the setting for \"Match image size to container size\" is \"Yes\"."
 
 msgid "sonstiges_livesuche_all_top_count_name"
 msgstr "Number of top search queries to be displayed"
@@ -2091,7 +2091,7 @@ msgid "vergleichsliste_lieferzeit_desc"
 msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up the field appears. Enter 0 if you do not want this field to be displayed."
 
 msgid "vergleichsliste_hersteller_name"
-msgstr "Displaying priority of Manufacturer"
+msgstr "Displaying priority of manufacturer"
 
 msgid "vergleichsliste_hersteller_desc"
 msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up the field appears. Enter 0 if you do not want this field to be displayed."
@@ -2229,10 +2229,10 @@ msgid "bewertung_artikel_gekauft_desc"
 msgstr "Specify whether customers can only rate items that they have purchased themselves."
 
 msgid "newsletter_active_name"
-msgstr "Enable newsletter"
+msgstr "Activate newsletter"
 
 msgid "newsletter_active_desc"
-msgstr "Specify whether to enable the newsletter."
+msgstr "Specify whether to use the newsletter."
 
 msgid "newsletter_emailmethode_name"
 msgstr "Send emails via"
@@ -2361,10 +2361,10 @@ msgid "allgemein_kategoriefilter_benutzen_desc"
 msgstr "Specify whether to display the category as a filter option for your customers in the results list under \"Filter by\". These options are only partially supported by the NOVA template. Please select \"Yes, in content area and in navigation box\" or \"No\" if you are using NOVA."
 
 msgid "allgemein_availabilityfilter_benutzen_name"
-msgstr "Allow filtering by availability"
+msgstr "Use availability filter"
 
 msgid "allgemein_availabilityfilter_benutzen_desc"
-msgstr "Specify whether to display the availability as a filter option for your customers in the results list under \"Filter by\". These options are only partially supported by the NOVA template. Please select \"Yes, in content area and in navigation box\" or \"No\" if you are using NOVA."
+msgstr "Specify whether to display \"Availability\" as a filter option for your customers in the results list under \"Filter by\". These options are only partially supported by the NOVA template. Please select \"Yes, in content area and in navigation box\" or \"No\" if you are using NOVA."
 
 msgid "kategoriefilter_anzeigen_als_name"
 msgstr "Show category filter as"
@@ -2946,7 +2946,7 @@ msgid "cron_freq_name"
 msgstr "Start server-to-server with every Xth call"
 
 msgid "cron_type_desc"
-msgstr "Specifies whether a Pseudo Cron Method  is activated."
+msgstr "Specify whether a Pseudo Cron method is to be active."
 
 msgid "cron_freq_desc"
 msgstr "Starts Pseudo Cron with every Xth call of the page"
@@ -2973,13 +2973,13 @@ msgid "consent_manager_active_name"
 msgstr "Enable Consent manager"
 
 msgid "consent_manager_active_desc"
-msgstr "Specify whether to enable the Consent manager."
+msgstr "Specify whether to use the Consent manager."
 
 msgid "bewertung_sortierung_name"
-msgstr "Default sorting option"
+msgstr "Default sorting"
 
 msgid "bewertung_sortierung_desc"
-msgstr "Specify which sorting option is selected by default."
+msgstr "Specify how reviews are sorted by default."
 
 msgid "direct_advertising_name"
 msgstr "Show information on direct advertising when registering the email address"
@@ -2992,3 +2992,9 @@ msgstr "Allowed file uploads per hour"
 
 msgid "upload_modul_limit_desc"
 msgstr "Specify the maximum number of files that a user can upload per hour when the Upload Module is activated."
+
+msgid "consent_manager_show_banner_name"
+msgstr "Show cookie banner"
+
+msgid "consent_manager_show_banner_desc"
+msgstr "Specify when visitors of your online shop will see the banner for giving or denying global consent."

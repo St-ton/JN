@@ -2,9 +2,13 @@
 
 namespace JTL\Plugin;
 
+use Exception;
+use InvalidArgumentException;
+use JTL\Backend\AdminIO;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\IO\IOError;
 use JTL\Plugin\Data\Config;
 use JTL\Shop;
 use stdClass;
@@ -131,7 +135,11 @@ class Helper
                 ? new PluginLoader($db, $cache)
                 : new LegacyPluginLoader($db, $cache);
 
-            return $loader->init((int)$plugin->kPlugin, false, $langID);
+            try {
+                return $loader->init((int)$plugin->kPlugin, false, $langID);
+            } catch (InvalidArgumentException $e) {
+                return null;
+            }
         }
 
         return null;
@@ -447,8 +455,12 @@ class Helper
     public static function bootstrap(int $id, LoaderInterface $loader): ?BootstrapperInterface
     {
         if (!isset(self::$bootstrapper[$id])) {
-            $plugin = $loader->init($id);
-            if ($plugin === null || $plugin->isBootstrap() === false) {
+            try {
+                $plugin = $loader->init($id);
+            } catch (InvalidArgumentException $e) {
+                return null;
+            }
+            if ($plugin->isBootstrap() === false) {
                 return null;
             }
             if ($loader instanceof LegacyPluginLoader) {
@@ -512,5 +524,65 @@ class Helper
         $db    = $db ?? Shop::Container()->getDB();
 
         return $isExtension ? new PluginLoader($db, $cache) : new LegacyPluginLoader($db, $cache);
+    }
+
+    /**
+     * @param int $pluginID
+     * @return stdClass
+     */
+    public static function ioTestLoading(int $pluginID): stdClass
+    {
+        $result = (object)[
+            'code'     => InstallCode::WRONG_PARAM,
+            'message'  => '',
+        ];
+        if ($pluginID <= 0) {
+            $result->code    = InstallCode::NO_PLUGIN_FOUND;
+            $result->message = __('errorPluginNotFound');
+
+            return $result;
+        }
+
+        \register_shutdown_function(static function () use ($pluginID) {
+            $err = \error_get_last();
+            if ($err !== null) {
+                \ob_get_clean();
+                $io = AdminIO::getInstance();
+                $io->respondAndExit(new IOError($err['message']));
+            }
+        });
+
+        $db     = Shop::Container()->getDB();
+        $cache  = Shop::Container()->getCache();
+        $data   = $db->select('tplugin', 'kPlugin', $pluginID);
+        $loader = (int)$data->bExtension === 1
+            ? new PluginLoader($db, $cache)
+            : new LegacyPluginLoader($db, $cache);
+        try {
+            $plugin = $loader->init($pluginID);
+            if ($plugin === null) {
+                $result->code    = InstallCode::NO_PLUGIN_FOUND;
+                $result->message = __('errorPluginNotFound');
+
+                return $result;
+            }
+            $boot = self::bootstrap($pluginID, $loader);
+            if ($boot === null) {
+                $result->code = InstallCode::OK;
+
+                return $result;
+            }
+            if (($p = $boot->getPlugin()) !== null) {
+                $result->code    = InstallCode::OK;
+                $result->message = $p->getPluginID();
+
+                return $result;
+            }
+        } catch (Exception $e) {
+            $result->code    = $e->getCode();
+            $result->message = $e->getMessage();
+        }
+
+        return $result;
     }
 }

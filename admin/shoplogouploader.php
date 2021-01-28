@@ -6,8 +6,10 @@ use JTL\Helpers\Request;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
-$oAccount->permission('DISPLAY_OWN_LOGO_VIEW', true, true);
+/** @global \JTL\Backend\AdminAccount $oAccount */
 /** @global \JTL\Smarty\JTLSmarty $smarty */
+
+$oAccount->permission('DISPLAY_OWN_LOGO_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'shoplogouploader_inc.php';
 if (isset($_POST['action'], $_POST['logo']) && $_POST['action'] === 'deleteLogo') {
     $currentLogo = Shop::getLogo();

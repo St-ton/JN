@@ -18,8 +18,7 @@ class Migration_20200417082200 extends Migration implements IMigration
     protected $description = 'Remove customer recruting data';
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
@@ -42,15 +41,14 @@ class Migration_20200417082200 extends Migration implements IMigration
     }
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function down()
     {
         $this->setConfig(
             'kwk_nutzen',
             'N',
-            \CONF_KUNDENWERBENKUNDEN,
+            CONF_KUNDENWERBENKUNDEN,
             'Kunden werben Kunden nutzen?',
             'selectbox',
             20,
@@ -65,7 +63,7 @@ class Migration_20200417082200 extends Migration implements IMigration
         $this->setConfig(
             'kwk_neukundenguthaben',
             '0',
-            \CONF_KUNDENWERBENKUNDEN,
+            CONF_KUNDENWERBENKUNDEN,
             'Neukunde Willkommensguthaben',
             'kommazahl',
             30,
@@ -76,7 +74,7 @@ class Migration_20200417082200 extends Migration implements IMigration
         $this->setConfig(
             'kwk_bestandskundenguthaben',
             '0',
-            \CONF_KUNDENWERBENKUNDEN,
+            CONF_KUNDENWERBENKUNDEN,
             'Bestandskunde Bonusguthaben',
             'kommazahl',
             30,
@@ -87,7 +85,7 @@ class Migration_20200417082200 extends Migration implements IMigration
         $this->setConfig(
             'kwk_kundengruppen',
             '1',
-            \CONF_KUNDENWERBENKUNDEN,
+            CONF_KUNDENWERBENKUNDEN,
             'Standard Kundengruppe',
             'selectkdngrp',
             50,
@@ -98,7 +96,7 @@ class Migration_20200417082200 extends Migration implements IMigration
         $this->setConfig(
             'configgroup_116_customer_recruit_customer',
             'Kunden werben Kunden Einstellungen',
-            \CONF_KUNDENWERBENKUNDEN,
+            CONF_KUNDENWERBENKUNDEN,
             'Kunden werben Kunden Einstellungen',
             null,
             10,

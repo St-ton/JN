@@ -18,8 +18,7 @@ class Migration_20200417100000 extends Migration implements IMigration
     protected $description = 'Remove customer recruting tables';
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
@@ -28,8 +27,7 @@ class Migration_20200417100000 extends Migration implements IMigration
     }
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function down()
     {

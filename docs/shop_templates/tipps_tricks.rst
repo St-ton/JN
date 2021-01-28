@@ -272,38 +272,69 @@ Template-Code:
 Erstellen eigener Smarty-Funktionen
 -----------------------------------
 
-Um in Ihrem Template eigene Smarty-Funktionen nutzen zu können, legen Sie im Verzeichnis ``[templatename]/php/`` eine
-Datei ``functions.php`` an. |br|
-Diese Datei wird automatisch beim Start geladen und ermöglicht das Registrieren von Smarty-Plugins.
+Um eigene Smarty-Funktionen zu registrieren, gibt es template-abhängig zwei Wege.
 
-.. attention::
+Evo-Template
+++++++++++++
 
-    Die so erstellte ``functions.php`` ersetzt das Original aus dem Vatertemplate vollständig! Stellen Sie deshalb sicher,
-    dass **alle** geerbten Funktionen ebenfalls implementiert werden!
+Wenn Sie ein Child-Template des Evo-Templates verwenden, legen Sie im Wurzelverzeichnis Ihres Child-Templates
+einen Ordner ``php/`` an. Erzeugen Sie dort eine Datei namens ``functions.php``.
 
-Theoretisch könnten Sie einfach eine komplette Kopie der Datei aus dem Parent-Template erstellen und dort Ihre
-Änderungen vornehmen. Das ist jedoch nicht sehr sinnvoll, da dann bei jedem Update des Onlineshops alle Änderungen
-nachgezogen werden müssten. |br|
-Besser ist es, das Original einfach per ``include`` in das eigene Script einzubinden.
-
-Um die Update-Fähigkeiten Ihres Parent-Templates weiterhin zu gewährleisten, erstellen Sie eine
-leere ``functions.php`` und fügen dort den folgenden Code ein:
+Um die Update-Fähigkeiten Ihres Parent-Templates weiterhin zu gewährleisten, fügen Sie folgenden Inhalt ein:
 
 .. code-block:: php
-   :emphasize-lines: 8
+    :emphasize-lines: 6
 
     <?php
     /**
-     * Eigene Smarty-Funktionen mit Vererbung aus dem Vatertemplate
-     *
      * @global JTLSmarty $smarty
      */
 
     include realpath(__DIR__ . '/../../Evo/php/functions.php');
 
-Danach können Sie Ihre eigenen Smarty-Funktionen implementieren und in Smarty registrieren.
 
-Im nachfolgenden Beispiel wird eine Funktion zur Berechnung der Kreiszahl PI eingebunden.
+.. attention::
+
+    Die so erstellte ``functions.php`` ersetzt das Original aus dem Vatertemplate vollständig!
+
+Theoretisch könnten Sie einfach eine komplette Kopie der Datei aus dem Parent-Template erstellen und dort Ihre
+Änderungen vornehmen. Das ist jedoch nicht sehr sinnvoll, da dann bei jedem Update von JTL-Shop alle Änderungen
+nachgezogen werden müssten. |br|
+Besser ist es, das Original einfach per ``include`` in das eigene Script einzubinden (siehe Beispiel oben).
+
+NOVA-Template
++++++++++++++
+
+Wenn Sie ein Child-Template des NOVA-Templates verwenden, erstellen Sie im Wurzelverzeichnis Ihres Child-Templates
+eine PHP-Klasse namens ``Bootstrap.php`` mit folgendem Inhalt:
+
+.. code-block:: php
+
+    <?php declare(strict_types=1);
+
+    namespace Template\[NOVA-child-name];
+
+    /**
+     * Class Bootstrap
+     * @package Template\[NOVA-child-name]
+     */
+    class Bootstrap extends \Template\NOVA\Bootstrap
+    {
+        // eigene Methoden
+    }
+
+
+.. hint::
+
+    Die PHP-Datei, wie auch die PHP-Klasse, wird beim Start automatisch geladen und ermöglicht das Registrieren
+    von Smarty-Plugins. |br|
+    Danach können Sie Ihre eigenen Smarty-Funktionen implementieren und in Smarty registrieren.
+
+Funktionen im Evo-Child registrieren
+++++++++++++++++++++++++++++++++++++
+
+Im nachfolgenden Beispiel wird eine Funktion zur Berechnung der Kreiszahl PI in die PHP-Datei ``functions.php``
+eingebunden und in Smarty registriert:
 
 .. code-block:: php
 
@@ -317,22 +348,78 @@ Im nachfolgenden Beispiel wird eine Funktion zur Berechnung der Kreiszahl PI ein
 
         for ($i = 0; $i < $precision; $i++) {
             $iterator = $iterator + $factor / $nenner;
-            $factor   = $factor * -1;
+            $factor  *= -1;
             $nenner  += 2;
         }
 
         return $iterator * 4;
     }
 
-Die Funktion ``getPI``  kann dann im Template z. B. mit ``{getPi(12)}`` verwendet werden.
+
+Funktionen im NOVA-Child registrieren
++++++++++++++++++++++++++++++++++++++
+
+Im nachfolgenden Beispiel wird eine Methode zur Berechnung der Kreiszahl PI in die ``Bootstrap``-Klasse eingebunden und
+in Smarty registriert:
+
+.. code-block:: php
+
+    <?php declare(strict_types=1);
+
+    namespace Template\[NOVA-child-name];
+
+    use Smarty;
+
+    /**
+     * Class Bootstrap
+     * @package Template\[NOVA-child-name]
+     */
+    class Bootstrap extends \Template\NOVA\Bootstrap
+    {
+        public function boot(): void
+        {
+            parent::boot();
+            try {
+                $this->getSmarty()->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getPI', [$this, 'getPI']);
+            } catch (\SmartyException $e) {
+                throw new \RuntimeException('Problems during smarty instantiation: ' . $e->getMessage());
+            }
+        }
+
+        public function getPI($args)
+        {
+            $precision = $args['precision'];
+            $iterator  = 1;
+            $factor    = -1;
+            $nenner    = 3;
+
+            for ($i = 0; $i < $precision; $i++) {
+                $iterator = $iterator + $factor / $nenner;
+                $factor   *= -1;
+                $nenner   += 2;
+            }
+
+            return $iterator * 4;
+        }
+    }
+
+Funktionen nutzen
++++++++++++++++++
+
+Die Funktion ``getPI()``  kann dann im Template z. B. mit ``{getPI precision=12}`` verwendet werden.
+
 
 Überschreiben bestehender Funktionen
 ------------------------------------
 
-Das Überschreiben von Funktionalitäten ist ebenfalls möglich. |br|
-Hierzu muss lediglich die Registrierung der originalen Funktion zuerst mit ``$smarty->unregisterPlugin`` aufgehoben
-werden. |br|
-Danach kann die eigene Funktion registriert werden.
+Das Überschreiben von Funktionalitäten ist ebenfalls möglich.
+
+Funktionen im Evo-Child überschreiben
++++++++++++++++++++++++++++++++++++++
+
+In Ihrem Evo-Child muss lediglich die Registrierung der originalen Funktion zuerst mit ``$smarty->unregisterPlugin``
+aufgehoben werden. |br|
+Danach kann die neue Funktion registriert werden.
 
 Im nachfolgenden Beispiel wird die Funktion ``trans`` des EVO-Templates dahingehend erweitert, dass bei
 nicht vorhandener Übersetzung der Text "*-no translation-*" ausgegeben wird.
@@ -360,6 +447,44 @@ nicht vorhandener Übersetzung der Text "*-no translation-*" ausgegeben wird.
 
         return $trans;
     }
+
+Funktionen im NOVA-Child überschreiben
+++++++++++++++++++++++++++++++++++++++
+
+In Ihrem NOVA-Child überschreiben sie Funktionen, indem Sie die entsprechende Basisklasse des NOVA-Templates
+``templates/NOVA/Plugins.php`` mit einer eigenen Klasse in Ihrem NOVA-Child ``templates/[NOVA-child-name]/Plugins.php``
+erweitern.
+
+Im nachfolgenden Beispiel wird die Funktion ``getTranslation()`` des NOVA-Templates dahingehend erweitert, dass bei
+nicht vorhandener Übersetzung der Text "*-no translation-*" ausgegeben wird.
+
+.. code-block:: php
+
+    <?php declare(strict_types=1);
+
+    namespace Template\[NOVA-child-name];
+
+    use JTL\Shop;
+
+    /**
+     * Class Bootstrap
+     * @package Template\[NOVA-child-name]
+     */
+    class Plugins extends \Template\NOVA\Plugins
+    {
+        public function getTranslation($mixed, $to = null): ?string
+        {
+            $to = $to ?: Shop::getLanguageCode();
+
+            if ($this->hasTranslation($mixed, $to)) {
+                return \is_string($mixed) ? $mixed : $mixed[$to];
+            }
+
+            return '-no translation-';
+        }
+    }
+
+
 
 Unabhängige Artikellisten erzeugen
 ----------------------------------

@@ -20,8 +20,11 @@ class Manufacturer extends AbstractImage
     /**
      * @var string
      */
-    public const REGEX = '/^media\/image\/(?P<type>manufacturer)'
-    . '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl)\/(?P<name>[a-zA-Z0-9\-_]+)'
+    public const REGEX = '/^media\/image'
+    . '\/(?P<type>manufacturer)'
+    . '\/(?P<id>\d+)'
+    . '\/(?P<size>xs|sm|md|lg|xl)'
+    . '\/(?P<name>[' . self::REGEX_ALLOWED_CHARS . ']+)'
     . '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**
@@ -65,7 +68,7 @@ class Manufacturer extends AbstractImage
             case 2:
                 $result = $mixed->path ?? $mixed->cBildpfad ?? null;
                 if ($result !== null) {
-                    return \pathinfo($result)['filename'];
+                    $result = \pathinfo($result)['filename'];
                 }
                 break;
             case 1:

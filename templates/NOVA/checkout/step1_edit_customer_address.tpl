@@ -23,8 +23,8 @@
                             {include file='checkout/inc_shipping_address.tpl'}
                         {/block}
                         {block name='checkout-step1-edit-customer-address-form-submit'}
-                            {row class='mt-5'}
-                                {col cols=12 md=4 xl=3 class='ml-md-auto'}
+                            {row class="checkout-button-row"}
+                                {col cols=12 md=4 xl=3 class="checkout-button-row-submit"}
                                     {input type="hidden" name="unreg_form" value=$unreg_form}
                                     {input type="hidden" name="editRechnungsadresse" value=$editRechnungsadresse}
                                     {button variant="primary" type="submit" block=true class="submit_once"}

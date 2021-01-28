@@ -16,11 +16,17 @@ class Migration_20160419114335 extends Migration implements IMigration
 {
     protected $author = 'aj';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->removeConfig('bilder_hochskalieren');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
     }

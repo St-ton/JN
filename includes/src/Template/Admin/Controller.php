@@ -22,6 +22,7 @@ use JTL\Template\Model;
 use JTL\Template\XMLReader;
 use JTLShop\SemVer\Version;
 use stdClass;
+use function Functional\first;
 
 /**
  * Class Controller
@@ -142,7 +143,7 @@ class Controller
         $response  = $extractor->extractTemplate($files['tmp_name']);
         if ($response->getStatus() === InstallationResponse::STATUS_OK
             && $response->getDirName()
-            && ($bootstrapper = BootChecker::bootstrap($response->getDirName())) !== null
+            && ($bootstrapper = BootChecker::bootstrap(\rtrim($response->getDirName(), '/'))) !== null
         ) {
             $bootstrapper->installed();
         }
@@ -150,6 +151,7 @@ class Controller
         $html          = new stdClass();
         $html->id      = '#shoptemplate-overview';
         $html->content = $this->smarty->assign('listingItems', $lstng->getAll())
+            ->assign('shopVersion', Version::parse(\APPLICATION_VERSION))
             ->fetch('tpl_inc/shoptemplate_overview.tpl');
         $response->setHtml($html);
         die($response->toJson());
@@ -224,22 +226,31 @@ class Controller
         if ($tplXML !== null && !empty($tplXML->Parent)) {
             $parentFolder = (string)$tplXML->Parent;
         }
-        $tplConfXML   = $this->config->getConfigXML($reader, $parentFolder);
-        $sectionCount = \count($_POST['cSektion']);
-        for ($i = 0; $i < $sectionCount; $i++) {
-            $section = $_POST['cSektion'][$i];
-            $name    = $_POST['cName'][$i];
-            $value   = $_POST['cWert'][$i];
-            // for uploads, the value of an input field is the $_FILES index of the uploaded file
-            if (\mb_strpos($value, 'upload-') === 0) { // all upload fields have to start with "upload-"
-                try {
-                    $value = $this->handleUpload($tplConfXML, $value, $name);
-                } catch (InvalidArgumentException $e) {
+        $tplConfXML = $this->config->getConfigXML($reader, $parentFolder);
+        foreach ($tplConfXML as $config) {
+            foreach ($config->settings as $setting) {
+                if ($setting->cType === 'checkbox') {
+                    $value = isset($_POST[$setting->elementID]) ? '1' : '0';
+                } else {
+                    $value = $_POST[$setting->elementID] ?? null;
+                }
+                if ($value === null) {
                     continue;
                 }
+                if (\is_array($value)) {
+                    $value = first($value);
+                }
+                // for uploads, the value of an input field is the $_FILES index of the uploaded file
+                if ($setting->cType === 'upload') {
+                    try {
+                        $value = $this->handleUpload($tplConfXML, $value, $setting->key);
+                    } catch (InvalidArgumentException $e) {
+                        continue;
+                    }
+                }
+                $this->config->updateConfigInDB($setting->section, $setting->key, $value);
+                $this->cache->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_TEMPLATE]);
             }
-            $this->config->updateConfigInDB($section, $name, $value);
-            $this->cache->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_TEMPLATE]);
         }
         $check = $this->setActiveTemplate($this->currentTemplateDir);
         if ($check) {
@@ -276,7 +287,7 @@ class Controller
                     continue;
                 }
                 $templatePath = \PFAD_TEMPLATES . $this->currentTemplateDir . '/' . $setting->rawAttributes['target'];
-                $base         = PFAD_ROOT . $templatePath;
+                $base         = \PFAD_ROOT . $templatePath;
                 // optional target file name + extension
                 if (isset($setting->rawAttributes['targetFileName'])) {
                     $value = $setting->rawAttributes['targetFileName'];
@@ -349,7 +360,7 @@ class Controller
         $current      = $service->loadFull(['cTemplate' => $this->currentTemplateDir]);
         $parentFolder = null;
         Shop::Container()->getGetText()->loadTemplateLocale('base', $current);
-        if ($tplXML !== null && !empty($tplXML->Parent)) {
+        if (!empty($tplXML->Parent)) {
             $parentFolder = (string)$tplXML->Parent;
         }
         $templateConfig = $this->config->getConfigXML($reader, $parentFolder);

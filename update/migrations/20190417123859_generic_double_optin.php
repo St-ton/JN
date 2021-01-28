@@ -29,6 +29,9 @@ class Migration_20190417123859 extends Migration implements IMigration
     protected $description = 'generic double optin';
     protected $kEmailvorlage;
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute("CREATE TABLE IF NOT EXISTS toptin(
@@ -245,6 +248,9 @@ class Migration_20190417123859 extends Migration implements IMigration
             tinyint(3) NOT NULL DEFAULT 0 COMMENT 'append privatcy statement'");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->kEmailvorlage = $this->fetchOne(

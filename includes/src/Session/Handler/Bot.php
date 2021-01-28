@@ -30,17 +30,15 @@ class Bot extends JTLDefault
     }
 
     /**
-     * @param string $savePath
-     * @param string $sessName
-     * @return bool
+     * @inheritDoc
      */
-    public function open($savePath, $sessName)
+    public function open($path, $name)
     {
         return true;
     }
 
     /**
-     * @return bool
+     * @inheritDoc
      */
     public function close()
     {
@@ -48,11 +46,9 @@ class Bot extends JTLDefault
     }
 
     /**
-     * @param string $sessID
-     * @return mixed|string
-     * @throws \Exception
+     * @inheritDoc
      */
-    public function read($sessID)
+    public function read($id)
     {
         $sessionData = '';
         if ($this->doSave === true) {
@@ -65,33 +61,29 @@ class Bot extends JTLDefault
     }
 
     /**
-     * @param string $sessID
-     * @param array $sessData
-     * @return bool
+     * @inheritDoc
      */
-    public function write($sessID, $sessData)
+    public function write($id, $data)
     {
         if ($this->doSave === true) {
-            Shop::Container()->getCache()->set($this->sessionID, $sessData, [\CACHING_GROUP_CORE]);
+            Shop::Container()->getCache()->set($this->sessionID, $data, [\CACHING_GROUP_CORE]);
         }
 
         return true;
     }
 
     /**
-     * @param string $sessID
-     * @return bool
+     * @inheritDoc
      */
-    public function destroy($sessID)
+    public function destroy($id)
     {
         return true;
     }
 
     /**
-     * @param int $sessMaxLifeTime
-     * @return bool
+     * @inheritDoc
      */
-    public function gc($sessMaxLifeTime)
+    public function gc($max_lifetime)
     {
         return true;
     }

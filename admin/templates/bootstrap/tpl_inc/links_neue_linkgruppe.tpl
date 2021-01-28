@@ -1,4 +1,4 @@
-{assign var=cTitel value=__('newLinkGroup')}
+{assign var=cTitel value=__('newLinkGroupTitle')}
 {if $linkGroup !== null}
     {assign var=cTitel value=__('saveLinkGroup')}
 {/if}
@@ -41,6 +41,11 @@
             <div class="card-footer save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
+                        <a class="btn btn-outline-primary btn-block" href="links.php">
+                            {__('cancelWithIcon')}
+                        </a>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
                         <button type="submit" class="btn btn-primary btn-block" name="action" value="save-linkgroup"><i class="fa fa-save"></i> {$cTitel}</button>
                     </div>
                 </div>

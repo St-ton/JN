@@ -26,8 +26,7 @@ class CaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     *
-     * @return bool
+     * @inheritDoc
      */
     public function isConfigured(): bool
     {
@@ -44,7 +43,7 @@ class CaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @return bool
+     * @inheritDoc
      */
     public function isEnabled(): bool
     {
@@ -52,8 +51,7 @@ class CaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @param JTLSmarty|JTLSmartyTemplateClass $smarty
-     * @return string
+     * @inheritDoc
      */
     public function getHeadMarkup($smarty): string
     {
@@ -75,8 +73,7 @@ class CaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @param JTLSmarty|JTLSmartyTemplateClass $smarty
-     * @return string
+     * @inheritDoc
      */
     public function getBodyMarkup($smarty): string
     {
@@ -98,8 +95,7 @@ class CaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @param  array $requestData
-     * @return bool
+     * @inheritDoc
      */
     public function validate(array $requestData): bool
     {

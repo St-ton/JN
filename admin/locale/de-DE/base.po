@@ -54,7 +54,7 @@ msgid "save"
 msgstr "Speichern"
 
 msgid "saveAndContinue"
-msgstr "Speichern und weiter bearbeiten"
+msgstr "Speichern und weiterbearbeiten"
 
 msgid "settings"
 msgstr "Einstellungen"
@@ -297,10 +297,10 @@ msgid "errorTwoFactorExpired"
 msgstr "2-Faktor-Authentifizierungs-Code abgelaufen"
 
 msgid "errorTwoFactorFaultyExpired"
-msgstr "2-Faktor-Authentifizierungs-Code falsch oder abgelaufen"
+msgstr "2-Faktor-Authentifizierungs-Code ungültig oder abgelaufen"
 
 msgid "errorNoPermission"
-msgstr "Keine Berechtigungen vorhanden"
+msgstr "Fehlende Berechtigung"
 
 msgid "errorCSRF"
 msgstr "Cross-Site-Request-Forgery! Sind Cookies aktiviert?"
@@ -333,7 +333,7 @@ msgid "successEmailSend"
 msgstr "Eine E-Mail mit weiteren Anweisungen wurde an die hinterlegte Adresse gesendet."
 
 msgid "errorEmailNotFound"
-msgstr "Die E-Mail wurde nicht gefunden."
+msgstr "Die E-Mail-Adresse wurde nicht gefunden."
 
 msgid "successPasswordChange"
 msgstr "Passwort wurde erfolgreich geändert."
@@ -748,6 +748,9 @@ msgstr "Muster GmbH"
 
 msgid "faulty"
 msgstr "Fehlerhaft"
+
+msgid "untested"
+msgstr "Ungeprüft"
 
 msgid "week"
 msgstr "Woche"
@@ -1883,6 +1886,15 @@ msgstr "Hilfecenter"
 msgid "notificationsHeader"
 msgstr "Mitteilungen"
 
+msgid "Refresh all notifications"
+msgstr "Alle Mitteilungen aktualisieren"
+
+msgid "Mark notification as read"
+msgstr "Mitteilung als gelesen verbergen"
+
+msgid "Mark all notifications as unread"
+msgstr "Alle verborgenen Mitteilungen anzeigen"
+
 msgid "favouritesHeader"
 msgstr "Favoriten"
 
@@ -1923,13 +1935,13 @@ msgid "successSave"
 msgstr "Erfolgreich gespeichert"
 
 msgid "errorSave"
-msgstr "Konnte nicht speichern"
+msgstr "Speichern fehlgeschlagen"
 
 msgid "successDelete"
 msgstr "Erfolgreich gelöscht"
 
 msgid "errorDelete"
-msgstr "Konnte nicht löschen"
+msgstr "Löschen fehlgeschlagen"
 
 msgid "filterManufacturers"
 msgstr "Alle Hersteller"
@@ -1951,6 +1963,9 @@ msgstr "Alle Kategorien"
 
 msgid "filterCharacteristics"
 msgstr "Merkmale"
+
+msgid "filterAvailability"
+msgstr "Verfügbarkeit"
 
 msgid "za_ueberweisung_jtl"
 msgstr "Überweisung"
@@ -1985,14 +2000,32 @@ msgstr "Lizenzen abgelaufen"
 msgid "I understood this notice."
 msgstr "Ja, ich habe diesen Hinweis zur Kenntnis genommen."
 
-msgid "The following extensions do not have a valid license:"
-msgstr "Die folgenden Extensions haben keine gültige Lizenz:"
+msgid "No valid licence found for the following installed and active extensions:"
+msgstr "Zu folgenden installierten und aktiven Extensions wurde keine gültige Lizenz gefunden:"
 
-msgid "Please uninstall this extensions or purchase a valid license."
-msgstr "Bitte deinstallieren Sie diese oder erwerben Sie eine gültige Lizenz."
+msgid "Possible reasons:"
+msgstr "Dies kann folgende Gründe haben:"
 
-msgid "Further using these extensions will violate the license policy and may have legal consequences."
-msgstr "Eine weitere Nutzung stellt eine Lizenzverletzung dar und kann juristische Konsequenzen haben."
+msgid "The extension was obtained from a different source than the JTL-Extension Store"
+msgstr "Eine Extension wurde über eine andere Quelle als den JTL-Extension Store bezogen"
+
+msgid "The licence is not bound to this shop yet (check licence in \"My purchases\")"
+msgstr "Die Lizenz ist noch nicht an diesen Shop gebunden (Lizenz prüfen unter \"Meine Käufe\")"
+
+msgid "The licence is bound to a different customer account that is not connected to this shop (check connected account in \"My purchases\")"
+msgstr "Die Lizenz ist einem anderen Kundenkonto zugeordnet, welches aber nicht mit diesem Shop verknüpft ist (verknüpftes Kundenkonto unter \"Meine Käufe\" prüfen)"
+
+msgid "The manufacturer disabled the licence"
+msgstr "Die Lizenz wurde vom Hersteller deaktiviert"
+
+msgid "Further use of the extension may constitute a licence violation!"
+msgstr "Eine weitere Nutzung kann einen Lizenzverstoß darstellen!"
+
+msgid "Please purchase a licence in the JTL-Extension Store or contact the manufacturer of the extension for information on rights of use."
+msgstr "Bitte erwerben Sie eine Lizenz im JTL-Extension Store oder kontaktieren Sie den Hersteller der Extension zu Informationen bezüglich der Nutzungsrechte."
+
+msgid "Licensing problem detected"
+msgstr "Lizenzproblem festgestellt"
 
 msgid "Understood"
 msgstr "Verstanden"
@@ -2006,8 +2039,41 @@ msgstr "Template deaktivieren"
 msgid "Smarty syntax error"
 msgstr "Smarty Syntax-Fehler"
 
+msgid "Smarty syntax ok"
+msgstr "Smarty Syntax in Ordnung."
+
 msgid "weRecommend"
 msgstr "Wir empfehlen:"
 
 msgid "somethingHappend"
 msgstr "Es ist ein unbekannter Fehler aufgetreten."
+
+msgid "warningPasswordResetAuth"
+msgstr "Falls für dieses Konto eine Verknüpfung mit dem JTL-Extension Store besteht, muss diese nach der Änderung des Passworts erneuert werden (Plugins > Meine Käufe > Konto verknüpfen). Dies hat keine Auswirkungen auf bereits erstandene Extensions."
+
+msgid "errrorNumberRange"
+msgstr "Der Wert der Einstellung \"%s\" muss zwischen %d und %d liegen."
+
+msgid "csvImportInvalidMime"
+msgstr "Gewählte Datei hat einen ungültigen MIME-Typen"
+
+msgid "csvImportNoArtNrOrDestUrl"
+msgstr "CSV enthält weder Artikelnummern noch Ziel-URLs."
+
+msgid "csvImportArtNrAndDestUrlError"
+msgstr "CSV enthält sowohl Artikelnummern als Ziel-URLs und darf nur eines von beiden beinhalten."
+
+msgid "csvImportArtNrNotFound"
+msgstr "Artikelnummer %s konnte nicht im Shop gefunden werden."
+
+msgid "csvImportSaveError"
+msgstr "Zeile %s konnte nicht gespeichert werden."
+
+msgid "extensionStoreURL"
+msgstr "https://jtl-url.de/exs"
+
+msgid "Safe mode"
+msgstr "Abgesicherter Modus"
+
+msgid "Safe mode enabled."
+msgstr "Abgesicherter Modus aktiv. Gewisse Funktionalitäten stehen nicht zur Verfügung."

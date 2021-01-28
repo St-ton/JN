@@ -60,12 +60,12 @@ class Country
 
     /**
      * Country constructor.
-     * @param string $ISO
-     * @param bool $initFromDB
+     * @param string $iso
+     * @param bool   $initFromDB
      */
-    public function __construct(string $ISO, bool $initFromDB = false)
+    public function __construct(string $iso, bool $initFromDB = false)
     {
-        $this->setISO($ISO);
+        $this->setISO($iso);
         foreach (Shop::Lang()->getAllLanguages() as $lang) {
             $this->setName($lang);
         }
@@ -168,11 +168,11 @@ class Country
      */
     public function getName(int $idx = null): string
     {
-        $langID = Shop::getLanguageID() !== 0 ? Shop::getLanguageID() : ($_SESSION['kSprachISO'] ?? 0);
+        $idx = $idx ?? Shop::getLanguageID();
 
         return isset($_SESSION['AdminAccount']->language)
             ? $this->getNameForLangISO($_SESSION['AdminAccount']->language)
-            : $this->names[$idx ?? $langID] ?? '';
+            : $this->names[$idx] ?? '';
     }
 
     /**

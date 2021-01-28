@@ -189,5 +189,19 @@
         <td colspan="3" class="text-right"><span class="price_label"><strong>{lang key='totalSum' section='global'}</strong>{if $NettoPreise} {lang key='gross' section='global'}{/if}:</span></td>
         <td colspan="2" class="text-right"><span class="price">{$Bestellung->WarensummeLocalized[0]}</span></td>
     </tr>
+    {if !empty($Bestellung->OrderAttributes)}
+        {foreach $Bestellung->OrderAttributes as $attribute}
+            {if $attribute->cName === 'Finanzierungskosten'}
+                <tr class="type-{$smarty.const.C_WARENKORBPOS_TYP_ZINSAUFSCHLAG}">
+                    <td class="text-right" colspan="2">
+                        {lang key='financeCosts' section='order'}
+                    </td>
+                    <td class="text-right price-col" colspan="3">
+                        {$attribute->cValue}
+                    </td>
+                </tr>
+            {/if}
+        {/foreach}
+    {/if}
     </tfoot>
 </table>

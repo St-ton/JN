@@ -99,16 +99,6 @@ class Optin extends OptinBase
     }
 
     /**
-     * @return bool
-     */
-    public function isActive(): bool
-    {
-        $this->loadOptin();
-
-        return !empty($this->foundOptinTupel->dActivated);
-    }
-
-    /**
      * @param string $optinClass
      * @throws EmptyResultSetException
      */

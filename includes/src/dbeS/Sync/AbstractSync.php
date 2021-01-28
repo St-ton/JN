@@ -236,7 +236,9 @@ abstract class AbstractSync
             $product->cURL .= $sep . $campaign->cParameter . '=' . $campaign->cWert;
         }
         foreach ($subscriptions as $msg) {
-            $availAgainOptin = (new Optin(OptinAvailAgain::class))->setEmail($msg->cMail);
+            $availAgainOptin = (new Optin(OptinAvailAgain::class))->getOptinInstance()
+                ->setProduct($product)
+                ->setEmail($msg->cMail);
             if (!$availAgainOptin->isActive()) {
                 continue;
             }

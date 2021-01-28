@@ -85,6 +85,7 @@ abstract class OptinBase extends OptinFactory
      */
     protected function loadOptin(): void
     {
+        error_log('i am optinbase loadoptin');
         if (empty($this->emailAddress)) {
             $this->foundOptinTupel = $this->dbHandler->select('toptin', 'kOptinCode', $this->optCode);
         } else {
@@ -199,5 +200,15 @@ abstract class OptinBase extends OptinFactory
             $this->loadOptin();
             $this->deactivateOptin(); // "shift" to history
         }
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive(): bool
+    {
+        $this->loadOptin();
+
+        return !empty($this->foundOptinTupel->dActivated);
     }
 }

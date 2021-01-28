@@ -2112,7 +2112,7 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
 
     if (isset($deliveryCountry->nEU) &&
         $deliveryCountry->nEU === '0' &&
-        $conf['kunden']['kundenregistrierung_abfragen_ustid'] === 'Y'
+        $conf['kunden']['kundenregistrierung_abfragen_ustid'] !== 'N'
     ) {
         //skip
     } elseif (empty($data['ustid']) && $conf['kunden']['kundenregistrierung_abfragen_ustid'] === 'Y') {

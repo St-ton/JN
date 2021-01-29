@@ -50,6 +50,12 @@
                             fileRequired=true
                         }
                     </span>
+                    <style>
+                        .krajee-default.file-preview-frame .kv-file-content, .kv-preview-data.file-preview-text {
+                            width: 100%!important;
+                            max-width: 100%!important;
+                        }
+                    </style>
                 </div>
             </div>
             <div class="card-footer save-wrapper">

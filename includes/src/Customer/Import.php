@@ -118,7 +118,7 @@ class Import
         $fmt       = [];
         while ($data = \fgetcsv($file, 2000, $delimiter, '"')) {
             if ($row === 0) {
-                $fmt      = $this->validate($data);
+                $fmt = $this->validate($data);
                 if ($fmt === -1) {
                     $result[] = __('errorFormatNotFound');
                     break;

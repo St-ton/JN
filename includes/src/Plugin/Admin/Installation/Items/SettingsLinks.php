@@ -77,8 +77,8 @@ class SettingsLinks extends AbstractItem
                                 ? \serialize([$setting['initialValue']])
                                 : $setting['initialValue'];
                         }
-                        $sort         = $setting['sort'];
-                        $cConf        = $setting['conf'];
+                        $sort  = $setting['sort'];
+                        $cConf = $setting['conf'];
                     } elseif (\mb_strlen($hits4[0]) === \mb_strlen($j)) {
                         $plgnConf          = new stdClass();
                         $plgnConf->kPlugin = $pluginID;

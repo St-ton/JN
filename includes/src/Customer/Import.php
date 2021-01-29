@@ -118,13 +118,11 @@ class Import
         $fmt       = [];
         while ($data = \fgetcsv($file, 2000, $delimiter, '"')) {
             if ($row === 0) {
-                $result[] = __('checkHead');
                 $fmt      = $this->validate($data);
                 if ($fmt === -1) {
                     $result[] = __('errorFormatNotFound');
                     break;
                 }
-                $result[] = __('importPending');
             } else {
                 $result[] = __('row') . ' ' . $row . ': ' . $this->processImport($fmt, $data);
             }
@@ -150,7 +148,6 @@ class Import
                 $fmt[$i] = '';
             }
         }
-
         if ($this->generatePasswords === false) {
             if (!\in_array('cPasswort', $fmt, true) || !\in_array('cMail', $fmt, true)) {
                 return -1;
@@ -192,15 +189,16 @@ class Import
         if (isset($oldMail->kKunde) && $oldMail->kKunde > 0) {
             return \sprintf(__('errorEmailDuplicate'), $customer->cMail);
         }
-        $customer->cNewsletter = 'N';
         if ($customer->cAnrede === 'f' || \mb_convert_case($customer->cAnrede, MB_CASE_LOWER) === 'frau') {
             $customer->cAnrede = 'w';
         }
         if ($customer->cAnrede === 'h' || \mb_convert_case($customer->cAnrede, MB_CASE_LOWER) === 'herr') {
             $customer->cAnrede = 'm';
         }
-        if ($customer->cNewsletter === '1') {
+        if ($customer->cNewsletter === '1' || $customer->cNewsletter === 'y' || $customer->cNewsletter === 'Y') {
             $customer->cNewsletter = 'Y';
+        } else {
+            $customer->cNewsletter = 'N';
         }
 
         if (empty($customer->cLand) && $this->defaultCountryCode !== null) {

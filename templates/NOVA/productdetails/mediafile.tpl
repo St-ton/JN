@@ -70,11 +70,19 @@
                             {if ($oMedienDatei->videoType === 'mp4'
                             || $oMedienDatei->videoType === 'webm'
                             || $oMedienDatei->videoType === 'ogg')}
-                                    <video class="product-detail-video mw-100" controls>
-                                        <source src="{$ShopURL}/{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" type="video/{$oMedienDatei->videoType}">
-                                        {lang key='videoTagNotSupported' section='errorMessages'}
-                                    </video>
-
+                                {card class="mediafiles-video" title-text=$oMedienDatei->cName}
+                                    {row}
+                                        {col cols=12}
+                                            {$oMedienDatei->cBeschreibung}
+                                        {/col}
+                                        {col cols=12}
+                                            <video class="product-detail-video mw-100" controls>
+                                                <source src="{$ShopURL}/{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" type="video/{$oMedienDatei->videoType}">
+                                                {lang key='videoTagNotSupported' section='errorMessages'}
+                                            </video>
+                                        {/col}
+                                    {/row}
+                                {/card}
                             {else}
                                 {lang key='videoTypeNotSupported' section='errorMessages'}
                             {/if}

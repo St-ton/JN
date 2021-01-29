@@ -24936,6 +24936,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   text-decoration: none;
 }
 
+.mediafiles .mediafiles-description {
+  padding-bottom: 1rem;
+}
+
 /* comparelist */
 #filter-checkboxes {
   margin-bottom: 1.5rem;

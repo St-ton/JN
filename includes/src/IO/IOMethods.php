@@ -265,7 +265,8 @@ class IOMethods
                ->assign('Xselling', $xSelling)
                ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
                ->assign('oSpezialseiten_arr', Shop::Container()->getLinkService()->getSpecialPages())
-               ->assign('Steuerpositionen', $cart->gibSteuerpositionen());
+               ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
+               ->assign('favourableShippingString', $cart->favourableShippingString);
 
         $response->nType           = 2;
         $response->cWarenkorbText  = \lang_warenkorb_warenkorbEnthaeltXArtikel($cart);
@@ -621,7 +622,8 @@ class IOMethods
                            $shippingFreeMin,
                            $cartValue
                        ))
-                       ->assign('oSpezialseiten_arr', Shop::Container()->getLinkService()->getSpecialPages());
+                       ->assign('oSpezialseiten_arr', Shop::Container()->getLinkService()->getSpecialPages())
+                       ->assign('favourableShippingString', $cart->favourableShippingString);
 
                 ShippingMethod::getShippingCosts($country, $plz, $error);
                 $response->cTemplate = $smarty->fetch('basket/cart_dropdown_label.tpl');

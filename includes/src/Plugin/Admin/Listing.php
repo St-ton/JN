@@ -80,10 +80,10 @@ final class Listing
     {
         $items = new Collection();
         try {
-            $all = $this->db->selectAll('tplugin', [], [], 'kPlugin, bExtension', 'cName, cAutor, nPrio');
+            $all = $this->db->selectAll('tplugin', [], [], '*', 'cName, cAutor, nPrio');
         } catch (InvalidArgumentException $e) {
             $all = $this->db->query(
-                'SELECT kPlugin, 0 AS bExtension
+                'SELECT *, 0 AS bExtension
                     FROM tplugin
                     ORDER BY cName, cAutor, nPrio',
                 ReturnType::ARRAY_OF_OBJECTS
@@ -100,11 +100,12 @@ final class Listing
         );
         $legacyLoader = new LegacyPluginLoader($this->db, $this->cache);
         $pluginLoader = new PluginLoader($this->db, $this->cache);
+        $langCode     = Shop::getLanguageCode();
         foreach ($data as $dataItem) {
             $item           = new ListingItem();
             $plugin         = (int)$dataItem->bExtension === 1
-                ? $pluginLoader->init($dataItem->kPlugin, true)
-                : $legacyLoader->init($dataItem->kPlugin, true);
+                ? $pluginLoader->loadFromObject($dataItem, $langCode)
+                : $legacyLoader->loadFromObject($dataItem, $langCode);
             $currentVersion = $plugin->getCurrentVersion();
             if ($currentVersion->greaterThan($plugin->getMeta()->getSemVer())) {
                 $plugin->getMeta()->setUpdateAvailable($currentVersion);

@@ -47,5 +47,3 @@ window.initNumberInput = function () {
 		if(value > max) this.value = max;
 	})
 };
-
-initNumberInput();

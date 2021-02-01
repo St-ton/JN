@@ -164,6 +164,10 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
         $deleteFiles = Request::postInt('delete-files', 1) === 1;
         foreach ($pluginIDs as $pluginID) {
             if (isset($_POST['aktivieren'])) {
+                if (SAFE_MODE) {
+                    $errorMsg = __('Safe mode enabled.') . ' - ' . __('activate');
+                    break;
+                }
                 $res = $stateChanger->activate($pluginID);
                 switch ($res) {
                     case InstallCode::OK:
@@ -273,7 +277,9 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
         $step = 'pluginverwaltung_sprachvariablen';
     } elseif (isset($_POST['installieren'])) {
         $dirs = $_POST['cVerzeichnis'];
-        if (is_array($dirs)) {
+        if (SAFE_MODE) {
+            $errorMsg = __('Safe mode enabled.') . ' - ' . __('pluginBtnInstall');
+        } elseif (is_array($dirs)) {
             foreach ($dirs as $dir) {
                 $installer->setDir(basename($dir));
                 $res = $installer->prepare();
@@ -286,7 +292,6 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                 }
             }
         }
-        $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LICENSES, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
     } elseif (Request::postInt('delete') === 1) {
         $dirs    = Request::postVar('cVerzeichnis', []);
         $res     = count($dirs) > 0;
@@ -437,12 +442,10 @@ if ($reload === true) {
     exit();
 }
 
-
 $alert = Shop::Container()->getAlertService();
 if (SAFE_MODE) {
-    $alert->addAlert(Alert::TYPE_WARNING, __('Safe mode enabled.'), 'warnSafeMode');
+    $alert->addAlert(Alert::TYPE_WARNING, __('Safe mode restrictions.'), 'warnSafeMode', ['dismissable' => false]);
 }
-
 $alert->addAlert(Alert::TYPE_ERROR, $errorMsg, 'errorPlugin');
 $alert->addAlert(Alert::TYPE_NOTE, $notice, 'noticePlugin');
 

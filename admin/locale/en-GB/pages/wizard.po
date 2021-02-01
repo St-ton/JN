@@ -114,7 +114,7 @@ msgid "getToKnowMore"
 msgstr "Learn more"
 
 msgid "paymentPluginInstalled"
-msgstr "The plug-in has been successfully installed and is now ready to be set up under \"Administration > Payments > Payment methods\"."
+msgstr "The plug-in has been successfully installed and is now ready to be set up under \"Administration > Payment methods\"."
 
 msgid "finalize"
 msgstr "Finish"

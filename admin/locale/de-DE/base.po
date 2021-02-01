@@ -2071,3 +2071,9 @@ msgstr "Zeile %s konnte nicht gespeichert werden."
 
 msgid "extensionStoreURL"
 msgstr "https://jtl-url.de/exs"
+
+msgid "Safe mode"
+msgstr "Abgesicherter Modus"
+
+msgid "Safe mode enabled."
+msgstr "Abgesicherter Modus aktiv. Gewisse Funktionalitäten stehen nicht zur Verfügung."

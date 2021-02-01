@@ -15,6 +15,9 @@ use JTL\Update\Updater;
 use JTLShop\SemVer\Version;
 
 if (!isset($bExtern) || !$bExtern) {
+    if (isset($_REQUEST['safemode'])) {
+        $GLOBALS['plgSafeMode'] = in_array(strtolower($_REQUEST['safemode']), ['1', 'on', 'ein', 'true', 'wahr']);
+    }
     define('DEFINES_PFAD', __DIR__ . '/../../includes/');
     require DEFINES_PFAD . 'config.JTL-Shop.ini.php';
     require DEFINES_PFAD . 'defines.php';
@@ -66,6 +69,14 @@ $updater    = new Updater($db);
 $hasUpdates = $updater->hasPendingUpdates();
 $conf       = Shop::getSettings([CONF_GLOBAL]);
 
+if ($loggedIn && isset($GLOBALS['plgSafeMode'])) {
+    if ($GLOBALS['plgSafeMode']) {
+        touch(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR . 'safemode.lck');
+    } elseif (file_exists(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR . 'safemode.lck')) {
+        unlink(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR . 'safemode.lck');
+    }
+}
+
 if (!empty($_COOKIE['JTLSHOP']) && empty($_SESSION['frontendUpToDate'])) {
     $adminToken   = $_SESSION['jtl_token'];
     $adminLangTag = $_SESSION['AdminAccount']->language;
@@ -80,8 +91,8 @@ if (!empty($_COOKIE['JTLSHOP']) && empty($_SESSION['frontendUpToDate'])) {
     session_write_close();
     session_name('eSIdAdm');
     session_id($eSIdAdm);
-    session_start();
-    $_SESSION['frontendUpToDate'] = true;
+    $session = new Backend();
+    $session::set('frontendUpToDate', true);
 }
 
 if ($loggedIn

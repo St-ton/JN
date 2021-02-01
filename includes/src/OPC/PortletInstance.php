@@ -17,17 +17,6 @@ class PortletInstance implements \JsonSerializable
     use MultiSizeImage;
 
     /**
-     * @var array
-     */
-    protected static $dirSizes = [
-        Image::SIZE_XL => \WIDTH_OPC_IMAGE_XL,
-        Image::SIZE_LG => \WIDTH_OPC_IMAGE_LG,
-        Image::SIZE_MD => \WIDTH_OPC_IMAGE_MD,
-        Image::SIZE_SM => \WIDTH_OPC_IMAGE_SM,
-        Image::SIZE_XS => \WIDTH_OPC_IMAGE_XS,
-    ];
-
-    /**
      * @var Portlet
      */
     protected $portlet;
@@ -529,6 +518,8 @@ class PortletInstance implements \JsonSerializable
         $sizes      = \is_file($filepath) ? \getimagesize($filepath) : [0, 0];
         $realWidth  = $sizes[0];
         $realHeight = $sizes[1];
+        $portrait   = $realWidth < $realHeight;
+        $aspect     = $realWidth > 0 ? $realWidth / $realHeight : 1.0;
 
         if (empty($src)) {
             return [
@@ -541,15 +532,32 @@ class PortletInstance implements \JsonSerializable
                 'realHeight' => $realHeight,
             ];
         }
+
+        $imgSettings = Image::getSettings()[Image::TYPE_OPC];
         $this->generateAllImageSizes(true, 1, \rawurldecode($src));
+
         foreach ($this->getImages()[1] as $size => $url) {
-            $url   = \str_replace(' ', '%20', $url);
-            $width = self::$dirSizes[$size] ?? null;
-            if ($width !== null) {
-                $srcset .= $url . ' ' . $width . 'w,';
+            $url = \str_replace(' ', '%20', $url);
+
+            if ($size === 'xl') {
+                $srcset .= $url . ' ' . $realWidth . 'w,';
+            } elseif ($portrait) {
+                $width = $imgSettings[$size]['width'] ?? null;
+                if ($width !== null) {
+                    $width  *= $aspect;
+                    $width   = (int)\round($width);
+                    $srcset .= $url . ' ' . $width . 'w,';
+                }
+            } else {
+                $width = $imgSettings[$size]['width'] ?? null;
+                if ($width !== null) {
+                    $srcset .= $url . ' ' . $width . 'w,';
+                }
             }
         }
+        
         $srcset = \mb_substr($srcset, 0, -1); // remove trailing comma
+
         foreach ($this->widthHeuristics as $breakpoint => $col) {
             if (!empty($col)) {
                 $factor = 1;
@@ -560,24 +568,20 @@ class PortletInstance implements \JsonSerializable
 
                 switch ($breakpoint) {
                     case 'xs':
-                        $breakpoint = 767;
-                        $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
+                        $srcsizes .= '(max-width: 767px) '
                             . (int)($col * 100 * $factor) . 'vw, ';
                         break;
                     case 'sm':
-                        $breakpoint = 991;
-                        $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
-                            . (int)($col * $breakpoint * $factor) . 'px, ';
+                        $srcsizes .= '(max-width: 991px) '
+                            . (int)($col * 100 * $factor) . 'vw, ';
                         break;
                     case 'md':
-                        $breakpoint = 1199;
-                        $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
-                            . (int)($col * $breakpoint * $factor) . 'px, ';
+                        $srcsizes .= '(max-width: 1299px) '
+                            . (int)($col * 100 * $factor) . 'vw, ';
                         break;
                     case 'lg':
-                        $breakpoint = 1200;
-                        $srcsizes  .= '(min-width: ' . $breakpoint . 'px) '
-                            . (int)($col * $breakpoint * $factor) . 'px, ';
+                        $srcsizes .= '(min-width: 1300px) '
+                            . (int)($col * 100 * $factor) . 'vw, ';
                         break;
                     default:
                         break;

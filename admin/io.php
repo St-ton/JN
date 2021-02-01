@@ -12,6 +12,7 @@ use JTL\Jtllog;
 use JTL\Link\Admin\LinkAdmin;
 use JTL\Mail\Validator\SyntaxChecker;
 use JTL\Media\Manager;
+use JTL\Plugin\Helper;
 use JTL\Shop;
 use JTL\Update\UpdateIO;
 
@@ -112,7 +113,8 @@ try {
        ->register('getShippingSurcharge', 'getShippingSurcharge', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
        ->register('exportformatSyntaxCheck', [Exportformat::class, 'ioCheckSyntax'], null, 'EXPORT_FORMATS_VIEW')
        ->register('mailvorlageSyntaxCheck', [SyntaxChecker::class, 'ioCheckSyntax'], null, 'CONTENT_EMAIL_TEMPLATE_VIEW')
-       ->register('notificationAction', [Notification::class, 'ioNotification']);
+       ->register('notificationAction', [Notification::class, 'ioNotification'])
+       ->register('pluginTestLoading', [Helper::class, 'ioTestLoading']);
 } catch (Exception $e) {
     $io->respondAndExit(new IOError($e->getMessage(), $e->getCode()));
 }

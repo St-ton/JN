@@ -22053,7 +22053,7 @@ table caption {
 .jtl-spinner i {
   margin-top: -40px;
   margin-left: -40px;
-  position: absolute;
+  position: fixed;
   top: 50%;
   font-size: 80px;
   left: 50%;
@@ -22500,13 +22500,13 @@ ul.partlist-items {
 }
 
 /* SIGNAL */
-.delivery-status .status-0 {
+.delivery-status .status-0, .signal_image .status-0 {
   color: #b90000;
 }
-.delivery-status .status-1 {
+.delivery-status .status-1, .signal_image .status-1 {
   color: #f39932;
 }
-.delivery-status .status-2 {
+.delivery-status .status-2, .signal_image .status-2 {
   color: #1C871E;
 }
 

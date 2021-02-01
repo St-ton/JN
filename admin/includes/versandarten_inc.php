@@ -572,14 +572,23 @@ function createShippingSurchargeZIP(array $data): object
  */
 function getShippingTypes(int $shippingTypeID = null)
 {
-    $shippingTypes = Shop::Container()->getDB()->queryPrepared(
-        'SELECT *
+    if ($shippingTypeID !== null) {
+        $shippingTypes = Shop::Container()->getDB()->queryPrepared(
+            'SELECT *
             FROM tversandberechnung'
-        . ($shippingTypeID ? ' WHERE kVersandberechnung = :shippingTypeID' : '')
-        . ' ORDER BY cName',
-        ['shippingTypeID' => $shippingTypeID],
-        ReturnType::COLLECTION
-    )->each(static function ($e) {
+            . ($shippingTypeID ? ' WHERE kVersandberechnung = :shippingTypeID' : '')
+            . ' ORDER BY cName',
+            ['shippingTypeID' => $shippingTypeID],
+            ReturnType::COLLECTION
+        );
+    } else {
+        $shippingTypes = Shop::Container()->getDB()->query(
+            'SELECT *
+                FROM tversandberechnung ORDER BY cName',
+            ReturnType::COLLECTION
+        );
+    }
+   $shippingTypes->each(static function ($e) {
         $e->kVersandberechnung = (int)$e->kVersandberechnung;
         $e->cName              = __('shippingType_' . $e->cModulId);
     });

@@ -1,4 +1,3 @@
-{capture name="outofstock" assign="outofstockInfo"}<span class="delivery-status"><small class="status-0">{lang key="soldout" section="global"}</small></span>{/capture}
 <div class="table-responsive">
     <table class="table table-striped variation-matrix">
         {* ****** 2-dimensional ****** *}
@@ -56,7 +55,11 @@
                                                 {lang key="productAvailableFrom" section="global"}: <strong>{$child->Erscheinungsdatum_de}</strong>
                                             </small>
                                         {else}
-                                            {$outofstockInfo}
+                                            <span class="delivery-status">
+                                                <small class="status-0">
+                                                    {$child->Lageranzeige->AmpelText}
+                                                </small>
+                                            </span>
                                         {/if}
                                     {elseif (isset($child->bHasKonfig) && $child->bHasKonfig == true) || (isset($child->nVariationAnzahl) && isset($child->nVariationOhneFreifeldAnzahl) && $child->nVariationAnzahl > $child->nVariationOhneFreifeldAnzahl)}
                                         <div class="center-sm">
@@ -241,7 +244,11 @@
                                             {lang key="productAvailableFrom" section="global"}: <strong>{$child->Erscheinungsdatum_de}</strong>
                                         </small>
                                     {else}
-                                        {$outofstockInfo}
+                                        <span class="delivery-status">
+                                            <small class="status-0">
+                                                {$child->Lageranzeige->AmpelText}
+                                            </small>
+                                        </span>
                                     {/if}
                                 {elseif (isset($child->bHasKonfig) && $child->bHasKonfig == true) || (isset($child->nVariationAnzahl) && isset($child->nVariationOhneFreifeldAnzahl) && $child->nVariationAnzahl > $child->nVariationOhneFreifeldAnzahl)}
                                     <div class="center-sm">
@@ -369,7 +376,11 @@
                                             {lang key="productAvailableFrom" section="global"}: <strong>{$child->Erscheinungsdatum_de}</strong>
                                         </small>
                                     {else}
-                                        {$outofstockInfo}
+                                        <span class="delivery-status">
+                                            <small class="status-0">
+                                               {$child->Lageranzeige->AmpelText}
+                                            </small>
+                                        </span>
                                     {/if}
                                 {elseif (isset($child->bHasKonfig) && $child->bHasKonfig == true) || (isset($child->nVariationAnzahl) && isset($child->nVariationOhneFreifeldAnzahl) && $child->nVariationAnzahl > $child->nVariationOhneFreifeldAnzahl)}
                                     <a class="btn btn-default configurepos" href="{$child->cSeo}"><i class="fa fa-cogs"></i><span class="hidden-xs"> {lang key="configure" section="global"}</span></a>

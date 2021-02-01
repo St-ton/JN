@@ -588,7 +588,7 @@ function getShippingTypes(int $shippingTypeID = null)
             ReturnType::COLLECTION
         );
     }
-   $shippingTypes->each(static function ($e) {
+    $shippingTypes->each(static function ($e) {
         $e->kVersandberechnung = (int)$e->kVersandberechnung;
         $e->cName              = __('shippingType_' . $e->cModulId);
     });

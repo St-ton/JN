@@ -575,9 +575,9 @@ function getShippingTypes(int $shippingTypeID = null)
     if ($shippingTypeID !== null) {
         $shippingTypes = Shop::Container()->getDB()->queryPrepared(
             'SELECT *
-            FROM tversandberechnung'
-            . ($shippingTypeID ? ' WHERE kVersandberechnung = :shippingTypeID' : '')
-            . ' ORDER BY cName',
+                FROM tversandberechnung
+                WHERE kVersandberechnung = :shippingTypeID
+                ORDER BY cName',
             ['shippingTypeID' => $shippingTypeID],
             ReturnType::COLLECTION
         );

@@ -359,10 +359,8 @@ class CheckBox
             $checked          = $this->checkboxWasChecked($checkbox->cID, $post);
             $log              = new stdClass();
             $log->kCheckBox   = $checkbox->kCheckBox;
-            $log->kBesucher   = (int)$_SESSION['oBesucher']->kBesucher;
-            $log->kBestellung = isset($_SESSION['kBestellung'])
-                ? (int)$_SESSION['kBestellung']
-                : 0;
+            $log->kBesucher   = (int)($_SESSION['oBesucher']->kBesucher ?? 0);
+            $log->kBestellung = (int)($_SESSION['kBestellung'] ?? 0);
             $log->bChecked    = (int)$checked;
             $log->dErstellt   = 'NOW()';
             $this->db->insert('tcheckboxlogging', $log);

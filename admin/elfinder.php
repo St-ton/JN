@@ -24,6 +24,8 @@ if (Form::validateToken()) {
         $mediafilesSubdir = PFAD_MEDIA_VIDEO;
     }
 
+    $mediafilesBaseUrlPath = parse_url(URL_SHOP . '/' . $mediafilesSubdir, PHP_URL_PATH);
+
     if (!empty($elfinderCommand)) {
         // Documentation for connector options:
         // https://github.com/Studio-42/elFinder/wiki/Connector-configuration-options
@@ -60,10 +62,7 @@ if (Form::validateToken()) {
                     // path to files (REQUIRED)
                     'path'          => PFAD_ROOT . $mediafilesSubdir,
                     // URL to files (REQUIRED)
-                    'URL'           => parse_url(
-                        URL_SHOP . '/' . $mediafilesSubdir,
-                        PHP_URL_PATH
-                    ),
+                    'URL'           => $mediafilesBaseUrlPath,
                     // to make hash same to Linux one on windows too
                     'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
                     // All Mimetypes not allowed to upload
@@ -95,6 +94,7 @@ if (Form::validateToken()) {
                ->assign('isCKEditor', $isCKEditor)
                ->assign('CKEditorFuncNum', $CKEditorFuncNum)
                ->assign('templateUrl', Shop::getAdminURL() . '/' . $currentTemplateDir)
+               ->assign('mediafilesBaseUrlPath', $mediafilesBaseUrlPath)
                ->display('elfinder.tpl');
     }
 }

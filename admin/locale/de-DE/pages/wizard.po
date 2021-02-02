@@ -114,7 +114,7 @@ msgid "getToKnowMore"
 msgstr "Mehr erfahren"
 
 msgid "paymentPluginInstalled"
-msgstr "Das Plugin wurde erfolgreich installiert. Sie müssen es nun noch unter „Administration > Zahlungen > Zahlungsarten“ einrichten."
+msgstr "Das Plugin wurde erfolgreich installiert. Sie müssen es nun noch unter „Administration > Zahlungsarten“ einrichten."
 
 msgid "finalize"
 msgstr "Beenden"

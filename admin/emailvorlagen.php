@@ -25,7 +25,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 /** @global JTLSmarty $smarty */
 
 $oAccount->permission('CONTENT_EMAIL_TEMPLATE_VIEW', true, true);
-Shop::Container()->getCache()->flushTags(Status::CACHE_ID_EMAIL_SYNTAX_CHECK);
+Shop::Container()->getCache()->flushTags([Status::CACHE_ID_EMAIL_SYNTAX_CHECK]);
 
 $mailTemplate        = null;
 $hasError            = false;

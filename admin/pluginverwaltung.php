@@ -292,7 +292,6 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                 }
             }
         }
-        $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LICENSES, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
     } elseif (Request::postInt('delete') === 1) {
         $dirs    = Request::postVar('cVerzeichnis', []);
         $res     = count($dirs) > 0;

@@ -119,6 +119,9 @@ class LegacyPluginLoader extends AbstractLoader
 
         Shop::Container()->getGetText();
 
+        if ($this->plugin === null) {
+            $this->plugin = new LegacyPlugin();
+        }
         $this->plugin->setID((int)$obj->kPlugin);
         $this->plugin->setPluginID($obj->cPluginID);
         $this->plugin->setState((int)$obj->nStatus);

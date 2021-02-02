@@ -146,11 +146,10 @@
 }
 
 /* shipping-calculator */
+.shipping-calculator-form {
+  margin-bottom: map-get($spacers, 6);
+}
 .shipping-calculator-main {
-  margin-bottom: map-get($spacers, 5);
-  .col {
-    margin-bottom: map-get($spacers, 3);
-  }
   .shipping-calculator-main-heading {
     margin-bottom: map-get($spacers, 4);
   }
@@ -324,4 +323,9 @@
   padding-left: map-get($spacers, 3);
   padding-right: map-get($spacers, 3);
   margin-top: auto;
+}
+.snippets-suggestion {
+  a {
+    display: block;
+  }
 }

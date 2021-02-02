@@ -132,7 +132,7 @@ class ArtikelListe
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND tartikel.kArtikel = tkategorieartikel.kArtikel ' . $conditionSQL . ' 
                         AND tkategorieartikel.kKategorie = ' . $categoryID . ' ' . $stockFilterSQL . '
-                    ORDER BY $order, nSort
+                    ORDER BY ' . $order . ', nSort
                     LIMIT ' . $limitStart . ', ' . $limitAnzahl,
                 ReturnType::ARRAY_OF_OBJECTS
             );

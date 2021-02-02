@@ -135,6 +135,8 @@ class Category
                 $cat->setShortName($cat->getAttribute(\ART_ATTRIBUT_SHORTNAME)->cWert ?? $cat->getName());
             }
             $fullCats = $this->buildTree($nodes);
+            $fullCats = $this->setOrphanedCategories($nodes, $fullCats);
+
             if ($filterEmpty) {
                 $fullCats = $this->removeRelicts($this->filterEmpty($fullCats));
             }
@@ -651,5 +653,33 @@ class Category
         $category = self::getInstance()->getCategoryById($categoryID);
 
         return $category === null ? [] : $category->getChildren();
+    }
+
+
+    /**
+     * @param $nodes
+     * @param $fullCats
+     * @return array
+     */
+    private function setOrphanedCategories($nodes, $fullCats):array
+    {
+        $ids = \array_map(static function ($e) {
+            return $e->getID();
+        }, $nodes);
+
+        $orphanedCategories = \array_filter($nodes, static function ($e) use ($ids) {
+            if ($e->getParentID() === 0) {
+                return false;
+            }
+            return \in_array($e->getParentID(), $ids, true) === false;
+        });
+
+        foreach ($orphanedCategories as $oCat) {
+            $oCat->setParentID(0);
+            $oCat->setOrphaned(true);
+            $fullCats[$oCat->getID()] = $oCat;
+        }
+
+        return $fullCats;
     }
 }

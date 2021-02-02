@@ -101,6 +101,12 @@ class MenuItem
     public $customImgName;
 
     /**
+     * @var bool
+     */
+    public $orphaned = false;
+
+
+    /**
      * @return int
      */
     public function getID(): int
@@ -335,6 +341,22 @@ class MenuItem
     public function setProductCount(int $productCount): void
     {
         $this->productCount = $productCount;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isOrphaned(): bool
+    {
+        return $this->orphaned;
+    }
+
+    /**
+     * @param bool $isOrphaned
+     */
+    public function setOrphaned(bool $orphaned): void
+    {
+        $this->orphaned = $orphaned;
     }
 
     /**

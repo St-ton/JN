@@ -19,7 +19,7 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
 Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
 $oAccount->permission('EXPORT_FORMATS_VIEW', true, true);
-Shop::Container()->getCache()->flushTags(Status::CACHE_ID_EXPORT_SYNTAX_CHECK);
+Shop::Container()->getCache()->flushTags([Status::CACHE_ID_EXPORT_SYNTAX_CHECK]);
 
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 $step                = 'uebersicht';

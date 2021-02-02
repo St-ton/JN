@@ -103,6 +103,7 @@
             // this.registerImageSwitch($wrapper);
             //this.registerArticleOverlay($wrapper);
             this.registerFinish($wrapper);
+            window.initNumberInput();
         },
 
         registerAccordion: function() {
@@ -150,7 +151,10 @@
                     otherElemHeight = 0,
                     current         = ($('#gallery .slick-current').data('slick-index')),
                     $galleryImages  = $('#gallery img, #gallery picture source'),
-                    previewHeight   = $('#gallery_preview_wrapper').length > 0 ? 170 : 30;
+                    hidePreview     = maxHeight < 700,
+                    previewHeight   = $('#gallery_preview_wrapper').length > 0 && !hidePreview ? 170 : 30,
+                    $gallery        = $('#gallery'),
+                    $previewBar     = $('.product-detail-image-preview-bar');
 
                 if (fullscreen) {
                     $imgWrapper.addClass('fullscreen');
@@ -163,8 +167,12 @@
                     $galleryImages.removeAttr('sizes');
                     lazySizes.autoSizer.updateElem($galleryImages);
 
+                    if (hidePreview) {
+                        $previewBar.addClass('d-none');
+                    }
+
                     $galleryImages.css('max-height', maxHeight-otherElemHeight);
-                    $('#gallery').css('max-height', maxHeight-otherElemHeight);
+                    $gallery.css('max-height', maxHeight-otherElemHeight);
 
                     $('body').off('click.toggleFullscreen').on('click.toggleFullscreen', function (event) {
                         if (!($(event.target).hasClass('product-image') || $(event.target).hasClass('slick-arrow'))) {
@@ -175,9 +183,11 @@
                 } else {
                     $imgWrapper.removeClass('fullscreen');
                     $galleryImages.css('max-height', '100%');
+                    $gallery.css('max-height', '100%');
+                    $previewBar.removeClass('d-none');
                 }
 
-                $('#gallery').slick('slickSetOption','initialSlide', current, true);
+                $gallery.slick('slickSetOption','initialSlide', current, true);
                 $('#gallery_preview').slick('slickGoTo', current, true);
 
                 //fix firefox height bug
@@ -1255,8 +1265,6 @@
                         history.pushState({a: id, a2: variation, url: url, variations: variations}, "", url);
                     }
                     $.evo.extended().stopSpinner();
-
-                    window.initNumberInput();
                 }, function () {
                     $.evo.error('Error loading ' + url);
                     $.evo.extended().stopSpinner();
@@ -1284,8 +1292,6 @@
                         $.evo.extended().autoheight();
                     }
                     $.evo.extended().stopSpinner();
-
-                    window.initNumberInput();
 
                     $(wrapper + ' .list-gallery:not(.slick-initialized)').slick({
                         lazyLoad: 'ondemand',

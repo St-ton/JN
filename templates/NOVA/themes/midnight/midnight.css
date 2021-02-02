@@ -19008,7 +19008,7 @@ Supports Thumbs: false
   font-family: "Montserrat";
   font-style: normal;
   font-weight: 600;
-  src: local("Montserrat"), local("Montserrat"), url("../base/fonts/montserrat/Montserrat-SemiBold.eot?") format("eot"), url("../base/fonts/montserrat/Montserrat-SemiBold.woff2") format("woff2"), url("../base/fonts/montserrat/Montserrat-SemiBold.woff") format("woff"), url("../base/fonts/montserrat/Montserrat-SemiBold.ttf") format("truetype"), url("../base/fonts/montserrat/Montserrat-SemiBold.svg#Montserrat") format("svg");
+  src: local("Montserrat"), local("Montserrat"), url("../base/fonts/montserrat/Montserrat-SemiBold.woff2") format("woff2"), url("../base/fonts/montserrat/Montserrat-SemiBold.ttf") format("truetype");
   font-display: swap;
 }
 .container-fluid-xl {
@@ -20609,6 +20609,15 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
   max-height: 100%;
   object-fit: contain;
 }
+.square-image .inner img.lazyloading {
+  color: transparent;
+  opacity: 1;
+  transition: opacity 300ms;
+  width: auto;
+  height: auto;
+  max-width: 40px;
+  max-height: 40px;
+}
 
 .square-inner, .productbox-image-wrapper-inner {
   position: absolute;
@@ -22044,7 +22053,7 @@ table caption {
 .jtl-spinner i {
   margin-top: -40px;
   margin-left: -40px;
-  position: absolute;
+  position: fixed;
   top: 50%;
   font-size: 80px;
   left: 50%;
@@ -22491,13 +22500,13 @@ ul.partlist-items {
 }
 
 /* SIGNAL */
-.delivery-status .status-0 {
+.delivery-status .status-0, .signal_image .status-0 {
   color: #b90000;
 }
-.delivery-status .status-1 {
+.delivery-status .status-1, .signal_image .status-1 {
   color: #f39932;
 }
-.delivery-status .status-2 {
+.delivery-status .status-2, .signal_image .status-2 {
   color: #1C871E;
 }
 
@@ -22877,6 +22886,10 @@ input.typeahead:-ms-input-placeholder {
   color: transparent;
   opacity: 1;
   transition: opacity 300ms;
+  width: auto;
+  height: auto;
+  max-width: 40px;
+  max-height: 40px;
 }
 
 .lazyloaded {
@@ -24257,6 +24270,9 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   -webkit-transform: initial;
   transform: initial;
 }
+#image_wrapper.fullscreen #gallery .slick-arrow {
+  display: block !important;
+}
 #image_wrapper.fullscreen #gallery_preview_wrapper {
   width: 100%;
   padding: 1rem;
@@ -24325,6 +24341,13 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 #image_wrapper #gallery .slick-slide {
   padding: 0;
+}
+#image_wrapper #gallery .slick-arrow {
+  display: none !important;
+  background-color: transparent;
+}
+#image_wrapper #gallery .slick-arrow:hover {
+  background-color: #1973D3;
 }
 #image_wrapper .product-thumbnails .square-image {
   margin-bottom: 0;
@@ -24911,6 +24934,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 .estimated-delivery:hover .estimated-delivery-info {
   color: #1973D3;
   text-decoration: none;
+}
+
+.mediafiles .mediafiles-description {
+  padding-bottom: 1rem;
 }
 
 /* comparelist */
@@ -26321,6 +26348,9 @@ header #burger-menu {
 /* mobile */
 .productlist-applied-filter {
   margin-bottom: 2rem;
+}
+.productlist-applied-filter.productlist-applied-filter-top {
+  margin-bottom: 0;
 }
 
 .productlist-filter-footer {

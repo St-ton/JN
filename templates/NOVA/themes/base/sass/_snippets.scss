@@ -311,6 +311,9 @@
 /* mobile */
 .productlist-applied-filter {
   margin-bottom: map-get($spacers, 5);
+  &.productlist-applied-filter-top {
+    margin-bottom: 0;
+  }
 }
 .productlist-filter-footer {
   padding-left: map-get($spacers, 3);

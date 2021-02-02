@@ -93,8 +93,8 @@
                     <label class="col col-sm-4 col-form-label text-sm-right" for="nUseCache">{__('useCache')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <select class="custom-select" name="nUseCache" id="nUseCache">
-                            <option value="1" {if (isset($Exportformat->nUseCache) && $Exportformat->nUseCache === '1')}selected{/if}>{__('yes')}</option>
-                            <option value="0" {if (!isset($Exportformat->nUseCache) || $Exportformat->nUseCache === '0')}selected{/if}>{__('no')}</option>
+                            <option value="1" {if (isset($Exportformat->nUseCache) && $Exportformat->nUseCache === 1)}selected{/if}>{__('yes')}</option>
+                            <option value="0" {if (!isset($Exportformat->nUseCache) || $Exportformat->nUseCache === 0)}selected{/if}>{__('no')}</option>
                         </select>
                     </div>
                 </div>
@@ -203,3 +203,54 @@
         {getRevisions type='export' key=$Exportformat->kExportformat show=['cContent','cKopfzeile','cFusszeile'] data=$Exportformat}
     {/if}
 </div>
+<script>
+    {literal}
+    function validateTemplateSyntax(tplID) {
+        simpleAjaxCall('io.php', {
+            jtl_token: JTL_TOKEN,
+            io : JSON.stringify({
+                name: 'exportformatSyntaxCheck',
+                params : [tplID]
+            })
+        }, function (result) {
+            if (result.message && result.message !== '') {
+                createNotify({
+                    title: '{/literal}{__('smartySyntaxError')}{literal}',
+                    message: result.message,
+                }, {
+                    allow_dismiss: true,
+                    type: 'danger',
+                    delay: 0
+                });
+            } else {
+                createNotify({
+                    title: '{/literal}{__('Check syntax')}{literal}',
+                    message: '{/literal}{__('Smarty syntax ok')}{literal}',
+                }, {
+                    allow_dismiss: true,
+                    type: 'success',
+                    delay: 1500
+                });
+            }
+        }, function (result) {
+            if (result.statusText) {
+                let msg = result.statusText;
+                if (result.responseJSON && result.responseJSON.error.message !== '') {
+                    msg += '<br>' + result.responseJSON.error.message;
+                }
+                createNotify({
+                    title: '{/literal}{__('Syntax check fail')}{literal}',
+                    message: msg,
+                }, {
+                    allow_dismiss: true,
+                    type: 'warning',
+                    delay: 0
+                });
+            }
+        }, undefined, true);
+    }
+    {/literal}{if isset($Exportformat->kExportformat)}{literal}
+    validateTemplateSyntax({/literal}{$Exportformat->kExportformat}{literal});
+    {/literal}{/if}{literal}
+    {/literal}
+</script>

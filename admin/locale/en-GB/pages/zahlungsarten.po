@@ -124,3 +124,12 @@ msgstr "Enter a name for a potential charge for the payment method. The name of 
 
 msgid "paymentsReceived"
 msgstr "Payments received"
+
+msgid "Plugin for payment method not found"
+msgstr "The payment method %s belongs to a plugin for %s. However the associated plugin is not installed!"
+
+msgid "Payment method can not been deleted"
+msgstr "The payment method %s can not been deleted!"
+
+msgid "Payment method has been deleted"
+msgstr "The payment method %s has been deleted!"

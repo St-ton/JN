@@ -58,6 +58,8 @@ if ($action !== 'logreset' && Request::verifyGPCDataInt('kZahlungsart') > 0 && F
         $step = 'payments';
     } elseif ($action === 'log') {
         $step = 'log';
+    } elseif ($action === 'del') {
+        $step = 'delete';
     }
 }
 
@@ -366,6 +368,37 @@ if ($step === 'einstellen') {
            ->assign('oZahlunseingang_arr', $pagination->getPageItems())
            ->assign('pagination', $pagination)
            ->assign('oFilter', $filter);
+} elseif ($step === 'delete') {
+    $paymentMethodID = Request::verifyGPCDataInt('kZahlungsart');
+    $method          = $db->select('tzahlungsart', 'kZahlungsart', $paymentMethodID);
+    $pluginID        = PluginHelper::getIDByModuleID($method->cModulId);
+    if ($pluginID > 0) {
+        try {
+            Shop::Container()->getGetText()->loadPluginLocale(
+                'base',
+                PluginHelper::getLoaderByPluginID($pluginID)->init($pluginID)
+            );
+            $alertHelper->addAlert(
+                Alert::TYPE_WARNING,
+                sprintf(__('Payment method can not been deleted'), __($method->cName)),
+                'paymentcantdel',
+                ['saveInSession' => true]
+            );
+        } catch (InvalidArgumentException $e) {
+            // Only delete if plugin is not installed
+            $db->delete('tversandartzahlungsart', 'kZahlungsart', $paymentMethodID);
+            $db->delete('tzahlungsartsprache', 'kZahlungsart', $paymentMethodID);
+            $db->delete('tzahlungsart', 'kZahlungsart', $paymentMethodID);
+            $alertHelper->addAlert(
+                Alert::TYPE_SUCCESS,
+                sprintf(__('Payment method has been deleted'), $method->cName),
+                'paymentdeleted',
+                ['saveInSession' => true]
+            );
+        }
+    }
+    header('Location: ' . Shop::getAdminURL(true) . '/zahlungsarten.php');
+    exit;
 }
 
 if ($step === 'uebersicht') {
@@ -377,12 +410,23 @@ if ($step === 'uebersicht') {
         'cAnbieter, cName, nSort, kZahlungsart, cModulId'
     );
     foreach ($methods as $method) {
+        $method->markedForDelete = false;
+
         $pluginID = PluginHelper::getIDByModuleID($method->cModulId);
         if ($pluginID > 0) {
-            Shop::Container()->getGetText()->loadPluginLocale(
-                'base',
-                PluginHelper::getLoaderByPluginID($pluginID)->init($pluginID)
-            );
+            try {
+                Shop::Container()->getGetText()->loadPluginLocale(
+                    'base',
+                    PluginHelper::getLoaderByPluginID($pluginID)->init($pluginID)
+                );
+            } catch (InvalidArgumentException $e) {
+                $method->markedForDelete = true;
+                $alertHelper->addAlert(
+                    Alert::TYPE_WARNING,
+                    sprintf(__('Plugin for payment method not found'), $method->cName, $method->cAnbieter),
+                    'notfound_' . $pluginID
+                );
+            }
         }
         $method->nEingangAnzahl = (int)$db->executeQueryPrepared(
             'SELECT COUNT(*) AS `cnt`

@@ -41,12 +41,15 @@ $oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'pluginverwaltung_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 
+Shop::Container()->getGetText()->loadAdminLocale('pages/plugin');
+
 $errorCount      = 0;
 $plugin          = null;
 $pluginUploaded  = false;
 $reload          = false;
 $notice          = '';
 $errorMsg        = '';
+$pluginNotFound  = false;
 $step            = 'pluginverwaltung_uebersicht';
 $db              = Shop::Container()->getDB();
 $cache           = Shop::Container()->getCache();
@@ -117,9 +120,13 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
         $pluginID = Request::postInt('lizenzkey');
         $step     = 'pluginverwaltung_lizenzkey';
         $loader   = Helper::getLoaderByPluginID($pluginID, $db, $cache);
-        $plugin   = $loader->init($pluginID, true);
+        try {
+            $plugin = $loader->init($pluginID, true);
+        } catch (InvalidArgumentException $e) {
+            $pluginNotFound = true;
+        }
         $smarty->assign('oPlugin', $plugin)
-            ->assign('kPlugin', $pluginID);
+               ->assign('kPlugin', $pluginID);
         $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
     } elseif (Request::postInt('lizenzkeyadd') === 1 && Request::postInt('kPlugin') > 0) {
         // Lizenzkey eingeben
@@ -157,6 +164,10 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
         $deleteFiles = Request::postInt('delete-files', 1) === 1;
         foreach ($pluginIDs as $pluginID) {
             if (isset($_POST['aktivieren'])) {
+                if (SAFE_MODE) {
+                    $errorMsg = __('Safe mode enabled.') . ' - ' . __('activate');
+                    break;
+                }
                 $res = $stateChanger->activate($pluginID);
                 switch ($res) {
                     case InstallCode::OK:
@@ -266,7 +277,9 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
         $step = 'pluginverwaltung_sprachvariablen';
     } elseif (isset($_POST['installieren'])) {
         $dirs = $_POST['cVerzeichnis'];
-        if (is_array($dirs)) {
+        if (SAFE_MODE) {
+            $errorMsg = __('Safe mode enabled.') . ' - ' . __('pluginBtnInstall');
+        } elseif (is_array($dirs)) {
             foreach ($dirs as $dir) {
                 $installer->setDir(basename($dir));
                 $res = $installer->prepare();
@@ -279,7 +292,6 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                 }
             }
         }
-        $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LICENSES, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
     } elseif (Request::postInt('delete') === 1) {
         $dirs    = Request::postVar('cVerzeichnis', []);
         $res     = count($dirs) > 0;
@@ -415,9 +427,13 @@ if ($step === 'pluginverwaltung_uebersicht') {
     $pluginID = Request::verifyGPCDataInt('kPlugin');
     $loader   = Helper::getLoaderByPluginID($pluginID, $db);
 
-    $smarty->assign('pluginLanguages', Shop::Lang()->gibInstallierteSprachen())
-        ->assign('plugin', $loader->init($pluginID))
-        ->assign('kPlugin', $pluginID);
+    try {
+        $smarty->assign('pluginLanguages', Shop::Lang()->gibInstallierteSprachen())
+               ->assign('plugin', $loader->init($pluginID))
+               ->assign('kPlugin', $pluginID);
+    } catch (InvalidArgumentException $e) {
+        $pluginNotFound = true;
+    }
 }
 
 if ($reload === true) {
@@ -426,18 +442,17 @@ if ($reload === true) {
     exit();
 }
 
-
 $alert = Shop::Container()->getAlertService();
 if (SAFE_MODE) {
-    $alert->addAlert(Alert::TYPE_WARNING, __('Safe mode enabled.'), 'warnSafeMode');
+    $alert->addAlert(Alert::TYPE_WARNING, __('Safe mode restrictions.'), 'warnSafeMode', ['dismissable' => false]);
 }
-
 $alert->addAlert(Alert::TYPE_ERROR, $errorMsg, 'errorPlugin');
 $alert->addAlert(Alert::TYPE_NOTE, $notice, 'noticePlugin');
 
 $smarty->assign('hinweis64', base64_encode($notice))
     ->assign('step', $step)
     ->assign('mapper', new StateMapper())
+    ->assign('pluginNotFound', $pluginNotFound)
     ->assign('pluginsAvailable', $pluginsAvailable)
     ->assign('pluginsErroneous', $pluginsErroneous)
     ->assign('pluginsInstalled', $pluginsInstalled)

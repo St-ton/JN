@@ -5851,7 +5851,7 @@ class Artikel
             foreach ($propValues as $propValueID) {
                 $propValueID = (int)$propValueID;
                 if (!\in_array($propValueID, (array)$possibleVariationsForSelection[$propID], true)) {
-                    if (!\is_array($invalidVariations[$propID])) {
+                    if (!isset($invalidVariations[$propID]) || !\is_array($invalidVariations[$propID])) {
                         $invalidVariations[$propID] = [];
                     }
                     $invalidVariations[$propID][] = $propValueID;
@@ -6014,11 +6014,11 @@ class Artikel
             case Image::SIZE_XS:
                 return $from->cURLMini;
             case Image::SIZE_SM:
-                return $from->cPfadKlein;
+                return $from->cURLKlein;
             case Image::SIZE_MD:
-                return $from->cPfadNormal;
+                return $from->cURLNormal;
             case Image::SIZE_LG:
-                return $from->cPfadGross;
+                return $from->cURLGross;
             default:
                 return null;
         }

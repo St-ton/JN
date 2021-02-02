@@ -37,7 +37,7 @@
                                 {block name='layout-breadcrumb-last-item'}
                                     {breadcrumbitem class="last active"
                                         router-tag-itemprop="url"
-                                        href="{if $oItem->getHasChild() === true}{$oItem->getURLFull()}{/if}"
+                                        href="{$oItem->getURLFull()}"
                                         title=$oItem->getName()|escape:'html'
                                         itemprop="itemListElement"
                                         itemscope=true

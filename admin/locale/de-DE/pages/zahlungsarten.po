@@ -124,3 +124,12 @@ msgstr "Hier legen Sie den Namen einer eventuell anfallenden Gebühr für die Za
 
 msgid "paymentsReceived"
 msgstr "Zahlungseingänge"
+
+msgid "Plugin for payment method not found"
+msgstr "Die Zahlungsart %s ist eine Plugin-Zahlungsart für %s. Das zugehörige Plugin ist jedoch nicht installiert!"
+
+msgid "Payment method can not been deleted"
+msgstr "Die Zahlungsart %s kann nicht gelöscht werden!"
+
+msgid "Payment method has been deleted"
+msgstr "Die Zahlungsart %s wurde gelöscht!"

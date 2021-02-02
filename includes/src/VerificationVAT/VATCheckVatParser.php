@@ -76,25 +76,6 @@ class VATCheckVatParser
         // modification in place of original documentation, because the VIES can not handle spaces
         'FR' => ['FR__999999999'],       // example: FR40303265045(ok), FRK7399859412(ok)
 
-        // GB-Vereinigtes Königreich     GB999 9999 99 oder
-        //                               GB999 9999 99 999 oder
-        //                               GBGD999 oder
-        //                               GBHA999              1 Block mit 3 Ziffern, 1 Block mit 4 Ziffern
-        // und 1 Block mit 2 Ziffern; oder wie oben, gefolgt von einem Block mit 3 Ziffern; oder 1 Block mit 5 Ziffern
-        //, 'GB' => [
-        //      'GB999 9999 99'
-        //    , 'GB999 9999 99 999'
-        //    , 'GBGD999'
-        //    , 'GBHA999'
-        //]
-        // modification in place of original documentation, because the VIES can not handle spaces
-        'GB' => [
-            'GB999999999',  // example: GB862906405(ok), 'GB 117 8490 96'(ok, spaces are removed before parsing)
-            'GB999999999999',
-            'GBGD999',
-            'GBHA999'
-        ],
-
         // HR-Kroatien                   HR99999999999        1 Block mit 11 Ziffern
         'HR' => ['HR99999999999'],       // example: HR33392005961(ok)
 
@@ -112,6 +93,30 @@ class VATCheckVatParser
             'IE9_99999_',                // example: IE6433435F(ok), IE8D79739I(ok)
             'IE9_99999__'                // example: IE3333510LH(ok)
         ],
+
+        // NI-Nordirland
+        // not yet MIAS-support - state at: 2021-01-19
+        //
+        // northern ireland stays a member of the EU
+        // VAT numbers are "not fully known" / "not yet confirmed"
+        /*
+        'XI' => [
+            // maybe they use numbers like GB (not confirmed)
+            'XI999999999',  // https://www.gov.uk/government/publications/accounting-for-vat-on-goods-moving-between-great-britain-and-northern-ireland-from-1-january-2021/check-when-you-are-trading-under-the-northern-ireland-protocol-if-you-are-vat-registered-business
+            // not yet confirmed (officially)
+            // found at: https://www.meridianglobalservices.com/blog/2013/01/01/New-tax-number-format-Ireland#:~:text=Formally%2C the VAT Identification number,7 numbers plus 2 letters).
+            'XI9999999',    // old numbers before 2013 (old format) for Ireland
+            'XI9999999_A',  // new numbers for "individuals"
+            'XI9999999_H'   // new numbers for "non-individuals"
+
+            // possible other way (completely like GB):
+        'XI' => [
+            'XI999999999',
+            'XI999999999999',
+            'XIGD999',
+            'XIHA999'
+        ],
+        */
 
         // IT-Italien                    IT99999999999        1 Block mit 11 Ziffern
         'IT' => ['IT99999999999'],      // example: IT00743110157(ok)

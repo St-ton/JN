@@ -1955,6 +1955,9 @@ pre#debug b {
 .btn-group-plain .btn:hover {
   color: #E04000;
 }
+.content-header {
+  margin-top: 0;
+}
 .content-header .actions {
   opacity: 0.25;
   transition: opacity 300ms ease-in-out;
@@ -1962,6 +1965,9 @@ pre#debug b {
 }
 .content-header:hover .actions {
   opacity: 1;
+}
+.content-header .description a {
+  text-decoration: underline;
 }
 .dropdown.avatar > a {
   padding: 0;
@@ -2447,9 +2453,6 @@ div.markdown thead tr td {
   height: 40px;
   border-radius: 50%;
   padding: 0;
-}
-.content-header {
-  margin-top: 0;
 }
 .kv-upload-progress {
   margin-bottom: 1rem;

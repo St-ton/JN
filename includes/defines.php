@@ -208,12 +208,6 @@ ifndef('IMAGE_CLEANUP_LIMIT', 50);
 ifndef('OBJECT_CACHE_DIR', PFAD_ROOT . PFAD_COMPILEDIR . 'filecache/');
 
 ifndef('SITEMAP_ITEMS_LIMIT', 25000);
-// CMS Image Widths
-ifndef('WIDTH_OPC_IMAGE_XS', '480');
-ifndef('WIDTH_OPC_IMAGE_SM', '720');
-ifndef('WIDTH_OPC_IMAGE_MD', '1080');
-ifndef('WIDTH_OPC_IMAGE_LG', '1440');
-ifndef('WIDTH_OPC_IMAGE_XL', '2040');
 // show child products in product listings? 0 - never, 1 - only when at least 1 filter is active, 2 - always
 ifndef('SHOW_CHILD_PRODUCTS', 0);
 // redis connect timeout in seconds
@@ -281,7 +275,7 @@ ifndef('SHOW_TEMPLATE_HINTS', 0);
 
 ifndef('SEO_SLUG_LOWERCASE', false);
 
-ifndef('SAFE_MODE', false);
+ifndef('SAFE_MODE', $GLOBALS['plgSafeMode'] ?? file_exists(PFAD_ROOT. PFAD_ADMIN . PFAD_COMPILEDIR . 'safemode.lck'));
 
 /**
  * @param string     $constant

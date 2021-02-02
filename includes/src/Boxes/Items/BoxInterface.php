@@ -301,4 +301,9 @@ interface BoxInterface
      * @param string $renderedContent
      */
     public function setRenderedContent(string $renderedContent): void;
+
+    /**
+     *
+     */
+    public function init(): void;
 }

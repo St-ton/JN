@@ -15,7 +15,7 @@ msgid "pluginverwaltungLicenceKey"
 msgstr "Lizenzschlüssel"
 
 msgid "pluginverwaltungDesc"
-msgstr "Plugins erweitern den Funktionsumfang von JTL-Shop, ohne den Kern zu verändern. Aktive Plugins können jederzeit deaktiviert bzw. komplett deinstalliert werden. Bitte installieren Sie keine Plugins, deren Ursprung Ihnen nicht bekannt ist. <br/><strong>Sicherheitshinweis: Plugins haben Zugriff auf die gesamte Datenbank von JTL-Shop.</strong>"
+msgstr "Plugins erweitern den Funktionsumfang von JTL-Shop, ohne den Kern zu verändern. Im <a href=\"https://jtl-url.de/exs\" target=\"_blank\">JTL-Extension Store</a> finden Sie zahlreiche Erweiterungen für Ihren Shop. Aktive Plugins können jederzeit deaktiviert bzw. komplett deinstalliert werden. Bitte installieren Sie keine Plugins, deren Ursprung Ihnen nicht bekannt ist. <br/><strong>Sicherheitshinweis: Plugins haben Zugriff auf die gesamte Datenbank von JTL-Shop.</strong>"
 
 msgid "pluginverwaltungURL"
 msgstr "https://jtl-url.de/5stze"
@@ -784,3 +784,9 @@ msgstr "Subscription abgelaufen"
 
 msgid "Unbekannt"
 msgstr "Unbekannt"
+
+msgid "Safe mode restrictions."
+msgstr "Hinweis: Im abgesicherten Modus werden Plugins gegebenenfalls nicht vollständig deaktiviert oder deinstalliert. Dies kann dazu führen, dass nicht mehr benötigte Daten in der Datenbank verbleiben."
+
+msgid "Plugin probably flawed"
+msgstr "Das Plugin verursacht mglws. Fehler: "

@@ -1,13 +1,14 @@
 {block name='snippets-categories-mega-recursive'}
-    {$max_subsub_items="{if $isMobile}5{else}2{/if}"}
+    {block name='snippets-categories-mega-recursive-max-subsub-items'}
+        {$max_subsub_items="{if $isMobile}5{else}2{/if}"}
+    {/block}
     {block name='snippets-categories-mega-recursive-main-link'}
         {link href=$mainCategory->getURL()
             class="categories-recursive-link d-lg-block {if $firstChild}submenu-headline submenu-headline-toplevel{/if} {$subCategory} {if $mainCategory->hasChildren() && $subCategory < $max_subsub_items && $Einstellungen.template.megamenu.show_subcategories !== 'N'}nav-link dropdown-toggle{/if}"
             aria=["expanded"=>"false"]}
             {if $firstChild
                 && $Einstellungen.template.megamenu.show_category_images !== 'N'
-                && (!$isMobile || $isTablet)
-                && !empty($mainCategory->getImage(\JTL\Media\Image::SIZE_XS))}
+                && (!$isMobile || $isTablet)}
                 {include file='snippets/image.tpl'
                     class='submenu-headline-image'
                     item=$mainCategory

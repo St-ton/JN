@@ -15,7 +15,7 @@ msgid "pluginverwaltungLicenceKey"
 msgstr "Licence key"
 
 msgid "pluginverwaltungDesc"
-msgstr "Plug-ins extend the functionality of JTL-Shop without changing its core. Active plug-ins can be deactivated or uninstalled at any time. Please do not install any updates from unknown sources. <br/><strong>Security note: Plug-ins have access to the entire database of JTL-Shop.</strong>"
+msgstr "Plug-ins extend the functionality of JTL-Shop without changing its core. Go to the <a href=\"https://jtl-url.de/exs\" target=\"_blank\">JTL-Extension Store</a> to browse through a multitude of available extensions. Active plug-ins can be deactivated or uninstalled at any time. Please do not install any updates from unknown sources. <br/><strong>Security note: Plug-ins have access to the entire database of JTL-Shop.</strong>"
 
 msgid "pluginverwaltungURL"
 msgstr "https://jtl-url.de/gfso0"
@@ -784,3 +784,9 @@ msgstr "Subscription expired"
 
 msgid "Unbekannt"
 msgstr "Unknown"
+
+msgid "Safe mode restrictions."
+msgstr "Please note: In safe mode, plug-ins might not be fully deactivated or uninstalled. This could lead to unused data remaining in the database."
+
+msgid "Plugin probably flawed"
+msgstr "The plug-in might cause failures: "

@@ -32,7 +32,7 @@
                                     {/if}
                                 {/foreach}
                             {/if}
-                            {card class="mediafiles-description" img-src="{if !empty($oMedienDatei->cPfad)}{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}{elseif !empty($oMedienDatei->cURL)}{$oMedienDatei->cURL}{/if}" title-text="{$oMedienDatei->cName}" img-top=true img-alt="{$cMediaAltAttr}"}
+                            {card class="mediafiles-image" img-src="{if !empty($oMedienDatei->cPfad)}{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}{elseif !empty($oMedienDatei->cURL)}{$oMedienDatei->cURL}{/if}" title-text="{$oMedienDatei->cName}" img-top=true img-alt="{$cMediaAltAttr}"}
                                 <p>{$oMedienDatei->cBeschreibung}</p>
                             {/card}
                         {/block}
@@ -42,7 +42,7 @@
                             {block name='productdetails-mediafile-audio'}
                                 {card class="mediafiles-audio" title-text=$oMedienDatei->cName}
                                     {row}
-                                        {col cols=12}
+                                        {col class="mediafiles-description" cols=12}
                                             {$oMedienDatei->cBeschreibung}
                                         {/col}
                                         {col cols=12}
@@ -70,11 +70,19 @@
                             {if ($oMedienDatei->videoType === 'mp4'
                             || $oMedienDatei->videoType === 'webm'
                             || $oMedienDatei->videoType === 'ogg')}
-                                    <video class="product-detail-video mw-100" controls>
-                                        <source src="{$ShopURL}/{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" type="video/{$oMedienDatei->videoType}">
-                                        {lang key='videoTagNotSupported' section='errorMessages'}
-                                    </video>
-
+                                {card class="mediafiles-video" title-text=$oMedienDatei->cName}
+                                    {row}
+                                        {col class="mediafiles-description" cols=12}
+                                            {$oMedienDatei->cBeschreibung}
+                                        {/col}
+                                        {col cols=12}
+                                            <video class="product-detail-video mw-100" controls>
+                                                <source src="{$ShopURL}/{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" type="video/{$oMedienDatei->videoType}">
+                                                {lang key='videoTagNotSupported' section='errorMessages'}
+                                            </video>
+                                        {/col}
+                                    {/row}
+                                {/card}
                             {else}
                                 {lang key='videoTypeNotSupported' section='errorMessages'}
                             {/if}
@@ -84,7 +92,7 @@
                         {block name='productdetails-mediafile-misc'}
                             {card class="mediafiles-misc" title-text=$oMedienDatei->cName}
                                 {row}
-                                    {col cols=12}
+                                    {col class="mediafiles-description" cols=12}
                                         {$oMedienDatei->cBeschreibung}
                                     {/col}
                                     {col cols=12}
@@ -113,7 +121,7 @@
                         {block name='productdetails-mediafile-pdf'}
                             {card class="mediafiles-pdf" title-text=$oMedienDatei->cName}
                                 {row}
-                                    {col md=6}
+                                    {col class="mediafiles-description" md=6}
                                         {$oMedienDatei->cBeschreibung}
                                     {/col}
                                     {col md=6}

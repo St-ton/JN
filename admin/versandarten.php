@@ -32,6 +32,7 @@ $taxRateKeys     = array_keys($_SESSION['Steuersatz']);
 $alertHelper     = Shop::Container()->getAlertService();
 $countryHelper   = Shop::Container()->getCountryService();
 $languages       = LanguageHelper::getAllLanguages();
+$getText         = Shop::Container()->getGetText();
 
 $missingShippingClassCombis = getMissingShippingClassCombi();
 $smarty->assign('missingShippingClassCombis', $missingShippingClassCombis);
@@ -352,10 +353,28 @@ if ($step === 'neue Versandart') {
     foreach ($zahlungsarten as $zahlungsart) {
         $pluginID = PluginHelper::getIDByModuleID($zahlungsart->cModulId);
         if ($pluginID > 0) {
-            Shop::Container()->getGetText()->loadPluginLocale(
-                'base',
-                PluginHelper::getLoaderByPluginID($pluginID)->init($pluginID)
-            );
+            try {
+                Shop::Container()->getGetText()->loadPluginLocale(
+                    'base',
+                    PluginHelper::getLoaderByPluginID($pluginID)->init($pluginID)
+                );
+            } catch (InvalidArgumentException $e) {
+                $getText->loadAdminLocale('pages/zahlungsarten');
+                $alertHelper->addAlert(
+                    Alert::TYPE_WARNING,
+                    sprintf(
+                        __('Plugin for payment method not found'),
+                        $zahlungsart->cName,
+                        $zahlungsart->cAnbieter
+                    ),
+                    'notfound_' . $pluginID,
+                    [
+                        'linkHref' => Shop::getAdminURL(true) . '/zahlungsarten.php',
+                        'linkText' => __('paymentTypesOverview')
+                    ]
+                );
+                continue;
+            }
         }
         $zahlungsart->cName     = __($zahlungsart->cName);
         $zahlungsart->cAnbieter = __($zahlungsart->cAnbieter);
@@ -410,10 +429,28 @@ if ($step === 'uebersicht') {
             $smp->cAufpreisTyp = $smp->cAufpreisTyp === 'prozent' ? '%' : '';
             $pluginID          = PluginHelper::getIDByModuleID($smp->zahlungsart->cModulId);
             if ($pluginID > 0) {
-                Shop::Container()->getGetText()->loadPluginLocale(
-                    'base',
-                    PluginHelper::getLoaderByPluginID($pluginID)->init($pluginID)
-                );
+                try {
+                    $getText->loadPluginLocale(
+                        'base',
+                        PluginHelper::getLoaderByPluginID($pluginID)->init($pluginID)
+                    );
+                } catch (InvalidArgumentException $e) {
+                    $getText->loadAdminLocale('pages/zahlungsarten');
+                    $alertHelper->addAlert(
+                        Alert::TYPE_WARNING,
+                        sprintf(
+                            __('Plugin for payment method not found'),
+                            $smp->zahlungsart->cName,
+                            $smp->zahlungsart->cAnbieter
+                        ),
+                        'notfound_' . $pluginID,
+                        [
+                            'linkHref' => Shop::getAdminURL(true) . '/zahlungsarten.php',
+                            'linkText' => __('paymentTypesOverview')
+                        ]
+                    );
+                    continue;
+                }
             }
             $smp->zahlungsart->cName     = __($smp->zahlungsart->cName);
             $smp->zahlungsart->cAnbieter = __($smp->zahlungsart->cAnbieter);

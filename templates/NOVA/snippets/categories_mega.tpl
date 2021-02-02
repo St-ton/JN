@@ -90,7 +90,10 @@
             && $smarty.session.Kunde->kKunde != 0)}
         {get_manufacturers assign='manufacturers'}
         {if !empty($manufacturers)}
-            {assign var=manufacturerOverview value=\JTL\Shop::Container()->getLinkService()->getSpecialPage(LINKTYP_HERSTELLER)}
+            {assign var=manufacturerOverview value=null}
+            {if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_HERSTELLER])}
+                {$manufacturerOverview=$oSpezialseiten_arr[$smarty.const.LINKTYP_HERSTELLER]}
+            {/if}
             {block name='snippets-categories-mega-manufacturers-inner'}
                 <li class="nav-item nav-scrollbar-item dropdown dropdown-full {if $nSeitenTyp === $smarty.const.PAGE_HERSTELLER}active{/if}">
                     {link href="{if $manufacturerOverview !== null}{$manufacturerOverview->getURL()}{else}#{/if}" title={lang key='manufacturers'} class="nav-link dropdown-toggle" target="_self"}
@@ -176,6 +179,7 @@
                 {if !empty($smarty.session.Vergleichsliste->oArtikel_arr)}{$smarty.session.Vergleichsliste->oArtikel_arr|count}{else}0{/if}
             {/badge}
         {/navitem}
+        {if $linkgroups->getLinkGroupByTemplate('Kopf') !== null}
         {block name='snippets-categories-mega-top-links'}
             {foreach $linkgroups->getLinkGroupByTemplate('Kopf')->getLinks() as $Link}
                 {navitem class="nav-scrollbar-item" active=$Link->getIsActive() href=$Link->getURL() title=$Link->getTitle()}
@@ -183,6 +187,7 @@
                 {/navitem}
             {/foreach}
         {/block}
+        {/if}
         {block name='layout-header-top-bar-user-settings'}
             {block name='layout-header-top-bar-user-settings-currency'}
                 {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}

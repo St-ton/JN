@@ -19577,13 +19577,14 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
 
 .breadcrumb-wrapper {
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 @media (min-width: 992px) {
   .breadcrumb-wrapper {
     border-style: solid;
     border-color: #ebebeb;
     border-width: 1px 0;
+    margin-bottom: 2rem;
   }
 }
 

@@ -57,7 +57,7 @@
 					    {if $isCKEditor}
                             window.opener.CKEDITOR.tools.callFunction({$CKEditorFuncNum}, file.url);
                         {else}
-                            window.opener.elfinder.getFileCallback(file);
+                            window.opener.elfinder.getFileCallback(file, '{$mediafilesBaseUrlPath}');
                         {/if}
                         window.close();
                     },

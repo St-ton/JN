@@ -26357,4 +26357,8 @@ header #burger-menu {
   margin-top: auto;
 }
 
+.snippets-suggestion a {
+  display: block;
+}
+
 /*# sourceMappingURL=clear.css.map */

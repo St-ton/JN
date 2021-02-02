@@ -26357,6 +26357,10 @@ header #burger-menu {
   margin-top: auto;
 }
 
+.snippets-suggestion a {
+  display: block;
+}
+
 #footer .form-control, header .form-control, .fixed-search .form-control {
   border-color: #1973D3;
 }

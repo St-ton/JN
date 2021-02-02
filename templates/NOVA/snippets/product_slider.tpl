@@ -22,7 +22,7 @@
                         {/block}
                     {/if}
                     {block name='snippets-product-slider-box-products'}
-                        <div class="slick-slider-mb slick-smooth-loading carousel carousel-arrows-inside slick-lazy slick-type-box"
+                        <div class="slick-slider-mb slick-smooth-loading carousel carousel-arrows-inside slick-lazy slick-type-box {if $productlist|count < 3}slider-no-preview{/if}"
                             data-slick-type="{block name='product-box-slider-class'}box-slider{/block}">
                             {include file='snippets/slider_items.tpl' items=$productlist type='product'}
                         </div>
@@ -48,7 +48,7 @@
                         {/block}
                     {/if}
                     {block name='snippets-product-slider-other-products'}
-                        {row class="slick-lazy slick-smooth-loading carousel carousel-arrows-inside {if $tplscope === 'half'}slick-type-half{else}slick-type-product{/if}"
+                        {row class="slick-lazy slick-smooth-loading carousel carousel-arrows-inside {if $tplscope === 'half'}slick-type-half{else}slick-type-product{/if} {if $productlist|count < 3}slider-no-preview{/if}"
                             data=["slick-type"=>"{block name='product-slider-class'}{if $tplscope === 'half'}slider-half{else}product-slider{/if}{/block}"]}
                             {include file='snippets/slider_items.tpl' items=$productlist type='product'}
                         {/row}

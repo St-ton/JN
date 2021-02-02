@@ -20118,7 +20118,7 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
   max-height: none;
 }
 @media (max-width: 991.98px) {
-  .carousel:not(.slick-initialized).slick-lazy {
+  .carousel:not(.slick-initialized).slick-lazy:not(.slider-no-preview) {
     padding-right: 50px;
   }
 }
@@ -20400,11 +20400,11 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
 }
 
 @media (max-width: 991.98px) {
-  .slick-type-product .slick-list,
-.slick-type-half .slick-list,
-.slick-type-news .slick-list,
-.slick-type-three .slick-list,
-.slick-type-box .slick-list {
+  .slick-type-product:not(.slider-no-preview) .slick-list,
+.slick-type-half:not(.slider-no-preview) .slick-list,
+.slick-type-news:not(.slider-no-preview) .slick-list,
+.slick-type-three:not(.slider-no-preview) .slick-list,
+.slick-type-box:not(.slider-no-preview) .slick-list {
     padding-right: 50px;
   }
 }

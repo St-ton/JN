@@ -24753,7 +24753,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 .variations .custom-radio {
   margin-bottom: 0.5rem;
 }
-.variations .custom-radio:hover:hover, .variations .custom-radio:hover:focus {
+.variations .custom-radio:hover, .variations .custom-radio:focus {
   color: #525252;
   text-decoration: none;
   background-color: #f5f7fa;

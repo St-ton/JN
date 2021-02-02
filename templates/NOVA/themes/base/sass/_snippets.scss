@@ -305,6 +305,11 @@
   .wishlist-count {
     margin-left: auto;
   }
+  .product-characteristics {
+    .col {
+      @include text-truncate;
+    }
+  }
 }
 
 /* mobile */

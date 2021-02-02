@@ -815,3 +815,9 @@
 		}
 	}
 }
+
+.mediafiles {
+	.mediafiles-description {
+		padding-bottom: map_get($spacers, 3);
+	}
+}

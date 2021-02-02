@@ -105,7 +105,6 @@ class MenuItem
      */
     public $orphaned = false;
 
-
     /**
      * @return int
      */

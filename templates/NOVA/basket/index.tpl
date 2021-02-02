@@ -38,9 +38,9 @@
                                     {if $Einstellungen.kaufabwicklung.warenkorb_versandermittlung_anzeigen === 'Y'}
                                         {block name='basket-index-form-shipping-calc'}
                                             {opcMountPoint id='opc_before_shipping_calculator'}
-                                            {form id="basket-shipping-estimate-form" method="post" action="{get_static_route id='warenkorb.php'}#basket-shipping-estimate-form" slide=true}
+                                            {form id="basket-shipping-estimate-form" class="shipping-calculator-form" method="post" action="{get_static_route id='warenkorb.php'}#basket-shipping-estimate-form" slide=true}
                                                 {block name='basket-index-include-shipping-calculator'}
-                                                    {include file='snippets/shipping_calculator.tpl' checkout=true}
+                                                    {include file='snippets/shipping_calculator.tpl' checkout=true hrAtEnd=false}
                                                 {/block}
                                             {/form}
                                         {/block}
@@ -56,18 +56,18 @@
                                             {row class="basket-freegift"}
                                                 {col cols=12}
                                                     {block name='basket-index-freegifts-heading'}
-                                                        <div class="h3 basket-heading">{lang key='freeGiftFromOrderValueBasket'}</div>
+                                                        <div class="h2 basket-heading hr-sect">{lang key='freeGiftFromOrderValueBasket'}</div>
                                                     {/block}
                                                 {/col}
                                                 {col cols=12}
                                                     {block name='basket-index-form-freegift'}
                                                         {form method="post" name="freegift" action="{get_static_route id='warenkorb.php'}" class="text-center-util" slide=true}
                                                             {block name='basket-index-freegifts'}
-                                                                <div id="freegift"
+                                                                {row id="freegift"
                                                                      class="slick-smooth-loading carousel carousel-arrows-inside slick-lazy slick-type-half"
-                                                                     data-slick-type="slider-half">
+                                                                     data=["slick-type"=>"slider-half"]}
                                                                     {include file='snippets/slider_items.tpl' items=$oArtikelGeschenk_arr type='freegift'}
-                                                                </div>
+                                                                {/row}
                                                             {/block}
                                                             {block name='basket-index-freegifts-form-submit'}
                                                                 {input type="hidden" name="gratis_geschenk" value="1"}

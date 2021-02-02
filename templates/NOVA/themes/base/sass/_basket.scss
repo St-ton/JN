@@ -51,13 +51,13 @@
 /* index */
 .basket {
   .basket-heading {
-    margin-bottom: map-get($spacers, 5);
+    margin-bottom: map-get($spacers, 3);
   }
   .basket-items {
     margin-bottom: map-get($spacers, 7);
   }
   .basket-freegift {
-    margin-bottom: map-get($spacers, 4);
+    margin-bottom: map-get($spacers, 6);
   }
   .basket-empty {
     text-align: center;

@@ -320,3 +320,8 @@
   padding-right: map-get($spacers, 3);
   margin-top: auto;
 }
+.snippets-suggestion {
+  a {
+    display: block;
+  }
+}

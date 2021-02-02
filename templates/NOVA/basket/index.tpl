@@ -63,11 +63,11 @@
                                                     {block name='basket-index-form-freegift'}
                                                         {form method="post" name="freegift" action="{get_static_route id='warenkorb.php'}" class="text-center-util" slide=true}
                                                             {block name='basket-index-freegifts'}
-                                                                <div id="freegift"
+                                                                {row id="freegift"
                                                                      class="slick-smooth-loading carousel carousel-arrows-inside slick-lazy slick-type-half"
-                                                                     data-slick-type="slider-half">
+                                                                     data=["slick-type"=>"slider-half"]}
                                                                     {include file='snippets/slider_items.tpl' items=$oArtikelGeschenk_arr type='freegift'}
-                                                                </div>
+                                                                {/row}
                                                             {/block}
                                                             {block name='basket-index-freegifts-form-submit'}
                                                                 {input type="hidden" name="gratis_geschenk" value="1"}

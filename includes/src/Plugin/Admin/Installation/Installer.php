@@ -164,6 +164,7 @@ final class Installer
         $basePath           = \PFAD_ROOT . \PFAD_PLUGIN . $baseDir . \DIRECTORY_SEPARATOR;
         $lastVersionKey     = null;
         $plugin             = new stdClass();
+        $cache              = Shop::Container()->getCache();
         $plugin->nStatus    = $this->plugin === null ? State::ACTIVATED : $this->plugin->getState();
         $plugin->bExtension = 0;
         if (\is_array($versionNode)) {
@@ -181,8 +182,8 @@ final class Installer
         }
         if ($this->plugin !== null) {
             $loader = $this->plugin->isExtension() === true
-                ? new PluginLoader($this->db, Shop::Container()->getCache())
-                : new LegacyPluginLoader($this->db, Shop::Container()->getCache());
+                ? new PluginLoader($this->db, $cache)
+                : new LegacyPluginLoader($this->db, $cache);
             if (($p = Helper::bootstrap($this->plugin->getID(), $loader)) !== null) {
                 $p->preUpdate($this->plugin->getMeta()->getVersion(), $version);
             }
@@ -224,8 +225,15 @@ final class Installer
 
             return $res;
         }
+        $res = $this->installSQL($plugin, $versionNode, $version, $versionedDir);
+        $cache->flushTags([
+            \CACHING_GROUP_CORE,
+            \CACHING_GROUP_LICENSES,
+            \CACHING_GROUP_LANGUAGE,
+            \CACHING_GROUP_PLUGIN
+        ]);
 
-        return $this->installSQL($plugin, $versionNode, $version, $versionedDir);
+        return $res;
     }
 
     /**

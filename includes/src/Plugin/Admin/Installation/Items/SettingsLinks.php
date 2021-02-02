@@ -71,11 +71,14 @@ class SettingsLinks extends AbstractItem
                         $multiple     = (isset($setting['multiple'])
                             && $setting['multiple'] === 'Y'
                             && $type === InputType::SELECT);
-                        $initialValue = ($multiple === true) ?
-                            \serialize([$setting['initialValue']])
-                            : $setting['initialValue'];
-                        $sort         = $setting['sort'];
-                        $cConf        = $setting['conf'];
+                        $initialValue = '';
+                        if (isset($setting['initialValue'])) {
+                            $initialValue = ($multiple === true)
+                                ? \serialize([$setting['initialValue']])
+                                : $setting['initialValue'];
+                        }
+                        $sort  = $setting['sort'];
+                        $cConf = $setting['conf'];
                     } elseif (\mb_strlen($hits4[0]) === \mb_strlen($j)) {
                         $plgnConf          = new stdClass();
                         $plgnConf->kPlugin = $pluginID;

@@ -43,3 +43,6 @@ msgstr "Land bearbeiten"
 
 msgid "addCountry"
 msgstr "Land hinzufügen"
+
+msgid "errorCountryIsoExists"
+msgstr "Ein Land mit dem Iso-Code: \"%s\" existiert bereits."

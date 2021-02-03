@@ -122,9 +122,18 @@ class Manager
      */
     private function addCountry(): string
     {
+        $iso = Request::verifyGPDataString('cISO');
+        if ($this->countryService->getCountry($iso) !== null) {
+            $this->alertService->addAlert(
+                Alert::TYPE_DANGER,
+                \sprintf(__('errorCountryIsoExists'), $iso),
+                'errorCountryIsoExists'
+            );
+            return 'overview';
+        }
         if (Request::postInt('save') === 1) {
             $country                          = new \stdClass();
-            $country->cISO                    = Request::verifyGPDataString('cISO');
+            $country->cISO                    = $iso;
             $country->cDeutsch                = Request::verifyGPDataString('cDeutsch');
             $country->cEnglisch               = Request::verifyGPDataString('cEnglisch');
             $country->nEU                     = Request::verifyGPDataString('nEU');

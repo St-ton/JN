@@ -65,6 +65,9 @@ msgstr "Bestellungen löschen"
 msgid "deleteCustomers"
 msgstr "Kunden des Onlineshops löschen"
 
+msgid "deleteCustomersAndOrders"
+msgstr "Kunden und Bestellungen löschen"
+
 msgid "customersOrdersCoupons"
 msgstr "Kunden, Bestellungen und Coupons"
 

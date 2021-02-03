@@ -1,7 +1,7 @@
 <script type="text/javascript">
 {literal}
 $(document).ready(function() {
-    $('#tmp_check').bind('click', function() {
+    $('#tmp_check').on('change', function() {
         if ($(this).is(':checked')) {
             $('#tmp_date').show();
         } else {
@@ -45,6 +45,22 @@ $(document).ready(function() {
         $('.iso_wrapper').hide();
         $('#isoVita_' + iso).show();
     });
+
+    $('#kAdminlogingruppe').on('change', function(){
+        checkAdminSelected();
+    });
+    function checkAdminSelected()
+    {
+        let $tmpDate = $('#tmp-date-wrapper');
+        if ($('#kAdminlogingruppe').val() === '1') {
+            $tmpDate.hide();
+            $('#tmp_check').prop('checked', false);
+            $('#tmp_date').hide();
+        } else {
+            $tmpDate.show();
+        }
+    }
+    checkAdminSelected();
 });
 </script>
 <style>
@@ -171,9 +187,7 @@ $(document).ready(function() {
                             </div>
                         </div>
                     </div>
-
-                    {if isset($oAccount->kAdminlogingruppe) && $oAccount->kAdminlogingruppe > 1}
-                        <div class="item">
+                    <div id="tmp-date-wrapper" style="display: none;">
                             <div class="form-group form-row align-items-center">
                                 <label class="col col-sm-4 col-form-label text-sm-right" for="tmp_check">{__('temporaryAccess')}:</label>
                                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
@@ -187,15 +201,15 @@ $(document).ready(function() {
                             </div>
                         </div>
 
-                        <div class="item"{if !$oAccount->dGueltigBis || $oAccount->dGueltigBis == null} style="display: none;"{/if} id="tmp_date">
+                        <div class="item" {if empty($oAccount->dGueltigBis)}style="display: none;"{/if} id="tmp_date">
                             <div class="form-group form-row align-items-center{if !empty($cError_arr.dGueltigBis)} form-error{/if}">
-                                <label class="col col-sm-4 col-form-label text-sm-right" for="dGueltigBis">{__('tillInclusive')}</label>
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="dGueltigBis">{__('tillInclusive')}:</label>
                                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                    <input class="form-control" type="text" name="dGueltigBis" value="{if $oAccount->dGueltigBis}{$oAccount->dGueltigBis|date_format:'%d.%m.%Y %H:%M:%S'}{/if}" id="dGueltigBis" />
+                                    <input class="form-control" type="text" name="dGueltigBis" value="{if !empty($oAccount->dGueltigBis)}{$oAccount->dGueltigBis|date_format:'%d.%m.%Y %H:%M:%S'}{/if}" id="dGueltigBis" />
                                 </div>
                             </div>
                         </div>
-                    {/if}
+                    </div>
                 </div>
             </div>
             <div class="card">

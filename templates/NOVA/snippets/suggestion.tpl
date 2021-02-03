@@ -1,5 +1,7 @@
 {block name='snippets-suggestion'}
     <div class="snippets-suggestion">
-        {$result->keyword} {badge variant="primary" class="float-right"}{$result->quantity}{/badge}
+        {link href="{$shopURL}/index.php?qs={$result->keyword}"}
+            {$result->keyword} {badge variant="primary" class="float-right"}{$result->quantity}{/badge}
+        {/link}
     </div>
 {/block}

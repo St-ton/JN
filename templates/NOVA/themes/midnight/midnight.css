@@ -25603,13 +25603,13 @@ header #burger-menu {
 
 /* index */
 .basket .basket-heading {
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 .basket .basket-items {
   margin-bottom: 4rem;
 }
 .basket .basket-freegift {
-  margin-bottom: 1.5rem;
+  margin-bottom: 3rem;
 }
 .basket .basket-empty {
   text-align: center;
@@ -26188,12 +26188,10 @@ header #burger-menu {
 }
 
 /* shipping-calculator */
-.shipping-calculator-main {
-  margin-bottom: 2rem;
+.shipping-calculator-form {
+  margin-bottom: 3rem;
 }
-.shipping-calculator-main .col {
-  margin-bottom: 1rem;
-}
+
 .shipping-calculator-main .shipping-calculator-main-heading {
   margin-bottom: 1.5rem;
 }
@@ -26345,6 +26343,11 @@ header #burger-menu {
 .snippets-wishlist .wishlist-count {
   margin-left: auto;
 }
+.snippets-wishlist .product-characteristics .col {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 /* mobile */
 .productlist-applied-filter {
@@ -26358,6 +26361,10 @@ header #burger-menu {
   padding-left: 1rem;
   padding-right: 1rem;
   margin-top: auto;
+}
+
+.snippets-suggestion a {
+  display: block;
 }
 
 #footer .form-control, header .form-control, .fixed-search .form-control {

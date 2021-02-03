@@ -772,4 +772,17 @@ class Plugins
 
         $smarty->assign($params['assign'], \in_array($params['iso'], $availableLocales, true) ? $params['iso'] : 'LANG');
     }
+
+
+    /**
+     * @param array                         $params
+     * @param \Smarty_Internal_TemplateBase $smarty
+     * @return void
+     */
+    public function getCountry($params, $smarty): void
+    {
+        $regions = Shop::Container()->getCountryService()->getCountry($params['iso']);
+
+        $smarty->assign($params['assign'], $regions);
+    }
 }

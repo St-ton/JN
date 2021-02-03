@@ -8,6 +8,7 @@ use JTL\Country\Country;
 use JTL\Country\State;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Shop;
 
 /**
  * Class CountryService

@@ -235,7 +235,7 @@
                     {else}
                         {$countryISO=$shippingCountry}
                     {/if}
-                    {$selectedCountry=$countryService->getCountry($countryISO)}
+                    {getCountry iso=$countryISO assign='selectedCountry'}
                     {block name='checkout-inc-billing-address-form-country-wrap'}
                         {col cols=12}
                             {block name='checkout-inc-billing-address-form-country'}
@@ -251,7 +251,7 @@
                                     {/if}
                                     {select name="land" id="billing_address-country" class="country-input custom-select js-country-select" required=true autocomplete="billing country"}
                                         <option value="" disabled>{lang key='country' section='account data'}</option>
-                                        {foreach $countryService->getCountryList() as $country}
+                                        {foreach $countries as $country}
                                             {if $country->isPermitRegistration() && $country->isShippingAvailable()}
                                                 <option value="{$country->getISO()}" {if $selectedCountry->getISO() === $country->getISO()}selected="selected"{/if}>{$country->getName()}</option>
                                             {/if}

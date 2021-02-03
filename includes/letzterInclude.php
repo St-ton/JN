@@ -192,7 +192,7 @@ $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
     ->assign('isTablet', $device->isTablet())
     ->assign('isNova', ($conf['template']['general']['is_nova'] ?? 'N') === 'Y')
     ->assign('isAjax', Request::isAjaxRequest())
-    ->assign('countryService', Shop::Container()->getCountryService());
+    ->assign('countries', Shop::Container()->getCountryService()->getCountrylist());
 
 $nav = new Navigation(Shop::Lang(), Shop::Container()->getLinkService());
 $nav->setPageType(Shop::getPageType());

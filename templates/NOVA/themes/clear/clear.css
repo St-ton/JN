@@ -20961,6 +20961,10 @@ label {
   display: none;
 }
 
+.modal-fullwidth {
+  max-width: 96vw;
+}
+
 .newsbox {
   display: flex;
   flex-direction: column;
@@ -24999,6 +25003,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 .comparelist .stretched {
   display: flex;
   flex-direction: column;
+}
+.comparelist .comparelist-label-button th {
+  padding: 0;
+  border: 0;
 }
 
 .custom-checkbox + .description {

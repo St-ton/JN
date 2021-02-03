@@ -59,7 +59,7 @@
                                     <button name="action"
                                             value="delete"
                                             class="btn btn-link px-2"
-                                            onclick="return confirmDelete('1');"
+                                            onclick="return confirmDeleteModal('{__('confirmDeleteCountry')|printf:$country->getName():$country->getISO()}');"
                                             title="{__('delete')}"
                                             data-toggle="tooltip">
                                         <span class="icon-hover">

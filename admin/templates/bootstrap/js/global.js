@@ -849,3 +849,7 @@ function stopSpinner()
 {
     $('body').find('.ajax-spinner').remove();
 }
+
+function confirmDeleteModal(msg) {
+    return confirm(msg);
+}

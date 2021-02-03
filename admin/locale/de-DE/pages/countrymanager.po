@@ -46,3 +46,15 @@ msgstr "Land hinzufügen"
 
 msgid "errorCountryIsoExists"
 msgstr "Ein Land mit dem Iso-Code: \"%s\" existiert bereits."
+
+msgid "confirmDeleteCountry"
+msgstr "Das Land - %s - mit Iso-Code - %s - wirklich löschen? "
+
+msgid "successCountryAdd"
+msgstr "Land mit Iso-Code \"%s\" erfolgreich hinzugefügt."
+
+msgid "successCountryDelete"
+msgstr "Land mit Iso-Code \"%s\" erfolgreich gelöscht."
+
+msgid "successCountryUpdate"
+msgstr "Land mit Iso-Code \"%s\" erfolgreich aktualisiert."

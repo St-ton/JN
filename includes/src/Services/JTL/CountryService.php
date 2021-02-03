@@ -164,7 +164,7 @@ class CountryService implements CountryServiceInterface
             ];
         }
         \usort($continents, static function ($a, $b) {
-            return $a->sort > $b->sort;
+            return $a->sort <=> $b->sort;
         });
 
         return $continents;

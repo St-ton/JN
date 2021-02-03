@@ -784,3 +784,9 @@ msgstr "Subscription abgelaufen"
 
 msgid "Unbekannt"
 msgstr "Unbekannt"
+
+msgid "Safe mode restrictions."
+msgstr "Hinweis: Im abgesicherten Modus werden Plugins gegebenenfalls nicht vollständig deaktiviert oder deinstalliert. Dies kann dazu führen, dass nicht mehr benötigte Daten in der Datenbank verbleiben."
+
+msgid "Plugin probably flawed"
+msgstr "Das Plugin verursacht mglws. Fehler: "

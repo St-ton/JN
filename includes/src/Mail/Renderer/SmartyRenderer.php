@@ -258,6 +258,10 @@ class SmartyRenderer implements RendererInterface
                 return $value;
             }
         }
+        $getter = 'get' . \ucfirst($name);
+        if (\method_exists($object, $getter)) {
+            return $object->$getter();
+        }
 
         return null;
     }

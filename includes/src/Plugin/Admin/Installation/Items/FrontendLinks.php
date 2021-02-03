@@ -184,9 +184,9 @@ class FrontendLinks extends AbstractItem
         $link->kPlugin            = $pluginID;
         $link->cName              = $links['Name'];
         $link->nLinkart           = \LINKTYP_PLUGIN;
-        $link->cSichtbarNachLogin = $links['VisibleAfterLogin'];
-        $link->cDruckButton       = $links['PrintButton'];
-        $link->cNoFollow          = $links['NoFollow'] ?? null;
+        $link->cSichtbarNachLogin = $links['VisibleAfterLogin'] ?? 'N';
+        $link->cDruckButton       = $links['PrintButton'] ?? 'N';
+        $link->cNoFollow          = $links['NoFollow'] ?? 'N';
         $link->nSort              = \LINKTYP_PLUGIN;
         $link->bSSL               = (int)($links['SSL'] ?? 0);
 

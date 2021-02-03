@@ -57,7 +57,9 @@
                 {$templateDir = $parentTemplateDir}
             {/if}
             <style id="criticalCSS">
-                {file_get_contents("{$currentThemeDir}{$Einstellungen.template.theme.theme_default}_crit.css")}
+                {block name='layout-header-head-resources-crit'}
+                    {file_get_contents("{$currentThemeDir}{$Einstellungen.template.theme.theme_default}_crit.css")}
+                {/block}
             </style>
             {* css *}
             {if $Einstellungen.template.general.use_minify === 'N'}

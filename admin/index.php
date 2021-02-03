@@ -76,19 +76,22 @@ if (Request::postInt('adminlogin') === 1) {
             case AdminLoginStatus::LOGIN_OK:
                 Status::getInstance($db, $cache, true);
                 Backend::getInstance()->reHash();
+                $safeMode                 = isset($GLOBALS['plgSafeMode'])
+                    ? '?safemode=' . ($GLOBALS['plgSafeMode'] ? 'on' : 'off')
+                    : '';
                 $_SESSION['loginIsValid'] = true; // "enable" the "header.tpl"-navigation again
                 if (($conf['global']['global_wizard_done'] ?? 'Y') === 'N') {
-                    header('Location: ' . Shop::getAdminURL(true) . '/wizard.php');
+                    header('Location: ' . Shop::getAdminURL(true) . '/wizard.php' . $safeMode);
                     exit;
                 }
                 if ($oAccount->permission('SHOP_UPDATE_VIEW') && $oUpdater->hasPendingUpdates()) {
-                    header('Location: ' . Shop::getAdminURL(true) . '/dbupdater.php');
+                    header('Location: ' . Shop::getAdminURL(true) . '/dbupdater.php' . $safeMode);
                     exit;
                 }
                 if (isset($_REQUEST['uri']) && mb_strlen(trim($_REQUEST['uri'])) > 0) {
                     redirectToURI($_REQUEST['uri']);
                 }
-                header('Location: ' . Shop::getAdminURL(true) . '/index.php');
+                header('Location: ' . Shop::getAdminURL(true) . '/index.php' . $safeMode);
                 exit;
 
                 break;
@@ -134,7 +137,8 @@ $smarty->assign('bProfilerActive', $profilerState !== 0)
        ->assign('pw_updated', Request::getVar('pw_updated') === 'true')
        ->assign('alertError', $alertHelper->alertTypeExists(Alert::TYPE_ERROR))
        ->assign('alertList', $alertHelper)
-       ->assign('updateMessage', $updateMessage ?? null);
+       ->assign('updateMessage', $updateMessage ?? null)
+       ->assign('plgSafeMode', $GLOBALS['plgSafeMode'] ?? false);
 
 /**
  * opens the dashboard

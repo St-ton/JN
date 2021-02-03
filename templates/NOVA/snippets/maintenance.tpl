@@ -86,11 +86,11 @@
         </head>
     {/block}
         {block name='snippets-maintenance-content'}
-        <body id="main-wrapper" class="text-center font-size-1.5x pt-5 vh-100">
-            {container class="d-flex flex-column h-100" fluid=true}
+        <body id="main-wrapper" class="maintenance-main-wrapper text-center-util font-size-1.5x vh-100">
+            {container class="maintenance-main" fluid=true}
                 {block name='snippets-maintenance-content-language'}
                     {row}
-                        {col class="mb-3" cols=12 md=6 offset-md=3}
+                        {col class="maintenance-main-item" cols=12 md=6 offset-md=3}
                         {strip}
                             {nav tag='ul' class='nav-dividers'}
                                 {block name='snippets-maintenance-content-include-language-dropdown'}
@@ -103,13 +103,12 @@
                 {/block}
                 {block name='snippets-maintenance-content-maintenance'}
                      {row}
-                        {col class="mb-3" cols=12 md=6 offset-md=3}
+                        {col class="maintenance-main-item" cols=12 md=6 offset-md=3}
                             {if isset($ShopLogoURL)}
                                 {image src=$ShopLogoURL
-                                alt=$Einstellungen.global.global_shopname
-                                class="mb-3 mx-auto w-25"
-                                style="{if $ShopLogoURL|strpos:'.svg' !== false}height: 100px;{/if}"
-                                }
+                                    alt=$Einstellungen.global.global_shopname
+                                    class="maintenance-main-image"
+                                    style="{if $ShopLogoURL|strpos:'.svg' !== false}height: 100px;{/if}"}
                             {else}
                                 <span class="h1">{$Einstellungen.global.global_shopname}</span>
                             {/if}
@@ -120,6 +119,7 @@
                         {/col}
                     {/row}
                 {/block}
+                {if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_IMPRESSUM])}
                 {block name='snippets-maintenance-content-imprint'}
                     {row id="footer" class="flex-grow-1"}
                         {col cols=12 class="small" md=6 offset-md=3}
@@ -128,6 +128,7 @@
                         {/col}
                     {/row}
                 {/block}
+                {/if}
             {/container}
         </body>
         {/block}

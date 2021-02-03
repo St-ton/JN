@@ -8,7 +8,7 @@
         <span class="col-sm-auto">
             <select id="{$id}" name="kSprache" class="custom-select selectBox"{if $onchange} onchange="document.sprache.submit();"{/if}>
                 {foreach $availableLanguages as $language}
-                    <option value="{$language->getId()}" {if $language->getId() === $smarty.session.kSprache}{assign var=currentLanguage value=$language->getLocalizedName()}selected{/if}>{$language->getLocalizedName()}</option>
+                    <option value="{$language->getId()}" {if $language->getId() === $smarty.session.editLanguageID}{assign var=currentLanguage value=$language->getLocalizedName()}selected{/if}>{$language->getLocalizedName()}</option>
                 {/foreach}
             </select>
         </span>

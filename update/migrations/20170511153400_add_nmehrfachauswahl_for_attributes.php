@@ -18,6 +18,9 @@ class Migration_20170511153400 extends Migration implements IMigration
     protected $description = /** @lang text */
         'Create column nMehrfachauswahl in tmerkmal';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -25,6 +28,9 @@ class Migration_20170511153400 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute(

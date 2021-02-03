@@ -48,7 +48,7 @@ msgid "showedName"
 msgstr "Displayed name"
 
 msgid "multipleChoice"
-msgstr "Multiple selections possible."
+msgstr "Multiple selection is possible"
 
 msgid "save"
 msgstr "Save"
@@ -162,7 +162,7 @@ msgid "noCURLError"
 msgstr "The program \"<b>CURL (curl_init)</b>\" is not available. Please contact your server administrator to install the program."
 
 msgid "noCURLAndFopenError"
-msgstr "The PHP stream configuration option \"<b>allow_url_fopen</b>\" is not enabled, and the program \"<b>CURL (curl_init)</b>\" is not available. Please contact the server administrator to enabled at least one of them."
+msgstr "The PHP stream configuration option \"<b>allow_url_fopen</b>\" is not enabled, and the program \"<b>CURL (curl_init)</b>\" is not available. Please contact the server administrator to enable at least one of them."
 
 msgid "noSOAPError"
 msgstr "The network protocol \"<b>SOAP</b>\" is not available. Please ask the server administrator to provide it."
@@ -183,10 +183,10 @@ msgid "apply"
 msgstr "Apply"
 
 msgid "exportCsv"
-msgstr "Exported entries"
+msgstr "Export entries"
 
 msgid "importCsv"
-msgstr "Imported entries"
+msgstr "Import entries"
 
 msgid "importCsvChooseType"
 msgstr "How should the import be executed?"
@@ -284,6 +284,9 @@ msgstr "Please enter a valid date."
 msgid "smartySyntaxError"
 msgstr "Smarty syntax error"
 
+msgid "Smarty syntax ok"
+msgstr "Smarty Syntax is correct."
+
 msgid "errorCheckInput"
 msgstr "Please check your inputs."
 
@@ -297,10 +300,10 @@ msgid "errorTwoFactorExpired"
 msgstr "Code for two-factor authentication expired"
 
 msgid "errorTwoFactorFaultyExpired"
-msgstr "Code for two-factor authentication faulty or expired"
+msgstr "Invalid or expired code for two-factor authentication"
 
 msgid "errorNoPermission"
-msgstr "No permissions available"
+msgstr "Missing rights"
 
 msgid "errorCSRF"
 msgstr "Cross-site request forgery! Are cookies enabled?"
@@ -333,7 +336,7 @@ msgid "successEmailSend"
 msgstr "An email with further instructions has been sent to the indicated email address."
 
 msgid "errorEmailNotFound"
-msgstr "Email not found."
+msgstr "Could not find email address."
 
 msgid "successPasswordChange"
 msgstr "Password changed successfully."
@@ -438,7 +441,7 @@ msgid "chooseProduct"
 msgstr "Select items"
 
 msgid "deleteProduct"
-msgstr "Delete item"
+msgstr "Delete items"
 
 msgid "filter"
 msgstr "Filters"
@@ -456,13 +459,13 @@ msgid "zone"
 msgstr "Zone"
 
 msgid "newZone"
-msgstr "New Zone"
+msgstr "New zone"
 
 msgid "saveZones"
-msgstr "Save Zones"
+msgstr "Save zones"
 
 msgid "deleteZone"
-msgstr "Delete Zone"
+msgstr "Delete zone"
 
 msgid "title"
 msgstr "Name"
@@ -748,6 +751,9 @@ msgstr "Company Ltd."
 
 msgid "faulty"
 msgstr "Faulty"
+
+msgid "untested"
+msgstr "Untested"
 
 msgid "week"
 msgstr "Week"
@@ -1278,7 +1284,7 @@ msgid "more"
 msgstr "More"
 
 msgid "insert"
-msgstr "Insert"
+msgstr "Add"
 
 msgid "pages"
 msgstr "Pages"
@@ -1710,22 +1716,22 @@ msgid "syntax"
 msgstr "Syntax"
 
 msgid "typeAheadCategory"
-msgstr "Please enter the category name. You will shortly be offered different suggestions from which you can choose one."
+msgstr "Enter the name of the category. You will shortly be offered different suggestions from which you can choose one."
 
 msgid "typeAheadPage"
-msgstr "Please enter the page name. You will shortly be offered different suggestions from which you can choose one."
+msgstr "Enter the name of the page. You will shortly be offered different suggestions from which you can choose one."
 
 msgid "typeAheadTag"
-msgstr "Please enter the tag name. You will shortly be offered different suggestions from which you can choose one."
+msgstr "Enter the name of the tag. You will shortly be offered different suggestions from which you can choose one."
 
 msgid "typeAheadManufacturer"
-msgstr "Please enter the manufacturer name. You will shortly be offered different suggestions from which you can choose one."
+msgstr "Enter the name of the manufacturer. You will shortly be offered different suggestions from which you can choose one."
 
 msgid "typeAheadAttribute"
-msgstr "Please enter the name of the characteristic. You will shortly be offered different suggestions from which you can choose one."
+msgstr "Enter the name of the characteristic. You will shortly be offered different suggestions from which you can choose one."
 
 msgid "typeAheadProduct"
-msgstr "Please enter the item name. You will shortly be offered different suggestions from which you can choose one."
+msgstr "Enter the name of the item. You will shortly be offered different suggestions from which you can choose one."
 
 msgid "enterSearchTerm"
 msgstr "Please enter a search term."
@@ -1839,7 +1845,7 @@ msgid "foundEntries"
 msgstr "Found entries: "
 
 msgid "noEntriesSelected"
-msgstr "No entries selected yet. Please use the search."
+msgstr "No entries selected yet. Please use the search function."
 
 msgid "allSelectedEntries"
 msgstr "All selected entries: "
@@ -1883,6 +1889,15 @@ msgstr "Help Centre"
 msgid "notificationsHeader"
 msgstr "Notifications"
 
+msgid "Refresh all notifications"
+msgstr "Refresh all notifications"
+
+msgid "Mark notification as read"
+msgstr "Hide notification as read"
+
+msgid "Mark all notifications as unread"
+msgstr "Show all hidden notifications"
+
 msgid "favouritesHeader"
 msgstr "Favourites"
 
@@ -1920,25 +1935,25 @@ msgid "none"
 msgstr "None"
 
 msgid "successSave"
-msgstr "Successfully saved"
+msgstr "Saved successfully"
 
 msgid "errorSave"
-msgstr "Could not save"
+msgstr "Save failed"
 
 msgid "successDelete"
-msgstr "Successfully deleted"
+msgstr "Deleted successfully"
 
 msgid "errorDelete"
-msgstr "Could not delete"
+msgstr "Deletion failed"
 
 msgid "filterManufacturers"
-msgstr "Manufacturers"
+msgstr "All manufacturers"
 
 msgid "filterPriceRange"
 msgstr "Price range"
 
 msgid "filterRatings"
-msgstr "Reviews"
+msgstr "Customer reviews"
 
 msgid "filterSearch"
 msgstr "Search filter"
@@ -1947,10 +1962,13 @@ msgid "filterSearchSpecial"
 msgstr "Special items"
 
 msgid "filterCategory"
-msgstr "Categories"
+msgstr "All categories"
 
 msgid "filterCharacteristics"
 msgstr "Characteristics"
+
+msgid "filterAvailability"
+msgstr "Availability"
 
 msgid "za_ueberweisung_jtl"
 msgstr "Bank transfer"
@@ -1974,25 +1992,40 @@ msgid "getToKnowMore"
 msgstr "More"
 
 msgid "Updates available"
-msgstr "Updates available"
+msgstr "Available updates"
 
 msgid "validationErrorIncorrectEmail"
 msgstr "Please enter a valid email address."
 
 msgid "Licenses expired"
-msgstr "Licenses expired"
+msgstr "Licence expired."
 
 msgid "I understood this notice."
-msgstr "I understood this notice."
+msgstr "Yes, I have read this message."
 
-msgid "The following extensions do not have a valid license:"
-msgstr "The following extensions do not have a valid license:"
+msgid "No valid licence found for the following installed and active extensions:"
+msgstr "No valid licence found for the following installed and active extensions:"
 
-msgid "Please uninstall this extensions or purchase a valid license."
-msgstr "Please uninstall this extensions or purchase a valid license."
+msgid "Possible reasons:"
+msgstr "Possible reasons:"
 
-msgid "Further using these extensions will violate the license policy and may have legal consequences."
-msgstr "Further using these extensions will violate the license policy and may have legal consequences."
+msgid "The extension was obtained from a different source than the JTL-Extension Store"
+msgstr "The extension was obtained from a different source than the JTL-Extension Store"
+
+msgid "The licence is not bound to this shop yet (check licence in \"My purchases\")"
+msgstr "The licence is not bound to this shop yet (check licence in \"My purchases\")"
+
+msgid "The licence is bound to a different customer account that is not connected to this shop (check connected account in \"My purchases\")"
+msgstr "The licence is bound to a different customer account that is not connected to this shop (check connected account in \"My purchases\")"
+
+msgid "The manufacturer disabled the licence"
+msgstr "The manufacturer disabled the licence"
+
+msgid "Further use of the extension may constitute a licence violation!"
+msgstr "Further use of the extension may constitute a licence violation!"
+
+msgid "Please purchase a licence in the JTL-Extension Store or contact the manufacturer of the extension for information on rights of use."
+msgstr "Please purchase a licence in the JTL-Extension Store or contact the manufacturer of the extension for information on rights of use."
 
 msgid "Licensing problem detected"
 msgstr "Licensing problem detected"
@@ -2014,3 +2047,33 @@ msgstr "We recommend:"
 
 msgid "somethingHappend"
 msgstr "An unknown error occurred."
+
+msgid "warningPasswordResetAuth"
+msgstr "If this account is connected to the JTL-Extension Store, the connection must be renewed once the password has been changed (Plug-ins > My purchases > Connect account). This does not affect your purchased extensions."
+
+msgid "errrorNumberRange"
+msgstr "The setting \"%s\" must have a value between %d and %d."
+
+msgid "csvImportInvalidMime"
+msgstr "The selected file has an invalid MIME type"
+
+msgid "csvImportNoArtNrOrDestUrl"
+msgstr "CSV file does not contain an article number or a destination URL."
+
+msgid "csvImportArtNrAndDestUrlError"
+msgstr "CSV file contains an article number and a destination URL at the same time where only one of which must be present."
+
+msgid "csvImportArtNrNotFound"
+msgstr "Article number %s could not be found in this shop."
+
+msgid "csvImportSaveError"
+msgstr "Line %s could not be saved."
+
+msgid "extensionStoreURL"
+msgstr "https://jtl-url.de/exs"
+
+msgid "Safe mode"
+msgstr "Safe mode"
+
+msgid "Safe mode enabled."
+msgstr "Safe mode active. Functionality might be impaired."

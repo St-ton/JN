@@ -172,7 +172,7 @@ msgid "tutStepTitle_2_1"
 msgstr "Creating blueprints"
 
 msgid "tutStepText_2_1"
-msgstr "If you want to use contents again at a later time, you can make blueprints for them. To do this, click on the grid to select it."
+msgstr "If you want to use contents again at a later time, you can create blueprints for them. To do this, click on the grid to select it."
 
 msgid "tutStepTitle_2_2"
 msgstr "Creating blueprints"
@@ -184,7 +184,7 @@ msgid "tutStepTitle_2_3"
 msgstr "Creating blueprints"
 
 msgid "tutStepText_2_3"
-msgstr "Give the blueprint a clear name. This will help you to quickly find the blueprints again in the future. Good naming examples are <em>\"Product table\"</em>, <em>\"Video with description\"</em> or <em>\"Text with 3 columns\"</em>."
+msgstr "Give the blueprint a clear name. This will help you to quickly find the blueprint again in the future. Good naming examples are <em>\"Product table\"</em>, <em>\"Video with description\"</em> or <em>\"Text with 3 columns\"</em>."
 
 msgid "tutStepTitle_2_4"
 msgstr "Reusing blueprints"
@@ -202,4 +202,4 @@ msgid "tutStepTitle_2_6"
 msgstr "Reusing blueprints"
 
 msgid "tutStepText_2_6"
-msgstr "<p>The plug-in <em>\"JTL-Portlets\"</em> offers a small selection of templates. If the plug-in is installed, you can find these blueprints here as well.</p><p>This was the <em>Blueprints</em> tutorial. Have fun trying out the OnPage&nbsp;Composer!</p>"
+msgstr "<p>The plug-in <em>\"JTL-Portlets\"</em> offers a small selection of blueprints. If the plug-in is installed, you can find these templates here as well.</p><p>This was the <em>Blueprint</em> tutorial. Have fun trying out the OnPage&nbsp;Composer!</p>"

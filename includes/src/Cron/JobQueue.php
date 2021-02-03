@@ -376,7 +376,7 @@ class JobQueue
             $ins->tableName     = $this->cTabelle;
             $ins->foreignKey    = $this->cKey;
             $ins->startTime     = $this->dStartZeit;
-            $ins->lastStart     = $this->dZuletztGelaufen;
+            $ins->lastStart     = $this->dZuletztGelaufen ?? '_DBNULL_';
 
             return Shop::Container()->getDB()->insert('tjobqueue', $ins);
         }
@@ -401,7 +401,7 @@ class JobQueue
             $upd->tableName     = $this->cTabelle;
             $upd->foreignKey    = $this->cKey;
             $upd->startTime     = $this->dStartZeit;
-            $upd->lastStart     = $this->dZuletztGelaufen;
+            $upd->lastStart     = $this->dZuletztGelaufen ?? '_DBNULL_';
 
             return Shop::Container()->getDB()->update('tjobqueue', 'jobQueueID', (int)$this->kJobQueue, $upd);
         }

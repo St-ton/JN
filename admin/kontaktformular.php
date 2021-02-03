@@ -11,10 +11,10 @@ use function Functional\map;
 use function Functional\reindex;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('SETTINGS_CONTACTFORM_VIEW', true, true);
-/** @global \JTL\Smarty\JTLSmarty $smarty */
-$tab         = 'config';
 $step        = 'uebersicht';
 $alertHelper = Shop::Container()->getAlertService();
 $db          = Shop::Container()->getDB();
@@ -179,9 +179,10 @@ if ($step === 'betreff') {
         ->assign('gesetzteKundengruppen', getGesetzteKundengruppen($newSubject))
         ->assign('Betreffname', ($newSubject !== null) ? getNames($newSubject->kKontaktBetreff) : null);
 }
-
+if (isset($tab)) {
+    $smarty->assign('cTab', $tab);
+}
 $smarty->assign('step', $step)
-    ->assign('cTab', $tab)
     ->display('kontaktformular.tpl');
 
 /**

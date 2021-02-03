@@ -16,8 +16,7 @@ class Migration_20181030110600 extends Migration implements IMigration
     protected $description = 'Add admin login lock';
 
     /**
-     * @return bool|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
@@ -25,8 +24,7 @@ class Migration_20181030110600 extends Migration implements IMigration
     }
 
     /**
-     * @return bool|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function down()
     {

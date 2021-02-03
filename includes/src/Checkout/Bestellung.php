@@ -735,7 +735,7 @@ class Bestellung
                 $note                = new Lieferschein((int)$note->kLieferschein, $sData);
                 $note->oPosition_arr = [];
                 /** @var Lieferscheinpos $lineItem */
-                foreach ($note->oLieferscheinPos_arr as &$lineItem) {
+                foreach ($note->oLieferscheinPos_arr as $lineItem) {
                     foreach ($this->Positionen as &$orderItem) {
                         $orderItem->nPosTyp     = (int)$orderItem->nPosTyp;
                         $orderItem->kBestellpos = (int)$orderItem->kBestellpos;
@@ -780,12 +780,11 @@ class Bestellung
                         }
                     }
                 }
-                unset($lineItem);
                 $this->oLieferschein_arr[] = $note;
             }
             // Wenn Konfig-Vater, alle Kinder ueberpruefen
-            foreach ($this->oLieferschein_arr as &$deliveryNote) {
-                foreach ($deliveryNote->oPosition_arr as &$deliveryItem) {
+            foreach ($this->oLieferschein_arr as $deliveryNote) {
+                foreach ($deliveryNote->oPosition_arr as $deliveryItem) {
                     if ($deliveryItem->kKonfigitem == 0 && !empty($deliveryItem->cUnique)) {
                         $bAlleAusgeliefert = true;
                         foreach ($this->Positionen as $child) {
@@ -799,9 +798,7 @@ class Bestellung
                         $deliveryItem->bAusgeliefert = $bAlleAusgeliefert;
                     }
                 }
-                unset($deliveryItem);
             }
-            unset($deliveryNote);
         }
         // Fallback for Non-Beta
         if ((int)$this->cStatus === \BESTELLUNG_STATUS_VERSANDT) {
@@ -1050,10 +1047,9 @@ class Bestellung
             'longestMax' => 0,
         ];
         if ($minDelivery !== null && $maxDelivery !== null) {
-            $this->oEstimatedDelivery->longestMin = (int)$minDelivery;
-            $this->oEstimatedDelivery->longestMax = (int)$maxDelivery;
-
-            $this->oEstimatedDelivery->localized = (!empty($this->oEstimatedDelivery->longestMin)
+            $this->oEstimatedDelivery->longestMin = $minDelivery;
+            $this->oEstimatedDelivery->longestMax = $maxDelivery;
+            $this->oEstimatedDelivery->localized  = (!empty($this->oEstimatedDelivery->longestMin)
                 && !empty($this->oEstimatedDelivery->longestMax))
                 ? ShippingMethod::getDeliverytimeEstimationText(
                     $this->oEstimatedDelivery->longestMin,

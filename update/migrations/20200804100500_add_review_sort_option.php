@@ -19,7 +19,7 @@ class Migration_20200804100500 extends Migration implements IMigration
         $this->setConfig(
             'bewertung_sortierung',
             0,
-            \CONF_BEWERTUNG,
+            CONF_BEWERTUNG,
             'Standard-Sortierung',
             'selectbox',
             125,

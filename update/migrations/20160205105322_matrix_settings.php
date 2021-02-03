@@ -16,6 +16,9 @@ class Migration_20160205105322 extends Migration implements IMigration
 {
     protected $author = 'dh';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute("INSERT INTO `teinstellungenconfwerte` (kEinstellungenConf, cName, cWert, nSort) VALUES(1330, 'Liste (nur bei Varkombis möglich)', 'L', 3);");
@@ -23,6 +26,9 @@ class Migration_20160205105322 extends Migration implements IMigration
         $this->execute("UPDATE `teinstellungenconfwerte` SET cName='Querformat (nur bei 1 Variation möglich)' WHERE kEinstellungenConf=1330 AND cWert='Q';");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("DELETE FROM `teinstellungenconfwerte` WHERE kEinstellungenConf=1330 AND cWert='L';");

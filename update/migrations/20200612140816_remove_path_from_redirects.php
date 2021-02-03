@@ -19,6 +19,9 @@ class Migration_20200612140816 extends Migration implements IMigration
     protected $author = 'fp';
     protected $description = 'Remove path from redirects';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $shopSubPath = trim(parse_url(Shop::getURL(), PHP_URL_PATH) ?? '', '/') . '/';
@@ -57,6 +60,9 @@ class Migration_20200612140816 extends Migration implements IMigration
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
     }

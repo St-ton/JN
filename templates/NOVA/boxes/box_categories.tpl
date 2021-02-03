@@ -1,5 +1,5 @@
 {block name='boxes-box-categories'}
-    {card class="box box-categories word-break mb-md-4" id="sidebox-categories-{$oBox->getID()}"}
+    {card class="box box-normal box-categories word-break" id="sidebox-categories-{$oBox->getID()}"}
         {block name='boxes-box-categories-content'}
             {block name='boxes-box-categories-toggle-title'}
                 {link id="crd-hdr-{$oBox->getID()}"
@@ -7,7 +7,7 @@
                     data=["toggle"=>"collapse"]
                     role="button"
                     aria=["expanded"=>"false","controls"=>"crd-cllps-{$oBox->getID()}"]
-                    class="text-decoration-none font-weight-bold mb-2 d-md-none dropdown-toggle"}
+                    class="box-normal-link dropdown-toggle"}
                     {if !empty($oBox->getTitle())}{$oBox->getTitle()}{else}{lang key='categories'}{/if}
                 {/link}
             {/block}
@@ -38,7 +38,7 @@
                 {/collapse}
             {/block}
             {block name='boxes-box-categories-hr-end'}
-                <hr class="my-3 d-flex d-md-none">
+                <hr class="box-normal-hr">
             {/block}
         {/block}
     {/card}

@@ -168,12 +168,12 @@ innerhalb der ``boot()``-Methode schreiben:
         $args['oArtikel']->cName = 'Neuer Name';
     });
 
-Dies hat den Vorteil, dass der Listener nur in Abhängigkeit einer Plugin-Option registriert werden kann. Somit wird
+Dies hat den Vorteil, dass der Listener in Abhängigkeit einer Plugin-Option registriert werden kann. Somit wird
 der Hook, anders als bei statischen Hooks, die in der ``info.xml`` registriert wurden, nicht immer ausgeführt.|br|
 Auch muss so der objektorientierte Kontext des Bootstrappers nicht verlassen werden, während Hooks jeweils nur
 PHP-Dateien mit funktionalem Code aufrufen können.
 
-Ab JTL-Shop 5.0 kann zudem auch die Priorität, ähnlich dem Hook-Knoten ``<priority>`` der ``info.xml``, als
+Ab JTL-Shop 5.0.0 kann zudem auch die Priorität, ähnlich dem Hook-Knoten ``<priority>`` der ``info.xml``, als
 dritter Parameter angegeben werden:
 
 .. code-block:: php
@@ -186,7 +186,7 @@ dritter Parameter angegeben werden:
     {
         parent::boot($dispatcher);
         $dispatcher->listen(
-            'shop.hook' . \HOOK_ARTIKEL_CLASS_FUELLEARTIKEL,
+            'shop.hook.' . \HOOK_ARTIKEL_CLASS_FUELLEARTIKEL,
             function () { /* do something */ },
             10
         );
@@ -194,5 +194,8 @@ dritter Parameter angegeben werden:
 
 Siehe auch Abschnitt "Die info.xml", :ref:`label_infoxml_hooks`.
 
-Innerhalb des Bootstrappers haben Sie via ``$this->getPlugin()`` immer Zugriff auf die Instanz des Plugins,
-via ``$this->getDB()`` auf die Datenbank, sowie via ``$this->getCache()`` auf den Objektcache.
+Innerhalb des Bootstrappers besteht via ``$this->getPlugin()`` immer Zugriff auf die Instanz des Plugins, sodass
+die Nutzung des PluginHelpers vermieden werden kann.
+Auch besteht via ``$this->getDB()`` Zugriff auf die Datenbank sowie via ``$this->getCache()`` auf den Objektcache.
+Es ist daher nicht nötig, diese Instanzen über den DI-Container ``Shop::Container()->getDB()`` oder
+``Shop::Container()->getCache()`` zu holen.

@@ -84,7 +84,7 @@ msgid "Home page"
 msgstr "Startseite"
 
 msgid "Terms / Withdrawal"
-msgstr "AGB &amp; Widerrufsbelehrung"
+msgstr "AGB & Widerrufsbelehrung"
 
 msgid "Blog posts"
 msgstr "Blogbeiträge"
@@ -122,26 +122,11 @@ msgstr "Checkboxen"
 msgid "Email"
 msgstr "E-Mail"
 
-# Menu Items
-msgid "Email settings"
-msgstr "E-Mail-Einstellungen"
-
 msgid "Reports"
 msgstr "Berichte"
 
 msgid "Blacklist"
 msgstr "Blacklist"
-
-msgid "E-mail log"
-msgstr "E-Mail-Log"
-
-# Top Menu
-msgid "Purchases"
-msgstr "Kaufabwicklung"
-
-# Mid Menu
-msgid "Shopping cart"
-msgstr "Warenkorb"
 
 # Menu Items
 msgid "Checkout"
@@ -153,10 +138,6 @@ msgstr "Warenkörbe"
 msgid "Free gifts"
 msgstr "Gratisgeschenke"
 
-# Just incase you want to add a translation for partners:
-#   msgid "Trusted Shops"
-#   msgstr "Trusted Shops"
-# Mid Menu
 msgid "Payments"
 msgstr "Zahlungen"
 
@@ -164,12 +145,6 @@ msgstr "Zahlungen"
 msgid "Payment methods"
 msgstr "Zahlungsarten"
 
-# Just incase you want to add a translation for partners:
-#   msgid "Amazon Payments"
-#   msgstr "Amazon Pay"
-#
-#   msgid "Skrill"
-#   msgstr "Skrill"
 # Mid Menu
 msgid "Shipments"
 msgstr "Versand"
@@ -184,9 +159,6 @@ msgstr "Zusatzverpackungen"
 msgid "Marketing"
 msgstr "Marketing"
 
-msgid "Customer loyalty"
-msgstr "Kundenbindung"
-
 msgid "Coupons"
 msgstr "Coupons"
 
@@ -198,10 +170,6 @@ msgstr "Vergleichsliste"
 
 msgid "Newsletter"
 msgstr "Newsletter"
-
-# Mid Menu
-msgid "Publicity"
-msgstr "Werbung"
 
 # Menu Items
 msgid "Banners"
@@ -331,16 +299,13 @@ msgstr "Zurücksetzen"
 
 # Mid Menu
 msgid "Search"
-msgstr "Suche"
+msgstr "Suche & Artikellisten"
 
 msgid "Item overview"
 msgstr "Artikelübersicht"
 
 msgid "Search queries"
 msgstr "Suchanfragen"
-
-msgid "Search query activation"
-msgstr "Suchanfragen freischalten"
 
 msgid "Cron"
 msgstr "Cron"
@@ -352,10 +317,6 @@ msgstr "Plugins"
 # Mid Menu
 msgid "Overview"
 msgstr "Übersicht"
-
-# Menu Items
-msgid "Plug-in marketplace"
-msgstr "Plugin-Marktplatz"
 
 msgid "Plug-in manager"
 msgstr "Plugin-Manager"
@@ -387,9 +348,6 @@ msgstr "Hilfe"
 
 msgid "System check"
 msgstr "Systemprüfung"
-
-msgid "Rating system"
-msgstr "Bewertungssystem"
 
 msgid "Consent manager"
 msgstr "Consent-Manager"
@@ -515,9 +473,6 @@ msgstr "Fehlerbehebung"
 msgid "System diagnostics"
 msgstr "Diagnose"
 
-msgid "Set up"
-msgstr "Einrichten"
-
 msgid "Email templates"
 msgstr "Vorlagen"
 
@@ -529,3 +484,6 @@ msgstr "Verfügbarkeitsanfragen"
 
 msgid "Country manager"
 msgstr "Länderverwaltung"
+
+msgid "Set up"
+msgstr "Einrichten"

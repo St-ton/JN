@@ -570,7 +570,7 @@ abstract class DataModel implements DataModelInterface, Iterator
             }
         }
         $members = $this->getMembersToSave($members, $partial);
-        if (!$this->loaded || $noPrimaryKey || $keyValue === null) {
+        if (!$this->loaded || $noPrimaryKey || $keyValue === null || $keyValue === 0) {
             $pkValue = $this->db->insert($this->getTableName(), $members);
             if ((empty($keyValue) || $noPrimaryKey) && !empty($pkValue)) {
                 $this->setKey($pkValue);

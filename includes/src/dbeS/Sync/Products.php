@@ -36,6 +36,11 @@ final class Products extends AbstractSync
     protected $productVisibilityFilter;
 
     /**
+     * @var bool
+     */
+    private $affectsSearchSpecials = false;
+
+    /**
      * @param Starter $starter
      * @return mixed|null
      */
@@ -63,7 +68,6 @@ final class Products extends AbstractSync
             }
         }
         $productIDs = \array_unique(flatten($productIDs));
-        $this->handlePriceRange($productIDs);
         $this->db->query('COMMIT', ReturnType::DEFAULT);
         $this->clearProductCaches($productIDs);
 
@@ -294,6 +298,9 @@ final class Products extends AbstractSync
             }
         }
         $this->upsert('tartikel', $products, 'kArtikel');
+        $this->affectsSearchSpecials = $this->affectsSearchSpecials
+            || (($products[0]->cNeu ?? 'N') === 'Y')
+            || (($products[0]->cTopArtikel ?? 'N') === 'Y');
         \executeHook(\HOOK_ARTIKEL_XML_BEARBEITEINSERT, ['oArtikel' => $products[0]]);
 
         return $products;
@@ -504,13 +511,12 @@ final class Products extends AbstractSync
             return;
         }
         $uploads = $this->mapper->mapArray($xml['tartikel'], 'tartikelupload', 'mArtikelUpload');
-        foreach ($uploads as &$upload) {
+        foreach ($uploads as $upload) {
             $upload->nTyp          = 3;
             $upload->kUploadSchema = $upload->kArtikelUpload;
             $upload->kCustomID     = $upload->kArtikel;
             unset($upload->kArtikelUpload, $upload->kArtikel);
         }
-        unset($upload);
         $this->upsert('tuploadschema', $uploads, 'kUploadSchema', 'kCustomID');
         $ulCount = \count($uploads);
         if ($ulCount < 2) {
@@ -607,6 +613,7 @@ final class Products extends AbstractSync
                 'kKundengruppe'
             );
             $this->upsert('tartikelsonderpreis', $productSpecialPrices, 'kArtikelSonderpreis');
+            $this->affectsSearchSpecials = true;
         }
     }
 
@@ -995,7 +1002,6 @@ final class Products extends AbstractSync
         }
         $this->db->delete('tseo', ['cKey', 'kKey'], ['kArtikel', $id]);
         $this->db->delete('tartikel', 'kArtikel', $id);
-        $this->db->delete('tpricerange', 'kArtikel', $id);
         $this->db->delete('tkategorieartikel', 'kArtikel', $id);
         $this->db->delete('tartikelsprache', 'kArtikel', $id);
         $this->db->delete('tartikelattribut', 'kArtikel', $id);
@@ -1377,32 +1383,32 @@ final class Products extends AbstractSync
             // flush cache tags associated with the product's manufacturer ID
             $cacheTags = $cacheTags->concat(map($this->db->query(
                 'SELECT DISTINCT kHersteller AS id
-                FROM tartikel
-                WHERE kArtikel IN (' . $whereIn . ')
-                    AND kHersteller > 0',
+                    FROM tartikel
+                    WHERE kArtikel IN (' . $whereIn . ')
+                        AND kHersteller > 0',
                 ReturnType::ARRAY_OF_OBJECTS
             ), static function ($item) {
                 return \CACHING_GROUP_MANUFACTURER . '_' . (int)$item->id;
             }))->concat(map($this->db->query(
                 'SELECT DISTINCT kKategorie AS id
-                FROM tkategorieartikel
-                WHERE kArtikel IN (' . $whereIn . ')',
+                    FROM tkategorieartikel
+                    WHERE kArtikel IN (' . $whereIn . ')',
                 ReturnType::ARRAY_OF_OBJECTS
             ), static function ($item) {
                 return \CACHING_GROUP_CATEGORY . '_' . (int)$item->id;
             }))->concat(map($this->db->query(
                 'SELECT DISTINCT kVaterArtikel AS id
-                FROM tartikel
-                WHERE kArtikel IN (' . $whereIn . ')
-                AND kVaterArtikel > 0',
+                    FROM tartikel
+                    WHERE kArtikel IN (' . $whereIn . ')
+                        AND kVaterArtikel > 0',
                 ReturnType::ARRAY_OF_OBJECTS
             ), static function ($item) {
                 return \CACHING_GROUP_ARTICLE . '_' . (int)$item->id;
             }))->concat(map($this->db->query(
                 'SELECT DISTINCT kArtikel AS id
-                FROM tartikel
-                WHERE kVaterArtikel IN (' . $whereIn . ')
-                AND kVaterArtikel > 0',
+                    FROM tartikel
+                    WHERE kVaterArtikel IN (' . $whereIn . ')
+                        AND kVaterArtikel > 0',
                 ReturnType::ARRAY_OF_OBJECTS
             ), static function ($item) {
                 return \CACHING_GROUP_ARTICLE . '_' . (int)$item->id;
@@ -1410,6 +1416,9 @@ final class Products extends AbstractSync
         }
 
         $cacheTags->push('jtl_mmf');
+        if ($this->affectsSearchSpecials === true) {
+            $cacheTags->push('jtl_ssp');
+        }
         $cacheTags = $cacheTags->unique();
         // flush product cache, category cache and cache for gibMerkmalFilterOptionen() and mega menu/category boxes
         $totalCount = $this->cache->flushTags($cacheTags->toArray());

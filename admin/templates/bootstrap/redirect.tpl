@@ -331,37 +331,6 @@
                     </div>
                 </div>
             </form>
-            <form method="post" enctype="multipart/form-data">
-                {$jtl_token}
-                <div class="settings">
-                    <div class="subheading1">{__('redirectCsvImport')}</div>
-                    <hr class="mb-3">
-                    <div>
-                        <div class="form-group form-row align-items-center">
-                            <label class="col col-sm-4 col-form-label text-sm-right" for="cFile">{__('file')}:</label>
-                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                {include file='tpl_inc/fileupload.tpl'
-                                    fileID='csv-import'
-                                    fileName='cFile'
-                                    fileAllowedExtensions="['csv','txt']"
-                                    fileShowRemove=true
-                                    fileMaxSize=false
-                                    fileRequired=true
-                                }
-                            </div>
-                        </div>
-                    </div>
-                    <div class="save-wrapper">
-                        <div class="row">
-                            <div class="ml-auto col-sm-6 col-xl-auto">
-                                <button name="action" value="csvimport" class="btn btn-primary btn-block">
-                                    {__('import')}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
         </div>
     </div>
 </div>

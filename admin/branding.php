@@ -8,8 +8,10 @@ use JTL\Media\Media;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
-$oAccount->permission('DISPLAY_BRANDING_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
+/** @global \JTL\Backend\AdminAccount $oAccount */
+
+$oAccount->permission('DISPLAY_BRANDING_VIEW', true, true);
 $step        = 'branding_uebersicht';
 $alertHelper = Shop::Container()->getAlertService();
 if (isset($_POST['action']) && $_POST['action'] === 'delete' && Form::validateToken()) {

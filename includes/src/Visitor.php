@@ -43,6 +43,10 @@ class Visitor
             }
             // get back the new ID of that visitor (and write it back into the session)
             $visitor->kBesucher = self::dbInsert($visitor);
+            // store search-string from search-engine too
+            if ($visitor->cReferer !== '') {
+                self::analyzeReferer($visitor->kBesucher, $visitor->cReferer);
+            }
             // allways increment the visitor-counter (if no bot)
             Shop::Container()->getDB()->query(
                 'UPDATE tbesucherzaehler SET nZaehler = nZaehler + 1',
@@ -101,21 +105,21 @@ class Visitor
      * @former dbLookupVisitor()
      * @since  5.0.0
      */
-    public static function dbLookup($userAgent, $ip): ?stdClass
+    public static function dbLookup(string $userAgent, string $ip): ?stdClass
     {
         return Shop::Container()->getDB()->select('tbesucher', 'cSessID', \session_id())
             ?? Shop::Container()->getDB()->select('tbesucher', 'cID', \md5($userAgent . $ip));
     }
 
     /**
-     * @param object $vis
-     * @param int    $visitorID
-     * @param string $userAgent
-     * @param int    $botID
+     * @param stdClass $vis
+     * @param int      $visitorID
+     * @param string   $userAgent
+     * @param int      $botID
      * @return object
      * @since 5.0.0
      */
-    public static function updateVisitorObject($vis, int $visitorID, $userAgent, int $botID)
+    public static function updateVisitorObject(stdClass $vis, int $visitorID, string $userAgent, int $botID)
     {
         $vis->kBesucher         = $visitorID;
         $vis->cIP               = (new IpAnonymizer(Request::getRealIP()))->anonymize();
@@ -139,7 +143,7 @@ class Visitor
      * @return stdClass
      * @since 5.0.0
      */
-    public static function createVisitorObject($userAgent, int $botID): stdClass
+    public static function createVisitorObject(string $userAgent, int $botID): stdClass
     {
         $vis                    = new stdClass();
         $vis->kBesucher         = 0;
@@ -156,31 +160,27 @@ class Visitor
         $vis->dLetzteAktivitaet = (new DateTime())->format('Y-m-d H:i:s');
         $vis->dZeit             = (new DateTime())->format('Y-m-d H:i:s');
         $vis->kBesucherBot      = $botID;
-        // store search-string from search-engine too
-        if ($vis->cReferer !== '') {
-            self::analyzeReferer($vis->kBesucher, $vis->cReferer);
-        }
 
         return $vis;
     }
 
     /**
-     * @param object $visitor
+     * @param stdClass $visitor
      * @return int
      * @since since 5.0.0
      */
-    public static function dbInsert($visitor): int
+    public static function dbInsert(stdClass $visitor): int
     {
         return Shop::Container()->getDB()->insert('tbesucher', $visitor);
     }
 
     /**
-     * @param object $visitor
-     * @param int    $visitorID
+     * @param stdClass $visitor
+     * @param int      $visitorID
      * @return int
      * @since since 5.0.0
      */
-    public static function dbUpdate($visitor, int $visitorID): int
+    public static function dbUpdate(stdClass $visitor, int $visitorID): int
     {
         return Shop::Container()->getDB()->update('tbesucher', 'kBesucher', $visitorID, $visitor);
     }
@@ -268,7 +268,7 @@ class Visitor
      */
     public static function getBot(): string
     {
-        $agent = \mb_convert_case($_SERVER['HTTP_USER_AGENT'], \MB_CASE_LOWER);
+        $agent = \mb_convert_case($_SERVER['HTTP_USER_AGENT'] ?? '', \MB_CASE_LOWER);
         if (\mb_strpos($agent, 'googlebot') !== false) {
             return 'Google';
         }
@@ -314,7 +314,7 @@ class Visitor
         $ref             = $_SERVER['HTTP_REFERER'] ?? '';
         $term            = new stdClass();
         $term->kBesucher = $visitorID;
-        $term->cRohdaten = Text::filterXSS($_SERVER['HTTP_REFERER']);
+        $term->cRohdaten = \mb_substr(Text::filterXSS($_SERVER['HTTP_REFERER']), 0, 255);
         $param           = '';
         if (\mb_strpos($referer, '.google.') !== false
             || \mb_strpos($referer, 'suche.t-online.') !== false
@@ -380,14 +380,12 @@ class Visitor
      * @former istSpider()
      * @since  5.0.0
      */
-    public static function isSpider($userAgent): int
+    public static function isSpider(string $userAgent): int
     {
-        $db         = Shop::Container()->getDB();
-        $cache      = Shop::Container()->getCache();
-        $controller = new Crawler\Controller($db, $cache);
+        $controller = new Crawler\Controller(Shop::Container()->getDB(), Shop::Container()->getCache());
         $bot        = $controller->getByUserAgent($userAgent);
 
-        return $bot === false ? 0 : (int)$bot->kBesucherBot;
+        return (int)($bot->kBesucherBot ?? 0);
     }
 
     /**
@@ -395,9 +393,7 @@ class Visitor
      */
     public static function getSpiders(): array
     {
-        $db         = Shop::Container()->getDB();
-        $cache      = Shop::Container()->getCache();
-        $controller = new Crawler\Controller($db, $cache);
+        $controller = new Crawler\Controller(Shop::Container()->getDB(), Shop::Container()->getCache());
 
         return $controller->getAllCrawlers();
     }
@@ -406,7 +402,7 @@ class Visitor
      * @param string $userAgent
      * @return bool|int
      */
-    private static function isMobile($userAgent)
+    private static function isMobile(string $userAgent)
     {
         return \preg_match(
             '/android|avantgo|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile' .
@@ -445,8 +441,11 @@ class Visitor
      * @param string   $userAgent
      * @return stdClass
      */
-    private static function getBrowserData(stdClass $browser, $userAgent): stdClass
+    private static function getBrowserData(stdClass $browser, string $userAgent): stdClass
     {
+        if ($userAgent === '') {
+            return $browser;
+        }
         if (\preg_match('/MSIE/i', $userAgent) && !\preg_match('/Opera/i', $userAgent)) {
             $browser->nType    = \BROWSER_MSIE;
             $browser->cName    = 'Internet Explorer';
@@ -494,7 +493,7 @@ class Visitor
      */
     public static function getBrowserForUserAgent($userAgent = null): stdClass
     {
-        $userAgent          = $userAgent ?? $_SERVER['HTTP_USER_AGENT'] ?? null;
+        $userAgent          = $userAgent ?? $_SERVER['HTTP_USER_AGENT'] ?? '';
         $browser            = new stdClass();
         $browser->nType     = 0;
         $browser->bMobile   = false;

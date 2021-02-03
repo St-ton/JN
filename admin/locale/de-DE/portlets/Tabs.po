@@ -3,13 +3,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "Tabs"
-msgstr "Tabs"
+msgstr "Registerkarten"
 
 msgid "tabOne"
-msgstr "Registerkarte eins"
+msgstr "Registerkarte 1"
 
 msgid "tabTwo"
-msgstr "Registerkarte zwei"
+msgstr "Registerkarte 2"
 
 msgid "tabThree"
-msgstr "Registerkarte drei"
+msgstr "Registerkarte 3"

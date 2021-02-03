@@ -62,6 +62,8 @@ ifndef('SMARTY_USE_SUB_DIRS', false);
 ifndef('JTL_INCLUDE_ONLY_DB', 0);
 ifndef('SOCKET_TIMEOUT', 30);
 ifndef('ARTICLES_PER_PAGE_HARD_LIMIT', 100);
+ifndef('MAX_CORRUPTED_IMAGES', 50);
+ifndef('MAX_IMAGES_PER_STEP', 50000);
 
 // Pfade
 ifndef('PFAD_CLASSES', 'classes/old/'); // DEPRECATED
@@ -164,6 +166,7 @@ ifndef('STORAGE_CATEGORIES', PFAD_MEDIA_IMAGE_STORAGE . 'categories/');
 ifndef('STORAGE_CHARACTERISTICS', PFAD_MEDIA_IMAGE_STORAGE . 'characteristics/');
 ifndef('STORAGE_CHARACTERISTIC_VALUES', PFAD_MEDIA_IMAGE_STORAGE . 'characteristicvalues/');
 ifndef('STORAGE_OPC', PFAD_MEDIA_IMAGE_STORAGE . 'opc/');
+ifndef('STORAGE_VIDEO_THUMBS', PFAD_MEDIA_IMAGE_STORAGE . 'videothumbs/');
 // Plugins
 ifndef('PFAD_PLUGIN', PFAD_INCLUDES . 'plugins/');
 // dbeS
@@ -182,7 +185,7 @@ ifndef('BILD_KEIN_MERKMALWERTBILD_VORHANDEN', PFAD_GFX . 'keinBild_kl.gif');
 ifndef('BILD_UPLOAD_ZUGRIFF_VERWEIGERT', PFAD_GFX . 'keinBild.gif');
 //MediaImage Regex
 ifndef('MEDIAIMAGE_REGEX', '/^media\/image\/(?P<type>product)' .
-    '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl|os)\/(?P<name>[a-zA-Z0-9\-_]+)' .
+    '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl|os)\/(?P<name>[a-zA-Z0-9\-_\.]+)' .
     '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/');
 // Suchcache Lebensdauer in Minuten nach letzter Artikeländerung durch JTL-Wawi
 ifndef('SUCHCACHE_LEBENSDAUER', 60);
@@ -193,6 +196,7 @@ ifndef('JTLLOG_MAX_LOGSIZE', 200000);
 ifndef('PCLZIP_TEMPORARY_DIR', PFAD_ROOT . PFAD_COMPILEDIR);
 
 ifndef('IMAGE_PRELOAD_LIMIT', 10);
+ifndef('FORCE_IMAGEDRIVER_GD', false);
 //when the shop has up to n categories, all category data will be loaded by KategorieHelper::combinedGetAll()
 //with more then n categories, some db fields will only be selected if the corresponding options are active
 ifndef('CATEGORY_FULL_LOAD_LIMIT', 10000);
@@ -204,12 +208,6 @@ ifndef('IMAGE_CLEANUP_LIMIT', 50);
 ifndef('OBJECT_CACHE_DIR', PFAD_ROOT . PFAD_COMPILEDIR . 'filecache/');
 
 ifndef('SITEMAP_ITEMS_LIMIT', 25000);
-// CMS Image Widths
-ifndef('WIDTH_OPC_IMAGE_XS', '480');
-ifndef('WIDTH_OPC_IMAGE_SM', '720');
-ifndef('WIDTH_OPC_IMAGE_MD', '1080');
-ifndef('WIDTH_OPC_IMAGE_LG', '1440');
-ifndef('WIDTH_OPC_IMAGE_XL', '2040');
 // show child products in product listings? 0 - never, 1 - only when at least 1 filter is active, 2 - always
 ifndef('SHOW_CHILD_PRODUCTS', 0);
 // redis connect timeout in seconds
@@ -247,7 +245,7 @@ ifndef('SECURE_PHP_FUNCTIONS', '
     str_repeat, str_replace, str_rot13, str_shuffle, str_split, str_word_count, strcasecmp, strchr, strcmp, strcoll,
     strcspn, strip_tags, stripslashes, stristr, strlen, strnatcasecmp, strnatcmp, strncasecmp, strncmp, strpbrk, strpos,
     strrchr, strrev, strripos, strrpos, strspn, strstr, strtok, strtolower, strtoupper, strtr, substr_compare,
-    substr_count, substr_replace, substr, trim, ucfirst, ucwords, vsprintf, wordwrap,
+    substr_count, substr_replace, substr, trim, ucfirst, ucwords, vsprintf, var_dump, print_r, printf, wordwrap,
     
     checkdate, date_add, date_create_from_format, date_create_immutable_from_format, date_create_immutable, date_create,
     date_date_set, date_diff, date_format, date_get_last_errors, date_interval_create_from_date_string,
@@ -277,7 +275,7 @@ ifndef('SHOW_TEMPLATE_HINTS', 0);
 
 ifndef('SEO_SLUG_LOWERCASE', false);
 
-ifndef('SAFE_MODE', false);
+ifndef('SAFE_MODE', $GLOBALS['plgSafeMode'] ?? file_exists(PFAD_ROOT. PFAD_ADMIN . PFAD_COMPILEDIR . 'safemode.lck'));
 
 /**
  * @param string     $constant

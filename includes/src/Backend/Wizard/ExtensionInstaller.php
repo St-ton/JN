@@ -107,11 +107,17 @@ class ExtensionInstaller
                             $createdLicenseKeys[] = $data->meta->exs_key;
                         }
                     } catch (ClientException | GuzzleException $e) {
-                        $errorMsg .= \sprintf(
-                            '%s: %s <br>',
-                            $recom->getTitle(),
-                            Text::htmlentities($e->getMessage())
-                        );
+                        if ($e->getResponse()->getStatusCode() === 400
+                            && ($license = $this->manager->getLicenseByExsID($id)) !== null
+                        ) {
+                            $createdLicenseKeys[] = $license->getLicense()->getKey();
+                        } else {
+                            $errorMsg .= \sprintf(
+                                '%s: %s <br>',
+                                $recom->getTitle(),
+                                Text::htmlentities($e->getMessage())
+                            );
+                        }
                     }
                 }
             }
@@ -138,8 +144,7 @@ class ExtensionInstaller
                     $errorMsg .= \sprintf('%s: %s <br>', $license->getName(), $e->getMessage());
                 }
                 if (isset($installCode) && $installCode !== InstallCode::OK) {
-                    $mapper = new PluginValidation();
-                    $license->getName();
+                    $mapper    = new PluginValidation();
                     $errorMsg .= \sprintf('%s: %s <br>', $license->getName(), $mapper->map($installCode));
                 }
             }

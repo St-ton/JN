@@ -17,6 +17,9 @@ class Migration_20170201153618 extends Migration implements IMigration
     protected $author      = 'msc';
     protected $description = 'add lang key redeemed coupons';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'checkout', 'currentCoupon', 'Bereits eingelöster Kupon: ');
@@ -25,6 +28,9 @@ class Migration_20170201153618 extends Migration implements IMigration
         $this->setLocalization('eng', 'checkout', 'discountForArticle', 'applied to: ');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('currentCoupon');

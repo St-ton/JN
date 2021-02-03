@@ -15,9 +15,10 @@ use JTL\Pagination\Pagination;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('ORDER_COUPON_VIEW', true, true);
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'kupons_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_exporter_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_importer_inc.php';
@@ -27,6 +28,7 @@ $tab         = Kupon::TYPE_STANDARD;
 $languages   = LanguageHelper::getAllLanguages();
 $coupon      = null;
 $alertHelper = Shop::Container()->getAlertService();
+$errors      = [];
 $res         = handleCsvImportAction('kupon', static function ($obj, &$importDeleteDone, $importType = 2) {
     $db = Shop::Container()->getDB();
     if ($importType === 0 && $importDeleteDone === false) {
@@ -62,10 +64,12 @@ $res         = handleCsvImportAction('kupon', static function ($obj, &$importDel
     }
 
     return true;
-});
+}, [], null, 2, $errors);
 
 if ($res > 0) {
-    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorImportCSV') . ' ' . __('errorImportRow'), 'errorImportCSV');
+    foreach ($errors as $key => $error) {
+        $alertHelper->addAlert(Alert::TYPE_ERROR, $error, 'errorImportCSV_' . $key);
+    }
 } elseif ($res === 0) {
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successImportCSV'), 'successImportCSV');
 }

@@ -17,6 +17,9 @@ class Migration_20181129151242 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Remove tkuponneukunde, add tkuponflag';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('DROP TABLE IF EXISTS `tkuponneukunde`');
@@ -78,6 +81,9 @@ class Migration_20181129151242 extends Migration implements IMigration
         $this->setLocalization('eng', 'global', 'couponErr6', 'Error: Maximum usage reached for this coupon.');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('DROP TABLE IF EXISTS `tkuponflag`');

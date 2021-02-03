@@ -8,9 +8,10 @@ use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'news_inc.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('RESET_SHOP_VIEW', true, true);
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 $alertHelper = Shop::Container()->getAlertService();
 $db          = Shop::Container()->getDB();
 if (Request::postInt('zuruecksetzen') === 1 && Form::validateToken()) {

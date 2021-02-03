@@ -3,9 +3,7 @@
 namespace JTL;
 
 use Exception;
-use GuzzleHttp\Client;
-use GuzzleHttp\Cookie\CookieJar;
-use GuzzleHttp\Exception\GuzzleException;
+use JTL\Backend\AdminIO;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
@@ -24,8 +22,8 @@ use JTL\Session\Frontend;
 use JTL\Smarty\ExportSmarty;
 use JTL\Smarty\JTLSmarty;
 use Psr\Log\LoggerInterface;
+use SmartyException;
 use stdClass;
-use Symfony\Component\Process\PhpProcess;
 use function Functional\first;
 
 /**
@@ -34,6 +32,10 @@ use function Functional\first;
  */
 class Exportformat
 {
+    public const SYNTAX_FAIL        = 1;
+    public const SYNTAX_NOT_CHECKED = -1;
+    public const SYNTAX_OK          = 0;
+
     /**
      * @var int
      */
@@ -329,6 +331,7 @@ class Exportformat
         $ins->nSplitgroesse    = (int)$this->nSplitgroesse;
         $ins->dZuletztErstellt = empty($this->dZuletztErstellt) ? '_DBNULL_' : $this->dZuletztErstellt;
         $ins->nUseCache        = $this->nUseCache;
+        $ins->nFehlerhaft      = self::SYNTAX_NOT_CHECKED;
 
         $this->kExportformat = $this->db->insert('texportformat', $ins);
         if ($this->kExportformat > 0) {
@@ -360,6 +363,7 @@ class Exportformat
         $upd->nSplitgroesse    = (int)$this->nSplitgroesse;
         $upd->dZuletztErstellt = empty($this->dZuletztErstellt) ? '_DBNULL_' : $this->dZuletztErstellt;
         $upd->nUseCache        = $this->nUseCache;
+        $upd->nFehlerhaft      = self::SYNTAX_NOT_CHECKED;
 
         return $this->db->update('texportformat', 'kExportformat', $this->getExportformat(), $upd);
     }
@@ -1570,144 +1574,66 @@ class Exportformat
     }
 
     /**
-     * @param int $id
+     * @param int $error
+     * @return string
+     */
+    private static function getHTMLState(int $error): string
+    {
+        try {
+            return Shop::Smarty()->assign('exportformat', (object)['nFehlerhaft' => $error])
+                                 ->fetch('snippets/exportformat_state.tpl');
+        } catch (SmartyException | Exception $e) {
+            return '';
+        }
+    }
+
+    /**
+     * @param string $out
+     * @param string $message
+     * @return string
+     */
+    private static function stripMessage(string $out, string $message): string
+    {
+        $message = \strip_tags($message);
+        // strip possible call stack
+        if (\preg_match('/(Stack trace|Call Stack):/', $message, $hits)) {
+            $callstackPos = \mb_strpos($message, $hits[0]);
+            if ($callstackPos !== false) {
+                $message = \mb_substr($message, 0, $callstackPos);
+            }
+        }
+        $errText  = '';
+        $fatalPos = \mb_strlen($out);
+        // strip smarty output if fatal error occurs
+        if (\preg_match('/((Recoverable )?Fatal error|Uncaught Error):/ui', $out, $hits)) {
+            $fatalPos = \mb_strpos($out, $hits[0]);
+            if ($fatalPos !== false) {
+                $errText = \mb_substr($out, 0, $fatalPos);
+            }
+        }
+        // strip possible error position from smarty output
+        $errText = (string)\preg_replace('/[\t\n]/', ' ', \mb_substr($errText, 0, $fatalPos));
+        $len     = \mb_strlen($errText);
+        if ($len > 75) {
+            $errText = '...' . \mb_substr($errText, $len - 75);
+        }
+
+        return \htmlentities($message) . ($len > 0 ? '<br/>on line: ' . \htmlentities($errText) : '');
+    }
+
+    /**
      * @return stdClass
+     * @throws Exceptions\CircularReferenceException
+     * @throws Exceptions\ServiceNotFoundException
      */
-    public static function ioCheckSyntax(int $id): stdClass
+    private function doCheck(): stdClass
     {
-        \ini_set('html_errors', '0');
-        \ini_set('display_errors', '1');
-        \ini_set('log_errors', '0');
-        \error_reporting(\E_ALL & ~\E_NOTICE & ~\E_STRICT & ~\E_DEPRECATED);
+        $res = (object)[
+            'result'  => 'ok',
+            'message' => '',
+        ];
 
-        $ef    = new self($id, Shop::Container()->getDB());
-        $check = $ef->doCheckSyntax();
-        $res   = new stdClass();
-        if ($check === false) {
-            $res->result = 'ok';
-        } else {
-            $res->result  = 'failure';
-            $res->message = $check;
-        }
-
-        return $res;
-    }
-
-    /**
-     * @param string $text
-     * @return string|boolean
-     */
-    private function finishSyntaxcheck(string $text)
-    {
-        $result = \json_decode($text, false);
-        if (\json_last_error() !== \JSON_ERROR_NONE) {
-            $text = \strip_tags($text);
-            // strip possible call stack
-            if (\preg_match('/(Stack trace|Call Stack):/ui', $text, $hits)) {
-                $callstackPos = \mb_strpos($text, $hits[1]);
-                if ($callstackPos !== false) {
-                    $text = \mb_substr($text, 0, $callstackPos);
-                }
-            }
-            $errText  = '';
-            $fatalPos = \mb_strlen($text);
-            // strip smarty output if fatal error occurs
-            if (\preg_match('/((Recoverable )?Fatal error):/ui', $text, $hits)) {
-                $fatalPos = \mb_strpos($text, $hits[1]);
-                if ($fatalPos !== false) {
-                    $errText = \mb_substr($text, $fatalPos);
-                }
-            }
-            // strip possible error position from smarty output
-            $text = (string)\preg_replace('/[\t\n]/', ' ', \mb_substr($text, 0, $fatalPos));
-            $len  = \mb_strlen($text);
-            if ($len > 75) {
-                $text = '...' . \mb_substr($text, $len - 75);
-            }
-            $result = (object)[
-                'result'  => 'failure',
-                'message' => \htmlentities($errText) . ($len > 0 ? '<br/>on line: ' . \htmlentities($text) : ''),
-            ];
-        }
-        if ($result->result !== 'ok') {
-            $error  = '<strong>' . __('Smarty syntax error') . ':</strong><br />';
-            $error .= '<pre class="alert-danger">' . $result->message . '</pre>';
-            $this->updateError(1);
-
-            return $error;
-        }
-
-        return false;
-    }
-
-    /**
-     * @return bool|string
-     */
-    public function checkSyntax()
-    {
-        if (\PHP_SAPI !== 'cli') {
-            $testUrl = Shop::getAdminURL() . '/io.php?io=' .
-                \urlencode(
-                    \json_encode([
-                        'name'   => 'exportformatSyntaxCheck',
-                        'params' => [$this->kExportformat],
-                    ])
-                ) . '&token=' . Text::filterXSS($_SESSION['jtl_token']);
-            \session_write_close();
-            $client = new Client(['verify' => \DEFAULT_CURL_OPT_VERIFYPEER]);
-            $jar    = CookieJar::fromArray($_COOKIE, '.' . \parse_url(\URL_SHOP)['host']);
-            try {
-                $res = (string)$client->request('POST', $testUrl, ['cookies' => $jar])->getBody();
-            } catch (Exception | GuzzleException $e) {
-                $res = $e->getMessage();
-            } finally {
-                \session_start();
-            }
-
-            return $this->finishSyntaxcheck(\is_string($res) ? $res : __('somethingHappend'));
-        }
-
-        $phpProcess = new PhpProcess(
-            '<?php declare(strict_types=1);
-
-            use JTL\Exportformat;
-            use JTL\Helpers\Request;
-
-            require __DIR__ . \'/includes/globalinclude.php\';
-            ini_set(\'html_errors\', \'0\');
-            ini_set(\'display_errors\', \'1\');
-            ini_set(\'log_errors\', \'0\');
-            error_reporting(\E_ALL & ~\E_NOTICE & ~\E_STRICT & ~\E_DEPRECATED);
-
-            $kExportformat = ' . $this->kExportformat . ';
-
-            $ef    = new Exportformat($kExportformat, Shop::Container()->getDB());
-            $check = $ef->doCheckSyntax();
-            $res   = new stdClass();
-            if ($check === false) {
-                $res->result = \'ok\';
-            } else {
-                $res->result  = \'failure\';
-                $res->message = $check;
-            }
-
-            echo json_encode($res);',
-            \PFAD_ROOT,
-            null,
-            600
-        );
-        $phpProcess->run();
-
-        return $this->finishSyntaxcheck($phpProcess->getOutput());
-    }
-
-    /**
-     * @return bool|string
-     */
-    public function doCheckSyntax()
-    {
         $this->initSession()->initSmarty();
-        $error       = false;
         $product     = null;
         $productData = $this->db->query(
             "SELECT kArtikel 
@@ -1734,31 +1660,87 @@ class Exportformat
             $this->smarty->setErrorReporting(\E_ALL & ~\E_NOTICE & ~\E_STRICT & ~\E_DEPRECATED);
             $this->smarty->assign('Artikel', $product)
                          ->fetch('db:' . $this->kExportformat);
+            $this->updateError(self::SYNTAX_OK);
         } catch (Exception $e) {
-            $error = $e->getMessage();
+            $this->updateError(self::SYNTAX_FAIL);
+            $res->result  = 'fail';
+            $res->message = __($e->getMessage());
         }
-        $this->updateError($error ? 1 : 0);
 
-        return $error;
+        return $res;
+    }
+
+    /**
+     * @param int $id
+     * @return stdClass
+     */
+    public static function ioCheckSyntax(int $id): stdClass
+    {
+        \ini_set('html_errors', '0');
+        \ini_set('display_errors', '1');
+        \ini_set('log_errors', '0');
+        \error_reporting(\E_ALL & ~\E_NOTICE & ~\E_STRICT & ~\E_DEPRECATED);
+
+        Shop::Container()->getGetText()->loadAdminLocale('pages/exportformate');
+        \register_shutdown_function(static function () use ($id) {
+            $err = \error_get_last();
+            if ($err !== null && ($err['type'] & !(\E_NOTICE | \E_STRICT | \E_DEPRECATED) !== 0)) {
+                $out = \ob_get_clean();
+                $res = (object)[
+                    'result'  => 'fail',
+                    'state'   => '<span class="label text-warning">' . __('untested') . '</span>',
+                    'message' => self::stripMessage($out, $err['message']),
+                ];
+                $ef  = new self($id, Shop::Container()->getDB());
+                $ef->updateError(self::SYNTAX_FAIL);
+                $res->state = self::getHTMLState(self::SYNTAX_FAIL);
+
+                $io = AdminIO::getInstance();
+                $io->respondAndExit($res);
+            }
+        });
+
+        $ef = new self($id, Shop::Container()->getDB());
+        $ef->updateError(self::SYNTAX_NOT_CHECKED);
+
+        try {
+            $res = $ef->doCheck();
+        } catch (Exception $e) {
+            $res = (object)[
+                'result'  => 'fail',
+                'message' => __($e->getMessage()),
+            ];
+        }
+        $res->state = self::getHTMLState((int)($ef->nFehlerhaft ?? self::SYNTAX_NOT_CHECKED));
+
+        return $res;
+    }
+
+    /**
+     * @return bool|string
+     * @deprecated since 5.0.1 - do syntax check only with io-method because smarty syntax check can throw fatal error
+     */
+    public function checkSyntax()
+    {
+        return false;
+    }
+
+    /**
+     * @return bool|string
+     * @deprecated since 5.0.1 - do syntax check only with io-method because smarty syntax check can throw fatal error
+     */
+    public function doCheckSyntax()
+    {
+        return false;
     }
 
     /**
      * @return array
+     * @deprecated since 5.0.1 - do syntax check only with io-method because smarty syntax check can throw fatal error
      */
     public function checkAll(): array
     {
-        $allExports = $this->db->selectAll('texportformat', [], [], 'kExportformat');
-        $errors     = [];
-        foreach ($allExports as $export) {
-            $this->loadFromDB((int)$export->kExportformat);
-            $res = $this->checkSyntax();
-            if ($res === false) {
-                continue;
-            }
-            $errors[$this->kExportformat] = $res;
-        }
-
-        return $errors;
+        return [];
     }
 
     /**
@@ -1769,17 +1751,13 @@ class Exportformat
         if (Shop::getShopDatabaseVersion()->getMajor() < 5) {
             return;
         }
-        $res = $this->db->update(
+        if ($this->db->update(
             'texportformat',
             'kExportformat',
             $this->kExportformat,
             (object)['nFehlerhaft' => $error]
-        );
-        if ($res !== -1) {
-            $_SESSION['exportSyntaxErrorCount'] = (int)$this->db->query(
-                'SELECT COUNT(*) AS cnt FROM texportformat WHERE nFehlerhaft = 1',
-                ReturnType::SINGLE_OBJECT
-            )->cnt;
+        ) !== false) {
+            $this->nFehlerhaft = $error;
         }
     }
 }

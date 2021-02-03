@@ -1,9 +1,9 @@
-{block name='snippets-filter-characteristics'}
+{block name='snippets-filter-characteristic'}
     {$is_dropdown = ($Merkmal->cTyp === 'SELECTBOX')}
     {$limit = $Einstellungen.template.productlist.filter_max_options}
     {$collapseInit = false}
     {if $Merkmal->getData('cTyp') === 'BILD'}
-        <ul class="nav">
+        <ul class="nav nav-filter-has-image">
     {/if}
     {foreach $Merkmal->getOptions() as $attributeValue}
         {$attributeImageURL = null}
@@ -21,8 +21,8 @@
                     href="{if !empty($attributeValue->getURL())}{$attributeValue->getURL()}{else}#{/if}"
                     title="{if $Merkmal->getData('cTyp') === 'BILD'}{$attributeValue->getValue()|escape:'html'}{/if}"
                 }
-                    <div class="align-items-center d-flex">
-                        <i class="far fa-{if $attributeValue->isActive()}check-{/if}square text-muted mr-2"></i>
+                    <div class="box-link-wrapper">
+                        <i class="far fa-{if $attributeValue->isActive()}check-{/if}square snippets-filter-item-icon-right"></i>
                         {if !empty($attributeImageURL)}
                             {image lazy=true webp=true
                                 src=$attributeImageURL
@@ -30,8 +30,8 @@
                                 class="vmiddle"
                             }
                         {/if}
-                        <span class="word-break mr-3">{$attributeValue->getValue()|escape:'html'}</span>
-                        {badge variant="outline-secondary" class="ml-auto"}{$attributeValue->getCount()}{/badge}
+                        <span class="word-break">{$attributeValue->getValue()|escape:'html'}</span>
+                        {badge variant="outline-secondary"}{$attributeValue->getCount()}{/badge}
                     </div>
                 {/dropdownitem}
             {/block}
@@ -51,8 +51,8 @@
                             href="{if !empty($attributeValue->getURL())}{$attributeValue->getURL()}{else}#{/if}"
                             title="{$attributeValue->getValue()|escape:'html'}"
                         }
-                            <div class="align-items-center d-flex">
-                                <i class="far fa-{if $attributeValue->isActive()}check-{/if}square text-muted mr-2"></i>
+                            <div class="box-link-wrapper">
+                                <i class="far fa-{if $attributeValue->isActive()}check-{/if}square snippets-filter-item-icon-right"></i>
                                 {if !empty($attributeImageURL)}
                                     {image lazy=true webp=true
                                         src=$attributeImageURL
@@ -61,7 +61,7 @@
                                     }
                                 {/if}
                                 <span class="word-break">{$attributeValue->getValue()|escape:'html'}</span>
-                                {badge variant="outline-secondary" class="ml-auto"}{$attributeValue->getCount()}{/badge}
+                                {badge variant="outline-secondary"}{$attributeValue->getCount()}{/badge}
                             </div>
                         {/link}
                     {/block}
@@ -86,7 +86,7 @@
                             title="{$attributeValue->getValue()|escape:'html'}: {$attributeValue->getCount()}"
                             class="{if $attributeValue->isActive()}active{/if} filter-item"
                         }
-                            <div class="align-items-center d-flex">
+                            <div class="box-link-wrapper">
                                 {if !empty($attributeImageURL)}
                                     {image lazy=true webp=true
                                         src=$attributeImageURL
@@ -98,7 +98,7 @@
                                 <span class="word-break">
                                     {$attributeValue->getValue()|escape:'html'}
                                 </span>
-                                {badge variant="outline-secondary" class="ml-auto"}{$attributeValue->getCount()}{/badge}
+                                {badge variant="outline-secondary"}{$attributeValue->getCount()}{/badge}
                             </div>
                         {/link}
                     {/block}
@@ -110,10 +110,9 @@
         {block name='snippets-filter-characteristics-more-bottom'}
                 </ul>
             </div>
-            <div class="w-100">
+            <div class="snippets-filter-show-all">
                 {button variant="link"
                     role="button"
-                    class="p-0 ml-auto mt-1"
                     data=["toggle"=> "collapse", "target"=>"#box-collps-filter-attribute-{$Merkmal->getValue()}"]}
                     {lang key='showAll'}
                 {/button}

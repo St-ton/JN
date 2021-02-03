@@ -8,29 +8,29 @@
         <nav class="tabs-nav">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link {if !isset($cTab) || $cTab === 'aktivegeschenke'} active{/if}" data-toggle="tab" role="tab" href="#aktivegeschenke">
+                    <a class="nav-link {if $cTab === '' || $cTab === 'aktivegeschenke'} active{/if}" data-toggle="tab" role="tab" href="#aktivegeschenke">
                         {__('ggActiveProducts')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'haeufigegeschenke'} active{/if}" data-toggle="tab" role="tab" href="#haeufigegeschenke">
+                    <a class="nav-link {if $cTab === 'haeufigegeschenke'} active{/if}" data-toggle="tab" role="tab" href="#haeufigegeschenke">
                         {__('ggCommonBuyedProducts')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'letzten100geschenke'} active{/if}" data-toggle="tab" role="tab" href="#letzten100geschenke">
+                    <a class="nav-link {if $cTab === 'letzten100geschenke'} active{/if}" data-toggle="tab" role="tab" href="#letzten100geschenke">
                         {__('ggLast100Products')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'einstellungen'} active{/if}" data-toggle="tab" role="tab" href="#einstellungen">
+                    <a class="nav-link {if $cTab === 'einstellungen'} active{/if}" data-toggle="tab" role="tab" href="#einstellungen">
                         {__('settings')}
                     </a>
                 </li>
             </ul>
         </nav>
         <div class="tab-content">
-            <div id="aktivegeschenke" class="tab-pane fade {if !isset($cTab) || $cTab === 'aktivegeschenke'} active show{/if}">
+            <div id="aktivegeschenke" class="tab-pane fade {if $cTab === '' || $cTab === 'aktivegeschenke'} active show{/if}">
                 {if isset($oAktiveGeschenk_arr) && $oAktiveGeschenk_arr|@count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiAktiv cAnchor='aktivegeschenke'}
                     <div class="settings table-responsive">
@@ -59,7 +59,7 @@
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
-            <div id="haeufigegeschenke" class="tab-pane fade {if isset($cTab) && $cTab === 'haeufigegeschenke'} active show{/if}">
+            <div id="haeufigegeschenke" class="tab-pane fade {if $cTab === 'haeufigegeschenke'} active show{/if}">
                 {if isset($oHaeufigGeschenk_arr) && $oHaeufigGeschenk_arr|@count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiHaeufig cAnchor='haeufigegeschenke'}
                     <div class="settings table-responsive">
@@ -92,7 +92,7 @@
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
-            <div id="letzten100geschenke" class="tab-pane fade {if isset($cTab) && $cTab === 'letzten100geschenke'} active show{/if}">
+            <div id="letzten100geschenke" class="tab-pane fade {if $cTab === 'letzten100geschenke'} active show{/if}">
                 {if isset($oLetzten100Geschenk_arr) && $oLetzten100Geschenk_arr|@count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiLetzte100 cAnchor='letzten100geschenke'}
                     <div class="settings table-responsive">
@@ -123,7 +123,7 @@
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
-            <div id="einstellungen" class="tab-pane fade {if isset($cTab) && $cTab === 'einstellungen'} active show{/if}">
+            <div id="einstellungen" class="tab-pane fade {if $cTab === 'einstellungen'} active show{/if}">
                 {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='gratisgeschenk.php' buttonCaption=__('saveWithIcon') title=__('settings') tab='einstellungen'}
             </div>
         </div>

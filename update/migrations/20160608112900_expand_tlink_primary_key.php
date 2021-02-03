@@ -16,11 +16,17 @@ class Migration_20160608112900 extends Migration implements IMigration
 {
     protected $author = 'ms';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('ALTER TABLE `tlink` DROP PRIMARY KEY, ADD PRIMARY KEY (`kLink`, `kLinkgruppe`);');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('ALTER TABLE `tlink` DROP PRIMARY KEY, ADD PRIMARY KEY (`kLink`);');

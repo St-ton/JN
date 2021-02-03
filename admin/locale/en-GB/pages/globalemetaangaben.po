@@ -30,4 +30,4 @@ msgid "excludeKeywords"
 msgstr "Words exempt from meta keywords"
 
 msgid "spaceSeparated"
-msgstr "separated by blank spaces"
+msgstr "separated by blank space"

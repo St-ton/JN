@@ -11,18 +11,17 @@ use JTL\Pagination\Pagination;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('MODULE_SAVED_BASKETS_VIEW', true, true);
 
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 $step              = 'uebersicht';
 $searchSQL         = new stdClass();
 $searchSQL->cJOIN  = '';
 $searchSQL->cWHERE = '';
 $alertHelper       = Shop::Container()->getAlertService();
-if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
-}
+
 if (mb_strlen(Request::verifyGPDataString('cSuche')) > 0) {
     $cSuche = Shop::Container()->getDB()->escape(Text::filterXSS(Request::verifyGPDataString('cSuche')));
     if (mb_strlen($cSuche) > 0) {

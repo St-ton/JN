@@ -7,6 +7,8 @@ use JTL\Pagination\Pagination;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statistik_inc.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $statsType    = Request::verifyGPCDataInt('s');
 $db           = Shop::Container()->getDB();
@@ -32,7 +34,6 @@ switch ($statsType) {
         $oAccount->permission('STATS_VISITOR_VIEW', true, true);
         break;
 }
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 $interval  = 0;
 $filter    = new Filter('statistics');
 $dateRange = $filter->addDaterangefield(
@@ -57,10 +58,6 @@ if (in_array($statsType, $pie, true)) {
 if ($statsType === 3) {
     $controller = new Crawler\Controller($db, $cache, $alertService);
     if (($crawler = $controller->checkRequest()) === false) {
-        if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
-            $backTab = Request::verifyGPDataString('tab');
-            $smarty->assign('cTab', $backTab);
-        }
         $crawlerPagination = (new Pagination('crawler'))
             ->setItemArray($controller->getAllCrawlers())
             ->assemble();

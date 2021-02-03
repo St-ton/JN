@@ -739,7 +739,12 @@ class Plugins
      */
     public function getDecimalLength($params): int
     {
-        return \max(\strlen(\strrchr(\str_replace(',', '.', $params['quantity']), '.')) - 1, 0);
+        $portion = \strrchr(\str_replace(',', '.', $params['quantity']), '.');
+        if ($portion === false) {
+            $portion = '';
+        }
+
+        return \max(\strlen($portion) - 1, 0);
     }
 
     /**

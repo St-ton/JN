@@ -9,12 +9,13 @@ use JTL\Pagination\Pagination;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('UNLOCK_CENTRAL_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'freischalten_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bewertung_inc.php';
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 setzeSprache();
 
 $step                  = 'freischalten_uebersicht';

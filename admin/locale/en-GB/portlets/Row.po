@@ -5,18 +5,14 @@ msgstr ""
 msgid "Row"
 msgstr "Grid layout"
 
-msgid "layoutXS"
-msgstr "Layout XS"
+msgid "Layout"
+msgstr "Segmentation"
 
-msgid "layoutS"
-msgstr "Layout S"
+msgid "Column"
+msgstr "Column"
 
-msgid "layoutM"
-msgstr "Layout M"
-
-msgid "layoutL"
-msgstr "Layout L"
+msgid "Columns"
+msgstr "Columns"
 
 msgid "rowLayoutDesc"
-msgstr "Specifies the width of columns on devices of different sizes. 12 means that a column is displayed at "
-"full width."
+msgstr "Specifies the width of columns on devices of different sizes. 12 means that a column is displayed at full width."

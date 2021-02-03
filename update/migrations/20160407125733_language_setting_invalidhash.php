@@ -16,11 +16,17 @@ class Migration_20160407125733 extends Migration implements IMigration
 {
     protected $author = 'ms';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'productDetails', 'invalidHash', 'Ung&uuml;ltiger Hash &uuml;bergeben - Eventuell ist Ihr Link abgelaufen. Versuchen Sie bitte erneut, Ihr Passwort zurückzusetzen.');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
     }

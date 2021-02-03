@@ -380,16 +380,19 @@ class Search extends AbstractFilter
     /**
      * generate search cache entries for activated search queries
      *
+     * @param int $limit
      * @return $this
      */
-    private function generateSearchCaches(): self
+    private function generateSearchCaches(int $limit = 0): self
     {
         $allQueries = $this->productFilter->getDB()->query(
             'SELECT tsuchanfrage.cSuche FROM tsuchanfrage
                 LEFT JOIN tsuchcache
                     ON tsuchcache.cSuche = tsuchanfrage.cSuche
                 WHERE tsuchanfrage.nAktiv = 1
-                    AND tsuchcache.kSuchCache IS NULL',
+                    AND tsuchcache.kSuchCache IS NULL
+                ORDER BY tsuchanfrage.nAnzahlTreffer, tsuchanfrage.nAnzahlGesuche'
+                . ($limit > 0 ? ' LIMIT ' . $limit : ''),
             ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($allQueries as $nonCachedQuery) {
@@ -403,23 +406,19 @@ class Search extends AbstractFilter
     }
 
     /**
-     * @param null $data
-     * @return Option[]
+     * @inheritDoc
      */
-    public function getOptions($data = null): array
+    public function getOptions($mixed = null): array
     {
         if ($this->options !== null) {
             return $this->options;
         }
+        $limit   = (int)$this->getConfig('navigationsfilter')['suchtrefferfilter_anzahl'];
         $options = [];
         if ($this->getConfig('navigationsfilter')['suchtrefferfilter_nutzen'] === 'N') {
             return $options;
         }
-        $this->generateSearchCaches();
-        $nLimit = ($limit = (int)$this->getConfig('navigationsfilter')['suchtrefferfilter_anzahl']) > 0
-            ? ' LIMIT ' . $limit
-            : '';
-        $sql    = (new StateSQL())->from($this->productFilter->getCurrentStateData());
+        $sql = (new StateSQL())->from($this->productFilter->getCurrentStateData());
         $sql->setSelect([
             'tsuchanfrage.kSuchanfrage',
             'tsuchcache.kSuchCache',
@@ -457,6 +456,8 @@ class Search extends AbstractFilter
 
             return $this->options;
         }
+        $nLimit = $limit > 0 ? ' LIMIT ' . $limit : '';
+        $this->generateSearchCaches($limit > 0 ? $limit : 10);
         $searchFilters = $this->productFilter->getDB()->query(
             'SELECT ssMerkmal.kSuchanfrage, ssMerkmal.kSuchCache, ssMerkmal.cSuche, COUNT(*) AS nAnzahl
                 FROM (' . $baseQuery . ') AS ssMerkmal

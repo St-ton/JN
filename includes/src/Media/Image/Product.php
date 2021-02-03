@@ -23,7 +23,12 @@ class Product extends AbstractImage
     /**
      * @var string
      */
-    public const REGEX = \MEDIAIMAGE_REGEX;
+    public const REGEX = '/^media\/image'
+    . '\/(?P<type>product)'
+    . '\/(?P<id>\d+)'
+    . '\/(?P<size>xs|sm|md|lg|xl|os)'
+    . '\/(?P<name>[' . self::REGEX_ALLOWED_CHARS . ']+)'
+    . '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**
      * @inheritdoc
@@ -31,10 +36,13 @@ class Product extends AbstractImage
     public function getImageNames(MediaImageRequest $req): array
     {
         return $this->db->queryPrepared(
-            'SELECT kArtikel, cName, cSeo, cSeo AS originalSeo, cArtNr, cBarcode
-                FROM tartikel
-                WHERE kArtikel = :pid',
-            ['pid' => $req->getID()],
+            'SELECT A.kArtikel, A.cName, A.cSeo, A.cSeo AS originalSeo, A.cArtNr, A.cBarcode, B.cWert AS customImgName
+                FROM tartikel A
+                LEFT JOIN tartikelattribut B 
+                    ON A.kArtikel = B.kArtikel
+                    AND B.cName = :atr
+                WHERE A.kArtikel = :pid',
+            ['pid' => $req->getID(), 'atr' => 'bildname'],
             ReturnType::COLLECTION
         )->map(static function ($item) {
             return self::getCustomName($item);
@@ -79,10 +87,14 @@ class Product extends AbstractImage
                 break;
         }
         $images = $this->db->query(
-            'SELECT tartikelpict.cPfad AS path, tartikelpict.nNr AS number, tartikelpict.kArtikel ' . $cols . '
-                FROM tartikelpict
+            'SELECT B.cWert AS customImgName, P.cPfad AS path, P.nNr AS number, P.kArtikel ' . $cols . '
+                FROM tartikelpict P
                 INNER JOIN tartikel
-                  ON tartikelpict.kArtikel = tartikel.kArtikel' . self::getLimitStatement($offset, $limit),
+                    ON P.kArtikel = tartikel.kArtikel
+                LEFT JOIN tartikelattribut B 
+                    ON tartikel.kArtikel = B.kArtikel
+                    AND B.cName = \'bildname\''
+            . self::getLimitStatement($offset, $limit),
             ReturnType::QUERYSINGLE
         );
         while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {
@@ -104,6 +116,9 @@ class Product extends AbstractImage
      */
     public static function getCustomName($mixed): string
     {
+        if (!empty($mixed->customImgName)) { // set by FKT_ATTRIBUT_BILDNAME
+            return Image::getCleanFilename($mixed->customImgName);
+        }
         switch (Image::getSettings()['naming'][Image::TYPE_PRODUCT]) {
             case 0:
                 $result = (string)$mixed->kArtikel;

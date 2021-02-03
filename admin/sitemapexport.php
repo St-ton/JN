@@ -8,9 +8,10 @@ use JTL\Pagination\Pagination;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('EXPORT_SITEMAP_VIEW', true, true);
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 $alertHelper = Shop::Container()->getAlertService();
 if (!file_exists(PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml') && is_writable(PFAD_ROOT . PFAD_EXPORT)) {
     @touch(PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml');
@@ -28,10 +29,6 @@ if (!is_writable(PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml')) {
         sprintf(__('successSave'), '<i>' . PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml</i>'),
         'successSubjectDelete'
     );
-}
-// Tabs
-if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 
 if (Request::postInt('einstellungen') > 0) {

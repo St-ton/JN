@@ -6,7 +6,7 @@
             <div id="sidebox{$oBox->getID()}" class="box box-filter-price d-none d-lg-block js-price-range-box">
                 {button
                     variant="link"
-                    class="text-decoration-none px-0 text-left dropdown-toggle"
+                    class="btn-filter-box dropdown-toggle"
                     block=true
                     role="button"
                     data=["toggle"=> "collapse", "target"=>"#cllps-box{$oBox->getID()}"]
@@ -15,13 +15,13 @@
                         {lang key='rangeOfPrices'}
                     </span>
                 {/button}
-                {collapse class="pb-4" id="cllps-box{$oBox->getID()}" visible=true}
+                {collapse class="box-filter-price-collapse" id="cllps-box{$oBox->getID()}" visible=true}
                     {block name='boxes-box-filter-pricerange-include-price-slider'}
                         {include file='snippets/filter/price_slider.tpl' id='price-slider-box'}
                     {/block}
                 {/collapse}
                 {block name='boxes-box-filter-pricerange-hr'}
-                    <hr class="my-2">
+                    <hr class="box-filter-hr">
                 {/block}
             </div>
         {/block}

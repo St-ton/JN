@@ -20,8 +20,11 @@ class Variation extends AbstractImage
     /**
      * @var string
      */
-    public const REGEX = '/^media\/image\/(?P<type>variation)'
-    . '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl)\/(?P<name>[a-zA-Z0-9\-_]+)'
+    public const REGEX = '/^media\/image'
+    . '\/(?P<type>variation)'
+    . '\/(?P<id>\d+)'
+    . '\/(?P<size>xs|sm|md|lg|xl)'
+    . '\/(?P<name>[' . self::REGEX_ALLOWED_CHARS . ']+)'
     . '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**
@@ -64,12 +67,12 @@ class Variation extends AbstractImage
     public static function getCustomName($mixed): string
     {
         if (isset($mixed->cPfad)) {
-            return \pathinfo($mixed->cPfad)['filename'];
+            $result = \pathinfo($mixed->cPfad)['filename'];
+        } elseif (isset($mixed->path)) {
+            $result = \pathinfo($mixed->path)['filename'];
+        } else {
+            $result = $mixed->cName;
         }
-        if (isset($mixed->path)) {
-            return \pathinfo($mixed->path)['filename'];
-        }
-        $result = $mixed->cName;
 
         return empty($result) ? 'image' : Image::getCleanFilename($result);
     }

@@ -27,9 +27,9 @@ interface StepInterface
     public function getDescription(): string;
 
     /**
-     * @param string $title
+     * @param string $description
      */
-    public function setDescription(string $title): void;
+    public function setDescription(string $description): void;
 
     /**
      * @return int

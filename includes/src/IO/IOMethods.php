@@ -129,6 +129,7 @@ class IOMethods
             ],
             ReturnType::ARRAY_OF_OBJECTS
         );
+        $smarty->assign('shopURL', Shop::getURL());
         foreach ($results as $result) {
             $result->suggestion = $smarty->assign('result', $result)->fetch('snippets/suggestion.tpl');
         }
@@ -265,7 +266,8 @@ class IOMethods
                ->assign('Xselling', $xSelling)
                ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
                ->assign('oSpezialseiten_arr', Shop::Container()->getLinkService()->getSpecialPages())
-               ->assign('Steuerpositionen', $cart->gibSteuerpositionen());
+               ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
+               ->assign('favourableShippingString', $cart->favourableShippingString);
 
         $response->nType           = 2;
         $response->cWarenkorbText  = \lang_warenkorb_warenkorbEnthaeltXArtikel($cart);
@@ -621,7 +623,8 @@ class IOMethods
                            $shippingFreeMin,
                            $cartValue
                        ))
-                       ->assign('oSpezialseiten_arr', Shop::Container()->getLinkService()->getSpecialPages());
+                       ->assign('oSpezialseiten_arr', Shop::Container()->getLinkService()->getSpecialPages())
+                       ->assign('favourableShippingString', $cart->favourableShippingString);
 
                 ShippingMethod::getShippingCosts($country, $plz, $error);
                 $response->cTemplate = $smarty->fetch('basket/cart_dropdown_label.tpl');
@@ -666,7 +669,10 @@ class IOMethods
             true
         );
         $net                = Frontend::getCustomerGroup()->getIsMerchant();
-        $product->fuelleArtikel($productID);
+
+        $options               = Artikel::getDefaultOptions();
+        $options->nVariationen = 1;
+        $product->fuelleArtikel($productID, $options);
         $fVKNetto                      = $product->gibPreis($amount, [], Frontend::getCustomerGroup()->getID());
         $fVK                           = [
             Tax::getGross($fVKNetto, $_SESSION['Steuersatz'][$product->kSteuerklasse]),
@@ -681,7 +687,7 @@ class IOMethods
         $configGroupCounts = $quantities;
         $configItemCounts  = $itemQuantities;
         foreach ($configGroups as $itemList) {
-            foreach ($itemList as $configItemID) {
+            foreach ($itemList ?? [] as $configItemID) {
                 $configItemID = (int)$configItemID;
                 // Falls ungültig, ignorieren
                 if ($configItemID <= 0) {
@@ -746,13 +752,22 @@ class IOMethods
             }
         }
 
-        $errors                = Configurator::validateCart($productID, $configItems ?? []);
-        $config->invalidGroups = \array_unique(\array_merge(
+        $errors                     = Configurator::validateCart($productID, $configItems ?? []);
+        $config->invalidGroups      = \array_unique(\array_merge(
             $invalidGroups,
             \array_keys(\is_array($errors) ? $errors : [])
         ));
-        $config->errorMessages = $itemErrors ?? [];
-        $config->valid         = empty($config->invalidGroups) && empty($config->errorMessages);
+        $config->errorMessages      = $itemErrors ?? [];
+        $config->valid              = empty($config->invalidGroups) && empty($config->errorMessages);
+        $config->variationsSelected = $product->kVaterArtikel > 0 || !\in_array(
+            \R_VARWAEHLEN,
+            CartHelper::addToCartCheck(
+                $product,
+                1,
+                Product::getSelectedPropertiesForArticle($productID, false)
+            ),
+            true
+        );
         $smarty->assign('oKonfig', $config)
                ->assign('NettoPreise', $net)
                ->assign('Artikel', $product);
@@ -898,14 +913,15 @@ class IOMethods
                 ? Shop::Lang()->get('priceAsConfigured', 'productDetails')
                 : Shop::Lang()->get('priceStarting');
         }
-
-        $objResponse->callEvoProductFunction(
-            'setPrice',
-            $fVK[$isNet],
-            $cVKLocalized[$isNet],
-            $cPriceLabel,
-            $wrapper
-        );
+        if (!$product->bHasKonfig) {
+            $objResponse->callEvoProductFunction(
+                'setPrice',
+                $fVK[$isNet],
+                $cVKLocalized[$isNet],
+                $cPriceLabel,
+                $wrapper
+            );
+        }
         $objResponse->callEvoProductFunction(
             'setArticleWeight',
             [
@@ -1295,7 +1311,7 @@ class IOMethods
      * @param array  $selection
      * @return IOResponse
      */
-    public function setSelectionWizardAnswers($keyName, $id, $languageID, $selection): IOResponse
+    public function setSelectionWizardAnswers(string $keyName, int $id, int $languageID, array $selection): IOResponse
     {
         $smarty   = Shop::Smarty();
         $response = new IOResponse();
@@ -1303,10 +1319,10 @@ class IOMethods
         if ($wizard !== null) {
             $oLastSelectedValue = $wizard->getLastSelectedValue();
             $NaviFilter         = $wizard->getNaviFilter();
-
-            if (($oLastSelectedValue !== null && $oLastSelectedValue->nAnzahl === 1)
+            if (($oLastSelectedValue !== null && $oLastSelectedValue->getCount() === 1)
                 || $wizard->getCurQuestion() === $wizard->getQuestionCount()
-                || $wizard->getQuestion($wizard->getCurQuestion())->nTotalResultCount === 0) {
+                || $wizard->getQuestion($wizard->getCurQuestion())->nTotalResultCount === 0
+            ) {
                 $response->setClientRedirect($NaviFilter->getFilterURL()->getURL());
             } else {
                 $response->assignDom('selectionwizard', 'innerHTML', $wizard->fetchForm($smarty));

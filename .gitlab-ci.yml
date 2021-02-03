@@ -306,7 +306,7 @@ tagsDeployment:
 
 
 
-stagingPreDeploy:
+.stagingPreDeploy:
   stage: stagingPre
   variables:
     GIT_STRATEGY: none
@@ -320,7 +320,7 @@ stagingPreDeploy:
   tags:
     - dev-checkout
 
-stagingDevPhp73:
+.stagingDevPhp73:
   stage: staging
   variables:
     GIT_STRATEGY: none

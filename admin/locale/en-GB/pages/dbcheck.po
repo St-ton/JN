@@ -141,7 +141,7 @@ msgid "noteMigrationScript"
 msgstr "The migration via script using the MySQL Console is recommended if you have administrative access to your database server and want to migrate a great amount of data."
 
 msgid "noteMigrationScriptClick"
-msgstr "By clicking on \"Create script\" you can generate a script for carrying out the required migration. This script can then be executed or completely or in part on the console of your database server. For this you require administrative access (e.g. via SSH) to your database server. A web interface such as phpMyAdmin is <strong>not</strong> suited for running the script."
+msgstr "By clicking on \"Create script\", you can generate a script for carrying out the required migration. This script can then be executed completely or in part on the console of your database server. For this you require administrative access (e.g. via SSH) to your database server. A web interface such as phpMyAdmin is <strong>not</strong> suited for running the script."
 
 msgid "noteMigrationScriptDesc"
 msgstr "The script is based on the current situation and contains only changes that are necessary for this JTL-Shop. You cannot use the script to perform a migration for a different JTL-Shop."

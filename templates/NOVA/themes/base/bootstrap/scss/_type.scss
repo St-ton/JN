@@ -51,13 +51,13 @@ h6, .h6 { @include font-size($h6-font-size); }
 //
 // Horizontal rules
 //
-//
-//hr {
-//  margin-top: $hr-margin-y;
-//  margin-bottom: $hr-margin-y;
-//  border: 0;
-//  border-top: $hr-border-width solid $hr-border-color;
-//}
+
+hr {
+  margin-top: $hr-margin-y;
+  margin-bottom: $hr-margin-y;
+  border: 0;
+  border-top: $hr-border-width solid $hr-border-color;
+}
 
 
 //
@@ -82,12 +82,12 @@ mark,
 //
 
 .list-unstyled {
-  @include list-unstyled;
+  @include list-unstyled();
 }
 
 // Inline turns list items into inline-block
 .list-inline {
-  @include list-unstyled;
+  @include list-unstyled();
 }
 .list-inline-item {
   display: inline-block;

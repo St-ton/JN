@@ -94,7 +94,7 @@ $filters = $NaviFilter->getAvailableContentFilters();
 foreach ($filters as $key => $filter) {
     if ($filter->getClassName() === 'JTL\Filter\Items\Availability') {
         unset($filters[$key]);
-        \array_unshift($filters, $filter);
+        array_unshift($filters, $filter);
         break;
     }
 }
@@ -239,15 +239,15 @@ $debugbar->getTimer()->stopMeasure('init');
 $alertHelper = Shop::Container()->getAlertService();
 if (isset($cFehler)) {
     $alertHelper->addAlert(Alert::TYPE_ERROR, $cFehler, 'miscFehler');
-    trigger_error('global $cFehler is deprecated.', \E_USER_DEPRECATED);
+    trigger_error('global $cFehler is deprecated.', E_USER_DEPRECATED);
 }
 if (isset($cHinweis)) {
     $alertHelper->addAlert(Alert::TYPE_NOTE, $cHinweis, 'miscCHinweis');
-    trigger_error('global $cHinweis is deprecated.', \E_USER_DEPRECATED);
+    trigger_error('global $cHinweis is deprecated.', E_USER_DEPRECATED);
 }
 if (isset($hinweis)) {
     $alertHelper->addAlert(Alert::TYPE_NOTE, $hinweis, 'miscHinweis');
-    trigger_error('global $hinweis is deprecated.', \E_USER_DEPRECATED);
+    trigger_error('global $hinweis is deprecated.', E_USER_DEPRECATED);
 }
 $tplService->save();
 $smarty->assign('bCookieErlaubt', isset($_COOKIE[Frontend::getSessionName()]))

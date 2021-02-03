@@ -105,7 +105,6 @@ final class LegacyPluginValidator extends AbstractValidator
             $parsedXMLShopVersion = null;
         }
         if (empty($shopVersion)
-            || empty($parsedXMLShopVersion)
             || $parsedXMLShopVersion === null
             || $parsedXMLShopVersion->greaterThan($shopVersion)
         ) {

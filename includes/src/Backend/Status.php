@@ -7,8 +7,11 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\Checkout\ZahlungsLog;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Exportformat;
 use JTL\License\Manager;
 use JTL\License\Mapper;
+use JTL\Mail\Template\Model as MailTplModel;
+use JTL\Mail\Template\TemplateFactory;
 use JTL\Media\Image\Product;
 use JTL\Media\Image\StatsItem;
 use JTL\Nice;
@@ -46,6 +49,8 @@ class Status
     public const CACHE_ID_DATABASE_STRUCT      = 'validDatabaseStruct';
     public const CACHE_ID_MODIFIED_FILE_STRUCT = 'validModifiedFileStruct';
     public const CACHE_ID_ORPHANED_FILE_STRUCT = 'validOrphanedFilesStruct';
+    public const CACHE_ID_EMAIL_SYNTAX_CHECK   = 'validEMailSyntaxCheck';
+    public const CACHE_ID_EXPORT_SYNTAX_CHECK  = 'validExportSyntaxCheck';
 
     /**
      * Status constructor.
@@ -142,9 +147,10 @@ class Status
     /**
      * checks the shop-filesystem-structure against 'admin/includes/shopmd5files/[shop-version].csv'
      *
+     * @param string|null $hash
      * @return bool  true='no errors', false='something is wrong'
      */
-    public function validModifiedFileStruct(): bool
+    public function validModifiedFileStruct(?string &$hash = null): bool
     {
         if (($validModifiedFileStruct = $this->cache->get(self::CACHE_ID_MODIFIED_FILE_STRUCT)) === false) {
             $check   = new FileCheck();
@@ -162,6 +168,7 @@ class Status
                 [\CACHING_GROUP_STATUS]
             );
         }
+        $hash = \md5(($hash ?? 'validModifiedFileStruct') . '_' . $validModifiedFileStruct);
 
         return $validModifiedFileStruct === 0;
     }
@@ -169,9 +176,10 @@ class Status
     /**
      * checks the shop-filesystem-structure against 'admin/includes/shopmd5files/deleted_files_[shop-version].csv'
      *
+     * @param string|null $hash
      * @return bool  true='no errors', false='something is wrong'
      */
-    public function validOrphanedFilesStruct(): bool
+    public function validOrphanedFilesStruct(?string &$hash = null): bool
     {
         if (($validOrphanedFilesStruct = $this->cache->get(self::CACHE_ID_ORPHANED_FILE_STRUCT)) === false) {
             $check             = new FileCheck();
@@ -191,14 +199,16 @@ class Status
                 [\CACHING_GROUP_STATUS]
             );
         }
+        $hash = \md5(($hash ?? 'validOrphanedFilesStruct') . '_' . $validOrphanedFilesStruct);
 
         return $validOrphanedFilesStruct === 0;
     }
 
     /**
+     * @param string|null $hash
      * @return bool
      */
-    public function validFolderPermissions(): bool
+    public function validFolderPermissions(?string &$hash = null): bool
     {
         if (($filesystemFolders = $this->cache->get(self::CACHE_ID_FOLDER_PERMISSIONS)) === false) {
             $filesystem = new Filesystem(\PFAD_ROOT);
@@ -210,6 +220,7 @@ class Status
                 [\CACHING_GROUP_STATUS]
             );
         }
+        $hash = \md5(($hash ?? 'validFolderPermissions') . '_' . $filesystemFolders->nCountInValid);
 
         return $filesystemFolders->nCountInValid === 0;
     }
@@ -436,15 +447,19 @@ class Status
     }
 
     /**
+     * @param string|null $hash
      * @return bool
      */
-    public function hasLicenseExpirations(): bool
+    public function hasLicenseExpirations(?string &$hash = null): bool
     {
         $manager = new Manager($this->db, $this->cache);
         $mapper  = new Mapper($manager);
 
-        return $mapper->getCollection()->getAboutToBeExpired(28)->count() > 0
-            || $mapper->getCollection()->getBoundExpired()->count() > 0;
+        $toBeExpired  = $mapper->getCollection()->getAboutToBeExpired(28)->count();
+        $boundExpired = $mapper->getCollection()->getBoundExpired()->count();
+        $hash         = \md5(($hash ?? 'hasLicenseExpirations') . '_' . $toBeExpired . '_' . $boundExpired);
+
+        return $toBeExpired > 0 || $boundExpired > 0;
     }
 
     /**
@@ -508,11 +523,13 @@ class Status
      * Checks, whether SMTP is configured for sending mails but no encryption method is chosen for E-Mail-Server
      * communication
      *
+     * @param string|null $hash
      * @return bool
      */
-    public function hasInsecureMailConfig(): bool
+    public function hasInsecureMailConfig(?string &$hash = null): bool
     {
         $conf = Shop::getConfig([\CONF_EMAILS])['emails'];
+        $hash = \md5(($hash ?? 'hasInsecureMailConfig') . '_' . $conf['email_methode']);
 
         return $conf['email_methode'] === 'smtp' && empty(\trim($conf['email_smtp_verschluesselung']));
     }
@@ -550,33 +567,59 @@ class Status
     }
 
     /**
+     * @param int         $type
+     * @param string|null $hash
      * @return int
      */
-    public function getExportFormatErrorCount(): int
+    public function getExportFormatErrorCount(int $type = Exportformat::SYNTAX_FAIL, ?string &$hash = null): int
     {
-        if (!isset($_SESSION['exportSyntaxErrorCount'])) {
-            $_SESSION['exportSyntaxErrorCount'] = (int)$this->db->query(
-                'SELECT COUNT(*) AS cnt FROM texportformat WHERE nFehlerhaft = 1',
+        $cacheKey = self::CACHE_ID_EXPORT_SYNTAX_CHECK . $type;
+        if (($syntaxErrCnt = $this->cache->get($cacheKey)) === false) {
+            $syntaxErrCnt = (int)$this->db->queryPrepared(
+                'SELECT COUNT(*) AS cnt FROM texportformat WHERE nFehlerhaft = :type',
+                ['type' => $type],
                 ReturnType::SINGLE_OBJECT
             )->cnt;
+
+            $this->cache->set($cacheKey, $syntaxErrCnt, [\CACHING_GROUP_STATUS, self::CACHE_ID_EXPORT_SYNTAX_CHECK]);
         }
 
-        return $_SESSION['exportSyntaxErrorCount'];
+        $hash = \md5($hash . $syntaxErrCnt);
+
+        return $syntaxErrCnt;
     }
 
     /**
+     * @param int         $type
+     * @param string|null $hash
      * @return int
      */
-    public function getEmailTemplateSyntaxErrorCount(): int
+    public function getEmailTemplateSyntaxErrorCount(int $type = MailTplModel::SYNTAX_FAIL, ?string &$hash = null): int
     {
-        if (!isset($_SESSION['emailSyntaxErrorCount'])) {
-            $_SESSION['emailSyntaxErrorCount'] = (int)$this->db->query(
-                'SELECT COUNT(*) AS cnt FROM temailvorlage WHERE nFehlerhaft = 1',
-                ReturnType::SINGLE_OBJECT
-            )->cnt;
+        $cacheKey = self::CACHE_ID_EMAIL_SYNTAX_CHECK . $type;
+        if (($syntaxErrCnt = $this->cache->get($cacheKey)) === false) {
+            $syntaxErrCnt = 0;
+            /** @var array $templates */
+            $templates = $this->db->queryPrepared(
+                'SELECT cModulId, kPlugin FROM temailvorlage WHERE nFehlerhaft = :type',
+                ['type' => $type],
+                ReturnType::ARRAY_OF_OBJECTS
+            );
+            $factory   = new TemplateFactory($this->db);
+            foreach ($templates as $template) {
+                $module = $template->cModulId;
+                if ($template->kPlugin > 0) {
+                    $module = 'kPlugin_' . $template->kPlugin . '_' . $template->cModulId;
+                }
+                $syntaxErrCnt += $factory->getTemplate($module) !== null ? 1 : 0;
+            }
+
+            $this->cache->set($cacheKey, $syntaxErrCnt, [\CACHING_GROUP_STATUS, self::CACHE_ID_EMAIL_SYNTAX_CHECK]);
         }
 
-        return $_SESSION['emailSyntaxErrorCount'];
+        $hash = \md5($hash . $syntaxErrCnt);
+
+        return $syntaxErrCnt;
     }
 
     /**

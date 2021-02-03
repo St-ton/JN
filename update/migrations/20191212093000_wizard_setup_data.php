@@ -23,11 +23,11 @@ class Migration_20191212093000 extends Migration implements IMigration
      */
     public function up()
     {
-        if (Shopsetting::getInstance()->getValue(\CONF_GLOBAL, 'global_wizard_done') === null) {
+        if (Shopsetting::getInstance()->getValue(CONF_GLOBAL, 'global_wizard_done') === null) {
             $this->setConfig(
                 'global_wizard_done',
                 'Y',
-                \CONF_GLOBAL,
+                CONF_GLOBAL,
                 'Einrichtungsassistent durchlaufen',
                 'selectbox',
                 1,

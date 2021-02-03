@@ -17,6 +17,9 @@ class Migration_20181117133300 extends Migration implements IMigration
     protected $author      = 'aj';
     protected $description = 'create store table';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -28,6 +31,9 @@ class Migration_20181117133300 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('DROP TABLE `tstoreauth`');

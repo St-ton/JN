@@ -15,6 +15,9 @@ class Migration_20190403174900 extends Migration implements IMigration
     protected $author      = 'fm';
     protected $description = 'removed old exports';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -28,6 +31,9 @@ class Migration_20190403174900 extends Migration implements IMigration
                              )");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
     }

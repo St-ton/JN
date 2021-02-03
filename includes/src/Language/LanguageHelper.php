@@ -7,6 +7,7 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Product\Artikel;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Link\SpecialPageNotFoundException;
 use JTL\Mapper\PageTypeToLinkType;
 use JTL\News\Category;
 use JTL\News\Item;
@@ -87,7 +88,7 @@ class LanguageHelper
     /**
      * @var string
      */
-    public $cacheID = 'language_data';
+    public $cacheID = 'cr_lng_dta';
 
     /**
      * @var array
@@ -290,9 +291,12 @@ class LanguageHelper
 
     private function initLangData(): void
     {
-        $data = $this->cache->get('lang_data_list', function ($cache, $cacheID, &$content, &$tags) {
+        $data = $this->cache->get('lng_dta_lst', function ($cache, $cacheID, &$content, &$tags) {
             $content = $this->db->query(
-                'SELECT * FROM tsprache ORDER BY kSprache ASC',
+                'SELECT tsprache.*, tsprachiso.kSprachISO FROM tsprache 
+                    LEFT JOIN tsprachiso
+                        ON tsprache.cISO = tsprachiso.cISO
+                    ORDER BY tsprache.kSprache ASC',
                 ReturnType::COLLECTION
             );
             $tags    = [\CACHING_GROUP_LANGUAGE];
@@ -307,7 +311,11 @@ class LanguageHelper
         $this->byISO = $data->groupBy('cISO')->transform(static function (Collection $e) {
             $e = $e->first();
 
-            return (object)['kSprachISO' => (int)$e->kSprache, 'cISO' => $e->cISO];
+            return (object)[
+                'kSprachISO' => (int)$e->kSprachISO,
+                'kSprache'   => (int)$e->kSprache,
+                'cISO'       => $e->cISO
+            ];
         })->toArray();
 
         $this->byLangID = $data->groupBy('kSprache')->transform(static function (Collection $e) {
@@ -979,15 +987,15 @@ class LanguageHelper
      */
     public static function isDefaultLanguageActive(bool $shop = false, int $languageID = null): bool
     {
-        $langToCheckAgainst = $languageID !== null ? (int)$languageID : Shop::getLanguageID();
-        if ($langToCheckAgainst <= 0) {
+        $languageID = $languageID ?? Shop::getLanguageID();
+        if ($languageID <= 0) {
             return true;
         }
         foreach (Frontend::getLanguages() as $language) {
-            if ($language->cStandard === 'Y' && $language->kSprache === $langToCheckAgainst && !$shop) {
+            if (!$shop && $language->isDefault() && $language->getId() === $languageID) {
                 return true;
             }
-            if ($language->cShopStandard === 'Y' && $language->kSprache === $langToCheckAgainst && $shop) {
+            if ($shop && $language->isShopDefault() && $language->getId() === $languageID) {
                 return true;
             }
         }
@@ -1012,12 +1020,11 @@ class LanguageHelper
             }
         }
 
-
-        $cacheID = 'shop_lang_' . (($shop === true) ? 'b' : '');
+        $cacheID = 'shp_lng_' . (($shop === true) ? 'b' : '');
         if (($lang = $this->cache->get($cacheID)) !== false && $lang !== null) {
             return $lang;
         }
-        $lang = LanguageModel::loadByAttributes($shop ? ['default' => 'Y'] : ['shopDefault' => 'Y'], $this->db);
+        $lang = LanguageModel::loadByAttributes($shop ? ['shopDefault' => 'Y'] : ['default' => 'Y'], $this->db);
         $this->cache->set($cacheID, $lang, [\CACHING_GROUP_LANGUAGE]);
 
         return $lang;
@@ -1038,11 +1045,16 @@ class LanguageHelper
         if ($pageID !== null && $pageID > 0) {
             $linkID = $pageID;
         }
-        $ls          = Shop::Container()->getLinkService();
-        $mapper      = new PageTypeToLinkType();
-        $mapped      = $mapper->map(Shop::getPageType());
-        $specialPage = $mapped > 0 ? $ls->getSpecialPage($mapped) : null;
-        $page        = $linkID > 0 ? $ls->getPageLink($linkID) : null;
+        $ls     = Shop::Container()->getLinkService();
+        $mapper = new PageTypeToLinkType();
+        $mapped = $mapper->map(Shop::getPageType());
+        try {
+            $specialPage = $mapped > 0 ? $ls->getSpecialPage($mapped) : null;
+        } catch (SpecialPageNotFoundException $e) {
+            Shop::Container()->getLogService()->warning($e->getMessage());
+            $specialPage = null;
+        }
+        $page = $linkID > 0 ? $ls->getPageLink($linkID) : null;
         if (\count(Frontend::getLanguages()) > 1) {
             /** @var Artikel $AktuellerArtikel */
             foreach (Frontend::getLanguages() as $lang) {

@@ -1,7 +1,7 @@
 {$data = $instance->getAnimationData()}
 
 {if $isPreview}
-    {$areaClass = 'opc-area'}
+    {$areaClass = 'opc-area opc-col'}
 {/if}
 
 {if $inContainer === false}

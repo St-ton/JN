@@ -21,7 +21,7 @@
         {block name='newsletter-index-link-content'}
             {if !empty($Link->getContent())}
                 {opcMountPoint id='opc_before_newsletter_content' inContainer=false}
-                {container class="my-3"}
+                {container class="newsletter-content"}
                     {$Link->getContent()}
                 {/container}
             {/if}
@@ -33,7 +33,7 @@
                     {container}
                         {row}
                             {col cols=12 lg=8}
-                                <div id="newsletter-subscribe" class="mb-8">
+                                <div id="newsletter-subscribe" class="newsletter-subscribe">
                                     {block name='newsletter-index-newsletter-subscribe-subheading'}
                                         <div class="h3">{lang key='newsletterSubscribe' section='newsletter'}</div>
                                     {/block}
@@ -61,7 +61,7 @@
                                             {if (!isset($smarty.session.bAnti_spam_already_checked) || $smarty.session.bAnti_spam_already_checked !== true) &&
                                             isset($Einstellungen.newsletter.newsletter_sicherheitscode) && $Einstellungen.newsletter.newsletter_sicherheitscode !== 'N' && empty($smarty.session.Kunde->kKunde)}
                                                 {block name='newsletter-index-form-captcha'}
-                                                    <div class="form-group{if !empty($plausiArr.captcha) && $plausiArr.captcha === true} has-error{/if}">
+                                                    <div class="form-group simple-captcha-wrapper{if !empty($plausiArr.captcha) && $plausiArr.captcha === true} has-error{/if}">
                                                         {captchaMarkup getBody=true}
                                                     </div>
                                                 {/block}
@@ -75,14 +75,16 @@
 
                                             {block name='newsletter-index-newsletter-subscribe-form-content-submit'}
                                                 {row}
-                                                    {col md=6 class='ml-md-auto'}
+                                                    {col md=6 class='ml-auto-util'}
                                                         {input type="hidden" name="abonnieren" value="1"}
                                                         {button type="submit" variant="primary" block=true}
                                                             <span>{lang key='newsletterSendSubscribe' section='newsletter'}</span>
                                                         {/button}
-                                                        <p class="info small mt-1">
+                                                        {if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ])}
+                                                        <p class="info small newsletter-subscribe-consent">
                                                             {lang key='newsletterInformedConsent' section='newsletter' printf=$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL()}
                                                         </p>
+                                                        {/if}
                                                     {/col}
                                                 {/row}
                                             {/block}
@@ -101,7 +103,7 @@
                 {container}
                     {row}
                         {col cols=12 lg=8}
-                            <div id="newsletter-unsubscribe" class="mt-3">
+                            <div id="newsletter-unsubscribe" class="newsletter-unsubscribe">
                                 {block name='newsletter-index-newsletter-unsubscribe-subheading'}
                                     <div class="h3">{lang key='newsletterUnsubscribe' section='newsletter'}</div>
                                 {/block}
@@ -120,7 +122,7 @@
                                         }
                                         {input type="hidden" name="abmelden" value="1"}
                                         {row}
-                                            {col md=6 class='ml-md-auto'}
+                                            {col md=6 class='ml-auto-util'}
                                                 {button type="submit" block=true variant="outline-primary"}
                                                     <span>{lang key='newsletterSendUnsubscribe' section='newsletter'}</span>
                                                 {/button}

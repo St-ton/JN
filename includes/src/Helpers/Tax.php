@@ -112,8 +112,9 @@ class Tax
         );
         if (\count($taxZones) === 0) {
             // Keine Steuerzone für $deliveryCountryCode hinterlegt - das ist fatal!
-            $redirURL  = Shop::Container()->getLinkService()->getStaticRoute('bestellvorgang.php') .
-                '?editRechnungsadresse=1';
+            $redirURL  = Frontend::getCustomer()->isLoggedIn()
+                ? Shop::Container()->getLinkService()->getStaticRoute('jtl.php') . '?editRechnungsadresse=1'
+                : Shop::Container()->getLinkService()->getStaticRoute('bestellvorgang.php') . '?editRechnungsadresse=1';
             $urlHelper = new URL(Shop::getURL() . $_SERVER['REQUEST_URI']);
             $country   = LanguageHelper::getCountryCodeByCountryName($deliveryCountryCode);
 
@@ -227,9 +228,9 @@ class Tax
     }
 
     /**
-     * @param float $price
-     * @param float $taxRate
-     * @param int   $precision
+     * @param float|string $price
+     * @param float|string $taxRate
+     * @param int          $precision
      * @return float
      * @since since 5.0.0
      */
@@ -239,9 +240,9 @@ class Tax
     }
 
     /**
-     * @param float $price
-     * @param float $taxRate
-     * @param int   $precision
+     * @param float|string $price
+     * @param float|string $taxRate
+     * @param int          $precision
      * @return float
      * @since since 5.0.0
      */

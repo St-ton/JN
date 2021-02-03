@@ -17,6 +17,9 @@ class Migration_20190207151543 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'add lang rating range error';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization(
@@ -33,6 +36,9 @@ class Migration_20190207151543 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('ratingRange');

@@ -60,6 +60,13 @@
             {include file='tpl_inc/backend_sidebar.tpl'}
         {/if}
         <div class="backend-main {if !$hasPendingUpdates && $wizardDone}sidebar-offset{/if}">
+            {if $smarty.const.SAFE_MODE}
+            <div class="alert alert-warning fade show" role="alert">
+                <i class="fal fa-exclamation-triangle mr-2"></i>
+                {__('Safe mode enabled.')}
+                <a href="./?safemode=off" class="btn btn-light"><span class="fas fa-exclamation-circle mr-0 mr-lg-2"></span><span>{__('deactivate')}</span></a>
+            </div>
+            {/if}
             <div id="topbar" class="backend-navbar row mx-0 align-items-center topbar flex-nowrap">
                 {if !$hasPendingUpdates && $wizardDone}
                 <div class="col search px-0 px-md-3">
@@ -77,12 +84,12 @@
                                     <span class="fal fa-map-marker-question fa-fw"></span>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right">
-                                    <span class="dropdown-header">Hilfecenter</span>
+                                    <span class="dropdown-header">{__('helpCenterHeader')}</span>
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="https://jtl-url.de/shopschritte" target="_blank" rel="noopener">
                                         {__('firstSteps')}
                                     </a>
-                                    <a class="dropdown-item" href="https://jtl-url.de/shopguide" target="_blank" rel="noopener">
+                                    <a class="dropdown-item" href="https://jtl-url.de/0762z" target="_blank" rel="noopener">
                                         {__('jtlGuide')}
                                     </a>
                                     <a class="dropdown-item" href="https://forum.jtl-software.de" target="_blank" rel="noopener">
@@ -144,7 +151,7 @@
                                 <div class="row">
                                     <div class="col-md-2"><i class="fa fa-exclamation-triangle" style="font-size: 8em; padding-bottom:10px; color: red;"></i></div>
                                     <div class="col-md-10 ml-auto">
-                                        <p class="alert alert-danger">{__('The following extensions do not have a valid license:')}</p>
+                                        <strong>{__('No valid licence found for the following installed and active extensions:')}</strong>
                                         {form id="plugins-disable-form"}
                                             <input type="hidden" name="action" value="disable-expired-plugins">
                                             <ul>
@@ -161,10 +168,20 @@
                                                 {/foreach}
                                             </ul>
                                         {/form}
-                                        <p>{__('Please uninstall this extensions or purchase a valid license.')}</p>
                                     </div>
                                 </div>
-                                <p><strong>{__('Further using these extensions will violate the license policy and may have legal consequences.')}</strong></p>
+                                <div class="alert alert-secondary" role="alert">
+                                    <p><strong>{__('Possible reasons:')}</strong></p>
+                                    <ul class="small">
+                                        <li>{__('The extension was obtained from a different source than the JTL-Extension Store')}</li>
+                                        <li>{__('The licence is not bound to this shop yet (check licence in "My purchases")')}</li>
+                                        <li>{__('The licence is bound to a different customer account that is not connected to this shop (check connected account in "My purchases")')}</li>
+                                        <li>{__('The manufacturer disabled the licence')}</li>
+                                    </ul>
+                                </div>
+                                <p><strong>{__('Further use of the extension may constitute a licence violation!')}</strong><br>
+                                    {__('Please purchase a licence in the JTL-Extension Store or contact the manufacturer of the extension for information on rights of use.')}
+                                </p>
                             </div>
                             <div class="modal-footer">
                                 <input type="checkbox" id="understood-license-notice">

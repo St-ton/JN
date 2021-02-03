@@ -17,6 +17,7 @@ use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
+use JTL\Link\SpecialPageNotFoundException;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
@@ -278,9 +279,8 @@ class Cart
     }
 
     /**
-     * fuegt eine neue Position hinzu
      * @param int         $productID
-     * @param int         $qty   Anzahl des Artikel fuer die neue Position
+     * @param int|float   $qty
      * @param array       $attributeValues
      * @param int         $type
      * @param string|bool $unique
@@ -893,12 +893,12 @@ class Cart
 
     /**
      * gibt Gesamtanzahl eines bestimmten Artikels im Warenkorb zurueck
-     * @param int $productID
-     * @param int $excludePos
-     * @param bool $countParentProducts
+     * @param int|null $productID
+     * @param int      $excludePos
+     * @param bool     $countParentProducts
      * @return int|float
      */
-    public function gibAnzahlEinesArtikels(int $productID, int $excludePos = -1, bool $countParentProducts = false)
+    public function gibAnzahlEinesArtikels(?int $productID, int $excludePos = -1, bool $countParentProducts = false)
     {
         if (!$productID) {
             return 0;
@@ -925,6 +925,7 @@ class Cart
     public function setzePositionsPreise(): self
     {
         $defaultOptions               = Artikel::getDefaultOptions();
+        $configOptions                = Artikel::getDefaultConfigOptions();
         $defaultOptions->nStueckliste = 1;
         $this->oFavourableShipping    = null;
 
@@ -932,7 +933,10 @@ class Cart
             if ($item->kArtikel > 0 && $item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
                 $oldItem = clone $item;
                 $product = new Artikel();
-                if (!$product->fuelleArtikel($item->kArtikel, $defaultOptions)) {
+                if (!$product->fuelleArtikel($item->kArtikel, (int)$item->kKonfigitem === 0
+                    ? $defaultOptions
+                    : $configOptions)
+                ) {
                     continue;
                 }
                 // Baue Variationspreise im Warenkorb neu, aber nur wenn es ein gültiger Artikel ist
@@ -1024,7 +1028,7 @@ class Cart
      * @param bool   $name
      * @return $this
      */
-    public function setzeKonfig(&$item, bool $prices = true, bool $name = true): self
+    public function setzeKonfig($item, bool $prices = true, bool $name = true): self
     {
         // Falls Konfigitem gesetzt Preise + Name ueberschreiben
         if ((int)$item->kKonfigitem <= 0 || !\class_exists('Konfigitem')) {
@@ -1954,11 +1958,21 @@ class Cart
      */
     public function setFavourableShippingString(int $possibleShippingMethods): void
     {
-        if ($this->oFavourableShipping === null && empty(Frontend::get('Versandart'))) {
-            $this->favourableShippingString = \sprintf(
-                Shop::Lang()->get('shippingInformation', 'basket'),
-                Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_VERSAND)->getURL()
-            );
+        if (!empty(Frontend::get('Versandart'))) {
+            $this->favourableShippingString = '';
+            return;
+        }
+        if ($this->oFavourableShipping === null) {
+            try {
+                $this->favourableShippingString = \sprintf(
+                    Shop::Lang()->get('shippingInformation', 'basket'),
+                    Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_VERSAND)->getURL()
+                );
+            } catch (SpecialPageNotFoundException $e) {
+                $this->favourableShippingString = '';
+                Shop::Container()->getLogService()->error($e->getMessage());
+            }
+
             return;
         }
         $isMerchant    = Frontend::getCustomerGroup()->getIsMerchant();
@@ -1972,20 +1986,25 @@ class Cart
                 Shop::Lang()->get('vat', 'productDetails')
             );
         }
-        if ($possibleShippingMethods === 1) {
-            $this->favourableShippingString = \sprintf(
-                Shop::Lang()->get('shippingInformationSpecificSingle', 'basket'),
-                Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_VERSAND)->getURL(),
-                $shippingCosts,
-                $this->oFavourableShipping->country->getName()
-            );
-        } else {
-            $this->favourableShippingString = \sprintf(
-                Shop::Lang()->get('shippingInformationSpecific', 'basket'),
-                Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_VERSAND)->getURL(),
-                $shippingCosts,
-                $this->oFavourableShipping->country->getName()
-            );
+        try {
+            if ($possibleShippingMethods === 1) {
+                $this->favourableShippingString = \sprintf(
+                    Shop::Lang()->get('shippingInformationSpecificSingle', 'basket'),
+                    Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_VERSAND)->getURL(),
+                    $shippingCosts,
+                    $this->oFavourableShipping->country->getName()
+                );
+            } else {
+                $this->favourableShippingString = \sprintf(
+                    Shop::Lang()->get('shippingInformationSpecific', 'basket'),
+                    Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_VERSAND)->getURL(),
+                    $shippingCosts,
+                    $this->oFavourableShipping->country->getName()
+                );
+            }
+        } catch (SpecialPageNotFoundException $e) {
+            $this->favourableShippingString = '';
+            Shop::Container()->getLogService()->error($e->getMessage());
         }
     }
 

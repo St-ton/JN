@@ -10,11 +10,13 @@ use JTL\Shop;
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'agbwrb_inc.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
+/** @global \JTL\Backend\AdminAccount $oAccount */
 $oAccount->permission('ORDER_AGB_WRB_VIEW', true, true);
 $step            = 'agbwrb_uebersicht';
 $alertHelper     = Shop::Container()->getAlertService();
 $recommendations = new Manager($alertHelper, Manager::SCOPE_BACKEND_LEGAL_TEXTS);
 setzeSprache();
+$languageID = (int)$_SESSION['editLanguageID'];
 
 if (Request::verifyGPCDataInt('agbwrb') === 1 && Form::validateToken()) {
     // Editieren
@@ -24,7 +26,7 @@ if (Request::verifyGPCDataInt('agbwrb') === 1 && Form::validateToken()) {
             $oAGBWRB = Shop::Container()->getDB()->select(
                 'ttext',
                 'kSprache',
-                (int)$_SESSION['kSprache'],
+                $languageID,
                 'kKundengruppe',
                 Request::verifyGPCDataInt('kKundengruppe')
             );
@@ -36,7 +38,7 @@ if (Request::verifyGPCDataInt('agbwrb') === 1 && Form::validateToken()) {
     } elseif (Request::verifyGPCDataInt('agbwrb_editieren_speichern') === 1) {
         if (speicherAGBWRB(
             Request::verifyGPCDataInt('kKundengruppe'),
-            $_SESSION['kSprache'],
+            $languageID,
             $_POST,
             Request::verifyGPCDataInt('kText')
         )) {
@@ -50,7 +52,7 @@ if (Request::verifyGPCDataInt('agbwrb') === 1 && Form::validateToken()) {
 if ($step === 'agbwrb_uebersicht') {
     // AGB fuer jeweilige Sprache holen
     $agbWrb = [];
-    $data   = Shop::Container()->getDB()->selectAll('ttext', 'kSprache', (int)$_SESSION['kSprache']);
+    $data   = Shop::Container()->getDB()->selectAll('ttext', 'kSprache', $languageID);
     // Assoc Array mit kKundengruppe machen
     foreach ($data as $item) {
         $agbWrb[(int)$item->kKundengruppe] = $item;
@@ -60,6 +62,6 @@ if ($step === 'agbwrb_uebersicht') {
 }
 
 $smarty->assign('step', $step)
-    ->assign('kSprache', $_SESSION['kSprache'])
+    ->assign('languageID', $languageID)
     ->assign('recommendations', $recommendations)
     ->display('agbwrb.tpl');

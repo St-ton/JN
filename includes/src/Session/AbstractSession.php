@@ -2,6 +2,7 @@
 
 namespace JTL\Session;
 
+use JTL\Helpers\Request;
 use JTL\Session\Handler\JTLHandlerInterface;
 use JTL\Shop;
 use function Functional\last;
@@ -37,6 +38,31 @@ abstract class AbstractSession
     }
 
     /**
+     * pre-calculate all the localized shop base URLs
+     */
+    protected function initLanguageURLs(): void
+    {
+        if (\EXPERIMENTAL_MULTILANG_SHOP !== true) {
+            return;
+        }
+        $urls      = [];
+        $sslStatus = Request::checkSSL();
+        foreach ($_SESSION['Sprachen'] ?? [] as $language) {
+            $code    = \mb_convert_case($language->getCode(), \MB_CASE_UPPER);
+            $shopURL = \defined('URL_SHOP_' . $code) ? \constant('URL_SHOP_' . $code) : \URL_SHOP;
+            foreach ([0, 1] as $forceSSL) {
+                if ($sslStatus === 2) {
+                    $shopURL = \str_replace('http://', 'https://', $shopURL);
+                } elseif ($sslStatus === 4 || ($sslStatus === 3 && $forceSSL)) {
+                    $shopURL = \str_replace('http://', 'https://', $shopURL);
+                }
+                $urls[$language->getId()][$forceSSL] = \rtrim($shopURL, '/');
+            }
+        }
+        Shop::setURLs($urls);
+    }
+
+    /**
      * @return string
      */
     public static function getSessionName(): string
@@ -67,32 +93,17 @@ abstract class AbstractSession
      */
     private function setCookie(CookieConfig $cookieConfig): bool
     {
-        if (\PHP_VERSION_ID > 70300) {
-            $config = [
+        return \setcookie(
+            \session_name(),
+            \session_id(),
+            [
                 'expires'  => ($cookieConfig->getLifetime() === 0) ? 0 : \time() + $cookieConfig->getLifetime(),
                 'path'     => $cookieConfig->getPath(),
                 'domain'   => $cookieConfig->getDomain(),
                 'secure'   => $cookieConfig->isSecure(),
                 'httponly' => $cookieConfig->isHttpOnly(),
-            ];
-            if (\strlen($cookieConfig->getSameSite()) > 2) {
-                $config['samesite'] = $cookieConfig->getSameSite();
-            }
-
-            return \setcookie(
-                \session_name(),
-                \session_id(),
-                $config
-            );
-        }
-        return \setcookie(
-            \session_name(),
-            \session_id(),
-            ($cookieConfig->getLifetime() === 0) ? 0 : \time() + $cookieConfig->getLifetime(),
-            $cookieConfig->getPath(),
-            $cookieConfig->getDomain(),
-            $cookieConfig->isSecure(),
-            $cookieConfig->isHttpOnly()
+                'samesite' => $cookieConfig->getSameSite()
+            ]
         );
     }
 

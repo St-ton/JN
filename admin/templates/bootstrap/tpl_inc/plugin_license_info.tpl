@@ -17,7 +17,6 @@
                 <th>{__('Date created')}</th>
                 <td>{$license->getCreated()->format('d.m.Y')}</td>
             </tr>
-            <pre>{$data|var_dump}</pre>
             {if $license->getValidUntil() !== null}
             <tr>
                 <th>{__('Valid until')}</th>
@@ -34,6 +33,8 @@
 </table>
 <p class="mb-0 mt-2">
     {foreach $data->getLinks() as $link}
-        <a href="{$link->getHref()}" rel="noopener" class="btn btn-default">{__($link->getRel())}</a>
+        {if $link->getRel() !== 'clearBinding'}
+            <a href="{$link->getHref()}" rel="noopener" class="btn btn-default">{__($link->getRel())}</a>
+        {/if}
     {/foreach}
 </p>

@@ -17,6 +17,9 @@ msgstr "https://jtl-url.de/w8rpi"
 msgid "linkGroupMove"
 msgstr "Move to link group"
 
+msgid "linkModificationOnlyRoot"
+msgstr "only available on root level"
+
 msgid "linkMove"
 msgstr "Sort under link"
 
@@ -244,3 +247,6 @@ msgstr "Reference"
 
 msgid "hasAtLeastOneDuplicateSpecialLink"
 msgstr "In this link group, at least one special page exists several times for the same customer group(s)."
+
+msgid "newLinkGroupTitle"
+msgstr "Create new link group"

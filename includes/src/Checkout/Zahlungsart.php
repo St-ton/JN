@@ -510,12 +510,12 @@ class Zahlungsart extends MainModel
         if ($id <= 0) {
             return $this;
         }
-        $iso = $option['iso'] ?? $_SESSION['cISOSprache'] ?? null;
-        if ($option !== null) {
-            $iso = LanguageHelper::getDefaultLanguage()->cISO;
-        }
+        $iso  = $option['iso'] ?? Shop::getLanguageCode() ?? LanguageHelper::getDefaultLanguage()->getCode();
         $data = Shop::Container()->getDB()->queryPrepared(
-            'SELECT *
+            'SELECT z.kZahlungsart, COALESCE(s.cName, z.cName) AS cName, z.cModulId, z.cKundengruppen,
+                    z.cZusatzschrittTemplate, z.cPluginTemplate, z.cBild, z.nSort, z.nMailSenden, z.nActive,
+                    z.cAnbieter, z.cTSCode, z.nWaehrendBestellung, z.nCURL, z.nSOAP, z.nSOCKETS, z.nNutzbar,
+                    s.cISOSprache, s.cGebuehrname, s.cHinweisText, s.cHinweisTextShop
                 FROM tzahlungsart AS z
                 LEFT JOIN tzahlungsartsprache AS s 
                     ON s.kZahlungsart = z.kZahlungsart
@@ -544,17 +544,8 @@ class Zahlungsart extends MainModel
     {
         $payments = [];
         $where    = $active ? ' WHERE z.nActive = 1' : '';
-
-        if ($iso === null) {
-            if (isset($_SESSION['cISOSprache'])) {
-                $iso = $_SESSION['cISOSprache'];
-            } else {
-                $language = LanguageHelper::getDefaultLanguage();
-                $iso      = $language->cISO;
-            }
-        }
-
-        $objs = Shop::Container()->getDB()->queryPrepared(
+        $iso      = $iso ?? Shop::getLanguageCode() ?? LanguageHelper::getDefaultLanguage()->getCode();
+        $objs     = Shop::Container()->getDB()->queryPrepared(
             'SELECT *
                 FROM tzahlungsart AS z
                 LEFT JOIN tzahlungsartsprache AS s 
@@ -563,7 +554,6 @@ class Zahlungsart extends MainModel
             ['iso' => $iso],
             ReturnType::ARRAY_OF_OBJECTS
         );
-
         foreach ($objs as $obj) {
             $payments[] = new self(null, $obj);
         }

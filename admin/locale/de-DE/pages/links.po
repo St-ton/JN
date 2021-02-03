@@ -17,6 +17,9 @@ msgstr "https://jtl-url.de/rcl9g"
 msgid "linkGroupMove"
 msgstr "In Linkgruppe verschieben"
 
+msgid "linkModificationOnlyRoot"
+msgstr "nur für Elemente des Root-Levels möglich"
+
 msgid "linkMove"
 msgstr "Unter Link einordnen"
 
@@ -219,7 +222,7 @@ msgid "sureDeleteLinkGroup"
 msgstr "Möchten Sie die Linkgruppe „<strong>%s</strong>“ wirklich löschen?"
 
 msgid "newLinksSaveContinueEdit"
-msgstr "Seite speichern und weiter bearbeiten"
+msgstr "Seite speichern und weiterbearbeiten"
 
 msgid "createWithSearchEngineName"
 msgstr "(anlegen unter „Name für Suchmaschinen“)"
@@ -244,3 +247,6 @@ msgstr "Referenz"
 
 msgid "hasAtLeastOneDuplicateSpecialLink"
 msgstr "In dieser Linkgruppe existiert mindestens eine Spezialseite mehrmals, für die gleiche(n) Kundengruppe(n)."
+
+msgid "newLinkGroupTitle"
+msgstr "Neue Linkgruppe erstellen"

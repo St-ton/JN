@@ -17,11 +17,17 @@ class Migration_20170620103519 extends Migration implements IMigration
     protected $author      = 'fp';
     protected $description = 'Remove tkategorieartikelgesamt';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('DROP TABLE tkategorieartikelgesamt');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('CREATE TABLE tkategorieartikelgesamt (

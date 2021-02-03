@@ -161,15 +161,15 @@
         <nav class="tabs-nav">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link {if !isset($cTab) || $cTab === 'detailansicht'} active{/if}" data-toggle="tab" role="tab" href="#detailansicht">{__('kampagneDetailStats')}</a>
+                    <a class="nav-link {if $cTab === '' || $cTab === 'detailansicht'} active{/if}" data-toggle="tab" role="tab" href="#detailansicht">{__('kampagneDetailStats')}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'detailgraphen'} active{/if}" data-toggle="tab" role="tab" href="#detailgraphen">{__('kampagneDetailGraph')}</a>
+                    <a class="nav-link {if $cTab === 'detailgraphen'} active{/if}" data-toggle="tab" role="tab" href="#detailgraphen">{__('kampagneDetailGraph')}</a>
                 </li>
             </ul>
         </nav>
         <div class="tab-content">
-            <div id="detailansicht" class="tab-pane fade {if !isset($cTab) || $cTab === 'detailansicht'} active show{/if}">
+            <div id="detailansicht" class="tab-pane fade {if $cTab === '' || $cTab === 'detailansicht'} active show{/if}">
                 {if isset($oKampagneStat_arr) && $oKampagneStat_arr|@count > 0 && isset($oKampagneDef_arr) && $oKampagneDef_arr|@count > 0}
                     <div class="table-responsive">
                         <table class="table table-striped text-center">
@@ -217,7 +217,7 @@
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
-            <div id="detailgraphen" class="tab-pane fade{if isset($cTab) && $cTab === 'detailgraphen'} active show{/if}">
+            <div id="detailgraphen" class="tab-pane fade{if $cTab === 'detailgraphen'} active show{/if}">
                 {if $Charts|@count > 0}
                     {foreach name=charts from=$Charts key=key item=Chart}
                         <div class="my-5">

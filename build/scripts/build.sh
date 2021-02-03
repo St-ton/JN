@@ -20,22 +20,26 @@ build_create()
     local SCRIPT_DIR="${REPOSITORY_DIR}/build/scripts";
     local VERSION_REGEX="v?([0-9]{1,})\\.([0-9]{1,})\\.([0-9]{1,})(-(alpha|beta|rc)(\\.([0-9]{1,}))?)?";
 
-    source ${SCRIPT_DIR}/create_version_string.sh;
+    # source ${SCRIPT_DIR}/create_version_string.sh;
     source ${SCRIPT_DIR}/generate-tpl-checksums.sh;
 
     # Deactivate git renameList
     git config diff.renames 0;
 
     echo "Create build info";
-    create_version_string ${REPOSITORY_DIR} ${APPLICATION_VERSION} ${APPLICATION_BUILD_SHA};
+#   create_version_string ${REPOSITORY_DIR} ${APPLICATION_VERSION} ${APPLICATION_BUILD_SHA};
 
-    if [[ "$APPLICATION_VERSION"  == "master" ]]; then
-        if [[ ! -z "${NEW_VERSION}" ]]; then
-            export APPLICATION_VERSION_STR=${NEW_VERSION};
-        fi
-    else
-        export APPLICATION_VERSION_STR=${APPLICATION_VERSION};
-    fi
+#   if [[ "$APPLICATION_VERSION"  == "master" ]]; then
+#       if [[ ! -z "${NEW_VERSION}" ]]; then
+#           export APPLICATION_VERSION_STR=${NEW_VERSION};
+#       fi
+#   else
+#       export APPLICATION_VERSION_STR=${APPLICATION_VERSION};
+
+    export APPLICATION_VERSION_STR=`cat ${REPOSITORY_DIR}/VERSION`;
+    sed -i "s/'APPLICATION_VERSION', '.*'/'APPLICATION_VERSION', '${APPLICATION_VERSION_STR}'/g" ${REPOSITORY_DIR}/includes/defines_inc.php
+    sed -i "s/'APPLICATION_BUILD_SHA', '#DEV#'/'APPLICATION_BUILD_SHA', '${APPLICATION_BUILD_SHA}'/g" ${REPOSITORY_DIR}/includes/defines_inc.php
+    rm ${REPOSITORY_DIR}/VERSION
 
     echo "Executing composer";
     build_composer_execute;
@@ -70,7 +74,7 @@ build_create()
 
     echo "Executing migrations";
     build_migrate;
-	
+
     echo "Reset mailtemplates";
     build_reset_mailtemplates;
 
@@ -100,7 +104,7 @@ build_composer_execute()
 build_create_deleted_files_csv()
 {
     local VERSION="${APPLICATION_VERSION_STR//[\/\.]/-}";
-    local VERSION="${VERSION//[v]/}";
+    local VERSION="${VERSION//^[v]/}";
     local CUR_PWD=$(pwd);
     local DELETE_FILES_CSV_FILENAME="${REPOSITORY_DIR}/admin/includes/shopmd5files/deleted_files_${VERSION}.csv";
     local DELETE_FILES_CSV_FILENAME_TMP="${REPOSITORY_DIR}/admin/includes/shopmd5files/deleted_files_${VERSION}_tmp.csv";
@@ -115,7 +119,7 @@ build_create_deleted_files_csv()
 
     cd ${REPOSITORY_DIR};
     git pull >/dev/null 2>&1;
-    git diff --name-status --diff-filter D tags/v4.03.0 ${REMOTE_STR}${APPLICATION_VERSION} -- ${REPOSITORY_DIR} ':!admin/classes' ':!classes' ':!includes/ext' ':!includes/plugins' > ${DELETE_FILES_CSV_FILENAME_TMP};
+    git diff --name-status --diff-filter D tags/v4.03.0 ${REMOTE_STR}${APPLICATION_VERSION} -- ${REPOSITORY_DIR} ':!admin/classes' ':!classes' ':!includes/ext' ':!includes/plugins' ':!templates/Evo' > ${DELETE_FILES_CSV_FILENAME_TMP};
     cd ${CUR_PWD};
 
     while read line; do
@@ -163,7 +167,7 @@ build_create_shop_installer() {
 build_create_md5_hashfile()
 {
     local VERSION="${APPLICATION_VERSION_STR//[\/\.]/-}";
-    local VERSION="${VERSION//[v]/}";
+    local VERSION="${VERSION//^[v]/}";
     local CUR_PWD=$(pwd);
     local MD5_HASH_FILENAME="${REPOSITORY_DIR}/admin/includes/shopmd5files/${VERSION}.csv";
 
@@ -225,7 +229,7 @@ build_migrate()
 build_create_db_struct()
 {
     local VERSION="${APPLICATION_VERSION_STR//[\/\.]/-}";
-    local VERSION="${VERSION//[v]/}";
+    local VERSION="${VERSION//^[v]/}";
     local i=0;
     local DB_STRUCTURE='{';
     local TABLE_COUNT=$(($(mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "show tables;" | wc -l)-1));
@@ -327,7 +331,7 @@ build_add_files_to_patch_dir()
     local PATCH_VERSION=$1;
     local PATCH_DIR=$2;
     local VERSION="${APPLICATION_VERSION_STR//[\/\.]/-}";
-    local VERSION="${VERSION//[v]/}";
+    local VERSION="${VERSION//^[v]/}";
 
     echo "  Patch ${PATCH_VERSION} to ${APPLICATION_VERSION}";
 

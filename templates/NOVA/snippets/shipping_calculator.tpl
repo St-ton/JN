@@ -1,23 +1,25 @@
 {block name='snippets-shipping-calculator'}
     {block name='snippets-shipping-calculator-form'}
-        <div id="shipping-estimate-form" class="mb-5">
+        <div id="shipping-estimate-form" class="shipping-calculator-main">
             {block name='snippets-shipping-calculator-form-content'}
                 {block name='snippets-shipping-calculator-estimate'}
-                    <div class="h3 mb-4">{lang key='estimateShippingCostsTo' section='checkout'}:</div>
+                    <div class="h3 shipping-calculator-main-heading">{lang key='estimateShippingCostsTo' section='checkout'}:</div>
                 {/block}
                 {block name='snippets-shipping-calculator-estimate-main'}
                     <div class="form-row">
                         {block name='snippets-shipping-calculator-countries'}
-                            {col cols=12 md=5 class="mb-3"}
-                                {select name="land" id="country" class='custom-select' placeholder="" aria=["label"=>"{lang key='country' section='account data'}"]}
-                                    {foreach $countryService->getCountryList() as $country}
-                                        {if $country->isPermitRegistration() && $country->isShippingAvailable()}
-                                            <option value="{$country->getISO()}" {if $shippingCountry === $country->getISO()}selected{/if}>
-                                                {$country->getName()}
-                                            </option>
-                                        {/if}
-                                    {/foreach}
-                                {/select}
+                            {col cols=12 md=5 class="shipping-calculator-main-country"}
+                                {formgroup}
+                                    {select name="land" id="country" class='custom-select' placeholder="" aria=["label"=>"{lang key='country' section='account data'}"]}
+                                        {foreach $countryService->getCountryList() as $country}
+                                            {if $country->isPermitRegistration() && $country->isShippingAvailable()}
+                                                <option value="{$country->getISO()}" {if $shippingCountry === $country->getISO()}selected{/if}>
+                                                    {$country->getName()}
+                                                </option>
+                                            {/if}
+                                        {/foreach}
+                                    {/select}
+                                {/formgroup}
                             {/col}
                         {/block}
                         {block name='snippets-shipping-calculator-submit'}
@@ -28,7 +30,7 @@
                                     {elseif isset($smarty.session.Kunde->cPLZ)}
                                         {$smarty.session.Kunde->cPLZ}
                                     {/if}"|trim}
-                                {formgroup class='mb-3' label-for="plz" label="{lang key='plz' section='forgot password'}"}
+                                {formgroup label-for="plz" label="{lang key='plz' section='forgot password'}"}
                                     {input type="text"
                                         id="plz"
                                         name="plz"
@@ -65,7 +67,7 @@
                                     {foreach $ArtikelabhaengigeVersandarten as $artikelversand}
                                         <tr>
                                             <td>{$artikelversand->cName|trans}</td>
-                                            <td class="text-right text-nowrap">
+                                            <td class="text-right-util text-nowrap-util">
                                                 <strong>{$artikelversand->cPreisLocalized}</strong>
                                             </td>
                                         </tr>
@@ -108,7 +110,7 @@
                                                     </p>
                                                 {/if}
                                             </td>
-                                            <td class="text-right text-nowrap">
+                                            <td class="text-right-util text-nowrap-util">
                                                 <strong>
                                                     {$versandart->cPreisLocalized}
                                                 </strong>
@@ -139,6 +141,8 @@
         </div>
     {/if}
     {block name='snippets-shipping-calculator-hr-end'}
-        <hr class="my-4">
+        {if $hrAtEnd|default:true}
+            <hr class="shipping-calculator-hr">
+        {/if}
     {/block}
 {/block}

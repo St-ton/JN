@@ -5,9 +5,9 @@
                 <tbody class="summary"></tbody>
                 <tfoot>
                 <tr>
-                    <td colspan="3" class="text-right word-break">
+                    <td colspan="3" class="text-right-util word-break">
                         <strong class="price"></strong>
-                        <p class="vat_info text-muted">
+                        <p class="vat_info">
                             {block name='productdetails-config-sidebar-include-shipping-tax-info'}
                                 <small>{include file='snippets/shipping_tax_info.tpl' taxdata=$Artikel->taxData}</small>
                             {/block}

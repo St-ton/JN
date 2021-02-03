@@ -17,6 +17,9 @@ class Migration_20180803125235 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'add delivery status lang';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization(
@@ -33,6 +36,9 @@ class Migration_20180803125235 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('productUnsaleable');

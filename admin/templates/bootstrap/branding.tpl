@@ -132,7 +132,7 @@
                                     fileInitialPreviewConfig="[
                                             {if $oBranding->cBrandingBild|strlen > 0}
                                             {
-                                                url: '{$shopURL}/{$PFAD_ADMIN}branding.php',
+                                                url: '{$adminURL}/branding.php',
                                                 extra: {
                                                     action: 'delete',
                                                     logo: '{$oBranding->cBrandingBild}',

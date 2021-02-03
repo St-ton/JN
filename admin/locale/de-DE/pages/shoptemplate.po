@@ -60,28 +60,28 @@ msgid "errorOverlayWritePermissions"
 msgstr "Die Artikelsticker konnten nicht erzeugt werden. Bitte prüfen Sie die Schreibrechte des Ordners „%s“ und aktivieren Sie das Template erneut."
 
 msgid "successTemplateUpload"
-msgstr "Template erfolgreich hochgeladen."
+msgstr "Template wurde erfolgreich hochgeladen."
 
 msgid "uploadTemplateHeading"
 msgstr "Template hochladen"
 
 msgid "errorTemplateUpload"
-msgstr "Das Template konnte nicht hochgeladen werden. Bitte wenden Sie sich an den Support."
+msgstr "Template konnte nicht hochgeladen werden. Bitte wenden Sie sich an den Support."
 
 msgid "errorParentNotFound"
-msgstr "Das Elterntemplate konnte nicht gefunden werden."
+msgstr "Parent-Template konnte nicht gefunden werden."
 
 msgid "errorShopVersionNotFound"
-msgstr "XML-Knoten \"ShopVersion\"/\"MinShopVersion\" nicht gefunden."
+msgstr "XML-Knoten „ShopVersion“/„MinShopVersion“ konnte nicht gefunden werden."
 
 msgid "errorXmlNotFound"
-msgstr "template.xml nicht gefunden."
+msgstr "template.xml konnte nicht gefunden werden."
 
 msgid "errorXmlParse"
 msgstr "XML konnte nicht geparst werden."
 
 msgid "errorNameNotFound"
-msgstr "XML-Knoten \"Name\" konnte nicht gefunden werden."
+msgstr "XML-Knoten „Name“ konnte nicht gefunden werden."
 
 msgid "errorInvalidVersion"
 msgstr "Keine gültige SemVer."

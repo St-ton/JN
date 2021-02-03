@@ -14,7 +14,7 @@ class VATCheckVatParserNonEU
     private $countryPattern = [
         // CH-Schweiz                    CHE-999.999.999 oder
         //                               CHE-999999999         1 Block mit 9 Ziffern,
-        //                               CHE-999.999.999-99    with or without "Handelregister"-appendix ("-43")
+        //                               CHE-999.999.999-99    with or without "Handelregister"-appendix (e.g. "-43")
         'CHE' => [
             'CHE-999_999_999',              // example: CHE-422.597.330 (valid)
             'CHE-999_999_999-9',
@@ -22,6 +22,25 @@ class VATCheckVatParserNonEU
             'CHE-999999999',
             'CHE-999999999-9',
             'CHE-999999999-99'
+        ],
+
+        // GB-Vereinigtes Königreich     GB999 9999 99 oder
+        //                               GB999 9999 99 999 oder
+        //                               GBGD999 oder
+        //                               GBHA999              1 Block mit 3 Ziffern, 1 Block mit 4 Ziffern
+        // und 1 Block mit 2 Ziffern; oder wie oben, gefolgt von einem Block mit 3 Ziffern; oder 1 Block mit 5 Ziffern
+        //, 'GB' => [
+        //      'GB999 9999 99'
+        //    , 'GB999 9999 99 999'
+        //    , 'GBGD999'
+        //    , 'GBHA999'
+        //]
+        // modification in place of original documentation, because the VIES can not handle spaces
+        'GB' => [
+            'GB999999999',  // example: GB862906405(ok), 'GB 117 8490 96'(ok, spaces are removed before parsing)
+            'GB999999999999',
+            'GBGD999',
+            'GBHA999'
         ],
     ];
 
@@ -73,24 +92,21 @@ class VATCheckVatParserNonEU
                     if ($pattern[$i] === $vatID[$i]) {
                         continue 2; // check-space OK
                     }
-
                     break 2; // check-space FAIL
                 case \is_numeric($pattern[$i]):
                     if (\is_numeric($vatID[$i])) {
                         continue 2; // check-num OK
                     }
-
                     break 2; // check-num FAIL
                 default:
                     if ($pattern[$i] === '_' || $pattern[$i] === '-') {
                         continue 2;
                     }
-
                     break 2;
             }
         }
         // check, if we iterate the whole given VAT-ID,
-        // and if not, return the position, at which we sopped
+        // and if not, return the position, at which we stopped
         if (\mb_strlen($vatID) !== $i) {
             $this->errorPos = $i; // store the error-position for later usage too
 

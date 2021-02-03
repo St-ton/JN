@@ -187,7 +187,7 @@ function addValidationListener() {
             $(event.target).closest('.form-group').find('div.form-error-msg').remove();
             $(event.target).closest('.form-group')
                 .addClass('has-error')
-                .append('<div class="form-error-msg text-danger w-100">' + sanitizeOutput(event.target.validationMessage) + '</div>');
+                .append('<div class="form-error-msg w-100">' + sanitizeOutput(event.target.validationMessage) + '</div>');
 
             if (!$body.data('doScrolling')) {
                 var $firstError = $(event.target).closest('.form-group.has-error');
@@ -254,7 +254,7 @@ function checkInputError(event)
     if (event.target.validity.valid) {
         $target.closest('.form-group').removeClass('has-error');
     } else {
-        $target.closest('.form-group').addClass('has-error').append('<div class="form-error-msg text-danger">' + sanitizeOutput(event.target.validationMessage) + '</div>');
+        $target.closest('.form-group').addClass('has-error').append('<div class="form-error-msg">' + sanitizeOutput(event.target.validationMessage) + '</div>');
     }
 }
 

@@ -6,6 +6,7 @@ use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Language\LanguageHelper;
 use JTL\Plugin\State;
 use JTL\Shop;
 use JTL\Shopsetting;
@@ -208,6 +209,11 @@ final class Link extends AbstractLink
     private $currentLanguageID;
 
     /**
+     * @var int
+     */
+    private $fallbackLanguageID;
+
+    /**
      * Link constructor.
      * @param DbInterface $db
      */
@@ -233,8 +239,9 @@ final class Link extends AbstractLink
     {
         $this->currentLanguageID = Shop::getLanguageID();
         if ($this->currentLanguageID === 0) {
-            $this->currentLanguageID = $_SESSION['kSprache'] ?? 1;
+            $this->currentLanguageID = (int)($_SESSION['kSprache'] ?? 1);
         }
+        $this->fallbackLanguageID = LanguageHelper::getDefaultLanguage(true)->getId();
     }
 
     /**
@@ -295,6 +302,15 @@ final class Link extends AbstractLink
         return (int)$reference->reference > 0
             ? (int)$reference->reference
             : $id;
+    }
+
+    public function deref(): void
+    {
+        $id     = $this->getID();
+        $realID = $this->getRealID($id);
+        if ($id !== $realID) {
+            $this->setID($realID);
+        }
     }
 
     /**
@@ -518,7 +534,9 @@ final class Link extends AbstractLink
      */
     public function getName(int $idx = null): string
     {
-        return $this->names[$idx ?? $this->currentLanguageID] ?? '';
+        return $this->names[$idx ?? $this->currentLanguageID]
+            ?? $this->names[$this->fallbackLanguageID]
+            ?? '';
     }
 
     /**
@@ -558,7 +576,9 @@ final class Link extends AbstractLink
      */
     public function getSEO(int $idx = null): string
     {
-        return $this->seo[$idx ?? $this->currentLanguageID] ?? '';
+        return $this->seo[$idx ?? $this->currentLanguageID]
+            ?? $this->seo[$this->fallbackLanguageID]
+            ?? '';
     }
 
     /**
@@ -582,7 +602,9 @@ final class Link extends AbstractLink
      */
     public function getURL(int $idx = null): string
     {
-        return $this->urls[$idx ?? $this->currentLanguageID] ?? '/?s=' . $this->getID();
+        return $this->urls[$idx ?? $this->currentLanguageID]
+            ?? '/?s=' . $this->getID()
+            . '&lang=' . LanguageHelper::getIsoFromLangID($idx ?? $this->currentLanguageID)->cISO;
     }
 
     /**
@@ -614,7 +636,9 @@ final class Link extends AbstractLink
      */
     public function getTitle(int $idx = null): string
     {
-        return $this->titles[$idx ?? $this->currentLanguageID] ?? '';
+        return $this->titles[$idx ?? $this->currentLanguageID]
+            ?? $this->titles[$this->fallbackLanguageID]
+            ?? '';
     }
 
     /**
@@ -974,7 +998,7 @@ final class Link extends AbstractLink
      */
     public function getContent(int $idx = null): string
     {
-        return $this->contents[$idx ?? $this->currentLanguageID] ?? '';
+        return $this->contents[$idx ?? $this->currentLanguageID] ?? $this->contents[$this->fallbackLanguageID] ?? '';
     }
 
     /**
@@ -1006,7 +1030,9 @@ final class Link extends AbstractLink
      */
     public function getMetaTitle(int $idx = null): string
     {
-        return $this->metaTitles[$idx ?? $this->currentLanguageID] ?? '';
+        return $this->metaTitles[$idx ?? $this->currentLanguageID]
+            ?? $this->metaTitles[$this->fallbackLanguageID]
+            ?? '';
     }
 
     /**
@@ -1030,7 +1056,9 @@ final class Link extends AbstractLink
      */
     public function getMetaKeyword(int $idx = null): string
     {
-        return $this->metaKeywords[$idx ?? $this->currentLanguageID] ?? '';
+        return $this->metaKeywords[$idx ?? $this->currentLanguageID]
+            ?? $this->metaKeywords[$this->fallbackLanguageID]
+            ?? '';
     }
 
     /**
@@ -1062,7 +1090,9 @@ final class Link extends AbstractLink
      */
     public function getMetaDescription(int $idx = null): string
     {
-        return $this->metaDescriptions[$idx ?? $this->currentLanguageID] ?? '';
+        return $this->metaDescriptions[$idx ?? $this->currentLanguageID]
+            ?? $this->metaDescriptions[$this->fallbackLanguageID]
+            ?? '';
     }
 
     /**

@@ -10,12 +10,17 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Shop;
 
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
+
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
 
 Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
 $oAccount->permission('EXPORT_FORMATS_VIEW', true, true);
+Shop::Container()->getCache()->flushTags([Status::CACHE_ID_EXPORT_SYNTAX_CHECK]);
+
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 $step                = 'uebersicht';
 $oSmartyError        = new stdClass();
@@ -46,8 +51,8 @@ if (Request::postInt('neu_export') === 1 && Form::validateToken()) {
     $ef          = new Exportformat(0, $db);
     $checkResult = $ef->check($_POST);
     if ($checkResult === true) {
-        unset($_SESSION['exportSyntaxErrorCount']);
         $kExportformat = $ef->getExportformat();
+        $doCheck       = $kExportformat;
         if ($kExportformat > 0) {
             $kExportformat = Request::postInt('kExportformat');
             $revision      = new Revision($db);
@@ -96,19 +101,14 @@ if (Request::postInt('neu_export') === 1 && Form::validateToken()) {
             }
             $db->insert('texportformateinstellungen', $aktWert);
         }
-        $step  = 'uebersicht';
-        $error = $ef->checkSyntax();
-        if ($error !== false) {
-            $step = 'neuer Export';
-            $alertHelper->addAlert(Alert::TYPE_ERROR, $error, 'syntaxError');
-        }
+        $step = 'uebersicht';
     } else {
         $_POST['cContent']   = str_replace('<tab>', "\t", $_POST['cContent']);
         $_POST['cKopfzeile'] = str_replace('<tab>', "\t", Request::postVar('cKopfzeile', ''));
         $_POST['cFusszeile'] = str_replace('<tab>', "\t", Request::postVar('cFusszeile', ''));
         $smarty->assign('cPlausiValue_arr', $checkResult)
                ->assign('cPostVar_arr', Collection::make(Text::filterXSS($_POST))->map(static function ($e) {
-                    return is_string($e) ? Text::htmlentities($e) : $e;
+                   return is_string($e) ? Text::htmlentities($e) : $e;
                })->all());
         $step = 'neuer Export';
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCheckInput'), 'errorCheckInput');
@@ -306,4 +306,5 @@ if ($step === 'neuer Export') {
 }
 
 $smarty->assign('step', $step)
+       ->assign('checkTemplate', $doCheck ?? 0)
        ->display('exportformate.tpl');

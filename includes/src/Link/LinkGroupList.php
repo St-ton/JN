@@ -143,8 +143,9 @@ final class LinkGroupList implements LinkGroupListInterface
         });
         $lg         = new LinkGroup($this->db);
         $lg->setID(-1);
-        $lg->setNames(['unassigned']);
+        $lg->setNames(['unassigned', 'unassigned']);
         $lg->setTemplate('unassigned');
+        $lg->setGroupName('unassigned');
         $links = new Collection();
         foreach ($grouped as $linkID => $linkData) {
             $link = new Link($this->db);
@@ -244,8 +245,9 @@ final class LinkGroupList implements LinkGroupListInterface
         });
         $lg           = new LinkGroup($this->db);
         $lg->setID(998);
-        $lg->setNames(['specialpages']);
+        $lg->setNames(['specialpages', 'specialpages']);
         $lg->setTemplate('specialpages');
+        $lg->setGroupName('specialpages');
         $links = new Collection();
         foreach ($grouped as $linkID => $linkData) {
             $link = new Link($this->db);
@@ -311,8 +313,9 @@ final class LinkGroupList implements LinkGroupListInterface
         });
         $lg           = new LinkGroup($this->db);
         $lg->setID(999);
-        $lg->setNames(['staticroutes']);
+        $lg->setNames(['staticroutes', 'staticroutes']);
         $lg->setTemplate('staticroutes');
+        $lg->setGroupName('staticroutes');
         $links = new Collection();
         foreach ($grouped as $linkID => $linkData) {
             $link = new Link($this->db);

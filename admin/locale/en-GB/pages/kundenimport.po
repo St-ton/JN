@@ -9,7 +9,7 @@ msgid "customerImportURL"
 msgstr "https://jtl-url.de/1lb7g"
 
 msgid "customerImportDesc"
-msgstr "Here you can import customer data (including passwords) from other online shop systems. This means that your customers do not have to register for this online shop again. <strong>IMPORTANT: When you change the server, it is paramount that you adopt the Blowfish key (see /includes/config.JTL-Shop.ini.php) for the new system!</strong>"
+msgstr "Here you can import customer data (including passwords) from other online shop systems. This means that your customers do not have to register for this online shop again. <strong>Important: When you change the server, it is paramount that you adopt the Blowfish key (see /includes/config.JTL-Shop.ini.php) for the new system!</strong>"
 
 msgid "csvFile"
 msgstr "CSV file with customer data"

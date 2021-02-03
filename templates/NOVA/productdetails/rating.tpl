@@ -5,7 +5,7 @@
         {else}
             {lang key='productRating' section='product rating' assign='ratingLabelText'}
         {/if}
-        {block name='productdetails-rating'}
+        {block name='productdetails-rating-main'}
         {if isset($link)}
             <a class="rating" href="{$link}#tab-votes" title="{$ratingLabelText}: {$stars}/5" aria-label={lang key='Votes'}>
         {else}

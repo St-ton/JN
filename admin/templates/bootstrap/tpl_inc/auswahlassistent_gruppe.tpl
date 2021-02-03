@@ -12,7 +12,7 @@
     {if !isset($noModule) || !$noModule}
         <form class="settings" method="post" action="auswahlassistent.php">
             {$jtl_token}
-            <input name="kSprache" type="hidden" value="{$smarty.session.kSprache}">
+            <input name="kSprache" type="hidden" value="{$languageID}">
             <input name="tab" type="hidden" value="gruppe">
             <input name="a" type="hidden" value="addGrp">
             {if (isset($oGruppe->kAuswahlAssistentGruppe) && $oGruppe->kAuswahlAssistentGruppe > 0) || (isset($kAuswahlAssistentGruppe) && $kAuswahlAssistentGruppe > 0)}
@@ -156,7 +156,7 @@
                 <div class="card-footer save-wrapper">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <a href="auswahlassistent.php" class="btn btn-outline-primary btn-block">{__('goBack')}</a>
+                            <a href="auswahlassistent.php" class="btn btn-outline-primary btn-block">{__('cancelWithIcon')}</a>
                         </div>
                         <div class="col-sm-6 col-xl-auto">
                             <button name="speicherGruppe" type="submit" value="save" class="btn btn-primary btn-block">

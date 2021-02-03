@@ -35,6 +35,8 @@ class Admin
 {
     public const ACTION_EXTEND = 'extendLicense';
 
+    public const ACTION_UPGRADE = 'upgradeLicense';
+
     public const ACTION_SET_BINDING = 'setbinding';
 
     public const ACTION_CLEAR_BINDING = 'clearbinding';
@@ -89,6 +91,7 @@ class Admin
      */
     private $validActions = [
         self::ACTION_EXTEND,
+        self::ACTION_UPGRADE,
         self::ACTION_SET_BINDING,
         self::ACTION_CLEAR_BINDING,
         self::ACTION_RECHECK,
@@ -131,7 +134,7 @@ class Admin
         $valid  = Form::validateToken();
         if ($valid) {
             if ($action === self::ACTION_SAVE_TOKEN) {
-                $this->saveToken($smarty);
+                $this->saveToken();
                 $action = null;
             }
             if ($action === self::ACTION_ENTER_TOKEN) {
@@ -154,8 +157,8 @@ class Admin
                 $this->auth->revoke();
                 $action = null;
             }
-            if ($action === self::ACTION_EXTEND) {
-                $this->extend($smarty);
+            if ($action === self::ACTION_EXTEND || $action === self::ACTION_UPGRADE) {
+                $this->extendUpgrade($smarty, $action);
             }
         }
         if ($action === null || !\in_array($action, $this->validActions, true) || !$valid) {
@@ -255,7 +258,13 @@ class Admin
                 : $this->manager->clearBinding(Request::postVar('url'));
         } catch (ClientException | GuzzleException $e) {
             $response->error = $e->getMessage();
-            $smarty->assign('bindErrorMessage', $e->getMessage());
+            if ($e->getResponse()->getStatusCode() === 400) {
+                $body = \json_decode((string)$e->getResponse()->getBody());
+                if (isset($body->code, $body->message) && $body->code === 422) {
+                    $response->error = $body->message;
+                }
+            }
+            $smarty->assign('bindErrorMessage', $response->error);
         }
         $this->getLicenses(true);
         $this->getList($smarty);
@@ -267,16 +276,17 @@ class Admin
 
     /**
      * @param JTLSmarty $smarty
+     * @param string    $action
      * @throws \SmartyException
      */
-    private function extend(JTLSmarty $smarty): void
+    private function extendUpgrade(JTLSmarty $smarty, string $action): void
     {
         $responseData     = null;
         $apiResponse      = '';
         $response         = new AjaxResponse();
-        $response->action = 'extendLicense';
+        $response->action = $action;
         try {
-            $apiResponse  = $this->manager->extend(
+            $apiResponse  = $this->manager->extendUpgrade(
                 Request::postVar('url'),
                 Request::postVar('exsid'),
                 Request::postVar('key')
@@ -288,7 +298,11 @@ class Admin
         }
         if (isset($responseData->state)) {
             if ($responseData->state === self::STATE_APPROVED) {
-                $smarty->assign('extendSuccessMessage', 'Successfully extended.');
+                if ($action === self::ACTION_EXTEND) {
+                    $smarty->assign('extendSuccessMessage', 'Successfully extended.');
+                } elseif ($action === self::ACTION_UPGRADE) {
+                    $smarty->assign('extendSuccessMessage', 'Successfully executed.');
+                }
             } elseif ($responseData->state === self::STATE_FAILED && isset($responseData->failure_reason)) {
                 $smarty->assign('extendErrorMessage', $responseData->failure_reason);
             } elseif ($responseData->state === self::STATE_CREATED
@@ -320,10 +334,7 @@ class Admin
             ->assign('hasAuth', false);
     }
 
-    /**
-     * @param JTLSmarty $smarty
-     */
-    private function saveToken(JTLSmarty $smarty): void
+    private function saveToken(): void
     {
         $code  = \trim(Request::postVar('code', ''));
         $token = \trim(Request::postVar('token', ''));

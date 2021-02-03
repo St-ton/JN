@@ -12,6 +12,7 @@ use JTL\Plugin\MigrationHelper;
 use JTL\Update\IMigration;
 use JTLShop\SemVer\Version;
 use PDOException;
+use stdClass;
 
 /**
  * Class MigrationManager
@@ -201,7 +202,7 @@ final class MigrationManager
      * Execute a migration.
      *
      * @param IMigration $migration Migration
-     * @param string          $direction Direction
+     * @param string     $direction Direction
      * @throws Exception
      */
     public function executeMigration(IMigration $migration, string $direction = IMigration::UP): void
@@ -212,10 +213,15 @@ final class MigrationManager
         try {
             $this->db->beginTransaction();
             $migration->$direction();
-            $this->db->commit();
+            if ($this->db->getPDO()->inTransaction()) {
+                // Transaction may be committed by DDL in migration
+                $this->db->commit();
+            }
             $this->migrated($migration, $direction, $start);
         } catch (Exception $e) {
-            $this->db->rollback();
+            if ($this->db->getPDO()->inTransaction()) {
+                $this->db->rollback();
+            }
             throw new Exception(
                 $migration->getName() . ' ' . $migration->getDescription() . ' | ' . $e->getMessage(),
                 (int)$e->getCode()
@@ -250,8 +256,8 @@ final class MigrationManager
     /**
      * Gets an array of the database migrations.
      *
-     * @throws InvalidArgumentException
      * @return IMigration[]
+     * @throws InvalidArgumentException
      */
     public function getMigrations(): array
     {
@@ -359,47 +365,48 @@ final class MigrationManager
 
     /**
      * @param IMigration $migration
-     * @param string          $direction
-     * @param string          $state
-     * @param string          $message
+     * @param string     $direction
+     * @param string     $state
+     * @param string     $message
      * @return int
      */
-    private function log(IMigration $migration, $direction, $state, $message): int
+    private function log(IMigration $migration, string $direction, string $state, string $message): int
     {
-        $sql = \sprintf(
-            "INSERT INTO tmigrationlog (kMigration, cDir, cState, cLog, dCreated) VALUES ('%s', %s, %s, %s, '%s');",
-            $migration->getId(),
-            $this->db->pdoEscape($direction),
-            $this->db->pdoEscape($state),
-            $this->db->pdoEscape($message),
-            (new DateTime('now'))->format('Y-m-d H:i:s')
-        );
+        $data             = new stdClass();
+        $data->kMigration = $migration->getId();
+        $data->cDir       = $direction;
+        $data->cState     = $state;
+        $data->cLog       = $message;
+        $data->dCreated   = (new DateTime('now'))->format('Y-m-d H:i:s');
 
-        return $this->db->executeQuery($sql, ReturnType::AFFECTED_ROWS);
+        return $this->db->insertRow('tmigrationlog', $data);
     }
 
     /**
      * @param IMigration $migration
-     * @param string          $direction
-     * @param DateTime       $executed
+     * @param string     $direction
+     * @param DateTime   $executed
      * @return $this
      */
-    public function migrated(IMigration $migration, $direction, $executed): self
+    public function migrated(IMigration $migration, string $direction, DateTime $executed): self
     {
         if (\strcasecmp($direction, IMigration::UP) === 0) {
-            $sql = \sprintf(
-                "INSERT INTO tpluginmigration (kMigration, nVersion, pluginID, dExecuted)
-                    VALUES ('%s', '%s', '%s', '%s')",
-                $migration->getId(),
-                (string)$this->version,
-                $this->pluginID,
-                $executed->format('Y-m-d H:i:s')
-            );
-            $this->db->executeQuery($sql, ReturnType::AFFECTED_ROWS);
-        } else {
-            $sql = \sprintf("DELETE FROM tpluginmigration WHERE kMigration = '%s'", $migration->getId());
-            $this->db->executeQuery($sql, ReturnType::AFFECTED_ROWS);
+            $data             = new stdClass();
+            $data->kMigration = $migration->getId();
+            $data->nVersion   = (string)$this->version;
+            $data->pluginID   = $this->pluginID;
+            $data->dExecuted  = $executed->format('Y-m-d H:i:s');
+            $this->db->insertRow('tpluginmigration', $data);
+
+            return $this;
         }
+        $this->db->queryPrepared(
+            'DELETE FROM tpluginmigration 
+                WHERE kMigration = :mid 
+                AND pluginID = :pid',
+            ['mid' => $migration->getId(), 'pid' => $this->pluginID],
+            ReturnType::DEFAULT
+        );
 
         return $this;
     }

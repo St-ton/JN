@@ -17,6 +17,9 @@ class Migration_20180828131100 extends Migration implements IMigration
     protected $author      = 'fm';
     protected $description = 'Fix datetime defaults';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('ALTER TABLE `tlieferscheinposinfo` CHANGE COLUMN `dMHD` `dMHD` DATETIME DEFAULT NULL');
@@ -65,6 +68,9 @@ class Migration_20180828131100 extends Migration implements IMigration
         $this->execute("UPDATE `tnewsletterempfaengerhistory` SET `dOptCode` = NULL WHERE `dOptCode` = '0000-00-00 00:00:00'");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
     }

@@ -18,6 +18,9 @@ class Migration_20190301091345 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Add lang vars for account';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'global', 'myOrders', 'Meine Bestellungen');
@@ -83,6 +86,9 @@ class Migration_20190301091345 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('myOrders');

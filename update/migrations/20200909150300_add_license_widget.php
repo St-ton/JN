@@ -18,7 +18,7 @@ class Migration_20200909150300 extends Migration implements IMigration
     {
         $this->execute("INSERT INTO `tadminwidgets` (`kPlugin`, `cTitle`, `cClass`, 
              `eContainer`, `cDescription`, `nPos`, `bExpanded`, `bActive`) 
-             VALUES ('0', 'Lizenzen', 'LicensedItemUpdates', 'left', 'Zeigt Lizenznformationen an', '1', '1', '1')"
+             VALUES ('0', 'Lizenzen', 'LicensedItemUpdates', 'center', 'Zeigt Lizenznformationen an', '0', '1', '1')"
         );
     }
 

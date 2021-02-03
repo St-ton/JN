@@ -84,7 +84,7 @@ class Category
             : $customerGroupID;
         $config          = Shop::getSettings([\CONF_GLOBAL, \CONF_TEMPLATE]);
         if (self::$instance !== null && self::$languageID !== $languageID) {
-            //reset cached categories when language or depth was changed
+            // reset cached categories when language or depth was changed
             self::$fullCategories = null;
             unset($_SESSION['oKategorie_arr_new']);
         }
@@ -187,20 +187,23 @@ class Category
         }
         $imageSelect          = ($categoryCount >= \CATEGORY_FULL_LOAD_LIMIT && $showCategoryImages === 'N')
             ? ", '' AS cPfad" // select empty path if we don't need category images for the mega menu
-            : ', tkategoriepict.cPfad';
+            : ', tkategoriepict.cPfad, atr.cWert As customImgName';
         $imageJoin            = ($categoryCount >= \CATEGORY_FULL_LOAD_LIMIT && $showCategoryImages === 'N')
             ? '' //the join is not needed if we don't select the category image path
             : ' LEFT JOIN tkategoriepict
-                    ON tkategoriepict.kKategorie = node.kKategorie';
-            $nameSelect       = $isDefaultLang === true
+                    ON tkategoriepict.kKategorie = node.kKategorie
+                LEFT JOIN tkategorieattribut atr
+                    ON atr.kKategorie = node.kKategorie
+                    AND atr.cName = \'bildname\'';
+        $nameSelect           = $isDefaultLang === true
                 ? ', node.cName'
                 : ', node.cName, tkategoriesprache.cName AS cName_spr';
-            $langJoin         = $isDefaultLang === true
+        $langJoin             = $isDefaultLang === true
                 ? ''
                 : ' LEFT JOIN tkategoriesprache
                         ON tkategoriesprache.kKategorie = node.kKategorie
                             AND tkategoriesprache.kSprache = ' . self::$languageID . ' ';
-            $seoJoin          = " LEFT JOIN tseo
+        $seoJoin              = " LEFT JOIN tseo
                         ON tseo.cKey = 'kKategorie'
                         AND tseo.kKey = node.kKategorie
                         AND tseo.kSprache = " . self::$languageID . ' ';
@@ -241,9 +244,6 @@ class Category
                 ORDER BY node.lft',
             ReturnType::COLLECTION
         )->each(static function ($item) {
-            $item->kKategorie       = (int)$item->kKategorie;
-            $item->kOberKategorie   = (int)$item->kOberKategorie;
-            $item->cnt              = (int)$item->cnt;
             $item->bUnterKategorien = false;
             $item->Unterkategorien  = [];
         })->mapInto(MenuItem::class)
@@ -375,6 +375,17 @@ class Category
             $visibilityJoin        = '';
             $visibilityWhere       = '';
         }
+
+        foreach ($this->getAttributes($categoryID) as $catAttribute) {
+            $catID = $catAttribute->kKategorie;
+            $idx   = \mb_convert_case($catAttribute->cName, \MB_CASE_LOWER);
+            if ($catAttribute->bIstFunktionsAttribut) {
+                $functionAttributes[$catID][$idx] = $catAttribute->cWert;
+            } else {
+                $localizedAttributes[$catID][$idx] = $catAttribute;
+            }
+        }
+
         $nodes = self::$db->query(
             'SELECT parent.kKategorie, parent.kOberKategorie' . $nameSelect .
             $descriptionSelect . $imageSelect . $seoSelect . $countSelect . '
@@ -388,28 +399,14 @@ class Category
                     AND node.kKategorie = ' . $categoryID . $visibilityWhere . '                    
                 GROUP BY parent.kKategorie
                 ORDER BY parent.lft',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        foreach ($this->getAttributes($categoryID) as $catAttribute) {
-            $catID = $catAttribute->kKategorie;
-            $idx   = \mb_convert_case($catAttribute->cName, \MB_CASE_LOWER);
-            if ($catAttribute->bIstFunktionsAttribut) {
-                $functionAttributes[$catID][$idx] = $catAttribute->cWert;
-            } else {
-                $localizedAttributes[$catID][$idx] = $catAttribute;
-            }
-        }
-        foreach ($nodes as &$cat) {
-            $cat->kKategorie     = (int)$cat->kKategorie;
-            $cat->kOberKategorie = (int)$cat->kOberKategorie;
-            $cat->cnt            = (int)$cat->cnt;
-            $cat                 = new MenuItem($cat);
-            $cat->setURL(URL::buildURL($cat, \URLART_KATEGORIE, true));
-            $cat->setFunctionalAttributes($functionAttributes[$cat->getID()] ?? []);
-            $cat->setAttributes($localizedAttributes[$cat->getID()] ?? []);
-            $cat->setShortName($cat->getAttribute(\ART_ATTRIBUT_SHORTNAME)->cWert ?? $cat->getName());
-        }
-        unset($cat);
+            ReturnType::COLLECTION
+        )->each(static function ($item) use ($functionAttributes, $localizedAttributes) {
+            $item->cSeo                = URL::buildURL($item, \URLART_KATEGORIE, true);
+            $item->functionAttributes  = $functionAttributes;
+            $item->localizedAttributes = $localizedAttributes;
+        })->mapInto(MenuItem::class)
+          ->toArray();
+
         if ($filterEmpty) {
             $nodes = $this->removeRelicts($this->filterEmpty($nodes));
         }
@@ -423,7 +420,7 @@ class Category
      * @param MenuItem[] $catList
      * @return array
      */
-    private function filterEmpty($catList): array
+    private function filterEmpty(array $catList): array
     {
         foreach ($catList as $i => $cat) {
             if ($cat->hasChildren() === false && $cat->getProductCount() === 0) {
@@ -441,26 +438,26 @@ class Category
      * no articles and no sub categories with articles in them. in this case, bUnterKategorien
      * has a wrong value and the whole category has to be removed from the result
      *
-     * @param MenuItem[]    $catList
+     * @param MenuItem[]    $menuItems
      * @param MenuItem|null $parentCat
      * @return MenuItem[]
      */
-    private function removeRelicts($catList, $parentCat = null): array
+    private function removeRelicts(array $menuItems, ?MenuItem $parentCat = null): array
     {
-        foreach ($catList as $i => $cat) {
-            if ($cat->hasChildren() === false) {
+        foreach ($menuItems as $i => $menuItem) {
+            if ($menuItem->hasChildren() === false) {
                 continue;
             }
-            $cat->setHasChildren(\count($cat->getChildren()) > 0);
-            if ($cat->getProductCount() === 0 && $cat->hasChildren() === false) {
-                unset($catList[$i]);
+            $menuItem->setHasChildren(\count($menuItem->getChildren()) > 0);
+            if ($menuItem->getProductCount() === 0 && $menuItem->hasChildren() === false) {
+                unset($menuItems[$i]);
                 if ($parentCat !== null && \count($parentCat->getChildren()) === 0) {
                     $parentCat->setHasChildren(false);
                 }
             } else {
-                $cat->setChildren($this->removeRelicts($cat->getChildren(), $cat));
-                if (empty($cat->getChildren()) && $cat->getProductCount() === 0) {
-                    unset($catList[$i]);
+                $menuItem->setChildren($this->removeRelicts($menuItem->getChildren(), $menuItem));
+                if (empty($menuItem->getChildren()) && $menuItem->getProductCount() === 0) {
+                    unset($menuItems[$i]);
                     if ($parentCat !== null && empty($parentCat->getChildren())) {
                         $parentCat->setHasChildren(false);
                     }
@@ -468,7 +465,7 @@ class Category
             }
         }
 
-        return $catList;
+        return $menuItems;
     }
 
     /**
@@ -479,7 +476,7 @@ class Category
      */
     public static function categoryExists(int $id): bool
     {
-        return Shop::Container()->getDB()->select('tkategorie', 'kKategorie', $id) !== null;
+        return self::getInstance()->getCategoryById($id) !== null;
     }
 
     /**
@@ -579,8 +576,8 @@ class Category
     }
 
     /**
-     * @param string        $attribute
-     * @param string        $value
+     * @param string|array  $attribute
+     * @param string|array  $value
      * @param callable|null $callback
      * @return mixed
      * @since 5.0.0
@@ -595,8 +592,8 @@ class Category
     }
 
     /**
-     * @param string        $attribute
-     * @param string        $value
+     * @param string|array  $attribute
+     * @param string|array  $value
      * @param callable|null $callback
      * @return mixed
      * @since 5.0.0
@@ -619,7 +616,7 @@ class Category
      * @since 5.0.0
      * @former gibKategoriepfad()
      */
-    public function getPath($category, $asString = true)
+    public function getPath(Kategorie $category, bool $asString = true)
     {
         if (empty($category->cKategoriePfad_arr)
             || empty($category->kSprache)

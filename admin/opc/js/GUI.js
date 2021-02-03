@@ -7,7 +7,6 @@ class GUI
         this.io            = io;
         this.page          = page;
         this.messages      = messages;
-        this.configSaveCb  = noop;
         this.imageSelectCB = noop;
         this.iconPickerCB  = noop;
         this.inPreviewMode = false;
@@ -400,7 +399,6 @@ class GUI
     {
         let portletData = portlet.data('portlet');
 
-        this.setConfigSaveCallback(noop);
         this.setImageSelectCallback(noop);
 
         this.curPortlet = portlet;
@@ -429,7 +427,7 @@ class GUI
     {
         event.preventDefault();
 
-        this.configSaveCb();
+        opc.emit('save-config');
 
         let portletData  = this.page.portletToJSON(this.curPortlet);
         let configObject = $(event.target).serializeControls();
@@ -667,8 +665,8 @@ class GUI
 
     selectImageProp(propName)
     {
-        this.openElFinder(file => {
-            let url = file.url.slice(file.baseUrl.length);
+        this.openElFinder((file, mediafilesBaseUrlPath) => {
+            let url = file.url.slice(mediafilesBaseUrlPath.length);
             this.imageSelectCB(url, propName, file.url);
             this.configForm.find('[name="' + propName + '"]').val(url);
             this.configForm.find('#preview-img-' + propName).attr('src', file.url);
@@ -695,11 +693,6 @@ class GUI
 
         this.unsavedRevision.click();
         this.restoreUnsavedModal.modal('hide');
-    }
-
-    setConfigSaveCallback(callback)
-    {
-        this.configSaveCb = callback;
     }
 
     setImageSelectCallback(callback)

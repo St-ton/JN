@@ -819,3 +819,9 @@
 		padding-bottom: map_get($spacers, 3);
 	}
 }
+
+.attr-characteristic {
+	.badge {
+      margin-right: map_get($spacers, 1);
+    }
+}

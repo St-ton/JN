@@ -34,7 +34,12 @@
                 <ul>
                     {foreach $setting->oEinstellung_arr as $s}
                         <li tabindex="-1">
-                            <a class="dropdown-item value" href="einstellungen.php?cSuche={$s->kEinstellungenConf}&einstellungen_suchen=1">
+                            <a class="dropdown-item value"
+                               href="
+                               {if $s->kEinstellungenSektion < 101 && $s->kEinstellungenSektion != 9}einstellungen.php?cSuche={$s->kEinstellungenConf}&einstellungen_suchen=1
+                               {else}
+                               {$setting->cURL}#einstellungen
+                               {/if}">
                                 <span class="title">{$s->cName}
                                     {*<small>{$s->cBeschreibung}</small>*}
                                 </span>

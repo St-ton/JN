@@ -397,6 +397,7 @@ $adminMenu = [
                 __('Cron')       => (object)[
                     'link'        => 'cron.php',
                     'permissions' => 'CRON_VIEW',
+                    'section'     => CONF_CRON
                 ],
                 __('Filesystem') => (object)[
                     'link'        => 'filesystem.php',

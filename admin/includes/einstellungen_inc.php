@@ -28,8 +28,7 @@ function bearbeiteEinstellungsSuche(string $query, bool $save = false)
         return $result;
     }
 
-    $result->cWHERE = "(cModulId IS NULL OR cModulId = '') 
-    AND ((cWertName LIKE '%configgroup_%' AND kEinstellungenSektion > 101) OR kEinstellungenSektion < 101) ";
+    $result->cWHERE = "(cModulId IS NULL OR cModulId = '') AND kEinstellungenSektion != 101 ";
     $idList         = explode(',', $query);
     $isIdList       = count($idList) > 1;
 

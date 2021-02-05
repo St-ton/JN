@@ -287,7 +287,7 @@ final class Controller
 
             return self::ERROR_NO_TEMPLATE;
         }
-        $res  = true;
+        $res = true;
         foreach (LanguageHelper::getAllLanguages() as $lang) {
             $mail = new Mail();
             try {

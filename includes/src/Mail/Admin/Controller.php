@@ -288,8 +288,8 @@ final class Controller
             return self::ERROR_NO_TEMPLATE;
         }
         $res  = true;
-        $mail = new Mail();
         foreach (LanguageHelper::getAllLanguages() as $lang) {
+            $mail = new Mail();
             try {
                 $mail = $mail->createFromTemplate($template, null, $lang);
             } catch (InvalidArgumentException $e) {

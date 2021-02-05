@@ -32,10 +32,10 @@ class Migration_20210205115800 extends Migration implements IMigration
             ]
         );
 
-        $this->setLocalization('ger', 'product rating', 'reviewsInAllLang', 'Bewertungen in allen Sprachen:');
-        $this->setLocalization('eng', 'product rating', 'reviewsInAllLang', 'Reviews in all languages:');
+        $this->setLocalization('ger', 'product rating', 'reviewsInAllLang', 'Alle Bewertungen:');
+        $this->setLocalization('eng', 'product rating', 'reviewsInAllLang', 'All reviews:');
         $this->setLocalization('ger', 'product rating', 'noReviewsInAllLang', 'Es gibt noch keine Bewertungen.');
-        $this->setLocalization('eng', 'product rating', 'noReviewsInAllLang', 'There are no reviews.');
+        $this->setLocalization('eng', 'product rating', 'noReviewsInAllLang', 'There are no reviews yet.');
     }
 
     /**

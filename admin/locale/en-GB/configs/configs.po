@@ -2160,7 +2160,7 @@ msgid "bewertung_alle_sprachen_name"
 msgstr "Show all languages"
 
 msgid "bewertung_alle_sprachen_desc"
-msgstr "Specify whether to always display reviews of all languages in the item details."
+msgstr "Specifies whether review texts are always displayed regardless of the language in which they were written (Yes) or whether only reviews written in the language that match the current front-end language are displayed."
 
 msgid "bewertung_freischalten_name"
 msgstr "Activate customer reviews"

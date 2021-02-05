@@ -2156,6 +2156,12 @@ msgstr "Bewertungssystem nutzen"
 msgid "bewertung_anzeigen_desc"
 msgstr "Hier legen Sie fest, ob die Möglichkeit, eine Bewertung abzugeben, in den Artikeldetails angezeigt wird."
 
+msgid "bewertung_alle_sprachen_name"
+msgstr "Alle Sprachen anzeigen"
+
+msgid "bewertung_alle_sprachen_desc"
+msgstr "Hier legen Sie fest, ob immer die Bewertungen in allen Sprachen, in den Artikeldetails angezeigt werden."
+
 msgid "bewertung_freischalten_name"
 msgstr "Bewertungen freischalten"
 

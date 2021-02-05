@@ -2156,6 +2156,12 @@ msgstr "Use review system"
 msgid "bewertung_anzeigen_desc"
 msgstr "Specify whether the option of giving a review is displayed in the item details."
 
+msgid "bewertung_alle_sprachen_name"
+msgstr "Show all languages"
+
+msgid "bewertung_alle_sprachen_desc"
+msgstr "Specify whether to always display reviews of all languages in the item details."
+
 msgid "bewertung_freischalten_name"
 msgstr "Activate customer reviews"
 

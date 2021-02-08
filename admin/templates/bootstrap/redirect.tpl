@@ -253,6 +253,7 @@
                     {else}
                         <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                     {/if}
+                    {include file='tpl_inc/pagination.tpl' pagination=$pagination cAnchor='redirects' isBottom=true}
                     <div class="save-wrapper">
                         <div class="row">
                             <div class="col-sm-6 col-xl-auto text-left">

@@ -117,6 +117,9 @@
                         {__('emptySetMessage1')} {__($cKuponTypName)} {__('emptySetMessage2')}
                     </div>
                 {/if}
+                {if $oKupon_arr|@count > 0}
+                    {include file='tpl_inc/pagination.tpl' pagination=$pagination cParam_arr=['tab'=>$cKuponTyp] isBottom=true}
+                {/if}
                 <div class="card-footer save-wrapper">
                     <div class="row">
                         <div class="col-sm-6 col-xl-auto text-left">

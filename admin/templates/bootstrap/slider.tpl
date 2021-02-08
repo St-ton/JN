@@ -77,6 +77,7 @@
                                 </tbody>
                             </table>
                         </div>
+                        {include file='tpl_inc/pagination.tpl' pagination=$pagination isBottom=true}
                     </div>
                 {/if}
                 <div class="card-footer save-wrapper">

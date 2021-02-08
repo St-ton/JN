@@ -13,11 +13,12 @@ require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
 /** @global \JTL\Smarty\JTLSmarty     $smarty */
 /** @global \JTL\Backend\AdminAccount $oAccount */
-$sectionID = isset($_REQUEST['kSektion']) ? (int)$_REQUEST['kSektion'] : 0;
-$bSuche    = isset($_REQUEST['einstellungen_suchen']) && (int)$_REQUEST['einstellungen_suchen'] === 1;
-$db        = Shop::Container()->getDB();
-$getText   = Shop::Container()->getGetText();
-$search    = Request::verifyGPDataString('cSuche');
+$sectionID    = isset($_REQUEST['kSektion']) ? (int)$_REQUEST['kSektion'] : 0;
+$bSuche       = isset($_REQUEST['einstellungen_suchen']) && (int)$_REQUEST['einstellungen_suchen'] === 1;
+$db           = Shop::Container()->getDB();
+$getText      = Shop::Container()->getGetText();
+$adminAccount = Shop::Container()->getAdminAccount();
+$search       = Request::verifyGPDataString('cSuche');
 
 $getText->loadConfigLocales(true, true);
 
@@ -94,9 +95,10 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form
     } else {
         $section  = $db->select('teinstellungensektion', 'kEinstellungenSektion', $sectionID);
         $confData = $db->query(
-            'SELECT *
-                FROM teinstellungenconf
-                WHERE kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . "
+            'SELECT ec.*, e.cWert as currentValue
+                FROM teinstellungenconf as ec
+                JOIN teinstellungen as e ON e.cName=ec.cWertName
+                WHERE ec.kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . "
                     AND cConf = 'Y'
                     AND nModul = 0
                     AND nStandardanzeigen = 1 " . $sql->cWHERE . '
@@ -104,7 +106,7 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form
             ReturnType::ARRAY_OF_OBJECTS
         );
     }
-    $settingSection = new Manager($db, $smarty);
+    $settingSection = new Manager($db, $smarty, $adminAccount);
     foreach ($confData as $i => $sectionData) {
         $value       = new stdClass();
         $sectionItem = $settingSection->getInstance((int)$sectionData->kEinstellungenSektion);
@@ -139,6 +141,13 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form
                     }
                 } else {
                     $db->insert('teinstellungen', $value);
+                }
+                if ($confData[$i]->currentValue !== $_POST[$confData[$i]->cWertName]) {
+                    $settingSection->addLog(
+                        $confData[$i]->cWertName,
+                        $_POST[$confData[$i]->cWertName],
+                        $confData[$i]->currentValue
+                    );
                 }
             }
         }
@@ -208,7 +217,7 @@ if ($step === 'einstellungen bearbeiten') {
             ReturnType::ARRAY_OF_OBJECTS
         );
     }
-    $settingSection = new Manager($db, $smarty);
+    $settingSection = new Manager($db, $smarty, $adminAccount);
     foreach ($confData as $config) {
         $config->kEinstellungenConf    = (int)$config->kEinstellungenConf;
         $config->kEinstellungenSektion = (int)$config->kEinstellungenSektion;

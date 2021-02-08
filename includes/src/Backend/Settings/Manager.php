@@ -2,6 +2,7 @@
 
 namespace JTL\Backend\Settings;
 
+use JTL\Backend\AdminAccount;
 use JTL\DB\DbInterface;
 use JTL\Smarty\JTLSmarty;
 
@@ -37,14 +38,21 @@ class Manager
     protected $smarty;
 
     /**
-     * SettingSection constructor.
-     * @param DbInterface $db
-     * @param JTLSmarty   $smarty
+     * @var AdminAccount
      */
-    public function __construct(DbInterface $db, JTLSmarty $smarty)
+    protected $adminAccount;
+
+    /**
+     * Manager constructor.
+     * @param DbInterface $db
+     * @param JTLSmarty $smarty
+     * @param AdminAccount $adminAccount
+     */
+    public function __construct(DbInterface $db, JTLSmarty $smarty, AdminAccount $adminAccount)
     {
-        $this->db     = $db;
-        $this->smarty = $smarty;
+        $this->db           = $db;
+        $this->smarty       = $smarty;
+        $this->adminAccount = $adminAccount;
     }
 
     /**
@@ -67,7 +75,7 @@ class Manager
                     return $this->instances[$sectionID];
                 }
             }
-            $this->instances[$sectionID] = new self($this->db, $this->smarty);
+            $this->instances[$sectionID] = new self($this->db, $this->smarty, $this->adminAccount);
         }
 
         return $this->instances[$sectionID];
@@ -108,5 +116,23 @@ class Manager
     public function getValueMarkup($conf): string
     {
         return '';
+    }
+
+
+    /**
+     * @param string $setting
+     * @param string $oldValue
+     * @param string $newValue
+     */
+    public function addLog(string $setting, string $oldValue, string $newValue): void
+    {
+        $log                        = new \stdClass();
+        $log->kAdminLogin           = $this->adminAccount->getID();
+        $log->cEinstellungenName    = $setting;
+        $log->cEinstellungenWertAlt = $oldValue;
+        $log->cEinstellungenWertNeu = $newValue;
+        $log->dDatum                = 'NOW()';
+
+        $this->db->insert('teinstellungenlog', $log);
     }
 }

@@ -644,4 +644,16 @@ class Kategorie
     {
         return $this->cKurzbezeichnung;
     }
+
+    /**
+     * @return string
+     */
+    public function getImageAlt(): string
+    {
+        if (isset($this->categoryAttributes['img_alt'])) {
+            return $this->categoryAttributes['img_alt']->cWert;
+        }
+
+        return '';
+    }
 }

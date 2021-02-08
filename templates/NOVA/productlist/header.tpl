@@ -39,7 +39,11 @@
             {elseif $oNavigationsinfo->getCharacteristicValue() !== null}
                 {$navData = $oNavigationsinfo->getCharacteristicValue()}
             {/if}
-            {include file='snippets/image.tpl' class='productlist-header-description-image' item=$navData square=false alt=$navData->cBeschreibung|strip_tags|truncate:50}
+            {include file='snippets/image.tpl'
+                class='productlist-header-description-image'
+                item=$navData
+                square=false
+                alt="{if $oNavigationsinfo->getCategory() !== null && !empty($navData->getImageAlt())}{$navData->getImageAlt()}{else}{$navData->cBeschreibung|strip_tags|truncate:50}{/if}"}
         {/if}
         {if $oNavigationsinfo->getName()}
             <div class="title">

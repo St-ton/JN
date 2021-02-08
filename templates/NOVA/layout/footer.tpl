@@ -119,7 +119,7 @@
                                                 {/formgroup}
                                             {/block}
                                             {block name='layout-footer-form-captcha'}
-                                                <div class="form-group{if !empty($plausiArr.captcha) && $plausiArr.captcha === true} has-error{/if}">
+                                                <div class="{if !empty($plausiArr.captcha) && $plausiArr.captcha === true} has-error{/if}">
                                                     {captchaMarkup getBody=true}
                                                 </div>
                                             {/block}

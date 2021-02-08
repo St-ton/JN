@@ -93,10 +93,11 @@
                             {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}
                                 {block name='productlist-header-subcategories-image'}
                                     {link href=$subCategory->getURL()}
+                                        {$imgAlt = $subCategory->getAttribute('img_alt')}
                                         <div class="subcategories-image d-none d-md-flex">
                                             {image fluid=true lazy=true webp=true
                                                 src=$subCategory->getImage(\JTL\Media\Image::SIZE_SM)
-                                                alt=$subCategory->getName()}
+                                                alt="{if empty($imgAlt->cWert)}{$subCategory->getName()}{else}{$imgAlt->cWert}{/if}"}
                                         </div>
                                     {/link}
                                 {/block}

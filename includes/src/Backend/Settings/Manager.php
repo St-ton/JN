@@ -4,6 +4,7 @@ namespace JTL\Backend\Settings;
 
 use JTL\Backend\AdminAccount;
 use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
 use JTL\Smarty\JTLSmarty;
 
 /**
@@ -134,5 +135,31 @@ class Manager
         $log->dDatum                = 'NOW()';
 
         $this->db->insert('teinstellungenlog', $log);
+    }
+
+    /**
+     * @param string $settingName
+     * @return string
+     * @throws \SmartyException
+     */
+    public function getSettingLog(string $settingName): string
+    {
+        $logs    = [];
+        $logsTMP = $this->db->queryPrepared(
+            'SELECT el.*, al.cName as adminName 
+              FROM teinstellungenlog as el
+              LEFT JOIN tadminlogin as al 
+                USING(kAdminlogin)
+              WHERE cEinstellungenName = :settingName',
+            ['settingName' => $settingName],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+
+        foreach ($logsTMP as $log) {
+            $logs[] = (new Log())->init($log);
+        }
+        $this->smarty->assign('logs', $logs);
+
+        return $this->smarty->fetch('snippets/einstellungen_log_content.tpl');
     }
 }

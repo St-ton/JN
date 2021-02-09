@@ -552,6 +552,7 @@ $(document).ready(function () {
 
     checkSingleSettingCard();
     onChangeFormSubmit();
+    getSettingListeners();
 });
 
 $(window).on('load', () => {
@@ -848,4 +849,18 @@ function startSpinner()
 function stopSpinner()
 {
     $('body').find('.ajax-spinner').remove();
+}
+
+function getSettingListeners()
+{
+    $('.setting-changelog').on('click', function (e) {
+        e.preventDefault();
+        let $self = $(this);
+        ioCall('getSettingLog', [$(this).data('setting-name')], function (data) {
+            $('#modal-footer').modal('show');
+            $('#modal-footer .modal-body').html(data);
+            $('#modal-footer .modal-title').html(
+                $self.data('name') + ' | ' + $self.data('setting-name') + ' | ' + $self.data('id'));
+        });
+    });
 }

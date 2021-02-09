@@ -1,6 +1,7 @@
 <?php
 
 use JTL\Backend\AdminIO;
+use JTL\Backend\Settings\Manager as SettingsManager;
 use JTL\Backend\JSONAPI;
 use JTL\Backend\Notification;
 use JTL\Backend\TwoFA;
@@ -37,6 +38,7 @@ $io           = AdminIO::getInstance()->setAccount($oAccount);
 $images       = new Manager($db, $gettext);
 $updateIO     = new UpdateIO($db, $gettext);
 $wizardIO     = new WizardIO($db, $cache, $alertService, $gettext);
+$settings     = new SettingsManager($db, Shop::Smarty(), Shop::Container()->getAdminAccount());
 
 try {
     Shop::Container()->getOPC()->registerAdminIOFunctions($io);
@@ -63,6 +65,7 @@ try {
        ->register('getCustomers', [$jsonApi, 'getCustomers'])
        ->register('getSeos', [$jsonApi, 'getSeos'])
        ->register('getAttributes', [$jsonApi, 'getAttributes'])
+       ->register('getSettingLog', [$settings, 'getSettingLog'])
        ->register('isDuplicateSpecialLink', [LinkAdmin::class, 'isDuplicateSpecialLink'])
        ->register('getCurrencyConversion', 'getCurrencyConversionIO')
        ->register('setCurrencyConversionTooltip', 'setCurrencyConversionTooltipIO')

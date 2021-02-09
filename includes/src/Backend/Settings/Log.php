@@ -21,7 +21,12 @@ class Log
     /**
      * @var string
      */
-    private $setting;
+    private $adminName;
+
+    /**
+     * @var string
+     */
+    private $settingName;
 
     /**
      * @var string
@@ -38,8 +43,28 @@ class Log
      */
     private $date;
 
+    /**
+     * Log constructor.
+     */
     public function __construct()
     {
+    }
+
+    /**
+     * @param \stdClass $data
+     * @return Log
+     */
+    public function init(\stdClass $data): self
+    {
+        $this->setId((int)$data->kEinstellungenLog);
+        $this->setAdminId((int)$data->kAdminlogin);
+        $this->setAdminName($data->adminName);
+        $this->setSettingName($data->cEinstellungenName);
+        $this->setValueNew($data->cEinstellungenWertNeu);
+        $this->setValueOld($data->cEinstellungenWertAlt);
+        $this->setDate($data->dDatum);
+
+        return $this;
     }
 
     /**
@@ -77,17 +102,17 @@ class Log
     /**
      * @return string
      */
-    public function getSetting(): string
+    public function getSettingName(): string
     {
-        return $this->setting;
+        return $this->settingName;
     }
 
     /**
-     * @param string $setting
+     * @param string $settingName
      */
-    public function setSetting(string $setting): void
+    public function setSettingName(string $settingName): void
     {
-        $this->setting = $setting;
+        $this->settingName = $settingName;
     }
 
     /**
@@ -136,5 +161,21 @@ class Log
     public function setDate(string $date): void
     {
         $this->date = $date;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAdminName(): string
+    {
+        return $this->adminName;
+    }
+
+    /**
+     * @param string $adminName
+     */
+    public function setAdminName(string $adminName): void
+    {
+        $this->adminName = $adminName;
     }
 }

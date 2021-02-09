@@ -77,11 +77,15 @@
                                 <input class="form-control" type="text" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{if isset($cnf->gesetzterWert)}{$cnf->gesetzterWert}{/if}" tabindex="1" />
                             {/if}
                         </div>
-                        {if !empty($cnf->cBeschreibung)}
-                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">
+
+                        <div class="col-1 ml-sm-n4 order-2 order-sm-3 d-flex align-items-center">
+                            {if !empty($cnf->cBeschreibung)}
                                 {getHelpDesc cDesc=$cnf->cBeschreibung cID=$cnf->kEinstellungenConf}
-                            </div>
-                        {/if}
+                            {/if}
+                            {include file='snippets/einstellungen_reset_icon.tpl' cID=$cnf->kEinstellungenConf}
+                            {include file='snippets/einstellungen_log_icon.tpl' cnf=$cnf}
+                        </div>
+
                         {if isset($oSections[$kEinstellungenSektion]) && $oSections[$kEinstellungenSektion]->hasValueMarkup}
                             {*{$oSections[$kEinstellungenSektion]->getValueMarkup($cnf)}*}
                         {/if}

@@ -9,7 +9,7 @@ $(document).ready(function() {
         }
     });
     $('#dGueltigBis').datetimepicker({
-        locale: 'de',
+        locale: '{/literal}{$language|mb_substr:0:2}{literal}',
         format: 'DD.MM.YYYY HH:mm:ss',
         useCurrent: false,
         icons: {

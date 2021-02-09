@@ -222,7 +222,7 @@
                 <div itemprop="about"
                     itemscope=true
                     itemtype="http://schema.org/Blog"
-                    class="carousel carousel-arrows-inside mx-0 slick-lazy slick-type-three"
+                    class="carousel carousel-arrows-inside mx-0 slick-lazy slick-type-three {if $oNews_arr|count < 3}slider-no-preview{/if}"
                     data-slick-type="slider-three">
                     {include file='snippets/slider_items.tpl' items=$oNews_arr type='news'}
                 </div>

@@ -249,6 +249,7 @@ class TestHydrator extends DefaultsHydrator
         $until                         = (new DateTime())->modify('+28 days')->format('Y-m-d H:i:s');
         $coupon                        = new stdClass();
         $coupon->cName                 = 'Kuponname';
+        $coupon->Hersteller            = [];
         $coupon->fWert                 = 5;
         $coupon->cWertTyp              = 'festpreis';
         $coupon->dGueltigAb            = $now;

@@ -47,6 +47,7 @@
                                     <div class="mb-3">
                                         {if $group->name !== ''}<div class="subheading2">{$group->name}</div>{/if}
                                         {foreach $group->permissions as $permission}
+                                            {if isset($permission->cRecht)}
                                             <div class="custom-control custom-checkbox">
                                                 <input class="custom-control-input" type="checkbox" name="perm[]" value="{$permission->cRecht}" id="{$permission->cRecht}" {if isset($cAdminGroupPermission_arr) && is_array($cAdminGroupPermission_arr)}{if $permission->cRecht|in_array:$cAdminGroupPermission_arr}checked="checked"{/if}{/if} />
                                                 <label class="custom-control-label" for="{$permission->cRecht}" class="perm">
@@ -58,6 +59,7 @@
                                                     {/if}
                                                 </label>
                                             </div>
+                                            {/if}
                                         {/foreach}
                                     </div>
                                 {/foreach}

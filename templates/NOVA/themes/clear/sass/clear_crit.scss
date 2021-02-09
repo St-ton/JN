@@ -460,11 +460,6 @@ hr {
 /* header logo position - start */
 .toggler-logo-wrapper {
   float: left;
-  @include media-breakpoint-up(lg) {
-    .logo-wrapper {
-      padding-left: map-get($spacers, 4);
-    }
-  }
   @include media-breakpoint-down(md) {
     position: absolute;
     .logo-wrapper {

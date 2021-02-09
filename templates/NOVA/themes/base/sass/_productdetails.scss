@@ -822,6 +822,7 @@
 
 .attr-characteristic {
 	a {
-      margin-right: map_get($spacers, 1);
+      margin-right: map_get($spacers, 2);
+	  display: inline-block;
     }
 }

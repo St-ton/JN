@@ -24946,7 +24946,8 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 
 .attr-characteristic a {
-  margin-right: 0.25rem;
+  margin-right: 0.5rem;
+  display: inline-block;
 }
 
 /* comparelist */

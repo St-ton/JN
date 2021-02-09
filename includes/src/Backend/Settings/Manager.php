@@ -150,7 +150,8 @@ class Manager
               FROM teinstellungenlog as el
               LEFT JOIN tadminlogin as al 
                 USING(kAdminlogin)
-              WHERE cEinstellungenName = :settingName',
+              WHERE el.cEinstellungenName = :settingName
+              ORDER BY el.dDatum DESC',
             ['settingName' => $settingName],
             ReturnType::ARRAY_OF_OBJECTS
         );

@@ -18,15 +18,17 @@ class Migration_20210208144100 extends Migration implements IMigration
     {
         $this->execute(
             'CREATE TABLE IF NOT EXISTS `teinstellungenlog` (
-                `kEinstellungenLog`      INT          NOT NULL AUTO_INCREMENT,
-                `kAdminlogin`            INT          NOT NULL,
-                `cEinstellungenName`     VARCHAR(255) NOT NULL,
+                `kEinstellungenLog`     INT          NOT NULL AUTO_INCREMENT,
+                `kAdminlogin`           INT          NOT NULL,
+                `cEinstellungenName`    VARCHAR(255) NOT NULL,
                 `cEinstellungenWertAlt` VARCHAR(255) NOT NULL,
                 `cEinstellungenWertNeu` VARCHAR(255) NOT NULL,
-                `dDatum`                 DATETIME     NOT NULL,
-                PRIMARY KEY (`kEinstellungenLog`)
+                `dDatum`                DATETIME     NOT NULL,
+                PRIMARY KEY (`kEinstellungenLog`),
+                KEY (`cEinstellungenName`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;'
         );
+        $this->execute('ALTER TABLE teinstellungenconf ADD COLUMN cWertDefault VARCHAR(255) NOT NULL');
     }
 
     /**
@@ -35,5 +37,6 @@ class Migration_20210208144100 extends Migration implements IMigration
     public function down()
     {
         $this->execute('DROP TABLE IF EXISTS `teinstellungenlog`');
+        $this->execute('ALTER TABLE teinstellungenconf DROP COLUMN cWertDefault');
     }
 }

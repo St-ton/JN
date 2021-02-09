@@ -82,8 +82,8 @@
                             {if !empty($cnf->cBeschreibung)}
                                 {getHelpDesc cDesc=$cnf->cBeschreibung cID=$cnf->kEinstellungenConf}
                             {/if}
-                            {include file='snippets/einstellungen_reset_icon.tpl' cID=$cnf->kEinstellungenConf}
                             {include file='snippets/einstellungen_log_icon.tpl' cnf=$cnf}
+                            {include file='snippets/einstellungen_reset_icon.tpl' cnf=$cnf}
                         </div>
 
                         {if isset($oSections[$kEinstellungenSektion]) && $oSections[$kEinstellungenSektion]->hasValueMarkup}

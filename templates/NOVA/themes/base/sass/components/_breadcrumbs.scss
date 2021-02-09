@@ -1,8 +1,13 @@
 
 .breadcrumb-wrapper {
 	align-items: center;
-	margin-bottom: map-get($spacers, 5);
-	@include media-breakpoint-up(lg) { border-style: solid; border-color: $gray-medium; border-width: $border-width 0;}
+	margin-bottom: map-get($spacers, 4);
+	@include media-breakpoint-up(lg) {
+		border-style: solid;
+		border-color: $gray-medium;
+		border-width: $border-width 0;
+		margin-bottom: map-get($spacers, 5);
+	}
 }
 
 .breadcrumb {

@@ -743,7 +743,7 @@ class AdminAccountManager
                 \ENT_COMPAT | \ENT_HTML401,
                 \JTL_CHARSET
             );
-            $groupPermissions              = $_POST['perm'];
+            $groupPermissions              = $_POST['perm'] ?? [];
 
             if (\mb_strlen($adminGroup->cGruppe) === 0) {
                 $errors['cGruppe'] = 1;

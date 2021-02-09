@@ -78,7 +78,7 @@
                             {/if}
                         </div>
 
-                        <div class="col-1 ml-sm-n4 order-2 order-sm-3 d-flex align-items-center">
+                        <div class="col-auto ml-sm-n4 order-2 order-sm-3 d-flex align-items-center">
                             {if !empty($cnf->cBeschreibung)}
                                 {getHelpDesc cDesc=$cnf->cBeschreibung cID=$cnf->kEinstellungenConf}
                             {/if}

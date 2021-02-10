@@ -1,3 +1,4 @@
+{if !empty($logs)}
 <div class="table-responsive">
     <table class="table table-striped table-bordered table-hover">
         <thead>
@@ -11,10 +12,13 @@
         {foreach $logs as $log}
             <tr class="text-vcenter">
                 <td>{$log->getAdminName()}</td>
-                <td>{$log->getValueNew()}</td>
                 <td>{$log->getValueOld()}</td>
+                <td>{$log->getValueNew()}</td>
                 <td>{$log->getDate()}</td>
             </tr>
         {/foreach}
     </table>
 </div>
+{else}
+    <div class="alert alert-info">Keine Änderungen dieser Einstellung vorhanden.</div>
+{/if}

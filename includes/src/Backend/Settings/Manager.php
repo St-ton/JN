@@ -163,4 +163,36 @@ class Manager
 
         return $this->smarty->fetch('snippets/einstellungen_log_content.tpl');
     }
+
+    /**
+     * @param string $settingName
+     */
+    public function resetSetting(string $settingName): void
+    {
+        $defaultValue = $this->db->queryPrepared(
+            'SELECT cWert
+              FROM teinstellungen_default
+              WHERE cName=:settingName',
+            ['settingName' => $settingName],
+            ReturnType::SINGLE_OBJECT
+        );
+        $oldValue     = $this->db->queryPrepared(
+            'SELECT cWert
+              FROM teinstellungen
+              WHERE cName=:settingName',
+            ['settingName' => $settingName],
+            ReturnType::SINGLE_OBJECT
+        );
+        $this->db->queryPrepared(
+            'UPDATE teinstellungen
+              SET cWert=:defaultValue
+              WHERE cName=:settingName',
+            [
+                'settingName' => $settingName,
+                'defaultValue' => $defaultValue->cWert
+            ],
+            ReturnType::DEFAULT
+        );
+        $this->addLog($settingName, $oldValue->cWert, $defaultValue->cWert);
+    }
 }

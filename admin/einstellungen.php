@@ -13,12 +13,13 @@ require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
 /** @global \JTL\Smarty\JTLSmarty     $smarty */
 /** @global \JTL\Backend\AdminAccount $oAccount */
-$sectionID    = isset($_REQUEST['kSektion']) ? (int)$_REQUEST['kSektion'] : 0;
-$bSuche       = isset($_REQUEST['einstellungen_suchen']) && (int)$_REQUEST['einstellungen_suchen'] === 1;
-$db           = Shop::Container()->getDB();
-$getText      = Shop::Container()->getGetText();
-$adminAccount = Shop::Container()->getAdminAccount();
-$search       = Request::verifyGPDataString('cSuche');
+$sectionID      = isset($_REQUEST['kSektion']) ? (int)$_REQUEST['kSektion'] : 0;
+$bSuche         = isset($_REQUEST['einstellungen_suchen']) && (int)$_REQUEST['einstellungen_suchen'] === 1;
+$db             = Shop::Container()->getDB();
+$getText        = Shop::Container()->getGetText();
+$adminAccount   = Shop::Container()->getAdminAccount();
+$search         = Request::verifyGPDataString('cSuche');
+$settingManager = new Manager($db, $smarty, $adminAccount);
 
 $getText->loadConfigLocales(true, true);
 
@@ -78,7 +79,9 @@ $getText->localizeConfigSection($section);
 if ($bSuche) {
     $step = 'einstellungen bearbeiten';
 }
-if (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form::validateToken()) {
+if (Request::postVar('resetSetting') !== null) {
+    $settingManager->resetSetting(Request::postVar('resetSetting'));
+} elseif (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form::validateToken()) {
     // Einstellungssuche
     $sql = new stdClass();
     if ($bSuche) {
@@ -106,10 +109,9 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form
             ReturnType::ARRAY_OF_OBJECTS
         );
     }
-    $settingSection = new Manager($db, $smarty, $adminAccount);
     foreach ($confData as $i => $sectionData) {
         $value       = new stdClass();
-        $sectionItem = $settingSection->getInstance((int)$sectionData->kEinstellungenSektion);
+        $sectionItem = $settingManager->getInstance((int)$sectionData->kEinstellungenSektion);
         if (isset($_POST[$confData[$i]->cWertName])) {
             $value->cWert                 = $_POST[$confData[$i]->cWertName];
             $value->cName                 = $confData[$i]->cWertName;
@@ -143,10 +145,10 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form
                     $db->insert('teinstellungen', $value);
                 }
                 if ($confData[$i]->currentValue !== $_POST[$confData[$i]->cWertName]) {
-                    $settingSection->addLog(
+                    $settingManager->addLog(
                         $confData[$i]->cWertName,
-                        $_POST[$confData[$i]->cWertName],
-                        $confData[$i]->currentValue
+                        $confData[$i]->currentValue,
+                        $_POST[$confData[$i]->cWertName]
                     );
                 }
             }
@@ -219,14 +221,13 @@ if ($step === 'einstellungen bearbeiten') {
             ReturnType::ARRAY_OF_OBJECTS
         );
     }
-    $settingSection = new Manager($db, $smarty, $adminAccount);
     foreach ($confData as $config) {
         $config->kEinstellungenConf    = (int)$config->kEinstellungenConf;
         $config->kEinstellungenSektion = (int)$config->kEinstellungenSektion;
         $config->nStandardAnzeigen     = (int)$config->nStandardAnzeigen;
         $config->nSort                 = (int)$config->nSort;
         $config->nModul                = (int)$config->nModul;
-        $sectionItem                   = $settingSection->getInstance((int)$config->kEinstellungenSektion);
+        $sectionItem                   = $settingManager->getInstance((int)$config->kEinstellungenSektion);
         $getText->localizeConfig($config);
         //@ToDo: Setting 492 is the only one listbox at the moment.
         //But In special case of setting 492 values come from kKundengruppe instead of teinstellungenconfwerte

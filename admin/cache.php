@@ -159,7 +159,6 @@ switch ($action) {
                 LEFT JOIN teinstellungen as e ON e.cName=ec.cWertName
                 WHERE ec.kEinstellungenSektion = ' . CONF_CACHING . "
                     AND cConf = 'Y'
-                    AND nModul = 0
                 ORDER BY nSort",
             ReturnType::ARRAY_OF_OBJECTS
         );

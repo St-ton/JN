@@ -63,6 +63,7 @@ class Manager
         $this->db           = $db;
         $this->smarty       = $smarty;
         $this->adminAccount = $adminAccount;
+        $this->getText      = $getText;
     }
 
     /**

@@ -2,7 +2,7 @@
     <button type="submit"
             name="resetConfirm"
             value="{$cnf->kEinstellungenConf}"
-            class="btn btn-link p-0 {if $cnf->gesetzterWert === $cnf->cWertDefault}hidden{/if}"
+            class="btn btn-link p-0 {if $cnf->gesetzterWert === $cnf->defaultValue}hidden{/if}"
             title="{__('reset')}"
             data-toggle="tooltip"
             data-placement="top"

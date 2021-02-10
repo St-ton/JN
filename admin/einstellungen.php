@@ -207,13 +207,15 @@ if ($step === 'einstellungen bearbeiten') {
                ->assign('cSuche', $sql->cSuche);
     } else {
         $confData = $db->query(
-            'SELECT *
-                FROM teinstellungenconf
-                WHERE nModul = 0
-                    AND nStandardAnzeigen = 1
-                    AND kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . ' ' .
+            'SELECT te.*, ted.cWert as defaultValue
+                FROM teinstellungenconf as te
+                LEFT JOIN teinstellungen_default AS ted
+                  ON ted.cName= te.cWertName
+                WHERE te.nModul = 0
+                    AND te.nStandardAnzeigen = 1
+                    AND te.kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . ' ' .
                 $sql->cWHERE . '
-                ORDER BY nSort',
+                ORDER BY te.nSort',
             ReturnType::ARRAY_OF_OBJECTS
         );
     }

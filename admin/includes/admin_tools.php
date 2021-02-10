@@ -46,7 +46,7 @@ function getAdminSectionSettings($configSectionID, bool $byName = false)
             'SELECT ec.*, e.cWert as defaultValue
                 FROM teinstellungenconf as ec
                 LEFT JOIN teinstellungen_default as e ON e.cName=ec.cWertName
-                WHERE '. ($byName ? 'cWertName' : 'kEinstellungenSektion') . '=:configSection ' .
+                WHERE '. ($byName ? 'cWertName' : 'ec.kEinstellungenSektion') . '=:configSection ' .
                 'ORDER BY nSort',
             ['configSection' => $configSectionID],
             ReturnType::ARRAY_OF_OBJECTS
@@ -132,14 +132,15 @@ function saveAdminSettings(array $settingsIDs, array $post, $tags = [CACHING_GRO
         return __('successConfigReset');
     }
     $where    = $byName
-        ? "WHERE cWertName IN ('" . implode("','", $settingsIDs) . "')"
-        : 'WHERE kEinstellungenConf IN (' . implode(',', array_map('\intval', $settingsIDs)) . ')';
+        ? "WHERE ec.cWertName IN ('" . implode("','", $settingsIDs) . "')"
+        : 'WHERE ec.kEinstellungenConf IN (' . implode(',', array_map('\intval', $settingsIDs)) . ')';
     $confData = $db->query(
         'SELECT ec.*, e.cWert as currentValue
             FROM teinstellungenconf as ec
             LEFT JOIN teinstellungen as e ON e.cName=ec.cWertName
-            ' . $where . '
-            ORDER BY nSort',
+            ' . $where . "
+            AND ec.cConf = 'Y'
+            ORDER BY nSort",
         ReturnType::ARRAY_OF_OBJECTS
     );
     if (count($confData) === 0) {
@@ -179,7 +180,6 @@ function saveAdminSettings(array $settingsIDs, array $post, $tags = [CACHING_GRO
                     $post[$config->cWertName]
                 );
             }
-
         }
     }
     Shop::Container()->getCache()->flushTags($tags);
@@ -240,14 +240,22 @@ function saveAdminSectionSettings(int $configSectionID, array $post, $tags = [CA
     if (!Form::validateToken()) {
         return __('errorCSRF');
     }
-    $db       = Shop::Container()->getDB();
+    $db             = Shop::Container()->getDB();
+    $settingManager = new Manager($db, Shop::Smarty(), Shop::Container()->getAdminAccount());
+    if (Request::postVar('resetSetting') !== null) {
+        $settingManager->resetSetting(Request::postVar('resetSetting'));
+        return __('successConfigReset');
+    }
     $invalid  = 0;
-    $confData = $db->selectAll(
-        'teinstellungenconf',
-        ['kEinstellungenSektion', 'cConf'],
-        [$configSectionID, 'Y'],
-        '*',
-        'nSort'
+    $confData = $db->queryPrepared(
+        "SELECT ec.*, e.cWert as currentValue
+            FROM teinstellungenconf as ec
+            LEFT JOIN teinstellungen as e ON e.cName=ec.cWertName
+            WHERE ec.kEinstellungenSektion = :configSectionID
+              AND ec.cConf='Y'
+            ORDER BY nSort",
+        ['configSectionID' => $configSectionID],
+        ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($confData as $config) {
         $val                        = new stdClass();
@@ -280,6 +288,13 @@ function saveAdminSectionSettings(int $configSectionID, array $post, $tags = [CA
                 [$configSectionID, $config->cWertName]
             );
             $db->insert('teinstellungen', $val);
+            if ($config->currentValue !== $post[$config->cWertName]) {
+                $settingManager->addLog(
+                    $config->cWertName,
+                    $config->currentValue,
+                    $post[$config->cWertName]
+                );
+            }
         }
         if (!$valid) {
             $invalid++;

@@ -67,9 +67,7 @@
                                 <input class="form-control" type="text" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}" tabindex="1" />
                             {/if}
                         </div>
-                        {if $oConfig->cBeschreibung}
-                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=$oConfig->cBeschreibung}</div>
-                        {/if}
+                        {include file='snippets/einstellungen_icons.tpl' cnf=$oConfig}
                     </div>
                 {else}
                     {if $open}</div></div>{/if}

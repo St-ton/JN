@@ -44,9 +44,7 @@
                                                 <input class="form-control" type="text" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{$cnf->gesetzterWert}" tabindex="1" />
                                             {/if}
                                         </div>
-                                        {if !empty($cnf->cBeschreibung)}
-                                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=$cnf->cBeschreibung}</div>
-                                        {/if}
+                                        {include file='snippets/einstellungen_icons.tpl' cnf=$cnf}
                                     </div>
                                 {/if}
                             {/foreach}

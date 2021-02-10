@@ -164,11 +164,7 @@
                                    tabindex="1">
                         {/if}
                         </div>
-                        {if $oConfig->cBeschreibung}
-                            <span class="col-auto ml-sm-n4 order-2 order-sm-3">
-                                {getHelpDesc cDesc=$oConfig->cBeschreibung cID=$oConfig->kEinstellungenConf}
-                            </span>
-                        {/if}
+                        {include file='snippets/einstellungen_icons.tpl' cnf=$oConfig}
                         {if $oConfig->cWertName === 'preisspannenfilter_anzeige_berechnung'}
                     </div>
                     <div id="Werte" style="display: {if $oConfig->gesetzterWert === 'M'}block{else}none{/if};">

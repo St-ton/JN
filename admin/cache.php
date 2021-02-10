@@ -2,6 +2,7 @@
 
 use JTL\Alert\Alert;
 use JTL\Backend\DirManager;
+use JTL\Backend\Settings\Manager;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
@@ -13,18 +14,20 @@ require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 /** @global \JTL\Backend\AdminAccount $oAccount */
 $oAccount->permission('OBJECTCACHE_VIEW', true, true);
-$notice       = '';
-$error        = '';
-$step         = 'uebersicht';
-$tab          = 'uebersicht';
-$cache        = null;
-$opcacheStats = null;
-$options      = null;
-$action       = Form::validateToken() ? Request::postVar('a') : null;
-$cacheAction  = Request::postVar('cache-action', '');
-$db           = Shop::Container()->getDB();
-$getText      = Shop::Container()->getGetText();
-$alertHelper  = Shop::Container()->getAlertService();
+$notice         = '';
+$error          = '';
+$step           = 'uebersicht';
+$tab            = 'uebersicht';
+$cache          = null;
+$opcacheStats   = null;
+$options        = null;
+$action         = Form::validateToken() ? Request::postVar('a') : null;
+$cacheAction    = Request::postVar('cache-action', '');
+$db             = Shop::Container()->getDB();
+$getText        = Shop::Container()->getGetText();
+$alertHelper    = Shop::Container()->getAlertService();
+$adminAccount   = Shop::Container()->getAdminAccount();
+$settingManager = new Manager($db, $smarty, $adminAccount);
 $getText->loadConfigLocales();
 
 if (0 < mb_strlen(Request::verifyGPDataString('tab'))) {
@@ -146,12 +149,19 @@ switch ($action) {
         }
         break;
     case 'settings':
-        $settings      = $db->selectAll(
-            'teinstellungenconf',
-            ['kEinstellungenSektion', 'cConf'],
-            [CONF_CACHING, 'Y'],
-            '*',
-            'nSort'
+        if (Request::postVar('resetSetting') !== null) {
+            $settingManager->resetSetting(Request::postVar('resetSetting'));
+            break;
+        }
+        $settings      = $db->query(
+            'SELECT ec.*, e.cWert as currentValue
+                FROM teinstellungenconf as ec
+                LEFT JOIN teinstellungen as e ON e.cName=ec.cWertName
+                WHERE ec.kEinstellungenSektion = ' . CONF_CACHING . "
+                    AND cConf = 'Y'
+                    AND nModul = 0
+                ORDER BY nSort",
+            ReturnType::ARRAY_OF_OBJECTS
         );
         $i             = 0;
         $settingsCount = count($settings);
@@ -228,6 +238,13 @@ switch ($action) {
                     [CONF_CACHING, $settings[$i]->cWertName]
                 );
                 $db->insert('teinstellungen', $value);
+                if ($settings[$i]->currentValue !== $_POST[$settings[$i]->cWertName]) {
+                    $settingManager->addLog(
+                        $settings[$i]->cWertName,
+                        $settings[$i]->currentValue,
+                        $_POST[$settings[$i]->cWertName]
+                    );
+                }
             }
             ++$i;
         }
@@ -320,12 +337,15 @@ if ($cache !== null) {
         ->assign('all_methods', $cache->getAllMethods())
         ->assign('stats', $cache->getStats());
 }
-$settings = $db->selectAll(
-    'teinstellungenconf',
-    ['nStandardAnzeigen', 'kEinstellungenSektion'],
-    [1, CONF_CACHING],
-    '*',
-    'nSort'
+$settings = $db->query(
+    'SELECT te.*, ted.cWert as defaultValue
+        FROM teinstellungenconf as te
+        LEFT JOIN teinstellungen_default AS ted
+          ON ted.cName= te.cWertName
+        WHERE te.nStandardAnzeigen = 1
+            AND te.kEinstellungenSektion = ' . CONF_CACHING .
+        ' ORDER BY te.nSort',
+    ReturnType::ARRAY_OF_OBJECTS
 );
 
 $getText->localizeConfigs($settings);
@@ -352,11 +372,13 @@ foreach ($settings as $i => $setting) {
     $setting->gesetzterWert = $setValue->cWert ?? null;
 }
 $advancedSettings = $db->query(
-    'SELECT * 
-        FROM teinstellungenconf 
-        WHERE (nStandardAnzeigen = 0 OR nStandardAnzeigen = 2)
-            AND kEinstellungenSektion = ' . CONF_CACHING . '
-        ORDER BY nSort',
+    'SELECT te.*, ted.cWert as defaultValue
+        FROM teinstellungenconf as te
+        LEFT JOIN teinstellungen_default AS ted
+          ON ted.cName= te.cWertName
+        WHERE (te.nStandardAnzeigen = 0 OR te.nStandardAnzeigen = 2)
+            AND te.kEinstellungenSektion = ' . CONF_CACHING . '
+        ORDER BY te.nSort',
     ReturnType::ARRAY_OF_OBJECTS
 );
 $getText->localizeConfigs($advancedSettings);

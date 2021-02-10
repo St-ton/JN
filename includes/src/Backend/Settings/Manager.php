@@ -122,11 +122,14 @@ class Manager
 
     /**
      * @param string $setting
-     * @param string $oldValue
-     * @param string $newValue
+     * @param null|string $oldValue
+     * @param null|string $newValue
      */
-    public function addLog(string $setting, string $oldValue, string $newValue): void
+    public function addLog(string $setting, ?string $oldValue, ?string $newValue): void
     {
+        if ($oldValue === null || $newValue === null) {
+            return;
+        }
         $log                        = new \stdClass();
         $log->kAdminLogin           = $this->adminAccount->getID();
         $log->cEinstellungenName    = $setting;

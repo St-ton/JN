@@ -42,7 +42,7 @@ $languageID = (int)$_SESSION['editLanguageID'];
 $instance   = new Newsletter($db, $conf);
 if (Form::validateToken()) {
     if (Request::postInt('einstellungen') === 1) {
-        if (isset($_POST['speichern'])) {
+        if (isset($_POST['speichern']) || Request::postVar('resetSetting') !== null) {
             $step = 'uebersicht';
             $alertHelper->addAlert(
                 Alert::TYPE_SUCCESS,

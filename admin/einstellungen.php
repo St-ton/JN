@@ -143,13 +143,13 @@ if (Request::postVar('resetSetting') !== null) {
                     }
                 } else {
                     $db->insert('teinstellungen', $value);
-                }
-                if ($confData[$i]->currentValue !== $_POST[$confData[$i]->cWertName]) {
-                    $settingManager->addLog(
-                        $confData[$i]->cWertName,
-                        $confData[$i]->currentValue,
-                        $_POST[$confData[$i]->cWertName]
-                    );
+                    if ($confData[$i]->currentValue !== $_POST[$confData[$i]->cWertName]) {
+                        $settingManager->addLog(
+                            $confData[$i]->cWertName,
+                            $confData[$i]->currentValue,
+                            $_POST[$confData[$i]->cWertName]
+                        );
+                    }
                 }
             }
         }

@@ -3,6 +3,7 @@
 use JTL\Alert\Alert;
 use JTL\Backend\AdminFavorite;
 use JTL\Backend\Notification;
+use JTL\Backend\Settings\Manager;
 use JTL\Campaign;
 use JTL\Catalog\Currency;
 use JTL\DB\ReturnType;
@@ -30,22 +31,25 @@ function getAdminSectionSettings($configSectionID, bool $byName = false)
     $db = Shop::Container()->getDB();
     if (is_array($configSectionID)) {
         $where    = $byName
-            ? "WHERE cWertName IN ('" . implode("','", $configSectionID) . "')"
-            : 'WHERE kEinstellungenConf IN (' . implode(',', array_map('\intval', $configSectionID)) . ')';
+            ? " WHERE ec.cWertName IN ('" . implode("','", $configSectionID) . "') "
+            : ' WHERE ec.kEinstellungenConf IN (' . implode(',', array_map('\intval', $configSectionID)) . ') ';
         $confData = $db->query(
-            'SELECT *
-                FROM teinstellungenconf
+            'SELECT ec.*, e.cWert as defaultValue
+                FROM teinstellungenconf as ec
+                LEFT JOIN teinstellungen_default as e ON e.cName=ec.cWertName
                 ' . $where . '
                 ORDER BY nSort',
             ReturnType::ARRAY_OF_OBJECTS
         );
     } else {
-        $confData = $db->selectAll(
-            'teinstellungenconf',
-            $byName ? 'cWertName' : 'kEinstellungenSektion',
-            $configSectionID,
-            '*',
-            'nSort'
+        $confData = $db->queryPrepared(
+            'SELECT ec.*, e.cWert as defaultValue
+                FROM teinstellungenconf as ec
+                LEFT JOIN teinstellungen_default as e ON e.cName=ec.cWertName
+                WHERE '. ($byName ? 'cWertName' : 'kEinstellungenSektion') . '=:configSection ' .
+                'ORDER BY nSort',
+            ['configSection' => $configSectionID],
+            ReturnType::ARRAY_OF_OBJECTS
         );
     }
     foreach ($confData as $conf) {
@@ -121,13 +125,19 @@ function getAdminSectionSettings($configSectionID, bool $byName = false)
  */
 function saveAdminSettings(array $settingsIDs, array $post, $tags = [CACHING_GROUP_OPTION], bool $byName = false)
 {
-    $db       = Shop::Container()->getDB();
+    $db             = Shop::Container()->getDB();
+    $settingManager = new Manager($db, Shop::Smarty(), Shop::Container()->getAdminAccount());
+    if (Request::postVar('resetSetting') !== null) {
+        $settingManager->resetSetting(Request::postVar('resetSetting'));
+        return __('successConfigReset');
+    }
     $where    = $byName
         ? "WHERE cWertName IN ('" . implode("','", $settingsIDs) . "')"
         : 'WHERE kEinstellungenConf IN (' . implode(',', array_map('\intval', $settingsIDs)) . ')';
     $confData = $db->query(
-        'SELECT *
-            FROM teinstellungenconf
+        'SELECT ec.*, e.cWert as currentValue
+            FROM teinstellungenconf as ec
+            LEFT JOIN teinstellungen as e ON e.cName=ec.cWertName
             ' . $where . '
             ORDER BY nSort',
         ReturnType::ARRAY_OF_OBJECTS
@@ -162,6 +172,14 @@ function saveAdminSettings(array $settingsIDs, array $post, $tags = [CACHING_GRO
                 [(int)$config->kEinstellungenSektion, $config->cWertName]
             );
             $db->insert('teinstellungen', $val);
+            if ($config->currentValue !== $post[$config->cWertName]) {
+                $settingManager->addLog(
+                    $config->cWertName,
+                    $config->currentValue,
+                    $post[$config->cWertName]
+                );
+            }
+
         }
     }
     Shop::Container()->getCache()->flushTags($tags);

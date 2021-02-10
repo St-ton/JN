@@ -100,7 +100,7 @@ if (Request::postVar('resetSetting') !== null) {
         $confData = $db->query(
             'SELECT ec.*, e.cWert as currentValue
                 FROM teinstellungenconf as ec
-                JOIN teinstellungen as e ON e.cName=ec.cWertName
+                LEFT JOIN teinstellungen as e ON e.cName=ec.cWertName
                 WHERE ec.kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . "
                     AND cConf = 'Y'
                     AND nModul = 0

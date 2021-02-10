@@ -126,7 +126,11 @@ function getAdminSectionSettings($configSectionID, bool $byName = false)
 function saveAdminSettings(array $settingsIDs, array $post, $tags = [CACHING_GROUP_OPTION], bool $byName = false)
 {
     $db             = Shop::Container()->getDB();
-    $settingManager = new Manager($db, Shop::Smarty(), Shop::Container()->getAdminAccount());
+    $settingManager = new Manager(
+        $db,
+        Shop::Smarty(),
+        Shop::Container()->getGetText()
+    );
     if (Request::postVar('resetSetting') !== null) {
         $settingManager->resetSetting(Request::postVar('resetSetting'));
         return __('successConfigReset');
@@ -241,7 +245,12 @@ function saveAdminSectionSettings(int $configSectionID, array $post, $tags = [CA
         return __('errorCSRF');
     }
     $db             = Shop::Container()->getDB();
-    $settingManager = new Manager($db, Shop::Smarty(), Shop::Container()->getAdminAccount());
+    $settingManager = new Manager(
+        $db,
+        Shop::Smarty(),
+        Shop::Container()->getAdminAccount(),
+        Shop::Container()->getGetText()
+    );
     if (Request::postVar('resetSetting') !== null) {
         $settingManager->resetSetting(Request::postVar('resetSetting'));
         return __('successConfigReset');

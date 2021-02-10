@@ -31,6 +31,11 @@ class Log
     /**
      * @var string
      */
+    private $settingType;
+
+    /**
+     * @var string
+     */
     private $valueOld;
 
     /**
@@ -59,6 +64,7 @@ class Log
         $this->setId((int)$data->kEinstellungenLog);
         $this->setAdminId((int)$data->kAdminlogin);
         $this->setAdminName($data->adminName);
+        $this->setSettingType($data->settingType);
         $this->setSettingName($data->cEinstellungenName);
         $this->setValueNew($data->cEinstellungenWertNeu);
         $this->setValueOld($data->cEinstellungenWertAlt);
@@ -177,5 +183,21 @@ class Log
     public function setAdminName(string $adminName): void
     {
         $this->adminName = $adminName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSettingType(): string
+    {
+        return $this->settingType;
+    }
+
+    /**
+     * @param string $settingType
+     */
+    public function setSettingType(string $settingType): void
+    {
+        $this->settingType = $settingType;
     }
 }

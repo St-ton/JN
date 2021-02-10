@@ -27,7 +27,7 @@ $db             = Shop::Container()->getDB();
 $getText        = Shop::Container()->getGetText();
 $alertHelper    = Shop::Container()->getAlertService();
 $adminAccount   = Shop::Container()->getAdminAccount();
-$settingManager = new Manager($db, $smarty, $adminAccount);
+$settingManager = new Manager($db, $smarty, $adminAccount, $getText);
 $getText->loadConfigLocales();
 
 if (0 < mb_strlen(Request::verifyGPDataString('tab'))) {

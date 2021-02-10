@@ -12,8 +12,22 @@
         {foreach $logs as $log}
             <tr class="text-vcenter">
                 <td>{$log->getAdminName()}</td>
-                <td>{$log->getValueOld()}</td>
-                <td>{$log->getValueNew()}</td>
+                <td>
+                    {if $log->getSettingType() === 'selectbox'}
+                        {__("{$log->getSettingName()}_value({$log->getValueOld()})")}
+                        <span class="font-size-sm">({$log->getValueOld()})</span>
+                    {else}
+                        {$log->getValueOld()}
+                    {/if}
+                </td>
+                <td>
+                    {if $log->getSettingType() === 'selectbox'}
+                        {__("{$log->getSettingName()}_value({$log->getValueNew()})")}
+                        <span class="font-size-sm">({$log->getValueNew()})</span>
+                    {else}
+                        {$log->getValueNew()}
+                    {/if}
+                </td>
                 <td>{$log->getDate()}</td>
             </tr>
         {/foreach}

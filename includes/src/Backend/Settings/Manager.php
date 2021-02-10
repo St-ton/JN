@@ -5,6 +5,7 @@ namespace JTL\Backend\Settings;
 use JTL\Backend\AdminAccount;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\L10n\GetText;
 use JTL\Smarty\JTLSmarty;
 
 /**
@@ -44,13 +45,21 @@ class Manager
     protected $adminAccount;
 
     /**
+     * @var GetText
+     */
+    protected $getText;
+
+    /**
      * Manager constructor.
      * @param DbInterface $db
      * @param JTLSmarty $smarty
      * @param AdminAccount $adminAccount
+     * @param GetText $getText
      */
-    public function __construct(DbInterface $db, JTLSmarty $smarty, AdminAccount $adminAccount)
+    public function __construct(DbInterface $db, JTLSmarty $smarty, AdminAccount $adminAccount, GetText $getText)
     {
+        $getText->loadConfigLocales(true, true);
+
         $this->db           = $db;
         $this->smarty       = $smarty;
         $this->adminAccount = $adminAccount;
@@ -76,7 +85,7 @@ class Manager
                     return $this->instances[$sectionID];
                 }
             }
-            $this->instances[$sectionID] = new self($this->db, $this->smarty, $this->adminAccount);
+            $this->instances[$sectionID] = new self($this->db, $this->smarty, $this->adminAccount, $this->getText);
         }
 
         return $this->instances[$sectionID];
@@ -149,10 +158,12 @@ class Manager
     {
         $logs    = [];
         $logsTMP = $this->db->queryPrepared(
-            'SELECT el.*, al.cName as adminName 
+            'SELECT el.*, al.cName as adminName , ec.cInputTyp as settingType
               FROM teinstellungenlog as el
               LEFT JOIN tadminlogin as al 
                 USING(kAdminlogin)
+              LEFT JOIN teinstellungenconf as ec
+                ON ec.cWertName=el.cEinstellungenName
               WHERE el.cEinstellungenName = :settingName
               ORDER BY el.dDatum DESC',
             ['settingName' => $settingName],

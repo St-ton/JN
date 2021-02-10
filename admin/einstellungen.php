@@ -19,7 +19,7 @@ $db             = Shop::Container()->getDB();
 $getText        = Shop::Container()->getGetText();
 $adminAccount   = Shop::Container()->getAdminAccount();
 $search         = Request::verifyGPDataString('cSuche');
-$settingManager = new Manager($db, $smarty, $adminAccount);
+$settingManager = new Manager($db, $smarty, $adminAccount, $getText);
 
 $getText->loadConfigLocales(true, true);
 

@@ -3,10 +3,10 @@
             name="resetSetting"
             value="{$cnf->cWertName}"
             class="btn btn-link p-0 {if $cnf->gesetzterWert === $cnf->defaultValue}hidden{/if}"
-            title="{__('reset')}"
+            title="{__('settingReset')}"
             data-toggle="tooltip"
             data-placement="top"
-            onclick="return confirm('{__('confirmResetLog')}');"
+            onclick="return confirm('{__('confirmResetLog')|sprintf:__("{$cnf->cWertName}_name")}');"
     >
         <span class="icon-hover">
             <span class="fal fa-refresh"></span>

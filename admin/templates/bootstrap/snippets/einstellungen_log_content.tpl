@@ -3,10 +3,10 @@
     <table class="table table-striped table-bordered table-hover">
         <thead>
         <tr>
-            <th>geändert von</th>
-            <th>wert alt</th>
-            <th>wert neu</th>
-            <th>Datum</th>
+            <th>{__('settingChangedBy')}</th>
+            <th>{__('settingValueOld')}</th>
+            <th>{__('settingValueNew')}</th>
+            <th>{__('date')}</th>
         </tr>
         </thead>
         {foreach $logs as $log}
@@ -34,5 +34,5 @@
     </table>
 </div>
 {else}
-    <div class="alert alert-info">Keine Änderungen dieser Einstellung vorhanden.</div>
+    <div class="alert alert-info">{__('settingNoLog')}</div>
 {/if}

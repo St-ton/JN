@@ -1912,7 +1912,16 @@ class Artikel
      */
     public function holehilfreichsteBewertung($unlock = 'N'): self
     {
-        $this->HilfreichsteBewertung = new Bewertung($this->kArtikel, $this->kSprache, 0, 0, 0, $unlock, 1);
+        $this->HilfreichsteBewertung = new Bewertung(
+            $this->kArtikel,
+            $this->kSprache,
+            0,
+            0,
+            0,
+            $unlock,
+            1,
+            $this->conf['bewertung']['bewertung_alle_sprachen'] === 'Y'
+        );
 
         return $this;
     }

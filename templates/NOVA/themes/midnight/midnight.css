@@ -24947,6 +24947,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 
 .attr-characteristic a {
   margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
   display: inline-block;
 }
 

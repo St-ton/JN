@@ -294,8 +294,20 @@ if ($step === 'neuer Export') {
         }
         $smarty->assign('Exportformat', $exportformat);
     }
-    $gettext = Shop::Container()->getGetText();
-    $configs = getAdminSectionSettings(CONF_EXPORTFORMATE);
+    $gettext    = Shop::Container()->getGetText();
+    $configs    = getAdminSectionSettings(CONF_EXPORTFORMATE);
+    $efSettings = Shop::Container()->getDB()->selectAll(
+        'texportformateinstellungen',
+        'kExportformat',
+        (int)$exportformat->kExportformat
+    );
+    foreach ($configs as $config) {
+        foreach ($efSettings as $efSetting) {
+            if ($efSetting->cName === $config->cWertName) {
+                $config->gesetzterWert = $efSetting->cWert;
+            }
+        }
+    }
     $gettext->localizeConfigs($configs);
 
     foreach ($configs as $config) {

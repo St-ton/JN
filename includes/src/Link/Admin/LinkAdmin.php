@@ -329,8 +329,8 @@ final class LinkAdmin
             if (\in_array(
                 $specialPage->nLinkart,
                 [\LINKTYP_NEWSLETTERARCHIV, \LINKTYP_GRATISGESCHENK, \LINKTYP_AUSWAHLASSISTENT, true],
-                true)
-            ) {
+                true
+            )) {
                 continue;
             }
             $hit = $all->first(function ($val, $key) use ($specialPage) {

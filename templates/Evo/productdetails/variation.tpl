@@ -18,7 +18,19 @@
             {foreach name=Variationen from=$Artikel->$VariationsSource key=i item=Variation}
             {strip}
                 {if !isset($smallView) || !$smallView}
-                <dt>{$Variation->cName}{if $Variation->cTyp === 'IMGSWATCHES'} <span class="swatches-selected text-muted" data-id="{$Variation->kEigenschaft}"></span>{/if}</dt>
+                <dt>{$Variation->cName}&nbsp;
+                    {if $Variation->cTyp === 'IMGSWATCHES'}
+                        <span class="swatches-selected text-success" data-id="{$Variation->kEigenschaft}">
+                            {foreach $Variation->Werte as $variationValue}
+                                {if isset($oVariationKombi_arr[$variationValue->kEigenschaft])
+                                && in_array($variationValue->kEigenschaftWert, $oVariationKombi_arr[$variationValue->kEigenschaft])}
+                                    {$variationValue->cName}
+                                    {break}
+                                {/if}
+                            {/foreach}
+                        </span>
+                    {/if}
+                </dt>
                 {/if}
                 <dd class="form-group{if $Variation->cTyp !== 'FREIFELD' && !$showMatrix} required{/if}">
                     {if $Variation->cTyp === 'SELECTBOX'}

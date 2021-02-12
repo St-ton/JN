@@ -75,17 +75,17 @@
                             </p>
                         {else}
                             <p class="multi_input" style="margin-top: 10px;">
-                                <input type="radio" id="nLink1" name="nLinkart" value="1" tabindex="2" {if isset($xPostVar_arr.nLinkart) && (int)$xPostVar_arr.nLinkart === 1}checked{elseif $Link->getLinkType() === 1}checked{/if} />
+                                <input type="radio" id="nLink1" name="nLinkart" value="1" tabindex="2" {if isset($xPostVar_arr.nLinkart) && (int)$xPostVar_arr.nLinkart === 1}checked{elseif $Link->getLinkType() === 1}checked{/if}{if $Link->isSystem()} disabled{/if} />
                                 <label for="nLink1">{__('linkWithOwnContent')}:</label>
                             </p>
                             <p class="multi_input">
-                                <input type="radio" id="nLink2" name="nLinkart" value="2" onclick="$('#nLinkInput2').val('http://')" tabindex="3" {if isset($xPostVar_arr.nLinkart) && (int)$xPostVar_arr.nLinkart === 2}checked{elseif $Link->getLinkType() === 2}checked{/if} />
+                                <input type="radio" id="nLink2" name="nLinkart" value="2" onclick="$('#nLinkInput2').val('http://')" tabindex="3" {if isset($xPostVar_arr.nLinkart) && (int)$xPostVar_arr.nLinkart === 2}checked{elseif $Link->getLinkType() === 2}checked{/if}{if $Link->isSystem()} disabled{/if} />
                                 <label for="nLink2">{__('linkToExternalURL')} {__('createWithSearchEngineName')}:</label>
                             </p>
                             <p class="multi_input" style="margin-bottom: 10px;">
                                 <input type="radio" id="nLink3" name="nLinkart" value="3" {if isset($xPostVar_arr.nLinkart) && (int)$xPostVar_arr.nLinkart === 3}checked{elseif $Link->getLinkType() > 2}checked{/if} />
                                 <label for="nLink3">{__('linkToSpecalPage')}:</label>
-                                <select class="custom-select" id="specialLinkType" name="nSpezialseite">
+                                <select class="custom-select" id="specialLinkType" name="nSpezialseite"{if $Link->isSystem()} disabled{/if}>
                                     <option value="0">{__('choose')}</option>
                                     {foreach $specialPages as $specialPage}
                                         <option value="{$specialPage->nLinkart}" {if isset($xPostVar_arr.nSpezialseite) && $xPostVar_arr.nSpezialseite === $specialPage->nLinkart}selected{elseif $Link->getLinkType() === $specialPage->nLinkart}selected{/if}>{__($specialPage->cName)}</option>

@@ -151,6 +151,11 @@ final class Link extends AbstractLink
     /**
      * @var bool
      */
+    protected $isSystem = false;
+
+    /**
+     * @var bool
+     */
     protected $visibleLoggedInOnly = false;
 
     /**
@@ -362,6 +367,7 @@ final class Link extends AbstractLink
             $this->setSSL((bool)$link->bSSL);
             $this->setIsFluid((bool)$link->bIsFluid);
             $this->setIsEnabled($this->checkActivationSetting((bool)$link->bIsActive));
+            $this->setIsSystem((int)($link->bIsSystem ?? 0) === 1);
             $this->setFileName($link->cDateiname ?? '');
             $this->setLanguageCode($link->cISOSprache, $link->languageID);
             $this->setContent($link->content ?? '', $link->languageID);
@@ -1133,6 +1139,22 @@ final class Link extends AbstractLink
     public function setVisibility(bool $isVisible): void
     {
         $this->isVisible = $isVisible;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSystem(): bool
+    {
+        return $this->isSystem;
+    }
+
+    /**
+     * @param bool $isSystem
+     */
+    public function setIsSystem(bool $isSystem): void
+    {
+        $this->isSystem = $isSystem;
     }
 
     /**

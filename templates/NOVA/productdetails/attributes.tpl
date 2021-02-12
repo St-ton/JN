@@ -13,7 +13,7 @@
                                     {foreach $characteristic->oMerkmalWert_arr as $characteristicValue}
                                         {if $characteristic->cTyp === 'TEXT' || $characteristic->cTyp === 'SELECTBOX' || $characteristic->cTyp === ''}
                                             {block name='productdetails-attributes-badge'}
-                                                {link href=$characteristicValue->cURLFull class="badge badge-light"}{$characteristicValue->cWert|escape:'html'}{/link}
+                                                {link href=$characteristicValue->cURLFull class="badge badge-primary"}{$characteristicValue->cWert|escape:'html'}{/link}
                                             {/block}
                                         {else}
                                             {block name='productdetails-attributes-image'}
@@ -33,7 +33,7 @@
                                                             sizes='40px'
                                                             alt=$characteristicValue->cWert}
                                                     {else}
-                                                        {badge variant="light"}{$characteristicValue->cWert|escape:'html'}{/badge}
+                                                        {badge variant="primary"}{$characteristicValue->cWert|escape:'html'}{/badge}
                                                     {/if}
                                                 {/link}
                                             {/block}

@@ -24945,6 +24945,12 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   padding-bottom: 1rem;
 }
 
+.attr-characteristic a {
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+  display: inline-block;
+}
+
 /* comparelist */
 #filter-checkboxes {
   margin-bottom: 1.5rem;

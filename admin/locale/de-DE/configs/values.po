@@ -1535,6 +1535,12 @@ msgstr "Ja"
 msgid "bewertung_anzeigen_value(N)"
 msgstr "Nein"
 
+msgid "bewertung_alle_sprachen_value(Y)"
+msgstr "Ja"
+
+msgid "bewertung_alle_sprachen_value(N)"
+msgstr "Nein"
+
 msgid "bewertung_freischalten_value(Y)"
 msgstr "Ja"
 

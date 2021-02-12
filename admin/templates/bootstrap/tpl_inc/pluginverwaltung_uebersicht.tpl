@@ -66,6 +66,7 @@
                 {if $smarty.const.SAFE_MODE === false}
                 {include file='tpl_inc/pluginverwaltung_upload.tpl'}
                 {/if}
+                {include file='tpl_inc/pluginverwaltung_scripts.tpl'}
             </div>
         </div>
     </div>

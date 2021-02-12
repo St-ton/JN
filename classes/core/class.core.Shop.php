@@ -1895,7 +1895,7 @@ final class Shop
 
     private static function initLanguageURLs()
     {
-        if (\EXPERIMENTAL_MULTILANG_SHOP !== true) {
+        if (!defined('EXPERIMENTAL_MULTILANG_SHOP') || EXPERIMENTAL_MULTILANG_SHOP !== true) {
             return;
         }
         self::$url      = [];

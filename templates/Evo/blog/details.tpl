@@ -24,7 +24,7 @@
             {else}
                 <div itemprop="author publisher" itemscope itemtype="http://schema.org/Organization" class="hidden">
                     <span itemprop="name">{$meta_publisher}</span>
-                    <meta itemprop="logo" content="{$ShopUrl}/{$ShopLogoURL}" />
+                    <meta itemprop="logo" content="{$ShopURL}/{$ShopLogoURL}" />
                 </div>
             {/if}
             {if isset($oNewsArchiv->dErstellt)}<time itemprop="dateModified" class="hidden">{$oNewsArchiv->dErstellt}</time>{/if}

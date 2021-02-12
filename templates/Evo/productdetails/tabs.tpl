@@ -18,7 +18,7 @@
     || isset($smarty.get.bewertung_anzeigen) && count($smarty.get.bewertung_anzeigen) > 0
     || isset($smarty.get.ratings_nItemsPerPage) && count($smarty.get.ratings_nItemsPerPage) > 0
     || isset($smarty.get.ratings_nSortByDir) && count($smarty.get.ratings_nSortByDir) > 0
-    || isset($smarty.get.btgsterne) && count($smarty.get.btgsterne) > 0}
+    || isset($smarty.get.btgsterne) && $smarty.get.btgsterne > 0}
 {section name=iterator start=1 loop=10}
     {$tab = tab}
     {$tabname = $tab|cat:$smarty.section.iterator.index|cat:" name"}

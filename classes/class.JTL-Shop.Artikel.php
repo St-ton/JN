@@ -4626,8 +4626,12 @@ class Artikel
     public function baueLageranzeige()
     {
         $conf = Shop::getSettings([CONF_GLOBAL, CONF_ARTIKELDETAILS]);
+        if (!isset($this->Lageranzeige)) {
+            $this->Lageranzeige = new stdClass();
+        }
         if ($this->cLagerBeachten === 'Y') {
             if ($this->fLagerbestand > 0) {
+                $this->Lageranzeige->cLagerhinweis = [];
                 $this->Lageranzeige->cLagerhinweis['genau']          = $this->fLagerbestand . ' ' .
                     $this->cEinheit . ' ' . Shop::Lang()->get('inStock', 'global');
                 $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('productAvailable', 'global');
@@ -4644,6 +4648,7 @@ class Artikel
                 $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('productNotAvailable', 'global');
             }
         } else {
+            $this->Lageranzeige->cLagerhinweis = [];
             $this->Lageranzeige->cLagerhinweis['genau']          = Shop::Lang()->get('ampelGruen', 'global');
             $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('ampelGruen', 'global');
         }

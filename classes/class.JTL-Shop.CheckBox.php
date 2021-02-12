@@ -557,6 +557,7 @@ class CheckBox
         $oKundeTMP->cVorname  = $knd->cVorname;
         $oKundeTMP->cNachname = $knd->cNachname;
         $oKundeTMP->cEmail    = $knd->cMail;
+        $oKundeTMP->cRegIp    = gibIP();
 
         fuegeNewsletterEmpfaengerEin($oKundeTMP, false);
 

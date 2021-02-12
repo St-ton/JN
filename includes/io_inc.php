@@ -374,7 +374,9 @@ function removeFromComparelist($kArtikel)
 function getBasketItems($nTyp)
 {
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
-    global $Einstellungen, $smarty;
+    global $smarty;
+
+    $Einstellungen = Shop::getSettings([CONF_GLOBAL]);
 
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
@@ -398,7 +400,6 @@ function getBasketItems($nTyp)
                 $cLand         = $_SESSION['Kunde']->cLand;
                 $cPLZ          = $_SESSION['Kunde']->cPLZ;
             }
-
             $versandkostenfreiAb = gibVersandkostenfreiAb($kKundengruppe, $cLand);
             /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
             $smarty->assign('WarensummeLocalized', $_SESSION['Warenkorb']->gibGesamtsummeWarenLocalized())

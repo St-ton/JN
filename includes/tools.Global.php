@@ -4374,14 +4374,20 @@ function setzeSpracheUndWaehrungLink()
             $AktuellerArtikel->baueArtikelSprachURL();
         }
         foreach ($_SESSION['Sprachen'] as $i => $oSprache) {
-            if (isset($AktuellerArtikel->kArtikel, $AktuellerArtikel->cSprachURL_arr[$oSprache->cISO]) &&
+            if ($AktuelleSeite === 'STARTSEITE'
+                && defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true
+                && defined('URL_SHOP_' . strtoupper($oSprache->cISO))
+            ) {
+                $_SESSION['Sprachen'][$i]->cURL = Shop::getURL(false, true, (int)$oSprache->kSprache) . '/';
+                $_SESSION['Sprachen'][$i]->cURLFull = $_SESSION['Sprachen'][$i]->cURL;
+            } elseif (isset($AktuellerArtikel->kArtikel, $AktuellerArtikel->cSprachURL_arr[$oSprache->cISO]) &&
                 $AktuellerArtikel->kArtikel > 0
             ) {
                 $_SESSION['Sprachen'][$i]->cURL     = $AktuellerArtikel->cSprachURL_arr[$oSprache->cISO];
-                $_SESSION['Sprachen'][$i]->cURLFull = $shopURL . $AktuellerArtikel->cSprachURL_arr[$oSprache->cISO];
+                $_SESSION['Sprachen'][$i]->cURLFull = Shop::getURL(false, true, (int)$oSprache->kSprache) . '/' . $AktuellerArtikel->cSprachURL_arr[$oSprache->cISO];
             } elseif (($kLink > 0 || $kSeite > 0) && isset($sprachURL[$oSprache->cISO])) {
                 $_SESSION['Sprachen'][$i]->cURL     = $sprachURL[$oSprache->cISO];
-                $_SESSION['Sprachen'][$i]->cURLFull = $shopURL . $sprachURL[$oSprache->cISO];
+                $_SESSION['Sprachen'][$i]->cURLFull = Shop::getURL(false, true, (int)$oSprache->kSprache) . '/' . $sprachURL[$oSprache->cISO];
             } elseif ($AktuelleSeite === 'WARENKORB'
                 || $AktuelleSeite === 'KONTAKT'
                 || $AktuelleSeite === 'REGISTRIEREN'
@@ -4462,7 +4468,7 @@ function setzeSpracheUndWaehrungLink()
                     $url = $helper->getStaticRoute($id, false, false, $oSprache->cISO);
                     //check if there is a SEO link for the given file
                     if ($url === $id) { //no SEO link - fall back to php file with GET param
-                        $url = $shopURL . $id . '?lang=' . $oSprache->cISO;
+                        $url = Shop::getURL(false, true, (int)$oSprache->kSprache) . '/' . $id . '?lang=' . $oSprache->cISO;
                     } else { //there is a SEO link - make it a full URL
                         $url = $helper->getStaticRoute($id, true, false, $oSprache->cISO);
                     }

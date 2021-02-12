@@ -308,6 +308,8 @@ final class Shop
      */
     private static $_settings;
 
+    private static $url;
+
     /**
      *
      */
@@ -479,7 +481,7 @@ final class Shop
     {
         return new Jtllog();
     }
-    
+
     /**
      * @return PHPSettingsHelper
      */
@@ -1891,28 +1893,54 @@ final class Shop
         return ($ret === null) ? null : (($fullUrl === true) ? self::getURL() . '/' : '') . $ret;
     }
 
+    private static function initLanguageURLs()
+    {
+        if (!defined('EXPERIMENTAL_MULTILANG_SHOP') || EXPERIMENTAL_MULTILANG_SHOP !== true) {
+            return;
+        }
+        self::$url      = [];
+        $sslStatus = pruefeSSL();
+        foreach (gibAlleSprachen() as $language) {
+            $code    = strtoupper($language->cISO);
+            $shopURL = defined('URL_SHOP_' . $code) ? constant('URL_SHOP_' . $code) : URL_SHOP;
+            foreach ([0, 1] as $forceSSL) {
+                if ($sslStatus === 2) {
+                    $shopURL = \str_replace('http://', 'https://', $shopURL);
+                } elseif ($sslStatus === 4 || ($sslStatus === 3 && $forceSSL)) {
+                    $shopURL = \str_replace('http://', 'https://', $shopURL);
+                }
+                self::$url[$language->kSprache][$forceSSL] = \rtrim($shopURL, '/');
+            }
+        }
+    }
+
     /**
      * @param bool $bForceSSL
      * @param bool $bMultilang
+     * @param int $langID
      * @return string - the shop URL without trailing slash
      */
-    public static function getURL($bForceSSL = false, $bMultilang = true)
+    public static function getURL($bForceSSL = false, $bMultilang = true, $langID = null)
     {
-        $cShopURL = URL_SHOP;
-        //EXPERIMENTAL_MULTILANG_SHOP
-        if ($bMultilang === true && isset($_SESSION['cISOSprache']) &&
-            defined('URL_SHOP_' . strtoupper($_SESSION['cISOSprache']))
-        ) {
-            $cShopURL = constant('URL_SHOP_' . strtoupper($_SESSION['cISOSprache']));
+        if (self::$url === null) {
+            self::initLanguageURLs();
         }
+        $langID = $langID === null ? self::$kSprache : $langID;
+        $idx    = (int)$bForceSSL;
+        if (isset(self::$url[$langID][$idx])) {
+            return self::$url[$langID][$idx];
+        }
+        $shopURL   = \URL_SHOP;
         $sslStatus = pruefeSSL();
         if ($sslStatus === 2) {
-            $cShopURL = str_replace('http://', 'https://', $cShopURL);
+            $shopURL = \str_replace('http://', 'https://', $shopURL);
         } elseif ($sslStatus === 4 || ($sslStatus === 3 && $bForceSSL)) {
-            $cShopURL = str_replace('http://', 'https://', $cShopURL);
+            $shopURL = \str_replace('http://', 'https://', $shopURL);
         }
+        $url                      = \rtrim($shopURL, '/');
+        self::$url[$langID][$idx] = $url;
 
-        return rtrim($cShopURL, '/');
+        return $url;
     }
 
     /**

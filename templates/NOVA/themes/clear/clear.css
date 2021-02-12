@@ -20570,6 +20570,10 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
   width: 100%;
 }
 
+.dropdown-toggle, [data-toggle=collapse]:not(.navbar-toggler) {
+  white-space: initial;
+}
+
 .slick-slide .square, .slick-slide .productbox-image-wrapper {
   display: flex !important;
 }
@@ -24943,6 +24947,12 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 
 .mediafiles .mediafiles-description {
   padding-bottom: 1rem;
+}
+
+.attr-characteristic a {
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+  display: inline-block;
 }
 
 /* comparelist */

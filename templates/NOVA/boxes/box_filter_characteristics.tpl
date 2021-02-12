@@ -10,7 +10,7 @@
                     block=true
                     data=["toggle"=> "collapse", "target"=>"#cllps-box{$oBox->getID()}-{$characteristic->getID()}"]
                 }
-                    <span class="characteristic-collapse-btn-inner">
+                    <span class="characteristic-collapse-btn-inner text-truncate">
                         {$img = $characteristic->getImage(\JTL\Media\Image::SIZE_XS)}
                         {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'T'
                         && $img !== null
@@ -24,9 +24,7 @@
                                 sizes='24px'}
                         {/if}
                         {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'B'}
-                            <span class="text-truncate">
-                                {$characteristic->cName}
-                            </span>
+                            {$characteristic->cName}
                         {/if}
                     </span>
                 {/button}

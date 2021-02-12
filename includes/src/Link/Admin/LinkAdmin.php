@@ -333,9 +333,10 @@ final class LinkAdmin
             ) {
                 continue;
             }
-            if ($all->first(function ($val, $key) use ($specialPage) {
-                    return $val->nLinkart === $specialPage->nLinkart;
-            }) === null) {
+            $hit = $all->first(function ($val, $key) use ($specialPage) {
+                return $val->nLinkart === $specialPage->nLinkart;
+            });
+            if ($hit === null) {
                 $missingTypes->add($specialPage);
             }
         }

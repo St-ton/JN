@@ -549,6 +549,10 @@ final class LinkAdmin
         if ($link->nLinkart > 2 && isset($post['nSpezialseite']) && (int)$post['nSpezialseite'] > 0) {
             $link->nLinkart = (int)$post['nSpezialseite'];
         }
+        $type            = $link->nLinkart;
+        $link->bIsSystem = (int)$this->getSpecialPageTypes()->contains(function ($value) use ($type) {
+            return $value->nLinkart === $type;
+        });
 
         return $link;
     }

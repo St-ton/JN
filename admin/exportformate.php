@@ -301,16 +301,14 @@ if ($step === 'neuer Export') {
         'kExportformat',
         (int)$exportformat->kExportformat
     );
+    $gettext->localizeConfigs($configs);
+
     foreach ($configs as $config) {
         foreach ($efSettings as $efSetting) {
             if ($efSetting->cName === $config->cWertName) {
                 $config->gesetzterWert = $efSetting->cWert;
             }
         }
-    }
-    $gettext->localizeConfigs($configs);
-
-    foreach ($configs as $config) {
         $gettext->localizeConfigValues($config, $config->ConfWerte);
     }
 

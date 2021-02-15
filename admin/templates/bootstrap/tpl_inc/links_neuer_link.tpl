@@ -91,6 +91,9 @@
                                         <option value="{$specialPage->nLinkart}" {if isset($xPostVar_arr.nSpezialseite) && $xPostVar_arr.nSpezialseite === $specialPage->nLinkart}selected{elseif $Link->getLinkType() === $specialPage->nLinkart}selected{/if}>{__($specialPage->cName)}</option>
                                     {/foreach}
                                 </select>
+                                {if $Link->isSystem()}
+                                    <input type="hidden" name="nSpezialseite" value="{$Link->getLinkType()}">
+                                {/if}
                                 <span id="specialLinkType-error" class="hidden-soft error"> <i title="{__('isDuplicateSpecialLink')}" class="fal fa-exclamation-triangle error"></i></span>
                             </p>
                         {/if}

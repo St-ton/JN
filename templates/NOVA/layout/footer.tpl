@@ -1,4 +1,39 @@
 {block name='layout-footer'}
+
+    {block name='layout-footer-content-all-closingtags'}
+
+        {block name='layout-footer-aside'}
+            {has_boxes position='left' assign='hasLeftBox'}
+
+            {if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp
+            && !$bExclusive
+            && $hasLeftBox
+            && !empty($boxes.left|strip_tags|trim)
+            }
+                {block name='layout-footer-content-productlist-col-closingtag'}
+                    </div>{* /col *}
+                {/block}
+                {block name='layout-footer-sidepanel-left'}
+                    <aside id="sidepanel_left" class="sidepanel-left d-print-none col-12 col-lg-4 col-xl-3 order-lg-0 dropdown-full-width">
+                        {block name='footer-sidepanel-left-content'}{$boxes.left}{/block}
+                    </aside>
+                {/block}
+                {block name='layout-footer-content-productlist-row-closingtag'}
+                    </div>{* /row *}
+                {/block}
+            {/if}
+        {/block}
+
+        {block name='layout-footer-content-closingtag'}
+            {opcMountPoint id='opc_content' title='Default Area' inContainer=false}
+            </div>{* /content *}
+        {/block}
+
+        {block name='layout-footer-content-wrapper-closingtag'}
+            </div>{* /content-wrapper*}
+        {/block}
+    {/block}
+
     {block name='layout-footer-consent-manager'}
         {if $Einstellungen.consentmanager.consent_manager_active === 'Y' && !$isAjax && $consentItems->isNotEmpty()}
             <input id="consent-manager-show-banner" type="hidden" value="{$Einstellungen.consentmanager.consent_manager_show_banner}">
@@ -40,39 +75,6 @@
                 </script>
             {/inline_script}
         {/if}
-    {/block}
-    {block name='layout-footer-content-all-closingtags'}
-
-        {block name='layout-footer-aside'}
-            {has_boxes position='left' assign='hasLeftBox'}
-
-            {if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp
-            && !$bExclusive
-            && $hasLeftBox
-            && !empty($boxes.left|strip_tags|trim)
-            }
-                {block name='layout-footer-content-productlist-col-closingtag'}
-                    </div>{* /col *}
-                {/block}
-                {block name='layout-footer-sidepanel-left'}
-                    <aside id="sidepanel_left" class="sidepanel-left d-print-none col-12 col-lg-4 col-xl-3 order-lg-0 dropdown-full-width">
-                        {block name='footer-sidepanel-left-content'}{$boxes.left}{/block}
-                    </aside>
-                {/block}
-                {block name='layout-footer-content-productlist-row-closingtag'}
-                    </div>{* /row *}
-                {/block}
-            {/if}
-        {/block}
-
-        {block name='layout-footer-content-closingtag'}
-            {opcMountPoint id='opc_content' title='Default Area' inContainer=false}
-            </div>{* /content *}
-        {/block}
-
-        {block name='layout-footer-content-wrapper-closingtag'}
-            </div>{* /content-wrapper*}
-        {/block}
     {/block}
 
     {block name='layout-footer-main-wrapper-closingtag'}

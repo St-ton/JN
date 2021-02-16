@@ -337,8 +337,8 @@ if ($cache !== null) {
         ->assign('stats', $cache->getStats());
 }
 $settings = $db->query(
-    'SELECT te.*, ted.cWert as defaultValue
-        FROM teinstellungenconf as te
+    'SELECT te.*, ted.cWert AS defaultValue
+        FROM teinstellungenconf AS te
         LEFT JOIN teinstellungen_default AS ted
           ON ted.cName= te.cWertName
         WHERE te.nStandardAnzeigen = 1
@@ -371,8 +371,8 @@ foreach ($settings as $i => $setting) {
     $setting->gesetzterWert = $setValue->cWert ?? null;
 }
 $advancedSettings = $db->query(
-    'SELECT te.*, ted.cWert as defaultValue
-        FROM teinstellungenconf as te
+    'SELECT te.*, ted.cWert AS defaultValue
+        FROM teinstellungenconf AS te
         LEFT JOIN teinstellungen_default AS ted
           ON ted.cName= te.cWertName
         WHERE (te.nStandardAnzeigen = 0 OR te.nStandardAnzeigen = 2)

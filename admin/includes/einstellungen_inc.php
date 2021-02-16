@@ -28,7 +28,7 @@ function bearbeiteEinstellungsSuche(string $query, bool $save = false)
         return $result;
     }
 
-    $result->cWHERE = "(cModulId IS NULL OR cModulId = '') AND kEinstellungenSektion != 101 ";
+    $result->cWHERE = "(ec.cModulId IS NULL OR ec.cModulId = '') AND ec.kEinstellungenSektion != 101 ";
     $idList         = explode(',', $query);
     $isIdList       = count($idList) > 1;
 
@@ -113,10 +113,12 @@ function holeEinstellungen($sql, bool $save)
     }
 
     $sql->oEinstellung_arr = Shop::Container()->getDB()->query(
-        'SELECT *
-            FROM teinstellungenconf
+        'SELECT ec.*, e.cWert AS currentValue
+            FROM teinstellungenconf AS ec
+            LEFT JOIN teinstellungen AS e
+              ON e.cName=ec.cWertName
             WHERE ' . $sql->cWHERE . '
-            ORDER BY kEinstellungenSektion, nSort',
+            ORDER BY ec.kEinstellungenSektion, nSort',
         ReturnType::ARRAY_OF_OBJECTS
     );
     Shop::Container()->getGetText()->loadConfigLocales();
@@ -179,11 +181,13 @@ function holeEinstellungAbteil($sql, $sort, $sectionID)
 {
     if ((int)$sort > 0 && (int)$sectionID > 0) {
         $items = Shop::Container()->getDB()->query(
-            'SELECT *
-                FROM teinstellungenconf
-                WHERE nSort > ' . (int)$sort . '
-                    AND kEinstellungenSektion = ' . (int)$sectionID . '
-                ORDER BY nSort',
+            'SELECT ec.*, e.cWert AS currentValue
+                FROM teinstellungenconf AS ec
+                LEFT JOIN teinstellungen AS e
+                  ON e.cName=ec.cWertName
+                WHERE ec.nSort > ' . (int)$sort . '
+                    AND ec.kEinstellungenSektion = ' . (int)$sectionID . '
+                ORDER BY ec.nSort',
             ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($items as $item) {

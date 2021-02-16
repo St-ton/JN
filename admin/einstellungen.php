@@ -99,14 +99,15 @@ if (Request::postVar('resetSetting') !== null) {
     } else {
         $section  = $db->select('teinstellungensektion', 'kEinstellungenSektion', $sectionID);
         $confData = $db->query(
-            'SELECT ec.*, e.cWert as currentValue
-                FROM teinstellungenconf as ec
-                LEFT JOIN teinstellungen as e ON e.cName=ec.cWertName
+            'SELECT ec.*, e.cWert AS currentValue
+                FROM teinstellungenconf AS ec
+                LEFT JOIN teinstellungen AS e
+                  ON e.cName=ec.cWertName
                 WHERE ec.kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . "
-                    AND cConf = 'Y'
-                    AND nModul = 0
-                    AND nStandardanzeigen = 1 " . $sql->cWHERE . '
-                ORDER BY nSort',
+                    AND ec.cConf = 'Y'
+                    AND ec.nModul = 0
+                    AND ec.nStandardanzeigen = 1 " . $sql->cWHERE . '
+                ORDER BY ec.nSort',
             ReturnType::ARRAY_OF_OBJECTS
         );
     }
@@ -213,8 +214,8 @@ if ($step === 'einstellungen bearbeiten') {
                ->assign('cSuche', $sql->cSuche);
     } else {
         $confData = $db->query(
-            'SELECT te.*, ted.cWert as defaultValue
-                FROM teinstellungenconf as te
+            'SELECT te.*, ted.cWert AS defaultValue
+                FROM teinstellungenconf AS te
                 LEFT JOIN teinstellungen_default AS ted
                   ON ted.cName= te.cWertName
                 WHERE te.nModul = 0

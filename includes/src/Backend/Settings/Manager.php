@@ -57,6 +57,11 @@ class Manager
     protected $alertService;
 
     /**
+     * @var array
+     */
+    protected $listboxLogged = [];
+
+    /**
      * Manager constructor.
      * @param DbInterface $db
      * @param JTLSmarty $smarty
@@ -168,6 +173,31 @@ class Manager
         $log->dDatum                = 'NOW()';
 
         $this->db->insert('teinstellungenlog', $log);
+    }
+
+    /**
+     * @param string $setting
+     * @param array $newValue
+     */
+    public function addLogListbox(string $setting, array $newValue): void
+    {
+        if (\in_array($setting, $this->listboxLogged, true)) {
+            return;
+        }
+        $this->listboxLogged[] = $setting;
+        $oldValues             = $this->db->queryPrepared(
+            'SELECT cWert
+                FROM teinstellungen
+                WHERE cName=:setting',
+            ['setting' => $setting],
+            ReturnType::COLLECTION
+        )->pluck('cWert')->toArray();
+        \sort($oldValues);
+        \sort($newValue);
+
+        if ($oldValues !== $newValue) {
+            $this->addLog($setting, \implode($oldValues, ','), \implode($newValue, ','));
+        }
     }
 
     /**

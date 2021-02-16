@@ -202,6 +202,14 @@ function bearbeiteListBox($listBoxes, $valueName, int $configSectionID)
 {
     $db = Shop::Container()->getDB();
     if (is_array($listBoxes) && count($listBoxes) > 0) {
+        $settingManager = new Manager(
+            $db,
+            Shop::Smarty(),
+            Shop::Container()->getAdminAccount(),
+            Shop::Container()->getGetText(),
+            Shop::Container()->getAlertService()
+        );
+        $settingManager->addLogListbox($valueName, $listBoxes);
         $db->delete(
             'teinstellungen',
             ['kEinstellungenSektion', 'cName'],

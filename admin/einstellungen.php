@@ -132,6 +132,9 @@ if (Request::postVar('resetSetting') !== null) {
                     break;
             }
             if ($sectionItem->validate($confData[$i], $_POST[$confData[$i]->cWertName])) {
+                if (is_array($_POST[$confData[$i]->cWertName])) {
+                    $settingManager->addLogListbox($confData[$i]->cWertName, $_POST[$confData[$i]->cWertName]);
+                }
                 $db->delete(
                     'teinstellungen',
                     ['kEinstellungenSektion', 'cName'],

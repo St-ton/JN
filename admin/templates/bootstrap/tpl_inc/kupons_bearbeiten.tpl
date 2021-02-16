@@ -481,7 +481,7 @@
                                 keyName:           'kKunde',
                                 renderItemCb:      renderCustomerItem,
                                 onApply:           onApplySelectedCustomers,
-                                selectedKeysInit:  [{$customerIDs|implode:','}]
+                                selectedKeysInit:  [{implode(',', $customerIDs)}]
                             });
                             onApplySelectedCustomers(customerPicker.getSelection());
                         });

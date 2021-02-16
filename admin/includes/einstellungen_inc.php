@@ -113,10 +113,12 @@ function holeEinstellungen($sql, bool $save)
     }
 
     $sql->oEinstellung_arr = Shop::Container()->getDB()->query(
-        'SELECT ec.*, e.cWert AS currentValue
+        'SELECT ec.*, e.cWert AS currentValue, ed.cWert AS defaultValue
             FROM teinstellungenconf AS ec
             LEFT JOIN teinstellungen AS e
               ON e.cName=ec.cWertName
+            LEFT JOIN teinstellungen_default AS ed
+              ON ed.cName=ec.cWertName
             WHERE ' . $sql->cWHERE . '
             ORDER BY ec.kEinstellungenSektion, nSort',
         ReturnType::ARRAY_OF_OBJECTS
@@ -181,10 +183,12 @@ function holeEinstellungAbteil($sql, $sort, $sectionID)
 {
     if ((int)$sort > 0 && (int)$sectionID > 0) {
         $items = Shop::Container()->getDB()->query(
-            'SELECT ec.*, e.cWert AS currentValue
+            'SELECT ec.*, e.cWert AS currentValue, ed.cWert AS defaultValue
                 FROM teinstellungenconf AS ec
                 LEFT JOIN teinstellungen AS e
                   ON e.cName=ec.cWertName
+                LEFT JOIN teinstellungen_default AS ed
+                  ON ed.cName=ec.cWertName
                 WHERE ec.nSort > ' . (int)$sort . '
                     AND ec.kEinstellungenSektion = ' . (int)$sectionID . '
                 ORDER BY ec.nSort',

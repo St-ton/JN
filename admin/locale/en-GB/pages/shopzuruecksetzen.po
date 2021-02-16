@@ -79,3 +79,6 @@ msgstr "The following areas of JTL-Shop will be reset<span id=\"messageDataGetsL
 
 msgid "sureContinue"
 msgstr "Would you like to continue?"
+
+msgid "deleteShopSettings"
+msgstr "Shopeigene Einstellungen auf Werkseinstellungen zurücksetzen."

@@ -219,6 +219,16 @@ if (Request::postInt('zuruecksetzen') === 1 && Form::validateToken()) {
                     $db->query('TRUNCATE tkuponkunde', ReturnType::DEFAULT);
                     $db->query('TRUNCATE tkuponsprache', ReturnType::DEFAULT);
                     break;
+                case 'shopeinstellungen':
+                    $db->query('TRUNCATE teinstellungenlog', ReturnType::DEFAULT);
+                    $db->query(
+                        'UPDATE teinstellungen
+                          INNER JOIN teinstellungen_default
+                            USING(cName)
+                          SET teinstellungen.cWert = teinstellungen_default.cWert',
+                        ReturnType::DEFAULT
+                    );
+                    break;
             }
         }
         Shop::Container()->getCache()->flushAll();

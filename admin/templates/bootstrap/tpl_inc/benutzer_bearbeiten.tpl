@@ -9,9 +9,20 @@ $(document).ready(function() {
         }
     });
     $('#dGueltigBis').datetimepicker({
-        showSecond: true,
-        timeFormat: 'hh:mm:ss',
-        dateFormat: 'dd.mm.yy'
+        locale: '{/literal}{$language|mb_substr:0:2}{literal}',
+        format: 'DD.MM.YYYY HH:mm:ss',
+        useCurrent: false,
+        icons: {
+            time: 'far fa-clock',
+            date: 'far fa-calendar',
+            up: 'fas fa-chevron-up',
+            down: 'fas fa-chevron-down',
+            previous: 'fas fa-chevron-left',
+            next: 'fas fa-chevron-right',
+            today: 'far fa-calendar-check',
+            clear: 'fas fa-trash',
+            close: 'fas fa-times',
+        },
     });
 
     /** bring the 2FA-canvas in a defined position depending on the state of the 2FA */
@@ -205,7 +216,13 @@ $(document).ready(function() {
                             <div class="form-group form-row align-items-center{if !empty($cError_arr.dGueltigBis)} form-error{/if}">
                                 <label class="col col-sm-4 col-form-label text-sm-right" for="dGueltigBis">{__('tillInclusive')}:</label>
                                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                    <input class="form-control" type="text" name="dGueltigBis" value="{if !empty($oAccount->dGueltigBis)}{$oAccount->dGueltigBis|date_format:'%d.%m.%Y %H:%M:%S'}{/if}" id="dGueltigBis" />
+                                    <input class="form-control datetimepicker-inpu"
+                                           type="text"
+                                           name="dGueltigBis"
+                                           value="{if !empty($oAccount->dGueltigBis)}{$oAccount->dGueltigBis|date_format:'%d.%m.%Y %H:%M:%S'}{/if}"
+                                           id="dGueltigBis"
+                                           data-target="#dGueltigBis"
+                                           data-toggle="datetimepicker"/>
                                 </div>
                             </div>
                         </div>

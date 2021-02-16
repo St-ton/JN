@@ -147,7 +147,7 @@
 
                         {if $useAvailabilityNotification}
                             {block name='productdetails-tabs-tab-availability-notification'}
-                                {tab title="{lang key='notifyMeWhenProductAvailableAgain'}" active=$setActiveClass.availabilityNotification id="tab-availabilityNotification"}
+                                {tab title="{lang key='notifyMeWhenProductAvailableAgain'}" active=$setActiveClass.availabilityNotification id="availabilityNotification"}
                                     {include file='productdetails/availability_notification_form.tpl' position='tab' tplscope='artikeldetails'}
                                 {/tab}
                             {/block}

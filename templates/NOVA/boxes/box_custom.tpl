@@ -5,6 +5,8 @@
                 {$oBox->getTitle()}
             </div>
         {/block}
-        {eval var=$oBox->getContent()}
+        <div class="box-content-wrapper">
+            {eval var=$oBox->getContent()}
+        </div>
     {/card}
 {/block}

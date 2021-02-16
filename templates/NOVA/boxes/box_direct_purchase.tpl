@@ -6,6 +6,7 @@
             </div>
         {/block}
         {block name='boxes-box-direct-purchase-form'}
+            <div class="box-content-wrapper">
             {form action="{get_static_route id='warenkorb.php'}" method="post" slide=true}
                 {input type="hidden" name="schnellkauf" value="1"}
                 {inputgroup}
@@ -18,6 +19,7 @@
                     {/inputgroupaddon}
                 {/inputgroup}
             {/form}
+            </div>
         {/block}
         {block name='boxes-box-direct-purchase-hr-end'}
             <hr class="box-normal-hr">

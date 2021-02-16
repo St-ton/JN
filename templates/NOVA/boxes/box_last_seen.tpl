@@ -7,6 +7,8 @@
                     {$boxtitle}
                 </div>
             {/block}
+            {block name='boxes-box-last-seen-content'}
+            <div class="box-content-wrapper">
             {foreach $oBox->getProducts() as $product}
                 <div class="box-last-seen-item">
                     {block name='boxes-box-last-seen-image-link'}
@@ -30,6 +32,8 @@
                     {/block}
                 </div>
             {/foreach}
+            </div>
+            {/block}
             {block name='boxes-box-last-seen-hr-end'}
                 <hr class="box-normal-hr">
             {/block}

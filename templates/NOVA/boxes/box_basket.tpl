@@ -8,10 +8,12 @@
                     </div>
                 {/block}
                 {block name='boxes-box-basket-link'}
+                    <div class="box-content-wrapper">
                     {link href="{get_static_route id='warenkorb.php'}" class="basket"}
                         <span class="d-block">{$Warenkorbtext}</span>
                         <span class="basket_link"><i class="fas fa-shopping-cart"></i> {lang key='gotoBasket'}</span>
                     {/link}
+                    </div>
                 {/block}
             {/block}
         </div>

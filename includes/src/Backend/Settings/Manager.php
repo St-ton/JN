@@ -241,7 +241,7 @@ class Manager
             ['settingName' => $settingName],
             ReturnType::SINGLE_OBJECT
         );
-        if (empty($defaultValue->cWert)) {
+        if (empty($defaultValue)) {
             $this->alertService->addAlert(
                 Alert::TYPE_DANGER,
                 \sprintf(__('resetSettingDefaultValueNotFound'), $settingName),

@@ -34,49 +34,6 @@
         {/block}
     {/block}
 
-    {block name='layout-footer-consent-manager'}
-        {if $Einstellungen.consentmanager.consent_manager_active === 'Y' && !$isAjax && $consentItems->isNotEmpty()}
-            <input id="consent-manager-show-banner" type="hidden" value="{$Einstellungen.consentmanager.consent_manager_show_banner}">
-            {include file='snippets/consent_manager.tpl'}
-            {inline_script}
-                <script>
-                    setTimeout(function() {
-                        $('#consent-manager, #consent-settings-btn').removeClass('d-none');
-                    }, 100)
-                    const CM = new ConsentManager({
-                        version: 1
-                    });
-                    var trigger = document.querySelectorAll('.trigger')
-                    var triggerCall = function(e) {
-                        e.preventDefault();
-                        let type = e.target.dataset.consent;
-                        if (CM.getSettings(type) === false) {
-                            CM.openConfirmationModal(type, function() {
-                                let data = CM._getLocalData();
-                                if (data === null ) {
-                                    data = { settings: {} };
-                                }
-                                data.settings[type] = true;
-                                document.dispatchEvent(new CustomEvent('consent.updated', { detail: data.settings }));
-                            });
-                        }
-                    }
-                    for(let i = 0; i < trigger.length; ++i) {
-                        trigger[i].addEventListener('click', triggerCall)
-                    }
-                    document.addEventListener('consent.updated', function(e) {
-                        $.post('{$ShopURLSSL}/', {
-                                'action': 'updateconsent',
-                                'jtl_token': '{$smarty.session.jtl_token}',
-                                'data': e.detail
-                            }
-                        );
-                    });
-                </script>
-            {/inline_script}
-        {/if}
-    {/block}
-
     {block name='layout-footer-main-wrapper-closingtag'}
         </main> {* /mainwrapper *}
     {/block}
@@ -293,6 +250,49 @@
     {block name='layout-footer-js'}
         {$dbgBarBody}
         {captchaMarkup getBody=false}
+    {/block}
+
+    {block name='layout-footer-consent-manager'}
+        {if $Einstellungen.consentmanager.consent_manager_active === 'Y' && !$isAjax && $consentItems->isNotEmpty()}
+            <input id="consent-manager-show-banner" type="hidden" value="{$Einstellungen.consentmanager.consent_manager_show_banner}">
+            {include file='snippets/consent_manager.tpl'}
+            {inline_script}
+                <script>
+                    setTimeout(function() {
+                        $('#consent-manager, #consent-settings-btn').removeClass('d-none');
+                    }, 100)
+                    const CM = new ConsentManager({
+                        version: 1
+                    });
+                    var trigger = document.querySelectorAll('.trigger')
+                    var triggerCall = function(e) {
+                        e.preventDefault();
+                        let type = e.target.dataset.consent;
+                        if (CM.getSettings(type) === false) {
+                            CM.openConfirmationModal(type, function() {
+                                let data = CM._getLocalData();
+                                if (data === null ) {
+                                    data = { settings: {} };
+                                }
+                                data.settings[type] = true;
+                                document.dispatchEvent(new CustomEvent('consent.updated', { detail: data.settings }));
+                            });
+                        }
+                    }
+                    for(let i = 0; i < trigger.length; ++i) {
+                        trigger[i].addEventListener('click', triggerCall)
+                    }
+                    document.addEventListener('consent.updated', function(e) {
+                        $.post('{$ShopURLSSL}/', {
+                                'action': 'updateconsent',
+                                'jtl_token': '{$smarty.session.jtl_token}',
+                                'data': e.detail
+                            }
+                        );
+                    });
+                </script>
+            {/inline_script}
+        {/if}
     {/block}
     </body>
     </html>

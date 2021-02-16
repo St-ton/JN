@@ -12,11 +12,14 @@
     }
     .slick-slide {
       position: relative;
+      padding: 0 1rem;
+
       &:before {
         content: "";
         display: block;
         padding-bottom: 100%;
       }
+
       > :first-child {
         position: absolute;
         left: 0;

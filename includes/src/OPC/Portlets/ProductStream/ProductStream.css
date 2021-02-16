@@ -8,6 +8,7 @@
 }
 .opc-ProductStream.opc-ProductStream-simpleSlider .slick-slide {
   position: relative;
+  padding: 0 1rem;
 }
 .opc-ProductStream.opc-ProductStream-simpleSlider .slick-slide:before {
   content: "";

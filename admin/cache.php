@@ -27,7 +27,7 @@ $db             = Shop::Container()->getDB();
 $getText        = Shop::Container()->getGetText();
 $alertHelper    = Shop::Container()->getAlertService();
 $adminAccount   = Shop::Container()->getAdminAccount();
-$settingManager = new Manager($db, $smarty, $adminAccount, $getText);
+$settingManager = new Manager($db, $smarty, $adminAccount, $getText, $alertHelper);
 $getText->loadConfigLocales();
 
 if (0 < mb_strlen(Request::verifyGPDataString('tab'))) {
@@ -158,8 +158,8 @@ switch ($action) {
                 FROM teinstellungenconf as ec
                 LEFT JOIN teinstellungen as e ON e.cName=ec.cWertName
                 WHERE ec.kEinstellungenSektion = ' . CONF_CACHING . "
-                    AND cConf = 'Y'
-                ORDER BY nSort",
+                    AND ec.cConf = 'Y'
+                ORDER BY ec.nSort",
             ReturnType::ARRAY_OF_OBJECTS
         );
         $i             = 0;

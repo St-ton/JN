@@ -2,10 +2,12 @@
 
 namespace JTL\Backend\Settings;
 
+use JTL\Alert\Alert;
 use JTL\Backend\AdminAccount;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\L10n\GetText;
+use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Smarty\JTLSmarty;
 
 /**
@@ -50,20 +52,32 @@ class Manager
     protected $getText;
 
     /**
+     * @var AlertServiceInterface
+     */
+    protected $alertService;
+
+    /**
      * Manager constructor.
      * @param DbInterface $db
      * @param JTLSmarty $smarty
      * @param AdminAccount $adminAccount
      * @param GetText $getText
+     * @param AlertServiceInterface $alertService
      */
-    public function __construct(DbInterface $db, JTLSmarty $smarty, AdminAccount $adminAccount, GetText $getText)
-    {
+    public function __construct(
+        DbInterface $db,
+        JTLSmarty $smarty,
+        AdminAccount $adminAccount,
+        GetText $getText,
+        AlertServiceInterface $alertService
+    ) {
         $getText->loadConfigLocales(true, true);
 
         $this->db           = $db;
         $this->smarty       = $smarty;
         $this->adminAccount = $adminAccount;
         $this->getText      = $getText;
+        $this->alertService = $alertService;
     }
 
     /**
@@ -86,7 +100,13 @@ class Manager
                     return $this->instances[$sectionID];
                 }
             }
-            $this->instances[$sectionID] = new self($this->db, $this->smarty, $this->adminAccount, $this->getText);
+            $this->instances[$sectionID] = new self(
+                $this->db,
+                $this->smarty,
+                $this->adminAccount,
+                $this->getText,
+                $this->alertService
+            );
         }
 
         return $this->instances[$sectionID];
@@ -191,7 +211,16 @@ class Manager
             ['settingName' => $settingName],
             ReturnType::SINGLE_OBJECT
         );
-        $oldValue     = $this->db->queryPrepared(
+        if (empty($defaultValue->cWert)) {
+            $this->alertService->addAlert(
+                Alert::TYPE_DANGER,
+                \sprintf(__('resetSettingDefaultValueNotFound'), $settingName),
+                'resetSettingDefaultValueNotFound'
+            );
+            return;
+        }
+
+        $oldValue = $this->db->queryPrepared(
             'SELECT cWert
               FROM teinstellungen
               WHERE cName=:settingName',

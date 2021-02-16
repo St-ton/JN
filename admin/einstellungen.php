@@ -18,8 +18,9 @@ $bSuche         = isset($_REQUEST['einstellungen_suchen']) && (int)$_REQUEST['ei
 $db             = Shop::Container()->getDB();
 $getText        = Shop::Container()->getGetText();
 $adminAccount   = Shop::Container()->getAdminAccount();
+$alertService   = Shop::Container()->getAlertService();
 $search         = Request::verifyGPDataString('cSuche');
-$settingManager = new Manager($db, $smarty, $adminAccount, $getText);
+$settingManager = new Manager($db, $smarty, $adminAccount, $getText, $alertService);
 
 $getText->loadConfigLocales(true, true);
 

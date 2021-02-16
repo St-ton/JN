@@ -2101,3 +2101,6 @@ msgstr "Reset setting."
 
 msgid "confirmResetLog"
 msgstr "Reset setting - %s?"
+
+msgid "resetSettingDefaultValueNotFound"
+msgstr "Einstellung konnte nicht zurückgesetzt werden, da kein passender Eintrag in teinstellungen_default zu \"%s\" gefunden wurde."

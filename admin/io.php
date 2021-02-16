@@ -38,7 +38,7 @@ $io           = AdminIO::getInstance()->setAccount($oAccount);
 $images       = new Manager($db, $gettext);
 $updateIO     = new UpdateIO($db, $gettext);
 $wizardIO     = new WizardIO($db, $cache, $alertService, $gettext);
-$settings     = new SettingsManager($db, Shop::Smarty(), Shop::Container()->getAdminAccount(), $gettext);
+$settings     = new SettingsManager($db, Shop::Smarty(), Shop::Container()->getAdminAccount(), $gettext, $alertService);
 
 try {
     Shop::Container()->getOPC()->registerAdminIOFunctions($io);

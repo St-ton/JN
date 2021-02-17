@@ -264,7 +264,7 @@ function getSectionMenuPath(int $sectionID)
  * @param int $sectionID
  * @return boolean
  */
-function getSpecialSetting(int $sectionID)
+function getSpecialSetting(int $sectionID): bool
 {
     global $sectionMenuMapping;
 
@@ -279,7 +279,7 @@ function getSpecialSetting(int $sectionID)
  * @param int $sectionID
  * @return string
  */
-function getSettingsAnchor(int $sectionID)
+function getSettingsAnchor(int $sectionID): string
 {
     global $sectionMenuMapping;
 

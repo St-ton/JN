@@ -44,7 +44,7 @@ Weiterhin wird diese Klasse von ``JTL\OPC\Portlet`` abgeleitet.
 
     <?php declare(strict_types=1);
 
-    namespace Plugin\jtl_test\Portlets;
+    namespace Plugin\jtl_test\Portlets\MyPortlet;
 
     use JTL\OPC\Portlet;
 

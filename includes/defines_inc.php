@@ -37,9 +37,9 @@ define('CONF_SITEMAP', 114);
 define('CONF_SUCHSPECIAL', 119);
 define('CONF_AUSWAHLASSISTENT', 121);
 define('CONF_CACHING', 124);
-define('CONF_CONSENTMANAGER', 129);
 define('CONF_FS', 127);
 define('CONF_CRON', 128);
+define('CONF_CONSENTMANAGER', 129);
 /**
  * @deprecated
  */

@@ -8,8 +8,14 @@
                 </button>
             </div>
             <div class="modal-body">
-                <label for="delete-files-{$context}">{__('deletePluginFilesQuestion')}</label>
-                <input type="checkbox" id="delete-files-{$context}" name="delete-files">
+                <div class="custom-control custom-checkbox">
+                    <input class="custom-control-input" name="delete-data" type="checkbox" id="delete-data-{$context}" checked>
+                    <label class="custom-control-label" for="delete-data-{$context}">{__('deletePluginData')}</label>
+                </div>
+                <div class="custom-control custom-checkbox">
+                    <input class="custom-control-input" name="delete-files" type="checkbox" id="delete-files-{$context}">
+                    <label class="custom-control-label" for="delete-files-{$context}">{__('deletePluginFilesQuestion')}</label>
+                </div>
             </div>
             <div class="modal-footer">
                 <div class="row">
@@ -19,13 +25,8 @@
                         </button>
                     </div>
                     <div class="col-sm-6 col-xl-auto submit">
-                        <button type="button" class="delete-plugindata-no btn btn-outline-primary">
-                            <i class="fa fa-close"></i>&nbsp;{__('deletePluginDataNo')}
-                        </button>
-                    </div>
-                    <div class="col-sm-6 col-xl-auto submit">
                         <button type="button" class="btn btn-primary" name="cancel" data-dismiss="modal">
-                            <i class="fal fa-check text-success"></i>&nbsp;{__('cancel')}
+                            {__('cancelWithIcon')}
                         </button>
                     </div>
                 </div>
@@ -42,11 +43,7 @@
         });
         $('#uninstall-{$context}-modal .delete-plugindata-yes').on('click', function (event) {
             disModal.modal('hide');
-            uninstall(true);
-        });
-        $('#uninstall-{$context}-modal .delete-plugindata-no').on('click', function (event) {
-            disModal.modal('hide');
-            uninstall(false);
+            uninstall($('#delete-data-{$context}').is(':checked'));
         });
         function uninstall(deleteData) {
             var data = $('{$selector}').serialize();

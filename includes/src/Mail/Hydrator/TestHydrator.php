@@ -141,8 +141,11 @@ class TestHydrator extends DefaultsHydrator
     private function getGift(): stdClass
     {
         $gift                 = new stdClass();
+        $gift->fWert          = 5.00;
         $gift->cLocalizedWert = '5,00 EUR';
         $gift->cGrund         = 'Geburtstag';
+        $gift->kGutschein     = 33;
+        $gift->kKunde         = 1;
 
         return $gift;
     }

@@ -269,7 +269,7 @@ final class Link extends AbstractLink
                     ON tlink.kLink = loc.kLink
                 JOIN tsprache
                     ON tsprache.cISO = loc.cISOSprache
-                JOIN tseo
+                LEFT JOIN tseo
                     ON tseo.cKey = 'kLink'
                     AND tseo.kKey = loc.kLink
                     AND tseo.kSprache = tsprache.kSprache

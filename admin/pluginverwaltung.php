@@ -276,7 +276,7 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
     } elseif (Request::verifyGPCDataInt('sprachvariablen') === 1) { // Sprachvariablen editieren
         $step = 'pluginverwaltung_sprachvariablen';
     } elseif (isset($_POST['installieren'])) {
-        $dirs = $_POST['cVerzeichnis'];
+        $dirs = $_POST['cVerzeichnis'] ?? [];
         if (SAFE_MODE) {
             $errorMsg = __('Safe mode enabled.') . ' - ' . __('pluginBtnInstall');
         } elseif (is_array($dirs)) {

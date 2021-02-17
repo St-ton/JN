@@ -13,7 +13,8 @@
             {if !($Artikel->nIstVater && $Artikel->kVaterArtikel == 0)}
                 {block name='productdetails-image-actions'}
                     <div class="product-actions" data-toggle="product-actions">
-                        {if $Einstellungen.artikeldetails.artikeldetails_vergleichsliste_anzeigen === 'Y'}
+                        {if $Einstellungen.artikeldetails.artikeldetails_vergleichsliste_anzeigen === 'Y'
+                            && $Einstellungen.vergleichsliste.vergleichsliste_anzeigen === 'Y'}
                             {block name='productdetails-image-include-comparelist-button'}
                                 {include file='snippets/comparelist_button.tpl'}
                             {/block}

@@ -173,12 +173,14 @@
                 {/badge}
             {/navitem}
         {/if}
-        {navitem href="{get_static_route id='vergleichsliste.php'}" class="comparelist-nav-scrollbar-item nav-scrollbar-item"}
-            {lang key='compare'}
-            {badge id="comparelist-badge" variant="primary" class="product-count"}
-                {if !empty($smarty.session.Vergleichsliste->oArtikel_arr)}{$smarty.session.Vergleichsliste->oArtikel_arr|count}{else}0{/if}
-            {/badge}
-        {/navitem}
+        {if $Einstellungen.vergleichsliste.vergleichsliste_anzeigen === 'Y'}
+            {navitem href="{get_static_route id='vergleichsliste.php'}" class="comparelist-nav-scrollbar-item nav-scrollbar-item"}
+                {lang key='compare'}
+                {badge id="comparelist-badge" variant="primary" class="product-count"}
+                    {if !empty($smarty.session.Vergleichsliste->oArtikel_arr)}{$smarty.session.Vergleichsliste->oArtikel_arr|count}{else}0{/if}
+                {/badge}
+            {/navitem}
+        {/if}
         {if $linkgroups->getLinkGroupByTemplate('Kopf') !== null}
         {block name='snippets-categories-mega-top-links'}
             {foreach $linkgroups->getLinkGroupByTemplate('Kopf')->getLinks() as $Link}

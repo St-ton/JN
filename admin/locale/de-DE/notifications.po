@@ -109,6 +109,12 @@ msgstr "Ungeprüfte Exportvorlage"
 msgid "getExportFormatErrorCountMessage"
 msgstr "In %d Exportvorlage(n) sind Syntax-Fehler vorhanden."
 
+msgid "Missing special pages"
+msgstr "Fehlende Spezialseiten"
+
+msgid "%d special pages are missing."
+msgstr "%d Spezialseiten fehlen."
+
 msgid "getExportFormatUncheckedCountMessage"
 msgstr "%d Exportvorlage(n) sind ohne Syntax-Prüfung."
 

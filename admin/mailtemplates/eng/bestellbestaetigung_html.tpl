@@ -169,7 +169,7 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
                 <tr>
                     <td>
                         <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                            {$Kunde->cMobil}l
+                            {$Kunde->cMobil}
                         </font>
                     </td>
                 </tr>

@@ -201,7 +201,10 @@ msgid "licensePlugin"
 msgstr "Plugin-Lizenz"
 
 msgid "deletePluginData"
-msgstr "Möchten Sie das Plugin aus der Datenbank löschen?"
+msgstr "Plugin Deinstallation"
+
+msgid "deletePluginDataDesc"
+msgstr "Entfernt das Plugin aus allen shopeigenen Datenbank-Tabellen. Zusätzlich kann die Deinstallation über die beiden Checkboxen noch verfeinert werden."
 
 msgid "deletePluginFilesHeading"
 msgstr "Möchten Sie wirklich versuchen, sämtliche Plugindateien zu löschen?"
@@ -209,11 +212,17 @@ msgstr "Möchten Sie wirklich versuchen, sämtliche Plugindateien zu löschen?"
 msgid "deletePluginFilesQuestion"
 msgstr "Sollen die dazugehörigen Dateien ebenfalls gelöscht werden?"
 
-msgid "deletePluginDataYes"
-msgstr "Ja, alle Plugin-Daten löschen."
+msgid "deletePluginFilesQuestionDesc"
+msgstr "Wenn diese Checkbox aktiviert ist, werden alle Plugin-Dateien vom Webspace entfernt, d.h für eine erneute Installation des Plugins muss das Plugin neu bezogen/hochgeladen werden."
 
-msgid "deletePluginDataNo"
-msgstr "Nein, Plugin-Daten behalten."
+msgid "deletePluginDataQuestion"
+msgstr "Sollen alle plugineigenen Tabellen ebenfalls aus der Datenbank gelöscht werden?"
+
+msgid "deletePluginDataQuestionDesc"
+msgstr "Wenn diese Checkbox aktiviert ist, werden auch alle plugineigenen Datenbank-Tabelle entfernt."
+
+msgid "deletePluginDataYes"
+msgstr "Ja, Plugin mit den gewählten Einstellungen deinstallieren."
 
 msgid "WRONG_PARAM"
 msgstr "Die Plausibilitätsprüfung wurde aufgrund fehlender Parameter abgebrochen."

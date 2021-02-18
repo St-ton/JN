@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">{__('deletePluginData')}</h2>
+                <h2 class="modal-title">{__('deletePluginData')} {getHelpDesc cDesc=__('deletePluginDataDesc')}</h2>
                 <button type="button" class="close" data-dismiss="modal">
                     <i class="fal fa-times"></i>
                 </button>
@@ -10,11 +10,13 @@
             <div class="modal-body">
                 <div class="custom-control custom-checkbox">
                     <input class="custom-control-input" name="delete-data" type="checkbox" id="delete-data-{$context}" checked>
-                    <label class="custom-control-label" for="delete-data-{$context}">{__('deletePluginData')}</label>
+                    <label class="custom-control-label" for="delete-data-{$context}">{__('deletePluginDataQuestion')}</label>
+                    {getHelpDesc cDesc=__('deletePluginDataQuestionDesc')}
                 </div>
                 <div class="custom-control custom-checkbox">
                     <input class="custom-control-input" name="delete-files" type="checkbox" id="delete-files-{$context}">
                     <label class="custom-control-label" for="delete-files-{$context}">{__('deletePluginFilesQuestion')}</label>
+                    {getHelpDesc cDesc=__('deletePluginFilesQuestionDesc')}
                 </div>
             </div>
             <div class="modal-footer">

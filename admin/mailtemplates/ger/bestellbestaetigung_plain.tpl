@@ -46,7 +46,7 @@ Ihre Rechnungsadresse:
 {if $Kunde->cAdressZusatz}{$Kunde->cAdressZusatz}
 {/if}{$Kunde->cPLZ} {$Kunde->cOrt}
 {if $Kunde->cBundesland}{$Kunde->cBundesland}
-{/if}{$Kunde->cLand}
+{/if}{$Kunde->angezeigtesLand}
 {if $Kunde->cTel}Tel.: {$Kunde->cTel}
 {/if}{if $Kunde->cMobil}Mobil: {$Kunde->cMobil}
 {/if}{if $Kunde->cFax}Fax: {$Kunde->cFax}
@@ -64,7 +64,7 @@ E-Mail: {$Kunde->cMail}
     {if $Bestellung->Lieferadresse->cAdressZusatz}{$Bestellung->Lieferadresse->cAdressZusatz}
     {/if}{$Bestellung->Lieferadresse->cPLZ} {$Bestellung->Lieferadresse->cOrt}
     {if $Bestellung->Lieferadresse->cBundesland}{$Bestellung->Lieferadresse->cBundesland}
-    {/if}{$Bestellung->Lieferadresse->cLand}
+    {/if}{$Bestellung->Lieferadresse->angezeigtesLand}
     {if $Bestellung->Lieferadresse->cTel}Tel.: {$Bestellung->Lieferadresse->cTel}
     {/if}{if $Bestellung->Lieferadresse->cMobil}Mobil: {$Bestellung->Lieferadresse->cMobil}
 {/if}{if $Bestellung->Lieferadresse->cFax}Fax: {$Bestellung->Lieferadresse->cFax}

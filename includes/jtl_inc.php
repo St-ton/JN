@@ -250,7 +250,7 @@ function setzeWarenkorbPersInWarenkorb($kKunde)
                                               ->fuegeEin($kArtikelGeschenk, 1, [], C_WARENKORBPOS_TYP_GRATISGESCHENK);
                     }
                 }
-            } else {
+            } elseif(empty($oWarenkorbPersPos->cUnique)) {
                 $tmpProduct = new Artikel();
                 $tmpProduct->fuelleArtikel($oWarenkorbPersPos->kArtikel, Artikel::getDefaultOptions());
                 $failures = pruefeFuegeEinInWarenkorb($tmpProduct, $oWarenkorbPersPos->fAnzahl, $oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr);
@@ -393,7 +393,7 @@ function fuehreLoginAus($userLogin, $passLogin)
                     /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
                     if (count($oWarenkorbPers->oWarenkorbPersPos_arr) > 0) {
                         foreach ($oWarenkorbPers->oWarenkorbPersPos_arr as $oWarenkorbPersPos) {
-                            if (empty($oWarenkorbPers->Artikel->bHasKonfig)) {
+                            if (empty($oWarenkorbPersPos->cUnique)) {
                                 // Gratisgeschenk in Warenkorb legen
                                 if ((int)$oWarenkorbPersPos->nPosTyp === (int)C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                                     $kArtikelGeschenk = (int)$oWarenkorbPersPos->kArtikel;

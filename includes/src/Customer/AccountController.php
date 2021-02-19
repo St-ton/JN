@@ -525,7 +525,7 @@ class AccountController
             return false;
         }
         foreach ($persCart->oWarenkorbPersPos_arr as $item) {
-            if (!empty($item->Artikel->bHasKonfig)) {
+            if (!empty($item->cUnique)) {
                 continue;
             }
             // Gratisgeschenk in Warenkorb legen
@@ -717,7 +717,7 @@ class AccountController
                 $tmpProduct->fuelleArtikel($item->kArtikel, (int)$item->kKonfigitem === 0
                     ? Artikel::getDefaultOptions()
                     : Artikel::getDefaultConfigOptions());
-                if ((int)$tmpProduct->kArtikel > 0 && \count(CartHelper::addToCartCheck(
+                if ((int)$tmpProduct->kArtikel > 0 && empty($item->cUnique) && \count(CartHelper::addToCartCheck(
                     $tmpProduct,
                     $item->fAnzahl,
                     $item->oWarenkorbPersPosEigenschaft_arr

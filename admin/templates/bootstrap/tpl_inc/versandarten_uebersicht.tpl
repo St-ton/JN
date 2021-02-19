@@ -1,11 +1,3 @@
-<script type="text/javascript">
-    {literal}
-    function confirmDelete(cName) {
-        return confirm('{/literal}{__('deleteShippingMethod')}{literal}"' + cName + '"?');
-    }
-    {/literal}
-</script>
-
 {include file='tpl_inc/seite_header.tpl' cTitel=__('shippingmethods') cBeschreibung=__('isleListsHint') cDokuURL=__('shippingmethodsURL')}
 
 <div id="content">
@@ -136,9 +128,10 @@
                                 {$jtl_token}
                                 <div class="btn-group">
                                     <button name="del"
+                                            type="submit"
                                             value="{$versandart->kVersandart}"
-                                            class="btn btn-link px-2"
-                                            onclick="return confirmDelete('{$versandart->cName}');"
+                                            class="btn btn-link px-2 delete-confirm"
+                                            data-modal-body="{__('deleteShippingMethod')} {$versandart->cName}"
                                             title="{__('delete')}"
                                             data-toggle="tooltip">
                                         <span class="icon-hover">

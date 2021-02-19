@@ -552,6 +552,7 @@ $(document).ready(function () {
 
     checkSingleSettingCard();
     onChangeFormSubmit();
+    deleteConfirmation();
 });
 
 $(window).on('load', () => {
@@ -848,4 +849,33 @@ function startSpinner()
 function stopSpinner()
 {
     $('body').find('.ajax-spinner').remove();
+}
+
+function deleteConfirmation()
+{
+    $('.delete-confirm').on('click', function (e) {
+        e.preventDefault();
+        let href           = $(this).attr('href'),
+            $self          = $(this),
+            $confirmButton = $('#modal-footer-delete-confirm-yes'),
+            title          = $self.data('modal-title') || $('#modal-footer-delete-confirm-default-title').html(),
+            body           = $self.data('modal-body') || '';
+
+        if (href !== undefined && href !== '') {
+            $confirmButton.off().on('click', function () {
+                window.location = href;
+            });
+        } else if ($(this).attr('type') === 'submit') {
+            $confirmButton.off().on('click', function () {
+                let $form = $self.closest('form');
+                $form.append(
+                    '<input type="hidden" name="' + $self.attr('name') + '" value="' + $self.attr('value') + '" />'
+                );
+                $form.submit();
+            });
+        }
+        $('#modal-footer-delete-confirm .modal-title').html(title);
+        $('#modal-footer-delete-confirm .modal-body').html(body);
+        $('#modal-footer-delete-confirm').modal('show');
+    });
 }

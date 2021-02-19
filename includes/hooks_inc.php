@@ -1708,7 +1708,8 @@ define('HOOK_BACKEND_FUNCTIONS_GRAVATAR', 227);
 
 /**
  * @param Cart - oWarenkorb
- *@since 4.06
+ * @param Bestellung - oBestellung
+ * @since 4.06
  * @file includes/bestellabschluss_inc.php
  */
 define('HOOK_BESTELLABSCHLUSS_INC_WARENKORBINDB', 228);

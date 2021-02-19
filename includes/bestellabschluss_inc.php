@@ -163,7 +163,7 @@ function bestellungInDB($cleared = 0, $orderNo = '')
     }
     $conf = Shop::getSettings([CONF_GLOBAL]);
     //füge Warenkorb ein
-    executeHook(HOOK_BESTELLABSCHLUSS_INC_WARENKORBINDB, ['oWarenkorb' => &$cart]);
+    executeHook(HOOK_BESTELLABSCHLUSS_INC_WARENKORBINDB, ['oWarenkorb' => &$cart, 'oBestellung' => &$order]);
     $cart->kWarenkorb = $cart->insertInDB();
     //füge alle Warenkorbpositionen ein
     if (is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {

@@ -109,8 +109,8 @@
                     {$deleteCount = $linkGroupCountByLinkID[$link->getID()]|default:1}
                     <button name="action"
                             value="delete-link"
-                            class="btn btn-link px-2{if $link->getPluginID() > 0} disabled{/if}"
-                            {if $link->getPluginID() === 0} onclick="return confirmDelete();"{/if}
+                            class="btn btn-link px-2{if $link->getPluginID() > 0} disabled{else} delete-confirm{/if}"
+                            {if $link->getPluginID() === 0} data-modal-body="{__('sureDeleteLink')}"{/if}
                             title="{if $deleteCount > 1}{{__('dangerLinkWillGetDeleted')}|sprintf:{$deleteCount}}{else}{__('delete')}{/if}"
                             {if $link->isSystem()} disabled{/if}
                             data-toggle="tooltip">

@@ -131,7 +131,13 @@
                                                 <span class="fas fa-check"></span>
                                             </span>
                                         </button>
-                                        <button name="action" value="delete" class="btn btn-link px-1 remove notext" title="{__('delete')}" onclick="return confirm('{__('sureDeleteFormat')}');" data-toggle="tooltip" data-placement="top">
+                                        <button name="action"
+                                                value="delete"
+                                                class="btn btn-link px-1 remove notext delete-confirm"
+                                                title="{__('delete')}"
+                                                data-toggle="tooltip"
+                                                data-placement="top"
+                                                data-modal-body="{__('sureDeleteFormat')} ({$exportformat->cName})">
                                             <span class="icon-hover">
                                                 <span class="fal fa-trash-alt"></span>
                                                 <span class="fas fa-trash-alt"></span>

@@ -75,7 +75,12 @@
                                                     </span>
                                                 </button>
                                             {/if}
-                                            <button class="notext btn btn-link px-2" name="action" value="account_delete" onclick="return confirm('{__('sureDeleteUser')}');" title="{__('delete')}" data-toggle="tooltip">
+                                            <button class="notext btn btn-link px-2 delete-confirm"
+                                                    name="action"
+                                                    value="account_delete"
+                                                    title="{__('delete')}"
+                                                    data-toggle="tooltip"
+                                                    data-modal-body="{__('sureDeleteUser')} ({$oAdmin->cLogin})">
                                                 <span class="icon-hover">
                                                     <span class="fal fa-trash-alt"></span>
                                                     <span class="fas fa-trash-alt"></span>
@@ -137,11 +142,11 @@
                                             <input type="hidden" value="{$oGroup->kAdminlogingruppe}" name="id" />
                                             <div class="btn-group">
                                                 <button type="submit"
-                                                        class="delete btn btn-link px-2"
+                                                        class="delete btn btn-link px-2 delete-confirm"
                                                         name="action" value="group_delete"
-                                                        onclick="return confirm('{__('sureDeleteGroup')}');"
                                                         {if (int)$oGroup->nCount > 0}title="{__('loeschenLabelDeaktiviert')}" disabled="disabled"{else}title="{__('delete')}"{/if}
-                                                        data-toggle="tooltip">
+                                                        data-toggle="tooltip"
+                                                        data-modal-body="{__('sureDeleteGroup')} ({$oGroup->cGruppe})">
                                                     <span class="icon-hover">
                                                         <span class="fal fa-trash-alt"></span>
                                                         <span class="fas fa-trash-alt"></span>

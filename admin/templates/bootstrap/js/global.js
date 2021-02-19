@@ -851,6 +851,18 @@ function stopSpinner()
     $('body').find('.ajax-spinner').remove();
 }
 
+
+/**
+ * open a delete modal to confirm deletion
+ *
+ * 3 types of delete buttons:
+ * 1. By href: .delete-confirm - needs a href tag
+ * 2. By form: .delete-confirm - needs type="submit"
+ * 3. By io: .delete-confirm - needs .delete-confirm-io and confirm event is triggered by .trigger('delete.io');
+ *
+ * modal title can be changed by: data-modal-title
+ * modal body can be changed by: data-modal-body
+ */
 function deleteConfirmation()
 {
     $('.delete-confirm').on('click', function (e) {
@@ -858,6 +870,7 @@ function deleteConfirmation()
         let href           = $(this).attr('href'),
             $self          = $(this),
             $confirmButton = $('#modal-footer-delete-confirm-yes'),
+            $modal         = $('#modal-footer-delete-confirm'),
             title          = $self.data('modal-title') || $('#modal-footer-delete-confirm-default-title').html(),
             body           = $self.data('modal-body') || '';
 
@@ -873,9 +886,14 @@ function deleteConfirmation()
                 );
                 $form.submit();
             });
+        } else if ($self.hasClass('delete-confirm-io')) {
+            $confirmButton.off().on('click', function () {
+                $self.trigger('delete.io');
+                $modal.modal('hide');
+            });
         }
         $('#modal-footer-delete-confirm .modal-title').html(title);
         $('#modal-footer-delete-confirm .modal-body').html(body);
-        $('#modal-footer-delete-confirm').modal('show');
+        $modal.modal('show');
     });
 }

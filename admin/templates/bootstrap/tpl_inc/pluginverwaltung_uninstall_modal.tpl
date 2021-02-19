@@ -2,14 +2,15 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">{__('deletePluginData')} {getHelpDesc cDesc=__('deletePluginDataDesc')}</h2>
+                <h2 class="modal-title">{__('deletePluginData')}</h2>
                 <button type="button" class="close" data-dismiss="modal">
                     <i class="fal fa-times"></i>
                 </button>
             </div>
             <div class="modal-body">
+                <p>{__('deletePluginDataInfo')}</p>
                 <div class="custom-control custom-checkbox">
-                    <input class="custom-control-input" name="delete-data" type="checkbox" id="delete-data-{$context}" checked>
+                    <input class="custom-control-input" name="delete-data" type="checkbox" id="delete-data-{$context}">
                     <label class="custom-control-label" for="delete-data-{$context}">{__('deletePluginDataQuestion')}</label>
                     {getHelpDesc cDesc=__('deletePluginDataQuestionDesc')}
                 </div>
@@ -23,7 +24,7 @@
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto submit">
                         <button type="button" class="delete-plugindata-yes btn btn-danger btn-bock">
-                            <i class="fa fa-close"></i>&nbsp;{__('deletePluginDataYes')}
+                            <i class="fa fa-trash-alt"></i>&nbsp;{__('deletePluginDataYes')}
                         </button>
                     </div>
                     <div class="col-sm-6 col-xl-auto submit">

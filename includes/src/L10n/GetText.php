@@ -11,6 +11,7 @@ use JTL\Plugin\Admin\ListingItem as PluginListingItem;
 use JTL\Plugin\PluginInterface;
 use JTL\Template\Admin\ListingItem as TemplateListingItem;
 use JTL\Template\Model;
+use stdClass;
 
 /**
  * Class GetText
@@ -134,12 +135,9 @@ class GetText
     {
         if (!\array_key_exists($path, $this->translations)) {
             $this->translations[$path] = null;
-
             if (\file_exists($path)) {
-                $moLoader                  = new MoLoader();
-                $arrayGenerator            = new ArrayGenerator();
-                $this->translations[$path] = $moLoader->loadFile($path);
-                $this->translator->addTranslations($arrayGenerator->generateArray($this->translations[$path]));
+                $this->translations[$path] = (new MoLoader())->loadFile($path);
+                $this->translator->addTranslations((new ArrayGenerator())->generateArray($this->translations[$path]));
             }
         }
 
@@ -295,9 +293,9 @@ class GetText
     }
 
     /**
-     * @param object $config
+     * @param stdClass $config
      */
-    public function localizeConfig($config): void
+    public function localizeConfig(stdClass $config): void
     {
         if ($config->cConf === 'Y') {
             $config->cName         = __($config->cWertName . '_name');
@@ -312,7 +310,7 @@ class GetText
     }
 
     /**
-     * @param object[] $configs
+     * @param stdClass[] $configs
      */
     public function localizeConfigs(array $configs): void
     {
@@ -322,19 +320,19 @@ class GetText
     }
 
     /**
-     * @param object $config
-     * @param object $value
+     * @param stdClass $config
+     * @param stdClass $value
      */
-    public function localizeConfigValue($config, $value): void
+    public function localizeConfigValue(stdClass $config, stdClass $value): void
     {
         $value->cName = __($config->cWertName . '_value(' . $value->cWert . ')');
     }
 
     /**
-     * @param object   $config
-     * @param object[] $values
+     * @param stdClass   $config
+     * @param stdClass[] $values
      */
-    public function localizeConfigValues($config, $values): void
+    public function localizeConfigValues(stdClass $config, array $values): void
     {
         foreach ($values as $value) {
             $this->localizeConfigValue($config, $value);
@@ -342,17 +340,17 @@ class GetText
     }
 
     /**
-     * @param object $section
+     * @param stdClass $section
      */
-    public function localizeConfigSection($section): void
+    public function localizeConfigSection(stdClass $section): void
     {
         $section->cName = __('configsection_' . $section->kEinstellungenSektion);
     }
 
     /**
-     * @param object[] $sections
+     * @param stdClass[] $sections
      */
-    public function localizeConfigSections($sections): void
+    public function localizeConfigSections(array $sections): void
     {
         foreach ($sections as $section) {
             $this->localizeConfigSection($section);

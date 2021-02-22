@@ -34,7 +34,7 @@ class CreateCommandCommand extends Command
     /**
      * @inheritDoc
      */
-    protected function execute(InputInterface $input, OutputInterface $output): ?int
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
         $pluginID    = \trim($input->getArgument('plugin-id') ?? '');
         $commandName = \trim($input->getArgument('command-name') ?? '');
@@ -46,8 +46,6 @@ class CreateCommandCommand extends Command
             return 0;
         } catch (Exception $e) {
             $this->getIO()->error($e->getMessage());
-
-            return 1;
         }
     }
 

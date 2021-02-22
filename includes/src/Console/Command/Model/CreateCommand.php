@@ -30,7 +30,6 @@ class CreateCommand extends Command
             ->addArgument('author', InputArgument::OPTIONAL, 'Author');
     }
 
-
     /**
      * @inheritDoc
      */

@@ -367,7 +367,7 @@
                         {lang key="blockedEmail" section="global"}
                     {elseif isset($fehlendeAngaben.email) && $fehlendeAngaben.email == 4}
                         {lang key="noDnsEmail" section="account data"}
-                    {elseif (isset($fehlendeAngaben.email) && $fehlendeAngaben.email) == 5 || (isset($fehlendeAngaben.email_vorhanden) && $fehlendeAngaben.email_vorhanden == 1)}
+                    {elseif (isset($fehlendeAngaben.email) && $fehlendeAngaben.email == 5) || (isset($fehlendeAngaben.email_vorhanden) && $fehlendeAngaben.email_vorhanden == 1)}
                         {lang key="emailNotAvailable" section="account data"}
                     {/if}
                 </div>

@@ -636,7 +636,7 @@ final class JTLCache implements JTLCacheInterface
      */
     public function flushTags($tags, $hookInfo = null): int
     {
-        $deleted = $this->method->flushTags($tags);
+        $deleted = $this->method->flushTags(\is_array($tags) ? $tags : [$tags]);
         if ($hookInfo !== null && \defined('HOOK_CACHE_FLUSH_AFTER') && \function_exists('executeHook')) {
             \executeHook(\HOOK_CACHE_FLUSH_AFTER, $hookInfo);
         }

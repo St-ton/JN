@@ -351,7 +351,7 @@ class MenuItem
     }
 
     /**
-     * @param bool $isOrphaned
+     * @param bool $orphaned
      */
     public function setOrphaned(bool $orphaned): void
     {

@@ -657,11 +657,11 @@ class Category
 
 
     /**
-     * @param $nodes
-     * @param $fullCats
+     * @param MenuItem[] $nodes
+     * @param  array $fullCats
      * @return array
      */
-    private function setOrphanedCategories($nodes, $fullCats):array
+    private function setOrphanedCategories(array $nodes, array $fullCats): array
     {
         $ids = \array_map(static function ($e) {
             return $e->getID();

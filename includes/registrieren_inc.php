@@ -26,7 +26,12 @@ function kundeSpeichern($cPost_arr)
 
     $editRechnungsadresse = (int)$cPost_arr['editRechnungsadresse'];
     $step                 = 'formular';
-    $smarty->assign('cPost_arr', StringHandler::filterXSS($cPost_arr));
+    $originalPassword     = $cPost_arr['pass'];
+    $originalPasswordRep  = $cPost_arr['pass2'];
+    $cPost_arr            = StringHandler::filterXSS($cPost_arr);
+    $cPost_arr['pass']    = $originalPassword;
+    $cPost_arr['pass2']   = $originalPasswordRep;
+    $smarty->assign('cPost_arr', $cPost_arr);
     $fehlendeAngaben     = (!$editRechnungsadresse)
         ? checkKundenFormular(1)
         : checkKundenFormular(1, 0);

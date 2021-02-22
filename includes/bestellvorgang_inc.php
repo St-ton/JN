@@ -541,7 +541,7 @@ function pruefeFehlendeAngaben($context)
 {
     $fehlendeAngaben = Shop::Smarty()->getTemplateVars('fehlendeAngaben');
 
-    return (is_array($fehlendeAngaben[$context]) && count($fehlendeAngaben[$context]));
+    return isset($fehlendeAngaben[$context]) && is_array($fehlendeAngaben[$context]) && count($fehlendeAngaben[$context]);
 }
 
 /**
@@ -1852,10 +1852,11 @@ function versandartKorrekt($kVersandart, $aFormValues = 0)
 {
     /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     $kVersandart = (int)$kVersandart;
+    $fallback    = isset($aFormValues['kVerpackung']) ? $aFormValues['kVerpackung'] : null;
     //Verpackung beachten
     $kVerpackung_arr        = (isset($_POST['kVerpackung']) && is_array($_POST['kVerpackung']) && count($_POST['kVerpackung']) > 0)
         ? $_POST['kVerpackung']
-        : $aFormValues['kVerpackung'];
+        : $fallback;
     $fSummeWarenkorb        = $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
     $_SESSION['Verpackung'] = [];
     if (is_array($kVerpackung_arr) && count($kVerpackung_arr) > 0) {
@@ -2809,7 +2810,7 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
             : $Kunde->cHerkunft;
         if ($kundenaccount != 0) {
             $Kunde->cPasswort = isset($post['pass'])
-                ? StringHandler::htmlentities(StringHandler::filterXSS($post['pass']))
+                ? StringHandler::htmlentities($post['pass'])
                 : $Kunde->cPasswort;
         }
     } else {
@@ -2878,7 +2879,7 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
             : $Kunde->cHerkunft;
         if ($kundenaccount != 0) {
             $Kunde->cPasswort = isset($post['pass'])
-                ? StringHandler::filterXSS($post['pass'])
+                ? $post['pass']
                 : $Kunde->cPasswort;
         }
     }

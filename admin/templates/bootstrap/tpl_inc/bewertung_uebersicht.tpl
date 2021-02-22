@@ -90,6 +90,7 @@
                                     </tbody>
                                 </table>
                             </div>
+                            {include file='tpl_inc/pagination.tpl' pagination=$oPagiInaktiv cAnchor='freischalten' isBottom=true}
                             <div class="card-footer save-wrapper">
                                 <div class="row">
                                     <div class="col-sm-6 col-xl-auto text-left">
@@ -202,6 +203,7 @@
                                     </tbody>
                                 </table>
                             </div>
+                            {include file='tpl_inc/pagination.tpl' pagination=$oPagiAktiv cAnchor='letzten50' isBottom=true}
                             <div class="card-footer save-wrapper">
                                 <div class="row">
                                     <div class="col-sm-6 col-xl-auto text-left">

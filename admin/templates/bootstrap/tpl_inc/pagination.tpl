@@ -11,8 +11,10 @@
 {assign var=bItemsAvailable value=$pagination->getItemCount() > 0}
 {assign var=bMultiplePages value=$pagination->getPageCount() > 1}
 {assign var=bSortByOptions value=$pagination->getSortByOptions()|@count > 0}
+{assign var=isBottom value=$isBottom|default:false}
 
 {function pageButtons}
+    {if !$isBottom}
     <span class="font-weight-bold d-block mb-3">
         {if $bMultiplePages}
             {__('entries')} {$pagination->getFirstPageItem() + 1}
@@ -22,6 +24,7 @@
             {__('allEntries')}
         {/if}
     </span>
+    {/if}
     <nav aria-label="Page navigation example">
     {if $bMultiplePages}
         <ul class="pagination justify-content-between justify-content-md-start mb-5 mb-md-0">
@@ -62,11 +65,13 @@
             </li>
         </ul>
     {else}
-        <ul class="pagination">
-            <li>
-                <a>{$pagination->getItemCount()}</a>
-            </li>
-        </ul>
+        {if $bMultiplePages || !$isBottom}
+            <ul class="pagination">
+                <li>
+                    <a>{$pagination->getItemCount()}</a>
+                </li>
+            </ul>
+        {/if}
     {/if}
     </nav>
 {/function}
@@ -114,17 +119,19 @@
                 {foreach $cParam_arr as $cParamName => $cParamValue}
                     <input type="hidden" name="{$cParamName}" value="{$cParamValue}">
                 {/foreach}
-                <div class="col-12 col-md-4 col-lg-3 col-xl-2 ml-lg-auto">
-                    <div class="form-group">
-                        {itemsPerPageOptions}
-                    </div>
-                </div>
-                {if $bSortByOptions}
-                    <div class="col-12 col-md-4 col-lg-3 col-xl-2">
+                {if !$isBottom}
+                    <div class="col-12 col-md-4 col-lg-3 col-xl-2 ml-lg-auto">
                         <div class="form-group">
-                            {sortByDirOptions}
+                            {itemsPerPageOptions}
                         </div>
                     </div>
+                    {if $bSortByOptions}
+                        <div class="col-12 col-md-4 col-lg-3 col-xl-2">
+                            <div class="form-group">
+                                {sortByDirOptions}
+                            </div>
+                        </div>
+                    {/if}
                 {/if}
             </div>
         </form>

@@ -90,7 +90,7 @@
                                 <tr>
                                     <th class="sticky-top">&nbsp;</th>
                                     {foreach $oVergleichsliste->oArtikel_arr as $oArtikel}
-                                        <th class="comparelist-item sticky-top min-w">
+                                        <th class="comparelist-item sticky-top min-w" data-product-id-cl="{$oArtikel->kArtikel}">
                                             <div class="stretched">
                                                 <div>
                                                     {block name='comparelist-index-products-header-delete'}
@@ -149,7 +149,7 @@
                                     {block name='comparelist-index-products'}
                                         {foreach $oVergleichsliste->oArtikel_arr as $oArtikel}
                                             {if $row['key'] === 'verfuegbarkeit'}
-                                                <td>
+                                                <td data-product-id-cl="{$oArtikel->kArtikel}">
                                                     {block name='comparelist-index-products-row-abailability'}
                                                         {block name='comparelist-index-products-includes-stock-availability'}
                                                             {include file='productdetails/stock.tpl' Artikel=$oArtikel availability=true}
@@ -165,13 +165,13 @@
                                                     {/block}
                                                 </td>
                                             {elseif $row['key'] === 'lieferzeit'}
-                                                <td>
+                                                <td data-product-id-cl="{$oArtikel->kArtikel}">
                                                     {block name='comparelist-index-products-includes-stock-shipping-time'}
                                                         {include file='productdetails/stock.tpl' Artikel=$oArtikel shippingTime=true}
                                                     {/block}
                                                 </td>
                                             {elseif $oArtikel->$row['key'] !== ''}
-                                                <td style="min-width: {$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px">
+                                                <td style="min-width: {$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px" data-product-id-cl="{$oArtikel->kArtikel}">
                                                     {if $row['key'] === 'fArtikelgewicht' || $row['key'] === 'fGewicht'}
                                                         {block name='comparelist-index-products-row-weight'}
                                                             {$oArtikel->$row['key']} {lang key='weightUnit' section='comparelist'}
@@ -204,7 +204,7 @@
                                                 </td>
                                             {else}
                                                 {block name='comparelist-index-products-row-none'}
-                                                    <td>--</td>
+                                                    <td data-product-id-cl="{$oArtikel->kArtikel}">--</td>
                                                 {/block}
                                             {/if}
                                         {/foreach}
@@ -221,7 +221,7 @@
                                                     </div>
                                                 </td>
                                                 {foreach $oVergleichsliste->oArtikel_arr as $oArtikel}
-                                                    <td style="min-width: {$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px">
+                                                    <td style="min-width: {$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px" data-product-id-cl="{$oArtikel->kArtikel}">
                                                         {if count($oArtikel->oMerkmale_arr) > 0}
                                                             {foreach $oArtikel->oMerkmale_arr as $oMerkmaleArtikel}
                                                                 {if $oMerkmale->cName == $oMerkmaleArtikel->cName}
@@ -251,7 +251,7 @@
                                                     </td>
                                                 {/block}
                                                 {foreach $oVergleichsliste->oArtikel_arr as $oArtikel}
-                                                    <td>
+                                                    <td data-product-id-cl="{$oArtikel->kArtikel}">
                                                         {if isset($oArtikel->oVariationenNurKind_arr) && $oArtikel->oVariationenNurKind_arr|@count > 0}
                                                             {foreach $oArtikel->oVariationenNurKind_arr as $oVariationenArtikel}
                                                                 {if $oVariationen->cName == $oVariationenArtikel->cName}

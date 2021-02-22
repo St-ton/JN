@@ -46,7 +46,6 @@ class Service
     public function __construct(DB $db)
     {
         $this->db = $db;
-
         Shop::Container()->getGetText()
             ->setLanguage(Shop::getCurAdminLangTag())
             ->loadAdminLocale('pages/opc');

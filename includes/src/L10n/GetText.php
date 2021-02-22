@@ -2,8 +2,11 @@
 
 namespace JTL\L10n;
 
+use Gettext\Generator\ArrayGenerator;
+use Gettext\Loader\MoLoader;
 use Gettext\Translations;
 use Gettext\Translator;
+use Gettext\TranslatorFunctions;
 use JTL\Plugin\Admin\ListingItem as PluginListingItem;
 use JTL\Plugin\PluginInterface;
 use JTL\Template\Admin\ListingItem as TemplateListingItem;
@@ -38,7 +41,7 @@ class GetText
         $this->langTag      = $this->getDefaultLanguage();
         $this->translations = [];
         $this->translator   = new Translator();
-        $this->translator->register();
+        TranslatorFunctions::register($this->translator);
         $this->setLanguage()->loadAdminLocale('base');
     }
 
@@ -133,8 +136,10 @@ class GetText
             $this->translations[$path] = null;
 
             if (\file_exists($path)) {
-                $this->translations[$path] = Translations::fromMoFile($path);
-                $this->translator->loadTranslations($this->translations[$path]);
+                $moLoader                  = new MoLoader();
+                $arrayGenerator            = new ArrayGenerator();
+                $this->translations[$path] = $moLoader->loadFile($path);
+                $this->translator->addTranslations($arrayGenerator->generateArray($this->translations[$path]));
             }
         }
 
@@ -161,7 +166,7 @@ class GetText
     }
 
     /**
-     * @param string $domain
+     * @param string          $domain
      * @param PluginInterface $plugin
      * @return GetText
      */
@@ -241,8 +246,7 @@ class GetText
             $this->langTag      = $langTag;
             $this->translations = [];
             $this->translator   = new Translator();
-            $this->translator->register();
-
+            TranslatorFunctions::register($this->translator);
             if (!empty($oldLangTag)) {
                 foreach ($oldTranslations as $path => $trans) {
                     $newPath = \str_replace('/' . $oldLangTag . '/', '/' . $langTag . '/', $path);
@@ -278,8 +282,8 @@ class GetText
     public function loadConfigLocales(bool $withGroups = false, bool $withSections = false): void
     {
         $this->loadAdminLocale('configs/configs')
-             ->loadAdminLocale('configs/values')
-             ->loadAdminLocale('configs/groups');
+            ->loadAdminLocale('configs/values')
+            ->loadAdminLocale('configs/groups');
 
         if ($withGroups) {
             $this->loadAdminLocale('configs/groups');
@@ -327,7 +331,7 @@ class GetText
     }
 
     /**
-     * @param object $config
+     * @param object   $config
      * @param object[] $values
      */
     public function localizeConfigValues($config, $values): void

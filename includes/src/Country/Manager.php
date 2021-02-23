@@ -10,7 +10,6 @@ use JTL\Helpers\Request;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Services\JTL\CountryService;
 use JTL\Services\JTL\CountryServiceInterface;
-use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 
 /**

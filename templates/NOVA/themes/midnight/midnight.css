@@ -25627,8 +25627,11 @@ header #burger-menu {
   font-size: 1rem;
   border-top: 1px solid #ebebeb;
 }
-.basket .basket-summary-notice {
+.basket .basket-summary-top {
   margin-top: 2rem;
+}
+.basket .basket-summary-notice-weight-wrapper {
+  margin-top: 0.5rem;
 }
 .basket #cart-checkout-btn {
   width: 100%;

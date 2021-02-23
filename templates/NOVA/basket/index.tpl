@@ -212,9 +212,19 @@
                             {/card}
                             {if !empty($WarenkorbVersandkostenfreiHinweis) && $Warenkorb->PositionenArr|@count > 0}
                                 {block name='basket-index-alert'}
-                                    {row class="basket-summary-notice"}
+                                    {row class="basket-summary-notice basket-summary-top"}
                                         {col cols=1}<i class="fas fa-truck"></i>{/col}
                                         {col cols=10 class="basket_notice"}{$WarenkorbVersandkostenfreiHinweis}{/col}
+                                    {/row}
+                                {/block}
+                            {/if}
+                            {if $Einstellungen.kaufabwicklung.warenkorb_gesamtgewicht_anzeigen === 'Y'}
+                                {block name='basket-index-notice-weight'}
+                                    {row class="basket-summary-notice-weight-wrapper {if empty($WarenkorbVersandkostenfreiHinweis)}basket-summary-top{/if}"}
+                                        {col cols=1}<i class="fas fa-weight-hanging"></i>{/col}
+                                        {col cols=10 class="basket-summary-notice-weight"}
+                                            {lang key='cartTotalWeight' section='basket' printf=$WarenkorbGesamtgewicht}
+                                        {/col}
                                     {/row}
                                 {/block}
                             {/if}

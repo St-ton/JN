@@ -1274,6 +1274,12 @@ msgstr "Combine current basket with saved basket"
 msgid "warenkorb_warenkorb2pers_merge_desc"
 msgstr "Specify whether to combine the current basket of a customer with their already saved baskets."
 
+msgid "warenkorb_gesamtgewicht_anzeigen_name"
+msgstr "Show total weight"
+
+msgid "warenkorb_gesamtgewicht_anzeigen_desc"
+msgstr "Specify whether to display the total weight of all items in the basket."
+
 msgid "bestellvorgang_kaufabwicklungsmethode_name"
 msgstr "Checkout method"
 

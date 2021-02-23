@@ -26,7 +26,7 @@
                 let mainNode = $(this);
                 mainNode.removeClass('slick-lazy');
                 if (!mainNode.hasClass('slick-initialized')) {
-                    mainNode.find('.product-wrapper').removeClass('m-auto ml-auto mr-auto');
+                    mainNode.find('.product-wrapper').removeClass('mx-auto ml-auto-util mr-auto');
                     self.initSlick(mainNode, mainNode.data('slick-type'));
                 }
             });

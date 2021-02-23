@@ -2,6 +2,7 @@
 
 namespace JTL\dbeS\Sync;
 
+use JTL\Catalog\Currency;
 use JTL\Checkout\Adresse;
 use JTL\Customer\Customer as CustomerClass;
 use JTL\Customer\CustomerAttribute;
@@ -19,6 +20,7 @@ use JTL\Services\JTL\CryptoServiceInterface;
 use JTL\Shop;
 use JTL\SimpleMail;
 use JTL\XML;
+use Preise;
 use stdClass;
 
 /**
@@ -152,7 +154,8 @@ final class Customer extends AbstractSync
         if (!isset($xml['gutscheine']['gutschein']) || !\is_array($xml['gutscheine']['gutschein'])) {
             return;
         }
-        $mailer = Shop::Container()->get(Mailer::class);
+        $mailer          = Shop::Container()->get(Mailer::class);
+        $defaultCurrency = (new Currency())->getDefault();
         foreach ($this->mapper->mapArray($xml['gutscheine'], 'gutschein', 'mGutschein') as $voucher) {
             if (!($voucher->kGutschein > 0 && $voucher->kKunde > 0)) {
                 continue;
@@ -169,21 +172,22 @@ final class Customer extends AbstractSync
             );
             $this->db->query(
                 'UPDATE tkunde 
-                SET fGuthaben = fGuthaben + ' . (float)$voucher->fWert . ' 
-                WHERE kKunde = ' . (int)$voucher->kKunde,
+                    SET fGuthaben = fGuthaben + ' . (float)$voucher->fWert . ' 
+                    WHERE kKunde = ' . (int)$voucher->kKunde,
                 ReturnType::DEFAULT
             );
             $this->db->query(
                 'UPDATE tkunde 
-                SET fGuthaben = 0 
-                WHERE kKunde = ' . (int)$voucher->kKunde . ' 
-                    AND fGuthaben < 0',
+                    SET fGuthaben = 0 
+                    WHERE kKunde = ' . (int)$voucher->kKunde . ' 
+                        AND fGuthaben < 0',
                 ReturnType::DEFAULT
             );
-            $customer        = new CustomerClass((int)$voucher->kKunde);
-            $obj             = new stdClass();
-            $obj->tkunde     = $customer;
-            $obj->tgutschein = $voucher;
+            $voucher->cLocalizedWert = Preise::getLocalizedPriceString($voucher->fWert, $defaultCurrency, false);
+            $customer                = new CustomerClass((int)$voucher->kKunde);
+            $obj                     = new stdClass();
+            $obj->tkunde             = $customer;
+            $obj->tgutschein         = $voucher;
             if ($customer->cMail) {
                 $mail = new Mail();
                 $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_GUTSCHEIN, $obj));
@@ -285,8 +289,8 @@ final class Customer extends AbstractSync
                     cLand, cTel, cMobil, cFax, cMail, cUSTID, cWWW, fGuthaben, cNewsletter, dGeburtstag, fRabatt,
                     cHerkunft, dErstellt, dVeraendert, cAktiv, cAbgeholt,
                     date_format(dGeburtstag, '%d.%m.%Y') AS dGeburtstag_formatted, nRegistriert
-                    FROM tkunde
-                    WHERE kKunde = " . (int)$oldCustomer->kKunde,
+                FROM tkunde
+                WHERE kKunde = " . (int)$oldCustomer->kKunde,
             ReturnType::ARRAY_OF_ASSOC_ARRAYS
         );
         $crypto = Shop::Container()->getCryptoService();

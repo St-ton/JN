@@ -11,7 +11,9 @@
 			overflow-x: hidden;
 			max-height: none;
 			@include media-breakpoint-down(md) {
-				padding-right: 50px;
+				&:not(.slider-no-preview) {
+					padding-right: 50px;
+				}
 			}
 			> div {
 				width: 100%;
@@ -168,9 +170,11 @@
 .slick-type-news ,
 .slick-type-three ,
 .slick-type-box {
-	.slick-list {
-		@include media-breakpoint-down(md) {
-			padding-right: 50px;
+	&:not(.slider-no-preview) {
+		.slick-list {
+			@include media-breakpoint-down(md) {
+				padding-right: 50px;
+			}
 		}
 	}
 }

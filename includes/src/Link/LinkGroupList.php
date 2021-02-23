@@ -180,13 +180,14 @@ final class LinkGroupList implements LinkGroupListInterface
     {
         $groups         = [];
         $groupLanguages = $this->db->query(
-            'SELECT loc.*, g.cTemplatename AS template, g.cName AS groupName, IFNULL(tsprache.kSprache, 0) AS kSprache 
+            'SELECT g.*, l.cName AS localizedName, l.cISOSprache, g.cTemplatename AS template,
+                g.cName AS groupName, IFNULL(tsprache.kSprache, 0) AS kSprache 
                 FROM tlinkgruppe AS g
-                LEFT JOIN tlinkgruppesprache AS loc
-                    ON g.kLinkgruppe = loc.kLinkgruppe
+                LEFT JOIN tlinkgruppesprache AS l
+                    ON g.kLinkgruppe = l.kLinkgruppe
                 LEFT JOIN tsprache 
-                    ON tsprache.cISO = loc.cISOSprache
-                WHERE g.kLinkgruppe > 0 AND loc.kLinkgruppe > 0',
+                    ON tsprache.cISO = l.cISOSprache
+                WHERE g.kLinkgruppe > 0 AND l.kLinkgruppe > 0',
             ReturnType::ARRAY_OF_OBJECTS
         );
         $grouped        = group($groupLanguages, static function ($e) {

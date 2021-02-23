@@ -19577,13 +19577,14 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
 
 .breadcrumb-wrapper {
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 @media (min-width: 992px) {
   .breadcrumb-wrapper {
     border-style: solid;
     border-color: #ebebeb;
     border-width: 1px 0;
+    margin-bottom: 2rem;
   }
 }
 
@@ -20118,7 +20119,7 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
   max-height: none;
 }
 @media (max-width: 991.98px) {
-  .carousel:not(.slick-initialized).slick-lazy {
+  .carousel:not(.slick-initialized).slick-lazy:not(.slider-no-preview) {
     padding-right: 50px;
   }
 }
@@ -20400,11 +20401,11 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
 }
 
 @media (max-width: 991.98px) {
-  .slick-type-product .slick-list,
-.slick-type-half .slick-list,
-.slick-type-news .slick-list,
-.slick-type-three .slick-list,
-.slick-type-box .slick-list {
+  .slick-type-product:not(.slider-no-preview) .slick-list,
+.slick-type-half:not(.slider-no-preview) .slick-list,
+.slick-type-news:not(.slider-no-preview) .slick-list,
+.slick-type-three:not(.slider-no-preview) .slick-list,
+.slick-type-box:not(.slider-no-preview) .slick-list {
     padding-right: 50px;
   }
 }
@@ -20567,6 +20568,10 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
 
 .dropdown-full-width .dropdown-menu {
   width: 100%;
+}
+
+.dropdown-toggle, [data-toggle=collapse]:not(.navbar-toggler) {
+  white-space: initial;
 }
 
 .slick-slide .square, .slick-slide .productbox-image-wrapper {
@@ -20958,6 +20963,10 @@ label {
 
 #maintenance button.close {
   display: none;
+}
+
+.modal-fullwidth {
+  max-width: 96vw;
 }
 
 .newsbox {
@@ -24753,7 +24762,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 .variations .custom-radio {
   margin-bottom: 0.5rem;
 }
-.variations .custom-radio:hover:hover, .variations .custom-radio:hover:focus {
+.variations .custom-radio:hover, .variations .custom-radio:focus {
   color: #ffffff;
   text-decoration: none;
   background-color: #44466a;
@@ -24940,6 +24949,12 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   padding-bottom: 1rem;
 }
 
+.attr-characteristic a {
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+  display: inline-block;
+}
+
 /* comparelist */
 #filter-checkboxes {
   margin-bottom: 1.5rem;
@@ -24998,6 +25013,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 .comparelist .stretched {
   display: flex;
   flex-direction: column;
+}
+.comparelist .comparelist-label-button th {
+  padding: 0;
+  border: 0;
 }
 
 .custom-checkbox + .description {

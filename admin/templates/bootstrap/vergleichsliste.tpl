@@ -51,6 +51,7 @@
                             </tbody>
                         </table>
                     </div>
+                    {include file='tpl_inc/pagination.tpl' pagination=$pagination cAnchor='letztenvergleiche' isBottom=true}
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}

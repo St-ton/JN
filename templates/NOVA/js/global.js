@@ -316,10 +316,11 @@ $(document).ready(function () {
     });
 
     $(document).on('click', '.footnote-vat a, .versand, .popup', function(e) {
-        var url = e.currentTarget.href;
+        let url     = e.currentTarget.href,
+            classes = $(this).data('modal-classes') || '';
         url += (url.indexOf('?') === -1) ? '?isAjax=true' : '&isAjax=true';
         eModal.ajax({
-            size: 'xl',
+            size: 'xl ' + classes,
             url: url,
             title: typeof e.currentTarget.title !== 'undefined' ? e.currentTarget.title : '',
             keyboard: true,

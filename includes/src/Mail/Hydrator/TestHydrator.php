@@ -141,8 +141,11 @@ class TestHydrator extends DefaultsHydrator
     private function getGift(): stdClass
     {
         $gift                 = new stdClass();
+        $gift->fWert          = 5.00;
         $gift->cLocalizedWert = '5,00 EUR';
         $gift->cGrund         = 'Geburtstag';
+        $gift->kGutschein     = 33;
+        $gift->kKunde         = 1;
 
         return $gift;
     }
@@ -249,6 +252,7 @@ class TestHydrator extends DefaultsHydrator
         $until                         = (new DateTime())->modify('+28 days')->format('Y-m-d H:i:s');
         $coupon                        = new stdClass();
         $coupon->cName                 = 'Kuponname';
+        $coupon->Hersteller            = [];
         $coupon->fWert                 = 5;
         $coupon->cWertTyp              = 'festpreis';
         $coupon->dGueltigAb            = $now;

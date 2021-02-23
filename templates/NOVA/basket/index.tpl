@@ -64,7 +64,7 @@
                                                         {form method="post" name="freegift" action="{get_static_route id='warenkorb.php'}" class="text-center-util" slide=true}
                                                             {block name='basket-index-freegifts'}
                                                                 {row id="freegift"
-                                                                     class="slick-smooth-loading carousel carousel-arrows-inside slick-lazy slick-type-half"
+                                                                     class="slick-smooth-loading carousel carousel-arrows-inside slick-lazy slick-type-half {if $oArtikelGeschenk_arr|count < 3}slider-no-preview{/if}"
                                                                      data=["slick-type"=>"slider-half"]}
                                                                     {include file='snippets/slider_items.tpl' items=$oArtikelGeschenk_arr type='freegift'}
                                                                 {/row}

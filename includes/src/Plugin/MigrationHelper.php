@@ -232,9 +232,8 @@ final class MigrationHelper
         $relPath       = 'plugins/' . $pluginDir . '/Migrations';
         $migrationPath = $relPath . '/' . $filePath . '.php';
         $fileSystem    = new Filesystem(new Local(\PFAD_ROOT));
-
-        if (!$fileSystem->has($relPath)) {
-            throw new Exception('Migrations path doesn\'t exist!');
+        if (!$fileSystem->has($relPath) && !$fileSystem->createDir($relPath)) {
+            throw new Exception('Migrations path doesn\'t exist and could not be created!');
         }
 
         $content = Shop::Smarty()

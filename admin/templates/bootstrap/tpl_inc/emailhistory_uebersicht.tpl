@@ -84,6 +84,7 @@
                             </tbody>
                         </table>
                     </div>
+                    {include file='tpl_inc/pagination.tpl' pagination=$pagination isBottom=true}
                     <div class="save-wrapper">
                         <div class="row">
                             <div class="col-sm-6 col-xl-auto text-left">

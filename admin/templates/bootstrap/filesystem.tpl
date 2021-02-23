@@ -11,7 +11,7 @@
                 {if $cnf->cConf === 'Y'}
                     <div class="form-group form-row align-items-center item{if isset($cSuche) && $cnf->kEinstellungenConf == $cSuche} highlight{/if}">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="{$cnf->cWertName}">{$cnf->cName}</label>
-                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $cnf->cInputTyp === 'number'}config-type-number{/if}">
                             {if $cnf->cInputTyp === 'selectbox'}
                                 <select class="custom-select" name="{$cnf->cWertName}" id="{$cnf->cWertName}">
                                     {foreach name=selectfor from=$cnf->ConfWerte item=wert}

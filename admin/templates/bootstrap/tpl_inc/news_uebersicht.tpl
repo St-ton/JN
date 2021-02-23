@@ -133,6 +133,7 @@
                                     </tbody>
                                 </table>
                             </div>
+                            {include file='tpl_inc/pagination.tpl' pagination=$oPagiKommentar cAnchor='inaktiv' isBottom=true}
                             <div class="card-footer save-wrapper">
                                 <div class="row">
                                     <div class="col-sm-6 col-xl-auto text-left">
@@ -245,6 +246,7 @@
                         <input type="hidden" name="news" value="1" />
                         <input type="hidden" name="erstellen" value="1" />
                         <input type="hidden" name="tab" value="aktiv" />
+                        {include file='tpl_inc/pagination.tpl' pagination=$oPagiNews cAnchor='aktiv' isBottom=true}
                         <div class="card-footer save-wrapper">
                             <div class="row">
                                 <div class="col-sm-6 col-xl-auto text-left">
@@ -341,6 +343,7 @@
                         <input type="hidden" name="news" value="1" />
                         <input type="hidden" name="erstellen" value="1" />
                         <input type="hidden" name="tab" value="kategorien" />
+                        {include file='tpl_inc/pagination.tpl' pagination=$oPagiKats cAnchor='kategorien' isBottom=true}
                         <div class="card-footer save-wrapper">
                             <div class="row">
                                 <div class="col-sm-6 col-xl-auto text-left">
@@ -382,7 +385,7 @@
                                 {if $oConfig->cConf === 'Y'}
                                     <div class="form-group form-row align-items-center mb-5 mb-md-3">
                                         <label class="col col-sm-4 col-form-label text-sm-right" for="{$oConfig->cWertName}">{$oConfig->cName}:</label>
-                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $oConfig->cInputTyp === 'number'}config-type-number{/if}">
                                             {if $oConfig->cInputTyp === 'selectbox'}
                                                 <select name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" class="custom-select combo">
                                                     {foreach $oConfig->ConfWerte as $wert}

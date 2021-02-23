@@ -175,6 +175,7 @@
         });
 
         $('#cancelWait').on('click', function (e) {
+            console.log('cancelWait!');
             cancelWait(true);
             e.preventDefault();
         });
@@ -263,7 +264,7 @@
                     } else {
                         updateModalWait(null, 1);
                         updateRow($row, table);
-                        closeModalWait();
+                        window.setTimeout(closeModalWait, 100);
                     }
                 } else {
                     window.alert(sprintf('{/literal}{__('errorMigrationTable')}{literal}', table));
@@ -271,6 +272,7 @@
                 }
             },
             function (responseJSON) {
+                console.log('responseJSON', responseJSON);
                 window.alert(sprintf('{/literal}{__('errorMigrationTable')}{literal}', table));
                 window.location.reload(true);
             },

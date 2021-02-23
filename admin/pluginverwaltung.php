@@ -25,9 +25,9 @@ use JTL\Plugin\State;
 use JTL\Shop;
 use JTL\XMLParser;
 use JTLShop\SemVer\Version;
-use League\Flysystem\Adapter\Local;
-use League\Flysystem\Filesystem;
 use League\Flysystem\MountManager;
+use League\Flysystem\UnableToDeleteDirectory;
+use League\Flysystem\UnableToDeleteFile;
 use function Functional\first;
 use function Functional\group;
 use function Functional\select;
@@ -126,7 +126,7 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
             $pluginNotFound = true;
         }
         $smarty->assign('oPlugin', $plugin)
-               ->assign('kPlugin', $pluginID);
+            ->assign('kPlugin', $pluginID);
         $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
     } elseif (Request::postInt('lizenzkeyadd') === 1 && Request::postInt('kPlugin') > 0) {
         // Lizenzkey eingeben
@@ -295,8 +295,9 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
     } elseif (Request::postInt('delete') === 1) {
         $dirs    = Request::postVar('cVerzeichnis', []);
         $res     = count($dirs) > 0;
-        $manager = new MountManager(['root' => new Filesystem(new Local(PFAD_ROOT))]);
-        $manager->mountFilesystem('plgn', Shop::Container()->get(\JTL\Filesystem\Filesystem::class));
+        $manager = new MountManager([
+            'plgn' => Shop::Container()->get(\JTL\Filesystem\Filesystem::class)
+        ]);
         foreach ($dirs as $dir) {
             $dir  = basename($dir);
             $test = $_POST['ext'][$dir] ?? -1;
@@ -306,7 +307,11 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
             $dirName = (int)$test === 1
                 ? (PLUGIN_DIR . $dir)
                 : (PFAD_PLUGIN . $dir);
-            $res     = @$manager->deleteDir('plgn://' . $dirName) && $res;
+            try {
+                $manager->deleteDirectory('plgn://' . $dirName);
+            } catch (UnableToDeleteFile | UnableToDeleteDirectory $exception) {
+                $res = false;
+            }
         }
         if ($res === true) {
             $_SESSION['plugin_msg'] = __('successPluginDelete');
@@ -429,8 +434,8 @@ if ($step === 'pluginverwaltung_uebersicht') {
 
     try {
         $smarty->assign('pluginLanguages', Shop::Lang()->gibInstallierteSprachen())
-               ->assign('plugin', $loader->init($pluginID))
-               ->assign('kPlugin', $pluginID);
+            ->assign('plugin', $loader->init($pluginID))
+            ->assign('kPlugin', $pluginID);
     } catch (InvalidArgumentException $e) {
         $pluginNotFound = true;
     }

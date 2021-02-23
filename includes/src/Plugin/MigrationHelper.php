@@ -8,8 +8,9 @@ use Exception;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Shop;
-use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
+use League\Flysystem\Local\LocalFilesystemAdapter;
+use Throwable;
 
 /**
  * Class MigrationHelper
@@ -231,8 +232,10 @@ final class MigrationHelper
         $filePath      = 'Migration' . $timestamp;
         $relPath       = 'plugins/' . $pluginDir . '/Migrations';
         $migrationPath = $relPath . '/' . $filePath . '.php';
-        $fileSystem    = new Filesystem(new Local(\PFAD_ROOT));
-        if (!$fileSystem->has($relPath) && !$fileSystem->createDir($relPath)) {
+        $fileSystem    = new Filesystem(new LocalFilesystemAdapter(\PFAD_ROOT));
+        try {
+            $fileSystem->createDirectory($relPath);
+        } catch (Throwable $e) {
             throw new Exception('Migrations path doesn\'t exist and could not be created!');
         }
 
@@ -244,7 +247,7 @@ final class MigrationHelper
             ->assign('timestamp', $timestamp)
             ->fetch(\PFAD_ROOT . 'includes/src/Console/Command/Plugin/Template/migration.class.tpl');
 
-        $fileSystem->put($migrationPath, $content);
+        $fileSystem->write($migrationPath, $content);
 
         return $migrationPath;
     }

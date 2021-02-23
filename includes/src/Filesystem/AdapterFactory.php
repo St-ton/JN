@@ -2,10 +2,12 @@
 
 namespace JTL\Filesystem;
 
-use League\Flysystem\Adapter\Ftp;
-use League\Flysystem\Adapter\Local;
-use League\Flysystem\AdapterInterface;
-use League\Flysystem\Sftp\SftpAdapter;
+use League\Flysystem\FilesystemAdapter;
+use League\Flysystem\Ftp\FtpAdapter as Ftp;
+use League\Flysystem\Ftp\FtpConnectionOptions;
+use League\Flysystem\Local\LocalFilesystemAdapter as Local;
+use League\Flysystem\PhpseclibV2\SftpAdapter;
+use League\Flysystem\PhpseclibV2\SftpConnectionProvider;
 
 /**
  * Class AdapterFactory
@@ -30,15 +32,15 @@ class AdapterFactory
     }
 
     /**
-     * @return AdapterInterface
+     * @return FilesystemAdapter
      */
-    public function getAdapter(): AdapterInterface
+    public function getAdapter(): FilesystemAdapter
     {
         switch ($this->config['fs_adapter'] ?? $this->config['fs']['fs_adapter']) {
             case 'ftp':
-                return new Ftp($this->getFtpConfig());
+                return new Ftp(FtpConnectionOptions::fromArray($this->getFtpConfig()));
             case 'sftp':
-                return new SftpAdapter($this->getSftpConfig());
+                return new SftpAdapter($this->getSftpConfig(), \rtrim($this->config['sftp_path'], '/') . '/');
             case 'local':
             default:
                 return new Local(\PFAD_ROOT);
@@ -88,19 +90,19 @@ class AdapterFactory
     }
 
     /**
-     * @return array
+     * @return SftpConnectionProvider
      */
-    public function getSftpConfig(): array
+    public function getSftpConfig(): SftpConnectionProvider
     {
-        return [
-            'host'          => $this->config['sftp_hostname'],
-            'port'          => $this->config['sftp_port'],
-            'username'      => $this->config['sftp_user'],
-            'password'      => $this->config['sftp_pass'],
-            'privateKey'    => $this->config['sftp_privkey'],
-            'root'          => \rtrim($this->config['sftp_path'], '/') . '/',
-            'timeout'       => $this->config['fs_timeout'],
-            'directoryPerm' => 0755
-        ];
+        return new SftpConnectionProvider(
+            $this->config['sftp_hostname'],
+            $this->config['sftp_user'],
+            $this->config['sftp_pass'],
+            $this->config['sftp_privkey'],
+            null,
+            $this->config['sftp_port'],
+            false,
+            $this->config['fs_timeout']
+        );
     }
 }

@@ -8,10 +8,11 @@ use JTL\Console\Command\Command;
 use JTL\Filesystem\Filesystem;
 use JTL\Plugin\Helper;
 use JTL\Shop;
-use League\Flysystem\Adapter\Local;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
 
 /**
  * Class CreateCommandCommand
@@ -66,11 +67,12 @@ class CreateCommandCommand extends Command
         $datetime      = new DateTime('NOW');
         $relPath       = 'plugins/' . $pluginID . '/Commands';
         $migrationPath = $relPath . '/' . $commandName . '.php';
-        $fileSystem    = new Filesystem(new Local(\PFAD_ROOT));
-        if (!$fileSystem->has($relPath)) {
-            throw new Exception('Commands path doesn\'t exist!');
+        $fileSystem    = new Filesystem(new LocalFilesystemAdapter(\PFAD_ROOT));
+        try {
+            $fileSystem->createDirectory($relPath);
+        } catch (Throwable $e) {
+            throw new Exception('Cannot create dir ' . $relPath);
         }
-
         $content = Shop::Smarty()
             ->assign('commandName', $commandName)
             ->assign('author', $author)
@@ -78,7 +80,7 @@ class CreateCommandCommand extends Command
             ->assign('pluginId', $pluginID)
             ->fetch(\PFAD_ROOT . 'includes/src/Console/Command/Plugin/Template/command.class.tpl');
 
-        $fileSystem->put($migrationPath, $content);
+        $fileSystem->write($migrationPath, $content);
 
         return $migrationPath;
     }

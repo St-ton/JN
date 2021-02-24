@@ -1214,6 +1214,18 @@ msgstr "Vorausgewähltes Land"
 msgid "lieferadresse_abfragen_standardland_desc"
 msgstr "Hier geben Sie den ISO-Code für das Land an, das vorausgewählt sein soll, z. B. DE für Deutschland oder AT für Österreich."
 
+msgid "lieferadresse_abfragen_firma_name"
+msgstr "Firma abfragen"
+
+msgid "lieferadresse_abfragen_firma_desc"
+msgstr "Hier legen Sie fest, ob der Firmenname abgefragt wird."
+
+msgid "lieferadresse_abfragen_firmazusatz_name"
+msgstr "Firmenzusatz abfragen"
+
+msgid "lieferadresse_abfragen_firmazusatz_desc"
+msgstr "Hier legen Sie fest, ob der Firmenzusatz abgefragt wird."
+
 msgid "shop_ustid_name"
 msgstr "USt-IdNr. des Onlineshops"
 

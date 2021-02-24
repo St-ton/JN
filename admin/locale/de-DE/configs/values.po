@@ -1076,6 +1076,24 @@ msgstr "Ja, erforderliche Angabe"
 msgid "lieferadresse_abfragen_standardland_value(N)"
 msgstr "Nein"
 
+msgid "lieferadresse_abfragen_firma_value(O)"
+msgstr "Ja, optionale Angabe"
+
+msgid "lieferadresse_abfragen_firma_value(Y)"
+msgstr "Ja, erforderliche Angabe"
+
+msgid "lieferadresse_abfragen_firma_value(N)"
+msgstr "Nein"
+
+msgid "lieferadresse_abfragen_firmazusatz_value(O)"
+msgstr "Ja, optionale Angabe"
+
+msgid "lieferadresse_abfragen_firmazusatz_value(Y)"
+msgstr "Ja, erforderliche Angabe"
+
+msgid "lieferadresse_abfragen_firmazusatz_value(N)"
+msgstr "Nein"
+
 msgid "shop_ustid_bzstpruefung_value(Y)"
 msgstr "Ja"
 

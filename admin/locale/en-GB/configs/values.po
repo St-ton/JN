@@ -1076,6 +1076,24 @@ msgstr "Yes, mandatory"
 msgid "lieferadresse_abfragen_standardland_value(N)"
 msgstr "No"
 
+msgid "lieferadresse_abfragen_firma_value(O)"
+msgstr "Yes, optional"
+
+msgid "lieferadresse_abfragen_firma_value(Y)"
+msgstr "Yes, mandatory"
+
+msgid "lieferadresse_abfragen_firma_value(N)"
+msgstr "No"
+
+msgid "lieferadresse_abfragen_firmazusatz_value(O)"
+msgstr "Yes, optional"
+
+msgid "lieferadresse_abfragen_firmazusatz_value(Y)"
+msgstr "Yes, mandatory"
+
+msgid "lieferadresse_abfragen_firmazusatz_value(N)"
+msgstr "No"
+
 msgid "shop_ustid_bzstpruefung_value(Y)"
 msgstr "Yes"
 

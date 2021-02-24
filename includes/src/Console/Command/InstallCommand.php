@@ -3,13 +3,13 @@
 namespace JTL\Console\Command;
 
 use Exception;
-use League\Flysystem\Adapter\Local;
+use JTL\Installation\VueInstaller;
 use League\Flysystem\Filesystem;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 use Symfony\Component\Console\Helper\TableStyle;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use JTL\Installation\VueInstaller;
 
 /**
  * Class InstallCommand
@@ -180,7 +180,9 @@ class InstallCommand extends Command
         $syncUser        = $this->getOption('sync-user');
         $syncPass        = $this->getOption('sync-password');
         $demoData        = $this->getOption('install-demo-data');
-        $localFilesystem = new Filesystem(new Local(\PFAD_ROOT, \LOCK_EX, Local::SKIP_LINKS));
+        $localFilesystem = new Filesystem(
+            new LocalFilesystemAdapter(\PFAD_ROOT, null, \LOCK_EX, LocalFilesystemAdapter::SKIP_LINKS)
+        );
         if ($adminPass === 'random') {
             $adminPass = $this->getRandomString();
         }
@@ -240,8 +242,7 @@ class InstallCommand extends Command
 
         $io->setStep($this->currentStep++, $this->steps, 'Setting permissions');
         if ($this->currentUser !== $fileOwner) {
-            $paths = $localFilesystem->listContents(\PFAD_ROOT, true);
-            foreach ($paths as $path) {
+            foreach ($localFilesystem->listContents(\PFAD_ROOT, true) as $path) {
                 \chown(\PFAD_ROOT . $path->path, $fileOwner);
                 \chgrp(\PFAD_ROOT . $path->path, $fileGroup);
             }
@@ -361,7 +362,7 @@ class InstallCommand extends Command
         $headers = ['File/Dir', 'Correct permission', 'Permission'];
 
         foreach ($list as $path => $val) {
-            $permission = $localFilesystem->getVisibility($path);
+            $permission = $localFilesystem->visibility($path);
             $rows[]     = [$path, $val ? '<info> ✔ </info>' : '<comment> • </comment>', $permission];
         }
 

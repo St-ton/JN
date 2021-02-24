@@ -4,18 +4,15 @@ namespace JTL\Filesystem;
 
 use Exception;
 use JTL\Path;
-use League\Flysystem\Adapter\Local;
-use League\Flysystem\AdapterInterface;
-use League\Flysystem\FileExistsException;
-use League\Flysystem\FileNotFoundException;
-use League\Flysystem\FilesystemInterface;
+use League\Flysystem\FilesystemAdapter;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 use League\Flysystem\MountManager;
-use League\Flysystem\Plugin\GetWithMetadata;
-use League\Flysystem\Plugin\ListFiles;
-use League\Flysystem\Plugin\ListPaths;
+use League\Flysystem\PathNormalizer;
+use League\Flysystem\ZipArchive\FilesystemZipArchiveProvider;
 use League\Flysystem\ZipArchive\ZipArchiveAdapter;
 use SplFileInfo;
 use Symfony\Component\Finder\Finder;
+use Throwable;
 use ZipArchive;
 
 /**
@@ -25,20 +22,17 @@ use ZipArchive;
 class Filesystem extends \League\Flysystem\Filesystem
 {
     /**
-     * @var FilesystemInterface
+     * @var FilesystemAdapter
      */
     protected $adapter;
 
     /**
      * @inheritDoc
      */
-    public function __construct(AdapterInterface $adapter, $config = null)
+    public function __construct(FilesystemAdapter $adapter, array $config = [], PathNormalizer $pathNormalizer = null)
     {
         $this->adapter = $adapter;
         parent::__construct($adapter, $config);
-        $this->addPlugin(new ListFiles());
-        $this->addPlugin(new ListPaths());
-        $this->addPlugin(new GetWithMetadata());
     }
 
     /**
@@ -123,15 +117,15 @@ class Filesystem extends \League\Flysystem\Filesystem
      * @param string        $archive
      * @param callable|null $callback
      * @return bool
-     * @throws FileExistsException
      */
     public function zip(Finder $finder, string $archive, callable $callback = null): bool
     {
-        $root    = new Filesystem(new Local(\PFAD_ROOT));
-        $zip     = new Filesystem(new ZipArchiveAdapter($archive));
-        $manager = new MountManager(['root' => $root, 'zip' => $zip]);
-        $count   = $finder->count();
-        $index   = 0;
+        $provider = new FilesystemZipArchiveProvider($archive);
+        $root     = new Filesystem(new LocalFilesystemAdapter(\PFAD_ROOT));
+        $zip      = new Filesystem(new ZipArchiveAdapter($provider));
+        $manager  = new MountManager(['root' => $root, 'zip' => $zip]);
+        $count    = $finder->count();
+        $index    = 0;
         foreach ($finder->files() as $file) {
             /** @var SplFileInfo $file */
             $path = $file->getPathname();
@@ -141,11 +135,12 @@ class Filesystem extends \League\Flysystem\Filesystem
             }
             try {
                 if ($file->getType() === 'dir') {
-                    $manager->createDir('zip://' . $path);
+                    $manager->createDirectory('zip://' . $path);
                 } else {
                     $manager->copy('root://' . $path, 'zip://' . $path);
                 }
-            } catch (FileNotFoundException $e) {
+            } catch (Throwable $e) {
+                echo $e->getMessage() . \PHP_EOL;
             }
             if (\is_callable($callback)) {
                 $callback($count, $index);
@@ -153,14 +148,13 @@ class Filesystem extends \League\Flysystem\Filesystem
             }
         }
 
-        return $zip->getAdapter()->getArchive()->close();
+        return true;
     }
 
     /**
      * @param string $source
      * @param string $archive
      * @return bool
-     * @throws FileExistsException
      */
     public function zipDir(string $source, string $archive): bool
     {
@@ -168,17 +162,19 @@ class Filesystem extends \League\Flysystem\Filesystem
         if ($realSource === false || \strpos($realSource, \PFAD_ROOT) !== 0 || \strpos($archive, '.zip') === false) {
             return false;
         }
-        $root    = new Filesystem(new Local($realSource));
-        $zip     = new Filesystem(new ZipArchiveAdapter($archive));
-        $manager = new MountManager(['root' => $root, 'zip' => $zip]);
+        $manager = new MountManager([
+            'root' => new Filesystem(new LocalFilesystemAdapter($realSource)),
+            'zip'  => new Filesystem(new ZipArchiveAdapter(new FilesystemZipArchiveProvider($archive)))
+        ]);
         foreach ($manager->listContents('root:///', true) as $item) {
-            if ($item['type'] === 'dir') {
-                $manager->createDir('zip://' . $item['path']);
+            $path = $item->path();
+            if ($item->isDir()) {
+                $manager->createDirectory('zip://' . $path);
             } else {
-                $manager->copy('root://' . $item['path'], 'zip://' . $item['path']);
+                $manager->copy('root://' . $path, 'zip://' . $path);
             }
         }
 
-        return $zip->getAdapter()->getArchive()->close();
+        return true;
     }
 }

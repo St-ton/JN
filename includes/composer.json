@@ -57,9 +57,10 @@
         "mobiledetect/mobiledetectlib": "^2.8",
         "fzaninotto/faker": "dev-master",
         "cocur/slugify": "^4.0",
-        "league/flysystem": "^1.0",
-        "league/flysystem-sftp": "^1.0",
-        "league/flysystem-ziparchive": "^1.0",
+        "league/flysystem": "^2.0",
+        "league/flysystem-ftp": "^2.0",
+        "league/flysystem-sftp": "^2.0",
+        "league/flysystem-ziparchive": "^2.0",
         "illuminate/collections": "^8.12",
         "nesbot/carbon": "^2.41",
         "gettext/translator": "^1.0"

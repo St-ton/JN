@@ -30,7 +30,7 @@ Zur Kontrolle hier noch einmal Ihre Kundendaten:<br>
 							{if $Kunde->cAdressZusatz}{$Kunde->cAdressZusatz}{/if}<br>
 							{$Kunde->cPLZ} {$Kunde->cOrt}<br>
 							{if $Kunde->cBundesland}{$Kunde->cBundesland}{/if}<br>
-							<font style="text-transform: uppercase;">{$Kunde->cLand}</font>
+							<font style="text-transform: uppercase;">{$Kunde->angezeigtesLand}</font>
 						</font>
 					</td>
 				</tr>

@@ -14,9 +14,9 @@ use JTL\Shop;
 class Manager implements ManagerInterface
 {
     /**
-     * @var Collection
+     * @var array
      */
-    private $activeItems;
+    private $activeItems = [];
 
     /**
      * @var DbInterface
@@ -103,7 +103,7 @@ class Manager implements ManagerInterface
     {
         $cache  = Shop::Container()->getCache();
         $cached = true;
-        if (($models = $cache->get('jtl_consent_models')) === false) {
+        if (($models = $cache->get('jtl_consent_models_' . $languageID)) === false) {
             $models = ConsentModel::loadAll($this->db, 'active', 1)->map(
                 static function (ConsentModel $model) use ($languageID) {
                     return (new Item($languageID))->loadFromModel($model);
@@ -113,9 +113,9 @@ class Manager implements ManagerInterface
             $cached = false;
         }
         \executeHook(\CONSENT_MANAGER_GET_ACTIVE_ITEMS, ['items' => $models, 'cached' => $cached]);
-        $this->activeItems = $models;
+        $this->activeItems[$languageID] = $models;
 
-        return $this->activeItems;
+        return $models;
     }
 
     /**
@@ -123,6 +123,6 @@ class Manager implements ManagerInterface
      */
     public function getActiveItems(int $languageID): Collection
     {
-        return $this->activeItems ?? $this->initActiveItems($languageID);
+        return $this->activeItems[$languageID] ?? $this->initActiveItems($languageID);
     }
 }

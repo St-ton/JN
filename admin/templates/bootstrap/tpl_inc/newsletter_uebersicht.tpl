@@ -117,6 +117,7 @@
                                         </tbody>
                                     </table>
                                 </div>
+                                {include file='tpl_inc/pagination.tpl' pagination=$oPagiInaktiveAbos cAnchor='inaktiveabonnenten' isBottom=true}
                                 <div class="card-footer save-wrapper">
                                     <div class="row">
                                         <div class="col-sm-6 col-xl-auto text-left">
@@ -214,6 +215,7 @@
                                         </tbody>
                                     </table>
                                 </div>
+                                {include file='tpl_inc/pagination.tpl' pagination=$oPagiAlleAbos cAnchor='alleabonnenten' isBottom=true}
                                 <div class="card-footer save-wrapper">
                                     <div class="row">
                                         <div class="col-sm-6 col-xl-auto text-left">
@@ -351,6 +353,7 @@
                                         </tbody>
                                     </table>
                                 </div>
+                                {include file='tpl_inc/pagination.tpl' pagination=$oPagiWarteschlange cAnchor='newsletterqueue' isBottom=true}
                                 <div class="card-footer save-wrapper">
                                     <div class="row">
                                         <div class="col-sm-6 col-xl-auto text-left">
@@ -365,7 +368,6 @@
                                             </button>
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
@@ -462,6 +464,7 @@
                                         </tbody>
                                     </table>
                                 </div>
+                                {include file='tpl_inc/pagination.tpl' pagination=$oPagiVorlagen cAnchor='newslettervorlagen' isBottom=true}
                                 <div class="card-footer save-wrapper">
                                     <div class="row">
                                         <div class="col-sm-6 col-xl-auto text-left">
@@ -593,6 +596,7 @@
                                         </tbody>
                                     </table>
                                 </div>
+                                {include file='tpl_inc/pagination.tpl' pagination=$oPagiHistory cAnchor='newsletterhistory' isBottom=true}
                                 <div class="card-footer save-wrapper">
                                     <div class="row">
                                         <div class="col-sm-6 col-xl-auto text-left">

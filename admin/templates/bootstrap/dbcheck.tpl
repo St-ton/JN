@@ -177,6 +177,7 @@
         $('#cancelWait').on('click', function (e) {
             cancelWait(true);
             e.preventDefault();
+            window.setTimeout(closeModalWait, 1000);
         });
 
         function colorLines() {
@@ -263,7 +264,7 @@
                     } else {
                         updateModalWait(null, 1);
                         updateRow($row, table);
-                        closeModalWait();
+                        window.setTimeout(closeModalWait, 1000);
                     }
                 } else {
                     window.alert(sprintf('{/literal}{__('errorMigrationTable')}{literal}', table));

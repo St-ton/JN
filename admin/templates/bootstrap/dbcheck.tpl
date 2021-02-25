@@ -67,9 +67,9 @@
                                 </td>
                                 <td>
                                     {if $hasError}
-                                        <span class="badge red">{$cDBError_arr[$cTable]->errMsg}</span>
+                                        <span class="badge red text-white">{$cDBError_arr[$cTable]->errMsg}</span>
                                     {else}
-                                        <span class="badge green">{__('ok')}</span>
+                                        <span class="badge green text-white">{__('ok')}</span>
                                     {/if}
                                 </td>
                                 <td class="centered">
@@ -77,15 +77,14 @@
                                         {if $cDBStruct_arr.$cTable->Locked}
                                             <span title="Tabelle in Benutzung"><i class="fa fa-cog fa-spin fa-2x fa-fw"></i></span>
                                         {elseif (($cDBStruct_arr.$cTable->Migration & DBMigrationHelper::MIGRATE_TABLE) !== DBMigrationHelper::MIGRATE_NONE) && $DB_Version->collation_utf8 && $DB_Version->innodb->support}
-                                            <a href="#" class="btn btn-default" data-action="migrate" data-table="{$cTable}" data-step="1"><i class="fa fa-cogs"></i></a>
+                                            <a href="#" class="btn btn-default btn-migrate" data-action="migrate" data-table="{$cTable}" data-step="1"><i class="fa fa-cogs"></i></a>
                                         {elseif (($cDBStruct_arr.$cTable->Migration & DBMigrationHelper::MIGRATE_COLUMN) !== DBMigrationHelper::MIGRATE_NONE) && $DB_Version->collation_utf8 && $DB_Version->innodb->support}
-                                            <a href="#" class="btn btn-default" data-action="migrate" data-table="{$cTable}" data-step="2"><i class="fa fa-cogs"></i></a>
-                                        {elseif !$hasError}
-                                        <div class="custom-control custom-checkbox">
+                                            <a href="#" class="btn btn-default btn-migrate" data-action="migrate" data-table="{$cTable}" data-step="2"><i class="fa fa-cogs"></i></a>
+                                        {/if}
+                                        <div class="custom-control custom-checkbox{if $hasError} d-none{/if}">
                                             <input class="custom-control-input" id="check-{$smarty.foreach.datei.iteration}" type="checkbox" name="check[]" value="{$cTable}" />
                                             <label class="custom-control-label" for="check-{$smarty.foreach.datei.iteration}"></label>
                                         </div>
-                                        {/if}
                                     {/if}
                                 </td>
                             </tr>
@@ -177,6 +176,7 @@
         $('#cancelWait').on('click', function (e) {
             cancelWait(true);
             e.preventDefault();
+            window.setTimeout(closeModalWait, 1000);
         });
 
         function colorLines() {
@@ -263,7 +263,7 @@
                     } else {
                         updateModalWait(null, 1);
                         updateRow($row, table);
-                        closeModalWait();
+                        window.setTimeout(closeModalWait, 1000);
                     }
                 } else {
                     window.alert(sprintf('{/literal}{__('errorMigrationTable')}{literal}', table));
@@ -282,8 +282,9 @@
         if ($cols.length > 0) {
             $($cols[1]).html('<span class="badge alert-info">InnoDB</span>');
             $($cols[2]).html('<span class="badge alert-info">utf8_general_ci</span>');
-            $($cols[5]).html('<span class="badge green">{/literal}{__('ok')}{literal}</span>');
-            $($cols[6]).html('');
+            $($cols[5]).html('<span class="badge green text-white">{/literal}{__('ok')}{literal}</span>');
+            $($cols[6]).find('.btn-migrate').remove();
+            $($cols[6]).find('.d-none').removeClass('d-none');
         }
     }
     {/literal}

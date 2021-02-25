@@ -1,4 +1,5 @@
 {block name='boxes-box-comparelist'}
+    {if $Einstellungen.vergleichsliste.vergleichsliste_anzeigen === 'Y'}
     {assign var=maxItems value=$oBox->getItemCount()}
     {assign var=itemCount value=count($oBox->getProducts())}
     {if $itemCount > 0}
@@ -93,5 +94,6 @@
         {block name='blog-preview-no-items'}
             <section class="d-none box-compare" id="sidebox{$oBox->getID()}"></section>
         {/block}
+    {/if}
     {/if}
 {/block}

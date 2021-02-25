@@ -37,6 +37,7 @@
                         </tbody>
                     </table>
                 </div>
+                {include file='tpl_inc/pagination.tpl' pagination=$paginationPaymentLog isBottom=true}
                 <div class="save-wrapper">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-lg-auto">

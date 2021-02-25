@@ -131,6 +131,9 @@ msgstr "Der eingegebene Lizenzschlüssel ist ungültig. Bitte überprüfen Sie d
 msgid "errorPluginNotFound"
 msgstr "Das Plugin konnte nicht in der Datenbank gefunden werden. Bitte installieren Sie es erneut."
 
+msgid "errorPluginNotFoundFilesystem"
+msgstr "Das Plugin konnte im Dateisystem nicht gefunden werden. Bitte installieren Sie es erneut."
+
 msgid "successPluginActivate"
 msgstr "Ausgewählte Plugins wurden erfolgreich aktiviert."
 

@@ -34,7 +34,7 @@
             $(window).on('load', function() {
                 eModal.confirm({ldelim}message: '{lang key="basket2PersMerge" section="login"}', label1: '{lang key="no" section="global"}', label2: '{lang key="yes" section="global"}'{rdelim}, '{lang key="basket" section="global"}', function(res) {
                     if (res) {
-                        window.location = "{get_static_route id='bestellvorgang.php'}?basket2Pers=1"
+                        window.location = "{get_static_route id='bestellvorgang.php'}?basket2Pers=1&token={$smarty.session.jtl_token}"
                     }
                 });
             });

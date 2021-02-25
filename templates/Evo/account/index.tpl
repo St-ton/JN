@@ -26,7 +26,7 @@
                     '{lang key="basket" section="global"}',
                     function(res) {
                     if (res) {
-                        window.location = "{get_static_route id='jtl.php'}?basket2Pers=1"
+                        window.location = "{get_static_route id='jtl.php'}?basket2Pers=1&token={$smarty.session.jtl_token}"
                     }}
                 );
             });

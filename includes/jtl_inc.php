@@ -250,7 +250,10 @@ function setzeWarenkorbPersInWarenkorb($kKunde)
                                               ->fuegeEin($kArtikelGeschenk, 1, [], C_WARENKORBPOS_TYP_GRATISGESCHENK);
                     }
                 }
-            } elseif(empty($oWarenkorbPersPos->cUnique)) {
+            } else {
+                if(!empty($oWarenkorbPersPos->cUnique)) {
+                    continue;
+                }
                 $tmpProduct = new Artikel();
                 $tmpProduct->fuelleArtikel($oWarenkorbPersPos->kArtikel, Artikel::getDefaultOptions());
                 $failures = pruefeFuegeEinInWarenkorb($tmpProduct, $oWarenkorbPersPos->fAnzahl, $oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr);

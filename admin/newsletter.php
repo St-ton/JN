@@ -622,24 +622,15 @@ if ($step === 'uebersicht') {
         ->setItemCount($admin->getSubscriberCount($activeSearchSQL))
         ->assemble();
     $queue             = $db->queryPrepared(
-        "SELECT
-            l.cBetreff,
-            q.tasksExecuted,
-            c.cronID,
-            c.foreignKeyID,
-            c.startDate as 'Datum'
-        FROM
-            tcron c
+        "SELECT l.cBetreff, q.tasksExecuted, c.cronID, c.foreignKeyID, c.startDate as 'Datum'
+        FROM tcron c
             LEFT JOIN tjobqueue q ON c.cronID = q.cronID
             LEFT JOIN tnewsletter l ON c.foreignKeyID = l.kNewsletter
-        WHERE
-            c.jobType = 'newsletter'
-        ORDER BY
-            c.startDate DESC
+        WHERE c.jobType = 'newsletter'
+            AND l.kSprache = :langID
+        ORDER BY c.startDate DESC
         LIMIT " . $pagiQueue->getLimitSQL(),
-        [
-            'langID' => $languageID,
-        ],
+        ['langID' => $languageID],
         ReturnType::ARRAY_OF_OBJECTS
     );
     if (!($instance instanceof Newsletter)) {

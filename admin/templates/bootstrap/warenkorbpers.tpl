@@ -80,6 +80,7 @@
                         </tbody>
                     </table>
                 </div>
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiKunden cParam_arr=$cParam_arr isBottom=true}
             </div>
         {else}
             <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
@@ -117,6 +118,7 @@
                         </tbody>
                     </table>
                 </div>
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiWarenkorb cParam_arr=['a'=>$kKunde] isBottom=true}
             </div>
             <div class="card-footer save-wrapper">
                 <div class="row">

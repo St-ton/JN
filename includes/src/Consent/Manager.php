@@ -13,9 +13,9 @@ use JTL\Session\Frontend;
 class Manager implements ManagerInterface
 {
     /**
-     * @var Collection
+     * @var array
      */
-    private $activeItems;
+    private $activeItems = [];
 
     /**
      * @var DbInterface
@@ -107,9 +107,9 @@ class Manager implements ManagerInterface
             }
         );
         \executeHook(\CONSENT_MANAGER_GET_ACTIVE_ITEMS, ['items' => $models]);
-        $this->activeItems = $models;
+        $this->activeItems[$languageID] = $models;
 
-        return $this->activeItems;
+        return $this->activeItems[$languageID];
     }
 
     /**
@@ -117,6 +117,6 @@ class Manager implements ManagerInterface
      */
     public function getActiveItems(int $languageID): Collection
     {
-        return $this->activeItems ?? $this->initActiveItems($languageID);
+        return $this->activeItems[$languageID] ?? $this->initActiveItems($languageID);
     }
 }

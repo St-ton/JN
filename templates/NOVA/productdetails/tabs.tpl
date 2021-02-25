@@ -68,9 +68,9 @@
     {block name='productdetails-tabs-content'}
         {if useDescription || $useDownloads || $useDescriptionWithMediaGroup || $useVotes || $useQuestionOnItem || $usePriceFlow
         || $useAvailabilityNotification || $useMediaGroup || !empty($separatedTabs)}
+            {opcMountPoint id='opc_before_tabs' inContainer=false}
             {if $tabanzeige && !$isMobile}
                 {block name='productdetails-tabs-tabs'}
-                    {opcMountPoint id='opc_before_tabs' inContainer=false}
                     {container}
                         <nav class="tab-navigation">
                         {tabs id="product-tabs"}

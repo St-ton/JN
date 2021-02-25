@@ -8,6 +8,7 @@ use JTL\Console\Command\Cache\ClearObjectCacheCommand;
 use JTL\Console\Command\Cache\DbesTmpCommand;
 use JTL\Console\Command\Cache\DeleteFileCacheCommand;
 use JTL\Console\Command\Cache\DeleteTemplateCacheCommand;
+use JTL\Console\Command\Cache\WarmCacheCommand;
 use JTL\Console\Command\Command;
 use JTL\Console\Command\InstallCommand;
 use JTL\Console\Command\Mailtemplates\ResetCommand;
@@ -158,6 +159,7 @@ class Application extends BaseApplication
             $cmds[] = new DeleteFileCacheCommand();
             $cmds[] = new DbesTmpCommand();
             $cmds[] = new ClearObjectCacheCommand();
+            $cmds[] = new WarmCacheCommand();
             $cmds[] = new CreateModelCommand();
             $cmds[] = new ResetCommand();
 

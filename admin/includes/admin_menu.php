@@ -13,23 +13,29 @@ $adminMenu = [
             ],
             __('Promotions') => [
                 __('Newsletter') => (object)[
-                    'link'        => 'newsletter.php',
-                    'permissions' => 'MODULE_NEWSLETTER_VIEW',
-                    'section'     => CONF_NEWSLETTER,
+                    'link'           => 'newsletter.php',
+                    'permissions'    => 'MODULE_NEWSLETTER_VIEW',
+                    'section'        => CONF_NEWSLETTER,
+                    'specialSetting' => true,
+                    'settingsAnchor' => '#einstellungen',
                 ],
                 __('Blog posts') => (object)[
-                    'link'        => 'news.php',
-                    'permissions' => 'CONTENT_NEWS_SYSTEM_VIEW',
-                    'section'     => CONF_NEWS,
+                    'link'           => 'news.php',
+                    'permissions'    => 'CONTENT_NEWS_SYSTEM_VIEW',
+                    'section'        => CONF_NEWS,
+                    'specialSetting' => true,
+                    'settingsAnchor' => '#einstellungen',
                 ],
                 __('Coupons')    => (object)[
                     'link'        => 'kupons.php',
                     'permissions' => 'ORDER_COUPON_VIEW',
                 ],
                 __('Free gifts') => (object)[
-                    'link'        => 'gratisgeschenk.php',
-                    'permissions' => 'MODULE_GIFT_VIEW',
-                    'section'     => CONF_SONSTIGES,
+                    'link'           => 'gratisgeschenk.php',
+                    'permissions'    => 'MODULE_GIFT_VIEW',
+                    'section'        => CONF_SONSTIGES,
+                    'specialSetting' => true,
+                    'settingsAnchor' => '#einstellungen',
                 ],
             ],
             __('Statistics') => [
@@ -90,9 +96,10 @@ $adminMenu = [
                     'section'     => CONF_STARTSEITE,
                 ],
                 __('Item overview')    => (object)[
-                    'link'        => 'navigationsfilter.php',
-                    'permissions' => 'SETTINGS_NAVIGATION_FILTER_VIEW',
-                    'section'     => CONF_NAVIGATIONSFILTER,
+                    'link'           => 'navigationsfilter.php',
+                    'permissions'    => 'SETTINGS_NAVIGATION_FILTER_VIEW',
+                    'section'        => CONF_NAVIGATIONSFILTER,
+                    'specialSetting' => true,
                 ],
                 __('Item detail page') => (object)[
                     'link'        => 'einstellungen.php?kSektion=' . CONF_ARTIKELDETAILS,
@@ -105,18 +112,22 @@ $adminMenu = [
                     'section'     => CONF_KAUFABWICKLUNG,
                 ],
                 __('Comparison list')  => (object)[
-                    'link'        => 'vergleichsliste.php',
-                    'permissions' => 'MODULE_COMPARELIST_VIEW',
-                    'section'     => CONF_VERGLEICHSLISTE,
+                    'link'           => 'vergleichsliste.php',
+                    'permissions'    => 'MODULE_COMPARELIST_VIEW',
+                    'section'        => CONF_VERGLEICHSLISTE,
+                    'specialSetting' => true,
+                    'settingsAnchor' => '#einstellungen',
                 ],
                 __('Wish list')        => (object)[
                     'link'        => 'wunschliste.php',
                     'permissions' => 'MODULE_WISHLIST_VIEW',
                 ],
                 __('Contact form')     => (object)[
-                    'link'        => 'kontaktformular.php',
-                    'permissions' => 'SETTINGS_CONTACTFORM_VIEW',
-                    'section'     => CONF_KONTAKTFORMULAR,
+                    'link'           => 'kontaktformular.php',
+                    'permissions'    => 'SETTINGS_CONTACTFORM_VIEW',
+                    'section'        => CONF_KONTAKTFORMULAR,
+                    'specialSetting' => true,
+                    'settingsAnchor' => '#config',
                 ],
                 __('Registration')     => (object)[
                     'link'        => 'einstellungen.php?kSektion=' . CONF_KUNDEN,
@@ -130,14 +141,16 @@ $adminMenu = [
                     'permissions' => 'DISPLAY_OWN_LOGO_VIEW',
                 ],
                 __('Search')                     => (object)[
-                    'link'        => 'sucheinstellungen.php',
-                    'permissions' => 'SETTINGS_ARTICLEOVERVIEW_VIEW',
-                    'section'     => CONF_ARTIKELUEBERSICHT,
+                    'link'           => 'sucheinstellungen.php',
+                    'permissions'    => 'SETTINGS_ARTICLEOVERVIEW_VIEW',
+                    'section'        => CONF_ARTIKELUEBERSICHT,
+                    'specialSetting' => true,
                 ],
                 __('Price history')              => (object)[
-                    'link'        => 'preisverlauf.php',
-                    'permissions' => 'MODULE_PRICECHART_VIEW',
-                    'section'     => CONF_PREISVERLAUF,
+                    'link'           => 'preisverlauf.php',
+                    'permissions'    => 'MODULE_PRICECHART_VIEW',
+                    'section'        => CONF_PREISVERLAUF,
+                    'specialSetting' => true,
                 ],
                 __('Question on item')           => (object)[
                     'link'                  => 'einstellungen.php?kSektion=' . CONF_ARTIKELDETAILS .
@@ -162,22 +175,29 @@ $adminMenu = [
                     'permissions' => 'BOXES_VIEW',
                 ],
                 __('Selection wizard')           => (object)[
-                    'link'        => 'auswahlassistent.php',
-                    'permissions' => 'EXTENSION_SELECTIONWIZARD_VIEW',
-                    'section'     => CONF_AUSWAHLASSISTENT,
+                    'link'           => 'auswahlassistent.php',
+                    'permissions'    => 'EXTENSION_SELECTIONWIZARD_VIEW',
+                    'section'        => CONF_AUSWAHLASSISTENT,
+                    'specialSetting' => true,
+                    'settingsAnchor' => '#config',
                 ],
                 __('Warehouse display')          => (object)[
                     'link'        => 'warenlager.php',
                     'permissions' => 'WAREHOUSE_VIEW',
                 ],
                 __('Reviews')                    => (object)[
-                    'link'        => 'bewertung.php',
-                    'permissions' => 'MODULE_VOTESYSTEM_VIEW',
-                    'section'     => CONF_BEWERTUNG,
+                    'link'           => 'bewertung.php',
+                    'permissions'    => 'MODULE_VOTESYSTEM_VIEW',
+                    'section'        => CONF_BEWERTUNG,
+                    'specialSetting' => true,
+                    'settingsAnchor' => '#einstellungen',
                 ],
                 __('Consent manager')            => (object)[
                     'link'        => 'consent.php',
-                    'permissions' => 'CONSENT_MANAGER'
+                    'permissions' => 'CONSENT_MANAGER',
+                    'section'        => CONF_CONSENTMANAGER,
+                    'specialSetting' => true,
+                    'settingsAnchor' => '#config',
                 ],
             ],
             __('Custom contents')  => [
@@ -190,9 +210,11 @@ $adminMenu = [
                     'permissions' => 'ORDER_AGB_WRB_VIEW',
                 ],
                 __('Extended customer data') => (object)[
-                    'link'        => 'kundenfeld.php',
-                    'permissions' => 'ORDER_CUSTOMERFIELDS_VIEW',
-                    'section'     => CONF_KUNDENFELD,
+                    'link'           => 'kundenfeld.php',
+                    'permissions'    => 'ORDER_CUSTOMERFIELDS_VIEW',
+                    'section'        => CONF_KUNDENFELD,
+                    'specialSetting' => true,
+                    'settingsAnchor' => '#config',
                 ],
                 __('Check boxes')            => (object)[
                     'link'        => 'checkbox.php',
@@ -218,9 +240,10 @@ $adminMenu = [
                     'permissions' => 'DISPLAY_TEMPLATE_VIEW',
                 ],
                 __('Images')         => (object)[
-                    'link'        => 'bilder.php',
-                    'permissions' => 'SETTINGS_IMAGES_VIEW',
-                    'section'     => CONF_BILDER,
+                    'link'           => 'bilder.php',
+                    'permissions'    => 'SETTINGS_IMAGES_VIEW',
+                    'section'        => CONF_BILDER,
+                    'specialSetting' => true,
                 ],
                 __('Watermark')      => (object)[
                     'link'        => 'branding.php',
@@ -278,14 +301,17 @@ $adminMenu = [
             ],
             __('Export')          => [
                 __('Site map')       => (object)[
-                    'link'        => 'sitemapexport.php',
-                    'permissions' => 'EXPORT_SITEMAP_VIEW',
-                    'section'     => CONF_SITEMAP,
+                    'link'           => 'sitemapexport.php',
+                    'permissions'    => 'EXPORT_SITEMAP_VIEW',
+                    'section'        => CONF_SITEMAP,
+                    'specialSetting' => true,
+                    'settingsAnchor' => '#einstellungen',
                 ],
                 __('RSS feed')       => (object)[
-                    'link'        => 'rss.php',
-                    'permissions' => 'EXPORT_RSSFEED_VIEW',
-                    'section'     => CONF_RSS,
+                    'link'           => 'rss.php',
+                    'permissions'    => 'EXPORT_RSSFEED_VIEW',
+                    'section'        => CONF_RSS,
+                    'specialSetting' => true,
                 ],
                 __('Other formats')  => (object)[
                     'link'        => 'exportformate.php',
@@ -297,10 +323,10 @@ $adminMenu = [
                 ],
             ],
 //            __('Payments')        => [
-                __('Payment methods') => (object)[
-                    'link'        => 'zahlungsarten.php',
-                    'permissions' => 'ORDER_PAYMENT_VIEW',
-                ],
+            __('Payment methods') => (object)[
+                'link'        => 'zahlungsarten.php',
+                'permissions' => 'ORDER_PAYMENT_VIEW',
+            ],
 //                __('More payment methods') => (object)[
 //                    'link'   => 'zahlungsarten.php',
 //                    'permissions' => 'ORDER_PAYMENT_VIEW',
@@ -327,9 +353,10 @@ $adminMenu = [
                     'permissions' => 'CONTENT_EMAIL_TEMPLATE_VIEW',
                 ],
                 __('Blacklist')       => (object)[
-                    'link'        => 'emailblacklist.php',
-                    'permissions' => 'SETTINGS_EMAIL_BLACKLIST_VIEW',
-                    'section'     => CONF_EMAILBLACKLIST,
+                    'link'           => 'emailblacklist.php',
+                    'permissions'    => 'SETTINGS_EMAIL_BLACKLIST_VIEW',
+                    'section'        => CONF_EMAILBLACKLIST,
+                    'specialSetting' => true,
                 ],
                 __('Log')             => (object)[
                     'link'        => 'emailhistory.php',
@@ -338,9 +365,11 @@ $adminMenu = [
             ],
             __('SEO')             => [
                 __('Meta data')  => (object)[
-                    'link'        => 'globalemetaangaben.php',
-                    'permissions' => 'SETTINGS_GLOBAL_META_VIEW',
-                    'section'     => CONF_METAANGABEN,
+                    'link'           => 'globalemetaangaben.php',
+                    'permissions'    => 'SETTINGS_GLOBAL_META_VIEW',
+                    'section'        => CONF_METAANGABEN,
+                    'specialSetting' => true,
+                    'settingsAnchor' => '#einstellungen',
                 ],
                 __('Forwarding') => (object)[
                     'link'        => 'redirect.php',
@@ -351,14 +380,16 @@ $adminMenu = [
                     'permissions' => 'SETTINGS_SITEMAP_VIEW',
                 ],
                 __('SEO path')   => (object)[
-                    'link'        => 'suchspecials.php',
-                    'permissions' => 'SETTINGS_SPECIALPRODUCTS_VIEW',
-                    'section'     => CONF_SUCHSPECIAL,
+                    'link'           => 'suchspecials.php',
+                    'permissions'    => 'SETTINGS_SPECIALPRODUCTS_VIEW',
+                    'section'        => CONF_SUCHSPECIAL,
+                    'specialSetting' => true,
+                    'settingsAnchor' => '#einstellungen',
                 ],
             ],
             __('Languages')       => (object)[
                 'link'        => 'sprache.php',
-                'permissions' => 'LANGUAGE_VIEW',
+                'permissions' => 'LANGUAGE_VIEW'
             ],
             __('Accounts')        => [
                 __('Users')                    => (object)[
@@ -391,16 +422,24 @@ $adminMenu = [
             ],
             __('System')          => [
                 __('Cache')      => (object)[
-                    'link'        => 'cache.php',
-                    'permissions' => 'OBJECTCACHE_VIEW',
+                    'link'           => 'cache.php',
+                    'permissions'    => 'OBJECTCACHE_VIEW',
+                    'section'        => CONF_CACHING,
+                    'specialSetting' => true,
+                    'settingsAnchor' => '#settings',
                 ],
                 __('Cron')       => (object)[
-                    'link'        => 'cron.php',
-                    'permissions' => 'CRON_VIEW',
+                    'link'           => 'cron.php',
+                    'permissions'    => 'CRON_VIEW',
+                    'section'        => CONF_CRON,
+                    'specialSetting' => true,
+                    'settingsAnchor' => '#config',
                 ],
                 __('Filesystem') => (object)[
-                    'link'        => 'filesystem.php',
-                    'permissions' => 'FILESYSTEM_VIEW',
+                    'link'           => 'filesystem.php',
+                    'permissions'    => 'FILESYSTEM_VIEW',
+                    'section'        => CONF_FS,
+                    'specialSetting' => true,
                 ],
                 __('Update')     => (object)[
                     'link'        => 'dbupdater.php',
@@ -410,7 +449,7 @@ $adminMenu = [
                     'link'        => 'shopzuruecksetzen.php',
                     'permissions' => 'RESET_SHOP_VIEW',
                 ],
-                __('Set up') => (object)[
+                __('Set up')     => (object)[
                     'link'        => 'wizard.php',
                     'permissions' => 'WIZARD_VIEW',
                 ],
@@ -429,8 +468,10 @@ foreach ($adminMenu as $menuName => $menu) {
         foreach ($subMenu as $itemName => $item) {
             if (isset($item->section)) {
                 $sectionMenuMapping[$item->section] = (object)[
-                    'path' => $menuName . ' -&gt; ' . $subMenuName . ' -&gt; ' . $itemName,
-                    'url'  => $item->link,
+                    'path'           => $menuName . ' -&gt; ' . $subMenuName . ' -&gt; ' . $itemName,
+                    'url'            => $item->link,
+                    'specialSetting' => $item->specialSetting ?? false,
+                    'settingsAnchor' => $item->settingsAnchor ?? '',
                 ];
             }
         }

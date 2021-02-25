@@ -47,6 +47,8 @@ class CreateCommandCommand extends Command
             return 0;
         } catch (Exception $e) {
             $this->getIO()->error($e->getMessage());
+
+            return 1;
         }
     }
 

@@ -24042,7 +24042,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   flex-grow: 1;
   flex-basis: auto;
   align-items: stretch;
-  justify-content: space-between;
+  justify-content: flex-start;
   height: 100%;
 }
 .content-cats-small .sub-categories .subcategories-image {

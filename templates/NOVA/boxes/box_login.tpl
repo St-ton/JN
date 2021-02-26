@@ -9,7 +9,7 @@
             {if empty($smarty.session.Kunde->kKunde)}
                 {block name='boxes-box-login-form'}
                     <div class="box-content-wrapper">
-                    {form action="{get_static_route id='jtl.php' secure=true}" method="post" class="form box_login jtl-validate" slide=true}
+                    {form action="{get_static_route id='jtl.php' secure=true}" method="post" class="form jtl-validate" slide=true}
                         {block name='boxes-box-login-form-data'}
                             {input type="hidden" name="login" value="1"}
                             {include file='snippets/form_group_simple.tpl'

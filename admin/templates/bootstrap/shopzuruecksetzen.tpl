@@ -139,7 +139,7 @@
                     <div class="item">
                         <div class="custom-control custom-checkbox">
                             <input class="custom-control-input" type="checkbox" name="cOption_arr[]" value="shopkunden" tabindex="14" id="Shopkunden" />
-                            <label class="custom-control-label" for="Shopkunden">{__('deleteCustomers')}</label>
+                            <label class="custom-control-label" for="Shopkunden">{__('deleteCustomersAndOrders')}</label>
                         </div>
                     </div>
                     <div class="item">

@@ -17,6 +17,7 @@ Parameter
 
 ``Warenkorb`` **oWarenkorb**
     In **oWarenkorb** wird ein ``Warenkorb``-Objekt als Referenz übergeben.
+    In **oBestellung** wird ein ``Bestellung``-Objekt als Referenz übergeben. (ab Version 5.1.0)
 
 Beispiel für eine Implementierung
 """""""""""""""""""""""""""""""""

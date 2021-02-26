@@ -118,7 +118,7 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
                             {if $Kunde->cAdressZusatz}{$Kunde->cAdressZusatz}<br>{/if}
                             {$Kunde->cPLZ} {$Kunde->cOrt}<br>
                             {if $Kunde->cBundesland}{$Kunde->cBundesland}<br>{/if}
-                            <font style="text-transform: uppercase;">{$Kunde->cLand}</font>
+                            <font style="text-transform: uppercase;">{$Kunde->angezeigtesLand}</font>
                         </font>
                     </td>
                 </tr>
@@ -290,7 +290,7 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
                                 {if $Bestellung->Lieferadresse->cAdressZusatz}{$Bestellung->Lieferadresse->cAdressZusatz}<br>{/if}
                                 {$Bestellung->Lieferadresse->cPLZ} {$Bestellung->Lieferadresse->cOrt}<br>
                                 {if $Bestellung->Lieferadresse->cBundesland}{$Bestellung->Lieferadresse->cBundesland}<br>{/if}
-                                <font style="text-transform: uppercase;">{$Bestellung->Lieferadresse->cLand}</font>
+                                <font style="text-transform: uppercase;">{$Bestellung->Lieferadresse->angezeigtesLand}</font>
                             </font>
                         </td>
                     </tr>

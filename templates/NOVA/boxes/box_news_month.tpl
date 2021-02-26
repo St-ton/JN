@@ -1,5 +1,5 @@
 {block name='boxes-box-news-month'}
-    {card class="box box-monthlynews box-normal" id="sidebox{$oBox->getID()}"}
+    <div class="box box-monthlynews box-normal" id="sidebox{$oBox->getID()}">
         {block name='boxes-box-news-month-content'}
             {block name='boxes-box-news-month-toggle-title'}
                 {link id="crd-hdr-{$oBox->getID()}"
@@ -37,7 +37,7 @@
                 {/collapse}
             {/block}
         {/block}
-    {/card}
+    </div>
     {block name='boxes-box-news-month-hr-end'}
         <hr class="box-normal-hr">
     {/block}

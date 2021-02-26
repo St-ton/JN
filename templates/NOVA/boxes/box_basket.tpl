@@ -1,5 +1,5 @@
 {block name='boxes-box-basket'}
-    {card class="box box-basket box-normal" id="sidebox{$oBox->getID()}"}
+    <div class="box box-basket box-normal" id="sidebox{$oBox->getID()}">
         <div class="box-body text-center-util">
             {block name='boxes-box-basket-content'}
                 {block name='boxes-box-basket-title'}
@@ -20,5 +20,5 @@
         {block name='boxes-box-basket-hr-end'}
             <hr class="box-normal-hr">
         {/block}
-    {/card}
+    </div>
 {/block}

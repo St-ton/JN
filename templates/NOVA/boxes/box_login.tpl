@@ -1,5 +1,5 @@
 {block name='boxes-box-login'}
-    {card id="sidebox{$oBox->getID()}" class="box box-login box-normal"}
+    <div id="sidebox{$oBox->getID()}" class="box box-login box-normal">
         {block name='boxes-box-login-content'}
             {block name='boxes-box-login-title'}
                 <div class="productlist-filter-headline">
@@ -75,5 +75,5 @@
                 <hr class="box-normal-hr">
             {/block}
         {/block}
-    {/card}
+    </div>
 {/block}

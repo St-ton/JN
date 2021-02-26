@@ -1,5 +1,5 @@
 {block name='boxes-box-manufacturers'}
-    {card class="box box-manufacturers box-normal dropdown-full-width" id="sidebox{$oBox->getID()}"}
+    <div class="box box-manufacturers box-normal dropdown-full-width" id="sidebox{$oBox->getID()}">
         {block name='boxes-box-manufacturers-content'}
             {block name='boxes-box-manufacturers-toggle-title'}
                 {link id="crd-hdr-{$oBox->getID()}"
@@ -51,5 +51,5 @@
                 <hr class="box-normal-hr">
             {/block}
         {/block}
-    {/card}
+    </div>
 {/block}

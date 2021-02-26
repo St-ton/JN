@@ -3,7 +3,7 @@
     {assign var=maxItems value=$oBox->getItemCount()}
     {assign var=itemCount value=count($oBox->getProducts())}
     {if $itemCount > 0}
-        {card class="box box-compare box-normal" id="sidebox{$oBox->getID()}"}
+        <div class="box box-compare box-normal" id="sidebox{$oBox->getID()}">
             {block name='boxes-box-comparelist-content'}
                 {block name='boxes-box-comparelist-toggle-title'}
                     {link id="crd-hdr-{$oBox->getID()}"
@@ -89,7 +89,7 @@
             {block name='boxes-box-comparelist-hr-end'}
                 <hr class="box-normal-hr">
             {/block}
-        {/card}
+        </div>
     {else}
         {block name='blog-preview-no-items'}
             <section class="d-none box-compare" id="sidebox{$oBox->getID()}"></section>

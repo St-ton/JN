@@ -1,6 +1,6 @@
 {block name='boxes-box-last-seen'}
     {lang key='lastViewed' assign='boxtitle'}
-    {card class="box box-last-seen box-normal" id="sidebox{$oBox->getID()}"}
+    <div class="box box-last-seen box-normal" id="sidebox{$oBox->getID()}">
         {block name='boxes-box-last-seen-content'}
             {block name='boxes-box-last-seen-title'}
                 <div class="productlist-filter-headline">
@@ -38,5 +38,5 @@
                 <hr class="box-normal-hr">
             {/block}
         {/block}
-    {/card}
+    </div>
 {/block}

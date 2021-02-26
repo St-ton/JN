@@ -26226,6 +26226,9 @@ header #burger-menu {
 .vat_info .shipping {
   display: inline-block;
 }
+.vat_info abbr {
+  display: inline-block;
+}
 
 /* stock-status */
 .status-icon {

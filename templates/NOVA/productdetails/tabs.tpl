@@ -310,15 +310,15 @@
                                     {card no-body=true}
                                         {cardheader id="tab-question-head"
                                             data=["toggle" => "collapse",
-                                                "target"=>"#tab-question"
+                                                "target"=>"#tab-questionOnItem"
                                             ]
                                             aria=["expanded" => "{if $setActiveClass.questionOnItem}true{else}false{/if}",
-                                                "controls" => "tab-question"
+                                                "controls" => "tab-questionOnItem"
                                             ]
                                         }
                                             {lang key='productQuestion' section='productDetails'}
                                         {/cardheader}
-                                        {collapse id="tab-question" visible=$setActiveClass.questionOnItem
+                                        {collapse id="tab-questionOnItem" visible=$setActiveClass.questionOnItem
                                             data=["parent"=>"#tabAccordion"]
                                             aria=["labelledby"=>"tab-question-head"]
                                         }

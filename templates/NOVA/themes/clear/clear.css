@@ -5791,7 +5791,7 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
 h1, h2, h3, h4, h5, h6,
-.h1, .h2, .h3, .sidepanel-left .box-normal .box-normal-link, .h4, .h5, .h6 {
+.h1, .h2, .product-matrix .product-matrix-title, .h3, .sidepanel-left .box-normal .box-normal-link, .h4, .h5, .h6 {
   margin-bottom: 1rem;
   font-family: Montserrat, sans-serif;
   font-weight: 400;
@@ -5803,7 +5803,7 @@ h1, .h1 {
   font-size: 1.875rem;
 }
 
-h2, .h2 {
+h2, .h2, .product-matrix .product-matrix-title {
   font-size: 1.5rem;
 }
 
@@ -24190,6 +24190,9 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
     padding: 0.5rem;
   }
 }
+.product-detail .product-manufacturer img {
+  max-width: 35px;
+}
 
 .delivery-status .list-unstyled, .delivery-status .list-icons {
   margin-bottom: 0;
@@ -24821,16 +24824,20 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
     display: inline-block;
   }
 }
-.product-matrix .btn[type=submit] {
-  float: right;
+.product-matrix .product-matrix-submit {
+  margin-top: 1rem;
 }
-.product-matrix > .row {
+.product-matrix .product-matrix-submit .col {
+  margin-left: auto;
+}
+.product-matrix .matrix-list-wrapper > .matrix-list {
   padding: 0.5rem 0;
+  margin-left: 0;
+  margin-right: 0;
 }
-.product-matrix > .row:nth-of-type(odd) {
+.product-matrix .matrix-list-wrapper > .matrix-list:nth-of-type(odd) {
   background-color: #f5f7fa;
 }
-
 .media .card,
 .reviews-mosthelpful,
 #reviews-list .review {

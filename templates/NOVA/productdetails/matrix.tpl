@@ -15,7 +15,9 @@
                 {/block}
             {else}
                 {block name='productdetails-index-include-matrix-classic'}
-                    {include file='productdetails/matrix_classic.tpl'}
+                    <div class="matrix-classic-wrapper">
+                        {include file='productdetails/matrix_classic.tpl'}
+                    </div>
                 {/block}
             {/if}
          </div>

@@ -137,7 +137,7 @@
                                                 <span class="fas fa-trash-alt"></span>
                                             </span>
                                         </button>
-                                        <button name="action" value="export" class="btn btn-link px-1 extract notext" title="{__('createExportFile')}" data-toggle="tooltip" data-placement="top">
+                                        <button name="action" value="export" class="btn btn-link px-1 extract notext{if !$exportformat->enabled} disabled{/if}" title="{__('createExportFile')}" data-toggle="tooltip" data-placement="top">
                                             <span class="icon-hover">
                                                 <span class="fal fa-plus"></span>
                                                 <span class="fas fa-plus"></span>

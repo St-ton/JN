@@ -34,12 +34,11 @@ if ($link === null || !$link->isVisible()) {
     $link->setRedirectCode(301);
 }
 $requestURL = URL::buildURL($link, URLART_SEITE);
-if ($link->getLinkType() === LINKTYP_STARTSEITE) {
-    $cCanonicalURL = Shop::getURL() . '/';
-} elseif (mb_strpos($requestURL, '.php') === false) {
-    $cCanonicalURL = Shop::getURL() . '/' . $requestURL;
+if (mb_strpos($requestURL, '.php') === false) {
+    $cCanonicalURL = $link->getURL();
 }
 if ($link->getLinkType() === LINKTYP_STARTSEITE) {
+    $cCanonicalURL = Shop::getURL() . '/';
     if ($link->getRedirectCode() > 0) {
         header('Location: ' . $cCanonicalURL, true, $link->getRedirectCode());
         exit();

@@ -52,6 +52,11 @@ final class LinkGroup implements LinkGroupInterface
     private $isSpecial = true;
 
     /**
+     * @var bool
+     */
+    private $isSystem = true;
+
+    /**
      * @var array
      */
     private $languageID = [];
@@ -88,7 +93,8 @@ final class LinkGroup implements LinkGroupInterface
     {
         $this->id       = $id;
         $groupLanguages = $this->db->queryPrepared(
-            'SELECT l.*, g.cTemplatename AS template, g.cName AS groupName, lang.kSprache 
+            'SELECT g.*, l.cName AS localizedName, l.cISOSprache, g.cTemplatename AS template,
+                g.cName AS groupName, lang.kSprache 
                 FROM tlinkgruppe AS g 
                 JOIN tlinkgruppesprache AS l
                     ON g.kLinkgruppe = l.kLinkgruppe
@@ -111,9 +117,10 @@ final class LinkGroup implements LinkGroupInterface
     public function map(array $groupLanguages): LinkGroupInterface
     {
         foreach ($groupLanguages as $groupLanguage) {
+            $this->isSystem              = (int)($groupLanguage->bIsSystem ?? 0) === 1;
             $langID                      = (int)$groupLanguage->kSprache;
             $this->languageID[]          = $langID;
-            $this->names[$langID]        = $groupLanguage->cName;
+            $this->names[$langID]        = $groupLanguage->localizedName;
             $this->languageCode[$langID] = $groupLanguage->cISOSprache;
             $this->template              = $groupLanguage->template;
             $this->groupName             = $groupLanguage->groupName;
@@ -279,6 +286,22 @@ final class LinkGroup implements LinkGroupInterface
     public function setIsSpecial(bool $isSpecial): void
     {
         $this->isSpecial = $isSpecial;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSystem(): bool
+    {
+        return $this->isSystem;
+    }
+
+    /**
+     * @param bool $isSystem
+     */
+    public function setIsSystem(bool $isSystem): void
+    {
+        $this->isSystem = $isSystem;
     }
 
     /**

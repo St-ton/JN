@@ -45,7 +45,7 @@
                                         {block name='snippets-filter-mobile-filters-button'}
                                             {link class="collapsed"
                                                 data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$subFilter->getFrontendName()|@seofy}"]}
-                                                <span class="characteristic-collapse-btn-inner">
+                                                <span class="characteristic-collapse-btn-inner text-truncate">
                                                     {$img = $subFilter->getImage(\JTL\Media\Image::SIZE_XS)}
                                                     {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'T'
                                                     && $img !== null
@@ -59,7 +59,7 @@
                                                         sizes='24px'}
                                                     {/if}
                                                     {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'B'}
-                                                        <span class="text-truncate">{$subFilter->getFrontendName()}</span>
+                                                        {$subFilter->getFrontendName()}
                                                     {/if}
                                                 </span>
                                             {/link}

@@ -106,13 +106,15 @@ class Queue
 
     /**
      * @param Checker $checker
+     * @return int
      * @throws \Exception
      */
-    public function run(Checker $checker): void
+    public function run(Checker $checker): int
     {
         if ($checker->isLocked()) {
             $this->logger->debug('Cron currently locked');
-            exit;
+
+            return -1;
         }
         $checker->lock();
         $this->enqueueCronJobs($checker->check());
@@ -154,5 +156,7 @@ class Queue
             }
         }
         $checker->unlock();
+
+        return \count($this->queueEntries);
     }
 }

@@ -109,6 +109,12 @@ msgstr "Unchecked export template"
 msgid "getExportFormatErrorCountMessage"
 msgstr "%d export template(s) contain(s) syntax errors."
 
+msgid "Missing special pages"
+msgstr "Missing special pages"
+
+msgid "%d special pages are missing."
+msgstr "%d special pages are missing."
+
 msgid "getExportFormatUncheckedCountMessage"
 msgstr "%d export template(s) are without syntax check."
 

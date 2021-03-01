@@ -103,7 +103,6 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
      */
     public function activateOptin(): void
     {
-        $inquiry         = Product::getAvailabilityFormDefaults();
         $data            = new stdClass();
         $data->kSprache  = Shop::getLanguageID();
         $data->cIP       = Request::getRealIP();
@@ -113,22 +112,9 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
         $data->cMail     = $this->refData->getEmail();
         $data->cVorname  = $this->refData->getFirstName();
         $data->cNachname = $this->refData->getLastName();
-        $checkBox        = new CheckBox();
-        $customerGroupID = Frontend::getCustomerGroup()->getID();
-        if (empty($inquiry->cNachname)) {
-            $data->cNachname = '';
-        }
-        if (empty($inquiry->cVorname)) {
-            $data->cVorname = '';
-        }
-        \executeHook(\HOOK_ARTIKEL_INC_BENACHRICHTIGUNG, ['Benachrichtigung' => $inquiry]);
-        $checkBox->triggerSpecialFunction(
-            \CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT,
-            $customerGroupID,
-            true,
-            $_POST,
-            ['oKunde' => $inquiry, 'oNachricht' => $inquiry]
-        )->checkLogging(\CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $customerGroupID, $_POST, true);
+
+        \executeHook(\HOOK_ARTIKEL_INC_BENACHRICHTIGUNG, ['Benachrichtigung' => $data]);
+
         $inquiryID = $this->dbHandler->queryPrepared(
             'INSERT INTO tverfuegbarkeitsbenachrichtigung
                 (cVorname, cNachname, cMail, kSprache, kArtikel, cIP, dErstellt, nStatus)

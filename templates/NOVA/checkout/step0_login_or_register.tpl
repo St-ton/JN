@@ -18,7 +18,7 @@
                         {block name='checkout-step0-login-or-register-fieldset-form-login-content'}
                             <fieldset>
                                 {block name='checkout-step0-login-or-register-headline-form-login-content'}
-                                    <div class="h3">{lang key='alreadyCustomer'}</div>
+                                    <div class="card-title h3">{lang key='alreadyCustomer'}</div>
                                 {/block}
                                 {block name='checkout-step0-login-or-register-include-customer-login'}
                                     {include file='register/form/customer_login.tpl'}

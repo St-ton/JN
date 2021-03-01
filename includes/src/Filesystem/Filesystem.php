@@ -5,6 +5,7 @@ namespace JTL\Filesystem;
 use Exception;
 use JTL\Path;
 use League\Flysystem\FilesystemAdapter;
+use League\Flysystem\FilesystemException;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use League\Flysystem\MountManager;
 use League\Flysystem\PathNormalizer;
@@ -33,6 +34,25 @@ class Filesystem extends \League\Flysystem\Filesystem
     {
         $this->adapter = $adapter;
         parent::__construct($adapter, $config);
+    }
+
+    /**
+     * @param string $location
+     * @return bool
+     * @throws FilesystemException
+     */
+    public function has(string $location): bool
+    {
+        return $this->fileExists($location);
+    }
+
+    /**
+     * @param string $location
+     * @throws FilesystemException
+     */
+    public function deleteDir(string $location): void
+    {
+        $this->deleteDirectory($location);
     }
 
     /**
@@ -75,15 +95,10 @@ class Filesystem extends \League\Flysystem\Filesystem
         $directories = \array_flip($directories);
 
         // Create location where to extract the archive
-        if (!$this->createDir($location)) {
-            throw new Exception(\sprintf('Could not create directory "%s"', $location));
-        }
+        $this->createDirectory($location);
         // Create required directories
         foreach ($directories as $dir) {
-            $dir = Path::combine($location, $dir);
-            if (!$this->createDir($dir)) {
-                throw new Exception(\sprintf('Could not create directory "%s"', $dir));
-            }
+            $this->createDirectory(Path::combine($location, $dir));
         }
 
         unset($directories);
@@ -103,7 +118,7 @@ class Filesystem extends \League\Flysystem\Filesystem
                 throw new Exception('Could not extract file from archive.');
             }
             $file = Path::combine($location, $info['name']);
-            if ($this->put($file, $contents) === false) {
+            if ($this->write($file, $contents) === false) {
                 throw new Exception(\sprintf('Could not copy file "%s" (%d)', $file, \strlen($contents)));
             }
         }

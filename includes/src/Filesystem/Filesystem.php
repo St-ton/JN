@@ -40,6 +40,7 @@ class Filesystem extends \League\Flysystem\Filesystem
      * @param string $location
      * @return bool
      * @throws FilesystemException
+     * @deprecated since 5.1.0
      */
     public function has(string $location): bool
     {
@@ -49,6 +50,7 @@ class Filesystem extends \League\Flysystem\Filesystem
     /**
      * @param string $location
      * @throws FilesystemException
+     * @deprecated since 5.1.0
      */
     public function deleteDir(string $location): void
     {

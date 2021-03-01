@@ -5,6 +5,7 @@ use JTL\Backend\Settings\Manager;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Text;
 use JTL\Shop;
 use JTL\Shopsetting;
@@ -277,5 +278,6 @@ if ($step === 'einstellungen bearbeiten') {
 $smarty->assign('cPrefDesc', filteredConfDescription($sectionID))
        ->assign('cPrefURL', __('prefURL' . $sectionID))
        ->assign('step', $step)
+       ->assign('countries', ShippingMethod::getPossibleShippingCountries())
        ->assign('waehrung', $defaultCurrency->cName)
        ->display('einstellungen.tpl');

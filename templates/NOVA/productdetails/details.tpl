@@ -126,7 +126,6 @@
                                                                     webp=true
                                                                     src=$Artikel->cHerstellerBildURLKlein
                                                                     alt=$Artikel->cHersteller
-                                                                    width="35px"
                                                                 }
                                                                 <meta itemprop="image" content="{$Artikel->cHerstellerBildURLKlein}">
                                                             {/if}

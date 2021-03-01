@@ -1,6 +1,6 @@
 {block name='boxes-box-wishlist'}
     {if $oBox->getItems()|count > 0}
-        {card class="box box-wishlist box-normal" id="sidebox{$oBox->getID()}"}
+        <div class="box box-wishlist box-normal" id="sidebox{$oBox->getID()}">
             {block name='boxes-box-wishlist-content'}
                 {block name='boxes-box-wishlist-toggle-title'}
                     {link id="crd-hdr-{$oBox->getID()}"
@@ -86,7 +86,7 @@
             {block name='boxes-box-wishlist-hr-end'}
                 <hr class="box-normal-hr">
             {/block}
-        {/card}
+        </div>
     {else}
         {block name='boxes-box-wishlist-no-items'}
             <section class="d-none box-wishlist" id="sidebox{$oBox->getID()}"></section>

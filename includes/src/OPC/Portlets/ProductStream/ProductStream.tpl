@@ -42,7 +42,7 @@
     {elseif $style === 'simpleSlider'}
         <div id="{$instance->getUid()}"
              class="carousel carousel-arrows-inside evo-slider slick-lazy
-                    opc-ProductStream opc-ProductStream-slider slick-type-product"
+                    opc-ProductStream opc-ProductStream-{$style} slick-type-product"
              data-slick-type="product-slider"
              style="{$instance->getStyleString()}">
             {foreach $productlist as $Artikel}

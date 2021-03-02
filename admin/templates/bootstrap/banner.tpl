@@ -498,10 +498,12 @@
                         {/foreach}
                         </tbody>
                     </table>
+
                 </div>
             {if $banners|@count === 0}
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
+                {include file='tpl_inc/pagination.tpl' pagination=$pagination isBottom=true}
             </div>
             <div class="card-footer save-wrapper">
                 <div class="row">

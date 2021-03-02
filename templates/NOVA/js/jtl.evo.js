@@ -26,7 +26,7 @@
                 let mainNode = $(this);
                 mainNode.removeClass('slick-lazy');
                 if (!mainNode.hasClass('slick-initialized')) {
-                    mainNode.find('.product-wrapper').removeClass('m-auto ml-auto mr-auto');
+                    mainNode.find('.product-wrapper').removeClass('mx-auto ml-auto-util mr-auto');
                     self.initSlick(mainNode, mainNode.data('slick-type'));
                 }
             });
@@ -54,7 +54,7 @@
                         && Math.abs(startX - e.changedTouches[0].pageX) > 80
                     ) {
                         mainNode.removeClass('slick-lazy');
-                        mainNode.find('.product-wrapper').removeClass('m-auto ml-auto mr-auto');
+                        mainNode.find('.product-wrapper').removeClass('mx-auto ml-auto-util mr-auto');
                         self.initSlick(mainNode, mainNode.data('slick-type'));
                         let slickOptions = mainNode.slick('getSlick');
                         if(slickOptions.slideCount > mainNode.slick('slickGetOption', 'slidesToShow')) {

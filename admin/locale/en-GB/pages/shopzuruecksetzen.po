@@ -65,6 +65,9 @@ msgstr "Delete orders"
 msgid "deleteCustomers"
 msgstr "Delete online shop customers"
 
+msgid "deleteCustomersAndOrders"
+msgstr "Delete online shop customers and orders"
+
 msgid "customersOrdersCoupons"
 msgstr "Customers, orders, and coupons"
 

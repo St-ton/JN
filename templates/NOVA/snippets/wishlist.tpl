@@ -466,7 +466,7 @@
                                                                     small=true}
                                                             {/block}
                                                             {block name='snippets-wishlist-form-basket-characteristics-selected'}
-                                                                {row tag='dl' class="formrow-small"}
+                                                                {formrow tag='dl' class="formrow-small"}
                                                                     {foreach $wlPosition->CWunschlistePosEigenschaft_arr as $CWunschlistePosEigenschaft}
                                                                         {if $CWunschlistePosEigenschaft->cFreifeldWert}
                                                                             {col tag='dt' cols=6}{$CWunschlistePosEigenschaft->cEigenschaftName}:{/col}
@@ -476,7 +476,7 @@
                                                                             {col tag='dd' cols=6}{$CWunschlistePosEigenschaft->cEigenschaftWertName}{/col}
                                                                         {/if}
                                                                     {/foreach}
-                                                                {/row}
+                                                                {/formrow}
                                                             {/block}
                                                         </div>
                                                     {/block}

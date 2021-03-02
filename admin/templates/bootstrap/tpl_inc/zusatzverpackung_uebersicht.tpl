@@ -63,6 +63,7 @@
         {else}
         <div class="alert alert-info">{__('zusatzverpackungAddedNone')}</div>
         {/if}
+        {include file='tpl_inc/pagination.tpl' pagination=$pagination isBottom=true}
         <div class="card-footer save-wrapper">
             <div class="row">
                 {if $packagings|@count > 0}

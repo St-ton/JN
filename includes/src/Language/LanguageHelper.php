@@ -1051,7 +1051,6 @@ class LanguageHelper
         try {
             $specialPage = $mapped > 0 ? $ls->getSpecialPage($mapped) : null;
         } catch (SpecialPageNotFoundException $e) {
-            Shop::Container()->getLogService()->warning($e->getMessage());
             $specialPage = null;
         }
         $page = $linkID > 0 ? $ls->getPageLink($linkID) : null;

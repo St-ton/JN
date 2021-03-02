@@ -1479,7 +1479,7 @@ msgid "boxen_wunschzettel_bilder_desc"
 msgstr "Specify whether to display item images in the \"Wish list\" box."
 
 msgid "boxen_vergleichsliste_anzeigen_name"
-msgstr "Show comparison list"
+msgstr "Show box - comparison list"
 
 msgid "boxen_vergleichsliste_anzeigen_desc"
 msgstr "Specify whether to display the comparison list in a box."
@@ -2077,6 +2077,12 @@ msgstr "Include last X months"
 
 msgid "preisverlauf_anzahl_monate_desc"
 msgstr "Specify how many months are to be taken into account retrospectively for the price history. "
+
+msgid "vergleichsliste_anzeigen_name"
+msgstr "Enable comparison list"
+
+msgid "vergleichsliste_anzeigen_desc"
+msgstr "Specify whether your customers are able to use the comparison list."
 
 msgid "vergleichsliste_anzahl_name"
 msgstr "Max. number of items"

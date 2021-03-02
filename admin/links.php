@@ -31,6 +31,7 @@ $alertHelper = Shop::Container()->getAlertService();
 $action      = Request::verifyGPDataString('action');
 $linkID      = Request::verifyGPCDataInt('kLink');
 $linkGroupID = Request::verifyGPCDataInt('kLinkgruppe');
+$linkAdmin->getMissingSystemPages();
 if ($action !== '' && Form::validateToken()) {
     switch ($action) {
         case 'add-link-to-linkgroup':
@@ -369,6 +370,7 @@ if ($step === 'uebersicht') {
         );
     }
     $smarty->assign('linkGroupCountByLinkID', $linkAdmin->getLinkGroupCountForLinkIDs())
+           ->assign('missingSystemPages', $linkAdmin->getMissingSystemPages())
            ->assign('linkgruppen', $linkAdmin->getLinkGroups());
 }
 if ($step === 'neuer Link') {

@@ -528,6 +528,20 @@
     {/block}
     {block name='productdetails-matrix-classic-submit'}
         {input type="hidden" name="variBox" value="1"}
-        {button name="inWarenkorb" type="submit" value="{lang key='addToCart'}" variant="primary"}{lang key='addToCart'}{/button}
+        {row class="product-matrix-submit"}
+            {col cols=12 md=4 lg=3}
+                {button name="inWarenkorb"
+                    type="submit"
+                    value="{lang key='addToCart'}"
+                    variant="primary"
+                    block=true}
+                    <span class="btn-basket-check">
+                        <span>
+                            {lang key='addToCart'}
+                        </span> <i class="fas fa-shopping-cart"></i>
+                    </span>
+                {/button}
+            {/col}
+        {/row}
     {/block}
 {/block}

@@ -43,10 +43,10 @@ msgid "repeatVideo"
 msgstr "Repeat video once it has finished"
 
 msgid "muteVideo"
-msgstr "mute Video"
+msgstr "Mute Video"
 
 msgid "autoplayVideo"
-msgstr "start playing as soon as video is ready"
+msgstr "Use Auto-Play"
 
 msgid "showImage"
 msgstr "Show image"

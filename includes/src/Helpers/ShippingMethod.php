@@ -1382,9 +1382,10 @@ class ShippingMethod
             $country . '_' . $shippingClasses . '_' . Shop::getLanguageCode();
         if (($shippingMethod = Shop::Container()->getCache()->get($cacheID)) === false) {
             if (\mb_strlen($country) > 0) {
-                $customerSQL = " AND cLaender LIKE '%" . Text::filterXSS($country) . "%'";
+                $iso         = Text::filterXSS($country);
+                $customerSQL = " AND cLaender LIKE '%" . $iso . "%'";
             } else {
-                $iso         = Shop::Container()->getDB()->query(
+                $company     = Shop::Container()->getDB()->query(
                     'SELECT cISO
                         FROM tfirma
                         JOIN tland
@@ -1392,10 +1393,19 @@ class ShippingMethod
                         LIMIT 0,1',
                     ReturnType::SINGLE_OBJECT
                 );
-                $customerSQL = isset($iso->cISO)
-                    ? " AND cLaender LIKE '%" . $iso->cISO . "%'"
+                $iso         = $company->cISO ?? '';
+                $customerSQL = $iso !== ''
+                    ? " AND cLaender LIKE '%" . $iso . "%'"
                     : '';
             }
+            $shippingMethods          = map(self::getPossibleShippingMethods(
+                $iso,
+                $_SESSION['Lieferadresse']->cPLZ ?? Frontend::getCustomer()->cPLZ,
+                $shippingClasses,
+                $customerGroupID
+            ), static function ($e) {
+                return $e->kVersandart;
+            });
             $productSpecificCondition = empty($defaultShipping) ? '' : " AND cNurAbhaengigeVersandart = 'N' ";
             $shippingMethod           = Shop::Container()->getDB()->queryPrepared(
                 "SELECT tversandart.*, tversandartsprache.cName AS cNameLocalized
@@ -1406,6 +1416,7 @@ class ShippingMethod
                     WHERE fVersandkostenfreiAbX > 0
                         AND (cVersandklassen = '-1'
                             OR cVersandklassen RLIKE :cShippingClass)
+                        AND tversandart.kVersandart IN (" . \implode(', ', $shippingMethods) . ") 
                         AND (cKundengruppen = '-1'
                             OR FIND_IN_SET(:cGroupID, REPLACE(cKundengruppen, ';', ',')) > 0)
                         " . $customerSQL . $productSpecificCondition . '

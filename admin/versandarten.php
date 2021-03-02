@@ -185,13 +185,16 @@ if (Form::validateToken()) {
 
                         $VersandartStaffeln[] = $oVersandstaffel;
                         $upperLimits[]        = $oVersandstaffel->fBis;
+                        $lastScaleTo          = $oVersandstaffel->fBis;
                     }
                 }
             }
             // Dummy Versandstaffel hinzufuegen, falls Versandart nach Warenwert und Versandkostenfrei ausgewaehlt wurde
             if ($shippingType->cModulId === 'vm_versandberechnung_warenwert_jtl'
-                && $shippingMethod->fVersandkostenfreiAbX > 0
+                && Request::postInt('versandkostenfreiAktiv') === 1
             ) {
+                $shippingMethod->fVersandkostenfreiAbX = $lastScaleTo + 0.01;
+
                 $oVersandstaffel         = new stdClass();
                 $oVersandstaffel->fBis   = 999999999;
                 $oVersandstaffel->fPreis = 0.0;

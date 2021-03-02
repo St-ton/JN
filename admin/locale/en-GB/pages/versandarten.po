@@ -137,6 +137,9 @@ msgstr "Add"
 msgid "freeShipping"
 msgstr "Free shipping from"
 
+msgid "freeShippingBasketValue"
+msgstr "Free shipping after last scale"
+
 msgid "maxCosts"
 msgstr "Capping"
 

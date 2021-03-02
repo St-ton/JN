@@ -323,7 +323,11 @@
                     {/if}
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right">
-                                {__('freeShipping')}:
+                                {if $versandberechnung->cModulId === 'vm_versandberechnung_warenwert_jtl'}
+                                    {__('freeShippingBasketValue')}:
+                                {else}
+                                    {__('freeShipping')}:
+                                {/if}
                             </label>
                             <div class="col-sm-4 pl-sm-3 order-last order-sm-2">
                                 <select id="versandkostenfreiAktiv" name="versandkostenfreiAktiv" class="custom-select">
@@ -331,7 +335,7 @@
                                     <option value="1" {if isset($Versandart->fVersandkostenfreiAbX) && $Versandart->fVersandkostenfreiAbX > 0}selected{/if}>{__('yes')}</option>
                                 </select>
                             </div>
-                            <div class="col-sm pr-sm-5 order-last order-sm-2">
+                            <div class="col-sm pr-sm-5 order-last order-sm-2 {if $versandberechnung->cModulId === 'vm_versandberechnung_warenwert_jtl'}d-none{/if}">
                                 <input type="text" id="fVersandkostenfreiAbX" name="fVersandkostenfreiAbX" class="form-control price_large" value="{if isset($Versandart->fVersandkostenfreiAbX)}{$Versandart->fVersandkostenfreiAbX}{/if}">{* onKeyUp="setzePreisAjax(false, 'ajaxversandkostenfrei', this)" /> <span id="ajaxversandkostenfrei"></span>*}
                             </div>
                         </div>

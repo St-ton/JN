@@ -58,7 +58,7 @@ class Bewertung
             $languageID = Shop::getLanguageID();
         }
         if ($option === 1) {
-            $this->holeHilfreichsteBewertung($productID, $languageID);
+            $this->holeHilfreichsteBewertung($productID, $languageID, $allLanguages);
         } else {
             $this->holeProduktBewertungen(
                 $productID,
@@ -76,13 +76,15 @@ class Bewertung
     /**
      * @param int $productID
      * @param int $languageID
-     * @return $this
+     * @param bool $allLanguages
+     * @return Bewertung
      */
-    public function holeHilfreichsteBewertung(int $productID, int $languageID): self
+    public function holeHilfreichsteBewertung(int $productID, int $languageID, bool $allLanguages = false): self
     {
         $this->oBewertung_arr = [];
         if ($productID > 0 && $languageID > 0) {
-            $data = Shop::Container()->getDB()->queryPrepared(
+            $langSQL = $allLanguages ? '' : ' AND kSprache = ' . $languageID . ' ';
+            $data    = Shop::Container()->getDB()->queryPrepared(
                 "SELECT tbewertung.*,
                         DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum,
                         DATE_FORMAT(dAntwortDatum, '%d.%m.%Y') AS AntwortDatum,
@@ -91,8 +93,8 @@ class Bewertung
                     LEFT JOIN tbewertunghilfreich
                       ON tbewertung.kBewertung = tbewertunghilfreich.kBewertung
                       AND tbewertunghilfreich.kKunde = :customerID
-                    WHERE kSprache = " . $languageID . '
-                        AND kArtikel = ' . $productID . '
+                    WHERE kArtikel = " . $productID .
+                        $langSQL . '
                         AND nAktiv = 1
                     ORDER BY nHilfreich DESC
                     LIMIT 1',

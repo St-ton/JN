@@ -142,7 +142,8 @@ if ($AktuellerArtikel->Bewertungen === null || $ratingStars > 0) {
         $ratingPage,
         $ratingStars,
         $conf['bewertung']['bewertung_freischalten'],
-        $sorting
+        $sorting,
+        $conf['bewertung']['bewertung_alle_sprachen'] === 'Y'
     );
     $AktuellerArtikel->holehilfreichsteBewertung();
 }

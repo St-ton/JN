@@ -1839,6 +1839,7 @@ class Artikel
      * @param int    $stars
      * @param string $unlock
      * @param int    $opt
+     * @param bool   $allLanguages
      * @return $this
      */
     public function holeBewertung(
@@ -1846,9 +1847,19 @@ class Artikel
         int $page = 1,
         int $stars = 0,
         $unlock = 'N',
-        $opt = 0
+        $opt = 0,
+        bool $allLanguages = false
     ): self {
-        $this->Bewertungen = new Bewertung($this->kArtikel, $this->kSprache, $perPage, $page, $stars, $unlock, $opt);
+        $this->Bewertungen = new Bewertung(
+            $this->kArtikel,
+            $this->kSprache,
+            $perPage,
+            $page,
+            $stars,
+            $unlock,
+            $opt,
+            $allLanguages
+        );
 
         return $this;
     }
@@ -1901,7 +1912,16 @@ class Artikel
      */
     public function holehilfreichsteBewertung($unlock = 'N'): self
     {
-        $this->HilfreichsteBewertung = new Bewertung($this->kArtikel, $this->kSprache, 0, 0, 0, $unlock, 1);
+        $this->HilfreichsteBewertung = new Bewertung(
+            $this->kArtikel,
+            $this->kSprache,
+            0,
+            0,
+            0,
+            $unlock,
+            1,
+            $this->conf['bewertung']['bewertung_alle_sprachen'] === 'Y'
+        );
 
         return $this;
     }
@@ -3283,7 +3303,14 @@ class Artikel
         $this->taxData         = $this->getShippingAndTaxData();
         if ($this->conf['bewertung']['bewertung_anzeigen'] === 'Y' && $this->getOption('nRatings', 0) === 1) {
             $this->holehilfreichsteBewertung()
-                ->holeBewertung(-1, 1, 0, $this->conf['bewertung']['bewertung_freischalten']);
+                ->holeBewertung(
+                    -1,
+                    1,
+                    0,
+                    $this->conf['bewertung']['bewertung_freischalten'],
+                    0,
+                    $this->conf['bewertung']['bewertung_alle_sprachen'] === 'Y'
+                );
         }
         $this->baueArtikelSprachURL();
         $this->cKurzbezeichnung = !empty($this->AttributeAssoc[\ART_ATTRIBUT_SHORTNAME])

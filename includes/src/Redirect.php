@@ -341,19 +341,16 @@ class Redirect
      */
     public function checkFallbackRedirect(string $cUrl)
     {
-        $exploded = \explode('/', \trim($cUrl, '/'));
-        if (\count($exploded) > 0) {
-            $lastPath = $exploded[\count($exploded) - 1];
-            $filename = \strtok($lastPath, '?');
-            $seoPath  = Shop::Container()->getDB()->select('tseo', 'cSeo', $lastPath);
-            if ($filename === 'jtl.php'
-                || $filename === 'warenkorb.php'
-                || $filename === 'kontakt.php'
-                || $filename === 'news.php'
-                || (isset($seoPath->cSeo) && \mb_strlen($seoPath->cSeo) > 0)
-            ) {
-                return $lastPath;
-            }
+        $lastPath = \trim($cUrl, '/');
+        $filename = \strtok($lastPath, '?');
+        $seoPath  = Shop::Container()->getDB()->select('tseo', 'cSeo', $filename);
+        if ($filename === 'jtl.php'
+            || $filename === 'warenkorb.php'
+            || $filename === 'kontakt.php'
+            || $filename === 'news.php'
+            || (isset($seoPath->cSeo) && \mb_strlen($seoPath->cSeo) > 0)
+        ) {
+            return $lastPath;
         }
 
         return false;

@@ -5,9 +5,7 @@ namespace JTL\Optin;
 use JTL\Alert\Alert;
 use JTL\Campaign;
 use JTL\Catalog\Product\Artikel;
-use JTL\CheckBox;
 use JTL\DB\ReturnType;
-use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
@@ -164,7 +162,18 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
      */
     protected function loadOptin(): void
     {
-        foreach ($this->dbHandler->selectArray('toptin', 'cMail', $this->emailAddress) as $optin) {
+        $refData = $this->dbHandler->queryPrepared(
+            'SELECT cRefData
+              FROM toptin
+              WHERE cMail = :mail
+                AND kOptinClass = :optinclass',
+            [
+                'mail'       => $this->emailAddress,
+                'optinclass' => \get_class($this)
+            ],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        foreach ($refData as $optin) {
             /** @var OptinRefData $refData */
             $refData = \unserialize($optin->cRefData, ['OptinRefData']);
             if ($refData->getProductId() === $this->getProduct()->kArtikel) {

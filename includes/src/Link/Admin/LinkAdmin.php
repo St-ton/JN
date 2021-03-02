@@ -312,6 +312,38 @@ final class LinkAdmin
         });
     }
 
+    public function getMissingSystemPages(): Collection
+    {
+        $all          = $this->db->query(
+            'SELECT kLink, nLinkart
+                FROM tlink',
+            ReturnType::COLLECTION
+        )->map(function ($link) {
+            $link->kLink    = (int)$link->kLink;
+            $link->nLinkart = (int)$link->nLinkart;
+
+            return $link;
+        });
+        $missingTypes = new Collection();
+        foreach ($this->getSpecialPageTypes() as $specialPage) {
+            if (\in_array(
+                $specialPage->nLinkart,
+                [\LINKTYP_NEWSLETTERARCHIV, \LINKTYP_GRATISGESCHENK, \LINKTYP_AUSWAHLASSISTENT, true],
+                true
+            )) {
+                continue;
+            }
+            $hit = $all->first(function ($val, $key) use ($specialPage) {
+                return $val->nLinkart === $specialPage->nLinkart;
+            });
+            if ($hit === null) {
+                $missingTypes->add($specialPage);
+            }
+        }
+
+        return $missingTypes;
+    }
+
     /**
      * @param int $id
      * @return array
@@ -427,10 +459,7 @@ final class LinkAdmin
      */
     public function deleteLinkGroup(int $linkGroupID): int
     {
-        $linkIDs = $this->db->selectAll('tlinkgroupassociations', 'linkGroupID', $linkGroupID);
-        foreach ($linkIDs as $linkID) {
-            $this->deleteLink((int)$linkID->linkID);
-        }
+        $this->db->delete('tlinkgroupassociations', 'linkGroupID', $linkGroupID);
         $res = $this->db->delete('tlinkgruppe', 'kLinkgruppe', $linkGroupID);
         $this->db->delete('tlinkgruppesprache', 'kLinkgruppe', $linkGroupID);
 
@@ -520,6 +549,10 @@ final class LinkAdmin
         if ($link->nLinkart > 2 && isset($post['nSpezialseite']) && (int)$post['nSpezialseite'] > 0) {
             $link->nLinkart = (int)$post['nSpezialseite'];
         }
+        $type            = $link->nLinkart;
+        $link->bIsSystem = (int)$this->getSpecialPageTypes()->contains(function ($value) use ($type) {
+            return $value->nLinkart === $type;
+        });
 
         return $link;
     }

@@ -88,6 +88,7 @@
                                 </tbody>
                             </table>
                         </div>
+                        {include file='tpl_inc/pagination.tpl' pagination=$pagination cParam_arr=['s' => $nTyp] isBottom=true}
                     {else}
                         <div class="alert alert-info">{__('noData')}</div>
                     {/if}
@@ -147,6 +148,7 @@
                         </tbody>
                     </table>
                 </div>
+                {include file='tpl_inc/pagination.tpl' pagination=$crawlerPagination cParam_arr=['s'=>$nTyp,'tab'=>'settings'] isBottom=true}
                 <div class="card-footer save-wrapper">
                     <div class="row">
                         <div class="col-sm-6 col-xl-auto text-left">

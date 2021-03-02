@@ -1155,7 +1155,8 @@ function gibPostZahlungsInfo(): stdClass
  */
 function zahlungsartKorrekt(int $paymentMethodID): int
 {
-    $cart = Frontend::getCart();
+    $cart   = Frontend::getCart();
+    $zaInfo = $_SESSION['Zahlungsart']->ZahlungsInfo ?? null;
     unset($_SESSION['Zahlungsart']);
     $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
          ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
@@ -1248,13 +1249,9 @@ function zahlungsartKorrekt(int $paymentMethodID): int
                     // the null-paymentMethod did not has any additional-steps
                     break;
                 case 'za_kreditkarte_jtl':
-                    if (isset($_POST['kreditkartennr'])
-                        && $_POST['kreditkartennr']
-                        && $_POST['gueltigkeit']
-                        && $_POST['cvv']
-                        && $_POST['kartentyp']
-                        && $_POST['inhaber']
-                    ) {
+                    $fehlendeAngaben = checkAdditionalPayment($paymentMethod);
+
+                    if (count($fehlendeAngaben) === 0) {
                         $info->cKartenNr      = Text::htmlentities(
                             stripslashes($_POST['kreditkartennr']),
                             ENT_QUOTES
@@ -1275,6 +1272,9 @@ function zahlungsartKorrekt(int $paymentMethodID): int
                             stripslashes($_POST['inhaber']),
                             ENT_QUOTES
                         );
+                        $additionalInfoExists = true;
+                    } elseif ($zaInfo !== null && isset($zaInfo->cKartenNr)) {
+                        $info                 = $zaInfo;
                         $additionalInfoExists = true;
                     }
                     break;
@@ -1306,6 +1306,9 @@ function zahlungsartKorrekt(int $paymentMethodID): int
                             stripslashes($_POST['inhaber'] ?? ''),
                             ENT_QUOTES
                         );
+                        $additionalInfoExists = true;
+                    } elseif ($zaInfo !== null && (isset($zaInfo->cKontoNr) || isset($zaInfo->cIBAN))) {
+                        $info                 = $zaInfo;
                         $additionalInfoExists = true;
                     }
                     break;
@@ -2047,7 +2050,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
         }
     }
 
-    if (!empty($data['www']) && !Text::filterURL($data['www'])) {
+    if (!empty($data['www']) && !Text::filterURL($data['www'], true, true)) {
         $ret['www'] = 2;
     }
 

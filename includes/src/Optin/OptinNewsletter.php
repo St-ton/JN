@@ -140,7 +140,7 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                         $customer->cAnrede   = $this->refData->getSalutation();
                         $customer->cVorname  = $this->refData->getFirstName();
                         $customer->cNachname = $this->refData->getLastName();
-                        $customer->cEmail    = $this->refData->getEmail();
+                        $customer->cMail     = $this->refData->getEmail();
                         $customer->cRegIp    = $this->refData->getRealIP();
                         $checkBox->triggerSpecialFunction(
                             \CHECKBOX_ORT_NEWSLETTERANMELDUNG,

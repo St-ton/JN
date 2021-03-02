@@ -299,9 +299,7 @@ class Page
     {
         let elm             = portlet;
         let widthHeuristics = {xs: 1, sm: 1, md: 1, lg: 1};
-
-        console.log('computePortletWidthHeuristics for', portlet.data('portlet').class);
-
+        
         while (!elm.is(this.rootAreas) && !elm.is(this.offscreenAreas)) {
             if (elm[0].classList.contains('opc-col')) {
                 let areaId = elm.data('area-id').match(/^col-([0-9])+$/)[1];

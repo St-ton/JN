@@ -1,0 +1,11 @@
+*.git*
+*.idea*
+*build/*
+*docs/*
+*patch-dir-*
+*tests/*
+templates_c/*
+*.asset_cs
+*.php_cs
+*.travis.yml
+*phpunit.xml

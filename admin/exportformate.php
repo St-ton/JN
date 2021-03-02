@@ -8,6 +8,7 @@ use JTL\Exportformat;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
+use JTL\Plugin\State;
 use JTL\Shop;
 
 /** @global \JTL\Backend\AdminAccount $oAccount */
@@ -28,13 +29,11 @@ $oSmartyError->nCode = 0;
 $link                = null;
 $db                  = Shop::Container()->getDB();
 $alertHelper         = Shop::Container()->getAlertService();
-if (Request::getInt('neuerExport') === 1 && Form::validateToken()) {
+$validated           = Form::validateToken();
+if (Request::getInt('neuerExport') === 1 && $validated) {
     $step = 'neuer Export';
 }
-if (Request::getInt('kExportformat') > 0
-    && !isset($_GET['action'])
-    && Form::validateToken()
-) {
+if (Request::getInt('kExportformat') > 0 && !isset($_GET['action']) && $validated) {
     $step                   = 'neuer Export';
     $_POST['kExportformat'] = (int)$_GET['kExportformat'];
 
@@ -47,7 +46,7 @@ if (Request::getInt('kExportformat') > 0
         }
     }
 }
-if (Request::postInt('neu_export') === 1 && Form::validateToken()) {
+if (Request::postInt('neu_export') === 1 && $validated) {
     $ef          = new Exportformat(0, $db);
     $checkResult = $ef->check($_POST);
     if ($checkResult === true) {
@@ -123,7 +122,7 @@ if (mb_strlen(Request::postVar('action', '')) > 0 && Request::postInt('kExportfo
     $action        = $_GET['action'];
     $kExportformat = Request::getInt('kExportformat');
 }
-if ($action !== null && $kExportformat !== null && Form::validateToken()) {
+if ($action !== null && $kExportformat !== null && $validated) {
     switch ($action) {
         case 'export':
             $async                 = isset($_GET['ajax']);
@@ -216,10 +215,14 @@ if ($action !== null && $kExportformat !== null && Form::validateToken()) {
 }
 
 if ($step === 'uebersicht') {
-    $exportformate = $db->query(
-        'SELECT * 
-            FROM texportformat 
+    $exportformate = $db->queryPrepared(
+        'SELECT texportformat.*, tplugin.cPluginID 
+            FROM texportformat
+            LEFT JOIN tplugin
+               ON tplugin.kPlugin = texportformat.kPlugin
+               AND tplugin.nStatus = :stt
             ORDER BY cName',
+        ['stt' => State::ACTIVATED],
         ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($exportformate as $item) {
@@ -247,6 +250,7 @@ if ($step === 'uebersicht') {
         );
         $item->bPluginContentExtern = $item->kPlugin > 0
             && mb_strpos($item->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false;
+        $item->enabled              = $item->kPlugin === 0 || $item->cPluginID !== null;
     }
     $smarty->assign('exportformate', $exportformate);
 }

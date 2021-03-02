@@ -11,7 +11,7 @@ Please review your account details:
 {if $Kunde->cAdressZusatz}{$Kunde->cAdressZusatz}{/if}
 {$Kunde->cPLZ} {$Kunde->cOrt}
 {if $Kunde->cBundesland}{$Kunde->cBundesland}{/if}
-{$Kunde->cLand}
+{$Kunde->angezeigtesLand}
 {if $Kunde->cTel}Phone: {$Kunde->cTel}{/if}
 {if $Kunde->cMobil}Mobile: {$Kunde->cMobil}{/if}
 {if $Kunde->cFax}Fax: {$Kunde->cFax}{/if}

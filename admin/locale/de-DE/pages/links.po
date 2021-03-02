@@ -212,9 +212,6 @@ msgstr "Der Link konnte nicht kopiert werden, da er bereits in der Zielgruppe ex
 msgid "successLinkCopy"
 msgstr "Link %s wurde erfolgreich kopiert."
 
-msgid "dangerDeleteAllLinksInLinkGroup"
-msgstr "Alle Links innerhalb dieser Linkgruppe werden ebenfalls gelöscht."
-
 msgid "dangerDeleteLinksAlso"
 msgstr "Die folgenden Links werden in anderen Linkgruppen referenziert und werden dort ebenfalls gelöscht."
 
@@ -250,3 +247,9 @@ msgstr "In dieser Linkgruppe existiert mindestens eine Spezialseite mehrmals, f�
 
 msgid "newLinkGroupTitle"
 msgstr "Neue Linkgruppe erstellen"
+
+msgid "The following special pages are missing:"
+msgstr "Die folgenden Spezialseiten fehlen:"
+
+msgid "Please create the missing pages manually."
+msgstr "Legen Sie die fehlenden Seitentypen bitte manuell an."

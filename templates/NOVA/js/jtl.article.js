@@ -79,9 +79,13 @@
         },
 
         getCurrent: function($item) {
-            var $current = $item.hasClass('variation') ? $item : $item.closest('.variation');
-            if ($current.tagName === 'SELECT') {
+            var $current = $item.hasClass('variation') || ($item.length === 1 && $item[0].tagName === 'SELECT')
+                ? $item
+                : $item.closest('.variation');
+            if ($current.length === 1 && $current[0].tagName === 'SELECT') {
                 $current = $item.find('option:selected');
+            } else if ($current.length === 0) {
+                $current = $item.next('.variation');
             }
 
             return $current;

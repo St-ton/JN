@@ -2,7 +2,10 @@
 
 use JTL\Alert\Alert;
 use JTL\Catalog\Currency;
+use JTL\Cron\Checker;
+use JTL\Cron\JobFactory;
 use JTL\Cron\LegacyCron;
+use JTL\Cron\Queue;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
 use JTL\Exportformat;
@@ -348,28 +351,21 @@ function exportformatQueueActionLoeschen(array &$messages): string
  */
 function exportformatQueueActionTriggern(array &$messages): string
 {
-    global $bCronManuell, $oCron_arr, $oJobQueue_arr;
+    global $bCronManuell;
     $bCronManuell = true;
 
-    require_once PFAD_ROOT . PFAD_INCLUDES . 'cron_inc.php';
-
-    if (is_array($oCron_arr) && is_array($oJobQueue_arr)) {
-        $cronCount = count($oCron_arr);
-        $jobCount  = count($oJobQueue_arr);
-
-        if ($cronCount === 0 && $jobCount === 0) {
-            $messages['error'] .= __('errorCronStart') . '<br />';
-        } elseif ($cronCount === 1) {
-            $messages['notice'] .= __('successCronStart') . '<br />';
-        } elseif ($cronCount > 1) {
-            $messages['notice'] .= sprintf(__('successCronsStart'), $cronCount) . '<br />';
-        }
-
-        if ($jobCount === 1) {
-            $messages['notice'] .= __('successQueueDone') . '<br />';
-        } elseif ($jobCount > 1) {
-            $messages['notice'] .= sprintf(__('successQueuseDone'), $jobCount) . '<br />';
-        }
+    $logger = Shop::Container()->getLogService();
+    $db     = Shop::Container()->getDB();
+    $runner = new Queue($db, $logger, new JobFactory($db, $logger, Shop::Container()->getCache()));
+    $res    = $runner->run(new Checker($db, $logger));
+    if ($res === -1) {
+        $messages['error'] .= __('errorCronLocked') . '<br />';
+    } elseif ($res === 0) {
+        $messages['error'] .= __('errorCronStart') . '<br />';
+    } elseif ($res === 1) {
+        $messages['notice'] .= __('successCronStart') . '<br />';
+    } elseif ($res > 1) {
+        $messages['notice'] .= sprintf(__('successCronsStart'), $res) . '<br />';
     }
 
     return 'triggern';

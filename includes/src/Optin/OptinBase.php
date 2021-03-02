@@ -200,4 +200,14 @@ abstract class OptinBase extends OptinFactory
             $this->deactivateOptin(); // "shift" to history
         }
     }
+
+    /**
+     * @return bool
+     */
+    public function isActive(): bool
+    {
+        $this->loadOptin();
+
+        return !empty($this->foundOptinTupel->dActivated);
+    }
 }

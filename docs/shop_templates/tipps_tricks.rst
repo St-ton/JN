@@ -34,6 +34,61 @@ Bereich: :ref:`Arbeiten mit LESS <arbeiten-mit-less>`. |br|
 In diesem Abschnitt wird ebenso beschrieben, wie Sie die Variablen des Templates mit Ihrem Child-Template überschreiben
 können.
 
+Javascript in Templatedateien
+-----------------------------
+
+Jede Templatedatei (``*.tpl``) wird von der Template-Engine `Smarty` gelesen und interpretiert. Hierbei nutzt `Smarty`
+für die Auszeichnungen von Variablen- und Code-Ersetzungen geschweifte Klammern (``{``, ``}``). |br|
+Geschweifte Klammern sind aber ebenso in Javascript ein Sprachelement um beispielsweise Code-Blöcke zu umschließen.
+
+Damit sich diese bieden unterschiedlichen Auszeichnungensarten nicht überschneiden, ist es möglich,
+Javascript-Code von der Bearbeitung durch `Smarty` auszuschließen. |br|
+Hierfür existieren zwei unterschiedliche Ansätze.
+
+Für kleinere Javascript-Codefragmente ist es möglich, alle öffnenden und schließenden geschweiften
+Klammern durch zwei `Smarty`-Funktionen zu ersetzen - ``{ldelim}`` für ``{`` und ``{rdelim}`` für ``}`` - und sie
+anschließend von Smarty wieder als echte Klammern ausgeben zu lassen.
+
+**Beispiel:**
+
+.. code-block:: smarty
+
+    Dies ist eine smarty.tpl Datei,<br>
+    die ein Javascript enthält.<br>
+
+    <script>
+        function helloWorld() {ldelim}
+            alert('Hello World');
+        {rdelim}
+
+    </script>
+
+(Siehe auch: `Smarty Docs ldelim,rdelim <https://www.smarty.net/docsv2/de/language.function.ldelim.tpl>`_)
+
+Für umfangreicheren Code empfehlen wir allerdings die übersichtlichere Variante mit den zwei Smarty-Tags
+``{literal}`` und ``{/literal}``. |br|
+Mit diesen beiden Tags läßt sich ein größerer Javascript-Block ganz einfach umschließen und von der Verarbeitung durch
+`Smarty` ausschließen.
+
+**Beispiel:**
+
+.. code-block:: smarty
+
+    Dies ist eine smarty.tpl Datei,<br>
+    die ein Javascript enthält.<br>
+
+    {literal}
+    <script>
+        function helloWorld() {
+            alert('Hello World');
+        }
+
+    </script>
+    {/literal}
+
+(Siehe auch: `Smarty Docs literal <https://www.smarty.net/docsv2/de/language.function.literal.tpl>`_)
+
+
 Theme-Variablen
 ---------------
 

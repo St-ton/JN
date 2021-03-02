@@ -68,9 +68,9 @@
     {block name='productdetails-tabs-content'}
         {if useDescription || $useDownloads || $useDescriptionWithMediaGroup || $useVotes || $useQuestionOnItem || $usePriceFlow
         || $useAvailabilityNotification || $useMediaGroup || !empty($separatedTabs)}
+            {opcMountPoint id='opc_before_tabs' inContainer=false}
             {if $tabanzeige && !$isMobile}
                 {block name='productdetails-tabs-tabs'}
-                    {opcMountPoint id='opc_before_tabs' inContainer=false}
                     {container}
                         <nav class="tab-navigation">
                         {tabs id="product-tabs"}
@@ -147,7 +147,7 @@
 
                         {if $useAvailabilityNotification}
                             {block name='productdetails-tabs-tab-availability-notification'}
-                                {tab title="{lang key='notifyMeWhenProductAvailableAgain'}" active=$setActiveClass.availabilityNotification id="tab-availabilityNotification"}
+                                {tab title="{lang key='notifyMeWhenProductAvailableAgain'}" active=$setActiveClass.availabilityNotification id="availabilityNotification"}
                                     {include file='productdetails/availability_notification_form.tpl' position='tab' tplscope='artikeldetails'}
                                 {/tab}
                             {/block}
@@ -310,15 +310,15 @@
                                     {card no-body=true}
                                         {cardheader id="tab-question-head"
                                             data=["toggle" => "collapse",
-                                                "target"=>"#tab-question"
+                                                "target"=>"#tab-questionOnItem"
                                             ]
                                             aria=["expanded" => "{if $setActiveClass.questionOnItem}true{else}false{/if}",
-                                                "controls" => "tab-question"
+                                                "controls" => "tab-questionOnItem"
                                             ]
                                         }
                                             {lang key='productQuestion' section='productDetails'}
                                         {/cardheader}
-                                        {collapse id="tab-question" visible=$setActiveClass.questionOnItem
+                                        {collapse id="tab-questionOnItem" visible=$setActiveClass.questionOnItem
                                             data=["parent"=>"#tabAccordion"]
                                             aria=["labelledby"=>"tab-question-head"]
                                         }

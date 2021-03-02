@@ -336,7 +336,7 @@
                             <div>
                                 <div class="form-group form-row align-items-center">
                                     <label class="col col-sm-4 col-form-label text-sm-right" for="runcount">{__('runs')}:</label>
-                                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 config-type-number">
                                         <div class="input-group form-counter">
                                             <div class="input-group-prepend">
                                                 <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
@@ -354,7 +354,7 @@
                                 </div>
                                 <div class="form-group form-row align-items-center">
                                     <label class="col col-sm-4 col-form-label text-sm-right" for="repeat">{__('repeats')}:</label>
-                                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 config-type-number">
                                         <div class="input-group form-counter">
                                             <div class="input-group-prepend">
                                                 <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
@@ -461,7 +461,7 @@
                                 {if $setting->cConf === 'Y'}
                                     <div class="form-group form-row align-items-center">
                                         <label class="col col-sm-4 col-form-label text-sm-right" for="{$setting->cWertName}">{$setting->cName}:</label>
-                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $setting->cInputTyp === 'number'}config-type-number{/if}">
                                             {if $setting->cInputTyp === 'selectbox'}
                                                 <select name="{$setting->cWertName}" id="{$setting->cWertName}" class="custom-select">
                                                     {foreach $setting->ConfWerte as $wert}

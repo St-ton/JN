@@ -137,6 +137,9 @@ msgstr "Hinzufügen"
 msgid "freeShipping"
 msgstr "Versandkostenfrei ab"
 
+msgid "freeShippingBasketValue"
+msgstr "Versandkostenfrei nach letzter Staffel"
+
 msgid "maxCosts"
 msgstr "Deckelung"
 

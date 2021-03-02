@@ -73,7 +73,7 @@
                                 <div class="item form-group form-row align-items-center">
                                     {if $setting->isEditable}
                                         <label class="col col-sm-4 col-form-label text-sm-right" for="{$setting->elementID}">{__($setting->name)}:</label>
-                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $setting->cType === 'number'}config-type-number{/if}">
                                             {if $setting->cType === 'select'}
                                                 {include file='tpl_inc/option_select.tpl' setting=$setting section=$section}
                                             {elseif $setting->cType === 'optgroup'}

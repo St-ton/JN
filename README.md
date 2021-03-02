@@ -40,7 +40,7 @@
 * MIT License - see [LICENSE.md](LICENSE.md)
 
 ## Changelog
-* See [issues.jtl-software.de](https://issues.jtl-software.de/issues?project=JTL-Shop) or review commits in [Gitlab](https://gitlab.jtl-software.de/jtlshop/shop4/) for the latest changes
+* See [issues.jtl-software.de](https://issues.jtl-software.de/issues?project=JTL-Shop) or review commits in [Gitlab](https://gitlab.com/jtl-software/jtl-shop/core) for the latest changes
 
 ## Third party libraries
 * [Smarty](https://www.smarty.net/) - LGPL

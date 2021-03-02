@@ -58,6 +58,7 @@
                             </tbody>
                         </table>
                     </div>
+                    {include file='tpl_inc/pagination.tpl' pagination=$oPagiPos cAnchor='wunschlistepos' isBottom=true}
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
@@ -87,6 +88,7 @@
                             </tbody>
                         </table>
                     </div>
+                    {include file='tpl_inc/pagination.tpl' pagination=$oPagiArtikel cAnchor='wunschlisteartikel' isBottom=true}
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
@@ -120,6 +122,7 @@
                             </tbody>
                         </table>
                     </div>
+                    {include file='tpl_inc/pagination.tpl' pagination=$oPagiFreunde cAnchor='wunschlistefreunde' isBottom=true}
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}

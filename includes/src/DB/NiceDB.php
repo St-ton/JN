@@ -72,22 +72,38 @@ class NiceDB implements DbInterface
      */
     private $transactionCount = 0;
 
-    /** @deprecated  */
-    public const RET_SINGLE_OBJECT = 1;
-    /** @deprecated  */
-    public const RET_ARRAY_OF_OBJECTS = 2;
-    /** @deprecated  */
-    public const RET_AFFECTED_ROWS = 3;
-    /** @deprecated  */
-    public const RET_LAST_INSERTED_ID = 7;
-    /** @deprecated  */
-    public const RET_SINGLE_ASSOC_ARRAY = 8;
-    /** @deprecated  */
-    public const RET_ARRAY_OF_ASSOC_ARRAYS = 9;
-    /** @deprecated  */
-    public const RET_QUERYSINGLE = 10;
-    /** @deprecated  */
-    public const RET_ARRAY_OF_BOTH_ARRAYS = 11;
+    /**
+     * @deprecated Use ReturnType::SINGLE_OBJECT instead
+     */
+    public const RET_SINGLE_OBJECT = ReturnType::SINGLE_OBJECT;
+    /**
+     * @deprecated Use ReturnType::ARRAY_OF_OBJECTS instead
+     */
+    public const RET_ARRAY_OF_OBJECTS = ReturnType::ARRAY_OF_OBJECTS;
+    /**
+     * @deprecated Use ReturnType::AFFECTED_ROWS instead
+     */
+    public const RET_AFFECTED_ROWS = ReturnType::AFFECTED_ROWS;
+    /**
+     * @deprecated Use ReturnType::LAST_INSERTED_ID instead
+     */
+    public const RET_LAST_INSERTED_ID = ReturnType::LAST_INSERTED_ID;
+    /**
+     * @deprecated Use ReturnType::SINGLE_ASSOC_ARRAY instead
+     */
+    public const RET_SINGLE_ASSOC_ARRAY = ReturnType::SINGLE_ASSOC_ARRAY;
+    /**
+     * @deprecated Use ReturnType::SINGLE_ASSOC_ARRAY instead
+     */
+    public const RET_ARRAY_OF_ASSOC_ARRAYS = ReturnType::ARRAY_OF_ASSOC_ARRAYS;
+    /**
+     * @deprecated Use ReturnType::QUERYSINGLE instead
+     */
+    public const RET_QUERYSINGLE = ReturnType::QUERYSINGLE;
+    /**
+     * @deprecated Use ReturnType::ARRAY_OF_BOTH_ARRAYS instead
+     */
+    public const RET_ARRAY_OF_BOTH_ARRAYS = ReturnType::ARRAY_OF_BOTH_ARRAYS;
 
     /**
      * create DB Connection with default parameters

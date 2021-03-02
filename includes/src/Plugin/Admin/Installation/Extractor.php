@@ -145,6 +145,11 @@ class Extractor
                         && @$this->manager->delete('plgn://' . $target)
                         && @$this->manager->move('root://' . $source, 'plgn://' . $target);
                 }
+                if (isset($item['basename'])
+                    && \in_array($item['basename'], ['license.md', 'License.md', 'LICENSE.md'], true)
+                ) {
+                    $this->response->setLicense(\PFAD_ROOT . $target);
+                }
             }
         }
         $this->rootSystem->deleteDir(\PFAD_DBES_TMP . $dirName);

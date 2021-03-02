@@ -795,7 +795,7 @@ msgid "artikeldetails_kategorie_anzeigen_desc"
 msgstr "Hier legen Sie fest, ob die Kategorie des Artikels auf der Artikeldetailseite angezeigt wird."
 
 msgid "artikeldetails_tabs_nutzen_name"
-msgstr "Registerkarten nutzen"
+msgstr "Registerkarten / Tab nutzen"
 
 msgid "artikeldetails_tabs_nutzen_desc"
 msgstr "Hier legen Sie fest, ob auf der Artikeldetailseite Registerkarten verwendet werden sollen. Diese beinhalten beispielsweise die Bewertungen oder Fragen zum Artikel. Wenn Sie die Option deaktivieren, werden alle Informationen untereinander angezeigt."
@@ -1479,7 +1479,7 @@ msgid "boxen_wunschzettel_bilder_desc"
 msgstr "Hier legen Sie fest, ob in der Box „Wunschzettel“ Artikelbilder angezeigt werden sollen."
 
 msgid "boxen_vergleichsliste_anzeigen_name"
-msgstr "Vergleichsliste anzeigen"
+msgstr "Box - Vergleichsliste anzeigen"
 
 msgid "boxen_vergleichsliste_anzeigen_desc"
 msgstr "Hier legen Sie fest, ob die Vergleichsliste in einer Box angezeigt werden soll."
@@ -2077,6 +2077,12 @@ msgstr "Letzte X Monate beachten"
 
 msgid "preisverlauf_anzahl_monate_desc"
 msgstr "Hier legen Sie fest, wie viele Monate rückwirkend für den Preisverlauf berücksichtigt werden sollen. "
+
+msgid "vergleichsliste_anzeigen_name"
+msgstr "Vergleichsliste anzeigen"
+
+msgid "vergleichsliste_anzeigen_desc"
+msgstr "Hier legen Sie fest, ob Ihre Kunden die Vergleichsliste nutzen können."
 
 msgid "vergleichsliste_anzahl_name"
 msgstr "Maximale Anzahl an Artikeln"

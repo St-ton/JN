@@ -122,6 +122,7 @@
                                 </tbody>
                             </table>
                         </div>
+                        {include file='tpl_inc/pagination.tpl' pagination=$oPagiSuchanfragen cAnchor='suchanfrage' isBottom=true}
                         <div class="save-wrapper">
                             <div class="row">
                                 <div class="col-sm-6 col-xl-auto text-left">
@@ -209,6 +210,7 @@
                                 </tbody>
                             </table>
                         </div>
+                        {include file='tpl_inc/pagination.tpl' pagination=$oPagiErfolglos cAnchor='erfolglos' isBottom=true}
                         <div class="save-wrapper">
                             <div class="row">
                                 <div class="col-sm-6 col-xl-auto text-left">
@@ -277,6 +279,7 @@
                                 </tbody>
                             </table>
                         </div>
+                        {include file='tpl_inc/pagination.tpl' pagination=$oPagiMapping cAnchor='mapping' isBottom=true}
                         <div class="save-wrapper">
                             <div class="row">
                                 <div class="col-sm-6 col-xl-auto text-left">

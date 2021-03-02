@@ -163,7 +163,7 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
     protected function loadOptin(): void
     {
         $refData = $this->dbHandler->queryPrepared(
-            'SELECT cRefData
+            'SELECT *
               FROM toptin
               WHERE cMail = :mail
                 AND kOptinClass = :optinclass',

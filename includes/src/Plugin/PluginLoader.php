@@ -2,6 +2,7 @@
 
 namespace JTL\Plugin;
 
+use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Shop;
@@ -47,7 +48,7 @@ class PluginLoader extends AbstractLoader
         }
         $obj = $this->db->select('tplugin', 'kPlugin', $id);
         if ($obj === null) {
-            throw new \InvalidArgumentException('Cannot find plugin with ID ' . $id);
+            throw new InvalidArgumentException('Cannot find plugin with ID ' . $id);
         }
 
         return $this->loadFromObject($obj, $languageCode);

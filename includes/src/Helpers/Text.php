@@ -600,12 +600,16 @@ class Text
      * without idn_to_ascii (PECL) this will fail with umlaut domains
      * @param string $input
      * @param bool   $validate
+     * @param bool   $setHTTP
      * @return string|false - a filtered string or false if invalid
      */
-    public static function filterURL($input, bool $validate = true)
+    public static function filterURL($input, bool $validate = true, bool $setHTTP = false)
     {
         if (\mb_detect_encoding($input) !== 'UTF-8' || !self::is_utf8($input)) {
             $input = self::convertUTF8($input);
+        }
+        if ($setHTTP) {
+            $input = \mb_strpos($input, 'http') !== 0 ? 'http://' . $input : $input;
         }
         $input     = \idn_to_ascii($input, \IDNA_DEFAULT, \INTL_IDNA_VARIANT_UTS46);
         $sanitized = \filter_var($input, \FILTER_SANITIZE_URL);

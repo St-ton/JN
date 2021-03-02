@@ -313,11 +313,11 @@ class InstallCommand extends Command
 
         $io->setStep($this->currentStep++, $this->steps, 'Remove install dir and set new permissions for config file');
 
-        if ($localFilesystem->has('/install')) {
-            $localFilesystem->deleteDir('/install');
+        if ($localFilesystem->fileExists('/install/install.php')) {
+            $localFilesystem->deleteDirectory('/install');
         }
 
-        if ($localFilesystem->has('/includes/config.JTL-Shop.ini.php')) {
+        if ($localFilesystem->fileExists('/includes/config.JTL-Shop.ini.php')) {
             \chmod('/includes/config.JTL-Shop.ini.php', 0644);
             \chown('/includes/config.JTL-Shop.ini.php', $fileOwner);
             \chgrp('/includes/config.JTL-Shop.ini.php', $fileGroup);

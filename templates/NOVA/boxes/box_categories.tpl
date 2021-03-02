@@ -1,5 +1,5 @@
 {block name='boxes-box-categories'}
-    {card class="box box-normal box-categories word-break" id="sidebox-categories-{$oBox->getID()}"}
+    <div class="box box-normal box-categories word-break" id="sidebox-categories-{$oBox->getID()}">
         {block name='boxes-box-categories-content'}
             {block name='boxes-box-categories-toggle-title'}
                 {link id="crd-hdr-{$oBox->getID()}"
@@ -41,5 +41,5 @@
                 <hr class="box-normal-hr">
             {/block}
         {/block}
-    {/card}
+    </div>
 {/block}

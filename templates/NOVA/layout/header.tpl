@@ -91,7 +91,7 @@
                 </noscript>
             {/if}
 
-            {if $opc->isEditMode() === false && $opc->isPreviewMode() === false && \JTL\Shop::isAdmin(true)}
+            {if !$isMobile && !$opc->isEditMode() && !$opc->isPreviewMode() && \JTL\Shop::isAdmin(true)}
                 <link rel="preload" href="{$ShopURL}/admin/opc/css/startmenu.css" as="style"
                       onload="this.onload=null;this.rel='stylesheet'">
                 <noscript>
@@ -280,7 +280,9 @@
               {if isset($Link) && !empty($Link->getIdentifier())} id="{$Link->getIdentifier()}"{/if}>
     {/block}
     {if !$bExclusive}
-        {include file=$opcDir|cat:'tpl/startmenu.tpl'}
+        {if !$isMobile}
+            {include file=$opcDir|cat:'tpl/startmenu.tpl'}
+        {/if}
 
         {if $bAdminWartungsmodus}
             {block name='layout-header-maintenance-alert'}

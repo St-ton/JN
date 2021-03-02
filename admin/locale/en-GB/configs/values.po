@@ -1520,6 +1520,12 @@ msgstr "Yes"
 msgid "preisverlauf_anzeigen_value(N)"
 msgstr "No"
 
+msgid "vergleichsliste_anzeigen_value(Y)"
+msgstr "Yes"
+
+msgid "vergleichsliste_anzeigen_value(N)"
+msgstr "No"
+
 msgid "vergleichsliste_target_value(parent)"
 msgstr "In the same window"
 

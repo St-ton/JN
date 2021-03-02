@@ -2050,7 +2050,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
         }
     }
 
-    if (!empty($data['www']) && !Text::filterURL($data['www'])) {
+    if (!empty($data['www']) && !Text::filterURL($data['www'], true, true)) {
         $ret['www'] = 2;
     }
 

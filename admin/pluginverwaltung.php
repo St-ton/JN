@@ -183,6 +183,9 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                     case InstallCode::NO_PLUGIN_FOUND:
                         $errorMsg = __('errorPluginNotFound');
                         break;
+                    case InstallCode::DIR_DOES_NOT_EXIST:
+                        $errorMsg = __('errorPluginNotFoundFilesystem');
+                        break;
                     default:
                         break;
                 }

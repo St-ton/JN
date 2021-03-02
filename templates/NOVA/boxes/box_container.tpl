@@ -1,5 +1,7 @@
 {block name='boxes-box-container'}
     <div class="box box-container" id="sidebox{$oBox->getID()}">
-        {$oBox->getHTML()}
+        <div class="box-content-wrapper">
+            {$oBox->getHTML()}
+        </div>
     </div>
 {/block}

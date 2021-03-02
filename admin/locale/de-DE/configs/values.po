@@ -789,7 +789,7 @@ msgid "artikeldetails_vergleichsliste_anzeigen_value(N)"
 msgstr "Nein"
 
 msgid "mediendatei_anzeigen_value(YM)"
-msgstr "Ja, als neue Registerkarten pro Mediengruppe"
+msgstr "Ja, als neue Registerkarte / Tab pro Mediengruppe"
 
 msgid "mediendatei_anzeigen_value(YA)"
 msgstr "Ja, unter der Artikelbeschreibung"
@@ -1518,6 +1518,12 @@ msgid "preisverlauf_anzeigen_value(Y)"
 msgstr "Ja"
 
 msgid "preisverlauf_anzeigen_value(N)"
+msgstr "Nein"
+
+msgid "vergleichsliste_anzeigen_value(Y)"
+msgstr "Ja"
+
+msgid "vergleichsliste_anzeigen_value(N)"
 msgstr "Nein"
 
 msgid "vergleichsliste_target_value(parent)"

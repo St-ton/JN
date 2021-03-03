@@ -4,9 +4,8 @@ namespace JTL\Optin;
 
 use JTL\Alert\Alert;
 use JTL\Campaign;
-use JTL\CheckBox;
+use JTL\Catalog\Product\Artikel;
 use JTL\DB\ReturnType;
-use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
@@ -21,7 +20,7 @@ use stdClass;
 class OptinAvailAgain extends OptinBase implements OptinInterface
 {
     /**
-     * @var stdClass
+     * @var Artikel
      */
     private $product;
 
@@ -47,8 +46,10 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
      */
     public function createOptin(OptinRefData $refData): OptinInterface
     {
-        $this->refData = $refData;
-        $this->product = $this->dbHandler->select('tartikel', 'kArtikel', $this->refData->getProductId());
+        $this->refData                       = $refData;
+        $options                             = Artikel::getDefaultOptions();
+        $options->nKeineSichtbarkeitBeachten = 1;
+        $this->product                       = (new Artikel())->fuelleArtikel($this->refData->getProductId(), $options);
         $this->saveOptin($this->generateUniqOptinCode());
 
         return $this;
@@ -134,5 +135,50 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
     public function deactivateOptin(): void
     {
         $this->dbHandler->delete('tverfuegbarkeitsbenachrichtigung', 'cMail', $this->refData->getEmail());
+    }
+
+    /**
+     * @return Artikel
+     */
+    public function getProduct(): Artikel
+    {
+        return $this->product;
+    }
+
+    /**
+     * @param Artikel $product
+     * @return OptinAvailAgain
+     */
+    public function setProduct(Artikel $product): self
+    {
+        $this->product = $product;
+
+        return $this;
+    }
+
+    /**
+     * load a optin-tupel, via email and productID
+     * restore its reference data
+     */
+    protected function loadOptin(): void
+    {
+        $refData = $this->dbHandler->queryPrepared(
+            'SELECT *
+              FROM toptin
+              WHERE cMail = :mail
+                AND kOptinClass = :optinclass',
+            [
+                'mail'       => $this->emailAddress,
+                'optinclass' => \get_class($this)
+            ],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        foreach ($refData as $optin) {
+            /** @var OptinRefData $refData */
+            $refData = \unserialize($optin->cRefData, ['OptinRefData']);
+            if ($refData->getProductId() === $this->getProduct()->kArtikel) {
+                $this->foundOptinTupel = $optin;
+            }
+        }
     }
 }

@@ -2,7 +2,7 @@
     {if $Einstellungen.sitemap.sitemap_seiten_anzeigen === 'Y'}
         {block name='page-sitemap-pages'}
             {opcMountPoint id='opc_before_pages' inContainer=false}
-            {container class="sitemap-wrapper-linkgroup"}
+            {container fluid=$Link->getIsFluid() class="sitemap-wrapper-linkgroup"}
                 {card header={lang key='sitemapSites'} class="sitemap-group"}
                     {block name='page-sitemap-pages-content'}
                         {row}
@@ -26,7 +26,7 @@
     {if $Einstellungen.sitemap.sitemap_kategorien_anzeigen === 'Y' && isset($oKategorieliste->elemente) && $oKategorieliste->elemente|@count > 0}
         {block name='page-sitemap-categories'}
             {opcMountPoint id='opc_before_categories' inContainer=false}
-            {container class="sitemap-wrapper-categories"}
+            {container fluid=$Link->getIsFluid() class="sitemap-wrapper-categories"}
                 {card header={lang key='sitemapKats'} class="sitemap-group"}
                     {block name='page-sitemap-categories-content'}
                         {row}
@@ -87,7 +87,7 @@
     {if $Einstellungen.sitemap.sitemap_hersteller_anzeigen === 'Y' && $oHersteller_arr|@count > 0}
         {block name='page-sitemap-manufacturer'}
             {opcMountPoint id='opc_before_manufacturers' inContainer=false}
-            {container class="sitemap-wrapper-manufacturer"}
+            {container fluid=$Link->getIsFluid() class="sitemap-wrapper-manufacturer"}
                 {card header={lang key='sitemapNanufacturer'} class="sitemap-group"}
                     {block name='page-sitemap-manufacturer-content'}
                         {row}
@@ -105,7 +105,7 @@
     {if $Einstellungen.news.news_benutzen === 'Y' && $Einstellungen.sitemap.sitemap_news_anzeigen === 'Y' && !empty($oNewsMonatsUebersicht_arr) && $oNewsMonatsUebersicht_arr|@count > 0}
         {block name='page-sitemap-news'}
             {opcMountPoint id='opc_before_news' inContainer=false}
-            {container class="sitemap-wrapper-news"}
+            {container fluid=$Link->getIsFluid() class="sitemap-wrapper-news"}
                 {card header={lang key='sitemapNews'} class="sitemap-group"}
                     {block name='page-sitemap-news-content'}
                         {row}
@@ -135,7 +135,7 @@
     }
         {block name='page-sitemap-news-categories'}
             {opcMountPoint id='opc_before_news_categories' inContainer=false}
-            {container class="sitemap-wrapper-news-categories"}
+            {container fluid=$Link->getIsFluid() class="sitemap-wrapper-news-categories"}
                 {card header={lang key='sitemapNewsCats'} class="sitemap-group"}
                     {block name='page-sitemap-news-categories-content'}
                         {row}

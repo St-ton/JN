@@ -41,7 +41,7 @@ Jede Templatedatei (``*.tpl``) wird von der Template-Engine `Smarty` gelesen und
 für die Auszeichnungen von Variablen- und Code-Ersetzungen geschweifte Klammern (``{``, ``}``). |br|
 Geschweifte Klammern sind aber ebenso in Javascript ein Sprachelement um beispielsweise Code-Blöcke zu umschließen.
 
-Damit sich diese bieden unterschiedlichen Auszeichnungensarten nicht überschneiden, ist es möglich,
+Damit sich diese beiden unterschiedlichen Auszeichnungsarten nicht überschneiden, ist es möglich,
 Javascript-Code von der Bearbeitung durch `Smarty` auszuschließen. |br|
 Hierfür existieren zwei unterschiedliche Ansätze.
 
@@ -88,6 +88,27 @@ Mit diesen beiden Tags läßt sich ein größerer Javascript-Block ganz einfach 
 
 (Siehe auch: `Smarty Docs literal <https://www.smarty.net/docsv2/de/language.function.literal.tpl>`_)
 
+Möchten Sie in Ihrem Javascript weiterhin Variablen durch `Smarty` ersetzen lassen, kann der ``literal``-Block
+auch vor der `Smarty`-Variable beendet und nach ihr wieder begonnen werden.
+
+**Beispiel:**
+
+.. code-block:: smarty
+
+    Dies ist eine smarty.tpl Datei,<br>
+    die ein Javascript enthält.<br>
+
+    {literal}
+    <script>
+        function helloWorld() {
+            alert({/literal}'{$HelloWorldText}'{literal});
+        }
+
+    </script>
+    {/literal}
+
+In diesem Fall hätten Sie zwei getrennte ``literal``-Blöcken, die `Samrty` nicht interpretiert. |br|
+Die Variable in der Mitte wird dann wie gewohnt von `Smarty` ersetzt.
 
 Theme-Variablen
 ---------------

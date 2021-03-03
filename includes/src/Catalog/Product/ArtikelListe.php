@@ -6,6 +6,7 @@ use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Category\MenuItem;
 use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
+use JTL\Helpers\Product;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use function Functional\map;
@@ -176,7 +177,7 @@ class ArtikelListe
             }
         }
 
-        return $this->elemente;
+        return Product::separateByAvailability($this->elemente, true);
     }
 
     /**

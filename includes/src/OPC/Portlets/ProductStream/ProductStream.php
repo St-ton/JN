@@ -10,6 +10,7 @@ use JTL\Filter\AbstractFilter;
 use JTL\Filter\Config;
 use JTL\Filter\ProductFilter;
 use JTL\Filter\Type;
+use JTL\Helpers\Product;
 use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
 use JTL\OPC\PortletInstance;
@@ -104,6 +105,6 @@ class ProductStream extends Portlet
             $products[] = (new Artikel())->fuelleArtikel($productID, $defaultOptions);
         }
 
-        return $products;
+        return Product::separateByAvailability($products);
     }
 }

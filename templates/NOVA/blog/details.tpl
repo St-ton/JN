@@ -3,7 +3,7 @@
         {include file='snippets/extension.tpl'}
     {/block}
 
-    {container class="blog-details"}
+    {container fluid=$Link->getIsFluid() class="blog-details"}
     {if !empty($cNewsErr)}
         {block name='blog-details-alert'}
             {alert variant="danger"}{lang key='newsRestricted' section='news'}{/alert}

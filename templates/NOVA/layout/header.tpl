@@ -447,7 +447,7 @@
         {/block}
 
         {block name='layout-header-breadcrumb'}
-            {container fluid=($smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp) class="breadcrumb-container"}
+            {container fluid=($smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp || (isset($Link) && $Link->getIsFluid())) class="breadcrumb-container"}
                 {include file='layout/breadcrumb.tpl'}
             {/container}
         {/block}

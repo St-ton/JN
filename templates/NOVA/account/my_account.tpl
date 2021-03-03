@@ -220,6 +220,7 @@
                     {/card}
                 {/block}
             {/col}
+            {if $Einstellungen.vergleichsliste.vergleichsliste_anzeigen === 'Y'}
             {col cols=12 lg=6 class="account-data-item account-data-item-comparelist"}
                 {block name='account-my-account-comparelist'}
                     {card no-body=true class="account-comparelist"}
@@ -249,6 +250,7 @@
                     {/card}
                 {/block}
             {/col}
+            {/if}
         {/row}
     {/block}
     {opcMountPoint id='opc_after_account_page'}

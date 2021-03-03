@@ -1,12 +1,14 @@
 {block name='boxes-box-last-seen'}
     {lang key='lastViewed' assign='boxtitle'}
-    {card class="box box-last-seen box-normal" id="sidebox{$oBox->getID()}"}
+    <div class="box box-last-seen box-normal" id="sidebox{$oBox->getID()}">
         {block name='boxes-box-last-seen-content'}
             {block name='boxes-box-last-seen-title'}
                 <div class="productlist-filter-headline">
                     {$boxtitle}
                 </div>
             {/block}
+            {block name='boxes-box-last-seen-content'}
+            <div class="box-content-wrapper">
             {foreach $oBox->getProducts() as $product}
                 <div class="box-last-seen-item">
                     {block name='boxes-box-last-seen-image-link'}
@@ -30,9 +32,11 @@
                     {/block}
                 </div>
             {/foreach}
+            </div>
+            {/block}
             {block name='boxes-box-last-seen-hr-end'}
                 <hr class="box-normal-hr">
             {/block}
         {/block}
-    {/card}
+    </div>
 {/block}

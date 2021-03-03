@@ -55,6 +55,11 @@ class InstallationResponse
     private $html;
 
     /**
+     * @var string|null
+     */
+    private $license;
+
+    /**
      * @return string
      */
     public function getStatus(): string
@@ -237,6 +242,22 @@ class InstallationResponse
         $this->html = $html;
 
         return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getLicense(): ?string
+    {
+        return $this->license;
+    }
+
+    /**
+     * @param string|null $license
+     */
+    public function setLicense(?string $license): void
+    {
+        $this->license = $license;
     }
 
     /**

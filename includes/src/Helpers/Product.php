@@ -1256,6 +1256,25 @@ class Product
                     ->setEmail(Text::filterXSS($dbHandler->escape(\strip_tags($_POST['email']))) ?: '')
                     ->setLanguageID(Shop::getLanguageID())
                     ->setRealIP(Request::getRealIP());
+
+                $inquiry            = self::getAvailabilityFormDefaults();
+                $inquiry->kSprache  = Shop::getLanguage();
+                $inquiry->kArtikel  = Request::postInt('a');
+                $inquiry->cIP       = Request::getRealIP();
+                $inquiry->dErstellt = 'NOW()';
+                $inquiry->nStatus   = 0;
+                $inquiry->cNachname = $inquiry->cNachname ?? '';
+                $inquiry->cVorname  = $inquiry->cVorname ?? '';
+                $checkBox           = new CheckBox();
+                $customerGroupID    = Frontend::getCustomerGroup()->getID();
+                $checkBox->triggerSpecialFunction(
+                    \CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT,
+                    $customerGroupID,
+                    true,
+                    $_POST,
+                    ['oKunde' => $inquiry, 'oNachricht' => $inquiry]
+                )->checkLogging(\CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $customerGroupID, $_POST, true);
+
                 try {
                     (new Optin(OptinAvailAgain::class))
                         ->getOptinInstance()

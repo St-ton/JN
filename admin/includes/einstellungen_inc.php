@@ -225,9 +225,11 @@ function holeEinstellungHeadline(int $sort, int $sectionID)
         );
         foreach ($items as $item) {
             if ($item->cConf === 'N') {
-                $configHead                = $item;
-                $configHead->cSektionsPfad = gibEinstellungsSektionsPfad($sectionID);
-                $configHead->cURL          = getSectionMenuPath($sectionID);
+                $configHead                 = $item;
+                $configHead->cSektionsPfad  = gibEinstellungsSektionsPfad($sectionID);
+                $configHead->cURL           = getSectionMenuPath($sectionID);
+                $configHead->specialSetting = getSpecialSetting($sectionID);
+                $configHead->settingsAnchor = getSettingsAnchor($sectionID);
                 break;
             }
         }
@@ -261,6 +263,36 @@ function getSectionMenuPath(int $sectionID)
 
     if (isset($sectionMenuMapping[$sectionID])) {
         return $sectionMenuMapping[$sectionID]->url;
+    }
+
+    return '';
+}
+
+/**
+ * @param int $sectionID
+ * @return boolean
+ */
+function getSpecialSetting(int $sectionID): bool
+{
+    global $sectionMenuMapping;
+
+    if (isset($sectionMenuMapping[$sectionID])) {
+        return $sectionMenuMapping[$sectionID]->specialSetting;
+    }
+
+    return false;
+}
+
+/**
+ * @param int $sectionID
+ * @return string
+ */
+function getSettingsAnchor(int $sectionID): string
+{
+    global $sectionMenuMapping;
+
+    if (isset($sectionMenuMapping[$sectionID])) {
+        return $sectionMenuMapping[$sectionID]->settingsAnchor;
     }
 
     return '';

@@ -148,6 +148,9 @@
                         {else}
                             <div class="alert alert-info" role="alert">{__('notImportedYet')}</div>
                         {/if}
+                        {if $bSpracheAktiv}
+                            {include file='tpl_inc/pagination.tpl' pagination=$pagination isBottom=true}
+                        {/if}
                         <div class="save-wrapper">
                             {sprache_buttons}
                         </div>

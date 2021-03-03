@@ -20,7 +20,7 @@
             });
         </script>{/inline_script}
     {/block}
-    {card class="box box-searchcloud box-normal" id="sidebox{$oBox->getID()}"}
+    <div class="box box-searchcloud box-normal" id="sidebox{$oBox->getID()}">
         {block name='boxes-box-search-cloud-content'}
             {block name='boxes-box-search-cloud-title'}
                 <div class="productlist-filter-headline">
@@ -29,5 +29,5 @@
             {/block}
             <div class="searchcloud"></div>
         {/block}
-    {/card}
+    </div>
 {/block}

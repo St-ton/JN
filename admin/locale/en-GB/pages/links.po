@@ -212,9 +212,6 @@ msgstr "Could not copy link. It is already part of the target link group."
 msgid "successLinkCopy"
 msgstr "Link %s copied successfully."
 
-msgid "dangerDeleteAllLinksInLinkGroup"
-msgstr "All links in this link group will also be deleted."
-
 msgid "dangerDeleteLinksAlso"
 msgstr "The following links are referenced in other link groups and will also be deleted from those groups."
 
@@ -250,3 +247,9 @@ msgstr "In this link group, at least one special page exists several times for t
 
 msgid "newLinkGroupTitle"
 msgstr "Create new link group"
+
+msgid "The following special pages are missing:"
+msgstr "The following special pages are missing:"
+
+msgid "Please create the missing pages manually."
+msgstr "Please create the missing pages manually."

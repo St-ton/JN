@@ -90,6 +90,7 @@
                                     </tbody>
                                 </table>
                             </div>
+                            {include file='tpl_inc/pagination.tpl' pagination=$oPagiInaktiv cAnchor='freischalten' isBottom=true}
                             <div class="card-footer save-wrapper">
                                 <div class="row">
                                     <div class="col-sm-6 col-xl-auto text-left">
@@ -202,6 +203,7 @@
                                     </tbody>
                                 </table>
                             </div>
+                            {include file='tpl_inc/pagination.tpl' pagination=$oPagiAktiv cAnchor='letzten50' isBottom=true}
                             <div class="card-footer save-wrapper">
                                 <div class="row">
                                     <div class="col-sm-6 col-xl-auto text-left">
@@ -328,7 +330,7 @@
                                         <label class="col col-sm-4 col-form-label text-sm-right" for="{$oConfig->cWertName}">
                                             {$oConfig->cName}{if $oConfig->cWertName|strpos:'_guthaben'} <span id="EinstellungAjax_{$oConfig->cWertName}"></span>:{else}:{/if}
                                         </label>
-                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $oConfig->cInputTyp === 'number'}config-type-number{/if}">
                                             {if $oConfig->cInputTyp === 'selectbox'}
                                                 <select name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" class="custom-select combo">
                                                     {foreach $oConfig->ConfWerte as $wert}

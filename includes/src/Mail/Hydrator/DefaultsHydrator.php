@@ -155,28 +155,12 @@ class DefaultsHydrator implements HydratorInterface
         }
         $customer = GeneralObject::deepCopy($customer);
         if (isset($customer->cLand)) {
-            $iso = $customer->cLand;
-            $col = 'cDeutsch';
-            if (\mb_convert_case($lang->cISO, \MB_CASE_LOWER) !== 'ger') {
-                $col = 'cEnglisch';
+            if (isset($_SESSION['Kunde'])) {
+                $_SESSION['Kunde']->cLand = $customer->cLand;
             }
-            $country = $this->db->select(
-                'tland',
-                'cISO',
-                $customer->cLand,
-                null,
-                null,
-                null,
-                null,
-                false,
-                $col . ' AS cName, cISO'
-            );
-            if (isset($country->cName)) {
-                $customer->cLand = $country->cName;
+            if (($country = Shop::Container()->getCountryService()->getCountry($customer->cLand)) !== null) {
+                $customer->angezeigtesLand = $country->getName($lang->id);
             }
-        }
-        if (isset($_SESSION['Kunde'], $iso)) {
-            $_SESSION['Kunde']->cLand = $iso;
         }
 
         return $customer;

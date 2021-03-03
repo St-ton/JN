@@ -29,39 +29,19 @@
                             {foreach $sizes as $size}
                             <td class="text-center">
                                 <div class="input-group form-counter min-w-sm">
-                                    <div class="input-group-prepend">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                            <span class="fas fa-minus"></span>
-                                        </button>
-                                    </div>
                                     {$optIdx = 'bilder_'|cat:$idx|cat:'_'|cat:$size|cat:'_breite'}
                                     {if !isset($oConfig.$optIdx)}
                                         {$optIdx = 'bilder_'|cat:$idx|cat:'_breite'}
                                     {/if}
                                     <input size="4" class="form-control" type="number" name="{$optIdx}" value="{$oConfig.$optIdx}" />
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                            <span class="fas fa-plus"></span>
-                                        </button>
-                                    </div>
                                 </div>
                                 <span class="cross-sign text-center">x</span>
                                 <div class="input-group form-counter min-w-sm">
-                                    <div class="input-group-prepend">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                            <span class="fas fa-minus"></span>
-                                        </button>
-                                    </div>
                                     {$optIdx = 'bilder_'|cat:$idx|cat:'_'|cat:$size|cat:'_hoehe'}
                                     {if !isset($oConfig.$optIdx)}
                                         {$optIdx = 'bilder_'|cat:$idx|cat:'_hoehe'}
                                     {/if}
                                     <input size="4" class="form-control" type="number" name="{$optIdx}" value="{$oConfig.$optIdx}" />
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                            <span class="fas fa-plus"></span>
-                                        </button>
-                                    </div>
                                 </div>
                             </td>
                             {/foreach}
@@ -78,7 +58,7 @@
                 {if $cnf->cConf === 'Y'}
                     <div class="form-group form-row align-items-center{if isset($cSuche) && $cnf->kEinstellungenConf == $cSuche} highlight{/if}">
                         <label class="col col-sm-4 col-form-label text-sm-right order-1" for="{$cnf->cWertName}">{$cnf->cName}:</label>
-                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $cnf->cInputTyp === 'number'}config-type-number{/if}">
                         {if $cnf->cInputTyp === 'selectbox'}
                             <select class="custom-select" name="{$cnf->cWertName}" id="{$cnf->cWertName}">
                                 {foreach $cnf->ConfWerte as $wert}

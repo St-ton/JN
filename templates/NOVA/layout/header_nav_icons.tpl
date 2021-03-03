@@ -6,9 +6,11 @@
         {include file='layout/header_shop_nav_account.tpl'}
     {/block}
     {if !($isMobile)}
-        {block name='layout-header-nav-icons-include-header-shop-nav-compare'}
-            {include file='layout/header_shop_nav_compare.tpl'}
-        {/block}
+        {if $Einstellungen.vergleichsliste.vergleichsliste_anzeigen === 'Y'}
+            {block name='layout-header-nav-icons-include-header-shop-nav-compare'}
+                {include file='layout/header_shop_nav_compare.tpl'}
+            {/block}
+        {/if}
         {block name='layout-header-nav-icons-include-header-shop-nav-wish'}
             {include file='layout/header_shop_nav_wish.tpl'}
         {/block}

@@ -173,22 +173,23 @@ if (Request::postInt('zuruecksetzen') === 1 && Form::validateToken()) {
 
                 // Shopkunden & Kunden werben Kunden & Bestellungen & Kupons
                 case 'shopkunden':
-                    $db->query('TRUNCATE tkunde', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE tkundenattribut', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE tkundendatenhistory', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE tkundenfeld', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE tkundenfeldwert', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE tkundenherkunft', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE tkundenkontodaten', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE tlieferadresse', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE twarenkorbpers', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE twarenkorbperspos', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE twarenkorbpersposeigenschaft', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE twunschliste', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE twunschlistepos', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE twunschlisteposeigenschaft', ReturnType::DEFAULT);
-                    break;
                 case 'bestellungen':
+                    if ($option === 'shopkunden') {
+                        $db->query('TRUNCATE tkunde', ReturnType::DEFAULT);
+                        $db->query('TRUNCATE tkundenattribut', ReturnType::DEFAULT);
+                        $db->query('TRUNCATE tkundendatenhistory', ReturnType::DEFAULT);
+                        $db->query('TRUNCATE tkundenfeld', ReturnType::DEFAULT);
+                        $db->query('TRUNCATE tkundenfeldwert', ReturnType::DEFAULT);
+                        $db->query('TRUNCATE tkundenherkunft', ReturnType::DEFAULT);
+                        $db->query('TRUNCATE tkundenkontodaten', ReturnType::DEFAULT);
+                        $db->query('TRUNCATE tlieferadresse', ReturnType::DEFAULT);
+                        $db->query('TRUNCATE twarenkorbpers', ReturnType::DEFAULT);
+                        $db->query('TRUNCATE twarenkorbperspos', ReturnType::DEFAULT);
+                        $db->query('TRUNCATE twarenkorbpersposeigenschaft', ReturnType::DEFAULT);
+                        $db->query('TRUNCATE twunschliste', ReturnType::DEFAULT);
+                        $db->query('TRUNCATE twunschlistepos', ReturnType::DEFAULT);
+                        $db->query('TRUNCATE twunschlisteposeigenschaft', ReturnType::DEFAULT);
+                    }
                     $db->query('TRUNCATE tbestellid', ReturnType::DEFAULT);
                     $db->query('TRUNCATE tbestellstatus', ReturnType::DEFAULT);
                     $db->query('TRUNCATE tbestellung', ReturnType::DEFAULT);

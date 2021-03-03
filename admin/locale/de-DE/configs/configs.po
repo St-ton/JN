@@ -795,7 +795,7 @@ msgid "artikeldetails_kategorie_anzeigen_desc"
 msgstr "Hier legen Sie fest, ob die Kategorie des Artikels auf der Artikeldetailseite angezeigt wird."
 
 msgid "artikeldetails_tabs_nutzen_name"
-msgstr "Registerkarten nutzen"
+msgstr "Registerkarten / Tab nutzen"
 
 msgid "artikeldetails_tabs_nutzen_desc"
 msgstr "Hier legen Sie fest, ob auf der Artikeldetailseite Registerkarten verwendet werden sollen. Diese beinhalten beispielsweise die Bewertungen oder Fragen zum Artikel. Wenn Sie die Option deaktivieren, werden alle Informationen untereinander angezeigt."
@@ -1214,6 +1214,18 @@ msgstr "Vorausgewähltes Land"
 msgid "lieferadresse_abfragen_standardland_desc"
 msgstr "Hier geben Sie den ISO-Code für das Land an, das vorausgewählt sein soll, z. B. DE für Deutschland oder AT für Österreich."
 
+msgid "lieferadresse_abfragen_firma_name"
+msgstr "Firma abfragen"
+
+msgid "lieferadresse_abfragen_firma_desc"
+msgstr "Hier legen Sie fest, ob der Firmenname abgefragt wird."
+
+msgid "lieferadresse_abfragen_firmazusatz_name"
+msgstr "Firmenzusatz abfragen"
+
+msgid "lieferadresse_abfragen_firmazusatz_desc"
+msgstr "Hier legen Sie fest, ob der Firmenzusatz abgefragt wird."
+
 msgid "shop_ustid_name"
 msgstr "USt-IdNr. des Onlineshops"
 
@@ -1467,7 +1479,7 @@ msgid "boxen_wunschzettel_bilder_desc"
 msgstr "Hier legen Sie fest, ob in der Box „Wunschzettel“ Artikelbilder angezeigt werden sollen."
 
 msgid "boxen_vergleichsliste_anzeigen_name"
-msgstr "Vergleichsliste anzeigen"
+msgstr "Box - Vergleichsliste anzeigen"
 
 msgid "boxen_vergleichsliste_anzeigen_desc"
 msgstr "Hier legen Sie fest, ob die Vergleichsliste in einer Box angezeigt werden soll."
@@ -2066,6 +2078,12 @@ msgstr "Letzte X Monate beachten"
 msgid "preisverlauf_anzahl_monate_desc"
 msgstr "Hier legen Sie fest, wie viele Monate rückwirkend für den Preisverlauf berücksichtigt werden sollen. "
 
+msgid "vergleichsliste_anzeigen_name"
+msgstr "Vergleichsliste anzeigen"
+
+msgid "vergleichsliste_anzeigen_desc"
+msgstr "Hier legen Sie fest, ob Ihre Kunden die Vergleichsliste nutzen können."
+
 msgid "vergleichsliste_anzahl_name"
 msgstr "Maximale Anzahl an Artikeln"
 
@@ -2155,6 +2173,12 @@ msgstr "Bewertungssystem nutzen"
 
 msgid "bewertung_anzeigen_desc"
 msgstr "Hier legen Sie fest, ob die Möglichkeit, eine Bewertung abzugeben, in den Artikeldetails angezeigt wird."
+
+msgid "bewertung_alle_sprachen_name"
+msgstr "Alle Sprachen anzeigen"
+
+msgid "bewertung_alle_sprachen_desc"
+msgstr "Hier legen Sie fest, ob Bewertungstexte immer angezeigt werden, unabhängig davon, in welcher Sprache sie verfasst wurden (Ja), oder ob nur Bewertungen in der Sprache zu sehen sind, die aktuell im Frontend gesetzt ist (Nein)."
 
 msgid "bewertung_freischalten_name"
 msgstr "Bewertungen freischalten"

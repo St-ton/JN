@@ -123,7 +123,7 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
         if (isset($vl->cContentHtml)) {
             if ($pcs[0] === 'html') {
                 $source = $vl->cContentHtml;
-            } elseif ($pcs[0] === 'text') {
+            } elseif ($pcs[0] === 'text' || $pcs[0] === 'plain') {
                 $source = $vl->cContentText;
             } else {
                 $source = '';

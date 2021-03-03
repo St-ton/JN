@@ -155,6 +155,7 @@
                             </div>
                         </form>
                     </div>
+                    {include file='tpl_inc/pagination.tpl' pagination=$pagination cAnchor='uebersicht' isBottom=true}
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                     <form method="post" action="checkbox.php">

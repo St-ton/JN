@@ -107,7 +107,7 @@ auch vor der `Smarty`-Variable beendet und nach ihr wieder begonnen werden.
     </script>
     {/literal}
 
-In diesem Fall hätten Sie zwei getrennte ``literal``-Blöcken, die `Samrty` nicht interpretiert. |br|
+In diesem Fall hätten Sie zwei getrennte ``literal``-Blöcke, die `Samrty` nicht interpretiert. |br|
 Die Variable in der Mitte wird dann wie gewohnt von `Smarty` ersetzt.
 
 Theme-Variablen

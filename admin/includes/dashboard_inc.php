@@ -17,6 +17,8 @@ use JTL\Widgets\AbstractWidget;
  */
 function getWidgets(bool $bActive = true): array
 {
+    global $oAccount;
+
     $cache        = Shop::Container()->getCache();
     $db           = Shop::Container()->getDB();
     $gettext      = Shop::Container()->getGetText();
@@ -84,7 +86,7 @@ function getWidgets(bool $bActive = true): array
     if ($bActive) {
         $smarty = JTLSmarty::getInstance(false, ContextType::BACKEND);
 
-        foreach ($widgets as $widget) {
+        foreach ($widgets as $key => $widget) {
             $widget->cContent = '';
             $className        = '\JTL\Widgets\\' . $widget->cClass;
             $classPath        = null;
@@ -104,9 +106,13 @@ function getWidgets(bool $bActive = true): array
 
             if (class_exists($className)) {
                 /** @var AbstractWidget $instance */
-                $instance         = new $className($smarty, $db, $widget->plugin);
-                $widget->cContent = $instance->getContent();
-                $widget->hasBody  = $instance->hasBody;
+                $instance = new $className($smarty, $db, $widget->plugin);
+                if ($oAccount->permission('DASHBOARD_VIEW') || $oAccount->permission($instance->getPermission())) {
+                    $widget->cContent = $instance->getContent();
+                    $widget->hasBody  = $instance->hasBody;
+                } else {
+                    unset($widgets[$key]);
+                }
             }
         }
     }

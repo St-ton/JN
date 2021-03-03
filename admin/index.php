@@ -146,23 +146,20 @@ $smarty->assign('bProfilerActive', $profilerState !== 0)
  */
 function openDashboard()
 {
-    global $oAccount;
-
     $smarty = Shop::Smarty();
     if (isset($_REQUEST['uri']) && mb_strlen(trim($_REQUEST['uri'])) > 0) {
         redirectToURI($_REQUEST['uri']);
     }
     $_SESSION['loginIsValid'] = true;
-    if ($oAccount->permission('DASHBOARD_VIEW')) {
-        require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dashboard_inc.php';
 
-        $smarty->assign('bDashboard', true)
-               ->assign('bUpdateError', (Request::postInt('shopupdate') === 1 ? '1' : false))
-               ->assign('oActiveWidget_arr', getWidgets())
-               ->assign('oAvailableWidget_arr', getWidgets(false))
-               ->assign('bInstallExists', is_dir(PFAD_ROOT . 'install'));
-    }
-    $smarty->display('dashboard.tpl');
+    require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dashboard_inc.php';
+
+    $smarty->assign('bDashboard', true)
+           ->assign('bUpdateError', (Request::postInt('shopupdate') === 1 ? '1' : false))
+           ->assign('oActiveWidget_arr', getWidgets())
+           ->assign('oAvailableWidget_arr', getWidgets(false))
+           ->assign('bInstallExists', is_dir(PFAD_ROOT . 'install'))
+           ->display('dashboard.tpl');
     exit();
 }
 

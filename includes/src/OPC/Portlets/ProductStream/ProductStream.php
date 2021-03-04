@@ -27,18 +27,10 @@ class ProductStream extends Portlet
     public function getPropertyDesc(): array
     {
         return [
-            'search' => [
-                'type'  => InputType::SEARCH,
-                'label' => 'Suche',
-                'placeholder' => __('search'),
-                'width' => 67,
-                'order' => 2,
-            ],
             'listStyle'    => [
                 'type'    => InputType::SELECT,
                 'label'   => __('presentation'),
-                'width'   => 34,
-                'order'   => 1,
+                'width'   => 66,
                 'options' => [
                     'gallery'      => __('presentationGallery'),
                     'list'         => __('presentationList'),
@@ -47,6 +39,19 @@ class ProductStream extends Portlet
                     'box-slider'   => __('presentationBoxSlider'),
                 ],
                 'default' => 'gallery',
+            ],
+            'maxProducts' => [
+                'type'     => InputType::NUMBER,
+                'label'    => __('maxProducts'),
+                'width'    => 33,
+                'default'  => 15,
+                'required' => true,
+            ],
+            'search' => [
+                'type'        => InputType::SEARCH,
+                'label'       => __('search'),
+                'placeholder' => __('search'),
+                'width'       => 50,
             ],
             'filters'      => [
                 'type'     => InputType::FILTER,
@@ -87,7 +92,7 @@ class ProductStream extends Portlet
             $productFilter->addActiveFilter($newFilter, $enabledFilter['value']);
         }
 
-        return $productFilter->getProductKeys();
+        return $productFilter->getProductKeys()->slice(0, $instance->getProperty('maxProducts'));
     }
 
     /**

@@ -1868,7 +1868,7 @@ class Cart
         });
 
         $this->oFavourableShipping = null;
-        if (empty($shippingMethods)) {
+        if (\count($shippingMethods) === 0) {
             return null;
         }
         //use previously determined shippingfree shipping method

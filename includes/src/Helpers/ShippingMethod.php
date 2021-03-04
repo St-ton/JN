@@ -1406,7 +1406,7 @@ class ShippingMethod
             ), static function ($e) {
                 return $e->kVersandart;
             });
-            if (empty($shippingMethods)) {
+            if (\count($shippingMethods) === 0) {
                 return 0;
             }
 

@@ -319,9 +319,9 @@
                             {block name='layout-header-logo'}
                                 <div id="logo" class="logo-wrapper" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
                                     <span itemprop="name" class="d-none">{$meta_publisher}</span>
-                                    <meta itemprop="url" content="{$ShopURL}">
+                                    <meta itemprop="url" content="{$ShopHomeURL}">
                                     <meta itemprop="logo" content="{$ShopLogoURL}">
-                                    {link class="navbar-brand" href=$ShopURL title=$Einstellungen.global.global_shopname}
+                                    {link class="navbar-brand" href=$ShopHomeURL title=$Einstellungen.global.global_shopname}
                                     {if isset($ShopLogoURL)}
                                         {image src=$ShopLogoURL
                                         alt=$Einstellungen.global.global_shopname

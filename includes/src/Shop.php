@@ -37,6 +37,7 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\L10n\GetText;
+use JTL\Link\SpecialPageNotFoundException;
 use JTL\Language\LanguageHelper;
 use JTL\Mail\Hydrator\DefaultsHydrator;
 use JTL\Mail\Mailer;
@@ -2293,5 +2294,24 @@ final class Shop
         }
 
         return $faviconUrl;
+    }
+
+    /**
+     * @return string
+     * @throws Exceptions\CircularReferenceException
+     * @throws Exceptions\ServiceNotFoundException
+     */
+    public static function getHomeURL(): string
+    {
+        $homeURL = self::getURL() . '/';
+        try {
+            if (!LanguageHelper::isDefaultLanguageActive()) {
+                $homeURL = self::Container()->getLinkService()->getSpecialPage(\LINKTYP_STARTSEITE)->getURL();
+            }
+        } catch (SpecialPageNotFoundException $e) {
+            self::Container()->getLogService()->error($e->getMessage());
+        }
+
+        return $homeURL;
     }
 }

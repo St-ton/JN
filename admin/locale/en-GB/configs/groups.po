@@ -122,6 +122,9 @@ msgstr "Wish list"
 msgid "configgroup_8_box_comparelist"
 msgstr "Comparison list"
 
+msgid "configgroup_8_box_manufacturers"
+msgstr "Box: Manufacturer"
+
 msgid "configgroup_8_box_top_rated"
 msgstr "Box: Top rated"
 

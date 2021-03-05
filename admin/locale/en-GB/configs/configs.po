@@ -1502,6 +1502,12 @@ msgstr "\"Top rated\" requires average rating of"
 msgid "boxen_topbewertet_minsterne_desc"
 msgstr "Specify the minimum number of stars with which an item must be rated on average to be considered as \"Top rated\"."
 
+msgid "box_hersteller_anzahl_anzeige_name"
+msgstr "Number of displayed items"
+
+msgid "box_hersteller_anzahl_anzeige_desc"
+msgstr "Specify how many items are to be displayed in the box. Specify 0 to show all manufcaturers."
+
 msgid "bilder_kategorien_breite_name"
 msgstr "Category images: width"
 

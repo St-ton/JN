@@ -2595,10 +2595,10 @@ msgid "news_anzahl_content_desc"
 msgstr "Specify the number of blog posts to be displayed on the start page of your JTL-Shop."
 
 msgid "news_anzahl_box_name"
-msgstr "Number of months in the box"
+msgstr "Number of months/cateogries in the box"
 
 msgid "news_anzahl_box_desc"
-msgstr "Specify the number of months to be displayed in the \"Blog (monthly overview)\" box."
+msgstr "Specify the number of months/categories to be displayed in the \"Blog (monthly overview) / Blog (category overview)\" box."
 
 msgid "news_kommentare_freischalten_name"
 msgstr "Activate comments"

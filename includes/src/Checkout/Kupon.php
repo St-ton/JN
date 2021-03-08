@@ -7,6 +7,7 @@ use JTL\Cart\CartHelper;
 use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Product;
+use JTL\Language\LanguageHelper;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
@@ -1055,20 +1056,22 @@ class Kupon
             }
         }
 
+        $db             = Shop::Container()->getDB();
         $special        = new stdClass();
         $special->cName = $coupon->translationList;
+        $languageHelper = LanguageHelper::getInstance($db);
         foreach ($_SESSION['Sprachen'] as $language) {
             if ($coupon->cWertTyp === 'prozent'
                 && $coupon->nGanzenWKRabattieren === 0
                 && $coupon->cKuponTyp !== self::TYPE_NEWCUSTOMER
             ) {
                 $special->cName[$language->cISO] .= ' ' . $coupon->fWert . '% ';
-                $discount                         = Shop::Container()->getDB()->select(
+                $discount                         = $db->select(
                     'tsprachwerte',
                     'cName',
                     'discountForArticle',
                     'kSprachISO',
-                    $language->kSprache,
+                    $languageHelper->mappekISO($language->cISO),
                     null,
                     null,
                     false,

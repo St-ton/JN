@@ -1019,6 +1019,9 @@ class Artikel
         if ($this->kSteuerklasse === null) {
             return;
         }
+        if (Shop::getLanguageID() === 0 && isset($_SESSION['kSprache'], $_SESSION['cISOSprache'])) {
+            Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
+        }
         $this->conf    = $this->getConfig();
         $this->taxData = $this->getShippingAndTaxData();
     }

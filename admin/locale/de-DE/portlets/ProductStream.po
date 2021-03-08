@@ -25,3 +25,6 @@ msgstr "Einzelprodukt-Slider mit Name und Preis"
 
 msgid "itemFilter"
 msgstr "Artikelfilter"
+
+msgid "maxProducts"
+msgstr "Artikel-Anzahl begrenzen"

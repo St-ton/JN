@@ -2077,3 +2077,27 @@ msgstr "Abgesicherter Modus"
 
 msgid "Safe mode enabled."
 msgstr "Abgesicherter Modus aktiv. Gewisse Funktionalitäten stehen nicht zur Verfügung."
+
+msgid "shippingType"
+msgstr "Versandart"
+
+msgid "orderDate"
+msgstr "Bestelldatum"
+
+msgid "company"
+msgstr "Firma"
+
+msgid "productId"
+msgstr "Artikelnummer"
+
+msgid "phone"
+msgstr "Telefon"
+
+msgid "message"
+msgstr "Nachricht"
+
+msgid "vat"
+msgstr "Mwst"
+
+msgid "stock"
+msgstr "Lagerbestand"

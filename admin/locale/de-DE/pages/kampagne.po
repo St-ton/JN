@@ -151,3 +151,39 @@ msgstr "Wählen Sie hier, ob der Kampagnenwert ein fester Wert oder ein dynamisc
 
 msgid "kampagneValueStaticDesc"
 msgstr "Geben Sie hier den Kampagnenwert ein, wenn Sie vorher „Fester Wert“ ausgewählt haben. Bsp.: 5, http://demoshop.jtl-software.de/?rv=5"
+
+msgid "detailHeadIP"
+msgstr "IP-Adresse"
+
+msgid "detailHeadReferer"
+msgstr "Referer"
+
+msgid "detailHeadBrowser"
+msgstr "Browser"
+
+msgid "detailHeadAgent"
+msgstr "Suchmaschine"
+
+msgid "detailHeadDate"
+msgstr "Datum"
+
+msgid "detailHeadDateHit"
+msgstr "Vorgangsdatum"
+
+msgid "detailHeadCustomer"
+msgstr "Registrierter Kunde"
+
+msgid "detailHeadRegisterDate"
+msgstr "Anmeldedatum"
+
+msgid "detailHeadCreatedAt"
+msgstr "Erstellt am"
+
+msgid "detailHeadSentWawi"
+msgstr "Abgeholt durch JTL-Wawi"
+
+msgid "detailHeadProductLastUpdated"
+msgstr "Artikel zuletzt aktualisiert"
+
+msgid "detailHeadNewsletterDateOpened"
+msgstr "Newsletter geöffnet am"

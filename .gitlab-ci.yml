@@ -5,6 +5,8 @@ variables:
 stages:
   - codeQuality
   - test
+  - runtest_build
+  - runtest_deploy
   - build
   - deploy
   - cleanUp
@@ -59,6 +61,18 @@ stages:
       /bin/bash -c "bash $DEPLOY_SCRIPT_PATH $CI_PROJECT_NAME $CI_COMMIT_REF_NAME /archive"
 
     docker cp $CI_CONTAINER_NAME:/archive/. $CI_BUILD_SERVER_ARCHIVE_PATH
+    docker network disconnect mysql-php-network $CI_CONTAINER_NAME
+    docker stop "$CI_CONTAINER_NAME"
+    docker rm -fv "$CI_CONTAINER_NAME" >/dev/null
+  }
+  function runtest_deployProcess() {
+    echo "Deploying archive to build server..."
+    docker start $CI_CONTAINER_NAME
+    docker exec \
+      -w '/creation' \
+      $CI_CONTAINER_NAME \
+      /bin/bash -c "bash $DEPLOY_SCRIPT_PATH $CI_PROJECT_NAME $CI_COMMIT_REF_NAME /archive"
+    docker cp $CI_CONTAINER_NAME:/archive/. $CI_BUILD_SERVER_ARCHIVE_PATH_RUNTEST
     docker network disconnect mysql-php-network $CI_CONTAINER_NAME
     docker stop "$CI_CONTAINER_NAME"
     docker rm -fv "$CI_CONTAINER_NAME" >/dev/null
@@ -337,3 +351,32 @@ tagsDeployment:
   tags:
     - dev-checkout
 
+build_test:
+  stage: runtest_build
+  before_script:
+    - *preBuildDeployScripts
+    - dockerLogin
+  script:
+    - buildProcess
+#  <<: *debugging
+  after_script:
+    - *postBuildDeployScripts
+    - dockerLogout
+  tags:
+    - build
+  
+deploy_test:
+  stage: runtest_deploy
+  variables:
+    GIT_STRATEGY: none
+  before_script:
+    - *preBuildDeployScripts
+    - dockerLogin
+  script:
+    - runtest_deployProcess
+#  <<: *debugging
+  after_script:
+    - *postBuildDeployScripts
+    - dockerLogout
+  tags:
+    - build

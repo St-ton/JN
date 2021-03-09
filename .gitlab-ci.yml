@@ -1,3 +1,4 @@
+#change
 variables:
   GLOBAL_CI_REGISTRY_URL: "registry.gitlab.com/jtl-software/jtl-shop/core"
   GIT_DEPTH: 1

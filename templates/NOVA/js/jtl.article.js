@@ -1326,6 +1326,7 @@
                 $(item)
                     .removeClass('active')
                     .removeClass('loading')
+                    .removeClass('swatches-sold-out')
                     .addClass('not-available');
                 $.evo.article()
                     .removeStockInfo($(item));
@@ -1441,6 +1442,11 @@
                         trigger: 'hover',
                         container: 'body'
                     });
+                    if (status === 0) {
+                        $item.addClass('swatches-sold-out');
+                    } else {
+                        $item.removeClass('swatches-sold-out');
+                    }
                     break;
             }
         },

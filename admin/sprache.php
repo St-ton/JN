@@ -241,8 +241,8 @@ if ($step === 'newvar') {
     $values = $db->query(
         'SELECT sw.cName, sw.cWert, sw.cStandard, sw.bSystem, ss.kSprachsektion, ss.cName AS cSektionName
             FROM tsprachwerte AS sw
-                JOIN tsprachsektion AS ss
-                    ON ss.kSprachsektion = sw.kSprachsektion
+            JOIN tsprachsektion AS ss
+                ON ss.kSprachsektion = sw.kSprachsektion
             WHERE sw.kSprachISO = ' . $langIsoID . '
                 ' . ($filterSQL !== '' ? 'AND ' . $filterSQL : ''),
         ReturnType::ARRAY_OF_OBJECTS
@@ -266,14 +266,13 @@ if ($step === 'newvar') {
     $notFound = $db->query(
         'SELECT sl.*, ss.kSprachsektion
             FROM tsprachlog AS sl
-                LEFT JOIN tsprachsektion AS ss
-                    ON ss.cName = sl.cSektion
-            WHERE kSprachISO = ' . (int)$lang->currentLanguageID,
+            LEFT JOIN tsprachsektion AS ss
+                ON ss.cName = sl.cSektion
+            WHERE kSprachISO = ' . $langIsoID,
         ReturnType::ARRAY_OF_OBJECTS
     );
 
-    $smarty
-        ->assign('oFilter', $filter)
+    $smarty->assign('oFilter', $filter)
         ->assign('pagination', $pagination)
         ->assign('oWert_arr', $pagination->getPageItems())
         ->assign('bSpracheAktiv', $langActive)
@@ -281,7 +280,6 @@ if ($step === 'newvar') {
         ->assign('oNotFound_arr', $notFound);
 }
 
-$smarty
-    ->assign('tab', $tab)
+$smarty->assign('tab', $tab)
     ->assign('step', $step)
     ->display('sprache.tpl');

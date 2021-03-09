@@ -65,8 +65,7 @@
                                         <td class="text-center">
                                             <div class="btn-group">
                                                 <a class="btn btn-link px-2" title="{__('deleteDraftAll')}"
-                                                   href="{strip}?token={$smarty.session.jtl_token}&
-                                                         action=restore&pageId={$page->cPageId}{/strip}"
+                                                   href="?token={$smarty.session.jtl_token}&action=restore&pageId={$page->cPageId|htmlentities}"
                                                    onclick="return confirm('{__('sureDeleteAll')}');"
                                                    data-toggle="tooltip">
                                                     <span class="icon-hover">

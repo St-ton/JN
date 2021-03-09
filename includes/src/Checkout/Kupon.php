@@ -1055,34 +1055,23 @@ class Kupon
                     * $coupon->fWert;
             }
         }
-
-        $db             = Shop::Container()->getDB();
         $special        = new stdClass();
         $special->cName = $coupon->translationList;
-        $languageHelper = LanguageHelper::getInstance($db);
+        $languageHelper = LanguageHelper::getInstance();
+        $oldLangISO     = $languageHelper->getIso();
         foreach ($_SESSION['Sprachen'] as $language) {
             if ($coupon->cWertTyp === 'prozent'
                 && $coupon->nGanzenWKRabattieren === 0
                 && $coupon->cKuponTyp !== self::TYPE_NEWCUSTOMER
             ) {
-                $special->cName[$language->cISO] .= ' ' . $coupon->fWert . '% ';
-                $discount                         = $db->select(
-                    'tsprachwerte',
-                    'cName',
-                    'discountForArticle',
-                    'kSprachISO',
-                    $languageHelper->mappekISO($language->cISO),
-                    null,
-                    null,
-                    false,
-                    'cWert'
-                );
-
-                $special->discountForArticle[$language->cISO] = $discount->cWert;
+                $languageHelper->setzeSprache($language->cISO);
+                $special->cName[$language->cISO]             .= ' ' . $coupon->fWert . '% ';
+                $special->discountForArticle[$language->cISO] = $languageHelper->get('discountForArticle', 'checkout');
             } elseif ($coupon->cWertTyp === 'prozent') {
                 $special->cName[$language->cISO] .= ' ' . $coupon->fWert . '%';
             }
         }
+        $languageHelper->setzeSprache($oldLangISO);
         if (isset($productNames)) {
             $special->cArticleNameAffix = $productNames;
         }

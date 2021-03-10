@@ -161,7 +161,7 @@ build_add_old_files()
 }
 
 build_create_shop_installer() {
-    composer install --no-dev -o -d ${REPOSITORY_DIR}/build/components/vue-installer;
+    composer install --no-dev -o -q -d ${REPOSITORY_DIR}/build/components/vue-installer;
 }
 
 build_create_md5_hashfile()

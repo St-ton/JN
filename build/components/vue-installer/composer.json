@@ -23,7 +23,7 @@
             "manager-version": {
                 "npm": ">=6.0"
             },
-            "manager-install-options": " --production=false && npm run build"
+            "manager-install-options": " && npm run build"
         }
     }
 }

@@ -131,7 +131,8 @@
                                                 <span class="fas fa-check"></span>
                                             </span>
                                         </button>
-                                        <button name="action"
+                                        <button type="submit"
+                                                name="action"
                                                 value="delete"
                                                 class="btn btn-link px-1 remove notext delete-confirm"
                                                 title="{__('delete')}"

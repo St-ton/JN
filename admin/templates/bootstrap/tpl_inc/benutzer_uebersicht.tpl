@@ -75,7 +75,8 @@
                                                     </span>
                                                 </button>
                                             {/if}
-                                            <button class="notext btn btn-link px-2 delete-confirm"
+                                            <button type="submit"
+                                                    class="notext btn btn-link px-2 delete-confirm"
                                                     name="action"
                                                     value="account_delete"
                                                     title="{__('delete')}"

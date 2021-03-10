@@ -107,7 +107,8 @@
                 <input type="hidden" name="kLink" value="{$link->getID()}" />
                 <div class="btn-group">
                     {$deleteCount = $linkGroupCountByLinkID[$link->getID()]|default:1}
-                    <button name="action"
+                    <button type="submit"
+                            name="action"
                             value="delete-link"
                             class="btn btn-link px-2{if $link->getPluginID() > 0} disabled{else} delete-confirm{/if}"
                             {if $link->getPluginID() === 0} data-modal-body="{__('sureDeleteLink')}"{/if}

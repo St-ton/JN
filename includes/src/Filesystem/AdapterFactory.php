@@ -3,9 +3,9 @@
 namespace JTL\Filesystem;
 
 use League\Flysystem\FilesystemAdapter;
-use League\Flysystem\Ftp\FtpAdapter as Ftp;
+use League\Flysystem\Ftp\FtpAdapter;
 use League\Flysystem\Ftp\FtpConnectionOptions;
-use League\Flysystem\Local\LocalFilesystemAdapter as Local;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 use League\Flysystem\PhpseclibV2\SftpAdapter;
 use League\Flysystem\PhpseclibV2\SftpConnectionProvider;
 
@@ -38,12 +38,12 @@ class AdapterFactory
     {
         switch ($this->config['fs_adapter'] ?? $this->config['fs']['fs_adapter']) {
             case 'ftp':
-                return new Ftp(FtpConnectionOptions::fromArray($this->getFtpConfig()));
+                return new FtpAdapter(FtpConnectionOptions::fromArray($this->getFtpConfig()));
             case 'sftp':
                 return new SftpAdapter($this->getSftpConfig(), \rtrim($this->config['sftp_path'], '/') . '/');
             case 'local':
             default:
-                return new Local(\PFAD_ROOT);
+                return new LocalFilesystemAdapter(\PFAD_ROOT);
         }
     }
 

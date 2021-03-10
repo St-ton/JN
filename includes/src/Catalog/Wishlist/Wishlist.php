@@ -717,9 +717,10 @@ class Wishlist
 
     /**
      * @param int $id
+     * @param bool $force
      * @return string
      */
-    public static function delete(int $id): string
+    public static function delete(int $id, bool $force = false): string
     {
         $msg = '';
         if ($id === 0) {
@@ -728,7 +729,7 @@ class Wishlist
         $db       = Shop::Container()->getDB();
         $data     = $db->select('twunschliste', 'kWunschliste', $id);
         $customer = Frontend::getCustomer();
-        if (isset($data->kKunde) && (int)$data->kKunde === $customer->getID()) {
+        if (isset($data->kKunde) && ((int)$data->kKunde === $customer->getID() || $force)) {
             $items = $db->selectAll(
                 'twunschlistepos',
                 'kWunschliste',
@@ -744,13 +745,16 @@ class Wishlist
             }
             $db->delete('twunschlistepos', 'kWunschliste', $id);
             $db->delete('twunschliste', 'kWunschliste', $id);
-            if (isset($_SESSION['Wunschliste']->kWunschliste) && (int)$_SESSION['Wunschliste']->kWunschliste === $id) {
+            if (!$force
+                && isset($_SESSION['Wunschliste']->kWunschliste)
+                && (int)$_SESSION['Wunschliste']->kWunschliste === $id
+            ) {
                 unset($_SESSION['Wunschliste']);
             }
             // Wenn die gelöschte Wunschliste nStandard = 1 war => neue setzen
             if ((int)$data->nStandard === 1) {
                 // Neue Wunschliste holen (falls vorhanden) und nStandard=1 neu setzen
-                $data = $db->select('twunschliste', 'kKunde', $customer->getID());
+                $data = $db->select('twunschliste', 'kKunde', $data->kKunde);
                 if (isset($data->kWunschliste)) {
                     $db->query(
                         'UPDATE twunschliste
@@ -758,9 +762,11 @@ class Wishlist
                             WHERE kWunschliste = ' . (int)$data->kWunschliste,
                         ReturnType::AFFECTED_ROWS
                     );
-                    // Neue Standard Wunschliste in die Session laden
-                    $_SESSION['Wunschliste'] = new Wishlist((int)$data->kWunschliste);
-                    $_SESSION['Wunschliste']->ueberpruefePositionen();
+                    if (!$force) {
+                        // Neue Standard Wunschliste in die Session laden
+                        $_SESSION['Wunschliste'] = new Wishlist((int)$data->kWunschliste);
+                        $_SESSION['Wunschliste']->ueberpruefePositionen();
+                    }
                 }
             }
             $msg = Shop::Lang()->get('wishlistDelete', 'messages');

@@ -15,7 +15,6 @@ use League\Flysystem\PhpseclibV2\SftpConnectionProvider;
  */
 class AdapterFactory
 {
-
     /**
      * @var array
      */

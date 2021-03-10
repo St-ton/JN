@@ -90,11 +90,6 @@
             );
         });
     }
-
-    function confirmDelete(cName)
-    {
-        return confirm('{__('confirmDeleteBox')}'.replace('%s', cName));
-    }
 </script>
 
 <div id="content">

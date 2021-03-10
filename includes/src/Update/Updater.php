@@ -424,7 +424,7 @@ class Updater
      * @param Version $targetVersion
      * @throws Exception
      */
-    protected function setVersion(Version $targetVersion): void
+    public function setVersion(Version $targetVersion): void
     {
         $tVersionColumns = $this->db->executeQuery('SHOW COLUMNS FROM `tversion`', ReturnType::ARRAY_OF_OBJECTS);
         foreach ($tVersionColumns as $column) {

@@ -24,7 +24,6 @@
                     aria=["labelledby"=>"crd-hdr-{$oBox->getID()}"]}
                     {nav vertical=true class="box-nav-item"}
                         {foreach $oBox->getItems() as $newsMonth}
-                            {if $newsMonth@index === 10}{break}{/if}
                             {block name='boxes-box-news-month-news-link'}
                                 {navitem href=$newsMonth->cURL  title=$newsMonth->cName router-class="box-link-wrapper"}
                                     <i class="far fa-newspaper snippets-filter-item-icon-right"></i>

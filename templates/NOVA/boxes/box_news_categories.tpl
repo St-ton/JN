@@ -24,7 +24,6 @@
                     aria=["labelledby"=>"crd-hdr-{$oBox->getID()}"]}
                     {nav vertical=true class="box-nav-item"}
                         {foreach $oBox->getItems() as $newsCategory}
-                            {if $newsCategory@index === 10}{break}{/if}
                             {navitem href=$newsCategory->cURLFull title=$newsCategory->cName router-class="box-link-wrapper"}
                                 {$newsCategory->cName}
                                 {badge variant="outline-secondary"}{$newsCategory->nAnzahlNews}{/badge}

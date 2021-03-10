@@ -20,12 +20,14 @@ use JTL\Console\Command\Model\CreateCommand as CreateModelCommand;
 use JTL\Console\Command\Plugin\CreateCommandCommand;
 use JTL\Console\Command\Plugin\CreateMigrationCommand;
 use JTL\Console\Command\Plugin\ValidateCommand;
+use JTL\DB\ReturnType;
 use JTL\Plugin\Admin\Listing;
 use JTL\Plugin\Admin\ListingItem;
 use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
 use JTL\Plugin\Admin\Validation\PluginValidator;
 use JTL\Shop;
 use JTL\XMLParser;
+use JTLShop\SemVer\Version;
 use RuntimeException;
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
@@ -83,7 +85,11 @@ class Application extends BaseApplication
         if (!$this->isInstalled || \SAFE_MODE === true) {
             return;
         }
-        $db              = Shop::Container()->getDB();
+        $db      = Shop::Container()->getDB();
+        $version = $db->select('tversion', [], [], ReturnType::SINGLE_OBJECT);
+        if (Version::parse($version->nVersion ?? 400)->smallerThan(Version::parse(500))) {
+            return;
+        }
         $cache           = Shop::Container()->getCache();
         $parser          = new XMLParser();
         $validator       = new LegacyPluginValidator($db, $parser);
@@ -91,11 +97,10 @@ class Application extends BaseApplication
         $listing         = new Listing($db, $cache, $validator, $modernValidator);
         $installed       = $listing->getInstalled();
         $sorted          = $listing->getAll($installed);
-        $filteredPlugins = $sorted->filter(static function (ListingItem $i) {
+        $compatible      = $sorted->filter(static function (ListingItem $i) {
             return $i->isShop5Compatible();
         });
-
-        foreach ($filteredPlugins as $plugin) {
+        foreach ($compatible as $plugin) {
             /** @var ListingItem $plugin */
             if (!\is_dir($plugin->getPath() . '/Commands')) {
                 continue;

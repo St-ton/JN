@@ -52,3 +52,6 @@ msgstr "Aktion"
 
 msgid "successCartPersPosDelete"
 msgstr "Markierter Warenkorb wurde erfolgreich gelöscht."
+
+msgid "confirmDeleteBasket"
+msgstr "Kunde: <b>%s</b> | Datum: <b>%s</b>"

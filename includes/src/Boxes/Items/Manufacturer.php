@@ -23,8 +23,15 @@ final class Manufacturer extends AbstractBox
     public function __construct(array $config)
     {
         parent::__construct($config);
+        $manufacturers = ManufacturerHelper::getInstance()->getManufacturers();
+        $count         = $config['boxen']['box_hersteller_anzahl_anzeige'];
+
         $this->addMapping('manufacturers', 'Manufacturers');
-        $this->setManufacturers(ManufacturerHelper::getInstance()->getManufacturers());
+        $this->setManufacturers(
+            $count > 0
+                ? \array_slice($manufacturers, 0, $config['boxen']['box_hersteller_anzahl_anzeige'])
+                : $manufacturers
+        );
         $this->setShow(\count($this->manufacturerList) > 0);
     }
 

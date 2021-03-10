@@ -231,6 +231,46 @@ function holeEinstellungHeadline(int $sort, int $sectionID)
 
 /**
  * @param int $sectionID
+ * @return string
+ * @deprecated since 5.0.2
+ */
+function gibEinstellungsSektionsPfad(int $sectionID, $groupName)
+{
+    return getConfigSectionPath(mapConfigSectionToMenuEntry($sectionID, $groupName));
+}
+
+/**
+ * @param int $sectionID
+ * @return string
+ * @deprecated since 5.0.2
+ */
+function getSectionMenuPath(int $sectionID, $groupName)
+{
+    return getConfigSectionUrl(mapConfigSectionToMenuEntry($sectionID, $groupName));
+}
+
+/**
+ * @param int $sectionID
+ * @return boolean
+ * @deprecated since 5.0.2
+ */
+function getSpecialSetting(int $sectionID, $groupName): bool
+{
+    return isConfigSectionSpecialSetting(mapConfigSectionToMenuEntry($sectionID, $groupName));
+}
+
+/**
+ * @param int $sectionID
+ * @return string
+ * @deprecated since 5.0.2
+ */
+function getSettingsAnchor(int $sectionID, $groupName): string
+{
+    return getConfigSectionAnchor(mapConfigSectionToMenuEntry($sectionID, $groupName));
+}
+
+/**
+ * @param int $sectionID
  * @param string $groupName
  * @return stdClass
  */
@@ -283,45 +323,6 @@ function isConfigSectionSpecialSetting($menuEntry)
 function getConfigSectionAnchor($menuEntry)
 {
     return $menuEntry->settingsAnchor ?? '';
-}
-
-/**
- * @param int $sectionID
- * @return string
- * @deprecated since 5.0.2
- */
-function gibEinstellungsSektionsPfad(int $sectionID, $groupName)
-{
-    return getConfigSectionPath(mapConfigSectionToMenuEntry($sectionID, $groupName));
-}
-
-/**
- * @param int $sectionID
- * @return string
- * @deprecated since 5.0.2
- */
-function getSectionMenuPath(int $sectionID, $groupName)
-{
-    return getConfigSectionUrl(mapConfigSectionToMenuEntry($sectionID, $groupName));
-}
-
-/**
- * @param int $sectionID
- * @return boolean
- * @deprecated since 5.0.2
- */
-function getSpecialSetting(int $sectionID, $groupName): bool
-{
-    return isConfigSectionSpecialSetting(mapConfigSectionToMenuEntry($sectionID, $groupName));
-}
-
-/**
- * @param int $sectionID
- * @return string
- */
-function getSettingsAnchor(int $sectionID, $groupName): string
-{
-    return getConfigSectionAnchor(mapConfigSectionToMenuEntry($sectionID, $groupName));
 }
 
 /**

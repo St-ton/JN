@@ -52,3 +52,6 @@ msgstr "Action"
 
 msgid "successCartPersPosDelete"
 msgstr "Selected basket deleted successfully."
+
+msgid "confirmDeleteBasket"
+msgstr "Customer: <b>%s</b> | Date: <b>%s</b>"

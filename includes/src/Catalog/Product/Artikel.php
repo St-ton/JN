@@ -1019,6 +1019,9 @@ class Artikel
         if ($this->kSteuerklasse === null) {
             return;
         }
+        if (Shop::getLanguageID() === 0 && isset($_SESSION['kSprache'], $_SESSION['cISOSprache'])) {
+            Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
+        }
         $this->conf    = $this->getConfig();
         $this->taxData = $this->getShippingAndTaxData();
     }
@@ -4737,7 +4740,9 @@ class Artikel
                 AND (
                     va.kVersandberechnung = 1 OR va.kVersandberechnung = 4
                     OR ( va.kVersandberechnung = 2 AND vas.fBis > 0 AND :wght <= vas.fBis )
-                    OR ( va.kVersandberechnung = 3 AND vas.fBis > 0 AND :net <= vas.fBis )
+                    OR ( va.kVersandberechnung = 3
+                        AND vas.fBis = (SELECT MIN(fBis) FROM tversandartstaffel WHERE fBis > :net)
+                        )
                     )
                 ORDER BY minPrice, nSort ASC LIMIT 1',
             [

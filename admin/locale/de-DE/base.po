@@ -2077,3 +2077,6 @@ msgstr "Abgesicherter Modus"
 
 msgid "Safe mode enabled."
 msgstr "Abgesicherter Modus aktiv. Gewisse Funktionalitäten stehen nicht zur Verfügung."
+
+msgid "defaultDeleteConfirmTitle"
+msgstr "Löschen bestätigen"

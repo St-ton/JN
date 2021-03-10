@@ -1868,7 +1868,7 @@ class Cart
         });
 
         $this->oFavourableShipping = null;
-        if (empty($shippingMethods)) {
+        if (\count($shippingMethods) === 0) {
             return null;
         }
         //use previously determined shippingfree shipping method
@@ -1911,7 +1911,9 @@ class Cart
                     va.kVersandberechnung = 1 
                     OR ( va.kVersandberechnung = 4 AND vas.fBis > 0 AND :itemCount <= vas.fBis)
                     OR ( va.kVersandberechnung = 2 AND vas.fBis > 0 AND :totalWeight <= vas.fBis )
-                    OR ( va.kVersandberechnung = 3 AND vas.fBis > 0 AND :maxPrices <= vas.fBis )
+                    OR ( va.kVersandberechnung = 3 
+                        AND vas.fBis = (SELECT MIN(fBis) FROM tversandartstaffel WHERE fBis > :maxPrices)
+                        )
                     )
                 AND va.kVersandart IN (' . \implode(', ', $shippingMethods) . ')
                 ORDER BY minPrice, nSort ASC LIMIT 1',

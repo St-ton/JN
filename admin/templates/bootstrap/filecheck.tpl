@@ -65,7 +65,7 @@
                         {$jtl_token}
                         <div class="row">
                             <div class="ml-auto col-sm-6 col-xl-auto">
-                                <button class="btn btn-danger btn-block" name="delete-orphans" value="1" onclick="return confirmDelete();">
+                                <button type="submit" class="btn btn-danger btn-block delete-confirm" name="delete-orphans" value="1" data-modal-body="{__('confirmDeleteText')}">
                                     <i class="fa fas fa-trash"></i> {__('delete')}
                                 </button>
                             </div>
@@ -86,9 +86,4 @@
         </div>
     {/if}
 </div>
-<script type="text/javascript">
-    function confirmDelete() {ldelim}
-        return confirm('{__('confirmDeleteText')}');
-    {rdelim}
-</script>
 {include file='tpl_inc/footer.tpl'}

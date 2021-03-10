@@ -1,7 +1,4 @@
 <script type="text/javascript">
-    function confirmDelete() {
-        return confirm('{__('sureDeleteLink')|replace:"\n":' '}');
-    }
     $(document).ready(function () {
         $('.duplicate-special-link').closest('.link-group-wrapper').find('.duplicate-special-page-warning')
             .removeClass('d-none');

@@ -107,7 +107,10 @@ function getWidgets(bool $bActive = true): array
             if (class_exists($className)) {
                 /** @var AbstractWidget $instance */
                 $instance = new $className($smarty, $db, $widget->plugin);
-                if ($oAccount->permission('DASHBOARD_VIEW') || $oAccount->permission($instance->getPermission())) {
+                if ($oAccount->permission('DASHBOARD_VIEW')
+                    || $instance->getPermission() === 'DASHBOARD_ALL'
+                    || $oAccount->permission($instance->getPermission())
+                ) {
                     $widget->cContent = $instance->getContent();
                     $widget->hasBody  = $instance->hasBody;
                 } else {

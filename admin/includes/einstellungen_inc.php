@@ -207,23 +207,22 @@ function holeEinstellungHeadline(int $sort, int $sectionID)
 {
     $configHead = new stdClass();
     if ($sort > 0 && $sectionID > 0) {
-        $items = Shop::Container()->getDB()->query(
+        $item = Shop::Container()->getDB()->query(
             'SELECT *
                 FROM teinstellungenconf
                 WHERE nSort < ' . $sort . '
-                    AND kEinstellungenSektion = ' . $sectionID . '
-                ORDER BY nSort DESC',
-            ReturnType::ARRAY_OF_OBJECTS
+                    AND kEinstellungenSektion = ' . $sectionID . "
+                    AND cConf = 'N'
+                ORDER BY nSort DESC",
+            ReturnType::SINGLE_OBJECT
         );
-        foreach ($items as $item) {
-            if ($item->cConf === 'N') {
-                $configHead                 = $item;
-                $configHead->cSektionsPfad  = gibEinstellungsSektionsPfad($sectionID);
-                $configHead->cURL           = getSectionMenuPath($sectionID);
-                $configHead->specialSetting = getSpecialSetting($sectionID);
-                $configHead->settingsAnchor = getSettingsAnchor($sectionID);
-                break;
-            }
+        if ($item !== false) {
+            $menuEntry                  = mapConfigSectionToMenuEntry($sectionID, $item->cWertName);
+            $configHead                 = $item;
+            $configHead->cSektionsPfad  = getConfigSectionPath($menuEntry);
+            $configHead->cURL           = getConfigSectionUrl($menuEntry);
+            $configHead->specialSetting = isConfigSectionSpecialSetting($menuEntry);
+            $configHead->settingsAnchor = getConfigSectionAnchor($menuEntry);
         }
     }
 
@@ -232,62 +231,97 @@ function holeEinstellungHeadline(int $sort, int $sectionID)
 
 /**
  * @param int $sectionID
- * @return string
+ * @param string $groupName
+ * @return stdClass
  */
-function gibEinstellungsSektionsPfad(int $sectionID)
+function mapConfigSectionToMenuEntry(int $sectionID, string $groupName = 'all')
 {
     global $sectionMenuMapping;
 
     if (isset($sectionMenuMapping[$sectionID])) {
-        return $sectionMenuMapping[$sectionID]->path;
+        if (!isset($sectionMenuMapping[$sectionID][$groupName])) {
+            $groupName = 'all';
+        }
+
+        return $sectionMenuMapping[$sectionID][$groupName];
     }
 
-    return '';
+    return (object)[];
+}
+
+/**
+ * @param $menuEntry
+ * @return string
+ */
+function getConfigSectionPath($menuEntry)
+{
+    return $menuEntry->path ?? '';
+}
+
+/**
+ * @param $menuEntry
+ * @return string
+ */
+function getConfigSectionUrl($menuEntry)
+{
+    return $menuEntry->url ?? '';
+}
+
+/**
+ * @param $menuEntry
+ * @return bool
+ */
+function isConfigSectionSpecialSetting($menuEntry)
+{
+    return $menuEntry->specialSetting ?? false;
+}
+
+/**
+ * @param $menuEntry
+ * @return string
+ */
+function getConfigSectionAnchor($menuEntry)
+{
+    return $menuEntry->settingsAnchor ?? '';
 }
 
 /**
  * @param int $sectionID
  * @return string
+ * @deprecated since 5.0.2
  */
-function getSectionMenuPath(int $sectionID)
+function gibEinstellungsSektionsPfad(int $sectionID, $groupName)
 {
-    global $sectionMenuMapping;
+    return getConfigSectionPath(mapConfigSectionToMenuEntry($sectionID, $groupName));
+}
 
-    if (isset($sectionMenuMapping[$sectionID])) {
-        return $sectionMenuMapping[$sectionID]->url;
-    }
-
-    return '';
+/**
+ * @param int $sectionID
+ * @return string
+ * @deprecated since 5.0.2
+ */
+function getSectionMenuPath(int $sectionID, $groupName)
+{
+    return getConfigSectionUrl(mapConfigSectionToMenuEntry($sectionID, $groupName));
 }
 
 /**
  * @param int $sectionID
  * @return boolean
+ * @deprecated since 5.0.2
  */
-function getSpecialSetting(int $sectionID): bool
+function getSpecialSetting(int $sectionID, $groupName): bool
 {
-    global $sectionMenuMapping;
-
-    if (isset($sectionMenuMapping[$sectionID])) {
-        return $sectionMenuMapping[$sectionID]->specialSetting;
-    }
-
-    return false;
+    return isConfigSectionSpecialSetting(mapConfigSectionToMenuEntry($sectionID, $groupName));
 }
 
 /**
  * @param int $sectionID
  * @return string
  */
-function getSettingsAnchor(int $sectionID): string
+function getSettingsAnchor(int $sectionID, $groupName): string
 {
-    global $sectionMenuMapping;
-
-    if (isset($sectionMenuMapping[$sectionID])) {
-        return $sectionMenuMapping[$sectionID]->settingsAnchor;
-    }
-
-    return '';
+    return getConfigSectionAnchor(mapConfigSectionToMenuEntry($sectionID, $groupName));
 }
 
 /**

@@ -1,7 +1,7 @@
 {block name='blog-overview'}
     {block name='blog-overview-heading'}
         {opcMountPoint id='opc_before_heading' inContainer=false}
-        {container}
+        {container fluid=$Link->getIsFluid()}
             <h1>{lang key='news' section='news'}</h1>
         {/container}
     {/block}
@@ -10,7 +10,7 @@
         {include file='snippets/extension.tpl'}
     {/block}
     {opcMountPoint id='opc_before_filter' inContainer=false}
-    {container class="blog-overview"}
+    {container fluid=$Link->getIsFluid() class="blog-overview"}
         {block name='filter'}
             {row class="blog-overview-main"}
                 {col cols=12 class="col-xl"}

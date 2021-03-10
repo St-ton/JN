@@ -772,4 +772,13 @@ class Plugins
 
         $smarty->assign($params['assign'], \in_array($params['iso'], $availableLocales, true) ? $params['iso'] : 'LANG');
     }
+
+    /**
+     * @param $params
+     * @return string
+     */
+    public function sanitizeTitle($params): string
+    {
+        return \htmlspecialchars($params['title'], ENT_COMPAT, JTL_CHARSET, false);
+    }
 }

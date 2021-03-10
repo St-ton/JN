@@ -3,7 +3,7 @@
 <div id="content">
     <form name="uploader" method="post" action="shoplogouploader.php" enctype="multipart/form-data">
         {$jtl_token}
-        <div class="card">
+        <div class="card shoplogouploader">
             <div class="card-header">
                 <span class="subheading1">{__('yourLogo')}</span>
             </div>
@@ -18,6 +18,7 @@
                         fileUploadUrl="{$adminURL}/shoplogouploader.php?token={$smarty.session.jtl_token}"
                         fileDeleteUrl="{$adminURL}/shoplogouploader.php?token={$smarty.session.jtl_token}"
                         fileBrowseClear=true
+                        initialPreviewShowDelete=true
                         fileSuccessMsg="{__('successLogoUpload')}"
                         fileErrorMsg="{__('errorLogoUpload', implode(', ', $allowedExtensions), $smarty.const.PFAD_SHOPLOGO)}"
                         fileInitialPreview="[

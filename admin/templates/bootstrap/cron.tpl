@@ -67,7 +67,13 @@
                                                         </button>
                                                     {*{/if}*}
                                                     {if $job->getType() !== \JTL\Cron\Type::LICENSE_CHECK}
-                                                        <button class="btn btn-link px-2" type="submit" name="delete" value="{$job->getCronID()}" title="{__('delete')}" data-toggle="tooltip">
+                                                        <button class="btn btn-link px-2 delete-confirm"
+                                                                type="submit"
+                                                                name="delete"
+                                                                value="{$job->getCronID()}"
+                                                                title="{__('delete')}"
+                                                                data-toggle="tooltip"
+                                                                data-modal-body="{__($job->getType())}{if $job->getName() !== null} {$job->getName()}{/if}">
                                                             <span class="icon-hover">
                                                                 <span class="fal fa-trash-alt"></span>
                                                                 <span class="fas fa-trash-alt"></span>

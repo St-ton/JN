@@ -178,6 +178,7 @@
 
 		.subcategories-image {
 			justify-content: center;
+			align-items: flex-start;
 			margin-bottom: map_get($spacers, 3);
 		}
 	}

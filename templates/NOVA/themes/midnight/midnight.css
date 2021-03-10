@@ -24047,6 +24047,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 .content-cats-small .sub-categories .subcategories-image {
   justify-content: center;
+  align-items: flex-start;
   margin-bottom: 1rem;
 }
 .content-cats-small::after {

@@ -41,7 +41,7 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
         );
 
         foreach ($guestAccounts as $guestAccount) {
-            (new Customer((int)$guestAccount->kKunde))->deleteAccount(Journal::ISSUER_TYPE_APPLICATION, 0, true);
+            (new Customer((int)$guestAccount->kKunde))->deleteAccount(Journal::ISSUER_TYPE_APPLICATION, 0);
         }
     }
 }

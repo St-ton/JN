@@ -1,10 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * Created by PhpStorm.
- * User: mo
- * Date: 2019-02-13
- * Time: 15:37
- */
 
 namespace JTL\dbeS;
 

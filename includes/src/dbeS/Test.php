@@ -46,7 +46,6 @@ class Test
                 \FREIDEFINIERBARER_FEHLER
             );
         }
-        $versionStr = null;
         foreach ([
             'kKunde'           => 'tkunde',
             'kBestellung'      => 'tbestellung',
@@ -67,9 +66,8 @@ class Test
                 }
             }
         }
-        $version    = Shop::getShopDatabaseVersion();
-        $versionStr = \sprintf('%d%02d', $version->getMajor(), $version->getMinor());
+        $version = Shop::getShopDatabaseVersion();
 
-        return '0;JTL4;' . $versionStr . ';';
+        return \sprintf('0;JTL4;%d%02d;', $version->getMajor(), $version->getMinor());
     }
 }

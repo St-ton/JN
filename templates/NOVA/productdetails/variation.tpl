@@ -148,7 +148,7 @@
                                             {else}
                                                 {block name='productdetails-variation-swatch-inner'}
                                                 {col class='col-auto'}
-                                                    <label class="variation swatches {if $hasImage}swatches-image{else}swatches-text{/if} {if $bSelected}active{/if} {if $Variationswert->notExists}swatches-not-in-stock{elseif !$Variationswert->inStock}swatches-sold-out{/if}"
+                                                    <label class="variation swatches {if $hasImage}swatches-image{else}swatches-text{/if} {if $bSelected}active{/if} {if $Variationswert->notExists}swatches-not-in-stock not-available{elseif !$Variationswert->inStock}swatches-sold-out not-available{/if}"
                                                             data-type="swatch"
                                                             data-original="{$Variationswert->cName}"
                                                             data-key="{$Variationswert->kEigenschaft}"

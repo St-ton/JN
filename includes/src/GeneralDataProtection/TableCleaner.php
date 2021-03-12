@@ -41,7 +41,6 @@ class TableCleaner
     private $methods = [
         ['name' => 'AnonymizeIps', 'intervalDays' => 7],
         ['name' => 'AnonymizeDeletedCustomer', 'intervalDays' => 7],
-        ['name' => 'CleanupOldGuestAccounts', 'intervalDays' => 365],
         ['name' => 'CleanupCustomerRelicts', 'intervalDays' => 0],
         ['name' => 'CleanupGuestAccountsWithoutOrders', 'intervalDays' => 0],
         ['name' => 'CleanupNewsletterRecipients', 'intervalDays' => 30],

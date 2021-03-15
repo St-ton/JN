@@ -65,9 +65,7 @@ foreach ($installedLanguages as $language) {
     }
 }
 if (isset($_REQUEST['action']) && Form::validateToken()) {
-    $action = $_REQUEST['action'];
-
-    switch ($action) {
+    switch ($_REQUEST['action']) {
         case 'newvar':
             // neue Variable erstellen
             $step                     = 'newvar';
@@ -171,14 +169,11 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
 
             break;
         case 'saveall':
-            // geaenderte Variablen speichern
             $modified = [];
             foreach ($_REQUEST['cWert_arr'] as $kSektion => $sectionValues) {
                 foreach ($sectionValues as $name => $cWert) {
                     if ((int)$_REQUEST['bChanged_arr'][$kSektion][$name] === 1) {
-                        // wurde geaendert => speichern
-                        $lang
-                            ->setzeSprache($langCode)
+                        $lang->setzeSprache($langCode)
                             ->set((int)$kSektion, $name, $cWert);
                         $modified[] = $name;
                     }
@@ -198,9 +193,7 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
 
             break;
         case 'clearlog':
-            // Liste nicht gefundener Variablen leeren
-            $lang
-                ->setzeSprache($langCode)
+            $lang->setzeSprache($langCode)
                 ->clearLog();
             $cache->flushTags([CACHING_GROUP_LANGUAGE]);
             $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
@@ -212,8 +205,7 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
 }
 
 if ($step === 'newvar') {
-    $smarty
-        ->assign('oSektion_arr', $sections)
+    $smarty->assign('oSektion_arr', $sections)
         ->assign('oVariable', $variable)
         ->assign('oSprache_arr', $availableLanguages);
 } elseif ($step === 'overview') {
@@ -241,8 +233,8 @@ if ($step === 'newvar') {
     $values = $db->query(
         'SELECT sw.cName, sw.cWert, sw.cStandard, sw.bSystem, ss.kSprachsektion, ss.cName AS cSektionName
             FROM tsprachwerte AS sw
-                JOIN tsprachsektion AS ss
-                    ON ss.kSprachsektion = sw.kSprachsektion
+            JOIN tsprachsektion AS ss
+                ON ss.kSprachsektion = sw.kSprachsektion
             WHERE sw.kSprachISO = ' . $langIsoID . '
                 ' . ($filterSQL !== '' ? 'AND ' . $filterSQL : ''),
         ReturnType::ARRAY_OF_OBJECTS
@@ -266,14 +258,13 @@ if ($step === 'newvar') {
     $notFound = $db->query(
         'SELECT sl.*, ss.kSprachsektion
             FROM tsprachlog AS sl
-                LEFT JOIN tsprachsektion AS ss
-                    ON ss.cName = sl.cSektion
-            WHERE kSprachISO = ' . (int)$lang->currentLanguageID,
+            LEFT JOIN tsprachsektion AS ss
+                ON ss.cName = sl.cSektion
+            WHERE kSprachISO = ' . $langIsoID,
         ReturnType::ARRAY_OF_OBJECTS
     );
 
-    $smarty
-        ->assign('oFilter', $filter)
+    $smarty->assign('oFilter', $filter)
         ->assign('pagination', $pagination)
         ->assign('oWert_arr', $pagination->getPageItems())
         ->assign('bSpracheAktiv', $langActive)
@@ -281,7 +272,6 @@ if ($step === 'newvar') {
         ->assign('oNotFound_arr', $notFound);
 }
 
-$smarty
-    ->assign('tab', $tab)
+$smarty->assign('tab', $tab)
     ->assign('step', $step)
     ->display('sprache.tpl');

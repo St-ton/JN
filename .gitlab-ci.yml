@@ -336,4 +336,3 @@ tagsDeployment:
         || $CI_COMMIT_REF_NAME =~ /^release\/.*$/
   tags:
     - dev-checkout
-

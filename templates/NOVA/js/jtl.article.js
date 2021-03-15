@@ -1319,13 +1319,12 @@
         },
 
         variationDisableAll: function(wrapper) {
-            var $wrapper = this.getWrapper(wrapper);
+            let $wrapper = this.getWrapper(wrapper);
 
             $('.swatches-selected', $wrapper).text('');
             $('[data-value].variation', $wrapper).each(function(i, item) {
                 $(item)
-                    .removeClass('active')
-                    .removeClass('loading')
+                    .removeClass('active loading')
                     .addClass('not-available');
                 $.evo.article()
                     .removeStockInfo($(item));
@@ -1342,7 +1341,7 @@
             var $wrapper = this.getWrapper(wrapper),
                 $item    = $('[data-value="' + value + '"].variation', $wrapper);
 
-            $item.removeClass('not-available');
+            $item.removeClass('not-available swatches-sold-out swatches-not-in-stock');
         },
 
         variationActive: function(key, value, def, wrapper) {
@@ -1392,8 +1391,8 @@
             }
         },
 
-        variationInfo: function(value, status, note) {
-            var $item = $('[data-value="' + value + '"].variation'),
+        variationInfo: function(value, status, note, notExists) {
+            let $item = $('[data-value="' + value + '"].variation'),
                 type = $item.attr('data-type'),
                 text,
                 content,
@@ -1441,6 +1440,11 @@
                         trigger: 'hover',
                         container: 'body'
                     });
+                    if (notExists) {
+                        $item.addClass('swatches-not-in-stock');
+                    } else {
+                        $item.addClass('swatches-sold-out');
+                    }
                     break;
             }
         },

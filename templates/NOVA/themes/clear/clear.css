@@ -24963,6 +24963,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   display: inline-block;
 }
 
+.swatches-image .square-image .inner img {
+  width: 100%;
+}
+
 /* comparelist */
 #filter-checkboxes {
   margin-bottom: 1.5rem;

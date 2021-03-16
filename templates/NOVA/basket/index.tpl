@@ -4,7 +4,7 @@
     {/block}
 
     {block name='basket-index-content'}
-        {container class="basket"}
+        {container fluid=$Link->getIsFluid() class="basket"}
             {row}
                 {block name='basket-index-main'}
                 {col cols=12 lg="{if ($Warenkorb->PositionenArr|@count > 0)}7{else}12{/if}"}

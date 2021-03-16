@@ -24047,6 +24047,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 .content-cats-small .sub-categories .subcategories-image {
   justify-content: center;
+  align-items: flex-start;
   margin-bottom: 1rem;
 }
 .content-cats-small::after {
@@ -24960,6 +24961,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   margin-right: 0.5rem;
   margin-bottom: 0.5rem;
   display: inline-block;
+}
+
+.swatches-image .square-image .inner img {
+  width: 100%;
 }
 
 /* comparelist */

@@ -261,7 +261,7 @@
                     setTimeout(function() {
                         $('#consent-manager, #consent-settings-btn').removeClass('d-none');
                     }, 100)
-                    const CM = new ConsentManager({
+                    window.CM = new ConsentManager({
                         version: 1
                     });
                     var trigger = document.querySelectorAll('.trigger')

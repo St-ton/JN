@@ -38,7 +38,7 @@ if (mb_strpos($requestURL, '.php') === false) {
     $cCanonicalURL = $link->getURL();
 }
 if ($link->getLinkType() === LINKTYP_STARTSEITE) {
-    $cCanonicalURL = Shop::getURL() . '/';
+    $cCanonicalURL = Shop::getHomeURL();
     if ($link->getRedirectCode() > 0) {
         header('Location: ' . $cCanonicalURL, true, $link->getRedirectCode());
         exit();

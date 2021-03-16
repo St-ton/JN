@@ -88,9 +88,10 @@
                                         <td class="text-center">
                                             <div class="btn-group">
                                                 <a href="kontaktformular.php?del={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}"
-                                                   class="btn btn-link px-2"
+                                                   class="btn btn-link px-2 delete-confirm"
                                                    title="{__('delete')}"
-                                                   data-toggle="tooltip">
+                                                   data-toggle="tooltip"
+                                                   data-modal-body="{$Betreff->cName}">
                                                     <span class="icon-hover">
                                                         <span class="fal fa-trash-alt"></span>
                                                         <span class="fas fa-trash-alt"></span>

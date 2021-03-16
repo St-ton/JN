@@ -1145,6 +1145,7 @@ class IOMethods
                                 $value->kEigenschaftWert,
                                 $stockInfo->status,
                                 $stockInfo->text,
+                                $value->notExists,
                                 $wrapper
                             );
                         }

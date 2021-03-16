@@ -153,7 +153,7 @@
                                             <td>
                                                 <label for="l50-{$review->kBewertung}">{$review->ArtikelName}</label>
                                             </td>
-                                            <td>{$review->cName}.</td>
+                                            <td>{$review->cName}</td>
                                             <td>
                                                 <strong>{$review->cTitel}</strong><br>
                                                 {$review->cText}
@@ -169,9 +169,10 @@
                                             <td class="text-center">
                                                 {if !empty($review->cAntwort)}
                                                     <a href="bewertung.php?a=delreply&kBewertung={$review->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
-                                                       class="btn btn-link px-2"
+                                                       class="btn btn-link px-2 delete-confirm"
                                                        title="{__('removeReply')}"
-                                                       data-toggle="tooltip">
+                                                       data-toggle="tooltip"
+                                                       data-modal-body="{__('removeReply')} | {$review->ArtikelName}">
                                                         <span class="icon-hover">
                                                             <span class="fal fa-trash-alt"></span>
                                                             <span class="fas fa-trash-alt"></span>

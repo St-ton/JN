@@ -37,7 +37,8 @@ class Seo
         $obj = Shop::Container()->getDB()->query(
             "SELECT oseo.newSeo
                 FROM (
-                    SELECT CONCAT('{$url}', '_', @IKEY:=@IKEY+1) newSeo, @IKEY nOrder
+                    SELECT CONCAT('{$url}', '_', (CONVERT(@IKEY:=@IKEY+1 USING 'utf8') COLLATE utf8_unicode_ci)) newSeo,
+                        @IKEY nOrder
                     FROM tseo AS iseo
                     WHERE iseo.cSeo LIKE '{$url}%'
                         AND iseo.cSeo RLIKE '^{$url}(_[0-9]+)?$'

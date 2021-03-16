@@ -886,7 +886,8 @@ function deleteConfirmation()
             $confirmButton = $('#modal-footer-delete-confirm-yes'),
             $modal         = $('#modal-footer-delete-confirm'),
             title          = $self.data('modal-title') || $('#modal-footer-delete-confirm-default-title').html(),
-            body           = $self.data('modal-body') || '';
+            body           = $self.data('modal-body') || '',
+            submit         = $self.data('modal-submit') || $('#modal-footer-delete-confirm-default-submit').html();
 
         if (href !== undefined && href !== '') {
             $confirmButton.off().on('click', function () {
@@ -908,6 +909,7 @@ function deleteConfirmation()
         }
         $('#modal-footer-delete-confirm .modal-title').html(title);
         $('#modal-footer-delete-confirm .modal-body').html(body);
+        $confirmButton.html(submit);
         $modal.modal('show');
     });
 }

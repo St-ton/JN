@@ -2102,6 +2102,9 @@ msgstr "Einstellung auf Werkseinstellung zurücksetzen."
 msgid "confirmResetLog"
 msgstr "Einstellung  - %s - auf Werkseinstellung zurücksetzen?"
 
+msgid "confirmResetLogTitle"
+msgstr "Zurücksetzen bestätigen"
+
 msgid "resetSettingDefaultValueNotFound"
 msgstr "Einstellung konnte nicht zurückgesetzt werden, da kein passender Eintrag in teinstellungen_default zu \"%s\" gefunden wurde."
 

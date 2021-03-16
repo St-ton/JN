@@ -20,6 +20,7 @@
 
         <div class="modal" tabindex="-1" role="dialog" id="modal-footer-delete-confirm">
             <div id="modal-footer-delete-confirm-default-title" class="d-none">{__('defaultDeleteConfirmTitle')}</div>
+            <div id="modal-footer-delete-confirm-default-submit" class="d-none">{__('delete')}</div>
             <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
                 <div class="modal-content">
                     <div class="modal-header">

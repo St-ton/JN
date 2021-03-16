@@ -177,3 +177,12 @@ msgstr "No"
 
 msgid "Header über gesamte Bildschirmbreite darstellen"
 msgstr "Display header over full width"
+
+msgid "Linke Seitenleiste anzeigen"
+msgstr "Show left sidebar"
+
+msgid "Nur auf Artikellisten"
+msgstr "Only on item lists"
+
+msgid "Auf allen Seiten"
+msgstr "On all pages"

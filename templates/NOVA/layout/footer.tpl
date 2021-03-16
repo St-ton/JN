@@ -5,7 +5,7 @@
         {block name='layout-footer-aside'}
             {has_boxes position='left' assign='hasLeftBox'}
 
-            {if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp
+            {if ($smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp || $Einstellungen.template.theme.left_sidebar === 'Y')
             && !$bExclusive
             && $hasLeftBox
             && !empty($boxes.left|strip_tags|trim)

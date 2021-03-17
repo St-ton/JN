@@ -25443,6 +25443,11 @@ header #burger-menu {
   margin-bottom: 0;
 }
 
+@media (max-width: 991.98px) {
+  .sidepanel-left {
+    margin-top: 1.5rem;
+  }
+}
 @media (min-width: 992px) {
   .sidepanel-left {
     padding-right: 2rem;

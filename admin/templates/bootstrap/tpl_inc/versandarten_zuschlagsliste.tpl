@@ -47,9 +47,10 @@
                             <td class="zip-badge-row">{include file="snippets/zuschlagliste_plz_badges.tpl"}</td>
                             <td class="text-center">
                                 <div class="btn-group">
-                                    <button class="btn btn-sm surcharge-remove"
+                                    <button class="btn btn-sm surcharge-remove delete-confirm delete-confirm-io"
                                             data-surcharge-id="{$surcharge->getID()}"
                                             data-toggle="tooltip"
+                                            data-modal-body="{__('additionalFeeDelete')}: {$surcharge->getTitle()}"
                                             title="{__('additionalFeeDelete')}">
                                         <span class="icon-hover">
                                             <span class="fal fa-trash-alt"></span>
@@ -216,7 +217,7 @@
         });
     });
 
-    $('.surcharge-remove').on('click', function (e) {
+    $('.surcharge-remove').on('delete.io', function (e) {
         e.preventDefault();
         ioCall('deleteShippingSurcharge', [$(this).data('surcharge-id')], function (data) {
             if (data.surchargeID > 0) {

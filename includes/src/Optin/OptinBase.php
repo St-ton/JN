@@ -91,7 +91,7 @@ abstract class OptinBase extends OptinFactory
             $this->foundOptinTupel = $this->dbHandler->select('toptin', 'cMail', $this->emailAddress);
         }
         if (!empty($this->foundOptinTupel)) {
-            $this->refData = \unserialize($this->foundOptinTupel->cRefData, ['OptinRefData']);
+            $this->refData = \unserialize($this->foundOptinTupel->cRefData, [OptinRefData::class]);
         }
     }
 

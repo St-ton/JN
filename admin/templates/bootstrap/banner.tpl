@@ -473,7 +473,13 @@
                                         {$jtl_token}
                                         <input type="hidden" name="id" value="{$banner->kImageMap}" />
                                         <div class="btn-group">
-                                            <button class="btn btn-link px-2" name="action" value="delete" title="{__('delete')}" data-toggle="tooltip">
+                                            <button class="btn btn-link px-2 delete-confirm"
+                                                    type="submit"
+                                                    name="action"
+                                                    value="delete"
+                                                    title="{__('delete')}"
+                                                    data-toggle="tooltip"
+                                                    data-modal-body="{$banner->cTitel}">
                                                 <span class="icon-hover">
                                                     <span class="fal fa-trash-alt"></span>
                                                     <span class="fas fa-trash-alt"></span>

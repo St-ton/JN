@@ -228,7 +228,7 @@ class Service
      * @param array  $data
      * @throws Exception
      */
-    public function saveBlueprint($name, $data): void
+    public function saveBlueprint(string $name, array $data): void
     {
         $blueprint = (new Blueprint())->deserialize(['name' => $name, 'content' => $data]);
         $this->db->saveBlueprint($blueprint);
@@ -264,7 +264,7 @@ class Service
      * @return PortletInstance
      * @throws Exception
      */
-    public function getPortletInstance($data): PortletInstance
+    public function getPortletInstance(array $data): PortletInstance
     {
         if ($data['class'] === 'MissingPortlet') {
             return $this->createPortletInstance($data['missingClass'])
@@ -280,7 +280,7 @@ class Service
      * @return string
      * @throws Exception
      */
-    public function getPortletPreviewHtml($data): string
+    public function getPortletPreviewHtml(array $data): string
     {
         return $this->getPortletInstance($data)->getPreviewHtml();
     }
@@ -292,7 +292,7 @@ class Service
      * @return string
      * @throws Exception
      */
-    public function getConfigPanelHtml($portletClass, $missingClass, $props): string
+    public function getConfigPanelHtml(string $portletClass, string $missingClass, array $props): string
     {
         return $this->getPortletInstance([
             'class'        => $portletClass,
@@ -368,7 +368,7 @@ class Service
 
         $productFilter    = new ProductFilter(
             Config::getDefault(),
-            Shop::Container()->getDB(),
+            $this->db,
             Shop::Container()->getCache()
         );
         $availableFilters = $productFilter->getAvailableFilters();

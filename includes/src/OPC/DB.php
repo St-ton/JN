@@ -123,13 +123,11 @@ class DB
 
         if ($this->blueprintExists($blueprint)) {
             $res = $this->shopDB->update('topcblueprint', 'kBlueprint', $blueprint->getId(), $blueprintDB);
-
             if ($res === -1) {
                 throw new Exception('The OPC blueprint could not be updated in the DB.');
             }
         } else {
             $key = $this->shopDB->insert('topcblueprint', $blueprintDB);
-
             if ($key === 0) {
                 throw new Exception('The OPC blueprint could not be inserted into the DB.');
             }

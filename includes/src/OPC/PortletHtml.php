@@ -250,7 +250,7 @@ trait PortletHtml
      * @param string $name
      * @return string
      */
-    final protected function getCommonResource($name)
+    final protected function getCommonResource(string $name): string
     {
         return Shop::getURL() . '/' . \PFAD_INCLUDES . 'src/OPC/Portlets/common/' . $name;
     }

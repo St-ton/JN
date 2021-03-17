@@ -310,7 +310,7 @@ class Page implements \JsonSerializable
      * @param int $publicDraftKey
      * @return int
      */
-    public function getStatus(int $publicDraftKey)
+    public function getStatus(int $publicDraftKey): int
     {
         $now   = \date('Y-m-d H:i:s');
         $start = $this->getPublishFrom();
@@ -328,7 +328,7 @@ class Page implements \JsonSerializable
         if (empty($start)) {
             return 2; // draft
         }
-        if (!empty($start) && !empty($end) && $now > $end) {
+        if (!empty($end) && $now > $end) {
             return 3; // backdate
         }
 

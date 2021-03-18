@@ -210,6 +210,7 @@ class Slide
         $slide->cBild   = $this->getImage();
         $slide->nSort   = $this->getSort();
         $slide->cLink   = $this->getLink();
+        $slide->cText   = $this->getText();
 
         return Shop::Container()->getDB()->update('tslide', 'kSlide', $this->getID(), $slide);
     }

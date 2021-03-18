@@ -303,7 +303,7 @@ if ($step === 'neuer Export') {
     $efSettings = Shop::Container()->getDB()->selectAll(
         'texportformateinstellungen',
         'kExportformat',
-        (int)$exportformat->kExportformat
+        (int)($exportformat->kExportformat ?? 0)
     );
     $gettext->localizeConfigs($configs);
 

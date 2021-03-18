@@ -101,15 +101,16 @@ class Manager implements ManagerInterface
      */
     public function initActiveItems(int $languageID): Collection
     {
-        $cache  = Shop::Container()->getCache();
-        $cached = true;
-        if (($models = $cache->get('jtl_consent_models_' . $languageID)) === false) {
+        $cache   = Shop::Container()->getCache();
+        $cached  = true;
+        $cacheID = 'jtl_consent_models_' . $languageID;
+        if (($models = $cache->get($cacheID)) === false) {
             $models = ConsentModel::loadAll($this->db, 'active', 1)->map(
                 static function (ConsentModel $model) use ($languageID) {
                     return (new Item($languageID))->loadFromModel($model);
                 }
             );
-            $cache->set('jtl_consent_models', $models, [\CACHING_GROUP_CORE]);
+            $cache->set($cacheID, $models, [\CACHING_GROUP_CORE]);
             $cached = false;
         }
         \executeHook(\CONSENT_MANAGER_GET_ACTIVE_ITEMS, ['items' => $models, 'cached' => $cached]);

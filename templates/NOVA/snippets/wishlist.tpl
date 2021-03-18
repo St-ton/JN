@@ -361,7 +361,7 @@
                 {include file='snippets/pagination.tpl'
                     cThisUrl="wunschliste.php"
                     oPagination=$pagination
-                    cParam_arr=['wl' => {$CWunschliste->kWunschliste}]}
+                    cParam_arr=['wl' => {$CWunschliste->kWunschliste}, 'wlid' => $cURLID]}
                 {form method="post"
                     action="{get_static_route id='wunschliste.php'}{if $CWunschliste->nStandard != 1}?wl={$CWunschliste->kWunschliste}{/if}"
                     name="Wunschliste"

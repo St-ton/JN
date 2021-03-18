@@ -53,7 +53,7 @@ msgid "editPortletPrefix"
 msgstr "Edit "
 
 msgid "editPortletPostfix"
-msgstr " edit"
+msgstr " "
 
 msgid "Save this Portlet as a blueprint"
 msgstr "Save portlet as blueprint"

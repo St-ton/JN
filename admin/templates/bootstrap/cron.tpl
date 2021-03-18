@@ -67,7 +67,13 @@
                                                         </button>
                                                     {*{/if}*}
                                                     {if $job->getType() !== \JTL\Cron\Type::LICENSE_CHECK}
-                                                        <button class="btn btn-link px-2" type="submit" name="delete" value="{$job->getCronID()}" title="{__('delete')}" data-toggle="tooltip">
+                                                        <button class="btn btn-link px-2 delete-confirm"
+                                                                type="submit"
+                                                                name="delete"
+                                                                value="{$job->getCronID()}"
+                                                                title="{__('delete')}"
+                                                                data-toggle="tooltip"
+                                                                data-modal-body="{__($job->getType())}{if $job->getName() !== null} {$job->getName()}{/if}">
                                                             <span class="icon-hover">
                                                                 <span class="fal fa-trash-alt"></span>
                                                                 <span class="fas fa-trash-alt"></span>
@@ -111,7 +117,7 @@
                         </div>
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="cron-freq">{__('headingFrequency')} ({__('hours')}):</label>
-                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 config-type-number">
                                 <div class="input-group form-counter">
                                     <div class="input-group-prepend">
                                         <button type="button" class="btn btn-outline-secondary border-0" data-count-down>

@@ -1485,7 +1485,7 @@ msgid "boxen_wunschzettel_bilder_desc"
 msgstr "Specify whether to display item images in the \"Wish list\" box."
 
 msgid "boxen_vergleichsliste_anzeigen_name"
-msgstr "Show comparison list"
+msgstr "Show box - comparison list"
 
 msgid "boxen_vergleichsliste_anzeigen_desc"
 msgstr "Specify whether to display the comparison list in a box."
@@ -1507,6 +1507,12 @@ msgstr "\"Top rated\" requires average rating of"
 
 msgid "boxen_topbewertet_minsterne_desc"
 msgstr "Specify the minimum number of stars with which an item must be rated on average to be considered as \"Top rated\"."
+
+msgid "box_hersteller_anzahl_anzeige_name"
+msgstr "Number of displayed items"
+
+msgid "box_hersteller_anzahl_anzeige_desc"
+msgstr "Specify how many items are to be displayed in the box. Specify 0 to show all manufcaturers."
 
 msgid "bilder_kategorien_breite_name"
 msgstr "Category images: width"
@@ -2084,6 +2090,12 @@ msgstr "Include last X months"
 msgid "preisverlauf_anzahl_monate_desc"
 msgstr "Specify how many months are to be taken into account retrospectively for the price history. "
 
+msgid "vergleichsliste_anzeigen_name"
+msgstr "Enable comparison list"
+
+msgid "vergleichsliste_anzeigen_desc"
+msgstr "Specify whether your customers are able to use the comparison list."
+
 msgid "vergleichsliste_anzahl_name"
 msgstr "Max. number of items"
 
@@ -2589,10 +2601,10 @@ msgid "news_anzahl_content_desc"
 msgstr "Specify the number of blog posts to be displayed on the start page of your JTL-Shop."
 
 msgid "news_anzahl_box_name"
-msgstr "Number of months in the box"
+msgstr "Number of months/cateogries in the box"
 
 msgid "news_anzahl_box_desc"
-msgstr "Specify the number of months to be displayed in the \"Blog (monthly overview)\" box."
+msgstr "Specify the number of months/categories to be displayed in the \"Blog (monthly overview) / Blog (category overview)\" box."
 
 msgid "news_kommentare_freischalten_name"
 msgstr "Activate comments"

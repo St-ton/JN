@@ -795,7 +795,7 @@ msgid "artikeldetails_kategorie_anzeigen_desc"
 msgstr "Hier legen Sie fest, ob die Kategorie des Artikels auf der Artikeldetailseite angezeigt wird."
 
 msgid "artikeldetails_tabs_nutzen_name"
-msgstr "Registerkarten nutzen"
+msgstr "Registerkarten / Tab nutzen"
 
 msgid "artikeldetails_tabs_nutzen_desc"
 msgstr "Hier legen Sie fest, ob auf der Artikeldetailseite Registerkarten verwendet werden sollen. Diese beinhalten beispielsweise die Bewertungen oder Fragen zum Artikel. Wenn Sie die Option deaktivieren, werden alle Informationen untereinander angezeigt."
@@ -1485,7 +1485,7 @@ msgid "boxen_wunschzettel_bilder_desc"
 msgstr "Hier legen Sie fest, ob in der Box „Wunschzettel“ Artikelbilder angezeigt werden sollen."
 
 msgid "boxen_vergleichsliste_anzeigen_name"
-msgstr "Vergleichsliste anzeigen"
+msgstr "Box - Vergleichsliste anzeigen"
 
 msgid "boxen_vergleichsliste_anzeigen_desc"
 msgstr "Hier legen Sie fest, ob die Vergleichsliste in einer Box angezeigt werden soll."
@@ -1507,6 +1507,12 @@ msgstr "Top bewertet ab welcher Durchschnittsbewertung"
 
 msgid "boxen_topbewertet_minsterne_desc"
 msgstr "Hier legen Sie fest, mit wie vielen Sternen ein Artikel mindestens im Durchschnitt bewertet sein muss, um als „Top bewertet“ zu gelten."
+
+msgid "box_hersteller_anzahl_anzeige_name"
+msgstr "Anzahl angezeigter Hersteller"
+
+msgid "box_hersteller_anzahl_anzeige_desc"
+msgstr "Hier legen Sie fest, wie viele Hersteller in der Box „Hersteller“ angezeigt werden. Geben Sie 0 an, um alle Hersteller anzuzeigen."
 
 msgid "bilder_kategorien_breite_name"
 msgstr "Kategoriebilder Breite"
@@ -2084,6 +2090,12 @@ msgstr "Letzte X Monate beachten"
 msgid "preisverlauf_anzahl_monate_desc"
 msgstr "Hier legen Sie fest, wie viele Monate rückwirkend für den Preisverlauf berücksichtigt werden sollen. "
 
+msgid "vergleichsliste_anzeigen_name"
+msgstr "Vergleichsliste anzeigen"
+
+msgid "vergleichsliste_anzeigen_desc"
+msgstr "Hier legen Sie fest, ob Ihre Kunden die Vergleichsliste nutzen können."
+
 msgid "vergleichsliste_anzahl_name"
 msgstr "Maximale Anzahl an Artikeln"
 
@@ -2595,10 +2607,10 @@ msgid "news_anzahl_content_desc"
 msgstr "Hier legen Sie fest, wie viele Blogbeiträge auf der Startseite Ihres JTL-Shops angezeigt werden sollen."
 
 msgid "news_anzahl_box_name"
-msgstr "Anzahl Monate in der Box"
+msgstr "Anzahl Monate/Kategorien in der Box"
 
 msgid "news_anzahl_box_desc"
-msgstr "Hier legen Sie fest, wie viele Monate in der Box „Blog (Monatsübersicht)“ angezeigt werden sollen."
+msgstr "Hier legen Sie fest, wie viele Monate in der Box „Blog (Monatsübersicht)“ angezeigt werden sollen, bzw. wie viele Kategorien in der Box „Blog (Kategorieübersicht)“ angezeigt werden sollen."
 
 msgid "news_kommentare_freischalten_name"
 msgstr "Kommentare freischalten"

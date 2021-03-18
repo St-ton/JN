@@ -207,17 +207,16 @@ abstract class AbstractSync
         if ($product->kArtikel <= 0) {
             return;
         }
+        $stockRatio    = $conf['artikeldetails']['benachrichtigung_min_lagernd'] / 100;
+        $stockRelevanz = ($product->cLagerKleinerNull ?? '') !== 'Y' && ($product->cLagerBeachten ?? 'Y') === 'Y';
         $subscriptions = $this->db->selectAll(
             'tverfuegbarkeitsbenachrichtigung',
             ['nStatus', 'kArtikel'],
             [0, $product->kArtikel]
         );
         $subCount      = \count($subscriptions);
-        if ($subCount === 0
-            || (($product->fLagerbestand / $subCount) < ($conf['artikeldetails']['benachrichtigung_min_lagernd'] / 100)
-                && ($product->cLagerKleinerNull ?? '') !== 'Y'
-                && (!isset($product->cLagerBeachten)
-                    || $product->cLagerBeachten === 'Y')
+        if ($subCount === 0 || (
+                $stockRelevanz && ($product->fLagerbestand <= 0 || ($product->fLagerbestand / $subCount) < $stockRatio)
             )
         ) {
             return;
@@ -236,7 +235,9 @@ abstract class AbstractSync
             $product->cURL .= $sep . $campaign->cParameter . '=' . $campaign->cWert;
         }
         foreach ($subscriptions as $msg) {
-            $availAgainOptin = (new Optin(OptinAvailAgain::class))->setEmail($msg->cMail);
+            $availAgainOptin = (new Optin(OptinAvailAgain::class))->getOptinInstance()
+                ->setProduct($product)
+                ->setEmail($msg->cMail);
             if (!$availAgainOptin->isActive()) {
                 continue;
             }

@@ -91,7 +91,7 @@
                 </noscript>
             {/if}
 
-            {if $opc->isEditMode() === false && $opc->isPreviewMode() === false && \JTL\Shop::isAdmin(true)}
+            {if !$isMobile && !$opc->isEditMode() && !$opc->isPreviewMode() && \JTL\Shop::isAdmin(true)}
                 <link rel="preload" href="{$ShopURL}/admin/opc/css/startmenu.css" as="style"
                       onload="this.onload=null;this.rel='stylesheet'">
                 <noscript>
@@ -280,7 +280,9 @@
               {if isset($Link) && !empty($Link->getIdentifier())} id="{$Link->getIdentifier()}"{/if}>
     {/block}
     {if !$bExclusive}
-        {include file=$opcDir|cat:'tpl/startmenu.tpl'}
+        {if !$isMobile}
+            {include file=$opcDir|cat:'tpl/startmenu.tpl'}
+        {/if}
 
         {if $bAdminWartungsmodus}
             {block name='layout-header-maintenance-alert'}
@@ -317,9 +319,9 @@
                             {block name='layout-header-logo'}
                                 <div id="logo" class="logo-wrapper" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
                                     <span itemprop="name" class="d-none">{$meta_publisher}</span>
-                                    <meta itemprop="url" content="{$ShopURL}">
+                                    <meta itemprop="url" content="{$ShopHomeURL}">
                                     <meta itemprop="logo" content="{$ShopLogoURL}">
-                                    {link class="navbar-brand" href=$ShopURL title=$Einstellungen.global.global_shopname}
+                                    {link class="navbar-brand" href=$ShopHomeURL title=$Einstellungen.global.global_shopname}
                                     {if isset($ShopLogoURL)}
                                         {image src=$ShopLogoURL
                                         alt=$Einstellungen.global.global_shopname
@@ -445,7 +447,7 @@
         {/block}
 
         {block name='layout-header-breadcrumb'}
-            {container fluid=($smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp) class="breadcrumb-container"}
+            {container fluid=($smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp || (isset($Link) && $Link->getIsFluid())) class="breadcrumb-container"}
                 {include file='layout/breadcrumb.tpl'}
             {/container}
         {/block}

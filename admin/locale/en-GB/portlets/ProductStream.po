@@ -3,7 +3,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "Product Stream"
-msgstr "Product stream"
+msgstr "Product Stream"
 
 msgid "presentation"
 msgstr "View"
@@ -25,3 +25,6 @@ msgstr "Single-product slider with name and price"
 
 msgid "itemFilter"
 msgstr "Item filter"
+
+msgid "maxProducts"
+msgstr "Limit number of products"

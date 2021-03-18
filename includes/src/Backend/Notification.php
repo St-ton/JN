@@ -340,6 +340,15 @@ class Notification implements IteratorAggregate, Countable
             );
         }
 
+        if (($missingSystemPages = $linkAdmin->getMissingSystemPages()->count()) > 0) {
+            $this->add(
+                NotificationEntry::TYPE_DANGER,
+                __('Missing special pages'),
+                \sprintf(__('%d special pages are missing.'), $missingSystemPages),
+                $adminURL . 'links.php'
+            );
+        }
+
         if (($expSyntaxErrorCount = $status->getExportFormatErrorCount()) > 0) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,

@@ -8,7 +8,7 @@
             {include file='snippets/extension.tpl'}
         {/block}
 
-        {container class="snippets-wishlist"}
+        {container fluid=$Link->getIsFluid() class="snippets-wishlist"}
         {if $step === 'wunschliste versenden' && $Einstellungen.global.global_wunschliste_freunde_aktiv === 'Y'}
             {block name='snippets-wishlist-content-heading-email'}
                 <div class="h2">{lang key='wishlistViaEmail' section='login'}</div>
@@ -466,7 +466,7 @@
                                                                     small=true}
                                                             {/block}
                                                             {block name='snippets-wishlist-form-basket-characteristics-selected'}
-                                                                {row tag='dl' class="formrow-small"}
+                                                                {formrow tag='dl' class="formrow-small"}
                                                                     {foreach $wlPosition->CWunschlistePosEigenschaft_arr as $CWunschlistePosEigenschaft}
                                                                         {if $CWunschlistePosEigenschaft->cFreifeldWert}
                                                                             {col tag='dt' cols=6}{$CWunschlistePosEigenschaft->cEigenschaftName}:{/col}
@@ -476,7 +476,7 @@
                                                                             {col tag='dd' cols=6}{$CWunschlistePosEigenschaft->cEigenschaftWertName}{/col}
                                                                         {/if}
                                                                     {/foreach}
-                                                                {/row}
+                                                                {/formrow}
                                                             {/block}
                                                         </div>
                                                     {/block}

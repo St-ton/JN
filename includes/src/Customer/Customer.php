@@ -976,6 +976,9 @@ class Customer
             $this->erasePersonalData($issuerType, $issuerID);
             $logMessage = \sprintf('Account with ID kKunde = %s deleted', $customerID);
         } else {
+            if ($this->nRegistriert === 0) {
+                return;
+            }
             Shop::Container()->getDB()->update('tkunde', 'kKunde', $customerID, (object)[
                 'cPasswort'    => '',
                 'nRegistriert' => 0,
@@ -1178,28 +1181,12 @@ class Customer
             $this->cAnredeLocalized = Shop::Lang()->get('salutationGeneral');
         }
         if ($this->cLand !== null) {
-            $cISOLand = $this->cLand;
-            $sel_var  = 'cDeutsch';
-            if (\mb_convert_case($lang->cISO, \MB_CASE_LOWER) !== 'ger') {
-                $sel_var = 'cEnglisch';
+            if (isset($_SESSION['Kunde'])) {
+                $_SESSION['Kunde']->cLand = $this->cLand;
             }
-            $land = Shop::Container()->getDB()->select(
-                'tland',
-                'cISO',
-                $this->cLand,
-                null,
-                null,
-                null,
-                null,
-                false,
-                $sel_var . ' AS cName, cISO'
-            );
-            if (isset($land->cName)) {
-                $this->cLand = $land->cName;
+            if (($country = Shop::Container()->getCountryService()->getCountry($this->cLand)) !== null) {
+                $this->angezeigtesLand = $country->getName($lang->id);
             }
-        }
-        if (isset($_SESSION['Kunde'], $cISOLand)) {
-            $_SESSION['Kunde']->cLand = $cISOLand;
         }
 
         return $this;

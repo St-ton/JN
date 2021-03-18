@@ -1,5 +1,5 @@
 {block name='boxes-box-news-categories'}
-    {card class="box box-newscategories box-normal" id="sidebox{$oBox->getID()}"}
+    <div class="box box-newscategories box-normal" id="sidebox{$oBox->getID()}">
         {block name='boxes-box-news-categories-content'}
             {block name='boxes-box-news-categories-toggle-title'}
                 {link id="crd-hdr-{$oBox->getID()}"
@@ -24,7 +24,6 @@
                     aria=["labelledby"=>"crd-hdr-{$oBox->getID()}"]}
                     {nav vertical=true class="box-nav-item"}
                         {foreach $oBox->getItems() as $newsCategory}
-                            {if $newsCategory@index === 10}{break}{/if}
                             {navitem href=$newsCategory->cURLFull title=$newsCategory->cName router-class="box-link-wrapper"}
                                 {$newsCategory->cName}
                                 {badge variant="outline-secondary"}{$newsCategory->nAnzahlNews}{/badge}
@@ -34,7 +33,7 @@
                 {/collapse}
             {/block}
         {/block}
-    {/card}
+    </div>
     {block name='boxes-box-news-categories-hr-end'}
         <hr class="box-normal-hr">
     {/block}

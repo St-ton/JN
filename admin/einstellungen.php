@@ -5,6 +5,7 @@ use JTL\Backend\Settings\Manager;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Text;
 use JTL\Shop;
 use JTL\Shopsetting;
@@ -26,31 +27,31 @@ if ($bSuche) {
 }
 
 switch ($sectionID) {
-    case 1:
+    case CONF_GLOBAL:
         $oAccount->permission('SETTINGS_GLOBAL_VIEW', true, true);
         break;
-    case 2:
+    case CONF_STARTSEITE:
         $oAccount->permission('SETTINGS_STARTPAGE_VIEW', true, true);
         break;
-    case 3:
+    case CONF_EMAILS:
         $oAccount->permission('SETTINGS_EMAILS_VIEW', true, true);
         break;
-    case 4:
+    case CONF_ARTIKELUEBERSICHT:
         $oAccount->permission('SETTINGS_ARTICLEOVERVIEW_VIEW', true, true);
         // Sucheinstellungen haben eigene Logik
         header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . 'sucheinstellungen.php');
         exit;
         break;
-    case 5:
+    case CONF_ARTIKELDETAILS:
         $oAccount->permission('SETTINGS_ARTICLEDETAILS_VIEW', true, true);
         break;
-    case 6:
+    case CONF_KUNDEN:
         $oAccount->permission('SETTINGS_CUSTOMERFORM_VIEW', true, true);
         break;
-    case 7:
+    case CONF_KAUFABWICKLUNG:
         $oAccount->permission('SETTINGS_BASKET_VIEW', true, true);
         break;
-    case 9:
+    case CONF_BILDER:
         $oAccount->permission('SETTINGS_IMAGES_VIEW', true, true);
         break;
     default:
@@ -277,5 +278,6 @@ if ($step === 'einstellungen bearbeiten') {
 $smarty->assign('cPrefDesc', filteredConfDescription($sectionID))
        ->assign('cPrefURL', __('prefURL' . $sectionID))
        ->assign('step', $step)
+       ->assign('countries', ShippingMethod::getPossibleShippingCountries())
        ->assign('waehrung', $defaultCurrency->cName)
        ->display('einstellungen.tpl');

@@ -11,7 +11,7 @@
                 {if $configItem->cConf === 'Y'}
                     <div class="item form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="{$configItem->cWertName}">{$configItem->cName}:</label>
-                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $configItem->cInputTyp === 'number'}config-type-number{/if}">
                             {if $configItem->cInputTyp === 'selectbox'}
                                 <select name="{$configItem->cWertName}" id="{$configItem->cWertName}" class="custom-select combo">
                                     {foreach $configItem->ConfWerte as $wert}

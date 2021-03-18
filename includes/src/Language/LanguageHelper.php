@@ -260,8 +260,10 @@ class LanguageHelper
         if (\count($this->langVars) === 0) {
             $allLangVars = $this->db->query(
                 'SELECT tsprachwerte.cWert AS val, tsprachwerte.cName AS name, 
-                    tsprachsektion.cName AS sectionName, tsprachwerte.kSprachISO AS langID
+                    tsprachsektion.cName AS sectionName, tsprache.kSprache AS langID
                     FROM tsprachwerte
+                    INNER JOIN tsprachiso iso ON tsprachwerte.kSprachISO = iso.kSprachISO
+                    INNER JOIN tsprache ON iso.cISO = tsprache.cISO
                     LEFT JOIN tsprachsektion
                         ON tsprachwerte.kSprachsektion = tsprachsektion.kSprachsektion',
                 ReturnType::COLLECTION
@@ -1051,7 +1053,6 @@ class LanguageHelper
         try {
             $specialPage = $mapped > 0 ? $ls->getSpecialPage($mapped) : null;
         } catch (SpecialPageNotFoundException $e) {
-            Shop::Container()->getLogService()->warning($e->getMessage());
             $specialPage = null;
         }
         $page = $linkID > 0 ? $ls->getPageLink($linkID) : null;

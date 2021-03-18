@@ -64,6 +64,10 @@
                 "package",
                 "yarn"
             ],
+            "support": {
+                "issues": "https://github.com/fxpio/foxy/issues",
+                "source": "https://github.com/fxpio/foxy/tree/v1.1.0"
+            },
             "funding": [
                 {
                     "url": "https://paypal.me/francoispluchino",
@@ -87,5 +91,5 @@
         "php": ">=5.5.9"
     },
     "platform-dev": [],
-    "plugin-api-version": "1.1.0"
+    "plugin-api-version": "2.0.0"
 }

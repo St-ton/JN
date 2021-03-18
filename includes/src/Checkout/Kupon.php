@@ -7,6 +7,7 @@ use JTL\Cart\CartHelper;
 use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Product;
+use JTL\Language\LanguageHelper;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
@@ -1054,32 +1055,23 @@ class Kupon
                     * $coupon->fWert;
             }
         }
-
         $special        = new stdClass();
         $special->cName = $coupon->translationList;
+        $languageHelper = LanguageHelper::getInstance();
+        $oldLangISO     = $languageHelper->getIso();
         foreach ($_SESSION['Sprachen'] as $language) {
             if ($coupon->cWertTyp === 'prozent'
                 && $coupon->nGanzenWKRabattieren === 0
                 && $coupon->cKuponTyp !== self::TYPE_NEWCUSTOMER
             ) {
-                $special->cName[$language->cISO] .= ' ' . $coupon->fWert . '% ';
-                $discount                         = Shop::Container()->getDB()->select(
-                    'tsprachwerte',
-                    'cName',
-                    'discountForArticle',
-                    'kSprachISO',
-                    $language->kSprache,
-                    null,
-                    null,
-                    false,
-                    'cWert'
-                );
-
-                $special->discountForArticle[$language->cISO] = $discount->cWert;
+                $languageHelper->setzeSprache($language->cISO);
+                $special->cName[$language->cISO]             .= ' ' . $coupon->fWert . '% ';
+                $special->discountForArticle[$language->cISO] = $languageHelper->get('discountForArticle', 'checkout');
             } elseif ($coupon->cWertTyp === 'prozent') {
                 $special->cName[$language->cISO] .= ' ' . $coupon->fWert . '%';
             }
         }
+        $languageHelper->setzeSprache($oldLangISO);
         if (isset($productNames)) {
             $special->cArticleNameAffix = $productNames;
         }

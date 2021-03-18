@@ -129,6 +129,7 @@ class IOMethods
             ],
             ReturnType::ARRAY_OF_OBJECTS
         );
+        $smarty->assign('shopURL', Shop::getURL());
         foreach ($results as $result) {
             $result->suggestion = $smarty->assign('result', $result)->fetch('snippets/suggestion.tpl');
         }
@@ -1144,6 +1145,7 @@ class IOMethods
                                 $value->kEigenschaftWert,
                                 $stockInfo->status,
                                 $stockInfo->text,
+                                $value->notExists,
                                 $wrapper
                             );
                         }

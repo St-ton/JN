@@ -162,7 +162,7 @@ class ComparisonList
         }
         if (\count($attributes) > 0) {
             \uasort($attributes, static function (Merkmal $a, Merkmal $b) {
-                return $a->nSort > $b->nSort;
+                return $a->nSort <=> $b->nSort;
             });
         }
 
@@ -274,7 +274,7 @@ class ComparisonList
             }
         }
         $prioRows = sort($prioRows, static function (array $left, array $right) {
-            return $left['priority'] < $right['priority'];
+            return $right['priority'] <=> $left['priority'];
         });
 
         return $keysOnly ? map($prioRows, static function (array $row) {

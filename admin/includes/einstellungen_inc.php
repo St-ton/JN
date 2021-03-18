@@ -207,21 +207,22 @@ function holeEinstellungHeadline(int $sort, int $sectionID)
 {
     $configHead = new stdClass();
     if ($sort > 0 && $sectionID > 0) {
-        $items = Shop::Container()->getDB()->query(
+        $item = Shop::Container()->getDB()->query(
             'SELECT *
                 FROM teinstellungenconf
                 WHERE nSort < ' . $sort . '
-                    AND kEinstellungenSektion = ' . $sectionID . '
-                ORDER BY nSort DESC',
-            ReturnType::ARRAY_OF_OBJECTS
+                    AND kEinstellungenSektion = ' . $sectionID . "
+                    AND cConf = 'N'
+                ORDER BY nSort DESC",
+            ReturnType::SINGLE_OBJECT
         );
-        foreach ($items as $item) {
-            if ($item->cConf === 'N') {
-                $configHead                = $item;
-                $configHead->cSektionsPfad = gibEinstellungsSektionsPfad($sectionID);
-                $configHead->cURL          = getSectionMenuPath($sectionID);
-                break;
-            }
+        if ($item !== false) {
+            $menuEntry                  = mapConfigSectionToMenuEntry($sectionID, $item->cWertName);
+            $configHead                 = $item;
+            $configHead->cSektionsPfad  = getConfigSectionPath($menuEntry);
+            $configHead->cURL           = getConfigSectionUrl($menuEntry);
+            $configHead->specialSetting = isConfigSectionSpecialSetting($menuEntry);
+            $configHead->settingsAnchor = getConfigSectionAnchor($menuEntry);
         }
     }
 
@@ -231,31 +232,97 @@ function holeEinstellungHeadline(int $sort, int $sectionID)
 /**
  * @param int $sectionID
  * @return string
+ * @deprecated since 5.0.2
  */
-function gibEinstellungsSektionsPfad(int $sectionID)
+function gibEinstellungsSektionsPfad(int $sectionID, $groupName)
 {
-    global $sectionMenuMapping;
-
-    if (isset($sectionMenuMapping[$sectionID])) {
-        return $sectionMenuMapping[$sectionID]->path;
-    }
-
-    return '';
+    return getConfigSectionPath(mapConfigSectionToMenuEntry($sectionID, $groupName));
 }
 
 /**
  * @param int $sectionID
  * @return string
+ * @deprecated since 5.0.2
  */
-function getSectionMenuPath(int $sectionID)
+function getSectionMenuPath(int $sectionID, $groupName)
+{
+    return getConfigSectionUrl(mapConfigSectionToMenuEntry($sectionID, $groupName));
+}
+
+/**
+ * @param int $sectionID
+ * @return boolean
+ * @deprecated since 5.0.2
+ */
+function getSpecialSetting(int $sectionID, $groupName): bool
+{
+    return isConfigSectionSpecialSetting(mapConfigSectionToMenuEntry($sectionID, $groupName));
+}
+
+/**
+ * @param int $sectionID
+ * @return string
+ * @deprecated since 5.0.2
+ */
+function getSettingsAnchor(int $sectionID, $groupName): string
+{
+    return getConfigSectionAnchor(mapConfigSectionToMenuEntry($sectionID, $groupName));
+}
+
+/**
+ * @param int $sectionID
+ * @param string $groupName
+ * @return stdClass
+ */
+function mapConfigSectionToMenuEntry(int $sectionID, string $groupName = 'all')
 {
     global $sectionMenuMapping;
 
     if (isset($sectionMenuMapping[$sectionID])) {
-        return $sectionMenuMapping[$sectionID]->url;
+        if (!isset($sectionMenuMapping[$sectionID][$groupName])) {
+            $groupName = 'all';
+        }
+
+        return $sectionMenuMapping[$sectionID][$groupName];
     }
 
-    return '';
+    return (object)[];
+}
+
+/**
+ * @param $menuEntry
+ * @return string
+ */
+function getConfigSectionPath($menuEntry)
+{
+    return $menuEntry->path ?? '';
+}
+
+/**
+ * @param $menuEntry
+ * @return string
+ */
+function getConfigSectionUrl($menuEntry)
+{
+    return $menuEntry->url ?? '';
+}
+
+/**
+ * @param $menuEntry
+ * @return bool
+ */
+function isConfigSectionSpecialSetting($menuEntry)
+{
+    return $menuEntry->specialSetting ?? false;
+}
+
+/**
+ * @param $menuEntry
+ * @return string
+ */
+function getConfigSectionAnchor($menuEntry)
+{
+    return $menuEntry->settingsAnchor ?? '';
 }
 
 /**
@@ -270,11 +337,11 @@ function sortiereEinstellungen($config)
         $sections = [];
         foreach ($config as $i => $conf) {
             if (isset($conf->kEinstellungenSektion) && $conf->cConf !== 'N') {
-                if (!isset($sections[$conf->kEinstellungenSektion])) {
-                    $headline = holeEinstellungHeadline($conf->nSort, $conf->kEinstellungenSektion);
+                $headline = holeEinstellungHeadline($conf->nSort, $conf->kEinstellungenSektion);
+                if (!isset($sections[$headline->cWertName])) {
                     if (isset($headline->kEinstellungenSektion)) {
-                        $sections[$conf->kEinstellungenSektion] = true;
-                        $tmpConf[]                              = $headline;
+                        $sections[$headline->cWertName] = true;
+                        $tmpConf[]                      = $headline;
                     }
                 }
                 $tmpConf[] = $conf;

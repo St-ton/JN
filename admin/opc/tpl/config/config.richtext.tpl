@@ -19,6 +19,10 @@
             },
         );
 
+        $.each(CKEDITOR.dtd.$removeEmpty, key => {
+            CKEDITOR.dtd.$removeEmpty[key] = false;
+        });
+
         opc.once('save-config', () => {
             $('#textarea-{$propname}').val(CKEDITOR.instances['textarea-{$propname}'].getData());
         });

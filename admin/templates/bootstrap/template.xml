@@ -18,6 +18,7 @@
             <File Path="css/typeaheadjs.css"/>
             <File Path="css/fontawesome-pro/css/all.min.css"/>
             <File Path="css/bootstrap-colorpicker.min.css"/>
+            <File Path="css/tempusdominus-bootstrap-4.min.css"/>
             <File Path="css/app/preload.css"/>
             <File Path="css/app/app.css"/>
             <File Path="css/custom.css"/>
@@ -28,7 +29,6 @@
             <File Path="js/popper.min.js"/>
             <File Path="js/bootstrap.js"/>
             <File Path="js/button.js"/>
-            <File Path="js/jquery-ui-timepicker-addon.js"/>
             <File Path="js/jquery.cookie.js"/>
             <File Path="js/highcharts.min.js"/>
             <File Path="js/global.js"/>
@@ -52,6 +52,8 @@
             <File Path="js/draggable.bundle.js"/>
             <File Path="js/store.modern.min.js"/>
             <File Path="js/bootstrap-select.min.js"/>
+            <File Path="js/moment-with-locales.js"/>
+            <File Path="js/tempusdominus-bootstrap-4.min.js"/>
         </JS>
     </Minify>
 </Template>

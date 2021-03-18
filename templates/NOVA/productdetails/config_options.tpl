@@ -224,10 +224,10 @@
                                                                 {/button}
                                                             {/inputgroupprepend}
                                                             {input
-                                                                type="{if $oItem->getArtikel()->cTeilbar === 'Y' && $oItem->getArtikel()->fAbnahmeintervall == 0}text{else}number{/if}"
+                                                                type="number"
                                                                 min="{$oItem->getMin()}"
                                                                 max="{$oItem->getMax()}"
-                                                                step="{if $oItem->getArtikel()->fAbnahmeintervall > 0}{$oItem->getArtikel()->fAbnahmeintervall}{else}1{/if}"
+                                                                step="{if $oItem->getArtikel()->cTeilbar === 'Y' && $oItem->getArtikel()->fAbnahmeintervall == 0}any{elseif $oItem->getArtikel()->fAbnahmeintervall > 0}{$oItem->getArtikel()->fAbnahmeintervall}{else}1{/if}"
                                                                 id="quantity{$oItem->getKonfigitem()}"
                                                                 class="quantity"
                                                                 name="item_quantity[{$kKonfigitem}]"
@@ -334,10 +334,10 @@
                                                             {/button}
                                                         {/inputgroupprepend}
                                                         {input
-                                                            type="{if $oItem->getArtikel()->cTeilbar === 'Y' && $oItem->getArtikel()->fAbnahmeintervall == 0}text{else}number{/if}"
+                                                            type="number"
                                                             min="{$oItem->getMin()}"
                                                             max="{$oItem->getMax()}"
-                                                            step="{if $oItem->getArtikel()->fAbnahmeintervall > 0}{$oItem->getArtikel()->fAbnahmeintervall}{else}1{/if}"
+                                                            step="{if $oItem->getArtikel()->cTeilbar === 'Y' && $oItem->getArtikel()->fAbnahmeintervall == 0}any{elseif $oItem->getArtikel()->fAbnahmeintervall > 0}{$oItem->getArtikel()->fAbnahmeintervall}{else}1{/if}"
                                                             id="quantity{$oItem->getKonfigitem()}"
                                                             class="quantity"
                                                             name="item_quantity[{$oItem->getKonfigitem()}]"

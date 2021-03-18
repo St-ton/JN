@@ -24133,6 +24133,12 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   left: 1rem;
 }
 
+.list .productbox-details dt {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .gallery .image-wrapper .yousave {
   margin-top: -2rem;
 }

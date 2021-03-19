@@ -24,7 +24,7 @@
             && ($nSeitenTyp === $smarty.const.PAGE_ARTIKEL || $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE)}
                 {get_category_parents categoryId=$activeId assign='activeParents'}
             {/if}
-            {block name='snippets-categories-mega-categories'}
+            {block name='snippets-categories-mega-categories-inner'}
             {foreach $categories as $category}
                 {if isset($activeParents) && is_array($activeParents) && isset($activeParents[$i])}
                     {assign var=activeParent value=$activeParents[$i]}

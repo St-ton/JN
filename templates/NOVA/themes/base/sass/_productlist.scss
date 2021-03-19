@@ -260,6 +260,13 @@
 		}
 	}
 }
+.list {
+	.productbox-details {
+		dt {
+			@include text-truncate;
+		}
+	}
+}
 .gallery .image-wrapper .yousave {
 	margin-top: -(1 + (2 * map_get($spacers, 2)));
 }

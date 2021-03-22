@@ -1149,7 +1149,7 @@ final class Shop
         if (\mb_strpos($uri, '/') === 0) {
             $uri = \mb_substr($uri, 1);
         }
-        $seo         = Request::extractExternalParams($uri);
+        $seo = Request::extractExternalParams($uri);
         if ($seo) {
             foreach (self::$productFilter->getCustomFilters() as $customFilter) {
                 $seoParam = $customFilter->getUrlParamSEO();

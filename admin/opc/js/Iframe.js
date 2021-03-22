@@ -1,10 +1,9 @@
 class Iframe
 {
-    constructor(opc, io, gui, page, shopUrl, templateUrl)
+    constructor(io, gui, page, shopUrl, templateUrl)
     {
         bindProtoOnHandlers(this);
 
-        this.opc         = opc;
         this.io          = io;
         this.gui         = gui;
         this.page        = page;
@@ -47,7 +46,7 @@ class Iframe
             this.head = this.jq('head');
             this.body = this.jq('body');
 
-            this.ctx.opc = this.opc;
+            this.ctx.opc = opc;
 
             this.jq('[data-opc-portlet-css-link=true]').each((e, elm) => {
                 this.loadedStylesheets.push(elm.href);
@@ -75,7 +74,7 @@ class Iframe
                     this.gui.updatePagetreeBtn();
                 })
                 .then(() => {
-                    this.opc.emit('iframe.init', this);
+                    opc.emit('iframe.init', this);
                 });
         })
     }
@@ -407,7 +406,7 @@ class Iframe
     {
         elm = elm || null;
 
-        this.opc.emit('iframe.setSelected', elm);
+        opc.emit('iframe.setSelected', elm);
 
         if(elm === null || !elm.is(this.selectedElm)) {
             if(this.selectedElm !== null) {
@@ -500,7 +499,7 @@ class Iframe
     {
         if(this.selectedElm !== null) {
             let data = this.page.portletToJSON(this.selectedElm);
-            this.opc.emit('iframe.clonePortlet', data);
+            opc.emit('iframe.clonePortlet', data);
             this.io.getPortletPreviewHtml(data)
                 .then(html => {
                     let copiedElm = this.createPortletElm(html);

@@ -1,10 +1,9 @@
 class Page
 {
-    constructor(opc, io, shopUrl, key)
+    constructor(io, shopUrl, key)
     {
         bindProtoOnHandlers(this);
 
-        this.opc            = opc;
         this.io             = io;
         this.shopUrl        = shopUrl;
         this.key            = key;
@@ -90,7 +89,7 @@ class Page
 
     loadFromData(data)
     {
-        this.opc.emit('page.loadFromData', data);
+        opc.emit('page.loadFromData', data);
         return this.io.createPagePreview({areas: data.areas})
             .then(this.onLoad);
     }

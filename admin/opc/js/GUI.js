@@ -1,10 +1,9 @@
 class GUI
 {
-    constructor(opc, io, page, messages)
+    constructor(io, page, messages)
     {
         bindProtoOnHandlers(this);
 
-        this.opc           = opc;
         this.io            = io;
         this.page          = page;
         this.messages      = messages;

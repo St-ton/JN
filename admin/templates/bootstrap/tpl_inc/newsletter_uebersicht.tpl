@@ -117,7 +117,6 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                {include file='tpl_inc/pagination.tpl' pagination=$oPagiInaktiveAbos cAnchor='inaktiveabonnenten' isBottom=true}
                                 <div class="card-footer save-wrapper">
                                     <div class="row">
                                         <div class="col-sm-6 col-xl-auto text-left">
@@ -140,6 +139,7 @@
                                 </div>
                             </div>
                         </form>
+                        {include file='tpl_inc/pagination.tpl' pagination=$oPagiInaktiveAbos cAnchor='inaktiveabonnenten' isBottom=true}
                     </div>
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
@@ -215,7 +215,6 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                {include file='tpl_inc/pagination.tpl' pagination=$oPagiAlleAbos cAnchor='alleabonnenten' isBottom=true}
                                 <div class="card-footer save-wrapper">
                                     <div class="row">
                                         <div class="col-sm-6 col-xl-auto text-left">
@@ -234,6 +233,7 @@
                             </div>
                         </div>
                     </form>
+                    {include file='tpl_inc/pagination.tpl' pagination=$oPagiAlleAbos cAnchor='alleabonnenten' isBottom=true}
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                     {if isset($cSucheAktiv) && $cSucheAktiv|strlen > 0}
@@ -353,7 +353,6 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                {include file='tpl_inc/pagination.tpl' pagination=$oPagiWarteschlange cAnchor='newsletterqueue' isBottom=true}
                                 <div class="card-footer save-wrapper">
                                     <div class="row">
                                         <div class="col-sm-6 col-xl-auto text-left">
@@ -372,6 +371,7 @@
                             </div>
                         </div>
                     </form>
+                    {include file='tpl_inc/pagination.tpl' pagination=$oPagiWarteschlange cAnchor='newsletterqueue' isBottom=true}
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
@@ -464,7 +464,6 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                {include file='tpl_inc/pagination.tpl' pagination=$oPagiVorlagen cAnchor='newslettervorlagen' isBottom=true}
                                 <div class="card-footer save-wrapper">
                                     <div class="row">
                                         <div class="col-sm-6 col-xl-auto text-left">
@@ -490,6 +489,7 @@
                             </div>
                         </div>
                     </form>
+                    {include file='tpl_inc/pagination.tpl' pagination=$oPagiVorlagen cAnchor='newslettervorlagen' isBottom=true}
                 {else}
                     <form method="post" action="newsletter.php">
                         {$jtl_token}
@@ -596,7 +596,6 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                {include file='tpl_inc/pagination.tpl' pagination=$oPagiHistory cAnchor='newsletterhistory' isBottom=true}
                                 <div class="card-footer save-wrapper">
                                     <div class="row">
                                         <div class="col-sm-6 col-xl-auto text-left">
@@ -615,6 +614,7 @@
                             </div>
                         </div>
                     </form>
+                    {include file='tpl_inc/pagination.tpl' pagination=$oPagiHistory cAnchor='newsletterhistory' isBottom=true}
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}

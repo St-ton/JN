@@ -303,6 +303,7 @@ final class Uninstaller
         $this->db->delete('tadminwidgets', 'kPlugin', $pluginID);
         $this->db->delete('topcportlet', 'kPlugin', $pluginID);
         $this->db->delete('topcblueprint', 'kPlugin', $pluginID);
+        $this->db->delete('tconsent', 'pluginID', $pluginID);
         $this->db->queryPrepared(
             'DELETE texportformateinstellungen, texportformatqueuebearbeitet, texportformat
                 FROM texportformat

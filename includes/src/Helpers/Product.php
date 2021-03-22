@@ -1559,11 +1559,14 @@ class Product
                     case \R_MISSING_TOKEN:
                         $notices[] = Shop::Lang()->get('missingToken', 'messages');
                         break;
-                    default:
-                        $notices[] = Shop::Lang()->get('unknownError', 'messages');
-                        break;
                 }
-                \executeHook(\HOOK_ARTIKEL_INC_ARTIKELHINWEISSWITCH);
+                \executeHook(\HOOK_ARTIKEL_INC_ARTIKELHINWEISSWITCH, [
+                    'message' => $message,
+                    'notices' => &$notices
+                ]);
+                if (\count($notices) === 0) {
+                    $notices[] = Shop::Lang()->get('unknownError', 'messages');
+                }
             }
         }
 

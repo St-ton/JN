@@ -9,7 +9,7 @@
                     {__('restoreUnsaved')}
                 </div>
             </div>
-            <form onsubmit="opc.gui.restoreUnsaved()">
+            <form action="javascript:void(0);" onsubmit="opc.gui.restoreUnsaved()">
                 <div class="modal-footer">
                     <button type="button" class="opc-btn-secondary opc-small-btn" data-dismiss="modal"
                             onclick="opc.gui.noRestoreUnsaved()">

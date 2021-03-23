@@ -31,6 +31,8 @@ class Migration_20210323112600 extends Migration implements IMigration
                 ],
             ]
         );
+        $this->execute('ALTER TABLE `texportformat` ADD COLUMN `async` TINYINT(1) NULL DEFAULT 0');
+        $this->execute('UPDATE texportformat SET async = 1 WHERE kPlugin = 0');
     }
 
     /**
@@ -39,5 +41,6 @@ class Migration_20210323112600 extends Migration implements IMigration
     public function down()
     {
         $this->removeConfig('exportformate_line_ending');
+        $this->execute('ALTER TABLE `texportformat` DROP COLUMN `async`');
     }
 }

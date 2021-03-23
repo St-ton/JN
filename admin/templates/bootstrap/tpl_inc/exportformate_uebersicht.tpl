@@ -108,7 +108,7 @@
                 {foreach $exportformate as $exportformat}
                     {if $exportformat->nSpecial === 0}
                         <tr>
-                            <td class="text-left"> {$exportformat->cName}</td>
+                            <td class="text-left">{$exportformat->cName}</td>
                             <td class="text-left" id="progress{$exportformat->kExportformat}">
                                 <p>{$exportformat->cDateiname}</p>
                                 <div></div>
@@ -125,7 +125,11 @@
                                     {$jtl_token}
                                     <input type="hidden" name="kExportformat" value="{$exportformat->kExportformat}" />
                                     <div class="btn-group">
-                                        <button type="button" data-id="{$exportformat->kExportformat}" class="btn btn-link px-1 btn-syntaxcheck" title="{__('Check syntax')}" data-toggle="tooltip" data-placement="top">
+                                        <button type="button" data-id="{$exportformat->kExportformat}"
+                                                class="btn btn-link px-1 btn-syntaxcheck"
+                                                title="{__('Check syntax')}"
+                                                data-toggle="tooltip"
+                                                data-placement="top">
                                             <span class="icon-hover">
                                                 <span class="fal fa-check"></span>
                                                 <span class="fas fa-check"></span>
@@ -144,27 +148,33 @@
                                                 <span class="fas fa-trash-alt"></span>
                                             </span>
                                         </button>
-                                        <button name="action" value="export" class="btn btn-link px-1 extract notext{if !$exportformat->enabled} disabled{/if}" title="{__('createExportFile')}" data-toggle="tooltip" data-placement="top">
+                                        <button name="action" value="export" class="btn btn-link px-1 extract notext{if !$exportformat->enabled} disabled{/if}"
+                                                title="{__('createExportFile')}" data-toggle="tooltip" data-placement="top">
                                             <span class="icon-hover">
                                                 <span class="fal fa-plus"></span>
                                                 <span class="fas fa-plus"></span>
                                             </span>
                                         </button>
-                                        <button name="action" value="download" class="btn btn-link px-1 download notext" title="{__('download')}" data-toggle="tooltip" data-placement="top">
+                                        <button name="action" value="download" class="btn btn-link px-1 download notext"
+                                                title="{__('download')}" data-toggle="tooltip" data-placement="top">
                                             <span class="icon-hover">
                                                 <span class="fal fa-download"></span>
                                                 <span class="fas fa-download"></span>
                                             </span>
                                         </button>
-                                        {if !$exportformat->bPluginContentExtern}
-                                            <a href="#" class="btn btn-link px-1 extract_async notext" title="{__('createExportFileAsync')}" data-toggle="tooltip" data-placement="top" data-exportid="{$exportformat->kExportformat}" id="start-export-{$exportformat->kExportformat}">
+                                        {if $exportformat->async === true}
+                                            <a href="#" class="btn btn-link px-1 extract_async notext{if !$exportformat->enabled} disabled{/if}"
+                                               title="{__('createExportFileAsync')}" data-toggle="tooltip"
+                                               data-placement="top" data-exportid="{$exportformat->kExportformat}"
+                                               id="start-export-{$exportformat->kExportformat}">
                                                 <span class="icon-hover">
                                                     <span class="fal fa-plus-square"></span>
                                                     <span class="fas fa-plus-square"></span>
                                                 </span>
                                             </a>
                                         {/if}
-                                        <button name="action" value="edit" class="btn btn-link px-1 edit notext" title="{__('edit')}" data-toggle="tooltip" data-placement="top">
+                                        <button name="action" value="edit" class="btn btn-link px-1 edit notext"
+                                                title="{__('edit')}" data-toggle="tooltip" data-placement="top">
                                             <span class="icon-hover">
                                                 <span class="fal fa-edit"></span>
                                                 <span class="fas fa-edit"></span>

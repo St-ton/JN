@@ -251,6 +251,7 @@ if ($step === 'uebersicht') {
         $item->bPluginContentExtern = $item->kPlugin > 0
             && mb_strpos($item->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false;
         $item->enabled              = $item->kPlugin === 0 || $item->cPluginID !== null;
+        $item->async                = $item->kPlugin === 0 || (int)$item->async === 1;
     }
     $smarty->assign('exportformate', $exportformate);
 }

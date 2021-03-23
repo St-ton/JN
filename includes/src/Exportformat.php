@@ -179,6 +179,11 @@ class Exportformat
     private $db;
 
     /**
+     * @var int
+     */
+    protected $nFehlerhaft = 0;
+
+    /**
      * Exportformat constructor.
      *
      * @param int              $id
@@ -316,6 +321,9 @@ class Exportformat
         if (!isset($this->config['exportformate_semikolon'])) {
             $this->config['exportformate_semikolon'] = 'N';
         }
+        if (!isset($this->config['exportformate_line_ending'])) {
+            $this->config['exportformate_line_ending'] = 'LF';
+        }
     }
 
     /**
@@ -406,12 +414,12 @@ class Exportformat
     }
 
     /**
-     * @param int $kExportformat
+     * @param int $exportID
      * @return $this
      */
-    public function setExportformat(int $kExportformat): self
+    public function setExportformat(int $exportID): self
     {
-        $this->kExportformat = $kExportformat;
+        $this->kExportformat = $exportID;
 
         return $this;
     }
@@ -440,34 +448,34 @@ class Exportformat
     }
 
     /**
-     * @param int $kWaehrung
+     * @param int $currencyID
      * @return $this
      */
-    public function setWaehrung(int $kWaehrung): self
+    public function setWaehrung(int $currencyID): self
     {
-        $this->kWaehrung = $kWaehrung;
+        $this->kWaehrung = $currencyID;
 
         return $this;
     }
 
     /**
-     * @param int $kKampagne
+     * @param int $campaignID
      * @return $this
      */
-    public function setKampagne(int $kKampagne): self
+    public function setKampagne(int $campaignID): self
     {
-        $this->kKampagne = $kKampagne;
+        $this->kKampagne = $campaignID;
 
         return $this;
     }
 
     /**
-     * @param int $kPlugin
+     * @param int $pluginID
      * @return $this
      */
-    public function setPlugin(int $kPlugin): self
+    public function setPlugin(int $pluginID): self
     {
-        $this->kPlugin = $kPlugin;
+        $this->kPlugin = $pluginID;
 
         return $this;
     }
@@ -484,100 +492,100 @@ class Exportformat
     }
 
     /**
-     * @param string $cDateiname
+     * @param string $fileName
      * @return $this
      */
-    public function setDateiname(string $cDateiname): self
+    public function setDateiname(string $fileName): self
     {
-        $this->cDateiname = $cDateiname;
+        $this->cDateiname = $fileName;
 
         return $this;
     }
 
     /**
-     * @param string $cKopfzeile
+     * @param string $header
      * @return $this
      */
-    public function setKopfzeile($cKopfzeile): self
+    public function setKopfzeile(string $header): self
     {
-        $this->cKopfzeile = $cKopfzeile;
+        $this->cKopfzeile = $header;
 
         return $this;
     }
 
     /**
-     * @param string $cContent
+     * @param string $content
      * @return $this
      */
-    public function setContent($cContent): self
+    public function setContent(string $content): self
     {
-        $this->cContent = $cContent;
+        $this->cContent = $content;
 
         return $this;
     }
 
     /**
-     * @param string $cFusszeile
+     * @param string $footer
      * @return $this
      */
-    public function setFusszeile($cFusszeile): self
+    public function setFusszeile(string $footer): self
     {
-        $this->cFusszeile = $cFusszeile;
+        $this->cFusszeile = $footer;
 
         return $this;
     }
 
     /**
-     * @param string $cKodierung
+     * @param string $encoding
      * @return $this
      */
-    public function setKodierung($cKodierung): self
+    public function setKodierung(string $encoding): self
     {
-        $this->cKodierung = $cKodierung;
+        $this->cKodierung = $encoding;
 
         return $this;
     }
 
     /**
-     * @param int $nSpecial
+     * @param int $special
      * @return $this
      */
-    public function setSpecial(int $nSpecial): self
+    public function setSpecial(int $special): self
     {
-        $this->nSpecial = $nSpecial;
+        $this->nSpecial = $special;
 
         return $this;
     }
 
     /**
-     * @param int $nVarKombiOption
+     * @param int $varcombiOption
      * @return $this
      */
-    public function setVarKombiOption(int $nVarKombiOption): self
+    public function setVarKombiOption(int $varcombiOption): self
     {
-        $this->nVarKombiOption = $nVarKombiOption;
+        $this->nVarKombiOption = $varcombiOption;
 
         return $this;
     }
 
     /**
-     * @param int $nSplitgroesse
+     * @param int $splitSize
      * @return $this
      */
-    public function setSplitgroesse(int $nSplitgroesse): self
+    public function setSplitgroesse(int $splitSize): self
     {
-        $this->nSplitgroesse = $nSplitgroesse;
+        $this->nSplitgroesse = $splitSize;
 
         return $this;
     }
 
     /**
-     * @param string $dZuletztErstellt
+     * @param string $lastCreated
      * @return $this
      */
-    public function setZuletztErstellt($dZuletztErstellt): self
+    public function setZuletztErstellt($lastCreated): self
     {
-        $this->dZuletztErstellt = $dZuletztErstellt;
+        $this->dZuletztErstellt = $lastCreated;
 
         return $this;
     }
@@ -890,9 +898,7 @@ class Exportformat
 
         $condition = 'AND (tartikel.dErscheinungsdatum IS NULL OR NOT (DATE(tartikel.dErscheinungsdatum) > CURDATE()))';
         $conf      = Shop::getSettings([\CONF_GLOBAL]);
-        if (isset($conf['global']['global_erscheinende_kaeuflich'])
-            && $conf['global']['global_erscheinende_kaeuflich'] === 'Y'
-        ) {
+        if (($conf['global']['global_erscheinende_kaeuflich'] ?? 'N') === 'Y') {
             $condition = "AND (
                 tartikel.dErscheinungsdatum IS NULL 
                 OR NOT (DATE(tartikel.dErscheinungsdatum) > CURDATE())
@@ -974,6 +980,14 @@ class Exportformat
     }
 
     /**
+     * @return string
+     */
+    private function getNewLine(): string
+    {
+        return ($this->config['exportformate_line_ending'] ?? 'LF') === 'LF' ? "\n" : "\r\n";
+    }
+
+    /**
      * @param resource $handle
      * @return int
      */
@@ -991,7 +1005,7 @@ class Exportformat
             $header = Text::convertUTF8($header);
         }
 
-        return \fwrite($handle, $header . "\n");
+        return \fwrite($handle, $header . $this->getNewLine());
     }
 
     /**
@@ -1035,9 +1049,9 @@ class Exportformat
         if (\filesize(\PFAD_ROOT . \PFAD_EXPORT . $this->cDateiname) >= ($this->nSplitgroesse * 1024 * 1024 - 102400)) {
             \sleep(2);
             $this->cleanupFiles($this->cDateiname, $splits[0]);
-            $handle    = \fopen(\PFAD_ROOT . \PFAD_EXPORT . $this->cDateiname, 'r');
+            $handle    = \fopen(\PFAD_ROOT . \PFAD_EXPORT . $this->cDateiname, 'rb');
             $row       = 1;
-            $newHandle = \fopen($this->getFileName($splits, $fileCounter), 'w');
+            $newHandle = \fopen($this->getFileName($splits, $fileCounter), 'wb');
             $filesize  = 0;
             while (($content = \fgets($handle)) !== false) {
                 if ($row > 1) {
@@ -1052,7 +1066,7 @@ class Exportformat
                         $this->writeFooter($newHandle);
                         \fclose($newHandle);
                         ++$fileCounter;
-                        $newHandle = \fopen($this->getFileName($splits, $fileCounter), 'w');
+                        $newHandle = \fopen($this->getFileName($splits, $fileCounter), 'wb');
                         $this->writeHeader($newHandle);
                         // Schreibe Content
                         \fwrite($newHandle, $content);
@@ -1275,7 +1289,7 @@ class Exportformat
         if ((int)$this->queue->tasksExecuted === 0 && \file_exists(\PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName)) {
             \unlink(\PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName);
         }
-        $tmpFile = \fopen(\PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName, 'a');
+        $tmpFile = \fopen(\PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName, 'ab');
         if ($max === null) {
             $maxObj = $this->db->executeQuery(
                 $this->getExportSQL(true),
@@ -1290,7 +1304,6 @@ class Exportformat
                 ? 'enabled'
                 : 'disabled') .
             ' - ' . $queueObject->tasksExecuted . '/' . $max . ' products exported');
-        // Kopfzeile schreiben
         if ((int)$this->queue->tasksExecuted === 0) {
             $this->writeHeader($tmpFile);
         }
@@ -1380,7 +1393,7 @@ class Exportformat
 
             $_out = $this->smarty->assign('Artikel', $product)->fetch('db:' . $this->getExportformat());
             if (!empty($_out)) {
-                $output .= $_out . "\n";
+                $output .= $_out . $this->getNewLine();
             }
 
             \executeHook(\HOOK_DO_EXPORT_OUTPUT_FETCHED);
@@ -1435,7 +1448,7 @@ class Exportformat
                     \header('Location: ' . $cURL);
                 }
             } else {
-                // There are no more articles to export
+                // There are no more products to export
                 $this->db->query(
                     'UPDATE texportformat 
                         SET dZuletztErstellt = NOW() 
@@ -1484,7 +1497,7 @@ class Exportformat
                 }
             }
         } else {
-            //finalize job when there are no more products to export
+            // finalize job when there are no more products to export
             if ($started === false) {
                 $this->log('Finalizing job...');
                 $this->db->update(
@@ -1507,7 +1520,6 @@ class Exportformat
                 ) {
                     \unlink(\PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName);
                 }
-                // Versucht (falls so eingestellt) die erstellte Exportdatei in mehrere Dateien zu splitten
                 $this->splitFile();
             }
             $this->log('Finished after ' . \round(\microtime(true) - $start, 4) .
@@ -1568,38 +1580,37 @@ class Exportformat
         if (!isset($post['kSprache']) || (int)$post['kSprache'] === 0) {
             $validation['kSprache'] = 1;
         } else {
-            $this->setSprache($post['kSprache']);
+            $this->setSprache((int)$post['kSprache']);
         }
         if (!isset($post['kWaehrung']) || (int)$post['kWaehrung'] === 0) {
             $validation['kWaehrung'] = 1;
         } else {
-            $this->setWaehrung($post['kWaehrung']);
+            $this->setWaehrung((int)$post['kWaehrung']);
         }
         if (!isset($post['kKundengruppe']) || (int)$post['kKundengruppe'] === 0) {
             $validation['kKundengruppe'] = 1;
         } else {
-            $this->setKundengruppe($post['kKundengruppe']);
+            $this->setKundengruppe((int)$post['kKundengruppe']);
         }
-        if (\count($validation) === 0) {
-            $this->setCaching((int)$post['nUseCache'])
-                ->setVarKombiOption((int)$post['nVarKombiOption'])
-                ->setSplitgroesse((int)$post['nSplitgroesse'])
-                ->setSpecial(0)
-                ->setKodierung($post['cKodierung'])
-                ->setPlugin((int)($post['kPlugin'] ?? 0))
-                ->setExportformat((int)($post['kExportformat'] ?? 0))
-                ->setKampagne((int)($post['kKampagne'] ?? 0));
-            if (isset($post['cFusszeile'])) {
-                $this->setFusszeile(\str_replace('<tab>', "\t", $post['cFusszeile']));
-            }
-            if (isset($post['cKopfzeile'])) {
-                $this->setKopfzeile(\str_replace('<tab>', "\t", $post['cKopfzeile']));
-            }
-
-            return true;
+        if (\count($validation) > 0) {
+            return $validation;
+        }
+        $this->setCaching((int)$post['nUseCache'])
+            ->setVarKombiOption((int)$post['nVarKombiOption'])
+            ->setSplitgroesse((int)$post['nSplitgroesse'])
+            ->setSpecial(0)
+            ->setKodierung($post['cKodierung'])
+            ->setPlugin((int)($post['kPlugin'] ?? 0))
+            ->setExportformat((int)($post['kExportformat'] ?? 0))
+            ->setKampagne((int)($post['kKampagne'] ?? 0));
+        if (isset($post['cFusszeile'])) {
+            $this->setFusszeile(\str_replace('<tab>', "\t", $post['cFusszeile']));
+        }
+        if (isset($post['cKopfzeile'])) {
+            $this->setKopfzeile(\str_replace('<tab>', "\t", $post['cKopfzeile']));
         }
 
-        return $validation;
+        return true;
     }
 
     /**

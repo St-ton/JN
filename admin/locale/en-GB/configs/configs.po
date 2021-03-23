@@ -1952,6 +1952,12 @@ msgstr "Escaping of ;"
 msgid "exportformate_semikolon_desc"
 msgstr "You can escape these characters if required."
 
+msgid "exportformate_line_ending_name"
+msgstr "Line ending"
+
+msgid "exportformate_line_ending_desc"
+msgstr ""
+
 msgid "kontakt_abfragen_anrede_name"
 msgstr "Prompt title"
 

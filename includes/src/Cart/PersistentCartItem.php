@@ -120,14 +120,20 @@ class PersistentCartItem
      */
     public function erstellePosEigenschaften(array $attrValues): self
     {
+        $langCode = Shop::getLanguageCode();
         foreach ($attrValues as $value) {
             if (isset($value->kEigenschaft)) {
+                if (isset($value->cEigenschaftWertName[$langCode], $value->cTyp)
+                    && ($value->cTyp === 'FREIFELD' || $value->cTyp === 'PFLICHT-FREIFELD')
+                ) {
+                    $attrFreeText = $value->cEigenschaftWertName[$langCode];
+                }
                 $attr = new PersistentCartItemProperty(
                     $value->kEigenschaft,
                     $value->kEigenschaftWert ?? 0,
-                    $value->cFreifeldWert ?? null,
-                    $value->cEigenschaftName ?? null,
-                    $value->cEigenschaftWertName ?? null,
+                    $attrFreeText ?? $value->cFreifeldWert ?? null,
+                    $value->cEigenschaftName[$langCode] ?? $value->cEigenschaftName ?? null,
+                    $value->cEigenschaftWertName[$langCode] ?? $value->cEigenschaftWertName ?? null,
                     $this->kWarenkorbPersPos
                 );
                 $attr->schreibeDB();

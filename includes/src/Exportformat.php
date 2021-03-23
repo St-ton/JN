@@ -1215,6 +1215,10 @@ class Exportformat
 
             return !$started;
         }
+        $protocol = ((isset($_SERVER['HTTPS']) && \mb_convert_case($_SERVER['HTTPS'], \MB_CASE_LOWER) === 'on')
+            || Request::checkSSL() === 2)
+            ? 'https://'
+            : 'http://';
         $this->setQueue($queueObject)->initSession()->initSmarty();
         if ($this->getPlugin() > 0 && \mb_strpos($this->getContent(), \PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
             $this->log('Starting plugin exportformat "' . $this->getName() .
@@ -1246,6 +1250,13 @@ class Exportformat
                 global $queue;
                 $queue = $queueObject;
             }
+            if ($max === null) {
+                $maxObj = $this->db->executeQuery(
+                    $this->getExportSQL(true),
+                    ReturnType::SINGLE_OBJECT
+                );
+                $max    = (int)$maxObj->nAnzahl;
+            }
             global $exportformat, $ExportEinstellungen;
             $exportformat                   = new stdClass();
             $exportformat->kKundengruppe    = $this->getKundengruppe();
@@ -1265,6 +1276,8 @@ class Exportformat
             $exportformat->nSplitgroesse    = $this->getSplitgroesse();
             $exportformat->dZuletztErstellt = $this->getZuletztErstellt();
             $exportformat->nUseCache        = $this->getCaching();
+            $exportformat->max              = $max;
+            $exportformat->async            = $isAsync;
             // needed by Google Shopping export format plugin
             $exportformat->tkampagne_cParameter = $this->campaignParameter;
             $exportformat->tkampagne_cWert      = $this->campaignValue;
@@ -1424,10 +1437,6 @@ class Exportformat
                     ],
                     ReturnType::DEFAULT
                 );
-                $protocol = ((isset($_SERVER['HTTPS']) && \mb_convert_case($_SERVER['HTTPS'], \MB_CASE_LOWER) === 'on')
-                    || Request::checkSSL() === 2)
-                    ? 'https://'
-                    : 'http://';
                 if ($isAsync) {
                     $callback                 = new stdClass();
                     $callback->kExportformat  = $this->getExportformat();
@@ -1487,11 +1496,11 @@ class Exportformat
                         echo \json_encode($callback);
                     } else {
                         \header(
-                            'Location: exportformate.php?action=exported&token=' .
-                            $_SESSION['jtl_token'] .
-                            '&kExportformat=' . $this->getExportformat() .
-                            '&max=' . $max .
-                            '&hasError=' . (int)($errorMessage !== '')
+                            'Location: exportformate.php?action=exported&token='
+                            . $_SESSION['jtl_token']
+                            . '&kExportformat=' . $this->getExportformat()
+                            . '&max=' . $max
+                            . '&hasError=' . (int)($errorMessage !== '')
                         );
                     }
                 }

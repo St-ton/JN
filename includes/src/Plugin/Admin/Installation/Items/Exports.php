@@ -55,6 +55,7 @@ class Exports extends AbstractItem
             $export->cFusszeile       = $data['Footer'] ?? null;
             $export->cKodierung       = $data['Encoding'] ?? 'ASCII';
             $export->nSpecial         = 0;
+            $export->nUseCache        = (int)(($data['UseCache'] ?? 'X') === 'Y');
             $export->nVarKombiOption  = $data['VarCombiOption'] ?? 1;
             $export->nSplitgroesse    = $data['SplitSize'] ?? 0;
             $export->dZuletztErstellt = '_DBNULL_';

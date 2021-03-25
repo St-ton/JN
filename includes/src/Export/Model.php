@@ -174,6 +174,22 @@ final class Model extends DataModel
     }
 
     /**
+     * @return string
+     * @throws Exception
+     */
+    public function getSanitizedFilepath(): string
+    {
+        $base = \PFAD_ROOT . \PFAD_EXPORT;
+        $abs  = $base . $this->getFilename();
+        $real = \realpath(\pathinfo($abs, \PATHINFO_DIRNAME)) . '/';
+        if (\strpos($real, $base) !== 0) {
+            throw new Exception('Directory traversal detected for export ' . $this->getId());
+        }
+
+        return $abs;
+    }
+
+    /**
      * @inheritdoc
      */
     public function getAttributes(): array

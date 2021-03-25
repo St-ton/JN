@@ -172,8 +172,9 @@ class FileWriter
 
     public function deleteOldExports(): void
     {
-        if (\file_exists(\PFAD_ROOT . \PFAD_EXPORT . $this->model->getFilename())) {
-            \unlink(\PFAD_ROOT . \PFAD_EXPORT . $this->model->getFilename());
+        $path = $this->model->getSanitizedFilepath();
+        if (\file_exists($path)) {
+            \unlink($path);
         }
     }
 
@@ -203,8 +204,9 @@ class FileWriter
      */
     public function splitFile(): self
     {
+        $path = $this->model->getSanitizedFilepath();
         $file = $this->model->getFilename();
-        if ((int)$this->model->getSplitSize() <= 0 || !\file_exists(\PFAD_ROOT . \PFAD_EXPORT . $file)) {
+        if ((int)$this->model->getSplitSize() <= 0 || !\file_exists($path)) {
             return $this;
         }
         $fileCounter = 1;
@@ -222,7 +224,7 @@ class FileWriter
         if (\filesize(\PFAD_ROOT . \PFAD_EXPORT . $file) >= ($this->model->getSplitSize() * 1024 * 1024 - 102400)) {
             \sleep(2);
             $this->cleanupFiles($file, $splits[0]);
-            $handle    = \fopen(\PFAD_ROOT . \PFAD_EXPORT . $file, 'rb');
+            $handle    = \fopen($path, 'rb');
             $row       = 1;
             $newHandle = \fopen($this->getFileName($splits, $fileCounter), 'wb');
             $filesize  = 0;
@@ -252,7 +254,7 @@ class FileWriter
             }
             \fclose($newHandle);
             \fclose($handle);
-            \unlink(\PFAD_ROOT . \PFAD_EXPORT . $file);
+            \unlink($path);
         }
 
         return $this;

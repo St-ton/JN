@@ -348,9 +348,13 @@ class Admin
             \header('Content-type: text/plain');
             \header('Content-Disposition: attachment; filename=' . $file);
             echo \file_get_contents($real);
-            //header('Location: ' . Shop::getURL() . '/' . PFAD_EXPORT . $file);
             exit;
         }
+        $this->alertService->addAlert(
+            Alert::TYPE_ERROR,
+            \sprintf(__('File %s not found.'), $file),
+            'errorCannotDownloadExport'
+        );
     }
 
     /**

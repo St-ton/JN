@@ -447,7 +447,7 @@ class FormatExporter
         $this->fileWriter->writeFooter();
         if (!$this->fileWriter->finish()) {
             $errorMessage = 'Konnte Export-Datei '
-                . \PFAD_ROOT . \PFAD_EXPORT . $model->getFilename()
+                . $model->getSanitizedFilepath()
                 . ' nicht erstellen. Fehlende Schreibrechte?';
             $cb->setError($errorMessage);
         }

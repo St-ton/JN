@@ -33,6 +33,10 @@ const sortable = new Draggable.Sortable($(`.${Classes.dropzone}`).get(), {
 	delay: dragDelay
 })
 
+if (window.innerWidth <= 768) {
+    sortable.destroy();
+}
+
 /* events */
 
 sortable.on('drag:start', (evt) => {

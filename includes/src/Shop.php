@@ -1147,7 +1147,10 @@ final class Shop
         $manufSeo    = [];
         $categorySeo = '';
         $customSeo   = [];
-        $seo         = Request::extractExternalParams($uri);
+        if (\mb_strpos($uri, '/') === 0) {
+            $uri = \mb_substr($uri, 1);
+        }
+        $seo = Request::extractExternalParams($uri);
         if ($seo) {
             foreach (self::$productFilter->getCustomFilters() as $customFilter) {
                 $seoParam = $customFilter->getUrlParamSEO();
@@ -1991,6 +1994,7 @@ final class Shop
         $uri = isset($baseURLdata['path'])
             ? \mb_substr($baseURLdata['path'], \mb_strlen($shopURLdata['path'] ?? '') + 1)
             : '';
+        $uri = '/' . $uri;
 
         if ($decoded) {
             $uri = \rawurldecode($uri);

@@ -2,7 +2,6 @@
 
 namespace JTL\Export;
 
-use DateTime;
 use Exception;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;

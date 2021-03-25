@@ -15,24 +15,54 @@ use JTL\Helpers\Text;
  */
 class Product extends Artikel
 {
+    /**
+     * @var string
+     */
     public $cBeschreibungHTML;
 
+    /**
+     * @var string
+     */
     public $cKurzBeschreibungHTML;
 
+    /**
+     * @var float
+     */
     public $fUst;
 
+    /**
+     * @var string
+     */
     public $Lieferbar;
 
+    /**
+     * @var int
+     */
     public $Lieferbar_01;
 
+    /**
+     * @var int
+     */
     public $kKundengruppe;
 
+    /**
+     * @var string
+     */
     public $campaignValue;
 
+    /**
+     * @var int
+     */
     public $kWaehrung;
 
+    /**
+     * @var float|int|string
+     */
     public $Versandkosten;
 
+    /**
+     * @var float
+     */
     public $currencyConversionFactor;
 
     /**

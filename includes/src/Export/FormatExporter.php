@@ -56,6 +56,16 @@ class FormatExporter
     private $logger;
 
     /**
+     * @var FileWriter
+     */
+    private $fileWriter;
+
+    /**
+     * @var float
+     */
+    private $startedAt;
+
+    /**
      * FormatExporter constructor.
      * @param DbInterface     $db
      * @param LoggerInterface $logger
@@ -148,7 +158,7 @@ class FormatExporter
     }
 
     /**
-     * @param bool  $countOnly
+     * @param bool $countOnly
      * @return string
      */
     private function getExportSQL(bool $countOnly = false): string
@@ -259,6 +269,17 @@ class FormatExporter
     }
 
     /**
+     * @return int
+     */
+    private function getTotalCount(): int
+    {
+        return (int)$this->db->executeQuery(
+            $this->getExportSQL(true),
+            ReturnType::SINGLE_OBJECT
+        )->nAnzahl;
+    }
+
+    /**
      * @param int        $exportID
      * @param QueueEntry $queueObject
      * @param bool       $isAsync
@@ -275,6 +296,7 @@ class FormatExporter
         bool $isCron = false,
         int $max = null
     ): bool {
+        $this->startedAt = \microtime(true);
         try {
             $model = Model::load(['id' => $exportID], $this->db, Model::ON_NOTEXISTS_FAIL);
         } catch (Exception $e) {
@@ -283,23 +305,14 @@ class FormatExporter
         /** @var $model Model */
         $this->model = $model;
         $this->setConfig($exportID);
-
-        if ($max === null) {
-            $maxObj = $this->db->executeQuery(
-                $this->getExportSQL(true),
-                ReturnType::SINGLE_OBJECT
-            );
-            $max    = (int)$maxObj->nAnzahl;
-        }
-        $pseudoSession = new Session();
-
+        $max     = $max ?? $this->getTotalCount();
         $started = false;
         $this->setQueue($queueObject);
+        $pseudoSession = new Session();
         $pseudoSession->initSession($model, $this->db);
         $this->initSmarty();
         if ($model->getPluginID() > 0 && \mb_strpos($model->getContent(), \PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
             $this->startPluginExport($model, $isCron, $isAsync, $queueObject, $max);
-
             if ($queueObject->jobQueueID > 0 && empty($queueObject->cronID)) {
                 $this->db->delete('texportqueue', 'kExportqueue', $queueObject->jobQueueID);
             }
@@ -308,33 +321,32 @@ class FormatExporter
 
             return !$started;
         }
-        $start        = \microtime(true);
         $cacheHits    = 0;
         $cacheMisses  = 0;
         $output       = '';
         $errorMessage = '';
 
-        $fileWriter = new FileWriter($this->smarty, $model, $this->config);
+        $this->fileWriter = new FileWriter($this->smarty, $model, $this->config);
 
         if ((int)$this->queue->tasksExecuted === 0) {
-            $fileWriter->deleteOldTempFile();
+            $this->fileWriter->deleteOldTempFile();
         }
-        $fileWriter->start();
+        $this->fileWriter->start();
 
-        $this->logger->notice('Starting exportformat "' . Text::convertUTF8($model->getName()) .
-            '" for language ' . $model->getLanguageID() . ' and customer group ' . $model->getCustomerGroupID() .
-            ' with caching ' . ((Shop::Container()->getCache()->isActive() && $model->getUseCache())
+        $this->logger->notice('Starting exportformat "' . Text::convertUTF8($model->getName())
+            . '" for language ' . $model->getLanguageID() . ' and customer group ' . $model->getCustomerGroupID()
+            . ' with caching ' . ((Shop::Container()->getCache()->isActive() && $model->getUseCache())
                 ? 'enabled'
-                : 'disabled') .
-            ' - ' . $queueObject->tasksExecuted . '/' . $max . ' products exported');
+                : 'disabled')
+            . ' - ' . $queueObject->tasksExecuted . '/' . $max . ' products exported');
         if ((int)$this->queue->tasksExecuted === 0) {
-            $fileWriter->writeHeader();
+            $this->fileWriter->writeHeader();
         }
-        $categoryFallback = (\mb_strpos($model->getContent(), '->oKategorie_arr') !== false);
-        $options          = Product::getExportOptions();
-        $helper           = Category::getInstance($model->getLanguageID(), $model->getCustomerGroupID());
-        $shopURL          = Shop::getURL();
-        $imageBaseURL     = Shop::getImageBaseURL();
+        $fallback     = (\mb_strpos($model->getContent(), '->oKategorie_arr') !== false);
+        $options      = Product::getExportOptions();
+        $helper       = Category::getInstance($model->getLanguageID(), $model->getCustomerGroupID());
+        $shopURL      = Shop::getURL();
+        $imageBaseURL = Shop::getImageBaseURL();
 
         foreach ($this->db->query($this->getExportSQL(), ReturnType::QUERYSINGLE) as $productData) {
             $product = new Product();
@@ -357,14 +369,13 @@ class FormatExporter
             $started = true;
             ++$this->queue->tasksExecuted;
             $this->queue->lastProductID = $product->kArtikel;
-
             if ($product->cacheHit === true) {
                 ++$cacheHits;
             } else {
                 ++$cacheMisses;
             }
             $product = $product->augmentProduct($this->config);
-            $product->addCategoryData($categoryFallback);
+            $product->addCategoryData($fallback);
             $product->Kategoriepfad = $product->Kategorie->cKategoriePfad ?? $helper->getPath($product->Kategorie);
             $product->cDeeplink     = $shopURL . '/' . $product->cURL;
             $product->Artikelbild   = $product->Bilder[0]->cPfadGross
@@ -383,103 +394,29 @@ class FormatExporter
             }
         }
         if (\mb_strlen($output) > 0) {
-            $fileWriter->writeContent($output);
+            $this->fileWriter->writeContent($output);
         }
 
-        if ($isCron === false) {
+        if ($isCron !== false) {
+            $this->finishCronRun($started, (int)$queueObject->foreignKeyID, $cacheHits, $cacheMisses);
+        } else {
+            $cb = new AsyncCallback();
+            $cb->setExportID($model->getId())
+                ->setTasksExecuted($this->queue->tasksExecuted)
+                ->setQueueID($this->queue->jobQueueID)
+                ->setProductCount($max)
+                ->setLastProductID($this->queue->lastProductID)
+                ->setIsFinished(false)
+                ->setIsFirst(((int)$this->queue->tasksExecuted === 0))
+                ->setCacheHits($cacheHits)
+                ->setCacheMisses($cacheMisses)
+                ->setError($errorMessage);
             if ($started === true) {
                 // One or more products have been exported
-                $fileWriter->close();
-                $this->db->queryPrepared(
-                    'UPDATE texportqueue SET
-                        nLimit_n       = nLimit_n + :nLimitM,
-                        nLastArticleID = :nLastArticleID
-                        WHERE kExportqueue = :kExportqueue',
-                    [
-                        'nLimitM'        => $this->queue->taskLimit,
-                        'nLastArticleID' => $this->queue->lastProductID,
-                        'kExportqueue'   => (int)$this->queue->jobQueueID,
-                    ],
-                    ReturnType::DEFAULT
-                );
-                if ($isAsync) {
-                    $cb = new AsyncCallback();
-                    $cb->setExportID($model->getId())
-                        ->setTasksExecuted($this->queue->tasksExecuted)
-                        ->setQueueID($this->queue->jobQueueID)
-                        ->setProductCount($max)
-                        ->setLastProductID($this->queue->lastProductID)
-                        ->setIsFinished(false)
-                        ->setIsFirst(((int)$this->queue->tasksExecuted === 0))
-                        ->setCacheHits($cacheHits)
-                        ->setCacheMisses($cacheMisses);
-                    $cb->output();
-                } else {
-                    $cURL = Shop::getAdminURL() . '/do_export.php'
-                        . '?e=' . (int)$this->queue->jobQueueID
-                        . '&back=admin&token=' . $_SESSION['jtl_token'] . '&max=' . $max;
-                    \header('Location: ' . $cURL);
-                }
+                $this->finishRun($cb, $isAsync);
             } else {
-                // There are no more products to export
-                $this->db->query(
-                    'UPDATE texportformat 
-                        SET dZuletztErstellt = NOW() 
-                        WHERE kExportformat = ' . $model->getId(),
-                    ReturnType::DEFAULT
-                );
-                $this->db->delete('texportqueue', 'kExportqueue', (int)$this->queue->foreignKeyID);
-
-                $fileWriter->writeFooter();
-                if (!$fileWriter->finish()) {
-                    $errorMessage = 'Konnte Export-Datei '
-                        . \PFAD_ROOT . \PFAD_EXPORT . $model->getFilename()
-                        . ' nicht erstellen. Fehlende Schreibrechte?';
-                }
-                // Versucht (falls so eingestellt) die erstellte Exportdatei in mehrere Dateien zu splitten
-                $fileWriter->splitFile();
-                if ($back === true) {
-                    if ($isAsync) {
-                        $cb = new AsyncCallback();
-                        $cb->setExportID($model->getId())
-                            ->setProductCount($max)
-                            ->setTasksExecuted($this->queue->tasksExecuted)
-                            ->setLastProductID($this->queue->lastProductID)
-                            ->setIsFinished(true)
-                            ->setIsFirst(false)
-                            ->setCacheMisses($cacheMisses)
-                            ->setCacheHits($cacheHits)
-                            ->setError($errorMessage)
-                            ->output();
-                    } else {
-                        \header(
-                            'Location: exportformate.php?action=exported&token='
-                            . $_SESSION['jtl_token']
-                            . '&kExportformat=' . $model->getId()
-                            . '&max=' . $max
-                            . '&hasError=' . (int)($errorMessage !== '')
-                        );
-                    }
-                }
+                $this->finish($cb, $isAsync, $back, $model);
             }
-        } else {
-            // finalize job when there are no more products to export
-            if ($started === false) {
-                $this->logger->notice('Finalizing job...');
-                $this->db->update(
-                    'texportformat',
-                    'kExportformat',
-                    (int)$queueObject->foreignKeyID,
-                    (object)['dZuletztErstellt' => 'NOW()']
-                );
-                $fileWriter->deleteOldExports();
-                $fileWriter->writeFooter();
-                $fileWriter->finish();
-                $fileWriter->splitFile();
-            }
-            $this->logger->notice('Finished after ' . \round(\microtime(true) - $start, 4)
-                . 's. Product cache hits: ' . $cacheHits
-                . ', misses: ' . $cacheMisses);
         }
         $pseudoSession->restoreSession();
 
@@ -488,6 +425,107 @@ class FormatExporter
         }
 
         return !$started;
+    }
+
+    /**
+     * @param AsyncCallback $cb
+     * @param bool          $isAsync
+     * @param bool          $back
+     * @param Model         $model
+     */
+    private function finish(AsyncCallback $cb, bool $isAsync, bool $back, Model $model): void
+    {
+        // There are no more products to export
+        $this->db->query(
+            'UPDATE texportformat 
+                SET dZuletztErstellt = NOW() 
+                WHERE kExportformat = ' . $model->getId(),
+            ReturnType::DEFAULT
+        );
+        $this->db->delete('texportqueue', 'kExportqueue', (int)$this->queue->foreignKeyID);
+
+        $this->fileWriter->writeFooter();
+        if (!$this->fileWriter->finish()) {
+            $errorMessage = 'Konnte Export-Datei '
+                . \PFAD_ROOT . \PFAD_EXPORT . $model->getFilename()
+                . ' nicht erstellen. Fehlende Schreibrechte?';
+            $cb->setError($errorMessage);
+        }
+        // Versucht (falls so eingestellt) die erstellte Exportdatei in mehrere Dateien zu splitten
+        $this->fileWriter->splitFile();
+        if ($back === true) {
+            if ($isAsync) {
+                $cb->setIsFinished(true)
+                    ->setIsFirst(false)
+                    ->output();
+            } else {
+                \header(
+                    'Location: ' . Shop::getAdminURL() . '/exportformate.php?action=exported&token='
+                    . $_SESSION['jtl_token']
+                    . '&kExportformat=' . $model->getId()
+                    . '&max=' . $cb->getProductCount()
+                    . '&hasError=' . (int)($cb->getError() !== '')
+                );
+            }
+        }
+    }
+
+    /**
+     * @param AsyncCallback $cb
+     * @param bool          $isAsync
+     */
+    private function finishRun(AsyncCallback $cb, bool $isAsync): void
+    {
+        $this->fileWriter->close();
+        $this->db->queryPrepared(
+            'UPDATE texportqueue SET
+                nLimit_n       = nLimit_n + :nLimitM,
+                nLastArticleID = :nLastArticleID
+                WHERE kExportqueue = :kExportqueue',
+            [
+                'nLimitM'        => $this->queue->taskLimit,
+                'nLastArticleID' => $this->queue->lastProductID,
+                'kExportqueue'   => (int)$this->queue->jobQueueID,
+            ],
+            ReturnType::DEFAULT
+        );
+        if ($isAsync) {
+            $cb->output();
+        } else {
+            \header(
+                'Location: ' . Shop::getAdminURL() . '/do_export.php'
+                . '?e=' . (int)$this->queue->jobQueueID
+                . '&back=admin&token=' . $_SESSION['jtl_token']
+                . '&max=' . $cb->getProductCount()
+            );
+        }
+    }
+
+    /**
+     * @param bool $started
+     * @param int  $exportID
+     * @param int  $cacheHits
+     * @param int  $cacheMisses
+     */
+    private function finishCronRun(bool $started, int $exportID, int $cacheHits, int $cacheMisses): void
+    {
+        // finalize job when there are no more products to export
+        if ($started === false) {
+            $this->logger->notice('Finalizing job...');
+            $this->db->update(
+                'texportformat',
+                'kExportformat',
+                $exportID,
+                (object)['dZuletztErstellt' => 'NOW()']
+            );
+            $this->fileWriter->deleteOldExports();
+            $this->fileWriter->writeFooter();
+            $this->fileWriter->finish();
+            $this->fileWriter->splitFile();
+        }
+        $this->logger->notice('Finished after ' . \round(\microtime(true) - $this->startedAt, 4)
+            . 's. Product cache hits: ' . $cacheHits
+            . ', misses: ' . $cacheMisses);
     }
 
     /**
@@ -500,9 +538,10 @@ class FormatExporter
      */
     private function startPluginExport(Model $model, bool $isCron, bool $isAsync, QueueEntry $queueObject, int $max)
     {
-        $this->logger->notice('Starting plugin exportformat "' . $model->getName() .
-            '" for language ' . $model->getLanguageID() . ' and customer group ' . $model->getCustomerGroupID() .
-            ' with caching ' . ((Shop::Container()->getCache()->isActive() && $model->getUseCache())
+        $this->logger->notice('Starting plugin exportformat "' . $model->getName()
+            . '" for language ' . $model->getLanguageID()
+            . ' and customer group ' . $model->getCustomerGroupID()
+            . ' with caching ' . ((Shop::Container()->getCache()->isActive() && $model->getUseCache())
                 ? 'enabled'
                 : 'disabled'));
         $loader = PluginHelper::getLoaderByPluginID($model->getPluginID(), $this->db);
@@ -567,14 +606,15 @@ class FormatExporter
      */
     private function quit(bool $hasError = false): void
     {
-        if (Request::getVar('back') === 'admin') {
-            $location  = 'Location: exportformate.php?action=exported&token=' . $_SESSION['jtl_token'];
-            $location .= '&kExportformat=' . (int)$this->queue->foreignKeyID;
-            if ($hasError) {
-                $location .= '&hasError=1';
-            }
-            \header($location);
-            exit;
+        if (Request::getVar('back') !== 'admin') {
+            return;
         }
+        $location  = 'Location: exportformate.php?action=exported&token=' . $_SESSION['jtl_token'];
+        $location .= '&kExportformat=' . (int)$this->queue->foreignKeyID;
+        if ($hasError) {
+            $location .= '&hasError=1';
+        }
+        \header($location);
+        exit;
     }
 }

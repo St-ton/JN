@@ -34,9 +34,9 @@ use function Functional\first;
  */
 class Exportformat
 {
-    public const SYNTAX_FAIL = 1;
+    public const SYNTAX_FAIL        = 1;
     public const SYNTAX_NOT_CHECKED = -1;
-    public const SYNTAX_OK = 0;
+    public const SYNTAX_OK          = 0;
 
     /**
      * @var int
@@ -731,11 +731,11 @@ class Exportformat
                 $_upd        = new stdClass();
                 $_upd->cWert = $conf['cWert'];
                 $ok          = $ok && ($this->db->update(
-                            'tboxensichtbar',
-                            ['kExportformat', 'cName'],
-                            [$this->getExportformat(), $conf['cName']],
-                            $_upd
-                        ) >= 0);
+                    'tboxensichtbar',
+                    ['kExportformat', 'cName'],
+                    [$this->getExportformat(), $conf['cName']],
+                    $_upd
+                ) >= 0);
             }
         }
 
@@ -802,8 +802,7 @@ class Exportformat
         bool $back = false,
         bool $isCron = false,
         int $max = null
-    ): bool
-    {
+    ): bool {
         return false;
     }
 

@@ -189,9 +189,9 @@ class FileWriter
      * @param int   $fileCounter
      * @return string
      */
-    private function getFileName($splits, $fileCounter): string
+    private function getFileName(array $splits, int $fileCounter): string
     {
-        $fn = (\is_array($splits) && \count($splits) > 1)
+        $fn = \count($splits) > 1
             ? $splits[0] . $fileCounter . $splits[1]
             : $splits[0] . $fileCounter;
 
@@ -211,11 +211,11 @@ class FileWriter
         $splits      = [];
         $fileTypeIdx = \mb_strrpos($file, '.');
         // Dateiname splitten nach Name + Typ
-        if ($fileTypeIdx === false) {
-            $splits[0] = $file;
-        } else {
+        if ($fileTypeIdx !== false) {
             $splits[0] = \mb_substr($file, 0, $fileTypeIdx);
             $splits[1] = \mb_substr($file, $fileTypeIdx);
+        } else {
+            $splits[0] = $file;
         }
         // Ist die angelegte Datei größer als die Einstellung im Exportformat?
         \clearstatcache();

@@ -1,6 +1,7 @@
 <?php
 
 use JTL\Cron\QueueEntry;
+use JTL\Export\FormatExporter;
 use JTL\Exportformat;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -19,10 +20,10 @@ $queue = $db->select('texportqueue', 'kExportqueue', Request::getInt('e'));
 if (!isset($queue->kExportformat) || !$queue->kExportformat || !$queue->nLimit_m) {
     die('1');
 }
-$ef = new Exportformat((int)$queue->kExportformat, $db);
-if (!$ef->isOK()) {
-    die('2');
-}
+$ef = new FormatExporter($db, Shop::Container()->getLogService());
+//if (!$ef->isOK()) {
+//    die('2');
+//}
 $queue->jobQueueID    = (int)$queue->kExportqueue;
 $queue->cronID        = 0;
 $queue->foreignKeyID  = 0;
@@ -35,6 +36,7 @@ $queue->foreignKey    = 'kExportformat';
 $queue->foreignKeyID  = (int)$queue->kExportformat;
 
 $ef->startExport(
+    (int)$queue->kExportformat,
     new QueueEntry($queue),
     isset($_GET['ajax']),
     Request::getVar('back') === 'admin',

@@ -277,7 +277,7 @@ class Request
      * @param array|string|null $post
      * @return mixed
      */
-    public static function http_get_contents($url, int $timeout = 5, $post = null)
+    public static function http_get_contents(string $url, int $timeout = 5, $post = null)
     {
         return self::make_http_request($url, $timeout, $post);
     }

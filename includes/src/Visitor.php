@@ -23,6 +23,9 @@ class Visitor
      */
     public static function generateData(): void
     {
+        if (\TRACK_VISITORS === false) {
+            return;
+        }
         $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
         $botID     = self::isSpider($userAgent);
         if ($botID > 0) {
@@ -309,7 +312,7 @@ class Visitor
      * @former werteRefererAus()
      * @since  5.0.0
      */
-    public static function analyzeReferer(int $visitorID, $referer): void
+    public static function analyzeReferer(int $visitorID, string $referer): void
     {
         $ref             = $_SERVER['HTTP_REFERER'] ?? '';
         $term            = new stdClass();
@@ -446,34 +449,34 @@ class Visitor
         if ($userAgent === '') {
             return $browser;
         }
-        if (\preg_match('/MSIE/i', $userAgent) && !\preg_match('/Opera/i', $userAgent)) {
+        if (\stripos($userAgent, 'MSIE') && \stripos($userAgent, 'Opera') === false) {
             $browser->nType    = \BROWSER_MSIE;
             $browser->cName    = 'Internet Explorer';
             $browser->cBrowser = 'msie';
-        } elseif (\preg_match('/Firefox/i', $userAgent)) {
+        } elseif (\stripos($userAgent, 'Firefox') !== false) {
             $browser->nType    = \BROWSER_FIREFOX;
             $browser->cName    = 'Mozilla Firefox';
             $browser->cBrowser = 'firefox';
-        } elseif (\preg_match('/Chrome/i', $userAgent)) {
+        } elseif (\stripos($userAgent, 'Chrome') !== false) {
             $browser->nType    = \BROWSER_CHROME;
             $browser->cName    = 'Google Chrome';
             $browser->cBrowser = 'chrome';
-        } elseif (\preg_match('/Safari/i', $userAgent)) {
+        } elseif (\stripos($userAgent, 'Safari') !== false) {
             $browser->nType = \BROWSER_SAFARI;
-            if (\preg_match('/iPhone/i', $userAgent)) {
+            if (\stripos($userAgent, 'iPhone') !== false) {
                 $browser->cName    = 'Apple iPhone';
                 $browser->cBrowser = 'iphone';
-            } elseif (\preg_match('/iPad/i', $userAgent)) {
+            } elseif (\stripos($userAgent, 'iPad') !== false) {
                 $browser->cName    = 'Apple iPad';
                 $browser->cBrowser = 'ipad';
-            } elseif (\preg_match('/iPod/i', $userAgent)) {
+            } elseif (\stripos($userAgent, 'iPod') !== false) {
                 $browser->cName    = 'Apple iPod';
                 $browser->cBrowser = 'ipod';
             } else {
                 $browser->cName    = 'Apple Safari';
                 $browser->cBrowser = 'safari';
             }
-        } elseif (\preg_match('/Opera/i', $userAgent)) {
+        } elseif (\stripos($userAgent, 'Opera') !== false) {
             $browser->nType = \BROWSER_OPERA;
             if (\preg_match('/Opera Mini/i', $userAgent)) {
                 $browser->cName    = 'Opera Mini';
@@ -503,7 +506,7 @@ class Visitor
         $browser->cVersion  = '0';
         $browser->cAgent    = $userAgent;
         $browser->bMobile   = self::isMobile($browser->cAgent);
-        if (\preg_match('/linux/i', $userAgent)) {
+        if (\stripos($userAgent, "linux") !== false) {
             $browser->cPlatform = 'linux';
         } elseif (\preg_match('/macintosh|mac os x/i', $userAgent)) {
             $browser->cPlatform = 'mac';

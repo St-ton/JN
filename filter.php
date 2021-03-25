@@ -131,9 +131,9 @@ if ($oSuchergebnisse->getProducts()->count() === 0) {
     if ($NaviFilter->hasCategory()) {
         $categoryContent                  = new stdClass();
         $categoryContent->Unterkategorien = new KategorieListe();
-        $h                                = Category::getInstance();
-        $children                         = $h->getCategoryById($NaviFilter->getCategory()->getValue());
-        $tb                               = $conf['artikeluebersicht']['topbest_anzeigen'];
+
+        $children = Category::getInstance()->getCategoryById($NaviFilter->getCategory()->getValue());
+        $tb       = $conf['artikeluebersicht']['topbest_anzeigen'];
         if ($children !== null && $children->hasChildren()) {
             $categoryContent->Unterkategorien->elemente = $children->getChildren();
         }

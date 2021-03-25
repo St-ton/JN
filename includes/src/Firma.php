@@ -127,18 +127,25 @@ class Firma
      */
     public function loadFromDB(): self
     {
-        $countryHelper = Shop::Container()->getCountryService();
-        $obj           = Shop::Container()->getDB()->query('SELECT * FROM tfirma LIMIT 1', ReturnType::SINGLE_OBJECT);
-        if ($obj !== false) {
-            foreach (\get_object_vars($obj) as $k => $v) {
+        $cache = Shop::Container()->getCache();
+        if (($company = $cache->get('jtl_company')) !== false) {
+            foreach (\get_object_vars($company) as $k => $v) {
                 $this->$k = $v;
             }
+        } else {
+            $countryHelper = Shop::Container()->getCountryService();
+            $obj           = Shop::Container()->getDB()->query('SELECT * FROM tfirma LIMIT 1', ReturnType::SINGLE_OBJECT);
+            if ($obj !== false) {
+                foreach (\get_object_vars($obj) as $k => $v) {
+                    $this->$k = $v;
+                }
+            }
+            $iso           = $this->cLand !== null ? $countryHelper->getIsoByCountryName($this->cLand) : null;
+            $this->country = $iso !== null
+                ? $countryHelper->getCountry($iso)
+                : null;
+            $cache->set('jtl_company', $this, [\CACHING_GROUP_CORE]);
         }
-        $iso           = $this->cLand !== null ? $countryHelper->getIsoByCountryName($this->cLand) : null;
-        $this->country = $iso !== null
-            ? $countryHelper->getCountry($iso)
-            : null;
-
         \executeHook(\HOOK_FIRMA_CLASS_LOADFROMDB, ['instance' => $this]);
 
         return $this;

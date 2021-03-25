@@ -238,7 +238,8 @@ class Location
         ) {
             $checks['cOrt'] = 1;
         }
-        $langID = (int)($params['kSprache'] ?? 0);
+        $langID  = (int)($params['kSprache'] ?? 0);
+        $groupID = (int)($params['kAuswahlAssistentGruppe'] ?? 0);
         // Ort Kategorie
         if (isset($params['cKategorie']) && \mb_strlen($params['cKategorie']) > 0) {
             $categories = \explode(';', $params['cKategorie']);
@@ -252,11 +253,7 @@ class Location
                 $key = (int)$key;
                 if ($key > 0 && \mb_strlen($key) > 0) {
                     if ($update) {
-                        if ($this->isCategoryTaken(
-                            $key,
-                            $langID,
-                            (int)$params['kAuswahlAssistentGruppe']
-                        )) {
+                        if ($this->isCategoryTaken($key, $langID, $groupID)) {
                             $checks['cKategorie'] = 3;
                         }
                     } elseif ($this->isCategoryTaken($key, $langID)) {
@@ -273,11 +270,7 @@ class Location
                     continue;
                 }
                 if ($update) {
-                    if ($this->isLinkTaken(
-                        $key,
-                        $langID,
-                        (int)$params['kAuswahlAssistentGruppe']
-                    )) {
+                    if ($this->isLinkTaken($key, $langID, $groupID)) {
                         $checks['kLink_arr'] = 1;
                     }
                 } elseif ($this->isLinkTaken($key, $langID)) {
@@ -288,10 +281,7 @@ class Location
         // Ort Startseite
         if (isset($params['nStartseite']) && (int)$params['nStartseite'] === 1) {
             if ($update) {
-                if ($this->isStartPageTaken(
-                    $langID,
-                    (int)$params['kAuswahlAssistentGruppe']
-                )) {
+                if ($this->isStartPageTaken($langID, $groupID)) {
                     $checks['nStartseite'] = 1;
                 }
             } elseif ($this->isStartPageTaken($langID)) {

@@ -4,12 +4,13 @@ namespace JTL\OPC;
 
 use Exception;
 use InvalidArgumentException;
+use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\OPC\Portlets\MissingPortlet\MissingPortlet;
 use JTL\Plugin\PluginLoader;
-use JTL\Shop;
 use JTL\Update\Updater;
+use stdClass;
 use function Functional\map;
 
 /**
@@ -24,13 +25,28 @@ class DB
     protected $shopDB;
 
     /**
-     * DB constructor.
-     *
-     * @param DbInterface $shopDB
+     * @var JTLCacheInterface
      */
-    public function __construct(DbInterface $shopDB)
+    protected $cache;
+
+    /**
+     * @var array
+     */
+    protected $mapping;
+
+    /**
+     * DB constructor.
+     * @param DbInterface       $shopDB
+     * @param JTLCacheInterface $cache
+     */
+    public function __construct(DbInterface $shopDB, JTLCacheInterface $cache)
     {
-        $this->shopDB = $shopDB;
+        $this->shopDB  = $shopDB;
+        $this->cache   = $cache;
+        $this->mapping = $this->cache->get('jtl_opc_mapping');
+        if ($this->mapping === false) {
+            $this->mapping = [];
+        }
     }
 
     /**
@@ -107,13 +123,11 @@ class DB
 
         if ($this->blueprintExists($blueprint)) {
             $res = $this->shopDB->update('topcblueprint', 'kBlueprint', $blueprint->getId(), $blueprintDB);
-
             if ($res === -1) {
                 throw new Exception('The OPC blueprint could not be updated in the DB.');
             }
         } else {
             $key = $this->shopDB->insert('topcblueprint', $blueprintDB);
-
             if ($key === 0) {
                 throw new Exception('The OPC blueprint could not be inserted into the DB.');
             }
@@ -201,6 +215,27 @@ class DB
 
     /**
      * @param string $class
+     * @return stdClass|null
+     */
+    protected function getPortletByClassName(string $class): ?stdClass
+    {
+        if (isset($this->mapping[$class])) {
+            return $this->mapping[$class];
+        }
+        $mapping = $this->shopDB->select('topcportlet', 'cClass', $class);
+        if ($mapping !== null) {
+            $mapping->kPortlet = (int)$mapping->kPortlet;
+            $mapping->kPlugin  = (int)$mapping->kPlugin;
+            $mapping->bActive  = (int)$mapping->bActive;
+        }
+        $this->mapping[$class] = $mapping;
+        $this->cache->set('jtl_opc_mapping', $this->mapping, [\CACHING_GROUP_OPC]);
+
+        return $mapping;
+    }
+
+    /**
+     * @param string $class
      * @return Portlet
      * @throws Exception
      * @throws InvalidArgumentException
@@ -212,17 +247,17 @@ class DB
         }
         $plugin     = null;
         $pluginID   = 0;
-        $portletDB  = $this->shopDB->select('topcportlet', 'cClass', $class);
-        $installed  = \is_object($portletDB);
-        $active     = $installed && (int)$portletDB->bActive === 1;
-        $fromPlugin = $installed && (int)$portletDB->kPlugin > 0;
+        $data       = $this->getPortletByClassName($class);
+        $installed  = $data !== null;
+        $active     = $installed && $data->bActive === 1;
+        $fromPlugin = $installed && $data->kPlugin > 0;
         $fullClass  = '\JTL\OPC\Portlets\\' . $class . '\\' . $class;
         if ($fromPlugin) {
-            $pluginID = (int)$portletDB->kPlugin;
+            $pluginID = $data->kPlugin;
             if (\SAFE_MODE === true) {
                 $active = 0;
             } else {
-                $loader    = new PluginLoader($this->shopDB, Shop::Container()->getCache());
+                $loader    = new PluginLoader($this->shopDB, $this->cache);
                 $plugin    = $loader->init($pluginID);
                 $fullClass = '\Plugin\\' . $plugin->getPluginID() . '\Portlets\\' . $class . '\\' . $class;
             }
@@ -230,13 +265,13 @@ class DB
 
         if ($installed && $active) {
             $portlet = \class_exists($fullClass)
-                ? new $fullClass($class, (int)$portletDB->kPortlet, $pluginID)
-                : new Portlet($class, (int)$portletDB->kPortlet, $pluginID);
+                ? new $fullClass($class, $data->kPortlet, $pluginID)
+                : new Portlet($class, $data->kPortlet, $pluginID);
 
             return $portlet
-                ->setTitle($portletDB->cTitle)
-                ->setGroup($portletDB->cGroup)
-                ->setActive((int)$portletDB->bActive === 1);
+                ->setTitle($data->cTitle)
+                ->setGroup($data->cGroup)
+                ->setActive($data->bActive === 1);
         }
         $portlet = (new MissingPortlet('MissingPortlet', 0, 0))
             ->setMissingClass($class)
@@ -257,7 +292,12 @@ class DB
      */
     public function isOPCInstalled(): bool
     {
-        return $this->shopDB->select('tmigration', 'kMigration', 20180507101900) !== null;
+        if (($installed = $this->cache->get('opc_installed')) === false) {
+            $installed = $this->shopDB->select('tmigration', 'kMigration', 20180507101900) !== null;
+            $this->cache->set('opc_installed', $installed);
+        }
+
+        return $installed;
     }
 
     /**
@@ -266,7 +306,6 @@ class DB
      */
     public function shopHasUpdates(): bool
     {
-        $updater = new Updater($this->shopDB);
-        return $updater->hasPendingUpdates();
+        return (new Updater($this->shopDB))->hasPendingUpdates();
     }
 }

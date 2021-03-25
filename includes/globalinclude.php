@@ -53,7 +53,9 @@ define('JTL_MINOR_VERSION', (int)Version::parse(APPLICATION_VERSION)->getPatch()
 
 Profiler::start();
 
-$shop = Shop::getInstance();
+$db     = null;
+$config = null;
+$shop   = Shop::getInstance();
 
 if (!function_exists('Shop')) {
     /**

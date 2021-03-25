@@ -220,9 +220,9 @@ function setzeSmartyRechnungsadresse($nUnreg, $nCheckout = 0): void
 }
 
 /**
- * @param array $missingData
- * @param int   $nUnreg
- * @param array $post
+ * @param array      $missingData
+ * @param int        $nUnreg
+ * @param array|null $post
  * @deprecated since 5.0.0
  */
 function setzeFehlerSmartyRechnungsadresse($missingData, $nUnreg = 0, $post = null): void

@@ -13,9 +13,10 @@ use JTL\Plugin\LegacyPluginLoader;
 use JTL\Plugin\PluginInterface;
 use JTL\Plugin\PluginLoader;
 use JTL\Shop;
-use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
+use League\Flysystem\Local\LocalFilesystemAdapter as Local;
 use League\Flysystem\MountManager;
+use Throwable;
 
 /**
  * Class Uninstaller
@@ -93,12 +94,17 @@ final class Uninstaller
             $this->doSQLDelete($pluginID, $update, $newID, $deleteData);
             if ($deleteFiles === true) {
                 $dir     = $plugin->getPaths()->getBaseDir();
-                $manager = new MountManager(['root' => new Filesystem(new Local(\PFAD_ROOT))]);
-                $manager->mountFilesystem('plgn', Shop::Container()->get(\JTL\Filesystem\Filesystem::class));
+                $manager = new MountManager([
+                    'root' => new Filesystem(new Local(\PFAD_ROOT)),
+                    'plgn' => Shop::Container()->get(\JTL\Filesystem\Filesystem::class)
+                ]);
                 $dirName = (int)$data->bExtension === 1
                     ? (\PLUGIN_DIR . $dir)
                     : (\PFAD_PLUGIN . $dir);
-                @$manager->deleteDir('plgn://' . $dirName);
+                try {
+                    $manager->deleteDirectory('plgn://' . $dirName);
+                } catch (Throwable $e) {
+                }
             }
         }
         $this->cache->flushAll();

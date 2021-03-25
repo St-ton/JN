@@ -11,6 +11,8 @@ use JTL\phpQuery\phpQuery;
 use JTL\Plugin\Helper;
 use JTL\Shop;
 use JTL\Template\BootChecker;
+use Minify\CSSmin;
+use Minify\HTML;
 use RuntimeException;
 use SmartyBC;
 
@@ -229,14 +231,11 @@ class JTLSmarty extends SmartyBC
             $tplOutput = $doc->htmlOuter();
         }
 
-        return isset($this->config['template']['general']['minify_html'])
-        && $this->config['template']['general']['minify_html'] === 'Y'
+        return ($this->config['template']['general']['minify_html'] ?? 'N') === 'Y'
             ? $this->minifyHTML(
                 $tplOutput,
-                isset($this->config['template']['general']['minify_html_css'])
-                && $this->config['template']['general']['minify_html_css'] === 'Y',
-                isset($this->config['template']['general']['minify_html_js'])
-                && $this->config['template']['general']['minify_html_js'] === 'Y'
+                ($this->config['template']['general']['minify_html_css'] ?? 'N') === 'Y',
+                ($this->config['template']['general']['minify_html_js'] ?? 'N') === 'Y'
             )
             : $tplOutput;
     }
@@ -287,13 +286,13 @@ class JTLSmarty extends SmartyBC
     {
         $options = [];
         if ($minifyCSS === true) {
-            $options['cssMinifier'] = [\Minify_CSSmin::class, 'minify'];
+            $options['cssMinifier'] = [CSSmin::class, 'minify'];
         }
         if ($minifyJS === true) {
             $options['jsMinifier'] = [JSMin::class, 'minify'];
         }
         try {
-            $res = (new \Minify_HTML($html, $options))->process();
+            $res = (new HTML($html, $options))->process();
         } catch (UnterminatedStringException $e) {
             $res = $html;
         }

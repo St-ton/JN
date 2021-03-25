@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Configuration for "min", the default application built with the Minify
  * library
@@ -9,27 +9,26 @@
 /**
  * Enable the static serving feature
  */
-$min_enableStatic = true;
 
+use Minify\Minify;
+
+$min_enableStatic = true;
 
 /**
  * Allow use of the Minify URI Builder app. Only set this to true while you need it.
  */
 $min_enableBuilder = false;
 
-
 /**
  * Concatenate but do not minify the files. This can be used for testing.
  */
 $min_concatOnly = false;
-
 
 /**
  * If non-empty, the Builder will be protected with HTTP Digest auth.
  * The username is "admin".
  */
 $min_builderPassword = 'admin';
-
 
 /**
  * Set to true to log messages to FirePHP (Firefox Firebug addon) and PHP's error_log
@@ -51,7 +50,6 @@ $min_errorLogger = false;
  */
 $min_allowDebugFlag = false;
 
-
 /**
  * For best performance, specify your temp directory here. Otherwise Minify
  * will have to load extra code to guess. Some examples below:
@@ -60,7 +58,6 @@ $min_allowDebugFlag = false;
 //$min_cachePath = '/tmp';
 //$min_cachePath = preg_replace('/^\\d+;/', '', session_save_path());
 $min_cachePath = PFAD_ROOT . PFAD_COMPILEDIR;
-
 $min_factories = [];
 $min_envArgs   = null;
 
@@ -68,9 +65,11 @@ $min_envArgs   = null;
  * To use APC/Memcache/ZendPlatform for cache storage, require the class and
  * set $min_cachePath to an instance. Example below:
  */
-//$min_cachePath = new Minify_Cache_APC();
-
-
+//$redis = new Redis();
+//$redis->connect('localhost', 6379, REDIS_CONNECT_TIMEOUT);
+//$redis->select(1);
+//$min_cachePath = new \Minify\Cache\Redis($redis);
+//$min_cachePath = new \Minify\Cache\APC();
 /**
  * Leave an empty string to use PHP's $_SERVER['DOCUMENT_ROOT'].
  *
@@ -87,13 +86,11 @@ $min_documentRoot = '';
 //$min_documentRoot = substr(__FILE__, 0, -15);
 //$min_documentRoot = $_SERVER['SUBDOMAIN_DOCUMENT_ROOT'];
 
-
 /**
  * Cache file locking. Set to false if filesystem is NFS. On at least one
  * NFS system flock-ing attempts stalled PHP for 30 seconds!
  */
 $min_cacheFileLocking = true;
-
 
 /**
  * Combining multiple CSS files can place @import declarations after rules, which
@@ -104,7 +101,6 @@ $min_cacheFileLocking = true;
  * affect CSS values (which is why this option is disabled by default).
  */
 $min_serveOptions['bubbleCssImports'] = false;
-
 
 /**
  * Cache-Control: max-age value sent to browser (in seconds). After this period,
@@ -117,20 +113,6 @@ $min_serveOptions['bubbleCssImports'] = false;
  */
 $min_serveOptions['maxAge'] = 86400;
 
-
-/**
- * To use the CSS compressor that shipped with 2.x, uncomment the following line:
- */
-//$min_serveOptions['minifiers'][Minify::TYPE_CSS] = array('Minify_CSS', 'minify');
-
-
-/**
- * To use Google's Closure Compiler API to minify Javascript (falling back to JSMin
- * on failure), uncomment the following line:
- */
-//$min_serveOptions['minifiers']['application/x-javascript'] = array('Minify_JS_ClosureCompiler', 'minify');
-
-
 /**
  * If you'd like to restrict the "f" option to files within/below
  * particular directories below DOCUMENT_ROOT, set this here.
@@ -139,14 +121,13 @@ $min_serveOptions['maxAge'] = 86400;
  *
  * // = shortcut for DOCUMENT_ROOT
  */
-//$min_serveOptions['minApp']['allowDirs'] = array('//js', '//css');
+//$min_serveOptions['minApp']['allowDirs'] = ['//js', '//css'];
 
 /**
  * Set to true to disable the "f" GET parameter for specifying files.
  * Only the "g" parameter will be considered.
  */
 $min_serveOptions['minApp']['groupsOnly'] = true;
-
 
 /**
  * By default, Minify will not minify files with names containing .min or -min
@@ -156,7 +137,6 @@ $min_serveOptions['minApp']['groupsOnly'] = true;
  * own pattern that is matched against the filename.
  */
 //$min_serveOptions['minApp']['noMinPattern'] = '@[-\\.]min\\.(?:js|css)$@i';
-
 
 /**
  * If you minify CSS files stored in symlink-ed directories, the URI rewriting
@@ -171,7 +151,6 @@ $min_serveOptions['minApp']['groupsOnly'] = true;
  * </code>
  */
 $min_symlinks = [];
-
 
 /**
  * If you upload files from Windows to a non-Windows server, Windows may report
@@ -191,11 +170,10 @@ $min_symlinks = [];
  */
 $min_uploaderHoursBehind = 0;
 
-
 /**
  * Advanced: you can replace some of the PHP classes Minify uses to serve requests.
  * To do this, assign a callable to one of the elements of the $min_factories array.
- *
+ *6
  * You can see the default implementations (and what gets passed in) in index.php.
  */
 //$min_factories['minify'] = ... a callable accepting a Minify\App object
@@ -206,7 +184,8 @@ $min_uploaderHoursBehind = 0;
  * @param string $type
  * @return string
  */
-function removeSourceMaps($content, $type) {
+function removeSourceMaps(string $content, string $type): string
+{
     if ($type === Minify::TYPE_JS || $type === Minify::TYPE_CSS) {
         $regex = '~//[#@]\s(source(?:Mapping)?URL)=\s*(\S+)~';
 

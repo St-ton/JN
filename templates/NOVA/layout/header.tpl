@@ -195,8 +195,8 @@
             {/if}
             {* Languages *}
             {if !empty($smarty.session.Sprachen) && count($smarty.session.Sprachen) > 1}
-                {foreach item=oSprache from=$smarty.session.Sprachen}
-                    <link rel="alternate" hreflang="{$oSprache->cISO639}" href="{$oSprache->cURLFull}">
+                {foreach $smarty.session.Sprachen as $language}
+                    <link rel="alternate" hreflang="{$language->getIso639()}" href="{$language->getUrl()}">
                 {/foreach}
             {/if}
         {/block}
@@ -242,7 +242,7 @@
             <script defer src="{$ShopURL}/{$currentTemplateDir}js/custom.js?v={$nTemplateVersion}"></script>
         {/if}
 
-        {getUploaderLang iso=$smarty.session.currentLanguage->cISO639|default:'' assign='uploaderLang'}
+        {getUploaderLang iso=$smarty.session.currentLanguage->getIso639()|default:'' assign='uploaderLang'}
 
         <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fontawesome/webfonts/fa-solid-900.woff2" as="font" crossorigin/>
         <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fontawesome/webfonts/fa-regular-400.woff2" as="font" crossorigin/>

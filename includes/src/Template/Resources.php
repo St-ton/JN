@@ -90,7 +90,6 @@ class Resources
                 if (!isset($groups[$name])) {
                     $groups[$name] = [];
                 }
-                /** @var SimpleXMLElement $cssFile */
                 foreach ($css->File as $cssFile) {
                     $file     = (string)$cssFile->attributes()->Path;
                     $filePath = \PFAD_ROOT . \PFAD_TEMPLATES . $currentBaseDir . '/' . $file;

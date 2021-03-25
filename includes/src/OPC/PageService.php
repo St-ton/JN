@@ -85,11 +85,9 @@ class PageService
     public function registerAdminIOFunctions(AdminIO $io): void
     {
         $adminAccount = $io->getAccount();
-
         if ($adminAccount === null) {
             throw new Exception('Admin account was not set on AdminIO.');
         }
-
         $this->adminName = $adminAccount->account()->cLogin;
 
         foreach ($this->getPageIOFunctionNames() as $functionName) {
@@ -130,7 +128,7 @@ class PageService
      * @param string $id
      * @return Page
      */
-    public function createDraft($id): Page
+    public function createDraft(string $id): Page
     {
         return (new Page())->setId($id);
     }
@@ -183,27 +181,27 @@ class PageService
         $isEditMode    = $this->opc->isEditMode();
         $isPreviewMode = $this->opc->isPreviewMode();
         $editedPageKey = $this->opc->getEditedPageKey();
+        if ($this->curPage !== null) {
+            return $this->curPage;
+        }
+        if ($this->opc->isOPCInstalled() === false) {
+            $this->curPage = new Page();
+        } elseif ($isEditMode && $editedPageKey > 0) {
+            $this->curPage = $this->getDraft($editedPageKey);
+        } elseif ($isPreviewMode) {
+            $pageData      = $this->getPreviewPageData();
+            $this->curPage = $this->createPageFromData($pageData);
+        } else {
+            $curPageURL = $this->getCurPageUri();
+            $curPageID  = $this->createCurrentPageId();
 
-        if ($this->curPage === null) {
-            if ($this->opc->isOPCInstalled() === false) {
-                $this->curPage = new Page();
-            } elseif ($isEditMode && $editedPageKey > 0) {
-                $this->curPage = $this->getDraft($editedPageKey);
-            } elseif ($isPreviewMode) {
-                $pageData      = $this->getPreviewPageData();
-                $this->curPage = $this->createPageFromData($pageData);
+            if ($curPageID !== null) {
+                $this->curPage = $this->getPublicPage($curPageID) ?? new Page();
+                $this->curPage->setId($curPageID);
+                $this->curPage->setUrl($curPageURL);
             } else {
-                $curPageUrl = $this->getCurPageUri();
-                $curPageId  = $this->createCurrentPageId();
-
-                if ($curPageId !== null) {
-                    $this->curPage = $this->getPublicPage($curPageId) ?? new Page();
-                    $this->curPage->setId($curPageId);
-                    $this->curPage->setUrl($curPageUrl);
-                } else {
-                    $this->curPage = new Page();
-                    $this->curPage->setIsModifiable(false);
-                }
+                $this->curPage = new Page();
+                $this->curPage->setIsModifiable(false);
             }
         }
 
@@ -211,16 +209,15 @@ class PageService
     }
 
     /**
-     * @param int $langId
+     * @param int $langID
      * @return string
      */
-    public function getCurPageUri(int $langId = 0): string
+    public function getCurPageUri(int $langID = 0): string
     {
         $uri = $_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'];
-        if ($langId > 0) {
-            $languages = $_SESSION['Sprachen'];
-            foreach ($languages as $language) {
-                if ($language->id === $langId) {
+        if ($langID > 0) {
+            foreach ($_SESSION['Sprachen'] as $language) {
+                if ($language->id === $langID) {
                     $uri = $language->url;
                     break;
                 }
@@ -231,7 +228,6 @@ class PageService
         if (empty($shopURLdata['path'])) {
             $shopURLdata['path'] = '/';
         }
-
         if (!isset($baseURLdata['path'])) {
             return '/';
         }
@@ -248,24 +244,22 @@ class PageService
      * @return bool
      * @throws Exception
      */
-    public function isCurPageModifiable()
+    public function isCurPageModifiable(): bool
     {
         return $this->getCurPage()->isModifiable();
     }
 
     /**
-     * @param int $langId
+     * @param int $langID
      * @return string
      */
-    public function createCurrentPageId(int $langId = 0): ?string
+    public function createCurrentPageId(int $langID = 0): ?string
     {
-        if ($langId === 0) {
-            $langId = Shop::getLanguageID();
+        if ($langID === 0) {
+            $langID = Shop::getLanguageID();
         }
-
         $params    = Shop::getParameters();
-        $pageIdObj = (object)['lang' => $langId];
-
+        $pageIdObj = (object)['lang' => $langID];
         if ($params['kKategorie'] > 0) {
             $pageIdObj->type = 'category';
             $pageIdObj->id   = $params['kKategorie'];
@@ -276,12 +270,9 @@ class PageService
             $pageIdObj->type = 'product';
             $pageIdObj->id   = $params['kArtikel'];
         } elseif ($params['kLink'] > 0) {
-            if ($params['nLinkart'] === \LINKTYP_BESTELLVORGANG
-                || $params['nLinkart'] === \LINKTYP_BESTELLABSCHLUSS
-            ) {
+            if (\in_array($params['nLinkart'], [\LINKTYP_BESTELLVORGANG, \LINKTYP_BESTELLABSCHLUSS], true)) {
                 return null;
             }
-
             $pageIdObj->type = 'link';
             $pageIdObj->id   = $params['kLink'];
         } elseif ($params['kMerkmalWert'] > 0) {
@@ -303,15 +294,12 @@ class PageService
             $pageIdObj->type = 'other';
             $pageIdObj->id   = \md5(\serialize($params));
         }
-
         if (!empty($params['MerkmalFilter'])) {
             $pageIdObj->attribs = $params['MerkmalFilter'];
         }
-
         if (!empty($params['cPreisspannenFilter'])) {
             $pageIdObj->range = $params['cPreisspannenFilter'];
         }
-
         if (!empty($params['kHerstellerFilter'])) {
             $pageIdObj->manufacturerFilter = $params['kHerstellerFilter'];
         }
@@ -326,21 +314,21 @@ class PageService
      */
     public function getDrafts(string $id): array
     {
-        if ($this->opc->isOPCInstalled()) {
-            $drafts         = $this->pageDB->getDrafts($id);
-            $publicDraft    = $this->getPublicPage($id);
-            $publicDraftKey = $publicDraft === null ? 0 : $publicDraft->getKey();
-            \usort($drafts, static function ($a, $b) use ($publicDraftKey) {
-                /**
-                 * @var Page $a
-                 * @var Page $b
-                 */
-                return $a->getStatus($publicDraftKey) - $b->getStatus($publicDraftKey);
-            });
-            return $drafts;
+        if (!$this->opc->isOPCInstalled()) {
+            return [];
         }
+        $drafts         = $this->pageDB->getDrafts($id);
+        $publicDraft    = $this->getPublicPage($id);
+        $publicDraftKey = $publicDraft === null ? 0 : $publicDraft->getKey();
+        \usort($drafts, static function ($a, $b) use ($publicDraftKey) {
+            /**
+             * @var Page $a
+             * @var Page $b
+             */
+            return $a->getStatus($publicDraftKey) - $b->getStatus($publicDraftKey);
+        });
 
-        return [];
+        return $drafts;
     }
 
     /**
@@ -364,13 +352,13 @@ class PageService
     }
 
     /**
-     * @param int $revId
+     * @param int $revID
      * @return string[]
      * @throws Exception
      */
-    public function getRevisionPreview(int $revId): array
+    public function getRevisionPreview(int $revID): array
     {
-        return $this->getRevision($revId)->getAreaList()->getPreviewHtml();
+        return $this->getRevision($revID)->getAreaList()->getPreviewHtml();
     }
 
     /**
@@ -379,8 +367,7 @@ class PageService
      */
     public function saveDraft(array $data): void
     {
-        $draft = $this->getDraft($data['key'])->deserialize($data);
-        $this->pageDB->saveDraft($draft);
+        $this->pageDB->saveDraft($this->getDraft($data['key'])->deserialize($data));
     }
 
     /**
@@ -389,8 +376,7 @@ class PageService
      */
     public function publicateDraft(array $data): void
     {
-        $page = (new Page())->deserialize($data);
-        $this->pageDB->saveDraftPublicationStatus($page);
+        $this->pageDB->saveDraftPublicationStatus((new Page())->deserialize($data));
     }
 
     /**
@@ -429,9 +415,7 @@ class PageService
             return 2;
         }
 
-        $draft = $this->getDraft($key);
-
-        return $this->locker->lock($this->adminName, $draft) ? 0 : 1;
+        return $this->locker->lock($this->adminName, $this->getDraft($key)) ? 0 : 1;
     }
 
     /**
@@ -440,8 +424,7 @@ class PageService
      */
     public function unlockDraft(int $key): void
     {
-        $page = (new Page())->setKey($key);
-        $this->locker->unlock($page);
+        $this->locker->unlock((new Page())->setKey($key));
     }
 
     /**
@@ -477,7 +460,7 @@ class PageService
      * @param string $draftName
      * @throws Exception
      */
-    public function changeDraftName(int $draftKey, string $draftName)
+    public function changeDraftName(int $draftKey, string $draftName): void
     {
         $this->pageDB->saveDraftName($draftKey, $draftName);
     }
@@ -493,8 +476,7 @@ class PageService
         $smarty   = Shop::Smarty();
         $response = new IOResponse();
 
-        $draftStatusHtml = $smarty
-            ->assign('page', $draft)
+        $draftStatusHtml = $smarty->assign('page', $draft)
             ->fetch(\PFAD_ROOT . \PFAD_ADMIN . 'opc/tpl/draftstatus.tpl');
 
         $response->assignDom('opcDraftStatus', 'innerHTML', $draftStatusHtml);

@@ -8,8 +8,9 @@ use JTL\DB\ReturnType;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
-use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
+use League\Flysystem\Local\LocalFilesystemAdapter;
+use Throwable;
 
 /**
  * Class MigrationHelper
@@ -252,10 +253,12 @@ class MigrationHelper
         );
         $relPath       = 'update/migrations';
         $migrationPath = $relPath . '/' . $filePath . '.php';
-        $fileSystem    = new Filesystem(new Local(\PFAD_ROOT));
+        $fileSystem    = new Filesystem(new LocalFilesystemAdapter(\PFAD_ROOT));
 
-        if (!$fileSystem->has($relPath)) {
-            throw new Exception('Migrations path doesn\'t exist!');
+        try {
+            $fileSystem->createDirectory($relPath);
+        } catch (Throwable $e) {
+            throw new Exception('Cannot create migrations path!');
         }
 
         $smartyCli  = Shop::Smarty(true, ContextType::CLI);
@@ -266,7 +269,7 @@ class MigrationHelper
             ->assign('timestamp', $timestamp)
             ->fetch(\PFAD_ROOT . 'includes/src/Console/Command/Migration/Template/migration.class.tpl');
 
-        $fileSystem->put($migrationPath, $content);
+        $fileSystem->write($migrationPath, $content);
 
         return $migrationPath;
     }

@@ -198,7 +198,8 @@ class Slider implements IExtensionPoint
             $int = $this->id;
         }
         $data  = $this->db->queryPrepared(
-            'SELECT *, tslider.kSlider AS id FROM tslider
+            'SELECT *, tslider.kSlider AS id 
+                FROM tslider
                 LEFT JOIN tslide
                     ON tslider.kSlider = tslide.kSlider
                 WHERE tslider.kSlider = :sliderID' . $activeSQL .

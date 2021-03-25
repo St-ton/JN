@@ -6,7 +6,7 @@ use JTL\Console\Command\Command;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
-use League\Flysystem\Adapter\Local;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 use League\Flysystem\Filesystem;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -64,6 +64,8 @@ class CreateCommand extends Command
         $modelName = $this->writeDataModel($targetDir, $tableName, $author);
 
         $io->writeln("<info>Created DataModel:</info> <comment>'{$modelName}'</comment>");
+
+        return 0;
     }
 
     /**
@@ -114,7 +116,7 @@ class CreateCommand extends Command
                 'isPrimaryKey' => $attrib['Key'] === 'PRI' ? 'true' : 'false',
             ];
         }
-        $fileSystem = new Filesystem(new Local($targetDir));
+        $fileSystem = new Filesystem(new LocalFilesystemAdapter($targetDir));
 
         $content = $smartyCli->assign('tableName', $table)
             ->assign('modelName', $modelName)
@@ -123,7 +125,7 @@ class CreateCommand extends Command
             ->assign('tableDesc', $tableDesc)
             ->fetch(__DIR__ . '/Template/model.class.tpl');
 
-        $fileSystem->put($modelPath, $content);
+        $fileSystem->write($modelPath, $content);
 
         return $modelPath;
     }

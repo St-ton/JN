@@ -9,6 +9,7 @@ use JTL\Checkout\Versandart;
 use JTL\Country\Country;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
+use JTL\Firma;
 use JTL\Language\LanguageHelper;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -1385,15 +1386,11 @@ class ShippingMethod
                 $iso         = Text::filterXSS($country);
                 $customerSQL = " AND cLaender LIKE '%" . $iso . "%'";
             } else {
-                $company     = Shop::Container()->getDB()->query(
-                    'SELECT cISO
-                        FROM tfirma
-                        JOIN tland
-                            ON tfirma.cLand = tland.cDeutsch
-                        LIMIT 0,1',
-                    ReturnType::SINGLE_OBJECT
-                );
-                $iso         = $company->cISO ?? '';
+                $iso     = '';
+                $company = new Firma();
+                if ($company->country !== null) {
+                    $iso = $company->country->getISO() ?? '';
+                }
                 $customerSQL = $iso !== ''
                     ? " AND cLaender LIKE '%" . $iso . "%'"
                     : '';

@@ -80,6 +80,10 @@ class Separator
                 $this->kSprache        = (int)$this->nEinheit;
                 $this->kTrennzeichen   = (int)$this->kTrennzeichen;
             }
+            $this->nEinheit        = (int)$this->nEinheit;
+            $this->nDezimalstellen = (int)$this->nDezimalstellen;
+            $this->kSprache        = (int)$this->nEinheit;
+            $this->kTrennzeichen   = (int)$this->kTrennzeichen;
         }
 
         return $this;

@@ -2430,7 +2430,7 @@ msgid "bewertung_sortierung_value(4)"
 msgstr "Hilfreichste zuerst"
 
 msgid "bewertung_sortierung_value(5)"
-msgstr "Am wenigsten hiflreiche zuerst"
+msgstr "Am wenigsten hilfreiche zuerst"
 
 msgid "direct_advertising_value(N)"
 msgstr "Nein"

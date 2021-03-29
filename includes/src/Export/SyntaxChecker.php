@@ -39,6 +39,11 @@ class SyntaxChecker
     private $id;
 
     /**
+     * @var int
+     */
+    public $errorCode = self::SYNTAX_NOT_CHECKED;
+
+    /**
      * SyntaxChecker constructor.
      * @param int         $id
      * @param DbInterface $db
@@ -258,9 +263,7 @@ class SyntaxChecker
                 $ef  = new self($id, Shop::Container()->getDB());
                 $ef->updateError(self::SYNTAX_FAIL);
                 $res->state = self::getHTMLState(self::SYNTAX_FAIL);
-
-                $io = AdminIO::getInstance();
-                $io->respondAndExit($res);
+                AdminIO::getInstance()->respondAndExit($res);
             }
         });
 
@@ -275,16 +278,10 @@ class SyntaxChecker
                 'message' => __($e->getMessage()),
             ];
         }
-        $res->state = self::getHTMLState((int)($ef->nFehlerhaft ?? self::SYNTAX_NOT_CHECKED));
+        $res->state = self::getHTMLState($ef->errorCode);
 
         return $res;
     }
-
-    /**
-     * @var int
-     * @todo
-     */
-    public $nFehlerhaft = 0;
 
     /**
      * @param int $error
@@ -300,7 +297,7 @@ class SyntaxChecker
             $this->id,
             (object)['nFehlerhaft' => $error]
         ) !== false) {
-            $this->nFehlerhaft = $error;
+            $this->errorCode = $error;
         }
     }
 }

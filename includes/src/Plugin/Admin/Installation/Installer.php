@@ -417,8 +417,8 @@ final class Installer
 
     /**
      * @param stdClass $plugin
-     * @param string    $pluginPath
-     * @param Version   $targetVersion
+     * @param string   $pluginPath
+     * @param Version  $targetVersion
      * @return array|Version
      * @throws \Exception
      */
@@ -435,8 +435,8 @@ final class Installer
     }
 
     /**
-     * @param string    $sqlFile
-     * @param int       $version
+     * @param string   $sqlFile
+     * @param int      $version
      * @param stdClass $plugin
      * @return int
      * @throws CircularReferenceException
@@ -516,6 +516,16 @@ final class Installer
     public function syncPluginUpdate(int $pluginID): int
     {
         $newPluginID = $this->plugin->getID();
+        $cronJobs    = $this->db->queryPrepared(
+            'SELECT * 
+                FROM tcron
+                LEFT JOIN texportformat
+                    ON texportformat.kExportformat = tcron.foreignKeyID
+                WHERE tcron.foreignKey = \'kExportformat\'
+                    AND texportformat.kPlugin = :pid',
+            ['pid' => $newPluginID],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
         $res         = $this->uninstaller->uninstall($newPluginID, true, $pluginID);
         if ($res !== InstallCode::OK) {
             $this->uninstaller->uninstall($pluginID);
@@ -535,6 +545,7 @@ final class Installer
         $this->db->update('texportformat', 'kPlugin', $pluginID, $upd);
         $this->db->update('topcportlet', 'kPlugin', $pluginID, $upd);
         $this->db->update('topcblueprint', 'kPlugin', $pluginID, $upd);
+        $this->db->update('tconsent', 'pluginID', $pluginID, (object)['pluginID' => $newPluginID]);
         $this->updateLangVars($newPluginID, $pluginID);
         $this->updateConfig($newPluginID, $pluginID);
 
@@ -548,8 +559,35 @@ final class Installer
         $this->db->update('tcheckboxfunktion', 'kPlugin', $pluginID, $upd);
         $this->db->update('tspezialseite', 'kPlugin', $pluginID, $upd);
         $this->updatePaymentMethods($newPluginID, $pluginID);
+        $this->updateCronJobs($cronJobs, $newPluginID);
 
         return InstallCode::OK;
+    }
+
+    /**
+     * @param array $cronJobs
+     * @param int   $pluginID
+     */
+    private function updateCronJobs(array $cronJobs, int $pluginID): void
+    {
+        foreach ($cronJobs as $cronJob) {
+            $match = $this->db->select('texportformat', ['kPlugin', 'cName'], [$pluginID, $cronJob->cName]);
+            if (isset($match->kExportformat)) {
+                $update               = new stdClass();
+                $update->foreignKeyID = $match->kExportformat;
+                $this->db->update('tcron', 'cronID', $cronJob->cronID, $update);
+            }
+        }
+        $this->db->query(
+            'DELETE tcron 
+                FROM tcron
+                    LEFT JOIN texportformat
+                    ON texportformat.kExportformat = tcron.foreignKeyID
+                WHERE tcron.jobType = \'exportformat\'
+                    AND tcron.foreignKey = \'kExportformat\'
+                    AND texportformat.kExportformat IS NULL',
+            ReturnType::DEFAULT
+        );
     }
 
     /**

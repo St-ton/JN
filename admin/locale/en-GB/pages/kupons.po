@@ -123,7 +123,7 @@ msgid "wholeWKDiscount"
 msgstr "Apply discount to total order value"
 
 msgid "wholeWKDiscountHint"
-msgstr "The setting \"Apply discount to total order value\" only works with discounts in percent. If the setting is set to \"Yes\", the discount is applied to the total order value.<br/>If this setting is set to \"No\", the discount will be detracted separately from each valid line item."
+msgstr "The setting \"Apply discount to total order value\" only works with discounts in percent. If the setting is set to \"Yes\", the discount is applied to the total order value.<br/>If this setting is set to \"No\", the discount will be detracted only from each valid line item, the validity of each item refers to the restrictions set further down."
 
 msgid "gross"
 msgstr "Gross"

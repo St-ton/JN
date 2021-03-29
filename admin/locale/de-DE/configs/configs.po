@@ -1502,6 +1502,12 @@ msgstr "Top bewertet ab welcher Durchschnittsbewertung"
 msgid "boxen_topbewertet_minsterne_desc"
 msgstr "Hier legen Sie fest, mit wie vielen Sternen ein Artikel mindestens im Durchschnitt bewertet sein muss, um als „Top bewertet“ zu gelten."
 
+msgid "box_hersteller_anzahl_anzeige_name"
+msgstr "Anzahl angezeigter Hersteller"
+
+msgid "box_hersteller_anzahl_anzeige_desc"
+msgstr "Hier legen Sie fest, wie viele Hersteller in der Box „Hersteller“ angezeigt werden. Geben Sie 0 an, um alle Hersteller anzuzeigen."
+
 msgid "bilder_kategorien_breite_name"
 msgstr "Kategoriebilder Breite"
 
@@ -2595,10 +2601,10 @@ msgid "news_anzahl_content_desc"
 msgstr "Hier legen Sie fest, wie viele Blogbeiträge auf der Startseite Ihres JTL-Shops angezeigt werden sollen."
 
 msgid "news_anzahl_box_name"
-msgstr "Anzahl Monate in der Box"
+msgstr "Anzahl Monate/Kategorien in der Box"
 
 msgid "news_anzahl_box_desc"
-msgstr "Hier legen Sie fest, wie viele Monate in der Box „Blog (Monatsübersicht)“ angezeigt werden sollen."
+msgstr "Hier legen Sie fest, wie viele Monate in der Box „Blog (Monatsübersicht)“ angezeigt werden sollen, bzw. wie viele Kategorien in der Box „Blog (Kategorieübersicht)“ angezeigt werden sollen."
 
 msgid "news_kommentare_freischalten_name"
 msgstr "Kommentare freischalten"

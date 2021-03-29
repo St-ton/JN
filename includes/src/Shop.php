@@ -37,6 +37,7 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\L10n\GetText;
+use JTL\Link\SpecialPageNotFoundException;
 use JTL\Language\LanguageHelper;
 use JTL\Mail\Hydrator\DefaultsHydrator;
 use JTL\Mail\Mailer;
@@ -1136,7 +1137,7 @@ final class Shop
     public static function seoCheck(): void
     {
         self::getLanguageFromServerName();
-        $uri                             = $_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'] ?? '';
+        $uri                             = self::getRequestUri();
         self::$uri                       = $uri;
         self::$bSEOMerkmalNotFound       = false;
         self::$bKatFilterNotFound        = false;
@@ -1146,14 +1147,10 @@ final class Shop
         $manufSeo    = [];
         $categorySeo = '';
         $customSeo   = [];
-        $shopURLdata = \parse_url(self::getURL());
-        $baseURLdata = \parse_url($uri);
-        $seo         = isset($baseURLdata['path'])
-            ? \mb_substr($baseURLdata['path'], isset($shopURLdata['path'])
-                ? (\mb_strlen($shopURLdata['path']) + 1)
-                : 1)
-            : false;
-        $seo         = Request::extractExternalParams($seo);
+        if (\mb_strpos($uri, '/') === 0) {
+            $uri = \mb_substr($uri, 1);
+        }
+        $seo = Request::extractExternalParams($uri);
         if ($seo) {
             foreach (self::$productFilter->getCustomFilters() as $customFilter) {
                 $seoParam = $customFilter->getUrlParamSEO();
@@ -1991,17 +1988,13 @@ final class Shop
      */
     public static function getRequestUri(bool $decoded = false): string
     {
-        $uri         = $_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'];
         $shopURLdata = \parse_url(self::getURL());
-        $baseURLdata = \parse_url($uri);
-
-        if (empty($shopURLdata['path'])) {
-            $shopURLdata['path'] = '/';
-        }
+        $baseURLdata = \parse_url(self::getRequestURL());
 
         $uri = isset($baseURLdata['path'])
-            ? \mb_substr($baseURLdata['path'], \mb_strlen($shopURLdata['path']))
+            ? \mb_substr($baseURLdata['path'], \mb_strlen($shopURLdata['path'] ?? '') + 1)
             : '';
+        $uri = '/' . $uri;
 
         if ($decoded) {
             $uri = \rawurldecode($uri);
@@ -2293,5 +2286,30 @@ final class Shop
         }
 
         return $faviconUrl;
+    }
+
+    /**
+     * @return string
+     * @throws Exceptions\CircularReferenceException
+     * @throws Exceptions\ServiceNotFoundException
+     */
+    public static function getHomeURL(): string
+    {
+        $homeURL = self::getURL() . '/';
+        try {
+            if (!LanguageHelper::isDefaultLanguageActive()) {
+                $homeURL = self::Container()->getLinkService()->getSpecialPage(\LINKTYP_STARTSEITE)->getURL();
+            }
+        } catch (SpecialPageNotFoundException $e) {
+            self::Container()->getLogService()->error($e->getMessage());
+        }
+
+        return $homeURL;
+    }
+
+    public static function getRequestURL(): string
+    {
+        return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http')
+            . '://' . $_SERVER['HTTP_HOST'] . ($_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'] ?? '');
     }
 }

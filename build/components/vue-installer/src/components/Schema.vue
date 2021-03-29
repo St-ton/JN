@@ -31,15 +31,6 @@ import qs from 'qs';
 export default {
     name: 'schema',
     data() {
-        let finished     = false,
-            error        = null,
-            msg          = null,
-            networkError = false,
-            postData     = qs.stringify({
-                admin: this.$store.state.adminUser,
-                wawi:  this.$store.state.wawiUser,
-                db:    this.$store.state.database
-            });
         const messages = {
             de: {
                 unreachable:    'URL {url} nicht erreichbar.',
@@ -60,11 +51,24 @@ export default {
         };
         this.$i18n.add('en', messages.en);
         this.$i18n.add('de', messages.de);
+        return {
+            finished:     false,
+            error:        null,
+            msg:          null,
+            networkError: false
+        };
+    },
+    mounted() {
+        const postData     = qs.stringify({
+            admin: this.$store.state.adminUser,
+            wawi:  this.$store.state.wawiUser,
+            db:    this.$store.state.database
+        });
         axios.post(this.$getApiUrl('doinstall'), postData)
             .then(response => {
                 if (!response.data.payload) {
                     this.networkError = response.data;
-                    return ;
+                    return;
                 }
                 this.networkError = false;
                 this.$store.commit('setSecretKey', response.data.payload.secretKey);
@@ -94,12 +98,6 @@ export default {
                     ? err.response
                     : this.$i18n.translate('unreachable', { url: this.$getApiUrl('doinstall') });
             });
-        return {
-            finished,
-            error,
-            msg,
-            networkError
-        };
     }
 };
 </script>

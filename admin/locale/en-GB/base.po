@@ -2077,3 +2077,6 @@ msgstr "Safe mode"
 
 msgid "Safe mode enabled."
 msgstr "Safe mode active. Functionality might be impaired."
+
+msgid "defaultDeleteConfirmTitle"
+msgstr "Confirm delete"

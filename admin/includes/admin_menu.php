@@ -158,6 +158,7 @@ $adminMenu = [
                     'permissions'           => 'SETTINGS_ARTICLEDETAILS_VIEW',
                     'excludeFromAccessView' => true,
                     'section'               => CONF_ARTIKELDETAILS,
+                    'group'                 => 'configgroup_5_product_question',
                 ],
                 __('Availability notifications') => (object)[
                     'link'                  => 'einstellungen.php?kSektion=' . CONF_ARTIKELDETAILS .
@@ -165,6 +166,7 @@ $adminMenu = [
                     'permissions'           => 'SETTINGS_ARTICLEDETAILS_VIEW',
                     'excludeFromAccessView' => true,
                     'section'               => CONF_ARTIKELDETAILS,
+                    'group'                 => 'configgroup_5_product_available',
                 ],
                 __('Item badges')                => (object)[
                     'link'        => 'suchspecialoverlay.php',
@@ -467,7 +469,13 @@ foreach ($adminMenu as $menuName => $menu) {
         }
         foreach ($subMenu as $itemName => $item) {
             if (isset($item->section)) {
-                $sectionMenuMapping[$item->section] = (object)[
+                if (!isset($sectionMenuMapping[$item->section])) {
+                    $sectionMenuMapping[$item->section] = [];
+                }
+
+                $groupName = $item->group ?? 'all';
+
+                $sectionMenuMapping[$item->section][$groupName] = (object)[
                     'path'           => $menuName . ' -&gt; ' . $subMenuName . ' -&gt; ' . $itemName,
                     'url'            => $item->link,
                     'specialSetting' => $item->specialSetting ?? false,

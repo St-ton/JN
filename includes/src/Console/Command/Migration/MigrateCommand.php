@@ -8,6 +8,7 @@ use JTL\Shop;
 use JTL\Update\IMigration;
 use JTL\Update\MigrationManager;
 use JTL\Update\Updater;
+use JTLShop\SemVer\Version;
 use PDOException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -39,7 +40,7 @@ class MigrateCommand extends Command
         $migrations         = $manager->getMigrations();
         $executedMigrations = $manager->getExecutedMigrations();
         $identifier         = \max(\array_merge($executedMigrations, \array_keys($migrations)));
-
+        $migration          = null;
         if (!$updater->hasMinUpdateVersion()) {
             Shop::Container()->getGetText()->setLanguage('en-GB')->loadAdminLocale('pages/dbupdater');
             $io->writeln('<error>' . $updater->getMinUpdateVersionError() . '</error>');
@@ -63,6 +64,9 @@ class MigrateCommand extends Command
                         . $migration->getName() . ' '
                         . $migration->getDescription());
                 }
+            }
+            if (\count($manager->getPendingMigrations()) === 0) {
+                $updater->setVersion(Version::parse(\APPLICATION_VERSION));
             }
         } catch (PDOException $e) {
             [$code, , $message] = $e->errorInfo;

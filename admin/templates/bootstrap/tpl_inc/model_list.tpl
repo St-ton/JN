@@ -117,9 +117,6 @@
                                 </tbody>
                             </table>
                         </div>
-                        {if $pagination !== null}
-                            {include file='tpl_inc/pagination.tpl' pagination=$pagination cParam_arr=$params isBottom=true}
-                        {/if}
                         <div class="save-wrapper">
                             <div class="row">
                                 {if $select === true}
@@ -161,6 +158,9 @@
                             </div>
                         </div>
                     </form>
+                    {if $pagination !== null}
+                        {include file='tpl_inc/pagination.tpl' pagination=$pagination cParam_arr=$params isBottom=true}
+                    {/if}
                 {else}
                     <div class="alert alert-info"><i class="fal fa-info-circle"></i> {__('noDataAvailable')}</div>
                 {/if}

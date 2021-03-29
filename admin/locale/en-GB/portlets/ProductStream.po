@@ -25,3 +25,6 @@ msgstr "Single-product slider with name and price"
 
 msgid "itemFilter"
 msgstr "Item filter"
+
+msgid "maxProducts"
+msgstr "Limit number of products"

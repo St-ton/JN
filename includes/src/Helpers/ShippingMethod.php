@@ -1398,7 +1398,7 @@ class ShippingMethod
                     ? " AND cLaender LIKE '%" . $iso . "%'"
                     : '';
             }
-            $shippingMethods          = map(self::getPossibleShippingMethods(
+            $shippingMethods = map(self::getPossibleShippingMethods(
                 $iso,
                 $_SESSION['Lieferadresse']->cPLZ ?? Frontend::getCustomer()->cPLZ,
                 $shippingClasses,
@@ -1406,6 +1406,10 @@ class ShippingMethod
             ), static function ($e) {
                 return $e->kVersandart;
             });
+            if (\count($shippingMethods) === 0) {
+                return 0;
+            }
+
             $productSpecificCondition = empty($defaultShipping) ? '' : " AND cNurAbhaengigeVersandart = 'N' ";
             $shippingMethod           = Shop::Container()->getDB()->queryPrepared(
                 "SELECT tversandart.*, tversandartsprache.cName AS cNameLocalized

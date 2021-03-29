@@ -46,7 +46,9 @@ class CountryService implements CountryServiceInterface
     {
         $cacheID = 'serviceCountryList';
         if (($countries = $this->cache->get($cacheID)) !== false) {
-            $this->countryList = $countries;
+            $this->countryList = $countries->sortBy(static function (Country $country) {
+                return $country->getName();
+            });
 
             return;
         }
@@ -54,14 +56,14 @@ class CountryService implements CountryServiceInterface
         foreach ($countries as $country) {
             $countryTMP = new Country($country->cISO);
             $countryTMP->setEU((int)$country->nEU)
-                       ->setContinent($country->cKontinent)
-                       ->setNameDE($country->cDeutsch)
-                       ->setNameEN($country->cEnglisch);
+                ->setContinent($country->cKontinent)
+                ->setNameDE($country->cDeutsch)
+                ->setNameEN($country->cEnglisch);
 
-            $this->getCountryList()->push($countryTMP);
+            $this->countryList->push($countryTMP);
         }
 
-        $this->countryList = $this->getCountryList()->sortBy(static function (Country $country) {
+        $this->countryList = $this->countryList->sortBy(static function (Country $country) {
             return $country->getName();
         });
 

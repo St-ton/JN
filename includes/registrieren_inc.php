@@ -222,6 +222,6 @@ function gibKunde()
 {
     global $Kunde, $titel;
 
-    $Kunde = $_SESSION['Kunde'];
+    $Kunde = Frontend::getCustomer();
     $titel = Shop::Lang()->get('editData', 'login');
 }

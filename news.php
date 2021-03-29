@@ -113,6 +113,7 @@ if ($controller->getNoticeMsg() !== '') {
 }
 
 $smarty->assign('oPagination', $pagination)
+    ->assign('Link', $link)
     ->assign('code_news', false);
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';

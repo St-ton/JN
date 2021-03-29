@@ -13,13 +13,14 @@ use JTL\Widgets\AbstractWidget;
 
 /**
  * @param bool $bActive
+ * @param bool $getAll
  * @return array
  */
-function getWidgets(bool $bActive = true): array
+function getWidgets(bool $bActive = true, bool $getAll = false): array
 {
     global $oAccount;
 
-    if (!$oAccount->permission('DASHBOARD_VIEW')) {
+    if (!$getAll && !$oAccount->permission('DASHBOARD_VIEW')) {
         return [];
     }
 
@@ -107,11 +108,11 @@ function getWidgets(bool $bActive = true): array
                     }
                 }
             }
-
             if (class_exists($className)) {
                 /** @var AbstractWidget $instance */
                 $instance = new $className($smarty, $db, $widget->plugin);
-                if (in_array($instance->getPermission(), ['DASHBOARD_ALL', ''], true)
+                if ($getAll
+                    || in_array($instance->getPermission(), ['DASHBOARD_ALL', ''], true)
                     || $oAccount->permission($instance->getPermission())
                 ) {
                     $widget->cContent = $instance->getContent();

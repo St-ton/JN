@@ -645,7 +645,7 @@ msgid "requiredEntry"
 msgstr "Pflichtangabe"
 
 msgid "noMoreInfo"
-msgstr "Es stehen keine weiteren Informationen zur Verfügung."
+msgstr "Es stehen keine weiteren Informationen zur Verfügung. (Eventuell fehlt Ihnen die Berechtigung das Dashobard einzusehen)"
 
 msgid "structure"
 msgstr "Struktur"

@@ -1,6 +1,6 @@
 {include file='tpl_inc/header.tpl'}
 
-{if count($oActiveWidget_arr) > 0 || count($oAvailableWidget_arr) > 0}
+{if 'DASHBOARD_VIEW'|permission && (count($oActiveWidget_arr) > 0 || count($oAvailableWidget_arr) > 0)}
     <script type="text/javascript">
 
     function addWidget(kWidget) {

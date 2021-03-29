@@ -19,6 +19,10 @@ function getWidgets(bool $bActive = true): array
 {
     global $oAccount;
 
+    if (!$oAccount->permission('DASHBOARD_VIEW')) {
+        return [];
+    }
+
     $cache        = Shop::Container()->getCache();
     $db           = Shop::Container()->getDB();
     $gettext      = Shop::Container()->getGetText();
@@ -107,8 +111,7 @@ function getWidgets(bool $bActive = true): array
             if (class_exists($className)) {
                 /** @var AbstractWidget $instance */
                 $instance = new $className($smarty, $db, $widget->plugin);
-                if ($oAccount->permission('DASHBOARD_VIEW')
-                    || $instance->getPermission() === 'DASHBOARD_ALL'
+                if (in_array($instance->getPermission(), ['DASHBOARD_ALL', ''], true)
                     || $oAccount->permission($instance->getPermission())
                 ) {
                     $widget->cContent = $instance->getContent();

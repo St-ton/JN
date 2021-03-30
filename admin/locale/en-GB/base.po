@@ -648,7 +648,7 @@ msgid "requiredEntry"
 msgstr "Mandatory"
 
 msgid "noMoreInfo"
-msgstr "No further information available."
+msgstr "No further information available. (Maybe you are missing the dashobard permission)"
 
 msgid "structure"
 msgstr "Structure"

@@ -20,6 +20,7 @@ class VisitorsOnline extends AbstractWidget
     public function init()
     {
         Visitor::archive();
+        $this->setPermission('STATS_VISITOR_VIEW');
     }
 
     /**

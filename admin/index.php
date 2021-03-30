@@ -153,14 +153,15 @@ function openDashboard()
         redirectToURI($_REQUEST['uri']);
     }
     $_SESSION['loginIsValid'] = true;
+
     if ($oAccount->permission('DASHBOARD_VIEW')) {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dashboard_inc.php';
 
         $smarty->assign('bDashboard', true)
-               ->assign('bUpdateError', (Request::postInt('shopupdate') === 1 ? '1' : false))
-               ->assign('oActiveWidget_arr', getWidgets())
-               ->assign('oAvailableWidget_arr', getWidgets(false))
-               ->assign('bInstallExists', is_dir(PFAD_ROOT . 'install'));
+            ->assign('bUpdateError', (Request::postInt('shopupdate') === 1 ? '1' : false))
+            ->assign('oActiveWidget_arr', getWidgets())
+            ->assign('oAvailableWidget_arr', getWidgets(false))
+            ->assign('bInstallExists', is_dir(PFAD_ROOT . 'install'));
     }
     $smarty->display('dashboard.tpl');
     exit();

@@ -192,8 +192,10 @@ class TemplateService implements TemplateServiceInterface
             }
             foreach ($xml->Boxes[0] as $item) {
                 /** @var SimpleXMLElement $item */
-                $attr                           = $item->attributes();
-                $items[(string)$attr->Position] = (bool)(int)$attr->Available;
+                $attr = $item->attributes();
+                if (!isset($items[(string)$attr->Position])) {
+                    $items[(string)$attr->Position] = (bool)(int)$attr->Available;
+                }
             }
         }
 

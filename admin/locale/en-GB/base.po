@@ -648,7 +648,7 @@ msgid "requiredEntry"
 msgstr "Mandatory"
 
 msgid "noMoreInfo"
-msgstr "No further information available."
+msgstr "No further information available. (Maybe you are missing the dashobard permission)"
 
 msgid "structure"
 msgstr "Structure"
@@ -2077,3 +2077,6 @@ msgstr "Safe mode"
 
 msgid "Safe mode enabled."
 msgstr "Safe mode active. Functionality might be impaired."
+
+msgid "defaultDeleteConfirmTitle"
+msgstr "Confirm delete"

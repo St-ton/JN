@@ -172,10 +172,9 @@ class GenericAdmin
         $pagination = (new Pagination($template))
             ->setItemCount($models->count())
             ->assemble();
-
         $smarty->assign('step', $this->step)
             ->assign('item', $this->item)
-            ->assign('models', $models)
+            ->assign('models', $models->forPage($pagination->getPage() + 1, $pagination->getItemsPerPage()))
             ->assign('action', Shop::getAdminURL() . '/' . $this->adminBaseFile)
             ->assign('pagination', $pagination)
             ->assign('settings', \getAdminSectionSettings(\CONF_CONSENTMANAGER))

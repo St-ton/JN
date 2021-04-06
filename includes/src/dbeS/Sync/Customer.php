@@ -558,7 +558,7 @@ final class Customer extends AbstractSync
         }
         foreach ($attributes as $attribute) {
             $field = CustomerField::loadByName($attribute->cName, $languageID);
-            if ($field->getID() > 0 && $field->validate($attribute->cWert) !== CustomerField::VALIDATE_OK) {
+            if ($field->getID() > 0 && $field->validate($attribute->cWert) === CustomerField::VALIDATE_OK) {
                 $customerAttr = new CustomerAttribute();
                 $customerAttr->setCustomerID($customerID);
                 $customerAttr->setCustomerFieldID($field->getID());

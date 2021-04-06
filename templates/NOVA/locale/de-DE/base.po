@@ -41,7 +41,7 @@ msgid "Favicon"
 msgstr "Favicon"
 
 msgid "Megamenu"
-msgstr "Megamenu"
+msgstr "Megamenü"
 
 msgid "Kategorien (anstelle einer Kategoriebox / Boxenverwaltung)"
 msgstr "Kategorien (anstelle einer Kategoriebox / Boxenverwaltung)"

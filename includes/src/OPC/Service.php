@@ -211,7 +211,14 @@ class Service
      */
     public function getBlueprintInstance(int $id): PortletInstance
     {
-        return $this->getBlueprint($id)->getInstance();
+        $instance = $this->getBlueprint($id)->getInstance();
+
+        Shop::fire('shop.OPC.Service.getBlueprintInstance', [
+            'id' => $id,
+            'instance' => &$instance
+        ]);
+
+        return $instance;
     }
 
     /**

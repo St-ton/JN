@@ -976,6 +976,9 @@ class Customer
             $this->erasePersonalData($issuerType, $issuerID);
             $logMessage = \sprintf('Account with ID kKunde = %s deleted', $customerID);
         } else {
+            if ($this->nRegistriert === 0) {
+                return;
+            }
             Shop::Container()->getDB()->update('tkunde', 'kKunde', $customerID, (object)[
                 'cPasswort'    => '',
                 'nRegistriert' => 0,

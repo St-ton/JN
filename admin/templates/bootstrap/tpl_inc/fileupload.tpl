@@ -39,6 +39,7 @@ $fileExtraData                 |         | you also need to add the jtl_token: j
 {$fileIsSingle = $fileIsSingle|default:true}
 {$fileSuccessMsg = $fileSuccessMsg|default:false}
 {$fileErrorMsg = $fileErrorMsg|default:false}
+{$initialPreviewShowDelete = "{if isset($initialPreviewShowDelete) && $initialPreviewShowDelete === true}true{else}false{/if}"}
 <input class="custom-file-input {$fileClass|default:''}"
        type="file"
        name="{if isset($fileName)}{$fileName}{else}{$fileID}{/if}"
@@ -78,7 +79,7 @@ $fileExtraData                 |         | you also need to add the jtl_token: j
             removeClass: 'btn btn-outline-primary',
             uploadAsync: {$fileUploadAsync},
             showPreview: {$filePreview},
-            initialPreviewShowDelete: false,
+            initialPreviewShowDelete: {$initialPreviewShowDelete},
             fileActionSettings: {
                 showZoom: false,
                 showRemove: false,

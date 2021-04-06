@@ -30,6 +30,8 @@ class ServerSettings extends AbstractWidget
                       ->assign('postMaxSize', \ini_get('post_max_size'))
                       ->assign('bPostMaxSize', $this->checkPostMaxSize())
                       ->assign('bAllowUrlFopen', $this->checkAllowUrlFopen());
+
+        $this->setPermission('DIAGNOSTIC_VIEW');
     }
 
     /**

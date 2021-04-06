@@ -178,6 +178,7 @@
 
 		.subcategories-image {
 			justify-content: center;
+			align-items: flex-start;
 			margin-bottom: map_get($spacers, 3);
 		}
 	}
@@ -256,6 +257,13 @@
 			position: absolute;
 			padding: $pagination-padding-y $pagination-padding-x;
 			left: ($grid-gutter-width / 2);
+		}
+	}
+}
+.list {
+	.productbox-details {
+		dt {
+			@include text-truncate;
 		}
 	}
 }

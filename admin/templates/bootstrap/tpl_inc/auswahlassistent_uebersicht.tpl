@@ -121,8 +121,9 @@
                                                                             <td class="text-center">
                                                                                 <div class="btn-group">
                                                                                     <a href="auswahlassistent.php?a=delQuest&q={$oAuswahlAssistentFrage->kAuswahlAssistentFrage}&token={$smarty.session.jtl_token}"
-                                                                                       class="btn btn-link px-2 remove"
+                                                                                       class="btn btn-link px-2 remove delete-confirm"
                                                                                        data-toggle="tooltip"
+                                                                                       data-modal-body="{$oAuswahlAssistentFrage->cFrage}"
                                                                                        title="{__('delete')}">
                                                                                         <span class="icon-hover">
                                                                                             <span class="fal fa-trash-alt"></span>

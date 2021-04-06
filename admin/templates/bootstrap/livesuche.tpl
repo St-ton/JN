@@ -122,7 +122,6 @@
                                 </tbody>
                             </table>
                         </div>
-                        {include file='tpl_inc/pagination.tpl' pagination=$oPagiSuchanfragen cAnchor='suchanfrage' isBottom=true}
                         <div class="save-wrapper">
                             <div class="row">
                                 <div class="col-sm-6 col-xl-auto text-left">
@@ -156,6 +155,7 @@
                         </div>
                     </div>
                 </form>
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiSuchanfragen cAnchor='suchanfrage' isBottom=true}
             {else}
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
@@ -210,7 +210,6 @@
                                 </tbody>
                             </table>
                         </div>
-                        {include file='tpl_inc/pagination.tpl' pagination=$oPagiErfolglos cAnchor='erfolglos' isBottom=true}
                         <div class="save-wrapper">
                             <div class="row">
                                 <div class="col-sm-6 col-xl-auto text-left">
@@ -238,6 +237,7 @@
                         </div>
                     </div>
                 </form>
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiErfolglos cAnchor='erfolglos' isBottom=true}
             {else}
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
@@ -279,7 +279,6 @@
                                 </tbody>
                             </table>
                         </div>
-                        {include file='tpl_inc/pagination.tpl' pagination=$oPagiMapping cAnchor='mapping' isBottom=true}
                         <div class="save-wrapper">
                             <div class="row">
                                 <div class="col-sm-6 col-xl-auto text-left">
@@ -297,6 +296,7 @@
                         </div>
                     </div>
                 </form>
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiMapping cAnchor='mapping' isBottom=true}
             {else}
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}

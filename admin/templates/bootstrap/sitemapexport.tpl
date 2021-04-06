@@ -155,7 +155,6 @@
                                         </tfoot>
                                     </table>
                                 </div>
-                                {include file='tpl_inc/pagination.tpl' pagination=$oSitemapDownloadPagination cParam_arr=['tab' => 'downloads', 'nYear_downloads' => {$nSitemapDownloadYear}] isBottom=true}
                                 <div class="card-footer save-wrapper">
                                     <div class="row">
                                         <div class="col-sm-6 col-xl-auto text-left">
@@ -170,10 +169,10 @@
                                             </button>
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
                         </form>
+                        {include file='tpl_inc/pagination.tpl' pagination=$oSitemapDownloadPagination cParam_arr=['tab' => 'downloads', 'nYear_downloads' => {$nSitemapDownloadYear}] isBottom=true}
                     </div>
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
@@ -277,7 +276,6 @@
                                     </tbody>
                                 </table>
                             </div>
-                            {include file='tpl_inc/pagination.tpl' pagination=$oSitemapReportPagination cParam_arr=['tab' => 'report', 'nYear_reports' => {$nSitemapReportYear}] isBottom=true}
                             <div class="card-footer save-wrapper">
                                 <div class="row">
                                     <div class="col-sm-6 col-xl-auto text-left">
@@ -292,9 +290,9 @@
                                         </button>
                                     </div>
                                 </div>
-
                             </div>
                         </form>
+                        {include file='tpl_inc/pagination.tpl' pagination=$oSitemapReportPagination cParam_arr=['tab' => 'report', 'nYear_reports' => {$nSitemapReportYear}] isBottom=true}
                     </div>
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>

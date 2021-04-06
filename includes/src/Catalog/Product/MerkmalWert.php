@@ -212,4 +212,12 @@ class MerkmalWert
     {
         return $this->kMerkmalWert;
     }
+
+    /**
+     * @return string
+     */
+    public function getValue()
+    {
+        return $this->cWert;
+    }
 }

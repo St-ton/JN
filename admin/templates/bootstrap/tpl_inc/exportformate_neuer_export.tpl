@@ -29,7 +29,9 @@
                 <div class="form-group form-row align-items-center{if isset($cPlausiValue_arr.cName)} form-error{/if}">
                     <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('name')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                        <input class="form-control" type="text" name="cName" id="cName" value="{if isset($cPostVar_arr.cName)}{$cPostVar_arr.cName}{elseif isset($Exportformat->cName)}{$Exportformat->cName}{/if}" tabindex="1" />
+                        <input class="form-control" type="text" name="cName" id="cName"
+                               value="{if isset($cPostVar_arr.cName)}{$cPostVar_arr.cName}{elseif isset($Exportformat->cName)}{$Exportformat->cName}{/if}"
+                               tabindex="1"{if !empty($Exportformat->kPlugin)} readonly{/if} />
                     </div>
                 </div>
                 <div class="form-group form-row align-items-center item">

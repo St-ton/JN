@@ -793,7 +793,7 @@ final class Admin
                 DATE_FORMAT(tnewsletterempfaenger.dLetzterNewsletter, '%d.%m.%Y %H:%i') AS dLetzterNewsletter_de,
                 tkunde.kKundengruppe, tkundengruppe.cName, tnewsletterempfaengerhistory.cOptIp,
                 IF (tnewsletterempfaengerhistory.dOptCode != '0000-00-00 00:00:00'
-                    AND tnewsletterempfaengerhistory.dOptCode IN NOT NULL,
+                    AND tnewsletterempfaengerhistory.dOptCode IS NOT NULL,
                     DATE_FORMAT(tnewsletterempfaengerhistory.dOptCode, '%d.%m.%Y %H:%i'),
                     DATE_FORMAT(toptin.dActivated, '%d.%m.%Y %H:%i')) AS optInDate
                 FROM tnewsletterempfaenger

@@ -302,7 +302,7 @@ class FormatExporter
         } catch (Exception $e) {
             throw new InvalidArgumentException('Cannot find export with id ' . $exportID);
         }
-        /** @var $model Model */
+        /** @var Model $model */
         $this->model = $model;
         $this->setConfig($exportID);
         $max     = $max ?? $this->getTotalCount();

@@ -9,6 +9,14 @@ namespace JTL\Widgets;
 class News extends AbstractWidget
 {
     /**
+     *
+     */
+    public function init()
+    {
+        $this->setPermission('DASHBOARD_ALL');
+    }
+
+    /**
      * @return string
      */
     public function getContent()

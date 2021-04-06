@@ -216,11 +216,11 @@ class SyntaxChecker
             $product->fuelleArtikel((int)$productData->kArtikel, Product::getExportOptions());
             $product->cDeeplink             = '';
             $product->Artikelbild           = '';
-            $product->Lieferbar             = '';
-            $product->Lieferbar_01          = '';
+            $product->Lieferbar             = 'N';
+            $product->Lieferbar_01          = 0;
             $product->cBeschreibungHTML     = '';
             $product->cKurzBeschreibungHTML = '';
-            $product->fUst                  = 0;
+            $product->fUst                  = 0.00;
             $product->Kategorie             = new Kategorie();
             $product->Kategoriepfad         = '';
             $product->Versandkosten         = -1;

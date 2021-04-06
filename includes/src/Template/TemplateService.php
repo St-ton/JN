@@ -186,16 +186,14 @@ class TemplateService implements TemplateServiceInterface
     private function getBoxLayout(SimpleXMLElement $tplXML, ?SimpleXMLElement $parentXML = null): array
     {
         $items = [];
-        foreach ([$tplXML, $parentXML] as $xml) {
+        foreach ([$parentXML, $tplXML] as $xml) {
             if ($xml === null || !isset($xml->Boxes) || \count($xml->Boxes) !== 1) {
                 continue;
             }
             foreach ($xml->Boxes[0] as $item) {
                 /** @var SimpleXMLElement $item */
-                $attr = $item->attributes();
-                if (!isset($items[(string)$attr->Position])) {
-                    $items[(string)$attr->Position] = (bool)(int)$attr->Available;
-                }
+                $attr                           = $item->attributes();
+                $items[(string)$attr->Position] = (bool)(int)$attr->Available;
             }
         }
 

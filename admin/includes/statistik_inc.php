@@ -5,13 +5,13 @@ use JTL\Piechart;
 use JTL\Statistik;
 
 /**
- * @param int    $type
- * @param string $from
- * @param string $to
- * @param int    $intervall
- * @return array|mixed
+ * @param int $type
+ * @param int $from
+ * @param int $to
+ * @param int $intervall
+ * @return array
  */
-function gibBackendStatistik(int $type, $from, $to, &$intervall)
+function gibBackendStatistik(int $type, int $from, int $to, &$intervall): array
 {
     $data = [];
     if ($type > 0 && $from > 0 && $to > 0) {
@@ -41,9 +41,9 @@ function gibBackendStatistik(int $type, $from, $to, &$intervall)
 
 /**
  * @param int $type
- * @return mixed
+ * @return array
  */
-function gibMappingDaten($type)
+function gibMappingDaten(int $type)
 {
     if (!$type) {
         return [];

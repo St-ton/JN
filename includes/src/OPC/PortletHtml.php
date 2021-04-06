@@ -269,7 +269,7 @@ trait PortletHtml
      */
     final public function getFontAwesomeIcon(string $faCode): string
     {
-        /** @var array $faTable */
+        /** @global array $faTable */
         include \PFAD_ROOT . \PFAD_TEMPLATES . 'NOVA/themes/base/fontawesome/metadata/icons.php';
 
         $faGlyphHex = $faTable[$faCode];

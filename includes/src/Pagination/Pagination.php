@@ -121,7 +121,7 @@ class Pagination
     private $orderSQL = '';
 
     /**
-     * @var array
+     * @var array|Collection
      */
     private $items;
 

@@ -58,7 +58,7 @@ class Newsletter
     {
         $this->smarty = new JTLSmarty(true, ContextType::NEWSLETTER);
         $this->smarty->setCaching(0)
-            ->setDebugging(0)
+            ->setDebugging(false)
             ->setCompileDir(\PFAD_ROOT . \PFAD_COMPILEDIR)
             ->registerResource('db', new SmartyResourceNiceDB($this->db, ContextType::NEWSLETTER))
             ->assign('Firma', $this->db->query(
@@ -150,7 +150,6 @@ class Newsletter
         if ($this->db->getErrorCode() !== 0) {
             $recipients = new stdClass();
         }
-
         $recipients->cKundengruppe_arr = $tmpGroups;
 
         return $recipients;

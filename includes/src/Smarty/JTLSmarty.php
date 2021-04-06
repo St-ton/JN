@@ -133,7 +133,7 @@ class JTLSmarty extends SmartyBC
             if (!\is_dir($compileDir) && !\mkdir($compileDir) && !\is_dir($compileDir)) {
                 throw new RuntimeException(\sprintf('Directory "%s" could not be created', $compileDir));
             }
-            $this->setCaching(false)
+            $this->setCaching(\Smarty::CACHING_OFF)
                 ->setDebugging(\SMARTY_DEBUG_CONSOLE)
                 ->setTemplateDir([$this->context => \PFAD_ROOT . \PFAD_ADMIN . \PFAD_TEMPLATES . $tplDir])
                 ->setCompileDir($compileDir)
@@ -191,8 +191,7 @@ class JTLSmarty extends SmartyBC
         $config = $config ?? Shop::getSettings([\CONF_CACHING]);
 
         return $this->setCaching(self::CACHING_OFF)
-            ->setCompileCheck(!(isset($config['caching']['compile_check'])
-                && $config['caching']['compile_check'] === 'N'));
+            ->setCompileCheck((int)(($config['caching']['compile_check'] ?? 'Y') === 'Y'));
     }
 
     /**
@@ -241,11 +240,7 @@ class JTLSmarty extends SmartyBC
     }
 
     /**
-     * @param null|string $template
-     * @param null|string $cacheID
-     * @param null|string $compileID
-     * @param null        $parent
-     * @return bool
+     * @inheritDoc
      */
     public function isCached($template = null, $cacheID = null, $compileID = null, $parent = null): bool
     {
@@ -258,7 +253,7 @@ class JTLSmarty extends SmartyBC
      */
     public function setCaching($mode): self
     {
-        $this->caching = $mode;
+        $this->caching = (int)$mode;
 
         return $this;
     }
@@ -462,7 +457,7 @@ class JTLSmarty extends SmartyBC
     }
 
     /**
-     * @param bool $check
+     * @param int $check
      * @return $this
      */
     public function setCompileCheck($check): self

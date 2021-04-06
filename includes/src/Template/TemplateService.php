@@ -26,7 +26,7 @@ class TemplateService implements TemplateServiceInterface
     private $cache;
 
     /**
-     * @var Model
+     * @var Model|null
      */
     private $activeTemplate;
 

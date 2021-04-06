@@ -543,7 +543,7 @@ class Helper
             return $result;
         }
 
-        \register_shutdown_function(static function () use ($pluginID) {
+        \register_shutdown_function(static function () {
             $err = \error_get_last();
             if ($err !== null) {
                 \ob_get_clean();

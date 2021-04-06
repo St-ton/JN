@@ -30,8 +30,8 @@ class MailSmarty extends JTLSmarty
              ->registerPlugin(\Smarty::PLUGIN_FUNCTION, 'includeMailTemplate', [$this, 'includeMailTemplate'])
              ->setCompileDir(\PFAD_ROOT . \PFAD_COMPILEDIR)
              ->setTemplateDir(\PFAD_ROOT . \PFAD_EMAILTEMPLATES)
-             ->setDebugging(0)
-             ->setCaching(0);
+             ->setDebugging(false)
+             ->setCaching(false);
         if ($context === ContextType::MAIL && \MAILTEMPLATE_USE_SECURITY) {
             $this->activateBackendSecurityMode();
         } elseif ($context === ContextType::NEWSLETTER && \NEWSLETTER_USE_SECURITY) {

@@ -1,10 +1,10 @@
 {block name='page-shipping'}
+    {opcMountPoint id='opc_before_shipping' inContainer=false}
     {if isset($Einstellungen.global.global_versandermittlung_anzeigen)
         && $Einstellungen.global.global_versandermittlung_anzeigen === 'Y'
         && (!isset($smarty.get.shipping_calculator)
             || (isset($smarty.get.shipping_calculator) && $smarty.get.shipping_calculator !== "0")
         )}
-        {opcMountPoint id='opc_before_shipping' inContainer=false}
         {container fluid=$Link->getIsFluid() class="page-shipping"}
             {if isset($smarty.session.Warenkorb->PositionenArr) && $smarty.session.Warenkorb->PositionenArr|@count > 0}
                 {block name='page-shipping-form'}
@@ -26,4 +26,5 @@
             {/if}
         {/container}
     {/if}
+    {opcMountPoint id='opc_after_shipping' inContainer=false}
 {/block}

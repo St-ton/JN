@@ -4125,6 +4125,7 @@ class Artikel
                 ? $this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_GELB]
                 : Shop::Lang()->get('ampelGelb');
             $this->setToParentStockText(\ART_ATTRIBUT_AMPELTEXT_GELB, 'ampelGelb');
+
             if ($this->fLagerbestand <= (int)$this->conf['global']['artikel_lagerampel_rot']) {
                 $this->Lageranzeige->nStatus   = 0;
                 $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_ROT])

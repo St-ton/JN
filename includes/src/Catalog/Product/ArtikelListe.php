@@ -176,8 +176,9 @@ class ArtikelListe
                 break;
             }
         }
+        $this->elemente = Product::separateByAvailability($this->elemente, true);
 
-        return Product::separateByAvailability($this->elemente, true);
+        return $this->elemente;
     }
 
     /**

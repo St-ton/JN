@@ -542,21 +542,24 @@ final class BoxAdmin
      */
     public function getInvisibleBoxes(): array
     {
-        $model      = Shop::Container()->getTemplateService()->getActiveTemplate();
-        $unavailabe = filter($model->getBoxLayout(), static function ($e) {
+        $model         = Shop::Container()->getTemplateService()->getActiveTemplate();
+        $unavailabe    = filter($model->getBoxLayout(), static function ($e) {
             return $e === false;
         });
-        $mapped     = map($unavailabe, static function ($e, $key) {
-            return "'" . $key . "'";
-        });
+        $wherePosition = '';
+        if (\count($unavailabe) > 0) {
+            $mapped        = map($unavailabe, static function ($e, $key) {
+                return "'" . $key . "'";
+            });
+            $wherePosition = ' ePosition IN (' . \implode(',', $mapped) . ') OR ';
+        }
 
         return $this->db->query(
             'SELECT tboxen.*, tboxvorlage.eTyp, tboxvorlage.cName, tboxvorlage.cTemplate 
                 FROM tboxen 
                     LEFT JOIN tboxvorlage
                     ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
-                WHERE ePosition IN (' . \implode(',', $mapped) . ') 
-                    OR (kContainer > 0  AND kContainer NOT IN (SELECT kBox FROM tboxen))',
+                WHERE ' . $wherePosition . ' (kContainer > 0  AND kContainer NOT IN (SELECT kBox FROM tboxen))',
             ReturnType::ARRAY_OF_OBJECTS
         );
     }

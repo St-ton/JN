@@ -105,7 +105,7 @@ class Jtllog
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use the log service instead.', \E_USER_DEPRECATED);
 
-        return self::writeLog($cLog, $nLevel, $bForce, $cKey, $kKey);
+        return self::writeLog($cLog, $nLevel, $bForce, $cKey, (int)$kKey);
     }
 
     /**

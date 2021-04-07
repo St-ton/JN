@@ -127,8 +127,8 @@ class CountryService implements CountryServiceInterface
     }
 
     /**
-     * @param bool $getEU - get all countries in EU and all countries in Europe not in EU
-     * @param array|null $selectedCountries
+     * @param bool  $getEU - get all countries in EU and all countries in Europe not in EU
+     * @param array $selectedCountries
      * @return array
      */
     public function getCountriesGroupedByContinent(bool $getEU = false, array $selectedCountries = []): array

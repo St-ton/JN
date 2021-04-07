@@ -287,7 +287,7 @@ function augmentCoupon($coupon)
 /**
  * Create a fresh Kupon instance with default values to be edited
  *
- * @param $cKuponTyp - Kupon::TYPE_STANDRAD, Kupon::TYPE_SHIPPING, Kupon::TYPE_NEWCUSTOMER
+ * @param string $cKuponTyp - Kupon::TYPE_STANDRAD, Kupon::TYPE_SHIPPING, Kupon::TYPE_NEWCUSTOMER
  * @return Kupon
  */
 function createNewCoupon($cKuponTyp)

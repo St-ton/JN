@@ -1077,10 +1077,10 @@ function gibDetailDatumZeitraum()
             while ($nTMPStamp <= $nToStamp) {
                 $timeSpan['cDatum'][]     = date('Y-m-d', $nTMPStamp);
                 $timeSpan['cDatumFull'][] = date('d.m.Y', $nTMPStamp);
-                $daysPerWeek              = date('t', $nTMPStamp);
-                $day                      = date('d', $nTMPStamp) + 1;
-                $month                    = date('m', $nTMPStamp);
-                $year                     = date('Y', $nTMPStamp);
+                $daysPerWeek              = (int)date('t', $nTMPStamp);
+                $day                      = (int)date('d', $nTMPStamp) + 1;
+                $month                    = (int)date('m', $nTMPStamp);
+                $year                     = (int)date('Y', $nTMPStamp);
 
                 if ($day > $daysPerWeek) {
                     $day = 1;

@@ -302,7 +302,7 @@ class Versandart
      * @param array       $objects
      * @param string      $table
      * @param string      $key
-     * @param mixed       $value
+     * @param int         $value
      * @param null|string $unsetKey
      */
     private static function cloneShippingSection(array $objects, $table, $key, int $value, $unsetKey = null): void

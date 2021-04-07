@@ -42,7 +42,7 @@ interface IMedia
 
     /**
      * @param string      $type
-     * @param string      $id
+     * @param string|int  $id
      * @param mixed       $mixed
      * @param string      $size
      * @param int         $number

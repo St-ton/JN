@@ -159,9 +159,9 @@ final class Scheme
     }
 
     /**
-     * @param object      $objFrom
+     * @param mixed       $objFrom
      * @param object|null $objTo
-     * @return null|object
+     * @return stdClass
      */
     private static function copyMembers($objFrom, &$objTo = null)
     {

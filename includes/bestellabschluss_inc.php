@@ -1,5 +1,6 @@
 <?php
 
+use JTL\Campaign;
 use JTL\Cart\CartItem;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
@@ -21,7 +22,6 @@ use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
-use JTL\Campaign;
 use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
@@ -386,8 +386,6 @@ function bestellungInDB($cleared = 0, $orderNo = '')
  */
 function saveZahlungsInfo(int $customerID, int $orderID, bool $payAgain = false): bool
 {
-    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
-
     if (!$customerID || !$orderID) {
         return false;
     }
@@ -748,7 +746,7 @@ function aktualisiereStuecklistenLagerbestand($bomProduct, $amount)
                 aktualisiereLagerbestand(
                     $tmpArtikel,
                     $amount * $component->fAnzahl,
-                    null
+                    []
                 ) / $component->fAnzahl
             );
 
@@ -789,9 +787,9 @@ function aktualisiereStuecklistenLagerbestand($bomProduct, $amount)
 }
 
 /**
- * @param int       $productID
- * @param int|float $stockLevel
- * @param bool      $allowNegativeStock
+ * @param int   $productID
+ * @param float $stockLevel
+ * @param bool  $allowNegativeStock
  */
 function aktualisiereKomponenteLagerbestand(int $productID, float $stockLevel, bool $allowNegativeStock): void
 {
@@ -833,9 +831,9 @@ function AktualisiereAndereStuecklisten(int $productID, $amount, $bomID = null):
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if ($productID > 0) {
-        $tmpArtikel = new Artikel();
-        $tmpArtikel->fuelleArtikel($productID, Artikel::getDefaultOptions());
-        aktualisiereKomponenteLagerbestand($productID, $tmpArtikel->fLagerbestand, $tmpArtikel->cLagerKleinerNull);
+        $prod = new Artikel();
+        $prod->fuelleArtikel($productID, Artikel::getDefaultOptions());
+        aktualisiereKomponenteLagerbestand($productID, $prod->fLagerbestand, $prod->cLagerKleinerNull === 'Y');
     }
 }
 
@@ -873,14 +871,14 @@ function AktualisiereLagerStuecklisten($product, $amount = null, $isBom = false)
             aktualisiereKomponenteLagerbestand(
                 $product->kArtikel,
                 $product->fLagerbestand,
-                $product->cLagerKleinerNull
+                $product->cLagerKleinerNull === 'Y'
             );
         }
     }
 }
 
 /**
- * @param $order
+ * @param Bestellung $order
  */
 function KuponVerwendungen($order): void
 {
@@ -1054,7 +1052,6 @@ function setzeSmartyWeiterleitung(Bestellung $order): void
  */
 function fakeBestellung()
 {
-    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     if (isset($_POST['kommentar'])) {
         $_SESSION['kommentar'] = mb_substr(
             strip_tags(Shop::Container()->getDB()->escape($_POST['kommentar'])),
@@ -1132,7 +1129,7 @@ function fakeBestellung()
     }
     $order->cIP = Request::getRealIP();
 
-    return $order->fuelleBestellung(false, true);
+    return $order->fuelleBestellung(false, 1);
 }
 
 /**

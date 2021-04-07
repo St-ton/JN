@@ -114,7 +114,7 @@ function baueDatum($dates)
     foreach ($dates as $oDatum) {
         $oTMP        = new stdClass();
         $oTMP->cWert = $oDatum->nMonat . '-' . $oDatum->nJahr;
-        $oTMP->cName = mappeDatumName((string)$oDatum->nMonat, (int)$oDatum->nJahr, Shop::getLanguageCode());
+        $oTMP->cName = mappeDatumName((int)$oDatum->nMonat, (int)$oDatum->nJahr, Shop::getLanguageCode());
         $res[]       = $oTMP;
     }
 
@@ -122,8 +122,8 @@ function baueDatum($dates)
 }
 
 /**
- * @param string $cMonat
- * @param string $nJahr
+ * @param string|int $cMonat
+ * @param string|int $nJahr
  * @param string $cISOSprache
  * @return string
  * @deprecated since 5.0.0

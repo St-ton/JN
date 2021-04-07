@@ -132,7 +132,7 @@ interface JTLCacheInterface
 
     /**
      * @param array|string $tags
-     * @return mixed
+     * @return array
      */
     public function getKeysByTag($tags): array;
 

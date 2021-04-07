@@ -94,10 +94,10 @@ class ZahlungsLog
     }
 
     /**
-     * @param string $cModulId
-     * @param string $cLog
-     * @param string $cLogData
-     * @param int    $nLevel
+     * @param string      $cModulId
+     * @param string      $cLog
+     * @param string|null $cLogData
+     * @param int         $nLevel
      * @return int
      */
     public static function add($cModulId, $cLog, $cLogData = '', $nLevel = \LOGLEVEL_ERROR): int

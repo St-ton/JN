@@ -10,10 +10,9 @@ use Exception;
  */
 interface TemplateServiceInterface
 {
-    /**
-     *
-     */
     public function save(): void;
+
+    public function reset(): void;
 
     /**
      * @param bool $withLicense

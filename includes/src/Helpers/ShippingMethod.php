@@ -468,7 +468,7 @@ class ShippingMethod
                 $additionalProduct->fGewicht        += $product['fAnzahl'] * $tmpProduct->fGewicht;
 
                 if (\mb_strlen($shippingClasses) > 0
-                    && \mb_strpos($shippingClasses, $tmpProduct->kVersandklasse) === false
+                    && \mb_strpos($shippingClasses, (string)$tmpProduct->kVersandklasse) === false
                 ) {
                     $shippingClasses = '-' . $tmpProduct->kVersandklasse;
                 } elseif (\mb_strlen($shippingClasses) === 0) {
@@ -484,8 +484,8 @@ class ShippingMethod
 
                     $variation = Product::findVariation(
                         $tmpProduct->Variationen,
-                        $property0,
-                        $propertyValue0
+                        (int)$property0,
+                        (int)$propertyValue0
                     );
 
                     $additionalProduct->fAnzahl         += $product['fAnzahl'];
@@ -501,13 +501,13 @@ class ShippingMethod
 
                     $variation0 = Product::findVariation(
                         $tmpProduct->Variationen,
-                        $property0,
-                        $propertyValue0
+                        (int)$property0,
+                        (int)$propertyValue0
                     );
                     $variation1 = Product::findVariation(
                         $tmpProduct->Variationen,
-                        $property1,
-                        $propertyValue1
+                        (int)$property1,
+                        (int)$propertyValue1
                     );
 
                     $additionalProduct->fAnzahl         += $product['fAnzahl'];
@@ -517,7 +517,7 @@ class ShippingMethod
                         ($tmpProduct->fGewicht + $variation0->fGewichtDiff + $variation1->fGewichtDiff);
                 }
                 if (\mb_strlen($shippingClasses) > 0
-                    && \mb_strpos($shippingClasses, $tmpProduct->kVersandklasse) === false
+                    && \mb_strpos($shippingClasses, (string)$tmpProduct->kVersandklasse) === false
                 ) {
                     $shippingClasses = '-' . $tmpProduct->kVersandklasse;
                 } elseif (\mb_strlen($shippingClasses) === 0) {
@@ -531,8 +531,8 @@ class ShippingMethod
                     [$property0, $propertyValue0] = \explode(':', $cVariation0);
                     $childProductID               = Product::getChildProductIDByAttribute(
                         $tmpProduct->kArtikel,
-                        $property0,
-                        $propertyValue0
+                        (int)$property0,
+                        (int)$propertyValue0
                     );
                     $child->fuelleArtikel($childProductID, $defaultOptions);
                     // Summen pro Steuerklasse summieren
@@ -562,10 +562,10 @@ class ShippingMethod
 
                     $childProductID = Product::getChildProductIDByAttribute(
                         $tmpProduct->kArtikel,
-                        $property0,
-                        $propertyValue0,
-                        $property1,
-                        $propertyValue1
+                        (int)$property0,
+                        (int)$propertyValue0,
+                        (int)$property1,
+                        (int)$propertyValue1
                     );
                     $child->fuelleArtikel($childProductID, $defaultOptions);
                     // Summen pro Steuerklasse summieren
@@ -590,7 +590,7 @@ class ShippingMethod
                     $additionalProduct->fGewicht        += $product['fAnzahl'] * $child->fGewicht;
                 }
                 if (\mb_strlen($shippingClasses) > 0
-                    && \mb_strpos($shippingClasses, $child->kVersandklasse) === false
+                    && \mb_strpos($shippingClasses, (string)$child->kVersandklasse) === false
                 ) {
                     $shippingClasses = '-' . $child->kVersandklasse;
                 } elseif (\mb_strlen($shippingClasses) === 0) {
@@ -674,11 +674,11 @@ class ShippingMethod
     }
 
     /**
-     * @param string         $deliveryCountry
-     * @param string         $shippingClasses
-     * @param int            $customerGroupID
-     * @param Artikel|object $product
-     * @param bool           $checkProductDepedency
+     * @param string              $deliveryCountry
+     * @param string              $shippingClasses
+     * @param int                 $customerGroupID
+     * @param Artikel|object|null $product
+     * @param bool                $checkProductDepedency
      * @return mixed
      * @former gibGuenstigsteVersandart()
      */
@@ -1003,14 +1003,13 @@ class ShippingMethod
     }
 
     /**
-     * @todo Hier gilt noch zu beachten, dass fWarenwertNetto vom Zusatzartikel
-     *       darf kein Netto sein, sondern der Preis muss in Brutto angegeben werden.
-     * @param Versandart|object $shippingMethod
-     * @param String            $iso
-     * @param Artikel|stdClass  $additionalProduct
-     * @param Artikel|null      $product
+     * @param Versandart|object     $shippingMethod
+     * @param String                $iso
+     * @param Artikel|stdClass|null $additionalProduct
+     * @param Artikel|null          $product
      * @return int|string
      * @former berechneVersandpreis()
+     * @todo fWarenwertNetto vom Zusatzartikel darf kein Netto sein - der Preis muss in Brutto angegeben werden.
      */
     public static function calculateShippingFees($shippingMethod, $iso, $additionalProduct, $product = null)
     {
@@ -1250,12 +1249,12 @@ class ShippingMethod
         $deliveryText = $minDeliveryDays === $maxDeliveryDays
             ? \str_replace(
                 '#DELIVERYDAYS#',
-                $minDeliveryDays,
+                (string)$minDeliveryDays,
                 Shop::Lang()->get('deliverytimeEstimationSimple')
             )
             : \str_replace(
                 ['#MINDELIVERYDAYS#', '#MAXDELIVERYDAYS#'],
-                [$minDeliveryDays, $maxDeliveryDays],
+                [(string)$minDeliveryDays, (string)$maxDeliveryDays],
                 Shop::Lang()->get('deliverytimeEstimation')
             );
 
@@ -1318,8 +1317,8 @@ class ShippingMethod
     }
 
     /**
-     * @param $method
-     * @param $cartSum
+     * @param Versandart $method
+     * @param float|int  $cartSum
      * @return float
      */
     public static function getShippingFreeDifference($method, $cartSum): float

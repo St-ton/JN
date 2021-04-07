@@ -18,7 +18,7 @@ use JTL\Shop;
 use JTL\Shopsetting;
 
 /**
- * @param string $file
+ * @param int $file
  * @param mixed  $data
  * @deprecated since 5.0.0
  */
@@ -51,8 +51,8 @@ function baueSitemap($file, $data)
 }
 
 /**
- * @param string $file
- * @param bool   $useGZ
+ * @param int  $file
+ * @param bool $useGZ
  * @return string
  * @deprecated since 5.0.0
  */
@@ -958,13 +958,13 @@ function baueSitemapReport($urlCounts, $totalTime)
 }
 
 /**
- * @param int        $keyID
- * @param string     $keyName
- * @param string     $lastUpdate
- * @param array      $languages
- * @param int        $langID
- * @param int        $productsPerPage
- * @param array|null $config
+ * @param int         $keyID
+ * @param string      $keyName
+ * @param string|null $lastUpdate
+ * @param array       $languages
+ * @param int         $langID
+ * @param int         $productsPerPage
+ * @param array|null  $config
  * @return array
  * @deprecated since 5.0.0
  */

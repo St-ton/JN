@@ -279,7 +279,7 @@ class Category implements CategoryInterface
     }
 
     /**
-     * @param stdClass|null $filterSQL
+     * @param stdClass $filterSQL
      * @return $this
      */
     public function getOverview(stdClass $filterSQL): Category

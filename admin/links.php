@@ -318,7 +318,8 @@ if ($step === 'loesch_linkgruppe' && $linkGroupID > 0) {
     $_POST = [];
 } elseif ($step === 'edit-link') {
     $step = 'neuer Link';
-    $link = (new Link($db))->load($linkID);
+    $link = new Link($db);
+    $link->load($linkID);
     $link->deref();
     $dirName = $uploadDir . $link->getID();
     $files   = [];

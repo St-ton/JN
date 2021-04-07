@@ -15,7 +15,7 @@ use JTL\Shop;
 class Storage
 {
     /**
-     * @var \SessionHandlerInterface
+     * @var JTLHandlerInterface
      */
     protected $handler;
 

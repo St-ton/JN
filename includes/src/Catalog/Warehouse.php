@@ -309,7 +309,7 @@ class Warehouse extends MainModel
     }
 
     /**
-     * @return string|null
+     * @return string
      */
     public function getBeschreibung(): string
     {
@@ -678,11 +678,8 @@ class Warehouse extends MainModel
                 $this->oLageranzeige->nStatus   = 0;
                 $this->oLageranzeige->AmpelText = $config['attribut_ampeltext_rot'];
             }
-            if ($config['cLagerBeachten'] !== 'Y'
-                || $stock >= (int)$conf['global']['artikel_lagerampel_gruen']
-                || ($config['cLagerBeachten'] === 'Y'
-                    && $config['cLagerKleinerNull'] === 'Y'
-                    && $conf['global']['artikel_ampel_lagernull_gruen'] === 'Y')
+            if ($stock >= (int)$conf['global']['artikel_lagerampel_gruen']
+                || ($config['cLagerKleinerNull'] === 'Y' && $conf['global']['artikel_ampel_lagernull_gruen'] === 'Y')
             ) {
                 $this->oLageranzeige->nStatus   = 2;
                 $this->oLageranzeige->AmpelText = $config['attribut_ampeltext_gruen'];

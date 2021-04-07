@@ -75,8 +75,8 @@ class Linechart extends Chartdata
     }
 
     /**
-     * @param string     $color
-     * @param bool|float $opacity
+     * @param string            $color
+     * @param bool|float|string $opacity
      * @return string
      */
     private function hex2rgba($color, $opacity = false): string

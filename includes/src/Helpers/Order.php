@@ -114,7 +114,7 @@ class Order extends CartHelper
      */
     public function getLanguage(): string
     {
-        return Shop::Lang()->getIsoFromLangID($this->order->kSprache);
+        return Shop::Lang()->getIsoFromLangID($this->order->kSprache)->cISO;
     }
 
     /**

@@ -5,9 +5,11 @@ namespace JTL\Update;
 use DateTime;
 use Exception;
 use Gettext\Translator;
+use Gettext\TranslatorFunctions;
 use InvalidArgumentException;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Shop;
 use JTLShop\SemVer\Version;
 use PDOException;
 
@@ -23,7 +25,7 @@ class MigrationManager
     protected static $migrations = [];
 
     /**
-     * @var array
+     * @var array|null
      */
     protected $executedMigrations;
 
@@ -65,9 +67,8 @@ class MigrationManager
         $direction = $identifier > $currentId ? IMigration::UP : IMigration::DOWN;
         $executed  = [];
 
-        if (Translator::$current === null) {
-            (new Translator())->register();
-        }
+        $translator = new Translator();
+        TranslatorFunctions::register($translator);
 
         try {
             if ($direction === IMigration::DOWN) {
@@ -322,7 +323,7 @@ class MigrationManager
      * @param string $message
      * @throws Exception
      */
-    public function log(IMigration $migration, $direction, $state, $message): void
+    public function log(IMigration $migration, string $direction, $state, $message): void
     {
         $sql = \sprintf(
             "INSERT INTO tmigrationlog (kMigration, cDir, cState, cLog, dCreated) 
@@ -333,7 +334,7 @@ class MigrationManager
             $this->db->pdoEscape($message),
             (new DateTime('now'))->format('Y-m-d H:i:s')
         );
-        $this->db->executeQuery($sql, ReturnType::AFFECTED_ROWS);
+        $this->db->executeQuery($sql, ReturnType::DEFAULT);
     }
 
     /**
@@ -342,7 +343,7 @@ class MigrationManager
      * @param DateTime   $executed
      * @return $this
      */
-    public function migrated(IMigration $migration, $direction, $executed): self
+    public function migrated(IMigration $migration, string $direction, DateTime $executed): self
     {
         if (\strcasecmp($direction, IMigration::UP) === 0) {
             $version = Version::parse(\APPLICATION_VERSION);
@@ -352,10 +353,10 @@ class MigrationManager
                 \sprintf('%d%02d', $version->getMajor(), $version->getMinor()),
                 $executed->format('Y-m-d H:i:s')
             );
-            $this->db->executeQuery($sql, ReturnType::AFFECTED_ROWS);
+            $this->db->executeQuery($sql, ReturnType::DEFAULT);
         } else {
             $sql = \sprintf("DELETE FROM tmigration WHERE kMigration = '%s'", $migration->getId());
-            $this->db->executeQuery($sql, ReturnType::AFFECTED_ROWS);
+            $this->db->executeQuery($sql, ReturnType::DEFAULT);
         }
 
         return $this;

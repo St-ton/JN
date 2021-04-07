@@ -78,7 +78,7 @@ class Bestellung
     public $fGuthaben = 0.0;
 
     /**
-     * @var int
+     * @var int|float
      */
     public $fGesamtsumme;
 
@@ -123,7 +123,7 @@ class Bestellung
     public $cAbgeholt;
 
     /**
-     * @var string 'Y'/'N'
+     * @var int
      */
     public $cStatus;
 
@@ -242,22 +242,22 @@ class Bestellung
     public $dErstelldatum_en;
 
     /**
-     * @var
+     * @var string
      */
     public $cBestellwertLocalized;
 
     /**
-     * @var
+     * @var Currency
      */
     public $Waehrung;
 
     /**
-     * @var
+     * @var array
      */
     public $Steuerpositionen;
 
     /**
-     * @var
+     * @var string
      */
     public $Status;
 

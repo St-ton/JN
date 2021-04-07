@@ -59,8 +59,7 @@ class Seo
 
     /**
      * @param string $str
-     * @var mixed $convertedStr
-     * @return mixed
+     * @return string
      */
     public static function sanitizeSeoSlug(string $str): string
     {

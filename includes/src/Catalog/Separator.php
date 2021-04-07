@@ -132,9 +132,9 @@ class Separator
     /**
      * Loads database member into class member
      *
-     * @param int $unitID
-     * @param int $languageID
-     * @param int $qty
+     * @param int       $unitID
+     * @param int       $languageID
+     * @param int|float $qty
      * @return int|string|Separator
      */
     public static function getUnit(int $unitID, int $languageID, $qty = -1)

@@ -325,7 +325,7 @@ final class Shop
     public static $productFilter;
 
     /**
-     * @var string
+     * @var string|null
      */
     public static $fileName;
 
@@ -365,7 +365,7 @@ final class Shop
     public static $cSuche;
 
     /**
-     * @var
+     * @var int
      */
     public static $seite;
 
@@ -405,7 +405,7 @@ final class Shop
     private static $logged;
 
     /**
-     * @var null|bool
+     * @var null|string
      */
     private static $adminToken;
 

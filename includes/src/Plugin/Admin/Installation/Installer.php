@@ -101,7 +101,7 @@ final class Installer
     }
 
     /**
-     * @param PluginInterface|null $plugin
+     * @param PluginInterface $plugin
      */
     public function setPlugin(PluginInterface $plugin): void
     {

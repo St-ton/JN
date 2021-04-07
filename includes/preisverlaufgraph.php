@@ -1,4 +1,4 @@
-<?php
+<?php // @deprecated since 5.0.0
 
 use JTL\Catalog\Product\PreisverlaufGraph;
 use JTL\DB\ReturnType;
@@ -37,7 +37,7 @@ if (Request::getInt('kArtikel') > 0 && Request::getInt('kKundengruppe') > 0 && R
             $productID,
             $cgID,
             $month,
-            $conf,
+            Shop::getConfig([CONF_PREISVERLAUF]),
             $priceConfig
         );
         $graph->cSchriftverzeichnis = PFAD_ROOT . PFAD_FONTS;

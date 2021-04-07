@@ -101,7 +101,7 @@ class Item implements JsonSerializable
     protected $oPreis;
 
     /**
-     * @var Artikel
+     * @var Artikel|null
      */
     protected $oArtikel;
 
@@ -121,7 +121,7 @@ class Item implements JsonSerializable
     protected $nSort = 0;
 
     /**
-     * @var int|null
+     * @var int|float|null
      */
     public $fAnzahl;
 

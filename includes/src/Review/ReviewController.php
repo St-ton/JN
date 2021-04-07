@@ -182,7 +182,7 @@ class ReviewController extends BaseController
     /**
      * @param Customer $customer
      * @param array    $params
-     * @return bool|void
+     * @return bool
      */
     private function reviewPreCheck(Customer $customer, array $params): bool
     {

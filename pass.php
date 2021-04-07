@@ -46,7 +46,7 @@ if ($valid && isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POS
             $dateExpires = new DateTime($resetItem->dExpires);
             if ($dateExpires >= new DateTime()) {
                 $customer = new Customer((int)$resetItem->kKunde);
-                if ($customer && $customer->cSperre !== 'Y') {
+                if ($customer->kKunde > 0 && $customer->cSperre !== 'Y') {
                     $customer->updatePassword($_POST['pw_new']);
                     Shop::Container()->getDB()->delete('tpasswordreset', 'kKunde', $customer->kKunde);
                     header('Location: ' . $linkHelper->getStaticRoute('jtl.php') . '?updated_pw=true');

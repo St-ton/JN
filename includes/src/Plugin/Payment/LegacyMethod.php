@@ -249,8 +249,7 @@ class LegacyMethod
      * @param Bestellung $order
      * @param string     $hash
      * @param array      $args
-     *
-     * @return true, if $order should be finalized
+     * @return bool - true, if $order should be finalized
      */
     public function finalizeOrder($order, $hash, $args)
     {

@@ -92,9 +92,9 @@ class SimpleMail
     private $cSMTPHost;
 
     /**
-     * SMTP Auth nutzen 0/1
+     * SMTP Auth nutzen '0'/'1'
      *
-     * @var int
+     * @var string
      */
     private $cSMTPAuth;
 
@@ -300,7 +300,7 @@ class SimpleMail
                 $mailer->Host          = $this->cSMTPHost;
                 $mailer->Port          = $this->cSMTPPort;
                 $mailer->SMTPKeepAlive = true;
-                $mailer->SMTPAuth      = $this->cSMTPAuth;
+                $mailer->SMTPAuth      = (int)$this->cSMTPAuth === 1;
                 $mailer->Username      = $this->cSMTPUser;
                 $mailer->Password      = $this->cSMTPPass;
                 break;

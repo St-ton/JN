@@ -33,6 +33,7 @@ use JTL\Review\ReviewController;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
+use JTL\Smarty\JTLSmarty;
 use JTL\Staat;
 use SmartyException;
 use stdClass;
@@ -389,9 +390,9 @@ class IOMethods
     }
 
     /**
-     * @param int   $type
-     * @param array $conf
-     * @param       $smarty
+     * @param int       $type
+     * @param array     $conf
+     * @param JTLSmarty $smarty
      * @return array
      */
     private function forceRenderBoxes(int $type, array $conf, $smarty): array
@@ -1182,19 +1183,15 @@ class IOMethods
         }
         $variationID    = 0;
         $variationValue = 0;
-        if (\count($selectedVariationValues) > 0) {
-            $combinations = [];
-            $i            = 0;
-            foreach ($selectedVariationValues as $id => $value) {
-                if ($i++ === 0) {
-                    $variationID    = $id;
-                    $variationValue = $value;
-                } else {
-                    $combinations[] = "($id, $value)";
-                }
+        $combinations   = [];
+        $i              = 0;
+        foreach ($selectedVariationValues as $id => $value) {
+            if ($i++ === 0) {
+                $variationID    = $id;
+                $variationValue = $value;
+            } else {
+                $combinations[] = "($id, $value)";
             }
-        } else {
-            $combinations = null;
         }
 
         $combinationSQL = ($combinations !== null && \count($combinations) > 0)
@@ -1337,7 +1334,7 @@ class IOMethods
      * @param string $curPageId
      * @param string $adminSessionToken
      * @param array  $languages
-     * @param $currentLanguage
+     * @param array  $currentLanguage
      * @return IOResponse
      * @throws SmartyException|Exception
      */

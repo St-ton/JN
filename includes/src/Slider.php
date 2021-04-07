@@ -46,7 +46,7 @@ class Slider implements IExtensionPoint
     private $theme = '';
 
     /**
-     * @var int
+     * @var bool
      */
     private $isActive = false;
 

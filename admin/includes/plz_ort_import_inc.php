@@ -313,7 +313,7 @@ function plzimportActionDoImport($target = '', $part = '', $step = 0): stdClass
     $step   = (int)$step;
 
     session_write_close();
-    ini_set('max_execution_time', 30);
+    ini_set('max_execution_time', '30');
 
     if (empty($part)) {
         $part = 'download';
@@ -382,7 +382,7 @@ function plzimportActionResetImport($type = 'success', $message = ''): stdClass
 }
 
 /**
- * @return object
+ * @return stdClass
  */
 function plzimportActionCallStatus(): stdClass
 {
@@ -404,7 +404,7 @@ function plzimportActionCallStatus(): stdClass
 }
 
 /**
- * @return object
+ * @return stdClass
  */
 function plzimportActionCheckStatus(): stdClass
 {
@@ -625,7 +625,7 @@ function plzimportWriteSession($sessID, array $data): void
 
 /**
  * @param string $sessID
- * @return array
+ * @return mixed|array
  */
 function plzimportReadSession($sessID)
 {
@@ -637,9 +637,9 @@ function plzimportReadSession($sessID)
 }
 
 /**
- * @param mixed       $data
- * @param string|null $error
- * @return void
+ * @param mixed    $data
+ * @param int|null $error
+ * @deprecated since 5.0.0
  */
 function plzimportMakeResponse($data, $error = null)
 {

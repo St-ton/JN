@@ -79,7 +79,7 @@ class Zahlungsart extends MainModel
     public $nWaehrendBestellung;
 
     /**
-     * @var string
+     * @var int
      */
     public $nCURL;
 

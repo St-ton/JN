@@ -72,7 +72,7 @@ class Cart
     public $Waehrung;
 
     /**
-     * @var Versandart
+     * @var Versandart|null
      */
     public $oFavourableShipping;
 
@@ -623,8 +623,8 @@ class Cart
      * erstellt eine Spezialposition im Warenkorb
      *
      * @param string|array $name
-     * @param string       $qty
-     * @param string       $price
+     * @param string|int   $qty
+     * @param float|string $price
      * @param int          $taxClassID
      * @param int          $type
      * @param bool         $delSamePosType

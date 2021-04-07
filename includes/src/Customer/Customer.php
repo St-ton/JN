@@ -842,11 +842,9 @@ class Customer
             ReturnType::AFFECTED_ROWS
         );
 
-        $linkParams             = ['fpwh' => $key];
         $obj                    = new stdClass();
         $obj->tkunde            = $this;
-        $obj->passwordResetLink = $linkHelper->getStaticRoute('pass.php') .
-            '?' . \http_build_query($linkParams, null, '&');
+        $obj->passwordResetLink = $linkHelper->getStaticRoute('pass.php') . '?' . \http_build_query(['fpwh' => $key]);
         $obj->cHash             = $key;
         $obj->neues_passwort    = 'Es ist leider ein Fehler aufgetreten. Bitte kontaktieren Sie uns.';
 

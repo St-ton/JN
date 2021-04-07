@@ -4,7 +4,7 @@
     {/block}
 
     {block name='basket-index-content'}
-        {container fluid=$Link->getIsFluid() class="basket"}
+        {container fluid=$Link->getIsFluid() class="basket {if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
             {row}
                 {block name='basket-index-main'}
                 {col cols=12 lg="{if ($Warenkorb->PositionenArr|@count > 0)}7{else}12{/if}"}

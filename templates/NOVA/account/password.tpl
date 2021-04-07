@@ -8,11 +8,11 @@
             {include file='snippets/extension.tpl'}
         {/block}
         {block name='account-password-heading'}
-            {container fluid=$Link->getIsFluid() class="account-password-heading"}
+            {container fluid=$Link->getIsFluid() class="account-password-heading {if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
                 <h1>{lang key='forgotPassword' section='global'}</h1>
             {/container}
         {/block}
-        {container fluid=$Link->getIsFluid() class="account-password"}
+        {container fluid=$Link->getIsFluid() class="account-password {if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
             {if $step === 'formular'}
                 {row}
                     {col cols=12 lg=8}

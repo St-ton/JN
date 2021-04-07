@@ -442,7 +442,8 @@
     {block name='layout-header-content-all-starttags'}
         {block name='layout-header-content-wrapper-starttag'}
             <div id="content-wrapper"
-                 class="{if ($Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}is-item-list container-fluid container-fluid-xl{/if}
+                 class="{if ($Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}has-left-sidebar container-fluid container-fluid-xl{/if}
+                 {if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}is-item-list{/if}
                         {if $isFluidBanner || $isFluidSlider} has-fluid{/if}">
         {/block}
 

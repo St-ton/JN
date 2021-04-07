@@ -8,7 +8,7 @@
     {block name='comparelist-index-content'}
         {block name='comparelist-index-heading'}
             {opcMountPoint id='opc_before_heading' inContainer=false}
-            {container fluid=$Link->getIsFluid()}
+            {container fluid=$Link->getIsFluid() class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
                 <h1 class="h2">{lang key='compare' section='global'}</h1>
                 {if !$isAjax}
                     <hr class="hr-no-top">
@@ -22,7 +22,7 @@
         {if $oVergleichsliste->oArtikel_arr|@count > 0}
             {block name='comparelist-index-filter'}
                 {opcMountPoint id='opc_before_filter' inContainer=false}
-                {container fluid=$Link->getIsFluid()}
+                {container fluid=$Link->getIsFluid() class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
                     <div id="filter-checkboxes">
                         {block name='comparelist-index-filter-buttons'}
                             {row}
@@ -82,7 +82,7 @@
                 {/container}
             {/block}
             {block name='comparelist-index-products'}
-                {container fluid=$Link->getIsFluid()}
+                {container fluid=$Link->getIsFluid() class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
                     {block name='comparelist-index-products-header-label'}
                         {button size="sm" variant="outline-secondary" id="switch-label"}
                             <span class="comparelist-label d-none">{lang key='showLabels' section='comparelist'}</span>
@@ -293,7 +293,7 @@
             {/block}
         {else}
             {block name='comparelist-index-empty'}
-                {container fluid=$Link->getIsFluid()}
+                {container fluid=$Link->getIsFluid() class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
                     {lang key='compareListNoItems'}
                 {/container}
             {/block}

@@ -71,7 +71,7 @@
             {opcMountPoint id='opc_before_tabs' inContainer=false}
             {if $tabanzeige && !$isMobile}
                 {block name='productdetails-tabs-tabs'}
-                    {container}
+                    {container class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
                         <nav class="tab-navigation">
                         {tabs id="product-tabs"}
                         {if $useDescription}
@@ -169,7 +169,7 @@
                 {/block}
             {else}
                 {block name='productdetails-tabs-no-tabs'}
-                    {container}
+                    {container class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
                         <div class="accordion" id="tabAccordion">
                             {if $useDescription}
                                 {block name='productdetails-tabs-description'}

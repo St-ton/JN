@@ -248,7 +248,7 @@ final class Characteristics extends AbstractSync
                     $item->kSprache_arr[] = $loc->kSprache;
                 }
 
-                if (isset($loc->kSprache, $defaultLangID) && $loc->kSprache === $defaultLangID) {
+                if ($loc->kSprache === $defaultLangID) {
                     $item->cNameSTD            = $loc->cWert;
                     $item->cSeoSTD             = $loc->cSeo;
                     $item->cMetaTitleSTD       = $loc->cMetaTitle;

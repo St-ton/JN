@@ -246,12 +246,12 @@ interface BoxInterface
     public function setConfig(array $config): void;
 
     /**
-     * @return null|string
+     * @return string
      */
     public function getJSON(): string;
 
     /**
-     * @param null|string $json
+     * @param string $json
      */
     public function setJSON(string $json): void;
 

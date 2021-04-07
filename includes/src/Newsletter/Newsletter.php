@@ -7,6 +7,7 @@ use JTL\Campaign;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Hersteller;
 use JTL\Catalog\Product\Artikel;
+use JTL\Customer\Customer;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Mail\Mail\Mail;
@@ -226,13 +227,13 @@ class Newsletter
     }
 
     /**
-     * @param object   $newsletter
-     * @param stdClass $recipients
-     * @param array    $products
-     * @param array    $manufacturers
-     * @param array    $categories
-     * @param string   $campaign
-     * @param string   $oKunde
+     * @param object          $newsletter
+     * @param stdClass        $recipients
+     * @param array           $products
+     * @param array           $manufacturers
+     * @param array           $categories
+     * @param Campaign|string $campaign
+     * @param Customer|string $customer
      * @return string|bool
      */
     public function send(
@@ -242,11 +243,11 @@ class Newsletter
         $manufacturers = [],
         $categories = [],
         $campaign = '',
-        $oKunde = ''
+        $customer = ''
     ) {
         $this->smarty->assign('oNewsletter', $newsletter)
             ->assign('Emailempfaenger', $recipients)
-            ->assign('Kunde', $oKunde)
+            ->assign('Kunde', $customer)
             ->assign('Artikelliste', $products)
             ->assign('Herstellerliste', $manufacturers)
             ->assign('Kategorieliste', $categories)
@@ -259,13 +260,13 @@ class Newsletter
             );
         $net      = 0;
         $bodyHtml = '';
-        if (isset($oKunde->kKunde) && $oKunde->kKunde > 0) {
+        if (isset($customer->kKunde) && $customer->kKunde > 0) {
             $oKundengruppe = $this->db->query(
                 'SELECT tkundengruppe.nNettoPreise
                 FROM tkunde
                 JOIN tkundengruppe
                     ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
-                WHERE tkunde.kKunde = ' . (int)$oKunde->kKunde,
+                WHERE tkunde.kKunde = ' . (int)$customer->kKunde,
                 ReturnType::SINGLE_OBJECT
             );
             if (isset($oKundengruppe->nNettoPreise)) {
@@ -306,8 +307,8 @@ class Newsletter
             return $e->getMessage();
         }
         $toName = ($recipients->cVorname ?? '') . ' ' . ($recipients->cNachname ?? '');
-        if (isset($oKunde->kKunde) && $oKunde->kKunde > 0) {
-            $toName = ($oKunde->cVorname ?? '') . ' ' . ($oKunde->cNachname ?? '');
+        if (isset($customer->kKunde) && $customer->kKunde > 0) {
+            $toName = ($customer->cVorname ?? '') . ' ' . ($customer->cNachname ?? '');
         }
         $mailer                 = Shop::Container()->get(Mailer::class);
         $config                 = [

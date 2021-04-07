@@ -373,7 +373,6 @@ class CartItem
      */
     public function setzeGesamtpreisLocalized(): self
     {
-        /** @var array('Warenkorb' => Warenkorb) $_SESSION */
         if (!\is_array($_SESSION['Waehrungen'])) {
             return $this;
         }

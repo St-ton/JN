@@ -381,7 +381,6 @@ class ProductFilterURL
 
         $extraFilter = (new Search($this->productFilter))->init(null)->setDoUnset(true);
         foreach ($this->productFilter->getSearchFilter() as $searchFilter) {
-            /** @var Option $option */
             if (($value = $searchFilter->getValue()) > 0) {
                 $_url = $this->getURL($extraFilter);
                 $url->addSearchFilter($value, $_url);

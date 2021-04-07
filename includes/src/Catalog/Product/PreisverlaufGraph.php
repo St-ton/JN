@@ -252,7 +252,7 @@ class PreisverlaufGraph
     /**
      * Array von Preissteps für die Berechnung der Y-Achsen Legende
      *
-     * @var float
+     * @var float[]
      */
     public $fStepWert_arr;
 
@@ -287,49 +287,49 @@ class PreisverlaufGraph
     /**
      * Währung und Steuersatz der Preise
      *
-     * @var array
+     * @var object
      */
     public $oPreisConfig;
 
     /**
      * Bild vom Graphen
      *
-     * @var string image
+     * @var resource
      */
     public $image;
 
     /**
      * Hintergrundfarbe des Bildes
      *
-     * @var string
+     * @var int[]
      */
     public $ColorBackground;
 
     /**
      * Gridfarbe
      *
-     * @var string
+     * @var int[]
      */
     public $ColorGrid;
 
     /**
      * Graphenfarbe
      *
-     * @var string
+     * @var int[]
      */
     public $ColorGraph;
 
     /**
      * Boxfarbe
      *
-     * @var string
+     * @var int[]
      */
     public $ColorBox;
 
     /**
      * Textfarbe
      *
-     * @var string
+     * @var int[]
      */
     public $ColorText;
 
@@ -809,7 +809,7 @@ class PreisverlaufGraph
      * Berechnet zu jedem Preis aus der Datenbank, den Y Punkt
      *
      * @param float $fVKNetto
-     * @return int
+     * @return int|float
      */
     public function holeYPreis($fVKNetto)
     {

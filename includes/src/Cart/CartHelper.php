@@ -1388,7 +1388,7 @@ class CartHelper
      * @param int|string|float $qty
      * @param array            $attrValues
      * @param int              $redirect
-     * @param string           $unique
+     * @param string|bool      $unique
      * @param int              $configItemID
      * @param stdClass|null    $options
      * @param bool             $setzePositionsPreise
@@ -1572,7 +1572,6 @@ class CartHelper
      */
     public static function applyCartChanges(): void
     {
-        /** @var array('Warenkorb' => Warenkorb) $_SESSION */
         unset($_SESSION['cPlausi_arr'], $_SESSION['cPost_arr']);
         // Gratis Geschenk wurde hinzugefuegt
         if (isset($_POST['gratishinzufuegen'])) {
@@ -2036,8 +2035,8 @@ class CartHelper
     }
 
     /**
-     * @param float|string $quantity
-     * @param float|string $multiple
+     * @param float $quantity
+     * @param float $multiple
      * @return bool
      */
     public static function isMultiple(float $quantity, float $multiple): bool

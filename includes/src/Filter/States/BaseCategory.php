@@ -55,11 +55,11 @@ class BaseCategory extends AbstractFilter
 
     /**
      * @param bool $includeSubCategories
-     * @return Category
+     * @return $this
      */
-    public function setIncludeSubCategories($includeSubCategories): self
+    public function setIncludeSubCategories(bool $includeSubCategories): self
     {
-        $this->includeSubCategories = (bool)$includeSubCategories;
+        $this->includeSubCategories = $includeSubCategories;
 
         return $this;
     }

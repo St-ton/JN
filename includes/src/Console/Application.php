@@ -37,9 +37,9 @@ use Symfony\Component\Finder\SplFileInfo;
 
 /**
  * Class Application
- * @property ConsoleIO io
- * @property bool      devMode
- * @property bool      isInstalled
+ * @property ConsoleIO $io
+ * @property bool      $devMode
+ * @property bool      $isInstalled
  * @package JTL\Console
  */
 class Application extends BaseApplication
@@ -85,8 +85,8 @@ class Application extends BaseApplication
             return;
         }
         $db      = Shop::Container()->getDB();
-        $version = $db->select('tversion', [], [], ReturnType::SINGLE_OBJECT);
-        if (Version::parse($version->nVersion ?? 400)->smallerThan(Version::parse(500))) {
+        $version = $db->select('tversion', [], []);
+        if (Version::parse($version->nVersion ?? '400')->smallerThan(Version::parse('500'))) {
             return;
         }
         $cache           = Shop::Container()->getCache();

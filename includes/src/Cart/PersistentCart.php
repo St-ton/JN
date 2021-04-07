@@ -478,13 +478,13 @@ class PersistentCart
     }
 
     /**
-     * @param int    $productID
-     * @param float  $amount
-     * @param array  $attributeValues
-     * @param bool   $unique
-     * @param int    $configItemID
-     * @param int    $type
-     * @param string $responsibility
+     * @param int         $productID
+     * @param float       $amount
+     * @param array       $attributeValues
+     * @param bool|string $unique
+     * @param int         $configItemID
+     * @param int         $type
+     * @param string      $responsibility
      */
     public static function addToCheck(
         int $productID,
@@ -597,17 +597,17 @@ class PersistentCart
                 continue;
             }
             $configItem = $db->queryPrepared(
-                'SELECT * FROM tkonfigitem WHERE kKonfigitem=:konfigItemId ',
+                'SELECT * FROM tkonfigitem WHERE kKonfigitem = :konfigItemId ',
                 ['konfigItemId' => (int)$item->kKonfigitem],
                 ReturnType::SINGLE_OBJECT
             );
 
             $checkParentsExistence = $db->queryPrepared(
                 'SELECT * FROM tartikelkonfiggruppe 
-                    WHERE kArtikel =:parentID
-                    AND kKonfiggruppe=:configItemGroupId',
+                    WHERE kArtikel = :parentID
+                    AND kKonfiggruppe = :configItemGroupId',
                 [
-                    'parentID' => $mainKonfigProduct[0]->kArtikel,
+                    'parentID'          => $mainKonfigProduct[0]->kArtikel,
                     'configItemGroupId' => $configItem->kKonfiggruppe,
                 ],
                 ReturnType::ARRAY_OF_OBJECTS

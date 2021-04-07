@@ -476,7 +476,7 @@ class AccountController
     }
 
     /**
-     * @param array $coupons
+     * @param Kupon[] $coupons
      */
     private function checkCoupons(array $coupons): void
     {
@@ -664,7 +664,7 @@ class AccountController
                     ReturnType::SINGLE_OBJECT
                 );
                 if (isset($present->kArtikel) && $present->kArtikel > 0) {
-                    PersistentCart::addToCheck($productID, 1, [], null, 0, \C_WARENKORBPOS_TYP_GRATISGESCHENK);
+                    PersistentCart::addToCheck($productID, 1, [], false, 0, \C_WARENKORBPOS_TYP_GRATISGESCHENK);
                 }
             } else {
                 PersistentCart::addToCheck(

@@ -42,7 +42,7 @@ class Merkmal
     public $cBildpfadKlein;
 
     /**
-     * @var string
+     * @var int
      */
     public $nBildKleinVorhanden;
 
@@ -52,7 +52,7 @@ class Merkmal
     public $cBildpfadGross;
 
     /**
-     * @var string
+     * @var int
      */
     public $nBildGrossVorhanden;
 

@@ -28,12 +28,15 @@ class Filesystem extends \League\Flysystem\Filesystem
     protected $adapter;
 
     /**
-     * @inheritDoc
+     * Filesystem constructor.
+     * @param FilesystemAdapter   $adapter
+     * @param array               $config
+     * @param PathNormalizer|null $pathNormalizer
      */
     public function __construct(FilesystemAdapter $adapter, array $config = [], PathNormalizer $pathNormalizer = null)
     {
         $this->adapter = $adapter;
-        parent::__construct($adapter, $config);
+        parent::__construct($adapter, $config, $pathNormalizer);
     }
 
     /**
@@ -120,9 +123,7 @@ class Filesystem extends \League\Flysystem\Filesystem
                 throw new Exception('Could not extract file from archive.');
             }
             $file = Path::combine($location, $info['name']);
-            if ($this->write($file, $contents) === false) {
-                throw new Exception(\sprintf('Could not copy file "%s" (%d)', $file, \strlen($contents)));
-            }
+            $this->write($file, $contents);
         }
         $zipArchive->close();
 

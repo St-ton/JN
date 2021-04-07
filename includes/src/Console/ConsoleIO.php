@@ -47,12 +47,12 @@ class ConsoleIO extends OutputStyle
     private $output;
 
     /**
-     * @var
+     * @var SymfonyQuestionHelper|null
      */
     private $questionHelper;
 
     /**
-     * @var
+     * @var ProgressBar|null
      */
     private $progressBar;
 
@@ -158,7 +158,7 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * @param $message
+     * @param string $message
      * @return $this
      */
     public function overwrite($message)
@@ -194,12 +194,12 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * @param      $process
-     * @param null $format
-     * @param bool $clearMessage
+     * @param callable    $process
+     * @param string|null $format
+     * @param bool        $clearMessage
      * @return $this
      */
-    public function progress($process, $format = null, $clearMessage = true)
+    public function progress($process, $format = null, bool $clearMessage = true)
     {
         $progress = parent::createProgressBar();
 
@@ -259,9 +259,9 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * @param $current
-     * @param $limit
-     * @param $step
+     * @param int    $current
+     * @param int    $limit
+     * @param string $step
      * @return $this
      */
     public function setStep($current, $limit, $step)
@@ -272,8 +272,8 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * @param      $title
-     * @param null $sub
+     * @param string      $title
+     * @param string|null $sub
      * @return $this
      */
     public function setLabel($title, $sub = null)
@@ -348,7 +348,7 @@ class ConsoleIO extends OutputStyle
         $length += \strlen($prefix) * 2;
 
         foreach ($lines as &$line) {
-            $line  = \sprintf('%s%s', $prefix, $line);
+            $line = \sprintf('%s%s', $prefix, $line);
             $line .= \str_repeat(' ', $length - Helper::strlenWithoutDecoration($this->getFormatter(), $line));
 
             if ($style) {
@@ -364,7 +364,7 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function title($message)
     {
@@ -385,7 +385,7 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function section($message)
     {
@@ -406,7 +406,7 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function listing(array $elements)
     {
@@ -426,7 +426,7 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function text($message)
     {
@@ -466,7 +466,7 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function success($message)
     {
@@ -474,7 +474,7 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function error($message)
     {
@@ -482,7 +482,7 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function warning($message)
     {
@@ -490,7 +490,7 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function note($message)
     {
@@ -498,7 +498,7 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function caution($message)
     {
@@ -506,7 +506,7 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function table(array $headers, array $rows, array $options = [])
     {
@@ -536,7 +536,7 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function ask($question, $default = null, $validator = null)
     {
@@ -547,7 +547,7 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function askHidden($question, $validator = null)
     {
@@ -560,7 +560,7 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function confirm($question, $default = true)
     {
@@ -568,7 +568,7 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function choice($question, array $choices, $default = null)
     {
@@ -581,7 +581,7 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function progressStart($max = 0)
     {
@@ -592,7 +592,7 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function progressAdvance($step = 1)
     {
@@ -602,7 +602,7 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function progressFinish()
     {
@@ -614,7 +614,7 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function createProgressBar($max = 0)
     {
@@ -631,7 +631,6 @@ class ConsoleIO extends OutputStyle
 
     /**
      * @param Question $question
-     *
      * @return string
      */
     public function askQuestion(Question $question)
@@ -654,7 +653,7 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function writeln($messages, $type = self::OUTPUT_NORMAL)
     {
@@ -665,7 +664,7 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function write($messages, $newline = false, $type = self::OUTPUT_NORMAL)
     {
@@ -676,7 +675,7 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function newLine($count = 1)
     {
@@ -741,7 +740,7 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * @param $messages
+     * @param array|mixed $messages
      * @return array
      */
     private function reduceBuffer($messages)

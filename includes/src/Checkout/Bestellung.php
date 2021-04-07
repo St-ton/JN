@@ -242,22 +242,22 @@ class Bestellung
     public $dErstelldatum_en;
 
     /**
-     * @var
+     * @var string
      */
     public $cBestellwertLocalized;
 
     /**
-     * @var
+     * @var Currency
      */
     public $Waehrung;
 
     /**
-     * @var
+     * @var array
      */
     public $Steuerpositionen;
 
     /**
-     * @var
+     * @var string
      */
     public $Status;
 

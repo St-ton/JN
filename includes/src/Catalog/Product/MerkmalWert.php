@@ -88,7 +88,7 @@ class MerkmalWert
     public $cBildpfadKlein;
 
     /**
-     * @var string
+     * @var int
      */
     public $nBildKleinVorhanden;
 
@@ -98,7 +98,7 @@ class MerkmalWert
     public $cBildpfadNormal;
 
     /**
-     * @var string
+     * @var int
      */
     public $nBildNormalVorhanden;
 

@@ -183,7 +183,7 @@ class Configurator
         $product = new Artikel();
         $product->fuelleArtikel($productID, Artikel::getDefaultOptions());
         // Grundpreis
-        if ($product && (int)$product->kArtikel > 0) {
+        if ($product !== null && $product->kArtikel > 0) {
             $total = $product->Preise->fVKNetto;
         }
         $total  = self::getTotal($total, $configItems);
@@ -204,8 +204,8 @@ class Configurator
     }
 
     /**
-     * @param float $total
-     * @param array $configItems
+     * @param float  $total
+     * @param Item[] $configItems
      * @return float|int
      */
     private static function getTotal(float $total, array $configItems)

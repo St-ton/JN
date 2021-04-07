@@ -101,7 +101,7 @@ class Item implements JsonSerializable
     protected $oPreis;
 
     /**
-     * @var Artikel
+     * @var Artikel|null
      */
     protected $oArtikel;
 

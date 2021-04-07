@@ -68,17 +68,17 @@ interface DbInterface extends \Serializable
     /**
      * insert row into db
      *
-     * @param string   $tableName - table name
-     * @param object   $object - object to insert
-     * @param int|bool $echo - true -> print statement
+     * @param string $tableName - table name
+     * @param object $object - object to insert
+     * @param bool   $echo - true -> print statement
      * @return int - 0 if fails, PrimaryKeyValue if successful
      */
     public function insertRow(string $tableName, $object, bool $echo = false): int;
 
     /**
-     * @param string   $tableName
-     * @param object   $object
-     * @param int|bool $echo
+     * @param string $tableName
+     * @param object $object
+     * @param bool   $echo
      * @return int
      */
     public function insert(string $tableName, $object, bool $echo = false): int;
@@ -90,7 +90,7 @@ interface DbInterface extends \Serializable
      * @param string|array     $keyname - Name of Key which should be compared
      * @param int|string|array $keyvalue - Value of Key which should be compared
      * @param object           $object - object to update with
-     * @param int|bool         $echo - true -> print statement
+     * @param bool             $echo - true -> print statement
      * @return int - -1 if fails, number of affected rows if successful
      */
     public function updateRow(string $tableName, $keyname, $keyvalue, $object, bool $echo = false): int;
@@ -100,7 +100,7 @@ interface DbInterface extends \Serializable
      * @param string|array     $keyname
      * @param string|int|array $keyvalue
      * @param object           $object
-     * @param bool|int         $echo
+     * @param bool             $echo
      * @return int
      */
     public function update(string $tableName, $keyname, $keyvalue, $object, bool $echo = false): int;
@@ -214,7 +214,7 @@ interface DbInterface extends \Serializable
      * 9  - array of fetched assoc arrays
      * 10 - result of querysingle
      * 11 - fetch both arrays
-     * @param int|bool      $echo print current stmt
+     * @param bool          $echo print current stmt
      * @param callable|null $fnInfo statistic callback
      * @return array|object|int - 0 if fails, 1 if successful or LastInsertID if specified
      * @throws \InvalidArgumentException
@@ -224,7 +224,7 @@ interface DbInterface extends \Serializable
     /**
      * @param string   $stmt
      * @param int      $return
-     * @param int|bool $echo
+     * @param bool     $echo
      * @return int|object|array
      */
     public function query($stmt, $return, bool $echo = false);
@@ -244,7 +244,7 @@ interface DbInterface extends \Serializable
      * 9  - array of fetched assoc arrays
      * 10 - result of querysingle
      * 11 - fetch both arrays
-     * @param int|bool      $echo print current stmt
+     * @param bool          $echo print current stmt
      * @param callable|null $fnInfo statistic callback
      * @return array|object|int|bool - 0 if fails, 1 if successful or LastInsertID if specified
      * @throws \InvalidArgumentException
@@ -261,7 +261,7 @@ interface DbInterface extends \Serializable
      * @param string   $stmt
      * @param array    $params
      * @param int      $return
-     * @param int|bool $echo
+     * @param bool     $echo
      * @param mixed    $fnINfo
      * @return int|object|array
      */
@@ -279,7 +279,7 @@ interface DbInterface extends \Serializable
      * @param string           $tableName - table name
      * @param string|array     $keyname - Name of Key which should be compared
      * @param string|int|array $keyvalue - Value of Key which should be compared
-     * @param bool|int         $echo - true -> print statement
+     * @param bool             $echo - true -> print statement
      * @return int - -1 if fails, #affectedRows if successful
      */
     public function deleteRow(string $tableName, $keyname, $keyvalue, bool $echo = false): int;
@@ -288,7 +288,7 @@ interface DbInterface extends \Serializable
      * @param string           $tableName
      * @param string|array     $keyname
      * @param string|int|array $keyvalue
-     * @param bool|int         $echo
+     * @param bool             $echo
      * @return int
      */
     public function delete(string $tableName, $keyname, $keyvalue, bool $echo = false): int;

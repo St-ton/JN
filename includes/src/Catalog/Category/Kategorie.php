@@ -294,7 +294,7 @@ class Kategorie
         if (!empty($item->cSeo) || \EXPERIMENTAL_MULTILANG_SHOP !== true) {
             return;
         }
-        $defaultLangID = (int)($tmpLang->kSprache ?? LanguageHelper::getDefaultLanguage()->kSprache);
+        $defaultLangID = LanguageHelper::getDefaultLanguage()->kSprache;
         if ($languageID !== $defaultLangID) {
             $seo = $db->select(
                 'tseo',

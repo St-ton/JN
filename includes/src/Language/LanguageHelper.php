@@ -61,7 +61,7 @@ class LanguageHelper
     /**
      * compatability only
      *
-     * @var int
+     * @var string
      */
     public $cISOSprache = '';
 
@@ -346,8 +346,8 @@ class LanguageHelper
     }
 
     /**
-     * @param int $sectionID
-     * @param mixed null|string $default
+     * @param int               $sectionID
+     * @param mixed|null|string $default
      * @return string|null
      * @deprecated since 5.0.0
      */
@@ -415,7 +415,6 @@ class LanguageHelper
     /**
      * @param string $name
      * @param string $sectionName
-     * @param mixed [$arg1, ...]
      * @return string
      */
     public function getTranslation($name, $sectionName = 'global'): string
@@ -1057,8 +1056,8 @@ class LanguageHelper
         }
         $page = $linkID > 0 ? $ls->getPageLink($linkID) : null;
         if (\count(Frontend::getLanguages()) > 1) {
-            /** @var Artikel $AktuellerArtikel */
             foreach (Frontend::getLanguages() as $lang) {
+                /** @var Artikel $AktuellerArtikel */
                 $langID  = $lang->getId();
                 $langISO = $lang->getIso();
                 if (isset($AktuellerArtikel->cSprachURL_arr[$langISO])) {

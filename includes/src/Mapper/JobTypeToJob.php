@@ -23,7 +23,7 @@ class JobTypeToJob
 {
     /**
      * @param string $type
-     * @return JobInterface
+     * @return string
      */
     public function map(string $type): string
     {

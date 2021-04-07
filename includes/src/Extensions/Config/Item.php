@@ -121,7 +121,7 @@ class Item implements JsonSerializable
     protected $nSort = 0;
 
     /**
-     * @var int|null
+     * @var int|float|null
      */
     public $fAnzahl;
 

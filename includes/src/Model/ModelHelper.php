@@ -169,8 +169,7 @@ final class ModelHelper
     /**
      * @param string    $value
      * @param bool|null $default
-     *
-     * @return bool
+     * @return bool|null
      */
     public static function fromCharToBool($value, $default = null): ?bool
     {
@@ -191,9 +190,9 @@ final class ModelHelper
     }
 
     /**
-     * @param int       $value
-     * @param bool|null $default
-     * @return bool
+     * @param int             $value
+     * @param bool|mixed|null $default
+     * @return bool|null
      */
     public static function fromIntToBool($value, $default = null): ?bool
     {

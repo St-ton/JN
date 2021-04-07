@@ -198,7 +198,7 @@ class Admin
             $download  = $helper->getDownload($itemID);
             $result    = $action === self::ACTION_UPDATE
                 ? $installer->update($exsID, $download, $response)
-                : $installer->install($itemID, $download, $response, true);
+                : $installer->install($itemID, $download, $response);
             if ($result === InstallCode::DUPLICATE_PLUGIN_ID && $action !== self::ACTION_UPDATE) {
                 $download = $helper->getDownload($itemID);
                 $result   = $installer->forceUpdate($download, $response);

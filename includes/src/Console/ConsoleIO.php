@@ -348,7 +348,7 @@ class ConsoleIO extends OutputStyle
         $length += \strlen($prefix) * 2;
 
         foreach ($lines as &$line) {
-            $line = \sprintf('%s%s', $prefix, $line);
+            $line  = \sprintf('%s%s', $prefix, $line);
             $line .= \str_repeat(' ', $length - Helper::strlenWithoutDecoration($this->getFormatter(), $line));
 
             if ($style) {

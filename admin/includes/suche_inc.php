@@ -116,8 +116,8 @@ function adminMenuSearch($query)
 }
 
 /**
- * @param $haystack
- * @param $needle
+ * @param string $haystack
+ * @param string $needle
  * @return string
  */
 function highlightSearchTerm($haystack, $needle)

@@ -184,7 +184,7 @@ class Tax
     /**
      * @param array                  $items
      * @param int|bool               $net
-     * @param true                   $html
+     * @param bool                   $html
      * @param Currency|stdClass|null $currency
      * @return array
      * @former gibAlteSteuerpositionen()

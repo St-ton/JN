@@ -281,7 +281,7 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
-     * @param null|string $section
+     * @param null|int $section
      * @param null|string $name
      * @return mixed|null
      */

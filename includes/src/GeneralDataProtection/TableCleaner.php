@@ -2,9 +2,11 @@
 
 namespace JTL\GeneralDataProtection;
 
+use DateTime;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Shop;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class TableCleaner
@@ -18,12 +20,12 @@ class TableCleaner
     /**
      * object wide date at the point of instanciating
      *
-     * @var object DateTime
+     * @var DateTime
      */
     private $now;
 
     /**
-     * @var object Monolog\Logger
+     * @var LoggerInterface|null
      */
     private $logger;
 

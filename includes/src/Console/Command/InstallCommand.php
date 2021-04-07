@@ -224,7 +224,7 @@ class InstallCommand extends Command
         foreach ($systemCheckResults['testresults'] as $resultGroup) {
             foreach ($resultGroup as $test) {
                 $result = (int)$test->getResult();
-                if (isset($result) && $result !== 0) {
+                if ($result !== 0) {
                     $systemCheckFailed = true;
                 }
             }
@@ -242,13 +242,13 @@ class InstallCommand extends Command
 
         $io->setStep($this->currentStep++, $this->steps, 'Setting permissions');
         if ($this->currentUser !== $fileOwner) {
-            foreach ($localFilesystem->listContents(\PFAD_ROOT, true) as $path) {
-                \chown(\PFAD_ROOT . $path->path, $fileOwner);
-                \chgrp(\PFAD_ROOT . $path->path, $fileGroup);
+            foreach ($localFilesystem->listContents(\PFAD_ROOT, true) as $item) {
+                $path = $item->path();
+                \chown(\PFAD_ROOT . $path, $fileOwner);
+                \chgrp(\PFAD_ROOT . $path, $fileGroup);
             }
             \chown(\PFAD_ROOT, $fileOwner);
         }
-
         foreach (self::$writeablePaths as $path) {
             \chmod($path, 0777);
         }

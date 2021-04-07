@@ -226,7 +226,7 @@ class ProductFilter
     private $cache;
 
     /**
-     * @var Config
+     * @var ConfigInterface
      */
     private $filterConfig;
 
@@ -1806,14 +1806,14 @@ class ProductFilter
         if (!empty($stateCondition)) {
             $conditions[] = $stateCondition;
         }
-        /** @var FilterInterface $filter */
         foreach ($this->getActiveFilters(true, $ignore) as $type => $active) {
+            /** @var FilterInterface[] $active */
             if ($type !== 'misc' && $type !== 'custom' && \count($active) > 1) {
                 $orFilters = select($active, static function (FilterInterface $f) {
                     return $f->getType() === Type::OR;
                 });
-                /** @var AbstractFilter $filter */
                 foreach ($active as $filter) {
+                    /** @var AbstractFilter $filter */
                     // the built-in filter behave quite strangely and have to be combined this way
                     $joins[] = $filter->getSQLJoin();
                     if (!\in_array($filter, $orFilters, true)) {

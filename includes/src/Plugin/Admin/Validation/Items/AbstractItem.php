@@ -4,6 +4,7 @@ namespace JTL\Plugin\Admin\Validation\Items;
 
 use JTL\Plugin\Admin\Validation\ValidationItemInterface;
 use JTL\Plugin\InstallCode;
+use JTL\Shop;
 
 /**
  * Class AbstractItem
@@ -32,9 +33,9 @@ class AbstractItem implements ValidationItemInterface
     protected $dir = '';
 
     /**
-     * @var int
+     * @var string
      */
-    protected $version = 100;
+    protected $version = '100';
 
     /**
      * @var string

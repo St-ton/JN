@@ -14,17 +14,17 @@ class XML
     public $parser;
 
     /**
-     * @var
+     * @var array
      */
     public $document;
 
     /**
-     * @var
+     * @var array|string
      */
     public $parent;
 
     /**
-     * @var
+     * @var array
      */
     public $stack;
 
@@ -42,7 +42,7 @@ class XML
      * XML constructor.
      * @param string $encoding
      */
-    public function __construct($encoding)
+    public function __construct(string $encoding)
     {
         $this->parser = \xml_parser_create($encoding);
         \xml_parser_set_option($this->parser, \XML_OPTION_CASE_FOLDING, false);
@@ -69,7 +69,7 @@ class XML
      * @param string $encoding
      * @return array|null
      */
-    public static function unserialize(&$xml, $encoding = 'UTF-8'): ?array
+    public static function unserialize(&$xml, string $encoding = 'UTF-8'): ?array
     {
         $parser = new self($encoding);
         $data   = $parser->parse($xml);

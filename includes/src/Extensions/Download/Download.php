@@ -100,6 +100,11 @@ class Download
     private $licenseOK;
 
     /**
+     * @var string
+     */
+    private $cLimit;
+
+    /**
      * Download constructor.
      * @param int  $id
      * @param int  $languageID
@@ -180,6 +185,10 @@ class Download
                 ['dlid' => $this->kDownload],
                 ReturnType::ARRAY_OF_OBJECTS
             );
+            foreach ($this->oArtikelDownload_arr as $dla) {
+                $dla->kArtikel  = (int)$dla->kArtikel;
+                $dla->kDownload = (int)$dla->kDownload;
+            }
         }
     }
 
@@ -366,7 +375,7 @@ class Download
             }
             foreach ($order->Positionen as $item) {
                 foreach ($download->oArtikelDownload_arr as $donwloadItem) {
-                    if ($item->kArtikel != $donwloadItem->kArtikel) {
+                    if ((int)$item->kArtikel !== $donwloadItem->kArtikel) {
                         continue;
                     }
                     // Check Anzahl

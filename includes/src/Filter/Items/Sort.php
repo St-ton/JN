@@ -27,7 +27,7 @@ class Sort extends AbstractFilter
     /**
      * @var Collection
      */
-    private $sortingOptions = [];
+    private $sortingOptions;
 
     /**
      * @var SortingOptionInterface
@@ -46,6 +46,7 @@ class Sort extends AbstractFilter
      */
     public function __construct(ProductFilter $productFilter)
     {
+        $this->sortingOptions = new Collection();
         parent::__construct($productFilter);
         $this->setIsCustom(false)
              ->setUrlParam('Sortierung')

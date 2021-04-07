@@ -56,7 +56,7 @@ class BoxService implements BoxServiceInterface
     public $visibilities;
 
     /**
-     * @var Factory
+     * @var FactoryInterface
      */
     private $factory;
 

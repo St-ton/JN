@@ -367,17 +367,17 @@ class Artikel
     public $bSuchspecial_arr;
 
     /**
-     * @var stdClass
+     * @var Image\Overlay
      */
     public $oSuchspecialBild;
 
     /**
-     * @var bool
+     * @var int
      */
     public $bIsBestseller;
 
     /**
-     * @var bool
+     * @var int
      */
     public $bIsTopBewertet;
 
@@ -402,7 +402,7 @@ class Artikel
     public $nVariationsAufpreisVorhanden;
 
     /**
-     * @var
+     * @var string
      */
     public $cMedienDateiAnzeige;
 
@@ -412,7 +412,7 @@ class Artikel
     public $oVariationKombi_arr = [];
 
     /**
-     * @var
+     * @var array
      */
     public $VariationenOhneFreifeld = [];
 
@@ -422,7 +422,7 @@ class Artikel
     public $oVariationenNurKind_arr = [];
 
     /**
-     * @var
+     * @var stdClass|null
      */
     public $Lageranzeige;
 
@@ -482,7 +482,7 @@ class Artikel
     public $kEigenschaftKombi_arr;
 
     /**
-     * @var
+     * @var null
      */
     public $oVariationKombiVorschauText;
 
@@ -497,17 +497,17 @@ class Artikel
     public $oVariationDetailPreis_arr;
 
     /**
-     * @var
+     * @var Artikel|null
      */
     public $oProduktBundleMain;
 
     /**
-     * @var
+     * @var stdClass|null
      */
     public $oProduktBundlePrice;
 
     /**
-     * @var
+     * @var int
      */
     public $inWarenkorbLegbar;
 
@@ -522,7 +522,7 @@ class Artikel
     public $oVariationKombiVorschau_arr;
 
     /**
-     * @var
+     * @var bool|null
      */
     public $cVariationenbilderVorhanden;
 
@@ -542,7 +542,7 @@ class Artikel
     public $nVariationOhneFreifeldAnzahl;
 
     /**
-     * @var
+     * @var Bewertung|null
      */
     public $Bewertungen;
 
@@ -552,12 +552,12 @@ class Artikel
     public $fDurchschnittsBewertung;
 
     /**
-     * @var
+     * @var Bewertung|null
      */
     public $HilfreichsteBewertung;
 
     /**
-     * @var
+     * @var array|null
      */
     public $similarProducts;
 
@@ -567,12 +567,12 @@ class Artikel
     public $cacheID;
 
     /**
-     * @var
+     * @var Versandart|null
      */
     public $oFavourableShipping;
 
     /**
-     * @var
+     * @var string
      */
     public $cCachedCountryCode;
 
@@ -587,7 +587,7 @@ class Artikel
     public $fLieferzeit = 0.0;
 
     /**
-     * @var
+     * @var string
      */
     public $cEstimatedDelivery;
 
@@ -1344,7 +1344,7 @@ class Artikel
      * @param bool     $json
      * @return mixed|object|string
      */
-    private function prepareImageDetails($image, $json = true)
+    private function prepareImageDetails($image, bool $json = true)
     {
         $result = (object)[
             'xs' => $this->getProductImageSize($image, 'xs'),
@@ -1359,9 +1359,9 @@ class Artikel
     /**
      * @param stdClass $image
      * @param string   $size
-     * @return object
+     * @return object|null
      */
-    private function getProductImageSize($image, $size)
+    private function getProductImageSize($image, string $size)
     {
         switch ($size) {
             case 'xs':
@@ -1428,7 +1428,7 @@ class Artikel
     }
 
     /**
-     * @param object $image
+     * @param stdClass $image
      * @return string
      */
     public function getArtikelImageJSON($image): string
@@ -2707,7 +2707,7 @@ class Artikel
         $varCombChildren[$identifier] = $lastProduct; //last item
 
         // Preise holen bzw. Artikel
-        if (\is_array($varCombChildren) && ($cnt = \count($varCombChildren)) > 0 && $cnt <= \ART_MATRIX_MAX) {
+        if (($cnt = \count($varCombChildren)) > 0 && $cnt <= \ART_MATRIX_MAX) {
             $tmp                                = [];
             $per                                = ' ' . Shop::Lang()->get('vpePer') . ' ';
             $taxRate                            = $_SESSION['Steuersatz'][$this->kSteuerklasse];
@@ -3949,7 +3949,7 @@ class Artikel
             && $now < new DateTime($this->dErscheinungsdatum);
         // Top bewertet
         // No need to check with custom function.. this value is set in fuelleArtikel()?
-        $specials[\SEARCHSPECIALS_TOPREVIEWS] = $this->bIsTopBewertet === '1';
+        $specials[\SEARCHSPECIALS_TOPREVIEWS] = (int)$this->bIsTopBewertet === 1;
         // Variationen Lagerbestand 0
         if ($this->cLagerBeachten === 'Y'
             && $this->cLagerKleinerNull === 'N'

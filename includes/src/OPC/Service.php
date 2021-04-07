@@ -29,7 +29,7 @@ class Service
     protected $adminName = '';
 
     /**
-     * @var DbInterface
+     * @var DB
      */
     protected $db;
 
@@ -375,7 +375,7 @@ class Service
 
         $productFilter    = new ProductFilter(
             Config::getDefault(),
-            $this->db,
+            Shop::Container()->getDB(),
             Shop::Container()->getCache()
         );
         $availableFilters = $productFilter->getAvailableFilters();

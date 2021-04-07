@@ -91,7 +91,6 @@ class Frontend extends AbstractSession
             $this->updateGlobals();
             if ($updateLanguage && isset($_SESSION['Kunde'])) {
                 // Kundensprache ändern, wenn im eingeloggten Zustand die Sprache geändert wird
-                /** @var array('Kunde' => \Kunde) $_SESSION */
                 $_SESSION['Kunde']->kSprache = $_SESSION['kSprache'];
                 $_SESSION['Kunde']->updateInDB();
             }

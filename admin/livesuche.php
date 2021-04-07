@@ -146,6 +146,8 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
                 $db->update('tsuchanfrage', 'kSuchanfrage', $active, $upd);
             }
         }
+        $succesMapMessage = '';
+        $errorMapMessage  = '';
         foreach ($searchQueries as $sucheanfrage) {
             $index = 'mapping_' . $sucheanfrage->kSuchanfrage;
             if (!isset($_POST[$index])

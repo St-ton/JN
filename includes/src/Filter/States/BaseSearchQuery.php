@@ -48,7 +48,7 @@ class BaseSearchQuery extends AbstractFilter
     private $searchCacheID = 0;
 
     /**
-     * @var string
+     * @var string|null
      */
     public $error;
 
@@ -994,11 +994,9 @@ class BaseSearchQuery extends AbstractFilter
      * @param array  $nonAllowed
      * @return bool
      */
-    public function checkColumnClasses($searchCols, $searchCol, $nonAllowed): bool
+    public function checkColumnClasses(array $searchCols, string $searchCol, array $nonAllowed): bool
     {
-        if (\is_array($searchCols)
-            && \is_array($nonAllowed)
-            && \count($searchCols) > 0
+        if (\count($searchCols) > 0
             && \mb_strlen($searchCol) > 0
             && \count($nonAllowed) > 0
         ) {

@@ -117,25 +117,25 @@ class Profiler
      */
     public static function getIsActive(): int
     {
-        if (PROFILE_QUERIES !== false && PROFILE_SHOP === true && PROFILE_PLUGINS === true) {
+        if (\PROFILE_QUERIES !== false && \PROFILE_SHOP === true && \PROFILE_PLUGINS === true) {
             return 7;
         }
-        if (PROFILE_QUERIES !== false && PROFILE_SHOP === true) {
+        if (\PROFILE_QUERIES !== false && \PROFILE_SHOP === true) {
             return 6;
         }
-        if (PROFILE_QUERIES !== false && PROFILE_PLUGINS === true) {
+        if (\PROFILE_QUERIES !== false && \PROFILE_PLUGINS === true) {
             return 5;
         }
-        if (PROFILE_SHOP === true && PROFILE_PLUGINS === true) {
+        if (\PROFILE_SHOP === true && \PROFILE_PLUGINS === true) {
             return 4;
         }
-        if (PROFILE_PLUGINS === true) {
+        if (\PROFILE_PLUGINS === true) {
             return 3;
         }
-        if (PROFILE_SHOP === true) {
+        if (\PROFILE_SHOP === true) {
             return 2;
         }
-        if (PROFILE_QUERIES !== false) {
+        if (\PROFILE_QUERIES !== false) {
             return 1;
         }
 
@@ -160,7 +160,7 @@ class Profiler
      */
     public static function setPluginProfile($data): bool
     {
-        if (\defined('PROFILE_PLUGINS') && PROFILE_PLUGINS === true) {
+        if (\defined('PROFILE_PLUGINS') && \PROFILE_PLUGINS === true) {
             self::$pluginProfile[] = $data;
 
             return true;
@@ -209,7 +209,7 @@ class Profiler
     public static function saveSQLProfile(): bool
     {
         self::$stopProfiling = true;
-        if (PROFILE_QUERIES_ECHO === true || \count(self::$sqlProfile) === 0) {
+        if (\PROFILE_QUERIES_ECHO === true || \count(self::$sqlProfile) === 0) {
             return false;
         }
         // create run object

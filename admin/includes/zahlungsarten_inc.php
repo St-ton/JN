@@ -112,7 +112,7 @@ function getPaymentMethodsByName($query)
     $paymentMethodsByName = [];
     foreach (explode(',', $query) as $string) {
         // Leerzeichen löschen
-        trim($string);
+        $string = trim($string);
         // Nur Eingaben mit mehr als 2 Zeichen
         if (mb_strlen($string) > 2) {
             $data = Shop::Container()->getDB()->queryPrepared(

@@ -146,7 +146,7 @@ class Overlay
      * @param int         $type
      * @param int         $language
      * @param string|null $template
-     * @param bool|null   $setFallbackPath
+     * @param bool        $setFallbackPath
      * @return Overlay
      */
     public static function getInstance(

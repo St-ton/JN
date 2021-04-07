@@ -2,6 +2,7 @@
 
 namespace JTL\Sitemap\ItemRenderers;
 
+use JTL\Shop;
 use JTL\Sitemap\Items\ItemInterface;
 
 /**

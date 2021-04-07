@@ -168,7 +168,7 @@ class TwoFA
      * fetch a tupel of user-data from the DB, by his ID(`kAdminlogin`)
      * (store the fetched data in this object)
      *
-     * @param int - the (DB-)id of this user-account
+     * @param int $iID - the (DB-)id of this user-account
      */
     public function setUserByID(int $iID): void
     {
@@ -180,7 +180,7 @@ class TwoFA
      * this setter can called too, if the user is unknown yet
      * (store the fetched data in this object)
      *
-     * @param string - the users login-name
+     * @param string $userName - the users login-name
      */
     public function setUserByName(string $userName): void
     {

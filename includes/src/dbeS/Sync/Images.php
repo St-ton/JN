@@ -659,7 +659,7 @@ final class Images extends AbstractSync
 
     /**
      * @param string $str
-     * @return mixed
+     * @return string
      */
     private function convertUmlauts(string $str): string
     {

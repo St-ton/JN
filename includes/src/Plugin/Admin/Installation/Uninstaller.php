@@ -3,6 +3,7 @@
 namespace JTL\Plugin\Admin\Installation;
 
 use Exception;
+use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
@@ -72,8 +73,9 @@ final class Uninstaller
         $loader = (int)$data->bExtension === 1
             ? new PluginLoader($this->db, $this->cache)
             : new LegacyPluginLoader($this->db, $this->cache);
-        $plugin = $loader->init($pluginID);
-        if ($plugin === null) {
+        try {
+            $plugin = $loader->init($pluginID);
+        } catch (InvalidArgumentException $e) {
             return InstallCode::NO_PLUGIN_FOUND;
         }
         if ($update) {

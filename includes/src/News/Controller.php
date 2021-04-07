@@ -168,10 +168,7 @@ class Controller
                 $pagination->getItemsPerPage()
             );
         }
-        if (!$newsItem->isVisible()) {
-            $this->smarty->assign('cNewsErr', true)
-                ->assign('newsItem', $newsItem);
-        } else {
+        if ($newsItem->isVisible()) {
             $conf = Shop::getConfig([\CONF_NEWS]);
             $this->smarty->assign('oNewsKommentar_arr', $comments)
                 ->assign('comments', $comments)
@@ -184,6 +181,9 @@ class Controller
                 ->assign('oNews_arr', $conf['news']['news_benutzen'] === 'Y'
                     ? CMS::getHomeNews($conf)
                     : []);
+        } else {
+            $this->smarty->assign('cNewsErr', true)
+                ->assign('newsItem', $newsItem);
         }
     }
 

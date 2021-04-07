@@ -22,7 +22,7 @@ use JTL\Shop;
  *      0 = clear table, then import (careful!!! again: this will clear the table denoted by $target)
  *      1 = insert new, overwrite existing
  *      2 = insert only non-existing
- * @param string[] - output a list of error messages
+ * @param string[] $errors - output a list of error messages
  * @return int - -1 if importer-id-mismatch / 0 on success / >1 import error count
  * @throws TypeError
  * @throws InvalidArgumentException

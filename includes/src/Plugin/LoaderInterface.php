@@ -2,6 +2,7 @@
 
 namespace JTL\Plugin;
 
+use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use stdClass;
@@ -45,7 +46,7 @@ interface LoaderInterface
      * @param bool     $invalidateCache
      * @param int|null $languageID
      * @return PluginInterface
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function init(int $id, bool $invalidateCache = false, int $languageID = null): PluginInterface;
 

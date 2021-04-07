@@ -563,7 +563,7 @@ class Preise
 
     /**
      * @param float|string $price
-     * @param object|null  $currency
+     * @param mixed        $currency
      * @param bool         $html
      * @param int          $decimals
      * @return string

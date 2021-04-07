@@ -830,7 +830,7 @@ class Kupon
             }
             if (isset($item->Artikel->cHersteller) && \mb_strlen($item->Artikel->cHersteller) > 0) {
                 $manufQry .= " OR FIND_IN_SET('" .
-                    \str_replace('%', '\%', (int)$item->Artikel->kHersteller)
+                    \str_replace('%', '\%', (string)$item->Artikel->kHersteller)
                     . "', REPLACE(cHersteller, ';', ',')) > 0";
             }
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL
@@ -883,10 +883,10 @@ class Kupon
                         OR cKategorien = '-1' " . $catQry . ")
                     AND (cKunden = ''
                         OR cKunden = '-1' " . $customerQry . ')',
-            ReturnType::SINGLE_OBJECT
+            ReturnType::AFFECTED_ROWS
         );
 
-        return empty($ok) ? 0 : 1;
+        return $ok > 0 ? 1 : 0;
     }
 
     /**

@@ -167,7 +167,7 @@ class Location
         if (isset($params['cKategorie']) && \mb_strlen($params['cKategorie']) > 0) {
             foreach (\explode(';', $params['cKategorie']) as $key) {
                 $key = (int)$key;
-                if ($key > 0 && \mb_strlen($key) > 0) {
+                if ($key > 0 && \mb_strlen((string)$key) > 0) {
                     $ins                          = new stdClass();
                     $ins->kAuswahlAssistentGruppe = $groupID;
                     $ins->cKey                    = \AUSWAHLASSISTENT_ORT_KATEGORIE;

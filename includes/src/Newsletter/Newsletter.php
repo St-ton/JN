@@ -7,6 +7,7 @@ use JTL\Campaign;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Hersteller;
 use JTL\Catalog\Product\Artikel;
+use JTL\Customer\Customer;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Mail\Mail\Mail;
@@ -58,7 +59,7 @@ class Newsletter
     {
         $this->smarty = new JTLSmarty(true, ContextType::NEWSLETTER);
         $this->smarty->setCaching(0)
-            ->setDebugging(0)
+            ->setDebugging(false)
             ->setCompileDir(\PFAD_ROOT . \PFAD_COMPILEDIR)
             ->registerResource('db', new SmartyResourceNiceDB($this->db, ContextType::NEWSLETTER))
             ->assign('Firma', $this->db->query(
@@ -79,7 +80,7 @@ class Newsletter
      * @param array           $products
      * @param array           $manufacturers
      * @param array           $categories
-     * @param string          $campaign
+     * @param string|Campaign $campaign
      * @param stdClass|string $recipient
      * @param stdClass|string $customer
      * @return string
@@ -150,7 +151,6 @@ class Newsletter
         if ($this->db->getErrorCode() !== 0) {
             $recipients = new stdClass();
         }
-
         $recipients->cKundengruppe_arr = $tmpGroups;
 
         return $recipients;
@@ -227,13 +227,13 @@ class Newsletter
     }
 
     /**
-     * @param object   $newsletter
-     * @param stdClass $recipients
-     * @param array    $products
-     * @param array    $manufacturers
-     * @param array    $categories
-     * @param string   $campaign
-     * @param string   $oKunde
+     * @param object                   $newsletter
+     * @param stdClass                 $recipients
+     * @param array                    $products
+     * @param array                    $manufacturers
+     * @param array                    $categories
+     * @param Campaign|string          $campaign
+     * @param Customer|stdClass|string $customer
      * @return string|bool
      */
     public function send(
@@ -243,11 +243,11 @@ class Newsletter
         $manufacturers = [],
         $categories = [],
         $campaign = '',
-        $oKunde = ''
+        $customer = ''
     ) {
         $this->smarty->assign('oNewsletter', $newsletter)
             ->assign('Emailempfaenger', $recipients)
-            ->assign('Kunde', $oKunde)
+            ->assign('Kunde', $customer)
             ->assign('Artikelliste', $products)
             ->assign('Herstellerliste', $manufacturers)
             ->assign('Kategorieliste', $categories)
@@ -260,13 +260,13 @@ class Newsletter
             );
         $net      = 0;
         $bodyHtml = '';
-        if (isset($oKunde->kKunde) && $oKunde->kKunde > 0) {
+        if (isset($customer->kKunde) && $customer->kKunde > 0) {
             $oKundengruppe = $this->db->query(
                 'SELECT tkundengruppe.nNettoPreise
                 FROM tkunde
                 JOIN tkundengruppe
                     ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
-                WHERE tkunde.kKunde = ' . (int)$oKunde->kKunde,
+                WHERE tkunde.kKunde = ' . (int)$customer->kKunde,
                 ReturnType::SINGLE_OBJECT
             );
             if (isset($oKundengruppe->nNettoPreise)) {
@@ -307,8 +307,8 @@ class Newsletter
             return $e->getMessage();
         }
         $toName = ($recipients->cVorname ?? '') . ' ' . ($recipients->cNachname ?? '');
-        if (isset($oKunde->kKunde) && $oKunde->kKunde > 0) {
-            $toName = ($oKunde->cVorname ?? '') . ' ' . ($oKunde->cNachname ?? '');
+        if (isset($customer->kKunde) && $customer->kKunde > 0) {
+            $toName = ($customer->cVorname ?? '') . ' ' . ($customer->cNachname ?? '');
         }
         $mailer                 = Shop::Container()->get(Mailer::class);
         $config                 = [

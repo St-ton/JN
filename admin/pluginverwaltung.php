@@ -63,6 +63,7 @@ $updater         = new Updater($db, $installer);
 $extractor       = new Extractor($parser);
 $stateChanger    = new StateChanger($db, $cache, $legacyValidator, $pluginValidator);
 $minify          = new MinifyService();
+$response        = null;
 if (isset($_SESSION['plugin_msg'])) {
     $notice = $_SESSION['plugin_msg'];
     unset($_SESSION['plugin_msg']);

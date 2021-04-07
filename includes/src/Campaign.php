@@ -151,7 +151,7 @@ class Campaign
     }
 
     /**
-     * @return array|mixed
+     * @return array
      */
     public static function getAvailable(): array
     {

@@ -26,7 +26,7 @@ final class MigrationManager
     private $migrations;
 
     /**
-     * @var array
+     * @var array|null
      */
     private $executedMigrations;
 
@@ -324,7 +324,7 @@ final class MigrationManager
             ReturnType::SINGLE_OBJECT
         );
 
-        return $version ? (int)$version->kMigration : 0;
+        return (int)($version->kMigration ?? 0);
     }
 
     /**

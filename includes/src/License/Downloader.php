@@ -18,7 +18,7 @@ class Downloader
 {
     /**
      * @param Release $available
-     * @return ResponseInterface|string
+     * @return string
      * @throws DownloadValidationException
      * @throws FilePermissionException
      * @throws ApiResultCodeException
@@ -44,7 +44,7 @@ class Downloader
     /**
      * @param string $url
      * @param string $targetName
-     * @return ResponseInterface
+     * @return string
      * @throws FilePermissionException
      * @throws ApiResultCodeException
      */

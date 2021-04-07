@@ -2800,7 +2800,7 @@ function pruefeAjaxEinKlick(): int
 
 /**
  * @param array $missingData
- * @param null $context
+ * @param string|null $context
  */
 function setzeFehlendeAngaben(array $missingData, $context = null)
 {

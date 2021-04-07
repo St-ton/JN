@@ -1334,7 +1334,7 @@ function zahlungsartKorrekt(int $paymentMethodID): int
 }
 
 /**
- * @param $paymentMethod
+ * @param object $paymentMethod
  */
 function getPaymentSurchageDiscount($paymentMethod)
 {
@@ -2164,7 +2164,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
                         // if we have problems like "no module php_soap" we create a log entry
                         // (use case: the module and the vat-check was formerly activated yet
                         // but the php-module is disabled now)
-                        Shop::Container()->getLogService()->warn($resultVatCheck['errorinfo']);
+                        Shop::Container()->getLogService()->warning($resultVatCheck['errorinfo']);
                         break;
                 }
             }

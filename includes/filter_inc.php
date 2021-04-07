@@ -446,7 +446,7 @@ function berechneMaxMinStep($fMax, $fMin)
 }
 
 /**
- * @return null|string
+ * @return string
  * @deprecated since 5.0.0
  */
 function gibBrotNaviName()
@@ -603,7 +603,7 @@ function gibErweiterteDarstellung($conf, $NaviFilter, $nDarstellung = 0)
 
 /**
  * @deprecated since 5.0.0
- * @param object productFilter
+ * @param object $NaviFilter
  * @param bool   $seo
  * @param object $pages
  * @param int    $maxPages

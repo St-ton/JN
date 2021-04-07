@@ -807,7 +807,7 @@ function SendNiceMailReply($fromName, $fromMail, $replyTo, $to, $subject, $text,
     if (empty($to)) {
         return false;
     }
-    $mime_boundary = md5(time()) . '_jtlshop2';
+    $mime_boundary = md5((string)time()) . '_jtlshop2';
     $headers       = '';
     if (mb_strpos($to, 'freenet')) {
         $headers .= 'From: ' . mb_convert_case($fromMail, MB_CASE_LOWER) . $eol;

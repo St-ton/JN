@@ -14,7 +14,7 @@ class Request
 {
     /**
      * @param string $var
-     * @param null   $default
+     * @param mixed  $default
      * @return mixed|null
      */
     public static function getVar(string $var, $default = null)
@@ -24,7 +24,7 @@ class Request
 
     /**
      * @param string $var
-     * @param null   $default
+     * @param mixed  $default
      * @return mixed|null
      */
     public static function postVar(string $var, $default = null)

@@ -8,6 +8,7 @@ use JTL\Shop;
 /**
  * Class PreisverlaufGraph
  * @package JTL\Catalog\Product
+ * @deprecated since 5.0.0
  */
 class PreisverlaufGraph
 {

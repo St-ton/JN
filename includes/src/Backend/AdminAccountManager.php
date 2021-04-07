@@ -35,7 +35,7 @@ class AdminAccountManager
     private $smarty;
 
     /**
-     * @var JTLSmarty
+     * @var AlertServiceInterface
      */
     private $alertService;
 

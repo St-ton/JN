@@ -10,7 +10,7 @@
             <div class="modal-body">
                 <p>{__('deletePluginDataInfo')}</p>
                 <div class="custom-control custom-checkbox">
-                    <input class="custom-control-input" name="delete-data" type="checkbox" id="delete-data-{$context}">
+                    <input class="custom-control-input" name="delete-data" type="checkbox" id="delete-data-{$context}" checked>
                     <label class="custom-control-label" for="delete-data-{$context}">{__('deletePluginDataQuestion')}</label>
                     {getHelpDesc cDesc=__('deletePluginDataQuestionDesc')}
                 </div>

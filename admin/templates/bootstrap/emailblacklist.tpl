@@ -65,7 +65,7 @@
                 <hr class="mb-n3">
             </div>
             <div class="card-body">
-                <textarea class="form-control" name="cEmail" cols="50" rows="10">{foreach $blacklist as $item}{$item->cEmail}{if !$item@last};{/if}{/foreach}</textarea>
+                <textarea class="form-control" name="cEmail" cols="50" rows="10" placeholder="{__('emailblacklistPlaceholder')}">{foreach $blacklist as $item}{$item->cEmail}{if !$item@last};{/if}{/foreach}</textarea>
             </div>
         </div>
         <div class="save-wrapper">

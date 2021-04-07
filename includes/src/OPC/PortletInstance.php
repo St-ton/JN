@@ -338,7 +338,7 @@ class PortletInstance implements \JsonSerializable
         $styleString = '';
 
         foreach ($this->getStyles() as $styleName => $styleValue) {
-            if (!empty($styleValue)) {
+            if ($styleValue !== '') {
                 if (\mb_stripos($styleName, 'margin-') === 0
                     || \mb_stripos($styleName, 'padding-') === 0
                     || \mb_stripos($styleName, '-width') !== false

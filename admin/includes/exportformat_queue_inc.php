@@ -172,7 +172,7 @@ function erstelleExportformatCron(int $exportID, $start, int $freq, int $cronID 
             'texportformat',
             'kExportformat',
             baueENGDate($start),
-            baueENGDate($start, 1)
+            baueENGDate($start, true)
         );
         $cron->speicherInDB();
 
@@ -198,7 +198,7 @@ function erstelleExportformatCron(int $exportID, $start, int $freq, int $cronID 
         'texportformat',
         'kExportformat',
         baueENGDate($start),
-        baueENGDate($start, 1)
+        baueENGDate($start, true)
     );
     $cron->speicherInDB();
 

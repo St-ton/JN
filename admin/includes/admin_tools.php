@@ -277,7 +277,7 @@ function saveAdminSectionSettings(int $configSectionID, array $post, $tags = [CA
 }
 
 /**
- * @param $setting
+ * @param stdClass $setting
  * @return bool
  */
 function validateSetting($setting): bool
@@ -295,9 +295,9 @@ function validateSetting($setting): bool
 }
 
 /**
- * @param int $min
- * @param int $max
- * @param $setting
+ * @param int      $min
+ * @param int      $max
+ * @param stdClass $setting
  * @return bool
  */
 function validateNumberRange(int $min, int $max, $setting): bool

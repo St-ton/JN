@@ -80,7 +80,7 @@ class Newsletter
      * @param array           $products
      * @param array           $manufacturers
      * @param array           $categories
-     * @param string          $campaign
+     * @param string|Campaign $campaign
      * @param stdClass|string $recipient
      * @param stdClass|string $customer
      * @return string
@@ -227,13 +227,13 @@ class Newsletter
     }
 
     /**
-     * @param object          $newsletter
-     * @param stdClass        $recipients
-     * @param array           $products
-     * @param array           $manufacturers
-     * @param array           $categories
-     * @param Campaign|string $campaign
-     * @param Customer|string $customer
+     * @param object                   $newsletter
+     * @param stdClass                 $recipients
+     * @param array                    $products
+     * @param array                    $manufacturers
+     * @param array                    $categories
+     * @param Campaign|string          $campaign
+     * @param Customer|stdClass|string $customer
      * @return string|bool
      */
     public function send(

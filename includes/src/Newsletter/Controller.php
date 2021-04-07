@@ -266,11 +266,11 @@ final class Controller
     }
 
     /**
-     * @param $dbField
-     * @param $value
+     * @param string $dbField
+     * @param string $value
      * @return int
      */
-    private function deleteSubscriber($dbField, $value): int
+    private function deleteSubscriber(string $dbField, string $value): int
     {
         return $this->db->delete(
             'tnewsletterempfaenger',

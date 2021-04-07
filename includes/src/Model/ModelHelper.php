@@ -77,9 +77,8 @@ final class ModelHelper
     }
 
     /**
-     * @param string|DateInterval      $value
+     * @param string|DateInterval|null $value
      * @param string|DateInterval|null $default
-     *
      * @return DateInterval|null
      */
     public static function fromStrToTime($value, $default = null): ?DateInterval

@@ -1,8 +1,8 @@
 <?php
 
 use JTL\DB\ReturnType;
-use JTL\Helpers\Text;
 use JTL\Helpers\Request;
+use JTL\Helpers\Text;
 use JTL\Shop;
 use function Functional\filter;
 use function Functional\flatten;
@@ -290,7 +290,7 @@ function mapConfigSectionToMenuEntry(int $sectionID, string $groupName = 'all')
 }
 
 /**
- * @param $menuEntry
+ * @param object $menuEntry
  * @return string
  */
 function getConfigSectionPath($menuEntry)
@@ -299,7 +299,7 @@ function getConfigSectionPath($menuEntry)
 }
 
 /**
- * @param $menuEntry
+ * @param object $menuEntry
  * @return string
  */
 function getConfigSectionUrl($menuEntry)
@@ -308,7 +308,7 @@ function getConfigSectionUrl($menuEntry)
 }
 
 /**
- * @param $menuEntry
+ * @param object $menuEntry
  * @return bool
  */
 function isConfigSectionSpecialSetting($menuEntry)
@@ -317,7 +317,7 @@ function isConfigSectionSpecialSetting($menuEntry)
 }
 
 /**
- * @param $menuEntry
+ * @param object $menuEntry
  * @return string
  */
 function getConfigSectionAnchor($menuEntry)
@@ -332,9 +332,10 @@ function getConfigSectionAnchor($menuEntry)
 function sortiereEinstellungen($config)
 {
     if (is_array($config) && count($config) > 0) {
-        $sprt     = [];
-        $tmpConf  = [];
-        $sections = [];
+        $sectionIDs = [];
+        $sprt       = [];
+        $tmpConf    = [];
+        $sections   = [];
         foreach ($config as $i => $conf) {
             if (isset($conf->kEinstellungenSektion) && $conf->cConf !== 'N') {
                 $headline = holeEinstellungHeadline($conf->nSort, $conf->kEinstellungenSektion);

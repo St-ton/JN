@@ -99,7 +99,7 @@ $sitemapDownloadsPerYear = Shop::Container()->getDB()->query(
         ORDER BY 1 DESC',
     ReturnType::ARRAY_OF_OBJECTS
 );
-if (!isset($sitemapDownloadsPerYear) || count($sitemapDownloadsPerYear) === 0) {
+if (count($sitemapDownloadsPerYear) === 0) {
     $sitemapDownloadsPerYear[] = (object)[
         'year'  => date('Y'),
         'count' => 0,
@@ -134,7 +134,7 @@ $reportYears = Shop::Container()->getDB()->query(
         ORDER BY 1 DESC',
     ReturnType::ARRAY_OF_OBJECTS
 );
-if (!isset($reportYears) || count($reportYears) === 0) {
+if (count($reportYears) === 0) {
     $reportYears[] = (object)[
         'year'  => date('Y'),
         'count' => 0,

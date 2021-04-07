@@ -145,7 +145,7 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
             $comment->setID(0);
             $comment->setNewsID(Request::verifyGPCDataInt('kNews'));
             $comment->setCustomerID(0);
-            $comment->setIsActive(1);
+            $comment->setIsActive(true);
             $comment->setName($adminName);
             $comment->setMail('');
             $comment->setText('');

@@ -20,7 +20,7 @@ use stdClass;
 class Helper
 {
     /**
-     * @var array
+     * @var array|null
      */
     private static $hookList;
 

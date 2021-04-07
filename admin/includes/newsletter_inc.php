@@ -154,7 +154,7 @@ function gibStaticHtml()
 }
 
 /**
- * @return array|null|stdClass
+ * @return null
  * @deprecated since 5.0.0
  */
 function speicherVorlage()

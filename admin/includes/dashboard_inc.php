@@ -245,7 +245,7 @@ function getRemoteData(string $url, int $timeout = 15)
         $data = curl_exec($curl);
         curl_close($curl);
     } elseif (ini_get('allow_url_fopen')) {
-        @ini_set('default_socket_timeout', $timeout);
+        @ini_set('default_socket_timeout', (string)$timeout);
         $fileHandle = @fopen($url, 'r');
         if ($fileHandle) {
             @stream_set_timeout($fileHandle, $timeout);

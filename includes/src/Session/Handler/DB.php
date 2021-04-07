@@ -121,10 +121,9 @@ class DB extends JTLDefault
      */
     public function gc($max_lifetime)
     {
-        // return affected rows
         return $this->db->query(
             'DELETE FROM ' . $this->tableName . ' WHERE nSessionExpires < ' . \time(),
             ReturnType::AFFECTED_ROWS
-        );
+        ) > 0;
     }
 }

@@ -826,7 +826,7 @@ class Product
      * @former findeVariation()
      * @since 5.0.0
      */
-    public static function findVariation(array $variations, int $propertyID, int $propertyValueID): bool
+    public static function findVariation(array $variations, int $propertyID, int $propertyValueID)
     {
         foreach ($variations as $variation) {
             $variation->kEigenschaft = (int)$variation->kEigenschaft;

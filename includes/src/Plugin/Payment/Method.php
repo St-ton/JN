@@ -52,7 +52,7 @@ class Method implements MethodInterface
     public $caption;
 
     /**
-     * @var bool
+     * @var int
      */
     public $duringCheckout;
 

@@ -180,7 +180,7 @@ class Bestseller
      * @param bool      $onlykeys
      * @param int       $limit
      * @param int       $minsells
-     * @return Artikel[]
+     * @return Artikel[]|int[]
      */
     public static function buildBestsellers(
         $products,

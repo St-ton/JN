@@ -457,7 +457,7 @@ ini_set('display_errors', 0);" . "\n";
     /**
      * @param int    $length
      * @param string $seed
-     * @return bool|string
+     * @return string
      */
     private function getUID(int $length = 40, string $seed = ''): string
     {

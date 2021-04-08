@@ -165,12 +165,12 @@ interface DbInterface extends \Serializable
     );
 
     /**
-     * @param string       $tableName
-     * @param string|array $keys
-     * @param string|array $values
-     * @param string       $select
-     * @param string       $orderBy
-     * @param string|int   $limit
+     * @param string           $tableName
+     * @param string|array     $keys
+     * @param string|array|int $values
+     * @param string           $select
+     * @param string           $orderBy
+     * @param string|int       $limit
      * @return array
      * @throws \InvalidArgumentException
      */

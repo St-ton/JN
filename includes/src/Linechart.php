@@ -11,12 +11,7 @@ use stdClass;
 class Linechart extends Chartdata
 {
     /**
-     * @var array
-     */
-    public $series;
-
-    /**
-     * @var array
+     * @var stdClass
      */
     public $_xAxis;
 

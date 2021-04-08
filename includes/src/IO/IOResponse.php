@@ -99,9 +99,9 @@ class IOResponse implements JsonSerializable
     }
 
     /**
-     * @param string $msg
-     * @param bool   $groupHead
-     * @param bool   $groupEnd
+     * @param array|null $msg
+     * @param bool       $groupHead
+     * @param bool       $groupEnd
      * @return $this
      */
     public function debugLog($msg, bool $groupHead = false, $groupEnd = false): self

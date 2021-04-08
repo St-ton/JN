@@ -625,7 +625,7 @@ class Statusmail
 
     /**
      * @param array $logLevels
-     * @return array|int|object
+     * @return array
      */
     public function getLogEntries(array $logLevels): array
     {

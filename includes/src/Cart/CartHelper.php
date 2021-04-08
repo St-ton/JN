@@ -379,7 +379,7 @@ class CartHelper
             return self::checkWishlist(
                 $productID,
                 $fAnzahl,
-                false&&$conf['global']['global_wunschliste_weiterleitung'] === 'Y'
+                false && $conf['global']['global_wunschliste_weiterleitung'] === 'Y'
             );
         }
         if (isset($_POST['Vergleichsliste']) && $productID > 0) {
@@ -685,8 +685,7 @@ class CartHelper
             \header('Location: ' . $linkHelper->getStaticRoute('jtl.php')
                 . '?a=' . $productID
                 . '&n=' . $qty
-                . '&r=' . \R_LOGIN_WUNSCHLISTE, true, 302
-            );
+                . '&r=' . \R_LOGIN_WUNSCHLISTE, true, 302);
             exit;
         }
 
@@ -741,7 +740,7 @@ class CartHelper
                 if ($wishlist->kWunschliste <= 0) {
                     $wishlist->schreibeDB();
                 }
-                $qty             = \max(1, $qty);
+                $qty    = \max(1, $qty);
                 $itemID = $wishlist->fuegeEin(
                     $productID,
                     $productExists->cName,
@@ -752,7 +751,7 @@ class CartHelper
                     Campaign::setCampaignAction(\KAMPAGNE_DEF_WUNSCHLISTE, $itemID, $qty);
                 }
 
-                $obj           = (object)['kArtikel' => $productID];
+                $obj = (object)['kArtikel' => $productID];
                 \executeHook(\HOOK_TOOLS_GLOBAL_CHECKEWARENKORBEINGANG_WUNSCHLISTE, [
                     'kArtikel'         => &$productID,
                     'fAnzahl'          => &$qty,

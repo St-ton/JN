@@ -18,22 +18,34 @@ class AuthToken
 {
     private const AUTH_SERVER = 'https://oauth2.api.jtl-software.com/link';
 
-    /** @var self */
+    /**
+     * @var AuthToken
+     */
     private static $instance;
 
-    /** @var string */
+    /**
+     * @var string|null
+     */
     private $authCode;
 
-    /** @var string */
+    /**
+     * @var string|null
+     */
     private $token;
 
-    /** @var string */
+    /**
+     * @var string|null
+     */
     private $hash;
 
-    /** @var string */
+    /**
+     * @var string|null
+     */
     private $verified;
 
-    /** @var DbInterface */
+    /**
+     * @var DbInterface
+     */
     private $db;
 
     /**

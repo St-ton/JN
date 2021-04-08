@@ -6,7 +6,7 @@ use Exception;
 use JTL\DB\ReturnType;
 use JTL\Filter\ProductFilter;
 use JTL\MagicCompatibilityTrait;
-use JTL\Services\JTL\BoxService;
+use JTL\Services\JTL\BoxServiceInterface;
 use JTL\Shop;
 use SmartyException;
 use stdClass;
@@ -61,7 +61,7 @@ class LegacyBoxes
     private static $instance;
 
     /**
-     * @var BoxService
+     * @var BoxServiceInterface
      */
     private $boxService;
 

@@ -113,8 +113,8 @@ function getCategories($selectedCategories = '', int $categoryID = 0, int $depth
 /**
  * Parse Datumsstring und formatiere ihn im DB-kompatiblen Standardformat
  *
- * @param string $string
- * @return string
+ * @param string|null $string
+ * @return string|null
  */
 function normalizeDate($string)
 {

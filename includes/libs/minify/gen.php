@@ -1,9 +1,5 @@
 <?php declare(strict_types=1);
 
-use Minify\App;
-use Minify\Env;
-use Minify\Minify;
-
 $send_400 = static function ($content = 'Bad URL') {
     http_response_code(400);
     die($content);
@@ -44,7 +40,7 @@ $get_cache_time = static function (bool $auto_create = true) {
 };
 
 $app = (require __DIR__ . '/bootstrap.php');
-/* @var App $app */
+/* @var Minify\App $app */
 
 if (!$app->config->enableStatic) {
     die('Minify static serving is not enabled. Set $min_enableStatic = true; in config.php');
@@ -100,7 +96,7 @@ if (!$cache_time) {
     die('Directory is not writable.');
 }
 
-$app->env = new Env([
+$app->env = new Minify_Env([
     'get' => $get_params,
 ]);
 $ctrl     = $app->controller;

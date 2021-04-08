@@ -11,8 +11,6 @@ use JTL\phpQuery\phpQuery;
 use JTL\Plugin\Helper;
 use JTL\Shop;
 use JTL\Template\BootChecker;
-use Minify\CSSmin;
-use Minify\HTML;
 use RuntimeException;
 use SmartyBC;
 
@@ -281,13 +279,13 @@ class JTLSmarty extends SmartyBC
     {
         $options = [];
         if ($minifyCSS === true) {
-            $options['cssMinifier'] = [CSSmin::class, 'minify'];
+            $options['cssMinifier'] = [\Minify_CSSmin::class, 'minify'];
         }
         if ($minifyJS === true) {
             $options['jsMinifier'] = [JSMin::class, 'minify'];
         }
         try {
-            $res = (new HTML($html, $options))->process();
+            $res = (new \Minify_HTML($html, $options))->process();
         } catch (UnterminatedStringException $e) {
             $res = $html;
         }

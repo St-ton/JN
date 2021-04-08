@@ -9,9 +9,6 @@
 /**
  * Enable the static serving feature
  */
-
-use Minify\Minify;
-
 $min_enableStatic = true;
 
 /**
@@ -65,11 +62,7 @@ $min_envArgs   = null;
  * To use APC/Memcache/ZendPlatform for cache storage, require the class and
  * set $min_cachePath to an instance. Example below:
  */
-//$redis = new Redis();
-//$redis->connect('localhost', 6379, REDIS_CONNECT_TIMEOUT);
-//$redis->select(1);
-//$min_cachePath = new \Minify\Cache\Redis($redis);
-//$min_cachePath = new \Minify\Cache\APC();
+//$min_cachePath = new Minify_Cache_APC();
 /**
  * Leave an empty string to use PHP's $_SERVER['DOCUMENT_ROOT'].
  *

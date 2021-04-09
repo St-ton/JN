@@ -2041,7 +2041,7 @@ final class Shop
             \session_name('JTLSHOP');
             \session_id($frontendId);
             \session_start();
-            self::$logged       = $_SESSION['loggedAsAdmin'] = true;
+            self::$logged       = $_SESSION['loggedAsAdmin'];
             self::$adminToken   = $_SESSION['adminToken']    = $adminToken;
             self::$adminLangTag = $_SESSION['adminLangTag']  = $adminLangTag;
         } else {

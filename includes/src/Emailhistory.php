@@ -208,8 +208,11 @@ class Emailhistory
     public function deleteAll(): int
     {
         Shop::Container()->getLogService()->notice('eMail-History gelöscht');
+        $db  = Shop::Container()->getDB();
+        $res = $db->query('SELECT COUNT(kEmailhistory) AS historyCount FROM temailhistory', ReturnType::SINGLE_OBJECT);
+        $db->query('TRUNCATE TABLE temailhistory', ReturnType::DEFAULT);
 
-        return !Shop::Container()->getDB()->query('TRUNCATE TABLE temailhistory', ReturnType::AFFECTED_ROWS);
+        return (int)$res->historyCount;
     }
 
     /**

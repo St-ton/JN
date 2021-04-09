@@ -833,9 +833,9 @@ function AktualisiereAndereStuecklisten(int $productID, $amount, $bomID = null):
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if ($productID > 0) {
-        $tmpArtikel = new Artikel();
-        $tmpArtikel->fuelleArtikel($productID, Artikel::getDefaultOptions());
-        aktualisiereKomponenteLagerbestand($productID, $tmpArtikel->fLagerbestand, $tmpArtikel->cLagerKleinerNull);
+        $prod = new Artikel();
+        $prod->fuelleArtikel($productID, Artikel::getDefaultOptions());
+        aktualisiereKomponenteLagerbestand($productID, $prod->fLagerbestand, $prod->cLagerKleinerNull === 'Y');
     }
 }
 
@@ -873,7 +873,7 @@ function AktualisiereLagerStuecklisten($product, $amount = null, $isBom = false)
             aktualisiereKomponenteLagerbestand(
                 $product->kArtikel,
                 $product->fLagerbestand,
-                $product->cLagerKleinerNull
+                $product->cLagerKleinerNull === 'Y'
             );
         }
     }

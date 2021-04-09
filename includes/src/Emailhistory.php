@@ -212,7 +212,7 @@ class Emailhistory
         $res = $db->query('SELECT COUNT(kEmailhistory) AS historyCount FROM temailhistory', ReturnType::SINGLE_OBJECT);
         $db->query('TRUNCATE TABLE temailhistory', ReturnType::DEFAULT);
 
-        return $res;
+        return (int)$res->historyCount;
     }
 
     /**

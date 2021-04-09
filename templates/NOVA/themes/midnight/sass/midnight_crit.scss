@@ -478,14 +478,18 @@ hr {
 }
 #header-top-bar {
   float: right;
-  position: sticky;
+  position: fixed;
   top: 0;
+  right: 0;
   &:not(.is-fullwidth) {
     /* max-width of container-fluid-xl + padding of container-fluid */
     @media (min-width: 103.125rem + 2rem) {
       margin-right: calc((100vw - 103.125rem - 2rem) / 2);
     }
   }
+}
+body > #header-top-bar {
+  max-width: 80%;
 }
 .is-checkout {
   .logo-wrapper {

@@ -13707,6 +13707,12 @@ body {
   }
 }
 
+@media (max-width: 991.98px) {
+  #available-widgets {
+    right: 0;
+  }
+}
+
 #content_wrapper {
   padding-top: 0.5rem;
 }

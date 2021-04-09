@@ -33,10 +33,6 @@ const sortable = new Draggable.Sortable($(`.${Classes.dropzone}`).get(), {
 	delay: dragDelay
 })
 
-if (window.innerWidth <= 768) {
-    sortable.destroy();
-}
-
 /* events */
 
 sortable.on('drag:start', (evt) => {
@@ -110,3 +106,9 @@ $(function () {
             .appendTo($('.options', widget));
     });
 })
+
+// no drag'n drop on touch devices
+$('.dashboard-wrapper')[0].addEventListener("touchstart", function() {
+    sortable.destroy();
+}, false);
+

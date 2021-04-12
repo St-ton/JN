@@ -346,28 +346,26 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                 AND kKampagneDef = ' . (int)$definition->kKampagneDef . $sql,
         ReturnType::ARRAY_OF_OBJECTS
     );
-    // Stamp Text
-    switch ((int)$_SESSION['Kampagne']->nDetailAnsicht) {
-        case 1:    // Jahr
-            $text = $stats[0]->cStampText;
-            break;
-        case 2:    // Monat
-            $textParts = isset($stats[0]->cStampText)
-                ? explode('.', $stats[0]->cStampText)
-                : [];
-            $month     = $textParts [0] ?? '';
-            $year      = $textParts [1] ?? '';
-            $text      = mappeENGMonat($month) . ' ' . $year;
-            break;
-        case 3:    // Woche
-            $dates = ermittleDatumWoche($stats[0]->cStampText);
-            $text  = date('d.m.Y', $dates[0]) . ' - ' . date('d.m.Y', $dates[1]);
-            break;
-        case 4:    // Tag
-            $text = $stats[0]->cStampText;
-            break;
+    if (count($stats) > 0) {
+        switch ((int)$_SESSION['Kampagne']->nDetailAnsicht) {
+            case 1:    // Jahr
+                $text = $stats[0]->cStampText;
+                break;
+            case 2:    // Monat
+                $textParts = explode('.', $stats[0]->cStampText);
+                $month     = $textParts [0] ?? '';
+                $year      = $textParts [1] ?? '';
+                $text      = mappeENGMonat($month) . ' ' . $year;
+                break;
+            case 3:    // Woche
+                $dates = ermittleDatumWoche($stats[0]->cStampText);
+                $text  = date('d.m.Y', $dates[0]) . ' - ' . date('d.m.Y', $dates[1]);
+                break;
+            case 4:    // Tag
+                $text = $stats[0]->cStampText;
+                break;
+        }
     }
-
     // Kampagnendefinitionen
     switch ((int)$definition->kKampagneDef) {
         case KAMPAGNE_DEF_HIT:    // HIT

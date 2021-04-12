@@ -299,6 +299,13 @@ class Frontend extends AbstractSession
      */
     private function checkComparelistDeletes(): self
     {
+        if (Request::verifyGPDataString('delete') === 'all') {
+            unset($_SESSION['Vergleichsliste']);
+            \http_response_code(301);
+            \header('Location: ' . Shop::Container()->getLinkService()->getStaticRoute('vergleichsliste.php'));
+            exit;
+        }
+
         $listID = Request::verifyGPCDataInt('vlplo');
         if ($listID !== 0 && GeneralObject::isCountable('oArtikel_arr', $_SESSION['Vergleichsliste'])) {
             // Wunschliste Position aus der Session löschen

@@ -190,6 +190,11 @@ if ($oAccount->getIsAuthenticated()) {
                 $_SESSION['AdminAccount']->TwoFA_expired = false;
                 $_SESSION['AdminAccount']->TwoFA_valid   = true;
                 $_SESSION['loginIsValid']                = true;
+                if (isset($GLOBALS['plgSafeMode'])) {
+                    header('Location: ' . Shop::getAdminURL(true) . '/index.php'
+                        . '?safemode=' . ($GLOBALS['plgSafeMode'] ? 'on' : 'off'));
+                    exit;
+                }
                 openDashboard();
             } else {
                 $alertHelper->addAlert(

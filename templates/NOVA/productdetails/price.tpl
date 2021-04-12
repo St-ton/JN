@@ -104,7 +104,9 @@
                                 {/if}
                             {/block}
 
-                            {if $Einstellungen.artikeldetails.artikeldetails_uvp_anzeigen === 'Y' && $Artikel->fUVP > 0}
+                        {if $Einstellungen.artikeldetails.artikeldetails_uvp_anzeigen === 'Y'
+                            && $Artikel->fUVP > 0
+                            && $Artikel->Preise->fVKBrutto < $Artikel->fUVP}
                                 {block name='productdetails-price-uvp'}
                                     <div class="suggested-price">
                                         <span>{lang key='suggestedPrice' section='productDetails'}</span>:

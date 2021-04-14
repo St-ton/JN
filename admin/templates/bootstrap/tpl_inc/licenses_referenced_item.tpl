@@ -11,7 +11,7 @@
     {elseif $referencedItem !== null}
         {$licData = $license->getLicense()}
         {$subscription = $licData->getSubscription()}
-        {$disabled = $licData->isExpired() || $subscription->isExpired()}
+        {$disabled = $licData->isExpired() || $subscription->isExpired() || $referencedItem->canBeUpdated() === false}
         {if isset($licenseErrorMessage)}
             <div class="alert alert-danger">
                 {__($licenseErrorMessage)}
@@ -44,6 +44,9 @@
             <span class="update-available badge badge-success">
                 {__('Update to version %s available', $referencedItem->getMaxInstallableVersion())}
             </span>
+            {if $referencedItem->canBeUpdated() === false}
+                <span class="badge badge-danger">{__('Your shop version is not compatible with this plugin version')}</span>
+            {/if}
             {form method="post" class="mt-2{if !$disabled} update-item-form{/if}"}
                 <input type="hidden" name="action" value="update">
                 <input type="hidden" name="item-type" value="{$license->getType()}">

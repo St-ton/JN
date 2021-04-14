@@ -339,7 +339,7 @@ final class LinkGroupList implements LinkGroupListInterface
     /**
      * @inheritdoc
      */
-    public function setLinkGroups(Collection $linkGroups): void
+    public function setLinkGroups(LinkGroupCollection $linkGroups): void
     {
         $this->linkGroups = $linkGroups;
     }

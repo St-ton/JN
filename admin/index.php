@@ -76,23 +76,8 @@ if (Request::postInt('adminlogin') === 1) {
             case AdminLoginStatus::LOGIN_OK:
                 Status::getInstance($db, $cache, true);
                 Backend::getInstance()->reHash();
-                $safeMode                 = isset($GLOBALS['plgSafeMode'])
-                    ? '?safemode=' . ($GLOBALS['plgSafeMode'] ? 'on' : 'off')
-                    : '';
                 $_SESSION['loginIsValid'] = true; // "enable" the "header.tpl"-navigation again
-                if (($conf['global']['global_wizard_done'] ?? 'Y') === 'N') {
-                    header('Location: ' . Shop::getAdminURL(true) . '/wizard.php' . $safeMode);
-                    exit;
-                }
-                if ($oAccount->permission('SHOP_UPDATE_VIEW') && $oUpdater->hasPendingUpdates()) {
-                    header('Location: ' . Shop::getAdminURL(true) . '/dbupdater.php' . $safeMode);
-                    exit;
-                }
-                if (isset($_REQUEST['uri']) && mb_strlen(trim($_REQUEST['uri'])) > 0) {
-                    redirectToURI($_REQUEST['uri']);
-                }
-                header('Location: ' . Shop::getAdminURL(true) . '/index.php' . $safeMode);
-                exit;
+                redirectLogin($oAccount, $oUpdater);
 
                 break;
         }
@@ -177,6 +162,34 @@ function redirectToURI($uri)
     exit;
 }
 
+/**
+ * @param AdminAccount $oAccount
+ * @param Updater      $oUpdater
+ * @return void
+ * @throws Exception
+ */
+function redirectLogin(AdminAccount $oAccount, Updater $oUpdater)
+{
+    $conf     = Shop::getSettings([CONF_GLOBAL]);
+    $safeMode = isset($GLOBALS['plgSafeMode'])
+        ? '?safemode=' . ($GLOBALS['plgSafeMode'] ? 'on' : 'off')
+        : '';
+    if (($conf['global']['global_wizard_done'] ?? 'Y') === 'N') {
+        header('Location: ' . Shop::getAdminURL(true) . '/wizard.php' . $safeMode);
+        exit;
+    }
+    if ($oAccount->permission('SHOP_UPDATE_VIEW') && $oUpdater->hasPendingUpdates()) {
+        header('Location: ' . Shop::getAdminURL(true) . '/dbupdater.php' . $safeMode);
+        exit;
+    }
+    if (isset($_REQUEST['uri']) && mb_strlen(trim($_REQUEST['uri'])) > 0) {
+        redirectToURI($_REQUEST['uri']);
+    }
+
+    header('Location: ' . Shop::getAdminURL(true) . '/index.php' . $safeMode);
+    exit;
+}
+
 unset($_SESSION['AdminAccount']->TwoFA_active);
 if ($oAccount->getIsAuthenticated()) {
     Shop::Container()->getGetText()->loadAdminLocale('widgets');
@@ -190,7 +203,7 @@ if ($oAccount->getIsAuthenticated()) {
                 $_SESSION['AdminAccount']->TwoFA_expired = false;
                 $_SESSION['AdminAccount']->TwoFA_valid   = true;
                 $_SESSION['loginIsValid']                = true;
-                openDashboard();
+                redirectLogin($oAccount, $oUpdater);
             } else {
                 $alertHelper->addAlert(
                     Alert::TYPE_ERROR,

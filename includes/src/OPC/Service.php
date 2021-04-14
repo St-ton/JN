@@ -29,7 +29,7 @@ class Service
     protected $adminName = '';
 
     /**
-     * @var DbInterface
+     * @var DB
      */
     protected $db;
 

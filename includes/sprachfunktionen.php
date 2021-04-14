@@ -24,17 +24,17 @@ function lang_warenkorb_warenkorbEnthaeltXArtikel(Cart $cart): string
 
         return $ret;
     }
-    $nArtikel = $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]);
-    $nArtikel = str_replace('.', ',', $nArtikel);
-    if ($nArtikel === 1) {
+    $count    = $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]);
+    $nArtikel = str_replace('.', ',', $count);
+    if ($count === 1) {
         return Shop::Lang()->get('yourbasketcontains', 'checkout') . ' ' .
             $nArtikel . ' ' . Shop::Lang()->get('product');
     }
-    if ($nArtikel > 1) {
+    if ($count > 1) {
         return Shop::Lang()->get('yourbasketcontains', 'checkout') . ' ' .
             $nArtikel . ' ' . Shop::Lang()->get('products');
     }
-    if ($nArtikel === 0) {
+    if ($count === 0) {
         return Shop::Lang()->get('emptybasket', 'checkout');
     }
 

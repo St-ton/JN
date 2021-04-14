@@ -85,7 +85,7 @@ class Application extends BaseApplication
             return;
         }
         $db      = Shop::Container()->getDB();
-        $version = $db->select('tversion', [], [], ReturnType::SINGLE_OBJECT);
+        $version = $db->select('tversion', [], []);
         if (Version::parse($version->nVersion ?? 400)->smallerThan(Version::parse(500))) {
             return;
         }

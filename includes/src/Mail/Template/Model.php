@@ -54,7 +54,7 @@ final class Model
     /**
      * @var string
      */
-    private $active = true;
+    private $active = 'Y';
 
     /**
      * @var bool

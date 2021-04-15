@@ -101,7 +101,8 @@ $smarty->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
     ->assign('Kunde', $_SESSION['Kunde'] ?? null)
     ->assign('bOrderConf', true)
     ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
-    ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK);
+    ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK)
+    ->assign('Link', $linkHelper->getPageLink($linkHelper->getSpecialPageID(PAGE_BESTELLABSCHLUSS)));
 
 $kPlugin = isset($bestellung->Zahlungsart->cModulId)
     ? Helper::getIDByModuleID($bestellung->Zahlungsart->cModulId)

@@ -308,7 +308,7 @@
                         || $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_GRATISGESCHENK
                         }
                             {col cols=$cols xl=10 class='cart-items-delete' data=['toggle'=>'product-actions']}
-                                {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
+                                {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y' && $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
                                     {block name='basket-cart-items-cart-submit-include-wishlist-button'}
                                         {include file='snippets/wishlist_button.tpl' Artikel=$oPosition->Artikel buttonAndText=true}
                                     {/block}

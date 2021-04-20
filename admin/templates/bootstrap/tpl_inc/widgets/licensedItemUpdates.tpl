@@ -114,7 +114,7 @@
                                     {$license->getName()}
                                 </a>
                             <td>
-                                {if $license->getLicense()->isExpired() && $license->getLicense()->getValidUntil() !== null}
+                                {if $license->getLicense()->getValidUntil() !== null}
                                     {$license->getLicense()->getValidUntil()->format('d.m.Y')}
                                 {/if}
                             </td>

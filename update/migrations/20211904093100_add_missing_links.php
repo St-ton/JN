@@ -45,7 +45,7 @@ class Migration_20211904093100 extends Migration implements IMigration
         foreach (LanguageHelper::getAllLanguages() as $language) {
             $code = $language->getIso();
             $link['cName_' . $code] = '';
-            $link['cSeo' . $code] = '';
+            $link['cSeo_' . $code] = '';
             $link['cTitle_' . $code] = '';
             $link['cContent_' . $code] = '';
             $link['cMetaTitle_' . $code] = '';

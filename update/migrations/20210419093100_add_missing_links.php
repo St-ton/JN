@@ -7,9 +7,9 @@ use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
 /**
- * Class Migration_20211904093100
+ * Class Migration_20210419093100
  */
-class Migration_20211904093100 extends Migration implements IMigration
+class Migration_20210419093100 extends Migration implements IMigration
 {
     protected $author      = 'mh';
     protected $description = 'Add missing links';

@@ -2187,6 +2187,9 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
             if (mb_strlen($data['pass']) < $conf['kunden']['kundenregistrierung_passwortlaenge']) {
                 $ret['pass_zu_kurz'] = 1;
             }
+            if (mb_strlen($data['pass']) > 255) {
+                $ret['pass_zu_lang'] = 1;
+            }
         }
         //existiert diese email bereits?
         if (!isset($ret['email']) && !isEmailAvailable($data['email'], Frontend::getCustomer()->kKunde ?? 0)) {

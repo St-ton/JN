@@ -415,6 +415,8 @@ class Customer
      */
     public function checkCredentials($user, $pass)
     {
+        $user            = \mb_substr($user, 0, 255);
+        $pass            = \mb_substr($pass, 0, 255);
         $passwordService = Shop::Container()->getPasswordService();
         $db              = Shop::Container()->getDB();
         $customer        = $db->select(
@@ -762,6 +764,7 @@ class Customer
      */
     public function updatePassword($password = null): self
     {
+        $password        = \mb_substr($password, 0, 255);
         $passwordService = Shop::Container()->getPasswordService();
         if ($password === null) {
             $clearTextPassword = $passwordService->generate(12);

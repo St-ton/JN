@@ -926,6 +926,7 @@ class Product
                             $group->Artikel[] = $product;
                         }
                     }
+                    $group->Artikel                     = self::separateByAvailability($group->Artikel);
                     $xSelling->Standard->XSellGruppen[] = $group;
                 }
             }
@@ -998,6 +999,7 @@ class Product
                         $xSelling->Kauf->Artikel[] = $product;
                     }
                 }
+                $xSelling->Kauf->Artikel = self::separateByAvailability($xSelling->Kauf->Artikel);
             }
         }
         \executeHook(\HOOK_ARTIKEL_INC_XSELLING, [
@@ -2088,5 +2090,29 @@ class Product
         );
 
         return !empty($ratings->kBewertung);
+    }
+
+    /**
+     * @param array $items
+     * @param bool $shuffle
+     * @return array
+     */
+    public static function separateByAvailability(array $items, bool $shuffle = false): array
+    {
+        $available  = [];
+        $outOfStock = [];
+        foreach ($items as $item) {
+            if ($item->inWarenkorbLegbar === 1) {
+                $available[] = $item;
+            } else {
+                $outOfStock[] = $item;
+            }
+        }
+        if ($shuffle) {
+            \shuffle($available);
+            \shuffle($outOfStock);
+        }
+
+        return \array_merge($available, $outOfStock);
     }
 }

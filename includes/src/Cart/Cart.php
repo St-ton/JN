@@ -197,7 +197,9 @@ class Cart
             $newAmount  = \floor(
                 ($depProduct->fLagerbestand - $depAmount) / $depProduct->fPackeinheit / $dependent->stockFactor
             );
-
+            if ($depProduct->fAbnahmeintervall > 0) {
+                $newAmount -= \fmod($newAmount, $depProduct->fAbnahmeintervall);
+            }
             if ($newAmount < $amount) {
                 $amount = $newAmount;
             }

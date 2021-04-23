@@ -434,6 +434,7 @@ class Frontend extends AbstractSession
         $lang                    = LanguageHelper::getInstance();
         $lang->kSprache          = (int)$_SESSION['kSprache'];
         $lang->currentLanguageID = (int)$_SESSION['kSprache'];
+        $lang->kSprachISO        = (int)$lang->mappekISO($_SESSION['cISOSprache']);
         $lang->cISOSprache       = $_SESSION['cISOSprache'];
 
         return $lang;

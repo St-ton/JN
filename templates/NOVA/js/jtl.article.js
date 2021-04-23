@@ -108,6 +108,7 @@
             //this.registerArticleOverlay($wrapper);
             this.registerFinish($wrapper);
             window.initNumberInput();
+            this.initAbnahmeIntervallError();
         },
 
         registerAccordion: function() {
@@ -1547,6 +1548,23 @@
                     $(this).detach()
                 });
             }, 0);
+        },
+
+        initAbnahmeIntervallError: function() {
+            let $intervallNotice = $('#intervall-notice');
+            if ($intervallNotice.length > 0) {
+                $('#quantity').on('change', function () {
+                    let $step   = $(this).attr('step'),
+                        diff    = Math.abs(($(this).val() % $step) - $step),
+                        epsilon = 0.00000001;
+                    if (diff < epsilon || diff + epsilon > $step) {
+                        $('#intervall-notice-danger').remove();
+                    } else {
+                        $('#quantity-grp').after('<div id="intervall-notice-danger" class="alert alert-danger mt-2">'
+                            + $intervallNotice.html() + '</div>');
+                    }
+                });
+            }
         }
     };
 

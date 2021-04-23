@@ -102,9 +102,9 @@
                             <p>{$minimumPurchase|replace:"%d":$Artikel->fMindestbestellmenge|replace:"%s":$units}</p>
                         {/if}
 
-                        {if $Artikel->fAbnahmeintervall > 0 && $Einstellungen.artikeldetails.artikeldetails_artikelintervall_anzeigen === 'Y'}
+                        {if $Artikel->fAbnahmeintervall > 0}
                             {lang key='takeHeedOfInterval' section='productDetails' assign='takeHeedOfInterval'}
-                            <p>{$takeHeedOfInterval|replace:"%d":$Artikel->fAbnahmeintervall|replace:"%s":$units}</p>
+                            <p id="intervall-notice" {if $Einstellungen.artikeldetails.artikeldetails_artikelintervall_anzeigen !== 'Y'}class="d-none"{/if}>{$takeHeedOfInterval|replace:"%d":$Artikel->fAbnahmeintervall|replace:"%s":$units}</p>
                         {/if}
 
                         {if $Artikel->cTeilbar === 'Y'}

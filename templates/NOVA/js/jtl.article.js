@@ -146,8 +146,9 @@
 
             function toggleFullscreen(fullscreen = false)
             {
-                let $imgWrapper = $('#image_wrapper');
-                if (fullscreen && $imgWrapper.hasClass('fullscreen')){
+                let $imgWrapper = $('#image_wrapper'),
+                    $gallery    = $('#gallery');
+                if (!$gallery.hasClass('slick-initialized') || (fullscreen && $imgWrapper.hasClass('fullscreen'))){
                     return;
                 }
 
@@ -157,7 +158,6 @@
                     $galleryImages  = $('#gallery img, #gallery picture source'),
                     hidePreview     = maxHeight < 700,
                     previewHeight   = $('#gallery_preview_wrapper').length > 0 && !hidePreview ? 170 : 30,
-                    $gallery        = $('#gallery'),
                     $previewBar     = $('.product-detail-image-preview-bar');
 
                 if (fullscreen) {
@@ -215,7 +215,7 @@
                 addClickListener();
 
                 $(document).on('keyup', e => {
-                    if (e.key === "Escape") {
+                    if (e.key === "Escape" && $('#image_wrapper').hasClass('fullscreen')) {
                         toggleFullscreen();
                         addClickListener();
                     }

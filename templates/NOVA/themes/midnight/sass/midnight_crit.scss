@@ -318,16 +318,6 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
   @include transition($input-transition);
 }
 
-.breadcrumb {
-  display: flex;
-  flex-wrap: wrap;
-  padding: .5rem 0;
-  margin-bottom: 1rem;
-  list-style: none;
-  background-color: transparent;
-  border-radius: 0;
-}
-
 .square {
   display: flex;
   position: relative;

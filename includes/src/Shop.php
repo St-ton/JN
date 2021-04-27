@@ -2036,14 +2036,15 @@ final class Shop
             \session_start();
             $adminToken                   = $_SESSION['jtl_token'];
             $adminLangTag                 = $_SESSION['AdminAccount']->language;
+            self::$logged                 = $_SESSION['loginIsValid'] ?? null;
             $_SESSION['frontendUpToDate'] = true;
             \session_write_close();
             \session_name('JTLSHOP');
             \session_id($frontendId);
             \session_start();
-            self::$logged       = $_SESSION['loggedAsAdmin'] ?? null;
-            self::$adminToken   = $_SESSION['adminToken']    = $adminToken;
-            self::$adminLangTag = $_SESSION['adminLangTag']  = $adminLangTag;
+            self::$adminToken          = $_SESSION['adminToken']    = $adminToken;
+            self::$adminLangTag        = $_SESSION['adminLangTag']  = $adminLangTag;
+            $_SESSION['loggedAsAdmin'] = self::$logged;
         } else {
             // no information about admin session available
             self::$logged       = null;

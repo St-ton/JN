@@ -1293,9 +1293,6 @@
                         $.evo.article().variationSetVal(item.key, item.value, wrapper);
                     });
 
-                    if (!$wrapper.hasClass('productbox-hover')) {
-                        $.evo.extended().autoheight();
-                    }
                     $.evo.extended().stopSpinner();
 
                     $(wrapper + ' .list-gallery:not(.slick-initialized)').slick({

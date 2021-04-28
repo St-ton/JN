@@ -1294,13 +1294,6 @@
                     });
 
                     $.evo.extended().stopSpinner();
-
-                    $(wrapper + ' .list-gallery:not(.slick-initialized)').slick({
-                        lazyLoad: 'ondemand',
-                        infinite: false,
-                        dots:     false,
-                        arrows:   true
-                    });
                 }, function () {
                     $.evo.error('Error loading ' + url);
                     $.evo.extended().stopSpinner();

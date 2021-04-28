@@ -2038,6 +2038,7 @@ final class Shop
             $adminLangTag                 = $_SESSION['AdminAccount']->language;
             self::$logged                 = $_SESSION['loginIsValid'] ?? null;
             $_SESSION['frontendUpToDate'] = true;
+            self::Container()->getGetText();
             \session_write_close();
             \session_name('JTLSHOP');
             \session_id($frontendId);

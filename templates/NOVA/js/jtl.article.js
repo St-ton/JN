@@ -1242,7 +1242,12 @@
 
         setArticleContent: function(id, variation, url, variations, wrapper) {
             var $wrapper  = this.getWrapper(wrapper),
-                listStyle = $('#ed_list.active').length > 0 ? 'list' : 'gallery';
+                listStyle = $('#product-list-type').val();
+
+                if (listStyle === 'undefined') {
+                    listStyle = $('#ed_list.active').length > 0 ? 'list' : 'gallery';
+                }
+
                 $.evo.extended().startSpinner($wrapper);
 
             if (this.modalShown) {

@@ -2034,11 +2034,11 @@ final class Shop
             \session_name('eSIdAdm');
             \session_id($_COOKIE['eSIdAdm']);
             \session_start();
+            self::$logged = $_SESSION['loginIsValid'] ?? null;
 
             if (isset($_SESSION['jtl_token'], $_SESSION['AdminAccount'])) {
                 $adminToken                   = $_SESSION['jtl_token'];
                 $adminLangTag                 = $_SESSION['AdminAccount']->language;
-                self::$logged                 = $_SESSION['loginIsValid'] ?? null;
                 $_SESSION['frontendUpToDate'] = true;
 
                 if (self::$logged) {
@@ -2049,7 +2049,6 @@ final class Shop
                 $adminLangTag = null;
             }
 
-            self::$logged = $_SESSION['loginIsValid'] ?? null;
             \session_write_close();
             \session_name('JTLSHOP');
             \session_id($frontendId);

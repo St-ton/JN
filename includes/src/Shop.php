@@ -2022,7 +2022,7 @@ final class Shop
             self::$logged       = true;
             self::$adminToken   = $_SESSION['adminToken'];
             self::$adminLangTag = $_SESSION['adminLangTag'];
-            self::Container()->getGetText();
+            self::Container()->getGetText()->setLanguage(self::$adminLangTag);
         } elseif ($sessionSwitchAllowed === true
             && isset($_COOKIE['eSIdAdm'])
             && Request::verifyGPDataString('fromAdmin') === 'yes'
@@ -2040,7 +2040,10 @@ final class Shop
                 $adminLangTag                 = $_SESSION['AdminAccount']->language;
                 self::$logged                 = $_SESSION['loginIsValid'] ?? null;
                 $_SESSION['frontendUpToDate'] = true;
-                self::Container()->getGetText();
+
+                if (self::$logged) {
+                    self::Container()->getGetText();
+                }
             } else {
                 $adminToken   = null;
                 $adminLangTag = null;

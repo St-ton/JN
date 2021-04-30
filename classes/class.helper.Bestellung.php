@@ -110,11 +110,20 @@ class BestellungHelper extends WarenkorbHelper
                     break;
                 }
 
-                case C_WARENKORBPOS_TYP_ZAHLUNGSART:
-                case C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR: {
-                    $info->surcharge[self::NET] += $amount * $oPosition->nAnzahl;
-                    $info->surcharge[self::GROSS] += $amountGross * $oPosition->nAnzahl;
+                case C_WARENKORBPOS_TYP_ZAHLUNGSART: {
+                    if ($amount >= 0) {
+                        $info->surcharge[self::NET]   += $amount * $oPosition->nAnzahl;
+                        $info->surcharge[self::GROSS] += $amountGross * $oPosition->nAnzahl;
+                    } else {
+                        $info->discount[self::NET]   += $amount * $oPosition->nAnzahl;
+                        $info->discount[self::GROSS] += $amountGross * $oPosition->nAnzahl;
+                    }
                     break;
+                }
+
+                case C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR: {
+                    $info->surcharge[self::NET]   += $amount * $oPosition->nAnzahl;
+                    $info->surcharge[self::GROSS] += $amountGross * $oPosition->nAnzahl;
                 }
             }
         }

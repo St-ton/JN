@@ -790,7 +790,7 @@ class Cart
             return 3;
         }
         $mbw = Frontend::getCustomerGroup()->getAttribute(\KNDGRP_ATTRIBUT_MINDESTBESTELLWERT);
-        if ($mbw > 0 && $this->gibGesamtsummeWaren(true, false) < $mbw) {
+        if ($mbw > 0 && $this->gibGesamtsummeWarenOhne([C_WARENKORBPOS_TYP_GUTSCHEIN], true) < $mbw) {
             return 9;
         }
         if ((!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true)

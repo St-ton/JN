@@ -7,7 +7,7 @@
         {inputgroupaddon prepend=true is-text=true}
             <span class="fa fa-search"></span>
         {/inputgroupaddon}
-        {input class="filter-search" placeholder="Suche in "|cat:$filter->getName()}
+        {input class="filter-search" placeholder={lang key='filterSearchPlaceholder' section='productOverview' printf=$filter->getFrontendName()}}
             <span class="form-clear d-none"><i class="fas fa-times"></i></span>
         {/inputgroup}
     {/if}

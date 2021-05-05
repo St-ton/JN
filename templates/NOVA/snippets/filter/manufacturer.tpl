@@ -1,6 +1,16 @@
 {block name='snippets-filter-manufacturer'}
     {$limit = $Einstellungen.template.productlist.filter_max_options}
     {$collapseInit = false}
+    <div class="filter-search-wrapper">
+    {if (int)$Einstellungen.template.productlist.filter_search_count < count($filter->getOptions())}
+        {inputgroup size="sm"}
+        {inputgroupaddon prepend=true is-text=true}
+            <span class="fa fa-search"></span>
+        {/inputgroupaddon}
+        {input class="filter-search" placeholder="Suche in "|cat:$filter->getName()}
+            <span class="form-clear d-none"><i class="fas fa-times"></i></span>
+        {/inputgroup}
+    {/if}
     {if $Einstellungen.navigationsfilter.hersteller_anzeigen_als === 'B'}
         <ul class="nav nav-filter-has-image">
     {/if}
@@ -31,6 +41,7 @@
                                 src=$filterOption->getData('cBildpfadKlein')
                                 class="vmiddle filter-img"
                             }
+                            <span class="d-none filter-item-value">{$filterOption->getName()}</span>
                         {/block}
                     {elseif $Einstellungen.navigationsfilter.hersteller_anzeigen_als === 'BT'}
                         {block name='snippets-filter-manufacturer-item-image-text'}
@@ -38,13 +49,13 @@
                                 src=$filterOption->getData('cBildpfadKlein')
                                 class="vmiddle filter-img"
                             }
-                            <span class="word-break">{$filterOption->getName()}</span>
+                            <span class="word-break filter-item-value">{$filterOption->getName()}</span>
                             {badge variant="outline-secondary"}{$filterOption->getCount()}{/badge}
                         {/block}
                     {elseif $Einstellungen.navigationsfilter.hersteller_anzeigen_als === 'T'}
                         {block name='snippets-filter-manufacturer-item-text'}
                             <i class="far fa-{if $filterIsActive === true}check-{/if}square snippets-filter-item-icon-right"></i>
-                            <span class="word-break">{$filterOption->getName()}</span>
+                            <span class="word-break filter-item-value">{$filterOption->getName()}</span>
                             {badge variant="outline-secondary"}{$filterOption->getCount()}{/badge}
                         {/block}
                     {/if}
@@ -69,4 +80,5 @@
     {if $Einstellungen.navigationsfilter.hersteller_anzeigen_als === 'B'}
         </ul>
     {/if}
+    </div>
 {/block}

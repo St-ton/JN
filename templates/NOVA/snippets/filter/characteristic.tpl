@@ -3,10 +3,15 @@
     {$limit = $Einstellungen.template.productlist.filter_max_options}
     {$collapseInit = false}
     <div class="filter-search-wrapper">
-        {inputgroup}
-            {input class="filter-search" size-class="sm" placeholder="Suche in "|cat:$Merkmal->getName()}
+    {if (int)$Einstellungen.template.productlist.filter_search_count < count($Merkmal->getOptions())}
+        {inputgroup size="sm"}
+            {inputgroupaddon prepend=true is-text=true}
+                <span class="fa fa-search"></span>
+            {/inputgroupaddon}
+            {input class="filter-search" placeholder="Suche in "|cat:$Merkmal->getName()}
             <span class="form-clear d-none"><i class="fas fa-times"></i></span>
         {/inputgroup}
+    {/if}
     {if $Merkmal->getData('cTyp') === 'BILD'}
         <ul class="nav nav-filter-has-image">
     {/if}

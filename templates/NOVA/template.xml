@@ -89,6 +89,7 @@
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
+            <Setting Description="Suchfeld in Filtern anzeigen ab x Artikel" Key="filter_search_count" Type="number" Value="10"/>
             <Setting Description="Zusatzinfos zu Artikeln beim Hovern/Antippen anzeigen" Key="hover_productlist" Type="select" Value="Y">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>

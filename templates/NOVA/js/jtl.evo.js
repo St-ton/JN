@@ -861,14 +861,13 @@
         },
 
         initFilters: function (href) {
-            let $wrapper = $('.js-collapse-filter'),
-                self=this;
+            let $wrapper = $('.js-collapse-filter');
             $.evo.extended().startSpinner($wrapper);
 
             $.ajax(href, {data: {'useMobileFilters':1}})
                 .done(function(data) {
                     $wrapper.html(data);
-                    self.initPriceSlider($wrapper, false);
+                    $.evo.initPriceSlider($wrapper, false);
                     $.evo.initFilterSearch();
                 })
                 .always(function() {
@@ -984,7 +983,7 @@
                     }
                 });
             });
-            $('.filter-search-wrapper .form-clear').on('click', function() {
+            $(searchWrapper + ' ' + clear).on('click', function() {
                 $(this).prev().val('');
                 $(this).addClass('d-none');
                 filterSearch($(this).closest(searchWrapper));

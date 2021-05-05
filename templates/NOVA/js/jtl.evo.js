@@ -869,6 +869,7 @@
                 .done(function(data) {
                     $wrapper.html(data);
                     self.initPriceSlider($wrapper, false);
+                    $.evo.initFilterSearch();
                 })
                 .always(function() {
                     $.evo.extended().stopSpinner();
@@ -968,6 +969,46 @@
             });
         },
 
+        initFilterSearch: function() {
+            let searchWrapper = '.filter-search-wrapper',
+                searchInput   = '.filter-search',
+                itemValue     = '.filter-item-value',
+                item          = '.filter-item',
+                clear         = '.form-clear';
+            $(searchWrapper).each((i, itemWrapper) => {
+                $(itemWrapper).find(searchInput).on('input', function () {
+                    filterSearch($(itemWrapper));
+                }).on('keydown', e => {
+                    if (e.key === 'Escape') {
+                        e.stopPropagation();
+                    }
+                });
+            });
+            $('.filter-search-wrapper .form-clear').on('click', function() {
+                $(this).prev().val('');
+                $(this).addClass('d-none');
+                filterSearch($(this).closest(searchWrapper));
+            });
+
+            function filterSearch (itemWrapper) {
+                let searchTerm = itemWrapper.find(searchInput).val().toLowerCase();
+                itemWrapper.find(itemValue).each((i, itemTMP) => {
+                    itemTMP = $(itemTMP);
+                    let text = itemTMP.text().toLowerCase();
+                    if (text.indexOf(searchTerm) === -1) {
+                        itemTMP.closest(item).hide();
+                    } else {
+                        itemTMP.closest(item).show();
+                    }
+                    if (searchTerm.length === 0) {
+                        itemWrapper.find(clear).addClass('d-none');
+                    } else {
+                        itemWrapper.find(clear).removeClass('d-none');
+                    }
+                });
+            }
+        },
+
         /**
          * $.evo.extended() is deprecated, please use $.evo instead
          */
@@ -998,6 +1039,7 @@
             this.initWishlist();
             this.initPaginationEvents();
             this.initFilterEvents();
+            this.initFilterSearch();
         }
     };
 

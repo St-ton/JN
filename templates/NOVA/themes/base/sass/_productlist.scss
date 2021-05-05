@@ -77,6 +77,15 @@
 		word-break: keep-all;
 	}
 }
+.filter-search-wrapper {
+	.filter-search {
+		margin-bottom: map-get($spacers, 2);
+	}
+	.form-clear {
+		bottom: 13px;
+		right: 7px;
+	}
+}
 
 .productlist-filter-categories {
 	> .nav-item > .nav-link { padding-left: 0; padding-right: 0; position: relative;

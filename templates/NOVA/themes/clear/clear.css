@@ -23926,6 +23926,14 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   word-break: keep-all;
 }
 
+.filter-search-wrapper .filter-search {
+  margin-bottom: 0.5rem;
+}
+.filter-search-wrapper .form-clear {
+  bottom: 13px;
+  right: 7px;
+}
+
 .productlist-filter-categories > .nav-item > .nav-link {
   padding-left: 0;
   padding-right: 0;

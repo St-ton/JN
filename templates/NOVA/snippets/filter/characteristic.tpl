@@ -2,6 +2,11 @@
     {$is_dropdown = ($Merkmal->cTyp === 'SELECTBOX')}
     {$limit = $Einstellungen.template.productlist.filter_max_options}
     {$collapseInit = false}
+    <div class="filter-search-wrapper">
+        {inputgroup}
+            {input class="filter-search" size-class="sm" placeholder="Suche in "|cat:$Merkmal->getName()}
+            <span class="form-clear d-none"><i class="fas fa-times"></i></span>
+        {/inputgroup}
     {if $Merkmal->getData('cTyp') === 'BILD'}
         <ul class="nav nav-filter-has-image">
     {/if}
@@ -30,7 +35,7 @@
                                 class="vmiddle"
                             }
                         {/if}
-                        <span class="word-break">{$attributeValue->getValue()|escape:'html'}</span>
+                        <span class="word-break filter-item-value">{$attributeValue->getValue()|escape:'html'}</span>
                         {badge variant="outline-secondary"}{$attributeValue->getCount()}{/badge}
                     </div>
                 {/dropdownitem}
@@ -60,7 +65,7 @@
                                         class="vmiddle"
                                     }
                                 {/if}
-                                <span class="word-break">{$attributeValue->getValue()|escape:'html'}</span>
+                                <span class="word-break filter-item-value">{$attributeValue->getValue()|escape:'html'}</span>
                                 {badge variant="outline-secondary"}{$attributeValue->getCount()}{/badge}
                             </div>
                         {/link}
@@ -78,6 +83,9 @@
                                 title="{$attributeValue->getValue()|escape:'html'}: {$attributeValue->getCount()}"
                                 class="vmiddle filter-img"
                             }
+                            <span class="d-none filter-item-value">
+                                {$attributeValue->getValue()|escape:'html'}
+                            </span>
                         {/link}
                     {/block}
                 {else}
@@ -95,7 +103,7 @@
                                         class="vmiddle filter-img"
                                     }
                                 {/if}
-                                <span class="word-break">
+                                <span class="word-break filter-item-value">
                                     {$attributeValue->getValue()|escape:'html'}
                                 </span>
                                 {badge variant="outline-secondary"}{$attributeValue->getCount()}{/badge}
@@ -122,4 +130,5 @@
     {if $Merkmal->getData('cTyp') === 'BILD'}
         </ul>
     {/if}
+    </div>
 {/block}

@@ -868,7 +868,7 @@
                 .done(function(data) {
                     $wrapper.html(data);
                     $.evo.initPriceSlider($wrapper, false);
-                    $.evo.initFilterSearch();
+                    $.evo.initItemSearch('filter');
                 })
                 .always(function() {
                     $.evo.extended().stopSpinner();
@@ -968,11 +968,11 @@
             });
         },
 
-        initFilterSearch: function() {
-            let searchWrapper = '.filter-search-wrapper',
-                searchInput   = '.filter-search',
-                itemValue     = '.filter-item-value',
-                item          = '.filter-item',
+        initItemSearch: function(context) {
+            let searchWrapper = '.' + context + '-search-wrapper',
+                searchInput   = '.' + context + '-search',
+                itemValue     = '.' + context + '-item-value',
+                item          = '.' + context + '-item',
                 clear         = '.form-clear';
             $(searchWrapper).each((i, itemWrapper) => {
                 $(itemWrapper).find(searchInput).on('input', function () {
@@ -1038,7 +1038,7 @@
             this.initWishlist();
             this.initPaginationEvents();
             this.initFilterEvents();
-            this.initFilterSearch();
+            this.initItemSearch('filter');
         }
     };
 

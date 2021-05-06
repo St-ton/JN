@@ -13,7 +13,7 @@ echo "] create zip of build '${TAG}'...";
 #zip -r -q ${ARCHIVE_PATH} . -x@/creation/build/scripts/archive_main_excludes.lst;
 # second, add additional files to the previous created MAIN archive
 zip -r -q ${ARCHIVE_PATH} . -x \*.git* \*.idea* \*build/* \*docs/* \*patch-dir-* \*templates_c/* \*tests/* \*.asset_cs \*.php_cs \*.travis.yml \*phpunit.xml;
-zip -r -q ${ARCHIVE_PATH} . -i \*templates_c/.htaccess \*templates_c/min/.htaccess
+zip -r -q ${ARCHIVE_PATH} . -i \*templates_c/.htaccess \*templates_c/min/.htaccess admin/templates_c/.gitkeep
 
 chmod g+w ${ARCHIVE_PATH}
 echo "  ${FILENAME}";

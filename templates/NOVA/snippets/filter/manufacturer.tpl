@@ -3,13 +3,15 @@
     {$collapseInit = false}
     <div class="filter-search-wrapper">
     {if (int)$Einstellungen.template.productlist.filter_search_count < count($filter->getOptions())}
-        {inputgroup size="sm"}
-        {inputgroupaddon prepend=true is-text=true}
-            <span class="fa fa-search"></span>
-        {/inputgroupaddon}
-        {input class="filter-search" placeholder={lang key='filterSearchPlaceholder' section='productOverview' printf=$filter->getFrontendName()}}
-            <span class="form-clear d-none"><i class="fas fa-times"></i></span>
-        {/inputgroup}
+        {block name='snippets-filter-manufacturer-search'}
+            {inputgroup size="sm"}
+            {inputgroupaddon prepend=true is-text=true}
+                <span class="fa fa-search"></span>
+            {/inputgroupaddon}
+            {input class="filter-search" placeholder={lang key='filterSearchPlaceholder' section='productOverview' printf=$filter->getFrontendName()}}
+                <span class="form-clear d-none"><i class="fas fa-times"></i></span>
+            {/inputgroup}
+        {/block}
     {/if}
     {if $Einstellungen.navigationsfilter.hersteller_anzeigen_als === 'B'}
         <ul class="nav nav-filter-has-image">

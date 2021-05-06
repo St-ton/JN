@@ -973,7 +973,8 @@
                 searchInput   = '.' + context + '-search',
                 itemValue     = '.' + context + '-item-value',
                 item          = '.' + context + '-item',
-                clear         = '.form-clear';
+                clear         = '.form-clear',
+                inputSelected = 'input-group-selected';
             $(searchWrapper).each((i, itemWrapper) => {
                 $(itemWrapper).find(searchInput).on('input', function () {
                     filterSearch($(itemWrapper));
@@ -987,6 +988,11 @@
                 $(this).prev().val('');
                 $(this).addClass('d-none');
                 filterSearch($(this).closest(searchWrapper));
+            });
+            $(searchInput).on('focusin', function() {
+                $(this).closest(searchWrapper).addClass(inputSelected);
+            }).on('focusout', function() {
+                $(this).closest(searchWrapper).removeClass(inputSelected);
             });
 
             function filterSearch (itemWrapper) {

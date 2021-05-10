@@ -10,7 +10,7 @@
             {/block}
         {/if}
         {block name='snippets-filter-search-navitem'}
-            {link nofollow=true
+            {link rel="nofollow"
                 href=$searchFilter->getURL()
                 class="filter-item {if $searchFilter->isActive()}active{/if}"}
                     <div class="box-link-wrapper">

@@ -2,8 +2,6 @@
 
 namespace JTL\Link;
 
-use Illuminate\Support\Collection;
-
 /**
  * Interface LinkGroupListInterface
  * @package JTL\Link

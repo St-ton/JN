@@ -87,7 +87,8 @@ $step = 'bestellung';
 $smarty->assign('step', $step)
        ->assign('BESTELLUNG_STATUS_BEZAHLT', BESTELLUNG_STATUS_BEZAHLT)
        ->assign('BESTELLUNG_STATUS_VERSANDT', BESTELLUNG_STATUS_VERSANDT)
-       ->assign('BESTELLUNG_STATUS_OFFEN', BESTELLUNG_STATUS_OFFEN);
+       ->assign('BESTELLUNG_STATUS_OFFEN', BESTELLUNG_STATUS_OFFEN)
+       ->assign('Link', $linkHelper->getPageLink($linkHelper->getSpecialPageID(PAGE_BESTELLSTATUS)));
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 

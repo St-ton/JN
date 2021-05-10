@@ -38,6 +38,11 @@ abstract class ReferencedItem implements ReferencedItemInterface
     /**
      * @var bool
      */
+    private $canBeUpdated = true;
+
+    /**
+     * @var bool
+     */
     private $active = false;
 
     /**
@@ -133,6 +138,22 @@ abstract class ReferencedItem implements ReferencedItemInterface
     public function setHasUpdate(bool $hasUpdate): void
     {
         $this->hasUpdate = $hasUpdate;
+    }
+
+    /**
+     * @return bool
+     */
+    public function canBeUpdated(): bool
+    {
+        return $this->canBeUpdated;
+    }
+
+    /**
+     * @param bool $canBeUpdated
+     */
+    public function setCanBeUpdated(bool $canBeUpdated): void
+    {
+        $this->canBeUpdated = $canBeUpdated;
     }
 
     /**

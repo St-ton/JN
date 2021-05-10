@@ -19,16 +19,20 @@ class ReferencedTemplate extends ReferencedItem
      * @inheritDoc
      * @throws \Exception
      */
-    public function initByExsID(DbInterface $db, stdClass $license, ?Release $release): void
+    public function initByExsID(DbInterface $db, stdClass $license, Releases $releases): void
     {
         $exsid = $license->exsid;
         $data  = $db->select('ttemplate', 'eTyp', 'standard');
         if ($data !== null && $data->exsID === $exsid) {
-            $releaseVersion   = $release === null ? Version::parse('0.0.0') : $release->getVersion();
+            $available = $releases->getAvailable();
+            $latest    = $releases->getLatest() ?? $available ?? Version::parse('0.0.0');
+            if ($available !== null && $latest->getVersion()->greaterThan($available->getVersion())) {
+                $this->setCanBeUpdated(false);
+            }
             $installedVersion = Version::parse($data->version);
             $this->setID($data->cTemplate);
-            $this->setMaxInstallableVersion($releaseVersion);
-            $this->setHasUpdate($installedVersion->smallerThan($releaseVersion));
+            $this->setMaxInstallableVersion($latest);
+            $this->setHasUpdate($installedVersion->smallerThan($latest));
             $this->setInstalled(true);
             $this->setInstalledVersion($installedVersion);
             $this->setActive(true);

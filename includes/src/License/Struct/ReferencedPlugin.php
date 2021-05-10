@@ -18,15 +18,20 @@ class ReferencedPlugin extends ReferencedItem
     /**
      * @inheritDoc
      */
-    public function initByExsID(DbInterface $db, stdClass $license, ?Release $release): void
+    public function initByExsID(DbInterface $db, stdClass $license, Releases $releases): void
     {
         $installed = $db->select('tplugin', 'exsID', $license->exsid);
         if ($installed !== null) {
             $installedVersion = Version::parse($installed->nVersion);
             $this->setID($installed->cPluginID);
-            if ($release !== null) {
-                $this->setMaxInstallableVersion($release->getVersion());
-                $this->setHasUpdate($installedVersion->smallerThan($release->getVersion()));
+            $available = $releases->getAvailable();
+            $latest    = $releases->getLatest() ?? $available;
+            if ($latest !== null) {
+                $this->setMaxInstallableVersion($latest->getVersion());
+                $this->setHasUpdate($installedVersion->smallerThan($latest->getVersion()));
+                if ($available !== null && $latest->getVersion()->greaterThan($available->getVersion())) {
+                    $this->setCanBeUpdated(false);
+                }
             } else {
                 $this->setMaxInstallableVersion(Version::parse('0.0.0'));
             }

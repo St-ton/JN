@@ -28,7 +28,7 @@ if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
 if (isset($_POST['erstellenShowButton'])) {
     $tab = 'erstellen';
 } elseif (Request::verifyGPCDataInt('uebersicht') === 1 && Form::validateToken()) {
-    $checkboxIDs = array_map('\intval', $_POST['kCheckBox']);
+    $checkboxIDs = Request::verifyGPDataIntegerArray('kCheckBox');
     if (isset($_POST['checkboxAktivierenSubmit'])) {
         $checkbox->aktivateCheckBox($checkboxIDs);
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCheckboxActivate'), 'successCheckboxActivate');

@@ -372,12 +372,12 @@ class Artikel
     public $oSuchspecialBild;
 
     /**
-     * @var bool
+     * @var int
      */
     public $bIsBestseller;
 
     /**
-     * @var bool
+     * @var int
      */
     public $bIsTopBewertet;
 
@@ -3949,7 +3949,7 @@ class Artikel
             && $now < new DateTime($this->dErscheinungsdatum);
         // Top bewertet
         // No need to check with custom function.. this value is set in fuelleArtikel()?
-        $specials[\SEARCHSPECIALS_TOPREVIEWS] = $this->bIsTopBewertet === '1';
+        $specials[\SEARCHSPECIALS_TOPREVIEWS] = $this->bIsTopBewertet === 1;
         // Variationen Lagerbestand 0
         if ($this->cLagerBeachten === 'Y'
             && $this->cLagerKleinerNull === 'N'

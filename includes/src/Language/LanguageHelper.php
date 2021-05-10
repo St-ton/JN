@@ -368,15 +368,18 @@ class LanguageHelper
         $this->initLangData();
         if (isset($_SESSION['cISOSprache']) && \mb_strlen($_SESSION['cISOSprache']) > 0) {
             $this->currentISOCode = $_SESSION['cISOSprache'];
+            $this->kSprache       = (int)$_SESSION['kSprache'];
         } else {
             $language = $this->mappedGetDefaultLanguage();
             if (isset($language->cISO) && \mb_strlen($language->cISO) > 0) {
                 $this->currentISOCode = $language->cISO;
+                $this->kSprache       = $language->id;
             }
         }
-        $this->currentLanguageID = $this->mappekISO($this->currentISOCode);
+        $this->currentLanguageID = $this->kSprache;
+        $this->kSprachISO        = $this->mappekISO($this->currentISOCode);
         if (isset($_SESSION)) {
-            $_SESSION['kSprachISO'] = $this->currentLanguageID;
+            $_SESSION['kSprachISO'] = $this->kSprachISO;
         }
 
         return $this;

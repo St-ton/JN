@@ -47,7 +47,7 @@ class Category
     private static $config;
 
     /**
-     * @var array
+     * @var array|null
      */
     private static $fullCategories;
 

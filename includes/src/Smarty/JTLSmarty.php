@@ -144,7 +144,7 @@ class JTLSmarty extends SmartyBC
     }
 
     /**
-     * @param null $parent
+     * @param string|null $parent
      * @throws \SmartyException
      */
     private function init($parent = null): void

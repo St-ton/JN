@@ -193,6 +193,10 @@ $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
     ->assign('isNova', ($conf['template']['general']['is_nova'] ?? 'N') === 'Y')
     ->assign('isAjax', Request::isAjaxRequest());
 
+if ($smarty->getTemplateVars('Link') === null) {
+    $smarty->assign('Link', $link ?? $linkHelper->getPageLink($linkHelper->getSpecialPageID(LINKTYP_404)));
+}
+
 $nav = new Navigation(Shop::Lang(), Shop::Container()->getLinkService());
 $nav->setPageType(Shop::getPageType());
 $nav->setProductFilter($NaviFilter);

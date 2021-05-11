@@ -1651,6 +1651,7 @@ class CartHelper
                         && $product->cLagerVariation !== 'Y'
                         && $product->cLagerKleinerNull !== 'Y'
                     ) {
+                        $available = true;
                         foreach ($product->getAllDependentProducts(true) as $dependent) {
                             /** @var Artikel $depProduct */
                             $depProduct = $dependent->product;
@@ -1661,12 +1662,13 @@ class CartHelper
                                         [$i]
                                     )) > $depProduct->fLagerbestand
                             ) {
-                                $valid = false;
+                                $valid     = false;
+                                $available = false;
                                 break;
                             }
                         }
 
-                        if (!$valid) {
+                        if ($available === false) {
                             $msg = Shop::Lang()->get('quantityNotAvailable', 'messages');
                             if (!isset($cartNotices) || !\in_array($msg, $cartNotices, true)) {
                                 $cartNotices[] = $msg;

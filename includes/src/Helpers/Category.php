@@ -241,7 +241,11 @@ class Category
                     $hasProductsCheckJoin . $stockJoin . $visibilityJoin . '                     
                 WHERE node.nLevel > 0 AND parent.nLevel > 0
                     AND tkategoriesichtbarkeit.kKategorie IS NULL AND node.lft BETWEEN parent.lft AND parent.rght
-                    AND parent.kOberKategorie = 0 ' . $visibilityWhere . $depthWhere . '                    
+                    AND (parent.kOberKategorie = 0 OR NOT EXISTS(
+                        SELECT 1
+                        FROM tkategorie
+                        WHERE tkategorie.kKategorie = parent.kOberKategorie)
+                    ) ' . $visibilityWhere . $depthWhere . '
                 GROUP BY node.kKategorie
                 ORDER BY node.lft',
             ReturnType::COLLECTION
@@ -675,8 +679,11 @@ class Category
         });
 
         foreach ($orphanedCategories as $oCat) {
+            $children = $this->buildTree($nodes, $oCat->getID());
             $oCat->setParentID(0);
             $oCat->setOrphaned(true);
+            $oCat->setChildren($children);
+            $oCat->setHasChildren(count($children) > 0);
             $fullCats[$oCat->getID()] = $oCat;
         }
 

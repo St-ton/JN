@@ -379,7 +379,7 @@ class CartHelper
             return self::checkWishlist(
                 $productID,
                 $fAnzahl,
-                false && $conf['global']['global_wunschliste_weiterleitung'] === 'Y'
+                $conf['global']['global_wunschliste_weiterleitung'] === 'Y'
             );
         }
         if (isset($_POST['Vergleichsliste']) && $productID > 0) {

@@ -290,9 +290,6 @@
                             }
                         );
                     });
-                    $('#consent-accept-banner-btn-close').on('click', function(e) {
-                        CM.closeBanner();
-                    });
                 </script>
             {/inline_script}
         {/if}

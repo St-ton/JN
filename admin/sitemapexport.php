@@ -43,8 +43,7 @@ if (Request::postInt('einstellungen') > 0) {
         Shop::Container()->getDB()->query(
             'DELETE
                 FROM tsitemaptracker
-                WHERE kSitemapTracker IN (' . implode(',', $trackers) . ')',
-            ReturnType::AFFECTED_ROWS
+                WHERE kSitemapTracker IN (' . implode(',', $trackers) . ')'
         );
     }
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSitemapDLDelete'), 'successSitemapDLDelete');
@@ -54,8 +53,7 @@ if (Request::postInt('einstellungen') > 0) {
         Shop::Container()->getDB()->query(
             'DELETE
                 FROM tsitemapreport
-                WHERE kSitemapReport IN (' . implode(',', $reports) . ')',
-            ReturnType::AFFECTED_ROWS
+                WHERE kSitemapReport IN (' . implode(',', $reports) . ')'
         );
     }
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSitemapReportDelete'), 'successSitemapReportDelete');
@@ -67,8 +65,7 @@ $yearReports   = Request::verifyGPCDataInt('nYear_reports');
 if (Request::postVar('action') === 'year_downloads_delete' && Form::validateToken()) {
     Shop::Container()->getDB()->query(
         'DELETE FROM tsitemaptracker
-            WHERE YEAR(tsitemaptracker.dErstellt) = ' . $yearDownloads,
-        ReturnType::AFFECTED_ROWS
+            WHERE YEAR(tsitemaptracker.dErstellt) = ' . $yearDownloads
     );
     $alertHelper->addAlert(
         Alert::TYPE_SUCCESS,
@@ -81,8 +78,7 @@ if (Request::postVar('action') === 'year_downloads_delete' && Form::validateToke
 if (Request::postVar('action') === 'year_reports_delete' && Form::validateToken()) {
     Shop::Container()->getDB()->query(
         'DELETE FROM tsitemapreport
-            WHERE YEAR(tsitemapreport.dErstellt) = ' . $yearReports,
-        ReturnType::AFFECTED_ROWS
+            WHERE YEAR(tsitemapreport.dErstellt) = ' . $yearReports
     );
     $alertHelper->addAlert(
         Alert::TYPE_SUCCESS,

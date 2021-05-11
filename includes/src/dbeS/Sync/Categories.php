@@ -23,7 +23,7 @@ final class Categories extends AbstractSync
     public function handle(Starter $starter)
     {
         $categoryIDs = [];
-        $this->db->query('START TRANSACTION', ReturnType::DEFAULT);
+        $this->db->query('START TRANSACTION');
         foreach ($starter->getXML() as $i => $item) {
             [$file, $xml] = [\key($item), \reset($item)];
             if (isset($xml['tkategorie attr']['nGesamt']) || isset($xml['tkategorie attr']['nAktuell'])) {
@@ -40,7 +40,7 @@ final class Categories extends AbstractSync
         }));
         $lastJob = new LastJob($this->db, $this->logger);
         $lastJob->run(\LASTJOBS_KATEGORIEUPDATE, 'Kategorien_xml');
-        $this->db->query('COMMIT', ReturnType::DEFAULT);
+        $this->db->query('COMMIT');
 
         return null;
     }
@@ -122,10 +122,8 @@ final class Categories extends AbstractSync
                         WHERE tkategorie.kKategorie = :categoryID
                             AND tsprache.cStandard = 'Y'
                             AND tkategorie.cSeo != '')",
-                ['categoryID' => (int)$categories[0]->kKategorie],
-                ReturnType::DEFAULT
+                ['categoryID' => (int)$categories[0]->kKategorie]
             );
-
             \executeHook(\HOOK_KATEGORIE_XML_BEARBEITEINSERT, ['oKategorie' => $categories[0]]);
         }
         $this->setLanguages($xml, $category->kKategorie, $categories[0]);
@@ -238,8 +236,7 @@ final class Categories extends AbstractSync
                     ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
                 WHERE tkategorieattribut.kKategorie = :categoryID' . (\count($attribPKs) > 0 ? '
                     AND tkategorieattribut.kKategorieAttribut NOT IN (' . \implode(', ', $attribPKs) . ')' : ''),
-            ['categoryID' => $categoryID],
-            ReturnType::DEFAULT
+            ['categoryID' => $categoryID]
         );
     }
 
@@ -274,8 +271,7 @@ final class Categories extends AbstractSync
                 LEFT JOIN tkategorieattributsprache
                     ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
                 WHERE tkategorieattribut.kKategorie = :categoryID',
-            ['categoryID' => $id],
-            ReturnType::DEFAULT
+            ['categoryID' => $id]
         );
         $this->db->delete('tseo', ['kKey', 'cKey'], [$id, 'kKategorie']);
         $this->db->delete('tkategorie', 'kKategorie', $id);
@@ -345,8 +341,7 @@ final class Categories extends AbstractSync
                     fRabatt    = IF(tartikelkategorierabatt.fRabatt < tNew.fRabatt,
                         tNew.fRabatt,
                         tartikelkategorierabatt.fRabatt)',
-            ['categoryID' => $categoryID],
-            ReturnType::DEFAULT
+            ['categoryID' => $categoryID]
         );
     }
 
@@ -368,9 +363,7 @@ final class Categories extends AbstractSync
                 WHERE tart_a.kKategorie = :categoryID
                     AND tkgrp_b.fRabatt > COALESCE(tkgrp_a.fRabatt, 0)
                     AND tsicht.kKategorie IS NULL',
-            [
-                'categoryID' => $categoryID
-            ],
+            ['categoryID' => $categoryID],
             ReturnType::ARRAY_OF_OBJECTS
         );
     }

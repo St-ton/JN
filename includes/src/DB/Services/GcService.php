@@ -110,14 +110,12 @@ class GcService implements GcServiceInterface
                 $this->db->query(
                     "DELETE {$cFrom} 
                         FROM {$table} {$cJoin} 
-                        WHERE DATE_SUB(NOW(), INTERVAL {$interval} DAY) >= {$table}.{$dateField}",
-                    ReturnType::AFFECTED_ROWS
+                        WHERE DATE_SUB(NOW(), INTERVAL {$interval} DAY) >= {$table}.{$dateField}"
                 );
             } else {
                 $this->db->query(
                     "DELETE FROM {$table} 
-                        WHERE DATE_SUB(NOW(), INTERVAL {$interval} DAY) >= {$dateField}",
-                    ReturnType::AFFECTED_ROWS
+                        WHERE DATE_SUB(NOW(), INTERVAL {$interval} DAY) >= {$dateField}"
                 );
             }
         }

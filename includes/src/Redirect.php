@@ -700,13 +700,12 @@ class Redirect
      */
     public static function deleteUnassigned(): int
     {
-        return Shop::Container()->getDB()->query(
+        return Shop::Container()->getDB()->getAffectedRows(
             "DELETE tredirect, tredirectreferer
                 FROM tredirect
                 LEFT JOIN tredirectreferer
                     ON tredirect.kRedirect = tredirectreferer.kRedirect
-                WHERE tredirect.cToUrl = ''",
-            ReturnType::AFFECTED_ROWS
+                WHERE tredirect.cToUrl = ''"
         );
     }
 

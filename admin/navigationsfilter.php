@@ -22,7 +22,7 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
     );
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_CATEGORY]);
     if (GeneralObject::hasCount('nVon', $_POST) && GeneralObject::hasCount('nBis', $_POST)) {
-        $db->query('TRUNCATE TABLE tpreisspannenfilter', ReturnType::AFFECTED_ROWS);
+        $db->query('TRUNCATE TABLE tpreisspannenfilter');
         foreach ($_POST['nVon'] as $i => $nVon) {
             $nVon = (float)$nVon;
             $nBis = (float)$_POST['nBis'][$i];

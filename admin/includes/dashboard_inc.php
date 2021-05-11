@@ -152,8 +152,7 @@ function setWidgetPosition(int $widgetId, string $container, int $pos): void
                     'currentPos'       => $current->nPos,
                     'newPos'           => $pos,
                     'currentContainer' => $current->eContainer
-                ],
-                ReturnType::DEFAULT
+                ]
             );
         } else {
             $db->queryPrepared(
@@ -166,8 +165,7 @@ function setWidgetPosition(int $widgetId, string $container, int $pos): void
                     'currentPos'       => $current->nPos,
                     'newPos'           => $pos,
                     'currentContainer' => $current->eContainer
-                ],
-                ReturnType::DEFAULT
+                ]
             );
         }
     } else {
@@ -179,8 +177,7 @@ function setWidgetPosition(int $widgetId, string $container, int $pos): void
             [
                 'currentPos'       => $current->nPos,
                 'currentContainer' => $current->eContainer
-            ],
-            ReturnType::DEFAULT
+            ]
         );
         $db->queryPrepared(
             'UPDATE tadminwidgets
@@ -190,8 +187,7 @@ function setWidgetPosition(int $widgetId, string $container, int $pos): void
             [
                 'newPos'       => $pos,
                 'newContainer' => $container
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     }
 

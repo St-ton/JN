@@ -12,6 +12,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_EMAIL_BLACKLIST_VIEW', true, true);
 $step = 'emailblacklist';
+$db   = Shop::Container()->getDB();
 if (Request::postInt('einstellungen') > 0) {
     Shop::Container()->getAlertService()->addAlert(
         Alert::TYPE_SUCCESS,
@@ -21,22 +22,18 @@ if (Request::postInt('einstellungen') > 0) {
 }
 if (Request::postInt('emailblacklist') === 1 && Form::validateToken()) {
     $addresses = explode(';', $_POST['cEmail']);
-    if (is_array($addresses) && count($addresses) > 0) {
-        Shop::Container()->getDB()->query('TRUNCATE temailblacklist', ReturnType::AFFECTED_ROWS);
+    if (count($addresses) > 0) {
+        $db->query('TRUNCATE temailblacklist');
         foreach ($addresses as $mail) {
             $mail = strip_tags(trim($mail));
             if (mb_strlen($mail) > 0) {
-                Shop::Container()->getDB()->insert('temailblacklist', (object)['cEmail' => $mail]);
+                $db->insert('temailblacklist', (object)['cEmail' => $mail]);
             }
         }
     }
 }
-$blacklist = Shop::Container()->getDB()->query(
-    'SELECT * 
-        FROM temailblacklist',
-    ReturnType::ARRAY_OF_OBJECTS
-);
-$blocked   = Shop::Container()->getDB()->query(
+$blacklist = $db->selectAll('temailblacklist', [], []);
+$blocked   = $db->query(
     "SELECT *, DATE_FORMAT(dLetzterBlock, '%d.%m.%Y %H:%i') AS Datum
         FROM temailblacklistblock
         ORDER BY dLetzterBlock DESC

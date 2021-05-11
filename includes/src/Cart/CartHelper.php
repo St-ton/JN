@@ -675,104 +675,102 @@ class CartHelper
      * @param bool      $redirect
      * @return bool
      */
-    private static function checkWishlist(int $productID, $qty, $redirect): bool
+    private static function checkWishlist(int $productID, $qty, bool $redirect): bool
     {
         $linkHelper = Shop::Container()->getLinkService();
         if (!isset($_POST['login']) && Frontend::getCustomer()->getID() < 1) {
             if ($qty <= 0) {
                 $qty = 1;
             }
-            \header('Location: ' . $linkHelper->getStaticRoute('jtl.php') .
-                '?a=' . $productID .
-                '&n=' . $qty .
-                '&r=' . \R_LOGIN_WUNSCHLISTE, true, 302);
+            \header('Location: ' . $linkHelper->getStaticRoute('jtl.php')
+                . '?a=' . $productID
+                . '&n=' . $qty
+                . '&r=' . \R_LOGIN_WUNSCHLISTE, true, 302);
             exit;
         }
 
-        if ($productID > 0 && Frontend::getCustomer()->getID() > 0) {
-            $productExists = Shop::Container()->getDB()->select(
-                'tartikel',
+        if ($productID <= 0 || Frontend::getCustomer()->getID() <= 0) {
+            return false;
+        }
+        $productExists = Shop::Container()->getDB()->select(
+            'tartikel',
+            'kArtikel',
+            $productID,
+            null,
+            null,
+            null,
+            null,
+            false,
+            'kArtikel, cName'
+        );
+        if ($productExists !== null && $productExists->kArtikel > 0) {
+            $vis = Shop::Container()->getDB()->select(
+                'tartikelsichtbarkeit',
                 'kArtikel',
                 $productID,
-                null,
-                null,
+                'kKundengruppe',
+                Frontend::getCustomerGroup()->getID(),
                 null,
                 null,
                 false,
-                'kArtikel, cName'
+                'kArtikel'
             );
-            if ($productExists !== null && $productExists->kArtikel > 0) {
-                $vis = Shop::Container()->getDB()->select(
-                    'tartikelsichtbarkeit',
-                    'kArtikel',
+            if ($vis === null || !$vis->kArtikel) {
+                if (Product::isParent($productID)) {
+                    // Falls die Wunschliste aus der Artikelübersicht ausgewählt wurde,
+                    // muss zum Artikel weitergeleitet werden um Variationen zu wählen
+                    if (Request::verifyGPCDataInt('overview') === 1) {
+                        \header('Location: ' . Shop::getURL() . '/?a=' . $productID .
+                            '&n=' . $qty .
+                            '&r=' . \R_VARWAEHLEN, true, 303);
+                        exit;
+                    }
+
+                    $productID  = Product::getArticleForParent($productID);
+                    $attributes = $productID > 0
+                        ? Product::getSelectedPropertiesForVarCombiArticle($productID)
+                        : [];
+                } else {
+                    $attributes = Product::getSelectedPropertiesForArticle($productID);
+                }
+                if ($productID <= 0) {
+                    return true;
+                }
+                $wishlist = Frontend::getWishList();
+                if ($wishlist->kWunschliste <= 0) {
+                    $wishlist->schreibeDB();
+                }
+                $qty    = \max(1, $qty);
+                $itemID = $wishlist->fuegeEin(
                     $productID,
-                    'kKundengruppe',
-                    Frontend::getCustomerGroup()->getID(),
-                    null,
-                    null,
-                    false,
-                    'kArtikel'
+                    $productExists->cName,
+                    $attributes,
+                    $qty
                 );
-                if ($vis === null || !$vis->kArtikel) {
-                    if (Product::isParent($productID)) {
-                        // Falls die Wunschliste aus der Artikelübersicht ausgewählt wurde,
-                        // muss zum Artikel weitergeleitet werden um Variationen zu wählen
-                        if (Request::verifyGPCDataInt('overview') === 1) {
-                            \header('Location: ' . Shop::getURL() . '/?a=' . $productID .
-                                '&n=' . $qty .
-                                '&r=' . \R_VARWAEHLEN, true, 303);
-                            exit;
-                        }
+                if (isset($_SESSION['Kampagnenbesucher'])) {
+                    Campaign::setCampaignAction(\KAMPAGNE_DEF_WUNSCHLISTE, $itemID, $qty);
+                }
 
-                        $productID  = Product::getArticleForParent($productID);
-                        $attributes = $productID > 0
-                            ? Product::getSelectedPropertiesForVarCombiArticle($productID)
-                            : [];
-                    } else {
-                        $attributes = Product::getSelectedPropertiesForArticle($productID);
-                    }
-                    /** @noinspection NotOptimalIfConditionsInspection */
-                    if ($productID > 0) {
-                        if (empty($_SESSION['Wunschliste']->kWunschliste)) {
-                            $_SESSION['Wunschliste'] = new Wishlist();
-                            $_SESSION['Wunschliste']->schreibeDB();
-                        }
-                        $qty             = \max(1, $qty);
-                        $kWunschlistePos = $_SESSION['Wunschliste']->fuegeEin(
-                            $productID,
-                            $productExists->cName,
-                            $attributes,
-                            $qty
-                        );
-                        if (isset($_SESSION['Kampagnenbesucher'])) {
-                            Campaign::setCampaignAction(\KAMPAGNE_DEF_WUNSCHLISTE, $kWunschlistePos, $qty);
-                        }
+                $obj = (object)['kArtikel' => $productID];
+                \executeHook(\HOOK_TOOLS_GLOBAL_CHECKEWARENKORBEINGANG_WUNSCHLISTE, [
+                    'kArtikel'         => &$productID,
+                    'fAnzahl'          => &$qty,
+                    'AktuellerArtikel' => &$obj
+                ]);
 
-                        $obj           = new stdClass();
-                        $obj->kArtikel = $productID;
-                        \executeHook(\HOOK_TOOLS_GLOBAL_CHECKEWARENKORBEINGANG_WUNSCHLISTE, [
-                            'kArtikel'         => &$productID,
-                            'fAnzahl'          => &$qty,
-                            'AktuellerArtikel' => &$obj
-                        ]);
-
-                        Shop::Container()->getAlertService()->addAlert(
-                            Alert::TYPE_NOTE,
-                            Shop::Lang()->get('wishlistProductadded', 'messages'),
-                            'wishlistProductadded'
-                        );
-                        if ($redirect === true && !Request::isAjaxRequest()) {
-                            \header('Location: ' . $linkHelper->getStaticRoute('wunschliste.php'), true, 302);
-                            exit;
-                        }
-                    }
+                Shop::Container()->getAlertService()->addAlert(
+                    Alert::TYPE_NOTE,
+                    Shop::Lang()->get('wishlistProductadded', 'messages'),
+                    'wishlistProductadded'
+                );
+                if ($redirect === true && !Request::isAjaxRequest()) {
+                    \header('Location: ' . $linkHelper->getStaticRoute('wunschliste.php'), true, 302);
+                    exit;
                 }
             }
-
-            return true;
         }
 
-        return false;
+        return true;
     }
 
     /**
@@ -1650,6 +1648,7 @@ class CartHelper
                         && $product->cLagerVariation !== 'Y'
                         && $product->cLagerKleinerNull !== 'Y'
                     ) {
+                        $available = true;
                         foreach ($product->getAllDependentProducts(true) as $dependent) {
                             /** @var Artikel $depProduct */
                             $depProduct = $dependent->product;
@@ -1660,12 +1659,13 @@ class CartHelper
                                         [$i]
                                     )) > $depProduct->fLagerbestand
                             ) {
-                                $valid = false;
+                                $valid     = false;
+                                $available = false;
                                 break;
                             }
                         }
 
-                        if (!$valid) {
+                        if ($available === false) {
                             $msg = Shop::Lang()->get('quantityNotAvailable', 'messages');
                             if (!isset($cartNotices) || !\in_array($msg, $cartNotices, true)) {
                                 $cartNotices[] = $msg;

@@ -330,9 +330,8 @@ final class Orders extends AbstractSync
                 $deliveryAddress->kLieferadresse = $deliveryAddress->insertInDB();
                 $this->db->query(
                     'UPDATE tbestellung
-                    SET kLieferadresse = ' . (int)$deliveryAddress->kLieferadresse . '
-                    WHERE kBestellung = ' . (int)$oldOrder->kBestellung,
-                    ReturnType::DEFAULT
+                        SET kLieferadresse = ' . (int)$deliveryAddress->kLieferadresse . '
+                        WHERE kBestellung = ' . (int)$oldOrder->kBestellung
                 );
             }
         } elseif ($oldOrder->kLieferadresse > 0) {
@@ -453,8 +452,7 @@ final class Orders extends AbstractSync
                 'total' => $order->fGesamtsumme,
                 'cmt'   => $order->cKommentar,
                 'oid'   => $oldOrder->kBestellung
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     }
 
@@ -864,8 +862,7 @@ final class Orders extends AbstractSync
             $this->db->query(
                 'DELETE FROM tbestellattribut
                 WHERE kBestellung = ' . $orderID . '
-                    AND kBestellattribut NOT IN (' . \implode(', ', $updated) . ')',
-                ReturnType::DEFAULT
+                    AND kBestellattribut NOT IN (' . \implode(', ', $updated) . ')'
             );
         } else {
             $this->db->delete('tbestellattribut', 'kBestellung', $orderID);

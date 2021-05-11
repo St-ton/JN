@@ -40,8 +40,7 @@ class Migration_20180919130519 extends Migration implements IMigration
                     'valueID'   => $duplicate->kMerkmalWert,
                     'ProductID' => $duplicate->kArtikel,
                     'delCount'  => $duplicate->cntData - 1,
-                ],
-                ReturnType::DEFAULT
+                ]
             );
         }
         $this->execute(

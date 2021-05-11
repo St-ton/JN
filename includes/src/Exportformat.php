@@ -223,9 +223,9 @@ class Exportformat
 
     /**
      * @param string     $msg
-     * @param null|array $context
+     * @param array|null $context
      */
-    private function log(string $msg, array $context = []): void
+    private function log(string $msg, ?array $context = []): void
     {
         if ($this->logger !== null) {
             $this->logger->log(\JTLLOG_LEVEL_NOTICE, $msg, $context);

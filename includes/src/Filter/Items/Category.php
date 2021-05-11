@@ -187,9 +187,8 @@ class Category extends BaseCategory
         if (!Shop::has('checkCategoryVisibility')) {
             Shop::set(
                 'checkCategoryVisibility',
-                $this->productFilter->getDB()->query(
-                    'SELECT kKategorie FROM tkategoriesichtbarkeit',
-                    ReturnType::AFFECTED_ROWS
+                $this->productFilter->getDB()->getAffectedRows(
+                    'SELECT kKategorie FROM tkategoriesichtbarkeit'
                 ) > 0
             );
         }

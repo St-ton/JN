@@ -180,8 +180,7 @@ function schalteNewskommentareFrei($newsComments): bool
     Shop::Container()->getDB()->query(
         'UPDATE tnewskommentar
             SET nAktiv = 1
-            WHERE kNewsKommentar IN (' . implode(',', $newsComments) . ')',
-        ReturnType::AFFECTED_ROWS
+            WHERE kNewsKommentar IN (' . implode(',', $newsComments) . ')'
     );
 
     return true;
@@ -201,8 +200,7 @@ function schalteNewsletterempfaengerFrei($recipients): bool
     Shop::Container()->getDB()->query(
         'UPDATE tnewsletterempfaenger
             SET nAktiv = 1
-            WHERE kNewsletterEmpfaenger IN (' . implode(',', $recipients) .')',
-        ReturnType::AFFECTED_ROWS
+            WHERE kNewsletterEmpfaenger IN (' . implode(',', $recipients) .')'
     );
 
     return true;
@@ -221,8 +219,7 @@ function loescheBewertung($ratings): bool
 
     Shop::Container()->getDB()->query(
         'DELETE FROM tbewertung
-            WHERE kBewertung IN (' . implode(',', $ratings) . ')',
-        ReturnType::AFFECTED_ROWS
+            WHERE kBewertung IN (' . implode(',', $ratings) . ')'
     );
 
     return true;
@@ -241,14 +238,12 @@ function loescheSuchanfragen($queries): bool
 
     Shop::Container()->getDB()->query(
         'DELETE FROM tsuchanfrage
-            WHERE kSuchanfrage IN (' . implode(',', $queries) . ')',
-        ReturnType::AFFECTED_ROWS
+            WHERE kSuchanfrage IN (' . implode(',', $queries) . ')'
     );
     Shop::Container()->getDB()->query(
         "DELETE FROM tseo
             WHERE cKey = 'kSuchanfrage'
-                AND kKey IN (" . implode(',', $queries) . ')',
-        ReturnType::AFFECTED_ROWS
+                AND kKey IN (" . implode(',', $queries) . ')'
     );
 
     return true;
@@ -263,12 +258,10 @@ function loescheNewskommentare($comments): bool
     if (!is_array($comments) || count($comments) === 0) {
         return false;
     }
-    $comments = array_map('\intval', $comments);
 
     Shop::Container()->getDB()->query(
         'DELETE FROM tnewskommentar
-            WHERE kNewsKommentar IN (' . implode(',', $comments) . ')',
-        ReturnType::AFFECTED_ROWS
+            WHERE kNewsKommentar IN (' . implode(',', array_map('\intval', $comments)) . ')'
     );
 
     return true;
@@ -283,12 +276,10 @@ function loescheNewsletterempfaenger($recipients): bool
     if (!is_array($recipients) || count($recipients) === 0) {
         return false;
     }
-    $recipients = array_map('\intval', $recipients);
 
     Shop::Container()->getDB()->query(
         'DELETE FROM tnewsletterempfaenger
-            WHERE kNewsletterEmpfaenger IN (' . implode(',', $recipients) . ')',
-        ReturnType::AFFECTED_ROWS
+            WHERE kNewsletterEmpfaenger IN (' . implode(',', array_map('\intval', $recipients)) . ')'
     );
 
     return true;
@@ -337,8 +328,7 @@ function mappeLiveSuche($queryIDs, $cMapping): int
                 'cnt' => $oSuchanfrage->nAnzahlGesuche,
                 'lid' => (int)$_SESSION['editLanguageID'],
                 'sid' => (int)$oSuchanfrageNeu->kSuchanfrage
-            ],
-            ReturnType::DEFAULT
+            ]
         );
         $db->delete('tsuchanfrage', 'kSuchanfrage', (int)$oSuchanfrage->kSuchanfrage);
         $db->queryPrepared(
@@ -346,8 +336,7 @@ function mappeLiveSuche($queryIDs, $cMapping): int
                 SET kKey = :sqid
                 WHERE cKey = 'kSuchanfrage'
                     AND kKey = :sqid",
-            ['sqid' => (int)$oSuchanfrage->kSuchanfrage],
-            ReturnType::DEFAULT
+            ['sqid' => (int)$oSuchanfrage->kSuchanfrage]
         );
     }
 

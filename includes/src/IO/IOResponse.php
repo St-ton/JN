@@ -44,9 +44,9 @@ class IOResponse implements JsonSerializable
     private $evoProductFunctionCalls = [];
 
     /**
-     * @param $target
-     * @param $attr
-     * @param $data
+     * @param string $target
+     * @param string $attr
+     * @param mixed  $data
      * @return $this
      * @deprecated since 5.0.0
      */
@@ -74,7 +74,7 @@ class IOResponse implements JsonSerializable
 
     /**
      * @param string $name
-     * @param $value
+     * @param mixed  $value
      * @return $this
      */
     public function assignVar(string $name, $value): self
@@ -99,9 +99,9 @@ class IOResponse implements JsonSerializable
     }
 
     /**
-     * @param $msg
-     * @param bool $groupHead
-     * @param bool $groupEnd
+     * @param array|null $msg
+     * @param bool       $groupHead
+     * @param bool       $groupEnd
      * @return $this
      */
     public function debugLog($msg, bool $groupHead = false, $groupEnd = false): self
@@ -125,7 +125,7 @@ class IOResponse implements JsonSerializable
 
     /**
      * @param string $name
-     * @param $args
+     * @param mixed  $args
      * @return $this
      */
     public function callEvoProductFunction($name, ...$args): self

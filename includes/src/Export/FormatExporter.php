@@ -439,8 +439,7 @@ class FormatExporter
         $this->db->query(
             'UPDATE texportformat 
                 SET dZuletztErstellt = NOW() 
-                WHERE kExportformat = ' . $model->getId(),
-            ReturnType::DEFAULT
+                WHERE kExportformat = ' . $model->getId()
         );
         $this->db->delete('texportqueue', 'kExportqueue', (int)$this->queue->foreignKeyID);
 
@@ -486,8 +485,7 @@ class FormatExporter
                 'nLimitM'        => $this->queue->taskLimit,
                 'nLastArticleID' => $this->queue->lastProductID,
                 'kExportqueue'   => (int)$this->queue->jobQueueID,
-            ],
-            ReturnType::DEFAULT
+            ]
         );
         if ($isAsync) {
             $cb->output();

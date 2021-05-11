@@ -145,7 +145,7 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form
         }
     }
 
-    $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
+    $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
     $tagsToFlush = [CACHING_GROUP_OPTION];
     if ($sectionID === 1 || $sectionID === 4 || $sectionID === 5) {

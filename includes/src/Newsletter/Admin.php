@@ -686,8 +686,7 @@ final class Admin
         $this->db->query(
             'UPDATE tnewsletterempfaenger
                 SET nAktiv = 1
-                WHERE kNewsletterEmpfaenger' . $where,
-            ReturnType::AFFECTED_ROWS
+                WHERE kNewsletterEmpfaenger' . $where
         );
         foreach ($recipients as $recipient) {
             $hist               = new stdClass();
@@ -736,8 +735,7 @@ final class Admin
         }
         $this->db->query(
             'DELETE FROM tnewsletterempfaenger
-                WHERE kNewsletterEmpfaenger' . $where,
-            ReturnType::AFFECTED_ROWS
+                WHERE kNewsletterEmpfaenger' . $where
         );
         foreach ($recipients as $recipient) {
             $hist               = new stdClass();
@@ -833,8 +831,7 @@ final class Admin
             [
                 'active'       => $active,
                 'newsletterID' => 'jtl_newsletter'
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     }
 }

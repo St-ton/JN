@@ -155,6 +155,7 @@ if (Form::validateToken()) {
             $VersandartZahlungsarten[] = $versandartzahlungsart;
         }
 
+        $lastScaleTo              = 0.0;
         $VersandartStaffeln       = [];
         $upperLimits              = []; // Haelt alle fBis der Staffel
         $staffelDa                = true;

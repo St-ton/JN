@@ -75,8 +75,7 @@ class Journal
                 'cIssuer'    => $issuerType,
                 'iIssuerId'  => $issuerID,
                 'dEventTime' => $this->now->format('Y-m-d H:i:s')
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     }
 }

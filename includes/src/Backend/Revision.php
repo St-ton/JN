@@ -226,7 +226,7 @@ class Revision
      */
     public function deleteAll(): self
     {
-        $this->db->query('TRUNCATE table trevisions', ReturnType::AFFECTED_ROWS);
+        $this->db->query('TRUNCATE table trevisions');
 
         return $this;
     }
@@ -311,7 +311,7 @@ class Revision
      */
     private function housekeeping($type, $key): int
     {
-        return $this->db->queryPrepared(
+        return $this->db->getAffectedRows(
             'DELETE a 
                 FROM trevisions AS a 
                 JOIN ( 
@@ -326,8 +326,7 @@ class Revision
                 'type' => $type,
                 'prim' => $key,
                 'max'  => \MAX_REVISIONS
-            ],
-            ReturnType::AFFECTED_ROWS
+            ]
         );
     }
 }

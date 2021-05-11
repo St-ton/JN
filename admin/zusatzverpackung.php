@@ -72,8 +72,7 @@ if ($action === 'save') {
                     FROM tverpackung
                     LEFT JOIN tverpackungsprache 
                         ON tverpackungsprache.kVerpackung = tverpackung.kVerpackung
-                    WHERE tverpackung.kVerpackung = ' . $packagingID,
-                ReturnType::AFFECTED_ROWS
+                    WHERE tverpackung.kVerpackung = ' . $packagingID
             );
             $packaging->kVerpackung = $packagingID;
             $db->insert('tverpackung', $packaging);

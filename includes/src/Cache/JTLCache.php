@@ -310,11 +310,10 @@ final class JTLCache implements JTLCacheInterface
     public function setCache(string $methodName): bool
     {
         if (\SAFE_MODE === false) {
-            $cache = null;
-            /** @var ICachingMethod $className */
             $class = 'JTL\Cache\Methods\Cache' . \ucfirst($methodName);
-            $cache = new $class($this->options);
-            if (!empty($cache) && $cache instanceof ICachingMethod) {
+            $cache = \class_exists($class) ? new $class($this->options) : null;
+            /** @var ICachingMethod $class */
+            if ($cache !== null && $cache instanceof ICachingMethod) {
                 $this->setError($cache->getError());
                 if ($cache->isInitialized() && $cache->isAvailable()) {
                     $this->setMethod($cache);

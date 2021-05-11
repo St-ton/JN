@@ -63,7 +63,7 @@ final class ImageCache extends Job
             $this->logger->debug(\sprintf('generated image %d/%d', $rendered, $thisRun));
             if ($index % 10 === 0) {
                 // this may be a long running loop without any db interaction - so query something from time to time
-                $this->db->query('SELECT 1 AS avoidTimeout', ReturnType::DEFAULT);
+                $this->db->query('SELECT 1 AS avoidTimeout');
             }
         }
         $this->logger->info(\sprintf('Generated cache for %d %s images', $rendered, $instance::getType()));

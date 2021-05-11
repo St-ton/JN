@@ -838,8 +838,7 @@ class Customer
                 'kKunde'   => $this->kKunde,
                 'cKey'     => $key,
                 'dExpires' => $expires->format('Y-m-d H:i:s'),
-            ],
-            ReturnType::AFFECTED_ROWS
+            ]
         );
 
         $obj                    = new stdClass();
@@ -1084,7 +1083,38 @@ class Customer
         $db->delete('tlieferadresse', 'kKunde', $customerID);
         $db->delete('trechnungsadresse', 'kKunde', $customerID);
         $db->delete('tkundenattribut', 'kKunde', $customerID);
-        $db->delete('tkunde', 'kKunde', $customerID);
+        $db->update('tkunde', 'kKunde', $customerID, (object)[
+             'cKundenNr'     => $anonymous,
+             'cPasswort'     => '',
+             'cAnrede'       => '',
+             'cTitel'        => '',
+             'cVorname'      => $anonymous,
+             'cNachname'     => $anonymous,
+             'cFirma'        => '',
+             'cZusatz'       => '',
+             'cStrasse'      => '',
+             'cHausnummer'   => '',
+             'cAdressZusatz' => '',
+             'cPLZ'          => '',
+             'cOrt'          => '',
+             'cBundesland'   => '',
+             'cLand'         => '',
+             'cTel'          => '',
+             'cMobil'        => '',
+             'cFax'          => '',
+             'cMail'         => $anonymous,
+             'cUSTID'        => '',
+             'cWWW'          => '',
+             'cSperre'       => 'Y',
+             'fGuthaben'     => 0,
+             'cNewsletter'   => 'N',
+             'dGeburtstag'   => '_DBNULL_',
+             'fRabatt'       => 0,
+             'cHerkunft'     => '',
+             'dVeraendert'   => 'now()',
+             'cAktiv'        => 'N',
+             'nRegistriert'  => 0,
+        ]);
         $db->delete('tkundendatenhistory', 'kKunde', $customerID);
         $db->delete('tkundenkontodaten', 'kKunde', $customerID);
         $db->delete('tzahlungsinfo', 'kKunde', $customerID);
@@ -1101,8 +1131,7 @@ class Customer
             'DELETE FROM tnewsletterempfaenger
                 WHERE cEmail = :email
                     OR kKunde = :customerID',
-            ['email' => $this->cMail, 'customerID' => $customerID],
-            ReturnType::AFFECTED_ROWS
+            ['email' => $this->cMail, 'customerID' => $customerID]
         );
 
         $obj            = new stdClass();
@@ -1137,8 +1166,7 @@ class Customer
                 LEFT JOIN twunschlisteversand
                     ON twunschlisteversand.kWunschliste = twunschliste.kWunschliste
                 WHERE twunschliste.kKunde = :customerID',
-            ['customerID' => $customerID],
-            ReturnType::DEFAULT
+            ['customerID' => $customerID]
         );
         $db->queryPrepared(
             'DELETE twarenkorbpers, twarenkorbperspos, twarenkorbpersposeigenschaft
@@ -1148,8 +1176,7 @@ class Customer
                 LEFT JOIN twarenkorbpersposeigenschaft
                     ON twarenkorbpersposeigenschaft.kWarenkorbPersPos = twarenkorbperspos.kWarenkorbPersPos
                 WHERE twarenkorbpers.kKunde = :customerID',
-            ['customerID' => $customerID],
-            ReturnType::DEFAULT
+            ['customerID' => $customerID]
         );
 
         $logMessage = \sprintf('Account with ID kKunde = %s deleted', $customerID);

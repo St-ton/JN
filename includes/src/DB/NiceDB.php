@@ -763,7 +763,7 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function executeQuery(string $stmt, int $return, bool $echo = false, $fnInfo = null)
+    public function executeQuery(string $stmt, int $return = ReturnType::DEFAULT, bool $echo = false, $fnInfo = null)
     {
         return $this->_execute(0, $stmt, [], $return, $echo, $fnInfo);
     }
@@ -774,7 +774,7 @@ class NiceDB implements DbInterface
     public function executeQueryPrepared(
         string $stmt,
         array $params,
-        int $return,
+        int $return = ReturnType::DEFAULT,
         bool $echo = false,
         $fnInfo = null
     ) {
@@ -787,11 +787,19 @@ class NiceDB implements DbInterface
     public function queryPrepared(
         string $stmt,
         array $params,
-        int $return,
+        int $return = ReturnType::DEFAULT,
         bool $echo = false,
         $fnINfo = null
     ) {
         return $this->_execute(1, $stmt, $params, $return, $echo, $fnINfo);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAffectedRows(string $stmt, array $params = []): int
+    {
+        return $this->_execute(1, $stmt, $params, ReturnType::AFFECTED_ROWS);
     }
 
     /**
@@ -1010,7 +1018,7 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function query($stmt, $return, bool $echo = false)
+    public function query($stmt, int $return = ReturnType::DEFAULT, bool $echo = false)
     {
         return $this->executeQuery($stmt, $return, $echo);
     }

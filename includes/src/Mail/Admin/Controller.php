@@ -317,16 +317,14 @@ final class Controller
         $this->db->queryPrepared(
             'DELETE FROM temailvorlagesprache
                 WHERE kEmailvorlage = :tid',
-            ['tid' => $templateID],
-            ReturnType::DEFAULT
+            ['tid' => $templateID]
         );
         $this->db->queryPrepared(
             'INSERT INTO temailvorlagesprache
                 SELECT *
                 FROM temailvorlagespracheoriginal
                 WHERE temailvorlagespracheoriginal.kEmailvorlage = :tid',
-            ['tid' => $templateID],
-            ReturnType::DEFAULT
+            ['tid' => $templateID]
         );
         $data = $this->db->select(
             'temailvorlage',

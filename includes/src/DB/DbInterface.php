@@ -165,12 +165,12 @@ interface DbInterface extends \Serializable
     );
 
     /**
-     * @param string       $tableName
-     * @param string|array $keys
-     * @param string|array $values
-     * @param string       $select
-     * @param string       $orderBy
-     * @param string|int   $limit
+     * @param string           $tableName
+     * @param string|array     $keys
+     * @param string|array|int $values
+     * @param string           $select
+     * @param string           $orderBy
+     * @param string|int       $limit
      * @return array
      * @throws \InvalidArgumentException
      */
@@ -219,7 +219,7 @@ interface DbInterface extends \Serializable
      * @return array|object|int - 0 if fails, 1 if successful or LastInsertID if specified
      * @throws \InvalidArgumentException
      */
-    public function executeQuery(string $stmt, int $return, bool $echo = false, $fnInfo = null);
+    public function executeQuery(string $stmt, int $return = ReturnType::DEFAULT, bool $echo = false, $fnInfo = null);
 
     /**
      * @param string   $stmt
@@ -227,7 +227,7 @@ interface DbInterface extends \Serializable
      * @param bool     $echo
      * @return int|object|array
      */
-    public function query($stmt, $return, bool $echo = false);
+    public function query($stmt, int $return = ReturnType::DEFAULT, bool $echo = false);
 
     /**
      * executes query and returns misc data
@@ -252,7 +252,7 @@ interface DbInterface extends \Serializable
     public function executeQueryPrepared(
         string $stmt,
         array $params,
-        int $return,
+        int $return = ReturnType::DEFAULT,
         bool $echo = false,
         $fnInfo = null
     );
@@ -268,10 +268,17 @@ interface DbInterface extends \Serializable
     public function queryPrepared(
         string $stmt,
         array $params,
-        int $return,
+        int $return = ReturnType::DEFAULT,
         bool $echo = false,
         $fnINfo = null
     );
+
+    /**
+     * @param string   $stmt
+     * @param array    $params
+     * @return int
+     */
+    public function getAffectedRows(string $stmt, array $params = []): int;
 
     /**
      * delete row from table

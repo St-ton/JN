@@ -713,7 +713,7 @@ class LegacyLink extends MainModel
             $sql .= \implode(', ', $set);
             $sql .= ' WHERE kLink = ' . $this->getLink() . ' AND klinkgruppe = ' . $this->getLinkgruppe();
 
-            return Shop::Container()->getDB()->query($sql, ReturnType::AFFECTED_ROWS);
+            return Shop::Container()->getDB()->getAffectedRows($sql);
         }
         throw new Exception('ERROR: Object has no members!');
     }

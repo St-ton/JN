@@ -134,7 +134,8 @@ if ($pluginID > 0) {
 }
 
 $smarty->assign('WarensummeLocalized', Frontend::getCart()->gibGesamtsummeWarenLocalized())
-    ->assign('Bestellung', $order);
+    ->assign('Bestellung', $order)
+    ->assign('Link', $linkHelper->getPageLink($linkHelper->getSpecialPageID(PAGE_BESTELLABSCHLUSS)));
 
 unset(
     $_SESSION['Zahlungsart'],

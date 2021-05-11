@@ -116,8 +116,8 @@ function createSearchIndex($index, $create)
  */
 function clearSearchCache()
 {
-    Shop::Container()->getDB()->query('DELETE FROM tsuchcachetreffer', ReturnType::AFFECTED_ROWS);
-    Shop::Container()->getDB()->query('DELETE FROM tsuchcache', ReturnType::AFFECTED_ROWS);
+    Shop::Container()->getDB()->query('DELETE FROM tsuchcachetreffer');
+    Shop::Container()->getDB()->query('DELETE FROM tsuchcache');
     Shop::Container()->getGetText()->loadAdminLocale('pages/sucheinstellungen');
 
     return ['hinweis' => __('successSearchCacheDelete')];

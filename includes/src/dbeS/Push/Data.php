@@ -36,8 +36,7 @@ final class Data extends AbstractPush
                     "UPDATE tverfuegbarkeitsbenachrichtigung
                     SET cAbgeholt = 'Y'
                     WHERE kVerfuegbarkeitsbenachrichtigung = " .
-                    (int)$current[$i . ' attr']['kVerfuegbarkeitsbenachrichtigung'],
-                    ReturnType::DEFAULT
+                    (int)$current[$i . ' attr']['kVerfuegbarkeitsbenachrichtigung']
                 );
             }
             $xml['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung'] = $current;

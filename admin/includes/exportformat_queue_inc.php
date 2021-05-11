@@ -160,8 +160,7 @@ function erstelleExportformatCron(int $exportID, $start, int $freq, int $cronID 
                 LEFT JOIN tjobqueue 
                     ON tjobqueue.cronID = tcron.cronID
                 WHERE tcron.cronID = :id',
-            ['id' => $cronID],
-            ReturnType::DEFAULT
+            ['id' => $cronID]
         );
         $cron = new LegacyCron(
             $cronID,

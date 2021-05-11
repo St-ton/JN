@@ -54,8 +54,7 @@ class Test
                 if (\is_object($state) && (int)$state->Auto_increment < $id) {
                     $this->db->queryPrepared(
                         'ALTER TABLE ' . $table . ' AUTO_INCREMENT = :newId',
-                        ['newId' => $id],
-                        ReturnType::DEFAULT
+                        ['newId' => $id]
                     );
                 }
             }

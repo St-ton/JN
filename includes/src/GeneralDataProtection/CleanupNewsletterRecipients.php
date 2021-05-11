@@ -58,8 +58,7 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
                            ON h.cOptCode = e.cOptCode 
                            AND h.cEmail = e.cEmail
                     WHERE e.cOptCode = :pOpCode',
-                ['pOpCode' => $res->cOptCode],
-                ReturnType::DEFAULT
+                ['pOpCode' => $res->cOptCode]
             );
         }
     }

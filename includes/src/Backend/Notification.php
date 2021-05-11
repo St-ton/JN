@@ -471,8 +471,7 @@ class Notification implements IteratorAggregate, Countable
         if ($hashes->count() > 0) {
             $this->db->query(
                 "DELETE FROM tnotificationsignore
-                    WHERE notification_hash IN ('" . $hashes->implode('notification_hash', "', '") . "')",
-                ReturnType::DEFAULT
+                    WHERE notification_hash IN ('" . $hashes->implode('notification_hash', "', '") . "')"
             );
         }
 

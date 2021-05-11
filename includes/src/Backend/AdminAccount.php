@@ -515,7 +515,7 @@ class AdminAccount
         if (isset($_SESSION['AdminAccount']->cLogin, $_POST['TwoFA_code'])) {
             $twoFA = new TwoFA($this->db);
             $twoFA->setUserByName($_SESSION['AdminAccount']->cLogin);
-            $valid                                 = $twoFA->isCodeValid($_POST['TwoFA_code']);
+            $valid                                 = $twoFA->isCodeValid($_POST['TwoFA_code'] ?? '');
             $this->twoFaAuthenticated              = $valid;
             $_SESSION['AdminAccount']->TwoFA_valid = $valid;
 
@@ -599,8 +599,7 @@ class AdminAccount
             'UPDATE tadminlogin
                 SET nLoginVersuch = nLoginVersuch+1
                 WHERE cLogin = :login',
-            ['login' => $cLogin],
-            ReturnType::AFFECTED_ROWS
+            ['login' => $cLogin]
         );
         $data   = $this->db->select('tadminlogin', 'cLogin', $cLogin);
         $locked = (int)$data->nLoginVersuch >= \MAX_LOGIN_ATTEMPTS;

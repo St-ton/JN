@@ -177,8 +177,7 @@ class CustomerFields
                             WHERE tkundenfeldwert.kKundenfeld = tkundenattribut.kKundenfeld
                                 AND tkundenfeldwert.cWert = tkundenattribut.cWert
                         )",
-            ['kKundenfeld' => $customerFieldID],
-            ReturnType::DEFAULT
+            ['kKundenfeld' => $customerFieldID]
         );
     }
 
@@ -211,22 +210,20 @@ class CustomerFields
                 switch ($customerField->cTyp) {
                     case 'zahl':
                         // all customer values will be changed to numbers if possible
-                        Shop::Container()->getDB()->executeQueryPrepared(
+                        Shop::Container()->getDB()->queryPrepared(
                             'UPDATE tkundenattribut SET
                                 cWert =	CAST(CAST(cWert AS DOUBLE) AS CHAR)
                                 WHERE tkundenattribut.kKundenfeld = :kKundenfeld',
-                            ['kKundenfeld' => $key],
-                            ReturnType::AFFECTED_ROWS
+                            ['kKundenfeld' => $key]
                         );
                         break;
                     case 'datum':
                         // all customer values will be changed to date if possible
-                        Shop::Container()->getDB()->executeQueryPrepared(
+                        Shop::Container()->getDB()->queryPrepared(
                             "UPDATE tkundenattribut SET
                                 cWert =	DATE_FORMAT(STR_TO_DATE(cWert, '%d.%m.%Y'), '%d.%m.%Y')
                                 WHERE tkundenattribut.kKundenfeld = :kKundenfeld",
-                            ['kKundenfeld' => $key],
-                            ReturnType::AFFECTED_ROWS
+                            ['kKundenfeld' => $key]
                         );
                         break;
                     case 'text':

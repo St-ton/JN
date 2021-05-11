@@ -75,7 +75,7 @@ class CartItem
     public $fGesamtgewicht;
 
     /**
-     * @var string
+     * @var array|string
      */
     public $cName;
 
@@ -145,7 +145,7 @@ class CartItem
     public $kBestellpos = 0;
 
     /**
-     * @var string
+     * @var array|string
      */
     public $cLieferstatus = '';
 

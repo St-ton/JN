@@ -43,7 +43,6 @@
         "psr/container": "1.0.0",
         "lstrojny/functional-php": "^1.14",
         "monolog/monolog": "^2.1",
-        "jtl/minify": "dev-master",
         "myclabs/php-enum": "^1.7",
         "jtlshop/semver": "~0.0.7",
         "jtlshop/wizard": "dev-master",
@@ -63,7 +62,8 @@
         "league/flysystem-ziparchive": "^2.0",
         "illuminate/collections": "^8.12",
         "nesbot/carbon": "^2.41",
-        "gettext/translator": "^1.0"
+        "gettext/translator": "^1.0",
+        "mrclay/minify": "^3.0"
     },
     "require-dev": {
         "phpunit/php-token-stream": "^3.0",
@@ -115,10 +115,6 @@
         {
             "type": "vcs",
             "url": "https://gitlab.com/jtl-software/jtl-shop/tools/semver.git"
-        },
-        {
-            "type": "vcs",
-            "url": "https://gitlab.com/felix.jtl/minify.git"
         }
 
     ],

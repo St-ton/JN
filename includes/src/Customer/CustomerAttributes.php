@@ -96,8 +96,7 @@ class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
                 ? ' AND kKundenAttribut NOT IN (' . \implode(', ', $usedIDs) . ')' : ''),
             [
                 'customerID' => $this->customerID,
-            ],
-            ReturnType::DEFAULT
+            ]
         );
 
         return $this;

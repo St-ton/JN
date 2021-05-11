@@ -45,7 +45,7 @@ final class Images extends AbstractSync
     {
         $this->brandingConfig = $this->initBrandingConfig();
         $this->config         = Shop::getSettings([\CONF_BILDER])['bilder'];
-        $this->db->query('START TRANSACTION', ReturnType::DEFAULT);
+        $this->db->query('START TRANSACTION');
         foreach ($starter->getXML() as $i => $item) {
             [$file, $xml] = [\key($item), \reset($item)];
             switch (\pathinfo($file)['basename']) {
@@ -72,7 +72,7 @@ final class Images extends AbstractSync
                     break;
             }
         }
-        $this->db->query('COMMIT', ReturnType::DEFAULT);
+        $this->db->query('COMMIT');
 
         return null;
     }

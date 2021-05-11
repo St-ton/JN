@@ -47,7 +47,7 @@ final class LastJob
 
     public function execute(): void
     {
-        $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
+        $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
         if (!\KEEP_SYNC_FILES) {
             FileSystem::delDirRecursively(\PFAD_ROOT . \PFAD_DBES_TMP);
         }

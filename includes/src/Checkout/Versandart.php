@@ -240,8 +240,7 @@ class Versandart
                     ON tversandzuschlagplz.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
                 LEFT JOIN tversandzuschlagsprache 
                     ON tversandzuschlagsprache.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
-                WHERE tversandzuschlag.kVersandart = ' . $id,
-            ReturnType::DEFAULT
+                WHERE tversandzuschlag.kVersandart = ' . $id
         );
 
         return true;

@@ -436,8 +436,7 @@ class CheckBox
         $this->db->query(
             'UPDATE tcheckbox
                 SET nAktiv = 1
-                WHERE kCheckBox IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ');',
-            ReturnType::DEFAULT
+                WHERE kCheckBox IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ');'
         );
         Shop::Container()->getCache()->flushTags(['checkbox']);
 
@@ -456,8 +455,7 @@ class CheckBox
         $this->db->query(
             'UPDATE tcheckbox
                 SET nAktiv = 0
-                WHERE kCheckBox IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ');',
-            ReturnType::DEFAULT
+                WHERE kCheckBox IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ');'
         );
         Shop::Container()->getCache()->flushTags(['checkbox']);
 
@@ -478,8 +476,7 @@ class CheckBox
                 FROM tcheckbox
                 LEFT JOIN tcheckboxsprache
                     ON tcheckboxsprache.kCheckBox = tcheckbox.kCheckBox
-                WHERE tcheckbox.kCheckBox IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ')',
-            ReturnType::DEFAULT
+                WHERE tcheckbox.kCheckBox IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ')'
         );
         Shop::Container()->getCache()->flushTags(['checkbox']);
 

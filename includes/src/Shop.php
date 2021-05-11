@@ -2031,7 +2031,7 @@ final class Shop
             self::$logged       = true;
             self::$adminToken   = $_SESSION['adminToken'];
             self::$adminLangTag = $_SESSION['adminLangTag'];
-            self::Container()->getGetText();
+            self::Container()->getGetText()->setLanguage(self::$adminLangTag);
         } elseif ($sessionSwitchAllowed === true
             && isset($_COOKIE['eSIdAdm'])
             && Request::verifyGPDataString('fromAdmin') === 'yes'
@@ -2043,16 +2043,28 @@ final class Shop
             \session_name('eSIdAdm');
             \session_id($_COOKIE['eSIdAdm']);
             \session_start();
-            $adminToken                   = $_SESSION['jtl_token'];
-            $adminLangTag                 = $_SESSION['AdminAccount']->language;
-            $_SESSION['frontendUpToDate'] = true;
+            self::$logged = $_SESSION['loginIsValid'] ?? null;
+
+            if (isset($_SESSION['jtl_token'], $_SESSION['AdminAccount'])) {
+                $adminToken                   = $_SESSION['jtl_token'];
+                $adminLangTag                 = $_SESSION['AdminAccount']->language;
+                $_SESSION['frontendUpToDate'] = true;
+
+                if (self::$logged) {
+                    self::Container()->getGetText();
+                }
+            } else {
+                $adminToken   = null;
+                $adminLangTag = null;
+            }
+
             \session_write_close();
             \session_name('JTLSHOP');
             \session_id($frontendId);
             \session_start();
-            self::$logged       = $_SESSION['loggedAsAdmin'] = true;
-            self::$adminToken   = $_SESSION['adminToken']    = $adminToken;
-            self::$adminLangTag = $_SESSION['adminLangTag']  = $adminLangTag;
+            self::$adminToken          = $_SESSION['adminToken']    = $adminToken;
+            self::$adminLangTag        = $_SESSION['adminLangTag']  = $adminLangTag;
+            $_SESSION['loggedAsAdmin'] = self::$logged;
         } else {
             // no information about admin session available
             self::$logged       = null;

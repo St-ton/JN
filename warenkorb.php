@@ -117,7 +117,7 @@ if ($valid && isset($_POST['gratis_geschenk'], $_POST['gratisgeschenk']) && (int
 }
 if (($res = Request::getInt('fillOut', -1)) > -1) {
     $mbw = Frontend::getCustomerGroup()->getAttribute(KNDGRP_ATTRIBUT_MINDESTBESTELLWERT);
-    if ($res === 9 && $mbw > 0 && $cart->gibGesamtsummeWaren(true, false) < $mbw) {
+    if ($res === 9 && $mbw > 0 && $cart->gibGesamtsummeWarenOhne([C_WARENKORBPOS_TYP_GUTSCHEIN], true) < $mbw) {
         $warning = Shop::Lang()->get('minordernotreached', 'checkout') . ' ' . Preise::getLocalizedPriceString($mbw);
     } elseif ($res === 8) {
         $warning = Shop::Lang()->get('orderNotPossibleNow', 'checkout');

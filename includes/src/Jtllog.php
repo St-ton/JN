@@ -245,8 +245,7 @@ class Jtllog
         $db = Shop::Container()->getDB();
         $db->query(
             'DELETE FROM tjtllog 
-                WHERE DATE_ADD(dErstellt, INTERVAL 30 DAY) < NOW()',
-            ReturnType::AFFECTED_ROWS
+                WHERE DATE_ADD(dErstellt, INTERVAL 30 DAY) < NOW()'
         );
         $count = (int)$db->query(
             'SELECT COUNT(*) AS cnt 
@@ -255,10 +254,7 @@ class Jtllog
         )->cnt;
 
         if ($count > \JTLLOG_MAX_LOGSIZE) {
-            $db->query(
-                'DELETE FROM tjtllog ORDER BY dErstellt LIMIT ' . ($count - \JTLLOG_MAX_LOGSIZE),
-                ReturnType::DEFAULT
-            );
+            $db->query('DELETE FROM tjtllog ORDER BY dErstellt LIMIT ' . ($count - \JTLLOG_MAX_LOGSIZE));
         }
     }
 
@@ -268,9 +264,8 @@ class Jtllog
      */
     public static function deleteIDs(array $ids): int
     {
-        return Shop::Container()->getDB()->query(
-            'DELETE FROM tjtllog WHERE kLog IN (' . \implode(',', \array_map('\intval', $ids)) . ')',
-            ReturnType::AFFECTED_ROWS
+        return Shop::Container()->getDB()->getAffectedRows(
+            'DELETE FROM tjtllog WHERE kLog IN (' . \implode(',', \array_map('\intval', $ids)) . ')'
         );
     }
 
@@ -279,7 +274,7 @@ class Jtllog
      */
     public static function deleteAll(): int
     {
-        return Shop::Container()->getDB()->query('TRUNCATE TABLE tjtllog', ReturnType::AFFECTED_ROWS);
+        return Shop::Container()->getDB()->getAffectedRows('TRUNCATE TABLE tjtllog');
     }
 
     /**

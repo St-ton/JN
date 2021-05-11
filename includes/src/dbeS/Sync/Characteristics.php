@@ -301,8 +301,7 @@ final class Characteristics extends AbstractSync
                                 AND tseo.kKey = " . $characteristicValue->kMerkmalWert . '
                                 AND tseo.kSprache = ' . (int)$language->kSprache . '
                         WHERE tmerkmalwertsprache.kMerkmalWert = ' . $characteristicValue->kMerkmalWert . '
-                            AND tmerkmalwertsprache.kSprache = ' . $language->kSprache,
-                        ReturnType::DEFAULT
+                            AND tmerkmalwertsprache.kSprache = ' . $language->kSprache
                     );
                     //@todo: 1062: Duplicate entry '' for key 'PRIMARY'
                     if ($slug !== '' && $slug !== null) {
@@ -345,8 +344,7 @@ final class Characteristics extends AbstractSync
             INNER JOIN tmerkmal
                 ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
             WHERE tseo.cKey = 'kMerkmalWert'
-                AND tmerkmal.kMerkmal = " . $id,
-            ReturnType::DEFAULT
+                AND tmerkmal.kMerkmal = " . $id
         );
 
         if ($update) {
@@ -377,8 +375,7 @@ final class Characteristics extends AbstractSync
             INNER JOIN tmerkmal
                 ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
             WHERE tseo.cKey = 'kMerkmalWert'
-                AND tmerkmal.kMerkmal = " . $id,
-            ReturnType::DEFAULT
+                AND tmerkmal.kMerkmal = " . $id
         );
 
         $this->db->delete('tmerkmal', 'kMerkmal', $id);
@@ -412,8 +409,7 @@ final class Characteristics extends AbstractSync
             FROM tmerkmalwert
             JOIN tmerkmalwertsprache
                 ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-            WHERE tmerkmalwert.kMerkmalWert = ' . $id,
-            ReturnType::DEFAULT
+            WHERE tmerkmalwert.kMerkmalWert = ' . $id
         );
         // Das Merkmal hat keine MerkmalWerte mehr => auch loeschen
         if (!$isInsert && (int)$count->nAnzahl === 1) {

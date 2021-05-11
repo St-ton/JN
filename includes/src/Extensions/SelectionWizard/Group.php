@@ -253,8 +253,7 @@ class Group
                     LEFT JOIN tauswahlassistentort tao
                         ON tao.kAuswahlAssistentGruppe = tag.kAuswahlAssistentGruppe
                     WHERE tag.kAuswahlAssistentGruppe = :groupID',
-                ['groupID' => (int)$groupID],
-                ReturnType::AFFECTED_ROWS
+                ['groupID' => (int)$groupID]
             );
         }
 

@@ -133,7 +133,7 @@ class Emailhistory
             $sql .= \implode(', ', $set);
             $sql .= ' WHERE kEmailhistory = ' . $this->getEmailhistory();
 
-            return $db->query($sql, ReturnType::AFFECTED_ROWS);
+            return $db->getAffectedRows($sql);
         }
         throw new Exception('ERROR: Object has no members!');
     }
@@ -190,11 +190,10 @@ class Emailhistory
                 return (int)$i;
             }, $ids);
 
-            return Shop::Container()->getDB()->query(
+            return Shop::Container()->getDB()->getAffectedRows(
                 'DELETE 
                     FROM temailhistory 
-                    WHERE kEmailhistory IN (' . \implode(',', $ids) . ')',
-                ReturnType::AFFECTED_ROWS
+                    WHERE kEmailhistory IN (' . \implode(',', $ids) . ')'
             );
         }
 
@@ -208,8 +207,8 @@ class Emailhistory
     public function deleteAll(): int
     {
         Shop::Container()->getLogService()->notice('eMail-History gelöscht');
-        $res = Shop::Container()->getDB()->query('DELETE FROM temailhistory', ReturnType::AFFECTED_ROWS);
-        Shop::Container()->getDB()->query('TRUNCATE TABLE temailhistory', ReturnType::DEFAULT);
+        $res = Shop::Container()->getDB()->getAffectedRows('DELETE FROM temailhistory');
+        Shop::Container()->getDB()->query('TRUNCATE TABLE temailhistory');
 
         return $res;
     }

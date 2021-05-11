@@ -157,7 +157,7 @@ if ($action !== null && $kExportformat !== null && $validated) {
             $_POST['kExportformat'] = $kExportformat;
             break;
         case 'delete':
-            $bDeleted = $db->query(
+            $deleted = $db->getAffectedRows(
                 "DELETE tcron, texportformat, tjobqueue, texportqueue
                    FROM texportformat
                    LEFT JOIN tcron 
@@ -171,11 +171,11 @@ if ($action !== null && $kExportformat !== null && $validated) {
                       AND tjobqueue.jobType = 'exportformat'
                    LEFT JOIN texportqueue 
                       ON texportqueue.kExportformat = texportformat.kExportformat
-                   WHERE texportformat.kExportformat = " . $kExportformat,
-                ReturnType::AFFECTED_ROWS
+                   WHERE texportformat.kExportformat = :eid",
+                ['eid' => $kExportformat]
             );
 
-            if ($bDeleted > 0) {
+            if ($deleted > 0) {
                 $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successFormatDelete'), 'successFormatDelete');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFormatDelete'), 'errorFormatDelete');

@@ -863,7 +863,7 @@ class Kupon
         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             $customerQry = " OR FIND_IN_SET('" . $_SESSION['Kunde']->kKunde . "', REPLACE(cKunden, ';', ',')) > 0";
         }
-        $ok = $db->query(
+        $ok = $db->getAffectedRows(
             "SELECT * FROM tkupon
                 WHERE cAktiv = 'Y'
                     AND dGueltigAb <= NOW()
@@ -882,8 +882,7 @@ class Kupon
                     AND (cKategorien = ''
                         OR cKategorien = '-1' " . $catQry . ")
                     AND (cKunden = ''
-                        OR cKunden = '-1' " . $customerQry . ')',
-            ReturnType::AFFECTED_ROWS
+                        OR cKunden = '-1' " . $customerQry . ')'
         );
 
         return $ok > 0 ? 1 : 0;

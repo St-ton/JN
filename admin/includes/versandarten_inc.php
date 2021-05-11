@@ -333,13 +333,8 @@ function getMissingShippingClassCombi()
     }
 
     foreach ($combinationsInShippings as $com) {
-        $classes = explode(' ', trim($com->cVersandklassen));
-        if (is_array($classes)) {
-            foreach ($classes as $class) {
-                $combinationInUse[] = trim($class);
-            }
-        } else {
-            $combinationInUse[] = trim($com->cVersandklassen);
+        foreach (explode(' ', trim($com->cVersandklassen)) as $class) {
+            $combinationInUse[] = trim($class);
         }
     }
 
@@ -440,8 +435,7 @@ function deleteShippingSurcharge(int $surchargeID): object
             LEFT JOIN tversandzuschlagsprache USING(kVersandzuschlag)
             LEFT JOIN tversandzuschlagplz USING(kVersandzuschlag)
             WHERE tversandzuschlag.kVersandzuschlag = :surchargeID',
-        ['surchargeID' => $surchargeID],
-        ReturnType::DEFAULT
+        ['surchargeID' => $surchargeID]
     );
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
 
@@ -465,8 +459,7 @@ function deleteShippingSurchargeZIP(int $surchargeID, string $ZIP): object
             [
                 'surchargeID' => $surchargeID,
                 'ZIP' => $partsZIP[0]
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     } elseif (count($partsZIP) === 2) {
         Shop::Container()->getDB()->queryPrepared(
@@ -479,8 +472,7 @@ function deleteShippingSurchargeZIP(int $surchargeID, string $ZIP): object
                 'surchargeID' => $surchargeID,
                 'ZIPFrom' => $partsZIP[0],
                 'ZIPTo' => $partsZIP[1]
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     }
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);

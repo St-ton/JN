@@ -20,14 +20,14 @@ final class QuickSync extends AbstractSync
      */
     public function handle(Starter $starter)
     {
-        $this->db->query('START TRANSACTION', ReturnType::DEFAULT);
+        $this->db->query('START TRANSACTION');
         foreach ($starter->getXML() as $i => $item) {
             [$file, $xml] = [\key($item), \reset($item)];
             if (\strpos($file, 'quicksync.xml') !== false) {
                 $this->handleInserts($xml);
             }
         }
-        $this->db->query('COMMIT', ReturnType::DEFAULT);
+        $this->db->query('COMMIT');
 
         return null;
     }

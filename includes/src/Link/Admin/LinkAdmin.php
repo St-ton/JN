@@ -220,7 +220,7 @@ final class LinkAdmin
      */
     public function deleteLink(int $linkID): int
     {
-        return $this->db->executeQueryPrepared(
+        return $this->db->getAffectedRows(
             "DELETE tlink, tlinksprache, tseo, tlinkgroupassociations
                 FROM tlink
                 LEFT JOIN tlinkgroupassociations
@@ -232,8 +232,7 @@ final class LinkAdmin
                     AND tseo.kKey = :lid
                 WHERE tlink.kLink = :lid
                     OR tlink.reference = :lid",
-            ['lid' => $linkID],
-            ReturnType::AFFECTED_ROWS
+            ['lid' => $linkID]
         );
     }
 
@@ -673,7 +672,7 @@ final class LinkAdmin
     public function clearCache(): bool
     {
         $this->cache->flushTags([\CACHING_GROUP_CORE]);
-        $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
+        $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
 
         return true;
     }

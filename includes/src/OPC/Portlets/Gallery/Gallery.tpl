@@ -31,7 +31,8 @@
                        sizes=$imgAttribs.srcsizes
                        src=$imgAttribs.src
                        alt=$imgAttribs.alt|escape:'html'
-                       title=$imgAttribs.title}
+                       title=$imgAttribs.title
+                       webp=true}
                 {if $image.action === 'lightbox'}
                     <i class="opc-Gallery-zoom fa fa-search fa-2x"></i>
                 {/if}
@@ -119,7 +120,8 @@
                            sizes=$imgAttribs.srcsizes
                            src=$imgAttribs.src
                            alt=$imgAttribs.alt|escape:'html'
-                           title=$imgAttribs.title}
+                           title=$imgAttribs.title
+                           webp=true}
                     {if $image.action === 'lightbox'}
                         <i class="opc-Gallery-zoom fa fa-search fa-2x"></i>
                     {/if}

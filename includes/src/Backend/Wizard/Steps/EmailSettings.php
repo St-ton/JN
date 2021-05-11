@@ -84,8 +84,7 @@ final class EmailSettings extends AbstractStep
                     [
                         'emailTemplateID' => $emailTemplateID,
                         'emailBCC'        => $question->getValue()
-                    ],
-                    ReturnType::DEFAULT
+                    ]
                 );
             } else {
                 $db->queryPrepared(
@@ -96,8 +95,7 @@ final class EmailSettings extends AbstractStep
                     [
                         'emailTemplateID' => $emailTemplateID,
                         'emailBCC'        => $question->getValue()
-                    ],
-                    ReturnType::DEFAULT
+                    ]
                 );
             }
         });

@@ -361,8 +361,7 @@ final class Controller
                         'cky'  => 'kNewsMonatsUebersicht',
                         'mnth' => $month,
                         'yr'   => $year
-                    ],
-                    ReturnType::DEFAULT
+                    ]
                 );
             }
         }
@@ -413,12 +412,11 @@ final class Controller
      */
     private function deactivateUnassociatedNewsItems(): int
     {
-        return $this->db->query(
+        return $this->db->getAffectedRows(
             'UPDATE tnews 
                 SET nAktiv = 0
                 WHERE kNews > 0 
-                    AND kNews NOT IN (SELECT kNews FROM tnewskategorienews)',
-            ReturnType::AFFECTED_ROWS
+                    AND kNews NOT IN (SELECT kNews FROM tnewskategorienews)'
         );
     }
 

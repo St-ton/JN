@@ -526,7 +526,7 @@ class Warehouse extends MainModel
             $sql .= \implode(', ', $set);
             $sql .= ' WHERE kWarenlager = ' . $this->kWarenlager;
 
-            return $db->query($sql, ReturnType::AFFECTED_ROWS);
+            return $db->getAffectedRows($sql);
         }
         throw new Exception('ERROR: Object has no members!');
     }
@@ -536,14 +536,13 @@ class Warehouse extends MainModel
      */
     public function delete(): int
     {
-        return Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getAffectedRows(
             'DELETE twarenlager, twarenlagersprache
                 FROM twarenlager
                 LEFT JOIN twarenlagersprache 
                     ON twarenlagersprache.kWarenlager = twarenlager.kWarenlager
                 WHERE twarenlager.kWarenlager = :lid',
-            ['lid' => (int)$this->kWarenlager],
-            ReturnType::AFFECTED_ROWS
+            ['lid' => (int)$this->kWarenlager]
         );
     }
 

@@ -282,8 +282,7 @@ class AdminAccountManager
                     'loginName'  => $key,
                     'attribVal'  => $shortText,
                     'attribText' => $longText ?? null
-                ],
-                ReturnType::DEFAULT
+                ]
             ) === 0) {
                 $this->addError(\sprintf(__('errorKeyChange'), $key));
             }
@@ -293,8 +292,7 @@ class AdminAccountManager
         $this->db->query(
             'DELETE FROM tadminloginattribut
             WHERE kAdminlogin = ' . (int)$account->kAdminlogin . "
-                AND cName NOT IN ('" . \implode("', '", $handledKeys) . "')",
-            ReturnType::DEFAULT
+                AND cName NOT IN ('" . \implode("', '", $handledKeys) . "')"
         );
 
         $adminAccount = Shop::Container()->getAdminAccount();

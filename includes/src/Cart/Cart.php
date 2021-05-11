@@ -197,7 +197,9 @@ class Cart
             $newAmount  = \floor(
                 ($depProduct->fLagerbestand - $depAmount) / $depProduct->fPackeinheit / $dependent->stockFactor
             );
-
+            if ($depProduct->fAbnahmeintervall > 0) {
+                $newAmount -= \fmod($newAmount, $depProduct->fAbnahmeintervall);
+            }
             if ($newAmount < $amount) {
                 $amount = $newAmount;
             }
@@ -304,8 +306,8 @@ class Cart
         //schaue, ob es nicht schon Positionen mit diesem Artikel gibt
         foreach ($this->PositionenArr as $i => $item) {
             if (!(isset($item->Artikel->kArtikel)
-                && $item->Artikel->kArtikel == $productID
-                && $item->nPosTyp == $type
+                && (int)$item->Artikel->kArtikel === $productID
+                && (int)$item->nPosTyp === $type
                 && !$item->cUnique)
             ) {
                 continue;
@@ -332,7 +334,7 @@ class Cart
                         }
                     }
                 }
-                if (!$isNew && !$unique) {
+                if (!$isNew) {
                     //erhoehe Anzahl dieser Position
                     $item->nZeitLetzteAenderung = \time();
                     $item->nAnzahl             += $qty;
@@ -788,7 +790,7 @@ class Cart
             return 3;
         }
         $mbw = Frontend::getCustomerGroup()->getAttribute(\KNDGRP_ATTRIBUT_MINDESTBESTELLWERT);
-        if ($mbw > 0 && $this->gibGesamtsummeWaren(true, false) < $mbw) {
+        if ($mbw > 0 && $this->gibGesamtsummeWarenOhne([C_WARENKORBPOS_TYP_GUTSCHEIN], true) < $mbw) {
             return 9;
         }
         if ((!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true)

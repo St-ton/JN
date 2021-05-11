@@ -97,8 +97,7 @@ final class Downloads extends AbstractSync
             LEFT JOIN tdownloadhistory 
                 ON tdownloadhistory.kDownload = tdownload.kDownload
             WHERE tdownload.kDownload = :dlid',
-            ['dlid' => $id],
-            ReturnType::DEFAULT
+            ['dlid' => $id]
         );
     }
 }

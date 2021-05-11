@@ -115,15 +115,13 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
             $db->query(
                 "DELETE FROM tseo
                     WHERE cKey = 'kSuchanfrage'
-                        AND kKey" . $whereIn,
-                ReturnType::AFFECTED_ROWS
+                        AND kKey" . $whereIn
             );
             // Deaktivierte Suchanfragen in tsuchanfrage updaten
             $db->query(
                 "UPDATE tsuchanfrage
                     SET cSeo = ''
-                    WHERE kSuchanfrage" . $whereIn,
-                ReturnType::AFFECTED_ROWS
+                    WHERE kSuchanfrage" . $whereIn
             );
             foreach (Request::verifyGPDataIntegerArray('nAktiv') as $active) {
                 $query = $db->select('tsuchanfrage', 'kSuchanfrage', $active);
@@ -177,8 +175,7 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
                                 'cnt' => $sucheanfrage->nAnzahlGesuche,
                                 'lid' => $languageID,
                                 'src' => $_POST[$index]
-                            ],
-                            ReturnType::DEFAULT
+                            ]
                         );
                         $db->delete(
                             'tsuchanfrage',
@@ -242,8 +239,7 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
                                             'cnt' => $query->nAnzahlGesuche,
                                             'lid' => $languageID,
                                             'sid' => $oSuchanfrageNeu->kSuchanfrage
-                                        ],
-                                        ReturnType::DEFAULT
+                                        ]
                                     );
                                     $db->delete(
                                         'tsuchanfrage',
@@ -258,8 +254,7 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
                                         [
                                             'kid' => (int)$oSuchanfrageNeu->kSuchanfrage,
                                             'sid' => (int)$query->kSuchanfrage
-                                        ],
-                                        ReturnType::DEFAULT
+                                        ]
                                     );
 
                                     $alertHelper->addAlert(

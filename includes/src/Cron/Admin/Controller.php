@@ -77,16 +77,14 @@ final class Controller
      */
     public function deleteQueueEntry(int $cronId): int
     {
-        $affected = (int)$this->db->queryPrepared(
+        $affected = $this->db->getAffectedRows(
             'DELETE FROM tjobqueue WHERE cronID = :id',
-            ['id' => $cronId],
-            ReturnType::AFFECTED_ROWS
+            ['id' => $cronId]
         );
 
-        return $affected + (int)$this->db->queryPrepared(
+        return $affected + $this->db->getAffectedRows(
             'DELETE FROM tcron WHERE cronID = :id',
-            ['id' => $cronId],
-            ReturnType::AFFECTED_ROWS
+            ['id' => $cronId]
         );
     }
 

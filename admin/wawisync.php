@@ -29,8 +29,7 @@ if (isset($_POST['wawi-pass'], $_POST['wawi-user']) && Form::validateToken()) {
                 ON DUPLICATE KEY UPDATE
                 cName = :cName,
                 cPass = :cPass',
-            ['cName' => $upd->cName, 'cPass' => $upd->cPass],
-            ReturnType::AFFECTED_ROWS
+            ['cName' => $upd->cName, 'cPass' => $upd->cPass]
         );
 
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');

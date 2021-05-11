@@ -557,8 +557,7 @@ if (Form::validateToken()) {
                                     LEFT JOIN tnewslettervorlagestdvarinhalt
                                         ON tnewslettervorlagestdvarinhalt.kNewslettervorlage =
                                            tnewslettervorlage.kNewsletterVorlage
-                                    WHERE tnewslettervorlage.kNewsletterVorlage = ' . (int)$nlTemplateID,
-                                ReturnType::AFFECTED_ROWS
+                                    WHERE tnewslettervorlage.kNewsletterVorlage = ' . (int)$nlTemplateID
                             );
                         } else {
                             $db->delete(

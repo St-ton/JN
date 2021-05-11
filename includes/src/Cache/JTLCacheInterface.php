@@ -182,7 +182,7 @@ interface JTLCacheInterface
      * delete keys tagged with one or more tags
      *
      * @param array|string $tags
-     * @param null         $hookInfo
+     * @param mixed        $hookInfo
      * @return int
      */
     public function flushTags($tags, $hookInfo = null): int;

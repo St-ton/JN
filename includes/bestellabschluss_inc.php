@@ -307,8 +307,7 @@ function bestellungInDB($cleared = 0, $orderNo = '')
             [
                 'cred' => (float)$_SESSION['Bestellung']->fGuthabenGenutzt,
                 'cid'  => (int)$order->kKunde
-            ],
-            ReturnType::DEFAULT
+            ]
         );
         $customer->fGuthaben -= $_SESSION['Bestellung']->fGuthabenGenutzt;
     }
@@ -571,8 +570,7 @@ function aktualisiereBestseller(int $productID, $amount): void
     if (isset($data->kArtikel) && $data->kArtikel > 0) {
         Shop::Container()->getDB()->queryPrepared(
             'UPDATE tbestseller SET fAnzahl = fAnzahl + :mnt WHERE kArtikel = :aid',
-            ['mnt' => $amount, 'aid' => $productID],
-            ReturnType::DEFAULT
+            ['mnt' => $amount, 'aid' => $productID]
         );
     } else {
         $bestseller           = new stdClass();
@@ -604,8 +602,7 @@ function aktualisiereXselling(int $productID, int $targetID): void
             [
                 'pid' => $productID,
                 'xs'  => $targetID
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     } else {
         $xs                = new stdClass();
@@ -646,8 +643,7 @@ function aktualisiereLagerbestand(Artikel $product, $amount, $attributeValues, i
                 [
                     'aid' => (int)$value->kEigenschaftWert,
                     'inv' => $amount * $EigenschaftWert->fPackeinheit
-                ],
-                ReturnType::DEFAULT
+                ]
             );
         }
         updateStock($product->kArtikel, $amount, $product->fPackeinheit);
@@ -703,8 +699,7 @@ function updateStock(int $productID, $amount, $packeinheit)
         [
             'amountSubstract' => $amount * $packeinheit,
             'productID'       => $productID
-        ],
-        ReturnType::DEFAULT
+        ]
     );
 }
 
@@ -918,8 +913,7 @@ function KuponVerwendungen($order): void
         'UPDATE tkupon
           SET nVerwendungenBisher = nVerwendungenBisher + 1
           WHERE kKupon = :couponID',
-        ['couponID' => $couponID],
-        ReturnType::DEFAULT
+        ['couponID' => $couponID]
     );
 
     $db->queryPrepared(
@@ -931,8 +925,7 @@ function KuponVerwendungen($order): void
             'couponID' => $couponID,
             'email'    => Kupon::hash(Frontend::getCustomer()->cMail),
             'used'     => 1
-        ],
-        ReturnType::DEFAULT
+        ]
     );
 
     $db->insert('tkuponflag', (object)[

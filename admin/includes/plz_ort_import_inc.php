@@ -140,8 +140,7 @@ function plzimportDoImport($target, array $sessData, $result): void
         $db->delete('tplz_backup', 'cLandISO', $isoLand);
         $db->queryPrepared(
             'INSERT INTO tplz_backup SELECT * FROM tplz WHERE cLandISO = :isoCode',
-            ['isoCode' => $isoLand],
-            ReturnType::AFFECTED_ROWS
+            ['isoCode' => $isoLand]
         );
         $db->delete('tplz', 'cLandISO', $isoLand);
 
@@ -545,8 +544,7 @@ function plzimportActionRestoreBackup($target = ''): stdClass
         Shop::Container()->getDB()->delete('tplz', 'cLandISO', $target);
         Shop::Container()->getDB()->queryPrepared(
             'INSERT INTO tplz SELECT * FROM tplz_backup WHERE cLandISO = :target',
-            ['target' => $target],
-            ReturnType::AFFECTED_ROWS
+            ['target' => $target]
         );
         Shop::Container()->getDB()->delete('tplz_backup', 'cLandISO', $target);
 
@@ -593,8 +591,7 @@ function plzimportOpenSession($sessID): bool
                 VALUES ('plzimport." . $sessID . "', " . (time() + 2 * 60) . ", '')
                 ON DUPLICATE KEY UPDATE
                 nSessionExpires = " . (time() + 2 * 60) . ",
-                cSessionData    = ''",
-            ReturnType::AFFECTED_ROWS
+                cSessionData    = ''"
         );
 
         return true;

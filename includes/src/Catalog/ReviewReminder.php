@@ -137,8 +137,7 @@ class ReviewReminder
             Shop::Container()->getDB()->query(
                 'UPDATE tbestellung
                     SET dBewertungErinnerung = NOW()
-                    WHERE kBestellung = ' . (int)$orderData->kBestellung,
-                ReturnType::AFFECTED_ROWS
+                    WHERE kBestellung = ' . (int)$orderData->kBestellung
             );
             $logger = Shop::Container()->getLogService();
             if ($logger->isHandling(\JTLLOG_LEVEL_DEBUG)) {

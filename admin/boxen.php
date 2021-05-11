@@ -182,7 +182,7 @@ if (Request::postInt('einstellungen') > 0) {
             break;
     }
     $flushres = Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_BOX, 'boxes']);
-    Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
+    Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
 }
 $boxList       = $boxService->buildList($pageID, false);
 $boxTemplates  = $boxAdmin->getTemplates($pageID);

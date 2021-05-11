@@ -31,7 +31,7 @@ class PriceRange
     private $customerID;
 
     /**
-     * @var int
+     * @var float|int
      */
     private $discount;
 

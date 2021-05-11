@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 namespace Template\NOVA;
 
@@ -57,7 +57,7 @@ class Plugins
      * @param Smarty_Internal_Data $smarty
      * @return array|void
      */
-    public function getProductList(array $params, Smarty_Internal_Data $smarty)
+    public function getProductList($params, $smarty)
     {
         $limit                 = (int)($params['nLimit'] ?? 10);
         $sort                  = (int)($params['nSortierung'] ?? 0);
@@ -124,7 +124,7 @@ class Plugins
      * @param Smarty_Internal_Data $smarty
      * @return bool|string
      */
-    public function getStaticRoute(array $params, Smarty_Internal_Data $smarty)
+    public function getStaticRoute($params, $smarty)
     {
         if (isset($params['id'])) {
             $full   = !isset($params['full']) || $params['full'] === true;
@@ -152,7 +152,7 @@ class Plugins
      * @param Smarty_Internal_Data $smarty
      * @return array|void
      */
-    public function getManufacturers(array $params, Smarty_Internal_Data $smarty)
+    public function getManufacturers($params, $smarty)
     {
         $manufacturers = Manufacturer::getInstance()->getManufacturers();
         if (isset($params['assign'])) {
@@ -169,7 +169,7 @@ class Plugins
      * @param Smarty_Internal_Data $smarty
      * @return array|void
      */
-    public function getBoxesByPosition(array $params, Smarty_Internal_Data $smarty)
+    public function getBoxesByPosition($params, $smarty)
     {
         if (isset($params['position'])) {
             $data  = Shop::Container()->getBoxService()->boxes;
@@ -187,7 +187,7 @@ class Plugins
      * @param Smarty_Internal_Data $smarty
      * @return array|void
      */
-    public function getCategoryArray(array $params, Smarty_Internal_Data $smarty)
+    public function getCategoryArray($params, $smarty)
     {
         $id = isset($params['categoryId']) ? (int)$params['categoryId'] : 0;
         if ($id === 0) {
@@ -224,7 +224,7 @@ class Plugins
      * @param Smarty_Internal_Data $smarty
      * @return array|void
      */
-    public function getCategoryParents(array $params, Smarty_Internal_Data $smarty)
+    public function getCategoryParents($params, $smarty)
     {
         $id         = isset($params['categoryId']) ? (int)$params['categoryId'] : 0;
         $categories = new KategorieListe();
@@ -247,7 +247,7 @@ class Plugins
      * @param Smarty_Internal_Data $smarty
      * @return string
      */
-    public function getImgTag(array $params, Smarty_Internal_Data $smarty): string
+    public function getImgTag($params, $smarty): string
     {
         if (empty($params['src'])) {
             return '';
@@ -274,7 +274,7 @@ class Plugins
      * @param array                $params
      * @param Smarty_Internal_Data $smarty
      */
-    public function hasBoxes(array $params, Smarty_Internal_Data $smarty): void
+    public function hasBoxes($params, $smarty): void
     {
         $boxData = $smarty->getTemplateVars('boxes');
         $smarty->assign($params['assign'], !empty($boxData[$params['position']]));
@@ -301,7 +301,7 @@ class Plugins
      * @param Smarty_Internal_Data $smarty
      * @return mixed|string
      */
-    public function getLocalizedPrice(array $params, Smarty_Internal_Data $smarty)
+    public function getLocalizedPrice($params, $smarty)
     {
         $surcharge                     = new \stdClass();
         $surcharge->cAufpreisLocalized = '';
@@ -386,7 +386,7 @@ class Plugins
      * @param array                $params
      * @param Smarty_Internal_Data $smarty
      */
-    public function hasCheckBoxForLocation(array $params, Smarty_Internal_Data $smarty): void
+    public function hasCheckBoxForLocation($params, $smarty): void
     {
         $smarty->assign(
             $params['bReturn'],
@@ -398,7 +398,7 @@ class Plugins
      * @param array                $params
      * @param Smarty_Internal_Data $smarty
      */
-    public function getCheckBoxForLocation(array $params, Smarty_Internal_Data $smarty): void
+    public function getCheckBoxForLocation($params, $smarty): void
     {
         $langID     = Shop::getLanguageID();
         $cid        = 'cb_' . (int)$params['nAnzeigeOrt'] . '_' . $langID;
@@ -433,7 +433,7 @@ class Plugins
      * @param array $params
      * @return string
      */
-    public function aaURLEncode(array $params): string
+    public function aaURLEncode($params): string
     {
         $reset  = (int)($params['nReset'] ?? 0) === 1;
         $url    = $_SERVER['REQUEST_URI'];
@@ -470,7 +470,7 @@ class Plugins
      * @param array                $params - ['type'] Templatename of link, ['assign'] array name to assign
      * @param Smarty_Internal_Data $smarty
      */
-    public function getNavigation(array $params, Smarty_Internal_Data $smarty): void
+    public function getNavigation($params, $smarty): void
     {
         if (!isset($params['assign'])) {
             return;
@@ -515,7 +515,7 @@ class Plugins
      * @param array $params
      * @return string|object|null
      */
-    public function prepareImageDetails(array $params)
+    public function prepareImageDetails($params)
     {
         if (!isset($params['item'])) {
             return null;
@@ -551,7 +551,7 @@ class Plugins
      * @param string $image
      * @return object|null
      */
-    public function getImageSize(string $image)
+    public function getImageSize($image)
     {
         $path = \strpos($image, \PFAD_BILDER) === 0
             ? PFAD_ROOT . $image
@@ -599,7 +599,7 @@ class Plugins
      * @param Smarty_Internal_Data $smarty
      * @return mixed
      */
-    public function getCMSContent(array $params, Smarty_Internal_Data $smarty)
+    public function getCMSContent($params, $smarty)
     {
         if (isset($params['kLink']) && (int)$params['kLink'] > 0) {
             $linkID  = (int)$params['kLink'];
@@ -623,7 +623,7 @@ class Plugins
      * 1: normal listable variations
      * 2: only child listable variations
      */
-    public function hasOnlyListableVariations(array $params, Smarty_Internal_Data $smarty)
+    public function hasOnlyListableVariations($params, $smarty)
     {
         if (!isset($params['artikel']->Variationen)) {
             if (isset($params['assign'])) {
@@ -711,7 +711,7 @@ class Plugins
      * @param Smarty_Internal_Data $smarty
      * @return string
      */
-    public function captchaMarkup(array $params, Smarty_Internal_Data $smarty): string
+    public function captchaMarkup($params, $smarty): string
     {
         if (isset($params['getBody']) && $params['getBody']) {
             return Shop::Container()->getCaptchaService()->getBodyMarkup($smarty);
@@ -725,7 +725,7 @@ class Plugins
      * @param Smarty_Internal_Data $smarty
      * @return array|null|void
      */
-    public function getStates(array $params, Smarty_Internal_Data $smarty)
+    public function getStates($params, $smarty)
     {
         $regions = Staat::getRegions($params['cIso']);
         if (!isset($params['assign'])) {
@@ -738,7 +738,7 @@ class Plugins
      * @param array $params
      * @return int
      */
-    public function getDecimalLength(array $params): int
+    public function getDecimalLength($params): int
     {
         $portion = \strrchr(\str_replace(',', '.', $params['quantity']), '.');
         if ($portion === false) {
@@ -763,7 +763,7 @@ class Plugins
      * @param Smarty_Internal_Data $smarty
      * @return void
      */
-    public function getUploaderLang(array $params, Smarty_Internal_Data $smarty): void
+    public function getUploaderLang($params, $smarty): void
     {
         $availableLocales = [
             'ar', 'az', 'bg', 'ca', 'cr', 'cs', 'da', 'de', 'el', 'es', 'et', 'fa', 'fi', 'fr', 'gl', 'he', 'hu', 'id',

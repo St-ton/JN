@@ -105,13 +105,12 @@ final class BoxAdmin
         });
 
         return \count($affectedBoxes) > 0
-            && $this->db->query(
+            && $this->db->getAffectedRows(
                 'DELETE tboxen, tboxensichtbar, tboxsprache
                     FROM tboxen
                     LEFT JOIN tboxensichtbar USING (kBox)
                     LEFT JOIN tboxsprache USING (kBox)
-                    WHERE tboxen.kBox IN (' . \implode(',', $affectedBoxes) . ')',
-                ReturnType::AFFECTED_ROWS
+                    WHERE tboxen.kBox IN (' . \implode(',', $affectedBoxes) . ')'
             ) > 0;
     }
 
@@ -305,8 +304,7 @@ final class BoxAdmin
                         'show'     => $show,
                         'page'     => $validPageType,
                         'position' => $position
-                    ],
-                    ReturnType::DEFAULT
+                    ]
                 );
             }
 
@@ -322,8 +320,7 @@ final class BoxAdmin
                 'show'     => $show,
                 'page'     => $pageID,
                 'position' => $position
-            ],
-            ReturnType::DEFAULT
+            ]
         ) !== 0;
     }
 
@@ -357,8 +354,7 @@ final class BoxAdmin
                             'validPageType' => $validPageType,
                             'sort'          => $sort,
                             'active'        => $active
-                        ],
-                        ReturnType::DEFAULT
+                        ]
                     );
                 } else {
                     $ok = $this->db->queryPrepared(
@@ -371,8 +367,7 @@ final class BoxAdmin
                             'validPageType' => $validPageType,
                             'sort'          => $sort,
                             'active'        => $active
-                        ],
-                        ReturnType::DEFAULT
+                        ]
                     );
                 }
             }
@@ -386,12 +381,11 @@ final class BoxAdmin
                     ON DUPLICATE KEY UPDATE
                       nSort = :sort, bAktiv = :active',
             [
-                    'boxID'         => $boxID,
-                    'validPageType' => $pageID,
-                    'sort'          => $sort,
-                    'active'        => $active
-                ],
-            ReturnType::DEFAULT
+                'boxID'         => $boxID,
+                'validPageType' => $pageID,
+                'sort'          => $sort,
+                'active'        => $active
+            ]
         ) !== 0;
     }
 

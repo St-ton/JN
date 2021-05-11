@@ -272,7 +272,7 @@ class Manager
      */
     private function housekeeping(): int
     {
-        return $this->db->queryPrepared(
+        return $this->db->getAffectedRows(
             'DELETE a 
                 FROM licenses AS a 
                 JOIN ( 
@@ -281,8 +281,7 @@ class Manager
                         ORDER BY timestamp DESC 
                         LIMIT 99999 OFFSET :max) AS b
                 ON a.id = b.id',
-            ['max' => self::MAX_REQUESTS],
-            ReturnType::AFFECTED_ROWS
+            ['max' => self::MAX_REQUESTS]
         );
     }
 

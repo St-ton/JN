@@ -97,8 +97,7 @@ class TableCleaner
         $this->db->queryPrepared(
             'DELETE FROM tanondatajournal
                 WHERE dEventTime <= LAST_DAY(DATE_ADD(:pNow - INTERVAL 2 YEAR, INTERVAL 12 - MONTH(:pNow) MONTH))',
-            ['pNow' => $this->now->format('Y-m-d H:i:s')],
-            ReturnType::DEFAULT
+            ['pNow' => $this->now->format('Y-m-d H:i:s')]
         );
     }
 }

@@ -164,6 +164,7 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
                                 $searchError = __('errorMapSelf');
                                 break;
                             default:
+                                $searchError = '';
                                 break;
                         }
                         $alertHelper->addAlert(Alert::TYPE_ERROR, $searchError, 'searchError');

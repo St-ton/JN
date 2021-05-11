@@ -612,8 +612,8 @@ class Warehouse extends MainModel
                     FROM tartikelwarenlager
                     JOIN twarenlager 
                         ON twarenlager.kWarenlager = tartikelwarenlager.kWarenlager' . $sql . '
-                    WHERE tartikelwarenlager.kArtikel = :articleID',
-                ['articleID' => $productID],
+                    WHERE tartikelwarenlager.kArtikel = :productID',
+                ['productID' => $productID],
                 ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($data as $item) {

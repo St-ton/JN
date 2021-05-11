@@ -319,7 +319,7 @@ class BoxService implements BoxServiceInterface
             }
         }
         $this->smarty->clearAssign('BoxenEinstellungen');
-        // avoid modification of article object on render loop
+        // avoid modification of product object on render loop
         if ($product !== null) {
             $this->smarty->assign('Artikel', $product);
         }

@@ -421,7 +421,7 @@ class Category
     }
 
     /**
-     * remove items from category list that have no articles and no subcategories
+     * remove items from category list that have no products and no subcategories
      *
      * @param MenuItem[] $catList
      * @return array
@@ -441,7 +441,7 @@ class Category
 
     /**
      * self::filterEmpty() may have removed all sub categories from a category that now may have
-     * no articles and no sub categories with articles in them. in this case, bUnterKategorien
+     * no products and no sub categories with products in them. in this case, bUnterKategorien
      * has a wrong value and the whole category has to be removed from the result
      *
      * @param MenuItem[]    $menuItems

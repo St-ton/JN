@@ -1685,8 +1685,8 @@ class Cart
             && (int)$_SESSION['Kupon']->nGanzenWKRabattieren === 0
             && $_SESSION['Kupon']->cKuponTyp === Kupon::TYPE_STANDARD
         ) {
-            //we have a coupon in the current session but none in the cart.
-            //this happens with coupons tied to special articles that are no longer valid.
+            // we have a coupon in the current session but none in the cart.
+            // this happens with coupons tied to special products that are no longer valid.
             unset($_SESSION['Kupon']);
         }
 

@@ -1074,7 +1074,7 @@ class Artikel
         if ($this->kEigenschaftKombi > 0) {
             $id = (int)$this->kVaterArtikel;
         } elseif (!empty($this->oKategorie_arr)) {
-            // oKategorie_arr already has all categories for this article in it
+            // oKategorie_arr already has all categories for this product in it
             if (isset($_SESSION['LetzteKategorie'])) {
                 $lastCategoryID = (int)$_SESSION['LetzteKategorie'];
                 if (\in_array($lastCategoryID, $this->oKategorie_arr, true)) {
@@ -3339,7 +3339,7 @@ class Artikel
         ]);
 
         if ($noCache === false) {
-            // oVariationKombiKinderAssoc_arr can contain a lot of article objects, prices may depend on customers
+            // oVariationKombiKinderAssoc_arr can contain a lot of product objects, prices may depend on customers
             // so do not save to cache
             $toSave                                 = clone $this;
             $toSave->oVariationKombiKinderAssoc_arr = null;
@@ -4810,7 +4810,7 @@ class Artikel
                     ON tstueckliste.kArtikel = tartikel.kArtikel
                     AND tstueckliste.kStueckliste = ' . (int)$this->kStueckliste
         );
-        // check if this is a set article - if so, calculate the delivery time from the set of articles
+        // check if this is a set product - if so, calculate the delivery time from the set of products
         // we don't have loaded the list of pieces yet, do so!
         $partList = null;
         if ((!empty($this->kStueckliste) && empty($this->oStueckliste_arr)) ||

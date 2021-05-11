@@ -437,8 +437,7 @@ class BaseSearchQuery extends AbstractFilter
                 LEFT JOIN tsuchcachetreffer 
                     ON tsuchcachetreffer.kSuchCache = tsuchcache.kSuchCache
                 WHERE tsuchcache.dGueltigBis IS NOT NULL
-                    AND DATE_ADD(tsuchcache.dGueltigBis, INTERVAL 5 MINUTE) < NOW()',
-            ReturnType::AFFECTED_ROWS
+                    AND DATE_ADD(tsuchcache.dGueltigBis, INTERVAL 5 MINUTE) < NOW()'
         );
         // Suchcache checken, ob bereits vorhanden
         $searchCache = $this->productFilter->getDB()->executeQueryPrepared(
@@ -834,8 +833,7 @@ class BaseSearchQuery extends AbstractFilter
             'INSERT INTO tsuchcachetreffer ' .
             $sql .
             ' GROUP BY kArtikelTMP
-                LIMIT ' . (int)$this->getConfig('artikeluebersicht')['suche_max_treffer'],
-            ReturnType::AFFECTED_ROWS
+                LIMIT ' . (int)$this->getConfig('artikeluebersicht')['suche_max_treffer']
         );
 
         return $kSuchCache;
@@ -943,8 +941,7 @@ class BaseSearchQuery extends AbstractFilter
                             ON tartikelsichtbarkeit.kArtikel = i.kArtikelTMP
                             AND tartikelsichtbarkeit.kKundengruppe = ' . Frontend::getCustomerGroup()->getID() . '
                         WHERE tartikelsichtbarkeit.kKundengruppe IS NULL
-                        GROUP BY kSuchCache, kArtikelTMP' . ($limit > 0 ? ' LIMIT ' . $limit : ''),
-                ReturnType::AFFECTED_ROWS
+                        GROUP BY kSuchCache, kArtikelTMP' . ($limit > 0 ? ' LIMIT ' . $limit : '')
             );
         }
 

@@ -262,7 +262,7 @@ class Controller
             $overlayHelper = new Overlay($this->db);
             $overlayHelper->loadOverlaysFromTemplateFolder($this->currentTemplateDir);
         }
-        $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
+        $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
     }
 
     /**
@@ -345,7 +345,7 @@ class Controller
         } else {
             $this->alertService->addAlert(Alert::TYPE_ERROR, __('errorTemplateSave'), 'errorTemplateSave');
         }
-        $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
+        $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
         $this->cache->flushTags([\CACHING_GROUP_LICENSES]);
     }
 

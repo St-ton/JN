@@ -80,23 +80,20 @@ function setzeAbgeholtZurueck(array $orderIDs): int
         Shop::Container()->getDB()->query(
             "UPDATE tkunde
                 SET cAbgeholt = 'N'
-                WHERE kKunde IN(" . implode(',', $customerIDs) . ')',
-            ReturnType::DEFAULT
+                WHERE kKunde IN(" . implode(',', $customerIDs) . ')'
         );
     }
     Shop::Container()->getDB()->query(
         "UPDATE tbestellung
             SET cAbgeholt = 'N'
             WHERE kBestellung IN(" . $orderList . ")
-                AND cAbgeholt = 'Y'",
-        ReturnType::DEFAULT
+                AND cAbgeholt = 'Y'"
     );
     Shop::Container()->getDB()->query(
         "UPDATE tzahlungsinfo
             SET cAbgeholt = 'N'
             WHERE kBestellung IN(" . $orderList . ")
-                AND cAbgeholt = 'Y'",
-        ReturnType::DEFAULT
+                AND cAbgeholt = 'Y'"
     );
 
     return -1;

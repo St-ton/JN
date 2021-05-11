@@ -838,8 +838,7 @@ class Customer
                 'kKunde'   => $this->kKunde,
                 'cKey'     => $key,
                 'dExpires' => $expires->format('Y-m-d H:i:s'),
-            ],
-            ReturnType::AFFECTED_ROWS
+            ]
         );
 
         $obj                    = new stdClass();
@@ -1132,8 +1131,7 @@ class Customer
             'DELETE FROM tnewsletterempfaenger
                 WHERE cEmail = :email
                     OR kKunde = :customerID',
-            ['email' => $this->cMail, 'customerID' => $customerID],
-            ReturnType::AFFECTED_ROWS
+            ['email' => $this->cMail, 'customerID' => $customerID]
         );
 
         $obj            = new stdClass();
@@ -1168,8 +1166,7 @@ class Customer
                 LEFT JOIN twunschlisteversand
                     ON twunschlisteversand.kWunschliste = twunschliste.kWunschliste
                 WHERE twunschliste.kKunde = :customerID',
-            ['customerID' => $customerID],
-            ReturnType::DEFAULT
+            ['customerID' => $customerID]
         );
         $db->queryPrepared(
             'DELETE twarenkorbpers, twarenkorbperspos, twarenkorbpersposeigenschaft
@@ -1179,8 +1176,7 @@ class Customer
                 LEFT JOIN twarenkorbpersposeigenschaft
                     ON twarenkorbpersposeigenschaft.kWarenkorbPersPos = twarenkorbperspos.kWarenkorbPersPos
                 WHERE twarenkorbpers.kKunde = :customerID',
-            ['customerID' => $customerID],
-            ReturnType::DEFAULT
+            ['customerID' => $customerID]
         );
 
         $logMessage = \sprintf('Account with ID kKunde = %s deleted', $customerID);

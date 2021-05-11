@@ -18,7 +18,7 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
         'saveSettings'
     );
     if (GeneralObject::hasCount('nVon', $_POST) && GeneralObject::hasCount('nBis', $_POST)) {
-        Shop::Container()->getDB()->query('TRUNCATE TABLE tpreisspannenfilter', ReturnType::AFFECTED_ROWS);
+        Shop::Container()->getDB()->query('TRUNCATE TABLE tpreisspannenfilter');
         for ($i = 0; $i < 10; $i++) {
             if ((int)$_POST['nVon'][$i] >= 0 && (int)$_POST['nBis'][$i] > 0) {
                 $filter       = new stdClass();

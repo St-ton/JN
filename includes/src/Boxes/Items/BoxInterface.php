@@ -205,12 +205,12 @@ interface BoxInterface
     public function setIsActive(bool $isActive): void;
 
     /**
-     * @return array|Artikel[]|ArtikelListe
+     * @return Artikel[]|ArtikelListe
      */
     public function getProducts();
 
     /**
-     * @param array|ArtikelListe $products
+     * @param Artikel[]|ArtikelListe $products
      */
     public function setProducts($products): void;
 

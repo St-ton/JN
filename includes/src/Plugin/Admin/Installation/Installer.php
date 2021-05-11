@@ -471,7 +471,7 @@ final class Installer
                     $this->db->insert('tplugincustomtabelle', $customTable);
                 }
             }
-            $this->db->query($sql, ReturnType::DEFAULT);
+            $this->db->query($sql);
             $errNo = $this->db->getErrorCode();
             if ($errNo) {
                 Shop::Container()->getLogService()->withName('kPlugin')->error(
@@ -585,8 +585,7 @@ final class Installer
                     ON texportformat.kExportformat = tcron.foreignKeyID
                 WHERE tcron.jobType = \'exportformat\'
                     AND tcron.foreignKey = \'kExportformat\'
-                    AND texportformat.kExportformat IS NULL',
-            ReturnType::DEFAULT
+                    AND texportformat.kExportformat IS NULL'
         );
     }
 
@@ -623,8 +622,7 @@ final class Installer
                             'bid' => $newBoxTemplate->kBoxvorlage,
                             'pid' => $oldPluginID,
                             'oid' => $template->kBoxvorlage
-                        ],
-                        ReturnType::DEFAULT
+                        ]
                     );
                     break;
                 }
@@ -648,8 +646,7 @@ final class Installer
             'DELETE FROM tboxen
                 WHERE kCustomID = :pid 
                 AND kBoxvorlage NOT IN (SELECT kBoxvorlage FROM tboxvorlage WHERE kCustomID = :pid)',
-            ['pid' => $oldPluginID],
-            ReturnType::DEFAULT
+            ['pid' => $oldPluginID]
         );
     }
 
@@ -719,8 +716,7 @@ final class Installer
             }
             $this->db->query(
                 'DELETE FROM tplugineinstellungen
-                    WHERE kPlugin IN (' . $oldPluginID . ', ' . $pluginID . ')',
-                ReturnType::AFFECTED_ROWS
+                    WHERE kPlugin IN (' . $oldPluginID . ', ' . $pluginID . ')'
             );
 
             foreach ($confData as $value) {
@@ -731,15 +727,13 @@ final class Installer
             'UPDATE tplugineinstellungen
                 SET kPlugin = ' . $oldPluginID . ",
                     cName = REPLACE(cName, 'kPlugin_" . $pluginID . "_', 'kPlugin_" . $oldPluginID . "_')
-                WHERE kPlugin = " . $pluginID,
-            ReturnType::AFFECTED_ROWS
+                WHERE kPlugin = " . $pluginID
         );
         $this->db->query(
             'UPDATE tplugineinstellungenconf
                 SET kPlugin = ' . $oldPluginID . ",
                     cWertName = REPLACE(cWertName, 'kPlugin_" . $pluginID . "_', 'kPlugin_" . $oldPluginID . "_')
-                WHERE kPlugin = " . $pluginID,
-            ReturnType::AFFECTED_ROWS
+                WHERE kPlugin = " . $pluginID
         );
     }
 
@@ -799,8 +793,7 @@ final class Installer
                 WHERE NOT EXISTS (
                     SELECT 1 FROM temailvorlage
                     WHERE temailvorlage.kEmailvorlage = tpluginemailvorlageeinstellungen.kEmailvorlage
-                )',
-            ReturnType::DEFAULT
+                )'
         );
     }
 
@@ -814,8 +807,7 @@ final class Installer
             'UPDATE tpluginzahlungsartklasse
                 SET kPlugin = ' . $oldPluginID . ",
                     cModulId = REPLACE(cModulId, 'kPlugin_" . $pluginID . "_', 'kPlugin_" . $oldPluginID . "_')
-                WHERE kPlugin = " . $pluginID,
-            ReturnType::AFFECTED_ROWS
+                WHERE kPlugin = " . $pluginID
         );
         $oldPaymentMethods = $this->db->queryPrepared(
             'SELECT kZahlungsart, cModulId
@@ -852,8 +844,7 @@ final class Installer
                         FROM tzahlungsart
                         JOIN tzahlungsartsprache
                             ON tzahlungsartsprache.kZahlungsart = tzahlungsart.kZahlungsart
-                        WHERE tzahlungsart.kZahlungsart = ' . $method->kZahlungsart,
-                    ReturnType::AFFECTED_ROWS
+                        WHERE tzahlungsart.kZahlungsart = ' . $method->kZahlungsart
                 );
                 $setSQL = ' , kZahlungsart = ' . $method->kZahlungsart;
                 $upd    = (object)['kZahlungsart' => $method->kZahlungsart];
@@ -863,8 +854,7 @@ final class Installer
                 'UPDATE tzahlungsart
                     SET cModulId = :newID ' . $setSQL . '
                     WHERE cModulId LIKE :oldID',
-                ['oldID' => $oldModuleID, 'newID' => $method->cModulId],
-                ReturnType::AFFECTED_ROWS
+                ['oldID' => $oldModuleID, 'newID' => $method->cModulId]
             );
         }
         foreach ($newPaymentMethods as $method) {
@@ -874,8 +864,7 @@ final class Installer
                 'UPDATE tzahlungsart
                     SET cModulId = :newID
                     WHERE kZahlungsart = :pmid',
-                ['pmid' => $method->kZahlungsart, 'newID' => $newModuleID],
-                ReturnType::AFFECTED_ROWS
+                ['pmid' => $method->kZahlungsart, 'newID' => $newModuleID]
             );
         }
         foreach ($oldPaymentMethods as $method) {
@@ -884,8 +873,7 @@ final class Installer
                 $this->db->queryPrepared(
                     'DELETE FROM tplugineinstellungen
                         WHERE kPlugin = :pid AND cName LIKE :nm',
-                    ['pid' => $oldPluginID, 'nm' => \str_replace('_', '\_', $method->cModulId) . '\_%'],
-                    ReturnType::DEFAULT
+                    ['pid' => $oldPluginID, 'nm' => \str_replace('_', '\_', $method->cModulId) . '\_%']
                 );
             }
         }
@@ -893,15 +881,13 @@ final class Installer
             'DELETE FROM tzahlungsartsprache
                 WHERE kZahlungsart NOT IN (
                     SELECT kZahlungsart FROM tzahlungsart
-                )',
-            ReturnType::DEFAULT
+                )'
         );
         $this->db->query(
             'DELETE FROM tversandartzahlungsart
                 WHERE kZahlungsart NOT IN (
                     SELECT kZahlungsart FROM tzahlungsart
-                )',
-            ReturnType::DEFAULT
+                )'
         );
     }
 }

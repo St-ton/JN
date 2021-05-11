@@ -108,8 +108,7 @@ class Controller
         $where_in = '(' . \implode(',', \array_map('\intval', $ids)) . ')';
         $this->db->executeQuery(
             'DELETE FROM tbesucherbot 
-                WHERE kBesucherBot IN ' . $where_in . ' ',
-            ReturnType::DEFAULT
+                WHERE kBesucherBot IN ' . $where_in . ' '
         );
         $this->cache->flush('crawler');
 

@@ -50,7 +50,7 @@ final class Products extends AbstractSync
         $this->categoryVisibilityFilter = (int)$this->config['global']['kategorien_anzeigefilter'];
         $this->productVisibilityFilter  = (int)$this->config['global']['artikel_artikelanzeigefilter'];
         $productIDs                     = [];
-        $this->db->query('START TRANSACTION', ReturnType::DEFAULT);
+        $this->db->query('START TRANSACTION');
         foreach ($starter->getXML() as $i => $item) {
             [$file, $xml] = [\key($item), \reset($item)];
             if (\strpos($file, 'artdel.xml') !== false) {
@@ -62,13 +62,12 @@ final class Products extends AbstractSync
                 $this->db->query(
                     'UPDATE tsuchcache
                         SET dGueltigBis = DATE_ADD(NOW(), INTERVAL ' . \SUCHCACHE_LEBENSDAUER . ' MINUTE)
-                        WHERE dGueltigBis IS NULL',
-                    ReturnType::AFFECTED_ROWS
+                        WHERE dGueltigBis IS NULL'
                 );
             }
         }
         $productIDs = \array_unique(flatten($productIDs));
-        $this->db->query('COMMIT', ReturnType::DEFAULT);
+        $this->db->query('COMMIT');
         $this->clearProductCaches($productIDs);
 
         return null;
@@ -323,8 +322,7 @@ final class Products extends AbstractSync
             WHERE tartikel.kArtikel = :pid
                 AND tsprache.cStandard = 'Y'
                 AND tartikel.cSeo != ''",
-            ['pid' => $productID],
-            ReturnType::AFFECTED_ROWS
+            ['pid' => $productID]
         );
     }
 
@@ -781,8 +779,7 @@ final class Products extends AbstractSync
                     'fBestand'     => $storage->fBestand,
                     'fZulauf'      => $storage->fZulauf,
                     'dZulaufDatum' => $storage->dZulaufDatum ?? null,
-                ],
-                ReturnType::DEFAULT
+                ]
             );
         }
     }
@@ -798,7 +795,7 @@ final class Products extends AbstractSync
                 if (\strlen($sql) <= 10) {
                     continue;
                 }
-                $this->db->query($sql, ReturnType::DEFAULT);
+                $this->db->query($sql);
             }
         }
         if (!isset($xml['tartikel']['SQL']) || \strlen($xml['tartikel']['SQL']) <= 10) {
@@ -809,7 +806,7 @@ final class Products extends AbstractSync
             if (\strlen($sql) <= 10) {
                 continue;
             }
-            $this->db->query($sql, ReturnType::DEFAULT);
+            $this->db->query($sql);
         }
     }
 
@@ -827,8 +824,7 @@ final class Products extends AbstractSync
                         WHERE kVaterartikel = ' . $productID . '
                      ) AS x
                  )
-                WHERE kArtikel = ' . $productID,
-                ReturnType::AFFECTED_ROWS
+                WHERE kArtikel = ' . $productID
             );
             Artikel::beachteVarikombiMerkmalLagerbestand($productID, $this->productVisibilityFilter);
         } elseif (isset($product->kVaterArtikel) && $product->kVaterArtikel > 0) {
@@ -841,8 +837,7 @@ final class Products extends AbstractSync
                         WHERE kVaterartikel = ' . $productID . '
                     ) AS x
                 )
-                WHERE kArtikel = ' . $productID,
-                ReturnType::AFFECTED_ROWS
+                WHERE kArtikel = ' . $productID
             );
             // Aktualisiere Merkmale in tartikelmerkmal vom Vaterartikel
             Artikel::beachteVarikombiMerkmalLagerbestand($productID, $this->productVisibilityFilter);
@@ -949,8 +944,7 @@ final class Products extends AbstractSync
                     JOIN tartikel
                         ON tartikel.kArtikel = :pid
                         AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi',
-                ['pid' => $productID],
-                ReturnType::DEFAULT
+                ['pid' => $productID]
             );
             $this->removeProductIdfromCoupons($productID);
             $res[] = $this->deleteProduct($productID);
@@ -1198,13 +1192,12 @@ final class Products extends AbstractSync
      */
     private function deletePrices(int $productID): int
     {
-        return $this->db->queryPrepared(
+        return $this->db->getAffectedRows(
             'DELETE p, pd
                 FROM tpreis p
                 INNER JOIN tpreisdetail pd ON pd.kPreis = p.kPreis
                 WHERE  p.kArtikel = :productID',
-            ['productID' => $productID],
-            ReturnType::AFFECTED_ROWS
+            ['productID' => $productID]
         );
     }
 
@@ -1214,14 +1207,13 @@ final class Products extends AbstractSync
      */
     private function deleteSpecialPrices(int $productID): int
     {
-        return $this->db->queryPrepared(
+        return $this->db->getAffectedRows(
             'DELETE asp, sp
-            FROM tartikelsonderpreis asp
-            LEFT JOIN tsonderpreise sp
-                ON sp.kArtikelSonderpreis = asp.kArtikelSonderpreis
-            WHERE asp.kArtikel = :productID',
-            ['productID' => $productID],
-            ReturnType::AFFECTED_ROWS
+                FROM tartikelsonderpreis asp
+                LEFT JOIN tsonderpreise sp
+                    ON sp.kArtikelSonderpreis = asp.kArtikelSonderpreis
+                WHERE asp.kArtikel = :productID',
+            ['productID' => $productID]
         );
     }
 
@@ -1239,12 +1231,10 @@ final class Products extends AbstractSync
             $artNo = $data->cArtNr;
             $this->db->queryPrepared(
                 "UPDATE tkupon SET cArtikel = REPLACE(cArtikel, ';" . $artNo . ";', ';') WHERE cArtikel LIKE :artno",
-                ['artno' => '%;' . $artNo . ';%'],
-                ReturnType::DEFAULT
+                ['artno' => '%;' . $artNo . ';%']
             );
             $this->db->query(
-                "UPDATE tkupon SET cArtikel = '' WHERE cArtikel = ';'",
-                ReturnType::DEFAULT
+                "UPDATE tkupon SET cArtikel = '' WHERE cArtikel = ';'"
             );
         }
     }
@@ -1296,8 +1286,7 @@ final class Products extends AbstractSync
                         'customerGroup' => $item->kKundengruppe,
                         'categoryID'    => $maxDiscount->kKategorie,
                         'discount'      => $maxDiscount->fRabatt,
-                    ],
-                    ReturnType::DEFAULT
+                    ]
                 );
                 $affectedProductIDs[] = $productID;
             }

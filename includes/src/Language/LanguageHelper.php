@@ -528,7 +528,7 @@ class LanguageHelper
     {
         $where = $currentLang === true ? ' WHERE kSprachISO = ' . (int)$this->currentLanguageID : '';
 
-        return $this->db->query('DELETE FROM tsprachlog' . $where, ReturnType::AFFECTED_ROWS);
+        return $this->db->getAffectedRows('DELETE FROM tsprachlog' . $where);
     }
 
     /**
@@ -853,8 +853,7 @@ class LanguageHelper
                                 'name'    => $name,
                                 'val'     => $value,
                                 'sys'     => $system
-                            ],
-                            ReturnType::DEFAULT
+                            ]
                         );
                         $updateCount++;
                         break;
@@ -884,8 +883,7 @@ class LanguageHelper
                                     'name'    => $name,
                                     'val'     => $value,
                                     'sys'     => $system
-                                ],
-                                ReturnType::DEFAULT
+                                ]
                             );
                             $updateCount++;
                         }

@@ -143,8 +143,7 @@ class Campaign
                 FROM tkampagne
                 LEFT JOIN tkampagnevorgang 
                     ON tkampagnevorgang.kKampagne = tkampagne.kKampagne
-                WHERE tkampagne.kKampagne = ' . (int)$this->kKampagne,
-            ReturnType::AFFECTED_ROWS
+                WHERE tkampagne.kKampagne = ' . (int)$this->kKampagne
         );
 
         return true;

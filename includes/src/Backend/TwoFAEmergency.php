@@ -78,8 +78,7 @@ class TwoFAEmergency
         // now write into the DB what we got till now
         $this->db->queryPrepared(
             'INSERT INTO `tadmin2facodes`(`kAdminlogin`, `cEmergencyCode`) VALUES' . $rowValues,
-            $bindings,
-            ReturnType::AFFECTED_ROWS
+            $bindings
         );
 
         return $this->codes;

@@ -204,7 +204,7 @@ class VueInstaller
     private function doInstall(): self
     {
         if ($this->initNiceDB($this->post['db'])) {
-            $this->db->query('SET FOREIGN_KEY_CHECKS=0', ReturnType::DEFAULT);
+            $this->db->query('SET FOREIGN_KEY_CHECKS=0');
             $schema = \PFAD_ROOT . 'install/initial_schema.sql';
             if (!\file_exists($schema)) {
                 $this->responseMessage[] = 'File does not exists: ' . $schema;
@@ -214,7 +214,7 @@ class VueInstaller
             $blowfishKey = $this->getUID(30);
             $this->writeConfigFile($this->post['db'], $blowfishKey);
             $this->payload['secretKey'] = $blowfishKey;
-            $this->db->query('SET FOREIGN_KEY_CHECKS=1', ReturnType::DEFAULT);
+            $this->db->query('SET FOREIGN_KEY_CHECKS=1');
         }
 
         if ($this->cli) {

@@ -17,14 +17,13 @@ if ($cDatei === null) {
     exit;
 }
 $ip              = Request::getRealIP();
-$floodProtection = Shop::Container()->getDB()->queryPrepared(
+$floodProtection = Shop::Container()->getDB()->getAffectedRows(
     'SELECT * 
         FROM `tsitemaptracker` 
         WHERE `cIP` = :ip 
             AND DATE_ADD(`dErstellt`, INTERVAL 2 MINUTE) >= NOW() 
         ORDER BY `dErstellt` DESC',
-    ['ip' => $ip],
-    ReturnType::AFFECTED_ROWS
+    ['ip' => $ip]
 );
 if ($floodProtection === 0) {
     // Track request

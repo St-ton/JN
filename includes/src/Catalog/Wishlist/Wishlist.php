@@ -273,14 +273,13 @@ class Wishlist
      */
     public function entferneAllePos(): int
     {
-        return Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getAffectedRows(
             'DELETE twunschlistepos, twunschlisteposeigenschaft 
                 FROM twunschlistepos
                 LEFT JOIN twunschlisteposeigenschaft 
                     ON twunschlisteposeigenschaft.kWunschlistePos = twunschlistepos.kWunschlistePos
                 WHERE twunschlistepos.kWunschliste = :wlID',
-            ['wlID' => (int)$this->kWunschliste],
-            ReturnType::AFFECTED_ROWS
+            ['wlID' => (int)$this->kWunschliste]
         );
     }
 
@@ -755,8 +754,7 @@ class Wishlist
                     $db->query(
                         'UPDATE twunschliste
                             SET nStandard = 1
-                            WHERE kWunschliste = ' . (int)$data->kWunschliste,
-                        ReturnType::AFFECTED_ROWS
+                            WHERE kWunschliste = ' . (int)$data->kWunschliste
                     );
                     // Neue Standard Wunschliste in die Session laden
                     $_SESSION['Wunschliste'] = new Wishlist((int)$data->kWunschliste);

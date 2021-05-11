@@ -79,7 +79,7 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
             // Variable loeschen
             $name = Request::getVar('cName');
             $lang->loesche(Request::getInt('kSprachsektion'), $name);
-            $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
+            $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
             $alertHelper->addAlert(
                 Alert::TYPE_SUCCESS,
                 sprintf(__('successVarRemove'), $name),
@@ -160,10 +160,7 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
                     ['cSektion', 'cName'],
                     [$variable->cSprachsektion, $variable->cName]
                 );
-                $db->query(
-                    'UPDATE tglobals SET dLetzteAenderung = NOW()',
-                    ReturnType::DEFAULT
-                );
+                $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
             }
 
             break;
@@ -180,7 +177,7 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
             }
 
             $cache->flushTags([CACHING_GROUP_CORE]);
-            $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
+            $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
 
             $alertHelper->addAlert(
                 Alert::TYPE_SUCCESS,
@@ -194,7 +191,7 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
         case 'clearlog':
             $lang->setzeSprache($langCode)
                 ->clearLog();
-            $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
+            $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
             $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successListReset'), 'successListReset');
             break;
         default:

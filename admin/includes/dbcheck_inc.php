@@ -490,14 +490,11 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $tableName = ''
                         if (($migration & DBMigrationHelper::MIGRATE_TABLE) !== 0) {
                             $fkSQLs = DBMigrationHelper::sqlRecreateFKs($table->TABLE_NAME);
                             foreach ($fkSQLs->dropFK as $fkSQL) {
-                                $db->executeQuery($fkSQL, ReturnType::DEFAULT);
+                                $db->executeQuery($fkSQL);
                             }
-                            $migrate = $db->executeQuery(
-                                DBMigrationHelper::sqlMoveToInnoDB($table),
-                                ReturnType::DEFAULT
-                            );
+                            $migrate = $db->executeQuery(DBMigrationHelper::sqlMoveToInnoDB($table));
                             foreach ($fkSQLs->createFK as $fkSQL) {
-                                $db->executeQuery($fkSQL, ReturnType::DEFAULT);
+                                $db->executeQuery($fkSQL);
                             }
                         } else {
                             $migrate = true;

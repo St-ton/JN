@@ -305,8 +305,7 @@ class Form
                 FROM tfloodprotect
                 WHERE dErstellt < DATE_SUB(NOW(), INTERVAL 1 HOUR)
                     AND cTyp = 'upload'",
-            [],
-            ReturnType::DEFAULT
+            []
         );
 
         $result = Shop::Container()->getDB()->executeQueryPrepared(

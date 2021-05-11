@@ -36,10 +36,7 @@ if (isset($_GET['i'])) {
         speicherUploads($bestellung);
         $db->delete('tbestellid', 'kBestellung', (int)$bestellid->kBestellung);
     }
-    $db->query(
-        'DELETE FROM tbestellid WHERE dDatum < DATE_SUB(NOW(), INTERVAL 30 DAY)',
-        ReturnType::DEFAULT
-    );
+    $db->query('DELETE FROM tbestellid WHERE dDatum < DATE_SUB(NOW(), INTERVAL 30 DAY)');
     $smarty->assign('abschlussseite', 1);
 } else {
     if (isset($_POST['kommentar'])) {

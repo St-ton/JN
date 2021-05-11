@@ -49,8 +49,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
                 kKunde > 0
                 AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = tbesucherarchiv.kKunde)
                 LIMIT :pLimit',
-            ['pLimit' => $this->workLimit],
-            ReturnType::DEFAULT
+            ['pLimit' => $this->workLimit]
         );
     }
 
@@ -65,8 +64,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             WHERE
                 NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = tkundenattribut.kKunde)
             LIMIT :pLimit',
-            ['pLimit' => $this->workLimit],
-            ReturnType::DEFAULT
+            ['pLimit' => $this->workLimit]
         );
     }
 
@@ -82,8 +80,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
                 kKunde > 0
                 AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = tzahlungsinfo.kKunde)
             LIMIT :pLimit',
-            ['pLimit' => $this->workLimit],
-            ReturnType::DEFAULT
+            ['pLimit' => $this->workLimit]
         );
     }
 
@@ -99,8 +96,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
                 kKunde > 0
                 AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = tkundenkontodaten.kKunde)
             LIMIT :pLimit',
-            ['pLimit' => $this->workLimit],
-            ReturnType::DEFAULT
+            ['pLimit' => $this->workLimit]
         );
     }
 
@@ -119,8 +115,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             WHERE
                 b.cAbgeholt = 'Y'
                 AND b.cStatus IN (" . \BESTELLUNG_STATUS_VERSANDT . ', ' . \BESTELLUNG_STATUS_STORNO . ')
-                AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = k.kKunde)',
-            ReturnType::DEFAULT
+                AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = k.kKunde)'
         );
     }
 
@@ -137,8 +132,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
                 JOIN tbestellung b ON b.kKunde = k.kKunde
             WHERE b.cAbgeholt = 'Y'
                 AND b.cStatus IN (" . \BESTELLUNG_STATUS_VERSANDT . ', ' . \BESTELLUNG_STATUS_STORNO . ')
-                AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = k.kKunde)',
-            ReturnType::DEFAULT
+                AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = k.kKunde)'
         );
     }
 }

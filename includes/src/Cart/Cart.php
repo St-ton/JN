@@ -306,8 +306,8 @@ class Cart
         //schaue, ob es nicht schon Positionen mit diesem Artikel gibt
         foreach ($this->PositionenArr as $i => $item) {
             if (!(isset($item->Artikel->kArtikel)
-                && $item->Artikel->kArtikel == $productID
-                && $item->nPosTyp == $type
+                && (int)$item->Artikel->kArtikel === $productID
+                && (int)$item->nPosTyp === $type
                 && !$item->cUnique)
             ) {
                 continue;
@@ -334,7 +334,7 @@ class Cart
                         }
                     }
                 }
-                if (!$isNew && !$unique) {
+                if (!$isNew) {
                     //erhoehe Anzahl dieser Position
                     $item->nZeitLetzteAenderung = \time();
                     $item->nAnzahl             += $qty;

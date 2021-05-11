@@ -58,8 +58,8 @@ $res         = handleCsvImportAction('kupon', static function ($obj, &$importDel
         return false;
     }
     if ($importType === 0 && $importDeleteDone === false) {
-        $db->query('TRUNCATE TABLE tkupon', ReturnType::AFFECTED_ROWS);
-        $db->query('TRUNCATE TABLE tkuponsprache', ReturnType::AFFECTED_ROWS);
+        $db->query('TRUNCATE TABLE tkupon');
+        $db->query('TRUNCATE TABLE tkuponsprache');
         $importDeleteDone = true;
     }
 

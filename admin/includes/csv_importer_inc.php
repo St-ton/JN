@@ -114,7 +114,7 @@ function handleCsvImportAction(
     }
 
     if ($importType === 0 && is_string($target)) {
-        Shop::Container()->getDB()->query('TRUNCATE ' . $target, ReturnType::AFFECTED_ROWS);
+        Shop::Container()->getDB()->query('TRUNCATE ' . $target);
     }
 
     while (($row = fgetcsv($fs, 0, $delim)) !== false) {

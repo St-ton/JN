@@ -58,28 +58,18 @@ class Updater
         $dbVersionShort = (int)\sprintf('%d%02d', $dbVersion->getMajor(), $dbVersion->getMinor());
         // While updating from 3.xx to 4.xx provide a default admin-template row
         if ($dbVersionShort < 400) {
-            $count = (int)$this->db->query(
-                "SELECT * FROM `ttemplate` WHERE `eTyp` = 'admin'",
-                ReturnType::AFFECTED_ROWS
-            );
+            $count = $this->db->getAffectedRows("SELECT * FROM `ttemplate` WHERE `eTyp` = 'admin'");
             if ($count === 0) {
                 $this->db->query(
                     "ALTER TABLE `ttemplate` 
-                        CHANGE `eTyp` `eTyp` ENUM('standard','mobil','admin') NOT NULL",
-                    ReturnType::AFFECTED_ROWS
+                        CHANGE `eTyp` `eTyp` ENUM('standard','mobil','admin') NOT NULL"
                 );
-                $this->db->query(
-                    "INSERT INTO `ttemplate` (`cTemplate`, `eTyp`) VALUES ('bootstrap', 'admin')",
-                    ReturnType::AFFECTED_ROWS
-                );
+                $this->db->query("INSERT INTO `ttemplate` (`cTemplate`, `eTyp`) VALUES ('bootstrap', 'admin')");
             }
         }
 
         if ($dbVersionShort < 404) {
-            $this->db->query(
-                'ALTER TABLE `tversion` CHANGE `nTyp` `nTyp` INT(4) UNSIGNED NOT NULL',
-                ReturnType::AFFECTED_ROWS
-            );
+            $this->db->query('ALTER TABLE `tversion` CHANGE `nTyp` `nTyp` INT(4) UNSIGNED NOT NULL');
         }
 
         static::$isVerified = true;
@@ -343,7 +333,7 @@ class Updater
             $this->db->beginTransaction();
             foreach ($sqls as $i => $sql) {
                 $currentLine = $i;
-                $this->db->query($sql, ReturnType::AFFECTED_ROWS);
+                $this->db->query($sql);
             }
         } catch (PDOException $e) {
             $code  = (int)$e->errorInfo[1];
@@ -373,8 +363,7 @@ class Updater
                         'type'   => $code,
                         'err'    => $error
 
-                    ],
-                    ReturnType::AFFECTED_ROWS
+                    ]
                 );
 
                 throw $e;
@@ -450,8 +439,7 @@ class Updater
                 nTyp = 1, 
                 cFehlerSQL = '', 
                 dAktualisiert = NOW()",
-            ['ver' => $newVersion],
-            ReturnType::AFFECTED_ROWS
+            ['ver' => $newVersion]
         );
     }
 

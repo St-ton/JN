@@ -334,7 +334,7 @@ class MigrationManager
             $this->db->pdoEscape($message),
             (new DateTime('now'))->format('Y-m-d H:i:s')
         );
-        $this->db->executeQuery($sql, ReturnType::DEFAULT);
+        $this->db->executeQuery($sql);
     }
 
     /**
@@ -353,10 +353,10 @@ class MigrationManager
                 \sprintf('%d%02d', $version->getMajor(), $version->getMinor()),
                 $executed->format('Y-m-d H:i:s')
             );
-            $this->db->executeQuery($sql, ReturnType::DEFAULT);
+            $this->db->executeQuery($sql);
         } else {
             $sql = \sprintf("DELETE FROM tmigration WHERE kMigration = '%s'", $migration->getId());
-            $this->db->executeQuery($sql, ReturnType::DEFAULT);
+            $this->db->executeQuery($sql);
         }
 
         return $this;

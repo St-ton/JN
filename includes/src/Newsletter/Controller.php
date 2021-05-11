@@ -249,8 +249,7 @@ final class Controller
             'UPDATE tnewsletterempfaenger, tkunde
                 SET tnewsletterempfaenger.kKunde = tkunde.kKunde
                 WHERE tkunde.cMail = tnewsletterempfaenger.cEmail
-                    AND tnewsletterempfaenger.kKunde = 0',
-            ReturnType::DEFAULT
+                    AND tnewsletterempfaenger.kKunde = 0'
         );
         $upd           = new stdClass();
         $upd->dOptCode = 'NOW()';

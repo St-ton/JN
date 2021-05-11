@@ -215,8 +215,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
             "DELETE FROM tseo
                 WHERE cKey = 'suchspecial'
                     AND kSprache = " . $languageID . '
-                    AND kKey IN (' . implode(',', $ids) . ')',
-            ReturnType::AFFECTED_ROWS
+                    AND kKey IN (' . implode(',', $ids) . ')'
         );
         foreach ($ssTmp as $item) {
             $seo           = new stdClass();
@@ -233,8 +232,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
             "DELETE FROM tseo
                 WHERE cKey = 'suchspecial'
                     AND kSprache = " . $languageID . '
-                    AND kKey IN (' . implode(',', $ssToDelete) . ')',
-            ReturnType::AFFECTED_ROWS
+                    AND kKey IN (' . implode(',', $ssToDelete) . ')'
         );
     }
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSeoSave'), 'successSeoSave');

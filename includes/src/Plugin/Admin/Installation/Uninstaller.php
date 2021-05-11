@@ -144,8 +144,7 @@ final class Uninstaller
                 LEFT JOIN tpluginsprachvariablecustomsprache
                     ON tpluginsprachvariablecustomsprache.cSprachvariable = tpluginsprachvariable.cName
                     AND tpluginsprachvariablecustomsprache.kPlugin = tpluginsprachvariable.kPlugin
-                WHERE tpluginsprachvariable.kPlugin = ' . $pluginID,
-            ReturnType::DEFAULT
+                WHERE tpluginsprachvariable.kPlugin = ' . $pluginID
         );
         $this->db->delete('tplugineinstellungen', 'kPlugin', $pluginID);
         $this->db->delete('tconsent', 'pluginID', $pluginID);
@@ -159,8 +158,7 @@ final class Uninstaller
                 LEFT JOIN tversandartzahlungsart
                     ON tversandartzahlungsart.kZahlungsart = tzahlungsart.kZahlungsart
                 WHERE tzahlungsart.cModulId LIKE :pid',
-            ['pid' => 'kPlugin_' . $pluginID . '_%'],
-            ReturnType::DEFAULT
+            ['pid' => 'kPlugin_' . $pluginID . '_%']
         );
         $this->db->queryPrepared(
             "DELETE tboxen, tboxvorlage
@@ -169,8 +167,7 @@ final class Uninstaller
                     ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
                 WHERE tboxvorlage.kCustomID = :pid
                     AND (tboxvorlage.eTyp = 'plugin' OR tboxvorlage.eTyp = 'extension')",
-            ['pid' => $pluginID],
-            ReturnType::DEFAULT
+            ['pid' => $pluginID]
         );
         $this->db->query(
             'DELETE tpluginemailvorlageeinstellungen, temailvorlagespracheoriginal,
@@ -182,8 +179,7 @@ final class Uninstaller
                     ON tpluginemailvorlageeinstellungen.kEmailvorlage = temailvorlage.kEmailvorlage
                 LEFT JOIN temailvorlagesprache
                     ON temailvorlagesprache.kEmailvorlage = temailvorlage.kEmailvorlage
-                WHERE temailvorlage.kPlugin = ' . $pluginID,
-            ReturnType::DEFAULT
+                WHERE temailvorlage.kPlugin = ' . $pluginID
         );
     }
 
@@ -198,8 +194,7 @@ final class Uninstaller
                 LEFT JOIN tpluginsprachvariablesprache
                     ON tpluginsprachvariablesprache.kPluginSprachvariable = tpluginsprachvariable.kPluginSprachvariable
                 WHERE tpluginsprachvariable.kPlugin = :pid',
-            ['pid' => $pluginID],
-            ReturnType::DEFAULT
+            ['pid' => $pluginID]
         );
         $this->db->delete('tpluginlinkdatei', 'kPlugin', $pluginID);
         $this->db->queryPrepared(
@@ -208,8 +203,7 @@ final class Uninstaller
                 LEFT JOIN temailvorlagespracheoriginal
                     ON temailvorlagespracheoriginal.kEmailvorlage = temailvorlage.kEmailvorlage
                 WHERE temailvorlage.kPlugin = :pid',
-            ['pid' => $pluginID],
-            ReturnType::DEFAULT
+            ['pid' => $pluginID]
         );
     }
 
@@ -226,7 +220,7 @@ final class Uninstaller
         } else {
             if ($deleteData === true) {
                 foreach ($this->db->selectAll('tplugincustomtabelle', 'kPlugin', $pluginID) as $table) {
-                    $this->db->query('DROP TABLE IF EXISTS ' . $table->cTabelle, ReturnType::DEFAULT);
+                    $this->db->query('DROP TABLE IF EXISTS ' . $table->cTabelle);
                 }
             }
             $this->fullDelete($pluginID);
@@ -237,8 +231,7 @@ final class Uninstaller
                 LEFT JOIN tpluginsqlfehler
                     ON tpluginsqlfehler.kPluginHook = tpluginhook.kPluginHook
                 WHERE tpluginhook.kPlugin = :pid',
-            ['pid' => $pluginID],
-            ReturnType::DEFAULT
+            ['pid' => $pluginID]
         );
         $this->db->delete('tpluginadminmenu', 'kPlugin', $pluginID);
         $this->db->queryPrepared(
@@ -248,8 +241,7 @@ final class Uninstaller
                     ON tplugineinstellungenconfwerte.kPluginEinstellungenConf = 
                     tplugineinstellungenconf.kPluginEinstellungenConf
                 WHERE tplugineinstellungenconf.kPlugin = :pid',
-            ['pid' => $pluginID],
-            ReturnType::DEFAULT
+            ['pid' => $pluginID]
         );
 
         $this->db->delete('tpluginuninstall', 'kPlugin', $pluginID);
@@ -296,8 +288,7 @@ final class Uninstaller
                     ON tseo.cKey = 'kLink'
                     AND tseo.kKey = tlink.kLink
                 WHERE tlink.kPlugin = :pid",
-            ['pid' => $pluginID],
-            ReturnType::DEFAULT
+            ['pid' => $pluginID]
         );
         $this->db->delete('tpluginzahlungsartklasse', 'kPlugin', $pluginID);
         $this->db->delete('tplugintemplate', 'kPlugin', $pluginID);
@@ -314,8 +305,7 @@ final class Uninstaller
                 LEFT JOIN texportformatqueuebearbeitet
                     ON texportformatqueuebearbeitet.kExportformat = texportformat.kExportformat
                 WHERE texportformat.kPlugin = :pid',
-            ['pid' => $pluginID],
-            ReturnType::DEFAULT
+            ['pid' => $pluginID]
         );
         $this->db->delete('tplugin', 'kPlugin', $pluginID);
     }

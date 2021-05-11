@@ -25,7 +25,7 @@ function loescheKupons($ids)
         return false;
     }
     $ids       = array_map('\intval', $ids);
-    $affedcted = Shop::Container()->getDB()->query(
+    $affedcted = Shop::Container()->getDB()->getAffectedRows(
         'DELETE tkupon, tkuponsprache, tkuponkunde, tkuponbestellung
             FROM tkupon
             LEFT JOIN tkuponsprache
@@ -34,8 +34,7 @@ function loescheKupons($ids)
               ON tkuponkunde.kKupon = tkupon.kKupon
             LEFT JOIN tkuponbestellung
               ON tkuponbestellung.kKupon = tkupon.kKupon
-            WHERE tkupon.kKupon IN(' . implode(',', $ids) . ')',
-        ReturnType::AFFECTED_ROWS
+            WHERE tkupon.kKupon IN(' . implode(',', $ids) . ')'
     );
 
     return $affedcted >= count($ids);

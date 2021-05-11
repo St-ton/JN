@@ -599,8 +599,7 @@ class AdminAccount
             'UPDATE tadminlogin
                 SET nLoginVersuch = nLoginVersuch+1
                 WHERE cLogin = :login',
-            ['login' => $cLogin],
-            ReturnType::AFFECTED_ROWS
+            ['login' => $cLogin]
         );
         $data   = $this->db->select('tadminlogin', 'cLogin', $cLogin);
         $locked = (int)$data->nLoginVersuch >= \MAX_LOGIN_ATTEMPTS;

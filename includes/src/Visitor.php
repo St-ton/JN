@@ -31,8 +31,7 @@ class Visitor
         if ($botID > 0) {
             Shop::Container()->getDB()->queryPrepared(
                 'UPDATE tbesucherbot SET dZeit = NOW() WHERE kBesucherBot = :_kBesucherBot',
-                ['_kBesucherBot' => $botID],
-                ReturnType::AFFECTED_ROWS
+                ['_kBesucherBot' => $botID]
             );
         }
         self::archive();
@@ -51,10 +50,7 @@ class Visitor
                 self::analyzeReferer($visitor->kBesucher, $visitor->cReferer);
             }
             // allways increment the visitor-counter (if no bot)
-            Shop::Container()->getDB()->query(
-                'UPDATE tbesucherzaehler SET nZaehler = nZaehler + 1',
-                ReturnType::AFFECTED_ROWS
-            );
+            Shop::Container()->getDB()->query('UPDATE tbesucherzaehler SET nZaehler = nZaehler + 1');
         } else {
             $visitor->kBesucher    = (int)$visitor->kBesucher;
             $visitor->kKunde       = (int)$visitor->kKunde;
@@ -90,14 +86,12 @@ class Visitor
             (UNIX_TIMESTAMP(dLetzteAktivitaet) - UNIX_TIMESTAMP(dZeit)) AS nBesuchsdauer, kBesucherBot, dZeit
               FROM tbesucher
               WHERE dLetzteAktivitaet <= DATE_SUB(NOW(), INTERVAL :interval HOUR)',
-            ['interval' => $interval],
-            ReturnType::AFFECTED_ROWS
+            ['interval' => $interval]
         );
         Shop::Container()->getDB()->queryPrepared(
             'DELETE FROM tbesucher
                 WHERE dLetzteAktivitaet <= DATE_SUB(NOW(), INTERVAL :interval HOUR)',
-            ['interval' => $interval],
-            ReturnType::AFFECTED_ROWS
+            ['interval' => $interval]
         );
     }
 
@@ -506,7 +500,7 @@ class Visitor
         $browser->cVersion  = '0';
         $browser->cAgent    = $userAgent;
         $browser->bMobile   = self::isMobile($browser->cAgent);
-        if (\stripos($userAgent, "linux") !== false) {
+        if (\stripos($userAgent, 'linux') !== false) {
             $browser->cPlatform = 'linux';
         } elseif (\preg_match('/macintosh|mac os x/i', $userAgent)) {
             $browser->cPlatform = 'mac';

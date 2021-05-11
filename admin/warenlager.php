@@ -18,16 +18,13 @@ $alertHelper = Shop::Container()->getAlertService();
 $db          = Shop::Container()->getDB();
 
 if ($action === 'update') {
-    $db->query('UPDATE twarenlager SET nAktiv = 0', ReturnType::AFFECTED_ROWS);
+    $db->query('UPDATE twarenlager SET nAktiv = 0');
     if (GeneralObject::hasCount('kWarenlager', $_REQUEST)) {
         $wl = [];
         foreach ($_REQUEST['kWarenlager'] as $_wl) {
             $wl[] = (int)$_wl;
         }
-        $db->query(
-            'UPDATE twarenlager SET nAktiv = 1 WHERE kWarenlager IN (' . implode(', ', $wl) . ')',
-            ReturnType::AFFECTED_ROWS
-        );
+        $db->query('UPDATE twarenlager SET nAktiv = 1 WHERE kWarenlager IN (' . implode(', ', $wl) . ')');
     }
     if (GeneralObject::hasCount('cNameSprache', $_REQUEST)) {
         foreach ($_REQUEST['cNameSprache'] as $kWarenlager => $assocLang) {

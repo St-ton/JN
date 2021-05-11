@@ -257,8 +257,7 @@ class Search extends AbstractFilter
             $this->productFilter->getDB()->query(
                 'DELETE
                     FROM tsuchanfragencache
-                    WHERE dZeit < DATE_SUB(NOW(), INTERVAL 1 HOUR)',
-                ReturnType::AFFECTED_ROWS
+                    WHERE dZeit < DATE_SUB(NOW(), INTERVAL 1 HOUR)'
             );
             if ($hits > 0) {
                 $searchQuery                  = new stdClass();
@@ -286,8 +285,7 @@ class Search extends AbstractFilter
                             SET nAnzahlTreffer = ' . (int)$searchQuery->nAnzahlTreffer . ',
                                 nAnzahlGesuche = nAnzahlGesuche + 1,
                                 dZuletztGesucht = NOW()
-                            WHERE kSuchanfrage = ' . (int)$previuousQuery->kSuchanfrage,
-                        ReturnType::AFFECTED_ROWS
+                            WHERE kSuchanfrage = ' . (int)$previuousQuery->kSuchanfrage
                     );
                 } elseif (!isset($previuousQuery->kSuchanfrage) || !$previuousQuery->kSuchanfrage) {
                     $this->productFilter->getDB()->delete(
@@ -321,8 +319,7 @@ class Search extends AbstractFilter
                             SET nAnzahlGesuche = nAnzahlGesuche + 1,
                                 dZuletztGesucht = NOW()
                             WHERE kSuchanfrageErfolglos = ' .
-                        (int)$oldMiss->kSuchanfrageErfolglos,
-                        ReturnType::AFFECTED_ROWS
+                        (int)$oldMiss->kSuchanfrageErfolglos
                     );
                 } else {
                     $this->productFilter->getDB()->delete(

@@ -4803,13 +4803,12 @@ class Artikel
         $minDeliveryDays = \mb_strlen(\trim($favShipping->nMinLiefertage)) > 0 ? (int)$favShipping->nMinLiefertage : 2;
         $maxDeliveryDays = \mb_strlen(\trim($favShipping->nMaxLiefertage)) > 0 ? (int)$favShipping->nMaxLiefertage : 3;
         // get all pieces (even invisible) to calc delivery
-        $nAllPieces = Shop::Container()->getDB()->query(
+        $nAllPieces = Shop::Container()->getDB()->getAffectedRows(
             'SELECT tartikel.kArtikel, tstueckliste.fAnzahl
                 FROM tartikel
                 JOIN tstueckliste
                     ON tstueckliste.kArtikel = tartikel.kArtikel
-                    AND tstueckliste.kStueckliste = ' . (int)$this->kStueckliste,
-            ReturnType::AFFECTED_ROWS
+                    AND tstueckliste.kStueckliste = ' . (int)$this->kStueckliste
         );
         // check if this is a set article - if so, calculate the delivery time from the set of articles
         // we don't have loaded the list of pieces yet, do so!
@@ -5200,7 +5199,7 @@ class Artikel
             : '';
         Shop::Container()->getDB()->delete('tartikelmerkmal', 'kArtikel', $parentID);
 
-        return Shop::Container()->getDB()->query(
+        return Shop::Container()->getDB()->getAffectedRows(
             'INSERT INTO tartikelmerkmal
                 (SELECT tartikelmerkmal.kMerkmal, tartikelmerkmal.kMerkmalWert, ' . $parentID . '
                     FROM tartikelmerkmal
@@ -5208,8 +5207,7 @@ class Artikel
                         ON tartikel.kArtikel = tartikelmerkmal.kArtikel
                     WHERE tartikel.kVaterArtikel = ' . $parentID . '
                     ' . $filterSQL . '
-                    GROUP BY tartikelmerkmal.kMerkmalWert)',
-            ReturnType::AFFECTED_ROWS
+                    GROUP BY tartikelmerkmal.kMerkmalWert)'
         );
     }
 

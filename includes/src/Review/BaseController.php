@@ -148,12 +148,11 @@ abstract class BaseController
      */
     public function increaseCustomerBalance(int $customerID, float $reward): int
     {
-        return $this->db->queryPrepared(
+        return $this->db->getAffectedRows(
             'UPDATE tkunde
                 SET fGuthaben = fGuthaben + :rew
                 WHERE kKunde = :cid',
-            ['cid' => $customerID, 'rew' => $reward],
-            ReturnType::AFFECTED_ROWS
+            ['cid' => $customerID, 'rew' => $reward]
         );
     }
 

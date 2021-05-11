@@ -31,8 +31,7 @@ class ContentAuthor
                 "INSERT INTO tcontentauthor (cRealm, kAdminlogin, kContentId)
                     VALUES('" . $realm . "', " . $authorID . ', ' . $contentID . ')
                     ON DUPLICATE KEY UPDATE
-                        kAdminlogin = ' . $authorID,
-                ReturnType::DEFAULT
+                        kAdminlogin = ' . $authorID
             );
         }
 

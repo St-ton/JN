@@ -404,8 +404,7 @@ final class MigrationManager
             'DELETE FROM tpluginmigration 
                 WHERE kMigration = :mid 
                 AND pluginID = :pid',
-            ['mid' => $migration->getId(), 'pid' => $this->pluginID],
-            ReturnType::DEFAULT
+            ['mid' => $migration->getId(), 'pid' => $this->pluginID]
         );
 
         return $this;

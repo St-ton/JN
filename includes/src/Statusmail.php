@@ -62,14 +62,13 @@ class Statusmail
                 && \is_array($_POST['cInhalt_arr'])
                 && \count($_POST['cInhalt_arr']) > 0)
         ) {
-            $this->db->query('TRUNCATE TABLE tstatusemail', ReturnType::DEFAULT);
+            $this->db->query('TRUNCATE TABLE tstatusemail');
             $this->db->query(
                 "DELETE tcron, tjobqueue
                     FROM tcron
                     LEFT JOIN tjobqueue
                         ON tjobqueue.cronID = tcron.cronID
-                    WHERE tcron.jobType = 'statusemail'",
-                ReturnType::DEFAULT
+                    WHERE tcron.jobType = 'statusemail'"
             );
             foreach ($_POST['cIntervall_arr'] as $interval) {
                 $interval              = (int)$interval;

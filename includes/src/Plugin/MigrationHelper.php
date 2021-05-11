@@ -124,8 +124,7 @@ final class MigrationHelper
                 pluginID varchar(255) NOT NULL, 
                 dExecuted datetime NOT NULL,
                 PRIMARY KEY (kMigration)
-            ) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'",
-            ReturnType::DEFAULT
+            ) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'"
         );
         $this->db->query(
             "CREATE TABLE IF NOT EXISTS tmigrationlog 
@@ -137,8 +136,7 @@ final class MigrationHelper
                 cLog text NOT NULL, 
                 dCreated datetime NOT NULL, 
                 PRIMARY KEY (kMigrationlog)
-            ) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'",
-            ReturnType::DEFAULT
+            ) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'"
         );
     }
 
@@ -189,8 +187,7 @@ final class MigrationHelper
     {
         if (\count($this->indexColumns($idxTable, $idxName)) > 0) {
             return !$this->db->executeQuery(
-                'DROP INDEX `' . $idxName . '` ON `' . $idxTable . '` ',
-                ReturnType::DEFAULT
+                'DROP INDEX `' . $idxName . '` ON `' . $idxTable . '` '
             ) ? false : true;
         }
 

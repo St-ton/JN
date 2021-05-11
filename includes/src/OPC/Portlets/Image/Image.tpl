@@ -42,6 +42,7 @@
             rounded=$portlet->getRoundedProp($instance)
             thumbnail=$portlet->getThumbnailProp($instance)
             fluid-grow=true
+            webp=true
         }
         {if $isLink && !$isPreview && !empty($href)}
             </a>

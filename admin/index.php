@@ -170,6 +170,7 @@ function redirectToURI($uri)
  */
 function redirectLogin(AdminAccount $oAccount, Updater $oUpdater)
 {
+    unset($_SESSION['frontendUpToDate']);
     $conf     = Shop::getSettings([CONF_GLOBAL]);
     $safeMode = isset($GLOBALS['plgSafeMode'])
         ? '?safemode=' . ($GLOBALS['plgSafeMode'] ? 'on' : 'off')

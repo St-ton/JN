@@ -119,6 +119,11 @@ class Zahlungsart extends MainModel
     public $einstellungen;
 
     /**
+     * @var bool
+     */
+    public $bPayAgain = false;
+
+    /**
      * @return int|null
      */
     public function getZahlungsart(): ?int

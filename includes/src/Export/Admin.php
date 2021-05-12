@@ -8,7 +8,6 @@ use InvalidArgumentException;
 use JTL\Alert\Alert;
 use JTL\Backend\Revision;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -194,17 +193,15 @@ class Admin
     private function view(): void
     {
         require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'admin_tools.php';
-        $this->smarty->assign('kundengruppen', $this->db->query(
+        $this->smarty->assign('kundengruppen', $this->db->getObjects(
             'SELECT * 
                 FROM tkundengruppe 
-                ORDER BY cName',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY cName'
         ))
-            ->assign('waehrungen', $this->db->query(
+            ->assign('waehrungen', $this->db->getObjects(
                 'SELECT * 
                     FROM twaehrung 
-                    ORDER BY cStandard DESC',
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY cStandard DESC'
             ))
             ->assign('oKampagne_arr', \holeAlleKampagnen());
 
@@ -299,7 +296,7 @@ class Admin
      */
     private function delete(int $exportID): bool
     {
-        $deleted = $this->db->queryPrepared(
+        $deleted = $this->db->getAffectedRows(
             "DELETE tcron, texportformat, tjobqueue, texportqueue
                FROM texportformat
                LEFT JOIN tcron 
@@ -314,8 +311,7 @@ class Admin
                LEFT JOIN texportqueue 
                   ON texportqueue.kExportformat = texportformat.kExportformat
                WHERE texportformat.kExportformat = :eid",
-            ['eid' => $exportID],
-            ReturnType::AFFECTED_ROWS
+            ['eid' => $exportID]
         );
 
         if ($deleted > 0) {

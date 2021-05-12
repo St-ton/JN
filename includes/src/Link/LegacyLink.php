@@ -3,7 +3,6 @@
 namespace JTL\Link;
 
 use Exception;
-use JTL\DB\ReturnType;
 use JTL\Helpers\FileSystem;
 use JTL\MainModel;
 use JTL\Shop;
@@ -594,15 +593,14 @@ class LegacyLink extends MainModel
     public function load($id, $data = null, $option = null, int $kLinkgruppe = null): self
     {
         if ($kLinkgruppe > 0) {
-            $data = Shop::Container()->getDB()->queryPrepared(
+            $data = Shop::Container()->getDB()->getSingleObject(
                 'SELECT tlink.* 
                     FROM tlink 
                     JOIN tlinkgroupassociations t 
                         ON tlink.kLink = t.linkID
                     WHERE tlink.kLink = :lid
                     AND t.linkGroupID = :lgid',
-                ['lid' => (int)$id, 'lgid' => $kLinkgruppe],
-                ReturnType::SINGLE_OBJECT
+                ['lid' => (int)$id, 'lgid' => $kLinkgruppe]
             );
         } else {
             $data = Shop::Container()->getDB()->select('tlink', 'kLink', (int)$id);
@@ -627,7 +625,7 @@ class LegacyLink extends MainModel
     {
         if ($kVaterLink > 0) {
             if (!empty($kVaterLinkgruppe)) {
-                $links = Shop::Container()->getDB()->queryPrepared(
+                $links = Shop::Container()->getDB()->getObjects(
                     'SELECT tlink.* 
                         FROM tlink 
                         JOIN tlinkgroupassociations t 
@@ -637,8 +635,7 @@ class LegacyLink extends MainModel
                     [
                         'parentID' => $kVaterLink,
                         'lgid'     => $kVaterLinkgruppe
-                    ],
-                    ReturnType::ARRAY_OF_OBJECTS
+                    ]
                 );
             } else {
                 $links = Shop::Container()->getDB()->selectAll('tlink', 'kVaterLink', $kVaterLink);

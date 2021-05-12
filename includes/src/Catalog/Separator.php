@@ -2,7 +2,6 @@
 
 namespace JTL\Catalog;
 
-use JTL\DB\ReturnType;
 use JTL\Language\LanguageHelper;
 use JTL\Shop;
 use stdClass;

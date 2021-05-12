@@ -92,7 +92,7 @@ final class LinkGroup implements LinkGroupInterface
     public function load(int $id): LinkGroupInterface
     {
         $this->id       = $id;
-        $groupLanguages = $this->db->queryPrepared(
+        $groupLanguages = $this->db->getObjects(
             'SELECT g.*, l.cName AS localizedName, l.cISOSprache, g.cTemplatename AS template,
                 g.cName AS groupName, lang.kSprache 
                 FROM tlinkgruppe AS g 
@@ -101,8 +101,7 @@ final class LinkGroup implements LinkGroupInterface
                 JOIN tsprache AS lang
                     ON lang.cISO = l.cISOSprache
                 WHERE g.kLinkgruppe = :lgid',
-            ['lgid' => $this->id],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['lgid' => $this->id]
         );
         if (\count($groupLanguages) === 0) {
             return $this;

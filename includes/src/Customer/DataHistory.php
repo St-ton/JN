@@ -3,7 +3,6 @@
 namespace JTL\Customer;
 
 use Exception;
-use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\MainModel;
 use JTL\Shop;

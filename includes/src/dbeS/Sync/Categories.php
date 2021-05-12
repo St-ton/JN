@@ -2,7 +2,6 @@
 
 namespace JTL\dbeS\Sync;
 
-use JTL\DB\ReturnType;
 use JTL\dbeS\LastJob;
 use JTL\dbeS\Starter;
 use JTL\Helpers\Seo;
@@ -88,12 +87,11 @@ final class Categories extends AbstractSync
             return 0;
         }
         // Altes SEO merken => falls sich es bei der aktualisierten Kategorie ändert => Eintrag in tredirect
-        $oldData = $this->db->queryPrepared(
+        $oldData = $this->db->getSingleObject(
             'SELECT cSeo, lft, rght, nLevel
                 FROM tkategorie
                 WHERE kKategorie = :categoryID',
-            ['categoryID' => $category->kKategorie],
-            ReturnType::SINGLE_OBJECT
+            ['categoryID' => $category->kKategorie]
         );
         $this->db->delete('tseo', ['kKey', 'cKey'], [$category->kKategorie, 'kKategorie']);
         $categories = $this->mapper->mapArray($xml, 'tkategorie', 'mKategorie');
@@ -347,11 +345,11 @@ final class Categories extends AbstractSync
 
     /**
      * @param int $categoryID
-     * @return array
+     * @return stdClass[]
      */
     private function getLinkedDiscountCategories(int $categoryID): array
     {
-        return $this->db->queryPrepared(
+        return $this->db->getObjects(
             'SELECT DISTINCT tkgrp_b.kKategorie
                 FROM tkategorieartikel tart_a
                 INNER JOIN tkategorieartikel tart_b ON tart_a.kArtikel = tart_b.kArtikel
@@ -363,8 +361,7 @@ final class Categories extends AbstractSync
                 WHERE tart_a.kKategorie = :categoryID
                     AND tkgrp_b.fRabatt > COALESCE(tkgrp_a.fRabatt, 0)
                     AND tsicht.kKategorie IS NULL',
-            ['categoryID' => $categoryID],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['categoryID' => $categoryID]
         );
     }
 }

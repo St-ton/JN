@@ -9,7 +9,6 @@ use JTL\Campaign;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Customer\Customer;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -107,13 +106,12 @@ class Wishlist
     public static function instanceByURLID(string $urlID): self
     {
         $instance = new self();
-        $data     = Shop::Container()->getDB()->queryPrepared(
+        $data     = Shop::Container()->getDB()->getSingleObject(
             "SELECT *, DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_DE
                 FROM twunschliste
                 WHERE cURLID = :wlID
                     AND nOeffentlich = 1",
-            ['wlID' => $urlID],
-            ReturnType::SINGLE_OBJECT
+            ['wlID' => $urlID]
         );
 
         return $data ? $instance->setRecord($data) : $instance;
@@ -127,13 +125,12 @@ class Wishlist
     public static function instanceByCustomerID(int $customerID): self
     {
         $instance = new self();
-        $data     = Shop::Container()->getDB()->queryPrepared(
+        $data     = Shop::Container()->getDB()->getSingleObject(
             "SELECT *, DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_DE
                 FROM twunschliste
                 WHERE kKunde = :customerID
                     AND nStandard = 1",
-            ['customerID' => $customerID],
-            ReturnType::SINGLE_OBJECT
+            ['customerID' => $customerID]
         );
 
         return $data ? $instance->setRecord($data) : $instance->schreibeDB();
@@ -239,17 +236,16 @@ class Wishlist
      */
     public function entfernePos(int $itemID): self
     {
-        $customer = Shop::Container()->getDB()->queryPrepared(
+        $customer = Shop::Container()->getDB()->getSingleObject(
             'SELECT twunschliste.kKunde
                 FROM twunschliste
                 JOIN twunschlistepos 
                     ON twunschliste.kWunschliste = twunschlistepos.kWunschliste
                 WHERE twunschlistepos.kWunschlistePos = :wliid',
-            ['wliid' => $itemID],
-            ReturnType::SINGLE_OBJECT
+            ['wliid' => $itemID]
         );
         // Prüfen ob der eingeloggte Kunde auch der Besitzer der zu löschenden WunschlistenPos ist
-        if (!empty($customer->kKunde) && (int)$customer->kKunde === Frontend::getCustomer()->getID()) {
+        if ($customer !== null && (int)$customer->kKunde === Frontend::getCustomer()->getID()) {
             // Alle Eigenschaften löschen
             Shop::Container()->getDB()->delete('twunschlisteposeigenschaft', 'kWunschlistePos', $itemID);
             // Die Posiotion mit ID $kWunschlistePos löschen
@@ -361,7 +357,7 @@ class Wishlist
         }
         $db            = Shop::Container()->getDB();
         $searchResults = [];
-        $data          = $db->queryPrepared(
+        $data          = $db->getObjects(
             "SELECT twunschlistepos.*, date_format(twunschlistepos.dHinzugefuegt, '%d.%m.%Y %H:%i') AS dHinzugefuegt_de
                 FROM twunschliste
                 JOIN twunschlistepos 
@@ -372,8 +368,7 @@ class Wishlist
             [
                 'search' => '%' . $query . '%',
                 'wlID'   => (int)$this->kWunschliste
-            ],
-            ReturnType::ARRAY_OF_OBJECTS
+            ]
         );
         foreach ($data as $i => $result) {
             $item = new WishlistItem(
@@ -388,15 +383,14 @@ class Wishlist
             $item->dHinzugefuegt    = $result->dHinzugefuegt;
             $item->dHinzugefuegt_de = $result->dHinzugefuegt_de;
 
-            $wlPositionAttributes = $db->queryPrepared(
+            $wlPositionAttributes = $db->getObjects(
                 'SELECT twunschlisteposeigenschaft.*, teigenschaftsprache.cName
                     FROM twunschlisteposeigenschaft
                     JOIN teigenschaftsprache 
                         ON teigenschaftsprache.kEigenschaft = twunschlisteposeigenschaft.kEigenschaft
                     WHERE twunschlisteposeigenschaft.kWunschlistePos = :wlID
                     GROUP BY twunschlisteposeigenschaft.kWunschlistePosEigenschaft',
-                ['wlID' => (int)$result->kWunschlistePos],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['wlID' => (int)$result->kWunschlistePos]
             );
             foreach ($wlPositionAttributes as $wlPositionAttribute) {
                 if ($wlPositionAttribute->cFreifeldWert !== '') {
@@ -487,12 +481,11 @@ class Wishlist
             return $this->reset();
         }
 
-        $data = Shop::Container()->getDB()->queryPrepared(
+        $data = Shop::Container()->getDB()->getSingleObject(
             "SELECT *, DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_DE
                 FROM twunschliste
                 WHERE kWunschliste = :wlID",
-            ['wlID' => $id],
-            ReturnType::SINGLE_OBJECT
+            ['wlID' => $id]
         );
 
         if (!$data || !$this->validate($data)) {
@@ -1020,10 +1013,9 @@ class Wishlist
         if ($id > 0) {
             $wishlist = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $id);
         } elseif ($cURLID !== '') {
-            $wishlist = Shop::Container()->getDB()->queryPrepared(
+            $wishlist = Shop::Container()->getDB()->getSingleObject(
                 'SELECT * FROM twunschliste WHERE cURLID LIKE :id',
-                ['id' => $cURLID],
-                ReturnType::SINGLE_OBJECT
+                ['id' => $cURLID]
             );
         }
         if (isset($wishlist->kWunschliste) && $wishlist->kWunschliste > 0) {
@@ -1137,7 +1129,7 @@ class Wishlist
             $wlPosition->dHinzugefuegt    = $position->dHinzugefuegt;
             $wlPosition->dHinzugefuegt_de = $position->dHinzugefuegt_de;
 
-            $wlPositionAttributes = $db->queryPrepared(
+            $wlPositionAttributes = $db->getObjects(
                 'SELECT twunschlisteposeigenschaft.*,
                     IF(LENGTH(teigenschaftsprache.cName) > 0,
                         teigenschaftsprache.cName,
@@ -1157,13 +1149,12 @@ class Wishlist
                 [
                     'langID' => $langID,
                     'wlID'   => $position->kWunschlistePos
-                ],
-                ReturnType::ARRAY_OF_OBJECTS
+                ]
             );
             foreach ($wlPositionAttributes as $wlPositionAttribute) {
                 if ($wlPositionAttribute->cFreifeldWert !== '') {
                     if (empty($wlPositionAttribute->cName)) {
-                        $_cName                     = $db->queryPrepared(
+                        $_cName                     = $db->getSingleObject(
                             'SELECT IF(LENGTH(teigenschaftsprache.cName) > 0,
                                 teigenschaftsprache.cName,
                                 teigenschaft.cName) AS cName
@@ -1175,8 +1166,7 @@ class Wishlist
                             [
                                 'langID' => $langID,
                                 'attrID' => (int)$wlPositionAttribute->kEigenschaft
-                            ],
-                            ReturnType::SINGLE_OBJECT
+                            ]
                         );
                         $wlPositionAttribute->cName = $_cName->cName;
                     }
@@ -1247,15 +1237,14 @@ class Wishlist
             return new Collection();
         }
 
-        return Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getCollection(
             'SELECT tw.*, COUNT(twp.kArtikel) AS productCount
                 FROM twunschliste AS tw
                     LEFT JOIN twunschlistepos AS twp USING (kWunschliste)
                 WHERE kKunde = :customerID
                 GROUP BY tw.kWunschliste
                 ORDER BY tw.nStandard DESC',
-            ['customerID' => $customerID],
-            ReturnType::COLLECTION
+            ['customerID' => $customerID]
         )->map(static function ($list) {
             $list->kWunschliste = (int)$list->kWunschliste;
             $list->kKunde       = (int)$list->kKunde;

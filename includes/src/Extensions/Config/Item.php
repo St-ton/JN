@@ -5,13 +5,13 @@ namespace JTL\Extensions\Config;
 use JsonSerializable;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Nice;
 use JTL\Session\Frontend;
 use JTL\Shop;
+use stdClass;
 use function Functional\select;
 
 /**
@@ -323,23 +323,21 @@ class Item implements JsonSerializable
      */
     public static function fetchAll(int $groupID): array
     {
-        $items = [];
-        $data  = Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getCollection(
             'SELECT kKonfigitem 
                 FROM tkonfigitem 
                 WHERE kKonfiggruppe = :groupID 
                 ORDER BY nSort ASC',
-            ['groupID' => $groupID],
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        foreach ($data as $id) {
-            $item = new self((int)$id->kKonfigitem);
-            if ($item->isValid()) {
-                $items[] = $item;
-            }
-        }
-
-        return $items;
+            ['groupID' => $groupID]
+        )
+            ->map(static function (stdClass $item) {
+                return (int)$item->kKonfigitem;
+            })
+            ->mapInto(self::class)
+            ->filter(static function (Item $item) {
+                return $item->isValid();
+            })
+            ->toArray();
     }
 
     /**

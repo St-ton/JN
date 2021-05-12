@@ -2,8 +2,6 @@
 
 namespace JTL\GeneralDataProtection;
 
-use JTL\DB\ReturnType;
-
 /**
  * Class CleanupNewsletterRecipients
  * @package JTL\GeneralDataProtection
@@ -32,7 +30,7 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
      */
     private function cleanupNewsletters(): void
     {
-        $data = $this->db->queryPrepared(
+        $data = $this->db->getObjects(
             "SELECT e.cOptCode
                 FROM tnewsletterempfaenger e
                     JOIN tnewsletterempfaengerhistory h
@@ -47,8 +45,7 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
             [
                 'pDateLimit' => $this->dateLimit,
                 'pLimit'     => $this->workLimit
-            ],
-            ReturnType::ARRAY_OF_OBJECTS
+            ]
         );
         foreach ($data as $res) {
             $this->db->queryPrepared(

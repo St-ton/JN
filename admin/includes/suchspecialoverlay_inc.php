@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Alert\Alert;
-use JTL\DB\ReturnType;
 use JTL\Shop;
 
 /**
@@ -10,12 +9,7 @@ use JTL\Shop;
 function gibAlleSuchspecialOverlays()
 {
     $overlays = [];
-    $types    = Shop::Container()->getDB()->query(
-        'SELECT kSuchspecialOverlay
-            FROM tsuchspecialoverlay',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
-    foreach ($types as $type) {
+    foreach (Shop::Container()->getDB()->getObjects('SELECT kSuchspecialOverlay FROM tsuchspecialoverlay') as $type) {
         $overlays[] = JTL\Media\Image\Overlay::getInstance(
             (int)$type->kSuchspecialOverlay,
             (int)$_SESSION['editLanguageID']

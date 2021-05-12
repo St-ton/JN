@@ -687,15 +687,14 @@ class Kupon
      * @param string $code
      * @return bool|Kupon
      */
-    public function getByCode($code = '')
+    public function getByCode(string $code = '')
     {
-        return Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getCollection(
             'SELECT kKupon AS id 
                 FROM tkupon
                 WHERE cCode = :code
                 LIMIT 1',
-            ['code' => $code],
-            ReturnType::COLLECTION
+            ['code' => $code]
         )->pluck('id')->transform('\intval')->mapInto(self::class)->first() ?? false;
     }
 

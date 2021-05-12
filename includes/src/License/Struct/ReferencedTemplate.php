@@ -21,11 +21,11 @@ class ReferencedTemplate extends ReferencedItem
      */
     public function initByExsID(DbInterface $db, stdClass $license, Releases $releases): void
     {
-        $exsid = $license->exsid;
-        $data  = $db->select('ttemplate', 'eTyp', 'standard');
+        $exsid     = $license->exsid;
+        $data      = $db->select('ttemplate', 'eTyp', 'standard');
+        $available = $releases->getAvailable();
+        $latest    = $releases->getLatest() ?? $available ?? Version::parse('0.0.0');
         if ($data !== null && $data->exsID === $exsid) {
-            $available = $releases->getAvailable();
-            $latest    = $releases->getLatest() ?? $available ?? Version::parse('0.0.0');
             if ($available !== null && $latest->getVersion()->greaterThan($available->getVersion())) {
                 $this->setCanBeUpdated(false);
             }
@@ -44,8 +44,8 @@ class ReferencedTemplate extends ReferencedItem
                 if ($template->getExsID() === $exsid) {
                     $installedVersion = Version::parse($template->getVersion());
                     $this->setID($template->getPath());
-                    $this->setMaxInstallableVersion($release->getVersion());
-                    $this->setHasUpdate($installedVersion->smallerThan($release->getVersion()));
+                    $this->setMaxInstallableVersion($latest->getVersion());
+                    $this->setHasUpdate($installedVersion->smallerThan($latest->getVersion()));
                     $this->setInstalled(true);
                     $this->setInstalledVersion($installedVersion);
                     $this->setActive(false);

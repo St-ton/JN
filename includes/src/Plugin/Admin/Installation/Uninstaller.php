@@ -6,7 +6,6 @@ use Exception;
 use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Language\LanguageHelper;
 use JTL\Plugin\Helper;
 use JTL\Plugin\InstallCode;
@@ -248,12 +247,11 @@ final class Uninstaller
         $this->db->delete('tplugin_resources', 'kPlugin', $pluginID);
         $links = [];
         if ($newPluginID !== null && $newPluginID > 0) {
-            $links = $this->db->query(
+            $links = $this->db->getObjects(
                 'SELECT kLink
                     FROM tlink
                     WHERE kPlugin IN (' . $pluginID . ', ' . $newPluginID . ')
-                        ORDER BY kLink',
-                ReturnType::ARRAY_OF_OBJECTS
+                        ORDER BY kLink'
             );
         }
         if (\count($links) === 2) {

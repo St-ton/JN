@@ -217,7 +217,7 @@ final class Orders extends AbstractPush
      */
     private function getCampaignInfo(int $orderID): ?array
     {
-        return $this->db->queryPrepared(
+        return $this->db->getSingleArray(
             "SELECT tkampagne.cName, tkampagne.cParameter cIdentifier,
                 COALESCE(tkampagnevorgang.cParamWert, '') cWert
                 FROM tkampagnevorgang
@@ -228,8 +228,7 @@ final class Orders extends AbstractPush
                 WHERE tkampagnedef.cKey = 'kBestellung'
                     AND tkampagnevorgang.kKey = :oid
                 ORDER BY tkampagnevorgang.kKampagneDef DESC LIMIT 1",
-            ['oid' => $orderID],
-            ReturnType::SINGLE_ASSOC_ARRAY
+            ['oid' => $orderID]
         );
     }
 
@@ -239,13 +238,12 @@ final class Orders extends AbstractPush
      */
     private function getTrackingInfo(int $orderID): ?array
     {
-        return $this->db->queryPrepared(
+        return $this->db->getSingleArray(
             'SELECT cUserAgent, cReferer
                 FROM tbesucher
                 WHERE kBestellung = :oid
                 LIMIT 1',
-            ['oid' => $orderID],
-            ReturnType::SINGLE_ASSOC_ARRAY
+            ['oid' => $orderID]
         );
     }
 
@@ -256,13 +254,12 @@ final class Orders extends AbstractPush
      */
     private function getPaymentData(int $orderID, CryptoServiceInterface $crypto): array
     {
-        $payment = $this->db->queryPrepared(
+        $payment = $this->db->getSingleArray(
             "SELECT *
                 FROM tzahlungsinfo
                 WHERE kBestellung = :oid AND cAbgeholt = 'N'
                 ORDER BY kZahlungsInfo DESC LIMIT 1",
-            ['oid' => $orderID],
-            ReturnType::SINGLE_ASSOC_ARRAY
+            ['oid' => $orderID]
         );
         $keys    = ['cBankName', 'cBLZ', 'cInhaber', 'cKontoNr', 'cIBAN', 'cBIC', 'cKartenNr', 'cCVV'];
         if ($payment === null) {

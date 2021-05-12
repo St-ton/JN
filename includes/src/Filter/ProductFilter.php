@@ -7,7 +7,6 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Product\Artikel;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Filter\Items\Availability;
 use JTL\Filter\Items\Category;
 use JTL\Filter\Items\Characteristic;
@@ -822,13 +821,12 @@ class ProductFilter
         if (\count($values) === 0) {
             return $this;
         }
-        $characteristics = $this->db->query(
+        $characteristics = $this->db->getObjects(
             'SELECT tmerkmalwert.kMerkmal, tmerkmalwert.kMerkmalWert, tmerkmal.nMehrfachauswahl
                 FROM tmerkmalwert
                 JOIN tmerkmal 
                     ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
-                WHERE kMerkmalWert IN (' . \implode(',', \array_map('\intval', $values)) . ')',
-            ReturnType::ARRAY_OF_OBJECTS
+                WHERE kMerkmalWert IN (' . \implode(',', \array_map('\intval', $values)) . ')'
         );
         foreach ($characteristics as $characteristic) {
             $characteristic->kMerkmal         = (int)$characteristic->kMerkmal;
@@ -1592,14 +1590,10 @@ class ProductFilter
         $sql->setOrderBy($sorting->getOrderBy());
         $sql->setLimit('');
         $sql->setGroupBy(['tartikel.kArtikel']);
-        $qry         = $this->getFilterSQL()->getBaseQuery($sql, 'listing');
-        $productKeys = \collect(\array_map(
-            static function ($e) {
+        $productKeys       = $this->db->getCollection($this->getFilterSQL()->getBaseQuery($sql, 'listing'))
+            ->map(static function ($e) {
                 return (int)$e->kArtikel;
-            },
-            $this->db->query($qry, ReturnType::ARRAY_OF_OBJECTS)
-        ));
-
+            });
         $orderData         = new stdClass();
         $orderData->cJoin  = $sorting->getJoin()->getSQL();
         $orderData->cOrder = $sorting->getOrderBy();

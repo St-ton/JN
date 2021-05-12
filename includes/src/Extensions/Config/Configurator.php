@@ -5,7 +5,6 @@ namespace JTL\Extensions\Config;
 use JTL\Cart\CartHelper;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
-use JTL\DB\ReturnType;
 use JTL\Nice;
 use JTL\Shop;
 use function Functional\some;
@@ -81,15 +80,14 @@ class Configurator
             return false;
         }
 
-        return Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getSingleObject(
             'SELECT tartikelkonfiggruppe.kKonfiggruppe
                  FROM tartikelkonfiggruppe
                  JOIN tkonfigitem
                     ON tkonfigitem.kKonfiggruppe = tartikelkonfiggruppe.kKonfiggruppe
                         AND tartikelkonfiggruppe.kArtikel = :pid',
-            ['pid' => $productID],
-            ReturnType::SINGLE_OBJECT
-        ) !== false;
+            ['pid' => $productID]
+        ) !== null;
     }
 
     /**

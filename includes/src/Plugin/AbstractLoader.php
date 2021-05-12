@@ -5,7 +5,6 @@ namespace JTL\Plugin;
 use Illuminate\Support\Collection;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\License\Manager;
 use JTL\License\Struct\ExpiredExsLicense;
 use JTL\Plugin\Data\AdminMenu;
@@ -82,7 +81,7 @@ abstract class AbstractLoader implements LoaderInterface
      */
     protected function loadLinks(int $id): Links
     {
-        $data  = $this->db->queryPrepared(
+        $data  = $this->db->getObjects(
             'SELECT tlink.kLink
                 FROM tlink
                 JOIN tlinksprache
@@ -91,8 +90,7 @@ abstract class AbstractLoader implements LoaderInterface
                     ON tsprache.cISO = tlinksprache.cISOSprache
                 WHERE tlink.kPlugin = :plgn
                 GROUP BY tlink.kLink',
-            ['plgn' => $id],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['plgn' => $id]
         );
         $links = new Links();
 
@@ -106,7 +104,7 @@ abstract class AbstractLoader implements LoaderInterface
      */
     protected function loadLocalization(int $id, string $currentLanguageCode): Localization
     {
-        $data         = $this->db->queryPrepared(
+        $data         = $this->db->getObjects(
             'SELECT l.kPluginSprachvariable, l.kPlugin, l.cName, l.cBeschreibung, o.cISO,
                 COALESCE(c.cName, o.cName) AS customValue, l.type
             FROM tpluginsprachvariable AS l
@@ -117,8 +115,7 @@ abstract class AbstractLoader implements LoaderInterface
                 AND o.cISO = c.cISO
             WHERE l.kPlugin = :pid
             ORDER BY l.kPluginSprachvariable',
-            ['pid' => $id],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['pid' => $id]
         );
         $localization = new Localization($currentLanguageCode);
 
@@ -143,7 +140,7 @@ abstract class AbstractLoader implements LoaderInterface
      */
     protected function loadConfig(string $path, int $id): Config
     {
-        $data   = $this->db->queryPrepared(
+        $data   = $this->db->getObjects(
             'SELECT c.kPluginEinstellungenConf AS id, c.cName AS name,
             c.cBeschreibung AS description, c.kPluginAdminMenu AS menuID, c.cConf AS confType,
             c.nSort, c.cInputTyp AS inputType, c.cSourceFile AS sourceFile,
@@ -157,8 +154,7 @@ abstract class AbstractLoader implements LoaderInterface
             WHERE c.kPlugin = :pid
             GROUP BY id, confValue
             ORDER BY c.nSort',
-            ['pid' => $id],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['pid' => $id]
         );
         $config = new Config($path);
 
@@ -472,13 +468,12 @@ abstract class AbstractLoader implements LoaderInterface
      */
     protected function loadMailTemplates(PluginInterface $plugin): MailTemplates
     {
-        $data = $this->db->queryPrepared(
+        $data = $this->db->getObjects(
             'SELECT * FROM temailvorlage
             JOIN temailvorlagesprache AS loc
                 ON loc.kEmailvorlage = temailvorlage.kEmailvorlage
             WHERE temailvorlage.kPlugin = :id',
-            ['id' => $plugin->getID()],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['id' => $plugin->getID()]
         );
         if ($data === 0) { // race condition with migrations
             $data = [];
@@ -494,26 +489,24 @@ abstract class AbstractLoader implements LoaderInterface
      */
     protected function loadPaymentMethods(PluginInterface $plugin): PaymentMethods
     {
-        $methods = $this->db->query(
+        $methods = $this->db->getObjects(
             "SELECT *
                 FROM tzahlungsart
                 JOIN tpluginzahlungsartklasse
                     ON tpluginzahlungsartklasse.cModulID = tzahlungsart.cModulId
-                WHERE tzahlungsart.cModulId LIKE 'kPlugin\_" . $plugin->getID() . "\_%'",
-            ReturnType::ARRAY_OF_OBJECTS
+                WHERE tzahlungsart.cModulId LIKE 'kPlugin\_" . $plugin->getID() . "\_%'"
         );
         foreach ($methods as $method) {
             $moduleID                                = Helper::getModuleIDByPluginID(
                 $plugin->getID(),
                 $method->cName
             );
-            $method->oZahlungsmethodeEinstellung_arr = $this->db->query(
+            $method->oZahlungsmethodeEinstellung_arr = $this->db->getObjects(
                 "SELECT *
                     FROM tplugineinstellungenconf
                     WHERE cWertName LIKE '" . $moduleID . "\_%'
                         AND cConf = 'Y'
-                    ORDER BY nSort",
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY nSort"
             );
             $method->oZahlungsmethodeSprache_arr     = $this->db->selectAll(
                 'tzahlungsartsprache',

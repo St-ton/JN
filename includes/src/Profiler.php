@@ -2,7 +2,6 @@
 
 namespace JTL;
 
-use JTL\DB\ReturnType;
 use stdClass;
 
 /**
@@ -393,18 +392,17 @@ class Profiler
      * @param bool   $combined
      * @return array
      */
-    private static function getProfile($type = 'plugin', $combined = false): array
+    private static function getProfile(string $type = 'plugin', bool $combined = false): array
     {
         if ($combined === true) {
-            return Shop::Container()->getDB()->queryPrepared(
+            return Shop::Container()->getDB()->getObjects(
                 'SELECT *
                     FROM tprofiler
                     JOIN tprofiler_runs 
                         ON tprofiler.runID = tprofiler_runs.runID
                     WHERE ptype = :type
                     ORDER BY tprofiler.runID DESC',
-                ['type' => $type],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['type' => $type]
             );
         }
         $db       = Shop::Container()->getDB();

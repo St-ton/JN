@@ -17,7 +17,6 @@ use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Language\LanguageHelper;
 use JTL\Plugin\Payment\LegacyMethod;
-use JTL\Plugin\Payment\Method as PaymentMethod;
 use JTL\Shop;
 use stdClass;
 
@@ -162,7 +161,7 @@ class Bestellung
     public $Positionen;
 
     /**
-     * @var PaymentMethod
+     * @var Zahlungsart
      */
     public $Zahlungsart;
 
@@ -424,8 +423,6 @@ class Bestellung
             return $this;
         }
         $db               = Shop::Container()->getDB();
-        $sum              = null;
-        $date             = null;
         $this->Positionen = $db->selectAll(
             'twarenkorbpos',
             'kWarenkorb',
@@ -526,17 +523,7 @@ class Bestellung
                 $this->Waehrung
             );
             if ($this->kZahlungsart > 0) {
-                $this->Zahlungsart = $db->select(
-                    'tzahlungsart',
-                    'kZahlungsart',
-                    (int)$this->kZahlungsart
-                );
-                if ($this->Zahlungsart !== null) {
-                    $oZahlungsart = LegacyMethod::create($this->Zahlungsart->cModulId, 1);
-                    if ($oZahlungsart !== null) {
-                        $this->Zahlungsart->bPayAgain = $oZahlungsart->canPayAgain();
-                    }
-                }
+                $this->loadPaymentMethod();
             }
         }
         if ($this->kBestellung > 0) {
@@ -844,6 +831,21 @@ class Bestellung
         ]);
 
         return $this;
+    }
+
+    /**
+     *
+     */
+    private function loadPaymentMethod(): void
+    {
+        $paymentMethod = new Zahlungsart((int)$this->kZahlungsart);
+        if ($paymentMethod !== null) {
+            $method = LegacyMethod::create($paymentMethod->cModulId, 1);
+            if ($method !== null) {
+                $paymentMethod->bPayAgain = $method->canPayAgain();
+            }
+            $this->Zahlungsart = $paymentMethod;
+        }
     }
 
     /**

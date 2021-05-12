@@ -67,10 +67,7 @@ class ShippingMethod
      */
     public function getShippingMethods(): array
     {
-        return $this->shippingMethods ?? Shop::Container()->getDB()->query(
-            'SELECT * FROM tversandart',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
+        return $this->shippingMethods ?? Shop::Container()->getDB()->getObjects('SELECT * FROM tversandart');
     }
 
     /**
@@ -103,7 +100,7 @@ class ShippingMethod
             if (!isset($this->countries[$cgroupID])) {
                 $this->countries[$cgroupID] = [];
             }
-            $this->countries[$cgroupID][$shippingClassID] = Shop::Container()->getDB()->queryPrepared(
+            $this->countries[$cgroupID][$shippingClassID] = Shop::Container()->getDB()->getObjects(
                 "SELECT *
                     FROM tversandart
                     WHERE fVersandkostenfreiAbX > 0
@@ -113,8 +110,7 @@ class ShippingMethod
                 [
                     'sClasses' => '^([0-9 -]* )?' . $shippingClassID . ' ',
                     'cGroupID' => $cgroupID
-                ],
-                ReturnType::ARRAY_OF_OBJECTS
+                ]
             );
         }
         $shippingFreeCountries = [];
@@ -169,7 +165,7 @@ class ShippingMethod
             $filterSQL           = ' AND tzahlungsart.kZahlungsart = :paymentID ';
             $params['paymentID'] = $filterPaymentID;
         }
-        return Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getObjects(
             'SELECT tversandartzahlungsart.*, tzahlungsart.*
                      FROM tversandartzahlungsart, tzahlungsart
                      WHERE tversandartzahlungsart.kVersandart = :methodID
@@ -180,8 +176,7 @@ class ShippingMethod
                          AND tzahlungsart.nActive = 1
                          AND tzahlungsart.nNutzbar = 1
                      ORDER BY tzahlungsart.nSort",
-            $params,
-            ReturnType::ARRAY_OF_OBJECTS
+            $params
         );
     }
 
@@ -204,7 +199,7 @@ class ShippingMethod
         $depending                = self::normalerArtikelversand($countryCode) === false
             ? 'Y'
             : 'N';
-        $methods                  = $db->queryPrepared(
+        $methods                  = $db->getObjects(
             "SELECT * FROM tversandart
                 WHERE cNurAbhaengigeVersandart = :depOnly
                     AND cLaender LIKE :iso
@@ -218,8 +213,7 @@ class ShippingMethod
                 'cGroupID' => $cgroupID,
                 'sClasses' => '^([0-9 -]* )?' . $shippingClasses . ' ',
                 'depOnly'  => $depending
-            ],
-            ReturnType::ARRAY_OF_OBJECTS
+            ]
         );
         if (empty($methods)) {
             return [];
@@ -694,7 +688,7 @@ class ShippingMethod
         $depOnly         = ($checkProductDepedency && self::normalerArtikelversand($deliveryCountry) === false)
             ? 'Y'
             : 'N';
-        $shippingMethods = Shop::Container()->getDB()->queryPrepared(
+        $shippingMethods = Shop::Container()->getDB()->getObjects(
             "SELECT *
             FROM tversandart
             WHERE cIgnoreShippingProposal != 'Y'
@@ -710,8 +704,7 @@ class ShippingMethod
                 'iso'      => '%' . $deliveryCountry . '%',
                 'cGroupID' => $customerGroupID,
                 'sClasses' => '^([0-9 -]* )?' . $shippingClasses . ' '
-            ],
-            ReturnType::ARRAY_OF_OBJECTS
+            ]
         );
         foreach ($shippingMethods as $i => $shippingMethod) {
             $shippingMethod->fEndpreis = self::calculateShippingFees($shippingMethod, $deliveryCountry, $product);
@@ -1198,7 +1191,7 @@ class ShippingMethod
         ) {
             $dep = " AND cNurAbhaengigeVersandart = 'N'";
         }
-        $methods = $db->queryPrepared(
+        $methods = $db->getObjects(
             "SELECT *
                 FROM tversandart
                 WHERE cIgnoreShippingProposal != 'Y'
@@ -1211,8 +1204,7 @@ class ShippingMethod
                 'iso'  => '%' . $iso . '%',
                 'scls' => '^([0-9 -]* )?' . $product->kVersandklasse,
                 'cgid' => $customerGroupID
-            ],
-            ReturnType::ARRAY_OF_OBJECTS
+            ]
         );
         foreach ($methods as $method) {
             if (!$allowCash) {
@@ -1459,7 +1451,7 @@ class ShippingMethod
         $countryHelper = Shop::Container()->getCountryService();
 
         if (!$force && ($conf['kunden']['kundenregistrierung_nur_lieferlaender'] === 'Y' || $ignoreConf)) {
-            $countryISOFilter = Shop::Container()->getDB()->query(
+            $countryISOFilter = Shop::Container()->getDB()->getObjects(
                 "SELECT DISTINCT tland.cISO
                     FROM tland
                     INNER JOIN tversandart ON FIND_IN_SET(tland.cISO, REPLACE(tversandart.cLaender, ' ', ','))
@@ -1467,8 +1459,7 @@ class ShippingMethod
                         OR FIND_IN_SET('" . $customerGroupID . "', REPLACE(cKundengruppen, ';', ',')) > 0)
                         " . (\count($filterISO) > 0
                     ? "AND tland.cISO IN ('" . \implode("','", $filterISO) . "')"
-                    : ''),
-                ReturnType::ARRAY_OF_OBJECTS
+                    : '')
             );
             $countries        = $countryHelper->getFilteredCountryList(
                 map($countryISOFilter, static function ($country) {
@@ -1494,7 +1485,7 @@ class ShippingMethod
     public static function getPossiblePackagings(int $customerGroupID): array
     {
         $cartSum      = Frontend::getCart()->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true);
-        $packagings   = Shop::Container()->getDB()->queryPrepared(
+        $packagings   = Shop::Container()->getDB()->getObjects(
             "SELECT * FROM tverpackung
                 JOIN tverpackungsprache
                     ON tverpackung.kVerpackung = tverpackungsprache.kVerpackung
@@ -1508,8 +1499,7 @@ class ShippingMethod
                 'lcode' => Shop::getLanguageCode(),
                 'cid'   => $customerGroupID,
                 'csum'  => $cartSum
-            ],
-            ReturnType::ARRAY_OF_OBJECTS
+            ]
         );
         $currencyCode = Frontend::getCurrency()->getID();
         foreach ($packagings as $packaging) {

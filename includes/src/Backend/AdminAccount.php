@@ -6,7 +6,6 @@ use DateTime;
 use Exception;
 use JTL\Alert\Alert;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\L10n\GetText;
 use JTL\Mail\Mail\Mail;
@@ -338,11 +337,10 @@ class AdminAccount
     {
         // try, because of SHOP-4319
         try {
-            $attributes = reindex($this->db->queryPrepared(
+            $attributes = reindex($this->db->getObjects(
                 'SELECT cName, cAttribText, cAttribValue FROM tadminloginattribut
                     WHERE kAdminlogin = :userID',
-                ['userID' => $userID],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['userID' => $userID]
             ), static function ($e) {
                 return $e->cName;
             });

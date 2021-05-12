@@ -51,14 +51,11 @@ class PageDB
     }
 
     /**
-     * @return array
+     * @return stdClass[]
      */
     public function getPages(): array
     {
-        return $this->shopDB->query(
-            'SELECT cPageId, cPageUrl FROM topcpage GROUP BY cPageId, cPageUrl',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
+        return $this->shopDB->getObjects('SELECT cPageId, cPageUrl FROM topcpage GROUP BY cPageId, cPageUrl');
     }
 
     /**
@@ -261,42 +258,35 @@ class PageDB
         }
 
         if (!empty($pageIdObj->attribs)) {
-            $attribSeos = $this->shopDB->queryPrepared(
+            $attribSeos = $this->shopDB->getObjects(
                 "SELECT cSeo FROM tseo WHERE cKey = 'kMerkmalWert'
                      AND kKey IN (" . \implode(',', $pageIdObj->attribs) . ')
                      AND kSprache = :lang',
-                ['lang' => $pageIdObj->lang],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['lang' => $pageIdObj->lang]
             );
-
             if (\count($attribSeos) !== \count($pageIdObj->attribs)) {
                 return null;
             }
         }
-
+        $manufacturerSeo = null;
         if (!empty($pageIdObj->manufacturerFilter)) {
-            $manufacturerSeo = $this->shopDB->queryPrepared(
+            $manufacturerSeo = $this->shopDB->getSingleObject(
                 "SELECT cSeo FROM tseo WHERE cKey = 'kHersteller'
                      AND kKey = :kKey
                      AND kSprache = :lang",
-                ['kKey' => $pageIdObj->manufacturerFilter, 'lang' => $pageIdObj->lang],
-                ReturnType::SINGLE_OBJECT
+                ['kKey' => $pageIdObj->manufacturerFilter, 'lang' => $pageIdObj->lang]
             );
-
-            if (empty($manufacturerSeo)) {
+            if ($manufacturerSeo === null) {
                 return null;
             }
         }
-
         $result = '/' . $seo->cSeo;
-
         if (!empty($attribSeos)) {
             foreach ($attribSeos as $seo) {
                 $result .= '__' . $seo->cSeo;
             }
         }
-
-        if (!empty($manufacturerSeo)) {
+        if ($manufacturerSeo !== null) {
             $result .= '::' . $manufacturerSeo->cSeo;
         }
 

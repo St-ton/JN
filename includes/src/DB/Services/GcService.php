@@ -3,7 +3,6 @@
 namespace JTL\DB\Services;
 
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 
 /**
  * Class GcService

@@ -5,7 +5,6 @@ namespace JTL\dbeS;
 use JTL\Catalog\ReviewReminder;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\FileSystem;
 use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
@@ -115,13 +114,12 @@ final class LastJob
      */
     private function getRepeatedJobs(int $hours): array
     {
-        return $this->db->queryPrepared(
+        return $this->db->getObjects(
             "SELECT kJob, nJob, dErstellt
                 FROM tlastjob
                 WHERE cType = 'RPT'
                     AND (dErstellt IS NULL OR DATE_ADD(dErstellt, INTERVAL :hrs HOUR) < NOW())",
-            ['hrs' => $hours],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['hrs' => $hours]
         );
     }
 

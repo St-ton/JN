@@ -3,7 +3,6 @@
 namespace JTL\Services\JTL;
 
 use JTL\Boxes\Admin\BoxAdmin;
-use JTL\Boxes\Factory;
 use JTL\Boxes\FactoryInterface;
 use JTL\Boxes\Items\BoxInterface;
 use JTL\Boxes\Items\Extension;
@@ -12,7 +11,6 @@ use JTL\Boxes\Renderer\RendererInterface;
 use JTL\Boxes\Type;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Filter\ProductFilter;
 use JTL\Filter\Visibility;
 use JTL\Plugin\LegacyPlugin;
@@ -319,7 +317,7 @@ class BoxService implements BoxServiceInterface
             }
         }
         $this->smarty->clearAssign('BoxenEinstellungen');
-        // avoid modification of article object on render loop
+        // avoid modification of product object on render loop
         if ($product !== null) {
             $this->smarty->assign('Artikel', $product);
         }
@@ -351,7 +349,7 @@ class BoxService implements BoxServiceInterface
             . "  OR (tboxvorlage.eTyp != '" . Type::PLUGIN . "' AND tboxvorlage.eTyp != '" . Type::EXTENSION . "'))"
             : '';
         if (($grouped = $this->cache->get($cacheID)) === false) {
-            $boxData = $this->db->query(
+            $boxData = $this->db->getObjects(
                 'SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, 
                        tboxen.cTitel, tboxen.ePosition, tboxensichtbar.kSeite, tboxensichtbar.nSort, 
                        tboxensichtbar.cFilter, tboxvorlage.eTyp, 
@@ -374,8 +372,7 @@ class BoxService implements BoxServiceInterface
                     WHERE tboxen.kContainer > -1 '
                 . $activeSQL . $plgnSQL . ' 
                     GROUP BY tboxsprache.kBoxSprache, tboxen.kBox, tboxensichtbar.cFilter
-                    ORDER BY tboxensichtbar.nSort, tboxen.kBox ASC',
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY tboxensichtbar.nSort, tboxen.kBox ASC'
             );
             if (isset($_SESSION['AdminAccount'])) {
                 $boxData = map($boxData, static function ($box) {

@@ -2,8 +2,6 @@
 
 namespace JTL\GeneralDataProtection;
 
-use JTL\DB\ReturnType;
-
 /**
  * Class AnonymizeDeletedCustomer
  * @package JTL\GeneralDataProtection

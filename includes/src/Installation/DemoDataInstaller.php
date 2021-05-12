@@ -23,7 +23,7 @@ class DemoDataInstaller
     public const NUM_CATEGORIES = 10;
 
     /**
-     * number of articles to create.
+     * number of products to create.
      */
     public const NUM_ARTICLES = 50;
 

@@ -461,9 +461,9 @@ class Product
                 LEFT JOIN teigenschaftsichtbarkeit
                     ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
                     AND teigenschaftsichtbarkeit.kKundengruppe = :cgroupid
-                WHERE teigenschaft.kArtikel = :articleid
+                WHERE teigenschaft.kArtikel = :productID
                     AND teigenschaftsichtbarkeit.kEigenschaft IS NULL',
-            ['cgroupid' => $customerGroupID, 'articleid' => $productID],
+            ['cgroupid' => $customerGroupID, 'productID' => $productID],
             ReturnType::ARRAY_OF_OBJECTS
         );
         $properties      = [];

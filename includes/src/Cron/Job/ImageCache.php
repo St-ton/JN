@@ -5,7 +5,6 @@ namespace JTL\Cron\Job;
 use JTL\Cron\Job;
 use JTL\Cron\JobInterface;
 use JTL\Cron\QueueEntry;
-use JTL\DB\ReturnType;
 use JTL\Media\IMedia;
 use JTL\Media\Media;
 

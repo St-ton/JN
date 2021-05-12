@@ -152,7 +152,7 @@ $taxClasses = $db->query(
 
 $packagingCount = (int)$db->query(
     'SELECT COUNT(kVerpackung) AS cnt
-            FROM tverpackung',
+        FROM tverpackung',
     ReturnType::SINGLE_OBJECT
 )->cnt;
 $itemsPerPage   = 10;

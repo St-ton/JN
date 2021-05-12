@@ -2,6 +2,7 @@
 
 namespace JTL\dbeS\Sync;
 
+use GdImage;
 use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\Media\Image;
@@ -855,7 +856,7 @@ final class Images extends AbstractSync
     }
 
     /**
-     * @param resource    $im
+     * @param GdImage     $im
      * @param object|null $config
      * @return mixed
      */
@@ -981,15 +982,15 @@ final class Images extends AbstractSync
     }
 
     /**
-     * @param resource $destImg
-     * @param resource $srcImg
-     * @param int      $destX
-     * @param int      $destY
-     * @param int      $srcX
-     * @param int      $srxY
-     * @param int      $srcW
-     * @param int      $srcH
-     * @param int      $pct
+     * @param GdImage $destImg
+     * @param GdImage $srcImg
+     * @param int     $destX
+     * @param int     $destY
+     * @param int     $srcX
+     * @param int     $srxY
+     * @param int     $srcW
+     * @param int     $srcH
+     * @param int     $pct
      * @return bool
      */
     private function imagecopymergeAlpha(
@@ -1092,7 +1093,7 @@ final class Images extends AbstractSync
      * @param bool     $branding
      * @param int|null $containerWidth
      * @param int|null $containerHeight
-     * @return false|resource
+     * @return false|GdImage
      */
     private function createImage(
         string $source,
@@ -1157,10 +1158,10 @@ final class Images extends AbstractSync
     }
 
     /**
-     * @param resource $im
-     * @param string   $format
-     * @param string   $path
-     * @param int      $quality
+     * @param GdImage $im
+     * @param string  $format
+     * @param string  $path
+     * @param int     $quality
      * @return bool
      */
     private function saveImage($im, string $format, string $path, int $quality = 80): bool
@@ -1170,16 +1171,16 @@ final class Images extends AbstractSync
         }
         switch (\strtolower($format)) {
             case 'jpg':
-                $res = \function_exists('imagejpeg') ? \imagejpeg($im, $path, $quality) : false;
+                $res = \function_exists('imagejpeg') && \imagejpeg($im, $path, $quality);
                 break;
             case 'png':
-                $res = \function_exists('imagepng') ? \imagepng($im, $path) : false;
+                $res = \function_exists('imagepng') && \imagepng($im, $path);
                 break;
             case 'gif':
-                $res = \function_exists('imagegif') ? \imagegif($im, $path) : false;
+                $res = \function_exists('imagegif') && \imagegif($im, $path);
                 break;
             case 'bmp':
-                $res = \function_exists('imagewbmp') ? \imagewbmp($im, $path) : false;
+                $res = \function_exists('imagewbmp') && \imagewbmp($im, $path);
                 break;
             default:
                 $res = false;

@@ -223,7 +223,6 @@ class Method implements MethodInterface
      */
     public function generateHash(Bestellung $order): string
     {
-        $hash = null;
         if ((int)$this->duringCheckout === 1) {
             if (!isset($_SESSION['IP'])) {
                 $_SESSION['IP'] = new stdClass();

@@ -5,7 +5,6 @@ namespace JTL\Crawler;
 use JTL\Alert\Alert;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Services\JTL\AlertServiceInterface;
@@ -52,10 +51,9 @@ class Controller
      */
     public function getCrawler(int $id): array
     {
-        $crawler = $this->db->queryPrepared(
+        $crawler = $this->db->getObjects(
             'SELECT * FROM tbesucherbot WHERE kBesucherBot = :id ',
-            ['id' => $id],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['id' => $id]
         );
         if (\count($crawler) === 0) {
             throw new \InvalidArgumentException('Provided crawler id ' . $id . ' not found.');
@@ -71,10 +69,7 @@ class Controller
     {
         $cacheID = 'crawler';
         if (($crawlers = $this->cache->get($cacheID)) === false) {
-            $crawlers = $this->db->query(
-                'SELECT * FROM tbesucherbot ORDER BY kBesucherBot DESC',
-                ReturnType::ARRAY_OF_OBJECTS
-            );
+            $crawlers = $this->db->getObjects('SELECT * FROM tbesucherbot ORDER BY kBesucherBot DESC');
             $this->cache->set($cacheID, $crawlers, [\CACHING_GROUP_CORE]);
         }
 

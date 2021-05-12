@@ -2,7 +2,6 @@
 
 namespace JTL\dbeS\Sync;
 
-use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\Helpers\Seo;
 use JTL\Language\LanguageHelper;
@@ -276,10 +275,7 @@ final class Characteristics extends AbstractSync
      */
     private function addMissingCharacteristicValueSeo(array $characteristics): void
     {
-        $languages = $this->db->query(
-            'SELECT kSprache FROM tsprache ORDER BY kSprache',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
+        $languages = $this->db->getObjects('SELECT kSprache FROM tsprache ORDER BY kSprache');
         foreach ($characteristics as $characteristic) {
             foreach ($characteristic->oMMW_arr as $characteristicValue) {
                 $characteristicValue->kMerkmalWert = (int)$characteristicValue->kMerkmalWert;
@@ -394,14 +390,13 @@ final class Characteristics extends AbstractSync
         $this->db->delete('tseo', ['cKey', 'kKey'], ['kMerkmalWert', $id]);
         // Hat das Merkmal vor dem Loeschen noch mehr als einen Wert?
         // Wenn nein => nach dem Loeschen auch das Merkmal loeschen
-        $count = $this->db->query(
+        $count = $this->db->getSingleObject(
             'SELECT COUNT(*) AS nAnzahl, kMerkmal
-            FROM tmerkmalwert
-            WHERE kMerkmal = (
-                SELECT kMerkmal
-                    FROM tmerkmalwert
-                    WHERE kMerkmalWert = ' . $id . ')',
-            ReturnType::SINGLE_OBJECT
+                FROM tmerkmalwert
+                WHERE kMerkmal = (
+                    SELECT kMerkmal
+                        FROM tmerkmalwert
+                        WHERE kMerkmalWert = ' . $id . ')'
         );
 
         $this->db->query(
@@ -412,7 +407,7 @@ final class Characteristics extends AbstractSync
             WHERE tmerkmalwert.kMerkmalWert = ' . $id
         );
         // Das Merkmal hat keine MerkmalWerte mehr => auch loeschen
-        if (!$isInsert && (int)$count->nAnzahl === 1) {
+        if (!$isInsert && $count !== null && (int)$count->nAnzahl === 1) {
             $this->delete($count->kMerkmal);
         }
     }

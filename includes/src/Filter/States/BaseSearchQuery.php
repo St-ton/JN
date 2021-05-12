@@ -312,12 +312,11 @@ class BaseSearchQuery extends AbstractFilter
 
             return $this->options;
         }
-        $searchFilters  = $this->productFilter->getDB()->query(
+        $searchFilters  = $this->productFilter->getDB()->getObjects(
             'SELECT ssMerkmal.kSuchanfrage, ssMerkmal.cSuche, COUNT(*) AS nAnzahl
                 FROM (' . $baseQuery . ') AS ssMerkmal
                     GROUP BY ssMerkmal.kSuchanfrage
-                    ORDER BY ssMerkmal.cSuche' . $limit,
-            ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY ssMerkmal.cSuche' . $limit
         );
         $searchQueryIDs = [];
         if ($this->productFilter->hasSearch()) {
@@ -440,7 +439,7 @@ class BaseSearchQuery extends AbstractFilter
                     AND DATE_ADD(tsuchcache.dGueltigBis, INTERVAL 5 MINUTE) < NOW()'
         );
         // Suchcache checken, ob bereits vorhanden
-        $searchCache = $this->productFilter->getDB()->executeQueryPrepared(
+        $searchCache = $this->productFilter->getDB()->getSingleObject(
             'SELECT kSuchCache
                 FROM tsuchcache
                 WHERE kSprache = :lang
@@ -449,10 +448,9 @@ class BaseSearchQuery extends AbstractFilter
             [
                 'lang'   => $langID,
                 'search' => $query
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
-        if (isset($searchCache->kSuchCache) && $searchCache->kSuchCache > 0) {
+        if ($searchCache !== null && $searchCache->kSuchCache > 0) {
             return (int)$searchCache->kSuchCache; // Gib gültigen Suchcache zurück
         }
         // wenn kein Suchcache vorhanden

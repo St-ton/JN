@@ -8,7 +8,6 @@ use GuzzleHttp\Exception\GuzzleException;
 use JTL\Backend\AuthToken;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\License\Struct\ExsLicense;
 use JTL\Shop;
 use stdClass;
@@ -223,14 +222,13 @@ class Manager
      */
     public function getLicenseData(): ?stdClass
     {
-        $data = $this->db->query(
+        $data = $this->db->getSingleObject(
             'SELECT * FROM licenses
                 WHERE returnCode = 200
                 ORDER BY id DESC
-                LIMIT 1',
-            ReturnType::SINGLE_OBJECT
+                LIMIT 1'
         );
-        if ($data === false) {
+        if ($data === null) {
             return null;
         }
         $obj             = \json_decode($data->data, false);

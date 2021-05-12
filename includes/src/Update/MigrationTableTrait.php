@@ -3,7 +3,6 @@
 namespace JTL\Update;
 
 use Exception;
-use JTL\DB\ReturnType;
 use stdClass;
 
 /**

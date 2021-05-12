@@ -996,20 +996,20 @@ final class Shop
         $redirect            = Request::verifyGPDataString('r');
         if (self::$kArtikel > 0) {
             if (!empty($redirect)
-                && (self::$kNews > 0 // get param "n" was used a article amount
-                    || (isset($_GET['n']) && (float)$_GET['n'] > 0)) // article amount was a float >0 and <1
+                && (self::$kNews > 0 // get param "n" was used as product amount
+                    || (isset($_GET['n']) && (float)$_GET['n'] > 0)) // product amount was a float >0 and <1
             ) {
-                // GET param "n" is often misused as "amount of article"
+                // GET param "n" is often misused as "amount of product"
                 self::$kNews = 0;
                 if ((int)$redirect === \R_LOGIN_WUNSCHLISTE) {
                     // login redirect on wishlist add when not logged in uses get param "n" as amount
-                    // and "a" for the article ID - but we want to go to the login page, not to the article page
+                    // and "a" for the product ID - but we want to go to the login page, not to the product page
                     self::$kArtikel = 0;
                 }
             } elseif (((int)$redirect === \R_LOGIN_BEWERTUNG || (int)$redirect === \R_LOGIN_TAG)
                 && empty($_SESSION['Kunde']->kKunde)
             ) {
-                // avoid redirect to article page for ratings that require logged in customers
+                // avoid redirect to product page for ratings that require logged in customers
                 self::$kArtikel = 0;
             }
         }
@@ -1539,7 +1539,7 @@ final class Shop
             $parentID = Product::getParent(self::$kArtikel);
             if ($parentID > 0) {
                 $productID = $parentID;
-                // save data from child article POST and add to redirect
+                // save data from child product POST and add to redirect
                 $cRP = '';
                 if (\is_array($_POST) && \count($_POST) > 0) {
                     foreach (\array_keys($_POST) as $key) {

@@ -601,7 +601,7 @@ class Status
                 'SELECT cModulId, kPlugin FROM temailvorlage WHERE nFehlerhaft = :type',
                 ['type' => $type]
             );
-            $factory   = new TemplateFactory($this->db);
+            $factory      = new TemplateFactory($this->db);
             foreach ($templates as $template) {
                 $module = $template->cModulId;
                 if ($template->kPlugin > 0) {

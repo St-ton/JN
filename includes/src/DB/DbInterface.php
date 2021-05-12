@@ -2,6 +2,9 @@
 
 namespace JTL\DB;
 
+use Illuminate\Support\Collection;
+use stdClass;
+
 /**
  * Interface DbInterface
  * @package JTL\DB
@@ -258,11 +261,11 @@ interface DbInterface extends \Serializable
     );
 
     /**
-     * @param string   $stmt
-     * @param array    $params
-     * @param int      $return
-     * @param bool     $echo
-     * @param mixed    $fnINfo
+     * @param string $stmt
+     * @param array  $params
+     * @param int    $return
+     * @param bool   $echo
+     * @param mixed  $fnInfo
      * @return int|object|array
      */
     public function queryPrepared(
@@ -270,13 +273,46 @@ interface DbInterface extends \Serializable
         array $params,
         int $return = ReturnType::DEFAULT,
         bool $echo = false,
-        $fnINfo = null
+        $fnInfo = null
     );
+
+    /**
+     * @param string $stmt
+     * @param array  $params
+     * @return stdClass[]
+     * @since 5.1.0
+     */
+    public function getObjects(string $stmt, array $params = []): array;
+
+    /**
+     * @param string $stmt
+     * @param array  $params
+     * @return Collection
+     * @since 5.1.0
+     */
+    public function getCollection(string $stmt, array $params = []): Collection;
+
+    /**
+     * @param string $stmt
+     * @param array  $params
+     * @return stdClass|null
+     * @since 5.1.0
+     */
+    public function getSingleObject(string $stmt, array $params = []): ?stdClass;
+
+    /**
+     * @param string $stmt
+     * @param array  $params
+     * @return array|null
+     * @since 5.1.0
+     */
+    public function getSingleArray(string $stmt, array $params = []): ?array;
 
     /**
      * @param string   $stmt
      * @param array    $params
      * @return int
+     * @since 5.1.0
      */
     public function getAffectedRows(string $stmt, array $params = []): int;
 

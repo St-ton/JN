@@ -606,11 +606,11 @@ class Redirect
     /**
      * @param int $kRedirect
      * @param int $nLimit
-     * @return array
+     * @return stdClass[]
      */
     public static function getReferers(int $kRedirect, int $nLimit = 100): array
     {
-        return Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getObjects(
             'SELECT tredirectreferer.*, tbesucherbot.cName AS cBesucherBotName,
                     tbesucherbot.cUserAgent AS cBesucherBotAgent
                 FROM tredirectreferer
@@ -619,8 +619,7 @@ class Redirect
                     WHERE kRedirect = :kr
                 ORDER BY dDate ASC
                 LIMIT :lmt',
-            ['kr' => $kRedirect, 'lmt' => $nLimit],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['kr' => $kRedirect, 'lmt' => $nLimit]
         );
     }
 

@@ -4,7 +4,6 @@ namespace JTL;
 
 use DateTime;
 use JTL\Crawler;
-use JTL\DB\ReturnType;
 use JTL\GeneralDataProtection\IpAnonymizer;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -189,13 +188,12 @@ class Visitor
      */
     public static function refreshCustomerOrderId(int $customerID): int
     {
-        $data = Shop::Container()->getDB()->queryPrepared(
+        $data = Shop::Container()->getDB()->getSingleObject(
             'SELECT `kBestellung`
                 FROM `tbestellung`
                 WHERE `kKunde` = :cid
                 ORDER BY `dErstellt` DESC LIMIT 1',
-            ['cid' => $customerID],
-            ReturnType::SINGLE_OBJECT
+            ['cid' => $customerID]
         );
 
         return (int)($data->kBestellung ?? 0);

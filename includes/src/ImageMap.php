@@ -4,7 +4,6 @@ namespace JTL;
 
 use JTL\Catalog\Product\Artikel;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use stdClass;
 
 /**
@@ -64,15 +63,14 @@ class ImageMap implements IExtensionPoint
      */
     public function fetchAll(): array
     {
-        return $this->db->query(
+        return $this->db->getObjects(
             'SELECT *, IF(
                 (CURDATE() >= DATE(vDatum)) AND (
                     bDatum IS NULL 
                     OR CURDATE() <= DATE(bDatum)
                     OR bDatum = 0), 1, 0) AS active 
                 FROM timagemap
-                ORDER BY cTitel ASC',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY cTitel ASC'
         );
     }
 
@@ -90,8 +88,8 @@ class ImageMap implements IExtensionPoint
         if (!$fetchAll) {
             $sql .= ' AND (CURDATE() >= DATE(vDatum)) AND (bDatum IS NULL OR CURDATE() <= DATE(bDatum) OR bDatum = 0)';
         }
-        $imageMap = $this->db->query($sql, ReturnType::SINGLE_OBJECT);
-        if (!\is_object($imageMap)) {
+        $imageMap = $this->db->getSingleObject($sql);
+        if (!$imageMap === null) {
             return false;
         }
         $imageMap->oArea_arr = $this->db->selectAll(

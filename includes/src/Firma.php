@@ -3,7 +3,6 @@
 namespace JTL;
 
 use JTL\Country\Country;
-use JTL\DB\ReturnType;
 use stdClass;
 
 /**
@@ -134,8 +133,8 @@ class Firma
             }
         } else {
             $countryHelper = Shop::Container()->getCountryService();
-            $obj           = Shop::Container()->getDB()->query('SELECT * FROM tfirma LIMIT 1', ReturnType::SINGLE_OBJECT);
-            if ($obj !== false) {
+            $obj           = Shop::Container()->getDB()->getSingleObject('SELECT * FROM tfirma LIMIT 1');
+            if ($obj !== null) {
                 foreach (\get_object_vars($obj) as $k => $v) {
                     $this->$k = $v;
                 }

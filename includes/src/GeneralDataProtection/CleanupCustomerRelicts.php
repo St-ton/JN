@@ -2,8 +2,6 @@
 
 namespace JTL\GeneralDataProtection;
 
-use JTL\DB\ReturnType;
-
 /**
  * Class CleanupCustomerRelicts
  * @package JTL\GeneralDataProtection

@@ -126,7 +126,7 @@ class Controller
      */
     private function getMonthOverview(int $id): ?stdClass
     {
-        return $this->db->queryPrepared(
+        return $this->db->getSingleObject(
             "SELECT tnewsmonatsuebersicht.*, tseo.cSeo
                 FROM tnewsmonatsuebersicht
                 LEFT JOIN tseo 
@@ -137,8 +137,7 @@ class Controller
             [
                 'nmi' => $id,
                 'lid' => Shop::getLanguageID()
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
     }
 

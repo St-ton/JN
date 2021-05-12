@@ -2,7 +2,6 @@
 
 use JTL\Alert\Alert;
 use JTL\Catalog\Warehouse;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Shop;

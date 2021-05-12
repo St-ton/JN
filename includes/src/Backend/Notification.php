@@ -5,10 +5,8 @@ namespace JTL\Backend;
 use ArrayIterator;
 use Countable;
 use Exception;
-use Illuminate\Support\Collection;
 use IteratorAggregate;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Exportformat;
 use JTL\IO\IOResponse;
 use JTL\Link\Admin\LinkAdmin;
@@ -444,23 +442,12 @@ class Notification implements IteratorAggregate, Countable
     protected function updateNotifications(IOResponse $response, bool $flushCache = false): void
     {
         Shop::fire('backend.notification', $this->buildDefault($flushCache));
-        /** @var Collection $res */
-        $res = $this->db->queryPrepared(
+        $res    = $this->db->getCollection(
             'SELECT notification_hash
                 FROM tnotificationsignore
                 WHERE user_id = :userID', // AND NOW() < DATE_ADD(created, INTERVAL 7 DAY)',
-            [
-                'userID' => Shop::Container()->getAdminAccount()->getID(),
-            ],
-            ReturnType::COLLECTION
+            ['userID' => Shop::Container()->getAdminAccount()->getID()]
         );
-
-        if ($res === 0) {
-            $response->assignDom('notify-drop', 'innerHTML', \getNotifyDropIO()['tpl']);
-
-            return;
-        }
-
         $hashes = $res->keyBy('notification_hash');
         foreach ($this->array as $notificationEntry) {
             if (($hash = $notificationEntry->getHash()) !== null && $hashes->has($hash)) {

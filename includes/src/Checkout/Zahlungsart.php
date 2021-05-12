@@ -2,7 +2,6 @@
 
 namespace JTL\Checkout;
 
-use JTL\DB\ReturnType;
 use JTL\Language\LanguageHelper;
 use JTL\MainModel;
 use JTL\Shop;
@@ -516,7 +515,7 @@ class Zahlungsart extends MainModel
             return $this;
         }
         $iso  = $option['iso'] ?? Shop::getLanguageCode() ?? LanguageHelper::getDefaultLanguage()->getCode();
-        $data = Shop::Container()->getDB()->queryPrepared(
+        $data = Shop::Container()->getDB()->getSingleObject(
             'SELECT z.kZahlungsart, COALESCE(s.cName, z.cName) AS cName, z.cModulId, z.cKundengruppen,
                     z.cZusatzschrittTemplate, z.cPluginTemplate, z.cBild, z.nSort, z.nMailSenden, z.nActive,
                     z.cAnbieter, z.cTSCode, z.nWaehrendBestellung, z.nCURL, z.nSOAP, z.nSOCKETS, z.nNutzbar,
@@ -530,8 +529,7 @@ class Zahlungsart extends MainModel
             [
                 'iso'  => $iso,
                 'pmID' => $id
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
         if ($data !== false) {
             $this->loadObject($data);
@@ -550,14 +548,13 @@ class Zahlungsart extends MainModel
         $payments = [];
         $where    = $active ? ' WHERE z.nActive = 1' : '';
         $iso      = $iso ?? Shop::getLanguageCode() ?? LanguageHelper::getDefaultLanguage()->getCode();
-        $data     = Shop::Container()->getDB()->queryPrepared(
+        $data     = Shop::Container()->getDB()->getObjects(
             'SELECT *
                 FROM tzahlungsart AS z
                 LEFT JOIN tzahlungsartsprache AS s 
                     ON s.kZahlungsart = z.kZahlungsart
                     AND s.cISOSprache = :iso' . $where,
-            ['iso' => $iso],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['iso' => $iso]
         );
         foreach ($data as $obj) {
             $payments[] = new self(null, $obj);

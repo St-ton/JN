@@ -2,7 +2,6 @@
 
 namespace JTL\dbeS\Sync;
 
-use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\Helpers\GeneralObject;
 
@@ -159,10 +158,7 @@ final class Globals extends AbstractSync
             return;
         }
         $warehouses = $this->mapper->mapArray($source, 'twarenlager', 'mWarenlager');
-        $visibility = $this->db->query(
-            'SELECT kWarenlager, nAktiv FROM twarenlager WHERE nAktiv = 1',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
+        $visibility = $this->db->getObjects('SELECT kWarenlager, nAktiv FROM twarenlager WHERE nAktiv = 1');
         // Alle Einträge in twarenlager löschen - Wawi 1.0.1 sendet immer alle Warenlager.
         $this->db->query('DELETE FROM twarenlager WHERE 1');
         $this->upsert('twarenlager', $warehouses, 'kWarenlager');

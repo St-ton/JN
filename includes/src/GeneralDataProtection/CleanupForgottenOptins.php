@@ -2,8 +2,6 @@
 
 namespace JTL\GeneralDataProtection;
 
-use JTL\DB\ReturnType;
-
 /**
  * Class CleanupForgottenOptins
  * @package JTL\GeneralDataProtection
@@ -35,7 +33,7 @@ class CleanupForgottenOptins extends Method implements MethodInterface
      */
     private function cleanupOptins(): void
     {
-        $result = $this->db->queryPrepared(
+        $result = $this->db->getObjects(
             'SELECT
                 o.kOptin AS "o_kOptin",
                 o.kOptinCode AS "o_kOptinCode",
@@ -55,8 +53,7 @@ class CleanupForgottenOptins extends Method implements MethodInterface
             [
                 'pDateLimit' => $this->dateLimit,
                 'pLimit'     => $this->workLimit
-            ],
-            ReturnType::ARRAY_OF_OBJECTS
+            ]
         );
 
         $optinIDs     = [];

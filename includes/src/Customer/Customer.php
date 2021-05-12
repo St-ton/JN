@@ -926,17 +926,16 @@ class Customer
                 $lang     = Shop::Lang()->getDefaultLanguage();
                 $langCode = $lang->cISO ?? '';
             }
-            $value = Shop::Container()->getDB()->queryPrepared(
+            $value = Shop::Container()->getDB()->getSingleObject(
                 'SELECT tsprachwerte.cWert
                     FROM tsprachwerte
                     JOIN tsprachiso
                         ON tsprachiso.cISO = :ciso
                     WHERE tsprachwerte.kSprachISO = tsprachiso.kSprachISO
                         AND tsprachwerte.cName = :cname',
-                ['ciso' => $langCode, 'cname' => $salutation === 'm' ? 'salutationM' : 'salutationW'],
-                ReturnType::SINGLE_OBJECT
+                ['ciso' => $langCode, 'cname' => $salutation === 'm' ? 'salutationM' : 'salutationW']
             );
-            if (isset($value->cWert) && $value->cWert !== '') {
+            if ($value !== null && $value->cWert !== '') {
                 $salutation = $value->cWert;
             }
         }

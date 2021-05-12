@@ -3,7 +3,6 @@
 namespace JTL\Console\Command\Mailtemplates;
 
 use JTL\Console\Command\Command;
-use JTL\DB\ReturnType;
 use JTL\Mail\Admin\Controller;
 use JTL\Mail\Hydrator\TestHydrator;
 use JTL\Mail\Mailer;
@@ -45,14 +44,8 @@ class ResetCommand extends Command
         $factory    = new TemplateFactory($db);
         $controller = new Controller($db, $mailer, $factory);
         $io         = $this->getIO();
-
-        $templates = $db->queryPrepared(
-            'SELECT DISTINCT kEmailVorlage FROM temailvorlagesprache',
-            [],
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-
-        $count = 0;
+        $templates  = $db->getObjects('SELECT DISTINCT kEmailVorlage FROM temailvorlagesprache');
+        $count      = 0;
         foreach ($templates as $template) {
             $controller->resetTemplate((int)$template->kEmailVorlage);
             $count++;

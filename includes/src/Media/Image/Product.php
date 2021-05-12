@@ -35,15 +35,14 @@ class Product extends AbstractImage
      */
     public function getImageNames(MediaImageRequest $req): array
     {
-        return $this->db->queryPrepared(
+        return $this->db->getCollection(
             'SELECT A.kArtikel, A.cName, A.cSeo, A.cSeo AS originalSeo, A.cArtNr, A.cBarcode, B.cWert AS customImgName
                 FROM tartikel A
                 LEFT JOIN tartikelattribut B 
                     ON A.kArtikel = B.kArtikel
                     AND B.cName = :atr
                 WHERE A.kArtikel = :pid',
-            ['pid' => $req->getID(), 'atr' => 'bildname'],
-            ReturnType::COLLECTION
+            ['pid' => $req->getID(), 'atr' => 'bildname']
         )->map(static function ($item) {
             return self::getCustomName($item);
         })->toArray();

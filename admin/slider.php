@@ -187,7 +187,7 @@ switch ($action) {
         break;
 }
 
-$sliders    = $db->query('SELECT * FROM tslider', ReturnType::ARRAY_OF_OBJECTS);
+$sliders    = $db->getObjects('SELECT * FROM tslider');
 $pagination = (new Pagination('sliders'))
     ->setRange(4)
     ->setItemArray($sliders)

@@ -6,7 +6,6 @@ use Exception;
 use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\OPC\Portlets\MissingPortlet\MissingPortlet;
 use JTL\Plugin\PluginLoader;
 use JTL\Update\Updater;
@@ -145,10 +144,7 @@ class DB
      */
     public function getPortletGroups(bool $withInactive = false): array
     {
-        $groupNames = $this->shopDB->query(
-            'SELECT DISTINCT(cGroup) FROM topcportlet ORDER BY cGroup ASC',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
+        $groupNames = $this->shopDB->getObjects('SELECT DISTINCT(cGroup) FROM topcportlet ORDER BY cGroup ASC');
         $groups     = [];
         foreach ($groupNames as $groupName) {
             $groups[] = $this->getPortletGroup($groupName->cGroup, $withInactive);
@@ -207,10 +203,7 @@ class DB
      */
     public function getPortletCount(): int
     {
-        return (int)$this->shopDB->query(
-            'SELECT COUNT(kPortlet) AS count FROM topcportlet',
-            ReturnType::SINGLE_OBJECT
-        )->count;
+        return (int)$this->shopDB->getSingleObject('SELECT COUNT(kPortlet) AS count FROM topcportlet')->count;
     }
 
     /**

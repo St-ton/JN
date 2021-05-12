@@ -2,7 +2,6 @@
 
 namespace JTL;
 
-use JTL\DB\ReturnType;
 use stdClass;
 
 /**
@@ -58,7 +57,7 @@ class ExtensionPoint
             return $this;
         }
         $instances  = [];
-        $extensions = $db->queryPrepared(
+        $extensions = $db->getObjects(
             "SELECT cClass, kInitial FROM textensionpoint
                 WHERE (kSprache = :lid OR kSprache = 0)
                     AND (kKundengruppe = :cgid OR kKundengruppe = 0)
@@ -70,8 +69,7 @@ class ExtensionPoint
                 'ptype' => $this->nSeitenTyp,
                 'cky'   => $key->cKey,
                 'cval'  => $key->cValue
-            ],
-            ReturnType::ARRAY_OF_OBJECTS
+            ]
         );
         foreach ($extensions as $extension) {
             $instance = null;

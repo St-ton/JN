@@ -5,7 +5,6 @@ namespace JTL\Helpers;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\MenuItem;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Language\LanguageHelper;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -164,10 +163,7 @@ class Category
         $stockJoin          = '';
         $extended           = !empty($stockFilter);
         $isDefaultLang      = LanguageHelper::isDefaultLanguageActive();
-        $categoryCount      = (int)self::$db->query(
-            'SELECT COUNT(*) AS cnt FROM tkategorie',
-            ReturnType::SINGLE_OBJECT
-        )->cnt;
+        $categoryCount      = (int)self::$db->getSingleObject('SELECT COUNT(*) AS cnt FROM tkategorie')->cnt;
         self::$limitReached = $categoryCount >= \CATEGORY_FULL_LOAD_LIMIT;
         $descriptionSelect  = ", '' AS cBeschreibung";
         $visibilityWhere    = ' AND tartikelsichtbarkeit.kArtikel IS NULL';
@@ -231,7 +227,7 @@ class Category
             $visibilityWhere      = '';
         }
 
-        return self::$db->query(
+        return self::$db->getCollection(
             'SELECT node.kKategorie, node.kOberKategorie, tseo.cSeo' . $nameSelect .
                 $descriptionSelect . $imageSelect . $countSelect . '
                 FROM tkategorie AS node INNER JOIN tkategorie AS parent ' . $langJoin . '                    
@@ -247,8 +243,7 @@ class Category
                         WHERE tkategorie.kKategorie = parent.kOberKategorie)
                     ) ' . $visibilityWhere . $depthWhere . '
                 GROUP BY node.kKategorie
-                ORDER BY node.lft',
-            ReturnType::COLLECTION
+                ORDER BY node.lft'
         )->each(static function ($item) {
             $item->bUnterKategorien = false;
             $item->Unterkategorien  = [];
@@ -266,7 +261,7 @@ class Category
             ? ' WHERE tkategorieattribut.kKategorie = ' . $categoryID . ' '
             : '';
 
-        return self::$db->query(
+        return self::$db->getCollection(
             'SELECT tkategorieattribut.kKategorie, 
                     COALESCE(tkategorieattributsprache.cName, tkategorieattribut.cName) cName, 
                     COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert,
@@ -276,8 +271,7 @@ class Category
                     ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
                     AND tkategorieattributsprache.kSprache = ' . self::$languageID . $condition . '
                 ORDER BY tkategorieattribut.kKategorie, tkategorieattribut.bIstFunktionsAttribut DESC, 
-                tkategorieattribut.nSort',
-            ReturnType::COLLECTION
+                tkategorieattribut.nSort'
         )->each(static function ($e) {
             $e->kKategorie            = (int)$e->kKategorie;
             $e->bIstFunktionsAttribut = (bool)$e->bIstFunktionsAttribut;
@@ -392,7 +386,7 @@ class Category
             }
         }
 
-        $nodes = self::$db->query(
+        $nodes = self::$db->getCollection(
             'SELECT parent.kKategorie, parent.kOberKategorie' . $nameSelect .
             $descriptionSelect . $imageSelect . $seoSelect . $countSelect . '
                 FROM tkategorie AS node INNER JOIN tkategorie AS parent ' . $langJoin . '                    
@@ -404,8 +398,7 @@ class Category
                     AND tkategoriesichtbarkeit.kKategorie IS NULL AND node.lft BETWEEN parent.lft AND parent.rght
                     AND node.kKategorie = ' . $categoryID . $visibilityWhere . '                    
                 GROUP BY parent.kKategorie
-                ORDER BY parent.lft',
-            ReturnType::COLLECTION
+                ORDER BY parent.lft'
         )->each(static function ($item) use ($functionAttributes, $localizedAttributes) {
             $item->cSeo                = URL::buildURL($item, \URLART_KATEGORIE, true);
             $item->functionAttributes  = $functionAttributes;

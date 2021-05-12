@@ -3,7 +3,6 @@
 namespace JTL\Filter\Items;
 
 use JTL\Catalog\Category\Kategorie;
-use JTL\DB\ReturnType;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\Join;
 use JTL\Filter\Option;
@@ -227,7 +226,7 @@ class Category extends BaseCategory
 
             return $this->options;
         }
-        $categories         = $this->productFilter->getDB()->executeQuery(
+        $categories         = $this->productFilter->getDB()->getObjects(
             'SELECT tseo.cSeo, ssMerkmal.kKategorie, ssMerkmal.cName, 
                 ssMerkmal.nSort, COUNT(*) AS nAnzahl
                 FROM (' . $baseQuery . " ) AS ssMerkmal
@@ -235,8 +234,7 @@ class Category extends BaseCategory
                         AND tseo.cKey = 'kKategorie'
                         AND tseo.kSprache = " . $this->getLanguageID() . '
                     GROUP BY ssMerkmal.kKategorie
-                    ORDER BY ssMerkmal.nSort, ssMerkmal.cName',
-            ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY ssMerkmal.nSort, ssMerkmal.cName'
         );
         $langID             = $this->getLanguageID();
         $customerGroupID    = $this->getCustomerGroupID();

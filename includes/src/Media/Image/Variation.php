@@ -45,14 +45,13 @@ class Variation extends AbstractImage
      */
     public function getImageNames(MediaImageRequest $req): array
     {
-        return $this->db->queryPrepared(
+        return $this->db->getCollection(
             'SELECT p.kEigenschaftWert, p.kEigenschaftWertPict, p.cPfad AS path, t.cName
                 FROM teigenschaftwertpict p
                 JOIN teigenschaftwert t
                     ON p.kEigenschaftWert = t.kEigenschaftWert
                 WHERE p.kEigenschaftWert = :vid',
-            ['vid' => $req->getID()],
-            ReturnType::COLLECTION
+            ['vid' => $req->getID()]
         )->each(static function ($item, $key) use ($req) {
             if ($key === 0 && !empty($item->path)) {
                 $req->setSourcePath($item->path);

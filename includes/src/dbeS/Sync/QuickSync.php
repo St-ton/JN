@@ -2,7 +2,6 @@
 
 namespace JTL\dbeS\Sync;
 
-use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\Shop;
 use stdClass;
@@ -65,16 +64,15 @@ final class QuickSync extends AbstractSync
         foreach ($products as $product) {
             $id = (int)$product->kArtikel;
             if (isset($product->fLagerbestand) && $product->fLagerbestand > 0) {
-                $delta = $this->db->query(
+                $delta = $this->db->getSingleObject(
                     "SELECT SUM(pos.nAnzahl) AS totalquantity
-                    FROM tbestellung b
-                    JOIN twarenkorbpos pos
-                    ON pos.kWarenkorb = b.kWarenkorb
-                    WHERE b.cAbgeholt = 'N'
-                        AND pos.kArtikel = " . $id,
-                    ReturnType::SINGLE_OBJECT
+                        FROM tbestellung b
+                        JOIN twarenkorbpos pos
+                        ON pos.kWarenkorb = b.kWarenkorb
+                        WHERE b.cAbgeholt = 'N'
+                            AND pos.kArtikel = " . $id
                 );
-                if ($delta->totalquantity > 0) {
+                if ($delta !== null && $delta->totalquantity > 0) {
                     $product->fLagerbestand -= $delta->totalquantity;
                 }
             }

@@ -138,7 +138,7 @@ final class Products extends AbstractSync
         );
         if ($this->checkStock($currentStatus, $xml) === true) {
             // get count of visible products in the product's future categories
-            $productCountPerCategory = $this->db->query(
+            $productCountPerCategory = $this->db->getCollection(
                 'SELECT tkategorie.kKategorie AS id, COUNT(tartikel.kArtikel) AS cnt
                     FROM tkategorie
                     LEFT JOIN tkategorieartikel
@@ -146,8 +146,7 @@ final class Products extends AbstractSync
                     LEFT JOIN tartikel
                         ON tartikel.kArtikel = tkategorieartikel.kArtikel ' . $stockFilter . '
                     WHERE tkategorie.kKategorie IN (' . \implode(',', $newCategoryIDs) . ')
-                    GROUP BY tkategorie.kKategorie',
-                ReturnType::COLLECTION
+                    GROUP BY tkategorie.kKategorie'
             )->each(static function ($e) {
                 $e->id  = (int)$e->id;
                 $e->cnt = (int)$e->cnt;
@@ -197,7 +196,7 @@ final class Products extends AbstractSync
         if (\count($diff) === 0) {
             return false;
         }
-        $collection = $this->db->query(
+        $collection = $this->db->getCollection(
             'SELECT tkategorie.kKategorie, COUNT(tkategorieartikel.kArtikel) AS cnt
                 FROM tkategorie
                 LEFT JOIN  tkategorieartikel
@@ -205,8 +204,7 @@ final class Products extends AbstractSync
                 LEFT JOIN tartikel
                     ON tartikel.kArtikel = tkategorieartikel.kArtikel
                 WHERE tkategorie.kKategorie IN (' . \implode(',', $diff) . ') ' . $stockFilter . '
-                GROUP BY tkategorie.kKategorie',
-            ReturnType::COLLECTION
+                GROUP BY tkategorie.kKategorie'
         );
 
         return $collection->contains('cnt', 0) || $collection->count() < \count($diff);
@@ -225,14 +223,13 @@ final class Products extends AbstractSync
             return false;
         }
         // check if the product was the only one in at least one of these categories
-        return $this->db->query(
+        return $this->db->getCollection(
             'SELECT tkategorieartikel.kKategorie, COUNT(tkategorieartikel.kArtikel) AS cnt
                 FROM tkategorieartikel
                 LEFT JOIN tartikel
                     ON tartikel.kArtikel = tkategorieartikel.kArtikel
                 WHERE tkategorieartikel.kKategorie IN (' . \implode(',', $diff) . ') ' . $stockFilter . '
-                GROUP BY tkategorieartikel.kKategorie',
-            ReturnType::COLLECTION
+                GROUP BY tkategorieartikel.kKategorie'
         )->contains('cnt', '1');
     }
 
@@ -1058,14 +1055,13 @@ final class Products extends AbstractSync
      */
     private function deleteProductAttributeValues(int $productID): void
     {
-        $propValues = $this->db->queryPrepared(
+        $propValues = $this->db->getObjects(
             'SELECT teigenschaftwert.kEigenschaftWert AS id
-            FROM teigenschaftwert
-            JOIN teigenschaft
-                ON teigenschaft.kEigenschaft = teigenschaftwert.kEigenschaft
-            WHERE teigenschaft.kArtikel = :pid',
-            ['pid' => $productID],
-            ReturnType::ARRAY_OF_OBJECTS
+                FROM teigenschaftwert
+                JOIN teigenschaft
+                    ON teigenschaft.kEigenschaft = teigenschaftwert.kEigenschaft
+                WHERE teigenschaft.kArtikel = :pid',
+            ['pid' => $productID]
         );
         foreach ($propValues as $propValue) {
             $this->deletePropertyValue((int)$propValue->id);

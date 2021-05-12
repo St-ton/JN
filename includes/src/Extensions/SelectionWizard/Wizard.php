@@ -3,7 +3,6 @@
 namespace JTL\Extensions\SelectionWizard;
 
 use JTL\Catalog\Category\Kategorie;
-use JTL\DB\ReturnType;
 use JTL\Filter\Items\Characteristic;
 use JTL\Filter\Option;
 use JTL\Filter\ProductFilter;
@@ -123,7 +122,7 @@ class Wizard
         $cache   = Shop::Container()->getCache();
         $cacheID = 'jtl_sw_' . $keyName . '_' . $id . '_' . $languageID . '_' . (int)$activeOnly;
         if (($item = $cache->get($cacheID)) === false) {
-            $item = Shop::Container()->getDB()->queryPrepared(
+            $item = Shop::Container()->getDB()->getSingleObject(
                 'SELECT *
                     FROM tauswahlassistentort AS ao
                         JOIN tauswahlassistentgruppe AS ag
@@ -136,8 +135,7 @@ class Wizard
                     'ckey'     => $keyName,
                     'kkey'     => $id,
                     'ksprache' => $languageID
-                ],
-                ReturnType::SINGLE_OBJECT
+                ]
             );
             if ($item === false) {
                 $item = null;
@@ -165,14 +163,13 @@ class Wizard
         $this->kSprache                = (int)$this->kSprache;
         $this->nAktiv                  = (int)$this->nAktiv;
 
-        $questionIDs = Shop::Container()->getDB()->queryPrepared(
+        $questionIDs = Shop::Container()->getDB()->getObjects(
             'SELECT kAuswahlAssistentFrage AS id
                 FROM tauswahlassistentfrage
                 WHERE kAuswahlAssistentGruppe = :groupID' .
             ($activeOnly ? ' AND nAktiv = 1 ' : ' ') .
             'ORDER BY nSort',
-            ['groupID' => $this->kAuswahlAssistentGruppe],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['groupID' => $this->kAuswahlAssistentGruppe]
         );
 
         $this->questions = [];

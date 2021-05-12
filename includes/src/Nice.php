@@ -2,7 +2,6 @@
 
 namespace JTL;
 
-use JTL\DB\ReturnType;
 use JTL\xtea\XTEA;
 use stdClass;
 
@@ -76,11 +75,10 @@ class Nice
     {
         $cacheID = 'cbrocken';
         if (($brocken = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $data = Shop::Container()->getDB()->query(
+            $data = Shop::Container()->getDB()->getSingleObject(
                 'SELECT cBrocken 
                     FROM tbrocken 
-                    LIMIT 1',
-                ReturnType::SINGLE_OBJECT
+                    LIMIT 1'
             );
             if (!empty($data->cBrocken)) {
                 $passA   = \mb_substr(\base64_decode($data->cBrocken), 0, 9);

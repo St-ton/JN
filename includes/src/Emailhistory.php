@@ -3,7 +3,6 @@
 namespace JTL;
 
 use Exception;
-use JTL\DB\ReturnType;
 use stdClass;
 
 /**
@@ -152,11 +151,10 @@ class Emailhistory
      */
     public function getAll(string $limitSQL = ''): array
     {
-        $historyData = Shop::Container()->getDB()->query(
+        $historyData = Shop::Container()->getDB()->getObjects(
             'SELECT * 
                 FROM temailhistory 
-                ORDER BY dSent DESC' . $limitSQL,
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY dSent DESC' . $limitSQL
         );
         $history     = [];
         foreach ($historyData as $item) {
@@ -173,9 +171,8 @@ class Emailhistory
      */
     public function getCount(): int
     {
-        return (int)Shop::Container()->getDB()->query(
-            'SELECT COUNT(*) AS nCount FROM temailhistory',
-            ReturnType::SINGLE_OBJECT
+        return (int)Shop::Container()->getDB()->getSingleObject(
+            'SELECT COUNT(*) AS nCount FROM temailhistory'
         )->nCount;
     }
 

@@ -9,7 +9,6 @@ use Gettext\TranslatorFunctions;
 use InvalidArgumentException;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use JTL\Shop;
 use JTLShop\SemVer\Version;
 use PDOException;
 

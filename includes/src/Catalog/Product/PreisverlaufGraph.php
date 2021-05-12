@@ -2,7 +2,6 @@
 
 namespace JTL\Catalog\Product;
 
-use JTL\DB\ReturnType;
 use JTL\Shop;
 
 /**
@@ -431,7 +430,7 @@ class PreisverlaufGraph
      */
     public function holePreisverlauf(int $productID, int $customerGroupID, int $month): array
     {
-        $items = Shop::Container()->getDB()->queryPrepared(
+        $items = Shop::Container()->getDB()->getObjects(
             'SELECT fVKNetto, UNIX_TIMESTAMP(dDate) AS timestamp
                 FROM tpreisverlauf
                 WHERE kArtikel = :aid
@@ -442,8 +441,7 @@ class PreisverlaufGraph
                 'aid'  => $productID,
                 'cid'  => $customerGroupID,
                 'mnth' => $month
-            ],
-            ReturnType::ARRAY_OF_OBJECTS
+            ]
         );
         if (\count($items) === 0) {
             return [];

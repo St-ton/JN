@@ -4,7 +4,6 @@ namespace JTL\Backend;
 
 use Exception;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Shop;
 use stdClass;
 

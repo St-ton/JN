@@ -163,7 +163,7 @@ class Category implements CategoryInterface
     {
         $this->id          = $id;
         $activeFilter      = $activeOnly ? ' AND tnewskategorie.nAktiv = 1 ' : '';
-        $categoryLanguages = $this->db->queryPrepared(
+        $categoryLanguages = $this->db->getObjects(
             "SELECT tnewskategorie.*, t.*, tseo.cSeo
                 FROM tnewskategorie
                 JOIN tnewskategoriesprache t 
@@ -173,8 +173,7 @@ class Category implements CategoryInterface
                     AND tseo.kSprache = t.languageID
                     AND tseo.kKey = :cid
                 WHERE tnewskategorie.kNewsKategorie = :cid" . $activeFilter,
-            ['cid' => $this->id],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['cid' => $this->id]
         );
         if (\count($categoryLanguages) === 0) {
             $this->setID(-1);

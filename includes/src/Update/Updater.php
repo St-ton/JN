@@ -5,7 +5,6 @@ namespace JTL\Update;
 use Exception;
 use Ifsnop\Mysqldump\Mysqldump;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Minify\MinifyService;
 use JTL\Network\JTLApi;
 use JTL\Shop;
@@ -156,7 +155,7 @@ class Updater
      */
     public function getVersion(): stdClass
     {
-        $v = $this->db->query('SELECT * FROM tversion', ReturnType::SINGLE_OBJECT);
+        $v = $this->db->getSingleObject('SELECT * FROM tversion');
 
         if ($v === null) {
             throw new Exception('Unable to identify application version');
@@ -415,8 +414,7 @@ class Updater
      */
     public function setVersion(Version $targetVersion): void
     {
-        $tVersionColumns = $this->db->executeQuery('SHOW COLUMNS FROM `tversion`', ReturnType::ARRAY_OF_OBJECTS);
-        foreach ($tVersionColumns as $column) {
+        foreach ($this->db->getObjects('SHOW COLUMNS FROM `tversion`') as $column) {
             if ($column->Field === 'nVersion') {
                 if ($column->Type !== 'varchar(20)') {
                     $newVersion = \sprintf('%d%02d', $targetVersion->getMajor(), $targetVersion->getMinor());

@@ -57,7 +57,7 @@ $oPagiKunden = (new Pagination('kunden'))
     ->setItemCount($customerCount)
     ->assemble();
 
-$customers = Shop::Container()->getDB()->query(
+$customers = Shop::Container()->getDB()->getObjects(
     "SELECT tkunde.kKunde, tkunde.cFirma, tkunde.cVorname, tkunde.cNachname, 
         DATE_FORMAT(twarenkorbpers.dErstellt, '%d.%m.%Y  %H:%i') AS Datum, 
         COUNT(twarenkorbperspos.kWarenkorbPersPos) AS nAnzahl
@@ -69,8 +69,7 @@ $customers = Shop::Container()->getDB()->query(
         " . $searchSQL->cWHERE . '
         GROUP BY tkunde.kKunde
         ORDER BY twarenkorbpers.dErstellt DESC
-        LIMIT ' . $oPagiKunden->getLimitSQL(),
-    ReturnType::ARRAY_OF_OBJECTS
+        LIMIT ' . $oPagiKunden->getLimitSQL()
 );
 
 foreach ($customers as $item) {
@@ -98,7 +97,7 @@ if (Request::getInt('a') > 0) {
         ->setItemCount($persCartCount)
         ->assemble();
 
-    $carts = Shop::Container()->getDB()->query(
+    $carts = Shop::Container()->getDB()->getObjects(
         "SELECT tkunde.kKunde AS kKundeTMP, tkunde.cVorname, tkunde.cNachname, twarenkorbperspos.kArtikel, 
             twarenkorbperspos.cArtikelName, twarenkorbpers.kKunde, twarenkorbperspos.fAnzahl, 
             DATE_FORMAT(twarenkorbperspos.dHinzugefuegt, '%d.%m.%Y  %H:%i') AS Datum
@@ -108,8 +107,7 @@ if (Request::getInt('a') > 0) {
             JOIN twarenkorbperspos 
                 ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
             WHERE twarenkorbpers.kKunde = " . $customerID . '
-            LIMIT ' . $cartPagination->getLimitSQL(),
-        ReturnType::ARRAY_OF_OBJECTS
+            LIMIT ' . $cartPagination->getLimitSQL()
     );
     foreach ($carts as $cart) {
         $customer = new Customer((int)$cart->kKundeTMP);

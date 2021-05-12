@@ -226,24 +226,22 @@ final class Shopsetting implements ArrayAccess
     private function getSectionData($section): array
     {
         if ($section === \CONF_PLUGINZAHLUNGSARTEN) {
-            return Shop::Container()->getDB()->query(
+            return Shop::Container()->getDB()->getObjects(
                 "SELECT cName, cWert, '' AS type
                      FROM tplugineinstellungen
                      WHERE cName LIKE '%_min%' 
-                        OR cName LIKE '%_max'",
-                ReturnType::ARRAY_OF_OBJECTS
+                        OR cName LIKE '%_max'"
             );
         }
 
-        return Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getObjects(
             'SELECT teinstellungen.cName, teinstellungen.cWert, teinstellungenconf.cInputTyp AS type
                 FROM teinstellungen
                 LEFT JOIN teinstellungenconf
                     ON teinstellungenconf.cWertName = teinstellungen.cName
                     AND teinstellungenconf.kEinstellungenSektion = teinstellungen.kEinstellungenSektion
                 WHERE teinstellungen.kEinstellungenSektion = :section',
-            ['section' => $section],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['section' => $section]
         );
     }
 
@@ -306,15 +304,14 @@ final class Shopsetting implements ArrayAccess
      */
     private function getBrandingConfig(DbInterface $db): array
     {
-        $data = $db->query(
+        $data = $db->getObjects(
             'SELECT tbranding.kBranding AS id, tbranding.cBildKategorie AS type, 
             tbrandingeinstellung.cPosition AS position, tbrandingeinstellung.cBrandingBild AS path,
             tbrandingeinstellung.dTransparenz AS transparency, tbrandingeinstellung.dGroesse AS size
                 FROM tbrandingeinstellung
                 INNER JOIN tbranding 
                     ON tbrandingeinstellung.kBranding = tbranding.kBranding
-                WHERE tbrandingeinstellung.nAktiv = 1',
-            ReturnType::ARRAY_OF_OBJECTS
+                WHERE tbrandingeinstellung.nAktiv = 1'
         );
         foreach ($data as $item) {
             $item->size         = (int)$item->size;
@@ -333,11 +330,10 @@ final class Shopsetting implements ArrayAccess
      */
     private function getTemplateConfig(DbInterface $db): array
     {
-        $data     = $db->query(
+        $data     = $db->getObjects(
             "SELECT cSektion AS sec, cWert AS val, cName AS name 
                 FROM ttemplateeinstellungen 
-                WHERE cTemplate = (SELECT cTemplate FROM ttemplate WHERE eTyp = 'standard')",
-            ReturnType::ARRAY_OF_OBJECTS
+                WHERE cTemplate = (SELECT cTemplate FROM ttemplate WHERE eTyp = 'standard')"
         );
         $settings = [];
         foreach ($data as $setting) {

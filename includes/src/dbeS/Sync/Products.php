@@ -1241,17 +1241,14 @@ final class Products extends AbstractSync
      */
     private function addCategoryDiscounts(int $productID): array
     {
-        $customerGroups     = $this->db->query(
-            'SELECT kKundengruppe FROM tkundengruppe',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
+        $customerGroups     = $this->db->getObjects('SELECT kKundengruppe FROM tkundengruppe');
         $affectedProductIDs = [];
         $this->db->delete('tartikelkategorierabatt', 'kArtikel', $productID);
         if (!\is_array($customerGroups) || \count($customerGroups) === 0) {
             return $affectedProductIDs;
         }
         foreach ($customerGroups as $item) {
-            $maxDiscount = $this->db->queryPrepared(
+            $maxDiscount = $this->db->getSingleObject(
                 'SELECT tkategoriekundengruppe.fRabatt, tkategoriekundengruppe.kKategorie
                 FROM tkategoriekundengruppe
                 JOIN tkategorieartikel
@@ -1267,11 +1264,10 @@ final class Products extends AbstractSync
                 [
                     'kArtikel'      => $productID,
                     'kKundengruppe' => $item->kKundengruppe,
-                ],
-                ReturnType::SINGLE_OBJECT
+                ]
             );
 
-            if (isset($maxDiscount->fRabatt) && $maxDiscount->fRabatt > 0) {
+            if ($maxDiscount !== null && $maxDiscount->fRabatt > 0) {
                 $this->db->queryPrepared(
                     'INSERT INTO tartikelkategorierabatt (kArtikel, kKundengruppe, kKategorie, fRabatt)
                         VALUES (:productID, :customerGroup, :categoryID, :discount) ON DUPLICATE KEY UPDATE
@@ -1311,11 +1307,10 @@ final class Products extends AbstractSync
         }
 
         return map(
-            $this->db->query(
+            $this->db->getObjects(
                 'SELECT kArtikel AS id
                     FROM tartikelkonfiggruppe
-                    WHERE kKonfiggruppe IN (' . \implode(',', $configGroupIDs) . ')',
-                ReturnType::ARRAY_OF_OBJECTS
+                    WHERE kKonfiggruppe IN (' . \implode(',', $configGroupIDs) . ')'
             ),
             static function ($item) {
                 return (int)$item->id;
@@ -1366,35 +1361,31 @@ final class Products extends AbstractSync
         if ($deps->count() > 0) {
             $whereIn = $deps->implode(',');
             // flush cache tags associated with the product's manufacturer ID
-            $cacheTags = $cacheTags->concat(map($this->db->query(
+            $cacheTags = $cacheTags->concat(map($this->db->getObjects(
                 'SELECT DISTINCT kHersteller AS id
                     FROM tartikel
                     WHERE kArtikel IN (' . $whereIn . ')
-                        AND kHersteller > 0',
-                ReturnType::ARRAY_OF_OBJECTS
+                        AND kHersteller > 0'
             ), static function ($item) {
                 return \CACHING_GROUP_MANUFACTURER . '_' . (int)$item->id;
-            }))->concat(map($this->db->query(
+            }))->concat(map($this->db->getObjects(
                 'SELECT DISTINCT kKategorie AS id
                     FROM tkategorieartikel
-                    WHERE kArtikel IN (' . $whereIn . ')',
-                ReturnType::ARRAY_OF_OBJECTS
+                    WHERE kArtikel IN (' . $whereIn . ')'
             ), static function ($item) {
                 return \CACHING_GROUP_CATEGORY . '_' . (int)$item->id;
-            }))->concat(map($this->db->query(
+            }))->concat(map($this->db->getObjects(
                 'SELECT DISTINCT kVaterArtikel AS id
                     FROM tartikel
                     WHERE kArtikel IN (' . $whereIn . ')
-                        AND kVaterArtikel > 0',
-                ReturnType::ARRAY_OF_OBJECTS
+                        AND kVaterArtikel > 0'
             ), static function ($item) {
                 return \CACHING_GROUP_ARTICLE . '_' . (int)$item->id;
-            }))->concat(map($this->db->query(
+            }))->concat(map($this->db->getObjects(
                 'SELECT DISTINCT kArtikel AS id
                     FROM tartikel
                     WHERE kVaterArtikel IN (' . $whereIn . ')
-                        AND kVaterArtikel > 0',
-                ReturnType::ARRAY_OF_OBJECTS
+                        AND kVaterArtikel > 0'
             ), static function ($item) {
                 return \CACHING_GROUP_ARTICLE . '_' . (int)$item->id;
             }));

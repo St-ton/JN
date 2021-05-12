@@ -3,7 +3,6 @@
 namespace JTL\Extensions\SelectionWizard;
 
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Shop;
 use stdClass;
 
@@ -92,13 +91,12 @@ class Group
     private function loadFromDB(int $groupID, bool $active, bool $activeOnly, bool $backend): void
     {
         $activeSQL = $active ? ' AND nAktiv = 1' : '';
-        $group     = $this->db->queryPrepared(
+        $group     = $this->db->getSingleObject(
             'SELECT *
                 FROM tauswahlassistentgruppe
                 WHERE kAuswahlAssistentGruppe = :groupID' .
             $activeSQL,
-            ['groupID' => $groupID],
-            ReturnType::SINGLE_OBJECT
+            ['groupID' => $groupID]
         );
         if (isset($group->kAuswahlAssistentGruppe) && $group->kAuswahlAssistentGruppe > 0) {
             $question = new Question();
@@ -119,14 +117,13 @@ class Group
                     $this->nStartseite = 1;
                 }
             }
-            $language       = $this->db->queryPrepared(
+            $language       = $this->db->getSingleObject(
                 'SELECT cNameDeutsch 
                     FROM tsprache 
                     WHERE kSprache = :langID',
-                ['langID' => (int)$this->kSprache],
-                ReturnType::SINGLE_OBJECT
+                ['langID' => (int)$this->kSprache]
             );
-            $this->cSprache = $language->cNameDeutsch;
+            $this->cSprache = $language->cNameDeutsch ?? '';
         }
     }
 

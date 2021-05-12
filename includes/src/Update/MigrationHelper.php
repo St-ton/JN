@@ -181,10 +181,9 @@ class MigrationHelper
      */
     public static function indexColumns(string $idxTable, string $idxName): array
     {
-        return Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getObjects(
             "SHOW INDEXES FROM `$idxTable` WHERE Key_name = :idxName",
-            ['idxName' => $idxName],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['idxName' => $idxName]
         );
     }
 

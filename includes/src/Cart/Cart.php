@@ -1432,13 +1432,11 @@ class Cart
                 // Position ohne Variationen bzw. Variationen ohne eigenen Lagerbestand
                 // schaue in DB, ob Lagerbestand ausreichend
                 $depProducts = $item->Artikel->getAllDependentProducts(true);
-                $depStock    = Shop::Container()->getDB()->query(
+                $depStock    = Shop::Container()->getDB()->getObjects(
                     'SELECT kArtikel, fLagerbestand
                         FROM tartikel
-                        WHERE kArtikel IN (' . \implode(', ', \array_keys($depProducts)) . ')',
-                    ReturnType::ARRAY_OF_OBJECTS
+                        WHERE kArtikel IN (' . \implode(', ', \array_keys($depProducts)) . ')'
                 );
-
                 foreach ($depStock as $productStock) {
                     $productID = (int)$productStock->kArtikel;
 

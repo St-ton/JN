@@ -94,15 +94,14 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form
         $smarty->assign('cSearch', $sql->cSearch);
     } else {
         $section  = $db->select('teinstellungensektion', 'kEinstellungenSektion', $sectionID);
-        $confData = $db->query(
+        $confData = $db->getObjects(
             'SELECT *
                 FROM teinstellungenconf
                 WHERE kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . "
                     AND cConf = 'Y'
                     AND nModul = 0
                     AND nStandardanzeigen = 1 " . $sql->cWHERE . '
-                ORDER BY nSort',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY nSort'
         );
     }
     $settingSection = new Manager($db, $smarty);
@@ -160,11 +159,10 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form
 }
 
 if ($step === 'uebersicht') {
-    $sections     = $db->query(
+    $sections     = $db->getObjects(
         'SELECT *
             FROM teinstellungensektion
-            ORDER BY kEinstellungenSektion',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY kEinstellungenSektion'
     );
     $sectionCount = count($sections);
     for ($i = 0; $i < $sectionCount; $i++) {
@@ -198,15 +196,14 @@ if ($step === 'einstellungen bearbeiten') {
         $smarty->assign('cSearch', $sql->cSearch)
                ->assign('cSuche', $sql->cSuche);
     } else {
-        $confData = $db->query(
+        $confData = $db->getObjects(
             'SELECT *
                 FROM teinstellungenconf
                 WHERE nModul = 0
                     AND nStandardAnzeigen = 1
                     AND kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . ' ' .
                 $sql->cWHERE . '
-                ORDER BY nSort',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY nSort'
         );
     }
     $settingSection = new Manager($db, $smarty);
@@ -221,11 +218,10 @@ if ($step === 'einstellungen bearbeiten') {
         //@ToDo: Setting 492 is the only one listbox at the moment.
         //But In special case of setting 492 values come from kKundengruppe instead of teinstellungenconfwerte
         if ($config->cInputTyp === 'listbox' && $config->kEinstellungenConf === 492) {
-            $config->ConfWerte = $db->query(
+            $config->ConfWerte = $db->getObjects(
                 'SELECT kKundengruppe AS cWert, cName
                     FROM tkundengruppe
-                    ORDER BY cStandard DESC',
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY cStandard DESC'
             );
         } elseif (in_array($config->cInputTyp, ['selectbox', 'listbox'], true)) {
             $config->ConfWerte = $db->selectAll(

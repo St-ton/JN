@@ -32,12 +32,11 @@ function getAdminSectionSettings($configSectionID, bool $byName = false)
         $where    = $byName
             ? "WHERE cWertName IN ('" . implode("','", $configSectionID) . "')"
             : 'WHERE kEinstellungenConf IN (' . implode(',', array_map('\intval', $configSectionID)) . ')';
-        $confData = $db->query(
+        $confData = $db->getObjects(
             'SELECT *
                 FROM teinstellungenconf
                 ' . $where . '
-                ORDER BY nSort',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY nSort'
         );
     } else {
         $confData = $db->selectAll(
@@ -66,11 +65,10 @@ function getAdminSectionSettings($configSectionID, bool $byName = false)
                 'cStandard DESC'
             );
         } elseif ($conf->cInputTyp === 'selectkdngrp') {
-            $conf->ConfWerte = $db->query(
+            $conf->ConfWerte = $db->getObjects(
                 'SELECT kKundengruppe, cName
                     FROM tkundengruppe
-                    ORDER BY cStandard DESC',
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY cStandard DESC'
             );
         } else {
             $conf->ConfWerte = $db->selectAll(
@@ -125,12 +123,11 @@ function saveAdminSettings(array $settingsIDs, array $post, $tags = [CACHING_GRO
     $where    = $byName
         ? "WHERE cWertName IN ('" . implode("','", $settingsIDs) . "')"
         : 'WHERE kEinstellungenConf IN (' . implode(',', array_map('\intval', $settingsIDs)) . ')';
-    $confData = $db->query(
+    $confData = $db->getObjects(
         'SELECT *
             FROM teinstellungenconf
             ' . $where . '
-            ORDER BY nSort',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY nSort'
     );
     if (count($confData) === 0) {
         return __('errorConfigSave');
@@ -334,13 +331,12 @@ function holeAlleKampagnen(bool $internalOnly = false, bool $activeOnly = true)
         $interalSQL = ' WHERE kKampagne >= 1000';
     }
     $campaigns = [];
-    $items     = Shop::Container()->getDB()->query(
+    $items     = Shop::Container()->getDB()->getObjects(
         'SELECT kKampagne
             FROM tkampagne
             ' . $activeSQL . '
             ' . $interalSQL . '
-            ORDER BY kKampagne',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY kKampagne'
     );
     foreach ($items as $item) {
         $campaign = new Campaign((int)$item->kKampagne);

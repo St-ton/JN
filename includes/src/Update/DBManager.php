@@ -18,12 +18,10 @@ class DBManager
     public static function getTables(): array
     {
         $tables = [];
-        $rows   = Shop::Container()->getDB()->query(
+        $rows   = Shop::Container()->getDB()->getObjects(
             "SHOW FULL TABLES 
-                WHERE Table_type='BASE TABLE'",
-            ReturnType::ARRAY_OF_OBJECTS
+                WHERE Table_type='BASE TABLE'"
         );
-
         foreach ($rows as $row) {
             $tables[] = \current($row);
         }
@@ -39,10 +37,9 @@ class DBManager
     {
         $list    = [];
         $table   = Shop::Container()->getDB()->escape($table);
-        $columns = Shop::Container()->getDB()->query(
+        $columns = Shop::Container()->getDB()->getObjects(
             "SHOW FULL COLUMNS 
-                FROM `{$table}`",
-            ReturnType::ARRAY_OF_OBJECTS
+                FROM `{$table}`"
         );
         foreach ($columns as $column) {
             $column->Type_info    = self::parseType($column->Type);
@@ -60,12 +57,10 @@ class DBManager
     {
         $list    = [];
         $table   = Shop::Container()->getDB()->escape($table);
-        $indexes = Shop::Container()->getDB()->query(
+        $indexes = Shop::Container()->getDB()->getObjects(
             "SHOW INDEX 
-                FROM `{$table}`",
-            ReturnType::ARRAY_OF_OBJECTS
+                FROM `{$table}`"
         );
-
         foreach ($indexes as $index) {
             $container = (object)[
                 'Index_type' => 'INDEX',
@@ -115,10 +110,9 @@ class DBManager
         }
 
         $list   = [];
-        $status = Shop::Container()->getDB()->query(
+        $status = Shop::Container()->getDB()->getObjects(
             "SHOW TABLE STATUS 
-                FROM `{$database}`",
-            ReturnType::ARRAY_OF_OBJECTS
+                FROM `{$database}`"
         );
         foreach ($status as $s) {
             $list[$s->Name] = $s;

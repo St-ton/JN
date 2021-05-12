@@ -112,12 +112,11 @@ function holeEinstellungen($sql, bool $save)
         return $sql;
     }
 
-    $sql->oEinstellung_arr = Shop::Container()->getDB()->query(
+    $sql->oEinstellung_arr = Shop::Container()->getDB()->getObjects(
         'SELECT *
             FROM teinstellungenconf
             WHERE ' . $sql->cWHERE . '
-            ORDER BY kEinstellungenSektion, nSort',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY kEinstellungenSektion, nSort'
     );
     Shop::Container()->getGetText()->loadConfigLocales();
     foreach ($sql->oEinstellung_arr as $j => $config) {
@@ -178,13 +177,12 @@ function holeEinstellungen($sql, bool $save)
 function holeEinstellungAbteil($sql, $sort, $sectionID)
 {
     if ((int)$sort > 0 && (int)$sectionID > 0) {
-        $items = Shop::Container()->getDB()->query(
+        $items = Shop::Container()->getDB()->getObjects(
             'SELECT *
                 FROM teinstellungenconf
                 WHERE nSort > ' . (int)$sort . '
                     AND kEinstellungenSektion = ' . (int)$sectionID . '
-                ORDER BY nSort',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY nSort'
         );
         foreach ($items as $item) {
             if ($item->cConf !== 'N') {

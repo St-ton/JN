@@ -105,7 +105,7 @@ class DBMigrationHelper
     {
         $database = Shop::Container()->getDB()->getConfig()['database'];
 
-        return Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getObjects(
             "SELECT t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
                 , COUNT(IF(c.DATA_TYPE = 'text', c.COLUMN_NAME, NULL)) TEXT_FIELDS
                 , COUNT(IF(c.DATA_TYPE = 'tinyint', c.COLUMN_NAME, NULL)) TINY_FIELDS
@@ -125,8 +125,7 @@ class DBMigrationHelper
                     )
                 GROUP BY t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
                 ORDER BY t.`TABLE_NAME`",
-            ['schema' => $database],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['schema' => $database]
         );
     }
 
@@ -211,14 +210,13 @@ class DBMigrationHelper
             $filter          = 'AND `TABLE_NAME` = :table';
         }
 
-        return Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getObjects(
             "SELECT DISTINCT `TABLE_NAME`, `INDEX_NAME`
                 FROM information_schema.STATISTICS
                 WHERE `TABLE_SCHEMA` = :schema
                     {$filter}
                     AND `INDEX_TYPE` = 'FULLTEXT'",
-            $params,
-            ReturnType::ARRAY_OF_OBJECTS
+            $params
         );
     }
 
@@ -289,7 +287,7 @@ class DBMigrationHelper
     {
         $database = Shop::Container()->getDB()->getConfig()['database'];
 
-        return Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getObjects(
             "SELECT `COLUMN_NAME`, `DATA_TYPE`, `COLUMN_TYPE`, `COLUMN_DEFAULT`, `IS_NULLABLE`, `EXTRA`
                 FROM information_schema.COLUMNS
                 WHERE `TABLE_SCHEMA` = :schema
@@ -300,8 +298,7 @@ class DBMigrationHelper
                         OR (DATA_TYPE = 'tinyint' AND SUBSTRING(COLUMN_NAME, 1, 1) = 'k')
                     )
                 ORDER BY `ORDINAL_POSITION`",
-            ['schema' => $database, 'table' => $table],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['schema' => $database, 'table' => $table]
         );
     }
 
@@ -313,7 +310,7 @@ class DBMigrationHelper
     {
         $database = Shop::Container()->getDB()->getConfig()['database'];
 
-        return Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getObjects(
             'SELECT rc.`CONSTRAINT_NAME`, rc.`TABLE_NAME`, rc.`UPDATE_RULE`, rc.`DELETE_RULE`,
                     rk.`COLUMN_NAME`, rk.`REFERENCED_TABLE_NAME`, rk.`REFERENCED_COLUMN_NAME`
                 FROM information_schema.REFERENTIAL_CONSTRAINTS rc
@@ -325,8 +322,7 @@ class DBMigrationHelper
             [
                 'schema' => $database,
                 'table'  => $table
-            ],
-            ReturnType::ARRAY_OF_OBJECTS
+            ]
         );
     }
 

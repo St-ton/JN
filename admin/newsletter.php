@@ -620,17 +620,16 @@ if ($step === 'uebersicht') {
     $pagiSubscriptions = (new Pagination('alle'))
         ->setItemCount($admin->getSubscriberCount($activeSearchSQL))
         ->assemble();
-    $queue             = $db->queryPrepared(
+    $queue             = $db->getObjects(
         "SELECT l.cBetreff, q.tasksExecuted, c.cronID, c.foreignKeyID, c.startDate as 'Datum'
-        FROM tcron c
-            LEFT JOIN tjobqueue q ON c.cronID = q.cronID
-            LEFT JOIN tnewsletter l ON c.foreignKeyID = l.kNewsletter
-        WHERE c.jobType = 'newsletter'
-            AND l.kSprache = :langID
-        ORDER BY c.startDate DESC
-        LIMIT " . $pagiQueue->getLimitSQL(),
-        ['langID' => $languageID],
-        ReturnType::ARRAY_OF_OBJECTS
+            FROM tcron c
+                LEFT JOIN tjobqueue q ON c.cronID = q.cronID
+                LEFT JOIN tnewsletter l ON c.foreignKeyID = l.kNewsletter
+            WHERE c.jobType = 'newsletter'
+                AND l.kSprache = :langID
+            ORDER BY c.startDate DESC
+            LIMIT " . $pagiQueue->getLimitSQL(),
+        ['langID' => $languageID]
     );
     if (!($instance instanceof Newsletter)) {
         $instance = new Newsletter($db, $conf);
@@ -643,29 +642,26 @@ if ($step === 'uebersicht') {
         $entry->nAnzahlEmpfaenger = $recipient->nAnzahl;
         $entry->cKundengruppe_arr = $recipient->cKundengruppe_arr;
     }
-    $templates   = $db->query(
+    $templates   = $db->getObjects(
         'SELECT kNewsletterVorlage, kNewslettervorlageStd, cBetreff, cName
             FROM tnewslettervorlage
             WHERE kSprache = ' . $languageID . '
-            ORDER BY kNewsletterVorlage DESC LIMIT ' . $pagiTemplates->getLimitSQL(),
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY kNewsletterVorlage DESC LIMIT ' . $pagiTemplates->getLimitSQL()
     );
-    $defaultData = $db->query(
+    $defaultData = $db->getObjects(
         'SELECT *
             FROM tnewslettervorlagestd
             WHERE kSprache = ' . $languageID . '
-            ORDER BY cName',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY cName'
     );
     foreach ($defaultData as $tpl) {
-        $tpl->oNewsletttervorlageStdVar_arr = $db->query(
+        $tpl->oNewsletttervorlageStdVar_arr = $db->getObjects(
             'SELECT *
                 FROM tnewslettervorlagestdvar
-                WHERE kNewslettervorlageStd = ' . (int)$tpl->kNewslettervorlageStd,
-            ReturnType::ARRAY_OF_OBJECTS
+                WHERE kNewslettervorlageStd = ' . (int)$tpl->kNewslettervorlageStd
         );
     }
-    $inactiveRecipients = $db->query(
+    $inactiveRecipients = $db->getObjects(
         "SELECT tnewsletterempfaenger.kNewsletterEmpfaenger, tnewsletterempfaenger.cVorname AS newsVorname,
             tnewsletterempfaenger.cNachname AS newsNachname, tkunde.cVorname, tkunde.cNachname,
             tnewsletterempfaenger.cEmail, tnewsletterempfaenger.nAktiv, tkunde.kKundengruppe, tkundengruppe.cName,
@@ -678,29 +674,26 @@ if ($step === 'uebersicht') {
             WHERE tnewsletterempfaenger.nAktiv = 0
             " . $inactiveSearchSQL->cWHERE . '
             ORDER BY tnewsletterempfaenger.dEingetragen DESC
-            LIMIT ' . $pagiInactive->getLimitSQL(),
-        ReturnType::ARRAY_OF_OBJECTS
+            LIMIT ' . $pagiInactive->getLimitSQL()
     );
     foreach ($inactiveRecipients as $recipient) {
         $customer             = new Customer(isset($recipient->kKunde) ? (int)$recipient->kKunde : null);
         $recipient->cNachname = $customer->cNachname;
     }
 
-    $history              = $db->queryPrepared(
+    $history              = $db->getObjects(
         "SELECT kNewsletterHistory, nAnzahl, cBetreff, cKundengruppe,
             DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum
             FROM tnewsletterhistory
             WHERE kSprache = :lid
             ORDER BY dStart DESC
             LIMIT " . $pagiHistory->getLimitSQL(),
-        ['lid' => $languageID],
-        ReturnType::ARRAY_OF_OBJECTS
+        ['lid' => $languageID]
     );
-    $customerGroupsByName = $db->query(
+    $customerGroupsByName = $db->getObjects(
         'SELECT *
             FROM tkundengruppe
-            ORDER BY cName',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY cName'
     );
     $smarty->assign('kundengruppen', $customerGroupsByName)
         ->assign('oNewsletterQueue_arr', $queue)

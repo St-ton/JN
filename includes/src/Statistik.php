@@ -81,7 +81,7 @@ class Statistik
                 $this->nAnzeigeIntervall = $interval;
             }
             $dateSQL = $this->baueDatumSQL('dZeit');
-            $stats   = Shop::Container()->getDB()->query(
+            $stats   = Shop::Container()->getDB()->getObjects(
                 "SELECT * , sum( t.nCount ) AS nCount
                     FROM (
                     SELECT dZeit, DATE_FORMAT( dZeit, '%d.%m.%Y' ) AS dTime, 
@@ -106,8 +106,7 @@ class Statistik
                         ' . $dateSQL->cGroupBy . '
                         ) AS t
                         ' . $dateSQL->cGroupBy . '
-                        ORDER BY dTime ASC',
-                ReturnType::ARRAY_OF_OBJECTS
+                        ORDER BY dTime ASC'
             );
 
             return $this->mergeDaten($stats);
@@ -129,7 +128,7 @@ class Statistik
 
             $dateSQL = $this->baueDatumSQL('dZeit');
 
-            return Shop::Container()->getDB()->queryPrepared(
+            return Shop::Container()->getDB()->getObjects(
                 "SELECT * , SUM(t.nCount) AS nCount
                     FROM (
                         SELECT IF(cReferer = '', :directEntry, cReferer) AS cReferer, 
@@ -147,8 +146,7 @@ class Statistik
                     ) AS t
                     GROUP BY t.cReferer
                     ORDER BY nCount DESC',
-                ['directEntry' => __('directEntry')],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['directEntry' => __('directEntry')]
             );
         }
 
@@ -169,7 +167,7 @@ class Statistik
 
             $dateSQL = $this->baueDatumSQL('dZeit');
 
-            return Shop::Container()->getDB()->query(
+            return Shop::Container()->getDB()->getObjects(
                 'SELECT tbesucherbot.cUserAgent, SUM(t.nCount) AS nCount
                     FROM
                     (
@@ -184,8 +182,7 @@ class Statistik
                     ) AS t
                     JOIN tbesucherbot ON tbesucherbot.kBesucherBot = t.kBesucherBot
                     GROUP BY t.kBesucherBot
-                    ORDER BY nCount DESC ' . ($limit > -1 ? 'LIMIT ' . $limit : ''),
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY nCount DESC ' . ($limit > -1 ? 'LIMIT ' . $limit : '')
             );
         }
 
@@ -205,7 +202,7 @@ class Statistik
 
             $dateSQL = $this->baueDatumSQL('tbestellung.dErstellt');
 
-            return $this->mergeDaten(Shop::Container()->getDB()->query(
+            return $this->mergeDaten(Shop::Container()->getDB()->getObjects(
                 "SELECT tbestellung.dErstellt AS dZeit, SUM(tbestellung.fGesamtsumme) AS nCount,
                     DATE_FORMAT(tbestellung.dErstellt, '%m') AS nMonth, 
                     DATE_FORMAT(tbestellung.dErstellt, '%H') AS nHour,
@@ -215,8 +212,7 @@ class Statistik
                     " . $dateSQL->cWhere . "
                     AND cStatus != '-1'
                     " . $dateSQL->cGroupBy . '
-                    ORDER BY tbestellung.dErstellt ASC',
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY tbestellung.dErstellt ASC'
             ));
         }
 
@@ -236,7 +232,7 @@ class Statistik
 
             $dateSQL = $this->baueDatumSQL('dZeit');
 
-            return Shop::Container()->getDB()->query(
+            return Shop::Container()->getDB()->getObjects(
                 'SELECT *, SUM(t.nCount) AS nCount
                     FROM
                     (
@@ -250,8 +246,7 @@ class Statistik
                         GROUP BY cEinstiegsseite
                     ) AS t
                     GROUP BY t.cEinstiegsseite
-                    ORDER BY nCount DESC',
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY nCount DESC'
             );
         }
 

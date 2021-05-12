@@ -395,12 +395,11 @@ function gibAHKKeys($keyName, $productNo = false)
             return "'" . $e . "'";
         }, $res);
         if (count($res) > 0) {
-            $artNoData = Shop::Container()->getDB()->query(
+            $artNoData = Shop::Container()->getDB()->getObjects(
                 'SELECT kArtikel
                 FROM tartikel
                 WHERE cArtNr IN (' . implode(',', $res) . ')
-                    AND kEigenschaftKombi = 0',
-                ReturnType::ARRAY_OF_OBJECTS
+                    AND kEigenschaftKombi = 0'
             );
             $res       = array_map(static function ($e) {
                 return (int)$e->kArtikel;

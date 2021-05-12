@@ -19,7 +19,6 @@ use JTL\Cron\Admin\Controller as CronController;
 use JTL\Cron\Starter\StarterFactory;
 use JTL\DB\DbInterface;
 use JTL\DB\NiceDB;
-use JTL\DB\ReturnType;
 use JTL\DB\Services\GcService;
 use JTL\DB\Services\GcServiceInterface;
 use JTL\Debug\JTLDebugBar;
@@ -875,14 +874,13 @@ final class Shop
         $cache   = self::Container()->getCache();
         $cacheID = 'plgnbtsrp';
         if (($plugins = $cache->get($cacheID)) === false) {
-            $plugins = map($db->queryPrepared(
+            $plugins = map($db->getObjects(
                 'SELECT kPlugin, bBootstrap, bExtension
                     FROM tplugin
                     WHERE nStatus = :state
                       AND bBootstrap = 1
                     ORDER BY nPrio ASC',
-                ['state' => State::ACTIVATED],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['state' => State::ACTIVATED]
             ) ?: [], static function ($e) {
                 $e->kPlugin    = (int)$e->kPlugin;
                 $e->bBootstrap = (int)$e->bBootstrap;
@@ -1347,13 +1345,12 @@ final class Shop
                 foreach ($manufSeo as $i => $t) {
                     $bindValues[$i + 1] = $t;
                 }
-                $oSeo = self::Container()->getDB()->queryPrepared(
+                $oSeo = self::Container()->getDB()->getObjects(
                     "SELECT kKey
                         FROM tseo
                         WHERE cKey = 'kHersteller'
                         AND cSeo IN (" . \implode(',', \array_fill(0, $seoCount, '?')) . ')',
-                    $bindValues,
-                    ReturnType::ARRAY_OF_OBJECTS
+                    $bindValues
                 );
             }
             $results = \count($oSeo);
@@ -1604,11 +1601,10 @@ final class Shop
                         OR cKundengruppen IS NULL
                         OR cKundengruppen = 'NULL'
                         OR tlink.cKundengruppen = '')";
-                    $link              = self::Container()->getDB()->query(
+                    $link              = self::Container()->getDB()->getSingleObject(
                         'SELECT kLink
                             FROM tlink
-                            WHERE nLinkart = ' . \LINKTYP_STARTSEITE . $cKundengruppenSQL,
-                        ReturnType::SINGLE_OBJECT
+                            WHERE nLinkart = ' . \LINKTYP_STARTSEITE . $cKundengruppenSQL
                     );
                 }
                 self::$kLink = isset($link->kLink)
@@ -1843,10 +1839,7 @@ final class Shop
      */
     public static function getShopDatabaseVersion(): Version
     {
-        $version = self::Container()->getDB()->query(
-            'SELECT nVersion FROM tversion',
-            ReturnType::SINGLE_OBJECT
-        )->nVersion;
+        $version = self::Container()->getDB()->getSingleObject('SELECT nVersion FROM tversion')->nVersion;
 
         if ($version === '5' || $version === 5) {
             $version = '5.0.0';

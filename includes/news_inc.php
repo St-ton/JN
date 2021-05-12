@@ -79,7 +79,7 @@ function holeNewsKategorien($dateSQL, $activeOnly = false)
                     ' . $dateSQL;
     }
 
-    return Shop::Container()->getDB()->query(
+    return Shop::Container()->getDB()->getObjects(
         "SELECT tnewskategorie.kNewsKategorie, t.languageID AS kSprache, t.name AS cName,
             t.description AS cBeschreibung, t.metaTitle AS cMetaTitle, t.metaDescription AS cMetaDescription,
             tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung, 
@@ -97,8 +97,7 @@ function holeNewsKategorien($dateSQL, $activeOnly = false)
             WHERE t.languageID = ' . $languageID
             . $activeFilter . '
             GROUP BY tnewskategorie.kNewsKategorie
-            ORDER BY tnewskategorie.nSort',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY tnewskategorie.nSort'
     );
 }
 
@@ -281,7 +280,7 @@ function getNewsCategory(int $newsID)
         }
     );
 
-    return Shop::Container()->getDB()->query(
+    return Shop::Container()->getDB()->getObjects(
         "SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
             tnewskategorie.cBeschreibung, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription,
             tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung,
@@ -298,8 +297,7 @@ function getNewsCategory(int $newsID)
                 AND tnewskategorienews.kNewsKategorie IN (' . implode(',', $newsCategories) . ')
                 AND tnewskategorie.nAktiv = 1
             GROUP BY tnewskategorie.kNewsKategorie
-            ORDER BY tnewskategorie.nSort DESC',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY tnewskategorie.nSort DESC'
     );
 }
 
@@ -312,14 +310,13 @@ function getNewsCategory(int $newsID)
 function getNewsComments(int $newsID, $cLimitSQL)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Shop::Container()->getDB()->query(
+    return Shop::Container()->getDB()->getObjects(
         "SELECT *, DATE_FORMAT(tnewskommentar.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_de
             FROM tnewskommentar
             WHERE tnewskommentar.kNews = " . $newsID . '
                 AND tnewskommentar.nAktiv = 1
             ORDER BY tnewskommentar.dErstellt DESC
-            LIMIT ' . $cLimitSQL,
-        ReturnType::ARRAY_OF_OBJECTS
+            LIMIT ' . $cLimitSQL
     );
 }
 
@@ -374,7 +371,7 @@ function getMonthOverview(int $overviewID)
 function getNewsOverview($sql, $limitSQL)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Shop::Container()->getDB()->query(
+    return Shop::Container()->getDB()->getObjects(
         "SELECT tseo.cSeo, tnews.*, DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y %H:%i') AS dErstellt_de, 
             COUNT(*) AS nAnzahl, COUNT(DISTINCT(tnewskommentar.kNewsKommentar)) AS nNewsKommentarAnzahl
             FROM tnews
@@ -397,8 +394,7 @@ function getNewsOverview($sql, $limitSQL)
                 ' . $sql->cDatumSQL . '
             GROUP BY tnews.kNews
             ' . $sql->cSortSQL . '
-            LIMIT ' . $limitSQL,
-        ReturnType::ARRAY_OF_OBJECTS
+            LIMIT ' . $limitSQL
     );
 }
 
@@ -435,7 +431,7 @@ function getFullNewsOverview($sql)
 function getNewsDateArray($sql)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Shop::Container()->getDB()->query(
+    return Shop::Container()->getDB()->getObjects(
         'SELECT MONTH(tnews.dGueltigVon) AS nMonat, YEAR(tnews.dGueltigVon) AS nJahr
             FROM tnews
             JOIN tnewssprache t
@@ -448,8 +444,7 @@ function getNewsDateArray($sql)
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                 AND t.languageID = " . Shop::getLanguageID() . '
             GROUP BY nJahr, nMonat
-            ORDER BY dGueltigVon DESC',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY dGueltigVon DESC'
     );
 }
 

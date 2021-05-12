@@ -14,12 +14,11 @@ function holeAktiveGeschenke(string $sql): array
     if (mb_strlen($sql) < 1) {
         return $res;
     }
-    $data = Shop::Container()->getDB()->query(
+    $data = Shop::Container()->getDB()->getObjects(
         "SELECT kArtikel
             FROM tartikelattribut
             WHERE cName = '" . ART_ATTRIBUT_GRATISGESCHENKAB . "'
-            ORDER BY CAST(cWert AS SIGNED) DESC " . $sql,
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY CAST(cWert AS SIGNED) DESC " . $sql
     );
 
     $options                            = Artikel::getDefaultOptions();
@@ -45,15 +44,14 @@ function holeHaeufigeGeschenke(string $sql): array
     if (mb_strlen($sql) < 1) {
         return $res;
     }
-    $data = Shop::Container()->getDB()->query(
+    $data = Shop::Container()->getDB()->getObjects(
         'SELECT tgratisgeschenk.kArtikel, COUNT(*) AS nAnzahl, 
             MAX(tbestellung.dErstellt) AS lastOrdered, AVG(tbestellung.fGesamtsumme) AS avgOrderValue
             FROM tgratisgeschenk
             LEFT JOIN tbestellung
                 ON tbestellung.kWarenkorb = tgratisgeschenk.kWarenkorb
             GROUP BY tgratisgeschenk.kArtikel
-            ORDER BY nAnzahl DESC, lastOrdered DESC ' . $sql,
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY nAnzahl DESC, lastOrdered DESC ' . $sql
     );
 
     $options                            = Artikel::getDefaultOptions();
@@ -84,13 +82,12 @@ function holeLetzten100Geschenke(string $sql): array
     if (mb_strlen($sql) < 1) {
         return $res;
     }
-    $data                               = Shop::Container()->getDB()->query(
+    $data                               = Shop::Container()->getDB()->getObjects(
         'SELECT tgratisgeschenk.*, tbestellung.dErstellt AS orderCreated, tbestellung.fGesamtsumme
             FROM tgratisgeschenk
               LEFT JOIN tbestellung 
                   ON tbestellung.kWarenkorb = tgratisgeschenk.kWarenkorb
-            ORDER BY tbestellung.dErstellt DESC ' . $sql,
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY tbestellung.dErstellt DESC ' . $sql
     );
     $options                            = Artikel::getDefaultOptions();
     $options->nKeinLagerbestandBeachten = 1;

@@ -10,7 +10,7 @@ use JTL\Shop;
  * @param string $sql
  * @param object $searchSQL
  * @param bool   $checkLanguage
- * @return array
+ * @return stdClass[]
  */
 function gibBewertungFreischalten(string $sql, $searchSQL, bool $checkLanguage = true): array
 {
@@ -18,15 +18,14 @@ function gibBewertungFreischalten(string $sql, $searchSQL, bool $checkLanguage =
         ? 'tbewertung.kSprache = ' . (int)$_SESSION['editLanguageID'] . ' AND '
         : '';
 
-    return Shop::Container()->getDB()->query(
+    return Shop::Container()->getDB()->getObjects(
         "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
             FROM tbewertung
             LEFT JOIN tartikel 
                 ON tbewertung.kArtikel = tartikel.kArtikel
             WHERE " . $cond . 'tbewertung.nAktiv = 0
                 ' . $searchSQL->cWhere . '
-            ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC' . $sql,
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC' . $sql
     );
 }
 
@@ -34,7 +33,7 @@ function gibBewertungFreischalten(string $sql, $searchSQL, bool $checkLanguage =
  * @param string $sql
  * @param object $searchSQL
  * @param bool   $checkLanguage
- * @return array
+ * @return stdClass[]
  */
 function gibSuchanfrageFreischalten(string $sql, $searchSQL, bool $checkLanguage = true): array
 {
@@ -42,12 +41,11 @@ function gibSuchanfrageFreischalten(string $sql, $searchSQL, bool $checkLanguage
         ? 'AND kSprache = ' . (int)$_SESSION['editLanguageID'] . ' '
         : '';
 
-    return Shop::Container()->getDB()->query(
+    return Shop::Container()->getDB()->getObjects(
         "SELECT *, DATE_FORMAT(dZuletztGesucht, '%d.%m.%Y %H:%i') AS dZuletztGesucht_de
             FROM tsuchanfrage
             WHERE nAktiv = 0 " . $cond . $searchSQL->cWhere . '
-            ORDER BY ' . $searchSQL->cOrder . $sql,
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY ' . $searchSQL->cOrder . $sql
     );
 }
 
@@ -55,14 +53,14 @@ function gibSuchanfrageFreischalten(string $sql, $searchSQL, bool $checkLanguage
  * @param string $sql
  * @param object $searchSQL
  * @param bool   $checkLanguage
- * @return array
+ * @return stdClass[]
  */
 function gibNewskommentarFreischalten(string $sql, $searchSQL, bool $checkLanguage = true): array
 {
     $cond         = $checkLanguage === true
         ? ' AND t.languageID = ' . (int)$_SESSION['editLanguageID'] . ' '
         : '';
-    $newsComments = Shop::Container()->getDB()->query(
+    $newsComments = Shop::Container()->getDB()->getObjects(
         "SELECT tnewskommentar.*, DATE_FORMAT(tnewskommentar.dErstellt, '%d.%m.%Y  %H:%i') AS dErstellt_de, 
             tkunde.kKunde, tkunde.cVorname, tkunde.cNachname, t.title AS cBetreff
             FROM tnewskommentar
@@ -73,8 +71,7 @@ function gibNewskommentarFreischalten(string $sql, $searchSQL, bool $checkLangua
             LEFT JOIN tkunde 
                 ON tkunde.kKunde = tnewskommentar.kKunde
             WHERE tnewskommentar.nAktiv = 0" .
-            $searchSQL->cWhere . $cond . $sql,
-        ReturnType::ARRAY_OF_OBJECTS
+            $searchSQL->cWhere . $cond . $sql
     );
     foreach ($newsComments as $comment) {
         $customer = new Customer(isset($comment->kKunde) ? (int)$comment->kKunde : null);
@@ -89,7 +86,7 @@ function gibNewskommentarFreischalten(string $sql, $searchSQL, bool $checkLangua
  * @param string $sql
  * @param object $searchSQL
  * @param bool   $checkLanguage
- * @return array
+ * @return stdClass[]
  */
 function gibNewsletterEmpfaengerFreischalten($sql, $searchSQL, bool $checkLanguage = true): array
 {
@@ -97,14 +94,13 @@ function gibNewsletterEmpfaengerFreischalten($sql, $searchSQL, bool $checkLangua
         ? ' AND kSprache = ' . (int)$_SESSION['editLanguageID']
         : '';
 
-    return Shop::Container()->getDB()->query(
+    return Shop::Container()->getDB()->getObjects(
         "SELECT *, DATE_FORMAT(dEingetragen, '%d.%m.%Y  %H:%i') AS dEingetragen_de, 
             DATE_FORMAT(dLetzterNewsletter, '%d.%m.%Y  %H:%i') AS dLetzterNewsletter_de
             FROM tnewsletterempfaenger
             WHERE nAktiv = 0
                 " . $searchSQL->cWhere . $cond .
-        ' ORDER BY ' . $searchSQL->cOrder . $sql,
-        ReturnType::ARRAY_OF_OBJECTS
+        ' ORDER BY ' . $searchSQL->cOrder . $sql
     );
 }
 

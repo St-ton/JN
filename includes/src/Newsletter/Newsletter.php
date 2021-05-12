@@ -362,12 +362,11 @@ class Newsletter
                 return "'" . $e . "'";
             }, $res);
             if (\count($res) > 0) {
-                $artNoData = $this->db->query(
+                $artNoData = $this->db->getObjects(
                     'SELECT kArtikel
-                FROM tartikel
-                WHERE cArtNr IN (' . \implode(',', $res) . ')
-                    AND kEigenschaftKombi = 0',
-                    ReturnType::ARRAY_OF_OBJECTS
+                        FROM tartikel
+                        WHERE cArtNr IN (' . \implode(',', $res) . ')
+                            AND kEigenschaftKombi = 0'
                 );
                 $res       = \array_map(static function ($e) {
                     return $e->kArtikel;

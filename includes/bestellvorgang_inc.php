@@ -607,11 +607,10 @@ function gibStepUnregistriertBestellen(): void
 {
     /** @var Customer $Kunde */
     global $Kunde;
-    $origins         = Shop::Container()->getDB()->query(
+    $origins         = Shop::Container()->getDB()->getObjects(
         'SELECT *
             FROM tkundenherkunft
-            ORDER BY nSort',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY nSort'
     );
     $customerGroupID = Frontend::getCustomerGroup()->getID();
     if ($Kunde !== null) {
@@ -663,11 +662,10 @@ function gibStepLieferadresse()
     $customerGroupID = Frontend::getCustomerGroup()->getID();
     if (Frontend::getCustomer()->kKunde > 0) {
         $addresses = [];
-        $data      = Shop::Container()->getDB()->query(
+        $data      = Shop::Container()->getDB()->getObjects(
             'SELECT DISTINCT(kLieferadresse)
                 FROM tlieferadresse
-                WHERE kKunde = ' . Frontend::getCustomer()->getID(),
-            ReturnType::ARRAY_OF_OBJECTS
+                WHERE kKunde = ' . Frontend::getCustomer()->getID()
         );
         foreach ($data as $item) {
             if ($item->kLieferadresse > 0) {
@@ -1454,13 +1452,12 @@ function gibZahlungsart(int $paymentMethodID)
         );
         $method->angezeigterName[$language->cISO] = $localized->cName ?? null;
     }
-    $confData = Shop::Container()->getDB()->queryPrepared(
+    $confData = Shop::Container()->getDB()->getObjects(
         'SELECT *
             FROM teinstellungen
             WHERE kEinstellungenSektion = :sec
                 AND cModulId = :mod',
-        ['mod' => $method->cModulId, 'sec' => CONF_ZAHLUNGSARTEN],
-        ReturnType::ARRAY_OF_OBJECTS
+        ['mod' => $method->cModulId, 'sec' => CONF_ZAHLUNGSARTEN]
     );
     foreach ($confData as $conf) {
         $method->einstellungen[$conf->cName] = $conf->cWert;
@@ -1522,7 +1519,7 @@ function gibZahlungsarten(int $shippingMethodID, int $customerGroupID)
     $taxRate = 0.0;
     $methods = [];
     if ($shippingMethodID > 0) {
-        $methods = Shop::Container()->getDB()->queryPrepared(
+        $methods = Shop::Container()->getDB()->getObjects(
             "SELECT tversandartzahlungsart.*, tzahlungsart.*
                 FROM tversandartzahlungsart, tzahlungsart
                 WHERE tversandartzahlungsart.kVersandart = :sid
@@ -1532,8 +1529,7 @@ function gibZahlungsarten(int $shippingMethodID, int $customerGroupID)
                     AND tzahlungsart.nActive = 1
                     AND tzahlungsart.nNutzbar = 1
                 ORDER BY tzahlungsart.nSort",
-            ['sid' => $shippingMethodID, 'cgid' => $customerGroupID],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['sid' => $shippingMethodID, 'cgid' => $customerGroupID]
         );
     }
     $valid = [];

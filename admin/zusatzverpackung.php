@@ -145,26 +145,21 @@ if ($action === 'save') {
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successPackagingSaveMultiple'), 'successPackagingSaveMultiple');
     }
 }
-$taxClasses = $db->query(
-    'SELECT * FROM tsteuerklasse',
-    ReturnType::ARRAY_OF_OBJECTS
-);
+$taxClasses = $db->getObjects('SELECT * FROM tsteuerklasse');
 
-$packagingCount = (int)$db->query(
+$packagingCount = (int)$db->getSingleObject(
     'SELECT COUNT(kVerpackung) AS cnt
-        FROM tverpackung',
-    ReturnType::SINGLE_OBJECT
+        FROM tverpackung'
 )->cnt;
 $itemsPerPage   = 10;
 $pagination     = (new Pagination('standard'))
     ->setItemsPerPageOptions([$itemsPerPage, $itemsPerPage * 2, $itemsPerPage * 5])
     ->setItemCount($packagingCount)
     ->assemble();
-$packagings     = $db->query(
+$packagings     = $db->getObjects(
     'SELECT * FROM tverpackung 
        ORDER BY cName' .
-    ($pagination->getLimitSQL() !== '' ? ' LIMIT ' . $pagination->getLimitSQL() : ''),
-    ReturnType::ARRAY_OF_OBJECTS
+    ($pagination->getLimitSQL() !== '' ? ' LIMIT ' . $pagination->getLimitSQL() : '')
 );
 
 foreach ($packagings as $i => $packaging) {
@@ -192,11 +187,7 @@ function gibKundengruppeObj($groupString)
     $tmpNames      = [];
 
     if (mb_strlen($groupString) > 0) {
-        // Kundengruppen holen
-        $data             = Shop::Container()->getDB()->query(
-            'SELECT kKundengruppe, cName FROM tkundengruppe',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
+        $data             = Shop::Container()->getDB()->getObjects('SELECT kKundengruppe, cName FROM tkundengruppe');
         $customerGroupIDs = array_map('\intval', array_filter(explode(';', $groupString)));
         if (!in_array(-1, $customerGroupIDs, true)) {
             foreach ($customerGroupIDs as $id) {

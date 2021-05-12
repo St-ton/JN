@@ -64,11 +64,7 @@ function getCouponNames(int $id)
 function getManufacturers($selectedManufacturers = '')
 {
     $selected = Text::parseSSKint($selectedManufacturers);
-    $items    = Shop::Container()->getDB()->query(
-        'SELECT kHersteller, cName FROM thersteller',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
-
+    $items    = Shop::Container()->getDB()->getObjects('SELECT kHersteller, cName FROM thersteller');
     foreach ($items as $item) {
         $item->kHersteller = (int)$item->kHersteller;
         $manufacturer      = new Hersteller($item->kHersteller);
@@ -139,7 +135,7 @@ function normalizeDate($string)
  */
 function getRawCoupons($type = Kupon::TYPE_STANDARD, $whereSQL = '', $orderSQL = '', $limitSQL = '')
 {
-    return Shop::Container()->getDB()->query(
+    return Shop::Container()->getDB()->getObjects(
         "SELECT k.*, max(kk.dErstellt) AS dLastUse
             FROM tkupon AS k
             LEFT JOIN tkuponkunde AS kk ON kk.kKupon = k.kKupon
@@ -147,8 +143,7 @@ function getRawCoupons($type = Kupon::TYPE_STANDARD, $whereSQL = '', $orderSQL =
             ($whereSQL !== '' ? ' AND ' . $whereSQL : '') .
             'GROUP BY k.kKupon' .
             ($orderSQL !== '' ? ' ORDER BY ' . $orderSQL : '') .
-            ($limitSQL !== '' ? ' LIMIT ' . $limitSQL : ''),
-        ReturnType::ARRAY_OF_OBJECTS
+            ($limitSQL !== '' ? ' LIMIT ' . $limitSQL : '')
     );
 }
 
@@ -616,7 +611,7 @@ function informCouponCustomers($coupon)
     $coupon->cLocalizedMBW  = Preise::getLocalizedPriceString($coupon->fMindestbestellwert, $defaultCurrency, false);
     // kKunde-Array aller auserwaehlten Kunden
     $customerIDs     = Text::parseSSKint($coupon->cKunden);
-    $customerData    = $db->query(
+    $customerData    = $db->getObjects(
         'SELECT kKunde
             FROM tkunde
             WHERE TRUE
@@ -625,8 +620,7 @@ function informCouponCustomers($coupon)
             : 'AND kKundengruppe = ' . (int)$coupon->kKundengruppe) . '
                 ' . ($coupon->cKunden === '-1'
             ? 'AND TRUE'
-            : 'AND kKunde IN (' . implode(',', $customerIDs) . ')'),
-        ReturnType::ARRAY_OF_OBJECTS
+            : 'AND kKunde IN (' . implode(',', $customerIDs) . ')')
     );
     $productIDs      = [];
     $manufacturerIDs = Text::parseSSK($coupon->cHersteller);
@@ -635,11 +629,10 @@ function informCouponCustomers($coupon)
         $itemNumbers = array_map(static function ($e) {
             return '"' . $e . '"';
         }, $itemNumbers);
-        $productData = $db->query(
+        $productData = $db->getObjects(
             'SELECT kArtikel
                 FROM tartikel
-                WHERE cArtNr IN (' . implode(',', $itemNumbers) . ')',
-            ReturnType::ARRAY_OF_OBJECTS
+                WHERE cArtNr IN (' . implode(',', $itemNumbers) . ')'
         );
         $productIDs  = array_map(static function ($e) {
             return (int)$e->kArtikel;

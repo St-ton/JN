@@ -5,7 +5,6 @@ namespace JTL\OPC;
 use Exception;
 use JTL\Backend\Revision;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Shop;
 use JTL\Update\Updater;
 use stdClass;
@@ -44,10 +43,7 @@ class PageDB
      */
     public function getPageCount(): int
     {
-        return (int)$this->shopDB->query(
-            'SELECT COUNT(DISTINCT cPageId) AS count FROM topcpage',
-            ReturnType::SINGLE_OBJECT
-        )->count;
+        return (int)$this->shopDB->getSingleObject('SELECT COUNT(DISTINCT cPageId) AS count FROM topcpage')->count;
     }
 
     /**
@@ -73,10 +69,9 @@ class PageDB
      */
     public function getDraftCount(string $id): int
     {
-        return (int)$this->shopDB->queryPrepared(
+        return (int)$this->shopDB->getSingleObject(
             'SELECT COUNT(kPage) AS count FROM topcpage WHERE cPageId = :id',
-            ['id' => $id],
-            ReturnType::SINGLE_OBJECT
+            ['id' => $id]
         )->count;
     }
 
@@ -117,18 +112,15 @@ class PageDB
      */
     public function getPublicPageRow(string $id): ?stdClass
     {
-        $publicRow = $this->shopDB->queryPrepared(
+        return $this->shopDB->getSingleObject(
             'SELECT * FROM topcpage
                 WHERE cPageId = :pageID
                     AND dPublishFrom IS NOT NULL
                     AND dPublishFrom <= NOW()
                     AND (dPublishTo > NOW() OR dPublishTo IS NULL)
                 ORDER BY dPublishFrom DESC',
-            ['pageID' => $id],
-            ReturnType::SINGLE_OBJECT
+            ['pageID' => $id]
         );
-
-        return $publicRow === false ? null : $publicRow;
     }
 
     /**
@@ -247,13 +239,11 @@ class PageDB
             return null;
         }
 
-        $seo = $this->shopDB->queryPrepared(
+        $seo = $this->shopDB->getSingleObject(
             'SELECT cSeo FROM tseo WHERE cKey = :ckey AND kKey = :key AND kSprache = :lang',
-            ['ckey' => $cKey, 'key' => $pageIdObj->id, 'lang' => $pageIdObj->lang],
-            ReturnType::SINGLE_OBJECT
+            ['ckey' => $cKey, 'key' => $pageIdObj->id, 'lang' => $pageIdObj->lang]
         );
-
-        if (empty($seo)) {
+        if ($seo === null) {
             return null;
         }
 

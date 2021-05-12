@@ -49,11 +49,10 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
         $dbStructure =& $dbStruct['extended'];
 
         if (version_compare($mysqlVersion->innodb->version, '5.6', '>=')) {
-            $dbStatus = $db->queryPrepared(
+            $dbStatus = $db->getObjects(
                 'SHOW OPEN TABLES
                     WHERE `Database` LIKE :schema',
-                ['schema' => $database],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['schema' => $database]
             );
             if ($dbStatus) {
                 foreach ($dbStatus as $oStatus) {
@@ -74,7 +73,7 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
     }
 
     if ($dbStructure === false) {
-        $dbData = $db->queryPrepared(
+        $dbData = $db->getObjects(
             "SELECT t.`TABLE_NAME`, t.`ENGINE`, `TABLE_COLLATION`, t.`TABLE_ROWS`, t.`TABLE_COMMENT`,
                     t.`DATA_LENGTH` + t.`INDEX_LENGTH` AS DATA_SIZE,
                     COUNT(IF(c.DATA_TYPE = 'text', c.COLUMN_NAME, NULL)) TEXT_FIELDS,
@@ -91,8 +90,7 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
                 GROUP BY t.`TABLE_NAME`, t.`ENGINE`, `TABLE_COLLATION`, t.`TABLE_ROWS`, t.`TABLE_COMMENT`,
                     t.`DATA_LENGTH` + t.`INDEX_LENGTH`
                 ORDER BY t.`TABLE_NAME`",
-            ['schema' => $database],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['schema' => $database]
         );
 
         foreach ($dbData as $data) {
@@ -111,7 +109,7 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
                 $dbStructure[$table] = [];
             }
 
-            $columns = $db->queryPrepared(
+            $columns = $db->getObjects(
                 'SELECT `COLUMN_NAME`, `DATA_TYPE`, `COLUMN_TYPE`, `CHARACTER_SET_NAME`, `COLLATION_NAME`
                     FROM information_schema.COLUMNS
                     WHERE `TABLE_SCHEMA` = :schema
@@ -120,8 +118,7 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
                 [
                     'schema' => $database,
                     'table'  => $table
-                ],
-                ReturnType::ARRAY_OF_OBJECTS
+                ]
             );
             if ($columns !== false) {
                 foreach ($columns as $column) {
@@ -271,7 +268,7 @@ function doDBMaintenance(string $action, array $tables)
     }
 
     return count($tables) > 0
-        ? Shop::Container()->getDB()->query($cmd . implode(', ', $tables), ReturnType::ARRAY_OF_OBJECTS)
+        ? Shop::Container()->getDB()->getObjects($cmd . implode(', ', $tables))
         : false;
 }
 

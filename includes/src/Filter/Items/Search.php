@@ -382,15 +382,14 @@ class Search extends AbstractFilter
      */
     private function generateSearchCaches(int $limit = 0): self
     {
-        $allQueries = $this->productFilter->getDB()->query(
+        $allQueries = $this->productFilter->getDB()->getObjects(
             'SELECT tsuchanfrage.cSuche FROM tsuchanfrage
                 LEFT JOIN tsuchcache
                     ON tsuchcache.cSuche = tsuchanfrage.cSuche
                 WHERE tsuchanfrage.nAktiv = 1
                     AND tsuchcache.kSuchCache IS NULL
                 ORDER BY tsuchanfrage.nAnzahlTreffer, tsuchanfrage.nAnzahlGesuche'
-                . ($limit > 0 ? ' LIMIT ' . $limit : ''),
-            ReturnType::ARRAY_OF_OBJECTS
+                . ($limit > 0 ? ' LIMIT ' . $limit : '')
         );
         foreach ($allQueries as $nonCachedQuery) {
             $bsq = new BaseSearchQuery($this->productFilter);
@@ -455,12 +454,11 @@ class Search extends AbstractFilter
         }
         $nLimit = $limit > 0 ? ' LIMIT ' . $limit : '';
         $this->generateSearchCaches($limit > 0 ? $limit : 10);
-        $searchFilters = $this->productFilter->getDB()->query(
+        $searchFilters = $this->productFilter->getDB()->getObjects(
             'SELECT ssMerkmal.kSuchanfrage, ssMerkmal.kSuchCache, ssMerkmal.cSuche, COUNT(*) AS nAnzahl
                 FROM (' . $baseQuery . ') AS ssMerkmal
                     GROUP BY ssMerkmal.kSuchanfrage
-                    ORDER BY ssMerkmal.cSuche' . $nLimit,
-            ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY ssMerkmal.cSuche' . $nLimit
         );
         $searchQueries = [];
         if ($this->productFilter->hasSearch()) {

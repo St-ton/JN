@@ -36,8 +36,8 @@ final class Orders extends AbstractPush
 
             $items          = $this->db->queryPrepared(
                 'SELECT *
-                FROM twarenkorbpos
-                WHERE kWarenkorb = :cid',
+                    FROM twarenkorbpos
+                    WHERE kWarenkorb = :cid',
                 ['cid' => (int)$orderAttribute['kWarenkorb']],
                 ReturnType::ARRAY_OF_ASSOC_ARRAYS
             );
@@ -48,8 +48,8 @@ final class Orders extends AbstractPush
                 $itemAttribute['kBestellung']     = $orderAttribute['kBestellung'];
                 $item['twarenkorbposeigenschaft'] = $this->db->queryPrepared(
                     'SELECT *
-                    FROM twarenkorbposeigenschaft
-                    WHERE kWarenkorbPos = :cid',
+                        FROM twarenkorbposeigenschaft
+                        WHERE kWarenkorbPos = :cid',
                     ['cid' => (int)$itemAttribute['kWarenkorbPos']],
                     ReturnType::ARRAY_OF_ASSOC_ARRAYS
                 );

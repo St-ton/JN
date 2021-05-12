@@ -3,7 +3,6 @@
 use JTL\Alert\Alert;
 use JTL\Checkout\Kupon;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
@@ -32,14 +31,13 @@ $errors      = [];
 $res         = handleCsvImportAction('kupon', static function ($obj, &$importDeleteDone, $importType = 2) {
     $db          = Shop::Container()->getDB();
     $couponNames = [];
-    $cols        = Shop::Container()->getDB()->queryPrepared(
+    $cols        = Shop::Container()->getDB()->getCollection(
         'SELECT `column_name` AS name
             FROM information_schema.columns 
             WHERE `table_schema` = :sma
                 AND `table_name` = :tn',
-        ['sma' => DB_NAME, 'tn' => 'tkupon'],
-        ReturnType::COLLECTION
-    )->map(function ($e) {
+        ['sma' => DB_NAME, 'tn' => 'tkupon']
+    )->map(static function ($e) {
         return $e->name;
     })->toArray();
 
@@ -156,10 +154,7 @@ if ($action === 'bearbeiten') {
     }
 }
 if ($action === 'bearbeiten') {
-    $taxClasses    = Shop::Container()->getDB()->query(
-        'SELECT kSteuerklasse, cName FROM tsteuerklasse',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
+    $taxClasses    = Shop::Container()->getDB()->getObjects('SELECT kSteuerklasse, cName FROM tsteuerklasse');
     $manufacturers = getManufacturers($coupon->cHersteller);
     $categories    = getCategories($coupon->cKategorien);
     $customerIDs   = array_filter(

@@ -191,13 +191,12 @@ class Bewertung
             if ($stars > 0) {
                 $condSQL = ' AND nSterne = ' . $stars;
             }
-            $ratingCounts = $db->query(
+            $ratingCounts = $db->getObjects(
                 'SELECT COUNT(*) AS nAnzahl, nSterne
                     FROM tbewertung
                     WHERE kArtikel = ' . $productID . $activateSQL . '
                     GROUP BY nSterne
-                    ORDER BY nSterne DESC',
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY nSterne DESC'
             );
         }
         if ($page > 0) {
@@ -207,7 +206,7 @@ class Bewertung
                     ? ' LIMIT ' . (($page - 1) * $pageOffset) . ', ' . $pageOffset
                     : ' LIMIT ' . $pageOffset;
             }
-            $this->oBewertung_arr = $db->queryPrepared(
+            $this->oBewertung_arr = $db->getObjects(
                 "SELECT tbewertung.*,
                         DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum,
                         DATE_FORMAT(dAntwortDatum, '%d.%m.%Y') AS AntwortDatum,
@@ -218,8 +217,7 @@ class Bewertung
                       AND tbewertunghilfreich.kKunde = :customerID
                     WHERE kArtikel = " . $productID . $langSQL . $condSQL . $activateSQL . '
                     ORDER BY' . $orderSQL . $limitSQL,
-                ['customerID' => Frontend::getCustomer()->getID()],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['customerID' => Frontend::getCustomer()->getID()]
             );
             each($this->oBewertung_arr, [$this, 'sanitizeRatingData']);
         }

@@ -972,14 +972,13 @@ class Bestellung
     ): array {
         $items = [];
         if ($orderID > 0) {
-            $data = Shop::Container()->getDB()->query(
+            $data = Shop::Container()->getDB()->getObjects(
                 'SELECT twarenkorbpos.kWarenkorbPos, twarenkorbpos.kArtikel
                       FROM tbestellung
                       JOIN twarenkorbpos
                         ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
                           AND nPosTyp = ' . $posType . '
-                      WHERE tbestellung.kBestellung = ' . $orderID,
-                ReturnType::ARRAY_OF_OBJECTS
+                      WHERE tbestellung.kBestellung = ' . $orderID
             );
             foreach ($data as $item) {
                 if (isset($item->kWarenkorbPos) && $item->kWarenkorbPos > 0) {

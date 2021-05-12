@@ -1908,14 +1908,13 @@ class CartHelper
         );
         if (\count($productIDs) > 0) {
             $productIDs = \implode(', ', $productIDs);
-            $xsellData  = Shop::Container()->getDB()->query(
+            $xsellData  = Shop::Container()->getDB()->getObjects(
                 'SELECT DISTINCT kXSellArtikel
                     FROM txsellkauf
                     WHERE kArtikel IN (' . $productIDs . ')
                         AND kXSellArtikel NOT IN (' . $productIDs .')
                     ORDER BY nAnzahl DESC
-                    LIMIT ' . (int)$conf['kaufabwicklung']['warenkorb_xselling_anzahl'],
-                ReturnType::ARRAY_OF_OBJECTS
+                    LIMIT ' . (int)$conf['kaufabwicklung']['warenkorb_xselling_anzahl']
             );
             if (\count($xsellData) > 0) {
                 $xSelling->Kauf          = new stdClass();
@@ -1955,7 +1954,7 @@ class CartHelper
             }
             $limit    = $conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0 ?
                     ' LIMIT ' . $conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] : '';
-            $giftsTmp = Shop::Container()->getDB()->query(
+            $giftsTmp = Shop::Container()->getDB()->getObjects(
                 "SELECT tartikel.kArtikel, tartikelattribut.cWert
                     FROM tartikel
                     JOIN tartikelattribut
@@ -1966,8 +1965,7 @@ class CartHelper
                         AND tartikelattribut.cName = '" . \FKT_ATTRIBUT_GRATISGESCHENK . "'
                         AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .
                 Frontend::getCart()->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true) .
-                $sqlSort . $limit,
-                ReturnType::ARRAY_OF_OBJECTS
+                $sqlSort . $limit
             );
 
             foreach ($giftsTmp as $gift) {

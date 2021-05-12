@@ -175,14 +175,13 @@ class Jtllog
         $where = \count($conditions) > 0
             ? ' WHERE ' . \implode(' AND ', $conditions)
             : '';
-        $data  = Shop::Container()->getDB()->queryPrepared(
+        $data  = Shop::Container()->getDB()->getObjects(
             'SELECT kLog
                 FROM tjtllog
                 ' . $where . '
                 ORDER BY dErstellt DESC, kLog DESC
                 LIMIT :limitfrom, :limitto',
-            $values,
-            ReturnType::ARRAY_OF_OBJECTS
+            $values
         );
         foreach ($data as $oLog) {
             if (isset($oLog->kLog) && (int)$oLog->kLog > 0) {
@@ -200,13 +199,12 @@ class Jtllog
      */
     public static function getLogWhere(string $whereSQL = '', $limitSQL = ''): array
     {
-        return Shop::Container()->getDB()->query(
+        return Shop::Container()->getDB()->getObjects(
             'SELECT *
                 FROM tjtllog' .
             ($whereSQL !== '' ? ' WHERE ' . $whereSQL : '') .
             ' ORDER BY dErstellt DESC, kLog DESC ' .
-            ($limitSQL !== '' ? ' LIMIT ' . $limitSQL : ''),
-            ReturnType::ARRAY_OF_OBJECTS
+            ($limitSQL !== '' ? ' LIMIT ' . $limitSQL : '')
         );
     }
 

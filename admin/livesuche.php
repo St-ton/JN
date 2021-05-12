@@ -531,7 +531,7 @@ $paginationMapping = (new Pagination('mapping'))
     ->setItemCount($mappingCount)
     ->assemble();
 
-$searchQueries = $db->query(
+$searchQueries = $db->getObjects(
     "SELECT tsuchanfrage.*, tseo.cSeo AS tcSeo
         FROM tsuchanfrage
         LEFT JOIN tseo ON tseo.cKey = 'kSuchanfrage'
@@ -541,8 +541,7 @@ $searchQueries = $db->query(
             ' . $cLivesucheSQL->cWhere . '
         GROUP BY tsuchanfrage.kSuchanfrage
         ORDER BY ' . $cLivesucheSQL->cOrder . '
-        LIMIT ' . $paginationQueries->getLimitSQL(),
-    ReturnType::ARRAY_OF_OBJECTS
+        LIMIT ' . $paginationQueries->getLimitSQL()
 );
 
 if (isset($searchQueries->tcSeo) && mb_strlen($searchQueries->tcSeo) > 0) {
@@ -550,27 +549,24 @@ if (isset($searchQueries->tcSeo) && mb_strlen($searchQueries->tcSeo) > 0) {
 }
 unset($searchQueries->tcSeo);
 
-$failedQueries  = $db->query(
+$failedQueries  = $db->getObjects(
     'SELECT *
         FROM tsuchanfrageerfolglos
         WHERE kSprache = ' . $languageID . '
         ORDER BY nAnzahlGesuche DESC
-        LIMIT ' . $paginationFailed->getLimitSQL(),
-    ReturnType::ARRAY_OF_OBJECTS
+        LIMIT ' . $paginationFailed->getLimitSQL()
 );
-$queryBlacklist = $db->query(
+$queryBlacklist = $db->getObjects(
     'SELECT *
         FROM tsuchanfrageblacklist
         WHERE kSprache = ' . $languageID . '
-        ORDER BY kSuchanfrageBlacklist',
-    ReturnType::ARRAY_OF_OBJECTS
+        ORDER BY kSuchanfrageBlacklist'
 );
-$queryMapping   = $db->query(
+$queryMapping   = $db->getObjects(
     'SELECT *
         FROM tsuchanfragemapping
         WHERE kSprache = ' . $languageID . '
-        LIMIT ' . $paginationMapping->getLimitSQL(),
-    ReturnType::ARRAY_OF_OBJECTS
+        LIMIT ' . $paginationMapping->getLimitSQL()
 );
 $smarty->assign('oConfig_arr', getAdminSectionSettings($settingsIDs, true))
     ->assign('Suchanfragen', $searchQueries)

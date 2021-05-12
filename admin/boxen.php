@@ -190,25 +190,13 @@ $model         = Shop::Container()->getTemplateService()->getActiveTemplate();
 $boxContainer  = $model->getBoxLayout();
 $filterMapping = [];
 if ($pageID === PAGE_ARTIKELLISTE) { //map category name
-    $filterMapping = Shop::Container()->getDB()->query(
-        'SELECT kKategorie AS id, cName AS name FROM tkategorie',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
+    $filterMapping = Shop::Container()->getDB()->getObjects('SELECT kKategorie AS id, cName AS name FROM tkategorie');
 } elseif ($pageID === PAGE_ARTIKEL) { //map article name
-    $filterMapping = Shop::Container()->getDB()->query(
-        'SELECT kArtikel AS id, cName AS name FROM tartikel',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
+    $filterMapping = Shop::Container()->getDB()->getObjects('SELECT kArtikel AS id, cName AS name FROM tartikel');
 } elseif ($pageID === PAGE_HERSTELLER) { //map manufacturer name
-    $filterMapping = Shop::Container()->getDB()->query(
-        'SELECT kHersteller AS id, cName AS name FROM thersteller',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
+    $filterMapping = Shop::Container()->getDB()->getObjects('SELECT kHersteller AS id, cName AS name FROM thersteller');
 } elseif ($pageID === PAGE_EIGENE) { //map page name
-    $filterMapping = Shop::Container()->getDB()->query(
-        'SELECT kLink AS id, cName AS name FROM tlink',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
+    $filterMapping = Shop::Container()->getDB()->getObjects('SELECT kLink AS id, cName AS name FROM tlink');
 }
 
 $filterMapping = reindex($filterMapping, static function ($e) {

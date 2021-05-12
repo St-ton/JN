@@ -9,7 +9,6 @@ use JTL\Catalog\NavigationEntry;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\Wishlist\Wishlist;
-use JTL\DB\ReturnType;
 use JTL\ExtensionPoint;
 use JTL\Filter\Metadata;
 use JTL\Filter\SearchResults;
@@ -231,10 +230,7 @@ if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0) {
     $boxes->addRecentlyViewed($AktuellerArtikel->kArtikel);
 }
 $visitorCount = $conf['global']['global_zaehler_anzeigen'] === 'Y'
-    ? (int)Shop::Container()->getDB()->query(
-        'SELECT nZaehler FROM tbesucherzaehler',
-        ReturnType::SINGLE_OBJECT
-    )->nZaehler
+    ? (int)Shop::Container()->getDB()->getSingleObject('SELECT nZaehler FROM tbesucherzaehler')->nZaehler
     : 0;
 $debugbar->getTimer()->stopMeasure('init');
 

@@ -195,7 +195,7 @@ class Product
 
                 return $e;
             },
-            Shop::Container()->getDB()->query(
+            Shop::Container()->getDB()->getObjects(
                 'SELECT teigenschaftkombiwert.*
                     FROM teigenschaftkombiwert
                     JOIN tartikel
@@ -205,8 +205,7 @@ class Product
                         ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                         AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL ' . $cGroupBy .
-                'ORDER BY teigenschaftkombiwert.kEigenschaftWert',
-                ReturnType::ARRAY_OF_OBJECTS
+                'ORDER BY teigenschaftkombiwert.kEigenschaftWert'
             )
         );
     }
@@ -223,7 +222,7 @@ class Product
         $db       = Shop::Container()->getDB();
 
         // Hole EigenschaftWerte zur gewaehlten VariationKombi
-        $children = $db->queryPrepared(
+        $children = $db->getObjects(
             'SELECT teigenschaftkombiwert.kEigenschaftWert, teigenschaftkombiwert.kEigenschaft, tartikel.kVaterArtikel
                 FROM teigenschaftkombiwert
                 JOIN tartikel
@@ -237,8 +236,7 @@ class Product
             [
                 'productID'     => $productID,
                 'customerGroup' => Frontend::getCustomerGroup()->getID(),
-            ],
-            ReturnType::ARRAY_OF_OBJECTS
+            ]
         );
         if (\count($children) === 0) {
             return [];
@@ -303,7 +301,7 @@ class Product
                                     AND teigenschaftwertsprache.kSprache = ' . $langID;
         }
 
-        $oEigenschaft_arr = $db->query(
+        $oEigenschaft_arr = $db->getObjects(
             'SELECT teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName, ' . $attrVal->cSELECT . '
                 teigenschaftwertsichtbarkeit.kKundengruppe, teigenschaftwert.kEigenschaft, teigenschaft.cTyp, ' .
             $attr->cSELECT . ' teigenschaft.cName AS cNameEigenschaft, teigenschaft.kArtikel
@@ -319,12 +317,11 @@ class Product
                 WHERE teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                     AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
                     AND teigenschaftwert.kEigenschaft IN (' . \implode(',', $attributes) . ')
-                    AND teigenschaftwert.kEigenschaftWert IN (' . \implode(',', $attributeValues) . ')',
-            ReturnType::ARRAY_OF_OBJECTS
+                    AND teigenschaftwert.kEigenschaftWert IN (' . \implode(',', $attributeValues) . ')'
         );
 
 
-        $oEigenschaftTMP_arr = $db->query(
+        $oEigenschaftTMP_arr = $db->getObjects(
             'SELECT teigenschaft.kEigenschaft, teigenschaft.cName, teigenschaft.cTyp, 
                 teigenschaft.kArtikel, 0 AS kEigenschaftWert
                 FROM teigenschaft
@@ -335,8 +332,7 @@ class Product
                     OR teigenschaft.kArtikel = ' . $productID . ")
                     AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
                     AND (teigenschaft.cTyp = 'FREIFELD'
-                    OR teigenschaft.cTyp = 'PFLICHT-FREIFELD')",
-            ReturnType::ARRAY_OF_OBJECTS
+                    OR teigenschaft.cTyp = 'PFLICHT-FREIFELD')"
         );
 
         if (\is_array($oEigenschaftTMP_arr)) {
@@ -455,7 +451,7 @@ class Product
     {
         $db              = Shop::Container()->getDB();
         $customerGroupID = Frontend::getCustomerGroup()->getID();
-        $propData        = $db->queryPrepared(
+        $propData        = $db->getObjects(
             'SELECT teigenschaft.kEigenschaft,teigenschaft.cName,teigenschaft.cTyp
                 FROM teigenschaft
                 LEFT JOIN teigenschaftsichtbarkeit
@@ -463,8 +459,7 @@ class Product
                     AND teigenschaftsichtbarkeit.kKundengruppe = :cgroupid
                 WHERE teigenschaft.kArtikel = :productID
                     AND teigenschaftsichtbarkeit.kEigenschaft IS NULL',
-            ['cgroupid' => $customerGroupID, 'productID' => $productID],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['cgroupid' => $customerGroupID, 'productID' => $productID]
         );
         $properties      = [];
         $exists          = true;
@@ -897,7 +892,7 @@ class Product
         $config                           = Shop::getSettings([\CONF_ARTIKELDETAILS])['artikeldetails'];
         if ($config['artikeldetails_xselling_standard_anzeigen'] === 'Y') {
             $stockFilterSQL = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-            $xsell          = Shop::Container()->getDB()->queryPrepared(
+            $xsell          = Shop::Container()->getDB()->getObjects(
                 'SELECT txsell.*, txsellgruppe.cName, txsellgruppe.cBeschreibung
                     FROM txsell
                     JOIN tartikel
@@ -907,8 +902,7 @@ class Product
                         AND txsellgruppe.kSprache = :lid
                     WHERE txsell.kArtikel = :aid' . $stockFilterSQL . '
                     ORDER BY tartikel.cName',
-                ['lid' => Shop::getLanguageID(), 'aid' => $productID],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['lid' => Shop::getLanguageID(), 'aid' => $productID]
             );
             if (\count($xsell) > 0) {
                 $xsellgruppen   = group($xsell, static function ($e) {
@@ -944,7 +938,7 @@ class Product
                     $selectSQL = 'IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel)';
                     $filterSQL = 'IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel)';
                 }
-                $xsell = Shop::Container()->getDB()->query(
+                $xsell = Shop::Container()->getDB()->getObjects(
                     'SELECT ' . $productID . ' AS kArtikel, ' . $selectSQL . ' AS kXSellArtikel,
                         SUM(txsellkauf.nAnzahl) nAnzahl
                         FROM txsellkauf
@@ -957,11 +951,10 @@ class Product
                             AND ' . $filterSQL . ' != ' . $productID . '
                         GROUP BY 1, 2
                         ORDER BY SUM(txsellkauf.nAnzahl) DESC
-                        LIMIT ' . $limit,
-                    ReturnType::ARRAY_OF_OBJECTS
+                        LIMIT ' . $limit
                 );
             } elseif ($config['artikeldetails_xselling_kauf_parent'] === 'Y') {
-                $xsell = Shop::Container()->getDB()->queryPrepared(
+                $xsell = Shop::Container()->getDB()->getObjects(
                     'SELECT txsellkauf.kArtikel,
                     IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel) AS kXSellArtikel,
                     SUM(txsellkauf.nAnzahl) nAnzahl
@@ -977,8 +970,7 @@ class Product
                         GROUP BY 1, 2
                         ORDER BY SUM(txsellkauf.nAnzahl) DESC
                         LIMIT :lmt',
-                    ['pid' => $productID, 'lmt' => $limit],
-                    ReturnType::ARRAY_OF_OBJECTS
+                    ['pid' => $productID, 'lmt' => $limit]
                 );
             } else {
                 $xsell = Shop::Container()->getDB()->selectAll(
@@ -1795,7 +1787,7 @@ class Product
             }
             $stockFilterSQL    = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $customerGroupID   = Frontend::getCustomerGroup()->getID();
-            $productAttributes = Shop::Container()->getDB()->queryPrepared(
+            $productAttributes = Shop::Container()->getDB()->getObjects(
                 'SELECT tartikelmerkmal.kArtikel, tartikel.kVaterArtikel
                     FROM tartikelmerkmal
                         JOIN tartikel ON tartikel.kArtikel = tartikelmerkmal.kArtikel
@@ -1814,8 +1806,7 @@ class Product
                 [
                     'kArtikel'        => $productID,
                     'customerGroupID' => $customerGroupID
-                ],
-                ReturnType::ARRAY_OF_OBJECTS
+                ]
             );
             if (\is_array($productAttributes) && \count($productAttributes) > 0) {
                 $defaultOptions = Artikel::getDefaultOptions();
@@ -1830,7 +1821,7 @@ class Product
                     }
                 }
             } else { // Falls es keine Merkmale gibt, in tsuchcachetreffer suchen
-                $searchCacheHits = Shop::Container()->getDB()->query(
+                $searchCacheHits = Shop::Container()->getDB()->getObjects(
                     'SELECT tsuchcachetreffer.kArtikel, tartikel.kVaterArtikel
                         FROM
                         (
@@ -1850,8 +1841,7 @@ class Product
                             AND tartikel.kVaterArtikel != ' . $productID . '
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL ' . $stockFilterSQL . ' ' . $xsellSQL . '
                         GROUP BY tsuchcachetreffer.kArtikel
-                        ORDER BY COUNT(*) DESC' . $limit,
-                    ReturnType::ARRAY_OF_OBJECTS
+                        ORDER BY COUNT(*) DESC' . $limit
                 );
                 if (\count($searchCacheHits) > 0) {
                     $defaultOptions = Artikel::getDefaultOptions();

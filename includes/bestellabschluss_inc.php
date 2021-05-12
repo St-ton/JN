@@ -15,7 +15,6 @@ use JTL\Checkout\Nummern;
 use JTL\Checkout\Rechnungsadresse;
 use JTL\Checkout\ZahlungsInfo;
 use JTL\Customer\Customer;
-use JTL\DB\ReturnType;
 use JTL\Extensions\Upload\Upload;
 use JTL\Helpers\Date;
 use JTL\Helpers\Product;
@@ -719,15 +718,14 @@ function aktualisiereStuecklistenLagerbestand($bomProduct, $amount)
         return $newStockLevel;
     }
     // Gibt es lagerrelevante Komponenten in der Stückliste?
-    $components = Shop::Container()->getDB()->queryPrepared(
+    $components = Shop::Container()->getDB()->getObjects(
         "SELECT tstueckliste.kArtikel, tstueckliste.fAnzahl
             FROM tstueckliste
             JOIN tartikel
               ON tartikel.kArtikel = tstueckliste.kArtikel
             WHERE tstueckliste.kStueckliste = :slid
                 AND tartikel.cLagerBeachten = 'Y'",
-        ['slid' => $bomID],
-        ReturnType::ARRAY_OF_OBJECTS
+        ['slid' => $bomID]
     );
 
     if (is_array($components) && count($components) > 0) {
@@ -789,7 +787,7 @@ function aktualisiereStuecklistenLagerbestand($bomProduct, $amount)
 function aktualisiereKomponenteLagerbestand(int $productID, float $stockLevel, bool $allowNegativeStock): void
 {
     $db   = Shop::Container()->getDB();
-    $boms = $db->queryPrepared(
+    $boms = $db->getObjects(
         "SELECT tstueckliste.kStueckliste, tstueckliste.fAnzahl,
                 tartikel.kArtikel, tartikel.fLagerbestand, tartikel.cLagerKleinerNull
             FROM tstueckliste
@@ -797,8 +795,7 @@ function aktualisiereKomponenteLagerbestand(int $productID, float $stockLevel, b
                 ON tartikel.kStueckliste = tstueckliste.kStueckliste
             WHERE tstueckliste.kArtikel = :cid
                 AND tartikel.cLagerBeachten = 'Y'",
-        ['cid' => $productID],
-        ReturnType::ARRAY_OF_OBJECTS
+        ['cid' => $productID]
     );
     foreach ($boms as $bom) {
         // Ist der aktuelle Bestand der Stückliste größer als dies mit dem Bestand der Komponente möglich wäre?

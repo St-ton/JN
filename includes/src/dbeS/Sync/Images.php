@@ -85,10 +85,7 @@ final class Images extends AbstractSync
     {
         return map(
             reindex(
-                $this->db->query(
-                    'SELECT * FROM tbranding',
-                    ReturnType::ARRAY_OF_OBJECTS
-                ),
+                $this->db->getObjects('SELECT * FROM tbranding'),
                 static function ($e) {
                     return $e->cBildKategorie;
                 }

@@ -4,7 +4,6 @@ namespace JTL\Checkout;
 
 use JTL\Alert\Alert;
 use JTL\Cart\CartHelper;
-use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Product;
 use JTL\Language\LanguageHelper;
@@ -771,10 +770,9 @@ class Kupon
         $numbersString = $numbers ? '0123456789' : null;
         $code          = '';
         $db            = Shop::Container()->getDB();
-        $count         = (int)$db->query(
+        $count         = (int)$db->getSingleObject(
             'SELECT COUNT(*) AS cnt 
-                FROM tkupon',
-            ReturnType::SINGLE_OBJECT
+                FROM tkupon'
         )->cnt;
         while (empty($code) || ($count === 0
                 ? empty($code)
@@ -959,20 +957,17 @@ class Kupon
                 $ret['ungueltig'] = 11;
             } elseif (!empty($coupon->nVerwendungenProKunde) && $coupon->nVerwendungenProKunde > 0) {
                 //check if max usage of coupon is reached for cutomer
-                $countCouponUsed = Shop::Container()->getDB()->queryPrepared(
+                $countCouponUsed = Shop::Container()->getDB()->getSingleObject(
                     'SELECT nVerwendungen
-                      FROM tkuponkunde
-                      WHERE kKupon = :coupon
-                        AND cMail = :email',
+                         FROM tkuponkunde
+                         WHERE kKupon = :coupon
+                            AND cMail = :email',
                     [
                         'coupon' => (int)$coupon->kKupon,
                         'email'  => self::hash($_SESSION['Kunde']->cMail)
-                    ],
-                    ReturnType::SINGLE_OBJECT
+                    ]
                 );
-                if (isset($countCouponUsed->nVerwendungen)
-                    && $countCouponUsed->nVerwendungen >= $coupon->nVerwendungenProKunde
-                ) {
+                if ($countCouponUsed !== null && $countCouponUsed->nVerwendungen >= $coupon->nVerwendungenProKunde) {
                     $ret['ungueltig'] = 6;
                 }
             }
@@ -989,7 +984,7 @@ class Kupon
      */
     public static function newCustomerCouponUsed(string $email): bool
     {
-        $newCustomerCouponUsed = Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getSingleObject(
             'SELECT kKuponFlag
                 FROM tkuponflag
                 WHERE cEmailHash = :email
@@ -997,11 +992,8 @@ class Kupon
             [
                 'email'       => self::hash($email),
                 'newCustomer' => self::TYPE_NEWCUSTOMER
-            ],
-            ReturnType::SINGLE_OBJECT
-        );
-
-        return !empty($newCustomerCouponUsed);
+            ]
+        ) !== null;
     }
 
     /**

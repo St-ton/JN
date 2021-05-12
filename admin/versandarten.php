@@ -403,23 +403,16 @@ if ($step === 'neue Versandart') {
             : null);
 }
 if ($step === 'uebersicht') {
-    $customerGroups  = $db->query(
-        'SELECT kKundengruppe, cName FROM tkundengruppe ORDER BY kKundengruppe',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
-    $shippingMethods = $db->query(
-        'SELECT * FROM tversandart ORDER BY nSort, cName',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
+    $customerGroups  = $db->getObjects('SELECT kKundengruppe, cName FROM tkundengruppe ORDER BY kKundengruppe');
+    $shippingMethods = $db->getObjects('SELECT * FROM tversandart ORDER BY nSort, cName');
     foreach ($shippingMethods as $method) {
-        $method->versandartzahlungsarten = $db->query(
+        $method->versandartzahlungsarten = $db->getObjects(
             'SELECT tversandartzahlungsart.*
                 FROM tversandartzahlungsart
                 JOIN tzahlungsart
                     ON tzahlungsart.kZahlungsart = tversandartzahlungsart.kZahlungsart
                 WHERE tversandartzahlungsart.kVersandart = ' . (int)$method->kVersandart . '
-                ORDER BY tzahlungsart.cAnbieter, tzahlungsart.nSort, tzahlungsart.cName',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY tzahlungsart.cAnbieter, tzahlungsart.nSort, tzahlungsart.cName'
         );
 
         foreach ($method->versandartzahlungsarten as $smp) {

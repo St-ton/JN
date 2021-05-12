@@ -408,10 +408,7 @@ class DemoDataInstaller
         for ($i = 1; $i <= $limit; ++$i) {
             try {
                 $_name = $this->faker->unique()->company;
-                $res   = $this->pdo->query(
-                    'SELECT kHersteller FROM thersteller WHERE cName = "' . $_name . '"',
-                    ReturnType::ARRAY_OF_OBJECTS
-                );
+                $res   = $this->pdo->getObjects('SELECT kHersteller FROM thersteller WHERE cName = "' . $_name . '"');
                 if (\is_array($res) && count($res) > 0) {
                     throw new \OverflowException();
                 }
@@ -470,10 +467,7 @@ class DemoDataInstaller
         for ($i = 1; $i <= $limit; ++$i) {
             try {
                 $_name = $this->faker->unique()->department;
-                $res   = $this->pdo->query(
-                    'SELECT kKategorie FROM tkategorie WHERE cName = "' . $_name . '"',
-                    ReturnType::ARRAY_OF_OBJECTS
-                );
+                $res   = $this->pdo->getObjects('SELECT kKategorie FROM tkategorie WHERE cName = "' . $_name . '"');
                 if (\is_array($res) && count($res) > 0) {
                     throw new \OverflowException();
                 }
@@ -562,10 +556,7 @@ class DemoDataInstaller
         for ($i = 1; $i <= $limit; ++$i) {
             try {
                 $_name = $this->faker->unique()->productName;
-                $res   = $this->pdo->query(
-                    'SELECT kArtikel FROM tartikel WHERE cName = "' . $_name . '"',
-                    ReturnType::ARRAY_OF_OBJECTS
-                );
+                $res   = $this->pdo->getObjects('SELECT kArtikel FROM tartikel WHERE cName = "' . $_name . '"');
                 if (\is_array($res) && count($res) > 0) {
                     throw new \OverflowException();
                 }
@@ -899,9 +890,8 @@ class DemoDataInstaller
         // the right value of this node is the left value + 1
         $right = $left + 1;
         // get all children of this node
-        $result = $this->pdo->query(
-            'SELECT kKategorie FROM tkategorie WHERE kOberKategorie = ' . $parentId . ' ORDER BY nSort, cName',
-            ReturnType::ARRAY_OF_OBJECTS
+        $result = $this->pdo->getObjects(
+            'SELECT kKategorie FROM tkategorie WHERE kOberKategorie = ' . $parentId . ' ORDER BY nSort, cName'
         );
         foreach ($result as $_res) {
             $right = $this->rebuildCategoryTree((int)$_res->kKategorie, $right, $level + 1);

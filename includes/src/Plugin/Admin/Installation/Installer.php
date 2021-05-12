@@ -516,15 +516,14 @@ final class Installer
     public function syncPluginUpdate(int $pluginID): int
     {
         $newPluginID = $this->plugin->getID();
-        $cronJobs    = $this->db->queryPrepared(
+        $cronJobs    = $this->db->getObjects(
             'SELECT * 
                 FROM tcron
                 LEFT JOIN texportformat
                     ON texportformat.kExportformat = tcron.foreignKeyID
                 WHERE tcron.foreignKey = \'kExportformat\'
                     AND texportformat.kPlugin = :pid',
-            ['pid' => $newPluginID],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['pid' => $newPluginID]
         );
         $res         = $this->uninstaller->uninstall($newPluginID, true, $pluginID);
         if ($res !== InstallCode::OK) {
@@ -595,21 +594,19 @@ final class Installer
      */
     private function updateBoxes(int $oldPluginID, int $pluginID): void
     {
-        $newBoxTemplates = $this->db->queryPrepared(
+        $newBoxTemplates = $this->db->getObjects(
             "SELECT *
                 FROM tboxvorlage
                 WHERE kCustomID = :pid
                 AND (eTyp = 'plugin' OR eTyp = 'extension')",
-            ['pid' => $oldPluginID],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['pid' => $oldPluginID]
         );
-        $oldBoxTemplates = $this->db->queryPrepared(
+        $oldBoxTemplates = $this->db->getObjects(
             "SELECT *
                 FROM tboxvorlage
                 WHERE kCustomID = :pid
                 AND (eTyp = 'plugin' OR eTyp = 'extension')",
-            ['pid' => $pluginID],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['pid' => $pluginID]
         );
         foreach ($newBoxTemplates as $template) {
             foreach ($oldBoxTemplates as $newBoxTemplate) {
@@ -662,15 +659,14 @@ final class Installer
             $pluginID,
             (object)['kPlugin' => $oldPluginID]
         );
-        $customLangVars = $this->db->queryPrepared(
+        $customLangVars = $this->db->getObjects(
             'SELECT DISTINCT tpluginsprachvariable.kPluginSprachvariable AS newID,
                 tpluginsprachvariablecustomsprache.kPluginSprachvariable AS oldID, tpluginsprachvariable.cName
                 FROM tpluginsprachvariablecustomsprache
                 JOIN tpluginsprachvariable
                     ON tpluginsprachvariable.cName =  tpluginsprachvariablecustomsprache.cSprachvariable
                 WHERE tpluginsprachvariablecustomsprache.kPlugin = :pid',
-            ['pid' => $oldPluginID],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['pid' => $oldPluginID]
         );
         foreach ($customLangVars as $langVar) {
             $this->db->update(
@@ -688,12 +684,11 @@ final class Installer
      */
     private function updateConfig(int $oldPluginID, int $pluginID): void
     {
-        $pluginConf = $this->db->query(
+        $pluginConf = $this->db->getObjects(
             'SELECT *
                 FROM tplugineinstellungen
                 WHERE kPlugin IN (' . $oldPluginID . ', ' . $pluginID . ')
-                ORDER BY kPlugin',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY kPlugin'
         );
         if (\count($pluginConf) > 0) {
             $confData = [];
@@ -809,19 +804,17 @@ final class Installer
                     cModulId = REPLACE(cModulId, 'kPlugin_" . $pluginID . "_', 'kPlugin_" . $oldPluginID . "_')
                 WHERE kPlugin = " . $pluginID
         );
-        $oldPaymentMethods = $this->db->queryPrepared(
+        $oldPaymentMethods = $this->db->getObjects(
             'SELECT kZahlungsart, cModulId
                 FROM tzahlungsart
                 WHERE cModulId LIKE :newID',
-            ['newID' => 'kPlugin\_' . $oldPluginID . '\_%'],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['newID' => 'kPlugin\_' . $oldPluginID . '\_%']
         );
-        $newPaymentMethods = $this->db->queryPrepared(
+        $newPaymentMethods = $this->db->getObjects(
             'SELECT kZahlungsart, cModulId, cName
                 FROM tzahlungsart
                 WHERE cModulId LIKE :newID',
-            ['newID' => 'kPlugin\_' . $pluginID . '\_%'],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['newID' => 'kPlugin\_' . $pluginID . '\_%']
         );
         $updatedMethods    = [];
         foreach ($oldPaymentMethods as $method) {

@@ -567,13 +567,12 @@ class Redirect
      */
     public static function getRedirects($cWhereSQL = '', $cOrderSQL = '', $cLimitSQL = ''): array
     {
-        $redirects = Shop::Container()->getDB()->query(
+        $redirects = Shop::Container()->getDB()->getObjects(
             'SELECT *
                 FROM tredirect' .
             ($cWhereSQL !== '' ? ' WHERE ' . $cWhereSQL : '') .
             ($cOrderSQL !== '' ? ' ORDER BY ' . $cOrderSQL : '') .
-            ($cLimitSQL !== '' ? ' LIMIT ' . $cLimitSQL : ''),
-            ReturnType::ARRAY_OF_OBJECTS
+            ($cLimitSQL !== '' ? ' LIMIT ' . $cLimitSQL : '')
         );
         foreach ($redirects as $redirect) {
             $redirect->kRedirect            = (int)$redirect->kRedirect;

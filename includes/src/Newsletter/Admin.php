@@ -672,12 +672,11 @@ final class Admin
             return false;
         }
         $where      = ' IN (' . \implode(',', \array_map('\intval', $recipientIDs)) . ')';
-        $recipients = $this->db->query(
+        $recipients = $this->db->getObjects(
             'SELECT *
                 FROM tnewsletterempfaenger
                 WHERE kNewsletterEmpfaenger' .
-            $where,
-            ReturnType::ARRAY_OF_OBJECTS
+            $where
         );
 
         if (\count($recipients) === 0) {
@@ -722,12 +721,11 @@ final class Admin
             return false;
         }
         $where      = ' IN (' . \implode(',', \array_map('\intval', $recipientIDs)) . ')';
-        $recipients = $this->db->query(
+        $recipients = $this->db->getObjects(
             'SELECT *
                 FROM tnewsletterempfaenger
                 WHERE kNewsletterEmpfaenger' .
-            $where,
-            ReturnType::ARRAY_OF_OBJECTS
+            $where
         );
 
         if (\count($recipients) === 0) {
@@ -785,7 +783,7 @@ final class Admin
      */
     public function getSubscribers($limitSQL, $searchSQL): array
     {
-        $result = $this->db->query(
+        return $this->db->getObjects(
             "SELECT tnewsletterempfaenger.*,
                 DATE_FORMAT(tnewsletterempfaenger.dEingetragen, '%d.%m.%Y %H:%i') AS dEingetragen_de,
                 DATE_FORMAT(tnewsletterempfaenger.dLetzterNewsletter, '%d.%m.%Y %H:%i') AS dLetzterNewsletter_de,
@@ -806,14 +804,8 @@ final class Admin
                     ON toptin.cMail = tnewsletterempfaenger.cEmail
                 WHERE tnewsletterempfaenger.kSprache = " . (int)$_SESSION['kSprache'] .
             $searchSQL->cWHERE . '
-                ORDER BY tnewsletterempfaenger.dEingetragen DESC' . $limitSQL,
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY tnewsletterempfaenger.dEingetragen DESC' . $limitSQL
         );
-        if (empty($result)) {
-            return [];
-        }
-
-        return $result;
     }
 
     /**

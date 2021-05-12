@@ -2,7 +2,6 @@
 
 namespace JTL\Filter\States;
 
-use JTL\DB\ReturnType;
 use JTL\Filter\AbstractFilter;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\Join;
@@ -182,7 +181,7 @@ class BaseSearchQuery extends AbstractFilter
      */
     public function setSeo(array $languages): FilterInterface
     {
-        $seo = $this->productFilter->getDB()->executeQueryPrepared(
+        $seo = $this->productFilter->getDB()->getSingleObject(
             "SELECT tseo.cSeo, tseo.kSprache, tsuchanfrage.cSuche
                 FROM tseo
                 LEFT JOIN tsuchanfrage
@@ -190,16 +189,15 @@ class BaseSearchQuery extends AbstractFilter
                     AND tsuchanfrage.kSprache = tseo.kSprache
                 WHERE cKey = 'kSuchanfrage' 
                     AND kKey = :key",
-            ['key' => $this->getID()],
-            ReturnType::SINGLE_OBJECT
+            ['key' => $this->getID()]
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
-            if (isset($seo->kSprache) && $language->kSprache === (int)$seo->kSprache) {
+            if ($seo !== null && $language->kSprache === (int)$seo->kSprache) {
                 $this->cSeo[$language->kSprache] = $seo->cSeo;
             }
         }
-        if (!empty($seo->cSuche)) {
+        if ($seo !== null & !empty($seo->cSuche)) {
             $this->setName($seo->cSuche);
         }
 
@@ -1017,16 +1015,14 @@ class BaseSearchQuery extends AbstractFilter
         static $active = null;
 
         if ($active === null) {
-            $active = $this->productFilter->getDB()->query(
+            $active = $this->productFilter->getDB()->getSingleObject(
                 "SHOW INDEX FROM tartikel 
-                    WHERE KEY_NAME = 'idx_tartikel_fulltext'",
-                ReturnType::SINGLE_OBJECT
+                    WHERE KEY_NAME = 'idx_tartikel_fulltext'"
             )
-                && $this->productFilter->getDB()->query(
+                && $this->productFilter->getDB()->getSingleObject(
                     "SHOW INDEX 
                         FROM tartikelsprache 
-                        WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'",
-                    ReturnType::SINGLE_OBJECT
+                        WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'"
                 );
         }
 

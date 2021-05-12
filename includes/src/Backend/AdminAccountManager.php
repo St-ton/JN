@@ -75,12 +75,11 @@ class AdminAccountManager
      */
     public function getAdminList(): array
     {
-        return $this->db->query(
+        return $this->db->getObjects(
             'SELECT * FROM tadminlogin
                 LEFT JOIN tadminlogingruppe
                     ON tadminlogin.kAdminlogingruppe = tadminlogingruppe.kAdminlogingruppe
-                ORDER BY kAdminlogin',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY kAdminlogin'
         );
     }
 
@@ -89,13 +88,12 @@ class AdminAccountManager
      */
     public function getAdminGroups(): array
     {
-        return $this->db->query(
+        return $this->db->getObjects(
             'SELECT tadminlogingruppe.*, COUNT(tadminlogin.kAdminlogingruppe) AS nCount
                 FROM tadminlogingruppe
                 LEFT JOIN tadminlogin
                     ON tadminlogin.kAdminlogingruppe = tadminlogingruppe.kAdminlogingruppe
-                GROUP BY tadminlogingruppe.kAdminlogingruppe',
-            ReturnType::ARRAY_OF_OBJECTS
+                GROUP BY tadminlogingruppe.kAdminlogingruppe'
         );
     }
 

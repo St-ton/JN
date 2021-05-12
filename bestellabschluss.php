@@ -3,7 +3,6 @@
 use JTL\Cart\Cart;
 use JTL\Cart\CartHelper;
 use JTL\Checkout\Bestellung;
-use JTL\DB\ReturnType;
 use JTL\Plugin\Helper;
 use JTL\Session\Frontend;
 use JTL\Shop;

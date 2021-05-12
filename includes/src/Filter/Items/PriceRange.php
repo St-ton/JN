@@ -509,10 +509,7 @@ class PriceRange extends AbstractFilter
         $currency  = Frontend::getCurrency();
         $options   = [];
         $selectSQL = [];
-        $ranges    = $this->productFilter->getDB()->query(
-            'SELECT * FROM tpreisspannenfilter',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
+        $ranges    = $this->productFilter->getDB()->getObjects('SELECT * FROM tpreisspannenfilter');
         if (\count($ranges) === 0) {
             return $options;
         }

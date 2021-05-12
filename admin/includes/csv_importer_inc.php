@@ -1,6 +1,5 @@
 <?php
 
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\URL;
@@ -185,7 +184,7 @@ function getArtNrUrl(string $artNo, string $iso): ?string
         return null;
     }
 
-    $item = Shop::Container()->getDB()->executeQueryPrepared(
+    $item = Shop::Container()->getDB()->getSingleObject(
         "SELECT tartikel.kArtikel, tseo.cSeo
             FROM tartikel
             LEFT JOIN tsprache
@@ -196,8 +195,7 @@ function getArtNrUrl(string $artNo, string $iso): ?string
                 AND tseo.kSprache = tsprache.kSprache
             WHERE tartikel.cArtNr = :artno
             LIMIT 1",
-        ['iso' => mb_convert_case($iso, MB_CASE_LOWER), 'artno' => $artNo],
-        ReturnType::SINGLE_OBJECT
+        ['iso' => mb_convert_case($iso, MB_CASE_LOWER), 'artno' => $artNo]
     );
 
     return URL::buildURL($item, URLART_ARTIKEL);

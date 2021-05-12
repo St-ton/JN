@@ -258,7 +258,7 @@ class LanguageHelper
     {
         $this->langVars = $this->loadLangVars();
         if (\count($this->langVars) === 0) {
-            $allLangVars = $this->db->query(
+            $collection = $this->db->getCollection(
                 'SELECT tsprachwerte.cWert AS val, tsprachwerte.cName AS name, 
                     tsprachsektion.cName AS sectionName, tsprache.kSprache AS langID
                     FROM tsprachwerte
@@ -266,10 +266,8 @@ class LanguageHelper
                     INNER JOIN tsprache ON iso.cISO = tsprache.cISO
                     LEFT JOIN tsprachsektion
                         ON tsprachwerte.kSprachsektion = tsprachsektion.kSprachsektion',
-                ReturnType::COLLECTION
-            );
-            /** @var Collection $allLangVars */
-            $collection = $allLangVars->groupBy([
+                []
+            )->groupBy([
                 'langID',
                 static function ($e) {
                     return $e->sectionName;
@@ -294,12 +292,12 @@ class LanguageHelper
     private function initLangData(): void
     {
         $data = $this->cache->get('lng_dta_lst', function ($cache, $cacheID, &$content, &$tags) {
-            $content = $this->db->query(
+            $content = $this->db->getCollection(
                 'SELECT tsprache.*, tsprachiso.kSprachISO FROM tsprache 
                     LEFT JOIN tsprachiso
                         ON tsprache.cISO = tsprachiso.cISO
                     ORDER BY tsprache.kSprache ASC',
-                ReturnType::COLLECTION
+                []
             );
             $tags    = [\CACHING_GROUP_LANGUAGE];
 

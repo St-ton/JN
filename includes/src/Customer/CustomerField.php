@@ -2,7 +2,6 @@
 
 namespace JTL\Customer;
 
-use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
@@ -83,16 +82,13 @@ class CustomerField
     public static function load(int $id): self
     {
         $instance = new self();
-        $instance->setRecord(Shop::Container()->getDB()->queryPrepared(
+        $instance->setRecord(Shop::Container()->getDB()->getSingleObject(
             'SELECT tkundenfeld.kKundenfeld, tkundenfeld.kSprache, tkundenfeld.cName,
                    tkundenfeld.cWawi, tkundenfeld.cTyp, tkundenfeld.nSort,
                    tkundenfeld.nPflicht, tkundenfeld.nEditierbar
                 FROM tkundenfeld
                 WHERE tkundenfeld.kKundenfeld = :id',
-            [
-                'id' => $id,
-            ],
-            ReturnType::SINGLE_OBJECT
+            ['id' => $id]
         ))->loadValues();
 
         return $instance;
@@ -106,7 +102,7 @@ class CustomerField
     public static function loadByName(string $name, int $langID): self
     {
         $instance = new self();
-        $instance->setRecord(Shop::Container()->getDB()->queryPrepared(
+        $instance->setRecord(Shop::Container()->getDB()->getSingleObject(
             'SELECT tkundenfeld.kKundenfeld, tkundenfeld.kSprache, tkundenfeld.cName,
                    tkundenfeld.cWawi, tkundenfeld.cTyp, tkundenfeld.nSort,
                    tkundenfeld.nPflicht, tkundenfeld.nEditierbar
@@ -116,8 +112,7 @@ class CustomerField
             [
                 'name'   => $name,
                 'langID' => $langID,
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         ))->loadValues();
 
         return $instance;
@@ -129,15 +124,12 @@ class CustomerField
     protected function loadValues(): self
     {
         if ($this->getType() === self::TYPE_SELECT) {
-            foreach (Shop::Container()->getDB()->queryPrepared(
+            foreach (Shop::Container()->getDB()->getObjects(
                 'SELECT kKundenfeldWert, cWert
                     FROM tkundenfeldwert
                     WHERE kKundenfeld = :customerFieldID
                     ORDER BY nSort',
-                [
-                    'customerFieldID' => $this->getID(),
-                ],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['customerFieldID' => $this->getID()]
             ) as $customFieldValue) {
                 $this->values[$customFieldValue->kKundenfeldWert] = $customFieldValue->cWert;
             }

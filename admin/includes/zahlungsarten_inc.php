@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Checkout\Zahlungsart;
-use JTL\DB\ReturnType;
 use JTL\Shop;
 
 /**
@@ -115,7 +114,7 @@ function getPaymentMethodsByName($query)
         $string = trim($string);
         // Nur Eingaben mit mehr als 2 Zeichen
         if (mb_strlen($string) > 2) {
-            $data = Shop::Container()->getDB()->queryPrepared(
+            $data = Shop::Container()->getDB()->getObjects(
                 'SELECT za.kZahlungsart, za.cName
                     FROM tzahlungsart AS za
                     LEFT JOIN tzahlungsartsprache AS zs 
@@ -123,8 +122,7 @@ function getPaymentMethodsByName($query)
                         AND zs.cName LIKE :search
                     WHERE za.cName LIKE :search 
                     OR zs.cName LIKE :search',
-                ['search' => '%' . $string . '%'],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['search' => '%' . $string . '%']
             );
             // Berücksichtige keine fehlerhaften Eingaben
             if (!empty($data)) {

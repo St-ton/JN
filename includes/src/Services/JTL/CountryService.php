@@ -6,7 +6,6 @@ use Illuminate\Support\Collection;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Country\Country;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 
 /**
  * Class CountryService
@@ -52,8 +51,7 @@ class CountryService implements CountryServiceInterface
 
             return;
         }
-        $countries = $this->db->query('SELECT * FROM tland', ReturnType::ARRAY_OF_OBJECTS);
-        foreach ($countries as $country) {
+        foreach ($this->db->getObjects('SELECT * FROM tland') as $country) {
             $countryTMP = new Country($country->cISO);
             $countryTMP->setEU((int)$country->nEU)
                 ->setContinent($country->cKontinent)

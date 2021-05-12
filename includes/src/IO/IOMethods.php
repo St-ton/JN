@@ -1164,7 +1164,7 @@ class IOMethods
                 }
             }
         } else {
-            throw new Exception('Article not found ' . $parentProductID);
+            throw new Exception('Product not found ' . $parentProductID);
         }
         $objResponse->callEvoProductFunction('variationRefreshAll', $wrapper);
 

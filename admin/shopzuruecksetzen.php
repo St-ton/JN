@@ -107,11 +107,7 @@ if (Request::postInt('zuruecksetzen') === 1 && Form::validateToken()) {
 
                 // Shopinhalte
                 case 'news':
-                    $_index = $db->query(
-                        'SELECT kNews FROM tnews',
-                        ReturnType::ARRAY_OF_OBJECTS
-                    );
-                    foreach ($_index as $i) {
+                    foreach ($db->getObjects('SELECT kNews FROM tnews') as $i) {
                         loescheNewsBilderDir($i->kNews, PFAD_ROOT . PFAD_NEWSBILDER);
                     }
                     $db->query('TRUNCATE tnews');

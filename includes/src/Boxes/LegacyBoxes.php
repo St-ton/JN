@@ -3,7 +3,6 @@
 namespace JTL\Boxes;
 
 use Exception;
-use JTL\DB\ReturnType;
 use JTL\Filter\ProductFilter;
 use JTL\MagicCompatibilityTrait;
 use JTL\Services\JTL\BoxServiceInterface;
@@ -272,14 +271,13 @@ class LegacyBoxes
     public function holeBox(int $id): stdClass
     {
         \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        $box = Shop::Container()->getDB()->query(
+        $box = Shop::Container()->getDB()->getSingleObject(
             'SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.cTitel, tboxen.ePosition,
                 tboxvorlage.eTyp, tboxvorlage.cName, tboxvorlage.cVerfuegbar, tboxvorlage.cTemplate
                 FROM tboxen
                 LEFT JOIN tboxvorlage 
                     ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
-                WHERE kBox = ' . $id,
-            ReturnType::SINGLE_OBJECT
+                WHERE kBox = ' . $id
         );
 
         $box->oSprache_arr      = [];
@@ -363,7 +361,7 @@ class LegacyBoxes
     {
         \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
 
-        return Shop::Container()->getDB()->query('SELECT * FROM tlinkgruppe', ReturnType::ARRAY_OF_OBJECTS);
+        return Shop::Container()->getDB()->getObjects('SELECT * FROM tlinkgruppe');
     }
 
     /**

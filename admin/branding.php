@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Alert\Alert;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Media\Media;
@@ -54,19 +53,18 @@ function gibBrandings()
 
 /**
  * @param int $brandingID
- * @return mixed
+ * @return stdClass|null
  */
 function gibBranding(int $brandingID)
 {
-    return Shop::Container()->getDB()->queryPrepared(
+    return Shop::Container()->getDB()->getSingleObject(
         'SELECT tbranding.*, tbranding.kBranding AS kBrandingTMP, tbrandingeinstellung.*
             FROM tbranding
             LEFT JOIN tbrandingeinstellung 
                 ON tbrandingeinstellung.kBranding = tbranding.kBranding
             WHERE tbranding.kBranding = :bid
             GROUP BY tbranding.kBranding',
-        ['bid' => $brandingID],
-        ReturnType::SINGLE_OBJECT
+        ['bid' => $brandingID]
     );
 }
 

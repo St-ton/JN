@@ -4,7 +4,6 @@ namespace JTL\Optin;
 
 use JTL\Alert\Alert;
 use JTL\CheckBox;
-use JTL\DB\ReturnType;
 use JTL\Exceptions\InvalidInputException;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;

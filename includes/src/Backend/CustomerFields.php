@@ -2,7 +2,6 @@
 
 namespace JTL\Backend;
 
-use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Shop;
 use stdClass;
@@ -61,12 +60,11 @@ class CustomerFields
      */
     protected function loadFields(int $langID): void
     {
-        $this->customerFields = Shop::Container()->getDB()->queryPrepared(
+        $this->customerFields = Shop::Container()->getDB()->getCollection(
             'SELECT * FROM tkundenfeld
                 WHERE kSprache = :lid
                 ORDER BY nSort ASC',
-            ['lid' => $langID],
-            ReturnType::COLLECTION
+            ['lid' => $langID]
         )->map([$this, 'prepare'])->keyBy('kKundenfeld')->toArray();
     }
 

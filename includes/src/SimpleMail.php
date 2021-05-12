@@ -3,7 +3,6 @@
 namespace JTL;
 
 use Exception;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use PHPMailer\PHPMailer\PHPMailer;
 use stdClass;
@@ -492,11 +491,7 @@ class SimpleMail
         if ($conf['emailblacklist']['blacklist_benutzen'] !== 'Y') {
             return false;
         }
-        $blacklist = Shop::Container()->getDB()->query(
-            'SELECT cEmail FROM temailblacklist',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        foreach ($blacklist as $item) {
+        foreach (Shop::Container()->getDB()->getObjects('SELECT cEmail FROM temailblacklist') as $item) {
             if (\mb_strpos($item->cEmail, '*') !== false) {
                 \preg_match('/' . \str_replace('*', '[a-z0-9\-\_\.\@\+]*', $item->cEmail) . '/', $mail, $hits);
                 // Blocked

@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Alert\Alert;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Shop;
@@ -33,12 +32,11 @@ if (Request::postInt('emailblacklist') === 1 && Form::validateToken()) {
     }
 }
 $blacklist = $db->selectAll('temailblacklist', [], []);
-$blocked   = $db->query(
+$blocked   = $db->getObjects(
     "SELECT *, DATE_FORMAT(dLetzterBlock, '%d.%m.%Y %H:%i') AS Datum
         FROM temailblacklistblock
         ORDER BY dLetzterBlock DESC
-        LIMIT 100",
-    ReturnType::ARRAY_OF_OBJECTS
+        LIMIT 100"
 );
 
 $smarty->assign('blacklist', $blacklist)

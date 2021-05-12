@@ -4,7 +4,6 @@ namespace JTL\Checkout;
 
 use Illuminate\Support\Collection;
 use JTL\Country\Country;
-use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
@@ -359,13 +358,12 @@ class Versandart
             return;
         }
 
-        $this->setShippingSurcharges(Shop::Container()->getDB()->queryPrepared(
+        $this->setShippingSurcharges(Shop::Container()->getDB()->getCollection(
             'SELECT kVersandzuschlag
                 FROM tversandzuschlag
                 WHERE kVersandart = :kVersandart
                 ORDER BY kVersandzuschlag DESC',
-            ['kVersandart' => $this->kVersandart],
-            ReturnType::COLLECTION
+            ['kVersandart' => $this->kVersandart]
         )->map(static function ($surcharge) {
             return new ShippingSurcharge((int)$surcharge->kVersandzuschlag);
         }));

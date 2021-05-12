@@ -789,9 +789,43 @@ class NiceDB implements DbInterface
         array $params,
         int $return = ReturnType::DEFAULT,
         bool $echo = false,
-        $fnINfo = null
+        $fnInfo = null
     ) {
-        return $this->_execute(1, $stmt, $params, $return, $echo, $fnINfo);
+        return $this->_execute(1, $stmt, $params, $return, $echo, $fnInfo);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getObjects(string $stmt, array $params = []): array
+    {
+        return $this->_execute(1, $stmt, $params, ReturnType::ARRAY_OF_OBJECTS);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getCollection(string $stmt, array $params = []): Collection
+    {
+        return $this->_execute(1, $stmt, $params, ReturnType::COLLECTION);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSingleObject(string $stmt, array $params = []): ?stdClass
+    {
+        $res = $this->_execute(1, $stmt, $params, ReturnType::SINGLE_OBJECT);
+
+        return $res !== false ? $res : null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSingleArray(string $stmt, array $params = []): ?array
+    {
+        return $this->_execute(1, $stmt, $params, ReturnType::SINGLE_ASSOC_ARRAY);
     }
 
     /**

@@ -45,7 +45,7 @@ class Category extends AbstractImage
      */
     public function getImageNames(MediaImageRequest $req): array
     {
-        return $this->db->queryPrepared(
+        return $this->db->getCollection(
             'SELECT pic.cPfad AS path, pic.kKategorie, pic.kKategorie AS id, cat.cName,
                 atr.cWert AS customImgName, cat.cSeo AS seoPath
                 FROM tkategorie cat
@@ -55,8 +55,7 @@ class Category extends AbstractImage
                     ON cat.kKategorie = atr.kKategorie
                     AND atr.cName = :atr
                 WHERE pic.kKategorie = :cid',
-            ['cid' => $req->getID(), 'atr' => \KAT_ATTRIBUT_BILDNAME],
-            ReturnType::COLLECTION
+            ['cid' => $req->getID(), 'atr' => \KAT_ATTRIBUT_BILDNAME]
         )->map(static function ($item) {
             return self::getCustomName($item);
         })->toArray();

@@ -4,7 +4,6 @@ namespace JTL\GeneralDataProtection;
 
 use DateTime;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Shop;
 use Psr\Log\LoggerInterface;
 

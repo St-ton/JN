@@ -3,7 +3,6 @@
 namespace JTL\Backend;
 
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Helpers\Request;
@@ -78,14 +77,13 @@ class AuthToken
         $this->hash     = null;
         $this->verified = null;
 
-        $token = $this->db->query(
+        $token = $this->db->getSingleObject(
             'SELECT tstoreauth.auth_code, tstoreauth.access_token,
                 tadminlogin.cPass AS hash, tstoreauth.verified
                 FROM tstoreauth
                 INNER JOIN tadminlogin 
                     ON tadminlogin.kAdminlogin = tstoreauth.owner
-                LIMIT 1',
-            ReturnType::SINGLE_OBJECT
+                LIMIT 1'
         );
         if ($token) {
             $this->authCode = $token->auth_code;

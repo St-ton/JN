@@ -5,7 +5,6 @@ namespace JTL\Catalog;
 use DateTime;
 use Exception;
 use JTL\Catalog\Product\Artikel;
-use JTL\DB\ReturnType;
 use JTL\MainModel;
 use JTL\Shop;
 use stdClass;
@@ -462,11 +461,10 @@ class Warehouse extends MainModel
                                     AND twarenlagersprache.kSprache = ' . $option;
                 }
 
-                $data = Shop::Container()->getDB()->query(
+                $data = Shop::Container()->getDB()->getSingleObject(
                     'SELECT twarenlager.* ' . $select . '
                          FROM twarenlager' . $join . '
-                         WHERE twarenlager.kWarenlager = ' . $id,
-                    ReturnType::SINGLE_OBJECT
+                         WHERE twarenlager.kWarenlager = ' . $id
                 );
             }
         }
@@ -575,12 +573,7 @@ class Warehouse extends MainModel
     {
         $warehouses = [];
         $sql        = $activeOnly ? ' WHERE nAktiv = 1' : '';
-        $data       = Shop::Container()->getDB()->query(
-            'SELECT *
-               FROM twarenlager' . $sql,
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        foreach ($data as $item) {
+        foreach (Shop::Container()->getDB()->getObjects('SELECT * FROM twarenlager' . $sql) as $item) {
             $warehouse = new self(null, $item);
             if ($loadLanguages) {
                 $warehouse->loadLanguages();
@@ -607,14 +600,13 @@ class Warehouse extends MainModel
         $warehouses = [];
         if ($productID > 0) {
             $sql  = $active ? ' AND twarenlager.nAktiv = 1' : '';
-            $data = Shop::Container()->getDB()->queryPrepared(
+            $data = Shop::Container()->getDB()->getObjects(
                 'SELECT tartikelwarenlager.*
                     FROM tartikelwarenlager
                     JOIN twarenlager 
                         ON twarenlager.kWarenlager = tartikelwarenlager.kWarenlager' . $sql . '
-                    WHERE tartikelwarenlager.kArtikel = :articleID',
-                ['articleID' => $productID],
-                ReturnType::ARRAY_OF_OBJECTS
+                    WHERE tartikelwarenlager.kArtikel = :productID',
+                ['productID' => $productID]
             );
             foreach ($data as $item) {
                 $warehouse               = new self($item->kWarenlager, null, $langID);

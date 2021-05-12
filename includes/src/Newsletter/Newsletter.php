@@ -351,7 +351,7 @@ class Newsletter
     {
         $res  = [];
         $keys = \explode(';', $keyString);
-        if (!\is_array($keys) || \count($keys) === 0) {
+        if (\count($keys) === 0) {
             return $res;
         }
         $res = \array_filter($keys, static function ($e) {
@@ -437,7 +437,7 @@ class Newsletter
      *
      * @param array      $manufacturerIDs
      * @param int|object $campaign
-     * @param int|object $langID
+     * @param int        $langID
      * @return array
      */
     public function getManufacturers($manufacturerIDs, $campaign = 0, int $langID = 0): array

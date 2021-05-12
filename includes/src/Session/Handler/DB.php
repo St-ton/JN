@@ -3,7 +3,6 @@
 namespace JTL\Session\Handler;
 
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use stdClass;
 
 /**
@@ -61,15 +60,14 @@ class DB extends JTLDefault
      */
     public function read($id)
     {
-        $res = $this->db->queryPrepared(
+        $res = $this->db->getSingleObject(
             'SELECT cSessionData FROM ' . $this->tableName . '
                 WHERE cSessionId = :id
                 AND nSessionExpires > :time',
             [
                 'id'   => $id,
                 'time' => \time()
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
 
         return $res->cSessionData ?? '';

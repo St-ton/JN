@@ -5,7 +5,6 @@ namespace JTL\Extensions\Download;
 use DateTime;
 use JTL\Cart\Cart;
 use JTL\Checkout\Bestellung;
-use JTL\DB\ReturnType;
 use JTL\Nice;
 use JTL\Shop;
 
@@ -175,15 +174,14 @@ class Download
                     $this->dGueltigBis = $paymentDate->format('d.m.Y');
                 }
             }
-            $this->oArtikelDownload_arr = Shop::Container()->getDB()->queryPrepared(
+            $this->oArtikelDownload_arr = Shop::Container()->getDB()->getObjects(
                 'SELECT tartikeldownload.*
                     FROM tartikeldownload
                     JOIN tdownload 
                         ON tdownload.kDownload = tartikeldownload.kDownload
                     WHERE tartikeldownload.kDownload = :dlid
                     ORDER BY tdownload.nSort',
-                ['dlid' => $this->kDownload],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['dlid' => $this->kDownload]
             );
             foreach ($this->oArtikelDownload_arr as $dla) {
                 $dla->kArtikel  = (int)$dla->kArtikel;
@@ -253,14 +251,13 @@ class Download
                                JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
                                     AND twarenkorbpos.nPosTyp = ' . \C_WARENKORBPOS_TYP_ARTIKEL;
             }
-            $items = Shop::Container()->getDB()->query(
+            $items = Shop::Container()->getDB()->getObjects(
                 'SELECT ' . $select . '
                     FROM tartikeldownload
                     ' . $join . '
                     WHERE ' . $where . '
                     GROUP BY tartikeldownload.kDownload
-                    ORDER BY tdownload.nSort, tdownload.dErstellt DESC',
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY tdownload.nSort, tdownload.dErstellt DESC'
             );
             foreach ($items as $i => $download) {
                 $download->kDownload = (int)$download->kDownload;

@@ -3,7 +3,6 @@
 use JTL\Alert\Alert;
 use JTL\ContentAuthor;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;

@@ -4,7 +4,6 @@ namespace JTL\Helpers;
 
 use JTL\Alert\Alert;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Shop;
 
 /**
@@ -64,7 +63,7 @@ class Overlay
                 if ($lang === 0 || $type === 0) {
                     continue;
                 }
-                $defaultOverlay = $this->db->queryPrepared(
+                $defaultOverlay = $this->db->getSingleObject(
                     'SELECT *
                       FROM tsuchspecialoverlaysprache
                       WHERE kSprache = :lang
@@ -77,11 +76,10 @@ class Overlay
                         'type'         => $type,
                         'templateName' => $template,
                         'defaultName'  => \JTL\Media\Image\Overlay::DEFAULT_TEMPLATE
-                    ],
-                    ReturnType::SINGLE_OBJECT
+                    ]
                 );
                 // use default settings for new overlays
-                if (!empty($defaultOverlay) && $defaultOverlay->cTemplate !== $template) {
+                if ($defaultOverlay !== null && $defaultOverlay->cTemplate !== $template) {
                     speicherEinstellung(
                         $type,
                         (array)$defaultOverlay,

@@ -46,7 +46,7 @@ class ConfigGroup extends AbstractImage
      */
     public function getImageNames(MediaImageRequest $req): array
     {
-        return $this->db->queryPrepared(
+        return $this->db->getCollection(
             'SELECT a.kKonfiggruppe, t.cName, cBildPfad AS path
                 FROM tkonfiggruppe a
                 JOIN tkonfiggruppesprache t 
@@ -55,8 +55,7 @@ class ConfigGroup extends AbstractImage
                     ON tsprache.kSprache = t.kSprache
                 WHERE a.kKonfiggruppe = :cid
                 AND tsprache.cShopStandard = \'Y\'',
-            ['cid' => $req->getID()],
-            ReturnType::COLLECTION
+            ['cid' => $req->getID()]
         )->map(static function ($item) {
             return self::getCustomName($item);
         })->toArray();

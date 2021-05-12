@@ -172,7 +172,7 @@ final class MigrationHelper
                 . ' INDEX `' . $idxName . '` ON `' . $idxTable . '` '
                 . '(`' . \implode('`, `', $idxColumns) . '`)';
 
-            return !$this->db->executeQuery($ddl, ReturnType::DEFAULT) ? false : true;
+            return !$this->db->executeQuery($ddl) ? false : true;
         }
 
         return false;

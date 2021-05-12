@@ -284,15 +284,14 @@ class AccountController
             $this->getCustomerFields();
         }
         if ($step === 'bewertungen') {
-            $ratings = $this->db->queryPrepared(
+            $ratings = $this->db->getObjects(
                 'SELECT tbewertung.kBewertung, fGuthabenBonus, nAktiv, kArtikel, cTitel, cText, 
                   tbewertung.dDatum, nSterne, cAntwort, dAntwortDatum
                   FROM tbewertung 
                   LEFT JOIN tbewertungguthabenbonus 
                       ON tbewertung.kBewertung = tbewertungguthabenbonus.kBewertung
                   WHERE tbewertung.kKunde = :customer',
-                ['customer' => $customerID],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['customer' => $customerID]
             );
         }
         $_SESSION['Kunde']->cGuthabenLocalized = Preise::getLocalizedPriceString($_SESSION['Kunde']->fGuthaben);

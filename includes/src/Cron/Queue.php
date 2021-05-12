@@ -4,7 +4,6 @@ namespace JTL\Cron;
 
 use DateTime;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use Psr\Log\LoggerInterface;
 use stdClass;
 
@@ -52,16 +51,12 @@ class Queue
      */
     public function loadQueueFromDB(): array
     {
-        $queueData = $this->db->query(
+        $this->queueEntries = $this->db->getCollection(
             'SELECT *
                 FROM tjobqueue
                 WHERE isRunning = 0
-                    AND startTime <= NOW()',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        foreach ($queueData as $entry) {
-            $this->queueEntries[] = new QueueEntry($entry);
-        }
+                    AND startTime <= NOW()'
+        )->mapInto(QueueEntry::class)->toArray();
         $this->logger->debug(\sprintf('Loaded %d existing job(s).', \count($this->queueEntries)));
 
         return $this->queueEntries;

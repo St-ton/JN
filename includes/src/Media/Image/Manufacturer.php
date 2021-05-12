@@ -45,12 +45,11 @@ class Manufacturer extends AbstractImage
      */
     public function getImageNames(MediaImageRequest $req): array
     {
-        return $this->db->queryPrepared(
+        return $this->db->getCollection(
             'SELECT kHersteller, cName, cSeo AS seoPath, cSeo AS originalSeo, cBildpfad AS path
                 FROM thersteller
                 WHERE kHersteller = :mid',
-            ['mid' => $req->getID()],
-            ReturnType::COLLECTION
+            ['mid' => $req->getID()]
         )->each(static function ($item, $key) use ($req) {
             if ($key === 0 && !empty($item->path)) {
                 $req->setSourcePath($item->path);

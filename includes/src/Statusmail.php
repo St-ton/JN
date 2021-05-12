@@ -131,11 +131,7 @@ class Statusmail
      */
     public function loadConfig(): stdClass
     {
-        $data = $this->db->query(
-            'SELECT * FROM tstatusemail',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-
+        $data                         = $this->db->getObjects('SELECT * FROM tstatusemail');
         $first                        = first($data);
         $conf                         = new stdClass();
         $conf->cIntervallMoeglich_arr = $this->getPossibleIntervals();
@@ -203,10 +199,7 @@ class Statusmail
     private function getProductCountPerCustomerGroup(): array
     {
         $products       = [];
-        $customerGroups = $this->db->query(
-            'SELECT kKundengruppe, cName FROM tkundengruppe',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
+        $customerGroups = $this->db->getObjects('SELECT kKundengruppe, cName FROM tkundengruppe');
         foreach ($customerGroups as $customerGroup) {
             $productData            = $this->db->queryPrepared(
                 'SELECT COUNT(*) AS cnt
@@ -629,7 +622,7 @@ class Statusmail
     public function getLogEntries(array $logLevels): array
     {
         return map(
-            $this->db->queryPrepared(
+            $this->db->getObjects(
                 'SELECT *
                     FROM tjtllog
                     WHERE dErstellt >= :from
@@ -639,8 +632,7 @@ class Statusmail
                 [
                     'from' => $this->dateStart,
                     'to'   => $this->dateEnd
-                ],
-                ReturnType::ARRAY_OF_OBJECTS
+                ]
             ),
             static function ($e) {
                 $e->kLog   = (int)$e->kLog;

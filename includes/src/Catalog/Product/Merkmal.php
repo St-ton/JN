@@ -2,7 +2,6 @@
 
 namespace JTL\Catalog\Product;
 
-use JTL\DB\ReturnType;
 use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
@@ -137,16 +136,15 @@ class Merkmal
             $joinSQL   = 'INNER JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
                             AND tmerkmalsprache.kSprache = ' . $languageID;
         }
-        $data = Shop::Container()->getDB()->query(
+        $data = Shop::Container()->getDB()->getSingleObject(
             'SELECT tmerkmal.kMerkmal, tmerkmal.nSort, tmerkmal.cBildpfad, tmerkmal.cTyp, ' .
                 $selectSQL . '
                 FROM tmerkmal ' .
                 $joinSQL . '
                 WHERE tmerkmal.kMerkmal = ' . $id . '
-                ORDER BY tmerkmal.nSort',
-            ReturnType::SINGLE_OBJECT
+                ORDER BY tmerkmal.nSort'
         );
-        if (isset($data->kMerkmal) && $data->kMerkmal > 0) {
+        if ($data !== null && $data->kMerkmal > 0) {
             foreach (\array_keys(\get_object_vars($data)) as $cMember) {
                 $this->$cMember = $data->$cMember;
             }
@@ -168,11 +166,10 @@ class Merkmal
                                         AND standardSprache.kSprache = ' . $languageID;
                 $orderSQL     = ' ORDER BY tmw.nSort, standardSprache.cWert';
             }
-            $tmpAttributes          = Shop::Container()->getDB()->query(
+            $tmpAttributes          = Shop::Container()->getDB()->getObjects(
                 'SELECT tmw.kMerkmalWert
                     FROM tmerkmalwert tmw ' .  $joinValueSQL . '
-                    WHERE kMerkmal = ' . $this->kMerkmal . $orderSQL,
-                ReturnType::ARRAY_OF_OBJECTS
+                    WHERE kMerkmal = ' . $this->kMerkmal . $orderSQL
             );
             $this->oMerkmalWert_arr = [];
             foreach ($tmpAttributes as $oMerkmalWertTMP) {

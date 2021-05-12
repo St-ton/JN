@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Alert\Alert;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Shop;
@@ -33,10 +32,7 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
     }
 }
 
-$priceRangeFilters = $db->query(
-    'SELECT * FROM tpreisspannenfilter',
-    ReturnType::ARRAY_OF_OBJECTS
-);
+$priceRangeFilters = $db->getObjects('SELECT * FROM tpreisspannenfilter');
 
 $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_NAVIGATIONSFILTER))
        ->assign('oPreisspannenfilter_arr', $priceRangeFilters)

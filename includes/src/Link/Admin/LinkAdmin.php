@@ -293,7 +293,7 @@ final class LinkAdmin
      */
     public function getUntranslatedPageIDs(): Collection
     {
-        return $this->db->query(
+        return $this->db->getCollection(
             'SELECT DISTINCT tlink.kLink AS id
                 FROM tlink
                 JOIN tsprache
@@ -304,8 +304,7 @@ final class LinkAdmin
                     ON t2.cISO = loc.cISOSprache
                     AND t2.cISO = tsprache.cISO
                 WHERE t2.cISO IS NULL
-                    AND tlink.reference = 0',
-            ReturnType::COLLECTION
+                    AND tlink.reference = 0'
         )->map(function (stdClass $e) {
             return (int)$e->id;
         });
@@ -313,10 +312,9 @@ final class LinkAdmin
 
     public function getMissingSystemPages(): Collection
     {
-        $all          = $this->db->query(
+        $all          = $this->db->getCollection(
             'SELECT kLink, nLinkart
-                FROM tlink',
-            ReturnType::COLLECTION
+                FROM tlink'
         )->map(function ($link) {
             $link->kLink    = (int)$link->kLink;
             $link->nLinkart = (int)$link->nLinkart;
@@ -697,11 +695,10 @@ final class LinkAdmin
      */
     public function getSpecialPageTypes(): Collection
     {
-        return $this->db->query(
+        return $this->db->getCollection(
             'SELECT *
                 FROM tspezialseite
-                ORDER BY nSort',
-            ReturnType::COLLECTION
+                ORDER BY nSort'
         )->map(static function ($link) {
             $link->kSpezialseite = (int)$link->kSpezialseite;
             $link->kPlugin       = (int)$link->kPlugin;

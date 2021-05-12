@@ -1,6 +1,5 @@
 <?php
 
-use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\IO\IOResponse;
 use JTL\Network\JTLApi;
@@ -31,7 +30,7 @@ function getWidgets(bool $bActive = true, bool $getAll = false): array
     $loaderExt    = Helper::getLoader(true, $db, $cache);
     $plugins      = [];
 
-    $widgets = $db->queryPrepared(
+    $widgets = $db->getObjects(
         'SELECT tadminwidgets.*, tplugin.cPluginID, tplugin.bExtension
             FROM tadminwidgets
             LEFT JOIN tplugin 
@@ -39,8 +38,7 @@ function getWidgets(bool $bActive = true, bool $getAll = false): array
             WHERE bActive = :active
                 AND (tplugin.nStatus IS NULL OR tplugin.nStatus = :activated)
             ORDER BY eContainer ASC, nPos ASC',
-        ['active' => (int)$bActive, 'activated' => State::ACTIVATED],
-        ReturnType::ARRAY_OF_OBJECTS
+        ['active' => (int)$bActive, 'activated' => State::ACTIVATED]
     );
 
     foreach ($widgets as $widget) {

@@ -53,15 +53,14 @@ class Helper
         }
         $hook     = null;
         $hooks    = [];
-        $hookData = Shop::Container()->getDB()->queryPrepared(
+        $hookData = Shop::Container()->getDB()->getObjects(
             'SELECT tpluginhook.nHook, tplugin.kPlugin, tplugin.cVerzeichnis, tplugin.nVersion, tpluginhook.cDateiname
                 FROM tplugin
                 JOIN tpluginhook
                     ON tpluginhook.kPlugin = tplugin.kPlugin
                 WHERE tplugin.nStatus = :state
                 ORDER BY tpluginhook.nPriority, tplugin.kPlugin',
-            ['state' => State::ACTIVATED],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['state' => State::ACTIVATED]
         );
         foreach ($hookData as $hook) {
             $plugin             = new stdClass();
@@ -121,10 +120,7 @@ class Helper
         $langID  = Shop::getLanguageID();
         $cacheID = 'plugin_id_list';
         if (($plugins = $cache->get($cacheID)) === false) {
-            $plugins = $db->query(
-                'SELECT kPlugin, cPluginID, bExtension FROM tplugin',
-                ReturnType::ARRAY_OF_OBJECTS
-            );
+            $plugins = $db->getObjects('SELECT kPlugin, cPluginID, bExtension FROM tplugin');
             $cache->set($cacheID, $plugins, [\CACHING_GROUP_PLUGIN]);
         }
         foreach ($plugins as $plugin) {
@@ -170,13 +166,12 @@ class Helper
                 'nPrio'
             );
         } catch (\InvalidArgumentException $e) {
-            $plugins = Shop::Container()->getDB()->queryPrepared(
+            $plugins = Shop::Container()->getDB()->getObjects(
                 'SELECT cPluginID, cVerzeichnis, nVersion, 0 AS bExtension
                     FROM tplugin
                     WHERE nStatus = :stt
                     ORDER BY nPrio',
-                ['stt' => State::ACTIVATED],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['stt' => State::ACTIVATED]
             );
         }
         foreach ($plugins as $plugin) {
@@ -426,7 +421,7 @@ class Helper
     public static function getConfigByID(int $id): array
     {
         $conf = [];
-        $data = Shop::Container()->getDB()->queryPrepared(
+        $data = Shop::Container()->getDB()->getObjects(
             'SELECT tplugineinstellungen.*, tplugineinstellungenconf.cConf
                 FROM tplugin
                 JOIN tplugineinstellungen 
@@ -435,8 +430,7 @@ class Helper
                     ON tplugineinstellungenconf.kPlugin = tplugin.kPlugin 
                     AND tplugineinstellungen.cName = tplugineinstellungenconf.cWertName
                 WHERE tplugin.kPlugin = :pid',
-            ['pid' => $id],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['pid' => $id]
         );
         foreach ($data as $item) {
             $conf[$item->cName] = $item->cConf === Config::TYPE_DYNAMIC

@@ -3,7 +3,6 @@
 namespace JTL\GeneralDataProtection;
 
 use DateTime;
-use JTL\DB\ReturnType;
 use JTL\Shop;
 use stdClass;
 

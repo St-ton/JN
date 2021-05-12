@@ -46,7 +46,7 @@ class CharacteristicValue extends AbstractImage
      */
     public function getImageNames(MediaImageRequest $req): array
     {
-        return $this->db->queryPrepared(
+        return $this->db->getCollection(
             'SELECT a.kMerkmalWert, a.kMerkmalWert AS id, a.cBildpfad AS path, t.cWert AS val, t.cSeo AS seoPath
                 FROM tmerkmalwert AS a
                 JOIN tmerkmalwertsprache t
@@ -55,8 +55,7 @@ class CharacteristicValue extends AbstractImage
                     ON tsprache.kSprache = t.kSprache
                 WHERE a.kMerkmalWert = :cid
                     AND tsprache.cShopStandard = \'Y\'',
-            ['cid' => $req->getID()],
-            ReturnType::COLLECTION
+            ['cid' => $req->getID()]
         )->each(static function ($item, $key) use ($req) {
             if ($key === 0 && !empty($item->path)) {
                 $req->setSourcePath($item->path);

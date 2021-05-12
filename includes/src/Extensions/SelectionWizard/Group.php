@@ -141,12 +141,11 @@ class Group
     {
         $groups    = [];
         $activeSQL = $active ? ' AND nAktiv = 1' : '';
-        $groupData = $this->db->queryPrepared(
+        $groupData = $this->db->getObjects(
             'SELECT kAuswahlAssistentGruppe AS id
                 FROM tauswahlassistentgruppe
                 WHERE kSprache = :langID' . $activeSQL,
-            ['langID' => $langID],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['langID' => $langID]
         );
         foreach ($groupData as $item) {
             $groups[] = new self((int)$item->id, $active, $activeOnly, $backend);

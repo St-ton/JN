@@ -242,7 +242,7 @@ class Status
         foreach ($sharedHookIds as $hookData) {
             $hookID                 = (int)$hookData->nHook;
             $sharedPlugins[$hookID] = [];
-            $plugins                = $this->db->queryPrepared(
+            $plugins                = $this->db->getObjects(
                 'SELECT DISTINCT tpluginhook.kPlugin, tplugin.cName, tplugin.cPluginID
                     FROM tpluginhook
                     INNER JOIN tplugin
@@ -252,8 +252,7 @@ class Status
                 [
                     'hook'  => $hookID,
                     'state' => State::ACTIVATED
-                ],
-                ReturnType::ARRAY_OF_OBJECTS
+                ]
             );
             foreach ($plugins as $plugin) {
                 $sharedPlugins[$hookID][$plugin->cPluginID] = $plugin;
@@ -555,15 +554,14 @@ class Status
     }
 
     /**
-     * @return array
+     * @return stdClass[]
      */
     public function getDuplicateLinkGroupTemplateNames(): array
     {
-        return $this->db->query(
+        return $this->db->getObjects(
             'SELECT * FROM tlinkgruppe
                 GROUP BY cTemplatename
-                HAVING COUNT(*) > 1',
-            ReturnType::ARRAY_OF_OBJECTS
+                HAVING COUNT(*) > 1'
         );
     }
 
@@ -600,13 +598,11 @@ class Status
         $cacheKey = self::CACHE_ID_EMAIL_SYNTAX_CHECK . $type;
         if (($syntaxErrCnt = $this->cache->get($cacheKey)) === false) {
             $syntaxErrCnt = 0;
-            /** @var array $templates */
-            $templates = $this->db->queryPrepared(
+            $templates    = $this->db->getObjects(
                 'SELECT cModulId, kPlugin FROM temailvorlage WHERE nFehlerhaft = :type',
-                ['type' => $type],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['type' => $type]
             );
-            $factory   = new TemplateFactory($this->db);
+            $factory      = new TemplateFactory($this->db);
             foreach ($templates as $template) {
                 $module = $template->cModulId;
                 if ($template->kPlugin > 0) {

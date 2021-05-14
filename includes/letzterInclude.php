@@ -1,6 +1,7 @@
 <?php
 
 use JTL\Alert\Alert;
+use JTL\Campaign;
 use JTL\Cart\Cart;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\KategorieListe;
@@ -19,7 +20,6 @@ use JTL\Helpers\Manufacturer;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Text;
-use JTL\Campaign;
 use JTL\Link\Link;
 use JTL\Minify\MinifyService;
 use JTL\Session\Frontend;

@@ -1,5 +1,6 @@
 <?php
 
+use JTL\Campaign;
 use JTL\CheckBox;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerAttributes;
@@ -8,7 +9,6 @@ use JTL\Customer\DataHistory;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
-use JTL\Campaign;
 use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;

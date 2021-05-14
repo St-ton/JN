@@ -8,7 +8,6 @@ use JTL\License\Exception\ChecksumValidationException;
 use JTL\License\Exception\DownloadValidationException;
 use JTL\License\Exception\FilePermissionException;
 use JTL\License\Struct\Release;
-use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class Downloader

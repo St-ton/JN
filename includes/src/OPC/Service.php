@@ -4,7 +4,6 @@ namespace JTL\OPC;
 
 use Exception;
 use JTL\Backend\AdminIO;
-use JTL\DB\DbInterface;
 use JTL\Filter\AbstractFilter;
 use JTL\Filter\Config;
 use JTL\Filter\Items\Characteristic;

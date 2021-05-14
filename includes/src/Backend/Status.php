@@ -232,12 +232,11 @@ class Status
     public function getPluginSharedHooks(): array
     {
         $sharedPlugins = [];
-        $sharedHookIds = $this->db->query(
+        $sharedHookIds = $this->db->getObjects(
             'SELECT nHook
                 FROM tpluginhook
                 GROUP BY nHook
-                HAVING COUNT(DISTINCT kPlugin) > 1',
-            ReturnType::ARRAY_OF_OBJECTS
+                HAVING COUNT(DISTINCT kPlugin) > 1'
         );
         foreach ($sharedHookIds as $hookData) {
             $hookID                 = (int)$hookData->nHook;
@@ -410,12 +409,11 @@ class Status
      */
     public function getOrphanedCategories(bool $has = true)
     {
-        $categories = $this->db->query(
+        $categories = $this->db->getObjects(
             'SELECT kKategorie, cName
                 FROM tkategorie
                 WHERE kOberkategorie > 0
-                    AND kOberkategorie NOT IN (SELECT DISTINCT kKategorie FROM tkategorie)',
-            ReturnType::ARRAY_OF_OBJECTS
+                    AND kOberkategorie NOT IN (SELECT DISTINCT kKategorie FROM tkategorie)'
         );
 
         return $has === true
@@ -471,10 +469,9 @@ class Status
             return false;
         }
 
-        $data = $this->db->query(
+        $data = $this->db->getObjects(
             'SELECT `kPlugin`, `nVersion`, `bExtension`
-                FROM `tplugin`',
-            ReturnType::ARRAY_OF_OBJECTS
+                FROM `tplugin`'
         );
         if (!\is_array($data) || 1 > \count($data)) {
             return false; // there are no plugins installed
@@ -501,13 +498,12 @@ class Status
      */
     public function hasInvalidPasswordResetMailTemplate(): bool
     {
-        $translations = $this->db->query(
+        $translations = $this->db->getObjects(
             "SELECT lang.cContentText, lang.cContentHtml
                 FROM temailvorlagesprache lang
                 JOIN temailvorlage
                 ON lang.kEmailvorlage = temailvorlage.kEmailvorlage
-                WHERE temailvorlage.cName = 'Passwort vergessen'",
-            ReturnType::ARRAY_OF_OBJECTS
+                WHERE temailvorlage.cName = 'Passwort vergessen'"
         );
         foreach ($translations as $t) {
             $old = '{$neues_passwort}';
@@ -541,11 +537,10 @@ class Status
     public function needPasswordRehash2FA(): bool
     {
         $passwordService = Shop::Container()->getPasswordService();
-        $hashes          = $this->db->query(
+        $hashes          = $this->db->getObjects(
             'SELECT *
                 FROM tadmin2facodes
-                GROUP BY kAdminlogin',
-            ReturnType::ARRAY_OF_OBJECTS
+                GROUP BY kAdminlogin'
         );
 
         return some($hashes, static function ($hash) use ($passwordService) {

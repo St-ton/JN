@@ -279,6 +279,14 @@ interface DbInterface extends \Serializable
     /**
      * @param string $stmt
      * @param array  $params
+     * @return array[]
+     * @since 5.1.0
+     */
+    public function getArrays(string $stmt, array $params = []): array;
+
+    /**
+     * @param string $stmt
+     * @param array  $params
      * @return stdClass[]
      * @since 5.1.0
      */

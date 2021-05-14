@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Alert\Alert;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Pagination\Pagination;
@@ -28,7 +27,7 @@ if (Request::postInt('zeitfilter') === 1) {
 }
 
 if (Request::postInt('einstellungen') === 1 && Form::validateToken()) {
-    $configData  = $db->query(
+    $configData  = $db->getObjects(
         'SELECT *
             FROM teinstellungenconf
             WHERE (
@@ -36,8 +35,7 @@ if (Request::postInt('einstellungen') === 1 && Form::validateToken()) {
                 OR kEinstellungenSektion = ' . CONF_VERGLEICHSLISTE . "
                 )
                 AND cConf = 'Y'
-            ORDER BY nSort",
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY nSort"
     );
     $configCount = count($configData);
     for ($i = 0; $i < $configCount; $i++) {
@@ -69,15 +67,14 @@ if (Request::postInt('einstellungen') === 1 && Form::validateToken()) {
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
 }
 
-$configData  = $db->query(
+$configData  = $db->getObjects(
     'SELECT *
         FROM teinstellungenconf
         WHERE (
                 kEinstellungenConf IN ' . $settingIDs . ' 
                 OR kEinstellungenSektion = ' . CONF_VERGLEICHSLISTE . '
                )
-        ORDER BY nSort',
-    ReturnType::ARRAY_OF_OBJECTS
+        ORDER BY nSort'
 );
 $configCount = count($configData);
 for ($i = 0; $i < $configCount; $i++) {
@@ -102,20 +99,18 @@ for ($i = 0; $i < $configCount; $i++) {
     Shop::Container()->getGetText()->localizeConfig($configData[$i]);
 }
 
-$listCount  = (int)$db->query(
+$listCount  = (int)$db->getSingleObject(
     'SELECT COUNT(*) AS cnt
-        FROM tvergleichsliste',
-    ReturnType::SINGLE_OBJECT
+        FROM tvergleichsliste'
 )->cnt;
 $pagination = (new Pagination())
     ->setItemCount($listCount)
     ->assemble();
-$last20     = $db->query(
+$last20     = $db->getObjects(
     "SELECT kVergleichsliste, DATE_FORMAT(dDate, '%d.%m.%Y  %H:%i') AS Datum
         FROM tvergleichsliste
         ORDER BY dDate DESC
-        LIMIT " . $pagination->getLimitSQL(),
-    ReturnType::ARRAY_OF_OBJECTS
+        LIMIT " . $pagination->getLimitSQL()
 );
 
 if (is_array($last20) && count($last20) > 0) {
@@ -130,7 +125,7 @@ if (is_array($last20) && count($last20) > 0) {
         $list->oLetzten20VergleichslistePos_arr = $positions;
     }
 }
-$topComparisons = $db->query(
+$topComparisons = $db->getObjects(
     'SELECT tvergleichsliste.dDate, tvergleichslistepos.kArtikel, 
         tvergleichslistepos.cArtikelName, COUNT(tvergleichslistepos.kArtikel) AS nAnzahl
         FROM tvergleichsliste
@@ -140,8 +135,7 @@ $topComparisons = $db->query(
             < tvergleichsliste.dDate
         GROUP BY tvergleichslistepos.kArtikel
         ORDER BY nAnzahl DESC
-        LIMIT ' . (int)$_SESSION['Vergleichsliste']->nAnzahl,
-    ReturnType::ARRAY_OF_OBJECTS
+        LIMIT ' . (int)$_SESSION['Vergleichsliste']->nAnzahl
 );
 if (is_array($topComparisons) && count($topComparisons) > 0) {
     erstelleDiagrammTopVergleiche($topComparisons);

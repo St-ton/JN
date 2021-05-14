@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Alert\Alert;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Pagination\Pagination;
@@ -88,12 +87,11 @@ if (Request::postVar('action') === 'year_reports_delete' && Form::validateToken(
     $yearReports = 0;
 }
 
-$sitemapDownloadsPerYear = Shop::Container()->getDB()->query(
+$sitemapDownloadsPerYear = Shop::Container()->getDB()->getObjects(
     'SELECT YEAR(dErstellt) AS year, COUNT(*) AS count
         FROM tsitemaptracker
         GROUP BY 1
-        ORDER BY 1 DESC',
-    ReturnType::ARRAY_OF_OBJECTS
+        ORDER BY 1 DESC'
 );
 if (count($sitemapDownloadsPerYear) === 0) {
     $sitemapDownloadsPerYear[] = (object)[
@@ -109,7 +107,7 @@ $downloadPagination = (new Pagination('SitemapDownload'))
         return (int)$item->year === $yearDownloads ? (int)$item->count : $carry;
     }, 0))
     ->assemble();
-$sitemapDownloads   = Shop::Container()->getDB()->query(
+$sitemapDownloads   = Shop::Container()->getDB()->getObjects(
     "SELECT tsitemaptracker.*, IF(tsitemaptracker.kBesucherBot = 0, '', 
         IF(CHAR_LENGTH(tbesucherbot.cUserAgent) = 0, tbesucherbot.cName, tbesucherbot.cUserAgent)) AS cBot, 
         DATE_FORMAT(tsitemaptracker.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_DE
@@ -118,17 +116,15 @@ $sitemapDownloads   = Shop::Container()->getDB()->query(
             ON tbesucherbot.kBesucherBot = tsitemaptracker.kBesucherBot
         WHERE YEAR(tsitemaptracker.dErstellt) = " . $yearDownloads . '
         ORDER BY tsitemaptracker.dErstellt DESC
-        LIMIT ' . $downloadPagination->getLimitSQL(),
-    ReturnType::ARRAY_OF_OBJECTS
+        LIMIT ' . $downloadPagination->getLimitSQL()
 );
 
 // Sitemap Reports
-$reportYears = Shop::Container()->getDB()->query(
+$reportYears = Shop::Container()->getDB()->getObjects(
     'SELECT YEAR(dErstellt) AS year, COUNT(*) AS count
         FROM tsitemapreport
         GROUP BY 1
-        ORDER BY 1 DESC',
-    ReturnType::ARRAY_OF_OBJECTS
+        ORDER BY 1 DESC'
 );
 if (count($reportYears) === 0) {
     $reportYears[] = (object)[
@@ -144,13 +140,12 @@ $pagination     = (new Pagination('SitemapReport'))
         return (int)$item->year === $yearReports ? (int)$item->count : $carry;
     }, 0))
     ->assemble();
-$sitemapReports = Shop::Container()->getDB()->query(
+$sitemapReports = Shop::Container()->getDB()->getObjects(
     "SELECT tsitemapreport.*, DATE_FORMAT(tsitemapreport.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_DE
         FROM tsitemapreport
         WHERE YEAR(tsitemapreport.dErstellt) = " . $yearReports . '
         ORDER BY tsitemapreport.dErstellt DESC
-        LIMIT ' . $pagination->getLimitSQL(),
-    ReturnType::ARRAY_OF_OBJECTS
+        LIMIT ' . $pagination->getLimitSQL()
 );
 foreach ($sitemapReports as $report) {
     if (isset($report->kSitemapReport) && $report->kSitemapReport > 0) {

@@ -3,7 +3,6 @@
 namespace JTL\Console\Command\Migration;
 
 use JTL\Console\Command\Command;
-use JTL\DB\ReturnType;
 use JTL\Shop;
 use JTL\Update\DBMigrationHelper;
 use Symfony\Component\Console\Input\InputInterface;
@@ -101,18 +100,14 @@ class InnodbUtf8Command extends Command
             // If MySQL version is lower than 5.6 use alternative lock method
             // and delete all fulltext indexes because these are not supported
             $db = Shop::Container()->getDB();
-            $db->executeQuery(
-                DBMigrationHelper::sqlAddLockInfo($table->TABLE_NAME),
-                ReturnType::QUERYSINGLE
-            );
+            $db->query(DBMigrationHelper::sqlAddLockInfo($table->TABLE_NAME));
             $fulltextIndizes = DBMigrationHelper::getFulltextIndizes($table->TABLE_NAME);
             if ($fulltextIndizes) {
                 foreach ($fulltextIndizes as $fulltextIndex) {
                     /** @noinspection SqlResolve */
-                    $db->executeQuery(
+                    $db->query(
                         'ALTER TABLE `' . $table->TABLE_NAME . '`
-                            DROP KEY `' . $fulltextIndex->INDEX_NAME . '`',
-                        ReturnType::QUERYSINGLE
+                            DROP KEY `' . $fulltextIndex->INDEX_NAME . '`'
                     );
                 }
             }
@@ -126,10 +121,7 @@ class InnodbUtf8Command extends Command
     {
         if (\version_compare(DBMigrationHelper::getMySQLVersion()->innodb->version, '5.6', '<')) {
             $db = Shop::Container()->getDB();
-            $db->executeQuery(
-                DBMigrationHelper::sqlClearLockInfo($table),
-                ReturnType::QUERYSINGLE
-            );
+            $db->query(DBMigrationHelper::sqlClearLockInfo($table));
         }
     }
 

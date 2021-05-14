@@ -4,7 +4,6 @@ namespace JTL\Plugin\Admin\Validation\Items;
 
 use JTL\Plugin\Admin\Validation\ValidationItemInterface;
 use JTL\Plugin\InstallCode;
-use JTL\Shop;
 
 /**
  * Class AbstractItem

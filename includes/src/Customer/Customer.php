@@ -6,7 +6,6 @@ use DateInterval;
 use DateTime;
 use Exception;
 use JTL\Catalog\Product\Preise;
-use JTL\DB\ReturnType;
 use JTL\GeneralDataProtection\Journal;
 use JTL\Helpers\Date;
 use JTL\Helpers\Form;
@@ -708,10 +707,7 @@ class Customer
      */
     public function verschluesselAlleKunden(): self
     {
-        foreach (Shop::Container()->getDB()->query(
-            'SELECT * FROM tkunde',
-            ReturnType::ARRAY_OF_OBJECTS
-        ) as $customer) {
+        foreach (Shop::Container()->getDB()->getObjects('SELECT * FROM tkunde') as $customer) {
             if ($customer->kKunde > 0) {
                 unset($tmp);
                 $tmp = new self((int)$customer->kKunde);
@@ -905,14 +901,13 @@ class Customer
     {
         if (($languageID > 0 || $customerID > 0) && $salutation !== '') {
             if ($languageID === 0 && $customerID > 0) {
-                $customer = Shop::Container()->getDB()->queryPrepared(
+                $customer = Shop::Container()->getDB()->getSingleObject(
                     'SELECT kSprache
                         FROM tkunde
                         WHERE kKunde = :cid',
-                    ['cid' => $customerID],
-                    ReturnType::SINGLE_OBJECT
+                    ['cid' => $customerID]
                 );
-                if (isset($customer->kSprache) && $customer->kSprache > 0) {
+                if ($customer !== null && $customer->kSprache > 0) {
                     $languageID = (int)$customer->kSprache;
                 }
             }
@@ -1015,19 +1010,18 @@ class Customer
         $db               = Shop::Container()->getDB();
         $customerID       = $this->getID();
 
-        $openOrders               = $db->queryPrepared(
+        $openOrders               = $db->getSingleObject(
             'SELECT COUNT(kBestellung) AS orderCount
-                    FROM tbestellung
-                    WHERE cStatus NOT IN (:orderSent, :orderCanceled)
-                        AND kKunde = :customerId',
+                FROM tbestellung
+                WHERE cStatus NOT IN (:orderSent, :orderCanceled)
+                    AND kKunde = :customerId',
             [
                 'customerId'    => $customerID,
                 'orderSent'     => \BESTELLUNG_STATUS_VERSANDT,
                 'orderCanceled' => \BESTELLUNG_STATUS_STORNO,
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
-        $ordersInCancellationTime = $db->queryPrepared(
+        $ordersInCancellationTime = $db->getSingleObject(
             'SELECT COUNT(kBestellung) AS orderCount
                     FROM tbestellung
                     WHERE kKunde = :customerId
@@ -1037,8 +1031,7 @@ class Customer
                 'customerId'       => $customerID,
                 'orderSent'        => \BESTELLUNG_STATUS_VERSANDT,
                 'cancellationTime' => $cancellationTime,
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
 
         if (!empty($openOrders->orderCount) || !empty($ordersInCancellationTime->orderCount)) {

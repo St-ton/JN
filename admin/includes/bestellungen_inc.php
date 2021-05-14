@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Checkout\Bestellung;
-use JTL\DB\ReturnType;
 use JTL\Shop;
 
 /**
@@ -16,12 +15,11 @@ function gibBestellungsUebersicht(string $limitSQL, string $query): array
     if (mb_strlen($query)) {
         $searchFilter = " WHERE cBestellNr LIKE '%" . Shop::Container()->getDB()->escape($query) . "%'";
     }
-    $items = Shop::Container()->getDB()->query(
+    $items = Shop::Container()->getDB()->getObjects(
         'SELECT kBestellung
             FROM tbestellung
             ' . $searchFilter . '
-            ORDER BY dErstellt DESC' . $limitSQL,
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY dErstellt DESC' . $limitSQL
     );
     foreach ($items as $item) {
         if (isset($item->kBestellung) && $item->kBestellung > 0) {
@@ -44,10 +42,9 @@ function gibAnzahlBestellungen($query): int
         ? " WHERE cBestellNr LIKE '%" . Shop::Container()->getDB()->escape($query) . "%'"
         : '';
 
-    return (int)Shop::Container()->getDB()->query(
+    return (int)Shop::Container()->getDB()->getSingleObject(
         'SELECT COUNT(*) AS cnt
-            FROM tbestellung' . $filterSQL,
-        ReturnType::SINGLE_OBJECT
+            FROM tbestellung' . $filterSQL
     )->cnt;
 }
 
@@ -62,12 +59,11 @@ function setzeAbgeholtZurueck(array $orderIDs): int
     }
 
     $orderList = implode(',', array_map('\intval', $orderIDs));
-    $customers = Shop::Container()->getDB()->query(
+    $customers = Shop::Container()->getDB()->getObjects(
         'SELECT kKunde
             FROM tbestellung
             WHERE kBestellung IN(' . $orderList . ")
-                AND cAbgeholt = 'Y'",
-        ReturnType::ARRAY_OF_OBJECTS
+                AND cAbgeholt = 'Y'"
     );
     if (count($customers) > 0) {
         $customerIDs = [];

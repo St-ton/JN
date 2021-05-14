@@ -10,7 +10,6 @@ use JTL\Backend\Revision;
 use JTL\Cache\JTLCacheInterface;
 use JTL\ContentAuthor;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Helpers\Seo;
 use JTL\Language\LanguageModel;
@@ -336,7 +335,7 @@ final class Controller
             $date    = DateTime::createFromFormat('Y-m-d H:i:s', $newsData->dGueltigVon);
             $month   = (int)$date->format('m');
             $year    = (int)$date->format('Y');
-            $newsIDs = $this->db->queryPrepared(
+            $newsIDs = $this->db->getObjects(
                 'SELECT kNews
                     FROM tnews
                     WHERE MONTH(dGueltigVon) = :mnth
@@ -344,8 +343,7 @@ final class Controller
                 [
                     'mnth' => $month,
                     'yr'   => $year
-                ],
-                ReturnType::ARRAY_OF_OBJECTS
+                ]
             );
             if (\count($newsIDs) === 0) {
                 $this->db->queryPrepared(
@@ -394,13 +392,12 @@ final class Controller
      */
     private function getCategoryAndChildrenByID(int $categoryID): array
     {
-        return map($this->db->queryPrepared(
+        return map($this->db->getObjects(
             'SELECT node.kNewsKategorie AS id
                 FROM tnewskategorie AS node, tnewskategorie AS parent
                 WHERE node.lft BETWEEN parent.lft AND parent.rght
                     AND parent.kNewsKategorie = :cid',
-            ['cid' => $categoryID],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['cid' => $categoryID]
         ), static function ($e) {
             return (int)$e->id;
         });
@@ -650,9 +647,8 @@ final class Controller
     public function getAllNews(): Collection
     {
         $itemList = new ItemList($this->db);
-        $ids      = map($this->db->query(
-            'SELECT kNews FROM tnews',
-            ReturnType::ARRAY_OF_OBJECTS
+        $ids      = map($this->db->getObjects(
+            'SELECT kNews FROM tnews'
         ), static function ($e) {
             return (int)$e->kNews;
         });
@@ -669,15 +665,14 @@ final class Controller
     public function getNonActivatedComments(): Collection
     {
         $itemList = new CommentList($this->db);
-        $ids      = map($this->db->query(
+        $ids      = map($this->db->getObjects(
             'SELECT tnewskommentar.kNewsKommentar AS id
                 FROM tnewskommentar
                 JOIN tnews 
                     ON tnews.kNews = tnewskommentar.kNews
                 JOIN tnewssprache t 
                     ON tnews.kNews = t.kNews
-                WHERE tnewskommentar.nAktiv = 0',
-            ReturnType::ARRAY_OF_OBJECTS
+                WHERE tnewskommentar.nAktiv = 0'
         ), static function ($e) {
             return (int)$e->id;
         });
@@ -693,15 +688,14 @@ final class Controller
     public function getAllNewsCategories(bool $showOnlyActive = false): Collection
     {
         $itemList = new CategoryList($this->db);
-        $ids      = map($this->db->query(
+        $ids      = map($this->db->getObjects(
             'SELECT node.kNewsKategorie AS id
                 FROM tnewskategorie AS node 
                 INNER JOIN tnewskategorie AS parent
                 WHERE node.lvl > 0 
                     AND parent.lvl > 0 ' . ($showOnlyActive ? ' AND node.nAktiv = 1 ' : '') .
             ' GROUP BY node.kNewsKategorie
-                ORDER BY node.lft, node.nSort ASC',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY node.lft, node.nSort ASC'
         ), static function ($e) {
             return (int)$e->id;
         });

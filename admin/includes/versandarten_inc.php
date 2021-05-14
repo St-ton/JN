@@ -5,7 +5,6 @@ use JTL\Alert\Alert;
 use JTL\Checkout\ShippingSurcharge;
 use JTL\Checkout\Versandart;
 use JTL\Checkout\ZipValidator;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Language\LanguageModel;
@@ -119,12 +118,11 @@ function gibGesetzteVersandklassen($shippingClasses)
             $uniqueIDs[] = (int)$kVersandklasse;
         }
     }
-    $PVersandklassen = P(Shop::Container()->getDB()->query(
+    $PVersandklassen = P(Shop::Container()->getDB()->getObjects(
         'SELECT * 
             FROM tversandklasse
             WHERE kVersandklasse IN (' . implode(',', $uniqueIDs) . ')  
-            ORDER BY kVersandklasse',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY kVersandklasse'
     ));
     foreach ($PVersandklassen as $vk) {
         $gesetzteVK[$vk->kVersandklasse] = in_array($vk->kVersandklasse, $cVKarr, true);
@@ -152,12 +150,11 @@ function gibGesetzteVersandklassenUebersicht($shippingClasses)
             $uniqueIDs[] = (int)$kVersandklasse;
         }
     }
-    $items = P(Shop::Container()->getDB()->query(
+    $items = P(Shop::Container()->getDB()->getObjects(
         'SELECT * 
             FROM tversandklasse 
             WHERE kVersandklasse IN (' . implode(',', $uniqueIDs) . ')
-            ORDER BY kVersandklasse',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY kVersandklasse'
     ));
     foreach ($items as $item) {
         if (in_array($item->kVersandklasse, $cVKarr, true)) {
@@ -176,11 +173,10 @@ function gibGesetzteKundengruppen($customerGroupsString)
 {
     $activeGroups = [];
     $groups       = Text::parseSSKint($customerGroupsString);
-    $groupData    = Shop::Container()->getDB()->query(
+    $groupData    = Shop::Container()->getDB()->getObjects(
         'SELECT kKundengruppe
             FROM tkundengruppe
-            ORDER BY kKundengruppe',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY kKundengruppe'
     );
     foreach ($groupData as $group) {
         $id                = (int)$group->kKundengruppe;
@@ -249,7 +245,7 @@ function getShippingByName(string $query)
     foreach (explode(',', $query) as $search) {
         $search = trim($search);
         if (mb_strlen($search) > 2) {
-            $hits = $db->queryPrepared(
+            $hits = $db->getObjects(
                 'SELECT va.kVersandart, va.cName
                     FROM tversandart AS va
                     LEFT JOIN tversandartsprache AS vs 
@@ -257,8 +253,7 @@ function getShippingByName(string $query)
                         AND vs.cName LIKE :search
                     WHERE va.cName LIKE :search
                     OR vs.cName LIKE :search',
-                ['search' => '%' . $search . '%'],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['search' => '%' . $search . '%']
             );
             foreach ($hits as $item) {
                 $item->kVersandart           = (int)$item->kVersandart;
@@ -565,19 +560,18 @@ function createShippingSurchargeZIP(array $data): object
 function getShippingTypes(int $shippingTypeID = null)
 {
     if ($shippingTypeID !== null) {
-        $shippingTypes = Shop::Container()->getDB()->queryPrepared(
+        $shippingTypes = Shop::Container()->getDB()->getCollection(
             'SELECT *
                 FROM tversandberechnung
                 WHERE kVersandberechnung = :shippingTypeID
                 ORDER BY cName',
-            ['shippingTypeID' => $shippingTypeID],
-            ReturnType::COLLECTION
+            ['shippingTypeID' => $shippingTypeID]
         );
     } else {
-        $shippingTypes = Shop::Container()->getDB()->query(
+        $shippingTypes = Shop::Container()->getDB()->getCollection(
             'SELECT *
-                FROM tversandberechnung ORDER BY cName',
-            ReturnType::COLLECTION
+                FROM tversandberechnung
+                ORDER BY cName'
         );
     }
     $shippingTypes->each(static function ($e) {

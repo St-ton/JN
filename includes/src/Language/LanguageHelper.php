@@ -6,7 +6,6 @@ use Illuminate\Support\Collection;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Product\Artikel;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Link\SpecialPageNotFoundException;
 use JTL\Mapper\PageTypeToLinkType;
 use JTL\News\Category;
@@ -590,14 +589,11 @@ class LanguageHelper
     }
 
     /**
-     * @return array
+     * @return stdClass[]
      */
     private function gibSektionen(): array
     {
-        return $this->db->query(
-            'SELECT * FROM tsprachsektion ORDER BY cNAME ASC',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
+        return $this->db->getObjects('SELECT * FROM tsprachsektion ORDER BY cNAME ASC');
     }
 
     /**
@@ -683,11 +679,11 @@ class LanguageHelper
 
     /**
      * @param string $query
-     * @return array
+     * @return stdClass[]
      */
     public function suche(string $query): array
     {
-        return $this->db->queryPrepared(
+        return $this->db->getObjects(
             'SELECT tsprachwerte.kSprachsektion, tsprachwerte.cName, tsprachwerte.cWert, 
                 tsprachwerte.cStandard, tsprachwerte.bSystem, tsprachsektion.cName AS cSektionName
                 FROM tsprachwerte
@@ -701,8 +697,7 @@ class LanguageHelper
             [
                 'search' => '%' . $query . '%',
                 'id'     => $this->currentLanguageID
-            ],
-            ReturnType::ARRAY_OF_OBJECTS
+            ]
         );
     }
 
@@ -716,20 +711,19 @@ class LanguageHelper
         switch ($type) {
             default:
             case 0: // Alle
-                $values = $this->db->queryPrepared(
+                $values = $this->db->getObjects(
                     'SELECT tsprachsektion.cName AS cSektionName, tsprachwerte.cName, 
                         tsprachwerte.cWert, tsprachwerte.bSystem
                         FROM tsprachwerte
                         LEFT JOIN tsprachsektion 
                             ON tsprachwerte.kSprachsektion = tsprachsektion.kSprachsektion
                         WHERE kSprachISO = :iso',
-                    ['iso' => (int)$this->currentLanguageID],
-                    ReturnType::ARRAY_OF_OBJECTS
+                    ['iso' => (int)$this->currentLanguageID]
                 );
                 break;
 
             case 1: // System
-                $values = $this->db->queryPrepared(
+                $values = $this->db->getObjects(
                     'SELECT tsprachsektion.cName AS cSektionName, tsprachwerte.cName, 
                         tsprachwerte.cWert, tsprachwerte.bSystem
                         FROM tsprachwerte
@@ -737,13 +731,12 @@ class LanguageHelper
                             ON tsprachwerte.kSprachsektion = tsprachsektion.kSprachsektion
                         WHERE kSprachISO = :iso
                             AND bSystem = 1',
-                    ['iso' => (int)$this->currentLanguageID],
-                    ReturnType::ARRAY_OF_OBJECTS
+                    ['iso' => (int)$this->currentLanguageID]
                 );
                 break;
 
             case 2: // Eigene
-                $values = $this->db->queryPrepared(
+                $values = $this->db->getObjects(
                     'SELECT tsprachsektion.cName AS cSektionName, tsprachwerte.cName, 
                         tsprachwerte.cWert, tsprachwerte.bSystem
                         FROM tsprachwerte
@@ -751,8 +744,7 @@ class LanguageHelper
                           ON tsprachwerte.kSprachsektion = tsprachsektion.kSprachsektion
                         WHERE kSprachISO = :iso 
                             AND bSystem = 0',
-                    ['iso' => (int)$this->currentLanguageID],
-                    ReturnType::ARRAY_OF_OBJECTS
+                    ['iso' => (int)$this->currentLanguageID]
                 );
                 break;
         }

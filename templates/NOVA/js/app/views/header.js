@@ -195,7 +195,7 @@ $document.on('click', `${mainNavigation} .dropdown-toggle`, onMobile((e) => {
 /* desktop events */
 
 if(hasTouch()) {
-    $document.on('click', `${mainNavigation} .dropdown-toggle`, onDesktop((e) => {
+    $document.on('click', `${mainNavigation} .dropdown-toggle:not(.categories-recursive-link)`, onDesktop((e) => {
         e.preventDefault()
 
         if($activeDropdown !== null && $activeDropdown.get(0) === e.currentTarget) {

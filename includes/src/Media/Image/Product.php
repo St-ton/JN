@@ -53,12 +53,11 @@ class Product extends AbstractImage
      */
     public function getTotalImageCount(): int
     {
-        return (int)$this->db->query(
+        return (int)$this->db->getSingleObject(
             'SELECT COUNT(tartikelpict.kArtikel) AS cnt
                 FROM tartikelpict
                 INNER JOIN tartikel
-                    ON tartikelpict.kArtikel = tartikel.kArtikel',
-            ReturnType::SINGLE_OBJECT
+                    ON tartikelpict.kArtikel = tartikel.kArtikel'
         )->cnt;
     }
 
@@ -147,15 +146,14 @@ class Product extends AbstractImage
      */
     public function getPathByID($id, int $number = null): ?string
     {
-        return $this->db->queryPrepared(
+        return $this->db->getSingleObject(
             'SELECT cPfad AS path
                 FROM tartikelpict
                 WHERE kArtikel = :pid
                     AND nNr = :no
                 ORDER BY nNr
                 LIMIT 1',
-            ['pid' => $id, 'no' => $number],
-            ReturnType::SINGLE_OBJECT
+            ['pid' => $id, 'no' => $number]
         )->path ?? null;
     }
 
@@ -177,12 +175,11 @@ class Product extends AbstractImage
         $prepared = self::getImageStmt(Image::TYPE_PRODUCT, $id);
         if ($prepared !== null) {
             $db      = $db ?? Shop::Container()->getDB();
-            $primary = $db->queryPrepared(
+            $primary = $db->getSingleObject(
                 $prepared->stmt,
-                $prepared->bind,
-                ReturnType::SINGLE_OBJECT
+                $prepared->bind
             );
-            if (\is_object($primary)) {
+            if ($primary !== null) {
                 return \max(1, (int)$primary->number);
             }
         }

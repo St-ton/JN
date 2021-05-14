@@ -7,7 +7,6 @@ use InvalidArgumentException;
 use JTL\Backend\AdminIO;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\IO\IOError;
 use JTL\Plugin\Data\Config;
 use JTL\Shop;
@@ -330,7 +329,7 @@ class Helper
         if (\mb_strlen($iso) > 0) {
             $sql = " AND tpluginsprachvariablesprache.cISO = '" . \mb_convert_case($iso, \MB_CASE_UPPER) . "'";
         }
-        $langVars = Shop::Container()->getDB()->query(
+        $langVars = Shop::Container()->getDB()->getArrays(
             'SELECT t.kPluginSprachvariable,
                 t.kPlugin,
                 t.cName,
@@ -344,11 +343,10 @@ class Helper
                     ON c.kPlugin = t.kPlugin
                     AND c.kPluginSprachvariable = t.kPluginSprachvariable
                     AND tpluginsprachvariablesprache.cISO = c.cISO
-                WHERE t.kPlugin = ' . $id . $sql,
-            ReturnType::ARRAY_OF_ASSOC_ARRAYS
+                WHERE t.kPlugin = ' . $id . $sql
         );
         if (!\is_array($langVars) || \count($langVars) < 1) {
-            $langVars = Shop::Container()->getDB()->query(
+            $langVars = Shop::Container()->getDB()->getArrays(
                 "SELECT tpluginsprachvariable.kPluginSprachvariable,
                 tpluginsprachvariable.kPlugin,
                 tpluginsprachvariable.cName,
@@ -356,8 +354,7 @@ class Helper
                 CONCAT('#', tpluginsprachvariable.cName, '#') AS customValue, '" .
                 \mb_convert_case($iso, \MB_CASE_UPPER) . "' AS cISO
                     FROM tpluginsprachvariable
-                    WHERE tpluginsprachvariable.kPlugin = " . $id,
-                ReturnType::ARRAY_OF_ASSOC_ARRAYS
+                    WHERE tpluginsprachvariable.kPlugin = " . $id
             );
         }
         foreach ($langVars as $_sv) {
@@ -376,7 +373,7 @@ class Helper
      */
     public static function getLanguageVariables(int $pluginID): array
     {
-        $langVars = Shop::Container()->getDB()->queryPrepared(
+        $langVars = Shop::Container()->getDB()->getArrays(
             'SELECT l.kPluginSprachvariable, l.kPlugin, l.cName, l.cBeschreibung,
             COALESCE(c.cISO, tpluginsprachvariablesprache.cISO)  AS cISO,
             COALESCE(c.cName, tpluginsprachvariablesprache.cName) AS customValue
@@ -388,8 +385,7 @@ class Helper
                     AND tpluginsprachvariablesprache.cISO = COALESCE(c.cISO, tpluginsprachvariablesprache.cISO)
             WHERE l.kPlugin = :pid
             ORDER BY l.kPluginSprachvariable',
-            ['pid' => $pluginID],
-            ReturnType::ARRAY_OF_ASSOC_ARRAYS
+            ['pid' => $pluginID]
         );
         if (\count($langVars) === 0) {
             return [];

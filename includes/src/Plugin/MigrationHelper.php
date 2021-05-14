@@ -6,7 +6,6 @@ use DateTime;
 use DirectoryIterator;
 use Exception;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Shop;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Local\LocalFilesystemAdapter;
@@ -147,10 +146,9 @@ final class MigrationHelper
      */
     public function indexColumns(string $idxTable, string $idxName): array
     {
-        return $this->db->queryPrepared(
+        return $this->db->getObjects(
             'SHOW INDEXES FROM `' . $idxTable . '` WHERE Key_name = :idxName',
-            ['idxName' => $idxName],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['idxName' => $idxName]
         );
     }
 

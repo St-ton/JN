@@ -96,12 +96,11 @@ class Characteristic extends AbstractImage
      */
     public function getPathByID($id, int $number = null): ?string
     {
-        return $this->db->queryPrepared(
+        return $this->db->getSingleObject(
             'SELECT cBildpfad AS path
                 FROM tmerkmal
                 WHERE kMerkmal = :cid LIMIT 1',
-            ['cid' => $id],
-            ReturnType::SINGLE_OBJECT
+            ['cid' => $id]
         )->path ?? null;
     }
 
@@ -143,12 +142,11 @@ class Characteristic extends AbstractImage
      */
     public function getTotalImageCount(): int
     {
-        return (int)$this->db->query(
+        return (int)$this->db->getSingleObject(
             'SELECT COUNT(kMerkmal) AS cnt
                 FROM tmerkmal
                 WHERE cBildpfad IS NOT NULL
-                    AND cBildpfad != \'\'',
-            ReturnType::SINGLE_OBJECT
+                    AND cBildpfad != \'\''
         )->cnt;
     }
 }

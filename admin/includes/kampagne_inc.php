@@ -3,7 +3,6 @@
 use JTL\Campaign;
 use JTL\Catalog\Product\Preise;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Linechart;
@@ -17,11 +16,10 @@ use function Functional\reindex;
 function holeAlleKampagnenDefinitionen()
 {
     return reindex(
-        Shop::Container()->getDB()->query(
+        Shop::Container()->getDB()->getObjects(
             'SELECT *
                 FROM tkampagnedef
-                ORDER BY kKampagneDef',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY kKampagneDef'
         ),
         static function ($e) {
             return (int)$e->kKampagneDef;
@@ -31,15 +29,15 @@ function holeAlleKampagnenDefinitionen()
 
 /**
  * @param int $id
- * @return mixed
+ * @return stdClass|null
  */
 function holeKampagne(int $id)
 {
-    return Shop::Container()->getDB()->query(
+    return Shop::Container()->getDB()->getSingleObject(
         "SELECT *, DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE
             FROM tkampagne
-            WHERE kKampagne = " . $id,
-        ReturnType::SINGLE_OBJECT
+            WHERE kKampagne = :cid",
+        ['cid' => $id]
     );
 }
 
@@ -85,12 +83,11 @@ function holeKampagneGesamtStats($campaigns, $definitions)
         }
     }
 
-    $data = Shop::Container()->getDB()->query(
+    $data = Shop::Container()->getDB()->getObjects(
         'SELECT kKampagne, kKampagneDef, SUM(fWert) AS fAnzahl
             FROM tkampagnevorgang
             ' . $sql . '
-            GROUP BY kKampagne, kKampagneDef',
-        ReturnType::ARRAY_OF_OBJECTS
+            GROUP BY kKampagne, kKampagneDef'
     );
     foreach ($data as $item) {
         $stats[$item->kKampagne][$item->kKampagneDef] = $item->fAnzahl;
@@ -240,13 +237,12 @@ function holeKampagneDetailStats($campaignID, $definitions)
     }
     // Zeitraum
     $timeSpans = gibDetailDatumZeitraum();
-    $stats     = Shop::Container()->getDB()->query(
+    $stats     = Shop::Container()->getDB()->getObjects(
         'SELECT kKampagne, kKampagneDef, SUM(fWert) AS fAnzahl, ' . $selectSQL . '
             FROM tkampagnevorgang
             ' . $whereSQL . '
                 AND kKampagne = ' . $campaignID . '
-            ' . $groupSQL . ', kKampagneDef',
-        ReturnType::ARRAY_OF_OBJECTS
+            ' . $groupSQL . ', kKampagneDef'
     );
     // Vorbelegen
     $statsAssoc = [];
@@ -338,13 +334,12 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
     $where  = '';
     baueDefDetailSELECTWHERE($select, $where, $cStamp);
 
-    $stats = Shop::Container()->getDB()->query(
+    $stats = Shop::Container()->getDB()->getObjects(
         'SELECT kKampagne, kKampagneDef, kKey ' . $select . '
             FROM tkampagnevorgang
             ' . $where . '
                 AND kKampagne = ' . (int)$campaignID . '
-                AND kKampagneDef = ' . (int)$definition->kKampagneDef . $sql,
-        ReturnType::ARRAY_OF_OBJECTS
+                AND kKampagneDef = ' . (int)$definition->kKampagneDef . $sql
     );
     if (count($stats) > 0) {
         switch ((int)$_SESSION['Kampagne']->nDetailAnsicht) {
@@ -369,7 +364,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
     // Kampagnendefinitionen
     switch ((int)$definition->kKampagneDef) {
         case KAMPAGNE_DEF_HIT:    // HIT
-            $data = Shop::Container()->getDB()->query(
+            $data = Shop::Container()->getDB()->getObjects(
                 'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
                     $select . ", tkampagnevorgang.cCustomData, 
                     DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
@@ -392,8 +387,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                     " . $where . '
                         AND kKampagne = ' . (int)$campaignID . '
                         AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
-                    ORDER BY tkampagnevorgang.dErstellt DESC' . $sql,
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY tkampagnevorgang.dErstellt DESC' . $sql
             );
 
             if (is_array($data) && count($data) > 0) {
@@ -418,7 +412,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
             }
             break;
         case KAMPAGNE_DEF_VERKAUF:    // VERKAUF
-            $data = Shop::Container()->getDB()->query(
+            $data = Shop::Container()->getDB()->getObjects(
                 'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
                     $select . ",
                     DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
@@ -445,8 +439,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                     " . $where . '
                         AND kKampagne = ' . (int)$campaignID . '
                         AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
-                    ORDER BY tkampagnevorgang.dErstellt DESC',
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY tkampagnevorgang.dErstellt DESC'
             );
 
             if (is_array($data) && count($data) > 0) {
@@ -486,7 +479,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
             }
             break;
         case KAMPAGNE_DEF_ANMELDUNG:    // ANMELDUNG
-            $data = Shop::Container()->getDB()->query(
+            $data = Shop::Container()->getDB()->getObjects(
                 'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
                     $select . ",
                     DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
@@ -501,8 +494,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                     " . $where . '
                         AND kKampagne = ' . (int)$campaignID . '
                         AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
-                    ORDER BY tkampagnevorgang.dErstellt DESC',
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY tkampagnevorgang.dErstellt DESC'
             );
 
             if (is_array($data) && count($data) > 0) {
@@ -533,7 +525,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
             }
             break;
         case KAMPAGNE_DEF_VERKAUFSSUMME:    // VERKAUFSSUMME
-            $data   = Shop::Container()->getDB()->query(
+            $data   = Shop::Container()->getDB()->getObjects(
                 'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
                     $select . ",
                     DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
@@ -557,8 +549,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                     " . $where . '
                         AND kKampagne = ' . (int)$campaignID . '
                         AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
-                    ORDER BY tkampagnevorgang.dErstellt DESC',
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY tkampagnevorgang.dErstellt DESC'
             );
             $dCount = count($data);
             if (is_array($data) && $dCount > 0) {
@@ -597,7 +588,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
             }
             break;
         case KAMPAGNE_DEF_FRAGEZUMPRODUKT:    // FRAGEZUMPRODUKT
-            $data = Shop::Container()->getDB()->query(
+            $data = Shop::Container()->getDB()->getObjects(
                 'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
                     $select . ",
                     DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
@@ -626,8 +617,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                     " . $where . '
                         AND kKampagne = ' . (int)$campaignID . '
                         AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
-                    ORDER BY tkampagnevorgang.dErstellt DESC',
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY tkampagnevorgang.dErstellt DESC'
             );
 
             if (is_array($data) && count($data) > 0) {
@@ -647,7 +637,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
 
             break;
         case KAMPAGNE_DEF_VERFUEGBARKEITSANFRAGE:    // VERFUEGBARKEITSANFRAGE
-            $data = Shop::Container()->getDB()->query(
+            $data = Shop::Container()->getDB()->getObjects(
                 'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
                     $select . ",
                     DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
@@ -679,8 +669,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                     " . $where . '
                         AND kKampagne = ' . (int)$campaignID . '
                         AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
-                    ORDER BY tkampagnevorgang.dErstellt DESC',
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY tkampagnevorgang.dErstellt DESC'
             );
 
             if (is_array($data) && count($data) > 0) {
@@ -698,7 +687,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
 
             break;
         case KAMPAGNE_DEF_LOGIN:    // LOGIN
-            $data   = Shop::Container()->getDB()->query(
+            $data   = Shop::Container()->getDB()->getObjects(
                 'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
                 $select . ",
                     DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
@@ -714,8 +703,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                     " . $where . '
                         AND kKampagne = ' . (int)$campaignID . '
                         AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
-                    ORDER BY tkampagnevorgang.dErstellt DESC',
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY tkampagnevorgang.dErstellt DESC'
             );
             $dCount = count($data);
             if (is_array($data) && $dCount > 0) {
@@ -746,7 +734,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
             }
             break;
         case KAMPAGNE_DEF_WUNSCHLISTE:    // WUNSCHLISTE
-            $data   = Shop::Container()->getDB()->query(
+            $data   = Shop::Container()->getDB()->getObjects(
                 'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
                 $select . ",
                     DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
@@ -766,8 +754,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                     " . $where . '
                         AND kKampagne = ' . (int)$campaignID . '
                         AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
-                    ORDER BY tkampagnevorgang.dErstellt DESC',
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY tkampagnevorgang.dErstellt DESC'
             );
             $dCount = count($data);
             if (is_array($data) && $dCount > 0) {
@@ -802,7 +789,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
         case KAMPAGNE_DEF_WARENKORB:    // WARENKORB
             $customerGroupID = CustomerGroup::getDefaultGroupID();
 
-            $data = Shop::Container()->getDB()->query(
+            $data = Shop::Container()->getDB()->getObjects(
                 'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
                 $select . ",
                     DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
@@ -822,8 +809,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                     ' . $where . '
                         AND tkampagnevorgang.kKampagne = ' . (int)$campaignID . '
                         AND tkampagnevorgang.kKampagneDef = ' . (int)$definition->kKampagneDef . '
-                    ORDER BY tkampagnevorgang.dErstellt DESC',
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY tkampagnevorgang.dErstellt DESC'
             );
             if (is_array($data) && count($data) > 0) {
                 Frontend::getCustomerGroup()->setMayViewPrices(1);
@@ -849,7 +835,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
             }
             break;
         case KAMPAGNE_DEF_NEWSLETTER:    // NEWSLETTER
-            $data = Shop::Container()->getDB()->query(
+            $data = Shop::Container()->getDB()->getObjects(
                 'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
                 $select . ",
                     DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
@@ -870,8 +856,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                     " . $where . '
                         AND tkampagnevorgang.kKampagne = ' . (int)$campaignID . '
                         AND tkampagnevorgang.kKampagneDef = ' . (int)$definition->kKampagneDef . '
-                    ORDER BY tkampagnevorgang.dErstellt DESC',
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY tkampagnevorgang.dErstellt DESC'
             );
 
             if (is_array($data) && count($data) > 0) {
@@ -1149,14 +1134,13 @@ function speicherKampagne($campaign)
 {
     // Standardkampagnen (Interne) Werte herstellen
     if (isset($campaign->kKampagne) && ($campaign->kKampagne < 1000 && $campaign->kKampagne > 0)) {
-        $data = Shop::Container()->getDB()->query(
+        $data = Shop::Container()->getDB()->getSingleObject(
             'SELECT *
                 FROM tkampagne
-                WHERE kKampagne = ' . (int)$campaign->kKampagne,
-            ReturnType::SINGLE_OBJECT
+                WHERE kKampagne = :cid',
+            ['cid' => (int)$campaign->kKampagne]
         );
-
-        if (isset($data->kKampagne)) {
+        if ($data !== null) {
             $campaign->cName      = $data->cName;
             $campaign->cWert      = $data->cWert;
             $campaign->nDynamisch = $data->nDynamisch;
@@ -1174,15 +1158,13 @@ function speicherKampagne($campaign)
         return 5;//  Kampagnenwert ist leer
     }
     // Name schon vorhanden?
-    $data = Shop::Container()->getDB()->queryPrepared(
+    $data = Shop::Container()->getDB()->getSingleObject(
         'SELECT kKampagne
             FROM tkampagne
             WHERE cName = :cName',
-        ['cName' => $campaign->cName],
-        ReturnType::SINGLE_OBJECT
+        ['cName' => $campaign->cName]
     );
-
-    if (isset($data->kKampagne)
+    if ($data !== null
         && $data->kKampagne > 0
         && (!isset($campaign->kKampagne) || (int)$campaign->kKampagne === 0)
     ) {
@@ -1190,15 +1172,13 @@ function speicherKampagne($campaign)
     }
     // Parameter schon vorhanden?
     if (isset($campaign->nDynamisch) && (int)$campaign->nDynamisch === 1) {
-        $data = Shop::Container()->getDB()->queryPrepared(
+        $data = Shop::Container()->getDB()->getSingleObject(
             'SELECT kKampagne
                 FROM tkampagne
                 WHERE cParameter = :param',
-            ['param' => $campaign->cParameter],
-            ReturnType::SINGLE_OBJECT
+            ['param' => $campaign->cParameter]
         );
-
-        if (isset($data->kKampagne)
+        if ($data !== null
             && $data->kKampagne > 0
             && (!isset($campaign->kKampagne) || (int)$campaign->kKampagne === 0)
         ) {

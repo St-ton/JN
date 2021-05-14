@@ -10,7 +10,6 @@ use JTL\Cron\Job\LicenseCheck;
 use JTL\Cron\Job\Newsletter;
 use JTL\Cron\Job\Statusmail;
 use JTL\Cron\Job\Store;
-use JTL\Cron\JobInterface;
 use JTL\Cron\Type;
 use JTL\Events\Dispatcher;
 use JTL\Events\Event;

@@ -4,7 +4,6 @@ namespace JTL\dbeS\Sync;
 
 use Illuminate\Support\Collection;
 use JTL\Catalog\Product\Artikel;
-use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\Helpers\Product;
 use JTL\Helpers\Seo;
@@ -129,12 +128,11 @@ final class Products extends AbstractSync
         if ($filter === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_ALLE || \count($newCategoryIDs) === 0) {
             return false;
         }
-        $currentStatus = $this->db->queryPrepared(
+        $currentStatus = $this->db->getSingleObject(
             'SELECT cLagerBeachten, cLagerKleinerNull, fLagerbestand
                 FROM tartikel
                 WHERE kArtikel = :pid',
-            ['pid' => $productID],
-            ReturnType::SINGLE_OBJECT
+            ['pid' => $productID]
         );
         if ($this->checkStock($currentStatus, $xml) === true) {
             // get count of visible products in the product's future categories
@@ -275,16 +273,15 @@ final class Products extends AbstractSync
         }
         // any new orders since last wawi-sync? see https://gitlab.jtl-software.de/jtlshop/jtl-shop/issues/304
         if (isset($products[0]->fLagerbestand) && $products[0]->fLagerbestand > 0) {
-            $delta = $this->db->query(
+            $delta = $this->db->getSingleObject(
                 "SELECT SUM(pos.nAnzahl) AS totalquantity
                     FROM tbestellung b
                     JOIN twarenkorbpos pos
                         ON pos.kWarenkorb = b.kWarenkorb
                     WHERE b.cAbgeholt = 'N'
-                        AND pos.kArtikel = " . (int)$products[0]->kArtikel,
-                ReturnType::SINGLE_OBJECT
+                        AND pos.kArtikel = " . (int)$products[0]->kArtikel
             );
-            if ($delta->totalquantity > 0) {
+            if ($delta !== null && $delta->totalquantity > 0) {
                 $products[0]->fLagerbestand -= $delta->totalquantity;
                 $this->logger->debug(
                     'Artikel-Sync: Lagerbestand von kArtikel ' . $products[0]->kArtikel . ' wurde ' .
@@ -973,15 +970,14 @@ final class Products extends AbstractSync
             $stockFilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             foreach ($categories as $category) {
                 // check if the product was the only one in at least one of these categories
-                $categoryCount = $this->db->query(
+                $categoryCount = (int)$this->db->getSingleObject(
                     'SELECT COUNT(tkategorieartikel.kArtikel) AS cnt
                         FROM tkategorieartikel
                         LEFT JOIN tartikel
                             ON tartikel.kArtikel = tkategorieartikel.kArtikel
-                        WHERE tkategorieartikel.kKategorie = ' . (int)$category->kKategorie . ' ' . $stockFilter,
-                    ReturnType::SINGLE_OBJECT
-                );
-                if (!isset($categoryCount->cnt) || (int)$categoryCount->cnt === 1) {
+                        WHERE tkategorieartikel.kKategorie = ' . (int)$category->kKategorie . ' ' . $stockFilter
+                )->cnt;
+                if ($categoryCount <= 1) {
                     // the category only had this product in it - flush cache
                     $this->flushCategoryTreeCache();
                     break;
@@ -1218,12 +1214,9 @@ final class Products extends AbstractSync
      */
     private function removeProductIdfromCoupons(int $productID): void
     {
-        $data = $this->db->query(
-            'SELECT cArtNr FROM tartikel WHERE kArtikel = ' . $productID,
-            ReturnType::SINGLE_OBJECT
-        );
+        $data = $this->db->getSingleObject('SELECT cArtNr FROM tartikel WHERE kArtikel = ' . $productID);
 
-        if (!empty($data->cArtNr)) {
+        if ($data !== null && !empty($data->cArtNr)) {
             $artNo = $data->cArtNr;
             $this->db->queryPrepared(
                 "UPDATE tkupon SET cArtikel = REPLACE(cArtikel, ';" . $artNo . ";', ';') WHERE cArtikel LIKE :artno",
@@ -1241,17 +1234,14 @@ final class Products extends AbstractSync
      */
     private function addCategoryDiscounts(int $productID): array
     {
-        $customerGroups     = $this->db->query(
-            'SELECT kKundengruppe FROM tkundengruppe',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
+        $customerGroups     = $this->db->getObjects('SELECT kKundengruppe FROM tkundengruppe');
         $affectedProductIDs = [];
         $this->db->delete('tartikelkategorierabatt', 'kArtikel', $productID);
         if (!\is_array($customerGroups) || \count($customerGroups) === 0) {
             return $affectedProductIDs;
         }
         foreach ($customerGroups as $item) {
-            $maxDiscount = $this->db->queryPrepared(
+            $maxDiscount = $this->db->getSingleObject(
                 'SELECT tkategoriekundengruppe.fRabatt, tkategoriekundengruppe.kKategorie
                 FROM tkategoriekundengruppe
                 JOIN tkategorieartikel
@@ -1267,11 +1257,10 @@ final class Products extends AbstractSync
                 [
                     'kArtikel'      => $productID,
                     'kKundengruppe' => $item->kKundengruppe,
-                ],
-                ReturnType::SINGLE_OBJECT
+                ]
             );
 
-            if (isset($maxDiscount->fRabatt) && $maxDiscount->fRabatt > 0) {
+            if ($maxDiscount !== null && $maxDiscount->fRabatt > 0) {
                 $this->db->queryPrepared(
                     'INSERT INTO tartikelkategorierabatt (kArtikel, kKundengruppe, kKategorie, fRabatt)
                         VALUES (:productID, :customerGroup, :categoryID, :discount) ON DUPLICATE KEY UPDATE
@@ -1311,11 +1300,10 @@ final class Products extends AbstractSync
         }
 
         return map(
-            $this->db->query(
+            $this->db->getObjects(
                 'SELECT kArtikel AS id
                     FROM tartikelkonfiggruppe
-                    WHERE kKonfiggruppe IN (' . \implode(',', $configGroupIDs) . ')',
-                ReturnType::ARRAY_OF_OBJECTS
+                    WHERE kKonfiggruppe IN (' . \implode(',', $configGroupIDs) . ')'
             ),
             static function ($item) {
                 return (int)$item->id;
@@ -1366,35 +1354,31 @@ final class Products extends AbstractSync
         if ($deps->count() > 0) {
             $whereIn = $deps->implode(',');
             // flush cache tags associated with the product's manufacturer ID
-            $cacheTags = $cacheTags->concat(map($this->db->query(
+            $cacheTags = $cacheTags->concat(map($this->db->getObjects(
                 'SELECT DISTINCT kHersteller AS id
                     FROM tartikel
                     WHERE kArtikel IN (' . $whereIn . ')
-                        AND kHersteller > 0',
-                ReturnType::ARRAY_OF_OBJECTS
+                        AND kHersteller > 0'
             ), static function ($item) {
                 return \CACHING_GROUP_MANUFACTURER . '_' . (int)$item->id;
-            }))->concat(map($this->db->query(
+            }))->concat(map($this->db->getObjects(
                 'SELECT DISTINCT kKategorie AS id
                     FROM tkategorieartikel
-                    WHERE kArtikel IN (' . $whereIn . ')',
-                ReturnType::ARRAY_OF_OBJECTS
+                    WHERE kArtikel IN (' . $whereIn . ')'
             ), static function ($item) {
                 return \CACHING_GROUP_CATEGORY . '_' . (int)$item->id;
-            }))->concat(map($this->db->query(
+            }))->concat(map($this->db->getObjects(
                 'SELECT DISTINCT kVaterArtikel AS id
                     FROM tartikel
                     WHERE kArtikel IN (' . $whereIn . ')
-                        AND kVaterArtikel > 0',
-                ReturnType::ARRAY_OF_OBJECTS
+                        AND kVaterArtikel > 0'
             ), static function ($item) {
                 return \CACHING_GROUP_ARTICLE . '_' . (int)$item->id;
-            }))->concat(map($this->db->query(
+            }))->concat(map($this->db->getObjects(
                 'SELECT DISTINCT kArtikel AS id
                     FROM tartikel
                     WHERE kVaterArtikel IN (' . $whereIn . ')
-                        AND kVaterArtikel > 0',
-                ReturnType::ARRAY_OF_OBJECTS
+                        AND kVaterArtikel > 0'
             ), static function ($item) {
                 return \CACHING_GROUP_ARTICLE . '_' . (int)$item->id;
             }));

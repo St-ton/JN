@@ -2,7 +2,6 @@
 
 use JTL\Alert\Alert;
 use JTL\Campaign;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
@@ -181,13 +180,12 @@ if ($step === 'kampagne_uebersicht') {
         $where      = '';
         baueDefDetailSELECTWHERE($select, $where, $stamp);
 
-        $stats = Shop::Container()->getDB()->query(
+        $stats = Shop::Container()->getDB()->getObjects(
             'SELECT kKampagne, kKampagneDef, kKey ' . $select . '
                 FROM tkampagnevorgang
                 ' . $where . '
                     AND kKampagne = ' . $campaignID . '
-                    AND kKampagneDef = ' . (int)$definition->kKampagneDef,
-            ReturnType::ARRAY_OF_OBJECTS
+                    AND kKampagneDef = ' . (int)$definition->kKampagneDef
         );
 
         $paginationDefinitionDetail = (new Pagination('defdetail'))

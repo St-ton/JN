@@ -4,7 +4,6 @@ namespace JTL\News;
 
 use Illuminate\Support\Collection;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\CMS;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -250,14 +249,13 @@ class Controller
     public function getAllNewsCategories(bool $activeOnly = false): Collection
     {
         $itemList = new CategoryList($this->db);
-        $ids      = map($this->db->query(
+        $ids      = map($this->db->getObjects(
             'SELECT node.kNewsKategorie AS id
                 FROM tnewskategorie AS node INNER JOIN tnewskategorie AS parent
                 WHERE node.lvl > 0 
                     AND parent.lvl > 0 ' . ($activeOnly ? ' AND node.nAktiv = 1 ' : '') .
             ' GROUP BY node.kNewsKategorie
-                ORDER BY node.lft, node.nSort ASC',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY node.lft, node.nSort ASC'
         ), static function ($e) {
             return (int)$e->id;
         });
@@ -336,16 +334,15 @@ class Controller
             $checks['cKommentar'] = 2;
         }
         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0 && $newsID > 0) {
-            $oNewsKommentar = Shop::Container()->getDB()->queryPrepared(
+            $commentCount = Shop::Container()->getDB()->getSingleObject(
                 'SELECT COUNT(*) AS nAnzahl
                     FROM tnewskommentar
                     WHERE kNews = :nid
                         AND kKunde = :cid',
-                ['nid' => $newsID, 'cid' => Frontend::getCustomer()->getID()],
-                ReturnType::SINGLE_OBJECT
+                ['nid' => $newsID, 'cid' => Frontend::getCustomer()->getID()]
             );
 
-            if ((int)$oNewsKommentar->nAnzahl > (int)$config['news']['news_kommentare_anzahlprobesucher']
+            if ((int)($commentCount->nAnzahl ?? 0) > (int)$config['news']['news_kommentare_anzahlprobesucher']
                 && (int)$config['news']['news_kommentare_anzahlprobesucher'] !== 0
             ) {
                 $checks['nAnzahl'] = 1;
@@ -463,7 +460,7 @@ class Controller
      */
     private function getNewsDates($sql): array
     {
-        $dateData = $this->db->query(
+        $dateData = $this->db->getObjects(
             'SELECT MONTH(tnews.dGueltigVon) AS nMonat, YEAR(tnews.dGueltigVon) AS nJahr
                 FROM tnews 
                 JOIN tnewskategorienews 
@@ -477,8 +474,7 @@ class Controller
             "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                     AND tnewssprache.languageID = " . Shop::getLanguageID() . '
                 GROUP BY nJahr, nMonat
-                ORDER BY dGueltigVon DESC',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY dGueltigVon DESC'
         );
         $dates    = [];
         foreach ($dateData as $date) {
@@ -557,7 +553,7 @@ class Controller
         );
 
         return \count($newsCategories) > 0
-            ? $this->db->query(
+            ? $this->db->getObjects(
                 'SELECT tnewskategorie.kNewsKategorie, t.languageID AS kSprache, t.name AS cName,
                 t.description AS cBeschreibung, t.metaTitle AS cMetaTitle, t.metaDescription AS cMetaDescription,
                 tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung,
@@ -576,8 +572,7 @@ class Controller
                         AND tnewskategorienews.kNewsKategorie IN (' . \implode(',', $newsCategories) . ')
                         AND tnewskategorie.nAktiv = 1
                     GROUP BY tnewskategorie.kNewsKategorie
-                    ORDER BY tnewskategorie.nSort DESC',
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY tnewskategorie.nSort DESC'
             )
             : [];
     }

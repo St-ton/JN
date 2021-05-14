@@ -18,7 +18,6 @@ use JTL\Catalog\Separator;
 use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Checkout\Kupon;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
 use JTL\Extensions\Config\Configurator;
 use JTL\Extensions\Config\Item;
 use JTL\Extensions\SelectionWizard\Wizard;
@@ -110,7 +109,7 @@ class IOMethods
         $maxResults = ($cnt = Shop::getSettingValue(\CONF_ARTIKELUEBERSICHT, 'suche_ajax_anzahl')) > 0
             ? $cnt
             : 10;
-        $results    = Shop::Container()->getDB()->queryPrepared(
+        $results    = Shop::Container()->getDB()->getObjects(
             "SELECT cSuche AS keyword, nAnzahlTreffer AS quantity
                 FROM tsuchanfrage
                 WHERE SOUNDEX(cSuche) LIKE CONCAT(TRIM(TRAILING '0' FROM SOUNDEX(:keyword)), '%')
@@ -127,8 +126,7 @@ class IOMethods
                 'keyword' => $keyword,
                 'maxres'  => $maxResults,
                 'lang'    => $language
-            ],
-            ReturnType::ARRAY_OF_OBJECTS
+            ]
         );
         $smarty->assign('shopURL', Shop::getURL());
         foreach ($results as $result) {
@@ -151,14 +149,13 @@ class IOMethods
         }
 
         return pluck(
-            Shop::Container()->getDB()->queryPrepared(
+            Shop::Container()->getDB()->getObjects(
                 'SELECT cOrt
                     FROM tplz
                     WHERE cLandISO = :country
                         AND cPLZ = :zip
                         AND cOrt LIKE :cityQuery',
-                ['country' => $country, 'zip' => $zip, 'cityQuery' => '%' . Text::filterXSS($cityQuery) . '%'],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['country' => $country, 'zip' => $zip, 'cityQuery' => '%' . Text::filterXSS($cityQuery) . '%']
             ),
             'cOrt'
         );
@@ -398,7 +395,7 @@ class IOMethods
     private function forceRenderBoxes(int $type, array $conf, $smarty): array
     {
         $res     = [];
-        $boxData = Shop::Container()->getDB()->queryPrepared(
+        $boxData = Shop::Container()->getDB()->getObjects(
             'SELECT *, 0 AS nSort, \'\' AS pageIDs, \'\' AS pageVisibilities,
                        GROUP_CONCAT(tboxensichtbar.nSort) AS sortBypageIDs,
                        GROUP_CONCAT(tboxensichtbar.kSeite) AS pageIDs,
@@ -410,8 +407,7 @@ class IOMethods
                     ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
                 WHERE tboxen.kBoxvorlage = :type
                 GROUP BY tboxen.kBox',
-            ['type' => $type],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['type' => $type]
         );
         $factory = new Factory($conf);
         foreach ($boxData as $item) {
@@ -1174,7 +1170,7 @@ class IOMethods
     /**
      * @param int   $parentProductID
      * @param array $selectedVariationValues
-     * @return array
+     * @return stdClass[]
      */
     public function getArticleByVariations(int $parentProductID, $selectedVariationValues): array
     {
@@ -1207,7 +1203,7 @@ class IOMethods
                 AND '
             : '';
 
-        return Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getObjects(
             'SELECT tartikel.kArtikel,
                 tseo.kKey AS kSeoKey, COALESCE(tseo.cSeo, \'\') AS cSeo,
                 tartikel.fLagerbestand, tartikel.cLagerBeachten, tartikel.cLagerKleinerNull
@@ -1231,8 +1227,7 @@ class IOMethods
                 'parentProductID' => $parentProductID,
                 'variationID'     => $variationID,
                 'variationValue'  => $variationValue,
-            ],
-            ReturnType::ARRAY_OF_OBJECTS
+            ]
         );
     }
 

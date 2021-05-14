@@ -1,6 +1,5 @@
 <?php
 
-use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Shop;
@@ -112,12 +111,11 @@ function holeEinstellungen($sql, bool $save)
         return $sql;
     }
 
-    $sql->oEinstellung_arr = Shop::Container()->getDB()->query(
+    $sql->oEinstellung_arr = Shop::Container()->getDB()->getObjects(
         'SELECT *
             FROM teinstellungenconf
             WHERE ' . $sql->cWHERE . '
-            ORDER BY kEinstellungenSektion, nSort',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY kEinstellungenSektion, nSort'
     );
     Shop::Container()->getGetText()->loadConfigLocales();
     foreach ($sql->oEinstellung_arr as $j => $config) {
@@ -178,13 +176,12 @@ function holeEinstellungen($sql, bool $save)
 function holeEinstellungAbteil($sql, $sort, $sectionID)
 {
     if ((int)$sort > 0 && (int)$sectionID > 0) {
-        $items = Shop::Container()->getDB()->query(
+        $items = Shop::Container()->getDB()->getObjects(
             'SELECT *
                 FROM teinstellungenconf
                 WHERE nSort > ' . (int)$sort . '
                     AND kEinstellungenSektion = ' . (int)$sectionID . '
-                ORDER BY nSort',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY nSort'
         );
         foreach ($items as $item) {
             if ($item->cConf !== 'N') {
@@ -207,16 +204,15 @@ function holeEinstellungHeadline(int $sort, int $sectionID)
 {
     $configHead = new stdClass();
     if ($sort > 0 && $sectionID > 0) {
-        $item = Shop::Container()->getDB()->query(
+        $item = Shop::Container()->getDB()->getSingleObject(
             'SELECT *
                 FROM teinstellungenconf
                 WHERE nSort < ' . $sort . '
                     AND kEinstellungenSektion = ' . $sectionID . "
                     AND cConf = 'N'
-                ORDER BY nSort DESC",
-            ReturnType::SINGLE_OBJECT
+                ORDER BY nSort DESC"
         );
-        if ($item !== false) {
+        if ($item !== null) {
             $menuEntry                  = mapConfigSectionToMenuEntry($sectionID, $item->cWertName);
             $configHead                 = $item;
             $configHead->cSektionsPfad  = getConfigSectionPath($menuEntry);

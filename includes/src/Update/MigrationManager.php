@@ -8,7 +8,6 @@ use Gettext\Translator;
 use Gettext\TranslatorFunctions;
 use InvalidArgumentException;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTLShop\SemVer\Version;
 use PDOException;
 
@@ -252,11 +251,10 @@ class MigrationManager
      */
     public function getCurrentId(): int
     {
-        return (int)($this->db->query(
+        return (int)($this->db->getSingleObject(
             'SELECT kMigration 
                 FROM tmigration 
-                ORDER BY kMigration DESC',
-            ReturnType::SINGLE_OBJECT
+                ORDER BY kMigration DESC'
         )->kMigration ?? 0);
     }
 
@@ -301,11 +299,10 @@ class MigrationManager
     protected function _getExecutedMigrations()
     {
         if ($this->executedMigrations === null) {
-            $migrations = $this->db->executeQuery(
+            $migrations = $this->db->getObjects(
                 'SELECT * 
                     FROM tmigration 
-                    ORDER BY kMigration ASC',
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY kMigration ASC'
             );
             foreach ($migrations as $m) {
                 $this->executedMigrations[$m->kMigration] = new DateTime($m->dExecuted);

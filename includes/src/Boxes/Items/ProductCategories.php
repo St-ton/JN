@@ -2,9 +2,9 @@
 
 namespace JTL\Boxes\Items;
 
+use JTL\Catalog\Category\MenuItem;
 use JTL\Helpers\Category;
 use JTL\Session\Frontend;
-use JTL\Catalog\Category\MenuItem;
 
 /**
  * Class ProductCategories

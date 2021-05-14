@@ -9,14 +9,12 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\EigenschaftWert;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\Product\VariationValue;
-use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Rechnungsadresse;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Extensions\Config\Configurator;
@@ -1096,7 +1094,7 @@ class CartHelper
             $customerQRY = " OR FIND_IN_SET('" .
                 Frontend::getCustomer()->getID() . "', REPLACE(cKunden, ';', ',')) > 0";
         }
-        $couponsOK = Shop::Container()->getDB()->queryPrepared(
+        $couponsOK = Shop::Container()->getDB()->getSingleObject(
             "SELECT *
                 FROM tkupon
                 WHERE cAktiv = 'Y'
@@ -1119,10 +1117,9 @@ class CartHelper
                 'artNO'     => \str_replace('%', '\%', $item->Artikel->cArtNr),
                 'manuf'     => \str_replace('%', '\%', $item->Artikel->kHersteller),
                 'couponID'  => (int)$coupon->kKupon
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
-        if (isset($couponsOK->kKupon)
+        if ($couponsOK !== null
             && $couponsOK->kKupon > 0
             && $couponsOK->cWertTyp === 'prozent'
             && !Frontend::getCart()->posTypEnthalten(\C_WARENKORBPOS_TYP_KUPON)
@@ -1211,7 +1208,7 @@ class CartHelper
             $customerQRY = " OR FIND_IN_SET('" .
                 Frontend::getCustomer()->getID() . "', REPLACE(cKunden, ';', ',')) > 0";
         }
-        $couponOK = Shop::Container()->getDB()->queryPrepared(
+        $couponOK = Shop::Container()->getDB()->getSingleObject(
             "SELECT *
                 FROM tkupon
                 WHERE cAktiv = 'Y'
@@ -1233,11 +1230,9 @@ class CartHelper
                 'artNo'     => \str_replace('%', '\%', $cartItem->Artikel->cArtNr),
                 'manuf'     => \str_replace('%', '\%', $cartItem->Artikel->kHersteller),
                 'couponID'  => $coupon->kKupon
-
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
-        if (isset($couponOK->kKupon) && $couponOK->kKupon > 0 && $couponOK->cWertTyp === 'prozent') {
+        if ($couponOK !== null && $couponOK->kKupon > 0 && $couponOK->cWertTyp === 'prozent') {
             $item->fPreis = $cartItem->fPreis *
                 Frontend::getCurrency()->getConversionFactor() *
                 $cartItem->nAnzahl *
@@ -1778,17 +1773,15 @@ class CartHelper
         // Gesamtsumme Warenkorb < Gratisgeschenk && Gratisgeschenk in den Pos?
         if ($freeGiftID > 0) {
             // Prüfen, ob der Artikel wirklich ein Gratis Geschenk ist
-            $gift = Shop::Container()->getDB()->query(
+            $gift = Shop::Container()->getDB()->getSingleObject(
                 'SELECT kArtikel
                     FROM tartikelattribut
                     WHERE kArtikel = ' . $freeGiftID . "
                         AND cName = '" . \FKT_ATTRIBUT_GRATISGESCHENK . "'
                         AND CAST(cWert AS DECIMAL) <= " .
-                $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true),
-                ReturnType::SINGLE_OBJECT
+                $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true)
             );
-
-            if (empty($gift->kArtikel)) {
+            if ($gift === null || empty($gift->kArtikel)) {
                 $cart->loescheSpezialPos(\C_WARENKORBPOS_TYP_GRATISGESCHENK);
             }
         }
@@ -1908,14 +1901,13 @@ class CartHelper
         );
         if (\count($productIDs) > 0) {
             $productIDs = \implode(', ', $productIDs);
-            $xsellData  = Shop::Container()->getDB()->query(
+            $xsellData  = Shop::Container()->getDB()->getObjects(
                 'SELECT DISTINCT kXSellArtikel
                     FROM txsellkauf
                     WHERE kArtikel IN (' . $productIDs . ')
                         AND kXSellArtikel NOT IN (' . $productIDs .')
                     ORDER BY nAnzahl DESC
-                    LIMIT ' . (int)$conf['kaufabwicklung']['warenkorb_xselling_anzahl'],
-                ReturnType::ARRAY_OF_OBJECTS
+                    LIMIT ' . (int)$conf['kaufabwicklung']['warenkorb_xselling_anzahl']
             );
             if (\count($xsellData) > 0) {
                 $xSelling->Kauf          = new stdClass();
@@ -1955,7 +1947,7 @@ class CartHelper
             }
             $limit    = $conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0 ?
                     ' LIMIT ' . $conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] : '';
-            $giftsTmp = Shop::Container()->getDB()->query(
+            $giftsTmp = Shop::Container()->getDB()->getObjects(
                 "SELECT tartikel.kArtikel, tartikelattribut.cWert
                     FROM tartikel
                     JOIN tartikelattribut
@@ -1966,8 +1958,7 @@ class CartHelper
                         AND tartikelattribut.cName = '" . \FKT_ATTRIBUT_GRATISGESCHENK . "'
                         AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .
                 Frontend::getCart()->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true) .
-                $sqlSort . $limit,
-                ReturnType::ARRAY_OF_OBJECTS
+                $sqlSort . $limit
             );
 
             foreach ($giftsTmp as $gift) {

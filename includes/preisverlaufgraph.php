@@ -1,7 +1,6 @@
 <?php // @deprecated since 5.0.0
 
 use JTL\Catalog\Product\PreisverlaufGraph;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -17,7 +16,7 @@ if (Request::getInt('kArtikel') > 0 && Request::getInt('kKundengruppe') > 0 && R
         ? 0
         : $_SESSION['Steuersatz'][Request::getInt('kSteuerklasse')];
     $month                 = Shop::getSettingValue(CONF_PREISVERLAUF, 'preisverlauf_anzahl_monate');
-    $history               = Shop::Container()->getDB()->queryPrepared(
+    $history               = Shop::Container()->getDB()->getSingleObject(
         'SELECT kPreisverlauf
             FROM tpreisverlauf
             WHERE kArtikel = :pid
@@ -28,8 +27,7 @@ if (Request::getInt('kArtikel') > 0 && Request::getInt('kKundengruppe') > 0 && R
             'pid'  => $productID,
             'cgid' => $cgID,
             'mth'  => $month
-        ],
-        ReturnType::SINGLE_OBJECT
+        ]
     );
 
     if (isset($history->kPreisverlauf) && $history->kPreisverlauf > 0) {

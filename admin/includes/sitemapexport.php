@@ -18,8 +18,8 @@ use JTL\Shop;
 use JTL\Shopsetting;
 
 /**
- * @param int $file
- * @param mixed  $data
+ * @param int   $file
+ * @param mixed $data
  * @deprecated since 5.0.0
  */
 function baueSitemap($file, $data)
@@ -95,9 +95,9 @@ function baueSitemapIndex($file, $useGZ)
  * @param null|string $strPriority
  * @param string      $googleImageURL
  * @param bool        $ssl
+ * @return string
  * @deprecated since 5.0.0
  *
- * @return string
  */
 function makeURL(
     $strLoc,
@@ -441,7 +441,7 @@ function generateSitemapXML()
         );
         while (($tlink = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             if (spracheEnthalten($tlink->cISOSprache, $languages)) {
-                $oSeo = $db->queryPrepared(
+                $oSeo = $db->getSingleObject(
                     "SELECT cSeo
                         FROM tseo
                         WHERE cKey = 'kLink'
@@ -450,10 +450,9 @@ function generateSitemapXML()
                     [
                         'linkID' => $tlink->kLink,
                         'langID' => $languageAssoc[$tlink->cISOSprache]
-                    ],
-                    ReturnType::SINGLE_OBJECT
+                    ]
                 );
-                if (isset($oSeo->cSeo) && mb_strlen($oSeo->cSeo) > 0) {
+                if ($oSeo !== null && mb_strlen($oSeo->cSeo) > 0) {
                     $tlink->cSeo = $oSeo->cSeo;
                 }
 
@@ -732,7 +731,7 @@ function generateSitemapXML()
                     AND tnews.dGueltigVon <= NOW()
                     AND (tnews.cKundengruppe LIKE '%;-1;%'
                     OR FIND_IN_SET('" . Frontend::getCustomerGroup()->getID() .
-                        "', REPLACE(tnews.cKundengruppe, ';',',')) > 0) 
+            "', REPLACE(tnews.cKundengruppe, ';',',')) > 0) 
                     ORDER BY tnews.dErstellt",
             ReturnType::QUERYSINGLE
         );
@@ -865,7 +864,7 @@ function holeGoogleImage($productData)
         && mb_strlen($product->FunktionsAttribute[ART_ATTRIBUT_BILDLINK]) > 0
     ) {
         $artNo = Text::filterXSS($product->FunktionsAttribute[ART_ATTRIBUT_BILDLINK]);
-        $image = Shop::Container()->getDB()->queryPrepared(
+        $image = Shop::Container()->getDB()->getSingleObject(
             'SELECT tartikelpict.cPfad
                 FROM tartikelpict
                 JOIN tartikel 
@@ -874,21 +873,19 @@ function holeGoogleImage($productData)
                 GROUP BY tartikelpict.cPfad
                 ORDER BY tartikelpict.nNr
                 LIMIT 1',
-            ['artNr' => $artNo],
-            ReturnType::SINGLE_OBJECT
+            ['artNr' => $artNo]
         );
     }
 
     if (empty($image->cPfad)) {
-        $image = Shop::Container()->getDB()->queryPrepared(
+        $image = Shop::Container()->getDB()->getSingleObject(
             'SELECT cPfad 
                 FROM tartikelpict 
                 WHERE kArtikel = :articleID 
                 GROUP BY cPfad 
                 ORDER BY nNr 
                 LIMIT 1',
-            ['articleID' => (int)$product->kArtikel],
-            ReturnType::SINGLE_OBJECT
+            ['articleID' => (int)$product->kArtikel]
         );
     }
 
@@ -997,16 +994,15 @@ function baueExportURL(int $keyID, $keyName, $lastUpdate, $languages, $langID, $
             $params['kSuchanfrage'] = $keyID;
             $naviFilter->initStates($params);
             if ($keyID > 0) {
-                $oSuchanfrage = Shop::Container()->getDB()->queryPrepared(
+                $searchQuery = Shop::Container()->getDB()->getSingleObject(
                     'SELECT cSuche
                         FROM tsuchanfrage
                         WHERE kSuchanfrage = :ks
                         ORDER BY kSuchanfrage',
-                    ['ks' => $keyID],
-                    ReturnType::SINGLE_OBJECT
+                    ['ks' => $keyID]
                 );
-                if (!empty($oSuchanfrage->cSuche)) {
-                    $naviFilter->getSearchQuery()->setID($keyID)->setName($oSuchanfrage->cSuche);
+                if ($searchQuery !== null && !empty($searchQuery->cSuche)) {
+                    $naviFilter->getSearchQuery()->setID($keyID)->setName($searchQuery->cSuche);
                 }
             }
             break;
@@ -1024,12 +1020,12 @@ function baueExportURL(int $keyID, $keyName, $lastUpdate, $languages, $langID, $
         default:
             return $urls;
     }
-    $oSuchergebnisse = $naviFilter->generateSearchResults(null, false, (int)$productsPerPage);
-    $shopURL         = Shop::getURL();
-    $shopURLSSL      = Shop::getURL(true);
-    $search          = [$shopURL . '/', $shopURLSSL . '/'];
-    $replace         = ['', ''];
-    if (($keyName === 'kKategorie' && $keyID > 0) || $oSuchergebnisse->getProductCount() > 0) {
+    $searchResults = $naviFilter->generateSearchResults(null, false, (int)$productsPerPage);
+    $shopURL       = Shop::getURL();
+    $shopURLSSL    = Shop::getURL(true);
+    $search        = [$shopURL . '/', $shopURLSSL . '/'];
+    $replace       = ['', ''];
+    if (($keyName === 'kKategorie' && $keyID > 0) || $searchResults->getProductCount() > 0) {
         $urls[] = makeURL(
             str_replace($search, $replace, $naviFilter->getFilterURL()->getURL()),
             $lastUpdate,

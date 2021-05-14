@@ -7,7 +7,6 @@ use InvalidArgumentException;
 use JTL\Alert\Alert;
 use JTL\Cron\LegacyCron;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Mail\Mail\Attachment;
@@ -201,18 +200,17 @@ class Statusmail
         $products       = [];
         $customerGroups = $this->db->getObjects('SELECT kKundengruppe, cName FROM tkundengruppe');
         foreach ($customerGroups as $customerGroup) {
-            $productData            = $this->db->queryPrepared(
+            $productCount           = (int)$this->db->getSingleObject(
                 'SELECT COUNT(*) AS cnt
                     FROM tartikel
                     LEFT JOIN tartikelsichtbarkeit
                         ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
                         AND tartikelsichtbarkeit.kKundengruppe = :cgid
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL',
-                ['cgid' => (int)$customerGroup->kKundengruppe],
-                ReturnType::SINGLE_OBJECT
-            );
+                ['cgid' => (int)$customerGroup->kKundengruppe]
+            )->cnt;
             $product                = new stdClass();
-            $product->nAnzahl       = (int)$productData->cnt;
+            $product->nAnzahl       = $productCount;
             $product->kKundengruppe = (int)$customerGroup->kKundengruppe;
             $product->cName         = $customerGroup->cName;
 
@@ -227,7 +225,7 @@ class Statusmail
      */
     private function getNewCustomersCount(): int
     {
-        return (int)$this->db->queryPrepared(
+        return (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt
                 FROM tkunde
                 WHERE dErstellt >= :from
@@ -236,8 +234,7 @@ class Statusmail
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         )->cnt;
     }
 
@@ -246,7 +243,7 @@ class Statusmail
      */
     private function getNewCustomerSalesCount(): int
     {
-        return (int)$this->db->queryPrepared(
+        return (int)$this->db->getSingleObject(
             'SELECT COUNT(DISTINCT(tkunde.kKunde)) AS cnt
                 FROM tkunde
                 JOIN tbestellung
@@ -259,8 +256,7 @@ class Statusmail
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         )->cnt;
     }
 
@@ -269,7 +265,7 @@ class Statusmail
      */
     private function getOrderCount(): int
     {
-        return (int)$this->db->queryPrepared(
+        return (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt
                 FROM tbestellung
                 WHERE dErstellt >= :from
@@ -277,8 +273,7 @@ class Statusmail
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         )->cnt;
     }
 
@@ -287,7 +282,7 @@ class Statusmail
      */
     private function getOrderCountForNewCustomers(): int
     {
-        return (int)$this->db->queryPrepared(
+        return (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt
                 FROM tbestellung
                 JOIN tkunde
@@ -298,8 +293,7 @@ class Statusmail
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         )->cnt;
     }
 
@@ -308,7 +302,7 @@ class Statusmail
      */
     private function getIncomingPaymentsCount(): int
     {
-        return (int)$this->db->queryPrepared(
+        return (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt
                 FROM tbestellung
                 WHERE tbestellung.dErstellt >= :from
@@ -317,8 +311,7 @@ class Statusmail
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         )->cnt;
     }
 
@@ -327,7 +320,7 @@ class Statusmail
      */
     private function getShippedOrdersCount(): int
     {
-        return (int)$this->db->queryPrepared(
+        return (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt
                 FROM tbestellung
                 WHERE tbestellung.dErstellt >= :from
@@ -336,8 +329,7 @@ class Statusmail
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         )->cnt;
     }
 
@@ -346,7 +338,7 @@ class Statusmail
      */
     private function getVisitorCount(): int
     {
-        return (int)$this->db->queryPrepared(
+        return (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt
                 FROM tbesucherarchiv
                 WHERE dZeit >= :from
@@ -355,8 +347,7 @@ class Statusmail
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         )->cnt;
     }
 
@@ -365,7 +356,7 @@ class Statusmail
      */
     private function getBotVisitCount(): int
     {
-        return (int)$this->db->queryPrepared(
+        return (int)$this->db->getSingleObject(
             "SELECT COUNT(*) AS cnt
                 FROM tbesucherarchiv
                 WHERE dZeit >= :from
@@ -374,8 +365,7 @@ class Statusmail
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         )->cnt;
     }
 
@@ -384,7 +374,7 @@ class Statusmail
      */
     private function getRatingsCount(): int
     {
-        return (int)$this->db->queryPrepared(
+        return (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt
                 FROM tbewertung
                 WHERE dDatum >= :from
@@ -393,8 +383,7 @@ class Statusmail
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         )->cnt;
     }
 
@@ -403,7 +392,7 @@ class Statusmail
      */
     private function getNonApprovedRatingsCount(): int
     {
-        return (int)$this->db->queryPrepared(
+        return (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt
                 FROM tbewertung
                 WHERE dDatum >= :from
@@ -412,8 +401,7 @@ class Statusmail
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         )->cnt;
     }
 
@@ -422,7 +410,7 @@ class Statusmail
      */
     private function getRatingCreditsCount(): stdClass
     {
-        $rating = $this->db->queryPrepared(
+        $rating = $this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt, SUM(fGuthabenBonus) AS fSummeGuthaben
                 FROM tbewertungguthabenbonus
                 WHERE dDatum >= :from
@@ -430,13 +418,12 @@ class Statusmail
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
 
         $res                 = new stdClass();
-        $res->nAnzahl        = (int)$rating->cnt;
-        $res->fSummeGuthaben = $rating->fSummeGuthaben;
+        $res->nAnzahl        = (int)($rating->cnt ?? 0);
+        $res->fSummeGuthaben = $rating->fSummeGuthaben ?? 0;
 
         return $res;
     }
@@ -446,7 +433,7 @@ class Statusmail
      */
     private function getNewsletterOptOutCount():int
     {
-        $res = $this->db->queryPrepared(
+        $res = $this->db->getSingleObject(
             'SELECT COUNT(*) AS total
                 FROM toptinhistory
                 WHERE dDeActivated >= :from
@@ -457,11 +444,10 @@ class Statusmail
                 'class' => 'JTL\\Optin\\OptinNewsletter',
                 'from'  => $this->dateStart,
                 'to'    => $this->dateEnd
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
 
-        return \is_object($res) ? $res->total : 0;
+        return (int)($res->total ?? 0);
     }
 
     /**
@@ -469,7 +455,7 @@ class Statusmail
      */
     private function getNewsletterOptInCount():int
     {
-        $res = $this->db->queryPrepared(
+        $res = $this->db->getSingleObject(
             'SELECT COUNT(*) AS total
                 FROM toptin
                 WHERE dActivated >= :from
@@ -480,11 +466,10 @@ class Statusmail
                 'class' => 'JTL\\Optin\\OptinNewsletter',
                 'from'  => $this->dateStart,
                 'to'    => $this->dateEnd
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
 
-        return \is_object($res) ? $res->total : 0;
+        return (int)($res->total ?? 0);
     }
 
     /**
@@ -492,7 +477,7 @@ class Statusmail
      */
     private function getSentWishlistCount(): int
     {
-        return (int)$this->db->queryPrepared(
+        return (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt
                     FROM twunschlisteversand
                     WHERE dZeit >= :from
@@ -500,8 +485,7 @@ class Statusmail
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         )->cnt;
     }
 
@@ -510,7 +494,7 @@ class Statusmail
      */
     private function getNewsCommentsCount(): int
     {
-        return (int)$this->db->queryPrepared(
+        return (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt
                 FROM tnewskommentar
                 WHERE dErstellt >= :from
@@ -519,8 +503,7 @@ class Statusmail
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         )->cnt;
     }
 
@@ -529,7 +512,7 @@ class Statusmail
      */
     private function getNonApprovedCommentsCount(): int
     {
-        return (int)$this->db->queryPrepared(
+        return (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt
                 FROM tnewskommentar
                 WHERE dErstellt >= :from
@@ -538,8 +521,7 @@ class Statusmail
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         )->cnt;
     }
 
@@ -548,7 +530,7 @@ class Statusmail
      */
     private function getAvailabilityNotificationsCount(): int
     {
-        return (int)$this->db->queryPrepared(
+        return (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt
                 FROM tverfuegbarkeitsbenachrichtigung
                 WHERE dErstellt >= :from
@@ -556,8 +538,7 @@ class Statusmail
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         )->cnt;
     }
 
@@ -566,7 +547,7 @@ class Statusmail
      */
     private function getProductInquriesCount(): int
     {
-        return (int)$this->db->queryPrepared(
+        return (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt
                 FROM tproduktanfragehistory
                 WHERE dErstellt >= :from
@@ -574,8 +555,7 @@ class Statusmail
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         )->cnt;
     }
 
@@ -584,7 +564,7 @@ class Statusmail
      */
     private function getComparisonsCount(): int
     {
-        return (int)$this->db->queryPrepared(
+        return (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt
                 FROM tvergleichsliste
                 WHERE dDate >= :from
@@ -592,8 +572,7 @@ class Statusmail
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         )->cnt;
     }
 
@@ -602,7 +581,7 @@ class Statusmail
      */
     private function getCouponUsageCount(): int
     {
-        return (int)$this->db->queryPrepared(
+        return (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt
                 FROM tkuponkunde
                 WHERE dErstellt >= :from
@@ -610,8 +589,7 @@ class Statusmail
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         )->cnt;
     }
 

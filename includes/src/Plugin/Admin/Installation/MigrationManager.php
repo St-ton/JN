@@ -7,7 +7,6 @@ use DirectoryIterator;
 use Exception;
 use InvalidArgumentException;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Plugin\MigrationHelper;
 use JTL\Update\IMigration;
 use JTLShop\SemVer\Version;
@@ -315,13 +314,12 @@ final class MigrationManager
      */
     public function getCurrentId(): int
     {
-        $version = $this->db->queryPrepared(
+        $version = $this->db->getSingleObject(
             'SELECT kMigration 
                 FROM tpluginmigration 
                 WHERE pluginID = :pid
                 ORDER BY kMigration DESC',
-            ['pid' => $this->pluginID],
-            ReturnType::SINGLE_OBJECT
+            ['pid' => $this->pluginID]
         );
 
         return (int)($version->kMigration ?? 0);
@@ -334,13 +332,12 @@ final class MigrationManager
     {
         if ($this->executedMigrations === null) {
             $this->executedMigrations = [];
-            $migrations               = $this->db->queryPrepared(
+            $migrations               = $this->db->getObjects(
                 'SELECT * 
                     FROM tpluginmigration 
                     WHERE pluginID = :pid
                     ORDER BY kMigration ASC',
-                ['pid' => $this->pluginID],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['pid' => $this->pluginID]
             );
             foreach ($migrations as $m) {
                 $this->executedMigrations[$m->kMigration] = new DateTime($m->dExecuted);

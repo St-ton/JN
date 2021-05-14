@@ -93,12 +93,11 @@ class ConfigGroup extends AbstractImage
      */
     public function getPathByID($id, int $number = null): ?string
     {
-        return $this->db->queryPrepared(
+        return $this->db->getSingleObject(
             'SELECT cBildpfad AS path 
                 FROM tkonfiggruppe 
                 WHERE kKonfiggruppe = :cid LIMIT 1',
-            ['cid' => $id],
-            ReturnType::SINGLE_OBJECT
+            ['cid' => $id]
         )->path ?? null;
     }
 

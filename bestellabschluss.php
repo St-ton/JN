@@ -3,12 +3,13 @@
 use JTL\Cart\Cart;
 use JTL\Cart\CartHelper;
 use JTL\Checkout\Bestellung;
-use JTL\DB\ReturnType;
 use JTL\Plugin\Helper;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\SimpleMail;
+
+/** @global Frontend $session */
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellabschluss_inc.php';

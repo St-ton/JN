@@ -21,10 +21,7 @@ $kSektion         = CONF_ARTIKELUEBERSICHT;
 $conf             = Shop::getSettings([$kSektion]);
 $db               = Shop::Container()->getDB();
 $standardwaehrung = $db->select('twaehrung', 'cStandard', 'Y');
-$mysqlVersion     = $db->query(
-    "SHOW VARIABLES LIKE 'innodb_version'",
-    ReturnType::SINGLE_OBJECT
-)->Value;
+$mysqlVersion     = $db->getSingleObject("SHOW VARIABLES LIKE 'innodb_version'")->Value;
 $step             = 'einstellungen bearbeiten';
 $Conf             = [];
 $createIndex      = false;
@@ -48,14 +45,8 @@ if (Request::getVar('action') === 'createIndex') {
     }
 
     try {
-        if ($db->query(
-            "SHOW INDEX FROM $index WHERE KEY_NAME = 'idx_{$index}_fulltext'",
-            ReturnType::SINGLE_OBJECT
-        )) {
-            $db->executeQuery(
-                "ALTER TABLE $index DROP KEY idx_{$index}_fulltext",
-                ReturnType::QUERYSINGLE
-            );
+        if ($db->getSingleObject("SHOW INDEX FROM $index WHERE KEY_NAME = 'idx_{$index}_fulltext'")) {
+            $db->query("ALTER TABLE $index DROP KEY idx_{$index}_fulltext");
         }
     } catch (Exception $e) {
         // Fehler beim Index löschen ignorieren
@@ -91,8 +82,7 @@ if (Request::getVar('action') === 'createIndex') {
 
         try {
             $db->executeQuery(
-                'UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)',
-                ReturnType::QUERYSINGLE
+                'UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)'
             );
             $res = $db->executeQuery(
                 "ALTER TABLE $index
@@ -150,11 +140,8 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && $kSektion > 0 && Form:
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFulltextSearchMYSQL'), 'errorFulltextSearchMYSQL');
         } else {
             // Bei Volltextsuche die Mindeswortlänge an den DB-Parameter anpassen
-            $oValue                     = $db->query(
-                'SELECT @@ft_min_word_len AS ft_min_word_len',
-                ReturnType::SINGLE_OBJECT
-            );
-            $_POST['suche_min_zeichen'] = $oValue->ft_min_word_len ?? $_POST['suche_min_zeichen'];
+            $currentVal                 = $db->getSingleObject('SELECT @@ft_min_word_len AS ft_min_word_len');
+            $_POST['suche_min_zeichen'] = $currentVal->ft_min_word_len ?? $_POST['suche_min_zeichen'];
         }
     }
 
@@ -203,14 +190,8 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && $kSektion > 0 && Form:
 
 $section = $db->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
 if ($conf['artikeluebersicht']['suche_fulltext'] !== 'N'
-    && (!$db->query(
-        "SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'",
-        ReturnType::SINGLE_OBJECT
-    )
-    || !$db->query(
-        "SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'",
-        ReturnType::SINGLE_OBJECT
-    ))) {
+    && (!$db->getSingleObject("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'")
+    || !$db->getSingleObject("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'"))) {
     $alertHelper->addAlert(
         Alert::TYPE_ERROR,
         __('errorCreateTime') .

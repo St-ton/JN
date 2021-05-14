@@ -4,7 +4,6 @@ namespace JTL\Update;
 
 use DateTime;
 use Exception;
-use JTL\DB\ReturnType;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
@@ -140,15 +139,14 @@ class MigrationHelper
      */
     public static function verifyIntegrity(): void
     {
-        if (Shop::Container()->getDB()->queryPrepared(
+        if (Shop::Container()->getDB()->getSingleObject(
                 "SELECT `table_name` 
                     FROM information_schema.tables 
                     WHERE `table_type` = 'base table'
                         AND `table_schema` = :sma
                         AND `table_name` = :tn",
-                ['sma' => DB_NAME, 'tn' => 'tmigration'],
-                ReturnType::SINGLE_OBJECT
-            ) === false
+                ['sma' => DB_NAME, 'tn' => 'tmigration']
+            ) === null
         ) {
             Shop::Container()->getDB()->query(
                 "CREATE TABLE IF NOT EXISTS tmigration 
@@ -181,10 +179,9 @@ class MigrationHelper
      */
     public static function indexColumns(string $idxTable, string $idxName): array
     {
-        return Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getObjects(
             "SHOW INDEXES FROM `$idxTable` WHERE Key_name = :idxName",
-            ['idxName' => $idxName],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['idxName' => $idxName]
         );
     }
 

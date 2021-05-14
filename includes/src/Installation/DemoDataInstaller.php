@@ -6,7 +6,6 @@ use Cocur\Slugify\Slugify;
 use Faker\Factory as Fake;
 use Faker\Generator;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Installation\Faker\de_DE\Commerce;
 use JTL\Installation\Faker\ImageProvider;
 use stdClass;
@@ -398,20 +397,14 @@ class DemoDataInstaller
      */
     public function createManufacturers($callback = null): self
     {
-        $maxPk      = (int)$this->pdo->query(
-            'SELECT max(kHersteller) AS maxPk FROM thersteller',
-            ReturnType::SINGLE_OBJECT
-        )->maxPk;
+        $maxPk      = (int)$this->pdo->getSingleObject('SELECT max(kHersteller) AS maxPk FROM thersteller')->maxPk;
         $limit      = $this->config['manufacturers'];
         $name_index = 0;
 
         for ($i = 1; $i <= $limit; ++$i) {
             try {
                 $_name = $this->faker->unique()->company;
-                $res   = $this->pdo->query(
-                    'SELECT kHersteller FROM thersteller WHERE cName = "' . $_name . '"',
-                    ReturnType::ARRAY_OF_OBJECTS
-                );
+                $res   = $this->pdo->getObjects('SELECT kHersteller FROM thersteller WHERE cName = "' . $_name . '"');
                 if (\is_array($res) && count($res) > 0) {
                     throw new \OverflowException();
                 }
@@ -461,19 +454,13 @@ class DemoDataInstaller
      */
     public function createCategories($callback = null): self
     {
-        $maxPk      = (int)$this->pdo->query(
-            'SELECT max(kKategorie) AS maxPk FROM tkategorie',
-            ReturnType::SINGLE_OBJECT
-        )->maxPk;
+        $maxPk      = (int)$this->pdo->getSingleObject('SELECT max(kKategorie) AS maxPk FROM tkategorie')->maxPk;
         $limit      = $this->config['categories'];
         $name_index = 0;
         for ($i = 1; $i <= $limit; ++$i) {
             try {
                 $_name = $this->faker->unique()->department;
-                $res   = $this->pdo->query(
-                    'SELECT kKategorie FROM tkategorie WHERE cName = "' . $_name . '"',
-                    ReturnType::ARRAY_OF_OBJECTS
-                );
+                $res   = $this->pdo->getObjects('SELECT kKategorie FROM tkategorie WHERE cName = "' . $_name . '"');
                 if (\is_array($res) && count($res) > 0) {
                     throw new \OverflowException();
                 }
@@ -528,31 +515,20 @@ class DemoDataInstaller
      */
     public function createProducts($callback = null): self
     {
-        $maxPk             = (int)$this->pdo->query(
-            'SELECT max(kArtikel) AS maxPk FROM tartikel',
-            ReturnType::SINGLE_OBJECT
-        )->maxPk;
-        $manufacturesCount = (int)$this->pdo->query(
-            'SELECT count(kHersteller) AS mCount FROM thersteller',
-            ReturnType::SINGLE_OBJECT
-        )->mCount;
-        $categoryCount     = (int)$this->pdo->query(
-            'SELECT count(kKategorie) AS mCount FROM tkategorie',
-            ReturnType::SINGLE_OBJECT
-        )->mCount;
-
-        if ($categoryCount === 0) {
+        $maxPk         = (int)$this->pdo->getSingleObject('SELECT max(kArtikel) AS cnt FROM tartikel')->cnt;
+        $manufacturers = (int)$this->pdo->getSingleObject('SELECT count(kHersteller) AS cnt FROM thersteller')->cnt;
+        $categories    = (int)$this->pdo->getSingleObject('SELECT count(kKategorie) AS cnt FROM tkategorie')->cnt;
+        if ($categories === 0) {
             return $this;
         }
 
-        $unitCount = (int)$this->pdo->query(
+        $unitCount = (int)$this->pdo->getSingleObject(
             'SELECT max(groupCount) AS unitCount
                 FROM (
                     SELECT count(*) AS groupCount
                     FROM teinheit
                     GROUP BY kSprache
-                ) x',
-            ReturnType::SINGLE_OBJECT
+                ) x'
         )->unitCount;
 
         $limit      = $this->config['articles'];
@@ -562,10 +538,7 @@ class DemoDataInstaller
         for ($i = 1; $i <= $limit; ++$i) {
             try {
                 $_name = $this->faker->unique()->productName;
-                $res   = $this->pdo->query(
-                    'SELECT kArtikel FROM tartikel WHERE cName = "' . $_name . '"',
-                    ReturnType::ARRAY_OF_OBJECTS
-                );
+                $res   = $this->pdo->getObjects('SELECT kArtikel FROM tartikel WHERE cName = "' . $_name . '"');
                 if (\is_array($res) && count($res) > 0) {
                     throw new \OverflowException();
                 }
@@ -576,7 +549,7 @@ class DemoDataInstaller
             $price                             = \rand(1, 2999);
             $product                           = new stdClass();
             $product->kArtikel                 = $maxPk + $i;
-            $product->kHersteller              = \rand(0, $manufacturesCount);
+            $product->kHersteller              = \rand(0, $manufacturers);
             $product->kLieferstatus            = 0;
             $product->kSteuerklasse            = 1;
             $product->kEinheit                 = (\rand(0, 10) === 10) && $unitCount > 0 ? \rand(1, $unitCount) : 0;
@@ -638,7 +611,7 @@ class DemoDataInstaller
                 $productCategory                    = new stdClass();
                 $productCategory->kKategorieArtikel = $product->kArtikel;
                 $productCategory->kArtikel          = $product->kArtikel;
-                $productCategory->kKategorie        = \rand(1, $categoryCount);
+                $productCategory->kKategorie        = \rand(1, $categories);
                 $this->pdo->insert('tkategorieartikel', $productCategory);
 
                 $seoItem       = new stdClass();
@@ -818,11 +791,7 @@ class DemoDataInstaller
      */
     private function createProductImage(int $productID, string $text, int $imageNumber): void
     {
-        $maxPk = (int)$this->pdo->query(
-            'SELECT max(kArtikelPict) AS maxPk FROM tartikelpict',
-            ReturnType::SINGLE_OBJECT
-        )->maxPk;
-
+        $maxPk = (int)$this->pdo->getSingleObject('SELECT max(kArtikelPict) AS maxPk FROM tartikelpict')->maxPk;
         if ($productID > 0) {
             $file = '1024_1024_' . \md5($text . $productID . $imageNumber) . '.jpg';
             $path = \PFAD_ROOT . 'media/image/storage/' . $file;
@@ -899,9 +868,8 @@ class DemoDataInstaller
         // the right value of this node is the left value + 1
         $right = $left + 1;
         // get all children of this node
-        $result = $this->pdo->query(
-            'SELECT kKategorie FROM tkategorie WHERE kOberKategorie = ' . $parentId . ' ORDER BY nSort, cName',
-            ReturnType::ARRAY_OF_OBJECTS
+        $result = $this->pdo->getObjects(
+            'SELECT kKategorie FROM tkategorie WHERE kOberKategorie = ' . $parentId . ' ORDER BY nSort, cName'
         );
         foreach ($result as $_res) {
             $right = $this->rebuildCategoryTree((int)$_res->kKategorie, $right, $level + 1);

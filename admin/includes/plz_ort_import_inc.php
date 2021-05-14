@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Alert\Alert;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Shop;
@@ -21,7 +20,7 @@ defined('PLZIMPORT_REGEX') || define(
  */
 function plzimportGetPLZOrt(): array
 {
-    $items = Shop::Container()->getDB()->query(
+    $items = Shop::Container()->getDB()->getObjects(
         'SELECT tplz.cLandISO, tland.cDeutsch, tland.cKontinent, COUNT(tplz.kPLZ) AS nPLZOrte, backup.nBackup
             FROM tplz
             INNER JOIN tland ON tland.cISO = tplz.cLandISO
@@ -31,8 +30,7 @@ function plzimportGetPLZOrt(): array
                 GROUP BY tplz_backup.cLandISO
             ) AS backup ON backup.cLandISO = tplz.cLandISO
             GROUP BY tplz.cLandISO, tland.cDeutsch, tland.cKontinent
-            ORDER BY tplz.cLandISO',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY tplz.cLandISO'
     );
     foreach ($items as $key => $item) {
         $fName = PFAD_UPLOADS . $item->cLandISO . '.tab';
@@ -412,17 +410,16 @@ function plzimportActionCheckStatus(): stdClass
     if (plzimportOpenSession('Import')) {
         plzimportCloseSession('Import');
 
-        $impData = Shop::Container()->getDB()->query(
+        $impData = Shop::Container()->getDB()->getSingleObject(
             "SELECT COUNT(*) AS nAnzahl
                 FROM tplz
-                WHERE cLandISO = 'IMP'",
-            ReturnType::SINGLE_OBJECT
+                WHERE cLandISO = 'IMP'"
         );
 
         $result = (object)[
             'running' => false,
             'start'   => time(),
-            'tmp'     => $impData->nAnzahl,
+            'tmp'     => $impData->nAnzahl ?? 0,
         ];
     } else {
         $sessData = plzimportReadSession('Import');

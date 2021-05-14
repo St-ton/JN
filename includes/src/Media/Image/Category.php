@@ -102,12 +102,11 @@ class Category extends AbstractImage
      */
     public function getPathByID($id, int $number = null): ?string
     {
-        return $this->db->queryPrepared(
+        return $this->db->getSingleObject(
             'SELECT cPfad AS path
                 FROM tkategoriepict
                 WHERE kKategorie = :cid LIMIT 1',
-            ['cid' => $id],
-            ReturnType::SINGLE_OBJECT
+            ['cid' => $id]
         )->path ?? null;
     }
 
@@ -155,12 +154,11 @@ class Category extends AbstractImage
      */
     public function getTotalImageCount(): int
     {
-        return (int)$this->db->query(
+        return (int)$this->db->getSingleObject(
             'SELECT COUNT(tkategoriepict.kKategorie) AS cnt
                 FROM tkategoriepict
                 INNER JOIN tkategorie
-                    ON tkategorie.kKategorie = tkategoriepict.kKategorie',
-            ReturnType::SINGLE_OBJECT
+                    ON tkategorie.kKategorie = tkategoriepict.kKategorie'
         )->cnt;
     }
 

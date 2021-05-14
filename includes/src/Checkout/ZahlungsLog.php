@@ -2,7 +2,6 @@
 
 namespace JTL\Checkout;
 
-use JTL\DB\ReturnType;
 use JTL\Shop;
 use stdClass;
 
@@ -50,13 +49,12 @@ class ZahlungsLog
     {
         $condition = $level >= 0 ? ('AND nLevel = ' . $level) : '';
 
-        return Shop::Container()->getDB()->query(
+        return Shop::Container()->getDB()->getObjects(
             "SELECT * FROM tzahlungslog
                 WHERE cModulId = '" . $this->cModulId . "' " .
             $condition . ($whereSQL !== '' ? ' AND ' . $whereSQL : '') . '
                 ORDER BY dDatum DESC, kZahlunglog DESC 
-                LIMIT ' . $limit,
-            ReturnType::ARRAY_OF_OBJECTS
+                LIMIT ' . $limit
         );
     }
 
@@ -65,15 +63,12 @@ class ZahlungsLog
      */
     public function logCount(): int
     {
-        $oCount = Shop::Container()->getDB()->queryPrepared(
-            'SELECT COUNT(*) AS nCount 
+        return (int)Shop::Container()->getDB()->getSingleObject(
+            'SELECT COUNT(*) AS cnt 
                 FROM tzahlungslog 
                 WHERE cModulId = :module',
-            ['module' => $this->cModulId],
-            ReturnType::SINGLE_OBJECT
-        );
-
-        return (int)$oCount->nCount;
+            ['module' => $this->cModulId]
+        )->cnt;
     }
 
     /**
@@ -121,7 +116,7 @@ class ZahlungsLog
      * @param int   $offset
      * @param int   $limit
      * @param int   $level
-     * @return array
+     * @return stdClass[]
      */
     public static function getLog($moduleIDs, int $offset = 0, int $limit = 100, int $level = -1): array
     {
@@ -134,12 +129,11 @@ class ZahlungsLog
         $moduleIDlist = \implode(',', $moduleIDs);
         $where        = ($level >= 0) ? ('AND nLevel = ' . $level) : '';
 
-        return Shop::Container()->getDB()->query(
+        return Shop::Container()->getDB()->getObjects(
             'SELECT * FROM tzahlungslog
                 WHERE cModulId IN(' . $moduleIDlist . ') ' . $where . '
                 ORDER BY dDatum DESC, kZahlunglog DESC 
-                LIMIT ' . $offset . ', ' . $limit,
-            ReturnType::ARRAY_OF_OBJECTS
+                LIMIT ' . $offset . ', ' . $limit
         );
     }
 
@@ -152,24 +146,20 @@ class ZahlungsLog
     public static function count(string $moduleID, int $level = -1, string $whereSQL = ''): int
     {
         if ($level === -1) {
-            $count = Shop::Container()->getDB()->queryPrepared(
+            return (int)Shop::Container()->getDB()->getSingleObject(
                 'SELECT COUNT(*) AS count 
                     FROM tzahlungslog 
                     WHERE cModulId = :cModulId ' . ($whereSQL !== '' ? ' AND ' . $whereSQL : ''),
-                ['cModulId' => $moduleID],
-                ReturnType::SINGLE_OBJECT
-            )->count;
-        } else {
-            $count = Shop::Container()->getDB()->queryPrepared(
-                'SELECT COUNT(*) AS count 
-                    FROM tzahlungslog 
-                    WHERE cModulId = :cModulId 
-                        AND nLevel = :nLevel ' . ($whereSQL !== '' ? ' AND ' . $whereSQL : ''),
-                ['nLevel' => $level, 'cModulId' => $moduleID],
-                ReturnType::SINGLE_OBJECT
+                ['cModulId' => $moduleID]
             )->count;
         }
 
-        return (int)$count;
+        return (int)Shop::Container()->getDB()->getSingleObject(
+            'SELECT COUNT(*) AS count 
+                FROM tzahlungslog 
+                WHERE cModulId = :cModulId 
+                    AND nLevel = :nLevel ' . ($whereSQL !== '' ? ' AND ' . $whereSQL : ''),
+            ['nLevel' => $level, 'cModulId' => $moduleID]
+        )->count;
     }
 }

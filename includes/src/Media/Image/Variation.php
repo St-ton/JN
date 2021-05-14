@@ -81,13 +81,12 @@ class Variation extends AbstractImage
      */
     public function getPathByID($id, int $number = null): ?string
     {
-        return $this->db->queryPrepared(
+        return $this->db->getSingleObject(
             'SELECT cPfad AS path
                 FROM teigenschaftwertpict
                 WHERE kEigenschaftWert = :vid
                 LIMIT 1',
-            ['vid' => $id],
-            ReturnType::SINGLE_OBJECT
+            ['vid' => $id]
         )->path ?? null;
     }
 
@@ -129,12 +128,11 @@ class Variation extends AbstractImage
      */
     public function getTotalImageCount(): int
     {
-        return (int)$this->db->query(
+        return (int)$this->db->getSingleObject(
             'SELECT COUNT(kEigenschaftWertPict) AS cnt
                 FROM teigenschaftwertpict
                 WHERE cPfad IS NOT NULL
-                    AND cPfad != \'\'',
-            ReturnType::SINGLE_OBJECT
+                    AND cPfad != \'\''
         )->cnt;
     }
 }

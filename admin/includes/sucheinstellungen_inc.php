@@ -25,13 +25,11 @@ function createSearchIndex($index, $create)
     }
 
     try {
-        if (Shop::Container()->getDB()->query(
-            "SHOW INDEX FROM $index WHERE KEY_NAME = 'idx_{$index}_fulltext'",
-            ReturnType::SINGLE_OBJECT
+        if (Shop::Container()->getDB()->getSingleObject(
+            "SHOW INDEX FROM $index WHERE KEY_NAME = 'idx_{$index}_fulltext'"
         )) {
             Shop::Container()->getDB()->executeQuery(
-                "ALTER TABLE $index DROP KEY idx_{$index}_fulltext",
-                ReturnType::QUERYSINGLE
+                "ALTER TABLE $index DROP KEY idx_{$index}_fulltext"
             );
         }
     } catch (Exception $e) {
@@ -72,8 +70,7 @@ function createSearchIndex($index, $create)
 
         try {
             Shop::Container()->getDB()->executeQuery(
-                'UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)',
-                ReturnType::QUERYSINGLE
+                'UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)'
             );
             $res = Shop::Container()->getDB()->executeQuery(
                 "ALTER TABLE $index

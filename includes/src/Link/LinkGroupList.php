@@ -5,7 +5,6 @@ namespace JTL\Link;
 use Illuminate\Support\Collection;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Session\Frontend;
 use function Functional\group;
 

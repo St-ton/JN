@@ -29,7 +29,7 @@ class IOResponse implements JsonSerializable
     private $scripts = [];
 
     /**
-     * @var string[]
+     * @var array[]
      */
     private $debugLogLines = [];
 

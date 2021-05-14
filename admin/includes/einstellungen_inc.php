@@ -335,11 +335,9 @@ function sortiereEinstellungen($config)
         foreach ($config as $i => $conf) {
             if (isset($conf->kEinstellungenSektion) && $conf->cConf !== 'N') {
                 $headline = holeEinstellungHeadline($conf->nSort, $conf->kEinstellungenSektion);
-                if (!isset($sections[$headline->cWertName])) {
-                    if (isset($headline->kEinstellungenSektion)) {
-                        $sections[$headline->cWertName] = true;
-                        $tmpConf[]                      = $headline;
-                    }
+                if (!isset($sections[$headline->cWertName]) && isset($headline->kEinstellungenSektion)) {
+                    $sections[$headline->cWertName] = true;
+                    $tmpConf[]                      = $headline;
                 }
                 $tmpConf[] = $conf;
             }

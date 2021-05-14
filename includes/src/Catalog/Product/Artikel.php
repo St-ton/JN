@@ -3156,7 +3156,7 @@ class Artikel
         $db         = Shop::Container()->getDB();
         $productSQL = $this->getProductSQL($productID, $customerGroupID, $db);
         $tmpProduct = $db->getSingleObject($productSQL);
-        $test       = $test = $this->retryWithoutStockFilter($tmpProduct, $productID, $customerGroupID, $noCache);
+        $test       = $this->retryWithoutStockFilter($tmpProduct, $productID, $customerGroupID, $noCache);
         if ($test !== false) {
             return $test;
         }
@@ -5971,9 +5971,8 @@ class Artikel
         $optStr = \trim($optStr, '-');
         $optStr = \transliterator_transliterate('Latin-ASCII;', $optStr);
         $optStr = \mb_convert_case($optStr, \MB_CASE_LOWER);
-        $optStr = \preg_replace('/[^-a-z0-9_]+/', '', $optStr);
 
-        return $optStr;
+        return \preg_replace('/[^-a-z0-9_]+/', '', $optStr);
     }
 
     /**

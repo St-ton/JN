@@ -427,11 +427,11 @@ class CartHelper
         }
         $isConfigProduct = false;
         if (Configurator::checkLicense()) {
-            if (!Configurator::validateKonfig($productID)) {
-                $isConfigProduct = false;
-            } else {
+            if (Configurator::validateKonfig($productID)) {
                 $groups          = Configurator::getKonfig($productID);
                 $isConfigProduct = GeneralObject::hasCount($groups);
+            } else {
+                $isConfigProduct = false;
             }
         }
 
@@ -1757,7 +1757,6 @@ class CartHelper
                 $tmpCoupon = $_SESSION['Kupon'];
             }
             self::deleteAllSpecialItems();
-            /** @noinspection MissingIssetImplementationInspection */
             if (isset($tmpCoupon->kKupon) && $tmpCoupon->kKupon > 0) {
                 $_SESSION['Kupon'] = $tmpCoupon;
                 foreach ($cart->PositionenArr as $i => $oWKPosition) {

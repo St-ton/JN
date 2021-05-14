@@ -394,7 +394,6 @@ final class LinkService implements LinkServiceInterface
      */
     public function buildSpecialPageMeta(int $type): stdClass
     {
-        $first           = null;
         $meta            = new stdClass();
         $meta->cTitle    = '';
         $meta->cDesc     = '';

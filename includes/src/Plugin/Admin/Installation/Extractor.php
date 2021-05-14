@@ -146,13 +146,11 @@ class Extractor
                     $this->manager->createDirectory('plgn://' . $target);
                 } catch (Throwable $e) {
                     $ok = false;
-                    \error_log('e@moveToCreatedir: ' . $e->getMessage());
                 }
             } else {
                 try {
                     $this->manager->move('root://' . $source, 'plgn://' . $target);
                 } catch (Throwable $e) {
-                    \error_log('e@moveToMOVE: ' . $e->getMessage());
                     $this->manager->delete('plgn://' . $target);
                     $this->manager->move('root://' . $source, 'plgn://' . $target);
                 }

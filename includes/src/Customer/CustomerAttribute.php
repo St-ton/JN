@@ -241,7 +241,7 @@ class CustomerAttribute
      */
     public function setEditable($editable): void
     {
-        $this->editable = $editable ? true : false;
+        $this->editable = (bool)$editable;
     }
 
     /**

@@ -257,7 +257,7 @@ class CustomerField
      */
     public function setRequired(int $required): void
     {
-        $this->required = $required ? true : false;
+        $this->required = (bool)$required;
     }
 
     /**
@@ -281,7 +281,7 @@ class CustomerField
      */
     public function setEditable(int $editable): void
     {
-        $this->editable = $editable ? true : false;
+        $this->editable = (bool)$editable;
     }
 
     /**

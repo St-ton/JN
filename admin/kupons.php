@@ -50,9 +50,14 @@ $res         = handleCsvImportAction('kupon', static function ($obj, &$importDel
             unset($obj->$key);
         }
     }
-    if (!isset($obj->cCode) || !isset($obj->nGanzenWKRabattieren) || !isset($obj->cKunden) || !isset($obj->cKategorien)
-        || !isset($obj->cHersteller) || !isset($obj->cArtikel)
-    ) {
+    if (!isset(
+        $obj->cCode,
+        $obj->nGanzenWKRabattieren,
+        $obj->cKunden,
+        $obj->cKategorien,
+        $obj->cHersteller,
+        $obj->cArtikel
+    )) {
         return false;
     }
     if ($importType === 0 && $importDeleteDone === false) {

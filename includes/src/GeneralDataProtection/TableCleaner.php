@@ -62,7 +62,7 @@ class TableCleaner
             $this->logger = null;
         }
         $this->db  = Shop::Container()->getDB();
-        $this->now = new \DateTime();
+        $this->now = new DateTime();
     }
 
     /**

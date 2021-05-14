@@ -1091,7 +1091,8 @@ class Product
             $ret['captcha'] = 2;
         }
         $checkBox = new CheckBox();
-        $ret      = \array_merge(
+
+        return \array_merge(
             $ret,
             $checkBox->validateCheckBox(
                 \CHECKBOX_ORT_FRAGE_ZUM_PRODUKT,
@@ -1100,8 +1101,6 @@ class Product
                 true
             )
         );
-
-        return $ret;
     }
 
     /**
@@ -1311,12 +1310,11 @@ class Product
         // CheckBox Plausi
         $checkbox        = new CheckBox();
         $customerGroupID = Frontend::getCustomerGroup()->getID();
-        $ret             = \array_merge(
+
+        return \array_merge(
             $ret,
             $checkbox->validateCheckBox(\CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $customerGroupID, $_POST, true)
         );
-
-        return $ret;
     }
 
     /**

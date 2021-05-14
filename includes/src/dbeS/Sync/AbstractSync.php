@@ -199,7 +199,6 @@ abstract class AbstractSync
      * @param array  $conf
      * @throws CircularReferenceException
      * @throws ServiceNotFoundException
-     * @throws EmptyResultSetException
      */
     protected function sendAvailabilityMails($product, array $conf): void
     {

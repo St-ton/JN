@@ -87,11 +87,10 @@ function P($arr)
  */
 function bauePot($arr, $key)
 {
-    $cnt = count($arr);
-    for ($i = 0; $i < $cnt; ++$i) {
+    foreach ($arr as $val) {
         $obj                 = new stdClass();
-        $obj->kVersandklasse = $arr[$i]->kVersandklasse . '-' . $key->kVersandklasse;
-        $obj->cName          = $arr[$i]->cName . ', ' . $key->cName;
+        $obj->kVersandklasse = $val->kVersandklasse . '-' . $key->kVersandklasse;
+        $obj->cName          = $val->cName . ', ' . $key->cName;
         $arr[]               = $obj;
     }
     $arr[] = $key;

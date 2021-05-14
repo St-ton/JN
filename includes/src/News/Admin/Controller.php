@@ -814,10 +814,10 @@ final class Controller
             if ($imageName === 'preview') {
                 $upd                = new stdClass();
                 $upd->cPreviewImage = '';
-                if (\mb_strpos($uploadDir, \PFAD_NEWSKATEGORIEBILDER) === false) {
-                    $this->db->update('tnews', 'kNews', $id, $upd);
-                } else {
+                if (\mb_strpos($uploadDir, \PFAD_NEWSKATEGORIEBILDER) !== false) {
                     $this->db->update('tnewskategorie', 'kNewsKategorie', $id, $upd);
+                } else {
+                    $this->db->update('tnews', 'kNews', $id, $upd);
                 }
             }
 

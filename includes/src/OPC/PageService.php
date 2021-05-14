@@ -235,9 +235,8 @@ class PageService
         if (isset($baseURLdata['query'])) {
             $result .= '?' . $baseURLdata['query'];
         }
-        $result = '/' . \ltrim($result, '/');
 
-        return $result;
+        return '/' . \ltrim($result, '/');
     }
 
     /**

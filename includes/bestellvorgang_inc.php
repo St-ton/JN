@@ -229,9 +229,9 @@ function pruefeLieferdaten($post, &$missingData = null): void
         $delShip = mb_stripos($_SESSION['Versandart']->cLaender, $_SESSION['Lieferadresse']->cLand) === false;
         // ist die plz im zuschlagsbereich?
         if ((new Versandart((int)$_SESSION['Versandart']->kVersandart))->getShippingSurchargeForZip(
-                $_SESSION['Lieferadresse']->cPLZ,
-                $_SESSION['Lieferadresse']->cLand
-            ) !== null
+            $_SESSION['Lieferadresse']->cPLZ,
+            $_SESSION['Lieferadresse']->cLand
+        ) !== null
         ) {
             $delShip = true;
         }
@@ -2738,7 +2738,7 @@ function pruefeAjaxEinKlick(): int
             'SELECT kLieferadresse
                 FROM tlieferadresse
                 WHERE kKunde = :cid
-                    AND kLieferadresse = :daid' ,
+                    AND kLieferadresse = :daid',
             ['cid' => $customerID, 'daid' => (int)$lastOrder->kLieferadresse]
         );
         if ($addressData !== null && $addressData->kLieferadresse > 0) {

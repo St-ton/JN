@@ -241,7 +241,7 @@ function augmentCoupon($coupon)
             'SELECT cName 
                 FROM tkundengruppe 
                 WHERE kKundengruppe = :cgid',
-            ['cgid' =>  $coupon->kKundengruppe]
+            ['cgid' => $coupon->kKundengruppe]
         );
         $coupon->cKundengruppe = $customerGroup->cName ?? '';
     }

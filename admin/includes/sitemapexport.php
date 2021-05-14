@@ -62,7 +62,7 @@ function baueSitemapIndex($file, $useGZ)
     $shopURL = Shop::getURL();
     $conf    = Shop::getSettings([CONF_SITEMAP]);
     $xml     = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-    $xml     .= '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+    $xml    .= '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
     for ($i = 0; $i <= $file; ++$i) {
         if ($useGZ) {
             $xml .= '<sitemap><loc>' .
@@ -106,8 +106,7 @@ function makeURL(
     $strPriority = null,
     $googleImageURL = '',
     $ssl = false
-)
-{
+) {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $strRet = "  <url>\n" .
         '     <loc>' . Text::htmlentities(Shop::getURL($ssl)) . '/' .
@@ -270,7 +269,7 @@ function generateSitemapXML()
     $sitemapData   = '';
     $imageBaseURL  = Shop::getImageBaseURL();
     $db            = Shop::Container()->getDB();
-    $sitemapData   .= makeURL('', null, $addChangeFreq ? FREQ_ALWAYS : null, $addPriority ? PRIO_VERYHIGH : null);
+    $sitemapData  .= makeURL('', null, $addChangeFreq ? FREQ_ALWAYS : null, $addPriority ? PRIO_VERYHIGH : null);
     //Alte Sitemaps löschen
     loescheSitemaps();
     $andWhere = '';
@@ -812,13 +811,13 @@ function generateSitemapXML()
         if ($conf['sitemap']['sitemap_google_ping'] === 'Y') {
             $encodedSitemapIndexURL = urlencode(Shop::getURL() . '/sitemap_index.xml');
             if (($httpStatus = Request::http_get_status(
-                    'http://www.google.com/webmasters/tools/ping?sitemap=' . $encodedSitemapIndexURL
-                )) !== 200) {
+                'http://www.google.com/webmasters/tools/ping?sitemap=' . $encodedSitemapIndexURL
+            )) !== 200) {
                 Shop::Container()->getLogService()->notice('Sitemap ping to Google failed with status ' . $httpStatus);
             }
             if (($httpStatus = Request::http_get_status(
-                    'http://www.bing.com/ping?sitemap=' . $encodedSitemapIndexURL
-                )) !== 200) {
+                'http://www.bing.com/ping?sitemap=' . $encodedSitemapIndexURL
+            )) !== 200) {
                 Shop::Container()->getLogService()->notice('Sitemap ping to Bing failed with status ' . $httpStatus);
             }
         }

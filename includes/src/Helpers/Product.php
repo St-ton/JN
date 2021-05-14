@@ -11,7 +11,6 @@ use JTL\Catalog\Product\Preise;
 use JTL\Catalog\UnitsOfMeasure;
 use JTL\CheckBox;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
 use JTL\Extensions\Config\Configurator;
 use JTL\Extensions\Config\Group;
 use JTL\Extensions\Config\Item;
@@ -112,7 +111,7 @@ class Product
                     $attributes[]      = $i;
                     $attributeValues[] = (int)$kVariationKombi;
                 }
-                $product = Shop::Container()->getDB()->query(
+                $product = Shop::Container()->getDB()->getSingleObject(
                     'SELECT tartikel.kArtikel
                         FROM teigenschaftkombiwert
                         JOIN tartikel
@@ -125,10 +124,9 @@ class Product
                             AND tartikelsichtbarkeit.kArtikel IS NULL
                             AND tartikel.kVaterArtikel = ' . $productID . '
                         GROUP BY tartikel.kArtikel
-                        HAVING COUNT(*) = ' . \count($combinations),
-                    ReturnType::SINGLE_OBJECT
+                        HAVING COUNT(*) = ' . \count($combinations)
                 );
-                if (isset($product->kArtikel) && $product->kArtikel > 0) {
+                if ($product !== null && $product->kArtikel > 0) {
                     return (int)$product->kArtikel;
                 }
             }
@@ -243,9 +241,7 @@ class Product
         }
 
         foreach ($children as $child) {
-            if (!isset($result[$child->kEigenschaft])
-                || !\is_array($result[$child->kEigenschaft])
-            ) {
+            if (!isset($result[$child->kEigenschaft]) || !\is_array($result[$child->kEigenschaft])) {
                 $result[(int)$child->kEigenschaft] = (int)$child->kEigenschaftWert;
             }
         }
@@ -346,7 +342,7 @@ class Product
             if ($oEigenschaft->cTyp !== 'FREIFELD' && $oEigenschaft->cTyp !== 'PFLICHT-FREIFELD') {
                 // Ist kEigenschaft zu eigenschaftwert vorhanden
                 if (self::hasSelectedVariationValue($oEigenschaft->kEigenschaft)) {
-                    $oEigenschaftWertVorhanden = $db->query(
+                    $valueExists = $db->getSingleObject(
                         'SELECT teigenschaftwert.kEigenschaftWert
                             FROM teigenschaftwert
                             LEFT JOIN teigenschaftwertsichtbarkeit
@@ -354,11 +350,10 @@ class Product
                                 AND teigenschaftwertsichtbarkeit.kKundengruppe = ' . $customerGroup . '
                             WHERE teigenschaftwert.kEigenschaftWert = ' . $oEigenschaft->kEigenschaftWert . '
                                 AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
-                                AND teigenschaftwert.kEigenschaft = ' . $oEigenschaft->kEigenschaft,
-                        ReturnType::SINGLE_OBJECT
+                                AND teigenschaftwert.kEigenschaft = ' . $oEigenschaft->kEigenschaft
                     );
 
-                    if ($oEigenschaftWertVorhanden->kEigenschaftWert) {
+                    if ($valueExists !== null && $valueExists->kEigenschaftWert) {
                         unset($propValue);
                         $propValue                   = new stdClass();
                         $propValue->kEigenschaftWert = $oEigenschaft->kEigenschaftWert;
@@ -470,7 +465,7 @@ class Product
             $prop->kEigenschaft = (int)$prop->kEigenschaft;
             if ($prop->cTyp !== 'FREIFELD' && $prop->cTyp !== 'PFLICHT-FREIFELD') {
                 if (self::hasSelectedVariationValue($prop->kEigenschaft)) {
-                    $propExists = $db->queryPrepared(
+                    $propExists = $db->getSingleObject(
                         'SELECT teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName,
                             teigenschaftwertsichtbarkeit.kKundengruppe
                             FROM teigenschaftwert
@@ -484,11 +479,10 @@ class Product
                             'cgroupid'      => $customerGroupID,
                             'attribvalueid' => self::getSelectedVariationValue($prop->kEigenschaft),
                             'attribid'      => $prop->kEigenschaft
-                        ],
-                        ReturnType::SINGLE_OBJECT
+                        ]
                     );
 
-                    if (isset($propExists->kEigenschaftWert)) {
+                    if ($propExists !== null) {
                         $val                       = new stdClass();
                         $val->kEigenschaftWert     = (int)self::getSelectedVariationValue($prop->kEigenschaft);
                         $val->kEigenschaft         = $prop->kEigenschaft;
@@ -762,14 +756,13 @@ class Product
 
                 $having = ' HAVING COUNT(*) = 2';
             }
-            $product = Shop::Container()->getDB()->query(
+            $product = Shop::Container()->getDB()->getSingleObject(
                 'SELECT kArtikel
                     FROM tartikel' . $join . '
                     WHERE tartikel.kVaterArtikel = ' . $productID . '
-                    GROUP BY teigenschaftkombiwert.kEigenschaftKombi' . $having,
-                ReturnType::SINGLE_OBJECT
+                    GROUP BY teigenschaftkombiwert.kEigenschaftKombi' . $having
             );
-            if (isset($product->kArtikel) && \count($product->kArtikel) > 0) {
+            if ($product !== null && \count($product->kArtikel) > 0) {
                 return (int)$product->kArtikel;
             }
         }
@@ -1207,16 +1200,15 @@ class Product
         if ($min <= 0) {
             return false;
         }
-        $history = Shop::Container()->getDB()->queryPrepared(
+        $history = Shop::Container()->getDB()->getSingleObject(
             'SELECT kProduktanfrageHistory
                 FROM tproduktanfragehistory
                 WHERE cIP = :ip
                     AND DATE_SUB(NOW(), INTERVAL :min MINUTE) < dErstellt',
-            ['ip' => Request::getRealIP(), 'min' => $min],
-            ReturnType::SINGLE_OBJECT
+            ['ip' => Request::getRealIP(), 'min' => $min]
         );
 
-        return isset($history->kProduktanfrageHistory) && $history->kProduktanfrageHistory > 0;
+        return $history !== null && $history->kProduktanfrageHistory > 0;
     }
 
     /**
@@ -1348,16 +1340,15 @@ class Product
         if (!$min) {
             return false;
         }
-        $history = Shop::Container()->getDB()->executeQueryPrepared(
+        $history = Shop::Container()->getDB()->getSingleObject(
             'SELECT kVerfuegbarkeitsbenachrichtigung
                 FROM tverfuegbarkeitsbenachrichtigung
                 WHERE cIP = :ip
                 AND DATE_SUB(NOW(), INTERVAL :min MINUTE) < dErstellt',
-            ['ip' => Request::getRealIP(), 'min' => $min],
-            ReturnType::SINGLE_OBJECT
+            ['ip' => Request::getRealIP(), 'min' => $min]
         );
 
-        return isset($history->kVerfuegbarkeitsbenachrichtigung) && $history->kVerfuegbarkeitsbenachrichtigung > 0;
+        return $history !== null && $history->kVerfuegbarkeitsbenachrichtigung > 0;
     }
 
     /**
@@ -1410,7 +1401,7 @@ class Product
         // Ist der Besucher nicht von der Artikelübersicht gekommen?
         if ($categoryID > 0 && (!isset($nav->vorherigerArtikel) && !isset($nav->naechsterArtikel))) {
             $stockFilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-            $prev        = Shop::Container()->getDB()->query(
+            $prev        = Shop::Container()->getDB()->getSingleObject(
                 'SELECT tartikel.kArtikel
                     FROM tkategorieartikel, tartikel
                     LEFT JOIN tartikelsichtbarkeit
@@ -1422,10 +1413,9 @@ class Product
                         AND tkategorieartikel.kKategorie = ' . $categoryID . '
                         AND tartikel.kArtikel < ' . $productID . ' ' . $stockFilter . '
                     ORDER BY tartikel.kArtikel DESC
-                    LIMIT 1',
-                ReturnType::SINGLE_OBJECT
+                    LIMIT 1'
             );
-            $next        = Shop::Container()->getDB()->query(
+            $next        = Shop::Container()->getDB()->getSingleObject(
                 'SELECT tartikel.kArtikel
                     FROM tkategorieartikel, tartikel
                     LEFT JOIN tartikelsichtbarkeit
@@ -1437,15 +1427,14 @@ class Product
                         AND tkategorieartikel.kKategorie = ' . $categoryID . '
                         AND tartikel.kArtikel > ' . $productID . ' ' . $stockFilter . '
                     ORDER BY tartikel.kArtikel
-                    LIMIT 1',
-                ReturnType::SINGLE_OBJECT
+                    LIMIT 1'
             );
 
-            if (!empty($prev->kArtikel)) {
+            if ($prev !== null && !empty($prev->kArtikel)) {
                 $nav->vorherigerArtikel = (new Artikel())
                     ->fuelleArtikel((int)$prev->kArtikel, Artikel::getDefaultOptions());
             }
-            if (!empty($next->kArtikel)) {
+            if ($next !== null && !empty($next->kArtikel)) {
                 $nav->naechsterArtikel = (new Artikel())
                     ->fuelleArtikel((int)$next->kArtikel, Artikel::getDefaultOptions());
             }

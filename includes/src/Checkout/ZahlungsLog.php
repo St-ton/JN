@@ -2,7 +2,6 @@
 
 namespace JTL\Checkout;
 
-use JTL\DB\ReturnType;
 use JTL\Shop;
 use stdClass;
 
@@ -147,24 +146,20 @@ class ZahlungsLog
     public static function count(string $moduleID, int $level = -1, string $whereSQL = ''): int
     {
         if ($level === -1) {
-            $count = Shop::Container()->getDB()->queryPrepared(
+            return (int)Shop::Container()->getDB()->getSingleObject(
                 'SELECT COUNT(*) AS count 
                     FROM tzahlungslog 
                     WHERE cModulId = :cModulId ' . ($whereSQL !== '' ? ' AND ' . $whereSQL : ''),
-                ['cModulId' => $moduleID],
-                ReturnType::SINGLE_OBJECT
-            )->count;
-        } else {
-            $count = Shop::Container()->getDB()->queryPrepared(
-                'SELECT COUNT(*) AS count 
-                    FROM tzahlungslog 
-                    WHERE cModulId = :cModulId 
-                        AND nLevel = :nLevel ' . ($whereSQL !== '' ? ' AND ' . $whereSQL : ''),
-                ['nLevel' => $level, 'cModulId' => $moduleID],
-                ReturnType::SINGLE_OBJECT
+                ['cModulId' => $moduleID]
             )->count;
         }
 
-        return (int)$count;
+        return (int)Shop::Container()->getDB()->getSingleObject(
+            'SELECT COUNT(*) AS count 
+                FROM tzahlungslog 
+                WHERE cModulId = :cModulId 
+                    AND nLevel = :nLevel ' . ($whereSQL !== '' ? ' AND ' . $whereSQL : ''),
+            ['nLevel' => $level, 'cModulId' => $moduleID]
+        )->count;
     }
 }

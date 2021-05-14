@@ -1,6 +1,5 @@
 <?php
 
-use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Shop;
@@ -205,16 +204,15 @@ function holeEinstellungHeadline(int $sort, int $sectionID)
 {
     $configHead = new stdClass();
     if ($sort > 0 && $sectionID > 0) {
-        $item = Shop::Container()->getDB()->query(
+        $item = Shop::Container()->getDB()->getSingleObject(
             'SELECT *
                 FROM teinstellungenconf
                 WHERE nSort < ' . $sort . '
                     AND kEinstellungenSektion = ' . $sectionID . "
                     AND cConf = 'N'
-                ORDER BY nSort DESC",
-            ReturnType::SINGLE_OBJECT
+                ORDER BY nSort DESC"
         );
-        if ($item !== false) {
+        if ($item !== null) {
             $menuEntry                  = mapConfigSectionToMenuEntry($sectionID, $item->cWertName);
             $configHead                 = $item;
             $configHead->cSektionsPfad  = getConfigSectionPath($menuEntry);

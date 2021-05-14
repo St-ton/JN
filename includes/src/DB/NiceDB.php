@@ -797,6 +797,14 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
+    public function getArrays(string $stmt, array $params = []): array
+    {
+        return $this->_execute(1, $stmt, $params, ReturnType::ARRAY_OF_ASSOC_ARRAYS);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getObjects(string $stmt, array $params = []): array
     {
         return $this->_execute(1, $stmt, $params, ReturnType::ARRAY_OF_OBJECTS);

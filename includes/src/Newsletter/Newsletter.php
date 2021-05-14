@@ -9,7 +9,6 @@ use JTL\Catalog\Hersteller;
 use JTL\Catalog\Product\Artikel;
 use JTL\Customer\Customer;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Session\Frontend;
@@ -62,10 +61,7 @@ class Newsletter
             ->setDebugging(false)
             ->setCompileDir(\PFAD_ROOT . \PFAD_COMPILEDIR)
             ->registerResource('db', new SmartyResourceNiceDB($this->db, ContextType::NEWSLETTER))
-            ->assign('Firma', $this->db->query(
-                'SELECT *  FROM tfirma',
-                ReturnType::SINGLE_OBJECT
-            ))
+            ->assign('Firma', $this->db->getSingleObject('SELECT *  FROM tfirma'))
             ->assign('URL_SHOP', Shop::getURL())
             ->assign('Einstellungen', $this->config);
         if (\NEWSLETTER_USE_SECURITY) {
@@ -137,16 +133,15 @@ class Newsletter
             }
         }
 
-        $recipients = $this->db->query(
+        $recipients = $this->db->getSingleObject(
             'SELECT COUNT(*) AS nAnzahl
-            FROM tnewsletterempfaenger
-            LEFT JOIN tsprache
-                ON tsprache.kSprache = tnewsletterempfaenger.kSprache
-            LEFT JOIN tkunde
-                ON tkunde.kKunde = tnewsletterempfaenger.kKunde
-            WHERE tnewsletterempfaenger.kSprache = ' . (int)$data->kSprache . '
-                AND tnewsletterempfaenger.nAktiv = 1 ' . $cSQL,
-            ReturnType::SINGLE_OBJECT
+                FROM tnewsletterempfaenger
+                LEFT JOIN tsprache
+                    ON tsprache.kSprache = tnewsletterempfaenger.kSprache
+                LEFT JOIN tkunde
+                    ON tkunde.kKunde = tnewsletterempfaenger.kKunde
+                WHERE tnewsletterempfaenger.kSprache = ' . (int)$data->kSprache . '
+                    AND tnewsletterempfaenger.nAktiv = 1 ' . $cSQL
         );
         if ($this->db->getErrorCode() !== 0) {
             $recipients = new stdClass();
@@ -261,16 +256,15 @@ class Newsletter
         $net      = 0;
         $bodyHtml = '';
         if (isset($customer->kKunde) && $customer->kKunde > 0) {
-            $oKundengruppe = $this->db->query(
+            $customergGroup = $this->db->getSingleObject(
                 'SELECT tkundengruppe.nNettoPreise
-                FROM tkunde
-                JOIN tkundengruppe
-                    ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
-                WHERE tkunde.kKunde = ' . (int)$customer->kKunde,
-                ReturnType::SINGLE_OBJECT
+                    FROM tkunde
+                    JOIN tkundengruppe
+                        ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
+                    WHERE tkunde.kKunde = ' . (int)$customer->kKunde
             );
-            if (isset($oKundengruppe->nNettoPreise)) {
-                $net = $oKundengruppe->nNettoPreise;
+            if ($customergGroup !== null && isset($customergGroup->nNettoPreise)) {
+                $net = $customergGroup->nNettoPreise;
             }
         }
 

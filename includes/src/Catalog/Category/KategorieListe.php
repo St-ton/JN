@@ -3,7 +3,6 @@
 namespace JTL\Catalog\Category;
 
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\URL;
 use JTL\Language\LanguageHelper;
 use JTL\Session\Frontend;
@@ -452,7 +451,8 @@ class KategorieListe
     private function hasProducts(int $categoryID, int $customerGroupID, DbInterface $db): bool
     {
         $availability = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-        $data         = $db->query(
+
+        return (int)($db->getSingleObject(
             'SELECT tartikel.kArtikel
                 FROM tkategorieartikel, tartikel
                 LEFT JOIN tartikelsichtbarkeit 
@@ -461,10 +461,7 @@ class KategorieListe
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.kArtikel = tkategorieartikel.kArtikel
                     AND tkategorieartikel.kKategorie = ' . $categoryID . $availability . '
-                LIMIT 1',
-            ReturnType::SINGLE_OBJECT
-        );
-
-        return isset($data->kArtikel) && $data->kArtikel > 0;
+                LIMIT 1'
+        )->kArtikel ?? 0) > 0;
     }
 }

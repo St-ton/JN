@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Alert\Alert;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Pagination\Pagination;
@@ -100,10 +99,9 @@ for ($i = 0; $i < $configCount; $i++) {
     Shop::Container()->getGetText()->localizeConfig($configData[$i]);
 }
 
-$listCount  = (int)$db->query(
+$listCount  = (int)$db->getSingleObject(
     'SELECT COUNT(*) AS cnt
-        FROM tvergleichsliste',
-    ReturnType::SINGLE_OBJECT
+        FROM tvergleichsliste'
 )->cnt;
 $pagination = (new Pagination())
     ->setItemCount($listCount)

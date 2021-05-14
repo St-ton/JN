@@ -4,7 +4,6 @@ namespace JTL\dbeS\Sync;
 
 use Illuminate\Support\Collection;
 use JTL\Catalog\Product\Artikel;
-use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\Helpers\Product;
 use JTL\Helpers\Seo;
@@ -129,12 +128,11 @@ final class Products extends AbstractSync
         if ($filter === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_ALLE || \count($newCategoryIDs) === 0) {
             return false;
         }
-        $currentStatus = $this->db->queryPrepared(
+        $currentStatus = $this->db->getSingleObject(
             'SELECT cLagerBeachten, cLagerKleinerNull, fLagerbestand
                 FROM tartikel
                 WHERE kArtikel = :pid',
-            ['pid' => $productID],
-            ReturnType::SINGLE_OBJECT
+            ['pid' => $productID]
         );
         if ($this->checkStock($currentStatus, $xml) === true) {
             // get count of visible products in the product's future categories
@@ -275,16 +273,15 @@ final class Products extends AbstractSync
         }
         // any new orders since last wawi-sync? see https://gitlab.jtl-software.de/jtlshop/jtl-shop/issues/304
         if (isset($products[0]->fLagerbestand) && $products[0]->fLagerbestand > 0) {
-            $delta = $this->db->query(
+            $delta = $this->db->getSingleObject(
                 "SELECT SUM(pos.nAnzahl) AS totalquantity
                     FROM tbestellung b
                     JOIN twarenkorbpos pos
                         ON pos.kWarenkorb = b.kWarenkorb
                     WHERE b.cAbgeholt = 'N'
-                        AND pos.kArtikel = " . (int)$products[0]->kArtikel,
-                ReturnType::SINGLE_OBJECT
+                        AND pos.kArtikel = " . (int)$products[0]->kArtikel
             );
-            if ($delta->totalquantity > 0) {
+            if ($delta !== null && $delta->totalquantity > 0) {
                 $products[0]->fLagerbestand -= $delta->totalquantity;
                 $this->logger->debug(
                     'Artikel-Sync: Lagerbestand von kArtikel ' . $products[0]->kArtikel . ' wurde ' .
@@ -973,15 +970,14 @@ final class Products extends AbstractSync
             $stockFilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             foreach ($categories as $category) {
                 // check if the product was the only one in at least one of these categories
-                $categoryCount = $this->db->query(
+                $categoryCount = (int)$this->db->getSingleObject(
                     'SELECT COUNT(tkategorieartikel.kArtikel) AS cnt
                         FROM tkategorieartikel
                         LEFT JOIN tartikel
                             ON tartikel.kArtikel = tkategorieartikel.kArtikel
-                        WHERE tkategorieartikel.kKategorie = ' . (int)$category->kKategorie . ' ' . $stockFilter,
-                    ReturnType::SINGLE_OBJECT
-                );
-                if (!isset($categoryCount->cnt) || (int)$categoryCount->cnt === 1) {
+                        WHERE tkategorieartikel.kKategorie = ' . (int)$category->kKategorie . ' ' . $stockFilter
+                )->cnt;
+                if ($categoryCount <= 1) {
                     // the category only had this product in it - flush cache
                     $this->flushCategoryTreeCache();
                     break;
@@ -1218,12 +1214,9 @@ final class Products extends AbstractSync
      */
     private function removeProductIdfromCoupons(int $productID): void
     {
-        $data = $this->db->query(
-            'SELECT cArtNr FROM tartikel WHERE kArtikel = ' . $productID,
-            ReturnType::SINGLE_OBJECT
-        );
+        $data = $this->db->getSingleObject('SELECT cArtNr FROM tartikel WHERE kArtikel = ' . $productID);
 
-        if (!empty($data->cArtNr)) {
+        if ($data !== null && !empty($data->cArtNr)) {
             $artNo = $data->cArtNr;
             $this->db->queryPrepared(
                 "UPDATE tkupon SET cArtikel = REPLACE(cArtikel, ';" . $artNo . ";', ';') WHERE cArtikel LIKE :artno",

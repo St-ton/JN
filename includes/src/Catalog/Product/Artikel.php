@@ -12,7 +12,6 @@ use JTL\Checkout\Versandart;
 use JTL\Country\Country;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Extensions\Config\Configurator;
@@ -1087,7 +1086,7 @@ class Artikel
         $categoryFilter   = isset($_SESSION['LetzteKategorie'])
             ? ' AND tkategorieartikel.kKategorie = ' . (int)$_SESSION['LetzteKategorie']
             : '';
-        $categoryProducts = Shop::Container()->getDB()->query(
+        $categoryProducts = Shop::Container()->getDB()->getSingleObject(
             'SELECT tkategorieartikel.kKategorie
                 FROM tkategorieartikel
                 LEFT JOIN tkategoriesichtbarkeit 
@@ -1099,8 +1098,7 @@ class Artikel
                 WHERE tkategoriesichtbarkeit.kKategorie IS NULL
                     AND kArtikel = ' . $id . $categoryFilter . '
                 ORDER BY tkategorie.nSort
-                LIMIT 1',
-            ReturnType::SINGLE_OBJECT
+                LIMIT 1'
         );
 
         return (int)($categoryProducts->kKategorie ?? 0);
@@ -1603,7 +1601,7 @@ class Artikel
         $this->oProduktBundlePrice->fPriceDiff = 0.0;
         $this->oProduktBundle_arr              = [];
 
-        $main = Shop::Container()->getDB()->queryPrepared(
+        $main = Shop::Container()->getDB()->getSingleObject(
             'SELECT tartikel.kArtikel, tartikel.kStueckliste
                 FROM
                 (
@@ -1613,8 +1611,7 @@ class Artikel
                 ) AS sub
                 JOIN tartikel 
                     ON tartikel.kStueckliste = sub.kStueckliste',
-            ['kArtikel' => $this->kArtikel],
-            ReturnType::SINGLE_OBJECT
+            ['kArtikel' => $this->kArtikel]
         );
         if (isset($main->kArtikel, $main->kStueckliste) && $main->kArtikel > 0 && $main->kStueckliste > 0) {
             $options                             = self::getDefaultOptions();
@@ -1877,27 +1874,25 @@ class Artikel
                 ? (int)$this->kVaterArtikel
                 : (int)$this->kArtikel;
             if ($productID === null) {
-                $rating = Shop::Container()->getDB()->query(
+                $rating = Shop::Container()->getDB()->getSingleObject(
                     'SELECT fDurchschnittsBewertung
                         FROM tartikelext
                         WHERE round(fDurchschnittsBewertung) >= ' . $minStars . '
-                            AND kArtikel = ' . (int)$this->kArtikel,
-                    ReturnType::SINGLE_OBJECT
+                            AND kArtikel = ' . (int)$this->kArtikel
                 );
-                if (!empty($rating)) {
+                if ($rating !== null) {
                     $this->fDurchschnittsBewertung = \round($rating->fDurchschnittsBewertung * 2) / 2;
                 }
             } else {
                 $productID = $productID > 0 ? $productID : (int)$this->kArtikel;
-                $rating    = Shop::Container()->getDB()->queryPrepared(
+                $rating    = Shop::Container()->getDB()->getSingleObject(
                     'SELECT fDurchschnittsBewertung
                         FROM tartikelext
                         WHERE ROUND(fDurchschnittsBewertung) >= :minStars
                             AND kArtikel = :kArtikel',
-                    ['minStars' => $minStars, 'kArtikel' => $productID],
-                    ReturnType::SINGLE_OBJECT
+                    ['minStars' => $minStars, 'kArtikel' => $productID]
                 );
-                if (!empty($rating)) {
+                if ($rating !== null) {
                     $this->fDurchschnittsBewertung = \round($rating->fDurchschnittsBewertung * 2) / 2;
                 }
             }
@@ -2255,7 +2250,7 @@ class Artikel
 
         $cntVariationen = $exportWorkaround
             ? 0
-            : (int)Shop::Container()->getDB()->query(
+            : (int)Shop::Container()->getDB()->getSingleObject(
                 'SELECT COUNT(teigenschaft.kEigenschaft) AS cnt
                     FROM teigenschaft
                     LEFT JOIN teigenschaftsichtbarkeit 
@@ -2263,8 +2258,7 @@ class Artikel
                         AND teigenschaftsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
                     WHERE kArtikel = ' . (int)$this->kVaterArtikel . '
                         AND teigenschaft.cTyp NOT IN (\'FREIFELD\', \'PFLICHT-FREIFELD\')
-                        AND teigenschaftsichtbarkeit.kEigenschaft IS NULL',
-                ReturnType::SINGLE_OBJECT
+                        AND teigenschaftsichtbarkeit.kEigenschaft IS NULL'
             )->cnt;
         foreach ($variations as $i => $tmpVariation) {
             if ($lastID !== $tmpVariation->kEigenschaft) {
@@ -3745,7 +3739,7 @@ class Artikel
      */
     private function getPriceData(int $productID, int $customerGroupID): self
     {
-        $tmp = Shop::Container()->getDB()->queryPrepared(
+        $tmp = Shop::Container()->getDB()->getSingleObject(
             'SELECT tartikel.kArtikel, tartikel.kEinheit, tartikel.kVPEEinheit, tartikel.kSteuerklasse,
                 tartikel.fPackeinheit, tartikel.cVPE, tartikel.fVPEWert, tartikel.cVPEEinheit
                 FROM tartikel
@@ -3754,11 +3748,10 @@ class Artikel
                     AND tartikelsichtbarkeit.kKundengruppe = :cgid
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.kArtikel = :pid',
-            ['pid' => $productID, 'cgid' => $customerGroupID],
-            ReturnType::SINGLE_OBJECT
+            ['pid' => $productID, 'cgid' => $customerGroupID]
         );
 
-        if (!empty($tmp)) {
+        if ($tmp !== null) {
             foreach (\get_object_vars($tmp) as $k => $v) {
                 $this->$k = $v;
             }
@@ -3990,7 +3983,7 @@ class Artikel
     {
         if ($this->kVaterArtikel === 0 && $this->nIstVater === 1 && \is_object($this->Preise)) {
             $net          = $this->Preise->fVKNetto ?? 0.0;
-            $specialPrice = $db->query(
+            $specialPrice = $db->getSingleObject(
                 'SELECT COUNT(a.kArtikel) AS specialPrices
                     FROM tartikel AS a
                     JOIN tpreis AS p
@@ -4004,11 +3997,10 @@ class Artikel
                         ON sp.kArtikelSonderpreis = asp.kArtikelSonderpreis
                         AND sp.kKundengruppe = ' . $customerGroupID . '
                     WHERE a.kVaterArtikel = ' . $this->kArtikel . '
-                        AND COALESCE(sp.fNettoPreis, d.fVKNetto) - ' . $net . ' > 0.0001',
-                ReturnType::SINGLE_OBJECT
+                        AND COALESCE(sp.fNettoPreis, d.fVKNetto) - ' . $net . ' > 0.0001'
             );
 
-            $this->nVariationsAufpreisVorhanden = (int)$specialPrice->specialPrices > 0 ? 1 : 0;
+            $this->nVariationsAufpreisVorhanden = (int)($specialPrice->specialPrices ?? 0) > 0 ? 1 : 0;
         }
     }
 
@@ -4056,12 +4048,11 @@ class Artikel
         if ($this->kArtikel <= 0) {
             return false;
         }
-        $bestseller = Shop::Container()->getDB()->queryPrepared(
+        $bestseller = Shop::Container()->getDB()->getSingleObject(
             'SELECT ROUND(fAnzahl) >= :threshold AS bIsBestseller
                 FROM tbestseller
                 WHERE kArtikel = :pid',
-            ['threshold' => (float)$this->conf['global']['global_bestseller_minanzahl'], 'pid' => $this->kArtikel],
-            ReturnType::SINGLE_OBJECT
+            ['threshold' => (float)$this->conf['global']['global_bestseller_minanzahl'], 'pid' => $this->kArtikel]
         );
 
         return (bool)($bestseller->bIsBestseller ?? false);
@@ -4701,7 +4692,7 @@ class Artikel
             $this->fGewicht = 0;
         }
         // cheapest shipping except shippings that offer cash payment
-        $shipping = Shop::Container()->getDB()->queryPrepared(
+        $shipping = Shop::Container()->getDB()->getSingleObject(
             'SELECT va.kVersandart, IF(vas.fPreis IS NOT NULL, vas.fPreis, va.fPreis) AS minPrice, va.nSort
                 FROM tversandart va
                 LEFT JOIN tversandartstaffel vas
@@ -4730,10 +4721,9 @@ class Artikel
                 'sclass' => '^([0-9 -]* )?' . $this->kVersandklasse,
                 'wght'   => $this->fGewicht,
                 'net'    => $this->Preise->fVKNetto
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
-        if (isset($shipping->kVersandart)) {
+        if ($shipping !== null) {
             $this->oFavourableShipping = new Versandart((int)$shipping->kVersandart);
 
             return $this->oFavourableShipping;
@@ -4801,17 +4791,16 @@ class Artikel
         }
         $isPartsList = !empty($this->oStueckliste_arr) && !empty($this->kStueckliste);
         if ($isPartsList) {
-            $oPiecesNotInShop = Shop::Container()->getDB()->query(
+            $piecesNotInShop = Shop::Container()->getDB()->getSingleObject(
                 'SELECT COUNT(tstueckliste.kArtikel) AS nAnzahl
                     FROM tstueckliste
                     LEFT JOIN tartikel
                       ON tartikel.kArtikel = tstueckliste.kArtikel
                     WHERE tstueckliste.kStueckliste = ' . (int)$this->kStueckliste . '
-                        AND tartikel.kArtikel IS NULL',
-                ReturnType::SINGLE_OBJECT
+                        AND tartikel.kArtikel IS NULL'
             );
 
-            if (\is_object($oPiecesNotInShop) && (int)$oPiecesNotInShop->nAnzahl > 0) {
+            if ($piecesNotInShop !== null && (int)$piecesNotInShop->nAnzahl > 0) {
                 // this list has potentially invisible parts and can't calculated correctly
                 // handle this parts list as an normal product
                 $isPartsList = false;
@@ -5207,10 +5196,9 @@ class Artikel
         if (!Shop::has('checkCategoryDiscount')) {
             Shop::set(
                 'checkCategoryDiscount',
-                Shop::Container()->getDB()->query(
+                Shop::Container()->getDB()->getSingleObject(
                     'SELECT COUNT(kArtikel) AS cnt
-                          FROM tartikelkategorierabatt',
-                    ReturnType::SINGLE_OBJECT
+                          FROM tartikelkategorierabatt'
                 )->cnt > 0
             );
         }

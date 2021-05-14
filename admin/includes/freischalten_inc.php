@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Customer\Customer;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Seo;
 use JTL\Review\ReviewAdminController;
 use JTL\Shop;
@@ -129,32 +128,31 @@ function schalteSuchanfragenFrei($searchQueries): bool
         return false;
     }
     $db = Shop::Container()->getDB();
-    foreach ($searchQueries as $i => $kSuchanfrage) {
-        $kSuchanfrage = (int)$kSuchanfrage;
-        $oSuchanfrage = $db->query(
+    foreach ($searchQueries as $i => $qid) {
+        $qid   = (int)$qid;
+        $query = $db->getSingleObject(
             'SELECT kSuchanfrage, kSprache, cSuche
                 FROM tsuchanfrage
-                WHERE kSuchanfrage = ' . $kSuchanfrage,
-            ReturnType::SINGLE_OBJECT
+                WHERE kSuchanfrage = :qid',
+            ['qid' => $qid]
         );
-
-        if ($oSuchanfrage->kSuchanfrage > 0) {
+        if ($query !== null && $query->kSuchanfrage > 0) {
             $db->delete(
                 'tseo',
                 ['cKey', 'kKey', 'kSprache'],
-                ['kSuchanfrage', $kSuchanfrage, (int)$oSuchanfrage->kSprache]
+                ['kSuchanfrage', $qid, (int)$query->kSprache]
             );
-            $oSeo           = new stdClass();
-            $oSeo->cSeo     = Seo::checkSeo(Seo::getSeo($oSuchanfrage->cSuche));
-            $oSeo->cKey     = 'kSuchanfrage';
-            $oSeo->kKey     = $kSuchanfrage;
-            $oSeo->kSprache = $oSuchanfrage->kSprache;
-            $db->insert('tseo', $oSeo);
+            $seo           = new stdClass();
+            $seo->cSeo     = Seo::checkSeo(Seo::getSeo($query->cSuche));
+            $seo->cKey     = 'kSuchanfrage';
+            $seo->kKey     = $qid;
+            $seo->kSprache = $query->kSprache;
+            $db->insert('tseo', $seo);
             $db->update(
                 'tsuchanfrage',
                 'kSuchanfrage',
-                $kSuchanfrage,
-                (object)['nAktiv' => 1, 'cSeo' => $oSeo->cSeo]
+                $qid,
+                (object)['nAktiv' => 1, 'cSeo' => $seo->cSeo]
             );
         }
     }
@@ -211,11 +209,9 @@ function loescheBewertung($ratings): bool
     if (!is_array($ratings) || count($ratings) === 0) {
         return false;
     }
-    $ratings = array_map('\intval', $ratings);
-
     Shop::Container()->getDB()->query(
         'DELETE FROM tbewertung
-            WHERE kBewertung IN (' . implode(',', $ratings) . ')'
+            WHERE kBewertung IN (' . implode(',', array_map('\intval', $ratings)) . ')'
     );
 
     return true;
@@ -344,13 +340,13 @@ function mappeLiveSuche($queryIDs, $cMapping): int
  */
 function gibMaxBewertungen(): int
 {
-    return (int)Shop::Container()->getDB()->query(
-        'SELECT COUNT(*) AS nAnzahl
+    return (int)Shop::Container()->getDB()->getSingleObject(
+        'SELECT COUNT(*) AS cnt
             FROM tbewertung
             WHERE nAktiv = 0
-                AND kSprache = ' . (int)$_SESSION['editLanguageID'],
-        ReturnType::SINGLE_OBJECT
-    )->nAnzahl;
+                AND kSprache = :lid',
+        ['lid' => (int)$_SESSION['editLanguageID']]
+    )->cnt;
 }
 
 /**
@@ -358,13 +354,13 @@ function gibMaxBewertungen(): int
  */
 function gibMaxSuchanfragen(): int
 {
-    return (int)Shop::Container()->getDB()->query(
-        'SELECT COUNT(*) AS nAnzahl
+    return (int)Shop::Container()->getDB()->getSingleObject(
+        'SELECT COUNT(*) AS cnt
             FROM tsuchanfrage
             WHERE nAktiv = 0
-                AND kSprache = ' . (int)$_SESSION['editLanguageID'],
-        ReturnType::SINGLE_OBJECT
-    )->nAnzahl;
+                AND kSprache = :lid',
+        ['lid' => (int)$_SESSION['editLanguageID']]
+    )->cnt;
 }
 
 /**
@@ -372,17 +368,17 @@ function gibMaxSuchanfragen(): int
  */
 function gibMaxNewskommentare(): int
 {
-    return (int)Shop::Container()->getDB()->query(
-        'SELECT COUNT(tnewskommentar.kNewsKommentar) AS nAnzahl
+    return (int)Shop::Container()->getDB()->getSingleObject(
+        'SELECT COUNT(tnewskommentar.kNewsKommentar) AS cnt
             FROM tnewskommentar
             JOIN tnews 
                 ON tnews.kNews = tnewskommentar.kNews
             JOIN tnewssprache t 
                 ON tnews.kNews = t.kNews
             WHERE tnewskommentar.nAktiv = 0
-                AND t.languageID = ' . (int)$_SESSION['editLanguageID'],
-        ReturnType::SINGLE_OBJECT
-    )->nAnzahl;
+                AND t.languageID = :lid',
+        ['lid' => (int)$_SESSION['editLanguageID']],
+    )->cnt;
 }
 
 /**
@@ -390,11 +386,11 @@ function gibMaxNewskommentare(): int
  */
 function gibMaxNewsletterEmpfaenger(): int
 {
-    return (int)Shop::Container()->getDB()->query(
-        'SELECT COUNT(*) AS nAnzahl
+    return (int)Shop::Container()->getDB()->getSingleObject(
+        'SELECT COUNT(*) AS cnt
             FROM tnewsletterempfaenger
             WHERE nAktiv = 0
-                AND kSprache = ' . (int)$_SESSION['editLanguageID'],
-        ReturnType::SINGLE_OBJECT
-    )->nAnzahl;
+                AND kSprache = :lid',
+        ['lid' => (int)$_SESSION['editLanguageID']],
+    )->cnt;
 }

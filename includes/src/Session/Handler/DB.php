@@ -42,7 +42,7 @@ class DB extends JTLDefault
      */
     public function open($path, $name)
     {
-        $this->lifeTime = \get_cfg_var('session.gc_maxlifetime');
+        $this->lifeTime = (int)\get_cfg_var('session.gc_maxlifetime');
 
         return $this->db->isConnected();
     }

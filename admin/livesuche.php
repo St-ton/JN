@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Alert\Alert;
-use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Helpers\Seo;
@@ -503,23 +502,20 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
     $smarty->assign('tab', 'mapping');
 }
 
-$queryCount        = (int)$db->query(
+$queryCount        = (int)$db->getSingleObject(
     'SELECT COUNT(*) AS cnt
         FROM tsuchanfrage
-        WHERE kSprache = ' . $languageID . $cLivesucheSQL->cWhere,
-    ReturnType::SINGLE_OBJECT
+        WHERE kSprache = ' . $languageID . $cLivesucheSQL->cWhere
 )->cnt;
-$failedQueryCount  = (int)$db->query(
+$failedQueryCount  = (int)$db->getSingleObject(
     'SELECT COUNT(*) AS cnt
         FROM tsuchanfrageerfolglos
-        WHERE kSprache = ' . $languageID,
-    ReturnType::SINGLE_OBJECT
+        WHERE kSprache = ' . $languageID
 )->cnt;
-$mappingCount      = (int)$db->query(
+$mappingCount      = (int)$db->getSingleObject(
     'SELECT COUNT(*) AS cnt
         FROM tsuchanfragemapping
-        WHERE kSprache = ' . $languageID,
-    ReturnType::SINGLE_OBJECT
+        WHERE kSprache = ' . $languageID
 )->cnt;
 $paginationQueries = (new Pagination('suchanfragen'))
     ->setItemCount($queryCount)

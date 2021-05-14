@@ -3,7 +3,6 @@
 use JTL\Campaign;
 use JTL\Catalog\Product\Preise;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Linechart;
@@ -30,15 +29,15 @@ function holeAlleKampagnenDefinitionen()
 
 /**
  * @param int $id
- * @return mixed
+ * @return stdClass|null
  */
 function holeKampagne(int $id)
 {
-    return Shop::Container()->getDB()->query(
+    return Shop::Container()->getDB()->getSingleObject(
         "SELECT *, DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE
             FROM tkampagne
-            WHERE kKampagne = " . $id,
-        ReturnType::SINGLE_OBJECT
+            WHERE kKampagne = :cid",
+        ['cid' => $id]
     );
 }
 
@@ -1135,14 +1134,13 @@ function speicherKampagne($campaign)
 {
     // Standardkampagnen (Interne) Werte herstellen
     if (isset($campaign->kKampagne) && ($campaign->kKampagne < 1000 && $campaign->kKampagne > 0)) {
-        $data = Shop::Container()->getDB()->query(
+        $data = Shop::Container()->getDB()->getSingleObject(
             'SELECT *
                 FROM tkampagne
-                WHERE kKampagne = ' . (int)$campaign->kKampagne,
-            ReturnType::SINGLE_OBJECT
+                WHERE kKampagne = :cid',
+            ['cid' => (int)$campaign->kKampagne]
         );
-
-        if (isset($data->kKampagne)) {
+        if ($data !== null) {
             $campaign->cName      = $data->cName;
             $campaign->cWert      = $data->cWert;
             $campaign->nDynamisch = $data->nDynamisch;
@@ -1160,15 +1158,13 @@ function speicherKampagne($campaign)
         return 5;//  Kampagnenwert ist leer
     }
     // Name schon vorhanden?
-    $data = Shop::Container()->getDB()->queryPrepared(
+    $data = Shop::Container()->getDB()->getSingleObject(
         'SELECT kKampagne
             FROM tkampagne
             WHERE cName = :cName',
-        ['cName' => $campaign->cName],
-        ReturnType::SINGLE_OBJECT
+        ['cName' => $campaign->cName]
     );
-
-    if (isset($data->kKampagne)
+    if ($data !== null
         && $data->kKampagne > 0
         && (!isset($campaign->kKampagne) || (int)$campaign->kKampagne === 0)
     ) {
@@ -1176,15 +1172,13 @@ function speicherKampagne($campaign)
     }
     // Parameter schon vorhanden?
     if (isset($campaign->nDynamisch) && (int)$campaign->nDynamisch === 1) {
-        $data = Shop::Container()->getDB()->queryPrepared(
+        $data = Shop::Container()->getDB()->getSingleObject(
             'SELECT kKampagne
                 FROM tkampagne
                 WHERE cParameter = :param',
-            ['param' => $campaign->cParameter],
-            ReturnType::SINGLE_OBJECT
+            ['param' => $campaign->cParameter]
         );
-
-        if (isset($data->kKampagne)
+        if ($data !== null
             && $data->kKampagne > 0
             && (!isset($campaign->kKampagne) || (int)$campaign->kKampagne === 0)
         ) {

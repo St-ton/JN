@@ -2,7 +2,6 @@
 
 use JTL\Alert\Alert;
 use JTL\Customer\Customer;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
@@ -29,24 +28,21 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
         'saveSettings'
     );
 }
-$itemCount     = (int)Shop::Container()->getDB()->query(
+$itemCount     = (int)Shop::Container()->getDB()->getSingleObject(
     'SELECT COUNT(DISTINCT twunschliste.kWunschliste) AS cnt
          FROM twunschliste
          JOIN twunschlistepos
-             ON twunschliste.kWunschliste = twunschlistepos.kWunschliste',
-    ReturnType::SINGLE_OBJECT
+             ON twunschliste.kWunschliste = twunschlistepos.kWunschliste'
 )->cnt;
-$productCount  = (int)Shop::Container()->getDB()->query(
+$productCount  = (int)Shop::Container()->getDB()->getSingleObject(
     'SELECT COUNT(*) AS cnt
-        FROM twunschlistepos',
-    ReturnType::SINGLE_OBJECT
+        FROM twunschlistepos'
 )->cnt;
-$friends       = (int)Shop::Container()->getDB()->query(
+$friends       = (int)Shop::Container()->getDB()->getSingleObject(
     'SELECT COUNT(*) AS cnt
         FROM twunschliste
         JOIN twunschlisteversand 
-            ON twunschliste.kWunschliste = twunschlisteversand.kWunschliste',
-    ReturnType::SINGLE_OBJECT
+            ON twunschliste.kWunschliste = twunschlisteversand.kWunschliste'
 )->cnt;
 $oPagiPos      = (new Pagination('pos'))
     ->setItemCount($itemCount)

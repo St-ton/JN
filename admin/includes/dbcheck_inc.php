@@ -468,18 +468,14 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $tableName = ''
                         if (version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
                             // If MySQL version is lower than 5.6 use alternative lock method
                             // and delete all fulltext indexes because these are not supported
-                            $db->executeQuery(
-                                DBMigrationHelper::sqlAddLockInfo($table),
-                                ReturnType::QUERYSINGLE
-                            );
+                            $db->executeQuery(DBMigrationHelper::sqlAddLockInfo($table));
                             $fulltextIndizes = DBMigrationHelper::getFulltextIndizes($table->TABLE_NAME);
 
                             if ($fulltextIndizes) {
                                 foreach ($fulltextIndizes as $fulltextIndex) {
                                     $db->executeQuery(
                                         'ALTER TABLE `' . $table->TABLE_NAME . '`
-                                            DROP KEY `' . $fulltextIndex->INDEX_NAME . '`',
-                                        ReturnType::QUERYSINGLE
+                                            DROP KEY `' . $fulltextIndex->INDEX_NAME . '`'
                                     );
                                 }
                             }
@@ -504,10 +500,7 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $tableName = ''
                             $result->status = 'failure';
                         }
                         if (version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
-                            $db->executeQuery(
-                                DBMigrationHelper::sqlClearLockInfo($table),
-                                ReturnType::QUERYSINGLE
-                            );
+                            $db->executeQuery(DBMigrationHelper::sqlClearLockInfo($table));
                         }
                     } else {
                         $result->status = 'in_use';
@@ -577,8 +570,7 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $tableName = ''
                 $db->executeQuery(
                     "UPDATE `teinstellungen` 
                         SET `cWert` = 'N' 
-                        WHERE `cName` = 'suche_fulltext'",
-                    ReturnType::QUERYSINGLE
+                        WHERE `cName` = 'suche_fulltext'"
                 );
             }
             $result->nextTable = '';

@@ -4,7 +4,6 @@ namespace JTL;
 
 use ArrayAccess;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use function Functional\reindex;
 
 /**
@@ -356,15 +355,14 @@ final class Shopsetting implements ArrayAccess
         }
         $db       = Shop::Container()->getDB();
         $result   = [];
-        $settings = $db->query(
+        $settings = $db->getArrays(
             'SELECT teinstellungen.kEinstellungenSektion, teinstellungen.cName, teinstellungen.cWert,
                 teinstellungenconf.cInputTyp AS type
                 FROM teinstellungen
                 LEFT JOIN teinstellungenconf
                     ON teinstellungenconf.cWertName = teinstellungen.cName
                     AND teinstellungenconf.kEinstellungenSektion = teinstellungen.kEinstellungenSektion
-                ORDER BY kEinstellungenSektion',
-            ReturnType::ARRAY_OF_ASSOC_ARRAYS
+                ORDER BY kEinstellungenSektion'
         );
         foreach (self::$mapping as $mappingID => $sectionName) {
             foreach ($settings as $setting) {

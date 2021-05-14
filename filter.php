@@ -34,7 +34,6 @@ $AktuelleKategorie  = new Kategorie();
 $expandedCategories = new KategorieListe();
 $hasError           = false;
 $params             = Shop::getParameters();
-/** @var ProductFilter $NaviFilter */
 if ($NaviFilter->hasCategory()) {
     $categoryID                  = $NaviFilter->getCategory()->getValue();
     $_SESSION['LetzteKategorie'] = $categoryID;
@@ -67,12 +66,11 @@ if ($conf['navigationsfilter']['allgemein_weiterleitung'] === 'Y'
     && !Request::isAjaxRequest()
 ) {
     $hasSubCategories = ($categoryID = $NaviFilter->getCategory()->getValue()) > 0
-        ? (new Kategorie(
+        && (new Kategorie(
             $categoryID,
             $NaviFilter->getFilterConfig()->getLanguageID(),
             $NaviFilter->getFilterConfig()->getCustomerGroupID()
-        ))->existierenUnterkategorien()
-        : false;
+        ))->existierenUnterkategorien();
     if ($NaviFilter->getFilterCount() > 0
         || $NaviFilter->getRealSearch() !== null
         || ($NaviFilter->getCategory()->getValue() > 0 && !$hasSubCategories)

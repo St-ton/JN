@@ -2,7 +2,6 @@
 
 namespace JTL\Helpers;
 
-use JTL\DB\ReturnType;
 use JTL\Shop;
 
 /**
@@ -33,8 +32,8 @@ class Seo
         if ($exists === null) {
             return $url;
         }
-        Shop::Container()->getDB()->query('SET @IKEY := 0', ReturnType::QUERYSINGLE);
-        $obj = Shop::Container()->getDB()->query(
+        Shop::Container()->getDB()->query('SET @IKEY := 0');
+        $obj = Shop::Container()->getDB()->getSingleObject(
             "SELECT oseo.newSeo
                 FROM (
                     SELECT CONCAT('{$url}', '_', (CONVERT(@IKEY:=@IKEY+1 USING 'utf8') COLLATE utf8_unicode_ci)) newSeo,
@@ -50,8 +49,7 @@ class Seo
                         AND iseo.cSeo RLIKE '^{$url}_[0-9]+$'
                 )
                 ORDER BY oseo.nOrder
-                LIMIT 1",
-            ReturnType::SINGLE_OBJECT
+                LIMIT 1"
         );
 
         return $obj->newSeo ?? $url;

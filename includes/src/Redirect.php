@@ -2,7 +2,6 @@
 
 namespace JTL;
 
-use JTL\DB\ReturnType;
 use JTL\Filter\FilterInterface;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -277,7 +276,7 @@ class Redirect
         if (\mb_strlen($artNo) === 0) {
             return null;
         }
-        $item = Shop::Container()->getDB()->executeQueryPrepared(
+        $item = Shop::Container()->getDB()->getSingleObject(
             "SELECT tartikel.kArtikel, tseo.cSeo
                 FROM tartikel
                 LEFT JOIN tsprache
@@ -288,8 +287,7 @@ class Redirect
                     AND tseo.kSprache = tsprache.kSprache
                 WHERE tartikel.cArtNr = :artno
                 LIMIT 1",
-            ['iso' => \mb_convert_case($iso, \MB_CASE_LOWER), 'artno' => $artNo],
-            ReturnType::SINGLE_OBJECT
+            ['iso' => \mb_convert_case($iso, \MB_CASE_LOWER), 'artno' => $artNo]
         );
 
         return URL::buildURL($item, \URLART_ARTIKEL);
@@ -411,17 +409,16 @@ class Redirect
             }
             $ip = Request::getRealIP();
             // Eintrag für diese IP bereits vorhanden?
-            $entry = Shop::Container()->getDB()->queryPrepared(
+            $entry = Shop::Container()->getDB()->getSingleObject(
                 'SELECT *
                     FROM tredirectreferer tr
                     LEFT JOIN tredirect t
                         ON t.kRedirect = tr.kRedirect
                     WHERE tr.cIP = :ip
                     AND t.cFromUrl = :frm LIMIT 1',
-                ['ip' => $ip, 'frm' => $url],
-                ReturnType::SINGLE_OBJECT
+                ['ip' => $ip, 'frm' => $url]
             );
-            if ($entry === false || $entry === null || (\is_object($entry) && (int)$entry->nCount === 0)) {
+            if ($entry === null || (\is_object($entry) && (int)$entry->nCount === 0)) {
                 $ins               = new stdClass();
                 $ins->kRedirect    = $item !== null ? $item->kRedirect : 0;
                 $ins->kBesucherBot = isset($_SESSION['oBesucher']->kBesucherBot)
@@ -514,7 +511,7 @@ class Redirect
             $prep = ['search' => '%' . $query . '%'];
         }
 
-        return (int)Shop::Container()->getDB()->queryPrepared($qry, $prep, ReturnType::SINGLE_OBJECT)->nCount;
+        return (int)Shop::Container()->getDB()->getSingleObject($qry, $prep)->nCount;
     }
 
     /**
@@ -594,12 +591,11 @@ class Redirect
      */
     public static function getRedirectCount($cWhereSQL = ''): int
     {
-        return (int)Shop::Container()->getDB()->query(
-            'SELECT COUNT(kRedirect) AS nCount
+        return (int)Shop::Container()->getDB()->getSingleObject(
+            'SELECT COUNT(kRedirect) AS cnt
                 FROM tredirect' .
-            ($cWhereSQL !== '' ? ' WHERE ' . $cWhereSQL : ''),
-            ReturnType::SINGLE_OBJECT
-        )->nCount;
+            ($cWhereSQL !== '' ? ' WHERE ' . $cWhereSQL : '')
+        )->cnt;
     }
 
     /**
@@ -627,11 +623,10 @@ class Redirect
      */
     public static function getTotalRedirectCount(): int
     {
-        return (int)Shop::Container()->getDB()->query(
-            'SELECT COUNT(kRedirect) AS nCount
-                FROM tredirect',
-            ReturnType::SINGLE_OBJECT
-        )->nCount;
+        return (int)Shop::Container()->getDB()->getSingleObject(
+            'SELECT COUNT(kRedirect) AS cnt
+                FROM tredirect'
+        )->cnt;
     }
 
     /**

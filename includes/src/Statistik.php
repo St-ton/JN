@@ -2,7 +2,6 @@
 
 namespace JTL;
 
-use JTL\DB\ReturnType;
 use JTL\Helpers\Date;
 use stdClass;
 

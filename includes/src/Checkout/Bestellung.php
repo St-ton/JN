@@ -10,7 +10,6 @@ use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Customer\Customer;
-use JTL\DB\ReturnType;
 use JTL\Extensions\Download\Download;
 use JTL\Extensions\Upload\Upload;
 use JTL\Helpers\ShippingMethod;
@@ -465,21 +464,19 @@ class Bestellung
             (int)$this->kBestellung
         );
         $this->BestellstatusURL = Shop::getURL() . '/status.php?uid=' . $orderState->cUID;
-        $sum                    = $db->query(
+        $sum                    = $db->getSingleObject(
             'SELECT SUM(((fPreis * fMwSt)/100 + fPreis) * nAnzahl) AS wert
                 FROM twarenkorbpos
-                WHERE kWarenkorb = ' . (int)$this->kWarenkorb,
-            ReturnType::SINGLE_OBJECT
+                WHERE kWarenkorb = ' . (int)$this->kWarenkorb
         );
-        $date                   = $db->query(
+        $date                   = $db->getSingleObject(
             "SELECT date_format(dVersandDatum,'%d.%m.%Y') AS dVersanddatum_de,
                 date_format(dBezahltDatum,'%d.%m.%Y') AS dBezahldatum_de,
                 date_format(dErstellt,'%d.%m.%Y %H:%i:%s') AS dErstelldatum_de,
                 date_format(dVersandDatum,'%D %M %Y') AS dVersanddatum_en,
                 date_format(dBezahltDatum,'%D %M %Y') AS dBezahldatum_en,
                 date_format(dErstellt,'%D %M %Y') AS dErstelldatum_en
-                FROM tbestellung WHERE kBestellung = " . (int)$this->kBestellung,
-            ReturnType::SINGLE_OBJECT
+                FROM tbestellung WHERE kBestellung = " . (int)$this->kBestellung
         );
         if ($date !== null && \is_object($date)) {
             $this->dVersanddatum_de = $date->dVersanddatum_de;
@@ -492,17 +489,16 @@ class Bestellung
         // Hole Netto- oder Bruttoeinstellung der Kundengruppe
         $nNettoPreis = 0;
         if ($this->kBestellung > 0) {
-            $netOrderData = $db->query(
+            $netOrderData = $db->getSingleObject(
                 'SELECT tkundengruppe.nNettoPreise
                     FROM tkundengruppe
                     JOIN tbestellung 
                         ON tbestellung.kBestellung = ' . (int)$this->kBestellung . '
                     JOIN tkunde 
                         ON tkunde.kKunde = tbestellung.kKunde
-                    WHERE tkunde.kKundengruppe = tkundengruppe.kKundengruppe',
-                ReturnType::SINGLE_OBJECT
+                    WHERE tkunde.kKundengruppe = tkundengruppe.kKundengruppe'
             );
-            if (isset($netOrderData->nNettoPreise) && $netOrderData->nNettoPreise > 0) {
+            if ($netOrderData !== null && $netOrderData->nNettoPreise > 0) {
                 $nNettoPreis = 1;
             }
         }
@@ -1022,15 +1018,14 @@ class Bestellung
      */
     public static function getProductAmount(int $orderID, int $productID): int
     {
-        $data = Shop::Container()->getDB()->queryPrepared(
+        $data = Shop::Container()->getDB()->getSingleObject(
             'SELECT twarenkorbpos.nAnzahl
                 FROM tbestellung
                 JOIN twarenkorbpos
                     ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
                 WHERE tbestellung.kBestellung = :oid
                     AND twarenkorbpos.kArtikel = :pid',
-            ['oid' => $orderID, 'pid' => $productID],
-            ReturnType::SINGLE_OBJECT
+            ['oid' => $orderID, 'pid' => $productID]
         );
 
         return (int)($data->nAnzahl ?? 0);
@@ -1123,7 +1118,7 @@ class Bestellung
      */
     public function setKampagne(): void
     {
-        $this->oKampagne = Shop::Container()->getDB()->queryPrepared(
+        $this->oKampagne = Shop::Container()->getDB()->getSingleObject(
             'SELECT tkampagne.kKampagne, tkampagne.cName, tkampagne.cParameter, tkampagnevorgang.dErstellt,
                     tkampagnevorgang.kKey AS kBestellung, tkampagnevorgang.cParamWert AS cWert
                 FROM tkampagnevorgang
@@ -1134,8 +1129,7 @@ class Bestellung
             [
                 'orderID'     => $this->kBestellung,
                 'kampagneDef' => \KAMPAGNE_DEF_VERKAUF
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
     }
 }

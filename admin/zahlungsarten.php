@@ -3,7 +3,6 @@
 use JTL\Alert\Alert;
 use JTL\Checkout\Zahlungsart;
 use JTL\Checkout\ZahlungsLog;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\PaymentMethod;
 use JTL\Helpers\Request;
@@ -325,8 +324,7 @@ if ($step === 'einstellen') {
         $db->query(
             "UPDATE tzahlungseingang
                 SET cAbgeholt = 'N'
-                WHERE kZahlungseingang IN (" . implode(',', $incomingIDs) . ')',
-            ReturnType::QUERYSINGLE
+                WHERE kZahlungseingang IN (" . implode(',', $incomingIDs) . ')'
         );
     }
 
@@ -424,13 +422,12 @@ if ($step === 'uebersicht') {
                 );
             }
         }
-        $method->nEingangAnzahl = (int)$db->executeQueryPrepared(
+        $method->nEingangAnzahl = (int)$db->getSingleObject(
             'SELECT COUNT(*) AS `cnt`
                 FROM `tzahlungseingang` AS ze
                     JOIN `tbestellung` AS b ON ze.`kBestellung` = b.`kBestellung`
                 WHERE b.`kZahlungsart` = :kzahlungsart',
-            ['kzahlungsart' => $method->kZahlungsart],
-            ReturnType::SINGLE_OBJECT
+            ['kzahlungsart' => $method->kZahlungsart]
         )->cnt;
         $method->nLogCount      = ZahlungsLog::count($method->cModulId);
         $method->nErrorLogCount = ZahlungsLog::count($method->cModulId, JTLLOG_LEVEL_ERROR);

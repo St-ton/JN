@@ -2,7 +2,6 @@
 
 namespace JTL\Catalog\Product;
 
-use JTL\DB\ReturnType;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
@@ -84,7 +83,7 @@ class Bewertung
         $this->oBewertung_arr = [];
         if ($productID > 0 && $languageID > 0) {
             $langSQL = $allLanguages ? '' : ' AND kSprache = ' . $languageID . ' ';
-            $data    = Shop::Container()->getDB()->queryPrepared(
+            $data    = Shop::Container()->getDB()->getSingleObject(
                 "SELECT tbewertung.*,
                         DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum,
                         DATE_FORMAT(dAntwortDatum, '%d.%m.%Y') AS AntwortDatum,
@@ -98,10 +97,9 @@ class Bewertung
                         AND nAktiv = 1
                     ORDER BY nHilfreich DESC
                     LIMIT 1',
-                ['customerID' => Frontend::getCustomer()->getID()],
-                ReturnType::SINGLE_OBJECT
+                ['customerID' => Frontend::getCustomer()->getID()]
             );
-            if (!empty($data)) {
+            if ($data !== null) {
                 $this->sanitizeRatingData($data);
                 $data->nAnzahlHilfreich = $data->nHilfreich + $data->nNichtHilfreich;
             }
@@ -221,23 +219,21 @@ class Bewertung
             );
             each($this->oBewertung_arr, [$this, 'sanitizeRatingData']);
         }
-        $total = $db->query(
+        $total = $db->getSingleObject(
             'SELECT COUNT(*) AS nAnzahl, tartikelext.fDurchschnittsBewertung AS fDurchschnitt
                 FROM tartikelext
                 JOIN tbewertung 
                     ON tbewertung.kArtikel = tartikelext.kArtikel
                 WHERE tartikelext.kArtikel = ' . $productID . $activateSQL . '
-                GROUP BY tartikelext.kArtikel',
-            ReturnType::SINGLE_OBJECT
+                GROUP BY tartikelext.kArtikel'
         );
         // Anzahl Bewertungen für aktuelle Sprache
-        $totalLocalized = $db->query(
+        $totalLocalized = $db->getSingleObject(
             'SELECT COUNT(*) AS nAnzahlSprache
                 FROM tbewertung
-                WHERE kArtikel = ' . $productID . $langSQL . $activateSQL,
-            ReturnType::SINGLE_OBJECT
+                WHERE kArtikel = ' . $productID . $langSQL . $activateSQL
         );
-        if (isset($total->fDurchschnitt) && (int)$total->fDurchschnitt > 0) {
+        if ($total !== null && (int)$total->fDurchschnitt > 0) {
             $total->fDurchschnitt   = \round($total->fDurchschnitt * 2) / 2;
             $total->nAnzahl         = (int)$total->nAnzahl;
             $this->oBewertungGesamt = $total;
@@ -247,9 +243,7 @@ class Bewertung
             $total->nAnzahl         = 0;
             $this->oBewertungGesamt = $total;
         }
-        $this->nAnzahlSprache = ((int)$totalLocalized->nAnzahlSprache > 0)
-            ? (int)$totalLocalized->nAnzahlSprache
-            : 0;
+        $this->nAnzahlSprache = (int)($totalLocalized->nAnzahlSprache ?? 0);
         foreach ($this->oBewertung_arr as $i => $rating) {
             $this->oBewertung_arr[$i]->nAnzahlHilfreich = $rating->nHilfreich + $rating->nNichtHilfreich;
         }

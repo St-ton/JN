@@ -6,7 +6,6 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Checkout\Kupon;
 use JTL\Customer\Customer;
-use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -238,13 +237,13 @@ function augmentCoupon($coupon)
     if ((int)$coupon->kKundengruppe === -1) {
         $coupon->cKundengruppe = '';
     } else {
-        $customerGroup         = Shop::Container()->getDB()->query(
+        $customerGroup         = Shop::Container()->getDB()->getSingleObject(
             'SELECT cName 
                 FROM tkundengruppe 
-                WHERE kKundengruppe = ' . $coupon->kKundengruppe,
-            ReturnType::SINGLE_OBJECT
+                WHERE kKundengruppe = :cgid',
+            ['cgid' =>  $coupon->kKundengruppe]
         );
-        $coupon->cKundengruppe = $customerGroup->cName;
+        $coupon->cKundengruppe = $customerGroup->cName ?? '';
     }
 
     $artNos       = Text::parseSSKint($coupon->cArtikel);
@@ -265,14 +264,14 @@ function augmentCoupon($coupon)
         ? ''
         : (string)count($customers);
 
-    $maxCreated       = Shop::Container()->getDB()->query(
-        'SELECT max(dErstellt) as dLastUse
+    $maxCreated       = Shop::Container()->getDB()->getSingleObject(
+        'SELECT MAX(dErstellt) AS dLastUse
             FROM tkuponkunde
-            WHERE kKupon = ' . (int)$coupon->kKupon,
-        ReturnType::SINGLE_OBJECT
+            WHERE kKupon = :cid',
+        ['cid' => (int)$coupon->kKupon]
     );
     $coupon->dLastUse = date_create(
-        is_string($maxCreated->dLastUse)
+        $maxCreated !== null && is_string($maxCreated->dLastUse)
         ? $maxCreated->dLastUse
         : ''
     );
@@ -400,12 +399,11 @@ function createCouponFromInput()
  */
 function getCouponCount(string $type = Kupon::TYPE_STANDARD, string $whereSQL = ''): int
 {
-    return (int)Shop::Container()->getDB()->query(
+    return (int)Shop::Container()->getDB()->getSingleObject(
         "SELECT COUNT(kKupon) AS cnt
             FROM tkupon
             WHERE cKuponTyp = '" . $type . "'" .
-            ($whereSQL !== '' ? ' AND ' . $whereSQL : ''),
-        ReturnType::SINGLE_OBJECT
+            ($whereSQL !== '' ? ' AND ' . $whereSQL : '')
     )->cnt;
 }
 
@@ -455,15 +453,14 @@ function validateCoupon($coupon)
         && !isset($coupon->massCreationCoupon)
         && ($coupon->cKuponTyp === Kupon::TYPE_STANDARD || $coupon->cKuponTyp === Kupon::TYPE_SHIPPING)
     ) {
-        $queryRes = Shop::Container()->getDB()->executeQueryPrepared(
+        $queryRes = Shop::Container()->getDB()->getSingleObject(
             'SELECT kKupon
                 FROM tkupon
                 WHERE cCode = :cCode
                     AND kKupon != :kKupon',
-            [ 'cCode' => $coupon->cCode, 'kKupon' => (int)$coupon->kKupon ],
-            ReturnType::SINGLE_OBJECT
+            [ 'cCode' => $coupon->cCode, 'kKupon' => (int)$coupon->kKupon ]
         );
-        if (is_object($queryRes)) {
+        if ($queryRes !== null) {
             $errors[] = __('errorCouponCodeDuplicate');
         }
     }
@@ -699,8 +696,7 @@ function deactivateOutdatedCoupons()
         "UPDATE tkupon
             SET cAktiv = 'N'
             WHERE dGueltigBis > 0
-            AND dGueltigBis <= NOW()",
-        ReturnType::QUERYSINGLE
+            AND dGueltigBis <= NOW()"
     );
 }
 
@@ -713,7 +709,6 @@ function deactivateExhaustedCoupons()
         "UPDATE tkupon
             SET cAktiv = 'N'
             WHERE nVerwendungen > 0
-            AND nVerwendungenBisher >= nVerwendungen",
-        ReturnType::QUERYSINGLE
+            AND nVerwendungenBisher >= nVerwendungen"
     );
 }

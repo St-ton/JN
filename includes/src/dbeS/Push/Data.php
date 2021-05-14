@@ -2,8 +2,6 @@
 
 namespace JTL\dbeS\Push;
 
-use JTL\DB\ReturnType;
-
 /**
  * Class Data
  * @package JTL\dbeS\Push
@@ -20,12 +18,11 @@ final class Data extends AbstractPush
     public function getData()
     {
         $xml     = [];
-        $current = $this->db->query(
+        $current = $this->db->getArrays(
             "SELECT *
-            FROM tverfuegbarkeitsbenachrichtigung
-            WHERE cAbgeholt = 'N'
-            LIMIT " . self::LIMIT_AVAILABILITY_MSGS,
-            ReturnType::ARRAY_OF_ASSOC_ARRAYS
+                FROM tverfuegbarkeitsbenachrichtigung
+                WHERE cAbgeholt = 'N'
+                LIMIT " . self::LIMIT_AVAILABILITY_MSGS
         );
         $count   = \count($current);
         if ($count > 0) {
@@ -41,11 +38,10 @@ final class Data extends AbstractPush
             }
             $xml['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung'] = $current;
         }
-        $queueData = $this->db->query(
+        $queueData = $this->db->getArrays(
             'SELECT *
-            FROM tuploadqueue
-            LIMIT ' . self::LIMIT_UPLOADQUEUE,
-            ReturnType::ARRAY_OF_ASSOC_ARRAYS
+                FROM tuploadqueue
+                LIMIT ' . self::LIMIT_UPLOADQUEUE
         );
         $count     = \count($queueData);
         if ($count > 0) {

@@ -6,7 +6,6 @@ use DateTime;
 use Exception;
 use JTL\Alert\Alert;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -536,12 +535,11 @@ class AdminAccountManager
             }
             if ($tmpAcc->kAdminlogin > 0) {
                 $oldAcc     = $this->getAdminLogin($tmpAcc->kAdminlogin);
-                $groupCount = (int)$this->db->query(
-                    'SELECT COUNT(*) AS nCount
+                $groupCount = (int)$this->db->getSingleObject(
+                    'SELECT COUNT(*) AS cnt
                         FROM tadminlogin
-                        WHERE kAdminlogingruppe = 1',
-                    ReturnType::SINGLE_OBJECT
-                )->nCount;
+                        WHERE kAdminlogingruppe = 1'
+                )->cnt;
                 if ($oldAcc !== null
                     && (int)$oldAcc->kAdminlogingruppe === \ADMINGROUP
                     && (int)$tmpAcc->kAdminlogingruppe !== \ADMINGROUP
@@ -661,12 +659,11 @@ class AdminAccountManager
             'content'  => &$extContent
         ]);
 
-        $groupCount = (int)$this->db->query(
-            'SELECT COUNT(*) AS nCount
+        $groupCount = (int)$this->db->getSingleObject(
+            'SELECT COUNT(*) AS cnt
                 FROM tadminlogin
-                WHERE kAdminlogingruppe = 1',
-            ReturnType::SINGLE_OBJECT
-        )->nCount;
+                WHERE kAdminlogingruppe = 1'
+        )->cnt;
         $this->smarty->assign('oAccount', $account)
             ->assign('nAdminCount', $groupCount)
             ->assign('extContent', $extContent);
@@ -680,17 +677,13 @@ class AdminAccountManager
     public function actionAccountDelete(): string
     {
         $adminID    = Request::postInt('id');
-        $groupCount = (int)$this->db->query(
-            'SELECT COUNT(*) AS nCount
+        $groupCount = (int)$this->db->getSingleObject(
+            'SELECT COUNT(*) AS cnt
                 FROM tadminlogin
-                WHERE kAdminlogingruppe = 1',
-            ReturnType::SINGLE_OBJECT
-        )->nCount;
+                WHERE kAdminlogingruppe = 1'
+        )->cnt;
         $account    = $this->db->select('tadminlogin', 'kAdminlogin', $adminID);
-
-        if (isset($account->kAdminlogin)
-            && (int)$account->kAdminlogin === (int)$_SESSION['AdminAccount']->kAdminlogin
-        ) {
+        if ($account !== null && (int)$account->kAdminlogin === (int)$_SESSION['AdminAccount']->kAdminlogin) {
             $this->addError(__('errorSelfDelete'));
         } elseif (\is_object($account)) {
             if ((int)$account->kAdminlogingruppe === \ADMINGROUP && $groupCount <= 1) {
@@ -816,14 +809,13 @@ class AdminAccountManager
     public function actionGroupDelete(): string
     {
         $groupID = Request::postInt('id');
-        $data    = $this->db->queryPrepared(
-            'SELECT COUNT(*) AS member_count
+        $count   = (int)$this->db->getSingleObject(
+            'SELECT COUNT(*) AS cnt
                 FROM tadminlogin
                 WHERE kAdminlogingruppe = :gid',
             ['gid' => $groupID],
-            ReturnType::SINGLE_OBJECT
-        );
-        if ((int)$data->member_count !== 0) {
+        )->cnt;
+        if ($count !== 0) {
             $this->addError(__('errorGroupDeleteCustomer'));
 
             return 'group_redirect';

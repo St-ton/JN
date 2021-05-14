@@ -2,7 +2,6 @@
 
 use JTL\Alert\Alert;
 use JTL\Backend\Settings\Manager;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
@@ -166,15 +165,14 @@ if ($step === 'uebersicht') {
     );
     $sectionCount = count($sections);
     for ($i = 0; $i < $sectionCount; $i++) {
-        $confCount = $db->queryPrepared(
+        $confCount = $db->getSingleObject(
             "SELECT COUNT(*) AS anz
                 FROM teinstellungenconf
                 WHERE kEinstellungenSektion = :sid
                     AND cConf = 'Y'
                     AND nStandardAnzeigen = 1
                     AND nModul = 0",
-            ['sid' => (int)$sections[$i]->kEinstellungenSektion],
-            ReturnType::SINGLE_OBJECT
+            ['sid' => (int)$sections[$i]->kEinstellungenSektion]
         );
 
         $sections[$i]->anz = $confCount->anz;

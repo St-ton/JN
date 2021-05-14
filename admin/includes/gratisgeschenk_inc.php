@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Catalog\Product\Artikel;
-use JTL\DB\ReturnType;
 use JTL\Shop;
 
 /**
@@ -112,12 +111,11 @@ function holeLetzten100Geschenke(string $sql): array
  */
 function gibAnzahlAktiverGeschenke(): int
 {
-    return (int)Shop::Container()->getDB()->query(
-        "SELECT COUNT(*) AS nAnzahl
+    return (int)Shop::Container()->getDB()->getSingleObject(
+        "SELECT COUNT(*) AS cnt
             FROM tartikelattribut
-            WHERE cName = '" . ART_ATTRIBUT_GRATISGESCHENKAB . "'",
-        ReturnType::SINGLE_OBJECT
-    )->nAnzahl;
+            WHERE cName = '" . ART_ATTRIBUT_GRATISGESCHENKAB . "'"
+    )->cnt;
 }
 
 /**
@@ -125,12 +123,11 @@ function gibAnzahlAktiverGeschenke(): int
  */
 function gibAnzahlHaeufigGekaufteGeschenke(): int
 {
-    return (int)Shop::Container()->getDB()->query(
-        'SELECT COUNT(DISTINCT(kArtikel)) AS nAnzahl
+    return (int)Shop::Container()->getDB()->getSingleObject(
+        'SELECT COUNT(DISTINCT(kArtikel)) AS cnt
             FROM twarenkorbpos
-            WHERE nPosTyp = ' . C_WARENKORBPOS_TYP_GRATISGESCHENK,
-        ReturnType::SINGLE_OBJECT
-    )->nAnzahl;
+            WHERE nPosTyp = ' . C_WARENKORBPOS_TYP_GRATISGESCHENK
+    )->cnt;
 }
 
 /**
@@ -138,11 +135,10 @@ function gibAnzahlHaeufigGekaufteGeschenke(): int
  */
 function gibAnzahlLetzten100Geschenke(): int
 {
-    return (int)Shop::Container()->getDB()->query(
-        'SELECT COUNT(*) AS nAnzahl
+    return (int)Shop::Container()->getDB()->getSingleObject(
+        'SELECT COUNT(*) AS cnt
             FROM twarenkorbpos
             WHERE nPosTyp = ' . C_WARENKORBPOS_TYP_GRATISGESCHENK . '
-            LIMIT 100',
-        ReturnType::SINGLE_OBJECT
-    )->nAnzahl;
+            LIMIT 100'
+    )->cnt;
 }

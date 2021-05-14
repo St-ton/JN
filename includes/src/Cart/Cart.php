@@ -9,7 +9,6 @@ use JTL\Catalog\Product\Preise;
 use JTL\Checkout\Eigenschaft;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Versandart;
-use JTL\DB\ReturnType;
 use JTL\Extensions\Config\Item;
 use JTL\Extensions\Config\ItemLocalization;
 use JTL\Extensions\Download\Download;
@@ -790,34 +789,32 @@ class Cart
             return 3;
         }
         $mbw = Frontend::getCustomerGroup()->getAttribute(\KNDGRP_ATTRIBUT_MINDESTBESTELLWERT);
-        if ($mbw > 0 && $this->gibGesamtsummeWarenOhne([C_WARENKORBPOS_TYP_GUTSCHEIN], true) < $mbw) {
+        if ($mbw > 0 && $this->gibGesamtsummeWarenOhne([\C_WARENKORBPOS_TYP_GUTSCHEIN], true) < $mbw) {
             return 9;
         }
         if ((!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true)
             && $this->config['kaufabwicklung']['bestellabschluss_spamschutz_nutzen'] === 'Y'
             && ($ip = Request::getRealIP())
         ) {
-            $cnt = Shop::Container()->getDB()->executeQueryPrepared(
-                'SELECT COUNT(*) AS anz
+            $cnt = (int)Shop::Container()->getDB()->getSingleObject(
+                'SELECT COUNT(*) AS cnt
                     FROM tbestellung
                     WHERE cIP = :ip
                         AND dErstellt > NOW() - INTERVAL 1 DAY',
-                ['ip' => $ip],
-                ReturnType::SINGLE_OBJECT
-            );
-            if ($cnt->anz > 0) {
-                $min                = 2 ** $cnt->anz;
-                $min                = \min([$min, 1440]);
-                $bestellungMoeglich = Shop::Container()->getDB()->executeQueryPrepared(
+                ['ip' => $ip]
+            )->cnt;
+            if ($cnt > 0) {
+                $min = 2 ** $cnt;
+                $min = \min([$min, 1440]);
+                $ok  = Shop::Container()->getDB()->getSingleObject(
                     'SELECT dErstellt+INTERVAL ' . $min . ' MINUTE < NOW() AS moeglich
                         FROM tbestellung
                         WHERE cIP = :ip
                             AND dErstellt > NOW()-INTERVAL 1 DAY
                         ORDER BY kBestellung DESC',
-                    ['ip' => $ip],
-                    ReturnType::SINGLE_OBJECT
+                    ['ip' => $ip]
                 );
-                if (!$bestellungMoeglich->moeglich) {
+                if ($ok === null || !$ok->moeglich) {
                     return 8;
                 }
             }
@@ -1411,14 +1408,13 @@ class Cart
                 foreach ($item->WarenkorbPosEigenschaftArr as $oWarenkorbPosEigenschaft) {
                     if ($oWarenkorbPosEigenschaft->kEigenschaftWert > 0 && $item->nAnzahl > 0) {
                         //schaue in DB, ob Lagerbestand ausreichend
-                        $stock = Shop::Container()->getDB()->query(
+                        $stock = Shop::Container()->getDB()->getSingleObject(
                             'SELECT kEigenschaftWert, fLagerbestand >= ' . $item->nAnzahl .
                             ' AS bAusreichend, fLagerbestand
                                 FROM teigenschaftwert
-                                WHERE kEigenschaftWert = ' . (int)$oWarenkorbPosEigenschaft->kEigenschaftWert,
-                            ReturnType::SINGLE_OBJECT
+                                WHERE kEigenschaftWert = ' . (int)$oWarenkorbPosEigenschaft->kEigenschaftWert
                         );
-                        if (isset($stock->kEigenschaftWert) && $stock->kEigenschaftWert > 0 && !$stock->bAusreichend) {
+                        if ($stock !== null && $stock->kEigenschaftWert > 0 && !$stock->bAusreichend) {
                             if ($stock->fLagerbestand > 0) {
                                 $item->nAnzahl = $stock->fLagerbestand;
                             } else {
@@ -1893,7 +1889,7 @@ class Cart
         }
 
         // cheapest shipping except shippings that offer cash payment
-        $shipping = Shop::Container()->getDB()->queryPrepared(
+        $shipping = Shop::Container()->getDB()->getSingleObject(
             "SELECT va.kVersandart, IF(vas.fPreis IS NOT NULL, vas.fPreis, va.fPreis) AS minPrice, va.nSort
                 FROM tversandart va
                 LEFT JOIN tversandartstaffel vas
@@ -1923,11 +1919,9 @@ class Cart
                 'totalWeight' => $totalWeight,
                 'maxPrices'   => $maxPrices,
                 'scl'         => '^([0-9 -]* )?' . $shippingClasses
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
-
-        if (isset($shipping->kVersandart)) {
+        if ($shipping !== null && $shipping->kVersandart > 0) {
             $method = new Versandart((int)$shipping->kVersandart);
             $method->setCountryCode($countryCode);
 

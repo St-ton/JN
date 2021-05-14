@@ -6,7 +6,6 @@ use Illuminate\Support\Collection;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Product\Artikel;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Link\SpecialPageNotFoundException;
 use JTL\Mapper\PageTypeToLinkType;
 use JTL\News\Category;

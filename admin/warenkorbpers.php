@@ -3,7 +3,6 @@
 use JTL\Alert\Alert;
 use JTL\Cart\PersistentCart;
 use JTL\Customer\Customer;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -42,15 +41,14 @@ if (Request::getInt('l') > 0 && Form::validateToken()) {
 
     unset($persCart);
 }
-$customerCount = (int)Shop::Container()->getDB()->query(
+$customerCount = (int)Shop::Container()->getDB()->getSingleObject(
     'SELECT COUNT(DISTINCT tkunde.kKunde) AS cnt
          FROM tkunde
          JOIN twarenkorbpers
              ON tkunde.kKunde = twarenkorbpers.kKunde
          JOIN twarenkorbperspos
              ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
-         ' . $searchSQL->cWHERE,
-    ReturnType::SINGLE_OBJECT
+         ' . $searchSQL->cWHERE
 )->cnt;
 
 $oPagiKunden = (new Pagination('kunden'))
@@ -85,13 +83,12 @@ $smarty->assign('oKunde_arr', $customers)
 if (Request::getInt('a') > 0) {
     $step           = 'anzeigen';
     $customerID     = Request::getInt('a');
-    $persCartCount  = (int)Shop::Container()->getDB()->query(
+    $persCartCount  = (int)Shop::Container()->getDB()->getSingleObject(
         'SELECT COUNT(*) AS cnt
             FROM twarenkorbperspos
             JOIN twarenkorbpers 
                 ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
-            WHERE twarenkorbpers.kKunde = ' . $customerID,
-        ReturnType::SINGLE_OBJECT
+            WHERE twarenkorbpers.kKunde = ' . $customerID
     )->cnt;
     $cartPagination = (new Pagination('warenkorb'))
         ->setItemCount($persCartCount)

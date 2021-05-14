@@ -2,7 +2,6 @@
 
 namespace JTL\Backend;
 
-use JTL\DB\ReturnType;
 use JTL\Shop;
 
 /**
@@ -215,17 +214,16 @@ class JSONAPI
      */
     private function validateTableName(string $table): bool
     {
-        $res = Shop::Container()->getDB()->queryPrepared(
+        $res = Shop::Container()->getDB()->getSingleObject(
             "SELECT `table_name` 
                 FROM information_schema.tables 
                 WHERE `table_type` = 'base table'
                     AND `table_schema` = :sma
                     AND `table_name` = :tn",
-            ['sma' => DB_NAME, 'tn' => $table],
-            ReturnType::SINGLE_OBJECT
+            ['sma' => DB_NAME, 'tn' => $table]
         );
 
-        return $res !== false && $res->table_name === $table;
+        return $res !== null && $res->table_name === $table;
     }
 
     /**

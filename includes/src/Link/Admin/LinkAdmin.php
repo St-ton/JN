@@ -6,7 +6,6 @@ use Illuminate\Support\Collection;
 use JTL\Backend\Revision;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Seo;
 use JTL\Language\LanguageHelper;

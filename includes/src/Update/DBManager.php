@@ -2,7 +2,6 @@
 
 namespace JTL\Update;
 
-use JTL\DB\ReturnType;
 use JTL\Shop;
 use stdClass;
 
@@ -101,11 +100,10 @@ class DBManager
         if ($table !== null) {
             $table = Shop::Container()->getDB()->escape($table);
 
-            return Shop::Container()->getDB()->query(
+            return Shop::Container()->getDB()->getSingleObject(
                 "SHOW TABLE STATUS 
                     FROM `{$database}` 
-                    WHERE name='{$table}'",
-                ReturnType::SINGLE_OBJECT
+                    WHERE name='{$table}'"
             );
         }
 

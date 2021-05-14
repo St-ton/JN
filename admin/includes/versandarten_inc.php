@@ -5,7 +5,6 @@ use JTL\Alert\Alert;
 use JTL\Checkout\ShippingSurcharge;
 use JTL\Checkout\Versandart;
 use JTL\Checkout\ZipValidator;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Language\LanguageModel;
@@ -561,19 +560,18 @@ function createShippingSurchargeZIP(array $data): object
 function getShippingTypes(int $shippingTypeID = null)
 {
     if ($shippingTypeID !== null) {
-        $shippingTypes = Shop::Container()->getDB()->queryPrepared(
+        $shippingTypes = Shop::Container()->getDB()->getCollection(
             'SELECT *
                 FROM tversandberechnung
                 WHERE kVersandberechnung = :shippingTypeID
                 ORDER BY cName',
-            ['shippingTypeID' => $shippingTypeID],
-            ReturnType::COLLECTION
+            ['shippingTypeID' => $shippingTypeID]
         );
     } else {
-        $shippingTypes = Shop::Container()->getDB()->query(
+        $shippingTypes = Shop::Container()->getDB()->getCollection(
             'SELECT *
-                FROM tversandberechnung ORDER BY cName',
-            ReturnType::COLLECTION
+                FROM tversandberechnung
+                ORDER BY cName'
         );
     }
     $shippingTypes->each(static function ($e) {

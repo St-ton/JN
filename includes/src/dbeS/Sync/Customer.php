@@ -8,7 +8,6 @@ use JTL\Customer\Customer as CustomerClass;
 use JTL\Customer\CustomerAttribute;
 use JTL\Customer\CustomerField;
 use JTL\Customer\DataHistory;
-use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\GeneralDataProtection\Journal;
 use JTL\Helpers\GeneralObject;
@@ -281,15 +280,14 @@ final class Customer extends AbstractSync
      */
     private function notifyDuplicateCustomer(stdClass $oldCustomer, array $xml): array
     {
-        $cstmr  = $this->db->query(
+        $cstmr  = $this->db->getArrays(
             "SELECT kKunde, kKundengruppe, kSprache, cKundenNr, cPasswort, cAnrede, cTitel, cVorname,
                     cNachname, cFirma, cZusatz, cStrasse, cHausnummer, cAdressZusatz, cPLZ, cOrt, cBundesland, 
                     cLand, cTel, cMobil, cFax, cMail, cUSTID, cWWW, fGuthaben, cNewsletter, dGeburtstag, fRabatt,
                     cHerkunft, dErstellt, dVeraendert, cAktiv, cAbgeholt,
                     date_format(dGeburtstag, '%d.%m.%Y') AS dGeburtstag_formatted, nRegistriert
                 FROM tkunde
-                WHERE kKunde = " . (int)$oldCustomer->kKunde,
-            ReturnType::ARRAY_OF_ASSOC_ARRAYS
+                WHERE kKunde = " . (int)$oldCustomer->kKunde
         );
         $crypto = Shop::Container()->getCryptoService();
 
@@ -305,11 +303,10 @@ final class Customer extends AbstractSync
         $cstmr[0]['cLand'] = LanguageHelper::getCountryCodeByCountryName($cstmr[0]['cLand']);
         unset($cstmr[0]['cPasswort']);
         $cstmr['0 attr']             = $this->buildAttributes($cstmr[0]);
-        $cstmr[0]['tkundenattribut'] = $this->db->query(
+        $cstmr[0]['tkundenattribut'] = $this->db->getArrays(
             'SELECT *
                 FROM tkundenattribut
-                 WHERE kKunde = ' . (int)$cstmr['0 attr']['kKunde'],
-            ReturnType::ARRAY_OF_ASSOC_ARRAYS
+                 WHERE kKunde = ' . (int)$cstmr['0 attr']['kKunde']
         );
         foreach ($cstmr[0]['tkundenattribut'] as $o => $attr) {
             $cstmr[0]['tkundenattribut'][$o . ' attr'] = $this->buildAttributes($attr);

@@ -4,7 +4,6 @@ use JTL\Alert\Alert;
 use JTL\Campaign;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -108,7 +107,7 @@ if (Form::validateToken()) {
             if (!empty($_POST['kNewsletterQueue']) && is_array($_POST['kNewsletterQueue'])) {
                 $noticeTMP = '';
                 foreach ($_POST['kNewsletterQueue'] as $kNewsletterQueue) {
-                    $entry = $db->queryPrepared(
+                    $entry = $db->getSingleObject(
                         'SELECT c.foreignKeyID AS newsletterID, c.cronID AS cronID, l.cBetreff
                             FROM tcron c
                             LEFT JOIN tjobqueue j 
@@ -116,8 +115,7 @@ if (Form::validateToken()) {
                             LEFT JOIN tnewsletter l 
                                 ON c.foreignKeyID = l.kNewsletter
                             WHERE c.cronID = :cronID',
-                        ['cronID' => $kNewsletterQueue],
-                        ReturnType::SINGLE_OBJECT
+                        ['cronID' => $kNewsletterQueue]
                     );
                     $db->delete('tnewsletter', 'kNewsletter', (int)$entry->newsletterID);
                     $db->delete('tcron', 'cronID', $entry->cronID);
@@ -158,17 +156,15 @@ if (Form::validateToken()) {
         } elseif (isset($_GET['anzeigen'])) {
             $step      = 'history_anzeigen';
             $historyID = (int)$_GET['anzeigen'];
-            $hist      = $db->queryPrepared(
+            $hist      = $db->getSingleObject(
                 "SELECT kNewsletterHistory, cBetreff, cHTMLStatic, cKundengruppe,
                     DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum
                     FROM tnewsletterhistory
                     WHERE kNewsletterHistory = :hid
                         AND kSprache = :lid",
-                ['hid' => $historyID, 'lid' => $languageID],
-                ReturnType::SINGLE_OBJECT
+                ['hid' => $historyID, 'lid' => $languageID]
             );
-
-            if (isset($hist->kNewsletterHistory) && $hist->kNewsletterHistory > 0) {
+            if ($hist !== null && $hist->kNewsletterHistory > 0) {
                 $smarty->assign('oNewsletterHistory', $hist);
             }
         }
@@ -195,11 +191,10 @@ if (Form::validateToken()) {
     } elseif (Request::verifyGPCDataInt('vorschau') > 0) { // Vorschau
         $nlTemplateID = Request::verifyGPCDataInt('vorschau');
         // Infos der Vorlage aus DB holen
-        $newsletterTPL = $db->query(
+        $newsletterTPL = $db->getSingleObject(
             "SELECT *, DATE_FORMAT(dStartZeit, '%d.%m.%Y %H:%i') AS Datum
                 FROM tnewslettervorlage
-                WHERE kNewsletterVorlage = " . $nlTemplateID,
-            ReturnType::SINGLE_OBJECT
+                WHERE kNewsletterVorlage = " . $nlTemplateID
         );
         $preview       = null;
         if (Request::verifyGPCDataInt('iframe') === 1) {
@@ -325,16 +320,15 @@ if (Form::validateToken()) {
                 $nlTemplateID = Request::verifyGPCDataInt('editieren');
             }
             // Infos der Vorlage aus DB holen
-            $newsletterTPL = $db->query(
+            $newsletterTPL = $db->getSingleObject(
                 "SELECT *, DATE_FORMAT(dStartZeit, '%d.%m.%Y %H:%i') AS Datum
                     FROM tnewslettervorlage
-                    WHERE kNewsletterVorlage = " . $nlTemplateID,
-                ReturnType::SINGLE_OBJECT
+                    WHERE kNewsletterVorlage = " . $nlTemplateID
             );
 
             $newsletterTPL->oZeit = $admin->getDateData($newsletterTPL->dStartZeit);
 
-            if ($newsletterTPL->kNewsletterVorlage > 0) {
+            if ($newsletterTPL !== null && $newsletterTPL->kNewsletterVorlage > 0) {
                 $productData                = $admin->getProductData($newsletterTPL->cArtikel);
                 $newsletterTPL->cArtikel    = mb_substr(
                     mb_substr($newsletterTPL->cArtikel, 1),
@@ -543,13 +537,12 @@ if (Form::validateToken()) {
             $step = 'uebersicht';
             if (is_array($_POST['kNewsletterVorlage'])) {
                 foreach ($_POST['kNewsletterVorlage'] as $nlTemplateID) {
-                    $nlTPL = $db->query(
+                    $nlTPL = $db->getSingleObject(
                         'SELECT kNewsletterVorlage, kNewslettervorlageStd
                             FROM tnewslettervorlage
-                            WHERE kNewsletterVorlage = ' . (int)$nlTemplateID,
-                        ReturnType::SINGLE_OBJECT
+                            WHERE kNewsletterVorlage = ' . (int)$nlTemplateID
                     );
-                    if (isset($nlTPL->kNewsletterVorlage) && $nlTPL->kNewsletterVorlage > 0) {
+                    if ($nlTPL !== null && $nlTPL->kNewsletterVorlage > 0) {
                         if (isset($nlTPL->kNewslettervorlageStd) && $nlTPL->kNewslettervorlageStd > 0) {
                             $db->query(
                                 'DELETE tnewslettervorlage, tnewslettervorlagestdvarinhalt
@@ -581,29 +574,27 @@ if (Form::validateToken()) {
     }
 }
 if ($step === 'uebersicht') {
-    $recipientsCount   = (int)$db->query(
+    $recipientsCount   = (int)$db->getSingleObject(
         'SELECT COUNT(*) AS cnt
             FROM tnewsletterempfaenger
-            WHERE tnewsletterempfaenger.nAktiv = 0' . $inactiveSearchSQL->cWHERE,
-        ReturnType::SINGLE_OBJECT
+            WHERE tnewsletterempfaenger.nAktiv = 0' . $inactiveSearchSQL->cWHERE
     )->cnt;
-    $queueCount        = (int)$db->query(
+    $queueCount        = (int)$db->getSingleObject(
         "SELECT COUNT(*) AS cnt
             FROM tjobqueue
-            WHERE jobType = 'newsletter'",
-        ReturnType::SINGLE_OBJECT
+            WHERE jobType = 'newsletter'"
     )->cnt;
-    $templateCount     = (int)$db->query(
+    $templateCount     = (int)$db->getSingleObject(
         'SELECT COUNT(*) AS cnt
             FROM tnewslettervorlage
-            WHERE kSprache = ' . $languageID,
-        ReturnType::SINGLE_OBJECT
+            WHERE kSprache = :lid',
+        ['lid' => $languageID],
     )->cnt;
-    $historyCount      = (int)$db->query(
+    $historyCount      = (int)$db->getSingleObject(
         'SELECT COUNT(*) AS cnt
             FROM tnewsletterhistory
-            WHERE kSprache = ' . $languageID,
-        ReturnType::SINGLE_OBJECT
+            WHERE kSprache = :lid',
+        ['lid' => $languageID]
     )->cnt;
     $pagiInactive      = (new Pagination('inaktive'))
         ->setItemCount($recipientsCount)

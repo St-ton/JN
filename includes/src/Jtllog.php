@@ -2,7 +2,6 @@
 
 namespace JTL;
 
-use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 
 /**
@@ -225,14 +224,12 @@ class Jtllog
                 $where .= " AND cLog LIKE '%" . $filter . "%'";
             }
         }
-        $data = Shop::Container()->getDB()->query(
-            'SELECT COUNT(*) AS nAnzahl 
-                FROM tjtllog' .
-            $where,
-            ReturnType::SINGLE_OBJECT
-        );
 
-        return (int)$data->nAnzahl;
+        return (int)Shop::Container()->getDB()->getSingleObject(
+            'SELECT COUNT(*) AS cnt 
+                FROM tjtllog' .
+            $where
+        )->cnt;
     }
 
     /**
@@ -245,10 +242,9 @@ class Jtllog
             'DELETE FROM tjtllog 
                 WHERE DATE_ADD(dErstellt, INTERVAL 30 DAY) < NOW()'
         );
-        $count = (int)$db->query(
+        $count = (int)$db->getSingleObject(
             'SELECT COUNT(*) AS cnt 
-                FROM tjtllog',
-            ReturnType::SINGLE_OBJECT
+                FROM tjtllog'
         )->cnt;
 
         if ($count > \JTLLOG_MAX_LOGSIZE) {
@@ -446,13 +442,12 @@ class Jtllog
         if ($cache === true && isset($conf['global']['systemlog_flag'])) {
             return (int)$conf['global']['systemlog_flag'];
         }
-        $conf = Shop::Container()->getDB()->query(
+        $conf = Shop::Container()->getDB()->getSingleObject(
             "SELECT cWert 
                 FROM teinstellungen 
-                WHERE cName = 'systemlog_flag'",
-            ReturnType::SINGLE_OBJECT
+                WHERE cName = 'systemlog_flag'"
         );
 
-        return isset($conf->cWert) ? (int)$conf->cWert : 0;
+        return (int)($conf->cWert ?? 0);
     }
 }

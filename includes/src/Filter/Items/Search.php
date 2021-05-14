@@ -2,7 +2,6 @@
 
 namespace JTL\Filter\Items;
 
-use JTL\DB\ReturnType;
 use JTL\Filter\AbstractFilter;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\Join;
@@ -131,7 +130,7 @@ class Search extends AbstractFilter
      */
     public function setSeo(array $languages): FilterInterface
     {
-        $seo = $this->productFilter->getDB()->executeQueryPrepared(
+        $seo = $this->productFilter->getDB()->getSingleObject(
             'SELECT cSuche
                 FROM tsuchanfrage
                 WHERE kSuchanfrage = :kkey
@@ -139,10 +138,9 @@ class Search extends AbstractFilter
             [
                 'kkey'       => $this->getValue(),
                 'languageID' => (int)$_SESSION['kSprache']
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
-        if (!empty($seo->cSuche)) {
+        if ($seo !== null && !empty($seo->cSuche)) {
             $this->setName($seo->cSuche);
         }
 
@@ -227,13 +225,12 @@ class Search extends AbstractFilter
         }
         // Ist md5(IP) bereits X mal im Cache
         $maxHits       = (int)$this->getConfig('artikeluebersicht')['livesuche_max_ip_count'];
-        $userCacheHits = (int)$this->productFilter->getDB()->executeQueryPrepared(
+        $userCacheHits = (int)$this->productFilter->getDB()->getSingleObject(
             'SELECT COUNT(*) AS cnt
                 FROM tsuchanfragencache
                 WHERE kSprache = :lang
                 AND cIP = :ip',
-            ['lang' => $languageID, 'ip' => Request::getRealIP()],
-            ReturnType::SINGLE_OBJECT
+            ['lang' => $languageID, 'ip' => Request::getRealIP()]
         )->cnt;
         $ipUsed        = $this->productFilter->getDB()->select(
             'tsuchanfragencache',

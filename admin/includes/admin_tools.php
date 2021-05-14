@@ -5,7 +5,6 @@ use JTL\Backend\AdminFavorite;
 use JTL\Backend\Notification;
 use JTL\Campaign;
 use JTL\Catalog\Currency;
-use JTL\DB\ReturnType;
 use JTL\Filter\SearchResults;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -493,17 +492,15 @@ function getJTLVersionDB(bool $date = false)
 {
     $ret = 0;
     if ($date) {
-        $latestUpdate = Shop::Container()->getDB()->query(
-            'SELECT max(dExecuted) as date FROM tmigration',
-            ReturnType::SINGLE_OBJECT
+        $latestUpdate = Shop::Container()->getDB()->getSingleObject(
+            'SELECT MAX(dExecuted) AS date FROM tmigration'
         );
-        $ret          = $latestUpdate->date;
+        $ret          = $latestUpdate->date ?? 0;
     } else {
-        $versionData = Shop::Container()->getDB()->query(
-            'SELECT nVersion FROM tversion',
-            ReturnType::SINGLE_OBJECT
+        $versionData = Shop::Container()->getDB()->getSingleObject(
+            'SELECT nVersion FROM tversion'
         );
-        if (isset($versionData->nVersion)) {
+        if ($versionData !== null) {
             $ret = $versionData->nVersion;
         }
     }

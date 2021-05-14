@@ -4,7 +4,6 @@ use JTL\Alert\Alert;
 use JTL\Backend\Revision;
 use JTL\Boxes\Admin\BoxAdmin;
 use JTL\Boxes\Type;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Link\LinkGroupInterface;

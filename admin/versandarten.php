@@ -5,7 +5,6 @@ use JTL\Alert\Alert;
 use JTL\Checkout\Versandart;
 use JTL\Country\Country;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
@@ -490,10 +489,9 @@ if ($step === 'uebersicht') {
             $method->einheit = 'Stück';
         }
         $method->countries                  = new Collection();
-        $method->shippingSurchargeCountries = array_column($db->queryPrepared(
+        $method->shippingSurchargeCountries = array_column($db->getArrays(
             'SELECT DISTINCT cISO FROM tversandzuschlag WHERE kVersandart = :shippingMethodID',
-            ['shippingMethodID' => (int)$method->kVersandart],
-            ReturnType::ARRAY_OF_ASSOC_ARRAYS
+            ['shippingMethodID' => (int)$method->kVersandart]
         ), 'cISO');
         foreach (explode(' ', trim($method->cLaender)) as $item) {
             if (($country = $countryHelper->getCountry($item)) !== null) {

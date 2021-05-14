@@ -3,7 +3,6 @@
 namespace JTL\Plugin\Admin\Installation;
 
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Helpers\Text;
@@ -823,15 +822,14 @@ final class Installer
                 'kPlugin\_' . $pluginID . '\_',
                 $method->cModulId
             );
-            $newPaymentMethod = $this->db->queryPrepared(
+            $newPaymentMethod = $this->db->getSingleObject(
                 'SELECT kZahlungsart
                     FROM tzahlungsart
                     WHERE cModulId LIKE :oldID',
-                ['oldID' => $oldModuleID],
-                ReturnType::SINGLE_OBJECT
+                ['oldID' => $oldModuleID]
             );
             $setSQL           = '';
-            if (isset($method->kZahlungsart, $newPaymentMethod->kZahlungsart)) {
+            if ($newPaymentMethod !== null && isset($method->kZahlungsart, $newPaymentMethod->kZahlungsart)) {
                 $this->db->query(
                     'DELETE tzahlungsart, tzahlungsartsprache
                         FROM tzahlungsart

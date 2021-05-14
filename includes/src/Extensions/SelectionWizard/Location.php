@@ -4,7 +4,6 @@ namespace JTL\Extensions\SelectionWizard;
 
 use JTL\Catalog\Category\Kategorie;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Shop;
 use stdClass;
@@ -143,15 +142,12 @@ class Location
      */
     private function getLanguage(int $groupID): int
     {
-        $group = $this->db->queryPrepared(
+        return (int)($this->db->getSingleObject(
             'SELECT kSprache
                 FROM tauswahlassistentgruppe
                 WHERE kAuswahlAssistentGruppe = :groupID',
-            ['groupID' => $groupID],
-            ReturnType::SINGLE_OBJECT
-        );
-
-        return (int)($group->kSprache ?? 0);
+            ['groupID' => $groupID]
+        )->kSprache ?? 0);
     }
 
     /**
@@ -306,7 +302,7 @@ class Location
         $locationSQL = $groupID > 0
             ? ' AND o.kAuswahlAssistentGruppe != ' . $groupID
             : '';
-        $item        = $this->db->queryPrepared(
+        $item        = $this->db->getSingleObject(
             'SELECT kAuswahlAssistentOrt
                 FROM tauswahlassistentort AS o
                 JOIN tauswahlassistentgruppe AS g
@@ -318,8 +314,7 @@ class Location
                 'keyID'  => \AUSWAHLASSISTENT_ORT_KATEGORIE,
                 'catID'  => $categoryID,
                 'langID' => $languageID
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
 
         return ($item->kAuswahlAssistentOrt ?? 0) > 0;
@@ -339,7 +334,7 @@ class Location
         $condSQL = $groupID > 0
             ? ' AND o.kAuswahlAssistentGruppe != ' . $groupID
             : '';
-        $data    = $this->db->queryPrepared(
+        $data    = $this->db->getSingleObject(
             'SELECT kAuswahlAssistentOrt
                 FROM tauswahlassistentort AS o
                 JOIN tauswahlassistentgruppe AS g
@@ -351,8 +346,7 @@ class Location
                 'langID' => $languageID,
                 'keyID'  => \AUSWAHLASSISTENT_ORT_LINK,
                 'linkID' => $linkID
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
 
         return ($data->kAuswahlAssistentOrt ?? 0) > 0;
@@ -371,7 +365,7 @@ class Location
         $locationSQL = $groupID > 0
             ? ' AND o.kAuswahlAssistentGruppe != ' . $groupID
             : '';
-        $item        = $this->db->queryPrepared(
+        $item        = $this->db->getSingleObject(
             'SELECT kAuswahlAssistentOrt
                 FROM tauswahlassistentort AS o
                 JOIN tauswahlassistentgruppe AS g
@@ -379,8 +373,7 @@ class Location
                     AND g.kSprache = :langID
                 WHERE o.cKey = :keyID' . $locationSQL . '
                     AND o.kKey = 1',
-            ['langID' => $languageID, 'keyID' => \AUSWAHLASSISTENT_ORT_STARTSEITE],
-            ReturnType::SINGLE_OBJECT
+            ['langID' => $languageID, 'keyID' => \AUSWAHLASSISTENT_ORT_STARTSEITE]
         );
 
         return ($item->kAuswahlAssistentOrt ?? 0) > 0;
@@ -395,7 +388,7 @@ class Location
      */
     public function getLocation(string $keyName, int $id, int $languageID, bool $backend = false): ?self
     {
-        $item = $this->db->executeQueryPrepared(
+        $item = $this->db->getSingleObject(
             'SELECT kAuswahlAssistentOrt
                 FROM tauswahlassistentort AS o
                 JOIN tauswahlassistentgruppe AS g
@@ -407,11 +400,10 @@ class Location
                 'langID' => $languageID,
                 'keyID'  => $keyName,
                 'kkey'   => $id
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
 
-        return isset($item->kAuswahlAssistentOrt) && $item->kAuswahlAssistentOrt > 0
+        return $item !== null && $item->kAuswahlAssistentOrt > 0
             ? new self((int)$item->kAuswahlAssistentOrt, 0, $backend)
             : null;
     }

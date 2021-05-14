@@ -2,7 +2,6 @@
 
 namespace JTL\Update;
 
-use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use JTL\Shop;
 use stdClass;
@@ -37,21 +36,16 @@ class DBMigrationHelper
             $db          = Shop::Container()->getDB();
             $versionInfo = new stdClass();
 
-            $innodbSupport = $db->query(
+            $innodbSupport = $db->getSingleObject(
                 "SELECT `SUPPORT`
                     FROM information_schema.ENGINES
-                    WHERE `ENGINE` = 'InnoDB'",
-                ReturnType::SINGLE_OBJECT
+                    WHERE `ENGINE` = 'InnoDB'"
             );
-            $utf8Support   = $db->query(
+            $utf8Support   = $db->getSingleObject(
                 "SELECT `IS_COMPILED` FROM information_schema.COLLATIONS
-                    WHERE `COLLATION_NAME` = 'utf8_unicode_ci'",
-                ReturnType::SINGLE_OBJECT
+                    WHERE `COLLATION_NAME` = 'utf8_unicode_ci'"
             );
-            $innodbPath    = $db->query(
-                'SELECT @@innodb_data_file_path AS path',
-                ReturnType::SINGLE_OBJECT
-            );
+            $innodbPath    = $db->getSingleObject('SELECT @@innodb_data_file_path AS path');
             $innodbSize    = 'auto';
 
             if ($innodbPath && \mb_stripos($innodbPath->path, 'autoextend') === false) {
@@ -84,9 +78,8 @@ class DBMigrationHelper
 
             $versionInfo->innodb->support = $innodbSupport
                 && \in_array($innodbSupport->SUPPORT, ['YES', 'DEFAULT'], true);
-            $versionInfo->innodb->version = $db->query(
-                "SHOW VARIABLES LIKE 'innodb_version'",
-                ReturnType::SINGLE_OBJECT
+            $versionInfo->innodb->version = $db->getSingleObject(
+                "SHOW VARIABLES LIKE 'innodb_version'"
             )->Value;
             $versionInfo->innodb->size    = $innodbSize;
             $versionInfo->collation_utf8  = $utf8Support && \mb_convert_case(
@@ -138,7 +131,7 @@ class DBMigrationHelper
         $database   = Shop::Container()->getDB()->getConfig()['database'];
         $excludeStr = \implode("','", Text::filterXSS($excludeTables));
 
-        $result = Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getSingleObject(
             "SELECT t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
                 , COUNT(IF(c.DATA_TYPE = 'text', c.COLUMN_NAME, NULL)) TEXT_FIELDS
                 , COUNT(IF(c.DATA_TYPE = 'tinyint', c.COLUMN_NAME, NULL)) TINY_FIELDS
@@ -159,11 +152,8 @@ class DBMigrationHelper
                     )
                 GROUP BY t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`
                 ORDER BY t.`TABLE_NAME` LIMIT 1",
-            ['schema' => $database],
-            ReturnType::SINGLE_OBJECT
+            ['schema' => $database]
         );
-
-        return \is_object($result) ? $result : null;
     }
 
     /**
@@ -174,7 +164,7 @@ class DBMigrationHelper
     {
         $database = Shop::Container()->getDB()->getConfig()['database'];
 
-        return Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getSingleObject(
             "SELECT t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
                 , COUNT(IF(c.DATA_TYPE = 'text', c.COLUMN_NAME, NULL)) TEXT_FIELDS
                 , COUNT(IF(c.DATA_TYPE = 'tinyint', c.COLUMN_NAME, NULL)) TINY_FIELDS
@@ -191,8 +181,7 @@ class DBMigrationHelper
                     AND t.`TABLE_NAME` = :table
                 GROUP BY t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
                 ORDER BY t.`TABLE_NAME` LIMIT 1",
-            ['schema' => $database, 'table' => $table,],
-            ReturnType::SINGLE_OBJECT
+            ['schema' => $database, 'table' => $table,]
         );
     }
 
@@ -268,15 +257,14 @@ class DBMigrationHelper
             return $tableInfo !== null && \mb_strpos($tableInfo->TABLE_COMMENT, ':Migrating') !== false;
         }
 
-        $tableStatus = Shop::Container()->getDB()->queryPrepared(
+        $tableStatus = Shop::Container()->getDB()->getSingleObject(
             'SHOW OPEN TABLES
                 WHERE `Database` LIKE :schema
                     AND `Table` LIKE :table',
-            ['schema' => $database, 'table' => $table,],
-            ReturnType::SINGLE_OBJECT
+            ['schema' => $database, 'table' => $table,]
         );
 
-        return \is_object($tableStatus) && (int)$tableStatus->In_use > 0;
+        return $tableStatus !== null && (int)$tableStatus->In_use > 0;
     }
 
     /**

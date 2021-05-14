@@ -6,7 +6,6 @@ use DateTime;
 use JTL\Alert\Alert;
 use JTL\Backend\Revision;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Exceptions\EmptyResultSetException;
 use JTL\Optin\Optin;
 use JTL\Optin\OptinNewsletter;
@@ -236,15 +235,13 @@ final class Admin
                         $cSQL = ' AND kNewslettervorlage = ' . $templateID;
                     }
 
-                    $nlTplContent = $this->db->query(
+                    $nlTplContent = $this->db->getSingleObject(
                         'SELECT *
-                        FROM tnewslettervorlagestdvarinhalt
-                        WHERE kNewslettervorlageStdVar = ' . (int)$nlTplStdVar->kNewslettervorlageStdVar .
-                        $cSQL,
-                        ReturnType::SINGLE_OBJECT
+                            FROM tnewslettervorlagestdvarinhalt
+                            WHERE kNewslettervorlageStdVar = ' . (int)$nlTplStdVar->kNewslettervorlageStdVar
+                            . $cSQL
                     );
                 }
-
                 if (isset($nlTplContent->cInhalt) && \mb_strlen($nlTplContent->cInhalt) > 0) {
                     $defaultTpl->oNewslettervorlageStdVar_arr[$j]->cInhalt = \str_replace(
                         \NEWSLETTER_STD_VORLAGE_URLSHOP,
@@ -768,11 +765,10 @@ final class Admin
      */
     public function getSubscriberCount($searchSQL): int
     {
-        return (int)$this->db->query(
+        return (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt
                 FROM tnewsletterempfaenger
-                WHERE kSprache = ' . (int)$_SESSION['kSprache'] . $searchSQL->cWHERE,
-            ReturnType::SINGLE_OBJECT
+                WHERE kSprache = ' . (int)$_SESSION['kSprache'] . $searchSQL->cWHERE
         )->cnt;
     }
 

@@ -27,13 +27,17 @@ class ReferencedPlugin extends ReferencedItem
             $installedVersion = Version::parse($installed->nVersion);
             $availableVersion = $available === null ? Version::parse('0.0.0') : $available->getVersion();
             $latestVersion    = $latest === null ? $availableVersion : $latest->getVersion();
+            $this->setHasUpdate(false);
+            $this->setCanBeUpdated(false);
             $this->setID($installed->cPluginID);
             $this->setMaxInstallableVersion($installedVersion);
             if ($availableVersion->greaterThan($installedVersion)) {
                 $this->setMaxInstallableVersion($availableVersion);
                 $this->setHasUpdate(true);
                 $this->setCanBeUpdated(true);
-            } elseif ($latestVersion->greaterThan($availableVersion)) {
+            } elseif ($latestVersion->greaterThan($availableVersion)
+                && $latestVersion->greaterThan($installedVersion)
+            ) {
                 $this->setMaxInstallableVersion($latestVersion);
                 $this->setHasUpdate(true);
                 $this->setCanBeUpdated(false);

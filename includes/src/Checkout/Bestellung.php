@@ -835,8 +835,8 @@ class Bestellung
     private function loadPaymentMethod(): void
     {
         $paymentMethod = new Zahlungsart((int)$this->kZahlungsart);
-        if ($paymentMethod->cModulId !== null) {
-            $method = LegacyMethod::create($paymentMethod->cModulId, 1);
+        if ($paymentMethod->getModulId() !== null && \mb_strlen($paymentMethod->getModulId()) > 0) {
+            $method = LegacyMethod::create($paymentMethod->getModulId(), 1);
             if ($method !== null) {
                 $paymentMethod->bPayAgain = $method->canPayAgain();
             }

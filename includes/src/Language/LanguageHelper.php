@@ -51,14 +51,14 @@ use function Functional\reindex;
 class LanguageHelper
 {
     /**
-     * compatability only
+     * compatibility only
      *
      * @var int
      */
     public $kSprachISO = 0;
 
     /**
-     * compatability only
+     * compatibility only
      *
      * @var string
      */

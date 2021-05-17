@@ -22,18 +22,21 @@ class ReferencedPlugin extends ReferencedItem
     {
         $installed = $db->select('tplugin', 'exsID', $license->exsid);
         if ($installed !== null) {
+            $available        = $releases->getAvailable();
+            $latest           = $releases->getLatest();
             $installedVersion = Version::parse($installed->nVersion);
+            $availableVersion = $available === null ? Version::parse('0.0.0') : $available->getVersion();
+            $latestVersion    = $latest === null ? $availableVersion : $latest->getVersion();
             $this->setID($installed->cPluginID);
-            $available = $releases->getAvailable();
-            $latest    = $releases->getLatest() ?? $available;
-            if ($latest !== null) {
-                $this->setMaxInstallableVersion($latest->getVersion());
-                $this->setHasUpdate($installedVersion->smallerThan($latest->getVersion()));
-                if ($available !== null && $latest->getVersion()->greaterThan($available->getVersion())) {
-                    $this->setCanBeUpdated(false);
-                }
-            } else {
-                $this->setMaxInstallableVersion(Version::parse('0.0.0'));
+            $this->setMaxInstallableVersion($installedVersion);
+            if ($availableVersion->greaterThan($installedVersion)) {
+                $this->setMaxInstallableVersion($availableVersion);
+                $this->setHasUpdate(true);
+                $this->setCanBeUpdated(true);
+            } elseif ($latestVersion->greaterThan($availableVersion)) {
+                $this->setMaxInstallableVersion($latestVersion);
+                $this->setHasUpdate(true);
+                $this->setCanBeUpdated(false);
             }
             $this->setInstalled(true);
             $this->setInstalledVersion($installedVersion);

@@ -23,7 +23,7 @@ class Zahlungsart extends MainModel
     public $cName;
 
     /**
-     * @var string
+     * @var string|null
      */
     public $cModulId;
 

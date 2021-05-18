@@ -16,6 +16,7 @@ use JTL\Plugin\State;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\ExportSmarty;
+use PDO;
 use Psr\Log\LoggerInterface;
 use stdClass;
 
@@ -344,11 +345,11 @@ class FormatExporter
         $helper       = Category::getInstance($model->getLanguageID(), $model->getCustomerGroupID());
         $shopURL      = Shop::getURL();
         $imageBaseURL = Shop::getImageBaseURL();
-
-        foreach ($this->db->query($this->getExportSQL(), ReturnType::QUERYSINGLE) as $productData) {
+        $res          = $this->db->getPDOStatement($this->getExportSQL());
+        while (($productData = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $product = new Product();
             $product->fuelleArtikel(
-                (int)$productData['kArtikel'],
+                (int)$productData->kArtikel,
                 $options,
                 $model->getCustomerGroupID(),
                 $model->getLanguageID(),

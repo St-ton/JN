@@ -1100,7 +1100,7 @@ class Wishlist
         }
         $db             = Shop::Container()->getDB();
         $langID         = Shop::getLanguageID();
-        $items      = $db->selectAll(
+        $items          = $db->selectAll(
             'twunschlistepos',
             'kWunschliste',
             $this->kWunschliste,
@@ -1177,7 +1177,7 @@ class Wishlist
                     $wlPositionAttribute->kWunschlistePos
                 );
 
-                $prop->kWunschlistePosEigenschaft      = (int)$wlPositionAttribute->kWunschlistePosEigenschaft;
+                $prop->kWunschlistePosEigenschaft         = (int)$wlPositionAttribute->kWunschlistePosEigenschaft;
                 $wlItem->CWunschlistePosEigenschaft_arr[] = $prop;
             }
             $wlItem->Artikel = new Artikel();
@@ -1186,7 +1186,7 @@ class Wishlist
             } catch (Exception $e) {
                 continue;
             }
-            $wlItem->cArtikelName    = $wlItem->Artikel->cName === ''
+            $wlItem->cArtikelName        = $wlItem->Artikel->cName === ''
                 ? $wlItem->cArtikelName
                 : $wlItem->Artikel->cName;
             $this->CWunschlistePos_arr[] = $wlItem;

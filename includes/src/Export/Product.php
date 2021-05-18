@@ -8,6 +8,7 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
+use stdClass;
 
 /**
  * Class Product
@@ -89,6 +90,16 @@ class Product extends Artikel
      * @var string
      */
     public $Artikelbild;
+
+    /**
+     * @var array
+     */
+    protected $conf;
+
+    /**
+     * @var stdClass
+     */
+    protected $options;
 
     /**
      * @param array $config

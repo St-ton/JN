@@ -106,7 +106,7 @@ class ConfigGroup extends AbstractImage
      */
     public function getAllImages(int $offset = null, int $limit = null): Generator
     {
-        $images = $this->db->query(
+        $images = $this->db->getPDOStatement(
             'SELECT a.kKonfiggruppe AS id, t.cName, cBildPfad AS path
                 FROM tkonfiggruppe a
                 JOIN tkonfiggruppesprache t 
@@ -115,8 +115,7 @@ class ConfigGroup extends AbstractImage
                     ON tsprache.kSprache = t.kSprache
                 WHERE tsprache.cShopStandard = \'Y\'
                   AND cBildPfad IS NOT NULL
-                  AND cBildPfad != \'\'' . self::getLimitStatement($offset, $limit),
-            ReturnType::QUERYSINGLE
+                  AND cBildPfad != \'\'' . self::getLimitStatement($offset, $limit)
         );
         while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {
             yield MediaImageRequest::create([

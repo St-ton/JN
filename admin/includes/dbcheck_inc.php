@@ -519,7 +519,7 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $tableName = ''
                     $sql   = DBMigrationHelper::sqlConvertUTF8($table);
 
                     if (!empty($sql)) {
-                        if ($db->executeQuery($sql, ReturnType::QUERYSINGLE)) {
+                        if ($db->getPDOStatement($sql)) {
                             // Get next table for migration...
                             $result = $doSingle
                                 ? doMigrateToInnoDB_utf8('stop')

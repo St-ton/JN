@@ -34,10 +34,6 @@ import { mapGetters } from 'vuex';
 export default {
     name: 'installedcheck',
     data() {
-        let isInstalled  = false,
-            networkError = false,
-            anyway       = false,
-            protoWarning = false;
         const messages = {
             de: {
                 msgInstalled:      'Installation kann nicht fortgesetzt werden, da der Shop bereits installiert wurde.',
@@ -66,6 +62,14 @@ export default {
         };
         this.$i18n.add('en', messages.en);
         this.$i18n.add('de', messages.de);
+        return {
+            isInstalled:  false,
+            networkError: false,
+            protoWarning: false,
+            anyway:       false
+        };
+    },
+    mounted() {
         axios.get(this.$getApiUrl('installedcheck'))
             .then(response => {
                 if (!response.data.installed && !response.data.shopURL) {
@@ -86,12 +90,6 @@ export default {
                     ? error.response
                     : this.$i18n.translate('unreachable', { url: this.$getApiUrl('installedcheck') });
             });
-        return {
-            isInstalled,
-            networkError,
-            protoWarning,
-            anyway
-        };
     },
     computed: mapGetters({
         shopURL: 'getShopURL'

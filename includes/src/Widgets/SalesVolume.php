@@ -24,6 +24,7 @@ class SalesVolume extends AbstractWidget
     {
         require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'statistik_inc.php';
         $this->oWaehrung = $this->oDB->select('twaehrung', 'cStandard', 'Y');
+        $this->setPermission('STATS_EXCHANGE_VIEW');
     }
 
     /**

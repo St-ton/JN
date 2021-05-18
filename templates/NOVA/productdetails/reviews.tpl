@@ -97,9 +97,21 @@
         {block name='productdetails-reviews-reviews-in-lang'}
             {if $ratingPagination->getPageItemCount() > 0 || isset($Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich) &&
             $Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0}
-                <p>{lang key='reviewsInCurrLang' section='product rating'}</p>
+                <p>
+                    {if $Einstellungen.bewertung.bewertung_alle_sprachen === 'Y'}
+                        {lang key='reviewsInAllLang' section='product rating'}
+                    {else}
+                        {lang key='reviewsInCurrLang' section='product rating'}
+                    {/if}
+                </p>
             {else}
-                <p>{lang key='noReviewsInCurrLang' section='product rating'}</p>
+                <p>
+                    {if $Einstellungen.bewertung.bewertung_alle_sprachen === 'Y'}
+                        {lang key='noReviewsInAllLang' section='product rating'}
+                    {else}
+                        {lang key='noReviewsInCurrLang' section='product rating'}
+                    {/if}
+                </p>
             {/if}
         {/block}
         {if isset($Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich) &&

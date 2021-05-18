@@ -1214,6 +1214,18 @@ msgstr "Preselected country"
 msgid "lieferadresse_abfragen_standardland_desc"
 msgstr "Specify the ISO code for the country that is to be preselected, e.g. DE for Germany or AT for Austria."
 
+msgid "lieferadresse_abfragen_firma_name"
+msgstr "Prompt company name"
+
+msgid "lieferadresse_abfragen_firma_desc"
+msgstr "Specify whether to prompt the company name."
+
+msgid "lieferadresse_abfragen_firmazusatz_name"
+msgstr "Prompt company 2"
+
+msgid "lieferadresse_abfragen_firmazusatz_desc"
+msgstr "Specify whether to prompt the information entered into Company 2."
+
 msgid "shop_ustid_name"
 msgstr "VAT ID of online shop"
 
@@ -1489,6 +1501,12 @@ msgstr "\"Top rated\" requires average rating of"
 
 msgid "boxen_topbewertet_minsterne_desc"
 msgstr "Specify the minimum number of stars with which an item must be rated on average to be considered as \"Top rated\"."
+
+msgid "box_hersteller_anzahl_anzeige_name"
+msgstr "Number of displayed items"
+
+msgid "box_hersteller_anzahl_anzeige_desc"
+msgstr "Specify how many items are to be displayed in the box. Specify 0 to show all manufcaturers."
 
 msgid "bilder_kategorien_breite_name"
 msgstr "Category images: width"
@@ -2162,6 +2180,12 @@ msgstr "Use review system"
 msgid "bewertung_anzeigen_desc"
 msgstr "Specify whether the option of giving a review is displayed in the item details."
 
+msgid "bewertung_alle_sprachen_name"
+msgstr "Show all languages"
+
+msgid "bewertung_alle_sprachen_desc"
+msgstr "Specifies whether review texts are always displayed regardless of the language in which they were written (Yes) or whether only reviews written in the language that match the current front-end language are displayed."
+
 msgid "bewertung_freischalten_name"
 msgstr "Activate customer reviews"
 
@@ -2571,10 +2595,10 @@ msgid "news_anzahl_content_desc"
 msgstr "Specify the number of blog posts to be displayed on the start page of your JTL-Shop."
 
 msgid "news_anzahl_box_name"
-msgstr "Number of months in the box"
+msgstr "Number of months/cateogries in the box"
 
 msgid "news_anzahl_box_desc"
-msgstr "Specify the number of months to be displayed in the \"Blog (monthly overview)\" box."
+msgstr "Specify the number of months/categories to be displayed in the \"Blog (monthly overview) / Blog (category overview)\" box."
 
 msgid "news_kommentare_freischalten_name"
 msgstr "Activate comments"

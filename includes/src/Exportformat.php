@@ -780,11 +780,11 @@ class Exportformat
                 $_upd        = new stdClass();
                 $_upd->cWert = $conf['cWert'];
                 $ok          = $ok && ($this->db->update(
-                            'tboxensichtbar',
-                            ['kExportformat', 'cName'],
-                            [$this->getExportformat(), $conf['cName']],
-                            $_upd
-                        ) >= 0);
+                    'tboxensichtbar',
+                    ['kExportformat', 'cName'],
+                    [$this->getExportformat(), $conf['cName']],
+                    $_upd
+                ) >= 0);
             }
         }
 
@@ -1787,11 +1787,11 @@ class Exportformat
             return;
         }
         if ($this->db->update(
-                'texportformat',
-                'kExportformat',
-                $this->kExportformat,
-                (object)['nFehlerhaft' => $error]
-            ) !== false) {
+            'texportformat',
+            'kExportformat',
+            $this->kExportformat,
+            (object)['nFehlerhaft' => $error]
+        ) !== false) {
             $this->nFehlerhaft = $error;
         }
     }

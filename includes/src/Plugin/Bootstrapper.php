@@ -200,7 +200,7 @@ abstract class Bootstrapper implements BootstrapperInterface
         if (\PLUGIN_DEV_MODE !== true || $this->plugin === null) {
             return -1;
         }
-        $parser       = $parser = new XMLParser();
+        $parser       = new XMLParser();
         $stateChanger = new StateChanger(
             $this->db,
             $this->cache,

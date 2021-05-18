@@ -70,7 +70,7 @@ class AdminAccountManager
     }
 
     /**
-     * @return array
+     * @return stdClass[]
      */
     public function getAdminList(): array
     {
@@ -83,7 +83,7 @@ class AdminAccountManager
     }
 
     /**
-     * @return array
+     * @return stdClass[]
      */
     public function getAdminGroups(): array
     {
@@ -97,7 +97,7 @@ class AdminAccountManager
     }
 
     /**
-     * @return array
+     * @return stdClass[]
      */
     public function getAdminDefPermissions(): array
     {
@@ -115,10 +115,10 @@ class AdminAccountManager
                     continue;
                 }
                 if (\is_object($secondEntry)) {
-                    if (!isset($perms[$secondEntry->permissions])) {
-                        $perms[$secondEntry->permissions] = (object)['name' => $secondName];
-                    } else {
+                    if (isset($perms[$secondEntry->permissions])) {
                         $perms[$secondEntry->permissions]->name = $secondName;
+                    } else {
+                        $perms[$secondEntry->permissions] = (object)['name' => $secondName];
                     }
 
                     $permMainTMP[] = (object)[
@@ -132,10 +132,10 @@ class AdminAccountManager
                         if (!empty($thirdEntry->excludeFromAccessView)) {
                             continue;
                         }
-                        if (!isset($perms[$thirdEntry->permissions])) {
-                            $perms[$thirdEntry->permissions] = (object)['name' => $thirdName];
-                        } else {
+                        if (isset($perms[$thirdEntry->permissions])) {
                             $perms[$thirdEntry->permissions]->name = $thirdName;
+                        } else {
+                            $perms[$thirdEntry->permissions] = (object)['name' => $thirdName];
                         }
                         $permSecondTMP[] = $perms[$thirdEntry->permissions];
                         unset($perms[$thirdEntry->permissions]);
@@ -381,15 +381,15 @@ class AdminAccountManager
     }
 
     /**
-     * @param stdClass $oAccount
+     * @param stdClass $account
      * @return bool
      */
-    public function deleteAttributes(stdClass $oAccount): bool
+    public function deleteAttributes(stdClass $account): bool
     {
         return $this->db->delete(
             'tadminloginattribut',
             'kAdminlogin',
-            (int)$oAccount->kAdminlogin
+            (int)$account->kAdminlogin
         ) >= 0;
     }
 
@@ -813,7 +813,7 @@ class AdminAccountManager
             'SELECT COUNT(*) AS cnt
                 FROM tadminlogin
                 WHERE kAdminlogingruppe = :gid',
-            ['gid' => $groupID],
+            ['gid' => $groupID]
         )->cnt;
         if ($count !== 0) {
             $this->addError(__('errorGroupDeleteCustomer'));

@@ -433,7 +433,6 @@ class ProductFilterURL
         if ($extraFilter === null || \get_class($extraFilter) !== 'stdClass') {
             return $extraFilter;
         }
-        $filter = null;
         if (isset($extraFilter->KategorieFilter->kKategorie)
             || (isset($extraFilter->FilterLoesen->Kategorie) && $extraFilter->FilterLoesen->Kategorie === true)
         ) {

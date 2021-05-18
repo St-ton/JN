@@ -540,10 +540,10 @@ class ConsoleIO extends OutputStyle
      */
     public function ask($question, $default = null, $validator = null)
     {
-        $question = new Question($question, $default);
-        $question->setValidator($validator);
+        $instance = new Question($question, $default);
+        $instance->setValidator($validator);
 
-        return $this->askQuestion($question);
+        return $this->askQuestion($instance);
     }
 
     /**
@@ -551,12 +551,12 @@ class ConsoleIO extends OutputStyle
      */
     public function askHidden($question, $validator = null)
     {
-        $question = new Question($question);
+        $instance = new Question($question);
 
-        $question->setHidden(true);
-        $question->setValidator($validator);
+        $instance->setHidden(true);
+        $instance->setValidator($validator);
 
-        return $this->askQuestion($question);
+        return $this->askQuestion($instance);
     }
 
     /**

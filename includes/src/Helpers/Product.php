@@ -217,10 +217,8 @@ class Product
     {
         $result   = [];
         $parentID = 0;
-        $db       = Shop::Container()->getDB();
-
         // Hole EigenschaftWerte zur gewaehlten VariationKombi
-        $children = $db->getObjects(
+        $children = Shop::Container()->getDB()->getObjects(
             'SELECT teigenschaftkombiwert.kEigenschaftWert, teigenschaftkombiwert.kEigenschaft, tartikel.kVaterArtikel
                 FROM teigenschaftkombiwert
                 JOIN tartikel
@@ -241,11 +239,11 @@ class Product
         }
 
         foreach ($children as $child) {
-            if (!isset($result[$child->kEigenschaft]) || !\is_array($result[$child->kEigenschaft])) {
-                $result[(int)$child->kEigenschaft] = (int)$child->kEigenschaftWert;
+            $id = (int)$child->kEigenschaft;
+            if (!isset($result[$id]) || !\is_array($result[$id])) {
+                $result[$id] = (int)$child->kEigenschaftWert;
             }
         }
-
         $parentID = (int)$children[0]->kVaterArtikel;
 
         return $result;
@@ -1091,7 +1089,8 @@ class Product
             $ret['captcha'] = 2;
         }
         $checkBox = new CheckBox();
-        $ret      = \array_merge(
+
+        return \array_merge(
             $ret,
             $checkBox->validateCheckBox(
                 \CHECKBOX_ORT_FRAGE_ZUM_PRODUKT,
@@ -1100,8 +1099,6 @@ class Product
                 true
             )
         );
-
-        return $ret;
     }
 
     /**
@@ -1311,12 +1308,11 @@ class Product
         // CheckBox Plausi
         $checkbox        = new CheckBox();
         $customerGroupID = Frontend::getCustomerGroup()->getID();
-        $ret             = \array_merge(
+
+        return \array_merge(
             $ret,
             $checkbox->validateCheckBox(\CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $customerGroupID, $_POST, true)
         );
-
-        return $ret;
     }
 
     /**

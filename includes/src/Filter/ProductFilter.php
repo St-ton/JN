@@ -856,7 +856,6 @@ class ProductFilter
      */
     public function registerFilterByClassName(string $filterName): FilterInterface
     {
-        $filter = null;
         if (\class_exists($filterName)) {
             /** @var FilterInterface $filter */
             $filter          = new $filterName($this);
@@ -2088,9 +2087,7 @@ class ProductFilter
             return $result->isInitialized();
         }
 
-        return \is_array($result)
-            ? \count($result) > 0
-            : false;
+        return \is_array($result) && \count($result) > 0;
     }
 
     /**

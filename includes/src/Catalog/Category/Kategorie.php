@@ -349,6 +349,8 @@ class Kategorie
                 ORDER BY tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort'
         );
         foreach ($attributes as $attribute) {
+            $attribute->nSort                 = (int)$attribute->nSort;
+            $attribute->bIstFunktionsAttribut = (int)$attribute->bIstFunktionsAttribut;
             // Aus Kompatibilitätsgründen findet hier KEINE Trennung
             // zwischen Funktions- und lokalisierten Attributen statt
             if ($attribute->cName === 'meta_title') {

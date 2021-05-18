@@ -71,6 +71,7 @@ class Characteristic extends AbstractImage
     {
         switch (Image::getSettings()['naming'][Image::TYPE_CHARACTERISTIC]) {
             case 2:
+                /** @var string|null $result */
                 $result = $mixed->path ?? $mixed->cBildpfad ?? null;
                 if ($result !== null) {
                     $result = \pathinfo($result)['filename'];

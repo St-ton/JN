@@ -232,13 +232,13 @@ function speicherOverlay($im, $extension, $path, $quality = 80)
     }
     switch ($extension) {
         case '.jpg':
-            return function_exists('imagejpeg') ? imagejpeg($im, $path, $quality) : false;
+            return function_exists('imagejpeg') && imagejpeg($im, $path, $quality);
         case '.png':
-            return function_exists('imagepng') ? imagepng($im, $path) : false;
+            return function_exists('imagepng') && imagepng($im, $path);
         case '.gif':
-            return function_exists('imagegif') ? imagegif($im, $path) : false;
+            return function_exists('imagegif') && imagegif($im, $path);
         case '.bmp':
-            return function_exists('imagewbmp') ? imagewbmp($im, $path) : false;
+            return function_exists('imagewbmp') && imagewbmp($im, $path);
         default:
             return false;
     }

@@ -91,12 +91,12 @@ class Item implements JsonSerializable
     protected $fInitial;
 
     /**
-     * @var ItemLocalization
+     * @var ItemLocalization|null
      */
     protected $oSprache;
 
     /**
-     * @var ItemPrice
+     * @var ItemPrice|null
      */
     protected $oPreis;
 
@@ -659,12 +659,12 @@ class Item implements JsonSerializable
      */
     public function getPreisLocalized(bool $html = true, bool $signed = true, bool $bForceNetto = false): string
     {
-        $cLocalized = Preise::getLocalizedPriceString($this->getPreis($bForceNetto), false, $html);
+        $localized = Preise::getLocalizedPriceString($this->getPreis($bForceNetto), false, $html);
         if ($signed && $this->getPreis() > 0) {
-            $cLocalized = '+' . $cLocalized;
+            $localized = '+' . $localized;
         }
 
-        return $cLocalized;
+        return $localized;
     }
 
     /**

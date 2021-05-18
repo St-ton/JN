@@ -110,6 +110,7 @@ class Status
      */
     public function getSystemLogInfo(): stdClass
     {
+        /** @var int $conf */
         $conf = Shop::getConfigValue(\CONF_GLOBAL, 'systemlog_flag');
 
         return (object)[

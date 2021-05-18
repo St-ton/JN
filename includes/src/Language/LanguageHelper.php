@@ -51,14 +51,14 @@ use function Functional\reindex;
 class LanguageHelper
 {
     /**
-     * compatability only
+     * compatibility only
      *
      * @var int
      */
     public $kSprachISO = 0;
 
     /**
-     * compatability only
+     * compatibility only
      *
      * @var string
      */
@@ -164,7 +164,7 @@ class LanguageHelper
     /**
      * @param DbInterface|null       $db
      * @param JTLCacheInterface|null $cache
-     * @return $this
+     * @return LanguageHelper
      */
     public static function getInstance(DbInterface $db = null, JTLCacheInterface $cache = null): self
     {

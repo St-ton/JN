@@ -573,9 +573,7 @@ final class JTLCache implements JTLCacheInterface
      */
     public function setCacheTag($tags, $cacheID): bool
     {
-        return $this->options['activated'] === true
-            ? $this->method->setCacheTag($tags, $cacheID)
-            : false;
+        return $this->options['activated'] === true && $this->method->setCacheTag($tags, $cacheID);
     }
 
     /**
@@ -615,9 +613,7 @@ final class JTLCache implements JTLCacheInterface
     {
         $res = false;
         if ($cacheID !== null && $tags === null) {
-            $res = ($this->options['activated'] === true)
-                ? $this->method->flush($cacheID)
-                : false;
+            $res = $this->options['activated'] === true && $this->method->flush($cacheID);
         } elseif ($tags !== null) {
             $res = $this->flushTags($tags, $hookInfo);
         }

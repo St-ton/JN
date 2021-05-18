@@ -47,7 +47,6 @@ function baueSitemap($file, $data)
             fclose($handle);
         }
     }
-    $data = null;
 }
 
 /**

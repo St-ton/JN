@@ -22,7 +22,7 @@ final class NewsCategory extends AbstractFactory
         $languageIDs = map($languages, static function ($e) {
             return (int)$e->kSprache;
         });
-        $res         = $this->db->query(
+        $res         = $this->db->getPDOStatement(
             "SELECT tnewskategorie.dLetzteAktualisierung AS dlm, tnewskategorie.kNewsKategorie, 
             tnewskategorie.cPreviewImage AS image, tseo.cSeo, tseo.kSprache AS langID
                 FROM tnewskategorie
@@ -33,8 +33,7 @@ final class NewsCategory extends AbstractFactory
                     AND tseo.kKey = tnewskategorie.kNewsKategorie
                     AND tseo.kSprache = t.languageID
                 WHERE tnewskategorie.nAktiv = 1
-                    AND tseo.kSprache IN (" . \implode(',', $languageIDs) . ')',
-            ReturnType::QUERYSINGLE
+                    AND tseo.kSprache IN (" . \implode(',', $languageIDs) . ')'
         );
         while (($nc = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $item = new Item($this->config, $this->baseURL, $this->baseImageURL);

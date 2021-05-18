@@ -81,13 +81,10 @@ if (Request::getVar('action') === 'createIndex') {
         }
 
         try {
-            $db->executeQuery(
-                'UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)'
-            );
-            $res = $db->executeQuery(
+            $db->query('UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)');
+            $res = $db->getPDOStatement(
                 "ALTER TABLE $index
-                    ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $rows) . ')',
-                ReturnType::QUERYSINGLE
+                    ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $rows) . ')'
             );
         } catch (Exception $e) {
             $res = 0;

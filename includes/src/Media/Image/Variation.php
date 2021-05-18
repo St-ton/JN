@@ -103,12 +103,11 @@ class Variation extends AbstractImage
      */
     public function getAllImages(int $offset = null, int $limit = null): Generator
     {
-        $images = $this->db->query(
+        $images = $this->db->getPDOStatement(
             'SELECT p.kEigenschaftWert AS id, p.kEigenschaftWertPict, p.cPfad AS path, t.cName
                 FROM teigenschaftwertpict p
                 JOIN teigenschaftwert t
-                    ON p.kEigenschaftWert = t.kEigenschaftWert' . self::getLimitStatement($offset, $limit),
-            ReturnType::QUERYSINGLE
+                    ON p.kEigenschaftWert = t.kEigenschaftWert' . self::getLimitStatement($offset, $limit)
         );
         while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {
             yield MediaImageRequest::create([

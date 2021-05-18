@@ -194,7 +194,7 @@ $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
     ->assign('isAjax', Request::isAjaxRequest());
 
 if ($smarty->getTemplateVars('Link') === null) {
-    $smarty->assign('Link', $link ?? $linkHelper->getPageLink($linkHelper->getSpecialPageID(LINKTYP_404)));
+    $smarty->assign('Link', $link ?? new Link(Shop::Container()->getDB()));
 }
 
 $nav = new Navigation(Shop::Lang(), Shop::Container()->getLinkService());

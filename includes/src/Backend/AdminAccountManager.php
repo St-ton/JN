@@ -70,7 +70,7 @@ class AdminAccountManager
     }
 
     /**
-     * @return array
+     * @return stdClass[]
      */
     public function getAdminList(): array
     {
@@ -83,7 +83,7 @@ class AdminAccountManager
     }
 
     /**
-     * @return array
+     * @return stdClass[]
      */
     public function getAdminGroups(): array
     {
@@ -97,7 +97,7 @@ class AdminAccountManager
     }
 
     /**
-     * @return array
+     * @return stdClass[]
      */
     public function getAdminDefPermissions(): array
     {
@@ -381,15 +381,15 @@ class AdminAccountManager
     }
 
     /**
-     * @param stdClass $oAccount
+     * @param stdClass $account
      * @return bool
      */
-    public function deleteAttributes(stdClass $oAccount): bool
+    public function deleteAttributes(stdClass $account): bool
     {
         return $this->db->delete(
             'tadminloginattribut',
             'kAdminlogin',
-            (int)$oAccount->kAdminlogin
+            (int)$account->kAdminlogin
         ) >= 0;
     }
 
@@ -813,7 +813,7 @@ class AdminAccountManager
             'SELECT COUNT(*) AS cnt
                 FROM tadminlogin
                 WHERE kAdminlogingruppe = :gid',
-            ['gid' => $groupID],
+            ['gid' => $groupID]
         )->cnt;
         if ($count !== 0) {
             $this->addError(__('errorGroupDeleteCustomer'));

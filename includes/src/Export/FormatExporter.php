@@ -590,8 +590,8 @@ class FormatExporter
         $exportformat->tkampagne_cWert      = $model->getCampaignValue();
         // needed for plugin exports
         $ExportEinstellungen = $this->getConfig();
-        include $oPlugin->getPaths()->getExportPath() .
-            \str_replace(\PLUGIN_EXPORTFORMAT_CONTENTFILE, '', $model->getContent());
+        include $oPlugin->getPaths()->getExportPath()
+            . \str_replace(\PLUGIN_EXPORTFORMAT_CONTENTFILE, '', $model->getContent());
         if ($isAsync) {
             $model->setDateLastCreated(new DateTime());
             $model->save(['dateLastCreated']);

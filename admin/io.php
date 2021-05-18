@@ -5,7 +5,7 @@ use JTL\Backend\JSONAPI;
 use JTL\Backend\Notification;
 use JTL\Backend\TwoFA;
 use JTL\Backend\Wizard\WizardIO;
-use \JTL\Export\SyntaxChecker as ExportSyntaxChecker;
+use JTL\Export\SyntaxChecker as ExportSyntaxChecker;
 use JTL\Helpers\Form;
 use JTL\IO\IOError;
 use JTL\Jtllog;

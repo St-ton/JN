@@ -515,7 +515,7 @@ class Zahlungsart extends MainModel
             return $this;
         }
         $iso  = $option['iso'] ?? Shop::getLanguageCode() ?? LanguageHelper::getDefaultLanguage()->getCode();
-        $data = Shop::Container()->getDB()->getSingleObject(
+        $item = Shop::Container()->getDB()->getSingleObject(
             'SELECT z.kZahlungsart, COALESCE(s.cName, z.cName) AS cName, z.cModulId, z.cKundengruppen,
                     z.cZusatzschrittTemplate, z.cPluginTemplate, z.cBild, z.nSort, z.nMailSenden, z.nActive,
                     z.cAnbieter, z.cTSCode, z.nWaehrendBestellung, z.nCURL, z.nSOAP, z.nSOCKETS, z.nNutzbar,
@@ -531,8 +531,8 @@ class Zahlungsart extends MainModel
                 'pmID' => $id
             ]
         );
-        if ($data !== false) {
-            $this->loadObject($data);
+        if ($item !== null) {
+            $this->loadObject($item);
         }
 
         return $this;

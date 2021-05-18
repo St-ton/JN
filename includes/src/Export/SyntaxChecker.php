@@ -204,14 +204,13 @@ class SyntaxChecker
         $session->initSession($model, $this->db);
         $this->initSmarty();
         $product     = null;
-        $productData = $this->db->query(
+        $productData = $this->db->getSingleObject(
             "SELECT kArtikel 
                 FROM tartikel 
                 WHERE kVaterArtikel = 0 
-                AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1",
-            ReturnType::SINGLE_OBJECT
+                AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1"
         );
-        if (!empty($productData->kArtikel)) {
+        if ($productData !== null) {
             $product = new Product();
             $product->fuelleArtikel((int)$productData->kArtikel, Product::getExportOptions());
             $product->cDeeplink             = '';

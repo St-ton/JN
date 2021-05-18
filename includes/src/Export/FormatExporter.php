@@ -242,7 +242,7 @@ class FormatExporter
         if (($count = Shop::Container()->getCache()->get($cid)) !== false) {
             return $count ?? 0;
         }
-        $count = (int)$this->db->query($this->getExportSQL(true), ReturnType::SINGLE_OBJECT)->nAnzahl;
+        $count = (int)$this->db->getSingleObject($this->getExportSQL(true))->nAnzahl;
         Shop::Container()->getCache()->set($cid, $count, [\CACHING_GROUP_CORE], 120);
 
         return $count;
@@ -273,10 +273,7 @@ class FormatExporter
      */
     private function getTotalCount(): int
     {
-        return (int)$this->db->executeQuery(
-            $this->getExportSQL(true),
-            ReturnType::SINGLE_OBJECT
-        )->nAnzahl;
+        return (int)$this->db->getSingleObject($this->getExportSQL(true))->nAnzahl;
     }
 
     /**
@@ -436,10 +433,11 @@ class FormatExporter
     private function finish(AsyncCallback $cb, bool $isAsync, bool $back, Model $model): void
     {
         // There are no more products to export
-        $this->db->query(
+        $this->db->queryPrepared(
             'UPDATE texportformat 
                 SET dZuletztErstellt = NOW() 
-                WHERE kExportformat = ' . $model->getId()
+                WHERE kExportformat = :eid',
+            ['eid' => $model->getId()]
         );
         $this->db->delete('texportqueue', 'kExportqueue', (int)$this->queue->foreignKeyID);
 

@@ -71,7 +71,7 @@ class ReferencedTemplate extends ReferencedItem
                         $this->setCanBeUpdated(false);
                     }
                     $this->setID($template->getPath());
-                    $this->setHasUpdate($installedVersion->smallerThan($available->getVersion()));
+                    $this->setHasUpdate($installedVersion->smallerThan($availableVersion));
                     $this->setInstalled(true);
                     $this->setInstalledVersion($installedVersion);
                     $this->setActive(false);

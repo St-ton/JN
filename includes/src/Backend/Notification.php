@@ -47,7 +47,7 @@ class Notification implements IteratorAggregate, Countable
 
     /**
      * @param DbInterface|null $db
-     * @return $this
+     * @return Notification
      */
     public static function getInstance(DbInterface $db = null): self
     {

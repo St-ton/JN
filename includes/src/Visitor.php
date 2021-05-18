@@ -395,9 +395,9 @@ class Visitor
 
     /**
      * @param string $userAgent
-     * @return bool|int
+     * @return bool
      */
-    private static function isMobile(string $userAgent)
+    private static function isMobile(string $userAgent): bool
     {
         return \preg_match(
             '/android|avantgo|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile' .

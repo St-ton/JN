@@ -12,8 +12,8 @@ use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Mail\Template\Model;
 use JTL\Mail\Template\TemplateFactory;
-use JTL\Mail\Template\TemplateInterface;
 use PHPMailer\PHPMailer\Exception;
+use Shop;
 use stdClass;
 
 /**
@@ -389,7 +389,7 @@ final class Controller
     }
 
     /**
-     * @return TemplateInterface[]
+     * @return Model[]
      */
     public function getAllTemplates(): array
     {

@@ -239,7 +239,7 @@ class Location
         // Ort Kategorie
         if (isset($params['cKategorie']) && \mb_strlen($params['cKategorie']) > 0) {
             $categories = \explode(';', $params['cKategorie']);
-            if (!\is_array($categories) || \count($categories) === 0) {
+            if (\count($categories) === 0) {
                 $checks['cKategorie'] = 1;
             }
             if (!\is_numeric($categories[0])) {
@@ -247,7 +247,7 @@ class Location
             }
             foreach ($categories as $key) {
                 $key = (int)$key;
-                if ($key > 0 && \mb_strlen($key) > 0) {
+                if ($key > 0) {
                     if ($update) {
                         if ($this->isCategoryTaken($key, $langID, $groupID)) {
                             $checks['cKategorie'] = 3;

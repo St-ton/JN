@@ -115,7 +115,7 @@ class CartItem
     public $cKonfigpreisLocalized;
 
     /**
-     * @var Artikel
+     * @var Artikel|null
      */
     public $Artikel;
 

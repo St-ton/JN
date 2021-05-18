@@ -86,7 +86,6 @@ class CreateCommand extends Command
         $modelPath = $relPath . DS . $modelName . '.php';
         $tableDesc = [];
         $attribs   = Shop::Container()->getDB()->getPDO()->query('DESCRIBE ' . $table);
-        $dataType  = null;
         $typeMap   = [
             'bool|boolean',
             'int|tinyint|smallint|mediumint|integer|bigint|decimal|dec',

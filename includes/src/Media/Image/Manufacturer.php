@@ -65,6 +65,7 @@ class Manufacturer extends AbstractImage
     {
         switch (Image::getSettings()['naming'][Image::TYPE_MANUFACTURER]) {
             case 2:
+                /** @var string|null $result */
                 $result = $mixed->path ?? $mixed->cBildpfad ?? null;
                 if ($result !== null) {
                     $result = \pathinfo($result)['filename'];

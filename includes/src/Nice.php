@@ -107,12 +107,11 @@ class Nice
      */
     public function checkErweiterung(int $moduleID): bool
     {
-        return ($this->apiKey !== ''
+        return $this->apiKey !== ''
             && \mb_strlen($this->apiKey) > 0
             && !empty($this->domain)
-            && \count($this->moduleIDs) > 0)
-            ? \in_array($moduleID, $this->moduleIDs, true)
-            : false;
+            && \count($this->moduleIDs) > 0
+            && \in_array($moduleID, $this->moduleIDs, true);
     }
 
     /**

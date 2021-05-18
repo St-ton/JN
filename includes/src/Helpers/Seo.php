@@ -73,9 +73,8 @@ class Seo
         );
         $convertedStr = @\iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $str);
         $str          = $convertedStr === false ? \preg_replace('/[^a-zA-Z0-9\s]/', '', $str) : $convertedStr;
-        $str          = \preg_replace('/[\-_\s]+/u', '-', \trim($str));
 
-        return $str;
+        return \preg_replace('/[\-_\s]+/u', '-', \trim($str));
     }
 
     /**

@@ -476,7 +476,7 @@ class LegacyMethod
             if ($plugin !== null) {
                 $pluginPaymentMethod = $plugin->getPaymentMethods()->getMethodByID($moduleID);
                 if ($pluginPaymentMethod === null) {
-                    return $paymentMethod;
+                    return null;
                 }
                 $classFile = $pluginPaymentMethod->getClassFilePath();
                 if (\file_exists($classFile)) {

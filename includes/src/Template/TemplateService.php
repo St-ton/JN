@@ -200,6 +200,9 @@ class TemplateService implements TemplateServiceInterface
         return $items;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function reset(): void
     {
         $this->activeTemplate = null;

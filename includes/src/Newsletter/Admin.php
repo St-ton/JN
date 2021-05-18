@@ -478,7 +478,6 @@ final class Admin
         }
 
         $alertHelper = Shop::Container()->getAlertService();
-        $tpl         = null;
         $checks      = $this->checkTemplate(
             $post['cName'],
             $post['kKundengruppe'] ?? '',

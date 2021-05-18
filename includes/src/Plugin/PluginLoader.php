@@ -68,7 +68,7 @@ class PluginLoader extends AbstractLoader
     public function saveToCache(PluginInterface $plugin): bool
     {
         return $this->cacheID !== null
-            ? $this->cache->set(
+            && $this->cache->set(
                 $this->cacheID,
                 $plugin,
                 [
@@ -76,8 +76,7 @@ class PluginLoader extends AbstractLoader
                     \CACHING_GROUP_PLUGIN,
                     $plugin->getCache()->getGroup()
                 ]
-            )
-            : false;
+            );
     }
 
     /**

@@ -530,7 +530,8 @@ $paginationMapping = (new Pagination('mapping'))
 $searchQueries = $db->getObjects(
     "SELECT tsuchanfrage.*, tseo.cSeo AS tcSeo
         FROM tsuchanfrage
-        LEFT JOIN tseo ON tseo.cKey = 'kSuchanfrage'
+        LEFT JOIN tseo 
+            ON tseo.cKey = 'kSuchanfrage'
             AND tseo.kKey = tsuchanfrage.kSuchanfrage
             AND tseo.kSprache = " . $languageID . '
         WHERE tsuchanfrage.kSprache = ' . $languageID . '
@@ -539,11 +540,12 @@ $searchQueries = $db->getObjects(
         ORDER BY ' . $cLivesucheSQL->cOrder . '
         LIMIT ' . $paginationQueries->getLimitSQL()
 );
-
-if (isset($searchQueries->tcSeo) && mb_strlen($searchQueries->tcSeo) > 0) {
-    $searchQueries->cSeo = $searchQueries->tcSeo;
+foreach ($searchQueries as $item) {
+    if (isset($item->tcSeo) && mb_strlen($item->tcSeo) > 0) {
+        $item->cSeo = $item->tcSeo;
+    }
+    unset($item->tcSeo);
 }
-unset($searchQueries->tcSeo);
 
 $failedQueries  = $db->getObjects(
     'SELECT *

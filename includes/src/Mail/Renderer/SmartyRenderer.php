@@ -212,9 +212,9 @@ class SmartyRenderer implements RendererInterface
      * this only works for #var# or #var.value# - not for deeper hierarchies
      *
      * @param string $subject
-     * @return string|null
+     * @return string
      */
-    private function parseSubject(string $subject): ?string
+    private function parseSubject(string $subject): string
     {
         if (\preg_match_all('/#(.*?)#/', $subject, $hits) === 0) {
             return $subject;

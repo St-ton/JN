@@ -89,7 +89,7 @@ class ImageMap implements IExtensionPoint
             $sql .= ' AND (CURDATE() >= DATE(vDatum)) AND (bDatum IS NULL OR CURDATE() <= DATE(bDatum) OR bDatum = 0)';
         }
         $imageMap = $this->db->getSingleObject($sql);
-        if (!$imageMap === null) {
+        if ($imageMap === null) {
             return false;
         }
         $imageMap->oArea_arr = $this->db->selectAll(

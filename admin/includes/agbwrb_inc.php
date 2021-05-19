@@ -9,7 +9,7 @@ use JTL\Shop;
  * @param int   $textID
  * @return bool
  */
-function speicherAGBWRB(int $customerGroupID, int $languageID, array $post, int $textID = 0)
+function speicherAGBWRB(int $customerGroupID, int $languageID, array $post, int $textID = 0): bool
 {
     if ($customerGroupID > 0 && $languageID > 0) {
         $item = new stdClass();

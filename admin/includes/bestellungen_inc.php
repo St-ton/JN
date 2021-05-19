@@ -36,7 +36,7 @@ function gibBestellungsUebersicht(string $limitSQL, string $query): array
  * @param string $query
  * @return int
  */
-function gibAnzahlBestellungen($query): int
+function gibAnzahlBestellungen(string $query): int
 {
     $filterSQL = (mb_strlen($query) > 0)
         ? " WHERE cBestellNr LIKE '%" . Shop::Container()->getDB()->escape($query) . "%'"
@@ -54,10 +54,9 @@ function gibAnzahlBestellungen($query): int
  */
 function setzeAbgeholtZurueck(array $orderIDs): int
 {
-    if (!is_array($orderIDs) || count($orderIDs) === 0) {
+    if (count($orderIDs) === 0) {
         return 1;
     }
-
     $orderList = implode(',', array_map('\intval', $orderIDs));
     $customers = Shop::Container()->getDB()->getObjects(
         'SELECT kKunde

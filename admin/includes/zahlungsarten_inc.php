@@ -7,7 +7,7 @@ use JTL\Shop;
  * @param int $paymentMethodID
  * @return array
  */
-function getNames(int $paymentMethodID)
+function getNames(int $paymentMethodID): array
 {
     $res = [];
     if (!$paymentMethodID) {
@@ -25,7 +25,7 @@ function getNames(int $paymentMethodID)
  * @param int $paymentMethodID
  * @return array
  */
-function getshippingTimeNames(int $paymentMethodID)
+function getshippingTimeNames(int $paymentMethodID): array
 {
     $res = [];
     if (!$paymentMethodID) {
@@ -43,7 +43,7 @@ function getshippingTimeNames(int $paymentMethodID)
  * @param int $paymentMethodID
  * @return array
  */
-function getHinweisTexte(int $paymentMethodID)
+function getHinweisTexte(int $paymentMethodID): array
 {
     $messages = [];
     if (!$paymentMethodID) {
@@ -65,7 +65,7 @@ function getHinweisTexte(int $paymentMethodID)
  * @param int $paymentMethodID
  * @return array
  */
-function getHinweisTexteShop(int $paymentMethodID)
+function getHinweisTexteShop(int $paymentMethodID): array
 {
     $messages = [];
     if (!$paymentMethodID) {
@@ -84,10 +84,10 @@ function getHinweisTexteShop(int $paymentMethodID)
 }
 
 /**
- * @param Zahlungsart $paymentMethod
+ * @param stdClass|Zahlungsart $paymentMethod
  * @return array
  */
-function getGesetzteKundengruppen($paymentMethod)
+function getGesetzteKundengruppen($paymentMethod): array
 {
     $ret = [];
     if (!isset($paymentMethod->cKundengruppen) || !$paymentMethod->cKundengruppen) {
@@ -104,9 +104,9 @@ function getGesetzteKundengruppen($paymentMethod)
 
 /**
  * @param string $query
- * @return array $allShippingsByName
+ * @return array
  */
-function getPaymentMethodsByName($query)
+function getPaymentMethodsByName(string $query): array
 {
     $paymentMethodsByName = [];
     foreach (explode(',', $query) as $string) {

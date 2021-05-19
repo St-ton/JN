@@ -106,9 +106,9 @@ $smarty->assign('pluginProfilerData', $pluginProfilerData)
 /**
  * @param bool $all
  * @param int  $runID
- * @return mixed
+ * @return int
  */
-function deleteProfileRun(bool $all = false, $runID = 0)
+function deleteProfileRun(bool $all = false, int $runID = 0): int
 {
     if ($all === true) {
         $count = Shop::Container()->getDB()->getAffectedRows('DELETE FROM tprofiler');

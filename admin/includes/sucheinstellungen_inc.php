@@ -105,7 +105,7 @@ function createSearchIndex($index, $create)
 /**
  * @return array
  */
-function clearSearchCache()
+function clearSearchCache(): array
 {
     Shop::Container()->getDB()->query('DELETE FROM tsuchcachetreffer');
     Shop::Container()->getDB()->query('DELETE FROM tsuchcache');

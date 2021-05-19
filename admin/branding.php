@@ -55,7 +55,7 @@ function gibBrandings()
  * @param int $brandingID
  * @return stdClass|null
  */
-function gibBranding(int $brandingID)
+function gibBranding(int $brandingID): ?stdClass
 {
     return Shop::Container()->getDB()->getSingleObject(
         'SELECT tbranding.*, tbranding.kBranding AS kBrandingTMP, tbrandingeinstellung.*
@@ -74,7 +74,7 @@ function gibBranding(int $brandingID)
  * @param array $files
  * @return bool
  */
-function speicherEinstellung(int $brandingID, array $post, array $files)
+function speicherEinstellung(int $brandingID, array $post, array $files): bool
 {
     $db                 = Shop::Container()->getDB();
     $conf               = new stdClass();
@@ -122,7 +122,7 @@ function speicherEinstellung(int $brandingID, array $post, array $files)
  * @param int   $brandingID
  * @return bool
  */
-function speicherBrandingBild($files, int $brandingID)
+function speicherBrandingBild(array $files, int $brandingID): bool
 {
     if ($files['cBrandingBild']['type'] === 'image/jpeg'
         || $files['cBrandingBild']['type'] === 'image/pjpeg'
@@ -142,7 +142,7 @@ function speicherBrandingBild($files, int $brandingID)
 /**
  * @param int $brandingID
  */
-function loescheBrandingBild(int $brandingID)
+function loescheBrandingBild(int $brandingID): void
 {
     if (file_exists(PFAD_ROOT . PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . '.jpg')) {
         @unlink(PFAD_ROOT . PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . '.jpg');
@@ -159,7 +159,7 @@ function loescheBrandingBild(int $brandingID)
  * @param string $ype
  * @return string
  */
-function mappeFileTyp(string $ype)
+function mappeFileTyp(string $ype): string
 {
     switch ($ype) {
         case 'image/gif':

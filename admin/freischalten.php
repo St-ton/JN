@@ -111,13 +111,13 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
     // Bewertungen
     if (Request::verifyGPCDataInt('bewertungen') === 1) {
         if (isset($_POST['freischaltensubmit'])) {
-            if (schalteBewertungFrei($_POST['kBewertung'])) {
+            if (schalteBewertungFrei(Request::postVar('kBewertung', []))) {
                 $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successRatingUnlock'), 'successRatingUnlock');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneRating'), 'errorAtLeastOneRating');
             }
         } elseif (isset($_POST['freischaltenleoschen'])) {
-            if (loescheBewertung($_POST['kBewertung'])) {
+            if (loescheBewertung(Request::postVar('kBewertung', []))) {
                 $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successRatingDelete'), 'successRatingDelete');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneRating'), 'errorAtLeastOneRating');
@@ -133,7 +133,7 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
                     $res = mappeLiveSuche($_POST['kSuchanfrage'], $mapping);
 
                     if ($res === 1) { // Alles O.K.
-                        if (schalteSuchanfragenFrei($_POST['kSuchanfrage'])) {
+                        if (schalteSuchanfragenFrei(Request::postVar('kSuchanfrage', []))) {
                             $alertHelper->addAlert(
                                 Alert::TYPE_SUCCESS,
                                 sprintf(__('successLiveSearchMap'), $mapping),

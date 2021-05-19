@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Collection;
+use JTL\Helpers\Text;
 use JTL\Plugin\Admin\Listing;
 use JTL\Plugin\Admin\ListingItem;
 use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
@@ -49,7 +50,7 @@ function adminSearch($query, $standalonePage = false): ?string
 
     Shop::Smarty()
         ->assign('standalonePage', $standalonePage)
-        ->assign('query', $query)
+        ->assign('query', Text::filterXSS($query))
         ->assign('adminMenuItems', $adminMenuItems)
         ->assign('settings', !empty($settings->oEinstellung_arr) ? $groupedSettings : null)
         ->assign('shippings', count($shippings) > 0 ? $shippings : null)

@@ -65,6 +65,7 @@ class Manufacturer extends AbstractImage
     {
         switch (Image::getSettings()['naming'][Image::TYPE_MANUFACTURER]) {
             case 2:
+                /** @var string|null $result */
                 $result = $mixed->path ?? $mixed->cBildpfad ?? null;
                 if ($result !== null) {
                     $result = \pathinfo($result)['filename'];
@@ -108,11 +109,10 @@ class Manufacturer extends AbstractImage
      */
     public function getAllImages(int $offset = null, int $limit = null): Generator
     {
-        $images = $this->db->query(
+        $images = $this->db->getPDOStatement(
             'SELECT kHersteller AS id, cName, cSeo AS seoPath, cBildpfad AS path
                 FROM thersteller
-                WHERE cBildpfad IS NOT NULL AND cBildpfad != \'\'' . self::getLimitStatement($offset, $limit),
-            ReturnType::QUERYSINGLE
+                WHERE cBildpfad IS NOT NULL AND cBildpfad != \'\'' . self::getLimitStatement($offset, $limit)
         );
         while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {
             yield MediaImageRequest::create([

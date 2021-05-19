@@ -379,7 +379,7 @@ function gibAHKKeys($keyName, $productNo = false)
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $res  = [];
     $keys = explode(';', $keyName);
-    if (!is_array($keys) || count($keys) === 0) {
+    if (count($keys) === 0) {
         return $res;
     }
     $res = array_filter($keys, static function ($e) {

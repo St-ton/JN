@@ -13,6 +13,12 @@ use JTL\Media\Image\StatsItem;
 interface IMedia
 {
     /**
+     * IMedia constructor.
+     * @param DbInterface|null $db
+     */
+    public function __construct(DbInterface $db = null);
+
+    /**
      * @return DbInterface
      */
     public function getDB(): DbInterface;

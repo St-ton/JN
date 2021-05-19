@@ -217,10 +217,8 @@ class Product
     {
         $result   = [];
         $parentID = 0;
-        $db       = Shop::Container()->getDB();
-
         // Hole EigenschaftWerte zur gewaehlten VariationKombi
-        $children = $db->getObjects(
+        $children = Shop::Container()->getDB()->getObjects(
             'SELECT teigenschaftkombiwert.kEigenschaftWert, teigenschaftkombiwert.kEigenschaft, tartikel.kVaterArtikel
                 FROM teigenschaftkombiwert
                 JOIN tartikel
@@ -241,11 +239,11 @@ class Product
         }
 
         foreach ($children as $child) {
-            if (!isset($result[$child->kEigenschaft]) || !\is_array($result[$child->kEigenschaft])) {
-                $result[(int)$child->kEigenschaft] = (int)$child->kEigenschaftWert;
+            $id = (int)$child->kEigenschaft;
+            if (!isset($result[$id]) || !\is_array($result[$id])) {
+                $result[$id] = (int)$child->kEigenschaftWert;
             }
         }
-
         $parentID = (int)$children[0]->kVaterArtikel;
 
         return $result;

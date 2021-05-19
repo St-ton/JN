@@ -317,7 +317,7 @@ ini_set('display_errors', 0);" . "\n";
             ) {
                 $query .= $line;
                 if (\preg_match('/;\s*$/', $line)) {
-                    $result = $this->db->executeQuery($query, ReturnType::QUERYSINGLE);
+                    $result = $this->db->getPDOStatement($query);
                     if (!$result) {
                         $this->responseStatus    = false;
                         $this->responseMessage[] = $this->db->getErrorMessage() .

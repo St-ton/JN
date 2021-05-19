@@ -71,6 +71,7 @@ class CharacteristicValue extends AbstractImage
     {
         switch (Image::getSettings()['naming'][Image::TYPE_CHARACTERISTIC_VALUE]) {
             case 2:
+                /** @var string|null $result */
                 $result = $mixed->path ?? $mixed->cBildpfad ?? $mixed->currentImagePath ?? null;
                 if ($result !== null) {
                     $result = \pathinfo($result)['filename'];
@@ -117,7 +118,7 @@ class CharacteristicValue extends AbstractImage
      */
     public function getAllImages(int $offset = null, int $limit = null): Generator
     {
-        $images = $this->db->query(
+        $images = $this->db->getPDOStatement(
             'SELECT A.cBildpfad AS path, A.kMerkmalwert, A.kMerkmalwert AS id, B.cWert AS val, B.cSeo AS seoPath
                 FROM tmerkmalwert A
                 JOIN tmerkmalwertsprache B
@@ -127,8 +128,7 @@ class CharacteristicValue extends AbstractImage
                 WHERE cBildpfad IS NOT NULL
                     AND cBildpfad != \'\'
                     AND tsprache.cShopStandard = \'Y\'
-                GROUP BY path, id' . self::getLimitStatement($offset, $limit),
-            ReturnType::QUERYSINGLE
+                GROUP BY path, id' . self::getLimitStatement($offset, $limit)
         );
         while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {
             yield MediaImageRequest::create([

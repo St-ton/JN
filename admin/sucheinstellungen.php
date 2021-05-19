@@ -17,8 +17,8 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('SETTINGS_ARTICLEOVERVIEW_VIEW', true, true);
-$kSektion         = CONF_ARTIKELUEBERSICHT;
-$conf             = Shop::getSettings([$kSektion]);
+$sectionID        = CONF_ARTIKELUEBERSICHT;
+$conf             = Shop::getSettings([$sectionID]);
 $db               = Shop::Container()->getDB();
 $standardwaehrung = $db->select('twaehrung', 'cStandard', 'Y');
 $mysqlVersion     = $db->getSingleObject("SHOW VARIABLES LIKE 'innodb_version'")->Value;
@@ -81,13 +81,10 @@ if (Request::getVar('action') === 'createIndex') {
         }
 
         try {
-            $db->executeQuery(
-                'UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)'
-            );
-            $res = $db->executeQuery(
+            $db->query('UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)');
+            $res = $db->getPDOStatement(
                 "ALTER TABLE $index
-                    ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $rows) . ')',
-                ReturnType::QUERYSINGLE
+                    ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $rows) . ')'
             );
         } catch (Exception $e) {
             $res = 0;
@@ -100,7 +97,7 @@ if (Request::getVar('action') === 'createIndex') {
 
             if ($settings['suche_fulltext'] !== 'N') {
                 $settings['suche_fulltext'] = 'N';
-                saveAdminSectionSettings($kSektion, $settings);
+                saveAdminSectionSettings($sectionID, $settings);
 
                 Shop::Container()->getCache()->flushTags([
                     CACHING_GROUP_OPTION,
@@ -131,7 +128,7 @@ if (Request::getVar('action') === 'createIndex') {
     exit;
 }
 
-if (Request::postInt('einstellungen_bearbeiten') === 1 && $kSektion > 0 && Form::validateToken()) {
+if (Request::postInt('einstellungen_bearbeiten') === 1 && Form::validateToken()) {
     $sucheFulltext = in_array(Request::postVar('suche_fulltext', []), ['Y', 'B'], true);
     if ($sucheFulltext) {
         if (version_compare($mysqlVersion, '5.6', '<')) {
@@ -148,7 +145,7 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && $kSektion > 0 && Form:
     $shopSettings = Shopsetting::getInstance();
     $alertHelper->addAlert(
         Alert::TYPE_SUCCESS,
-        saveAdminSectionSettings($kSektion, $_POST),
+        saveAdminSectionSettings($sectionID, $_POST),
         'saveSettings'
     );
 
@@ -185,10 +182,10 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && $kSektion > 0 && Form:
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSearchDeactivate'), 'successSearchDeactivate');
     }
 
-    $conf = Shop::getSettings([$kSektion]);
+    $conf = Shop::getSettings([$sectionID]);
 }
 
-$section = $db->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
+$section = $db->select('teinstellungensektion', 'kEinstellungenSektion', $sectionID);
 if ($conf['artikeluebersicht']['suche_fulltext'] !== 'N'
     && (!$db->getSingleObject("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'")
     || !$db->getSingleObject("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'"))) {
@@ -206,11 +203,11 @@ if ($conf['artikeluebersicht']['suche_fulltext'] !== 'N'
 }
 
 $smarty->assign('action', 'sucheinstellungen.php')
-       ->assign('kEinstellungenSektion', $kSektion)
+       ->assign('kEinstellungenSektion', $sectionID)
        ->assign('Sektion', $section)
        ->assign('Conf', getAdminSectionSettings(CONF_ARTIKELUEBERSICHT))
-       ->assign('cPrefDesc', filteredConfDescription($kSektion))
-       ->assign('cPrefURL', $smarty->getConfigVars('prefURL' . $kSektion))
+       ->assign('cPrefDesc', filteredConfDescription($sectionID))
+       ->assign('cPrefURL', $smarty->getConfigVars('prefURL' . $sectionID))
        ->assign('step', $step)
        ->assign('supportFulltext', version_compare($mysqlVersion, '5.6', '>='))
        ->assign('createIndex', $createIndex)

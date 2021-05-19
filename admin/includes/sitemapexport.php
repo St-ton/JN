@@ -290,7 +290,7 @@ function generateSitemapXML()
     $modification = $conf['sitemap']['sitemap_insert_lastmod'] === 'Y'
         ? ', tartikel.dLetzteAktualisierung'
         : '';
-    $res          = $db->queryPrepared(
+    $res          = $db->getPDOStatement(
         'SELECT tartikel.kArtikel, tartikel.cName, tseo.cSeo, tartikel.cArtNr' .
         $modification . "
             FROM tartikel
@@ -305,8 +305,7 @@ function generateSitemapXML()
         [
             'kGrpID' => $defaultCustomerGroupID,
             'langID' => $defaultLangID
-        ],
-        ReturnType::QUERYSINGLE
+        ]
     );
     while (($product = $res->fetch(PDO::FETCH_OBJ)) !== false) {
         if ($sitemapNumber > $sitemapLimit) {
@@ -356,7 +355,7 @@ function generateSitemapXML()
         if ($tmpLang->kSprache === $defaultLangID) {
             continue;
         }
-        $res = $db->queryPrepared(
+        $res = $db->getPDOStatement(
             "SELECT tartikel.kArtikel, tartikel.dLetzteAktualisierung, tseo.cSeo
                 FROM tartikelsprache, tartikel
                 JOIN tseo 
@@ -374,8 +373,7 @@ function generateSitemapXML()
             [
                 'kGrpID' => $defaultCustomerGroupID,
                 'langID' => $tmpLang->kSprache
-            ],
-            ReturnType::QUERYSINGLE
+            ]
         );
         while (($product = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             if ($sitemapNumber > $sitemapLimit) {
@@ -418,7 +416,7 @@ function generateSitemapXML()
 
     if ($conf['sitemap']['sitemap_seiten_anzeigen'] === 'Y') {
         // Links alle sprachen
-        $res = $db->queryPrepared(
+        $res = $db->getPDOStatement(
             "SELECT tlink.nLinkart, tlinksprache.kLink, tlinksprache.cISOSprache, tlink.bSSL
                 FROM tlink
                 JOIN tlinkgroupassociations
@@ -435,8 +433,7 @@ function generateSitemapXML()
                     OR tlink.cKundengruppen = 'NULL'
                     OR FIND_IN_SET(:cGrpID, REPLACE(tlink.cKundengruppen, ';', ',')) > 0)
                 ORDER BY tlinksprache.kLink",
-            ['cGrpID' => $defaultCustomerGroupID],
-            ReturnType::QUERYSINGLE
+            ['cGrpID' => $defaultCustomerGroupID]
         );
         while (($tlink = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             if (spracheEnthalten($tlink->cISOSprache, $languages)) {
@@ -491,7 +488,7 @@ function generateSitemapXML()
     if ($conf['sitemap']['sitemap_kategorien_anzeigen'] === 'Y') {
         $categoryHelper = new KategorieListe();
         // Kategorien STD Sprache
-        $res = $db->queryPrepared(
+        $res = $db->getPDOStatement(
             "SELECT tkategorie.kKategorie, tseo.cSeo, tkategorie.dLetzteAktualisierung
                 FROM tkategorie
                 JOIN tseo 
@@ -506,8 +503,7 @@ function generateSitemapXML()
             [
                 'langID' => $defaultLangID,
                 'cGrpID' => $defaultCustomerGroupID
-            ],
-            ReturnType::QUERYSINGLE
+            ]
         );
         while (($categoryData = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $urls = baueExportURL(
@@ -539,7 +535,7 @@ function generateSitemapXML()
         }
         // Kategorien sonstige Sprachen
         foreach ($languages as $tmpLang) {
-            $res = $db->queryPrepared(
+            $res = $db->getPDOStatement(
                 "SELECT tkategorie.kKategorie, tkategorie.dLetzteAktualisierung, tseo.cSeo
                     FROM tkategoriesprache, tkategorie
                     JOIN tseo 
@@ -556,8 +552,7 @@ function generateSitemapXML()
                 [
                     'langID' => $tmpLang->kSprache,
                     'cGrpID' => $defaultCustomerGroupID
-                ],
-                ReturnType::QUERYSINGLE
+                ]
             );
             while (($categoryData = $res->fetch(PDO::FETCH_OBJ)) !== false) {
                 $urls = baueExportURL(
@@ -591,7 +586,7 @@ function generateSitemapXML()
     }
     if ($conf['sitemap']['sitemap_hersteller_anzeigen'] === 'Y') {
         // Hersteller
-        $res = $db->queryPrepared(
+        $res = $db->getPDOStatement(
             "SELECT thersteller.kHersteller, thersteller.cName, tseo.cSeo
                 FROM thersteller
                 JOIN tseo 
@@ -599,8 +594,7 @@ function generateSitemapXML()
                     AND tseo.kKey = thersteller.kHersteller
                     AND tseo.kSprache = :langID
                 ORDER BY thersteller.kHersteller",
-            ['langID' => $defaultLangID],
-            ReturnType::QUERYSINGLE
+            ['langID' => $defaultLangID]
         );
         while (($oHersteller = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $urls = baueExportURL(
@@ -631,7 +625,7 @@ function generateSitemapXML()
     }
     if ($conf['sitemap']['sitemap_livesuche_anzeigen'] === 'Y') {
         // Livesuche STD Sprache
-        $res = $db->queryPrepared(
+        $res = $db->getPDOStatement(
             "SELECT tsuchanfrage.kSuchanfrage, tseo.cSeo, tsuchanfrage.dZuletztGesucht
                 FROM tsuchanfrage
                 JOIN tseo 
@@ -641,8 +635,7 @@ function generateSitemapXML()
                 WHERE tsuchanfrage.kSprache = :langID
                     AND tsuchanfrage.nAktiv = 1
                 ORDER BY tsuchanfrage.kSuchanfrage",
-            ['langID' => $defaultLangID],
-            ReturnType::QUERYSINGLE
+            ['langID' => $defaultLangID]
         );
         while (($oSuchanfrage = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $urls = baueExportURL(
@@ -675,7 +668,7 @@ function generateSitemapXML()
             if ($tmpLang->kSprache === $defaultLangID) {
                 continue;
             }
-            $res = $db->queryPrepared(
+            $res = $db->getPDOStatement(
                 "SELECT tsuchanfrage.kSuchanfrage, tseo.cSeo, tsuchanfrage.dZuletztGesucht
                     FROM tsuchanfrage
                     JOIN tseo 
@@ -685,8 +678,7 @@ function generateSitemapXML()
                     WHERE tsuchanfrage.kSprache = :langID
                         AND tsuchanfrage.nAktiv = 1
                     ORDER BY tsuchanfrage.kSuchanfrage",
-                ['langID' => $tmpLang->kSprache],
-                ReturnType::QUERYSINGLE
+                ['langID' => $tmpLang->kSprache]
             );
             while (($oSuchanfrage = $res->fetch(PDO::FETCH_OBJ)) !== false) {
                 $urls = baueExportURL(
@@ -717,7 +709,7 @@ function generateSitemapXML()
         }
     }
     if ($conf['sitemap']['sitemap_news_anzeigen'] === 'Y') {
-        $res = $db->query(
+        $res = $db->getPDOStatement(
             "SELECT tnews.*, tseo.cSeo, tseo.kSprache
                 FROM tnews
                 JOIN tnewssprache t 
@@ -731,8 +723,7 @@ function generateSitemapXML()
                     AND (tnews.cKundengruppe LIKE '%;-1;%'
                     OR FIND_IN_SET('" . Frontend::getCustomerGroup()->getID() .
             "', REPLACE(tnews.cKundengruppe, ';',',')) > 0) 
-                    ORDER BY tnews.dErstellt",
-            ReturnType::QUERYSINGLE
+                    ORDER BY tnews.dErstellt"
         );
         while (($oNews = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $catURL = makeURL(
@@ -757,7 +748,7 @@ function generateSitemapXML()
         }
     }
     if ($conf['sitemap']['sitemap_newskategorien_anzeigen'] === 'Y') {
-        $res = $db->query(
+        $res = $db->getPDOStatement(
             "SELECT tnewskategorie.*, tseo.cSeo, tseo.kSprache
                  FROM tnewskategorie
                  JOIN tnewskategoriesprache t 
@@ -766,10 +757,8 @@ function generateSitemapXML()
                     ON tseo.cKey = 'kNewsKategorie'
                     AND tseo.kKey = tnewskategorie.kNewsKategorie
                     AND tseo.kSprache = t.languageID
-                 WHERE tnewskategorie.nAktiv = 1",
-            ReturnType::QUERYSINGLE
+                 WHERE tnewskategorie.nAktiv = 1"
         );
-
         while (($oNewsKategorie = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $catURL = makeURL(
                 URL::buildURL($oNewsKategorie, URLART_NEWSKATEGORIE),

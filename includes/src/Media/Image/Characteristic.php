@@ -71,6 +71,7 @@ class Characteristic extends AbstractImage
     {
         switch (Image::getSettings()['naming'][Image::TYPE_CHARACTERISTIC]) {
             case 2:
+                /** @var string|null $result */
                 $result = $mixed->path ?? $mixed->cBildpfad ?? null;
                 if ($result !== null) {
                     $result = \pathinfo($result)['filename'];
@@ -117,12 +118,11 @@ class Characteristic extends AbstractImage
      */
     public function getAllImages(int $offset = null, int $limit = null): Generator
     {
-        $images = $this->db->query(
+        $images = $this->db->getPDOStatement(
             'SELECT cBildpfad AS path, kMerkmal, kMerkmal AS id, cName
                 FROM tmerkmal
                 WHERE cBildpfad IS NOT NULL
-                    AND cBildpfad != \'\'' . self::getLimitStatement($offset, $limit),
-            ReturnType::QUERYSINGLE
+                    AND cBildpfad != \'\'' . self::getLimitStatement($offset, $limit)
         );
         while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {
             yield MediaImageRequest::create([

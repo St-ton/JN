@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Alert\Alert;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -45,9 +44,8 @@ if (isset($_FILES['csv']['tmp_name'])
     }
 }
 
-$smarty->assign('kundengruppen', Shop::Container()->getDB()->query(
-    'SELECT * FROM tkundengruppe ORDER BY cName',
-    ReturnType::ARRAY_OF_OBJECTS
+$smarty->assign('kundengruppen', Shop::Container()->getDB()->getObjects(
+    'SELECT * FROM tkundengruppe ORDER BY cName'
 ))
     ->display('newsletterimport.tpl');
 

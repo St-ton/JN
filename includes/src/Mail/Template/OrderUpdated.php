@@ -2,7 +2,6 @@
 
 namespace JTL\Mail\Template;
 
-use JTL\DB\ReturnType;
 use JTL\Smarty\JTLSmarty;
 
 /**
@@ -24,7 +23,7 @@ class OrderUpdated extends OrderShipped
         }
         $moduleID = $data->tbestellung->Zahlungsart->cModulId ?? null;
         if (!empty($moduleID)) {
-            $oZahlungsartConf = $this->db->queryPrepared(
+            $oZahlungsartConf = $this->db->getSingleObject(
                 'SELECT tzahlungsartsprache.*
                     FROM tzahlungsartsprache
                     JOIN tzahlungsart
@@ -33,11 +32,10 @@ class OrderUpdated extends OrderShipped
                     JOIN tsprache
                         ON tsprache.cISO = tzahlungsartsprache.cISOSprache
                     WHERE tsprache.kSprache = :lid',
-                ['module' => $moduleID, 'lid' => $this->languageID],
-                ReturnType::SINGLE_OBJECT
+                ['module' => $moduleID, 'lid' => $this->languageID]
             );
 
-            if (isset($oZahlungsartConf->kZahlungsart) && $oZahlungsartConf->kZahlungsart > 0) {
+            if ($oZahlungsartConf !== null && $oZahlungsartConf->kZahlungsart > 0) {
                 $smarty->assign('Zahlungsart', $oZahlungsartConf);
             }
         }

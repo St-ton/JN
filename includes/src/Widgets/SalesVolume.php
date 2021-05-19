@@ -30,9 +30,9 @@ class SalesVolume extends AbstractWidget
     /**
      * @param int $month
      * @param int $year
-     * @return array|mixed
+     * @return array
      */
-    public function calcVolumeOfMonth(int $month, int $year)
+    public function calcVolumeOfMonth(int $month, int $year): array
     {
         $interval = 0;
         $stats    = \gibBackendStatistik(

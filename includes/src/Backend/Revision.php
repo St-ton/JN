@@ -4,7 +4,6 @@ namespace JTL\Backend;
 
 use InvalidArgumentException;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Shop;
 use stdClass;
 
@@ -124,17 +123,14 @@ class Revision
             throw new InvalidArgumentException('Invalid revision type ' . $type);
         }
 
-        $latestRevision = $this->db->queryPrepared(
+        return $this->db->getSingleObject(
             'SELECT *
                 FROM trevisions
                 WHERE type = :tp
                     AND reference_primary = :ref
                 ORDER BY timestamp DESC',
-            ['tp' => $type, 'ref' => $key],
-            ReturnType::SINGLE_OBJECT
+            ['tp' => $type, 'ref' => $key]
         );
-
-        return \is_object($latestRevision) ? $latestRevision : null;
     }
 
     /**
@@ -226,7 +222,7 @@ class Revision
      */
     public function deleteAll(): self
     {
-        $this->db->query('TRUNCATE table trevisions', ReturnType::AFFECTED_ROWS);
+        $this->db->query('TRUNCATE table trevisions');
 
         return $this;
     }
@@ -311,7 +307,7 @@ class Revision
      */
     private function housekeeping($type, $key): int
     {
-        return $this->db->queryPrepared(
+        return $this->db->getAffectedRows(
             'DELETE a 
                 FROM trevisions AS a 
                 JOIN ( 
@@ -326,8 +322,7 @@ class Revision
                 'type' => $type,
                 'prim' => $key,
                 'max'  => \MAX_REVISIONS
-            ],
-            ReturnType::AFFECTED_ROWS
+            ]
         );
     }
 }

@@ -845,6 +845,14 @@ class NiceDB implements DbInterface
     }
 
     /**
+     * @inheritdoc
+     */
+    public function getPDOStatement(string $stmt, array $params = []): PDOStatement
+    {
+        return $this->_execute(1, $stmt, $params, ReturnType::QUERYSINGLE);
+    }
+
+    /**
      * executes query and returns misc data
      *
      * @param int           $type - Type [0 => query, 1 => prepared]

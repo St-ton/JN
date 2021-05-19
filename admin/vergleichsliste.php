@@ -142,50 +142,50 @@ if (is_array($topComparisons) && count($topComparisons) > 0) {
 }
 
 $smarty->assign('Letzten20Vergleiche', $last20)
-       ->assign('TopVergleiche', $topComparisons)
-       ->assign('pagination', $pagination)
-       ->assign('oConfig_arr', $configData)
-       ->display('vergleichsliste.tpl');
+    ->assign('TopVergleiche', $topComparisons)
+    ->assign('pagination', $pagination)
+    ->assign('oConfig_arr', $configData)
+    ->display('vergleichsliste.tpl');
 
 /**
  * @param array $topCompareLists
  */
-function erstelleDiagrammTopVergleiche($topCompareLists)
+function erstelleDiagrammTopVergleiche(array $topCompareLists): void
 {
     unset($_SESSION['oGraphData_arr'], $_SESSION['nYmax'], $_SESSION['nDiagrammTyp']);
-
     $graphData = [];
-    if (is_array($topCompareLists) && count($topCompareLists) > 0) {
-        $yMax                     = []; // Y-Achsen Werte um spaeter den Max Wert zu erlangen
-        $_SESSION['nDiagrammTyp'] = 4;
-
-        foreach ($topCompareLists as $i => $list) {
-            $top               = new stdClass();
-            $top->nAnzahl      = $list->nAnzahl;
-            $top->cArtikelName = checkName($list->cArtikelName);
-            $graphData[]       = $top;
-            $yMax[]            = $list->nAnzahl;
-            unset($top);
-
-            if ($i >= (int)$_SESSION['Vergleichsliste']->nAnzahl) {
-                break;
-            }
-        }
-        // Naechst hoehere Zahl berechnen fuer die Y-Balkenbeschriftung
-        if (count($yMax) > 0) {
-            $fMax = (float)max($yMax);
-            if ($fMax > 10) {
-                $temp  = 10 ** floor(log10($fMax));
-                $nYmax = ceil($fMax / $temp) * $temp;
-            } else {
-                $nYmax = 10;
-            }
-
-            $_SESSION['nYmax'] = $nYmax;
-        }
-
-        $_SESSION['oGraphData_arr'] = $graphData;
+    if (count($topCompareLists) === 0) {
+        return;
     }
+    $yMax                     = []; // Y-Achsen Werte um spaeter den Max Wert zu erlangen
+    $_SESSION['nDiagrammTyp'] = 4;
+
+    foreach ($topCompareLists as $i => $list) {
+        $top               = new stdClass();
+        $top->nAnzahl      = $list->nAnzahl;
+        $top->cArtikelName = checkName($list->cArtikelName);
+        $graphData[]       = $top;
+        $yMax[]            = $list->nAnzahl;
+        unset($top);
+
+        if ($i >= (int)$_SESSION['Vergleichsliste']->nAnzahl) {
+            break;
+        }
+    }
+    // Naechst hoehere Zahl berechnen fuer die Y-Balkenbeschriftung
+    if (count($yMax) > 0) {
+        $fMax = (float)max($yMax);
+        if ($fMax > 10) {
+            $temp  = 10 ** floor(log10($fMax));
+            $nYmax = ceil($fMax / $temp) * $temp;
+        } else {
+            $nYmax = 10;
+        }
+
+        $_SESSION['nYmax'] = $nYmax;
+    }
+
+    $_SESSION['oGraphData_arr'] = $graphData;
 }
 
 /**
@@ -194,7 +194,7 @@ function erstelleDiagrammTopVergleiche($topCompareLists)
  * @param string $name
  * @return string
  */
-function checkName($name)
+function checkName(string $name): string
 {
     $name = stripslashes(trim(str_replace([';', '_', '#', '%', '$', ':', '"'], '', $name)));
 

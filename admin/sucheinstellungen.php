@@ -3,7 +3,6 @@
 use JTL\Alert\Alert;
 use JTL\Backend\Notification;
 use JTL\Backend\NotificationEntry;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -39,7 +38,7 @@ if (Request::getVar('action') === 'createIndex') {
     $index = mb_convert_case(Text::xssClean($_GET['index']), MB_CASE_LOWER);
 
     if (!in_array($index, ['tartikel', 'tartikelsprache'], true)) {
-        header(Request::makeHTTPHeader(403), true);
+        header(Request::makeHTTPHeader(403));
         echo json_encode((object)['error' => __('errorIndexInvalid')]);
         exit;
     }
@@ -75,19 +74,16 @@ if (Request::getVar('action') === 'createIndex') {
                 );
                 break;
             default:
-                header(Request::makeHTTPHeader(403), true);
+                header(Request::makeHTTPHeader(403));
                 echo json_encode((object)['error' => __('errorIndexInvalid')]);
                 exit;
         }
 
         try {
-            $db->executeQuery(
-                'UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)'
-            );
-            $res = $db->executeQuery(
+            $db->query('UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)');
+            $res = $db->getPDOStatement(
                 "ALTER TABLE $index
-                    ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $rows) . ')',
-                ReturnType::QUERYSINGLE
+                    ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $rows) . ')'
             );
         } catch (Exception $e) {
             $res = 0;
@@ -127,7 +123,7 @@ if (Request::getVar('action') === 'createIndex') {
         );
     }
 
-    header(Request::makeHTTPHeader(200), true);
+    header(Request::makeHTTPHeader(200));
     exit;
 }
 

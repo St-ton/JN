@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Backend\DirManager;
-use JTL\DB\ReturnType;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Helpers\Text;
@@ -152,7 +151,7 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
 }
 
 /**
- * @return array
+ * @return array|mixed
  */
 function getDBFileStruct()
 {
@@ -305,7 +304,7 @@ function determineEngineUpdate(array $dbStruct)
  * @param string[] $shopTables
  * @return string
  */
-function doEngineUpdateScript(string $fileName, array $shopTables)
+function doEngineUpdateScript(string $fileName, array $shopTables): string
 {
     $nl = "\r\n";
 
@@ -420,8 +419,12 @@ function doEngineUpdateScript(string $fileName, array $shopTables)
  * @throws CircularReferenceException
  * @throws ServiceNotFoundException
  */
-function doMigrateToInnoDB_utf8(string $status = 'start', string $tableName = '', int $step = 1, array $exclude = [])
-{
+function doMigrateToInnoDB_utf8(
+    string $status = 'start',
+    string $tableName = '',
+    int $step = 1,
+    array $exclude = []
+): stdClass {
     Shop::Container()->getGetText()->loadAdminLocale('pages/dbcheck');
 
     $mysqlVersion = DBMigrationHelper::getMySQLVersion();
@@ -519,7 +522,7 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $tableName = ''
                     $sql   = DBMigrationHelper::sqlConvertUTF8($table);
 
                     if (!empty($sql)) {
-                        if ($db->executeQuery($sql, ReturnType::QUERYSINGLE)) {
+                        if ($db->query($sql)) {
                             // Get next table for migration...
                             $result = $doSingle
                                 ? doMigrateToInnoDB_utf8('stop')

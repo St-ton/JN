@@ -43,7 +43,7 @@ function gibBackendStatistik(int $type, int $from, int $to, &$intervall): array
  * @param int $type
  * @return array
  */
-function gibMappingDaten(int $type)
+function gibMappingDaten(int $type): array
 {
     if (!$type) {
         return [];
@@ -81,7 +81,7 @@ function gibMappingDaten(int $type)
  * @param int $type
  * @return string
  */
-function GetTypeNameStats($type)
+function GetTypeNameStats($type): string
 {
     $names = [
         1 => __('visitor'),
@@ -98,7 +98,7 @@ function GetTypeNameStats($type)
  * @param int $type
  * @return stdClass
  */
-function getAxisNames($type)
+function getAxisNames($type): stdClass
 {
     $axis    = new stdClass();
     $axis->y = 'nCount';
@@ -148,7 +148,7 @@ function mappeDatenMember($members, $mapping)
  * @param int    $mod
  * @return Linechart
  */
-function prepareLineChartStats($stats, $name, $axis, $mod = 1)
+function prepareLineChartStats($stats, $name, $axis, $mod = 1): Linechart
 {
     $chart = new Linechart(['active' => false]);
 
@@ -184,7 +184,7 @@ function prepareLineChartStats($stats, $name, $axis, $mod = 1)
  * @param int    $maxEntries
  * @return Piechart
  */
-function preparePieChartStats($stats, $name, $axis, $maxEntries = 6)
+function preparePieChartStats($stats, $name, $axis, $maxEntries = 6): Piechart
 {
     $chart = new Piechart(['active' => false]);
     if (is_array($stats) && count($stats) > 0) {
@@ -230,7 +230,7 @@ function preparePieChartStats($stats, $name, $axis, $maxEntries = 6)
  * @param int    $mod
  * @return Linechart
  */
-function prepareLineChartStatsMulti($series, $axis, $mod = 1)
+function prepareLineChartStatsMulti($series, $axis, $mod = 1): Linechart
 {
     $chart = new Linechart(['active' => false]);
     if (is_array($series) && count($series) > 0) {

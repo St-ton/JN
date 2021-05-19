@@ -20,9 +20,9 @@ use JTL\XMLParser;
 /**
  * @param int|array $configSectionID
  * @param bool $byName
- * @return array
+ * @return stdClass[]
  */
-function getAdminSectionSettings($configSectionID, bool $byName = false)
+function getAdminSectionSettings($configSectionID, bool $byName = false): array
 {
     $gettext = Shop::Container()->getGetText();
     $gettext->loadConfigLocales();
@@ -116,8 +116,12 @@ function getAdminSectionSettings($configSectionID, bool $byName = false)
  * @param bool $byName
  * @return string
  */
-function saveAdminSettings(array $settingsIDs, array $post, $tags = [CACHING_GROUP_OPTION], bool $byName = false)
-{
+function saveAdminSettings(
+    array $settingsIDs,
+    array $post,
+    array $tags = [CACHING_GROUP_OPTION],
+    bool $byName = false
+): string {
     $db       = Shop::Container()->getDB();
     $where    = $byName
         ? "WHERE cWertName IN ('" . implode("','", $settingsIDs) . "')"
@@ -166,11 +170,11 @@ function saveAdminSettings(array $settingsIDs, array $post, $tags = [CACHING_GRO
 }
 
 /**
- * @param array  $listBoxes
+ * @param mixed  $listBoxes
  * @param string $valueName
  * @param int    $configSectionID
  */
-function bearbeiteListBox($listBoxes, $valueName, int $configSectionID)
+function bearbeiteListBox($listBoxes, string $valueName, int $configSectionID): void
 {
     $db = Shop::Container()->getDB();
     if (is_array($listBoxes) && count($listBoxes) > 0) {
@@ -212,7 +216,7 @@ function bearbeiteListBox($listBoxes, $valueName, int $configSectionID)
  * @param array $tags
  * @return string
  */
-function saveAdminSectionSettings(int $configSectionID, array $post, $tags = [CACHING_GROUP_OPTION])
+function saveAdminSectionSettings(int $configSectionID, array $post, array $tags = [CACHING_GROUP_OPTION]): string
 {
     Shop::Container()->getGetText()->loadAdminLocale('configs/configs');
     if (!Form::validateToken()) {
@@ -276,7 +280,7 @@ function saveAdminSectionSettings(int $configSectionID, array $post, $tags = [CA
  * @param stdClass $setting
  * @return bool
  */
-function validateSetting($setting): bool
+function validateSetting(stdClass $setting): bool
 {
     $valid = true;
     switch ($setting->cName) {
@@ -296,7 +300,7 @@ function validateSetting($setting): bool
  * @param stdClass $setting
  * @return bool
  */
-function validateNumberRange(int $min, int $max, $setting): bool
+function validateNumberRange(int $min, int $max, stdClass $setting): bool
 {
     $valid = $min <= $setting->cWert && $setting->cWert <= $max;
 
@@ -320,7 +324,7 @@ function validateNumberRange(int $min, int $max, $setting): bool
  * @param bool $activeOnly
  * @return array
  */
-function holeAlleKampagnen(bool $internalOnly = false, bool $activeOnly = true)
+function holeAlleKampagnen(bool $internalOnly = false, bool $activeOnly = true): array
 {
     $activeSQL  = $activeOnly ? ' WHERE nAktiv = 1' : '';
     $interalSQL = '';
@@ -364,7 +368,7 @@ function getArrangedArray($xml, int $level = 1)
 /**
  *
  */
-function setzeSprache()
+function setzeSprache(): void
 {
     if (Form::validateToken() && Request::verifyGPCDataInt('sprachwechsel') === 1) {
         // Wähle explizit gesetzte Sprache als aktuelle Sprache
@@ -395,7 +399,7 @@ function setzeSprache()
 /**
  * @param int $month
  * @param int $year
- * @return int
+ * @return false|int
  */
 function firstDayOfMonth(int $month = -1, int $year = -1)
 {
@@ -412,7 +416,7 @@ function firstDayOfMonth(int $month = -1, int $year = -1)
 /**
  * @param int $month
  * @param int $year
- * @return int
+ * @return false|int
  */
 function lastDayOfMonth(int $month = -1, int $year = -1)
 {
@@ -435,7 +439,7 @@ function lastDayOfMonth(int $month = -1, int $year = -1)
  * @param string $dateString
  * @return array
  */
-function ermittleDatumWoche(string $dateString)
+function ermittleDatumWoche(string $dateString): array
 {
     if (mb_strlen($dateString) < 0) {
         return [];
@@ -535,7 +539,7 @@ function getMaxFileSize($size)
  * @param string $targetID
  * @return IOResponse
  */
-function getCurrencyConversionIO($netPrice, $grossPrice, $targetID)
+function getCurrencyConversionIO($netPrice, $grossPrice, $targetID): IOResponse
 {
     $response = new IOResponse();
     $response->assignDom($targetID, 'innerHTML', Currency::getCurrencyConversion($netPrice, $grossPrice));
@@ -549,7 +553,7 @@ function getCurrencyConversionIO($netPrice, $grossPrice, $targetID)
  * @param string $tooltipID
  * @return IOResponse
  */
-function setCurrencyConversionTooltipIO($netPrice, $grossPrice, $tooltipID)
+function setCurrencyConversionTooltipIO($netPrice, $grossPrice, $tooltipID): IOResponse
 {
     $response = new IOResponse();
     $response->assignVar('originalTilte', Currency::getCurrencyConversion($netPrice, $grossPrice));
@@ -562,7 +566,7 @@ function setCurrencyConversionTooltipIO($netPrice, $grossPrice, $tooltipID)
  * @param string $url
  * @return array|IOError
  */
-function addFav($title, $url)
+function addFav(string $title, string $url)
 {
     $success     = false;
     $kAdminlogin = Shop::Container()->getAdminAccount()->getID();
@@ -586,7 +590,7 @@ function addFav($title, $url)
 /**
  * @return array
  */
-function reloadFavs()
+function reloadFavs(): array
 {
     global $oAccount;
 
@@ -599,7 +603,7 @@ function reloadFavs()
 /**
  * @return array
  */
-function getNotifyDropIO()
+function getNotifyDropIO(): array
 {
     return [
         'tpl'  => JTLSmarty::getInstance(false, ContextType::BACKEND)
@@ -614,7 +618,7 @@ function getNotifyDropIO()
  * @return string delimiter guess
  * @former guessCsvDelimiter()
  */
-function getCsvDelimiter(string $filename)
+function getCsvDelimiter(string $filename): string
 {
     $file      = fopen($filename, 'r');
     $firstLine = fgets($file);
@@ -634,7 +638,7 @@ function getCsvDelimiter(string $filename)
 /**
  * @return JTLSmarty
  */
-function getFrontendSmarty()
+function getFrontendSmarty(): JTLSmarty
 {
     static $frontendSmarty = null;
 

@@ -6,12 +6,12 @@ use JTL\Review\ReviewAdminController;
 use JTL\Shop;
 
 /**
- * @param string $sql
- * @param object $searchSQL
- * @param bool   $checkLanguage
+ * @param string   $sql
+ * @param stdClass $searchSQL
+ * @param bool     $checkLanguage
  * @return stdClass[]
  */
-function gibBewertungFreischalten(string $sql, $searchSQL, bool $checkLanguage = true): array
+function gibBewertungFreischalten(string $sql, stdClass $searchSQL, bool $checkLanguage = true): array
 {
     $cond = $checkLanguage === true
         ? 'tbewertung.kSprache = ' . (int)$_SESSION['editLanguageID'] . ' AND '
@@ -29,12 +29,12 @@ function gibBewertungFreischalten(string $sql, $searchSQL, bool $checkLanguage =
 }
 
 /**
- * @param string $sql
- * @param object $searchSQL
- * @param bool   $checkLanguage
+ * @param string   $sql
+ * @param stdClass $searchSQL
+ * @param bool     $checkLanguage
  * @return stdClass[]
  */
-function gibSuchanfrageFreischalten(string $sql, $searchSQL, bool $checkLanguage = true): array
+function gibSuchanfrageFreischalten(string $sql, stdClass $searchSQL, bool $checkLanguage = true): array
 {
     $cond = $checkLanguage === true
         ? 'AND kSprache = ' . (int)$_SESSION['editLanguageID'] . ' '
@@ -49,12 +49,12 @@ function gibSuchanfrageFreischalten(string $sql, $searchSQL, bool $checkLanguage
 }
 
 /**
- * @param string $sql
- * @param object $searchSQL
- * @param bool   $checkLanguage
+ * @param string   $sql
+ * @param stdClass $searchSQL
+ * @param bool     $checkLanguage
  * @return stdClass[]
  */
-function gibNewskommentarFreischalten(string $sql, $searchSQL, bool $checkLanguage = true): array
+function gibNewskommentarFreischalten(string $sql, stdClass $searchSQL, bool $checkLanguage = true): array
 {
     $cond         = $checkLanguage === true
         ? ' AND t.languageID = ' . (int)$_SESSION['editLanguageID'] . ' '
@@ -82,12 +82,12 @@ function gibNewskommentarFreischalten(string $sql, $searchSQL, bool $checkLangua
 }
 
 /**
- * @param string $sql
- * @param object $searchSQL
- * @param bool   $checkLanguage
+ * @param string   $sql
+ * @param stdClass $searchSQL
+ * @param bool     $checkLanguage
  * @return stdClass[]
  */
-function gibNewsletterEmpfaengerFreischalten($sql, $searchSQL, bool $checkLanguage = true): array
+function gibNewsletterEmpfaengerFreischalten(string $sql, stdClass $searchSQL, bool $checkLanguage = true): array
 {
     $cond = $checkLanguage === true
         ? ' AND kSprache = ' . (int)$_SESSION['editLanguageID']
@@ -107,9 +107,9 @@ function gibNewsletterEmpfaengerFreischalten($sql, $searchSQL, bool $checkLangua
  * @param array $reviewIDs
  * @return bool
  */
-function schalteBewertungFrei($reviewIDs): bool
+function schalteBewertungFrei(array $reviewIDs): bool
 {
-    if (!is_array($reviewIDs) || count($reviewIDs) === 0) {
+    if (count($reviewIDs) === 0) {
         return false;
     }
     $controller = new ReviewAdminController(Shop::Container()->getDB(), Shop::Container()->getCache());
@@ -122,14 +122,13 @@ function schalteBewertungFrei($reviewIDs): bool
  * @param array $searchQueries
  * @return bool
  */
-function schalteSuchanfragenFrei($searchQueries): bool
+function schalteSuchanfragenFrei(array $searchQueries): bool
 {
-    if (!is_array($searchQueries) || count($searchQueries) === 0) {
+    if (count($searchQueries) === 0) {
         return false;
     }
     $db = Shop::Container()->getDB();
-    foreach ($searchQueries as $i => $qid) {
-        $qid   = (int)$qid;
+    foreach (array_map('\intval', $searchQueries) as $qid) {
         $query = $db->getSingleObject(
             'SELECT kSuchanfrage, kSprache, cSuche
                 FROM tsuchanfrage
@@ -146,7 +145,7 @@ function schalteSuchanfragenFrei($searchQueries): bool
             $seo->cSeo     = Seo::checkSeo(Seo::getSeo($query->cSuche));
             $seo->cKey     = 'kSuchanfrage';
             $seo->kKey     = $qid;
-            $seo->kSprache = $query->kSprache;
+            $seo->kSprache = (int)$query->kSprache;
             $db->insert('tseo', $seo);
             $db->update(
                 'tsuchanfrage',
@@ -164,17 +163,15 @@ function schalteSuchanfragenFrei($searchQueries): bool
  * @param array $newsComments
  * @return bool
  */
-function schalteNewskommentareFrei($newsComments): bool
+function schalteNewskommentareFrei(array $newsComments): bool
 {
-    if (!is_array($newsComments) || count($newsComments) === 0) {
+    if (count($newsComments) === 0) {
         return false;
     }
-    $newsComments = array_map('\intval', $newsComments);
-
     Shop::Container()->getDB()->query(
         'UPDATE tnewskommentar
             SET nAktiv = 1
-            WHERE kNewsKommentar IN (' . implode(',', $newsComments) . ')'
+            WHERE kNewsKommentar IN (' . implode(',', array_map('\intval', $newsComments)) . ')'
     );
 
     return true;
@@ -184,17 +181,15 @@ function schalteNewskommentareFrei($newsComments): bool
  * @param array $recipients
  * @return bool
  */
-function schalteNewsletterempfaengerFrei($recipients): bool
+function schalteNewsletterempfaengerFrei(array $recipients): bool
 {
-    if (!is_array($recipients) || count($recipients) === 0) {
+    if (count($recipients) === 0) {
         return false;
     }
-    $recipients = array_map('\intval', $recipients);
-
     Shop::Container()->getDB()->query(
         'UPDATE tnewsletterempfaenger
             SET nAktiv = 1
-            WHERE kNewsletterEmpfaenger IN (' . implode(',', $recipients) .')'
+            WHERE kNewsletterEmpfaenger IN (' . implode(',', array_map('\intval', $recipients)) .')'
     );
 
     return true;
@@ -204,9 +199,9 @@ function schalteNewsletterempfaengerFrei($recipients): bool
  * @param array $ratings
  * @return bool
  */
-function loescheBewertung($ratings): bool
+function loescheBewertung(array $ratings): bool
 {
-    if (!is_array($ratings) || count($ratings) === 0) {
+    if (count($ratings) === 0) {
         return false;
     }
     Shop::Container()->getDB()->query(
@@ -221,9 +216,9 @@ function loescheBewertung($ratings): bool
  * @param array $queries
  * @return bool
  */
-function loescheSuchanfragen($queries): bool
+function loescheSuchanfragen(array $queries): bool
 {
-    if (!is_array($queries) || count($queries) === 0) {
+    if (count($queries) === 0) {
         return false;
     }
     $queries = array_map('\intval', $queries);
@@ -245,12 +240,11 @@ function loescheSuchanfragen($queries): bool
  * @param array $comments
  * @return bool
  */
-function loescheNewskommentare($comments): bool
+function loescheNewskommentare(array $comments): bool
 {
-    if (!is_array($comments) || count($comments) === 0) {
+    if (count($comments) === 0) {
         return false;
     }
-
     Shop::Container()->getDB()->query(
         'DELETE FROM tnewskommentar
             WHERE kNewsKommentar IN (' . implode(',', array_map('\intval', $comments)) . ')'
@@ -263,12 +257,11 @@ function loescheNewskommentare($comments): bool
  * @param array $recipients
  * @return bool
  */
-function loescheNewsletterempfaenger($recipients): bool
+function loescheNewsletterempfaenger(array $recipients): bool
 {
-    if (!is_array($recipients) || count($recipients) === 0) {
+    if (count($recipients) === 0) {
         return false;
     }
-
     Shop::Container()->getDB()->query(
         'DELETE FROM tnewsletterempfaenger
             WHERE kNewsletterEmpfaenger IN (' . implode(',', array_map('\intval', $recipients)) . ')'
@@ -278,33 +271,33 @@ function loescheNewsletterempfaenger($recipients): bool
 }
 
 /**
- * @param array  $queryIDs
- * @param string $cMapping
+ * @param array|mixed $queryIDs
+ * @param string      $mapTo
  * @return int
  */
-function mappeLiveSuche($queryIDs, $cMapping): int
+function mappeLiveSuche($queryIDs, string $mapTo): int
 {
-    if (!is_array($queryIDs) || count($queryIDs) === 0 || mb_strlen($cMapping) === 0) {
+    if (!is_array($queryIDs) || count($queryIDs) === 0 || mb_strlen($mapTo) === 0) {
         return 2; // Leere Übergabe
     }
     $db = Shop::Container()->getDB();
     foreach ($queryIDs as $kSuchanfrage) {
-        $oSuchanfrage = $db->select('tsuchanfrage', 'kSuchanfrage', (int)$kSuchanfrage);
-        if ($oSuchanfrage === null || empty($oSuchanfrage->kSuchanfrage)) {
+        $query = $db->select('tsuchanfrage', 'kSuchanfrage', (int)$kSuchanfrage);
+        if ($query === null || empty($query->kSuchanfrage)) {
             return 3; // Mindestens eine Suchanfrage wurde nicht in der Datenbank gefunden.
         }
-        if (mb_convert_case($oSuchanfrage->cSuche, MB_CASE_LOWER) === mb_convert_case($cMapping, MB_CASE_LOWER)) {
+        if (mb_convert_case($query->cSuche, MB_CASE_LOWER) === mb_convert_case($mapTo, MB_CASE_LOWER)) {
             return 6; // Es kann nicht auf sich selbst gemappt werden
         }
-        $oSuchanfrageNeu = $db->select('tsuchanfrage', 'cSuche', $cMapping);
+        $oSuchanfrageNeu = $db->select('tsuchanfrage', 'cSuche', $mapTo);
         if ($oSuchanfrageNeu === null || empty($oSuchanfrageNeu->kSuchanfrage)) {
             return 5; // Sie haben versucht auf eine nicht existierende Suchanfrage zu mappen
         }
         $mapping                 = new stdClass();
         $mapping->kSprache       = $_SESSION['editLanguageID'];
-        $mapping->cSuche         = $oSuchanfrage->cSuche;
-        $mapping->cSucheNeu      = $cMapping;
-        $mapping->nAnzahlGesuche = $oSuchanfrage->nAnzahlGesuche;
+        $mapping->cSuche         = $query->cSuche;
+        $mapping->cSucheNeu      = $mapTo;
+        $mapping->nAnzahlGesuche = $query->nAnzahlGesuche;
 
         $kSuchanfrageMapping = $db->insert('tsuchanfragemapping', $mapping);
 
@@ -317,18 +310,18 @@ function mappeLiveSuche($queryIDs, $cMapping): int
                 WHERE kSprache = :lid
                     AND kSuchanfrage = :sid',
             [
-                'cnt' => $oSuchanfrage->nAnzahlGesuche,
+                'cnt' => $query->nAnzahlGesuche,
                 'lid' => (int)$_SESSION['editLanguageID'],
                 'sid' => (int)$oSuchanfrageNeu->kSuchanfrage
             ]
         );
-        $db->delete('tsuchanfrage', 'kSuchanfrage', (int)$oSuchanfrage->kSuchanfrage);
+        $db->delete('tsuchanfrage', 'kSuchanfrage', (int)$query->kSuchanfrage);
         $db->queryPrepared(
             "UPDATE tseo
                 SET kKey = :sqid
                 WHERE cKey = 'kSuchanfrage'
                     AND kKey = :sqid",
-            ['sqid' => (int)$oSuchanfrage->kSuchanfrage]
+            ['sqid' => (int)$query->kSuchanfrage]
         );
     }
 

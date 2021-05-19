@@ -3,6 +3,7 @@
 namespace JTL\DB;
 
 use Illuminate\Support\Collection;
+use PDOStatement;
 use stdClass;
 
 /**
@@ -323,6 +324,14 @@ interface DbInterface extends \Serializable
      * @since 5.1.0
      */
     public function getAffectedRows(string $stmt, array $params = []): int;
+
+    /**
+     * @param string   $stmt
+     * @param array    $params
+     * @return PDOStatement
+     * @since 5.1.0
+     */
+    public function getPDOStatement(string $stmt, array $params = []): PDOStatement;
 
     /**
      * delete row from table

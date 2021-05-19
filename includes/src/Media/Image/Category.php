@@ -124,7 +124,7 @@ class Category extends AbstractImage
      */
     public function getAllImages(int $offset = null, int $limit = null): Generator
     {
-        $images = $this->db->queryPrepared(
+        $images = $this->db->getPDOStatement(
             'SELECT pic.cPfad AS path, pic.kKategorie, pic.kKategorie AS id, cat.cName, 
                 atr.cWert AS customImgName, cat.cSeo AS seoPath
                 FROM tkategorie cat
@@ -134,8 +134,7 @@ class Category extends AbstractImage
                     ON cat.kKategorie = atr.kKategorie
                     AND atr.cName = :atr'
             . self::getLimitStatement($offset, $limit),
-            ['atr' => \KAT_ATTRIBUT_BILDNAME],
-            ReturnType::QUERYSINGLE
+            ['atr' => \KAT_ATTRIBUT_BILDNAME]
         );
         while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {
             yield MediaImageRequest::create([

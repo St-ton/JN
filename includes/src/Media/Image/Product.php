@@ -84,7 +84,7 @@ class Product extends AbstractImage
             default:
                 break;
         }
-        $images = $this->db->query(
+        $images = $this->db->getPDOStatement(
             'SELECT B.cWert AS customImgName, P.cPfad AS path, P.nNr AS number, P.kArtikel ' . $cols . '
                 FROM tartikelpict P
                 INNER JOIN tartikel
@@ -92,8 +92,7 @@ class Product extends AbstractImage
                 LEFT JOIN tartikelattribut B 
                     ON tartikel.kArtikel = B.kArtikel
                     AND B.cName = \'bildname\''
-            . self::getLimitStatement($offset, $limit),
-            ReturnType::QUERYSINGLE
+            . self::getLimitStatement($offset, $limit)
         );
         while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {
             yield MediaImageRequest::create([

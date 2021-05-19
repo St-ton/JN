@@ -262,11 +262,11 @@ $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_SUCHSPECIAL))
  * @param int    $key
  * @return bool
  */
-function pruefeSuchspecialSeo($searchSpecials, $seo, $key)
+function pruefeSuchspecialSeo(array $searchSpecials, string $seo, int $key): bool
 {
-    if ($key > 0 && is_array($searchSpecials) && count($searchSpecials) > 0 && mb_strlen($seo)) {
-        foreach ($searchSpecials as $oSuchSpecials) {
-            if ($oSuchSpecials->kKey == $key && $oSuchSpecials->cSeo === $seo) {
+    if ($key > 0 && count($searchSpecials) > 0 && mb_strlen($seo)) {
+        foreach ($searchSpecials as $special) {
+            if ((int)$special->kKey === $key && $special->cSeo === $seo) {
                 return true;
             }
         }

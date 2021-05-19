@@ -11,9 +11,9 @@ use JTL\Shop;
 use function Functional\reindex;
 
 /**
- * @return array
+ * @return stdClass[]
  */
-function holeAlleKampagnenDefinitionen()
+function holeAlleKampagnenDefinitionen(): array
 {
     return reindex(
         Shop::Container()->getDB()->getObjects(
@@ -31,7 +31,7 @@ function holeAlleKampagnenDefinitionen()
  * @param int $id
  * @return stdClass|null
  */
-function holeKampagne(int $id)
+function holeKampagne(int $id): ?stdClass
 {
     return Shop::Container()->getDB()->getSingleObject(
         "SELECT *, DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE
@@ -1309,7 +1309,7 @@ function setzeDetailZeitraum(DateTimeImmutable $date): void
 }
 
 /**
- * @return bool|string
+ * @return false|string
  */
 function checkGesamtStatZeitParam()
 {

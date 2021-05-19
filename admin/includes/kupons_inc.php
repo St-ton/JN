@@ -690,7 +690,7 @@ function informCouponCustomers($coupon)
 /**
  * Set all Coupons with an outdated dGueltigBis to cAktiv = 'N'
  */
-function deactivateOutdatedCoupons()
+function deactivateOutdatedCoupons(): void
 {
     Shop::Container()->getDB()->query(
         "UPDATE tkupon
@@ -703,7 +703,7 @@ function deactivateOutdatedCoupons()
 /**
  * Set all Coupons that reached nVerwendungenBisher to nVerwendungen to cAktiv = 'N'
  */
-function deactivateExhaustedCoupons()
+function deactivateExhaustedCoupons(): void
 {
     Shop::Container()->getDB()->query(
         "UPDATE tkupon

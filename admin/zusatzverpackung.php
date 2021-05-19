@@ -179,7 +179,7 @@ $smarty->assign('customerGroups', CustomerGroup::getGroups())
  * @param string $groupString
  * @return stdClass
  */
-function gibKundengruppeObj($groupString)
+function gibKundengruppeObj(string $groupString): stdClass
 {
     $customerGroup = new stdClass();
     $tmpIDs        = [];

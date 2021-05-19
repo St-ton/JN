@@ -140,7 +140,7 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
         $controller->setStep('news_kommentar_antwort_editieren');
         $comment         = new Comment($db);
         $parentCommentID = Request::verifyGPCDataInt('parentCommentID');
-        if (empty($comment->loadByParentCommentID($parentCommentID))) {
+        if ($comment->loadByParentCommentID($parentCommentID) === null) {
             $comment->setID(0);
             $comment->setNewsID(Request::verifyGPCDataInt('kNews'));
             $comment->setCustomerID(0);

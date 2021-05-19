@@ -1,6 +1,7 @@
 <?php
 
 use JTL\Alert\Alert;
+use JTL\Filesystem\Filesystem;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -192,7 +193,7 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
 
                 if ($res > 3) {
                     $mapper   = new ValidationMapper();
-                    $errorMsg = $mapper->map($res, null);
+                    $errorMsg = $mapper->map($res);
                 }
             } elseif (isset($_POST['deaktivieren'])) {
                 $res = $stateChanger->deactivate($pluginID);
@@ -299,7 +300,7 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
         $dirs    = Request::postVar('cVerzeichnis', []);
         $res     = count($dirs) > 0;
         $manager = new MountManager([
-            'plgn' => Shop::Container()->get(\JTL\Filesystem\Filesystem::class)
+            'plgn' => Shop::Container()->get(Filesystem::class)
         ]);
         foreach ($dirs as $dir) {
             $dir  = basename($dir);

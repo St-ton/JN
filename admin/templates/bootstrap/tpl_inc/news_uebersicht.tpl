@@ -182,7 +182,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {if $oNews_arr|@count > 0 && $oNews_arr}
+                                {if $oNews_arr|@count > 0}
                                     {foreach $oNews_arr as $oNews}
                                         <tr>
                                             <td class="check">

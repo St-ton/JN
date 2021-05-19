@@ -115,7 +115,7 @@ if (Request::verifyGPCDataInt('neu') === 1 && Form::validateToken()) {
     }
 } elseif (Request::verifyGPCDataInt('nSort') > 0) { // Sortierung
     // ASC / DESC
-    if ($_SESSION['Kampagne']->nSort == Request::verifyGPCDataInt('nSort')) {
+    if ((int)$_SESSION['Kampagne']->nSort === Request::verifyGPCDataInt('nSort')) {
         if ($_SESSION['Kampagne']->cSort === 'ASC') {
             $_SESSION['Kampagne']->cSort = 'DESC';
         } else {

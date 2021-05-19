@@ -292,13 +292,13 @@ class Service
     }
 
     /**
-     * @param string $portletClass
-     * @param string $missingClass
-     * @param array  $props
+     * @param string      $portletClass
+     * @param string|null $missingClass
+     * @param array       $props
      * @return string
      * @throws Exception
      */
-    public function getConfigPanelHtml(string $portletClass, string $missingClass, array $props): string
+    public function getConfigPanelHtml(string $portletClass, ?string $missingClass, array $props): string
     {
         return $this->getPortletInstance([
             'class'        => $portletClass,

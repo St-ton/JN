@@ -208,14 +208,14 @@ class Manager
     {
         $logs = [];
         $data = $this->db->getObjects(
-            'SELECT el.*, al.cName as adminName , ec.cInputTyp as settingType
-              FROM teinstellungenlog as el
-              LEFT JOIN tadminlogin as al 
-                USING(kAdminlogin)
-              LEFT JOIN teinstellungenconf as ec
-                ON ec.cWertName=el.cEinstellungenName
-              WHERE el.cEinstellungenName = :settingName
-              ORDER BY el.dDatum DESC',
+            'SELECT el.*, al.cName AS adminName , ec.cInputTyp as settingType
+                FROM teinstellungenlog AS el
+                LEFT JOIN tadminlogin AS al 
+                    USING (kAdminlogin)
+                LEFT JOIN teinstellungenconf AS ec
+                    ON ec.cWertName = el.cEinstellungenName
+                WHERE el.cEinstellungenName = :settingName
+                ORDER BY el.dDatum DESC',
             ['settingName' => $settingName]
         );
         foreach ($data as $log) {

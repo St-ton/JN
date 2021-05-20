@@ -87,7 +87,9 @@
         {foreach $plugins as $plugin}
             <li>
                 <a href="plugin.php?kPlugin={$plugin->getID()}&token={$smarty.session.jtl_token}" class="dropdown-item value">
-                    {$plugin->getName()}
+                    <span class="title">
+                        {$plugin->getName()}
+                    </span>
                 </a>
             </li>
         {/foreach}

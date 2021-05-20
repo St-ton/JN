@@ -2,7 +2,6 @@
 
 use JTL\Alert\Alert;
 use JTL\Backend\Settings\Manager;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
@@ -94,15 +93,14 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form
         $smarty->assign('cSearch', $sql->cSearch);
     } else {
         $section  = $db->select('teinstellungensektion', 'kEinstellungenSektion', $sectionID);
-        $confData = $db->query(
+        $confData = $db->getObjects(
             'SELECT *
                 FROM teinstellungenconf
                 WHERE kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . "
                     AND cConf = 'Y'
                     AND nModul = 0
                     AND nStandardanzeigen = 1 " . $sql->cWHERE . '
-                ORDER BY nSort',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY nSort'
         );
     }
     $settingSection = new Manager($db, $smarty);
@@ -145,7 +143,7 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form
         }
     }
 
-    $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
+    $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
     $tagsToFlush = [CACHING_GROUP_OPTION];
     if ($sectionID === 1 || $sectionID === 4 || $sectionID === 5) {
@@ -160,23 +158,21 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form
 }
 
 if ($step === 'uebersicht') {
-    $sections     = $db->query(
+    $sections     = $db->getObjects(
         'SELECT *
             FROM teinstellungensektion
-            ORDER BY kEinstellungenSektion',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY kEinstellungenSektion'
     );
     $sectionCount = count($sections);
     for ($i = 0; $i < $sectionCount; $i++) {
-        $confCount = $db->queryPrepared(
+        $confCount = $db->getSingleObject(
             "SELECT COUNT(*) AS anz
                 FROM teinstellungenconf
                 WHERE kEinstellungenSektion = :sid
                     AND cConf = 'Y'
                     AND nStandardAnzeigen = 1
                     AND nModul = 0",
-            ['sid' => (int)$sections[$i]->kEinstellungenSektion],
-            ReturnType::SINGLE_OBJECT
+            ['sid' => (int)$sections[$i]->kEinstellungenSektion]
         );
 
         $sections[$i]->anz = $confCount->anz;
@@ -198,15 +194,14 @@ if ($step === 'einstellungen bearbeiten') {
         $smarty->assign('cSearch', $sql->cSearch)
                ->assign('cSuche', $sql->cSuche);
     } else {
-        $confData = $db->query(
+        $confData = $db->getObjects(
             'SELECT *
                 FROM teinstellungenconf
                 WHERE nModul = 0
                     AND nStandardAnzeigen = 1
                     AND kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . ' ' .
                 $sql->cWHERE . '
-                ORDER BY nSort',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY nSort'
         );
     }
     $settingSection = new Manager($db, $smarty);
@@ -221,11 +216,10 @@ if ($step === 'einstellungen bearbeiten') {
         //@ToDo: Setting 492 is the only one listbox at the moment.
         //But In special case of setting 492 values come from kKundengruppe instead of teinstellungenconfwerte
         if ($config->cInputTyp === 'listbox' && $config->kEinstellungenConf === 492) {
-            $config->ConfWerte = $db->query(
+            $config->ConfWerte = $db->getObjects(
                 'SELECT kKundengruppe AS cWert, cName
                     FROM tkundengruppe
-                    ORDER BY cStandard DESC',
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY cStandard DESC'
             );
         } elseif (in_array($config->cInputTyp, ['selectbox', 'listbox'], true)) {
             $config->ConfWerte = $db->selectAll(

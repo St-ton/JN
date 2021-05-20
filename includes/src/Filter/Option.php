@@ -9,18 +9,18 @@ use JTL\Media\MultiSizeImage;
  *
  * @package JTL\Filter
  *
- * @property $kHersteller
- * @property $nAnzahlTagging
- * @property $kKategorie
- * @property $nVon
- * @property $cVonLocalized
- * @property $nBis
- * @property $cBisLocalized
- * @property $nAnzahlArtikel
- * @property $nStern
- * @property $kKey
- * @property $cSuche
- * @property $kSuchanfrage
+ * @property int $kHersteller
+ * @property int $nAnzahlTagging
+ * @property int $kKategorie
+ * @property int $nVon
+ * @property string $cVonLocalized
+ * @property int $nBis
+ * @property string $cBisLocalized
+ * @property int $nAnzahlArtikel
+ * @property int $nStern
+ * @property int $kKey
+ * @property string $cSuche
+ * @property int $kSuchanfrage
  */
 class Option extends AbstractFilter
 {
@@ -78,7 +78,7 @@ class Option extends AbstractFilter
 
     /**
      * Option constructor.
-     * @param null $productFilter
+     * @param ProductFilter|null $productFilter
      */
     public function __construct($productFilter = null)
     {

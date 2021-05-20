@@ -32,7 +32,7 @@ class NiceDBHandler extends AbstractProcessingHandler
     /**
      * @param array $record
      */
-    protected function write(array $record)
+    protected function write(array $record): void
     {
         $context = isset($record['context'][0]) && \is_numeric($record['context'][0])
             ? (int)$record['context'][0]

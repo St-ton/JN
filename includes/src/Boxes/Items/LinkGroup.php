@@ -2,6 +2,7 @@
 
 namespace JTL\Boxes\Items;
 
+use JTL\Link\LinkGroupInterface;
 use JTL\Shop;
 
 /**
@@ -11,7 +12,7 @@ use JTL\Shop;
 final class LinkGroup extends AbstractBox
 {
     /**
-     * @var \JTL\Link\LinkGroup|null
+     * @var LinkGroupInterface|null
      */
     private $linkGroup;
 
@@ -48,23 +49,23 @@ final class LinkGroup extends AbstractBox
     }
 
     /**
-     * @return \JTL\Link\LinkGroup|null
+     * @return LinkGroupInterface|null
      */
-    public function getLinkGroup(): ?\JTL\Link\LinkGroup
+    public function getLinkGroup(): ?LinkGroupInterface
     {
         return $this->linkGroup;
     }
 
     /**
-     * @param LinkGroup|null $linkGroup
+     * @param LinkGroupInterface|null $linkGroup
      */
-    public function setLinkGroup($linkGroup): void
+    public function setLinkGroup(?LinkGroupInterface $linkGroup): void
     {
         $this->linkGroup = $linkGroup;
     }
 
     /**
-     * @return null|string
+     * @return string
      */
     public function getLinkGroupTemplate(): string
     {
@@ -72,7 +73,7 @@ final class LinkGroup extends AbstractBox
     }
 
     /**
-     * @param null|string $linkGroupTemplate
+     * @param string $linkGroupTemplate
      */
     public function setLinkGroupTemplate(string $linkGroupTemplate): void
     {

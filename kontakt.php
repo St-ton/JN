@@ -2,7 +2,6 @@
 
 use JTL\Alert\Alert;
 use JTL\CheckBox;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -62,14 +61,13 @@ if (Form::checkSubject()) {
     foreach ($contents as $content) {
         $specialContent->{$content->cTyp} = $content->cContent;
     }
-    $subjects = Shop::Container()->getDB()->queryPrepared(
+    $subjects = Shop::Container()->getDB()->getObjects(
         "SELECT *
             FROM tkontaktbetreff
             WHERE (cKundengruppen = 0
             OR FIND_IN_SET(:customerGroupID, REPLACE(cKundengruppen, ';', ',')) > 0)
             ORDER BY nSort",
-        ['customerGroupID' => Frontend::getCustomerGroup()->getID()],
-        ReturnType::ARRAY_OF_OBJECTS
+        ['customerGroupID' => Frontend::getCustomerGroup()->getID()]
     );
     foreach ($subjects as $subject) {
         $localization             = Shop::Container()->getDB()->select(

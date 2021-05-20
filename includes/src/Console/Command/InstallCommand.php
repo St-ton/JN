@@ -3,13 +3,13 @@
 namespace JTL\Console\Command;
 
 use Exception;
-use League\Flysystem\Adapter\Local;
+use JTL\Installation\VueInstaller;
 use League\Flysystem\Filesystem;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 use Symfony\Component\Console\Helper\TableStyle;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use JTL\Installation\VueInstaller;
 
 /**
  * Class InstallCommand
@@ -180,7 +180,9 @@ class InstallCommand extends Command
         $syncUser        = $this->getOption('sync-user');
         $syncPass        = $this->getOption('sync-password');
         $demoData        = $this->getOption('install-demo-data');
-        $localFilesystem = new Filesystem(new Local(\PFAD_ROOT, \LOCK_EX, Local::SKIP_LINKS));
+        $localFilesystem = new Filesystem(
+            new LocalFilesystemAdapter(\PFAD_ROOT, null, \LOCK_EX, LocalFilesystemAdapter::SKIP_LINKS)
+        );
         if ($adminPass === 'random') {
             $adminPass = $this->getRandomString();
         }
@@ -222,7 +224,7 @@ class InstallCommand extends Command
         foreach ($systemCheckResults['testresults'] as $resultGroup) {
             foreach ($resultGroup as $test) {
                 $result = (int)$test->getResult();
-                if (isset($result) && $result !== 0) {
+                if ($result !== 0) {
                     $systemCheckFailed = true;
                 }
             }
@@ -233,20 +235,20 @@ class InstallCommand extends Command
                 $this->printSystemCheckTable($systemCheckResults['testresults']['recommendations']);
             }
             $io->error('Failed');
+
             return 1;
         }
         $io->success('All requirements are met');
 
         $io->setStep($this->currentStep++, $this->steps, 'Setting permissions');
         if ($this->currentUser !== $fileOwner) {
-            $paths = $localFilesystem->listContents(\PFAD_ROOT, true);
-            foreach ($paths as $path) {
-                \chown(\PFAD_ROOT . $path->path, $fileOwner);
-                \chgrp(\PFAD_ROOT . $path->path, $fileGroup);
+            foreach ($localFilesystem->listContents(\PFAD_ROOT, true) as $item) {
+                $path = $item->path();
+                \chown(\PFAD_ROOT . $path, $fileOwner);
+                \chgrp(\PFAD_ROOT . $path, $fileGroup);
             }
             \chown(\PFAD_ROOT, $fileOwner);
         }
-
         foreach (self::$writeablePaths as $path) {
             \chmod($path, 0777);
         }
@@ -258,6 +260,7 @@ class InstallCommand extends Command
         if (\in_array(false, $dirCheck['testresults'], true)) {
             $this->printDirCheckTable($dirCheck['testresults'], $localFilesystem);
             $io->error('File permissions are incorrect.');
+
             return 1;
         }
 
@@ -273,6 +276,7 @@ class InstallCommand extends Command
 
         if ($dbCredentialsCheck['error']) {
             $io->error($dbCredentialsCheck['msg']);
+
             return 1;
         }
         $io->success('Credentials matched');
@@ -309,11 +313,11 @@ class InstallCommand extends Command
 
         $io->setStep($this->currentStep++, $this->steps, 'Remove install dir and set new permissions for config file');
 
-        if ($localFilesystem->has('/install')) {
-            $localFilesystem->deleteDir('/install');
+        if ($localFilesystem->fileExists('/install/install.php')) {
+            $localFilesystem->deleteDirectory('/install');
         }
 
-        if ($localFilesystem->has('/includes/config.JTL-Shop.ini.php')) {
+        if ($localFilesystem->fileExists('/includes/config.JTL-Shop.ini.php')) {
             \chmod('/includes/config.JTL-Shop.ini.php', 0644);
             \chown('/includes/config.JTL-Shop.ini.php', $fileOwner);
             \chgrp('/includes/config.JTL-Shop.ini.php', $fileGroup);
@@ -358,7 +362,7 @@ class InstallCommand extends Command
         $headers = ['File/Dir', 'Correct permission', 'Permission'];
 
         foreach ($list as $path => $val) {
-            $permission = $localFilesystem->getVisibility($path);
+            $permission = $localFilesystem->visibility($path);
             $rows[]     = [$path, $val ? '<info> ✔ </info>' : '<comment> • </comment>', $permission];
         }
 

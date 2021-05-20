@@ -5,7 +5,6 @@ namespace JTL\Catalog;
 use Exception;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Merkmal;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -369,15 +368,14 @@ class ComparisonList
             return;
         }
         $db   = Shop::Container()->getDB();
-        $data = $db->queryPrepared(
+        $data = $db->getSingleObject(
             'SELECT COUNT(kVergleichsliste) AS nVergleiche
                 FROM tvergleichsliste
                 WHERE cIP = :ip
                     AND dDate > DATE_SUB(NOW(),INTERVAL 1 DAY)',
-            ['ip' => Request::getRealIP()],
-            ReturnType::SINGLE_OBJECT
+            ['ip' => Request::getRealIP()]
         );
-        if ($data->nVergleiche < 3) {
+        if ($data !== null && $data->nVergleiche < 3) {
             $ins        = new stdClass();
             $ins->cIP   = Request::getRealIP();
             $ins->dDate = \date('Y-m-d H:i:s');

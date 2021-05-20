@@ -106,11 +106,11 @@ final class JTLApi
     }
 
     /**
-     * @param string $uri
-     * @param null   $data
+     * @param string     $uri
+     * @param array|null $data
      * @return string|bool|null
      */
-    private function call($uri, $data = null)
+    private function call(string $uri, $data = null)
     {
         $content = Request::http_get_contents($uri, 10, $data);
 

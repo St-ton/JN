@@ -674,7 +674,7 @@ final class Mapper
 
     /**
      * @param string $index
-     * @return array|null
+     * @return array
      */
     public static function getTableMapping(string $index): array
     {
@@ -682,19 +682,19 @@ final class Mapper
     }
 
     /**
-     * @param object $oXmlTree
+     * @param object $xmlTree
      * @param string $toMap
      * @return stdClass
      */
-    public function map($oXmlTree, string $toMap): stdClass
+    public function map($xmlTree, string $toMap): stdClass
     {
         $mapped = new stdClass();
-        foreach ($oXmlTree->Attributes() as $key => $val) {
+        foreach ($xmlTree->Attributes() as $key => $val) {
             $mapped->$key = (string)$val;
         }
         foreach (self::getTableMapping($toMap) as $mapping) {
-            if (isset($oXmlTree->$mapping)) {
-                $mapped->$mapping = (string)($oXmlTree->$mapping);
+            if (isset($xmlTree->$mapping)) {
+                $mapped->$mapping = (string)($xmlTree->$mapping);
             }
         }
 
@@ -730,7 +730,7 @@ final class Mapper
         if (GeneralObject::isCountable($name, $xml) && \count($xml[$name]) > 2) {
             $cnt = \count($xml[$name]) / 2;
             for ($i = 0; $i < $cnt; $i++) {
-                if (!isset($objects[$i]) || $objects[$i] === null) {
+                if (!isset($objects[$i])) {
                     $objects[$i] = new stdClass();
                 }
                 $this->mapAttributes($objects[$i], $xml[$name][$i . ' attr']);
@@ -742,9 +742,9 @@ final class Mapper
     }
 
     /**
-     * @param stdClass|object $obj
-     * @param array            $xml
-     * @param string           $toMap
+     * @param stdClass|object|null $obj
+     * @param array|mixed          $xml
+     * @param string               $toMap
      */
     public function mapObject(&$obj, $xml, $toMap): void
     {
@@ -771,8 +771,8 @@ final class Mapper
     }
 
     /**
-     * @param stdClass $obj
-     * @param array     $xml
+     * @param stdClass|null $obj
+     * @param array|mixed   $xml
      */
     public function mapAttributes(&$obj, $xml): void
     {

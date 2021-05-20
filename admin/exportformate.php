@@ -3,7 +3,6 @@
 use Illuminate\Support\Collection;
 use JTL\Alert\Alert;
 use JTL\Backend\Revision;
-use JTL\DB\ReturnType;
 use JTL\Exportformat;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -157,7 +156,7 @@ if ($action !== null && $kExportformat !== null && $validated) {
             $_POST['kExportformat'] = $kExportformat;
             break;
         case 'delete':
-            $bDeleted = $db->query(
+            $deleted = $db->getAffectedRows(
                 "DELETE tcron, texportformat, tjobqueue, texportqueue
                    FROM texportformat
                    LEFT JOIN tcron 
@@ -171,11 +170,11 @@ if ($action !== null && $kExportformat !== null && $validated) {
                       AND tjobqueue.jobType = 'exportformat'
                    LEFT JOIN texportqueue 
                       ON texportqueue.kExportformat = texportformat.kExportformat
-                   WHERE texportformat.kExportformat = " . $kExportformat,
-                ReturnType::AFFECTED_ROWS
+                   WHERE texportformat.kExportformat = :eid",
+                ['eid' => $kExportformat]
             );
 
-            if ($bDeleted > 0) {
+            if ($deleted > 0) {
                 $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successFormatDelete'), 'successFormatDelete');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFormatDelete'), 'errorFormatDelete');
@@ -215,15 +214,14 @@ if ($action !== null && $kExportformat !== null && $validated) {
 }
 
 if ($step === 'uebersicht') {
-    $exportformate = $db->queryPrepared(
+    $exportformate = $db->getObjects(
         'SELECT texportformat.*, tplugin.cPluginID 
             FROM texportformat
             LEFT JOIN tplugin
                ON tplugin.kPlugin = texportformat.kPlugin
                AND tplugin.nStatus = :stt
             ORDER BY cName',
-        ['stt' => State::ACTIVATED],
-        ReturnType::ARRAY_OF_OBJECTS
+        ['stt' => State::ACTIVATED]
     );
     foreach ($exportformate as $item) {
         $item->kExportformat        = (int)$item->kExportformat;
@@ -256,17 +254,15 @@ if ($step === 'uebersicht') {
 }
 
 if ($step === 'neuer Export') {
-    $smarty->assign('kundengruppen', $db->query(
+    $smarty->assign('kundengruppen', $db->getObjects(
         'SELECT * 
             FROM tkundengruppe 
-            ORDER BY cName',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY cName'
     ))
-           ->assign('waehrungen', $db->query(
+           ->assign('waehrungen', $db->getObjects(
                'SELECT * 
                     FROM twaehrung 
-                    ORDER BY cStandard DESC',
-               ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY cStandard DESC'
            ))
            ->assign('oKampagne_arr', holeAlleKampagnen());
 

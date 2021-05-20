@@ -51,7 +51,7 @@ if (Form::validateToken()) {
     } elseif (Request::postInt('newsletterabonnent_loeschen') === 1
         || (Request::verifyGPCDataInt('inaktiveabonnenten') === 1 && isset($_POST['abonnentloeschenSubmit']))
     ) {
-        if ($admin->deleteSubscribers($_POST['kNewsletterEmpfaenger'])) {
+        if ($admin->deleteSubscribers($_POST['kNewsletterEmpfaenger'] ?? [])) {
             $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successNewsletterAboDelete'), 'successNewsletterAboDelete');
         } else {
             $alertHelper->addAlert(
@@ -179,7 +179,7 @@ if (Form::validateToken()) {
         // Vorlagen
         $smarty->assign('oKampagne_arr', holeAlleKampagnen(false, true));
         $productNos       = $_POST['cArtNr'] ?? null;
-        $customerGroupIDs = $_POST['kKundengruppe'] ?? null;
+        $customerGroupIDs = $_POST['kKundengruppe'] ?? [];
         $groupString      = '';
         // Kundengruppen in einen String bauen
         if (is_array($customerGroupIDs) && count($customerGroupIDs) > 0) {
@@ -204,10 +204,8 @@ if (Form::validateToken()) {
                     FROM tnewslettervorlage
                     WHERE kNewsletterVorlage = " . $nlTemplateID
             );
-
-            $newsletterTPL->oZeit = $admin->getDateData($newsletterTPL->dStartZeit);
-
             if ($newsletterTPL !== null && $newsletterTPL->kNewsletterVorlage > 0) {
+                $newsletterTPL->oZeit       = $admin->getDateData($newsletterTPL->dStartZeit);
                 $productData                = $admin->getProductData($newsletterTPL->cArtikel);
                 $newsletterTPL->cArtikel    = mb_substr(
                     mb_substr($newsletterTPL->cArtikel, 1),
@@ -234,7 +232,7 @@ if (Form::validateToken()) {
                 $option = 'editieren';
             }
         } elseif (isset($_POST['speichern'])) { // Vorlage speichern
-            $checks = $admin->saveTemplate($_POST);
+            $checks = $admin->saveTemplate(Text::filterXSS($_POST));
             if (is_array($checks) && count($checks) > 0) {
                 $step = 'vorlage_erstellen';
                 $smarty->assign('cPlausiValue_arr', $checks)
@@ -254,7 +252,7 @@ if (Form::validateToken()) {
             }
         } elseif (isset($_POST['loeschen'])) { // Vorlage loeschen
             $step = 'uebersicht';
-            $admin->deleteTemplates($_POST['kNewsletterVorlage'] ?? null);
+            $admin->deleteTemplates($_POST['kNewsletterVorlage'] ?? []);
         }
         $smarty->assign('cOption', $option);
     }

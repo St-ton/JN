@@ -47,7 +47,7 @@ final class Admin
      * @param string $input
      * @return stdClass
      */
-    public function getDateData($input): stdClass
+    public function getDateData(string $input): stdClass
     {
         $res = new stdClass();
 
@@ -70,7 +70,7 @@ final class Admin
      * @param string $type
      * @return array
      */
-    public function checkDefaultTemplate($name, $customerGroups, $subject, $type): array
+    public function checkDefaultTemplate(string $name, array $customerGroups, string $subject, string $type): array
     {
         $checks = [];
         if (empty($name)) {
@@ -113,7 +113,7 @@ final class Admin
      * @param bool   $noHTML
      * @return mixed|string
      */
-    public function mapDefaultTemplate($text, $stdVars, $noHTML = false)
+    public function mapDefaultTemplate($text, $stdVars, bool $noHTML = false)
     {
         if (!\is_array($stdVars) || \count($stdVars) === 0) {
             return $text;
@@ -292,10 +292,10 @@ final class Admin
             $post['kKundengruppe'] = null;
         }
         $checks = $this->checkDefaultTemplate(
-            $post['cName'],
-            $post['kKundengruppe'],
-            $post['cBetreff'],
-            $post['cArt']
+            $post['cName'] ?? '',
+            $post['kKundengruppe'] ?? [],
+            $post['cBetreff'] ?? '',
+            $post['cArt'] ?? ''
         );
 
         if (!\is_array($checks) || \count($checks) !== 0) {
@@ -523,7 +523,7 @@ final class Admin
             if ($templateID !== null) {
                 $tpl->kNewsletterVorlage = $templateID;
             }
-            $tpl->kSprache      = (int)$_SESSION['kSprache'];
+            $tpl->kSprache      = (int)($_SESSION['editLanguageID'] ?? $_SESSION['kSprache']);
             $tpl->kKampagne     = $campaignID;
             $tpl->cName         = $post['cName'];
             $tpl->cBetreff      = $post['cBetreff'];
@@ -723,9 +723,9 @@ final class Admin
      * @param array $recipientIDs
      * @return bool
      */
-    public function deleteSubscribers($recipientIDs): bool
+    public function deleteSubscribers(array $recipientIDs): bool
     {
-        if (!\is_array($recipientIDs) || \count($recipientIDs) === 0) {
+        if (\count($recipientIDs) === 0) {
             return false;
         }
         $where      = ' IN (' . \implode(',', \array_map('\intval', $recipientIDs)) . ')';
@@ -873,7 +873,8 @@ final class Admin
                 $this->alertService->addAlert(
                     Alert::TYPE_SUCCESS,
                     __('successNewsletterAboAdd'),
-                    'successNewsletterAboAdd');
+                    'successNewsletterAboAdd'
+                );
             }
         }
 
@@ -1215,12 +1216,12 @@ final class Admin
     }
 
     /**
-     * @param array|null $templateIDs
+     * @param array $templateIDs
      * @return bool
      */
-    public function deleteTemplates(?array $templateIDs): bool
+    public function deleteTemplates(array $templateIDs): bool
     {
-        if ($templateIDs === null || \count($templateIDs) === 0) {
+        if (\count($templateIDs) === 0) {
             $this->alertService->addAlert(
                 Alert::TYPE_ERROR,
                 __('errorAtLeastOneNewsletter'),

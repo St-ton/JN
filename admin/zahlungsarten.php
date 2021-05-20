@@ -72,12 +72,13 @@ if (Request::postInt('einstellungen_bearbeiten') === 1
         'kZahlungsart',
         Request::postInt('kZahlungsart')
     );
+    $filteredPost      = Text::filterXSS($_POST);
     $nMailSenden       = Request::postInt('nMailSenden');
     $nMailSendenStorno = Request::postInt('nMailSendenStorno');
     $nMailBits         = 0;
-    if (is_array($_POST['kKundengruppe'])) {
-        $cKundengruppen = Text::createSSK($_POST['kKundengruppe']);
-        if (in_array(0, $_POST['kKundengruppe'])) {
+    if (is_array($filteredPost['kKundengruppe'])) {
+        $cKundengruppen = Text::createSSK($filteredPost['kKundengruppe']);
+        if (in_array(0, $filteredPost['kKundengruppe'])) {
             unset($cKundengruppen);
         }
     }
@@ -91,14 +92,14 @@ if (Request::postInt('einstellungen_bearbeiten') === 1
         $cKundengruppen = '';
     }
 
-    $nWaehrendBestellung = Request::postInt('nWaehrendBestellung', $paymentMethod->nWaehrendBestellung);
+    $duringCheckout = Request::postInt('nWaehrendBestellung', $paymentMethod->nWaehrendBestellung);
 
     $upd                      = new stdClass();
     $upd->cKundengruppen      = $cKundengruppen;
     $upd->nSort               = Request::postInt('nSort');
     $upd->nMailSenden         = $nMailBits;
-    $upd->cBild               = $_POST['cBild'];
-    $upd->nWaehrendBestellung = $nWaehrendBestellung;
+    $upd->cBild               = $filteredPost['cBild'];
+    $upd->nWaehrendBestellung = $duringCheckout;
     $db->update('tzahlungsart', 'kZahlungsart', (int)$paymentMethod->kZahlungsart, $upd);
     // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
     if (mb_strpos($paymentMethod->cModulId, 'kPlugin_') !== false) {
@@ -114,7 +115,7 @@ if (Request::postInt('einstellungen_bearbeiten') === 1
             $aktWert          = new stdClass();
             $aktWert->kPlugin = $kPlugin;
             $aktWert->cName   = $Conf[$i]->cWertName;
-            $aktWert->cWert   = $_POST[$Conf[$i]->cWertName];
+            $aktWert->cWert   = $filteredPost[$Conf[$i]->cWertName];
 
             switch ($Conf[$i]->cInputTyp) {
                 case 'kommazahl':
@@ -146,7 +147,7 @@ if (Request::postInt('einstellungen_bearbeiten') === 1
         $configCount = count($Conf);
         for ($i = 0; $i < $configCount; ++$i) {
             $aktWert                        = new stdClass();
-            $aktWert->cWert                 = $_POST[$Conf[$i]->cWertName];
+            $aktWert->cWert                 = $filteredPost[$Conf[$i]->cWertName];
             $aktWert->cName                 = $Conf[$i]->cWertName;
             $aktWert->kEinstellungenSektion = CONF_ZAHLUNGSARTEN;
             $aktWert->cModulId              = $paymentMethod->cModulId;
@@ -172,21 +173,18 @@ if (Request::postInt('einstellungen_bearbeiten') === 1
             Shop::Container()->getGetText()->localizeConfig($Conf[$i]);
         }
     }
-
-    if (!isset($localized)) {
-        $localized = new stdClass();
-    }
+    $localized               = new stdClass();
     $localized->kZahlungsart = Request::postInt('kZahlungsart');
     foreach (LanguageHelper::getAllLanguages() as $lang) {
         $langCode               = $lang->getCode();
         $localized->cISOSprache = $langCode;
         $localized->cName       = $paymentMethod->cName;
-        if ($_POST['cName_' . $langCode]) {
-            $localized->cName = $_POST['cName_' . $langCode];
+        if ($filteredPost['cName_' . $langCode]) {
+            $localized->cName = $filteredPost['cName_' . $langCode];
         }
-        $localized->cGebuehrname     = $_POST['cGebuehrname_' . $langCode];
-        $localized->cHinweisText     = $_POST['cHinweisText_' . $langCode];
-        $localized->cHinweisTextShop = $_POST['cHinweisTextShop_' . $langCode];
+        $localized->cGebuehrname     = $filteredPost['cGebuehrname_' . $langCode];
+        $localized->cHinweisText     = $filteredPost['cHinweisText_' . $langCode];
+        $localized->cHinweisTextShop = $filteredPost['cHinweisTextShop_' . $langCode];
 
         $db->delete(
             'tzahlungsartsprache',
@@ -207,6 +205,7 @@ if ($step === 'einstellen') {
         $step = 'uebersicht';
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorPaymentMethodNotFound'), 'errorNotFound');
     } else {
+        $paymentMethod->cName = Text::filterXSS($paymentMethod->cName);
         PaymentMethod::activatePaymentMethod($paymentMethod);
         // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
         if (mb_strpos($paymentMethod->cModulId, 'kPlugin_') !== false) {
@@ -317,14 +316,10 @@ if ($step === 'einstellen') {
         && $_POST['action'] === 'paymentwawireset'
         && Form::validateToken()
     ) {
-        $incomingIDs = $_POST['kEingang_arr'];
-        array_walk($incomingIDs, static function (&$i) {
-            $i = (int)$i;
-        });
         $db->query(
             "UPDATE tzahlungseingang
                 SET cAbgeholt = 'N'
-                WHERE kZahlungseingang IN (" . implode(',', $incomingIDs) . ')'
+                WHERE kZahlungseingang IN (" . implode(',', \array_map('\intval', $_POST['kEingang_arr'])) . ')'
         );
     }
 

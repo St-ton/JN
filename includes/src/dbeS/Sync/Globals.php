@@ -2,7 +2,6 @@
 
 namespace JTL\dbeS\Sync;
 
-use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\Helpers\GeneralObject;
 
@@ -26,10 +25,7 @@ final class Globals extends AbstractSync
                 $this->handleInserts($xml);
             }
         }
-        $this->db->query(
-            'UPDATE tglobals SET dLetzteAenderung = NOW()',
-            ReturnType::DEFAULT
-        );
+        $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
 
         return null;
     }
@@ -85,8 +81,8 @@ final class Globals extends AbstractSync
         }
         $customerGroups = $this->mapper->mapArray($source, 'tkundengruppe', 'mKundengruppe');
         $this->dbDelInsert('tkundengruppe', $customerGroups, 1);
-        $this->db->query('TRUNCATE TABLE tkundengruppensprache', ReturnType::DEFAULT);
-        $this->db->query('TRUNCATE TABLE tkundengruppenattribut', ReturnType::DEFAULT);
+        $this->db->query('TRUNCATE TABLE tkundengruppensprache');
+        $this->db->query('TRUNCATE TABLE tkundengruppenattribut');
         $cgCount = \count($customerGroups);
         for ($i = 0; $i < $cgCount; $i++) {
             $item = $cgCount < 2 ? $source['tkundengruppe'] : $source['tkundengruppe'][$i];
@@ -107,6 +103,7 @@ final class Globals extends AbstractSync
         ) {
             $this->mapper->mapObject($company, $source['tfirma'], 'mFirma');
             $this->dbDelInsert('tfirma', [$company], 1);
+            $this->cache->flushTags([\CACHING_GROUP_CORE]);
         }
     }
 
@@ -136,7 +133,7 @@ final class Globals extends AbstractSync
         }
         $taxZones = $this->mapper->mapArray($source, 'tsteuerzone', 'mSteuerzone');
         $this->dbDelInsert('tsteuerzone', $taxZones, 1);
-        $this->db->query('DELETE FROM tsteuerzoneland', ReturnType::DEFAULT);
+        $this->db->query('DELETE FROM tsteuerzoneland');
         $taxCount = \count($taxZones);
         for ($i = 0; $i < $taxCount; $i++) {
             $this->upsert(
@@ -161,12 +158,9 @@ final class Globals extends AbstractSync
             return;
         }
         $warehouses = $this->mapper->mapArray($source, 'twarenlager', 'mWarenlager');
-        $visibility = $this->db->query(
-            'SELECT kWarenlager, nAktiv FROM twarenlager WHERE nAktiv = 1',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
+        $visibility = $this->db->getObjects('SELECT kWarenlager, nAktiv FROM twarenlager WHERE nAktiv = 1');
         // Alle Einträge in twarenlager löschen - Wawi 1.0.1 sendet immer alle Warenlager.
-        $this->db->query('DELETE FROM twarenlager WHERE 1', ReturnType::DEFAULT);
+        $this->db->query('DELETE FROM twarenlager WHERE 1');
         $this->upsert('twarenlager', $warehouses, 'kWarenlager');
         foreach ($visibility as $lager) {
             $this->db->update('twarenlager', 'kWarenlager', $lager->kWarenlager, $lager);
@@ -188,7 +182,7 @@ final class Globals extends AbstractSync
         }
         unset($_me);
         $this->dbDelInsert('tmasseinheit', $units, 1);
-        $this->db->query('TRUNCATE TABLE tmasseinheitsprache', ReturnType::DEFAULT);
+        $this->db->query('TRUNCATE TABLE tmasseinheitsprache');
         $meCount = \count($units);
         for ($i = 0; $i < $meCount; $i++) {
             $item = $meCount < 2 ? $source['tmasseinheit'] : $source['tmasseinheit'][$i];
@@ -230,7 +224,7 @@ final class Globals extends AbstractSync
             return;
         }
         if ($del) {
-            $this->db->query('DELETE FROM ' . $tablename, ReturnType::DEFAULT);
+            $this->db->query('DELETE FROM ' . $tablename);
         }
         foreach ($objects as $object) {
             //hack? unset arrays/objects that would result in nicedb exceptions

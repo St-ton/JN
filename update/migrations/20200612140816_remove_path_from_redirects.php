@@ -34,28 +34,22 @@ class Migration_20200612140816 extends Migration implements IMigration
                 [
                     'path'       => $shopSubPath,
                     'searchPath' => '/' . $shopSubPath . '%'
-                ],
-                ReturnType::DEFAULT
+                ]
             );
             // delete all redirects where source and destination are equal
-            $this->db->executeQuery(
-                'DELETE FROM tredirect WHERE cFromUrl = cToUrl',
-                ReturnType::DEFAULT
-            );
+            $this->db->executeQuery('DELETE FROM tredirect WHERE cFromUrl = cToUrl');
             // delete not found records with existing redirection
             $this->db->executeQuery(
                 "DELETE t1 FROM tredirect t1
                     INNER JOIN tredirect t2 ON t2.cFromUrl = t1.cFromUrl
                                            AND t2.kRedirect != t1.kRedirect
-                    WHERE t1.cToUrl = '';",
-                ReturnType::DEFAULT
+                    WHERE t1.cToUrl = '';"
             );
             // delete all duplicate redirects
             $this->db->executeQuery(
                 'DELETE t1 FROM tredirect t1
                     INNER JOIN tredirect t2 ON t2.cFromUrl = t1.cFromUrl
-                                           AND t2.kRedirect > t1.kRedirect;',
-                ReturnType::DEFAULT
+                                           AND t2.kRedirect > t1.kRedirect;'
             );
         }
     }

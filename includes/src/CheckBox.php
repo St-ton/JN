@@ -5,7 +5,6 @@ namespace JTL;
 use InvalidArgumentException;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -150,14 +149,13 @@ class CheckBox
 
             return $this;
         }
-        $checkbox = $this->db->queryPrepared(
+        $checkbox = $this->db->getSingleObject(
             "SELECT *, DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE
                 FROM tcheckbox
                 WHERE kCheckBox = :cbid",
-            ['cbid' => $id],
-            ReturnType::SINGLE_OBJECT
+            ['cbid' => $id]
         );
-        if ($checkbox === false || $checkbox === null) {
+        if ($checkbox === null) {
             return $this;
         }
         foreach (\array_keys(\get_object_vars($checkbox)) as $member) {
@@ -252,14 +250,13 @@ class CheckBox
         if ($logging) {
             $sql .= ' AND nLogging = 1';
         }
-        $checkboxes = $this->db->query(
+        $checkboxes = $this->db->getCollection(
             "SELECT kCheckBox AS id
                 FROM tcheckbox
                 WHERE FIND_IN_SET('" . $location . "', REPLACE(cAnzeigeOrt, ';', ',')) > 0
                     AND FIND_IN_SET('" . $customerGroupID . "', REPLACE(cKundengruppe, ';', ',')) > 0
                     " . $sql . '
-                ORDER BY nSort',
-            ReturnType::COLLECTION
+                ORDER BY nSort'
         )
             ->pluck('id')
             ->map(static function ($e) {
@@ -398,11 +395,10 @@ class CheckBox
      */
     public function getAllCheckBox(string $limitSQL = '', bool $active = false): array
     {
-        return $this->db->query(
+        return $this->db->getCollection(
             'SELECT kCheckBox AS id
                 FROM tcheckbox' . ($active ? ' WHERE nAktiv = 1' : '') . '
-                ORDER BY nSort ' . $limitSQL,
-            ReturnType::COLLECTION
+                ORDER BY nSort ' . $limitSQL
         )
             ->pluck('id')
             ->map(static function ($e) {
@@ -417,10 +413,9 @@ class CheckBox
      */
     public function getAllCheckBoxCount(bool $active = false): int
     {
-        return (int)$this->db->query(
+        return (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS nAnzahl
-                FROM tcheckbox' . ($active ? ' WHERE nAktiv = 1' : ''),
-            ReturnType::SINGLE_OBJECT
+                FROM tcheckbox' . ($active ? ' WHERE nAktiv = 1' : '')
         )->nAnzahl;
     }
 
@@ -436,8 +431,7 @@ class CheckBox
         $this->db->query(
             'UPDATE tcheckbox
                 SET nAktiv = 1
-                WHERE kCheckBox IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ');',
-            ReturnType::DEFAULT
+                WHERE kCheckBox IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ')'
         );
         Shop::Container()->getCache()->flushTags(['checkbox']);
 
@@ -456,8 +450,7 @@ class CheckBox
         $this->db->query(
             'UPDATE tcheckbox
                 SET nAktiv = 0
-                WHERE kCheckBox IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ');',
-            ReturnType::DEFAULT
+                WHERE kCheckBox IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ')'
         );
         Shop::Container()->getCache()->flushTags(['checkbox']);
 
@@ -478,8 +471,7 @@ class CheckBox
                 FROM tcheckbox
                 LEFT JOIN tcheckboxsprache
                     ON tcheckboxsprache.kCheckBox = tcheckbox.kCheckBox
-                WHERE tcheckbox.kCheckBox IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ')',
-            ReturnType::DEFAULT
+                WHERE tcheckbox.kCheckBox IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ')'
         );
         Shop::Container()->getCache()->flushTags(['checkbox']);
 
@@ -491,11 +483,10 @@ class CheckBox
      */
     public function getCheckBoxFunctions(): array
     {
-        return $this->db->query(
+        return $this->db->getCollection(
             'SELECT *
                 FROM tcheckboxfunktion
-                ORDER BY cName',
-            ReturnType::COLLECTION
+                ORDER BY cName'
         )->each(static function ($e) {
             $e->kCheckBoxFunktion = (int)$e->kCheckBoxFunktion;
             $e->cName             = __($e->cName);

@@ -122,7 +122,7 @@ interface MailInterface
     public function getReplyToName(): string;
 
     /**
-     * @param mixed $replyToName
+     * @param string $replyToName
      * @return MailInterface
      */
     public function setReplyToName(string $replyToName): self;

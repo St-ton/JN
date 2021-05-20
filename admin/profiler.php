@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Alert\Alert;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Profiler;
@@ -107,19 +106,17 @@ $smarty->assign('pluginProfilerData', $pluginProfilerData)
 /**
  * @param bool $all
  * @param int  $runID
- * @return mixed
+ * @return int
  */
-function deleteProfileRun(bool $all = false, $runID = 0)
+function deleteProfileRun(bool $all = false, int $runID = 0): int
 {
     if ($all === true) {
-        $count = Shop::Container()->getDB()->query('DELETE FROM tprofiler', ReturnType::AFFECTED_ROWS);
+        $count = Shop::Container()->getDB()->getAffectedRows('DELETE FROM tprofiler');
         Shop::Container()->getDB()->query(
-            'ALTER TABLE tprofiler AUTO_INCREMENT = 1',
-            ReturnType::AFFECTED_ROWS
+            'ALTER TABLE tprofiler AUTO_INCREMENT = 1'
         );
         Shop::Container()->getDB()->query(
-            'ALTER TABLE tprofiler_runs AUTO_INCREMENT = 1',
-            ReturnType::AFFECTED_ROWS
+            'ALTER TABLE tprofiler_runs AUTO_INCREMENT = 1'
         );
 
         return $count;

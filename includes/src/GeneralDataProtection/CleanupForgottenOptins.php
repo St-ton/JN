@@ -2,8 +2,6 @@
 
 namespace JTL\GeneralDataProtection;
 
-use JTL\DB\ReturnType;
-
 /**
  * Class CleanupForgottenOptins
  * @package JTL\GeneralDataProtection
@@ -35,7 +33,7 @@ class CleanupForgottenOptins extends Method implements MethodInterface
      */
     private function cleanupOptins(): void
     {
-        $result = $this->db->queryPrepared(
+        $result = $this->db->getObjects(
             'SELECT
                 o.kOptin AS "o_kOptin",
                 o.kOptinCode AS "o_kOptinCode",
@@ -55,8 +53,7 @@ class CleanupForgottenOptins extends Method implements MethodInterface
             [
                 'pDateLimit' => $this->dateLimit,
                 'pLimit'     => $this->workLimit
-            ],
-            ReturnType::ARRAY_OF_OBJECTS
+            ]
         );
 
         $optinIDs     = [];
@@ -68,19 +65,13 @@ class CleanupForgottenOptins extends Method implements MethodInterface
         $recipientIDs = \array_filter($recipientIDs);
         $optinIDs     = \array_filter($optinIDs);
         if (\count($optinIDs) > 0) {
-            $this->db->query(
-                'DELETE FROM toptin WHERE kOptin IN (' .
-                \implode(',', $optinIDs) .
-                ')',
-                ReturnType::DEFAULT
-            );
+            $this->db->query('DELETE FROM toptin WHERE kOptin IN (' . \implode(',', $optinIDs) . ')');
         }
         if (\count($recipientIDs) > 0) {
             $this->db->query(
                 'DELETE from tnewsletterempfaenger WHERE kNewsletterEmpfaenger IN (' .
                 \implode(',', $recipientIDs) .
-                ')',
-                ReturnType::DEFAULT
+                ')'
             );
         }
     }

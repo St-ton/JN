@@ -3,7 +3,6 @@
 namespace JTL\dbeS;
 
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Shop;
 
@@ -47,15 +46,11 @@ class Test
             'kZahlungseingang' => 'tzahlungseingang'
         ] as $idField => $table) {
             if (($id = Request::postInt($idField)) > 0) {
-                $state = $this->db->query(
-                    "SHOW TABLE STATUS LIKE '" . $table . "'",
-                    ReturnType::SINGLE_OBJECT
-                );
-                if (\is_object($state) && (int)$state->Auto_increment < $id) {
+                $state = $this->db->getSingleObject("SHOW TABLE STATUS LIKE '" . $table . "'");
+                if ($state !== null && (int)$state->Auto_increment < $id) {
                     $this->db->queryPrepared(
                         'ALTER TABLE ' . $table . ' AUTO_INCREMENT = :newId',
-                        ['newId' => $id],
-                        ReturnType::DEFAULT
+                        ['newId' => $id]
                     );
                 }
             }

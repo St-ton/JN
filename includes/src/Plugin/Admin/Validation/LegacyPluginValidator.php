@@ -66,10 +66,9 @@ final class LegacyPluginValidator extends AbstractValidator
      */
     public function pluginPlausiIntern($xml, bool $forUpdate): int
     {
-        $isShop4Compatible    = false;
-        $parsedXMLShopVersion = null;
-        $shopVersion          = Version::parse(\APPLICATION_VERSION);
-        $baseNode             = $xml['jtlshop3plugin'][0] ?? null;
+        $isShop4Compatible = false;
+        $shopVersion       = Version::parse(\APPLICATION_VERSION);
+        $baseNode          = $xml['jtlshop3plugin'][0] ?? null;
         if ($baseNode === null) {
             return InstallCode::MISSING_PLUGIN_NODE;
         }

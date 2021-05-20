@@ -97,13 +97,6 @@
                                                                     {/block}
                                                                 {/foreach}
                                                             {/if}
-                                                            {if !empty($versandart->cLieferdauer|trans) && $Einstellungen.global.global_versandermittlung_lieferdauer_anzeigen === 'Y'}
-                                                                {block name='checkout-step3-shipping-options-shipping-option-shipping-time'}
-                                                                    <small>{lang key='shippingTimeLP'}
-                                                                        : {$versandart->cLieferdauer|trans}
-                                                                    </small>
-                                                                {/block}
-                                                            {/if}
                                                         </span>
                                                     {/radio}
                                                 {/block}

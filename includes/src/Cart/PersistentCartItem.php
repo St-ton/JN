@@ -90,7 +90,7 @@ class PersistentCartItem
      * @param int          $cartItemID
      * @param string       $unique
      * @param int          $configItemID
-     * @param int|string   $type
+     * @param int          $type
      * @param string       $responsibility
      */
     public function __construct(

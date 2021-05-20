@@ -10,14 +10,12 @@ use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Customer\Customer;
-use JTL\DB\ReturnType;
 use JTL\Extensions\Download\Download;
 use JTL\Extensions\Upload\Upload;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Language\LanguageHelper;
 use JTL\Plugin\Payment\LegacyMethod;
-use JTL\Plugin\Payment\Method as PaymentMethod;
 use JTL\Shop;
 use stdClass;
 
@@ -78,7 +76,7 @@ class Bestellung
     public $fGuthaben = 0.0;
 
     /**
-     * @var int
+     * @var int|float
      */
     public $fGesamtsumme;
 
@@ -123,7 +121,7 @@ class Bestellung
     public $cAbgeholt;
 
     /**
-     * @var string 'Y'/'N'
+     * @var int
      */
     public $cStatus;
 
@@ -162,7 +160,7 @@ class Bestellung
     public $Positionen;
 
     /**
-     * @var PaymentMethod
+     * @var Zahlungsart
      */
     public $Zahlungsart;
 
@@ -242,22 +240,22 @@ class Bestellung
     public $dErstelldatum_en;
 
     /**
-     * @var
+     * @var string
      */
     public $cBestellwertLocalized;
 
     /**
-     * @var
+     * @var Currency
      */
     public $Waehrung;
 
     /**
-     * @var
+     * @var array
      */
     public $Steuerpositionen;
 
     /**
-     * @var
+     * @var string
      */
     public $Status;
 
@@ -424,8 +422,6 @@ class Bestellung
             return $this;
         }
         $db               = Shop::Container()->getDB();
-        $sum              = null;
-        $date             = null;
         $this->Positionen = $db->selectAll(
             'twarenkorbpos',
             'kWarenkorb',
@@ -468,21 +464,19 @@ class Bestellung
             (int)$this->kBestellung
         );
         $this->BestellstatusURL = Shop::getURL() . '/status.php?uid=' . $orderState->cUID;
-        $sum                    = $db->query(
+        $sum                    = $db->getSingleObject(
             'SELECT SUM(((fPreis * fMwSt)/100 + fPreis) * nAnzahl) AS wert
                 FROM twarenkorbpos
-                WHERE kWarenkorb = ' . (int)$this->kWarenkorb,
-            ReturnType::SINGLE_OBJECT
+                WHERE kWarenkorb = ' . (int)$this->kWarenkorb
         );
-        $date                   = $db->query(
+        $date                   = $db->getSingleObject(
             "SELECT date_format(dVersandDatum,'%d.%m.%Y') AS dVersanddatum_de,
                 date_format(dBezahltDatum,'%d.%m.%Y') AS dBezahldatum_de,
                 date_format(dErstellt,'%d.%m.%Y %H:%i:%s') AS dErstelldatum_de,
                 date_format(dVersandDatum,'%D %M %Y') AS dVersanddatum_en,
                 date_format(dBezahltDatum,'%D %M %Y') AS dBezahldatum_en,
                 date_format(dErstellt,'%D %M %Y') AS dErstelldatum_en
-                FROM tbestellung WHERE kBestellung = " . (int)$this->kBestellung,
-            ReturnType::SINGLE_OBJECT
+                FROM tbestellung WHERE kBestellung = " . (int)$this->kBestellung
         );
         if ($date !== null && \is_object($date)) {
             $this->dVersanddatum_de = $date->dVersanddatum_de;
@@ -495,17 +489,16 @@ class Bestellung
         // Hole Netto- oder Bruttoeinstellung der Kundengruppe
         $nNettoPreis = 0;
         if ($this->kBestellung > 0) {
-            $netOrderData = $db->query(
+            $netOrderData = $db->getSingleObject(
                 'SELECT tkundengruppe.nNettoPreise
                     FROM tkundengruppe
                     JOIN tbestellung 
                         ON tbestellung.kBestellung = ' . (int)$this->kBestellung . '
                     JOIN tkunde 
                         ON tkunde.kKunde = tbestellung.kKunde
-                    WHERE tkunde.kKundengruppe = tkundengruppe.kKundengruppe',
-                ReturnType::SINGLE_OBJECT
+                    WHERE tkunde.kKundengruppe = tkundengruppe.kKundengruppe'
             );
-            if (isset($netOrderData->nNettoPreise) && $netOrderData->nNettoPreise > 0) {
+            if ($netOrderData !== null && $netOrderData->nNettoPreise > 0) {
                 $nNettoPreis = 1;
             }
         }
@@ -526,17 +519,7 @@ class Bestellung
                 $this->Waehrung
             );
             if ($this->kZahlungsart > 0) {
-                $this->Zahlungsart = $db->select(
-                    'tzahlungsart',
-                    'kZahlungsart',
-                    (int)$this->kZahlungsart
-                );
-                if ($this->Zahlungsart !== null) {
-                    $oZahlungsart = LegacyMethod::create($this->Zahlungsart->cModulId, 1);
-                    if ($oZahlungsart !== null) {
-                        $this->Zahlungsart->bPayAgain = $oZahlungsart->canPayAgain();
-                    }
-                }
+                $this->loadPaymentMethod();
             }
         }
         if ($this->kBestellung > 0) {
@@ -847,6 +830,21 @@ class Bestellung
     }
 
     /**
+     *
+     */
+    private function loadPaymentMethod(): void
+    {
+        $paymentMethod = new Zahlungsart((int)$this->kZahlungsart);
+        if ($paymentMethod->getModulId() !== null && \mb_strlen($paymentMethod->getModulId()) > 0) {
+            $method = LegacyMethod::create($paymentMethod->getModulId(), 1);
+            if ($method !== null) {
+                $paymentMethod->bPayAgain = $method->canPayAgain();
+            }
+            $this->Zahlungsart = $paymentMethod;
+        }
+    }
+
+    /**
      * @return $this
      * @deprecated since 5.0.0
      */
@@ -970,14 +968,13 @@ class Bestellung
     ): array {
         $items = [];
         if ($orderID > 0) {
-            $data = Shop::Container()->getDB()->query(
+            $data = Shop::Container()->getDB()->getObjects(
                 'SELECT twarenkorbpos.kWarenkorbPos, twarenkorbpos.kArtikel
                       FROM tbestellung
                       JOIN twarenkorbpos
                         ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
                           AND nPosTyp = ' . $posType . '
-                      WHERE tbestellung.kBestellung = ' . $orderID,
-                ReturnType::ARRAY_OF_OBJECTS
+                      WHERE tbestellung.kBestellung = ' . $orderID
             );
             foreach ($data as $item) {
                 if (isset($item->kWarenkorbPos) && $item->kWarenkorbPos > 0) {
@@ -1021,15 +1018,14 @@ class Bestellung
      */
     public static function getProductAmount(int $orderID, int $productID): int
     {
-        $data = Shop::Container()->getDB()->queryPrepared(
+        $data = Shop::Container()->getDB()->getSingleObject(
             'SELECT twarenkorbpos.nAnzahl
                 FROM tbestellung
                 JOIN twarenkorbpos
                     ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
                 WHERE tbestellung.kBestellung = :oid
                     AND twarenkorbpos.kArtikel = :pid',
-            ['oid' => $orderID, 'pid' => $productID],
-            ReturnType::SINGLE_OBJECT
+            ['oid' => $orderID, 'pid' => $productID]
         );
 
         return (int)($data->nAnzahl ?? 0);
@@ -1122,7 +1118,7 @@ class Bestellung
      */
     public function setKampagne(): void
     {
-        $this->oKampagne = Shop::Container()->getDB()->queryPrepared(
+        $this->oKampagne = Shop::Container()->getDB()->getSingleObject(
             'SELECT tkampagne.kKampagne, tkampagne.cName, tkampagne.cParameter, tkampagnevorgang.dErstellt,
                     tkampagnevorgang.kKey AS kBestellung, tkampagnevorgang.cParamWert AS cWert
                 FROM tkampagnevorgang
@@ -1133,8 +1129,7 @@ class Bestellung
             [
                 'orderID'     => $this->kBestellung,
                 'kampagneDef' => \KAMPAGNE_DEF_VERKAUF
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
     }
 }

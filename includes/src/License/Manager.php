@@ -8,7 +8,6 @@ use GuzzleHttp\Exception\GuzzleException;
 use JTL\Backend\AuthToken;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\License\Struct\ExsLicense;
 use JTL\Shop;
 use stdClass;
@@ -66,8 +65,7 @@ class Manager
     private function checkUpdate(): bool
     {
         return ($lastItem = $this->getLicenseData()) === null
-            ? true
-            : (\time() - \strtotime($lastItem->timestamp)) / (60 * 60) > self::CHECK_INTERVAL_HOURS;
+            || (\time() - \strtotime($lastItem->timestamp)) / (60 * 60) > self::CHECK_INTERVAL_HOURS;
     }
 
     /**
@@ -223,14 +221,13 @@ class Manager
      */
     public function getLicenseData(): ?stdClass
     {
-        $data = $this->db->query(
+        $data = $this->db->getSingleObject(
             'SELECT * FROM licenses
                 WHERE returnCode = 200
                 ORDER BY id DESC
-                LIMIT 1',
-            ReturnType::SINGLE_OBJECT
+                LIMIT 1'
         );
-        if ($data === false) {
+        if ($data === null) {
             return null;
         }
         $obj             = \json_decode($data->data, false);
@@ -272,7 +269,7 @@ class Manager
      */
     private function housekeeping(): int
     {
-        return $this->db->queryPrepared(
+        return $this->db->getAffectedRows(
             'DELETE a 
                 FROM licenses AS a 
                 JOIN ( 
@@ -281,8 +278,7 @@ class Manager
                         ORDER BY timestamp DESC 
                         LIMIT 99999 OFFSET :max) AS b
                 ON a.id = b.id',
-            ['max' => self::MAX_REQUESTS],
-            ReturnType::AFFECTED_ROWS
+            ['max' => self::MAX_REQUESTS]
         );
     }
 

@@ -1,6 +1,5 @@
 <?php
 
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\URL;
@@ -22,7 +21,7 @@ use JTL\Shop;
  *      0 = clear table, then import (careful!!! again: this will clear the table denoted by $target)
  *      1 = insert new, overwrite existing
  *      2 = insert only non-existing
- * @param string[] - output a list of error messages
+ * @param string[] $errors - output a list of error messages
  * @return int - -1 if importer-id-mismatch / 0 on success / >1 import error count
  * @throws TypeError
  * @throws InvalidArgumentException
@@ -114,7 +113,7 @@ function handleCsvImportAction(
     }
 
     if ($importType === 0 && is_string($target)) {
-        Shop::Container()->getDB()->query('TRUNCATE ' . $target, ReturnType::AFFECTED_ROWS);
+        Shop::Container()->getDB()->query('TRUNCATE ' . $target);
     }
 
     while (($row = fgetcsv($fs, 0, $delim)) !== false) {
@@ -185,7 +184,7 @@ function getArtNrUrl(string $artNo, string $iso): ?string
         return null;
     }
 
-    $item = Shop::Container()->getDB()->executeQueryPrepared(
+    $item = Shop::Container()->getDB()->getSingleObject(
         "SELECT tartikel.kArtikel, tseo.cSeo
             FROM tartikel
             LEFT JOIN tsprache
@@ -196,8 +195,7 @@ function getArtNrUrl(string $artNo, string $iso): ?string
                 AND tseo.kSprache = tsprache.kSprache
             WHERE tartikel.cArtNr = :artno
             LIMIT 1",
-        ['iso' => mb_convert_case($iso, MB_CASE_LOWER), 'artno' => $artNo],
-        ReturnType::SINGLE_OBJECT
+        ['iso' => mb_convert_case($iso, MB_CASE_LOWER), 'artno' => $artNo]
     );
 
     return URL::buildURL($item, URLART_ARTIKEL);

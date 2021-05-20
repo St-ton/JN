@@ -2,7 +2,6 @@
 
 use JTL\Alert\Alert;
 use JTL\Campaign;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
@@ -116,7 +115,7 @@ if (Request::verifyGPCDataInt('neu') === 1 && Form::validateToken()) {
     }
 } elseif (Request::verifyGPCDataInt('nSort') > 0) { // Sortierung
     // ASC / DESC
-    if ($_SESSION['Kampagne']->nSort == Request::verifyGPCDataInt('nSort')) {
+    if ((int)$_SESSION['Kampagne']->nSort === Request::verifyGPCDataInt('nSort')) {
         if ($_SESSION['Kampagne']->cSort === 'ASC') {
             $_SESSION['Kampagne']->cSort = 'DESC';
         } else {
@@ -181,13 +180,12 @@ if ($step === 'kampagne_uebersicht') {
         $where      = '';
         baueDefDetailSELECTWHERE($select, $where, $stamp);
 
-        $stats = Shop::Container()->getDB()->query(
+        $stats = Shop::Container()->getDB()->getObjects(
             'SELECT kKampagne, kKampagneDef, kKey ' . $select . '
                 FROM tkampagnevorgang
                 ' . $where . '
                     AND kKampagne = ' . $campaignID . '
-                    AND kKampagneDef = ' . (int)$definition->kKampagneDef,
-            ReturnType::ARRAY_OF_OBJECTS
+                    AND kKampagneDef = ' . (int)$definition->kKampagneDef
         );
 
         $paginationDefinitionDetail = (new Pagination('defdetail'))

@@ -3,7 +3,6 @@
 namespace JTL;
 
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use stdClass;
 use function Functional\first;
 
@@ -46,7 +45,7 @@ class Slider implements IExtensionPoint
     private $theme = '';
 
     /**
-     * @var int
+     * @var bool
      */
     private $isActive = false;
 
@@ -197,14 +196,14 @@ class Slider implements IExtensionPoint
         if ($int === 0) {
             $int = $this->id;
         }
-        $data  = $this->db->queryPrepared(
-            'SELECT *, tslider.kSlider AS id FROM tslider
+        $data  = $this->db->getObjects(
+            'SELECT *, tslider.kSlider AS id 
+                FROM tslider
                 LEFT JOIN tslide
                     ON tslider.kSlider = tslide.kSlider
                 WHERE tslider.kSlider = :sliderID' . $activeSQL .
             ' ORDER BY tslide.nSort',
-            ['sliderID' => $int],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['sliderID' => $int]
         );
         $first = first($data);
         if ($first !== null) {

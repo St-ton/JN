@@ -41,7 +41,7 @@ class DummyState extends AbstractFilter
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
     public function getValue()
     {

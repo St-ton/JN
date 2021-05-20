@@ -3,7 +3,6 @@
 namespace JTL;
 
 use Exception;
-use JTL\DB\ReturnType;
 use stdClass;
 
 /**
@@ -133,7 +132,7 @@ class Emailhistory
             $sql .= \implode(', ', $set);
             $sql .= ' WHERE kEmailhistory = ' . $this->getEmailhistory();
 
-            return $db->query($sql, ReturnType::AFFECTED_ROWS);
+            return $db->getAffectedRows($sql);
         }
         throw new Exception('ERROR: Object has no members!');
     }
@@ -152,11 +151,10 @@ class Emailhistory
      */
     public function getAll(string $limitSQL = ''): array
     {
-        $historyData = Shop::Container()->getDB()->query(
+        $historyData = Shop::Container()->getDB()->getObjects(
             'SELECT * 
                 FROM temailhistory 
-                ORDER BY dSent DESC' . $limitSQL,
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY dSent DESC' . $limitSQL
         );
         $history     = [];
         foreach ($historyData as $item) {
@@ -173,9 +171,8 @@ class Emailhistory
      */
     public function getCount(): int
     {
-        return (int)Shop::Container()->getDB()->query(
-            'SELECT COUNT(*) AS nCount FROM temailhistory',
-            ReturnType::SINGLE_OBJECT
+        return (int)Shop::Container()->getDB()->getSingleObject(
+            'SELECT COUNT(*) AS nCount FROM temailhistory'
         )->nCount;
     }
 
@@ -190,11 +187,10 @@ class Emailhistory
                 return (int)$i;
             }, $ids);
 
-            return Shop::Container()->getDB()->query(
+            return Shop::Container()->getDB()->getAffectedRows(
                 'DELETE 
                     FROM temailhistory 
-                    WHERE kEmailhistory IN (' . \implode(',', $ids) . ')',
-                ReturnType::AFFECTED_ROWS
+                    WHERE kEmailhistory IN (' . \implode(',', $ids) . ')'
             );
         }
 
@@ -208,11 +204,10 @@ class Emailhistory
     public function deleteAll(): int
     {
         Shop::Container()->getLogService()->notice('eMail-History gelöscht');
-        $db  = Shop::Container()->getDB();
-        $res = $db->query('SELECT COUNT(kEmailhistory) AS historyCount FROM temailhistory', ReturnType::SINGLE_OBJECT);
-        $db->query('TRUNCATE TABLE temailhistory', ReturnType::DEFAULT);
+        $res = Shop::Container()->getDB()->getAffectedRows('DELETE FROM temailhistory');
+        Shop::Container()->getDB()->query('TRUNCATE TABLE temailhistory');
 
-        return (int)$res->historyCount;
+        return $res;
     }
 
     /**

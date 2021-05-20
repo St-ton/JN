@@ -6,7 +6,6 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Hersteller;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Category as CategoryHelper;
 use JTL\Helpers\URL;
 use JTL\Session\Frontend;
@@ -93,7 +92,7 @@ class Sitemap
         }
         $cacheID = 'news_category_' . $this->langID . '_' . $this->customerGroupID;
         if (($newsCategories = $this->cache->get($cacheID)) === false) {
-            $newsCategories = $this->db->queryPrepared(
+            $newsCategories = $this->db->getObjects(
                 "SELECT tnewskategorie.kNewsKategorie, t.languageID AS kSprache, t.name AS cName,
                 t.description AS cBeschreibung, t.metaTitle AS cMetaTitle, t.metaDescription AS cMetaDescription,
                 tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung, 
@@ -121,14 +120,13 @@ class Sitemap
                 [
                     'lid'  => $this->langID,
                     'cgid' => $this->customerGroupID
-                ],
-                ReturnType::ARRAY_OF_OBJECTS
+                ]
             );
             foreach ($newsCategories as $newsCategory) {
                 $newsCategory->cURL     = URL::buildURL($newsCategory, \URLART_NEWSKATEGORIE);
                 $newsCategory->cURLFull = URL::buildURL($newsCategory, \URLART_NEWSKATEGORIE, true);
 
-                $entries = $this->db->queryPrepared(
+                $entries = $this->db->getObjects(
                     "SELECT tnews.kNews, t.languageID AS kSprache, tnews.cKundengruppe, t.title AS cBetreff, 
                     t.content AS cText, t.preview AS cVorschauText, t.metaTitle AS cMetaTitle, 
                     t.metaDescription AS cMetaDescription, t.metaKeywords AS cMetaKeywords, 
@@ -155,8 +153,7 @@ class Sitemap
                         'lid'  => $this->langID,
                         'cgid' => $this->customerGroupID,
                         'cid'  => (int)$newsCategory->kNewsKategorie
-                    ],
-                    ReturnType::ARRAY_OF_OBJECTS
+                    ]
                 );
                 foreach ($entries as $entry) {
                     $entry->cURL     = URL::buildURL($entry, \URLART_NEWS);
@@ -180,7 +177,7 @@ class Sitemap
         }
         $cacheID = 'sitemap_news_' . $this->langID;
         if (($overview = $this->cache->get($cacheID)) === false) {
-            $overview = $this->db->queryPrepared(
+            $overview = $this->db->getObjects(
                 "SELECT tseo.cSeo, tnewsmonatsuebersicht.cName, tnewsmonatsuebersicht.kNewsMonatsUebersicht, 
                 MONTH(tnews.dGueltigVon) AS nMonat, YEAR(tnews.dGueltigVon) AS nJahr, COUNT(*) AS nAnzahl
                     FROM tnews
@@ -199,11 +196,10 @@ class Sitemap
                         AND t.languageID = :lid
                     GROUP BY YEAR(tnews.dGueltigVon), MONTH(tnews.dGueltigVon)
                     ORDER BY tnews.dGueltigVon DESC",
-                ['lid' => $this->langID],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['lid' => $this->langID]
             );
             foreach ($overview as $news) {
-                $entries = $this->db->queryPrepared(
+                $entries = $this->db->getObjects(
                     "SELECT tnews.kNews, t.languageID AS kSprache, tnews.cKundengruppe, 
                     t.title AS cBetreff, t.content AS cText, t.preview AS cVorschauText, 
                     t.metaTitle AS cMetaTitle, t.metaDescription AS cMetaDescription, t.metaKeywords AS cMetaKeywords,
@@ -234,8 +230,7 @@ class Sitemap
                         'cgid' => $this->customerGroupID,
                         'mnth' => $news->nMonat,
                         'yr'   => $news->nJahr
-                    ],
-                    ReturnType::ARRAY_OF_OBJECTS
+                    ]
                 );
                 foreach ($entries as $oNews) {
                     $oNews->cURL     = URL::buildURL($oNews, \URLART_NEWS);

@@ -66,7 +66,7 @@ class CreateMigrationCommand extends Command
             $migrationPath = MigrationHelper::create($pluginDir, $description, $author);
             $output->writeln("<info>Created Migration:</info> <comment>'" . $migrationPath . "'</comment>");
 
-            return null;
+            return 0;
         } catch (\Exception $e) {
             $this->getIO()->error($e->getMessage());
 

@@ -4,7 +4,7 @@ namespace JTL;
 
 use JTL\Catalog\Product\Artikel;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
+use JTL\Session\Frontend;
 use stdClass;
 
 /**
@@ -37,7 +37,7 @@ class ImageMap implements IExtensionPoint
         $this->db            = $db;
         $this->kSprache      = Shop::getLanguageID();
         $this->kKundengruppe = isset($_SESSION['Kundengruppe']->kKundengruppe)
-            ? Session\Frontend::getCustomerGroup()->getID()
+            ? Frontend::getCustomerGroup()->getID()
             : null;
         if (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0) {
             $this->kKundengruppe = (int)$_SESSION['Kunde']->kKundengruppe;
@@ -60,19 +60,18 @@ class ImageMap implements IExtensionPoint
     }
 
     /**
-     * @return array
+     * @return stdClass[]
      */
     public function fetchAll(): array
     {
-        return $this->db->query(
+        return $this->db->getObjects(
             'SELECT *, IF(
                 (CURDATE() >= DATE(vDatum)) AND (
                     bDatum IS NULL 
                     OR CURDATE() <= DATE(bDatum)
                     OR bDatum = 0), 1, 0) AS active 
                 FROM timagemap
-                ORDER BY cTitel ASC',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY cTitel ASC'
         );
     }
 
@@ -90,8 +89,8 @@ class ImageMap implements IExtensionPoint
         if (!$fetchAll) {
             $sql .= ' AND (CURDATE() >= DATE(vDatum)) AND (bDatum IS NULL OR CURDATE() <= DATE(bDatum) OR bDatum = 0)';
         }
-        $imageMap = $this->db->query($sql, ReturnType::SINGLE_OBJECT);
-        if (!\is_object($imageMap)) {
+        $imageMap = $this->db->getSingleObject($sql);
+        if ($imageMap === null) {
             return false;
         }
         $imageMap->oArea_arr = $this->db->selectAll(
@@ -102,7 +101,6 @@ class ImageMap implements IExtensionPoint
         $imageMap->cBildPfad = Shop::getImageBaseURL() . \PFAD_IMAGEMAP . $imageMap->cBildPfad;
         $parsed              = \parse_url($imageMap->cBildPfad);
         $imageMap->cBild     = \mb_substr($parsed['path'], \mb_strrpos($parsed['path'], '/') + 1);
-        $defaultOptions      = Artikel::getDefaultOptions();
         if (!\file_exists(\PFAD_ROOT . \PFAD_IMAGEMAP . $imageMap->cBild)) {
             return $imageMap;
         }
@@ -112,58 +110,68 @@ class ImageMap implements IExtensionPoint
             $area->kImageMap     = (int)$area->kImageMap;
             $area->kArtikel      = (int)$area->kArtikel;
             $area->oCoords       = new stdClass();
-            $aMap                = \explode(',', $area->cCoords);
-            if (\count($aMap) === 4) {
-                $area->oCoords->x = (int)$aMap[0];
-                $area->oCoords->y = (int)$aMap[1];
-                $area->oCoords->w = (int)$aMap[2];
-                $area->oCoords->h = (int)$aMap[3];
+            $map                 = \explode(',', $area->cCoords);
+            if (\count($map) === 4) {
+                $area->oCoords->x = (int)$map[0];
+                $area->oCoords->y = (int)$map[1];
+                $area->oCoords->w = (int)$map[2];
+                $area->oCoords->h = (int)$map[3];
             }
-
-            $area->oArtikel = null;
-            if ($area->kArtikel > 0) {
-                $area->oArtikel = new Artikel();
-                if ($fill === true) {
-                    $area->oArtikel->fuelleArtikel(
-                        $area->kArtikel,
-                        $defaultOptions,
-                        $this->kKundengruppe ?? 0,
-                        $this->kSprache
-                    );
-                } else {
-                    $area->oArtikel->kArtikel = $area->kArtikel;
-                    $area->oArtikel->cName    = $this->db->select(
-                        'tartikel',
-                        'kArtikel',
-                        $area->kArtikel,
-                        null,
-                        null,
-                        null,
-                        null,
-                        false,
-                        'cName'
-                    )->cName;
-                }
-                if (\mb_strlen($area->cTitel) === 0) {
-                    $area->cTitel = $area->oArtikel->cName;
-                }
-                if (\mb_strlen($area->cUrl) === 0) {
-                    $area->cUrl = $area->oArtikel->cURL;
-                }
-                if (\mb_strlen($area->cBeschreibung) === 0) {
-                    $area->cBeschreibung = $area->oArtikel->cKurzBeschreibung;
-                }
-            }
+            $this->addProduct($area, $fill);
         }
 
         return $imageMap;
     }
 
     /**
-     * @param string $title
-     * @param string $imagePath
-     * @param string $dateFrom
-     * @param string $dateUntil
+     * @param stdClass $area
+     * @param bool     $fill
+     */
+    private function addProduct(stdClass $area, bool $fill = true): void
+    {
+        $area->oArtikel = null;
+        if ($area->kArtikel <= 0) {
+            return;
+        }
+        $defaultOptions = Artikel::getDefaultOptions();
+        $area->oArtikel = new Artikel();
+        if ($fill === true) {
+            $area->oArtikel->fuelleArtikel(
+                $area->kArtikel,
+                $defaultOptions,
+                $this->kKundengruppe ?? 0,
+                $this->kSprache
+            );
+        } else {
+            $area->oArtikel->kArtikel = $area->kArtikel;
+            $area->oArtikel->cName    = $this->db->select(
+                'tartikel',
+                'kArtikel',
+                $area->kArtikel,
+                null,
+                null,
+                null,
+                null,
+                false,
+                'cName'
+            )->cName;
+        }
+        if (\mb_strlen($area->cTitel) === 0) {
+            $area->cTitel = $area->oArtikel->cName;
+        }
+        if (\mb_strlen($area->cUrl) === 0) {
+            $area->cUrl = $area->oArtikel->cURL;
+        }
+        if (\mb_strlen($area->cBeschreibung) === 0) {
+            $area->cBeschreibung = $area->oArtikel->cKurzBeschreibung;
+        }
+    }
+
+    /**
+     * @param string      $title
+     * @param string      $imagePath
+     * @param string|null $dateFrom
+     * @param string|null $dateUntil
      * @return int
      */
     public function save($title, $imagePath, $dateFrom, $dateUntil): int

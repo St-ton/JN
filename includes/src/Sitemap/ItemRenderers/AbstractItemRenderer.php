@@ -11,7 +11,7 @@ use JTL\Sitemap\Items\ItemInterface;
 abstract class AbstractItemRenderer implements RendererInterface
 {
     /**
-     * @var int
+     * @var int|string
      */
     protected $lastID;
 

@@ -83,7 +83,7 @@ class VATCheckEU extends AbstractVATCheck
             try {
                 $result = $soap->checkVat(['countryCode' => $countryCode, 'vatNumber' => $vatNumber]);
             } catch (\Exception $e) {
-                Shop::Container()->getLogService()->warn('VAT ID problem: ' . $e->getMessage());
+                Shop::Container()->getLogService()->warning('VAT ID problem: ' . $e->getMessage());
             }
 
             if ($result !== null && $result->valid === true) {

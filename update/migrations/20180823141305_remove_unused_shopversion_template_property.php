@@ -31,9 +31,6 @@ class Migration_20180823141305 extends Migration implements IMigration
      */
     public function down()
     {
-        $this->getDB()->query(
-            'ALTER TABLE `ttemplate` ADD `shopversion` int(11) DEFAULT NULL AFTER `version`',
-            ReturnType::DEFAULT
-        );
+        $this->getDB()->query('ALTER TABLE `ttemplate` ADD `shopversion` int(11) DEFAULT NULL AFTER `version`');
     }
 }

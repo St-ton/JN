@@ -2,7 +2,6 @@
 
 namespace JTL\Catalog;
 
-use JTL\DB\ReturnType;
 use JTL\Shop;
 use stdClass;
 
@@ -81,11 +80,10 @@ class UnitsOfMeasure
         static $units = [];
 
         if (\count($units) === 0) {
-            $units_tmp = Shop::Container()->getDB()->query(
+            $units_tmp = Shop::Container()->getDB()->getObjects(
                 "SELECT kMassEinheit, cCode
                     FROM tmasseinheit
-                    WHERE cCode IN ('" . \implode("', '", \array_keys(self::$UCUMcodeToPrint)) . "')",
-                ReturnType::ARRAY_OF_OBJECTS
+                    WHERE cCode IN ('" . \implode("', '", \array_keys(self::$UCUMcodeToPrint)) . "')"
             );
             foreach ($units_tmp as $unit) {
                 $units[(int)$unit->kMassEinheit] = $unit;

@@ -47,11 +47,6 @@ class LegacyPlugin extends PluginBC
     public $cFehler = '';
 
     /**
-     * @var int
-     */
-    public $nCalledHook;
-
-    /**
      * LegacyPlugin constructor.
      * @param int  $id
      * @param bool $invalidateCache

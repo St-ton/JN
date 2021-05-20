@@ -42,7 +42,7 @@ interface QueryInterface
     public function getType(): string;
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getTable(): string;
 

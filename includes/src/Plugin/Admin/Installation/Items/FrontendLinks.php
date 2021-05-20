@@ -2,7 +2,6 @@
 
 namespace JTL\Plugin\Admin\Installation\Items;
 
-use JTL\DB\ReturnType;
 use JTL\Helpers\Seo;
 use JTL\Language\LanguageHelper;
 use JTL\Plugin\InstallCode;
@@ -99,8 +98,7 @@ class FrontendLinks extends AbstractItem
                             "DELETE FROM tseo
                                 WHERE cKey = 'kLink'
                                     AND (kKey = " . $linkID . $or . ')
-                                    AND kSprache = ' . (int)$allLanguages[$linkLang->cISOSprache]->kSprache,
-                            ReturnType::DEFAULT
+                                    AND kSprache = ' . (int)$allLanguages[$linkLang->cISOSprache]->kSprache
                         );
                         $seo           = new stdClass();
                         $seo->cSeo     = Seo::checkSeo(Seo::getSeo($localized['Seo']));

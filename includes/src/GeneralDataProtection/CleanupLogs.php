@@ -2,8 +2,6 @@
 
 namespace JTL\GeneralDataProtection;
 
-use JTL\DB\ReturnType;
-
 /**
  * Class CleanupLogs
  * @package JTL\GeneralDataProtection
@@ -55,8 +53,7 @@ class CleanupLogs extends Method implements MethodInterface
             [
                 'pDateLimit' => $this->dateLimit,
                 'pLimit'     => $this->workLimit
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     }
 
@@ -74,8 +71,7 @@ class CleanupLogs extends Method implements MethodInterface
             [
                 'pDateLimit' => $this->dateLimit,
                 'pLimit'     => $this->workLimit
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     }
 
@@ -93,8 +89,7 @@ class CleanupLogs extends Method implements MethodInterface
             [
                 'pDateLimit' => $this->dateLimit,
                 'pLimit'     => $this->workLimit
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     }
 
@@ -112,8 +107,7 @@ class CleanupLogs extends Method implements MethodInterface
             [
                 'pDateLimit' => $this->dateLimit,
                 'pLimit'     => $this->workLimit
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     }
 
@@ -131,8 +125,7 @@ class CleanupLogs extends Method implements MethodInterface
             [
                 'pDateLimit' => $this->dateLimit,
                 'pLimit'     => $this->workLimit
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     }
 
@@ -150,8 +143,7 @@ class CleanupLogs extends Method implements MethodInterface
             [
                 'pDateLimit' => $this->dateLimit,
                 'pLimit'     => $this->workLimit
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     }
 
@@ -170,8 +162,7 @@ class CleanupLogs extends Method implements MethodInterface
             [
                 'pDateLimit' => $this->dateLimit,
                 'pLimit'     => $this->workLimit
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     }
 
@@ -190,8 +181,7 @@ class CleanupLogs extends Method implements MethodInterface
             [
                 'pDateLimit' => $this->dateLimit,
                 'pLimit'     => $this->workLimit
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     }
 
@@ -211,8 +201,7 @@ class CleanupLogs extends Method implements MethodInterface
             [
                 'pNow'   => $this->now->format('Y-m-d H:i:s'),
                 'pLimit' => $this->workLimit
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     }
 }

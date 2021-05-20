@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Alert\Alert;
-use JTL\DB\ReturnType;
 use JTL\Extensions\SelectionWizard\Group;
 use JTL\Extensions\SelectionWizard\Question;
 use JTL\Extensions\SelectionWizard\Wizard;
@@ -139,12 +138,11 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             $join   = ' JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
                             AND tmerkmalsprache.kSprache = ' . $languageID;
         }
-        $attributes = Shop::Container()->getDB()->query(
+        $attributes = Shop::Container()->getDB()->getObjects(
             'SELECT ' . $select . '
                 FROM tmerkmal
                 ' . $join . '
-                ORDER BY tmerkmal.nSort',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY tmerkmal.nSort'
         );
         $smarty->assign('oMerkmal_arr', $attributes)
             ->assign(

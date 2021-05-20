@@ -2,7 +2,6 @@
 
 namespace JTL\Filter\States;
 
-use JTL\DB\ReturnType;
 use JTL\Filter\AbstractFilter;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\Join;
@@ -80,7 +79,7 @@ class BaseCharacteristic extends AbstractFilter
                              ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
                              AND tmerkmalsprache.kSprache = ' . Shop::getLanguageID();
         }
-        $characteristicValues = $this->productFilter->getDB()->query(
+        $characteristicValues = $this->productFilter->getDB()->getObjects(
             'SELECT tmerkmalwertsprache.cWert, ' . $select . '
                 FROM tmerkmalwert
                 JOIN tmerkmalwertsprache 
@@ -88,8 +87,7 @@ class BaseCharacteristic extends AbstractFilter
                     AND kSprache = ' . Shop::getLanguageID() . '
                 JOIN tmerkmal ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
                 ' . $join . '
-                WHERE tmerkmalwert.kMerkmalWert = ' . $this->getValue(),
-            ReturnType::ARRAY_OF_OBJECTS
+                WHERE tmerkmalwert.kMerkmalWert = ' . $this->getValue()
         );
         if (\count($characteristicValues) > 0) {
             $characteristicValue = $characteristicValues[0];

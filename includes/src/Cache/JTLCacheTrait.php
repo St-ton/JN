@@ -19,7 +19,7 @@ trait JTLCacheTrait
     public $journalID;
 
     /**
-     * @var array
+     * @var array|null
      */
     public $journal;
 

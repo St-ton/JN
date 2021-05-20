@@ -52,5 +52,6 @@ class CreateCommand extends Command
         $migrationPath = MigrationHelper::create($description, $author);
 
         $output->writeln("<info>Created Migration:</info> <comment>'" . $migrationPath . "'</comment>");
+        return 0;
     }
 }

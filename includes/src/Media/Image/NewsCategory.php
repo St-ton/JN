@@ -4,7 +4,6 @@ namespace JTL\Media\Image;
 
 use FilesystemIterator;
 use Generator;
-use JTL\DB\ReturnType;
 use JTL\Media\Image;
 use JTL\Media\MediaImageRequest;
 use RecursiveDirectoryIterator;
@@ -48,14 +47,13 @@ class NewsCategory extends AbstractImage
      */
     public function getImageNames(MediaImageRequest $req): array
     {
-        return $this->db->queryPrepared(
+        return $this->db->getCollection(
             'SELECT a.kNewsKategorie, a.cPreviewImage AS path, t.name AS title
                 FROM tnewskategorie AS a
                 LEFT JOIN tnewskategoriesprache t
                     ON a.kNewsKategorie = t.kNewsKategorie
                 WHERE a.kNewsKategorie = :nid',
-            ['nid' => $req->getID()],
-            ReturnType::COLLECTION
+            ['nid' => $req->getID()]
         )->each(static function ($item, $key) use ($req) {
             if ($key === 0 && !empty($item->path)) {
                 $req->setSourcePath(\str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $item->path));
@@ -79,12 +77,11 @@ class NewsCategory extends AbstractImage
      */
     public function getPathByID($id, int $number = null): ?string
     {
-        $item = $this->db->queryPrepared(
+        $item = $this->db->getSingleObject(
             'SELECT cPreviewImage AS path
                 FROM tnewskategorie
                 WHERE kNewsKategorie = :cid LIMIT 1',
-            ['cid' => $id],
-            ReturnType::SINGLE_OBJECT
+            ['cid' => $id]
         )->path ?? null;
 
         return empty($item->path)

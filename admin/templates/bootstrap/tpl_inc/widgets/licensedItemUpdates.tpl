@@ -60,7 +60,13 @@
                                     {$license->getName()}
                                 </a>{if $days > 0} <span class="badge badge-danger">{n__('%d day remaining', '%d days remaining', $days)|sprintf:$days}</span>{/if}
                             </td>
-                            <td>{$license->getLicense()->getValidUntil()->format('d.m.Y')}</td>
+                            <td>
+                                {if $license->getLicense()->getValidUntil() !== null}
+                                    {$license->getLicense()->getValidUntil()->format('d.m.Y')}
+                                {elseif $license->getLicense()->getSubscription()->getValidUntil() !== null}
+                                    {$license->getLicense()->getSubscription()->getValidUntil()->format('d.m.Y')}
+                                {/if}
+                            </td>
                         </tr>
                     {/foreach}
                 </table>
@@ -107,7 +113,11 @@
                                 <a href="{$adminURL}/licenses.php#license-item-{$license->getID()}">
                                     {$license->getName()}
                                 </a>
-                            <td>{$license->getLicense()->getValidUntil()->format('d.m.Y')}</td>
+                            <td>
+                                {if $license->getLicense()->getValidUntil() !== null}
+                                    {$license->getLicense()->getValidUntil()->format('d.m.Y')}
+                                {/if}
+                            </td>
                         </tr>
                     {/foreach}
                 </table>

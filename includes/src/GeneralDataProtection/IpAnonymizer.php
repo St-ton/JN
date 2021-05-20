@@ -3,6 +3,7 @@
 namespace JTL\GeneralDataProtection;
 
 use JTL\Shop;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class IpAnonymizer
@@ -69,13 +70,13 @@ class IpAnonymizer
     private $beautifyFlag = false;
 
     /**
-     * @var object Monolog\Logger
+     * @var LoggerInterface|null
      */
     private $logger;
 
     /**
-     * @param string
-     * @param bool
+     * @param string $ip
+     * @param bool   $beautify
      */
     public function __construct(string $ip = '', bool $beautify = false)
     {
@@ -94,9 +95,9 @@ class IpAnonymizer
                 $this->init();
             } catch (\Exception $e) {
                 // The current PHP-version did not support IPv6 addresses!
-                ($this->logger !== null) ?: $this->logger->log(\JTLLOG_LEVEL_NOTICE, $e->getMessage());
-
-                return;
+                if ($this->logger !== null) {
+                    $this->logger->notice($e->getMessage());
+                }
             }
         }
         if ($beautify !== false) {
@@ -126,10 +127,9 @@ class IpAnonymizer
             $this->rawIp = @\inet_pton($this->rmLeadingZero($this->ip));
         }
         if ($this->rawIp === false) {
-            ($this->logger !== null) ?: $this->logger->log(
-                \JTLLOG_LEVEL_WARNING,
-                'Wrong IP: ' . $this->ip
-            );
+            if ($this->logger !== null) {
+                $this->logger->warning('Wrong IP: ' . $this->ip);
+            }
             $this->rawIp = '';
         }
         $this->placeholderIP = '0.0.0.0';
@@ -146,7 +146,7 @@ class IpAnonymizer
     }
 
     /**
-     * @param string
+     * @param string $ip
      * @return self
      * @throws \Exception
      */
@@ -236,7 +236,7 @@ class IpAnonymizer
     }
 
     /**
-     * @param string
+     * @param string $mask
      */
     public function setMaskV4(string $mask): void
     {
@@ -244,7 +244,7 @@ class IpAnonymizer
     }
 
     /**
-     * @param string
+     * @param string $mask
      */
     public function setMaskV6(string $mask): void
     {
@@ -265,7 +265,7 @@ class IpAnonymizer
      * remove leading zeros from the ip-string
      * (by converting each part to integer)
      *
-     * @param string
+     * @param string $ipString
      * @return string
      */
     private function rmLeadingZero(string $ipString): string

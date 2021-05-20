@@ -11,7 +11,6 @@ use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Checkout\Lieferadresse;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Manufacturer;
 use JTL\Helpers\Request;
@@ -91,7 +90,6 @@ class Frontend extends AbstractSession
             $this->updateGlobals();
             if ($updateLanguage && isset($_SESSION['Kunde'])) {
                 // Kundensprache ändern, wenn im eingeloggten Zustand die Sprache geändert wird
-                /** @var array('Kunde' => \Kunde) $_SESSION */
                 $_SESSION['Kunde']->kSprache = $_SESSION['kSprache'];
                 $_SESSION['Kunde']->updateInDB();
             }
@@ -133,15 +131,14 @@ class Frontend extends AbstractSession
         if (empty($_SESSION['Kunde']->kKunde) || isset($_SESSION['kundendaten_aktualisiert'])) {
             return false;
         }
-        $data = Shop::Container()->getDB()->queryPrepared(
+        $data = Shop::Container()->getDB()->getSingleObject(
             'SELECT kKunde
                 FROM tkunde
                 WHERE kKunde = :cid
                     AND DATE_SUB(NOW(), INTERVAL 3 HOUR) < dVeraendert',
-            ['cid' => (int)$_SESSION['Kunde']->kKunde],
-            ReturnType::SINGLE_OBJECT
+            ['cid' => (int)$_SESSION['Kunde']->kKunde]
         );
-        if (isset($data->kKunde) && $data->kKunde > 0) {
+        if ($data !== null && $data->kKunde > 0) {
             Shop::setLanguage(
                 $_SESSION['kSprache'] ?? $_SESSION['Kunde']->kSprache ?? 0,
                 $_SESSION['cISOSprache'] ?? null
@@ -171,21 +168,19 @@ class Frontend extends AbstractSession
         $doUpdate = true;
         if (isset($_SESSION['Globals_TS'])) {
             $doUpdate = false;
-            $last     = Shop::Container()->getDB()->queryPrepared(
+            $last     = Shop::Container()->getDB()->getSingleObject(
                 'SELECT dLetzteAenderung 
                     FROM tglobals 
                     WHERE dLetzteAenderung > :ts',
-                ['ts' => $_SESSION['Globals_TS']],
-                ReturnType::SINGLE_OBJECT
+                ['ts' => $_SESSION['Globals_TS']]
             );
-            if (isset($last->dLetzteAenderung)) {
+            if ($last !== null) {
                 $_SESSION['Globals_TS'] = $last->dLetzteAenderung;
                 $doUpdate               = true;
             }
         } else {
-            $_SESSION['Globals_TS'] = Shop::Container()->getDB()->query(
-                'SELECT dLetzteAenderung  FROM tglobals',
-                ReturnType::SINGLE_OBJECT
+            $_SESSION['Globals_TS'] = Shop::Container()->getDB()->getSingleObject(
+                'SELECT dLetzteAenderung FROM tglobals'
             )->dLetzteAenderung;
         }
 
@@ -434,6 +429,7 @@ class Frontend extends AbstractSession
         $lang                    = LanguageHelper::getInstance();
         $lang->kSprache          = (int)$_SESSION['kSprache'];
         $lang->currentLanguageID = (int)$_SESSION['kSprache'];
+        $lang->kSprachISO        = (int)$lang->mappekISO($_SESSION['cISOSprache']);
         $lang->cISOSprache       = $_SESSION['cISOSprache'];
 
         return $lang;

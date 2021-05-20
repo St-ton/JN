@@ -3,7 +3,6 @@
 namespace JTL\Media\Image;
 
 use Generator;
-use JTL\DB\ReturnType;
 use JTL\Media\Image;
 use JTL\Media\MediaImageRequest;
 use PDO;
@@ -46,7 +45,7 @@ class ConfigGroup extends AbstractImage
      */
     public function getImageNames(MediaImageRequest $req): array
     {
-        return $this->db->queryPrepared(
+        return $this->db->getCollection(
             'SELECT a.kKonfiggruppe, t.cName, cBildPfad AS path
                 FROM tkonfiggruppe a
                 JOIN tkonfiggruppesprache t 
@@ -55,8 +54,7 @@ class ConfigGroup extends AbstractImage
                     ON tsprache.kSprache = t.kSprache
                 WHERE a.kKonfiggruppe = :cid
                 AND tsprache.cShopStandard = \'Y\'',
-            ['cid' => $req->getID()],
-            ReturnType::COLLECTION
+            ['cid' => $req->getID()]
         )->map(static function ($item) {
             return self::getCustomName($item);
         })->toArray();
@@ -94,12 +92,11 @@ class ConfigGroup extends AbstractImage
      */
     public function getPathByID($id, int $number = null): ?string
     {
-        return $this->db->queryPrepared(
+        return $this->db->getSingleObject(
             'SELECT cBildpfad AS path 
                 FROM tkonfiggruppe 
                 WHERE kKonfiggruppe = :cid LIMIT 1',
-            ['cid' => $id],
-            ReturnType::SINGLE_OBJECT
+            ['cid' => $id]
         )->path ?? null;
     }
 
@@ -108,7 +105,7 @@ class ConfigGroup extends AbstractImage
      */
     public function getAllImages(int $offset = null, int $limit = null): Generator
     {
-        $images = $this->db->query(
+        $images = $this->db->getPDOStatement(
             'SELECT a.kKonfiggruppe AS id, t.cName, cBildPfad AS path
                 FROM tkonfiggruppe a
                 JOIN tkonfiggruppesprache t 
@@ -117,8 +114,7 @@ class ConfigGroup extends AbstractImage
                     ON tsprache.kSprache = t.kSprache
                 WHERE tsprache.cShopStandard = \'Y\'
                   AND cBildPfad IS NOT NULL
-                  AND cBildPfad != \'\'' . self::getLimitStatement($offset, $limit),
-            ReturnType::QUERYSINGLE
+                  AND cBildPfad != \'\'' . self::getLimitStatement($offset, $limit)
         );
         while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {
             yield MediaImageRequest::create([

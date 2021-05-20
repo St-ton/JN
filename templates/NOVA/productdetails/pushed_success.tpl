@@ -49,7 +49,7 @@
                                                         <dd class="col-6">{$pushedArtikel->cHersteller}</dd>
                                                     {/if}
                                                     {if !empty($pushedArtikel->oMerkmale_arr)}
-                                                        <dt class="col-6">{lang key='variationsIn' section='productOverview'}:</dt>
+                                                        <dt class="col-6">{lang key='characteristics' section='comparelist'}:</dt>
                                                         <dd class="col-6 attr-characteristic">
                                                             {block name='productdetails-pushed-success-characteristics'}
                                                                 {foreach $pushedArtikel->oMerkmale_arr as $oMerkmal}

@@ -77,14 +77,14 @@ class QueueEntry
     public $lastFinish;
 
     /**
-     * compatability only
+     * compatibility only
      *
      * @var int
      */
     public $nLimitN;
 
     /**
-     * compatability only
+     * compatibility only
      *
      * @var int
      */

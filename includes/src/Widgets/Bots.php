@@ -21,6 +21,7 @@ class Bots extends AbstractWidget
     public function init()
     {
         $this->bots = $this->getBotsOfMonth((int)\date('Y'), (int)\date('m'));
+        $this->setPermission('STATS_CRAWLER_VIEW');
     }
 
     /**

@@ -22,7 +22,6 @@ final class PluginValidator extends AbstractValidator
         $baseNode       = $xml['jtlshopplugin'][0] ?? null;
         $shopVersion    = Version::parse(\APPLICATION_VERSION);
         $minShopVersion = null;
-        $maxShopVersion = null;
         if ($baseNode === null) {
             return InstallCode::MISSING_PLUGIN_NODE;
         }

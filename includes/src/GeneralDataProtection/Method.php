@@ -49,7 +49,7 @@ class Method
     /**
      * main shop logger
      *
-     * @var LoggerInterface
+     * @var LoggerInterface|null
      */
     protected $logger;
 

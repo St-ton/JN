@@ -69,8 +69,7 @@ class Migration_20190604122745 extends Migration implements IMigration
                     'email'           => $subscriber->cEmail,
                     'refData'         => quotemeta(serialize($refData)),
                     'eingetragen'     => $subscriber->dEingetragen
-                ],
-                ReturnType::DEFAULT
+                ]
             );
         }
     }

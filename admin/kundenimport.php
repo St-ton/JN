@@ -2,7 +2,6 @@
 
 use JTL\Alert\Alert;
 use JTL\Customer\Import;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Shop;
@@ -29,9 +28,8 @@ if (isset($_FILES['csv']['tmp_name'])
     }
     Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $notice, 'importNotice');
 }
-$smarty->assign('kundengruppen', Shop::Container()->getDB()->query(
-    'SELECT * FROM tkundengruppe ORDER BY cName',
-    ReturnType::ARRAY_OF_OBJECTS
+$smarty->assign('kundengruppen', Shop::Container()->getDB()->getObjects(
+    'SELECT * FROM tkundengruppe ORDER BY cName'
 ))
     ->assign('step', $step ?? null)
     ->display('kundenimport.tpl');

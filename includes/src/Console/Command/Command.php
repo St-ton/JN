@@ -44,7 +44,7 @@ class Command extends BaseCommand
      * @param string $name
      * @return InputArgument
      */
-    public function getArgumentDefinition($name): InputArgument
+    public function getArgumentDefinition(string $name): InputArgument
     {
         return $this->getDefinition()->getArgument($name);
     }
@@ -53,7 +53,7 @@ class Command extends BaseCommand
      * @param string $name
      * @return bool
      */
-    public function hasMissingOption($name): bool
+    public function hasMissingOption(string $name): bool
     {
         $option = $this->getDefinition()->getOption($name);
         $value  = \trim($this->getIO()->getInput()->getOption($name) ?? '');
@@ -65,16 +65,16 @@ class Command extends BaseCommand
      * @param string $name
      * @return InputOption
      */
-    public function getOptionDefinition($name): InputOption
+    public function getOptionDefinition(string $name): InputOption
     {
         return $this->getDefinition()->getOption($name);
     }
 
     /**
      * @param string $name
-     * @return string|array
+     * @return string|array|bool|null
      */
-    public function getOption($name)
+    public function getOption(string $name)
     {
         $value = $this->getIO()->getInput()->getOption($name);
 
@@ -90,10 +90,10 @@ class Command extends BaseCommand
     }
 
     /**
-     * @param $name
+     * @param string $name
      * @return bool
      */
-    public function hasOption($name): bool
+    public function hasOption(string $name): bool
     {
         return $this->getIO()->getInput()->hasOption($name);
     }

@@ -5,7 +5,6 @@ namespace JTL\Cart;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Extensions\Config\ItemLocalization;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Tax;
@@ -182,17 +181,16 @@ class PersistentCart
      */
     public function entfernePos(int $id): self
     {
-        $customer = Shop::Container()->getDB()->queryPrepared(
+        $customer = Shop::Container()->getDB()->getSingleObject(
             'SELECT twarenkorbpers.kKunde
                 FROM twarenkorbpers
                 JOIN twarenkorbperspos 
                     ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
                 WHERE twarenkorbperspos.kWarenkorbPersPos = :kwpp',
-            ['kwpp' => $id],
-            ReturnType::SINGLE_OBJECT
+            ['kwpp' => $id]
         );
         // Prüfen ob der eingeloggte Kunde auch der Besitzer der zu löschenden WarenkorbPersPos ist
-        if (!isset($customer->kKunde) || (int)$customer->kKunde !== Frontend::getCustomer()->getID()) {
+        if ($customer === null || (int)$customer->kKunde !== Frontend::getCustomer()->getID()) {
             return $this;
         }
         // Alle Eigenschaften löschen
@@ -478,13 +476,13 @@ class PersistentCart
     }
 
     /**
-     * @param int    $productID
-     * @param float  $amount
-     * @param array  $attributeValues
-     * @param bool   $unique
-     * @param int    $configItemID
-     * @param int    $type
-     * @param string $responsibility
+     * @param int         $productID
+     * @param float       $amount
+     * @param array       $attributeValues
+     * @param bool|string $unique
+     * @param int         $configItemID
+     * @param int         $type
+     * @param string      $responsibility
      */
     public static function addToCheck(
         int $productID,
@@ -596,21 +594,19 @@ class PersistentCart
                 );
                 continue;
             }
-            $configItem = $db->queryPrepared(
-                'SELECT * FROM tkonfigitem WHERE kKonfigitem=:konfigItemId ',
-                ['konfigItemId' => (int)$item->kKonfigitem],
-                ReturnType::SINGLE_OBJECT
+            $configItem = $db->getSingleObject(
+                'SELECT * FROM tkonfigitem WHERE kKonfigitem = :konfigItemId ',
+                ['konfigItemId' => (int)$item->kKonfigitem]
             );
 
-            $checkParentsExistence = $db->queryPrepared(
+            $checkParentsExistence = $db->getObjects(
                 'SELECT * FROM tartikelkonfiggruppe 
-                    WHERE kArtikel =:parentID
-                    AND kKonfiggruppe=:configItemGroupId',
+                    WHERE kArtikel = :parentID
+                    AND kKonfiggruppe = :configItemGroupId',
                 [
-                    'parentID' => $mainKonfigProduct[0]->kArtikel,
-                    'configItemGroupId' => $configItem->kKonfiggruppe,
-                ],
-                ReturnType::ARRAY_OF_OBJECTS
+                    'parentID'          => $mainKonfigProduct[0]->kArtikel,
+                    'configItemGroupId' => $configItem->kKonfiggruppe ?? 0,
+                ]
             );
 
             if (\count($checkParentsExistence) === 0) {

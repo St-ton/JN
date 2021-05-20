@@ -2,7 +2,6 @@
 
 use JTL\Alert\Alert;
 use JTL\Backend\DirManager;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
@@ -351,13 +350,12 @@ foreach ($settings as $i => $setting) {
     );
     $setting->gesetzterWert = $setValue->cWert ?? null;
 }
-$advancedSettings = $db->query(
+$advancedSettings = $db->getObjects(
     'SELECT * 
         FROM teinstellungenconf 
         WHERE (nStandardAnzeigen = 0 OR nStandardAnzeigen = 2)
             AND kEinstellungenSektion = ' . CONF_CACHING . '
-        ORDER BY nSort',
-    ReturnType::ARRAY_OF_OBJECTS
+        ORDER BY nSort'
 );
 $getText->localizeConfigs($advancedSettings);
 $settingsCount = count($advancedSettings);

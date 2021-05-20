@@ -3,7 +3,6 @@
 namespace JTL\Boxes\Items;
 
 use JTL\Catalog\Product\Artikel;
-use JTL\DB\ReturnType;
 use JTL\Helpers\SearchSpecial;
 use JTL\Shop;
 use function Functional\map;
@@ -30,15 +29,14 @@ final class TopRatedProducts extends AbstractBox
         $cached    = true;
         if (($topRated = Shop::Container()->getCache()->get($cacheID)) === false) {
             $cached   = false;
-            $topRated = Shop::Container()->getDB()->query(
+            $topRated = Shop::Container()->getDB()->getObjects(
                 'SELECT tartikel.kArtikel, tartikelext.fDurchschnittsBewertung
                     FROM tartikel
                     JOIN tartikelext 
                         ON tartikel.kArtikel = tartikelext.kArtikel
                     WHERE ROUND(fDurchschnittsBewertung) >= ' . (int)$config['boxen']['boxen_topbewertet_minsterne'] .
                     ' ' . $parentSQL . ' ORDER BY tartikelext.fDurchschnittsBewertung DESC
-                    LIMIT ' . $limit,
-                ReturnType::ARRAY_OF_OBJECTS
+                    LIMIT ' . $limit
             );
             Shop::Container()->getCache()->set($cacheID, $topRated, $cacheTags);
         }

@@ -19,7 +19,6 @@ use JTL\Console\Command\Model\CreateCommand as CreateModelCommand;
 use JTL\Console\Command\Plugin\CreateCommandCommand;
 use JTL\Console\Command\Plugin\CreateMigrationCommand;
 use JTL\Console\Command\Plugin\ValidateCommand;
-use JTL\DB\ReturnType;
 use JTL\Plugin\Admin\Listing;
 use JTL\Plugin\Admin\ListingItem;
 use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
@@ -37,9 +36,9 @@ use Symfony\Component\Finder\SplFileInfo;
 
 /**
  * Class Application
- * @property ConsoleIO io
- * @property bool      devMode
- * @property bool      isInstalled
+ * @property ConsoleIO $io
+ * @property bool      $devMode
+ * @property bool      $isInstalled
  * @package JTL\Console
  */
 class Application extends BaseApplication
@@ -86,7 +85,7 @@ class Application extends BaseApplication
         }
         $db      = Shop::Container()->getDB();
         $version = $db->select('tversion', [], []);
-        if (Version::parse($version->nVersion ?? 400)->smallerThan(Version::parse(500))) {
+        if (Version::parse($version->nVersion ?? '400')->smallerThan(Version::parse('500'))) {
             return;
         }
         $cache           = Shop::Container()->getCache();

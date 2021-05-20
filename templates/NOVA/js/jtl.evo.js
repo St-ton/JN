@@ -969,13 +969,18 @@
         },
 
         initItemSearch: function(context) {
-            let searchWrapper = '.' + context + '-search-wrapper',
-                searchInput   = '.' + context + '-search',
-                itemValue     = '.' + context + '-item-value',
-                item          = '.' + context + '-item',
-                clear         = '.form-clear',
-                inputSelected = 'input-group-selected';
-            $(searchWrapper).each((i, itemWrapper) => {
+            let searchWrapper  = '.' + context + '-search-wrapper',
+                searchInput    = '.' + context + '-search',
+                itemValue      = '.' + context + '-item-value',
+                item           = '.' + context + '-item',
+                clear          = '.form-clear',
+                inputSelected  = 'input-group-selected',
+                $searchWrapper = $(searchWrapper);
+
+            if ($searchWrapper.length === 0) {
+                return;
+            }
+            $searchWrapper.each((i, itemWrapper) => {
                 $(itemWrapper).find(searchInput).on('input', function () {
                     filterSearch($(itemWrapper));
                 }).on('keydown', e => {

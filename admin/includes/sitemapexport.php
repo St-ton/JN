@@ -3,7 +3,6 @@
 use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Product\Artikel;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
 use JTL\Filter\Config;
 use JTL\Filter\ProductFilter;
 use JTL\Helpers\Request;

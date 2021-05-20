@@ -4,7 +4,6 @@ namespace JTL\Installation;
 
 use Exception;
 use JTL\DB\NiceDB;
-use JTL\DB\ReturnType;
 use JTL\Exceptions\InvalidEntityNameException;
 use jtl\Wizard\Question;
 use jtl\Wizard\ShopWizard;

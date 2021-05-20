@@ -25,7 +25,7 @@ function bearbeiteEinstellungsSuche(string $query, bool $save = false): stdClass
     if (mb_strlen($query) === 0) {
         return $result;
     }
-    $result->cWHERE = "(cModulId IS NULL OR cModulId = '') AND kEinstellungenSektion != 101 ";
+    $result->cWHERE = "(ec.cModulId IS NULL OR ec.cModulId = '') AND ec.kEinstellungenSektion != 101 ";
     $idList         = explode(',', $query);
     $isIdList       = count($idList) > 1;
     if ($isIdList) {
@@ -102,10 +102,14 @@ function holeEinstellungen(stdClass $sql, bool $save): stdClass
         return $sql;
     }
     $sql->oEinstellung_arr = Shop::Container()->getDB()->getObjects(
-        'SELECT *
-            FROM teinstellungenconf
+        'SELECT ec.*, e.cWert AS currentValue, ed.cWert AS defaultValue
+            FROM teinstellungenconf AS ec
+            LEFT JOIN teinstellungen AS e
+              ON e.cName = ec.cWertName
+            LEFT JOIN teinstellungen_default AS ed
+              ON ed.cName = ec.cWertName
             WHERE ' . $sql->cWHERE . '
-            ORDER BY kEinstellungenSektion, nSort'
+            ORDER BY ec.kEinstellungenSektion, nSort'
     );
     Shop::Container()->getGetText()->loadConfigLocales();
     foreach ($sql->oEinstellung_arr as $config) {
@@ -164,11 +168,15 @@ function holeEinstellungAbteil(stdClass $sql, int $sort, int $sectionID): stdCla
         return $sql;
     }
     $items = Shop::Container()->getDB()->getObjects(
-        'SELECT *
-            FROM teinstellungenconf
-            WHERE nSort > ' . $sort . '
-                AND kEinstellungenSektion = ' . $sectionID . '
-            ORDER BY nSort'
+        'SELECT ec.*, e.cWert AS currentValue, ed.cWert AS defaultValue
+            FROM teinstellungenconf AS ec
+            LEFT JOIN teinstellungen AS e
+              ON e.cName = ec.cWertName
+            LEFT JOIN teinstellungen_default AS ed
+              ON ed.cName = ec.cWertName
+            WHERE ec.nSort > ' . $sort . '
+                AND ec.kEinstellungenSektion = ' . $sectionID . '
+            ORDER BY ec.nSort'
     );
     foreach ($items as $item) {
         if ($item->cConf !== 'N') {

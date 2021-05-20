@@ -5,7 +5,6 @@ namespace JTL\Backend\Settings;
 use JTL\Alert\Alert;
 use JTL\Backend\AdminAccount;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\L10n\GetText;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Smarty\JTLSmarty;
@@ -89,30 +88,31 @@ class Manager
      * @param int $sectionID
      * @return static
      */
-    public function getInstance(int $sectionID)
+    public function getInstance(int $sectionID): self
     {
-        if (!isset($this->instances[$sectionID])) {
-            $section = $this->db->select('teinstellungensektion', 'kEinstellungenSektion', $sectionID);
-            if (isset($section->kEinstellungenSektion)) {
-                $className = 'JTL\Backend\Settings\Sections\\' . \preg_replace(
-                    ['([üäöÜÄÖ])', '/[^a-zA-Z_]/'],
-                    ['$1e', ''],
-                    $section->cName
-                );
-                if (\class_exists($className)) {
-                    $this->instances[$sectionID] = new $className($this->db, $this->smarty);
-
-                    return $this->instances[$sectionID];
-                }
-            }
-            $this->instances[$sectionID] = new self(
-                $this->db,
-                $this->smarty,
-                $this->adminAccount,
-                $this->getText,
-                $this->alertService
-            );
+        if (isset($this->instances[$sectionID])) {
+            return $this->instances[$sectionID];
         }
+        $section = $this->db->select('teinstellungensektion', 'kEinstellungenSektion', $sectionID);
+        if (isset($section->kEinstellungenSektion)) {
+            $className = 'JTL\Backend\Settings\Sections\\' . \preg_replace(
+                ['([üäöÜÄÖ])', '/[^a-zA-Z_]/'],
+                ['$1e', ''],
+                $section->cName
+            );
+            if (\class_exists($className)) {
+                $this->instances[$sectionID] = new $className($this->db, $this->smarty);
+
+                return $this->instances[$sectionID];
+            }
+        }
+        $this->instances[$sectionID] = new self(
+            $this->db,
+            $this->smarty,
+            $this->adminAccount,
+            $this->getText,
+            $this->alertService
+        );
 
         return $this->instances[$sectionID];
     }
@@ -185,18 +185,17 @@ class Manager
             return;
         }
         $this->listboxLogged[] = $setting;
-        $oldValues             = $this->db->queryPrepared(
+        $oldValues             = $this->db->getCollection(
             'SELECT cWert
                 FROM teinstellungen
-                WHERE cName=:setting',
-            ['setting' => $setting],
-            ReturnType::COLLECTION
+                WHERE cName = :setting',
+            ['setting' => $setting]
         )->pluck('cWert')->toArray();
         \sort($oldValues);
         \sort($newValue);
 
         if ($oldValues !== $newValue) {
-            $this->addLog($setting, \implode($oldValues, ','), \implode($newValue, ','));
+            $this->addLog($setting, \implode(',', $oldValues), \implode(',', $newValue));
         }
     }
 
@@ -207,8 +206,8 @@ class Manager
      */
     public function getSettingLog(string $settingName): string
     {
-        $logs    = [];
-        $logsTMP = $this->db->queryPrepared(
+        $logs = [];
+        $data = $this->db->getObjects(
             'SELECT el.*, al.cName as adminName , ec.cInputTyp as settingType
               FROM teinstellungenlog as el
               LEFT JOIN tadminlogin as al 
@@ -217,16 +216,13 @@ class Manager
                 ON ec.cWertName=el.cEinstellungenName
               WHERE el.cEinstellungenName = :settingName
               ORDER BY el.dDatum DESC',
-            ['settingName' => $settingName],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['settingName' => $settingName]
         );
-
-        foreach ($logsTMP as $log) {
+        foreach ($data as $log) {
             $logs[] = (new Log())->init($log);
         }
-        $this->smarty->assign('logs', $logs);
 
-        return $this->smarty->fetch('snippets/einstellungen_log_content.tpl');
+        return $this->smarty->assign('logs', $logs)->fetch('snippets/einstellungen_log_content.tpl');
     }
 
     /**
@@ -234,14 +230,13 @@ class Manager
      */
     public function resetSetting(string $settingName): void
     {
-        $defaultValue = $this->db->queryPrepared(
+        $defaultValue = $this->db->getSingleObject(
             'SELECT cWert
-              FROM teinstellungen_default
-              WHERE cName=:settingName',
-            ['settingName' => $settingName],
-            ReturnType::SINGLE_OBJECT
+                 FROM teinstellungen_default
+                 WHERE cName = :settingName',
+            ['settingName' => $settingName]
         );
-        if (empty($defaultValue)) {
+        if ($defaultValue === null) {
             $this->alertService->addAlert(
                 Alert::TYPE_DANGER,
                 \sprintf(__('resetSettingDefaultValueNotFound'), $settingName),
@@ -250,23 +245,21 @@ class Manager
             return;
         }
 
-        $oldValue = $this->db->queryPrepared(
+        $oldValue = $this->db->getSingleObject(
             'SELECT cWert
-              FROM teinstellungen
-              WHERE cName=:settingName',
-            ['settingName' => $settingName],
-            ReturnType::SINGLE_OBJECT
+                 FROM teinstellungen
+                 WHERE cName = :settingName',
+            ['settingName' => $settingName]
         );
         $this->db->queryPrepared(
             'UPDATE teinstellungen
-              SET cWert=:defaultValue
-              WHERE cName=:settingName',
+                 SET cWert = :defaultValue
+                 WHERE cName = :settingName',
             [
                 'settingName' => $settingName,
                 'defaultValue' => $defaultValue->cWert
-            ],
-            ReturnType::DEFAULT
+            ]
         );
-        $this->addLog($settingName, $oldValue->cWert, $defaultValue->cWert);
+        $this->addLog($settingName, $oldValue->cWert ?? '', $defaultValue->cWert);
     }
 }

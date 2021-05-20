@@ -133,7 +133,7 @@ class Emailvorlage
     }
 
     /**
-     * @param int
+     * @param int $kEmailvorlage
      * @return $this
      */
     public function setEmailvorlage(int $kEmailvorlage): self
@@ -144,7 +144,7 @@ class Emailvorlage
     }
 
     /**
-     * @param string
+     * @param string $name
      * @return $this
      */
     public function setName($name): self
@@ -155,7 +155,7 @@ class Emailvorlage
     }
 
     /**
-     * @param string
+     * @param string $cBeschreibung
      * @return $this
      */
     public function setBeschreibung($cBeschreibung): self
@@ -166,7 +166,7 @@ class Emailvorlage
     }
 
     /**
-     * @param string
+     * @param string $cMailTyp
      * @return $this
      */
     public function setMailTyp($cMailTyp): self
@@ -177,7 +177,7 @@ class Emailvorlage
     }
 
     /**
-     * @param string
+     * @param string $cModulId
      * @return $this
      */
     public function setModulId($cModulId): self
@@ -188,7 +188,7 @@ class Emailvorlage
     }
 
     /**
-     * @param string
+     * @param string $cDateiname
      * @return $this
      */
     public function setDateiname($cDateiname): self
@@ -199,7 +199,7 @@ class Emailvorlage
     }
 
     /**
-     * @param string
+     * @param string $cAktiv
      * @return $this
      */
     public function setAktiv($cAktiv): self
@@ -210,7 +210,7 @@ class Emailvorlage
     }
 
     /**
-     * @param int
+     * @param int $nAKZ
      * @return $this
      */
     public function setAKZ(int $nAKZ): self
@@ -221,7 +221,7 @@ class Emailvorlage
     }
 
     /**
-     * @param int
+     * @param int $nAGB
      * @return $this
      */
     public function setAGB(int $nAGB): self
@@ -232,7 +232,7 @@ class Emailvorlage
     }
 
     /**
-     * @param int
+     * @param int $nWRB
      * @return $this
      */
     public function setWRB(int $nWRB): self
@@ -243,7 +243,7 @@ class Emailvorlage
     }
 
     /**
-     * @param int
+     * @param int $nDSE
      * @return $this
      */
     public function setDSE(int $nDSE): self
@@ -254,7 +254,7 @@ class Emailvorlage
     }
 
     /**
-     * @param int
+     * @param int $nWRBForm
      * @return $this
      */
     public function setWRBForm(int $nWRBForm): self
@@ -265,7 +265,7 @@ class Emailvorlage
     }
 
     /**
-     * @param int
+     * @param int $nFehlerhaft
      * @return $this
      */
     public function setFehlerhaft(int $nFehlerhaft): self

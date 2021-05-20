@@ -6,7 +6,6 @@ use JTL\Backend\Notification;
 use JTL\Backend\Settings\Manager;
 use JTL\Campaign;
 use JTL\Catalog\Currency;
-use JTL\DB\ReturnType;
 use JTL\Filter\SearchResults;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -22,9 +21,9 @@ use JTL\XMLParser;
 /**
  * @param int|array $configSectionID
  * @param bool $byName
- * @return array
+ * @return stdClass[]
  */
-function getAdminSectionSettings($configSectionID, bool $byName = false)
+function getAdminSectionSettings($configSectionID, bool $byName = false): array
 {
     $gettext = Shop::Container()->getGetText();
     $gettext->loadConfigLocales();
@@ -33,23 +32,21 @@ function getAdminSectionSettings($configSectionID, bool $byName = false)
         $where    = $byName
             ? " WHERE ec.cWertName IN ('" . implode("','", $configSectionID) . "') "
             : ' WHERE ec.kEinstellungenConf IN (' . implode(',', array_map('\intval', $configSectionID)) . ') ';
-        $confData = $db->query(
+        $confData = $db->getObjects(
             'SELECT ec.*, e.cWert as defaultValue
                 FROM teinstellungenconf as ec
                 LEFT JOIN teinstellungen_default as e ON e.cName=ec.cWertName
                 ' . $where . '
-                ORDER BY ec.nSort',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY ec.nSort'
         );
     } else {
-        $confData = $db->queryPrepared(
+        $confData = $db->getObjects(
             'SELECT ec.*, e.cWert as defaultValue
                 FROM teinstellungenconf as ec
                 LEFT JOIN teinstellungen_default as e ON e.cName=ec.cWertName
                 WHERE '. ($byName ? 'ec.cWertName' : 'ec.kEinstellungenSektion') . '=:configSection ' .
                 'ORDER BY ec.nSort',
-            ['configSection' => $configSectionID],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['configSection' => $configSectionID]
         );
     }
     foreach ($confData as $conf) {
@@ -70,11 +67,10 @@ function getAdminSectionSettings($configSectionID, bool $byName = false)
                 'cStandard DESC'
             );
         } elseif ($conf->cInputTyp === 'selectkdngrp') {
-            $conf->ConfWerte = $db->query(
+            $conf->ConfWerte = $db->getObjects(
                 'SELECT kKundengruppe, cName
                     FROM tkundengruppe
-                    ORDER BY cStandard DESC',
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY cStandard DESC'
             );
         } else {
             $conf->ConfWerte = $db->selectAll(
@@ -140,14 +136,13 @@ function saveAdminSettings(array $settingsIDs, array $post, $tags = [CACHING_GRO
     $where    = $byName
         ? "WHERE ec.cWertName IN ('" . implode("','", $settingsIDs) . "')"
         : 'WHERE ec.kEinstellungenConf IN (' . implode(',', array_map('\intval', $settingsIDs)) . ')';
-    $confData = $db->query(
+    $confData = $db->getObjects(
         'SELECT ec.*, e.cWert as currentValue
             FROM teinstellungenconf as ec
             LEFT JOIN teinstellungen as e ON e.cName=ec.cWertName
             ' . $where . "
             AND ec.cConf = 'Y'
-            ORDER BY ec.nSort",
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY ec.nSort"
     );
     if (count($confData) === 0) {
         return __('errorConfigSave');
@@ -194,11 +189,11 @@ function saveAdminSettings(array $settingsIDs, array $post, $tags = [CACHING_GRO
 }
 
 /**
- * @param array  $listBoxes
+ * @param mixed  $listBoxes
  * @param string $valueName
  * @param int    $configSectionID
  */
-function bearbeiteListBox($listBoxes, $valueName, int $configSectionID)
+function bearbeiteListBox($listBoxes, string $valueName, int $configSectionID): void
 {
     $db = Shop::Container()->getDB();
     if (is_array($listBoxes) && count($listBoxes) > 0) {
@@ -248,7 +243,7 @@ function bearbeiteListBox($listBoxes, $valueName, int $configSectionID)
  * @param array $tags
  * @return string
  */
-function saveAdminSectionSettings(int $configSectionID, array $post, $tags = [CACHING_GROUP_OPTION])
+function saveAdminSectionSettings(int $configSectionID, array $post, array $tags = [CACHING_GROUP_OPTION]): string
 {
     Shop::Container()->getGetText()->loadAdminLocale('configs/configs');
     if (!Form::validateToken()) {
@@ -267,15 +262,14 @@ function saveAdminSectionSettings(int $configSectionID, array $post, $tags = [CA
         return __('successConfigReset');
     }
     $invalid  = 0;
-    $confData = $db->queryPrepared(
+    $confData = $db->getObjects(
         "SELECT ec.*, e.cWert as currentValue
             FROM teinstellungenconf as ec
             LEFT JOIN teinstellungen as e ON e.cName=ec.cWertName
             WHERE ec.kEinstellungenSektion = :configSectionID
-              AND ec.cConf='Y'
+              AND ec.cConf = 'Y'
             ORDER BY ec.nSort",
-        ['configSectionID' => $configSectionID],
-        ReturnType::ARRAY_OF_OBJECTS
+        ['configSectionID' => $configSectionID]
     );
     foreach ($confData as $config) {
         $val                        = new stdClass();
@@ -330,10 +324,10 @@ function saveAdminSectionSettings(int $configSectionID, array $post, $tags = [CA
 }
 
 /**
- * @param $setting
+ * @param stdClass $setting
  * @return bool
  */
-function validateSetting($setting): bool
+function validateSetting(stdClass $setting): bool
 {
     $valid = true;
     switch ($setting->cName) {
@@ -348,12 +342,12 @@ function validateSetting($setting): bool
 }
 
 /**
- * @param int $min
- * @param int $max
- * @param $setting
+ * @param int      $min
+ * @param int      $max
+ * @param stdClass $setting
  * @return bool
  */
-function validateNumberRange(int $min, int $max, $setting): bool
+function validateNumberRange(int $min, int $max, stdClass $setting): bool
 {
     $valid = $min <= $setting->cWert && $setting->cWert <= $max;
 
@@ -377,7 +371,7 @@ function validateNumberRange(int $min, int $max, $setting): bool
  * @param bool $activeOnly
  * @return array
  */
-function holeAlleKampagnen(bool $internalOnly = false, bool $activeOnly = true)
+function holeAlleKampagnen(bool $internalOnly = false, bool $activeOnly = true): array
 {
     $activeSQL  = $activeOnly ? ' WHERE nAktiv = 1' : '';
     $interalSQL = '';
@@ -387,13 +381,12 @@ function holeAlleKampagnen(bool $internalOnly = false, bool $activeOnly = true)
         $interalSQL = ' WHERE kKampagne >= 1000';
     }
     $campaigns = [];
-    $items     = Shop::Container()->getDB()->query(
+    $items     = Shop::Container()->getDB()->getObjects(
         'SELECT kKampagne
             FROM tkampagne
             ' . $activeSQL . '
             ' . $interalSQL . '
-            ORDER BY kKampagne',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY kKampagne'
     );
     foreach ($items as $item) {
         $campaign = new Campaign((int)$item->kKampagne);
@@ -422,7 +415,7 @@ function getArrangedArray($xml, int $level = 1)
 /**
  *
  */
-function setzeSprache()
+function setzeSprache(): void
 {
     if (Form::validateToken() && Request::verifyGPCDataInt('sprachwechsel') === 1) {
         // Wähle explizit gesetzte Sprache als aktuelle Sprache
@@ -453,7 +446,7 @@ function setzeSprache()
 /**
  * @param int $month
  * @param int $year
- * @return int
+ * @return false|int
  */
 function firstDayOfMonth(int $month = -1, int $year = -1)
 {
@@ -470,7 +463,7 @@ function firstDayOfMonth(int $month = -1, int $year = -1)
 /**
  * @param int $month
  * @param int $year
- * @return int
+ * @return false|int
  */
 function lastDayOfMonth(int $month = -1, int $year = -1)
 {
@@ -493,7 +486,7 @@ function lastDayOfMonth(int $month = -1, int $year = -1)
  * @param string $dateString
  * @return array
  */
-function ermittleDatumWoche(string $dateString)
+function ermittleDatumWoche(string $dateString): array
 {
     if (mb_strlen($dateString) < 0) {
         return [];
@@ -550,17 +543,15 @@ function getJTLVersionDB(bool $date = false)
 {
     $ret = 0;
     if ($date) {
-        $latestUpdate = Shop::Container()->getDB()->query(
-            'SELECT max(dExecuted) as date FROM tmigration',
-            ReturnType::SINGLE_OBJECT
+        $latestUpdate = Shop::Container()->getDB()->getSingleObject(
+            'SELECT MAX(dExecuted) AS date FROM tmigration'
         );
-        $ret          = $latestUpdate->date;
+        $ret          = $latestUpdate->date ?? 0;
     } else {
-        $versionData = Shop::Container()->getDB()->query(
-            'SELECT nVersion FROM tversion',
-            ReturnType::SINGLE_OBJECT
+        $versionData = Shop::Container()->getDB()->getSingleObject(
+            'SELECT nVersion FROM tversion'
         );
-        if (isset($versionData->nVersion)) {
+        if ($versionData !== null) {
             $ret = $versionData->nVersion;
         }
     }
@@ -595,7 +586,7 @@ function getMaxFileSize($size)
  * @param string $targetID
  * @return IOResponse
  */
-function getCurrencyConversionIO($netPrice, $grossPrice, $targetID)
+function getCurrencyConversionIO($netPrice, $grossPrice, $targetID): IOResponse
 {
     $response = new IOResponse();
     $response->assignDom($targetID, 'innerHTML', Currency::getCurrencyConversion($netPrice, $grossPrice));
@@ -609,7 +600,7 @@ function getCurrencyConversionIO($netPrice, $grossPrice, $targetID)
  * @param string $tooltipID
  * @return IOResponse
  */
-function setCurrencyConversionTooltipIO($netPrice, $grossPrice, $tooltipID)
+function setCurrencyConversionTooltipIO($netPrice, $grossPrice, $tooltipID): IOResponse
 {
     $response = new IOResponse();
     $response->assignVar('originalTilte', Currency::getCurrencyConversion($netPrice, $grossPrice));
@@ -622,7 +613,7 @@ function setCurrencyConversionTooltipIO($netPrice, $grossPrice, $tooltipID)
  * @param string $url
  * @return array|IOError
  */
-function addFav($title, $url)
+function addFav(string $title, string $url)
 {
     $success     = false;
     $kAdminlogin = Shop::Container()->getAdminAccount()->getID();
@@ -646,7 +637,7 @@ function addFav($title, $url)
 /**
  * @return array
  */
-function reloadFavs()
+function reloadFavs(): array
 {
     global $oAccount;
 
@@ -659,7 +650,7 @@ function reloadFavs()
 /**
  * @return array
  */
-function getNotifyDropIO()
+function getNotifyDropIO(): array
 {
     return [
         'tpl'  => JTLSmarty::getInstance(false, ContextType::BACKEND)
@@ -674,7 +665,7 @@ function getNotifyDropIO()
  * @return string delimiter guess
  * @former guessCsvDelimiter()
  */
-function getCsvDelimiter(string $filename)
+function getCsvDelimiter(string $filename): string
 {
     $file      = fopen($filename, 'r');
     $firstLine = fgets($file);
@@ -694,7 +685,7 @@ function getCsvDelimiter(string $filename)
 /**
  * @return JTLSmarty
  */
-function getFrontendSmarty()
+function getFrontendSmarty(): JTLSmarty
 {
     static $frontendSmarty = null;
 

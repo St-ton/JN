@@ -19,12 +19,15 @@
                 <b-alert variant="danger" show v-if="networkError !== false">
                     <icon name="exclamation-triangle"></icon> {{ $t('networkError') }} <div v-html="networkError"></div>
                 </b-alert>
+                <b-alert variant="danger" show v-if="phpError !== false">
+                    <icon name="exclamation-triangle"></icon> {{ phpError }}
+                </b-alert>
                 <b-form-checkbox v-model="anyway" value="true" unchecked-value="false" v-if="protoWarning && !isInstalled">
                     {{ $t('continueAnyway') }}
                 </b-form-checkbox>
             </div>
         </div>
-        <continue :disableBack="false" :disable="isInstalled || networkError !== false || (protoWarning === true && anyway !== 'true')"></continue>
+        <continue :disableBack="false" :disable="isInstalled || networkError !== false || phpError !== false || (protoWarning === true && anyway !== 'true')"></continue>
     </div>
 </template>
 
@@ -64,6 +67,7 @@ export default {
         this.$i18n.add('de', messages.de);
         return {
             isInstalled:  false,
+            phpError:     false,
             networkError: false,
             protoWarning: false,
             anyway:       false
@@ -72,10 +76,15 @@ export default {
     mounted() {
         axios.get(this.$getApiUrl('installedcheck'))
             .then(response => {
+                if (response.data.error) {
+                    this.phpError = response.data.error;
+                    return;
+                }
                 if (!response.data.installed && !response.data.shopURL) {
                     this.networkError = response.data;
                     return;
                 }
+                this.phpError = false;
                 this.networkError = false;
                 this.isInstalled = response.data.installed;
                 if (response.data.shopURL.indexOf('https:') === -1

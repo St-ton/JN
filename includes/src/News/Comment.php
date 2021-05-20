@@ -3,7 +3,6 @@
 namespace JTL\News;
 
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\MagicCompatibilityTrait;
 
 /**
@@ -105,12 +104,11 @@ class Comment implements CommentInterface
     public function load(int $id): CommentInterface
     {
         $this->id = $id;
-        $comment  = $this->db->queryPrepared(
+        $comment  = $this->db->getObjects(
             'SELECT * 
                 FROM tnewskommentar
                 WHERE kNewsKommentar = :cid',
-            ['cid' => $this->id],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['cid' => $this->id]
         );
         if (\count($comment) === 0) {
             throw new \InvalidArgumentException('Provided link id ' . $this->id . ' not found.');
@@ -125,15 +123,14 @@ class Comment implements CommentInterface
     public function loadByParentCommentID(int $parentID): ?CommentInterface
     {
         $this->id = $parentID;
-        $comment  = $this->db->queryPrepared(
+        $comment  = $this->db->getObjects(
             'SELECT *
                 FROM tnewskommentar
                 WHERE parentCommentID = :cid',
-            ['cid' => $this->id],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['cid' => $this->id]
         );
 
-        return $comment !== 0 && \count($comment) > 0 ? $this->map($comment) : null;
+        return \count($comment) > 0 ? $this->map($comment) : null;
     }
 
     /**

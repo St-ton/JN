@@ -5,6 +5,7 @@ namespace JTL\Consent;
 use Illuminate\Support\Collection;
 use JTL\DB\DbInterface;
 use JTL\Session\Frontend;
+use JTL\Shop;
 
 /**
  * Class Manager
@@ -30,7 +31,6 @@ class Manager implements ManagerInterface
     {
         $this->db = $db;
     }
-
 
     /**
      * @inheritDoc
@@ -101,15 +101,22 @@ class Manager implements ManagerInterface
      */
     public function initActiveItems(int $languageID): Collection
     {
-        $models = ConsentModel::loadAll($this->db, 'active', 1)->map(
-            static function (ConsentModel $model) use ($languageID) {
-                return (new Item($languageID))->loadFromModel($model);
-            }
-        );
-        \executeHook(\CONSENT_MANAGER_GET_ACTIVE_ITEMS, ['items' => $models]);
+        $cache   = Shop::Container()->getCache();
+        $cached  = true;
+        $cacheID = 'jtl_consent_models_' . $languageID;
+        if (($models = $cache->get($cacheID)) === false) {
+            $models = ConsentModel::loadAll($this->db, 'active', 1)->map(
+                static function (ConsentModel $model) use ($languageID) {
+                    return (new Item($languageID))->loadFromModel($model);
+                }
+            );
+            $cache->set($cacheID, $models, [\CACHING_GROUP_CORE]);
+            $cached = false;
+        }
+        \executeHook(\CONSENT_MANAGER_GET_ACTIVE_ITEMS, ['items' => $models, 'cached' => $cached]);
         $this->activeItems[$languageID] = $models;
 
-        return $this->activeItems[$languageID];
+        return $models;
     }
 
     /**

@@ -3,7 +3,6 @@
 use JTL\Alert\Alert;
 use JTL\Backend\DirManager;
 use JTL\Backend\Settings\Manager;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
@@ -153,14 +152,13 @@ switch ($action) {
             $settingManager->resetSetting(Request::postVar('resetSetting'));
             break;
         }
-        $settings      = $db->query(
+        $settings      = $db->getObjects(
             'SELECT ec.*, e.cWert as currentValue
                 FROM teinstellungenconf as ec
                 LEFT JOIN teinstellungen as e ON e.cName=ec.cWertName
                 WHERE ec.kEinstellungenSektion = ' . CONF_CACHING . "
                     AND ec.cConf = 'Y'
-                ORDER BY ec.nSort",
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY ec.nSort"
         );
         $i             = 0;
         $settingsCount = count($settings);
@@ -336,15 +334,14 @@ if ($cache !== null) {
         ->assign('all_methods', $cache->getAllMethods())
         ->assign('stats', $cache->getStats());
 }
-$settings = $db->query(
+$settings = $db->getObjects(
     'SELECT te.*, ted.cWert AS defaultValue
         FROM teinstellungenconf AS te
         LEFT JOIN teinstellungen_default AS ted
           ON ted.cName= te.cWertName
         WHERE te.nStandardAnzeigen = 1
             AND te.kEinstellungenSektion = ' . CONF_CACHING .
-        ' ORDER BY te.nSort',
-    ReturnType::ARRAY_OF_OBJECTS
+        ' ORDER BY te.nSort'
 );
 
 $getText->localizeConfigs($settings);
@@ -370,15 +367,14 @@ foreach ($settings as $i => $setting) {
     );
     $setting->gesetzterWert = $setValue->cWert ?? null;
 }
-$advancedSettings = $db->query(
+$advancedSettings = $db->getObjects(
     'SELECT te.*, ted.cWert AS defaultValue
         FROM teinstellungenconf AS te
         LEFT JOIN teinstellungen_default AS ted
           ON ted.cName= te.cWertName
         WHERE (te.nStandardAnzeigen = 0 OR te.nStandardAnzeigen = 2)
             AND te.kEinstellungenSektion = ' . CONF_CACHING . '
-        ORDER BY te.nSort',
-    ReturnType::ARRAY_OF_OBJECTS
+        ORDER BY te.nSort'
 );
 $getText->localizeConfigs($advancedSettings);
 $settingsCount = count($advancedSettings);

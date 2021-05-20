@@ -2,7 +2,6 @@
 
 namespace JTL\Boxes\Items;
 
-use JTL\DB\ReturnType;
 use JTL\Helpers\URL;
 use JTL\Shop;
 
@@ -24,7 +23,7 @@ final class NewsCurrentMonth extends AbstractBox
         $sql          = (int)$config['news']['news_anzahl_box'] > 0
             ? ' LIMIT ' . (int)$config['news']['news_anzahl_box']
             : '';
-        $newsOverview = Shop::Container()->getDB()->queryPrepared(
+        $newsOverview = Shop::Container()->getDB()->getObjects(
             "SELECT tseo.cSeo, tnewsmonatsuebersicht.cName, tnewsmonatsuebersicht.kNewsMonatsUebersicht, 
                 MONTH(tnews.dGueltigVon) AS nMonat, YEAR( tnews.dGueltigVon ) AS nJahr, COUNT(*) AS nAnzahl
                 FROM tnews
@@ -43,8 +42,7 @@ final class NewsCurrentMonth extends AbstractBox
                     AND t.languageID = :lid
                 GROUP BY YEAR(tnews.dGueltigVon) , MONTH(tnews.dGueltigVon)
                 ORDER BY tnews.dGueltigVon DESC" . $sql,
-            ['lid' => $langID],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['lid' => $langID]
         );
         foreach ($newsOverview as $item) {
             $item->cURL     = URL::buildURL($item, \URLART_NEWSMONAT);

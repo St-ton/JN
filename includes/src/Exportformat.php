@@ -218,9 +218,9 @@ class Exportformat
 
     /**
      * @param string     $msg
-     * @param null|array $context
+     * @param array|null $context
      */
-    private function log(string $msg, array $context = []): void
+    private function log(string $msg, ?array $context = []): void
     {
         if ($this->logger !== null) {
             $this->logger->log(\JTLLOG_LEVEL_NOTICE, $msg, $context);
@@ -1408,8 +1408,7 @@ class Exportformat
                         'nLimitM'        => $this->queue->taskLimit,
                         'nLastArticleID' => $this->queue->lastProductID,
                         'kExportqueue'   => (int)$this->queue->jobQueueID,
-                    ],
-                    ReturnType::DEFAULT
+                    ]
                 );
                 $protocol = ((isset($_SERVER['HTTPS']) && \mb_convert_case($_SERVER['HTTPS'], \MB_CASE_LOWER) === 'on')
                     || Request::checkSSL() === 2)
@@ -1435,12 +1434,11 @@ class Exportformat
                     \header('Location: ' . $cURL);
                 }
             } else {
-                // There are no more articles to export
+                // There are no more products to export
                 $this->db->query(
                     'UPDATE texportformat 
                         SET dZuletztErstellt = NOW() 
-                        WHERE kExportformat = ' . $this->getExportformat(),
-                    ReturnType::DEFAULT
+                        WHERE kExportformat = ' . $this->getExportformat()
                 );
                 $this->db->delete('texportqueue', 'kExportqueue', (int)$this->queue->foreignKeyID);
 

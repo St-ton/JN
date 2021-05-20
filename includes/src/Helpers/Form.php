@@ -4,7 +4,6 @@ namespace JTL\Helpers;
 
 use Exception;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Session\Frontend;
@@ -175,15 +174,14 @@ class Form
             }
         }
 
-        $subjects = Shop::Container()->getDB()->query(
+        $subjects = Shop::Container()->getDB()->getObjects(
             "SELECT kKontaktBetreff
                 FROM tkontaktbetreff
                 WHERE FIND_IN_SET('" . $customerGroupID . "', REPLACE(cKundengruppen, ';', ',')) > 0
-                    OR cKundengruppen = '0'",
-            ReturnType::ARRAY_OF_OBJECTS
+                    OR cKundengruppen = '0'"
         );
 
-        return \is_array($subjects) && \count($subjects) > 0;
+        return \count($subjects) > 0;
     }
 
     /**
@@ -278,16 +276,15 @@ class Form
             return false;
         }
         $min     = (int)$min;
-        $history = Shop::Container()->getDB()->executeQueryPrepared(
+        $history = Shop::Container()->getDB()->getSingleObject(
             'SELECT kKontaktHistory
                 FROM tkontakthistory
                 WHERE cIP = :ip
                     AND DATE_SUB(NOW(), INTERVAL :min MINUTE) < dErstellt',
-            ['ip' => Request::getRealIP(), 'min' => $min],
-            ReturnType::SINGLE_OBJECT
+            ['ip' => Request::getRealIP(), 'min' => $min]
         );
 
-        return isset($history->kKontaktHistory) && $history->kKontaktHistory > 0;
+        return $history !== null && $history->kKontaktHistory > 0;
     }
 
     /**
@@ -305,20 +302,18 @@ class Form
                 FROM tfloodprotect
                 WHERE dErstellt < DATE_SUB(NOW(), INTERVAL 1 HOUR)
                     AND cTyp = 'upload'",
-            [],
-            ReturnType::DEFAULT
+            []
         );
 
-        $result = Shop::Container()->getDB()->executeQueryPrepared(
+        $result = Shop::Container()->getDB()->getSingleObject(
             "SELECT COUNT(kFloodProtect) AS nAnfragen
                 FROM tfloodprotect
                 WHERE cTyp = 'upload'
                     AND cIP = :ip",
-            ['ip' => Request::getRealIP()],
-            ReturnType::SINGLE_OBJECT
+            ['ip' => Request::getRealIP()]
         );
 
-        return $result->nAnfragen >= $max;
+        return ($result->nAnfragen ?? 0) >= $max;
     }
 
     /**

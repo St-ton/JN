@@ -4,7 +4,6 @@ namespace JTL\Customer;
 
 use InvalidArgumentException;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
@@ -226,13 +225,12 @@ class Import
 
     protected function initDefaultCountry(): void
     {
-        $data = $this->db->query(
+        $data = $this->db->getSingleObject(
             "SELECT cWert AS cLand 
                 FROM teinstellungen 
-                WHERE cName = 'kundenregistrierung_standardland'",
-            ReturnType::SINGLE_OBJECT
+                WHERE cName = 'kundenregistrierung_standardland'"
         );
-        if (isset($data->cLand) && \mb_strlen($data->cLand) > 0) {
+        if ($data !== null && \mb_strlen($data->cLand) > 0) {
             $this->defaultCountryCode = $data->cLand;
         }
     }

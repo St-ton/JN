@@ -119,8 +119,12 @@ function getAdminSectionSettings($configSectionID, bool $byName = false): array
  * @param bool $byName
  * @return string
  */
-function saveAdminSettings(array $settingsIDs, array $post, $tags = [CACHING_GROUP_OPTION], bool $byName = false)
-{
+function saveAdminSettings(
+    array $settingsIDs,
+    array $post,
+    array $tags = [CACHING_GROUP_OPTION],
+    bool $byName = false
+): string {
     $db             = Shop::Container()->getDB();
     $settingManager = new Manager(
         $db,

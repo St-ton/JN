@@ -256,7 +256,7 @@ class Manager
                  SET cWert = :defaultValue
                  WHERE cName = :settingName',
             [
-                'settingName' => $settingName,
+                'settingName'  => $settingName,
                 'defaultValue' => $defaultValue->cWert
             ]
         );

@@ -105,9 +105,9 @@ function holeEinstellungen(stdClass $sql, bool $save): stdClass
         'SELECT ec.*, e.cWert AS currentValue, ed.cWert AS defaultValue
             FROM teinstellungenconf AS ec
             LEFT JOIN teinstellungen AS e
-              ON e.cName=ec.cWertName
+              ON e.cName = ec.cWertName
             LEFT JOIN teinstellungen_default AS ed
-              ON ed.cName=ec.cWertName
+              ON ed.cName = ec.cWertName
             WHERE ' . $sql->cWHERE . '
             ORDER BY ec.kEinstellungenSektion, nSort'
     );
@@ -171,9 +171,9 @@ function holeEinstellungAbteil(stdClass $sql, int $sort, int $sectionID): stdCla
         'SELECT ec.*, e.cWert AS currentValue, ed.cWert AS defaultValue
             FROM teinstellungenconf AS ec
             LEFT JOIN teinstellungen AS e
-              ON e.cName=ec.cWertName
+              ON e.cName = ec.cWertName
             LEFT JOIN teinstellungen_default AS ed
-              ON ed.cName=ec.cWertName
+              ON ed.cName = ec.cWertName
             WHERE ec.nSort > ' . $sort . '
                 AND ec.kEinstellungenSektion = ' . $sectionID . '
             ORDER BY ec.nSort'

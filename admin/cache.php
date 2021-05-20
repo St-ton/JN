@@ -153,9 +153,9 @@ switch ($action) {
             break;
         }
         $settings      = $db->getObjects(
-            'SELECT ec.*, e.cWert as currentValue
-                FROM teinstellungenconf as ec
-                LEFT JOIN teinstellungen as e ON e.cName=ec.cWertName
+            'SELECT ec.*, e.cWert AS currentValue
+                FROM teinstellungenconf AS ec
+                LEFT JOIN teinstellungen AS e ON e.cName = ec.cWertName
                 WHERE ec.kEinstellungenSektion = ' . CONF_CACHING . "
                     AND ec.cConf = 'Y'
                 ORDER BY ec.nSort"
@@ -371,7 +371,7 @@ $advancedSettings = $db->getObjects(
     'SELECT te.*, ted.cWert AS defaultValue
         FROM teinstellungenconf AS te
         LEFT JOIN teinstellungen_default AS ted
-          ON ted.cName= te.cWertName
+          ON ted.cName = te.cWertName
         WHERE (te.nStandardAnzeigen = 0 OR te.nStandardAnzeigen = 2)
             AND te.kEinstellungenSektion = ' . CONF_CACHING . '
         ORDER BY te.nSort'

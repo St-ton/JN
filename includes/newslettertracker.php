@@ -1,7 +1,7 @@
 <?php
 
-use JTL\Helpers\Request;
 use JTL\Campaign;
+use JTL\Helpers\Request;
 use JTL\Session\Frontend;
 use JTL\Shop;
 

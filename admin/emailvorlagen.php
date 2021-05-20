@@ -18,7 +18,6 @@ use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
 use JTL\Smarty\MailSmarty;
 use function Functional\filter;
-use function Functional\first;
 
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Backend\AdminAccount $oAccount */

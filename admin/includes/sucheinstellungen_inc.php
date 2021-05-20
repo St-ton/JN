@@ -19,20 +19,15 @@ function createSearchIndex($index, $create)
     $index    = mb_convert_case(Text::xssClean($index), MB_CASE_LOWER);
     $notice   = '';
     $errorMsg = '';
+    $db       = Shop::Container()->getDB();
 
     if (!in_array($index, ['tartikel', 'tartikelsprache'], true)) {
         return new IOError(__('errorIndexInvalid'), 403);
     }
 
     try {
-        if (Shop::Container()->getDB()->query(
-            "SHOW INDEX FROM $index WHERE KEY_NAME = 'idx_{$index}_fulltext'",
-            ReturnType::SINGLE_OBJECT
-        )) {
-            Shop::Container()->getDB()->executeQuery(
-                "ALTER TABLE $index DROP KEY idx_{$index}_fulltext",
-                ReturnType::QUERYSINGLE
-            );
+        if ($db->getSingleObject("SHOW INDEX FROM $index WHERE KEY_NAME = 'idx_{$index}_fulltext'")) {
+            $db->query("ALTER TABLE $index DROP KEY idx_{$index}_fulltext");
         }
     } catch (Exception $e) {
         // Fehler beim Index löschen ignorieren
@@ -71,14 +66,10 @@ function createSearchIndex($index, $create)
         }
 
         try {
-            Shop::Container()->getDB()->executeQuery(
-                'UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)',
-                ReturnType::QUERYSINGLE
-            );
-            $res = Shop::Container()->getDB()->executeQuery(
+            $db->query('UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)');
+            $res = $db->getPDOStatement(
                 "ALTER TABLE $index
-                    ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $rows) . ')',
-                ReturnType::QUERYSINGLE
+                    ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $rows) . ')'
             );
         } catch (Exception $e) {
             $res = 0;
@@ -114,10 +105,10 @@ function createSearchIndex($index, $create)
 /**
  * @return array
  */
-function clearSearchCache()
+function clearSearchCache(): array
 {
-    Shop::Container()->getDB()->query('DELETE FROM tsuchcachetreffer', ReturnType::AFFECTED_ROWS);
-    Shop::Container()->getDB()->query('DELETE FROM tsuchcache', ReturnType::AFFECTED_ROWS);
+    Shop::Container()->getDB()->query('DELETE FROM tsuchcachetreffer');
+    Shop::Container()->getDB()->query('DELETE FROM tsuchcache');
     Shop::Container()->getGetText()->loadAdminLocale('pages/sucheinstellungen');
 
     return ['hinweis' => __('successSearchCacheDelete')];

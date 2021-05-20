@@ -3,7 +3,6 @@
 use JTL\Alert\Alert;
 use JTL\Backend\Notification;
 use JTL\Backend\NotificationEntry;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -17,14 +16,11 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('SETTINGS_ARTICLEOVERVIEW_VIEW', true, true);
-$kSektion         = CONF_ARTIKELUEBERSICHT;
-$conf             = Shop::getSettings([$kSektion]);
+$sectionID        = CONF_ARTIKELUEBERSICHT;
+$conf             = Shop::getSettings([$sectionID]);
 $db               = Shop::Container()->getDB();
 $standardwaehrung = $db->select('twaehrung', 'cStandard', 'Y');
-$mysqlVersion     = $db->query(
-    "SHOW VARIABLES LIKE 'innodb_version'",
-    ReturnType::SINGLE_OBJECT
-)->Value;
+$mysqlVersion     = $db->getSingleObject("SHOW VARIABLES LIKE 'innodb_version'")->Value;
 $step             = 'einstellungen bearbeiten';
 $Conf             = [];
 $createIndex      = false;
@@ -42,20 +38,14 @@ if (Request::getVar('action') === 'createIndex') {
     $index = mb_convert_case(Text::xssClean($_GET['index']), MB_CASE_LOWER);
 
     if (!in_array($index, ['tartikel', 'tartikelsprache'], true)) {
-        header(Request::makeHTTPHeader(403), true);
+        header(Request::makeHTTPHeader(403));
         echo json_encode((object)['error' => __('errorIndexInvalid')]);
         exit;
     }
 
     try {
-        if ($db->query(
-            "SHOW INDEX FROM $index WHERE KEY_NAME = 'idx_{$index}_fulltext'",
-            ReturnType::SINGLE_OBJECT
-        )) {
-            $db->executeQuery(
-                "ALTER TABLE $index DROP KEY idx_{$index}_fulltext",
-                ReturnType::QUERYSINGLE
-            );
+        if ($db->getSingleObject("SHOW INDEX FROM $index WHERE KEY_NAME = 'idx_{$index}_fulltext'")) {
+            $db->query("ALTER TABLE $index DROP KEY idx_{$index}_fulltext");
         }
     } catch (Exception $e) {
         // Fehler beim Index löschen ignorieren
@@ -84,20 +74,16 @@ if (Request::getVar('action') === 'createIndex') {
                 );
                 break;
             default:
-                header(Request::makeHTTPHeader(403), true);
+                header(Request::makeHTTPHeader(403));
                 echo json_encode((object)['error' => __('errorIndexInvalid')]);
                 exit;
         }
 
         try {
-            $db->executeQuery(
-                'UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)',
-                ReturnType::QUERYSINGLE
-            );
-            $res = $db->executeQuery(
+            $db->query('UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)');
+            $res = $db->getPDOStatement(
                 "ALTER TABLE $index
-                    ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $rows) . ')',
-                ReturnType::QUERYSINGLE
+                    ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $rows) . ')'
             );
         } catch (Exception $e) {
             $res = 0;
@@ -110,7 +96,7 @@ if (Request::getVar('action') === 'createIndex') {
 
             if ($settings['suche_fulltext'] !== 'N') {
                 $settings['suche_fulltext'] = 'N';
-                saveAdminSectionSettings($kSektion, $settings);
+                saveAdminSectionSettings($sectionID, $settings);
 
                 Shop::Container()->getCache()->flushTags([
                     CACHING_GROUP_OPTION,
@@ -137,11 +123,11 @@ if (Request::getVar('action') === 'createIndex') {
         );
     }
 
-    header(Request::makeHTTPHeader(200), true);
+    header(Request::makeHTTPHeader(200));
     exit;
 }
 
-if (Request::postInt('einstellungen_bearbeiten') === 1 && $kSektion > 0 && Form::validateToken()) {
+if (Request::postInt('einstellungen_bearbeiten') === 1 && Form::validateToken()) {
     $sucheFulltext = in_array(Request::postVar('suche_fulltext', []), ['Y', 'B'], true);
     if ($sucheFulltext) {
         if (version_compare($mysqlVersion, '5.6', '<')) {
@@ -150,18 +136,15 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && $kSektion > 0 && Form:
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFulltextSearchMYSQL'), 'errorFulltextSearchMYSQL');
         } else {
             // Bei Volltextsuche die Mindeswortlänge an den DB-Parameter anpassen
-            $oValue                     = $db->query(
-                'SELECT @@ft_min_word_len AS ft_min_word_len',
-                ReturnType::SINGLE_OBJECT
-            );
-            $_POST['suche_min_zeichen'] = $oValue->ft_min_word_len ?? $_POST['suche_min_zeichen'];
+            $currentVal                 = $db->getSingleObject('SELECT @@ft_min_word_len AS ft_min_word_len');
+            $_POST['suche_min_zeichen'] = $currentVal->ft_min_word_len ?? $_POST['suche_min_zeichen'];
         }
     }
 
     $shopSettings = Shopsetting::getInstance();
     $alertHelper->addAlert(
         Alert::TYPE_SUCCESS,
-        saveAdminSectionSettings($kSektion, $_POST),
+        saveAdminSectionSettings($sectionID, $_POST),
         'saveSettings'
     );
 
@@ -198,19 +181,13 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && $kSektion > 0 && Form:
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSearchDeactivate'), 'successSearchDeactivate');
     }
 
-    $conf = Shop::getSettings([$kSektion]);
+    $conf = Shop::getSettings([$sectionID]);
 }
 
-$section = $db->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
+$section = $db->select('teinstellungensektion', 'kEinstellungenSektion', $sectionID);
 if ($conf['artikeluebersicht']['suche_fulltext'] !== 'N'
-    && (!$db->query(
-        "SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'",
-        ReturnType::SINGLE_OBJECT
-    )
-    || !$db->query(
-        "SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'",
-        ReturnType::SINGLE_OBJECT
-    ))) {
+    && (!$db->getSingleObject("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'")
+    || !$db->getSingleObject("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'"))) {
     $alertHelper->addAlert(
         Alert::TYPE_ERROR,
         __('errorCreateTime') .
@@ -225,11 +202,11 @@ if ($conf['artikeluebersicht']['suche_fulltext'] !== 'N'
 }
 
 $smarty->assign('action', 'sucheinstellungen.php')
-       ->assign('kEinstellungenSektion', $kSektion)
+       ->assign('kEinstellungenSektion', $sectionID)
        ->assign('Sektion', $section)
        ->assign('Conf', getAdminSectionSettings(CONF_ARTIKELUEBERSICHT))
-       ->assign('cPrefDesc', filteredConfDescription($kSektion))
-       ->assign('cPrefURL', $smarty->getConfigVars('prefURL' . $kSektion))
+       ->assign('cPrefDesc', filteredConfDescription($sectionID))
+       ->assign('cPrefURL', $smarty->getConfigVars('prefURL' . $sectionID))
        ->assign('step', $step)
        ->assign('supportFulltext', version_compare($mysqlVersion, '5.6', '>='))
        ->assign('createIndex', $createIndex)

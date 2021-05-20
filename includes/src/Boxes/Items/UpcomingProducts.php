@@ -3,7 +3,6 @@
 namespace JTL\Boxes\Items;
 
 use JTL\Catalog\Product\ArtikelListe;
-use JTL\DB\ReturnType;
 use JTL\Helpers\SearchSpecial;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -32,7 +31,7 @@ final class UpcomingProducts extends AbstractBox
             $limit          = (int)$config['boxen']['box_erscheinende_anzahl_basis'];
             $cacheID        = 'box_ikv_' . $customerGroupID . '_' . $limit . \md5($stockFilterSQL . $parentSQL);
             if (($productIDs = Shop::Container()->getCache()->get($cacheID)) === false) {
-                $productIDs = Shop::Container()->getDB()->queryPrepared(
+                $productIDs = Shop::Container()->getDB()->getObjects(
                     'SELECT tartikel.kArtikel
                         FROM tartikel
                         LEFT JOIN tartikelsichtbarkeit 
@@ -43,8 +42,7 @@ final class UpcomingProducts extends AbstractBox
                             $parentSQL . '
                             AND NOW() < tartikel.dErscheinungsdatum
                         LIMIT :lmt',
-                    ['cid' => $customerGroupID, 'lmt' => $limit],
-                    ReturnType::ARRAY_OF_OBJECTS
+                    ['cid' => $customerGroupID, 'lmt' => $limit]
                 );
                 Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
             }

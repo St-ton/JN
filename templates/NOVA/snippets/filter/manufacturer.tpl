@@ -35,6 +35,7 @@
                 title="{$filterOption->getName()}: {$filterOption->getCount()}"
                 data=$tooltip
                 class="filter-item {if $filterOption->isActive()}active{/if}"
+                rel="nofollow"
             }
                 <div class="box-link-wrapper">
                     {if $Einstellungen.navigationsfilter.hersteller_anzeigen_als == 'B'}

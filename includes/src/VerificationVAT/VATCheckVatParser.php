@@ -183,15 +183,15 @@ class VATCheckVatParser
     private $errorInfo = '';
 
     /**
-     * @var string
+     * @var int
      */
     private $errorPos = 0;
 
     /**
      * VATCheckVatParser constructor.
-     * @param $vatID
+     * @param string $vatID
      */
-    public function __construct($vatID)
+    public function __construct(string $vatID)
     {
         $this->vatID = $vatID;
     }

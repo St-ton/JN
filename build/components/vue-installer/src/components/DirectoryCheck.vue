@@ -49,11 +49,6 @@ import axios from 'axios';
 export default {
     name:  'directorycheck',
     data() {
-        let directories        = [],
-            directoriesStatus  = 0,
-            networkError       = false,
-            collapseIsVisible  = false,
-            checkedDirectories = false;
         const messages = {
             de: {
                 ok:                     'Alles OK.',
@@ -82,11 +77,11 @@ export default {
         this.$i18n.add('de', messages.de);
         this.check();
         return {
-            directories,
-            directoriesStatus,
-            checkedDirectories,
-            networkError,
-            collapseIsVisible
+            directories:        [],
+            directoriesStatus:  0,
+            checkedDirectories: false,
+            networkError:       false,
+            collapseIsVisible:  false
         };
     },
     methods: {

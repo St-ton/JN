@@ -6,7 +6,6 @@ use DateTime;
 use Exception;
 use JTL\Alert\Alert;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\L10n\GetText;
 use JTL\Mail\Mail\Mail;
@@ -97,6 +96,7 @@ class AdminAccount
         $this->getText       = $getText;
         $this->alertService  = $alertService;
         Backend::getInstance();
+        Shop::setIsFrontend(false);
         $this->initDefaults();
         $this->validateSession();
     }
@@ -155,7 +155,7 @@ class AdminAccount
                 $createdAt = (new DateTime())->setTimestamp((int)$timeStamp);
                 $now       = new DateTime();
                 $diff      = $now->diff($createdAt);
-                $secs      = ($diff->format('%a') * (60 * 60 * 24)); // total days
+                $secs      = ((int)$diff->format('%a') * (60 * 60 * 24)); // total days
                 $secs     += (int)$diff->format('%h') * (60 * 60); // hours
                 $secs     += (int)$diff->format('%i') * 60; // minutes
                 $secs     += (int)$diff->format('%s'); // seconds
@@ -337,11 +337,10 @@ class AdminAccount
     {
         // try, because of SHOP-4319
         try {
-            $attributes = reindex($this->db->queryPrepared(
+            $attributes = reindex($this->db->getObjects(
                 'SELECT cName, cAttribText, cAttribValue FROM tadminloginattribut
                     WHERE kAdminlogin = :userID',
-                ['userID' => $userID],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['userID' => $userID]
             ), static function ($e) {
                 return $e->cName;
             });
@@ -514,7 +513,7 @@ class AdminAccount
         if (isset($_SESSION['AdminAccount']->cLogin, $_POST['TwoFA_code'])) {
             $twoFA = new TwoFA($this->db);
             $twoFA->setUserByName($_SESSION['AdminAccount']->cLogin);
-            $valid                                 = $twoFA->isCodeValid($_POST['TwoFA_code']);
+            $valid                                 = $twoFA->isCodeValid($_POST['TwoFA_code'] ?? '');
             $this->twoFaAuthenticated              = $valid;
             $_SESSION['AdminAccount']->TwoFA_valid = $valid;
 
@@ -598,8 +597,7 @@ class AdminAccount
             'UPDATE tadminlogin
                 SET nLoginVersuch = nLoginVersuch+1
                 WHERE cLogin = :login',
-            ['login' => $cLogin],
-            ReturnType::AFFECTED_ROWS
+            ['login' => $cLogin]
         );
         $data   = $this->db->select('tadminlogin', 'cLogin', $cLogin);
         $locked = (int)$data->nLoginVersuch >= \MAX_LOGIN_ATTEMPTS;

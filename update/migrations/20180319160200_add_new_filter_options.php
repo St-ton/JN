@@ -45,8 +45,7 @@ class Migration_20180319160200 extends Migration implements IMigration
                 [
                     'newBoxID' => $newBoxID,
                     'boxID'    => $boxID,
-                ],
-                ReturnType::DEFAULT
+                ]
             );
         }
         /* Remove boxes on reserved positions */

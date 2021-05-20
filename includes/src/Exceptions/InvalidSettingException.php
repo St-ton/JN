@@ -12,9 +12,9 @@ class InvalidSettingException extends Exception
 {
     /**
      * InvalidSettingException constructor.
-     * @param $message
+     * @param string $message
      */
-    public function __construct($message)
+    public function __construct(string $message)
     {
         parent::__construct('Einstellungsfehler: ' . $message);
     }

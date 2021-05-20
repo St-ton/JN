@@ -162,7 +162,7 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
      */
     protected function loadOptin(): void
     {
-        $refData = $this->dbHandler->queryPrepared(
+        $refData = $this->dbHandler->getObjects(
             'SELECT *
               FROM toptin
               WHERE cMail = :mail
@@ -170,8 +170,7 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
             [
                 'mail'       => $this->emailAddress,
                 'optinclass' => \get_class($this)
-            ],
-            ReturnType::ARRAY_OF_OBJECTS
+            ]
         );
         foreach ($refData as $optin) {
             /** @var OptinRefData $refData */

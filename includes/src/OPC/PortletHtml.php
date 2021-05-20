@@ -250,7 +250,7 @@ trait PortletHtml
      * @param string $name
      * @return string
      */
-    final protected function getCommonResource($name)
+    final protected function getCommonResource(string $name): string
     {
         return Shop::getURL() . '/' . \PFAD_INCLUDES . 'src/OPC/Portlets/common/' . $name;
     }
@@ -269,7 +269,7 @@ trait PortletHtml
      */
     final public function getFontAwesomeIcon(string $faCode): string
     {
-        /** @var array $faTable */
+        /** @global array $faTable */
         include \PFAD_ROOT . \PFAD_TEMPLATES . 'NOVA/themes/base/fontawesome/metadata/icons.php';
 
         $faGlyphHex = $faTable[$faCode];

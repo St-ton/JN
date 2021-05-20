@@ -7,7 +7,6 @@ use InvalidArgumentException;
 use JTL\Backend\AdminIO;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\IO\IOError;
 use JTL\Plugin\Data\Config;
 use JTL\Shop;
@@ -20,7 +19,7 @@ use stdClass;
 class Helper
 {
     /**
-     * @var array
+     * @var array|null
      */
     private static $hookList;
 
@@ -53,15 +52,14 @@ class Helper
         }
         $hook     = null;
         $hooks    = [];
-        $hookData = Shop::Container()->getDB()->queryPrepared(
+        $hookData = Shop::Container()->getDB()->getObjects(
             'SELECT tpluginhook.nHook, tplugin.kPlugin, tplugin.cVerzeichnis, tplugin.nVersion, tpluginhook.cDateiname
                 FROM tplugin
                 JOIN tpluginhook
                     ON tpluginhook.kPlugin = tplugin.kPlugin
                 WHERE tplugin.nStatus = :state
                 ORDER BY tpluginhook.nPriority, tplugin.kPlugin',
-            ['state' => State::ACTIVATED],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['state' => State::ACTIVATED]
         );
         foreach ($hookData as $hook) {
             $plugin             = new stdClass();
@@ -121,10 +119,7 @@ class Helper
         $langID  = Shop::getLanguageID();
         $cacheID = 'plugin_id_list';
         if (($plugins = $cache->get($cacheID)) === false) {
-            $plugins = $db->query(
-                'SELECT kPlugin, cPluginID, bExtension FROM tplugin',
-                ReturnType::ARRAY_OF_OBJECTS
-            );
+            $plugins = $db->getObjects('SELECT kPlugin, cPluginID, bExtension FROM tplugin');
             $cache->set($cacheID, $plugins, [\CACHING_GROUP_PLUGIN]);
         }
         foreach ($plugins as $plugin) {
@@ -169,14 +164,13 @@ class Helper
                 'cPluginID, cVerzeichnis, nVersion, bExtension',
                 'nPrio'
             );
-        } catch (\InvalidArgumentException $e) {
-            $plugins = Shop::Container()->getDB()->queryPrepared(
+        } catch (InvalidArgumentException $e) {
+            $plugins = Shop::Container()->getDB()->getObjects(
                 'SELECT cPluginID, cVerzeichnis, nVersion, 0 AS bExtension
                     FROM tplugin
                     WHERE nStatus = :stt
                     ORDER BY nPrio',
-                ['stt' => State::ACTIVATED],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['stt' => State::ACTIVATED]
             );
         }
         foreach ($plugins as $plugin) {
@@ -335,7 +329,7 @@ class Helper
         if (\mb_strlen($iso) > 0) {
             $sql = " AND tpluginsprachvariablesprache.cISO = '" . \mb_convert_case($iso, \MB_CASE_UPPER) . "'";
         }
-        $langVars = Shop::Container()->getDB()->query(
+        $langVars = Shop::Container()->getDB()->getArrays(
             'SELECT t.kPluginSprachvariable,
                 t.kPlugin,
                 t.cName,
@@ -349,11 +343,10 @@ class Helper
                     ON c.kPlugin = t.kPlugin
                     AND c.kPluginSprachvariable = t.kPluginSprachvariable
                     AND tpluginsprachvariablesprache.cISO = c.cISO
-                WHERE t.kPlugin = ' . $id . $sql,
-            ReturnType::ARRAY_OF_ASSOC_ARRAYS
+                WHERE t.kPlugin = ' . $id . $sql
         );
         if (!\is_array($langVars) || \count($langVars) < 1) {
-            $langVars = Shop::Container()->getDB()->query(
+            $langVars = Shop::Container()->getDB()->getArrays(
                 "SELECT tpluginsprachvariable.kPluginSprachvariable,
                 tpluginsprachvariable.kPlugin,
                 tpluginsprachvariable.cName,
@@ -361,8 +354,7 @@ class Helper
                 CONCAT('#', tpluginsprachvariable.cName, '#') AS customValue, '" .
                 \mb_convert_case($iso, \MB_CASE_UPPER) . "' AS cISO
                     FROM tpluginsprachvariable
-                    WHERE tpluginsprachvariable.kPlugin = " . $id,
-                ReturnType::ARRAY_OF_ASSOC_ARRAYS
+                    WHERE tpluginsprachvariable.kPlugin = " . $id
             );
         }
         foreach ($langVars as $_sv) {
@@ -381,7 +373,7 @@ class Helper
      */
     public static function getLanguageVariables(int $pluginID): array
     {
-        $langVars = Shop::Container()->getDB()->queryPrepared(
+        $langVars = Shop::Container()->getDB()->getArrays(
             'SELECT l.kPluginSprachvariable, l.kPlugin, l.cName, l.cBeschreibung,
             COALESCE(c.cISO, tpluginsprachvariablesprache.cISO)  AS cISO,
             COALESCE(c.cName, tpluginsprachvariablesprache.cName) AS customValue
@@ -393,8 +385,7 @@ class Helper
                     AND tpluginsprachvariablesprache.cISO = COALESCE(c.cISO, tpluginsprachvariablesprache.cISO)
             WHERE l.kPlugin = :pid
             ORDER BY l.kPluginSprachvariable',
-            ['pid' => $pluginID],
-            ReturnType::ARRAY_OF_ASSOC_ARRAYS
+            ['pid' => $pluginID]
         );
         if (\count($langVars) === 0) {
             return [];
@@ -426,7 +417,7 @@ class Helper
     public static function getConfigByID(int $id): array
     {
         $conf = [];
-        $data = Shop::Container()->getDB()->queryPrepared(
+        $data = Shop::Container()->getDB()->getObjects(
             'SELECT tplugineinstellungen.*, tplugineinstellungenconf.cConf
                 FROM tplugin
                 JOIN tplugineinstellungen 
@@ -435,8 +426,7 @@ class Helper
                     ON tplugineinstellungenconf.kPlugin = tplugin.kPlugin 
                     AND tplugineinstellungen.cName = tplugineinstellungenconf.cWertName
                 WHERE tplugin.kPlugin = :pid',
-            ['pid' => $id],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['pid' => $id]
         );
         foreach ($data as $item) {
             $conf[$item->cName] = $item->cConf === Config::TYPE_DYNAMIC
@@ -543,7 +533,7 @@ class Helper
             return $result;
         }
 
-        \register_shutdown_function(static function () use ($pluginID) {
+        \register_shutdown_function(static function () {
             $err = \error_get_last();
             if ($err !== null) {
                 \ob_get_clean();

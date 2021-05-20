@@ -202,7 +202,7 @@ class Plugins
             return null;
         }
 
-        return \substr_replace((int)$params['value'], '.', 1, 0);
+        return \substr_replace((string)(int)$params['value'], '.', 1, 0);
     }
 
     /**

@@ -30,8 +30,11 @@ class ClearObjectCacheCommand extends Command
         $io = $this->getIO();
         if (Shop::Container()->getCache()->flushAll()) {
             $io->success('Object cache cleared.');
-        } else {
-            $io->warning('Could not clear object cache.');
+
+            return 0;
         }
+        $io->warning('Could not clear object cache.');
+
+        return 1;
     }
 }

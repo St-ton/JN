@@ -4,7 +4,6 @@ namespace JTL\Helpers;
 
 use JTL\Catalog\Hersteller;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
 use JTL\Language\LanguageHelper;
 use JTL\Shop;
 
@@ -75,7 +74,7 @@ class Manufacturer
         }
         if (($manufacturers = Shop::Container()->getCache()->get($this->cacheID)) === false) {
             $lagerfilter   = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-            $manufacturers = Shop::Container()->getDB()->queryPrepared(
+            $manufacturers = Shop::Container()->getDB()->getObjects(
                 'SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                         thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
                         therstellersprache.cMetaDescription, therstellersprache.cBeschreibung,
@@ -103,8 +102,7 @@ class Manufacturer
                     'skey' => 'kHersteller',
                     'lid'  => self::$langID,
                     'cgid' => CustomerGroup::getDefaultGroupID()
-                ],
-                ReturnType::ARRAY_OF_OBJECTS
+                ]
             );
             $shopURL       = Shop::getURL() . '/';
             $imageBaseURL  = Shop::getImageBaseURL();

@@ -5,7 +5,6 @@ namespace JTL\Link;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Language\LanguageHelper;
 use JTL\Plugin\State;
 use JTL\Shop;
@@ -255,7 +254,7 @@ final class Link extends AbstractLink
     public function load(int $id): LinkInterface
     {
         $this->id = $id;
-        $link     = $this->db->queryPrepared(
+        $link     = $this->db->getObjects(
             "SELECT tlink.*, loc.cISOSprache, tlink.cName AS displayName,
                 loc.cName AS localizedName,  loc.cTitle AS localizedTitle,
                 loc.cContent AS content, loc.cMetaDescription AS metaDescription,
@@ -282,8 +281,7 @@ final class Link extends AbstractLink
                     AND tlink.kLink = pld.kLink
                 WHERE tlink.kLink = :lid
                 GROUP BY tseo.kSprache",
-            ['lid' => $this->getRealID($id)],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['lid' => $this->getRealID($id)]
         );
         if (\count($link) === 0) {
             throw new InvalidArgumentException('Provided link id ' . $this->id . ' not found.');
@@ -298,13 +296,12 @@ final class Link extends AbstractLink
      */
     private function getRealID(int $id): int
     {
-        $reference = $this->db->queryPrepared(
+        $reference = $this->db->getSingleObject(
             'SELECT `reference` FROM `tlink` WHERE kLink = :lid',
-            ['lid' => $id],
-            ReturnType::SINGLE_OBJECT
+            ['lid' => $id]
         );
 
-        return (int)$reference->reference > 0
+        return $reference !== null && (int)$reference->reference > 0
             ? (int)$reference->reference
             : $id;
     }

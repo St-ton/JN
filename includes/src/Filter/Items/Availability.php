@@ -2,7 +2,6 @@
 
 namespace JTL\Filter\Items;
 
-use JTL\DB\ReturnType;
 use JTL\Filter\AbstractFilter;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\InputType;
@@ -156,12 +155,11 @@ class Availability extends AbstractFilter
         $sql->setHaving($state->getHaving());
         $sql->setOrderBy('');
 
-        return $this->productFilter->getDB()->query(
+        return $this->productFilter->getDB()->getObjects(
             'SELECT ssMerkmal.filterval, COUNT(*) AS nAnzahl
                 FROM (' . $this->productFilter->getFilterSQL()->getBaseQuery($sql) . ' ) AS ssMerkmal
                 GROUP BY ssMerkmal.filterval
-                ORDER BY ssMerkmal.filterval ASC',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY ssMerkmal.filterval ASC'
         );
     }
 }

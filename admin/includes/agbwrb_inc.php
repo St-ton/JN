@@ -1,6 +1,5 @@
 <?php
 
-use JTL\DB\ReturnType;
 use JTL\Shop;
 
 /**
@@ -10,7 +9,7 @@ use JTL\Shop;
  * @param int   $textID
  * @return bool
  */
-function speicherAGBWRB(int $customerGroupID, int $languageID, array $post, int $textID = 0)
+function speicherAGBWRB(int $customerGroupID, int $languageID, array $post, int $textID = 0): bool
 {
     if ($customerGroupID > 0 && $languageID > 0) {
         $item = new stdClass();
@@ -21,7 +20,7 @@ function speicherAGBWRB(int $customerGroupID, int $languageID, array $post, int 
         // Soll Standard sein?
         if (isset($post['nStandard']) && (int)$post['nStandard'] > 0) {
             // Standard umsetzen
-            Shop::Container()->getDB()->query('UPDATE ttext SET nStandard = 0', ReturnType::AFFECTED_ROWS);
+            Shop::Container()->getDB()->query('UPDATE ttext SET nStandard = 0');
         }
         $item->kSprache            = $languageID;
         $item->kKundengruppe       = $customerGroupID;

@@ -22,7 +22,7 @@ final class Manufacturer extends AbstractFactory
         $languageIDs = map($languages, static function ($e) {
             return (int)$e->kSprache;
         });
-        $res         = $this->db->query(
+        $res         = $this->db->getPDOStatement(
             "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cBildpfad AS image, 
             tseo.cSeo, tseo.kSprache AS langID
                 FROM thersteller
@@ -30,8 +30,7 @@ final class Manufacturer extends AbstractFactory
                     ON tseo.cKey = 'kHersteller'
                     AND tseo.kKey = thersteller.kHersteller
                     AND tseo.kSprache IN (" . \implode(',', $languageIDs) . ')
-                ORDER BY thersteller.kHersteller',
-            ReturnType::QUERYSINGLE
+                ORDER BY thersteller.kHersteller'
         );
         while (($mf = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $item = new Item($this->config, $this->baseURL, $this->baseImageURL);

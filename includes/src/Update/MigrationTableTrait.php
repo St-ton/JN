@@ -3,7 +3,6 @@
 namespace JTL\Update;
 
 use Exception;
-use JTL\DB\ReturnType;
 use stdClass;
 
 /**
@@ -103,14 +102,12 @@ trait MigrationTableTrait
                 [
                     'langKey'     => $key,
                     'langSection' => $section
-                ],
-                ReturnType::DEFAULT
+                ]
             );
         } else {
             $this->getDB()->queryPrepared(
                 'DELETE FROM tsprachwerte WHERE cName = :langKey',
-                ['langKey' => $key],
-                ReturnType::DEFAULT
+                ['langKey' => $key]
             );
         }
     }

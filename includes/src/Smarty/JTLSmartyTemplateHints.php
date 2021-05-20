@@ -48,7 +48,6 @@ class JTLSmartyTemplateHints extends JTLSmartyTemplateClass
         $uid = null,
         $content_func = null
     ) {
-        $tplName = null;
         $tplID   = null;
         $tplName = \mb_strpos($template, ':') !== false
             ? \mb_substr($template, \mb_strpos($template, ':') + 1)

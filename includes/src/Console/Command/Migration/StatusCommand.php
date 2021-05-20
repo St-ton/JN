@@ -40,8 +40,9 @@ class StatusCommand extends Command
                 'executed'    => \in_array($key, $executedMigrations)
             ];
         }
-
         $this->printMigrationTable($list);
+
+        return 0;
     }
 
     /**

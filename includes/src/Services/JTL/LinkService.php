@@ -194,10 +194,10 @@ final class LinkService implements LinkServiceInterface
         if ($parentLinkID <= 0) {
             return false;
         }
+        /** @var LinkGroupInterface $linkGroup */
         foreach ($this->linkGroupList->getLinkGroups() as $linkGroup) {
-            /** @var LinkGroupInterface $linkGroup */
+            /** @var LinkInterface $link */
             foreach ($linkGroup->getLinks() as $link) {
-                /** @var LinkInterface $link */
                 if ($link->getID() === $linkID && $link->getParent() === $parentLinkID) {
                     return true;
                 }
@@ -394,7 +394,6 @@ final class LinkService implements LinkServiceInterface
      */
     public function buildSpecialPageMeta(int $type): stdClass
     {
-        $first           = null;
         $meta            = new stdClass();
         $meta->cTitle    = '';
         $meta->cDesc     = '';
@@ -430,10 +429,10 @@ final class LinkService implements LinkServiceInterface
     public function activate(int $pageType): LinkGroupCollection
     {
         $linkGroups = $this->linkGroupList->getLinkGroups();
+        /** @var LinkGroupInterface $linkGroup */
         foreach ($linkGroups as $linkGroup) {
-            /** @var LinkGroupInterface $linkGroup */
+            /** @var LinkInterface $link */
             foreach ($linkGroup->getLinks() as $link) {
-                /** @var LinkInterface $link */
                 $link->setIsActive(false);
                 $linkType = $link->getLinkType();
                 $linkID   = $link->getID();

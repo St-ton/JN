@@ -88,7 +88,7 @@ class Config
     }
 
     /**
-     * @param object $conf
+     * @param stdClass|object $conf
      * @return null|array
      */
     public function getDynamicOptions($conf): ?array

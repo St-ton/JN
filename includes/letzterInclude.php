@@ -1,6 +1,7 @@
 <?php
 
 use JTL\Alert\Alert;
+use JTL\Campaign;
 use JTL\Cart\Cart;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\KategorieListe;
@@ -9,7 +10,6 @@ use JTL\Catalog\NavigationEntry;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\Wishlist\Wishlist;
-use JTL\DB\ReturnType;
 use JTL\ExtensionPoint;
 use JTL\Filter\Metadata;
 use JTL\Filter\SearchResults;
@@ -20,7 +20,6 @@ use JTL\Helpers\Manufacturer;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Text;
-use JTL\Campaign;
 use JTL\Link\Link;
 use JTL\Minify\MinifyService;
 use JTL\Session\Frontend;
@@ -125,6 +124,7 @@ $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
     ->assign('session_id', session_id())
     ->assign('lang', Shop::getLanguageCode())
     ->assign('ShopURL', $shopURL)
+    ->assign('ShopHomeURL', Shop::getHomeURL())
     ->assign('imageBaseURL', Shop::getImageBaseURL())
     ->assign('ShopURLSSL', Shop::getURL(true))
     ->assign('NettoPreise', Frontend::getCustomerGroup()->getIsMerchant())
@@ -230,10 +230,7 @@ if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0) {
     $boxes->addRecentlyViewed($AktuellerArtikel->kArtikel);
 }
 $visitorCount = $conf['global']['global_zaehler_anzeigen'] === 'Y'
-    ? (int)Shop::Container()->getDB()->query(
-        'SELECT nZaehler FROM tbesucherzaehler',
-        ReturnType::SINGLE_OBJECT
-    )->nZaehler
+    ? (int)Shop::Container()->getDB()->getSingleObject('SELECT nZaehler FROM tbesucherzaehler')->nZaehler
     : 0;
 $debugbar->getTimer()->stopMeasure('init');
 

@@ -53,6 +53,9 @@ msgstr "Contains filter data"
 msgid "cg_status_description"
 msgstr "Contains status for notifications"
 
+msgid "cg_opc_description"
+msgstr "Contains OPC data"
+
 msgid "cg_article_nicename"
 msgstr "Items"
 
@@ -94,6 +97,9 @@ msgstr "Item filter"
 
 msgid "cg_status_nicename"
 msgstr "Status"
+
+msgid "cg_opc_nicename"
+msgstr "OPC"
 
 msgid "entries"
 msgstr "Entries"

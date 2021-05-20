@@ -3,17 +3,9 @@
     {$limit = $Einstellungen.template.productlist.filter_max_options}
     {$collapseInit = false}
     <div class="filter-search-wrapper">
-    {if (int)$Einstellungen.template.productlist.filter_search_count < count($Merkmal->getOptions())}
-        {block name='snippets-filter-characteristic-search'}
-            {inputgroup size="sm"}
-                {inputgroupaddon prepend=true is-text=true}
-                    <span class="fa fa-search"></span>
-                {/inputgroupaddon}
-                {input class="filter-search" placeholder={lang key='filterSearchPlaceholder' section='productOverview' printf=$Merkmal->getName()}}
-                <span class="form-clear d-none"><i class="fas fa-times"></i></span>
-            {/inputgroup}
-        {/block}
-    {/if}
+    {block name='snippets-filter-characteristic-include-search-in-items'}
+        {include file='snippets/filter/search_in_items.tpl' itemCount=count($Merkmal->getOptions()) name=$Merkmal->getName()}
+    {/block}
     {if $Merkmal->getData('cTyp') === 'BILD'}
         <ul class="nav nav-filter-has-image">
     {/if}

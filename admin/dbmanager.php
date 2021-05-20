@@ -21,11 +21,11 @@ $restrictedTables = ['tadminlogin', 'tbrocken', 'tsession', 'tsynclogin'];
  * @param string $query
  * @return array|int|object
  */
-function exec_query($query)
+function exec_query(string $query)
 {
     try {
         Shop::Container()->getDB()->beginTransaction();
-        $result = Shop::Container()->getDB()->executeQuery($query, 9);
+        $result = Shop::Container()->getDB()->query($query, ReturnType::ARRAY_OF_ASSOC_ARRAYS);
         Shop::Container()->getDB()->commit();
 
         return $result;

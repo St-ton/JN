@@ -54,7 +54,7 @@ class Join implements JoinInterface
     /**
      * @inheritdoc
      */
-    public function setType($type): JoinInterface
+    public function setType(string $type): JoinInterface
     {
         $this->type = $type;
 

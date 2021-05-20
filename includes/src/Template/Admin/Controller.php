@@ -7,7 +7,6 @@ use InvalidArgumentException;
 use JTL\Alert\Alert;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Overlay;
 use JTL\Helpers\Request;
@@ -262,7 +261,7 @@ class Controller
             $overlayHelper = new Overlay($this->db);
             $overlayHelper->loadOverlaysFromTemplateFolder($this->currentTemplateDir);
         }
-        $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
+        $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
     }
 
     /**
@@ -345,7 +344,7 @@ class Controller
         } else {
             $this->alertService->addAlert(Alert::TYPE_ERROR, __('errorTemplateSave'), 'errorTemplateSave');
         }
-        $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
+        $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
         $this->cache->flushTags([\CACHING_GROUP_LICENSES]);
     }
 

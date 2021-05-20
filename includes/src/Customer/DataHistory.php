@@ -3,7 +3,6 @@
 namespace JTL\Customer;
 
 use Exception;
-use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\MainModel;
 use JTL\Shop;
@@ -225,7 +224,7 @@ class DataHistory extends MainModel
             $sql .= \implode(', ', $set);
             $sql .= ' WHERE kKundendatenHistory = ' . $this->getKundendatenHistory();
 
-            return Shop::Container()->getDB()->query($sql, ReturnType::AFFECTED_ROWS);
+            return Shop::Container()->getDB()->getAffectedRows($sql);
         }
         throw new Exception('ERROR: Object has no members!');
     }

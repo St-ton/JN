@@ -92,7 +92,7 @@ class PaymentMethods
 
     /**
      * @param string $id
-     * @return stdClass|null
+     * @return PaymentMethod|null
      */
     public function getMethodByID(string $id): ?PaymentMethod
     {

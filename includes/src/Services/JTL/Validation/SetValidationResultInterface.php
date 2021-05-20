@@ -9,9 +9,8 @@ namespace JTL\Services\JTL\Validation;
 interface SetValidationResultInterface
 {
     /**
-     * @param                           $fieldName
+     * @param string                    $fieldName
      * @param ValidationResultInterface $valueValidationResult
-     * @return void
      */
     public function setFieldResult($fieldName, ValidationResultInterface $valueValidationResult): void;
 

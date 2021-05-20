@@ -42,7 +42,7 @@ final class Product extends AbstractFactory
                                OR tartikel.cLagerKleinerNull = 'Y' 
                                OR tartikel.fLagerbestand > 0)";
         }
-        $res = $this->db->queryPrepared(
+        $res = $this->db->getPDOStatement(
             "SELECT tartikel.kArtikel, tartikel.dLetzteAktualisierung AS dlm, 
             tseo.cSeo, tseo.kSprache AS langID
                 FROM tartikel
@@ -55,10 +55,8 @@ final class Product extends AbstractFactory
                     AND tartikelsichtbarkeit.kKundengruppe = :cgid
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL' . $andWhere . '
                 ORDER BY tartikel.kArtikel',
-            ['cgid' => $defaultCustomerGroupID],
-            ReturnType::QUERYSINGLE
+            ['cgid' => $defaultCustomerGroupID]
         );
-
         while (($product = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $item = new Item($this->config, $this->baseURL, $this->baseImageURL);
             $item->generateData($product, $languages);

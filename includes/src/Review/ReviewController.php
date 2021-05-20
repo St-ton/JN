@@ -8,7 +8,6 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Product\Artikel;
 use JTL\Customer\Customer;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -182,7 +181,7 @@ class ReviewController extends BaseController
     /**
      * @param Customer $customer
      * @param array    $params
-     * @return bool|void
+     * @return bool
      */
     private function reviewPreCheck(Customer $customer, array $params): bool
     {
@@ -248,23 +247,22 @@ class ReviewController extends BaseController
         if ($this->config['bewertung']['bewertung_artikel_gekauft'] !== 'Y') {
             return true;
         }
-        $order = $this->db->queryPrepared(
+        $order = $this->db->getSingleObject(
             'SELECT tbestellung.kBestellung
-            FROM tbestellung
-            LEFT JOIN tartikel 
-                ON tartikel.kVaterArtikel = :aid
-            JOIN twarenkorb 
-                ON twarenkorb.kWarenkorb = tbestellung.kWarenkorb
-            JOIN twarenkorbpos 
-                ON twarenkorbpos.kWarenkorb = twarenkorb.kWarenkorb
-            WHERE tbestellung.kKunde = :cid
-                AND (twarenkorbpos.kArtikel = :aid 
-                OR twarenkorbpos.kArtikel = tartikel.kArtikel)',
-            ['aid' => $productID, 'cid' => $customer->getID()],
-            ReturnType::SINGLE_OBJECT
+                FROM tbestellung
+                LEFT JOIN tartikel 
+                    ON tartikel.kVaterArtikel = :aid
+                JOIN twarenkorb 
+                    ON twarenkorb.kWarenkorb = tbestellung.kWarenkorb
+                JOIN twarenkorbpos 
+                    ON twarenkorbpos.kWarenkorb = twarenkorb.kWarenkorb
+                WHERE tbestellung.kKunde = :cid
+                    AND (twarenkorbpos.kArtikel = :aid 
+                    OR twarenkorbpos.kArtikel = tartikel.kArtikel)',
+            ['aid' => $productID, 'cid' => $customer->getID()]
         );
 
-        return isset($order->kBestellung) && $order->kBestellung > 0;
+        return $order !== null && $order->kBestellung > 0;
     }
 
     /**

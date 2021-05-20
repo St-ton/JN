@@ -2,7 +2,6 @@
 
 namespace JTL\Media\Image;
 
-use JTL\DB\ReturnType;
 use JTL\Language\LanguageHelper;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
@@ -146,7 +145,7 @@ class Overlay
      * @param int         $type
      * @param int         $language
      * @param string|null $template
-     * @param bool|null   $setFallbackPath
+     * @param bool        $setFallbackPath
      * @return Overlay
      */
     public static function getInstance(
@@ -202,7 +201,7 @@ class Overlay
      */
     private function getDataForLanguage(int $language): ?stdClass
     {
-        $overlay = Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getSingleObject(
             'SELECT ssos.*, sso.cSuchspecial
                  FROM tsuchspecialoverlaysprache ssos
                  LEFT JOIN tsuchspecialoverlay sso
@@ -217,11 +216,8 @@ class Overlay
                 'overlayID'       => $this->getType(),
                 'templateName'    => $this->getTemplateName(),
                 'defaultTemplate' => self::DEFAULT_TEMPLATE
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
-
-        return $overlay === false ? null : $overlay;
     }
 
     /**
@@ -288,7 +284,7 @@ class Overlay
             'nMargin'      => 5
         ];
 
-        $check = $db->queryPrepared(
+        $check = $db->getSingleObject(
             'SELECT * FROM tsuchspecialoverlaysprache
               WHERE kSprache = :languageID
                 AND kSuchspecialOverlay = :overlayID
@@ -297,8 +293,7 @@ class Overlay
                 'languageID'   => $this->getLanguage(),
                 'overlayID'    => $this->getType(),
                 'templateName' => $this->getTemplateName()
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
         if ($check) {
             $db->update(

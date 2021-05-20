@@ -4,7 +4,6 @@ namespace JTL\Checkout;
 
 use Illuminate\Support\Collection;
 use JTL\Country\Country;
-use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
@@ -240,8 +239,7 @@ class Versandart
                     ON tversandzuschlagplz.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
                 LEFT JOIN tversandzuschlagsprache 
                     ON tversandzuschlagsprache.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
-                WHERE tversandzuschlag.kVersandart = ' . $id,
-            ReturnType::DEFAULT
+                WHERE tversandzuschlag.kVersandart = ' . $id
         );
 
         return true;
@@ -302,7 +300,7 @@ class Versandart
      * @param array       $objects
      * @param string      $table
      * @param string      $key
-     * @param mixed       $value
+     * @param int         $value
      * @param null|string $unsetKey
      */
     private static function cloneShippingSection(array $objects, $table, $key, int $value, $unsetKey = null): void
@@ -360,13 +358,12 @@ class Versandart
             return;
         }
 
-        $this->setShippingSurcharges(Shop::Container()->getDB()->queryPrepared(
+        $this->setShippingSurcharges(Shop::Container()->getDB()->getCollection(
             'SELECT kVersandzuschlag
                 FROM tversandzuschlag
                 WHERE kVersandart = :kVersandart
                 ORDER BY kVersandzuschlag DESC',
-            ['kVersandart' => $this->kVersandart],
-            ReturnType::COLLECTION
+            ['kVersandart' => $this->kVersandart]
         )->map(static function ($surcharge) {
             return new ShippingSurcharge((int)$surcharge->kVersandzuschlag);
         }));

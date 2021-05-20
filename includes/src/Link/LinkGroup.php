@@ -4,7 +4,6 @@ namespace JTL\Link;
 
 use Illuminate\Support\Collection;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
 use function Functional\flatten;
@@ -92,7 +91,7 @@ final class LinkGroup implements LinkGroupInterface
     public function load(int $id): LinkGroupInterface
     {
         $this->id       = $id;
-        $groupLanguages = $this->db->queryPrepared(
+        $groupLanguages = $this->db->getObjects(
             'SELECT g.*, l.cName AS localizedName, l.cISOSprache, g.cTemplatename AS template,
                 g.cName AS groupName, lang.kSprache 
                 FROM tlinkgruppe AS g 
@@ -101,8 +100,7 @@ final class LinkGroup implements LinkGroupInterface
                 JOIN tsprache AS lang
                     ON lang.cISO = l.cISOSprache
                 WHERE g.kLinkgruppe = :lgid',
-            ['lgid' => $this->id],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['lgid' => $this->id]
         );
         if (\count($groupLanguages) === 0) {
             return $this;
@@ -125,15 +123,14 @@ final class LinkGroup implements LinkGroupInterface
             $this->template              = $groupLanguage->template;
             $this->groupName             = $groupLanguage->groupName;
         }
-        $this->links = (new LinkList($this->db))->createLinks(map(flatten($this->db->queryPrepared(
+        $this->links = (new LinkList($this->db))->createLinks(map(flatten($this->db->getArrays(
             'SELECT kLink
                 FROM tlink
                 JOIN tlinkgroupassociations a 
                     ON tlink.kLink = a.linkID
                 WHERE a.linkGroupID = :lgid
                 ORDER BY tlink.nSort, tlink.cName',
-            ['lgid' => $this->id],
-            ReturnType::ARRAY_OF_ASSOC_ARRAYS
+            ['lgid' => $this->id]
         )), static function ($e) {
             return (int)$e;
         }));

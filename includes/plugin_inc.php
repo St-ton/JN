@@ -1,6 +1,5 @@
 <?php
 
-use JTL\DB\ReturnType;
 use JTL\Plugin\Helper;
 use JTL\Plugin\HookManager;
 use JTL\Plugin\LegacyPlugin;
@@ -116,15 +115,14 @@ function gibPluginExtendedTemplates(): array
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
     $templates = [];
-    $data      = Shop::Container()->getDB()->queryPrepared(
+    $data      = Shop::Container()->getDB()->getObjects(
         'SELECT tplugintemplate.cTemplate, tplugin.cVerzeichnis, tplugin.nVersion
             FROM tplugintemplate
             JOIN tplugin 
                 ON tplugintemplate.kPlugin = tplugin.kPlugin
                 WHERE tplugin.nStatus = :state 
             ORDER BY tplugin.nPrio DESC',
-        ['state' => State::ACTIVATED],
-        ReturnType::ARRAY_OF_OBJECTS
+        ['state' => State::ACTIVATED]
     );
     foreach ($data as $tpl) {
         $path = PFAD_ROOT . PFAD_PLUGIN . $tpl->cVerzeichnis . '/' .

@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 error_reporting(ADMIN_LOG_LEVEL);
 date_default_timezone_set(SHOP_TIMEZONE);
 

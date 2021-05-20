@@ -13,7 +13,7 @@
                 {block name='snippets-filter-genericFilterItem-nav-main'}
                     {link class="filter-item {if $filterIsActive === true}active{/if}"
                         href="{if $filterOption->isActive()}{$filter->getUnsetFilterURL($filterOption->getValue())}{else}{$filterOption->getURL()}{/if}"
-                        nofollow=true}
+                        rel="nofollow"}
                         <div class="box-link-wrapper">
                             {if $filter->getIcon() !== null}
                                 <i class="fa {$filter->getIcon()} snippets-filter-item-icon-right"></i>

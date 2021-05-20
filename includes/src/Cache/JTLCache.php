@@ -201,6 +201,12 @@ final class JTLCache implements JTLCacheInterface
                 'value'       => \CACHING_GROUP_STATUS,
                 'description' => 'cg_status_description'
             ],
+            [
+                'name'        => 'CACHING_GROUP_OPC',
+                'nicename'    => 'cg_opc_nicename',
+                'value'       => \CACHING_GROUP_OPC,
+                'description' => 'cg_opc_description'
+            ],
         ];
 
         return $this;
@@ -304,11 +310,10 @@ final class JTLCache implements JTLCacheInterface
     public function setCache(string $methodName): bool
     {
         if (\SAFE_MODE === false) {
-            $cache = null;
-            /** @var ICachingMethod $className */
             $class = 'JTL\Cache\Methods\Cache' . \ucfirst($methodName);
-            $cache = new $class($this->options);
-            if (!empty($cache) && $cache instanceof ICachingMethod) {
+            $cache = \class_exists($class) ? new $class($this->options) : null;
+            /** @var ICachingMethod $class */
+            if ($cache !== null && $cache instanceof ICachingMethod) {
                 $this->setError($cache->getError());
                 if ($cache->isInitialized() && $cache->isAvailable()) {
                     $this->setMethod($cache);
@@ -568,9 +573,7 @@ final class JTLCache implements JTLCacheInterface
      */
     public function setCacheTag($tags, $cacheID): bool
     {
-        return $this->options['activated'] === true
-            ? $this->method->setCacheTag($tags, $cacheID)
-            : false;
+        return $this->options['activated'] === true && $this->method->setCacheTag($tags, $cacheID);
     }
 
     /**
@@ -610,9 +613,7 @@ final class JTLCache implements JTLCacheInterface
     {
         $res = false;
         if ($cacheID !== null && $tags === null) {
-            $res = ($this->options['activated'] === true)
-                ? $this->method->flush($cacheID)
-                : false;
+            $res = $this->options['activated'] === true && $this->method->flush($cacheID);
         } elseif ($tags !== null) {
             $res = $this->flushTags($tags, $hookInfo);
         }

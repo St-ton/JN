@@ -2,7 +2,6 @@
 
 namespace JTL\dbeS\Sync;
 
-use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\Extensions\Download\Download;
 
@@ -97,8 +96,7 @@ final class Downloads extends AbstractSync
             LEFT JOIN tdownloadhistory 
                 ON tdownloadhistory.kDownload = tdownload.kDownload
             WHERE tdownload.kDownload = :dlid',
-            ['dlid' => $id],
-            ReturnType::DEFAULT
+            ['dlid' => $id]
         );
     }
 }

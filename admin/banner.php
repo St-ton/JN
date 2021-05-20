@@ -109,7 +109,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
             $ext->kInitial      = $imageMapID;
 
             $ins = $db->insert('textensionpoint', $ext);
-
+            Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
             if ($imageMapID && $ins > 0) {
                 $action = 'view';
                 $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSave'), 'successSave');
@@ -183,6 +183,7 @@ switch ($action) {
 
     case 'delete':
         if (entferneBanner(Request::postInt('id'))) {
+            Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
             $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successDeleted'), 'successDeleted');
         } else {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorDeleted'), 'errorDeleted');

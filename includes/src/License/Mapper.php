@@ -68,7 +68,7 @@ class Mapper
                 $plugin->initByExsID(
                     $this->manager->getDB(),
                     $license,
-                    $esxLicense->getReleases()->getLatest() ?? $esxLicense->getReleases()->getAvailable()
+                    $esxLicense->getReleases()
                 );
                 $esxLicense->setReferencedItem($plugin);
                 break;
@@ -77,7 +77,7 @@ class Mapper
                 $template->initByExsID(
                     $this->manager->getDB(),
                     $license,
-                    $esxLicense->getReleases()->getLatest() ?? $esxLicense->getReleases()->getAvailable()
+                    $esxLicense->getReleases()
                 );
                 $esxLicense->setReferencedItem($template);
                 break;

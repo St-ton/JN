@@ -35,6 +35,11 @@ abstract class AbstractWidget implements WidgetInterface
     public $hasBody = true;
 
     /**
+     * @var string
+     */
+    public $permission = '';
+
+    /**
      * @inheritdoc
      */
     public function __construct(JTLSmarty $smarty = null, DbInterface $db = null, $plugin = null)
@@ -106,5 +111,21 @@ abstract class AbstractWidget implements WidgetInterface
     public function getContent()
     {
         return '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getPermission(): string
+    {
+        return $this->permission;
+    }
+
+    /**
+     * @param string $permission
+     */
+    public function setPermission(string $permission): void
+    {
+        $this->permission = $permission;
     }
 }

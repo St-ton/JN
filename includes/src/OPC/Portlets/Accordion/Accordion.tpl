@@ -1,6 +1,6 @@
 {$uid = $instance->getUid()}
 
-{accordion id=$uid style=$instance->getStyleString() class=$instance->getStyleClasses()}
+{accordion id=$uid style=$instance->getStyleString() class='opc-Accordion '|cat:$instance->getStyleClasses()}
     {foreach $instance->getProperty('groups') as $i => $group}
         {$groupId = $uid|cat:'-'|cat:$i}
         {$areaId = 'group-'|cat:$i}
@@ -33,13 +33,14 @@
                 {$ariaExpanded = 'false'}
             {/if}
 
-            {card no-body=true}
+            {card no-body=true class='opc-Accordion-group'}
                 {cardheader id='heading-'|cat:$groupId}
                     <h2 style="margin-bottom: 0">
                         {button
                             variant='link'
                             data=['toggle' => 'collapse', 'target' => '#'|cat:$groupId, 'parent' => '#'|cat:$uid]
                             aria=['expanded' => $ariaExpanded, 'controls' => $groupId]
+                            class='opc-Accordion-head'
                         }
                             {$group|escape:'html'}
                         {/button}

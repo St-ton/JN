@@ -3,7 +3,6 @@
 namespace JTL\Checkout;
 
 use JTL\Catalog\Product\Preise;
-use JTL\DB\ReturnType;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
 use stdClass;
@@ -91,14 +90,13 @@ class ShippingSurcharge
     public function loadFromDB(int $id): void
     {
         $db        = Shop::Container()->getDB();
-        $surcharge = $db->queryPrepared(
+        $surcharge = $db->getSingleObject(
             'SELECT * 
                 FROM tversandzuschlag
                 WHERE kVersandzuschlag = :id',
-            ['id' => $id],
-            ReturnType::SINGLE_OBJECT
+            ['id' => $id]
         );
-        if (!\is_object($surcharge)) {
+        if ($surcharge === null) {
             return;
         }
 
@@ -108,13 +106,12 @@ class ShippingSurcharge
              ->setShippingMethod((int)$surcharge->kVersandart)
              ->setPriceLocalized();
 
-        $zips = $db->queryPrepared(
+        $zips = $db->getObjects(
             'SELECT vzp.cPLZ, vzp.cPLZAb, vzp.cPLZBis 
                 FROM tversandzuschlag AS vz
                 JOIN tversandzuschlagplz AS vzp USING(kVersandzuschlag) 
                 WHERE vz.kVersandzuschlag = :id',
-            ['id' => $id],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['id' => $id]
         );
         foreach ($zips as $zip) {
             if (!empty($zip->cPLZ)) {
@@ -124,14 +121,13 @@ class ShippingSurcharge
             }
         }
 
-        $names = $db->queryPrepared(
+        $names = $db->getObjects(
             'SELECT vzs.cName, s.kSprache 
                 FROM tversandzuschlag AS vz
                 JOIN tversandzuschlagsprache AS vzs USING(kVersandzuschlag) 
                 JOIN tsprache as s ON s.cISO = vzs.cISOSprache
                 WHERE vz.kVersandzuschlag = :id',
-            ['id' => $id],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['id' => $id]
         );
         foreach ($names as $name) {
             $this->setName($name->cName, (int)$name->kSprache);

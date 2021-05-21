@@ -2,7 +2,6 @@
 
 namespace JTL\Filter\States;
 
-use JTL\DB\ReturnType;
 use JTL\Filter\AbstractFilter;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\Join;
@@ -48,7 +47,7 @@ class BaseSearchQuery extends AbstractFilter
     private $searchCacheID = 0;
 
     /**
-     * @var string
+     * @var string|null
      */
     public $error;
 
@@ -182,7 +181,7 @@ class BaseSearchQuery extends AbstractFilter
      */
     public function setSeo(array $languages): FilterInterface
     {
-        $seo = $this->productFilter->getDB()->executeQueryPrepared(
+        $seo = $this->productFilter->getDB()->getSingleObject(
             "SELECT tseo.cSeo, tseo.kSprache, tsuchanfrage.cSuche
                 FROM tseo
                 LEFT JOIN tsuchanfrage
@@ -190,16 +189,15 @@ class BaseSearchQuery extends AbstractFilter
                     AND tsuchanfrage.kSprache = tseo.kSprache
                 WHERE cKey = 'kSuchanfrage' 
                     AND kKey = :key",
-            ['key' => $this->getID()],
-            ReturnType::SINGLE_OBJECT
+            ['key' => $this->getID()]
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
-            if (isset($seo->kSprache) && $language->kSprache === (int)$seo->kSprache) {
+            if ($seo !== null && $language->kSprache === (int)$seo->kSprache) {
                 $this->cSeo[$language->kSprache] = $seo->cSeo;
             }
         }
-        if (!empty($seo->cSuche)) {
+        if ($seo !== null & !empty($seo->cSuche)) {
             $this->setName($seo->cSuche);
         }
 
@@ -312,12 +310,11 @@ class BaseSearchQuery extends AbstractFilter
 
             return $this->options;
         }
-        $searchFilters  = $this->productFilter->getDB()->query(
+        $searchFilters  = $this->productFilter->getDB()->getObjects(
             'SELECT ssMerkmal.kSuchanfrage, ssMerkmal.cSuche, COUNT(*) AS nAnzahl
                 FROM (' . $baseQuery . ') AS ssMerkmal
                     GROUP BY ssMerkmal.kSuchanfrage
-                    ORDER BY ssMerkmal.cSuche' . $limit,
-            ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY ssMerkmal.cSuche' . $limit
         );
         $searchQueryIDs = [];
         if ($this->productFilter->hasSearch()) {
@@ -437,11 +434,10 @@ class BaseSearchQuery extends AbstractFilter
                 LEFT JOIN tsuchcachetreffer 
                     ON tsuchcachetreffer.kSuchCache = tsuchcache.kSuchCache
                 WHERE tsuchcache.dGueltigBis IS NOT NULL
-                    AND DATE_ADD(tsuchcache.dGueltigBis, INTERVAL 5 MINUTE) < NOW()',
-            ReturnType::AFFECTED_ROWS
+                    AND DATE_ADD(tsuchcache.dGueltigBis, INTERVAL 5 MINUTE) < NOW()'
         );
         // Suchcache checken, ob bereits vorhanden
-        $searchCache = $this->productFilter->getDB()->executeQueryPrepared(
+        $searchCache = $this->productFilter->getDB()->getSingleObject(
             'SELECT kSuchCache
                 FROM tsuchcache
                 WHERE kSprache = :lang
@@ -450,10 +446,9 @@ class BaseSearchQuery extends AbstractFilter
             [
                 'lang'   => $langID,
                 'search' => $query
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
-        if (isset($searchCache->kSuchCache) && $searchCache->kSuchCache > 0) {
+        if ($searchCache !== null && $searchCache->kSuchCache > 0) {
             return (int)$searchCache->kSuchCache; // Gib gültigen Suchcache zurück
         }
         // wenn kein Suchcache vorhanden
@@ -834,8 +829,7 @@ class BaseSearchQuery extends AbstractFilter
             'INSERT INTO tsuchcachetreffer ' .
             $sql .
             ' GROUP BY kArtikelTMP
-                LIMIT ' . (int)$this->getConfig('artikeluebersicht')['suche_max_treffer'],
-            ReturnType::AFFECTED_ROWS
+                LIMIT ' . (int)$this->getConfig('artikeluebersicht')['suche_max_treffer']
         );
 
         return $kSuchCache;
@@ -943,8 +937,7 @@ class BaseSearchQuery extends AbstractFilter
                             ON tartikelsichtbarkeit.kArtikel = i.kArtikelTMP
                             AND tartikelsichtbarkeit.kKundengruppe = ' . Frontend::getCustomerGroup()->getID() . '
                         WHERE tartikelsichtbarkeit.kKundengruppe IS NULL
-                        GROUP BY kSuchCache, kArtikelTMP' . ($limit > 0 ? ' LIMIT ' . $limit : ''),
-                ReturnType::AFFECTED_ROWS
+                        GROUP BY kSuchCache, kArtikelTMP' . ($limit > 0 ? ' LIMIT ' . $limit : '')
             );
         }
 
@@ -994,11 +987,9 @@ class BaseSearchQuery extends AbstractFilter
      * @param array  $nonAllowed
      * @return bool
      */
-    public function checkColumnClasses($searchCols, $searchCol, $nonAllowed): bool
+    public function checkColumnClasses(array $searchCols, string $searchCol, array $nonAllowed): bool
     {
-        if (\is_array($searchCols)
-            && \is_array($nonAllowed)
-            && \count($searchCols) > 0
+        if (\count($searchCols) > 0
             && \mb_strlen($searchCol) > 0
             && \count($nonAllowed) > 0
         ) {
@@ -1024,16 +1015,14 @@ class BaseSearchQuery extends AbstractFilter
         static $active = null;
 
         if ($active === null) {
-            $active = $this->productFilter->getDB()->query(
+            $active = $this->productFilter->getDB()->getSingleObject(
                 "SHOW INDEX FROM tartikel 
-                    WHERE KEY_NAME = 'idx_tartikel_fulltext'",
-                ReturnType::SINGLE_OBJECT
+                    WHERE KEY_NAME = 'idx_tartikel_fulltext'"
             )
-                && $this->productFilter->getDB()->query(
+                && $this->productFilter->getDB()->getSingleObject(
                     "SHOW INDEX 
                         FROM tartikelsprache 
-                        WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'",
-                    ReturnType::SINGLE_OBJECT
+                        WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'"
                 );
         }
 

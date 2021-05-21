@@ -18,17 +18,29 @@ class ReferencedPlugin extends ReferencedItem
     /**
      * @inheritDoc
      */
-    public function initByExsID(DbInterface $db, stdClass $license, ?Release $release): void
+    public function initByExsID(DbInterface $db, stdClass $license, Releases $releases): void
     {
         $installed = $db->select('tplugin', 'exsID', $license->exsid);
         if ($installed !== null) {
+            $available        = $releases->getAvailable();
+            $latest           = $releases->getLatest();
             $installedVersion = Version::parse($installed->nVersion);
+            $availableVersion = $available === null ? Version::parse('0.0.0') : $available->getVersion();
+            $latestVersion    = $latest === null ? $availableVersion : $latest->getVersion();
+            $this->setHasUpdate(false);
+            $this->setCanBeUpdated(false);
             $this->setID($installed->cPluginID);
-            if ($release !== null) {
-                $this->setMaxInstallableVersion($release->getVersion());
-                $this->setHasUpdate($installedVersion->smallerThan($release->getVersion()));
-            } else {
-                $this->setMaxInstallableVersion(Version::parse('0.0.0'));
+            $this->setMaxInstallableVersion($installedVersion);
+            if ($availableVersion->greaterThan($installedVersion)) {
+                $this->setMaxInstallableVersion($availableVersion);
+                $this->setHasUpdate(true);
+                $this->setCanBeUpdated(true);
+            } elseif ($latestVersion->greaterThan($availableVersion)
+                && $latestVersion->greaterThan($installedVersion)
+            ) {
+                $this->setMaxInstallableVersion($latestVersion);
+                $this->setHasUpdate(true);
+                $this->setCanBeUpdated(false);
             }
             $this->setInstalled(true);
             $this->setInstalledVersion($installedVersion);

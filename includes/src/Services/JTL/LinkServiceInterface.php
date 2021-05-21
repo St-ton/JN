@@ -98,7 +98,7 @@ interface LinkServiceInterface
     public function getSpecialPageID(int $linkType, bool $fallback = true);
 
     /**
-     * for compatability only
+     * for compatibility only
      *
      * @former gibLinkKeySpecialSeite()
      * @param int $linkType
@@ -138,7 +138,7 @@ interface LinkServiceInterface
     public function getSpecialPages(): Collection;
 
     /**
-     * for compatability only
+     * for compatibility only
      *
      * @param int $id
      * @return LinkInterface|null
@@ -146,7 +146,7 @@ interface LinkServiceInterface
     public function getPageLinkLanguage(int $id): ?LinkInterface;
 
     /**
-     * for compatability only
+     * for compatibility only
      *
      * @param int $id
      * @return LinkInterface|null
@@ -154,7 +154,7 @@ interface LinkServiceInterface
     public function getPageLink(int $id): ?LinkInterface;
 
     /**
-     * for compatability only
+     * for compatibility only
      *
      * @param int $id
      * @return LinkInterface|null
@@ -162,7 +162,7 @@ interface LinkServiceInterface
     public function getLinkObject(int $id): ?LinkInterface;
 
     /**
-     * for compatability only
+     * for compatibility only
      *
      * @param int $id
      * @param int $pluginID
@@ -171,7 +171,7 @@ interface LinkServiceInterface
     public function findCMSLinkInSession(int $id, int $pluginID = 0): ?LinkInterface;
 
     /**
-     * for compatability only
+     * for compatibility only
      *
      * @param int $parentLinkID
      * @param int $linkID
@@ -180,7 +180,7 @@ interface LinkServiceInterface
     public function isChildActive(int $parentLinkID, int $linkID): bool;
 
     /**
-     * for compatability only
+     * for compatibility only
      *
      * @param int $id
      * @return int|null
@@ -188,7 +188,7 @@ interface LinkServiceInterface
     public function getRootLink(int $id): ?int;
 
     /**
-     * for compatability only
+     * for compatibility only
      *
      * @param int $id
      * @return int[]
@@ -196,7 +196,7 @@ interface LinkServiceInterface
     public function getParentsArray(int $id): array;
 
     /**
-     * for compatability only
+     * for compatibility only
      * careful: does not do what it says it does.
      *
      * @param int $id

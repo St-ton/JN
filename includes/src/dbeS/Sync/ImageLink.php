@@ -2,7 +2,6 @@
 
 namespace JTL\dbeS\Sync;
 
-use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\Media\Image\Product;
 use SimpleXMLElement;
@@ -85,11 +84,10 @@ final class ImageLink extends AbstractSync
             return;
         }
         // is last reference
-        $res = $this->db->query(
-            'SELECT COUNT(*) AS cnt FROM tartikelpict WHERE kBild = ' . (int)$image->kBild,
-            ReturnType::SINGLE_OBJECT
+        $res = $this->db->getSingleObject(
+            'SELECT COUNT(*) AS cnt FROM tartikelpict WHERE kBild = ' . (int)$image->kBild
         );
-        if ((int)$res->cnt === 1) {
+        if ((int)($res->cnt ?? 0) === 1) {
             $this->db->delete('tbild', 'kBild', (int)$image->kBild);
             $storage = \PFAD_ROOT . \PFAD_MEDIA_IMAGE_STORAGE . $image->cPfad;
             if (\file_exists($storage)) {

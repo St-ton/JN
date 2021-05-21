@@ -3,7 +3,6 @@
 namespace JTL\Widgets;
 
 use JTL\Catalog\Product\Preise;
-use JTL\DB\ReturnType;
 use JTL\Shop;
 use JTL\Visitor;
 use stdClass;
@@ -20,6 +19,7 @@ class VisitorsOnline extends AbstractWidget
     public function init()
     {
         Visitor::archive();
+        $this->setPermission('STATS_VISITOR_VIEW');
     }
 
     /**
@@ -29,7 +29,7 @@ class VisitorsOnline extends AbstractWidget
     {
         // clause 'ANY_VALUE' is needed by servers, who has the 'sql_mode'-setting 'only_full_group_by' enabled.
         // this is the default since mysql version >= 5.7.x
-        $visitors      = $this->oDB->query(
+        $visitors      = $this->oDB->getObjects(
             'SELECT `otab`.*,
                 `tbestellung`.`fGesamtsumme` AS fGesamtsumme, `tbestellung`.`dErstellt` as dErstellt,
                 `tkunde`.`cVorname` as cVorname, `tkunde`.`cNachname` AS cNachname,
@@ -56,8 +56,7 @@ class VisitorsOnline extends AbstractWidget
                 LEFT JOIN `tkunde` 
                     ON `tbesucher`.`kKunde` = `tkunde`.`kKunde`
             WHERE `tbesucher`.`kBesucherBot` = 0
-                AND `tbesucher`.`kKunde` = 0',
-            ReturnType::ARRAY_OF_OBJECTS
+                AND `tbesucher`.`kKunde` = 0'
         );
         $cryptoService = Shop::Container()->getCryptoService();
         foreach ($visitors as $visitor) {

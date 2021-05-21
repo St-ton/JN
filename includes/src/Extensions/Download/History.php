@@ -2,7 +2,6 @@
 
 namespace JTL\Extensions\Download;
 
-use JTL\DB\ReturnType;
 use JTL\Nice;
 use JTL\Shop;
 use stdClass;
@@ -99,13 +98,12 @@ class History
      */
     public static function getHistory(int $downloadID): array
     {
-        return Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getCollection(
             'SELECT kDownloadHistory AS id 
                 FROM tdownloadhistory
                 WHERE kDownload = :dlid
                 ORDER BY dErstellt DESC',
-            ['dlid' => $downloadID],
-            ReturnType::COLLECTION
+            ['dlid' => $downloadID]
         )->pluck('id')->transform(static function ($e) {
             return (int)$e;
         })->mapInto(self::class)->toArray();
@@ -125,12 +123,11 @@ class History
                 $where .= ' AND kKunde = ' . $customerID;
             }
 
-            $data = Shop::Container()->getDB()->query(
+            $data = Shop::Container()->getDB()->getObjects(
                 'SELECT kDownload, kDownloadHistory
                      FROM tdownloadhistory
                      WHERE ' . $where . '
-                     ORDER BY dErstellt DESC',
-                ReturnType::ARRAY_OF_OBJECTS
+                     ORDER BY dErstellt DESC'
             );
             foreach ($data as $item) {
                 if (!isset($history[$item->kDownload]) || !\is_array($history[$item->kDownload])) {

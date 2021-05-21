@@ -90,11 +90,7 @@
                             <input class="form-control" type="text" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{$cnf->gesetzterWert}" tabindex="1" />
                         {/if}
                         </div>
-                        {if $cnf->cBeschreibung}
-                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                                {getHelpDesc cDesc=$cnf->cBeschreibung cID=$cnf->kEinstellungenConf}
-                            </div>
-                        {/if}
+                        {include file='snippets/einstellungen_icons.tpl' cnf=$cnf}
                     </div>
                 {else}
                     {if $open}</div></div>{/if}

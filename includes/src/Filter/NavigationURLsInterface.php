@@ -76,10 +76,10 @@ interface NavigationURLsInterface
     public function getCharacteristics(): array;
 
     /**
-     * @param string $characteristics
+     * @param array $characteristics
      * @return NavigationURLsInterface
      */
-    public function setCharacteristics(string $characteristics): NavigationURLsInterface;
+    public function setCharacteristics(array $characteristics): NavigationURLsInterface;
 
     /**
      * @param string|int $idx
@@ -94,10 +94,10 @@ interface NavigationURLsInterface
     public function getCharacteristicValues(): array;
 
     /**
-     * @param string $value
+     * @param array $value
      * @return NavigationURLsInterface
      */
-    public function setCharacteristicValues(string $value): NavigationURLsInterface;
+    public function setCharacteristicValues(array $value): NavigationURLsInterface;
 
     /**
      * @param string|int $idx
@@ -112,10 +112,10 @@ interface NavigationURLsInterface
     public function getSearchFilters(): array;
 
     /**
-     * @param string $searchFilters
+     * @param array $searchFilters
      * @return NavigationURLsInterface
      */
-    public function setSearchFilters(string $searchFilters): NavigationURLsInterface;
+    public function setSearchFilters(array $searchFilters): NavigationURLsInterface;
 
     /**
      * @param string|int $idx

@@ -44,4 +44,9 @@ interface SortingOptionInterface
      * @return int|string|array
      */
     public function getValue();
+
+    /**
+     * @return string|null
+     */
+    public function getName(): ?string;
 }

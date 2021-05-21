@@ -150,9 +150,9 @@ class Release
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getDownloadURL(): string
+    public function getDownloadURL(): ?string
     {
         return $this->downloadUrl;
     }

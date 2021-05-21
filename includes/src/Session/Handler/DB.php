@@ -3,7 +3,6 @@
 namespace JTL\Session\Handler;
 
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use stdClass;
 
 /**
@@ -43,7 +42,7 @@ class DB extends JTLDefault
      */
     public function open($path, $name)
     {
-        $this->lifeTime = \get_cfg_var('session.gc_maxlifetime');
+        $this->lifeTime = (int)\get_cfg_var('session.gc_maxlifetime');
 
         return $this->db->isConnected();
     }
@@ -61,15 +60,14 @@ class DB extends JTLDefault
      */
     public function read($id)
     {
-        $res = $this->db->queryPrepared(
+        $res = $this->db->getSingleObject(
             'SELECT cSessionData FROM ' . $this->tableName . '
                 WHERE cSessionId = :id
                 AND nSessionExpires > :time',
             [
                 'id'   => $id,
                 'time' => \time()
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
 
         return $res->cSessionData ?? '';
@@ -121,10 +119,8 @@ class DB extends JTLDefault
      */
     public function gc($max_lifetime)
     {
-        // return affected rows
-        return $this->db->query(
-            'DELETE FROM ' . $this->tableName . ' WHERE nSessionExpires < ' . \time(),
-            ReturnType::AFFECTED_ROWS
-        );
+        return $this->db->getAffectedRows(
+            'DELETE FROM ' . $this->tableName . ' WHERE nSessionExpires < ' . \time()
+        ) > 0;
     }
 }

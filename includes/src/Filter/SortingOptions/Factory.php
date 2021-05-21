@@ -3,6 +3,7 @@
 namespace JTL\Filter\SortingOptions;
 
 use Illuminate\Support\Collection;
+use InvalidArgumentException;
 use JTL\Filter\ProductFilter;
 use JTL\Mapper\SortingType;
 use JTL\Plugin\PluginInterface;
@@ -95,7 +96,7 @@ class Factory
     /**
      * @param int $type
      * @return SortingOptionInterface|null
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function getSortingOption(int $type): ?SortingOptionInterface
     {
@@ -105,7 +106,7 @@ class Factory
             $mapping = $this->mapping[$type] ?? null;
         }
         if ($mapping === null) {
-            throw new \InvalidArgumentException('Cannot map type ' . $type);
+            throw new InvalidArgumentException('Cannot map type ' . $type);
         }
 
         return new $mapping($this->productFilter, $this->plugins[$type] ?? null);

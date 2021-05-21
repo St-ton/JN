@@ -1,8 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL;
 
-use JTL\DB\ReturnType;
 use JTL\xtea\XTEA;
 use stdClass;
 
@@ -76,11 +75,10 @@ class Nice
     {
         $cacheID = 'cbrocken';
         if (($brocken = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $data = Shop::Container()->getDB()->query(
+            $data = Shop::Container()->getDB()->getSingleObject(
                 'SELECT cBrocken 
                     FROM tbrocken 
-                    LIMIT 1',
-                ReturnType::SINGLE_OBJECT
+                    LIMIT 1'
             );
             if (!empty($data->cBrocken)) {
                 $passA   = \mb_substr(\base64_decode($data->cBrocken), 0, 9);
@@ -109,12 +107,11 @@ class Nice
      */
     public function checkErweiterung(int $moduleID): bool
     {
-        return ($this->apiKey !== ''
+        return $this->apiKey !== ''
             && \mb_strlen($this->apiKey) > 0
             && !empty($this->domain)
-            && \count($this->moduleIDs) > 0)
-            ? \in_array($moduleID, $this->moduleIDs, true)
-            : false;
+            && \count($this->moduleIDs) > 0
+            && \in_array($moduleID, $this->moduleIDs, true);
     }
 
     /**

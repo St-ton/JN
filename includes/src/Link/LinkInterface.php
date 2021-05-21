@@ -362,7 +362,7 @@ interface LinkInterface
     public function getFileName(): string;
 
     /**
-     * @param null|string $fileName
+     * @param string $fileName
      */
     public function setFileName(string $fileName): void;
 

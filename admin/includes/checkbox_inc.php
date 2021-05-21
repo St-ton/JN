@@ -67,7 +67,7 @@ function plausiCheckBox(array $post, array $languages): array
 }
 
 /**
- * @param array $post
+ * @param array $post - pre-filtered post data
  * @param LanguageModel[] $languages
  * @return CheckBox
  */

@@ -90,11 +90,11 @@ class Campaign
     public function insertInDB(): int
     {
         $obj             = new stdClass();
-        $obj->cName      = $this->cName;
-        $obj->cParameter = $this->cParameter;
-        $obj->cWert      = $this->cWert;
-        $obj->nDynamisch = $this->nDynamisch;
-        $obj->nAktiv     = $this->nAktiv;
+        $obj->cName      = Text::filterXSS($this->cName);
+        $obj->cParameter = Text::filterXSS($this->cParameter);
+        $obj->cWert      = Text::filterXSS($this->cWert);
+        $obj->nDynamisch = (int)$this->nDynamisch;
+        $obj->nAktiv     = (int)$this->nAktiv;
         $obj->dErstellt  = $this->dErstellt;
         $this->kKampagne = Shop::Container()->getDB()->insert('tkampagne', $obj);
         if (\mb_convert_case($this->dErstellt, MB_CASE_LOWER) === 'now()') {
@@ -111,13 +111,13 @@ class Campaign
     public function updateInDB(): int
     {
         $obj             = new stdClass();
-        $obj->cName      = $this->cName;
-        $obj->cParameter = $this->cParameter;
-        $obj->cWert      = $this->cWert;
-        $obj->nDynamisch = $this->nDynamisch;
-        $obj->nAktiv     = $this->nAktiv;
+        $obj->cName      = Text::filterXSS($this->cName);
+        $obj->cParameter = Text::filterXSS($this->cParameter);
+        $obj->cWert      = Text::filterXSS($this->cWert);
+        $obj->nDynamisch = (int)$this->nDynamisch;
+        $obj->nAktiv     = (int)$this->nAktiv;
         $obj->dErstellt  = $this->dErstellt;
-        $obj->kKampagne  = $this->kKampagne;
+        $obj->kKampagne  = (int)$this->kKampagne;
 
         $res = Shop::Container()->getDB()->update('tkampagne', 'kKampagne', $obj->kKampagne, $obj);
         if (\mb_convert_case($this->dErstellt, MB_CASE_LOWER) === 'now()') {

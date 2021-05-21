@@ -139,7 +139,7 @@
                     <div class="item">
                         <div class="custom-control custom-checkbox">
                             <input class="custom-control-input" type="checkbox" name="cOption_arr[]" value="shopkunden" tabindex="14" id="Shopkunden" />
-                            <label class="custom-control-label" for="Shopkunden">{__('deleteCustomers')}</label>
+                            <label class="custom-control-label" for="Shopkunden">{__('deleteCustomersAndOrders')}</label>
                         </div>
                     </div>
                     <div class="item">
@@ -152,6 +152,21 @@
                         <div class="custom-control custom-checkbox">
                             <input class="custom-control-input" type="checkbox" name="cOption_arr[]" value="kupons" tabindex="15" id="Kupons" />
                             <label class="custom-control-label" for="Kupons">{__('deleteCoupons')}</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="subheading1">{__('settings')}</div>
+                    <hr class="mb-n3">
+                </div>
+                <div class="card-body">
+                    <div class="item">
+                        <div class="custom-control custom-checkbox">
+                            <input class="custom-control-input" type="checkbox" name="cOption_arr[]" value="shopeinstellungen" tabindex="14" id="shopeinstellungen" />
+                            <label class="custom-control-label" for="shopeinstellungen">{__('deleteShopSettings')}</label>
                         </div>
                     </div>
                 </div>

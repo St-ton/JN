@@ -2,7 +2,6 @@
 
 namespace JTL\Customer;
 
-use JTL\DB\ReturnType;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
 use stdClass;
@@ -488,19 +487,13 @@ class CustomerGroup
      */
     public static function getGroups(): array
     {
-        $groups = [];
-        $items  = Shop::Container()->getDB()->query(
-            'SELECT kKundengruppe 
-                FROM tkundengruppe',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        foreach ($items as $item) {
-            if (isset($item->kKundengruppe) && $item->kKundengruppe > 0) {
-                $groups[] = new self((int)$item->kKundengruppe);
-            }
-        }
-
-        return $groups;
+        return Shop::Container()->getDB()->getCollection(
+            'SELECT kKundengruppe AS id
+                FROM tkundengruppe
+                WHERE kKundengruppe > 0'
+        )->map(static function ($e) {
+            return (int)$e->id;
+        })->mapInto(self::class)->toArray();
     }
 
     /**

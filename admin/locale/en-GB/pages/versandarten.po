@@ -15,7 +15,7 @@ msgid "createShippingMethod"
 msgstr "Create shipping method"
 
 msgid "createShippingMethodTitle"
-msgstr "Creating shipping method"
+msgstr "Creating a shipping method"
 
 msgid "createShippingMethodDesc"
 msgstr "Create a new shipping method for JTL-Shop. You can later map it to one of the shipping methods in JTL-Wawi."
@@ -136,6 +136,9 @@ msgstr "Add"
 
 msgid "freeShipping"
 msgstr "Free shipping from"
+
+msgid "freeShippingBasketValue"
+msgstr "Free shipping after last scale"
 
 msgid "maxCosts"
 msgstr "Capping"

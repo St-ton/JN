@@ -89,6 +89,7 @@ class Page
 
     loadFromData(data)
     {
+        opc.emit('page.loadFromData', data);
         return this.io.createPagePreview({areas: data.areas})
             .then(this.onLoad);
     }
@@ -158,11 +159,11 @@ class Page
     onLoad(preview)
     {
         let areas = this.rootAreas;
-
         this.clear();
 
         areas.each((i, area) => {
             area = this.jq(area);
+            if (area.data('area-foreign')) return;
             let areaId = area.data('area-id');
             area.html(preview[areaId]);
             delete preview[areaId];
@@ -206,7 +207,7 @@ class Page
 
     clear()
     {
-        this.rootAreas.empty();
+        this.rootAreas.not('[data-area-foreign]').empty();
     }
 
     toJSON(withDom)
@@ -297,9 +298,7 @@ class Page
     {
         let elm             = portlet;
         let widthHeuristics = {xs: 1, sm: 1, md: 1, lg: 1};
-
-        console.log('computePortletWidthHeuristics for', portlet.data('portlet').class);
-
+        
         while (!elm.is(this.rootAreas) && !elm.is(this.offscreenAreas)) {
             if (elm[0].classList.contains('opc-col')) {
                 let areaId = elm.data('area-id').match(/^col-([0-9])+$/)[1];

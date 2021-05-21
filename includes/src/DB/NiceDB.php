@@ -53,7 +53,7 @@ class NiceDB implements DbInterface
     private static $instance;
 
     /**
-     * @var PDO
+     * @var PDO|null
      */
     private $pdo;
 
@@ -72,22 +72,38 @@ class NiceDB implements DbInterface
      */
     private $transactionCount = 0;
 
-    /** @deprecated  */
-    public const RET_SINGLE_OBJECT = 1;
-    /** @deprecated  */
-    public const RET_ARRAY_OF_OBJECTS = 2;
-    /** @deprecated  */
-    public const RET_AFFECTED_ROWS = 3;
-    /** @deprecated  */
-    public const RET_LAST_INSERTED_ID = 7;
-    /** @deprecated  */
-    public const RET_SINGLE_ASSOC_ARRAY = 8;
-    /** @deprecated  */
-    public const RET_ARRAY_OF_ASSOC_ARRAYS = 9;
-    /** @deprecated  */
-    public const RET_QUERYSINGLE = 10;
-    /** @deprecated  */
-    public const RET_ARRAY_OF_BOTH_ARRAYS = 11;
+    /**
+     * @deprecated Use ReturnType::SINGLE_OBJECT instead
+     */
+    public const RET_SINGLE_OBJECT = ReturnType::SINGLE_OBJECT;
+    /**
+     * @deprecated Use ReturnType::ARRAY_OF_OBJECTS instead
+     */
+    public const RET_ARRAY_OF_OBJECTS = ReturnType::ARRAY_OF_OBJECTS;
+    /**
+     * @deprecated Use ReturnType::AFFECTED_ROWS instead
+     */
+    public const RET_AFFECTED_ROWS = ReturnType::AFFECTED_ROWS;
+    /**
+     * @deprecated Use ReturnType::LAST_INSERTED_ID instead
+     */
+    public const RET_LAST_INSERTED_ID = ReturnType::LAST_INSERTED_ID;
+    /**
+     * @deprecated Use ReturnType::SINGLE_ASSOC_ARRAY instead
+     */
+    public const RET_SINGLE_ASSOC_ARRAY = ReturnType::SINGLE_ASSOC_ARRAY;
+    /**
+     * @deprecated Use ReturnType::SINGLE_ASSOC_ARRAY instead
+     */
+    public const RET_ARRAY_OF_ASSOC_ARRAYS = ReturnType::ARRAY_OF_ASSOC_ARRAYS;
+    /**
+     * @deprecated Use ReturnType::QUERYSINGLE instead
+     */
+    public const RET_QUERYSINGLE = ReturnType::QUERYSINGLE;
+    /**
+     * @deprecated Use ReturnType::ARRAY_OF_BOTH_ARRAYS instead
+     */
+    public const RET_ARRAY_OF_BOTH_ARRAYS = ReturnType::ARRAY_OF_BOTH_ARRAYS;
 
     /**
      * create DB Connection with default parameters
@@ -154,9 +170,9 @@ class NiceDB implements DbInterface
      */
     private function initDebugging(bool $debugOverride = false): void
     {
-        if ($debugOverride === false && PROFILE_QUERIES !== false) {
+        if ($debugOverride === false && \PROFILE_QUERIES !== false) {
             $this->debugLevel = \DEBUG_LEVEL;
-            if (PROFILE_QUERIES === true) {
+            if (\PROFILE_QUERIES === true) {
                 $this->debug = true;
             }
         }
@@ -747,9 +763,9 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function executeQuery(string $stmt, int $return, bool $echo = false, $fnInfo = null)
+    public function executeQuery(string $stmt, int $return = ReturnType::DEFAULT, bool $echo = false, $fnInfo = null)
     {
-        return $this->_execute(0, $stmt, null, $return, $echo, $fnInfo);
+        return $this->_execute(0, $stmt, [], $return, $echo, $fnInfo);
     }
 
     /**
@@ -758,7 +774,7 @@ class NiceDB implements DbInterface
     public function executeQueryPrepared(
         string $stmt,
         array $params,
-        int $return,
+        int $return = ReturnType::DEFAULT,
         bool $echo = false,
         $fnInfo = null
     ) {
@@ -771,11 +787,69 @@ class NiceDB implements DbInterface
     public function queryPrepared(
         string $stmt,
         array $params,
-        int $return,
+        int $return = ReturnType::DEFAULT,
         bool $echo = false,
-        $fnINfo = null
+        $fnInfo = null
     ) {
-        return $this->_execute(1, $stmt, $params, $return, $echo, $fnINfo);
+        return $this->_execute(1, $stmt, $params, $return, $echo, $fnInfo);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getArrays(string $stmt, array $params = []): array
+    {
+        return $this->_execute(1, $stmt, $params, ReturnType::ARRAY_OF_ASSOC_ARRAYS);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getObjects(string $stmt, array $params = []): array
+    {
+        return $this->_execute(1, $stmt, $params, ReturnType::ARRAY_OF_OBJECTS);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getCollection(string $stmt, array $params = []): Collection
+    {
+        return $this->_execute(1, $stmt, $params, ReturnType::COLLECTION);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSingleObject(string $stmt, array $params = []): ?stdClass
+    {
+        $res = $this->_execute(1, $stmt, $params, ReturnType::SINGLE_OBJECT);
+
+        return $res !== false ? $res : null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSingleArray(string $stmt, array $params = []): ?array
+    {
+        return $this->_execute(1, $stmt, $params, ReturnType::SINGLE_ASSOC_ARRAY);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAffectedRows(string $stmt, array $params = []): int
+    {
+        return $this->_execute(1, $stmt, $params, ReturnType::AFFECTED_ROWS);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getPDOStatement(string $stmt, array $params = []): PDOStatement
+    {
+        return $this->_execute(1, $stmt, $params, ReturnType::QUERYSINGLE);
     }
 
     /**
@@ -783,9 +857,9 @@ class NiceDB implements DbInterface
      *
      * @param int           $type - Type [0 => query, 1 => prepared]
      * @param string        $stmt - Statement to be executed
-     * @param array         $params - An array of values with as many elements as there are bound parameters
+     * @param array|null    $params - An array of values with as many elements as there are bound parameters
      * @param int           $return - what should be returned.
-     * @param int|bool      $echo print current stmt
+     * @param bool          $echo print current stmt
      * @param null|callable $fnInfo
      * 1  - single fetched object
      * 2  - array of fetched objects
@@ -994,7 +1068,7 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function query($stmt, $return, bool $echo = false)
+    public function query($stmt, int $return = ReturnType::DEFAULT, bool $echo = false)
     {
         return $this->executeQuery($stmt, $return, $echo);
     }

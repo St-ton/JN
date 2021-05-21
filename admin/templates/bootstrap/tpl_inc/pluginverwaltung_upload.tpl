@@ -27,6 +27,9 @@
             var response = data.response,
                 alert = $('#plugin-install-upload-upload-error');
             if (response.status === 'OK') {
+                if (typeof vLicenses !== 'undefined' && typeof response.license !== 'undefined' && response.license !== null) {
+                    vLicenses[response.dir_name.replace('/', '')] = response.license;
+                }
                 alert.hide();
                 var wasActiveVerfuegbar = $('#verfuegbar').hasClass('active'),
                     wasActiveFehlerhaft = $('#fehlerhaft').hasClass('active');

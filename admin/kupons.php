@@ -3,7 +3,6 @@
 use JTL\Alert\Alert;
 use JTL\Checkout\Kupon;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
@@ -30,20 +29,41 @@ $coupon      = null;
 $alertHelper = Shop::Container()->getAlertService();
 $errors      = [];
 $res         = handleCsvImportAction('kupon', static function ($obj, &$importDeleteDone, $importType = 2) {
-    $db = Shop::Container()->getDB();
-    if ($importType === 0 && $importDeleteDone === false) {
-        $db->query('TRUNCATE TABLE tkupon', ReturnType::AFFECTED_ROWS);
-        $db->query('TRUNCATE TABLE tkuponsprache', ReturnType::AFFECTED_ROWS);
-        $importDeleteDone = true;
-    }
-
+    $db          = Shop::Container()->getDB();
     $couponNames = [];
+    $cols        = Shop::Container()->getDB()->getCollection(
+        'SELECT `column_name` AS name
+            FROM information_schema.columns 
+            WHERE `table_schema` = :sma
+                AND `table_name` = :tn',
+        ['sma' => DB_NAME, 'tn' => 'tkupon']
+    )->map(static function ($e) {
+        return $e->name;
+    })->toArray();
 
     foreach (get_object_vars($obj) as $key => $val) {
         if (mb_strpos($key, 'cName_') === 0) {
             $couponNames[mb_substr($key, 6)] = $val;
             unset($obj->$key);
         }
+        if (!in_array($key, $cols, true)) {
+            unset($obj->$key);
+        }
+    }
+    if (!isset(
+        $obj->cCode,
+        $obj->nGanzenWKRabattieren,
+        $obj->cKunden,
+        $obj->cKategorien,
+        $obj->cHersteller,
+        $obj->cArtikel
+    )) {
+        return false;
+    }
+    if ($importType === 0 && $importDeleteDone === false) {
+        $db->query('TRUNCATE TABLE tkupon');
+        $db->query('TRUNCATE TABLE tkuponsprache');
+        $importDeleteDone = true;
     }
 
     if (isset($obj->cCode) && $db->select('tkupon', 'cCode', $obj->cCode) !== null) {
@@ -67,8 +87,12 @@ $res         = handleCsvImportAction('kupon', static function ($obj, &$importDel
 }, [], null, 2, $errors);
 
 if ($res > 0) {
-    foreach ($errors as $key => $error) {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, $error, 'errorImportCSV_' . $key);
+    if (count($errors) > 0) {
+        foreach ($errors as $key => $error) {
+            $alertHelper->addAlert(Alert::TYPE_ERROR, $error, 'errorImportCSV_' . $key);
+        }
+    } else {
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorImportCSV'), 'errorImportCSV');
     }
 } elseif ($res === 0) {
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successImportCSV'), 'successImportCSV');
@@ -135,10 +159,7 @@ if ($action === 'bearbeiten') {
     }
 }
 if ($action === 'bearbeiten') {
-    $taxClasses    = Shop::Container()->getDB()->query(
-        'SELECT kSteuerklasse, cName FROM tsteuerklasse',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
+    $taxClasses    = Shop::Container()->getDB()->getObjects('SELECT kSteuerklasse, cName FROM tsteuerklasse');
     $manufacturers = getManufacturers($coupon->cHersteller);
     $categories    = getCategories($coupon->cKategorien);
     $customerIDs   = array_filter(
@@ -278,20 +299,20 @@ if ($action === 'bearbeiten') {
     );
 
     $smarty->assign('tab', $tab)
-           ->assign('oFilterStandard', $filterStandard)
-           ->assign('oFilterVersand', $filterVersand)
-           ->assign('oFilterNeukunden', $filterNeukunden)
-           ->assign('oPaginationStandard', $paginationStandard)
-           ->assign('oPaginationVersandkupon', $paginationVersand)
-           ->assign('oPaginationNeukundenkupon', $paginationNeukunden)
-           ->assign('oKuponStandard_arr', $standardCoupons)
-           ->assign('oKuponVersandkupon_arr', $shippingCoupons)
-           ->assign('oKuponNeukundenkupon_arr', $newCustomerCoupons)
-           ->assign('nKuponStandardCount', $nKuponStandardTotal)
-           ->assign('nKuponVersandCount', $nKuponVersandTotal)
-           ->assign('nKuponNeukundenCount', $nKuponNeukundenTotal);
+        ->assign('oFilterStandard', $filterStandard)
+        ->assign('oFilterVersand', $filterVersand)
+        ->assign('oFilterNeukunden', $filterNeukunden)
+        ->assign('oPaginationStandard', $paginationStandard)
+        ->assign('oPaginationVersandkupon', $paginationVersand)
+        ->assign('oPaginationNeukundenkupon', $paginationNeukunden)
+        ->assign('oKuponStandard_arr', $standardCoupons)
+        ->assign('oKuponVersandkupon_arr', $shippingCoupons)
+        ->assign('oKuponNeukundenkupon_arr', $newCustomerCoupons)
+        ->assign('nKuponStandardCount', $nKuponStandardTotal)
+        ->assign('nKuponVersandCount', $nKuponVersandTotal)
+        ->assign('nKuponNeukundenCount', $nKuponNeukundenTotal);
 }
 
 $smarty->assign('action', $action)
-       ->assign('couponTypes', Kupon::getCouponTypes())
-       ->display('kupons.tpl');
+    ->assign('couponTypes', Kupon::getCouponTypes())
+    ->display('kupons.tpl');

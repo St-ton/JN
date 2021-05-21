@@ -62,9 +62,7 @@ function saveShopLogo(array $files): int
  */
 function deleteShopLogo(string $logo): bool
 {
-    return is_file(PFAD_ROOT . $logo)
-        ? unlink(PFAD_ROOT . $logo)
-        : false;
+    return is_file(PFAD_ROOT . $logo) && unlink(PFAD_ROOT . $logo);
 }
 
 /**

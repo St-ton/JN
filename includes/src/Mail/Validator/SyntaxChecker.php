@@ -144,7 +144,7 @@ final class SyntaxChecker
             $html = $this->renderer->renderHTML($id);
             $text = $this->renderer->renderText($id);
             if (!\in_array($moduleID, ['core_jtl_footer', 'core_jtl_header'], true)
-                && (\mb_strlen(trim($html)) === 0 || \mb_strlen(trim($text)) === 0)
+                && (\mb_strlen(\trim($html)) === 0 || \mb_strlen(\trim($text)) === 0)
             ) {
                 $model->setHasError(true);
                 $res->state   = 'fail';

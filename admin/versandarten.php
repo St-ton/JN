@@ -5,7 +5,6 @@ use JTL\Alert\Alert;
 use JTL\Checkout\Versandart;
 use JTL\Country\Country;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
@@ -155,6 +154,7 @@ if (Form::validateToken()) {
             $VersandartZahlungsarten[] = $versandartzahlungsart;
         }
 
+        $lastScaleTo              = 0.0;
         $VersandartStaffeln       = [];
         $upperLimits              = []; // Haelt alle fBis der Staffel
         $staffelDa                = true;
@@ -185,13 +185,16 @@ if (Form::validateToken()) {
 
                         $VersandartStaffeln[] = $oVersandstaffel;
                         $upperLimits[]        = $oVersandstaffel->fBis;
+                        $lastScaleTo          = $oVersandstaffel->fBis;
                     }
                 }
             }
             // Dummy Versandstaffel hinzufuegen, falls Versandart nach Warenwert und Versandkostenfrei ausgewaehlt wurde
             if ($shippingType->cModulId === 'vm_versandberechnung_warenwert_jtl'
-                && $shippingMethod->fVersandkostenfreiAbX > 0
+                && Request::postInt('versandkostenfreiAktiv') === 1
             ) {
+                $shippingMethod->fVersandkostenfreiAbX = $lastScaleTo + 0.01;
+
                 $oVersandstaffel         = new stdClass();
                 $oVersandstaffel->fBis   = 999999999;
                 $oVersandstaffel->fPreis = 0.0;
@@ -399,23 +402,16 @@ if ($step === 'neue Versandart') {
             : null);
 }
 if ($step === 'uebersicht') {
-    $customerGroups  = $db->query(
-        'SELECT kKundengruppe, cName FROM tkundengruppe ORDER BY kKundengruppe',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
-    $shippingMethods = $db->query(
-        'SELECT * FROM tversandart ORDER BY nSort, cName',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
+    $customerGroups  = $db->getObjects('SELECT kKundengruppe, cName FROM tkundengruppe ORDER BY kKundengruppe');
+    $shippingMethods = $db->getObjects('SELECT * FROM tversandart ORDER BY nSort, cName');
     foreach ($shippingMethods as $method) {
-        $method->versandartzahlungsarten = $db->query(
+        $method->versandartzahlungsarten = $db->getObjects(
             'SELECT tversandartzahlungsart.*
                 FROM tversandartzahlungsart
                 JOIN tzahlungsart
                     ON tzahlungsart.kZahlungsart = tversandartzahlungsart.kZahlungsart
                 WHERE tversandartzahlungsart.kVersandart = ' . (int)$method->kVersandart . '
-                ORDER BY tzahlungsart.cAnbieter, tzahlungsart.nSort, tzahlungsart.cName',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY tzahlungsart.cAnbieter, tzahlungsart.nSort, tzahlungsart.cName'
         );
 
         foreach ($method->versandartzahlungsarten as $smp) {
@@ -493,10 +489,9 @@ if ($step === 'uebersicht') {
             $method->einheit = 'Stück';
         }
         $method->countries                  = new Collection();
-        $method->shippingSurchargeCountries = array_column($db->queryPrepared(
+        $method->shippingSurchargeCountries = array_column($db->getArrays(
             'SELECT DISTINCT cISO FROM tversandzuschlag WHERE kVersandart = :shippingMethodID',
-            ['shippingMethodID' => (int)$method->kVersandart],
-            ReturnType::ARRAY_OF_ASSOC_ARRAYS
+            ['shippingMethodID' => (int)$method->kVersandart]
         ), 'cISO');
         foreach (explode(' ', trim($method->cLaender)) as $item) {
             if (($country = $countryHelper->getCountry($item)) !== null) {

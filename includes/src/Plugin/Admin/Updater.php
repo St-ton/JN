@@ -2,6 +2,7 @@
 
 namespace JTL\Plugin\Admin;
 
+use InvalidArgumentException;
 use JTL\DB\DbInterface;
 use JTL\Plugin\Admin\Installation\Installer;
 use JTL\Plugin\Helper;
@@ -45,10 +46,11 @@ class Updater
             return InstallCode::WRONG_PARAM;
         }
         $loader = Helper::getLoaderByPluginID($pluginID, $this->db);
-        if ($loader === null) {
+        try {
+            $plugin = $loader->init($pluginID, true);
+        } catch (InvalidArgumentException $e) {
             return InstallCode::NO_PLUGIN_FOUND;
         }
-        $plugin = $loader->init($pluginID, true);
         $this->installer->setPlugin($plugin);
         $this->installer->setDir($plugin->getPaths()->getBaseDir());
 
@@ -65,10 +67,11 @@ class Updater
             return InstallCode::WRONG_PARAM;
         }
         $loader = Helper::getLoaderByPluginID($item->getID(), $this->db);
-        if ($loader === null) {
+        try {
+            $plugin = $loader->init($item->getID(), true);
+        } catch (InvalidArgumentException $e) {
             return InstallCode::NO_PLUGIN_FOUND;
         }
-        $plugin = $loader->init($item->getID(), true);
         $this->installer->setPlugin($plugin);
         $this->installer->setDir($item->getUpdateFromDir() ?? $plugin->getPaths()->getBaseDir());
 

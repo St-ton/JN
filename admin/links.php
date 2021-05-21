@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Collection;
 use JTL\Alert\Alert;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
@@ -31,6 +30,7 @@ $alertHelper = Shop::Container()->getAlertService();
 $action      = Request::verifyGPDataString('action');
 $linkID      = Request::verifyGPCDataInt('kLink');
 $linkGroupID = Request::verifyGPCDataInt('kLinkgruppe');
+$linkAdmin->getMissingSystemPages();
 if ($action !== '' && Form::validateToken()) {
     switch ($action) {
         case 'add-link-to-linkgroup':
@@ -317,7 +317,8 @@ if ($step === 'loesch_linkgruppe' && $linkGroupID > 0) {
     $_POST = [];
 } elseif ($step === 'edit-link') {
     $step = 'neuer Link';
-    $link = (new Link($db))->load($linkID);
+    $link = new Link($db);
+    $link->load($linkID);
     $link->deref();
     $dirName = $uploadDir . $link->getID();
     $files   = [];
@@ -369,10 +370,11 @@ if ($step === 'uebersicht') {
         );
     }
     $smarty->assign('linkGroupCountByLinkID', $linkAdmin->getLinkGroupCountForLinkIDs())
+           ->assign('missingSystemPages', $linkAdmin->getMissingSystemPages())
            ->assign('linkgruppen', $linkAdmin->getLinkGroups());
 }
 if ($step === 'neuer Link') {
-    $cgroups = $db->query('SELECT * FROM tkundengruppe ORDER BY cName', ReturnType::ARRAY_OF_OBJECTS);
+    $cgroups = $db->getObjects('SELECT * FROM tkundengruppe ORDER BY cName');
     $lgl     = new LinkGroupList($db, Shop::Container()->getCache());
     $lgl->loadAll();
     $smarty->assign('specialPages', $linkAdmin->getSpecialPageTypes())

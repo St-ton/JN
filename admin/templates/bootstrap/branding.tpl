@@ -81,7 +81,7 @@
                         </div>
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="dTransparenz">{__('transparency')}:</label>
-                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 config-type-number">
                                 <div class="input-group form-counter min-w-sm">
                                     <div class="input-group-prepend">
                                         <button type="button" class="btn btn-outline-secondary border-0" data-count-down>

@@ -4,7 +4,6 @@ use JTL\Alert\Alert;
 use JTL\Campaign;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -42,7 +41,7 @@ $languageID = (int)$_SESSION['editLanguageID'];
 $instance   = new Newsletter($db, $conf);
 if (Form::validateToken()) {
     if (Request::postInt('einstellungen') === 1) {
-        if (isset($_POST['speichern'])) {
+        if (isset($_POST['speichern']) || Request::postVar('resetSetting') !== null) {
             $step = 'uebersicht';
             $alertHelper->addAlert(
                 Alert::TYPE_SUCCESS,
@@ -108,7 +107,7 @@ if (Form::validateToken()) {
             if (!empty($_POST['kNewsletterQueue']) && is_array($_POST['kNewsletterQueue'])) {
                 $noticeTMP = '';
                 foreach ($_POST['kNewsletterQueue'] as $kNewsletterQueue) {
-                    $entry = $db->queryPrepared(
+                    $entry = $db->getSingleObject(
                         'SELECT c.foreignKeyID AS newsletterID, c.cronID AS cronID, l.cBetreff
                             FROM tcron c
                             LEFT JOIN tjobqueue j 
@@ -116,8 +115,7 @@ if (Form::validateToken()) {
                             LEFT JOIN tnewsletter l 
                                 ON c.foreignKeyID = l.kNewsletter
                             WHERE c.cronID = :cronID',
-                        ['cronID' => $kNewsletterQueue],
-                        ReturnType::SINGLE_OBJECT
+                        ['cronID' => $kNewsletterQueue]
                     );
                     $db->delete('tnewsletter', 'kNewsletter', (int)$entry->newsletterID);
                     $db->delete('tcron', 'cronID', $entry->cronID);
@@ -158,17 +156,15 @@ if (Form::validateToken()) {
         } elseif (isset($_GET['anzeigen'])) {
             $step      = 'history_anzeigen';
             $historyID = (int)$_GET['anzeigen'];
-            $hist      = $db->queryPrepared(
+            $hist      = $db->getSingleObject(
                 "SELECT kNewsletterHistory, cBetreff, cHTMLStatic, cKundengruppe,
                     DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum
                     FROM tnewsletterhistory
                     WHERE kNewsletterHistory = :hid
                         AND kSprache = :lid",
-                ['hid' => $historyID, 'lid' => $languageID],
-                ReturnType::SINGLE_OBJECT
+                ['hid' => $historyID, 'lid' => $languageID]
             );
-
-            if (isset($hist->kNewsletterHistory) && $hist->kNewsletterHistory > 0) {
+            if ($hist !== null && $hist->kNewsletterHistory > 0) {
                 $smarty->assign('oNewsletterHistory', $hist);
             }
         }
@@ -195,11 +191,10 @@ if (Form::validateToken()) {
     } elseif (Request::verifyGPCDataInt('vorschau') > 0) { // Vorschau
         $nlTemplateID = Request::verifyGPCDataInt('vorschau');
         // Infos der Vorlage aus DB holen
-        $newsletterTPL = $db->query(
+        $newsletterTPL = $db->getSingleObject(
             "SELECT *, DATE_FORMAT(dStartZeit, '%d.%m.%Y %H:%i') AS Datum
                 FROM tnewslettervorlage
-                WHERE kNewsletterVorlage = " . $nlTemplateID,
-            ReturnType::SINGLE_OBJECT
+                WHERE kNewsletterVorlage = " . $nlTemplateID
         );
         $preview       = null;
         if (Request::verifyGPCDataInt('iframe') === 1) {
@@ -325,16 +320,15 @@ if (Form::validateToken()) {
                 $nlTemplateID = Request::verifyGPCDataInt('editieren');
             }
             // Infos der Vorlage aus DB holen
-            $newsletterTPL = $db->query(
+            $newsletterTPL = $db->getSingleObject(
                 "SELECT *, DATE_FORMAT(dStartZeit, '%d.%m.%Y %H:%i') AS Datum
                     FROM tnewslettervorlage
-                    WHERE kNewsletterVorlage = " . $nlTemplateID,
-                ReturnType::SINGLE_OBJECT
+                    WHERE kNewsletterVorlage = " . $nlTemplateID
             );
 
             $newsletterTPL->oZeit = $admin->getDateData($newsletterTPL->dStartZeit);
 
-            if ($newsletterTPL->kNewsletterVorlage > 0) {
+            if ($newsletterTPL !== null && $newsletterTPL->kNewsletterVorlage > 0) {
                 $productData                = $admin->getProductData($newsletterTPL->cArtikel);
                 $newsletterTPL->cArtikel    = mb_substr(
                     mb_substr($newsletterTPL->cArtikel, 1),
@@ -543,13 +537,12 @@ if (Form::validateToken()) {
             $step = 'uebersicht';
             if (is_array($_POST['kNewsletterVorlage'])) {
                 foreach ($_POST['kNewsletterVorlage'] as $nlTemplateID) {
-                    $nlTPL = $db->query(
+                    $nlTPL = $db->getSingleObject(
                         'SELECT kNewsletterVorlage, kNewslettervorlageStd
                             FROM tnewslettervorlage
-                            WHERE kNewsletterVorlage = ' . (int)$nlTemplateID,
-                        ReturnType::SINGLE_OBJECT
+                            WHERE kNewsletterVorlage = ' . (int)$nlTemplateID
                     );
-                    if (isset($nlTPL->kNewsletterVorlage) && $nlTPL->kNewsletterVorlage > 0) {
+                    if ($nlTPL !== null && $nlTPL->kNewsletterVorlage > 0) {
                         if (isset($nlTPL->kNewslettervorlageStd) && $nlTPL->kNewslettervorlageStd > 0) {
                             $db->query(
                                 'DELETE tnewslettervorlage, tnewslettervorlagestdvarinhalt
@@ -557,8 +550,7 @@ if (Form::validateToken()) {
                                     LEFT JOIN tnewslettervorlagestdvarinhalt
                                         ON tnewslettervorlagestdvarinhalt.kNewslettervorlage =
                                            tnewslettervorlage.kNewsletterVorlage
-                                    WHERE tnewslettervorlage.kNewsletterVorlage = ' . (int)$nlTemplateID,
-                                ReturnType::AFFECTED_ROWS
+                                    WHERE tnewslettervorlage.kNewsletterVorlage = ' . (int)$nlTemplateID
                             );
                         } else {
                             $db->delete(
@@ -582,29 +574,27 @@ if (Form::validateToken()) {
     }
 }
 if ($step === 'uebersicht') {
-    $recipientsCount   = (int)$db->query(
+    $recipientsCount   = (int)$db->getSingleObject(
         'SELECT COUNT(*) AS cnt
             FROM tnewsletterempfaenger
-            WHERE tnewsletterempfaenger.nAktiv = 0' . $inactiveSearchSQL->cWHERE,
-        ReturnType::SINGLE_OBJECT
+            WHERE tnewsletterempfaenger.nAktiv = 0' . $inactiveSearchSQL->cWHERE
     )->cnt;
-    $queueCount        = (int)$db->query(
+    $queueCount        = (int)$db->getSingleObject(
         "SELECT COUNT(*) AS cnt
             FROM tjobqueue
-            WHERE jobType = 'newsletter'",
-        ReturnType::SINGLE_OBJECT
+            WHERE jobType = 'newsletter'"
     )->cnt;
-    $templateCount     = (int)$db->query(
+    $templateCount     = (int)$db->getSingleObject(
         'SELECT COUNT(*) AS cnt
             FROM tnewslettervorlage
-            WHERE kSprache = ' . $languageID,
-        ReturnType::SINGLE_OBJECT
+            WHERE kSprache = :lid',
+        ['lid' => $languageID],
     )->cnt;
-    $historyCount      = (int)$db->query(
+    $historyCount      = (int)$db->getSingleObject(
         'SELECT COUNT(*) AS cnt
             FROM tnewsletterhistory
-            WHERE kSprache = ' . $languageID,
-        ReturnType::SINGLE_OBJECT
+            WHERE kSprache = :lid',
+        ['lid' => $languageID]
     )->cnt;
     $pagiInactive      = (new Pagination('inaktive'))
         ->setItemCount($recipientsCount)
@@ -621,26 +611,16 @@ if ($step === 'uebersicht') {
     $pagiSubscriptions = (new Pagination('alle'))
         ->setItemCount($admin->getSubscriberCount($activeSearchSQL))
         ->assemble();
-    $queue             = $db->queryPrepared(
-        "SELECT
-            l.cBetreff,
-            q.tasksExecuted,
-            c.cronID,
-            c.foreignKeyID,
-            c.startDate as 'Datum'
-        FROM
-            tcron c
-            LEFT JOIN tjobqueue q ON c.cronID = q.cronID
-            LEFT JOIN tnewsletter l ON c.foreignKeyID = l.kNewsletter
-        WHERE
-            c.jobType = 'newsletter'
-        ORDER BY
-            c.startDate DESC
-        LIMIT " . $pagiQueue->getLimitSQL(),
-        [
-            'langID' => $languageID,
-        ],
-        ReturnType::ARRAY_OF_OBJECTS
+    $queue             = $db->getObjects(
+        "SELECT l.cBetreff, q.tasksExecuted, c.cronID, c.foreignKeyID, c.startDate as 'Datum'
+            FROM tcron c
+                LEFT JOIN tjobqueue q ON c.cronID = q.cronID
+                LEFT JOIN tnewsletter l ON c.foreignKeyID = l.kNewsletter
+            WHERE c.jobType = 'newsletter'
+                AND l.kSprache = :langID
+            ORDER BY c.startDate DESC
+            LIMIT " . $pagiQueue->getLimitSQL(),
+        ['langID' => $languageID]
     );
     if (!($instance instanceof Newsletter)) {
         $instance = new Newsletter($db, $conf);
@@ -653,29 +633,26 @@ if ($step === 'uebersicht') {
         $entry->nAnzahlEmpfaenger = $recipient->nAnzahl;
         $entry->cKundengruppe_arr = $recipient->cKundengruppe_arr;
     }
-    $templates   = $db->query(
+    $templates   = $db->getObjects(
         'SELECT kNewsletterVorlage, kNewslettervorlageStd, cBetreff, cName
             FROM tnewslettervorlage
             WHERE kSprache = ' . $languageID . '
-            ORDER BY kNewsletterVorlage DESC LIMIT ' . $pagiTemplates->getLimitSQL(),
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY kNewsletterVorlage DESC LIMIT ' . $pagiTemplates->getLimitSQL()
     );
-    $defaultData = $db->query(
+    $defaultData = $db->getObjects(
         'SELECT *
             FROM tnewslettervorlagestd
             WHERE kSprache = ' . $languageID . '
-            ORDER BY cName',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY cName'
     );
     foreach ($defaultData as $tpl) {
-        $tpl->oNewsletttervorlageStdVar_arr = $db->query(
+        $tpl->oNewsletttervorlageStdVar_arr = $db->getObjects(
             'SELECT *
                 FROM tnewslettervorlagestdvar
-                WHERE kNewslettervorlageStd = ' . (int)$tpl->kNewslettervorlageStd,
-            ReturnType::ARRAY_OF_OBJECTS
+                WHERE kNewslettervorlageStd = ' . (int)$tpl->kNewslettervorlageStd
         );
     }
-    $inactiveRecipients = $db->query(
+    $inactiveRecipients = $db->getObjects(
         "SELECT tnewsletterempfaenger.kNewsletterEmpfaenger, tnewsletterempfaenger.cVorname AS newsVorname,
             tnewsletterempfaenger.cNachname AS newsNachname, tkunde.cVorname, tkunde.cNachname,
             tnewsletterempfaenger.cEmail, tnewsletterempfaenger.nAktiv, tkunde.kKundengruppe, tkundengruppe.cName,
@@ -688,29 +665,26 @@ if ($step === 'uebersicht') {
             WHERE tnewsletterempfaenger.nAktiv = 0
             " . $inactiveSearchSQL->cWHERE . '
             ORDER BY tnewsletterempfaenger.dEingetragen DESC
-            LIMIT ' . $pagiInactive->getLimitSQL(),
-        ReturnType::ARRAY_OF_OBJECTS
+            LIMIT ' . $pagiInactive->getLimitSQL()
     );
     foreach ($inactiveRecipients as $recipient) {
         $customer             = new Customer(isset($recipient->kKunde) ? (int)$recipient->kKunde : null);
         $recipient->cNachname = $customer->cNachname;
     }
 
-    $history              = $db->queryPrepared(
+    $history              = $db->getObjects(
         "SELECT kNewsletterHistory, nAnzahl, cBetreff, cKundengruppe,
             DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum
             FROM tnewsletterhistory
             WHERE kSprache = :lid
             ORDER BY dStart DESC
             LIMIT " . $pagiHistory->getLimitSQL(),
-        ['lid' => $languageID],
-        ReturnType::ARRAY_OF_OBJECTS
+        ['lid' => $languageID]
     );
-    $customerGroupsByName = $db->query(
+    $customerGroupsByName = $db->getObjects(
         'SELECT *
             FROM tkundengruppe
-            ORDER BY cName',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY cName'
     );
     $smarty->assign('kundengruppen', $customerGroupsByName)
         ->assign('oNewsletterQueue_arr', $queue)

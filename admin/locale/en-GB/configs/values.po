@@ -1076,6 +1076,24 @@ msgstr "Yes, mandatory"
 msgid "lieferadresse_abfragen_standardland_value(N)"
 msgstr "No"
 
+msgid "lieferadresse_abfragen_firma_value(O)"
+msgstr "Yes, optional"
+
+msgid "lieferadresse_abfragen_firma_value(Y)"
+msgstr "Yes, mandatory"
+
+msgid "lieferadresse_abfragen_firma_value(N)"
+msgstr "No"
+
+msgid "lieferadresse_abfragen_firmazusatz_value(O)"
+msgstr "Yes, optional"
+
+msgid "lieferadresse_abfragen_firmazusatz_value(Y)"
+msgstr "Yes, mandatory"
+
+msgid "lieferadresse_abfragen_firmazusatz_value(N)"
+msgstr "No"
+
 msgid "shop_ustid_bzstpruefung_value(Y)"
 msgstr "Yes"
 
@@ -1518,6 +1536,12 @@ msgid "preisverlauf_anzeigen_value(Y)"
 msgstr "Yes"
 
 msgid "preisverlauf_anzeigen_value(N)"
+msgstr "No"
+
+msgid "vergleichsliste_anzeigen_value(Y)"
+msgstr "Yes"
+
+msgid "vergleichsliste_anzeigen_value(N)"
 msgstr "No"
 
 msgid "vergleichsliste_target_value(parent)"

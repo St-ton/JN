@@ -16,8 +16,8 @@ class Uninstall extends AbstractItem
      */
     public function getNode(): array
     {
-        return !empty($base['Uninstall'])
-            ? (array)$base['Uninstall']
+        return !empty($this->baseNode['Uninstall'])
+            ? (array)$this->baseNode['Uninstall']
             : [];
     }
 

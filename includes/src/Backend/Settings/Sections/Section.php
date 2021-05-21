@@ -1,10 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * Created by PhpStorm.
- * User: mo
- * Date: 2019-01-25
- * Time: 14:40
- */
 
 namespace JTL\Backend\Settings\Sections;
 

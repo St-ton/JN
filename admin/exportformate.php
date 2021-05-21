@@ -3,11 +3,11 @@
 use Illuminate\Support\Collection;
 use JTL\Alert\Alert;
 use JTL\Backend\Revision;
-use JTL\DB\ReturnType;
 use JTL\Exportformat;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
+use JTL\Plugin\State;
 use JTL\Shop;
 
 /** @global \JTL\Backend\AdminAccount $oAccount */
@@ -28,13 +28,11 @@ $oSmartyError->nCode = 0;
 $link                = null;
 $db                  = Shop::Container()->getDB();
 $alertHelper         = Shop::Container()->getAlertService();
-if (Request::getInt('neuerExport') === 1 && Form::validateToken()) {
+$validated           = Form::validateToken();
+if (Request::getInt('neuerExport') === 1 && $validated) {
     $step = 'neuer Export';
 }
-if (Request::getInt('kExportformat') > 0
-    && !isset($_GET['action'])
-    && Form::validateToken()
-) {
+if (Request::getInt('kExportformat') > 0 && !isset($_GET['action']) && $validated) {
     $step                   = 'neuer Export';
     $_POST['kExportformat'] = (int)$_GET['kExportformat'];
 
@@ -47,7 +45,7 @@ if (Request::getInt('kExportformat') > 0
         }
     }
 }
-if (Request::postInt('neu_export') === 1 && Form::validateToken()) {
+if (Request::postInt('neu_export') === 1 && $validated) {
     $ef          = new Exportformat(0, $db);
     $checkResult = $ef->check($_POST);
     if ($checkResult === true) {
@@ -123,7 +121,7 @@ if (mb_strlen(Request::postVar('action', '')) > 0 && Request::postInt('kExportfo
     $action        = $_GET['action'];
     $kExportformat = Request::getInt('kExportformat');
 }
-if ($action !== null && $kExportformat !== null && Form::validateToken()) {
+if ($action !== null && $kExportformat !== null && $validated) {
     switch ($action) {
         case 'export':
             $async                 = isset($_GET['ajax']);
@@ -158,7 +156,7 @@ if ($action !== null && $kExportformat !== null && Form::validateToken()) {
             $_POST['kExportformat'] = $kExportformat;
             break;
         case 'delete':
-            $bDeleted = $db->query(
+            $deleted = $db->getAffectedRows(
                 "DELETE tcron, texportformat, tjobqueue, texportqueue
                    FROM texportformat
                    LEFT JOIN tcron 
@@ -172,11 +170,11 @@ if ($action !== null && $kExportformat !== null && Form::validateToken()) {
                       AND tjobqueue.jobType = 'exportformat'
                    LEFT JOIN texportqueue 
                       ON texportqueue.kExportformat = texportformat.kExportformat
-                   WHERE texportformat.kExportformat = " . $kExportformat,
-                ReturnType::AFFECTED_ROWS
+                   WHERE texportformat.kExportformat = :eid",
+                ['eid' => $kExportformat]
             );
 
-            if ($bDeleted > 0) {
+            if ($deleted > 0) {
                 $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successFormatDelete'), 'successFormatDelete');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFormatDelete'), 'errorFormatDelete');
@@ -216,11 +214,14 @@ if ($action !== null && $kExportformat !== null && Form::validateToken()) {
 }
 
 if ($step === 'uebersicht') {
-    $exportformate = $db->query(
-        'SELECT * 
-            FROM texportformat 
+    $exportformate = $db->getObjects(
+        'SELECT texportformat.*, tplugin.cPluginID 
+            FROM texportformat
+            LEFT JOIN tplugin
+               ON tplugin.kPlugin = texportformat.kPlugin
+               AND tplugin.nStatus = :stt
             ORDER BY cName',
-        ReturnType::ARRAY_OF_OBJECTS
+        ['stt' => State::ACTIVATED]
     );
     foreach ($exportformate as $item) {
         $item->kExportformat        = (int)$item->kExportformat;
@@ -247,22 +248,21 @@ if ($step === 'uebersicht') {
         );
         $item->bPluginContentExtern = $item->kPlugin > 0
             && mb_strpos($item->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false;
+        $item->enabled              = $item->kPlugin === 0 || $item->cPluginID !== null;
     }
     $smarty->assign('exportformate', $exportformate);
 }
 
 if ($step === 'neuer Export') {
-    $smarty->assign('kundengruppen', $db->query(
+    $smarty->assign('kundengruppen', $db->getObjects(
         'SELECT * 
             FROM tkundengruppe 
-            ORDER BY cName',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY cName'
     ))
-           ->assign('waehrungen', $db->query(
+           ->assign('waehrungen', $db->getObjects(
                'SELECT * 
                     FROM twaehrung 
-                    ORDER BY cStandard DESC',
-               ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY cStandard DESC'
            ))
            ->assign('oKampagne_arr', holeAlleKampagnen());
 
@@ -294,11 +294,21 @@ if ($step === 'neuer Export') {
         }
         $smarty->assign('Exportformat', $exportformat);
     }
-    $gettext = Shop::Container()->getGetText();
-    $configs = getAdminSectionSettings(CONF_EXPORTFORMATE);
+    $gettext    = Shop::Container()->getGetText();
+    $configs    = getAdminSectionSettings(CONF_EXPORTFORMATE);
+    $efSettings = Shop::Container()->getDB()->selectAll(
+        'texportformateinstellungen',
+        'kExportformat',
+        (int)($exportformat->kExportformat ?? 0)
+    );
     $gettext->localizeConfigs($configs);
 
     foreach ($configs as $config) {
+        foreach ($efSettings as $efSetting) {
+            if ($efSetting->cName === $config->cWertName) {
+                $config->gesetzterWert = $efSetting->cWert;
+            }
+        }
         $gettext->localizeConfigValues($config, $config->ConfWerte);
     }
 

@@ -13,11 +13,11 @@ use stdClass;
 interface ReferencedItemInterface
 {
     /**
-     * @param DbInterface  $db
-     * @param stdClass     $license
-     * @param Release|null $release
+     * @param DbInterface $db
+     * @param stdClass    $license
+     * @param Releases    $releases
      */
-    public function initByExsID(DbInterface $db, stdClass $license, ?Release $release): void;
+    public function initByExsID(DbInterface $db, stdClass $license, Releases $releases): void;
 
     /**
      * @return string

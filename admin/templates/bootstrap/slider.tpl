@@ -43,10 +43,11 @@
                                         </td>
                                         <td class="text-center">
                                             <div class="btn-group">
-                                                <a class="btn btn-link px-2"
+                                                <a class="btn btn-link px-2 delete-confirm"
                                                    href="slider.php?action=delete&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}"
                                                    title="{__('delete')}"
-                                                   data-toggle="tooltip">
+                                                   data-toggle="tooltip"
+                                                   data-modal-body="{$oSlider->cName}">
                                                     <span class="icon-hover">
                                                         <span class="fal fa-trash-alt"></span>
                                                         <span class="fas fa-trash-alt"></span>
@@ -77,6 +78,7 @@
                                 </tbody>
                             </table>
                         </div>
+                        {include file='tpl_inc/pagination.tpl' pagination=$pagination isBottom=true}
                     </div>
                 {/if}
                 <div class="card-footer save-wrapper">

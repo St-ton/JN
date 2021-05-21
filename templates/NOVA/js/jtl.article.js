@@ -79,9 +79,13 @@
         },
 
         getCurrent: function($item) {
-            var $current = $item.hasClass('variation') ? $item : $item.closest('.variation');
-            if ($current.tagName === 'SELECT') {
+            var $current = $item.hasClass('variation') || ($item.length === 1 && $item[0].tagName === 'SELECT')
+                ? $item
+                : $item.closest('.variation');
+            if ($current.length === 1 && $current[0].tagName === 'SELECT') {
                 $current = $item.find('option:selected');
+            } else if ($current.length === 0) {
+                $current = $item.next('.variation');
             }
 
             return $current;
@@ -104,6 +108,7 @@
             //this.registerArticleOverlay($wrapper);
             this.registerFinish($wrapper);
             window.initNumberInput();
+            this.initAbnahmeIntervallError();
         },
 
         registerAccordion: function() {
@@ -1238,7 +1243,12 @@
 
         setArticleContent: function(id, variation, url, variations, wrapper) {
             var $wrapper  = this.getWrapper(wrapper),
-                listStyle = $('#ed_list.active').length > 0 ? 'list' : 'gallery';
+                listStyle = $('#product-list-type').val();
+
+                if (listStyle === 'undefined') {
+                    listStyle = $('#ed_list.active').length > 0 ? 'list' : 'gallery';
+                }
+
                 $.evo.extended().startSpinner($wrapper);
 
             if (this.modalShown) {
@@ -1289,17 +1299,7 @@
                         $.evo.article().variationSetVal(item.key, item.value, wrapper);
                     });
 
-                    if (!$wrapper.hasClass('productbox-hover')) {
-                        $.evo.extended().autoheight();
-                    }
                     $.evo.extended().stopSpinner();
-
-                    $(wrapper + ' .list-gallery:not(.slick-initialized)').slick({
-                        lazyLoad: 'ondemand',
-                        infinite: false,
-                        dots:     false,
-                        arrows:   true
-                    });
                 }, function () {
                     $.evo.error('Error loading ' + url);
                     $.evo.extended().stopSpinner();
@@ -1316,13 +1316,12 @@
         },
 
         variationDisableAll: function(wrapper) {
-            var $wrapper = this.getWrapper(wrapper);
+            let $wrapper = this.getWrapper(wrapper);
 
             $('.swatches-selected', $wrapper).text('');
             $('[data-value].variation', $wrapper).each(function(i, item) {
                 $(item)
-                    .removeClass('active')
-                    .removeClass('loading')
+                    .removeClass('active loading')
                     .addClass('not-available');
                 $.evo.article()
                     .removeStockInfo($(item));
@@ -1339,7 +1338,7 @@
             var $wrapper = this.getWrapper(wrapper),
                 $item    = $('[data-value="' + value + '"].variation', $wrapper);
 
-            $item.removeClass('not-available');
+            $item.removeClass('not-available swatches-sold-out swatches-not-in-stock');
         },
 
         variationActive: function(key, value, def, wrapper) {
@@ -1389,8 +1388,8 @@
             }
         },
 
-        variationInfo: function(value, status, note) {
-            var $item = $('[data-value="' + value + '"].variation'),
+        variationInfo: function(value, status, note, notExists) {
+            let $item = $('[data-value="' + value + '"].variation'),
                 type = $item.attr('data-type'),
                 text,
                 content,
@@ -1438,6 +1437,11 @@
                         trigger: 'hover',
                         container: 'body'
                     });
+                    if (notExists) {
+                        $item.addClass('swatches-not-in-stock');
+                    } else {
+                        $item.addClass('swatches-sold-out');
+                    }
                     break;
             }
         },
@@ -1540,6 +1544,23 @@
                     $(this).detach()
                 });
             }, 0);
+        },
+
+        initAbnahmeIntervallError: function() {
+            let $intervallNotice = $('#intervall-notice');
+            if ($intervallNotice.length > 0) {
+                $('#quantity').on('change', function () {
+                    let $step   = $(this).attr('step'),
+                        diff    = Math.abs(($(this).val() % $step) - $step),
+                        epsilon = 0.00000001;
+                    if (diff < epsilon || diff + epsilon > $step) {
+                        $('#intervall-notice-danger').remove();
+                    } else {
+                        $('#quantity-grp').after('<div id="intervall-notice-danger" class="alert alert-danger mt-2">'
+                            + $intervallNotice.html() + '</div>');
+                    }
+                });
+            }
         }
     };
 

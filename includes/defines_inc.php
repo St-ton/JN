@@ -34,19 +34,19 @@ define('CONF_EMAILBLACKLIST', 111);
 define('CONF_METAANGABEN', 112);
 define('CONF_NEWS', 113);
 define('CONF_SITEMAP', 114);
-/**
- * @deprecated
- */
-define('CONF_KUNDENWERBENKUNDEN', 116);
 define('CONF_SUCHSPECIAL', 119);
-define('CONF_CHECKBOX', 120);
 define('CONF_AUSWAHLASSISTENT', 121);
 define('CONF_CACHING', 124);
-define('CONF_LOGO', 125);
-define('CONF_PLUGINZAHLUNGSARTEN', 126);
 define('CONF_FS', 127);
 define('CONF_CRON', 128);
 define('CONF_CONSENTMANAGER', 129);
+/**
+ * @deprecated
+ */
+define('CONF_CHECKBOX', 120);
+define('CONF_KUNDENWERBENKUNDEN', 116);
+define('CONF_LOGO', 125);
+define('CONF_PLUGINZAHLUNGSARTEN', 126);
 //
 define('C_WARENKORBPOS_TYP_ARTIKEL', 1);
 define('C_WARENKORBPOS_TYP_VERSANDPOS', 2);
@@ -64,6 +64,8 @@ define('C_WARENKORBPOS_TYP_ZINSAUFSCHLAG', 13);
 define('C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR', 14);
 define('C_WARENKORBPOS_TYP_RESERVED1', 15); // reserviert für Wawi intern - SHOP-3545
 define('C_WARENKORBPOS_TYP_RESERVED2', 16); // reserviert für Retoure in POS - SHOP-3545
+define('C_WARENKORBPOS_TYP_RESERVED3', 17); // reserviert für Mehrzweckgutschein
+define('C_WARENKORBPOS_TYP_RESERVED4', 18); // reserviert für MehrzweckgutscheinDigital
 //
 define('KONFIG_ITEM_TYP_ARTIKEL', 0);
 define('KONFIG_ITEM_TYP_SPEZIAL', 1);
@@ -573,3 +575,4 @@ define('CACHING_GROUP_MANUFACTURER', 'mnf');
 define('CACHING_GROUP_FILTER', 'fltr');
 define('CACHING_GROUP_FILTER_CHARACTERISTIC', 'fltrchr');
 define('CACHING_GROUP_STATUS', 'status');
+define('CACHING_GROUP_OPC', 'opc');

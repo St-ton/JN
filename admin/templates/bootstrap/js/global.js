@@ -552,6 +552,8 @@ $(document).ready(function () {
 
     checkSingleSettingCard();
     onChangeFormSubmit();
+    getSettingListeners();
+    deleteConfirmation();
 });
 
 $(window).on('load', () => {
@@ -848,4 +850,66 @@ function startSpinner()
 function stopSpinner()
 {
     $('body').find('.ajax-spinner').remove();
+}
+
+function getSettingListeners()
+{
+    $('.setting-changelog').on('click', function (e) {
+        e.preventDefault();
+        let $self = $(this);
+        ioCall('getSettingLog', [$(this).data('setting-name')], function (data) {
+            $('#modal-footer').modal('show');
+            $('#modal-footer .modal-body').html(data);
+            $('#modal-footer .modal-title').html(
+                $self.data('name') + ' | ' + $self.data('setting-name') + ' | ' + $self.data('id'));
+        });
+    });
+}
+
+/**
+ * open a delete modal to confirm deletion
+ *
+ * 3 types of delete buttons:
+ * 1. By href: .delete-confirm - needs a href tag
+ * 2. By form: .delete-confirm - needs type="submit"
+ * 3. By io: .delete-confirm - needs .delete-confirm-io and confirm event is triggered by .trigger('delete.io');
+ *
+ * modal title can be changed by: data-modal-title
+ * modal body can be changed by: data-modal-body
+ */
+function deleteConfirmation()
+{
+    $('.delete-confirm').on('click', function (e) {
+        e.preventDefault();
+        let href           = $(this).attr('href'),
+            $self          = $(this),
+            $confirmButton = $('#modal-footer-delete-confirm-yes'),
+            $modal         = $('#modal-footer-delete-confirm'),
+            title          = $self.data('modal-title') || $('#modal-footer-delete-confirm-default-title').html(),
+            body           = $self.data('modal-body') || '',
+            submit         = $self.data('modal-submit') || $('#modal-footer-delete-confirm-default-submit').html();
+
+        if (href !== undefined && href !== '') {
+            $confirmButton.off().on('click', function () {
+                window.location = href;
+            });
+        } else if ($(this).attr('type') === 'submit') {
+            $confirmButton.off().on('click', function () {
+                let $form = $self.closest('form');
+                $form.append(
+                    '<input type="hidden" name="' + $self.attr('name') + '" value="' + $self.attr('value') + '" />'
+                );
+                $form.submit();
+            });
+        } else if ($self.hasClass('delete-confirm-io')) {
+            $confirmButton.off().on('click', function () {
+                $self.trigger('delete.io');
+                $modal.modal('hide');
+            });
+        }
+        $('#modal-footer-delete-confirm .modal-title').html(title);
+        $('#modal-footer-delete-confirm .modal-body').html(body);
+        $confirmButton.html(submit);
+        $modal.modal('show');
+    });
 }

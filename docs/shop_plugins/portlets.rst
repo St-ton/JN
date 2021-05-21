@@ -44,7 +44,7 @@ Weiterhin wird diese Klasse von ``JTL\OPC\Portlet`` abgeleitet.
 
     <?php declare(strict_types=1);
 
-    namespace Plugin\jtl_test\Portlets;
+    namespace Plugin\jtl_test\Portlets\MyPortlet;
 
     use JTL\OPC\Portlet;
 
@@ -110,7 +110,7 @@ Folgende Felder sind für alle Typen verfügbar:
             'some-text'   => [
                 'label'   => __('a text'),
                 'type'    => 'text',
-                'width'   => 30
+                'width'   => 30,
                 'default' => __('Hello world!'),
             ],
             'type-select' => [

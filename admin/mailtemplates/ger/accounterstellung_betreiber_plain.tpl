@@ -12,7 +12,7 @@ Zur Kontrolle hier noch einmal Ihre Kundendaten:
 {if $Kunde->cAdressZusatz}{$Kunde->cAdressZusatz}
 {/if}{$Kunde->cPLZ} {$Kunde->cOrt}
 {if $Kunde->cBundesland}{$Kunde->cBundesland}
-{/if}{$Kunde->cLand}
+{/if}{$Kunde->angezeigtesLand}
 {if $Kunde->cTel}Telefon: {$Kunde->cTel}
 {/if}{if $Kunde->cMobil}Mobil: {$Kunde->cMobil}
 {/if}{if $Kunde->cFax}Fax: {$Kunde->cFax}

@@ -8,7 +8,7 @@
             {include file='snippets/extension.tpl'}
         {/block}
 
-        {container class="snippets-wishlist"}
+        {container fluid=$Link->getIsFluid() class="snippets-wishlist"}
         {if $step === 'wunschliste versenden' && $Einstellungen.global.global_wunschliste_freunde_aktiv === 'Y'}
             {block name='snippets-wishlist-content-heading-email'}
                 <div class="h2">{lang key='wishlistViaEmail' section='login'}</div>
@@ -466,7 +466,7 @@
                                                                     small=true}
                                                             {/block}
                                                             {block name='snippets-wishlist-form-basket-characteristics-selected'}
-                                                                {row tag='dl' class="formrow-small"}
+                                                                {formrow tag='dl' class="formrow-small"}
                                                                     {foreach $wlPosition->CWunschlistePosEigenschaft_arr as $CWunschlistePosEigenschaft}
                                                                         {if $CWunschlistePosEigenschaft->cFreifeldWert}
                                                                             {col tag='dt' cols=6}{$CWunschlistePosEigenschaft->cEigenschaftName}:{/col}
@@ -476,7 +476,7 @@
                                                                             {col tag='dd' cols=6}{$CWunschlistePosEigenschaft->cEigenschaftWertName}{/col}
                                                                         {/if}
                                                                     {/foreach}
-                                                                {/row}
+                                                                {/formrow}
                                                             {/block}
                                                         </div>
                                                     {/block}
@@ -514,16 +514,16 @@
                                                                                         {/button}
                                                                                     {/inputgroupprepend}
                                                                                     {input readonly=($isCurrenctCustomer !== true)
-                                                                                        type="{if $wlPosition->Artikel->cTeilbar === 'Y' && $wlPosition->Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
+                                                                                        type="number"
                                                                                         min="{if $wlPosition->Artikel->fMindestbestellmenge}{$wlPosition->Artikel->fMindestbestellmenge}{else}0{/if}"
                                                                                         max=$wlPosition->Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|default:''
                                                                                         required=($wlPosition->Artikel->fAbnahmeintervall > 0)
-                                                                                        step="{if $wlPosition->Artikel->fAbnahmeintervall > 0}{$wlPosition->Artikel->fAbnahmeintervall}{/if}"
+                                                                                        step="{if $wlPosition->Artikel->fAbnahmeintervall > 0}{$wlPosition->Artikel->fAbnahmeintervall}{else}1{/if}"
                                                                                         class="quantity wunschliste_anzahl"
                                                                                         name="Anzahl_{$wlPosition->kWunschlistePos}"
                                                                                         aria=["label"=>"{lang key='quantity'}"]
                                                                                         value="{$wlPosition->fAnzahl}"
-                                                                                        data=["decimals"=>"{if $wlPosition->Artikel->fAbnahmeintervall > 0}2{else}0{/if}"]
+                                                                                        data=["decimals"=>{getDecimalLength quantity=$wlPosition->Artikel->fAbnahmeintervall}]
                                                                                     }
                                                                                     {inputgroupappend}
                                                                                         {if $wlPosition->Artikel->cEinheit}

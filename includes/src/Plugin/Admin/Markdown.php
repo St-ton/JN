@@ -23,7 +23,7 @@ class Markdown extends Parsedown
     }
 
     /**
-     * @param $excerpt
+     * @param array|mixed $excerpt
      * @return array|void|null
      */
     protected function inlineImage($excerpt)

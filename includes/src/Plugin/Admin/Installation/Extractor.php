@@ -140,7 +140,7 @@ class Extractor
         foreach ($this->manager->listContents('root://' . \PFAD_DBES_TMP . $dirName, true) as $item) {
             /** @var FileAttributes $item */
             $source = $item->path();
-            $target = $base . \str_replace(\PFAD_DBES_TMP, '', $source);
+            $target = $base . \str_replace(\PFAD_DBES_TMP, '', \str_replace('root://', '', $source));
             if ($item->isDir()) {
                 try {
                     $this->manager->createDirectory('plgn://' . $target);
@@ -149,10 +149,10 @@ class Extractor
                 }
             } else {
                 try {
-                    $this->manager->move('root://' . $source, 'plgn://' . $target);
+                    $this->manager->move($source, 'plgn://' . $target);
                 } catch (Throwable $e) {
                     $this->manager->delete('plgn://' . $target);
-                    $this->manager->move('root://' . $source, 'plgn://' . $target);
+                    $this->manager->move($source, 'plgn://' . $target);
                 }
                 $baseName = \pathinfo($source)['basename'] ?? '';
                 if (\in_array($baseName, ['license.md', 'License.md', 'LICENSE.md'], true)) {
@@ -197,7 +197,7 @@ class Extractor
         foreach ($this->manager->listContents('root://' . \PFAD_DBES_TMP . $dirName, true) as $item) {
             /** @var FileAttributes $item */
             $source = $item->path();
-            $target = $base . \str_replace(\PFAD_DBES_TMP, '', $source);
+            $target = $base . \str_replace(\PFAD_DBES_TMP, '', \str_replace('root://', '', $source));
             if ($item->isDir()) {
                 try {
                     $this->manager->createDirectory('tpl://' . $target);
@@ -206,10 +206,10 @@ class Extractor
                 }
             } else {
                 try {
-                    $this->manager->move('root://' . $source, 'tpl://' . $target);
+                    $this->manager->move($source, 'tpl://' . $target);
                 } catch (Throwable $e) {
                     $this->manager->delete('tpl://' . $target);
-                    $this->manager->move('root://' . $source, 'tpl://' . $target);
+                    $this->manager->move($source, 'tpl://' . $target);
                 }
             }
         }

@@ -8,7 +8,7 @@ use Illuminate\Support\Collection;
  * Class LinkGroupCollection
  *
  * this allows calls like LinkService::getLinkgroups()->Fuss to access a link group by its template name
- * for compatability reasons only
+ * for compatibility reasons only
  *
  * @package JTL\Link
  */

@@ -16,6 +16,7 @@ class Visitors extends AbstractWidget
      */
     public function init()
     {
+        $this->setPermission('STATS_VISITOR_VIEW');
     }
 
     /**

@@ -7,7 +7,6 @@ use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Plugin\Admin\Validation\ValidatorInterface;
 use JTL\Plugin\InstallCode;
 use JTL\Plugin\LegacyPluginLoader;
@@ -82,11 +81,10 @@ final class Listing
         try {
             $all = $this->db->selectAll('tplugin', [], [], '*', 'cName, cAutor, nPrio');
         } catch (InvalidArgumentException $e) {
-            $all = $this->db->query(
+            $all = $this->db->getObjects(
                 'SELECT *, 0 AS bExtension
                     FROM tplugin
-                    ORDER BY cName, cAutor, nPrio',
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY cName, cAutor, nPrio'
             );
         }
         $data         = map(
@@ -233,6 +231,7 @@ final class Listing
             if ($plugin !== null) {
                 $plugin->setMinShopVersion($item->getMinShopVersion());
                 $plugin->setMaxShopVersion($item->getMaxShopVersion());
+                $item = $plugin;
             }
             if ($code === InstallCode::DUPLICATE_PLUGIN_ID && $plugin !== null) {
                 $item->setInstalled(true);

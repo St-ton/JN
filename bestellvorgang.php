@@ -30,6 +30,7 @@ $step         = 'accountwahl';
 $cart         = Frontend::getCart();
 $alertService = Shop::Container()->getAlertService();
 $linkService  = Shop::Container()->getLinkService();
+$smarty       = Shop::Smarty();
 $controller   = new AccountController(Shop::Container()->getDB(), $alertService, $linkService, $smarty);
 $valid        = Form::validateToken();
 

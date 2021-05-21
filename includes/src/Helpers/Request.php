@@ -14,7 +14,7 @@ class Request
 {
     /**
      * @param string $var
-     * @param null   $default
+     * @param mixed  $default
      * @return mixed|null
      */
     public static function getVar(string $var, $default = null)
@@ -24,7 +24,7 @@ class Request
 
     /**
      * @param string $var
-     * @param null   $default
+     * @param mixed  $default
      * @return mixed|null
      */
     public static function postVar(string $var, $default = null)
@@ -277,7 +277,7 @@ class Request
      * @param array|string|null $post
      * @return mixed
      */
-    public static function http_get_contents($url, int $timeout = 5, $post = null)
+    public static function http_get_contents(string $url, int $timeout = 5, $post = null)
     {
         return self::make_http_request($url, $timeout, $post);
     }
@@ -334,7 +334,7 @@ class Request
 
             \curl_close($curl);
         } elseif (\ini_get('allow_url_fopen')) {
-            @\ini_set('default_socket_timeout', $timeout);
+            @\ini_set('default_socket_timeout', (string)$timeout);
             $fileHandle = @\fopen($url, 'r');
             if ($fileHandle) {
                 @\stream_set_timeout($fileHandle, $timeout);

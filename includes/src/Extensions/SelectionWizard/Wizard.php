@@ -3,7 +3,6 @@
 namespace JTL\Extensions\SelectionWizard;
 
 use JTL\Catalog\Category\Kategorie;
-use JTL\DB\ReturnType;
 use JTL\Filter\Items\Characteristic;
 use JTL\Filter\Option;
 use JTL\Filter\ProductFilter;
@@ -12,6 +11,7 @@ use JTL\Nice;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
+use stdClass;
 
 /**
  * Class Wizard
@@ -119,51 +119,65 @@ class Wizard
      */
     private function loadFromDB(string $keyName, int $id, int $languageID, bool $activeOnly = true): void
     {
-        $item = Shop::Container()->getDB()->queryPrepared(
-            'SELECT *
-                FROM tauswahlassistentort AS ao
-                    JOIN tauswahlassistentgruppe AS ag
-                        ON ao.kAuswahlAssistentGruppe = ag.kAuswahlAssistentGruppe
-                            AND ao.cKey = :ckey
-                            AND ao.kKey = :kkey
-                            AND ag.kSprache = :ksprache' .
-            ($activeOnly ? ' AND ag.nAktiv = 1' : ''),
-            [
-                'ckey'     => $keyName,
-                'kkey'     => $id,
-                'ksprache' => $languageID
-            ],
-            ReturnType::SINGLE_OBJECT
+        $cache   = Shop::Container()->getCache();
+        $cacheID = 'jtl_sw_' . $keyName . '_' . $id . '_' . $languageID . '_' . (int)$activeOnly;
+        if (($item = $cache->get($cacheID)) === false) {
+            $item = Shop::Container()->getDB()->getSingleObject(
+                'SELECT *
+                    FROM tauswahlassistentort AS ao
+                        JOIN tauswahlassistentgruppe AS ag
+                            ON ao.kAuswahlAssistentGruppe = ag.kAuswahlAssistentGruppe
+                                AND ao.cKey = :ckey
+                                AND ao.kKey = :kkey
+                                AND ag.kSprache = :ksprache' .
+                ($activeOnly ? ' AND ag.nAktiv = 1' : ''),
+                [
+                    'ckey'     => $keyName,
+                    'kkey'     => $id,
+                    'ksprache' => $languageID
+                ]
+            );
+            if ($item === false) {
+                $item = null;
+            }
+            $this->init($item, $activeOnly);
+            $cache->set($cacheID, $this, [\CACHING_GROUP_CORE]);
+        }
+    }
+
+    /**
+     * @param stdClass|null $item
+     * @param bool          $activeOnly
+     */
+    private function init(?stdClass $item, bool $activeOnly): void
+    {
+        if ($item === null) {
+            return;
+        }
+        foreach (\get_object_vars($item) as $name => $value) {
+            $this->$name = $value;
+        }
+        $this->kAuswahlAssistentOrt    = (int)$this->kAuswahlAssistentOrt;
+        $this->kAuswahlAssistentGruppe = (int)$this->kAuswahlAssistentGruppe;
+        $this->kKey                    = (int)$this->kKey;
+        $this->kSprache                = (int)$this->kSprache;
+        $this->nAktiv                  = (int)$this->nAktiv;
+
+        $questionIDs = Shop::Container()->getDB()->getObjects(
+            'SELECT kAuswahlAssistentFrage AS id
+                FROM tauswahlassistentfrage
+                WHERE kAuswahlAssistentGruppe = :groupID' .
+            ($activeOnly ? ' AND nAktiv = 1 ' : ' ') .
+            'ORDER BY nSort',
+            ['groupID' => $this->kAuswahlAssistentGruppe]
         );
 
-        if ($item !== null && $item !== false) {
-            foreach (\get_object_vars($item) as $name => $value) {
-                $this->$name = $value;
-            }
+        $this->questions = [];
 
-            $this->kAuswahlAssistentOrt    = (int)$this->kAuswahlAssistentOrt;
-            $this->kAuswahlAssistentGruppe = (int)$this->kAuswahlAssistentGruppe;
-            $this->kKey                    = (int)$this->kKey;
-            $this->kSprache                = (int)$this->kSprache;
-            $this->nAktiv                  = (int)$this->nAktiv;
-
-            $questionIDs = Shop::Container()->getDB()->queryPrepared(
-                'SELECT kAuswahlAssistentFrage AS id
-                    FROM tauswahlassistentfrage
-                    WHERE kAuswahlAssistentGruppe = :groupID' .
-                ($activeOnly ? ' AND nAktiv = 1 ' : ' ') .
-                'ORDER BY nSort',
-                ['groupID' => $this->kAuswahlAssistentGruppe],
-                ReturnType::ARRAY_OF_OBJECTS
-            );
-
-            $this->questions = [];
-
-            foreach ($questionIDs as $questionID) {
-                $question                                  = new Question((int)$questionID->id);
-                $this->questions[]                         = $question;
-                $this->questionsAssoc[$question->kMerkmal] = $question;
-            }
+        foreach ($questionIDs as $questionID) {
+            $question                                  = new Question((int)$questionID->id);
+            $this->questions[]                         = $question;
+            $this->questionsAssoc[$question->kMerkmal] = $question;
         }
     }
 

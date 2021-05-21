@@ -671,9 +671,9 @@ class Text
         if (!\preg_match('/^\d{1,2}\.\d{1,2}\.(\d{4})$/', $data)) {
             return 2;
         }
-        [$tag, $monat, $jahr] = \explode('.', $data);
+        [$day, $month, $year] = \explode('.', $data);
 
-        return !\checkdate($monat, $tag, $jahr) ? 3 : 0;
+        return !\checkdate((int)$month, (int)$day, (int)$year) ? 3 : 0;
     }
 
     /**
@@ -701,7 +701,7 @@ class Text
      * @param bool                $copy   false if objects should be changed, true if they should be cloned first
      * @return string|array|object converted data
      */
-    public static function utf8_convert_recursive($data, $encode = true, $copy = false)
+    public static function utf8_convert_recursive($data, bool $encode = true, bool $copy = false)
     {
         if (\is_string($data)) {
             $isUtf8 = \mb_detect_encoding($data, 'UTF-8', true) !== false;
@@ -761,7 +761,7 @@ class Text
      * @param string $string
      * @return string
      */
-    public static function removeNumerousWhitespaces($string): string
+    public static function removeNumerousWhitespaces(string $string): string
     {
         while (\mb_strpos($string, '  ')) {
             $string = \str_replace('  ', ' ', $string);

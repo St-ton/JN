@@ -59,7 +59,6 @@
                             {/foreach}
                         </div>
                     {/if}
-                    {include file='tpl_inc/pagination.tpl' pagination=$pagination isBottom=true}
                     <div class="save-wrapper">
                         <div class="row">
                             <div class="col-sm-6 col-xl-auto text-left">
@@ -82,6 +81,7 @@
                         </div>
                     </div>
                 </form>
+                {include file='tpl_inc/pagination.tpl' pagination=$pagination isBottom=true}
             </div>
         </div>
         <div role="tabpanel" class="tab-pane fade{if $cTab === 'config'} active show{/if}" id="config">

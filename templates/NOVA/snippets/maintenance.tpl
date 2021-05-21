@@ -76,8 +76,8 @@
                 {/if}
 
                 {if !empty($smarty.session.Sprachen) && count($smarty.session.Sprachen) > 1}
-                    {foreach item=oSprache from=$smarty.session.Sprachen}
-                        <link rel="alternate" hreflang="{$oSprache->cISO639}" href="{$oSprache->cURLFull}">
+                    {foreach $smarty.session.Sprachen as $language}
+                        <link rel="alternate" hreflang="{$language->getIso639()}" href="{$language->getUrl()}">
                     {/foreach}
                 {/if}
                 <script src="{$ShopURL}/{$templateDir}js/jquery-3.5.1.min.js"></script>

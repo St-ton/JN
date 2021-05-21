@@ -11,9 +11,14 @@ use Exception;
 interface TemplateServiceInterface
 {
     /**
-     *
+     * save template data to object cache
      */
     public function save(): void;
+
+    /**
+     * reset currently active template
+     */
+    public function reset(): void;
 
     /**
      * @param bool $withLicense

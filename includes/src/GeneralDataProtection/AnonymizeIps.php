@@ -2,8 +2,6 @@
 
 namespace JTL\GeneralDataProtection;
 
-use JTL\DB\ReturnType;
-
 /**
  * Class AnonymizeIps
  * @package JTL\GeneralDataProtection
@@ -132,11 +130,7 @@ class AnonymizeIps extends Method implements MethodInterface
             $sql .= " ORDER BY {$colData['ColCreated']} ASC
                 LIMIT {$this->workLimit}";
 
-            $res = $this->db->query(
-                $sql,
-                ReturnType::ARRAY_OF_OBJECTS
-            );
-            foreach ($res as $row) {
+            foreach ($this->db->getObjects($sql) as $row) {
                 try {
                     $row->cIP = $anonymizer->setIp($row->cIP)->anonymize();
                 } catch (\Exception $e) {

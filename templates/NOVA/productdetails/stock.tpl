@@ -1,7 +1,7 @@
 {block name='productdetails-stock'}
     {assign var=anzeige value=$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige}
     <div class="delivery-status">
-    {block name='productdetails-stock-delivery-status'}
+    {block name='productdetails-stock-stock-info'}
         <ul class="list-unstyled">
             {if !isset($shippingTime)}
                 {block name='productdetails-stock-shipping-time'}

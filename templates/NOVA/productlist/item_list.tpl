@@ -167,11 +167,10 @@
                                                                 <span class="fas fa-minus"></span>
                                                             {/button}
                                                         {/inputgroupprepend}
-                                                        {input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}" min="0"
-                                                            step="{if $Artikel->fAbnahmeintervall > 0}{$Artikel->fAbnahmeintervall}{/if}"
+                                                        {input type="number" min="0"
+                                                            step="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}any{elseif $Artikel->fAbnahmeintervall > 0}{$Artikel->fAbnahmeintervall}{else}1{/if}"
                                                             min="{if $Artikel->fMindestbestellmenge}{$Artikel->fMindestbestellmenge}{else}0{/if}"
                                                             max=$Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|default:''
-                                                            size="2"
                                                             id="quantity{$Artikel->kArtikel}"
                                                             class="quantity"
                                                             name="anzahl"

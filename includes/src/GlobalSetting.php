@@ -3,7 +3,7 @@
 namespace JTL;
 
 use Illuminate\Support\Collection;
-use JTL\Cache\JTLCache;
+use JTL\Cache\JTLCacheInterface;
 
 /**
  * Class GlobalSetting
@@ -17,7 +17,7 @@ final class GlobalSetting
     private static $instance;
 
     /**
-     * @var JTLCache
+     * @var JTLCacheInterface
      */
     private $cache;
 

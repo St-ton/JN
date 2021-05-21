@@ -63,7 +63,7 @@ class LegacyPluginLoader extends AbstractLoader
         $this->cacheID = \CACHING_GROUP_PLUGIN . '_' . $id . '_' . $languageID;
         if ($invalidateCache === true) {
             $this->cache->flush('hook_list');
-            $this->cache->flushTags([\CACHING_GROUP_PLUGIN, \CACHING_GROUP_PLUGIN . '_' . $id]);
+            $this->cache->flushTags([\CACHING_GROUP_CORE, \CACHING_GROUP_PLUGIN, \CACHING_GROUP_PLUGIN . '_' . $id]);
         } elseif (($plugin = $this->loadFromCache()) !== null) {
             $this->plugin = $plugin;
 
@@ -80,7 +80,7 @@ class LegacyPluginLoader extends AbstractLoader
     /**
      * @inheritDoc
      */
-    protected function loadLicense($data): License
+    protected function loadLicense(stdClass $data): License
     {
         $license = new License();
         $license->setClass($data->cLizenzKlasse ?? '');
@@ -96,8 +96,7 @@ class LegacyPluginLoader extends AbstractLoader
     public function saveToCache(PluginInterface $plugin): bool
     {
         return $this->cacheID !== null
-            ? $this->cache->set($this->cacheID, $plugin, [\CACHING_GROUP_PLUGIN, $plugin->getCache()->getGroup()])
-            : false;
+            && $this->cache->set($this->cacheID, $plugin, [\CACHING_GROUP_PLUGIN, $plugin->getCache()->getGroup()]);
     }
 
     /**
@@ -111,7 +110,7 @@ class LegacyPluginLoader extends AbstractLoader
     /**
      * @inheritdoc
      */
-    public function loadFromObject($obj, string $currentLanguageCode): PluginInterface
+    public function loadFromObject(stdClass $obj, string $currentLanguageCode): PluginInterface
     {
         $currentLanguageCode = $currentLanguageCode
             ?? Shop::getLanguageCode()

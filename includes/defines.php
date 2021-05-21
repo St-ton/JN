@@ -89,7 +89,7 @@ ifndef('SMARTY_DIR', PFAD_ROOT . PFAD_SMARTY);
  * @deprecated since 5.0.0
  */
 ifndef('PFAD_PHPQUERY', PFAD_INCLUDES . 'vendor/jtlshop/phpquery/src/');
-ifndef('PFAD_PCLZIP', PFAD_INCLUDES . 'vendor/pclzip/pclzip/');
+ifndef('PFAD_PCLZIP', PFAD_INCLUDES . 'vendor/chamilo/pclzip/');
 ifndef('PFAD_PHPMAILER', PFAD_INCLUDES . 'vendor/phpmailer/phpmailer/');
 ifndef('PFAD_BLOWFISH', PFAD_INCLUDES_LIBS . 'vendor/jtlshop/xtea/');
 ifndef('PFAD_CLASSES_CORE', PFAD_CLASSES . 'core/');  // DEPRECATED
@@ -278,11 +278,13 @@ ifndef('SEO_SLUG_LOWERCASE', false);
 
 ifndef('SAFE_MODE', $GLOBALS['plgSafeMode'] ?? file_exists(PFAD_ROOT. PFAD_ADMIN . PFAD_COMPILEDIR . 'safemode.lck'));
 
+ifndef('TRACK_VISITORS', true);
+
 /**
- * @param string     $constant
- * @param string|int $value
+ * @param string $constant
+ * @param mixed  $value
  */
-function ifndef($constant, $value)
+function ifndef(string $constant, $value)
 {
     defined($constant) || define($constant, $value);
 }

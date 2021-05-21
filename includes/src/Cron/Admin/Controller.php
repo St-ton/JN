@@ -10,7 +10,6 @@ use JTL\Cron\JobHydrator;
 use JTL\Cron\JobInterface;
 use JTL\Cron\Type;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Events\Dispatcher;
 use JTL\Events\Event;
 use JTL\Mapper\JobTypeToJob;
@@ -77,16 +76,14 @@ final class Controller
      */
     public function deleteQueueEntry(int $cronId): int
     {
-        $affected = (int)$this->db->queryPrepared(
+        $affected = $this->db->getAffectedRows(
             'DELETE FROM tjobqueue WHERE cronID = :id',
-            ['id' => $cronId],
-            ReturnType::AFFECTED_ROWS
+            ['id' => $cronId]
         );
 
-        return $affected + (int)$this->db->queryPrepared(
+        return $affected + $this->db->getAffectedRows(
             'DELETE FROM tcron WHERE cronID = :id',
-            ['id' => $cronId],
-            ReturnType::AFFECTED_ROWS
+            ['id' => $cronId]
         );
     }
 
@@ -152,15 +149,14 @@ final class Controller
     public function getJobs(): array
     {
         $jobs = [];
-        $all  = $this->db->query(
+        $all  = $this->db->getObjects(
             'SELECT tcron.*, tjobqueue.isRunning, tjobqueue.jobQueueID, texportformat.cName AS exportName
                 FROM tcron
                 LEFT JOIN tjobqueue
                     ON tcron.cronID = tjobqueue.cronID
                 LEFT JOIN texportformat
                     ON texportformat.kExportformat = tcron.foreignKeyID
-                    AND tcron.tableName = \'texportformat\'',
-            ReturnType::ARRAY_OF_OBJECTS
+                    AND tcron.tableName = \'texportformat\''
         );
         foreach ($all as $cron) {
             $cron->jobQueueID = (int)($cron->jobQueueID ?? 0);

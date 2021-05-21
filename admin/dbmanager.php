@@ -21,11 +21,11 @@ $restrictedTables = ['tadminlogin', 'tbrocken', 'tsession', 'tsynclogin'];
  * @param string $query
  * @return array|int|object
  */
-function exec_query($query)
+function exec_query(string $query)
 {
     try {
         Shop::Container()->getDB()->beginTransaction();
-        $result = Shop::Container()->getDB()->executeQuery($query, 9);
+        $result = Shop::Container()->getDB()->query($query, ReturnType::ARRAY_OF_ASSOC_ARRAYS);
         Shop::Container()->getDB()->commit();
 
         return $result;
@@ -121,7 +121,7 @@ switch (true) {
         }
         // count without limit
         $query = implode(' ', $queryParts);
-        $count = Shop::Container()->getDB()->queryPrepared($query, $queryParams, ReturnType::AFFECTED_ROWS);
+        $count = Shop::Container()->getDB()->getAffectedRows($query, $queryParams);
         $pages = (int)ceil($count / $filter['limit']);
         // limit
         $queryParams['limit_count']  = $filter['limit'];
@@ -171,7 +171,7 @@ switch (true) {
                 if ($q['is_select'] !== true) {
                     throw new Exception(sprintf('Query is restricted to SELECT statements'));
                 }
-                foreach ($q['select_tables'] as $t) {
+                foreach ($q['select_tables'] ?? [] as $t) {
                     [$table, $dbname] = $t;
                     if ($dbname !== null && strcasecmp($dbname, DB_NAME) !== 0) {
                         throw new Exception(sprintf('Well, at least u tried :)'));
@@ -198,6 +198,7 @@ switch (true) {
         }
 
         $smarty->assign('sub', 'command')
+            ->assign('columns', [])
             ->display('dbmanager.tpl');
         break;
 
@@ -206,6 +207,7 @@ switch (true) {
 
         $smarty->assign('definedTables', $definedTables)
             ->assign('sub', 'default')
+            ->assign('columns', [])
             ->display('dbmanager.tpl');
         break;
 }

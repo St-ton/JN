@@ -3,7 +3,6 @@
 use JTL\Alert\Alert;
 use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Customer\Customer;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Pagination\Pagination;
@@ -34,24 +33,21 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
 if (Request::getInt('delete') > 0 && Form::validateToken()) {
     Wishlist::delete(Request::getInt('delete'), true);
 }
-$itemCount     = (int)Shop::Container()->getDB()->query(
+$itemCount     = (int)Shop::Container()->getDB()->getSingleObject(
     'SELECT COUNT(DISTINCT twunschliste.kWunschliste) AS cnt
          FROM twunschliste
          JOIN twunschlistepos
-             ON twunschliste.kWunschliste = twunschlistepos.kWunschliste',
-    ReturnType::SINGLE_OBJECT
+             ON twunschliste.kWunschliste = twunschlistepos.kWunschliste'
 )->cnt;
-$productCount  = (int)Shop::Container()->getDB()->query(
+$productCount  = (int)Shop::Container()->getDB()->getSingleObject(
     'SELECT COUNT(*) AS cnt
-        FROM twunschlistepos',
-    ReturnType::SINGLE_OBJECT
+        FROM twunschlistepos'
 )->cnt;
-$friends       = (int)Shop::Container()->getDB()->query(
+$friends       = (int)Shop::Container()->getDB()->getSingleObject(
     'SELECT COUNT(*) AS cnt
         FROM twunschliste
         JOIN twunschlisteversand 
-            ON twunschliste.kWunschliste = twunschlisteversand.kWunschliste',
-    ReturnType::SINGLE_OBJECT
+            ON twunschliste.kWunschliste = twunschlisteversand.kWunschliste'
 )->cnt;
 $oPagiPos      = (new Pagination('pos'))
     ->setItemCount($itemCount)
@@ -62,7 +58,7 @@ $oPagiArtikel  = (new Pagination('artikel'))
 $oPagiFreunde  = (new Pagination('freunde'))
     ->setItemCount($friends)
     ->assemble();
-$sentWishLists = Shop::Container()->getDB()->query(
+$sentWishLists = Shop::Container()->getDB()->getObjects(
     "SELECT tkunde.kKunde, tkunde.cNachname, tkunde.cVorname, twunschlisteversand.nAnzahlArtikel, 
         twunschliste.kWunschliste, twunschliste.cName, twunschliste.cURLID, 
         twunschlisteversand.nAnzahlEmpfaenger, DATE_FORMAT(twunschlisteversand.dZeit, '%d.%m.%Y  %H:%i') AS Datum
@@ -72,8 +68,7 @@ $sentWishLists = Shop::Container()->getDB()->query(
         LEFT JOIN tkunde 
             ON twunschliste.kKunde = tkunde.kKunde
         ORDER BY twunschlisteversand.dZeit DESC
-        LIMIT " . $oPagiFreunde->getLimitSQL(),
-    ReturnType::ARRAY_OF_OBJECTS
+        LIMIT " . $oPagiFreunde->getLimitSQL()
 );
 foreach ($sentWishLists as $wishList) {
     if ($wishList->kKunde !== null) {
@@ -81,7 +76,7 @@ foreach ($sentWishLists as $wishList) {
         $wishList->cNachname = $customer->cNachname;
     }
 }
-$wishLists = Shop::Container()->getDB()->query(
+$wishLists = Shop::Container()->getDB()->getObjects(
     "SELECT tkunde.kKunde, tkunde.cNachname, tkunde.cVorname, twunschliste.kWunschliste, twunschliste.cName,
         twunschliste.cURLID, DATE_FORMAT(twunschliste.dErstellt, '%d.%m.%Y %H:%i') AS Datum, 
         twunschliste.nOeffentlich, COUNT(twunschlistepos.kWunschliste) AS Anzahl, tbesucher.kBesucher as isOnline
@@ -94,8 +89,7 @@ $wishLists = Shop::Container()->getDB()->query(
             ON tbesucher.kKunde=tkunde.kKunde
         GROUP BY twunschliste.kWunschliste
         ORDER BY twunschliste.dErstellt DESC
-        LIMIT " . $oPagiPos->getLimitSQL(),
-    ReturnType::ARRAY_OF_OBJECTS
+        LIMIT " . $oPagiPos->getLimitSQL()
 );
 foreach ($wishLists as $wishList) {
     if ($wishList->kKunde !== null) {
@@ -103,14 +97,13 @@ foreach ($wishLists as $wishList) {
         $wishList->cNachname = $customer->cNachname;
     }
 }
-$wishListPositions = Shop::Container()->getDB()->query(
+$wishListPositions = Shop::Container()->getDB()->getObjects(
     "SELECT kArtikel, cArtikelName, count(kArtikel) AS Anzahl,
         DATE_FORMAT(dHinzugefuegt, '%d.%m.%Y %H:%i') AS Datum
         FROM twunschlistepos
         GROUP BY kArtikel
         ORDER BY Anzahl DESC
-        LIMIT " . $oPagiArtikel->getLimitSQL(),
-    ReturnType::ARRAY_OF_OBJECTS
+        LIMIT " . $oPagiArtikel->getLimitSQL()
 );
 
 $smarty->assign('oConfig_arr', getAdminSectionSettings($settingsIDs, true))

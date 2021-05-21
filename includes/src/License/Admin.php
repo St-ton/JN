@@ -4,20 +4,13 @@ namespace JTL\License;
 
 use Exception;
 use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Exception\RequestException;
-use InvalidArgumentException;
 use JTL\Alert\Alert;
 use JTL\Backend\AuthToken;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\License\Exception\ApiResultCodeException;
-use JTL\License\Exception\ChecksumValidationException;
-use JTL\License\Exception\DownloadValidationException;
-use JTL\License\Exception\FilePermissionException;
 use JTL\License\Installer\Helper;
 use JTL\License\Struct\ExsLicense;
 use JTL\Mapper\PluginValidation;
@@ -198,7 +191,7 @@ class Admin
             $download  = $helper->getDownload($itemID);
             $result    = $action === self::ACTION_UPDATE
                 ? $installer->update($exsID, $download, $response)
-                : $installer->install($itemID, $download, $response, true);
+                : $installer->install($itemID, $download, $response);
             if ($result === InstallCode::DUPLICATE_PLUGIN_ID && $action !== self::ACTION_UPDATE) {
                 $download = $helper->getDownload($itemID);
                 $result   = $installer->forceUpdate($download, $response);
@@ -215,14 +208,7 @@ class Admin
                     ->assign('mappedErrorMessage', $mappedErrorMsg)
                     ->assign('resultCode', $result);
             }
-        } catch (ClientException
-        | ConnectException
-        | FilePermissionException
-        | ApiResultCodeException
-        | DownloadValidationException
-        | ChecksumValidationException
-        | InvalidArgumentException $e
-        ) {
+        } catch (Exception $e) {
             $response->status = 'FAILED';
             $msg              = $e->getMessage();
             if (\strpos($msg, 'response:') !== false) {
@@ -379,7 +365,7 @@ class Admin
         try {
             $this->manager->update($force, $this->getInstalledExtensionPostData());
             $this->checker->handleExpiredLicenses($this->manager);
-        } catch (RequestException | Exception | ClientException $e) {
+        } catch (Exception $e) {
             Shop::Container()->getAlertService()->addAlert(
                 Alert::TYPE_ERROR,
                 __('errorFetchLicenseAPI') . '' . $e->getMessage(),

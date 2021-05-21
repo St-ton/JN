@@ -7,7 +7,6 @@ use JTL\Alert\Alert;
 use JTL\CheckBox;
 use JTL\Customer\Customer;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -249,8 +248,7 @@ final class Controller
             'UPDATE tnewsletterempfaenger, tkunde
                 SET tnewsletterempfaenger.kKunde = tkunde.kKunde
                 WHERE tkunde.cMail = tnewsletterempfaenger.cEmail
-                    AND tnewsletterempfaenger.kKunde = 0',
-            ReturnType::DEFAULT
+                    AND tnewsletterempfaenger.kKunde = 0'
         );
         $upd           = new stdClass();
         $upd->dOptCode = 'NOW()';
@@ -266,11 +264,11 @@ final class Controller
     }
 
     /**
-     * @param $dbField
-     * @param $value
+     * @param string $dbField
+     * @param string $value
      * @return int
      */
-    private function deleteSubscriber($dbField, $value): int
+    private function deleteSubscriber(string $dbField, string $value): int
     {
         return $this->db->delete(
             'tnewsletterempfaenger',
@@ -347,16 +345,15 @@ final class Controller
      */
     public function getHistory(int $kKundengruppe, int $id): ?stdClass
     {
-        $history = $this->db->queryPrepared(
+        $history = $this->db->getSingleObject(
             "SELECT kNewsletterHistory, nAnzahl, cBetreff, cHTMLStatic, cKundengruppeKey,
                 DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum
                 FROM tnewsletterhistory
                 WHERE kNewsletterHistory = :hid",
-            ['hid' => $id],
-            ReturnType::SINGLE_OBJECT
+            ['hid' => $id]
         );
 
-        return $history->kNewsletterHistory > 0 && $this->checkHistory($kKundengruppe, $history->cKundengruppeKey)
+        return $history !== null && $this->checkHistory($kKundengruppe, $history->cKundengruppeKey)
             ? $history
             : null;
     }

@@ -3,7 +3,6 @@
 namespace JTL\GeneralDataProtection;
 
 use JTL\Customer\Customer;
-use JTL\DB\ReturnType;
 
 /**
  * Class CleanupGuestAccountsWithoutOrders
@@ -30,18 +29,17 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
      */
     private function cleanupCustomers(): void
     {
-        $guestAccounts = $this->db->queryPrepared(
+        $guestAccounts = $this->db->getObjects(
             "SELECT kKunde
                 FROM tkunde
                 WHERE nRegistriert = 0
                   AND cAbgeholt ='Y'
                 LIMIT :pLimit",
-            ['pLimit' => $this->workLimit],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['pLimit' => $this->workLimit]
         );
 
         foreach ($guestAccounts as $guestAccount) {
-            (new Customer((int)$guestAccount->kKunde))->deleteAccount(Journal::ISSUER_TYPE_APPLICATION, 0, true);
+            (new Customer((int)$guestAccount->kKunde))->deleteAccount(Journal::ISSUER_TYPE_APPLICATION, 0);
         }
     }
 }

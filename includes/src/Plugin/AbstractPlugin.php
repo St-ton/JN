@@ -116,6 +116,11 @@ abstract class AbstractPlugin implements PluginInterface
     protected $paymentMethods;
 
     /**
+     * @var int|null
+     */
+    public $nCalledHook;
+
+    /**
      * @inheritdoc
      */
     public function getID(): int

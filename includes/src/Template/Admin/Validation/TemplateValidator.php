@@ -69,9 +69,7 @@ class TemplateValidator implements ValidatorInterface
     }
 
     /**
-     * @param string $path
-     * @param array  $xml
-     * @return int
+     * @inheritdoc
      */
     public function validate(string $path, array $xml): int
     {

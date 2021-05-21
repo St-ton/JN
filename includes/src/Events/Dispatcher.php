@@ -61,7 +61,7 @@ final class Dispatcher
     /**
      * Fire an event and call the listeners.
      *
-     * @param string|object $eventName
+     * @param string       $eventName
      * @param array|object $arguments
      */
     public function fire(string $eventName, $arguments = []): void
@@ -75,7 +75,6 @@ final class Dispatcher
      * Remove a set of listeners from the dispatcher.
      *
      * @param string $eventName
-     * @return void
      */
     public function forget(string $eventName): void
     {

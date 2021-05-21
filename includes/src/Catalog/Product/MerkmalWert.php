@@ -2,7 +2,6 @@
 
 namespace JTL\Catalog\Product;
 
-use JTL\DB\ReturnType;
 use JTL\Helpers\URL;
 use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
@@ -88,7 +87,7 @@ class MerkmalWert
     public $cBildpfadKlein;
 
     /**
-     * @var string
+     * @var int
      */
     public $nBildKleinVorhanden;
 
@@ -98,7 +97,7 @@ class MerkmalWert
     public $cBildpfadNormal;
 
     /**
-     * @var string
+     * @var int
      */
     public $nBildNormalVorhanden;
 
@@ -163,13 +162,12 @@ class MerkmalWert
             $joinSQL   = 'INNER JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
                             AND tmerkmalwertsprache.kSprache = ' . $languageID;
         }
-        $data = Shop::Container()->getDB()->query(
+        $data = Shop::Container()->getDB()->getSingleObject(
             'SELECT tmerkmalwert.*, ' . $selectSQL . '
                 FROM tmerkmalwert ' .  $joinSQL . '
-                WHERE tmerkmalwert.kMerkmalWert = ' . $id,
-            ReturnType::SINGLE_OBJECT
+                WHERE tmerkmalwert.kMerkmalWert = ' . $id
         );
-        if (isset($data->kMerkmalWert) && $data->kMerkmalWert > 0) {
+        if ($data !== null && $data->kMerkmalWert > 0) {
             foreach (\array_keys(\get_object_vars($data)) as $member) {
                 $this->$member = $data->$member;
             }
@@ -211,5 +209,13 @@ class MerkmalWert
     public function getID()
     {
         return $this->kMerkmalWert;
+    }
+
+    /**
+     * @return string
+     */
+    public function getValue()
+    {
+        return $this->cWert;
     }
 }

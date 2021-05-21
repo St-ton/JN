@@ -182,7 +182,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {if $oNews_arr|@count > 0 && $oNews_arr}
+                                {if $oNews_arr|@count > 0}
                                     {foreach $oNews_arr as $oNews}
                                         <tr>
                                             <td class="check">
@@ -422,9 +422,7 @@
                                                 <input class="form-control" type="text" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}" tabindex="1" />
                                             {/if}
                                         </div>
-                                        {if $oConfig->cBeschreibung}
-                                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=$oConfig->cBeschreibung cID=$oConfig->kEinstellungenConf}</div>
-                                        {/if}
+                                        {include file='snippets/einstellungen_icons.tpl' cnf=$oConfig}
                                     </div>
                                 {/if}
                             {/foreach}

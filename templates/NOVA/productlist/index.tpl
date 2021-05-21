@@ -33,6 +33,10 @@
                 {/if}
             {/if}
 
+            {block name='productlist-index-list-type'}
+                <input type="hidden" id="product-list-type" value="{$style}">
+            {/block}
+
             {if !empty($Suchergebnisse->getError())}
                 {block name='productlist-index-alert'}
                     {alert variant="danger"}{$Suchergebnisse->getError()}{/alert}

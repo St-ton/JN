@@ -110,7 +110,7 @@ Folgende Felder sind für alle Typen verfügbar:
             'some-text'   => [
                 'label'   => __('a text'),
                 'type'    => 'text',
-                'width'   => 30
+                'width'   => 30,
                 'default' => __('Hello world!'),
             ],
             'type-select' => [

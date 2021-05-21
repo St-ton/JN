@@ -2,9 +2,10 @@
 
 namespace JTL\GeneralDataProtection;
 
+use DateTime;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Shop;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class TableCleaner
@@ -18,12 +19,12 @@ class TableCleaner
     /**
      * object wide date at the point of instanciating
      *
-     * @var object DateTime
+     * @var DateTime
      */
     private $now;
 
     /**
-     * @var object Monolog\Logger
+     * @var LoggerInterface|null
      */
     private $logger;
 
@@ -41,7 +42,6 @@ class TableCleaner
     private $methods = [
         ['name' => 'AnonymizeIps', 'intervalDays' => 7],
         ['name' => 'AnonymizeDeletedCustomer', 'intervalDays' => 7],
-        ['name' => 'CleanupOldGuestAccounts', 'intervalDays' => 365],
         ['name' => 'CleanupCustomerRelicts', 'intervalDays' => 0],
         ['name' => 'CleanupGuestAccountsWithoutOrders', 'intervalDays' => 0],
         ['name' => 'CleanupNewsletterRecipients', 'intervalDays' => 30],
@@ -62,7 +62,7 @@ class TableCleaner
             $this->logger = null;
         }
         $this->db  = Shop::Container()->getDB();
-        $this->now = new \DateTime();
+        $this->now = new DateTime();
     }
 
     /**
@@ -96,8 +96,7 @@ class TableCleaner
         $this->db->queryPrepared(
             'DELETE FROM tanondatajournal
                 WHERE dEventTime <= LAST_DAY(DATE_ADD(:pNow - INTERVAL 2 YEAR, INTERVAL 12 - MONTH(:pNow) MONTH))',
-            ['pNow' => $this->now->format('Y-m-d H:i:s')],
-            ReturnType::DEFAULT
+            ['pNow' => $this->now->format('Y-m-d H:i:s')]
         );
     }
 }

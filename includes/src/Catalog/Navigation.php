@@ -50,7 +50,7 @@ class Navigation
     private $product;
 
     /**
-     * @var Link|null
+     * @var LinkInterface|null
      */
     private $link;
 
@@ -101,13 +101,13 @@ class Navigation
     /**
      * @return KategorieListe|null
      */
-    public function getCategoryList(): KategorieListe
+    public function getCategoryList(): ?KategorieListe
     {
         return $this->categoryList;
     }
 
     /**
-     * @param KategorieListe|null $categoryList
+     * @param KategorieListe $categoryList
      */
     public function setCategoryList(KategorieListe $categoryList): void
     {
@@ -139,7 +139,7 @@ class Navigation
     }
 
     /**
-     * @param Artikel|null $product
+     * @param Artikel $product
      */
     public function setProduct(Artikel $product): void
     {
@@ -155,7 +155,7 @@ class Navigation
     }
 
     /**
-     * @param LinkInterface|null $link
+     * @param LinkInterface $link
      */
     public function setLink(LinkInterface $link): void
     {
@@ -187,7 +187,7 @@ class Navigation
     }
 
     /**
-     * @param ProductFilter|null $productFilter
+     * @param ProductFilter $productFilter
      */
     public function setProductFilter(ProductFilter $productFilter): void
     {
@@ -203,7 +203,7 @@ class Navigation
     }
 
     /**
-     * @param NavigationEntry|null $customNavigationEntry
+     * @param NavigationEntry $customNavigationEntry
      */
     public function setCustomNavigationEntry(NavigationEntry $customNavigationEntry): void
     {

@@ -27,7 +27,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
     }
     $bannerPath = Request::postVar('cPath', '') !== '' ? $_POST['cPath'] : null;
     if (isset($_FILES['oFile'])
-        && $_FILES['oFile']['error'] === UPLOAD_ERR_OK
+        && isImageUpload($_FILES['oFile'])
         && move_uploaded_file($_FILES['oFile']['tmp_name'], PFAD_ROOT . PFAD_BILDER_BANNER . $_FILES['oFile']['name'])
     ) {
         $bannerPath = $_FILES['oFile']['name'];

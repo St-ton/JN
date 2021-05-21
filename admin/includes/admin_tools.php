@@ -113,6 +113,28 @@ function getAdminSectionSettings($configSectionID, bool $byName = false): array
 }
 
 /**
+ * @param array      $file
+ * @param array|null $allowed
+ * @return bool
+ */
+function isImageUpload(array $file, ?array $allowed = null): bool
+{
+    $allowed = $allowed ?? [
+            'image/jpeg',
+            'image/pjpeg',
+            'image/gif',
+            'image/x-png',
+            'image/png',
+            'image/bmp',
+            'image/webp'
+        ];
+
+    return isset($file['type'], $file['error'])
+        && $file['error'] === UPLOAD_ERR_OK
+        && in_array($file['type'], $allowed, true);
+}
+
+/**
  * @param array $settingsIDs
  * @param array $post
  * @param array $tags
@@ -141,9 +163,9 @@ function saveAdminSettings(
         ? "WHERE ec.cWertName IN ('" . implode("','", $settingsIDs) . "')"
         : 'WHERE ec.kEinstellungenConf IN (' . implode(',', array_map('\intval', $settingsIDs)) . ')';
     $confData = $db->getObjects(
-        'SELECT ec.*, e.cWert as currentValue
-            FROM teinstellungenconf as ec
-            LEFT JOIN teinstellungen as e ON e.cName=ec.cWertName
+        'SELECT ec.*, e.cWert AS currentValue
+            FROM teinstellungenconf AS ec
+            LEFT JOIN teinstellungen AS e ON e.cName=ec.cWertName
             ' . $where . "
             AND ec.cConf = 'Y'
             ORDER BY ec.nSort"

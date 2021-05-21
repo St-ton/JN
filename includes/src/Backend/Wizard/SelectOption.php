@@ -114,7 +114,7 @@ final class SelectOption
     }
 
     /**
-     * @param $val
+     * @param mixed $val
      * @return bool
      */
     public function isSelected($val): bool

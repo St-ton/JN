@@ -17,7 +17,7 @@ use JTL\Helpers\Request;
  * @param array $excluded - array of property/column names to be excluded
  * @param string $delim
  * @param bool   $head
- * @return bool - false = failure or exporter-id-mismatch
+ * @return void|bool - false = failure or exporter-id-mismatch
  */
 function handleCsvExportAction(
     $exporterId,

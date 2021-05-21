@@ -6,7 +6,6 @@ use DateTime;
 use JTL\Alert\Alert;
 use JTL\Backend\Revision;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Exceptions\EmptyResultSetException;
 use JTL\Optin\Optin;
 use JTL\Optin\OptinNewsletter;
@@ -236,15 +235,13 @@ final class Admin
                         $cSQL = ' AND kNewslettervorlage = ' . $templateID;
                     }
 
-                    $nlTplContent = $this->db->query(
+                    $nlTplContent = $this->db->getSingleObject(
                         'SELECT *
-                        FROM tnewslettervorlagestdvarinhalt
-                        WHERE kNewslettervorlageStdVar = ' . (int)$nlTplStdVar->kNewslettervorlageStdVar .
-                        $cSQL,
-                        ReturnType::SINGLE_OBJECT
+                            FROM tnewslettervorlagestdvarinhalt
+                            WHERE kNewslettervorlageStdVar = ' . (int)$nlTplStdVar->kNewslettervorlageStdVar
+                            . $cSQL
                     );
                 }
-
                 if (isset($nlTplContent->cInhalt) && \mb_strlen($nlTplContent->cInhalt) > 0) {
                     $defaultTpl->oNewslettervorlageStdVar_arr[$j]->cInhalt = \str_replace(
                         \NEWSLETTER_STD_VORLAGE_URLSHOP,
@@ -481,7 +478,6 @@ final class Admin
         }
 
         $alertHelper = Shop::Container()->getAlertService();
-        $tpl         = null;
         $checks      = $this->checkTemplate(
             $post['cName'],
             $post['kKundengruppe'] ?? '',
@@ -672,12 +668,11 @@ final class Admin
             return false;
         }
         $where      = ' IN (' . \implode(',', \array_map('\intval', $recipientIDs)) . ')';
-        $recipients = $this->db->query(
+        $recipients = $this->db->getObjects(
             'SELECT *
                 FROM tnewsletterempfaenger
                 WHERE kNewsletterEmpfaenger' .
-            $where,
-            ReturnType::ARRAY_OF_OBJECTS
+            $where
         );
 
         if (\count($recipients) === 0) {
@@ -686,8 +681,7 @@ final class Admin
         $this->db->query(
             'UPDATE tnewsletterempfaenger
                 SET nAktiv = 1
-                WHERE kNewsletterEmpfaenger' . $where,
-            ReturnType::AFFECTED_ROWS
+                WHERE kNewsletterEmpfaenger' . $where
         );
         foreach ($recipients as $recipient) {
             $hist               = new stdClass();
@@ -723,12 +717,11 @@ final class Admin
             return false;
         }
         $where      = ' IN (' . \implode(',', \array_map('\intval', $recipientIDs)) . ')';
-        $recipients = $this->db->query(
+        $recipients = $this->db->getObjects(
             'SELECT *
                 FROM tnewsletterempfaenger
                 WHERE kNewsletterEmpfaenger' .
-            $where,
-            ReturnType::ARRAY_OF_OBJECTS
+            $where
         );
 
         if (\count($recipients) === 0) {
@@ -736,8 +729,7 @@ final class Admin
         }
         $this->db->query(
             'DELETE FROM tnewsletterempfaenger
-                WHERE kNewsletterEmpfaenger' . $where,
-            ReturnType::AFFECTED_ROWS
+                WHERE kNewsletterEmpfaenger' . $where
         );
         foreach ($recipients as $recipient) {
             $hist               = new stdClass();
@@ -772,11 +764,10 @@ final class Admin
      */
     public function getSubscriberCount($searchSQL): int
     {
-        return (int)$this->db->query(
+        return (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt
                 FROM tnewsletterempfaenger
-                WHERE kSprache = ' . (int)$_SESSION['kSprache'] . $searchSQL->cWHERE,
-            ReturnType::SINGLE_OBJECT
+                WHERE kSprache = ' . (int)$_SESSION['kSprache'] . $searchSQL->cWHERE
         )->cnt;
     }
 
@@ -787,12 +778,13 @@ final class Admin
      */
     public function getSubscribers($limitSQL, $searchSQL): array
     {
-        $result = $this->db->query(
+        return $this->db->getObjects(
             "SELECT tnewsletterempfaenger.*,
                 DATE_FORMAT(tnewsletterempfaenger.dEingetragen, '%d.%m.%Y %H:%i') AS dEingetragen_de,
                 DATE_FORMAT(tnewsletterempfaenger.dLetzterNewsletter, '%d.%m.%Y %H:%i') AS dLetzterNewsletter_de,
                 tkunde.kKundengruppe, tkundengruppe.cName, tnewsletterempfaengerhistory.cOptIp,
-                IF (tnewsletterempfaengerhistory.dOptCode != '',
+                IF (tnewsletterempfaengerhistory.dOptCode != '0000-00-00 00:00:00'
+                    AND tnewsletterempfaengerhistory.dOptCode IS NOT NULL,
                     DATE_FORMAT(tnewsletterempfaengerhistory.dOptCode, '%d.%m.%Y %H:%i'),
                     DATE_FORMAT(toptin.dActivated, '%d.%m.%Y %H:%i')) AS optInDate
                 FROM tnewsletterempfaenger
@@ -803,18 +795,12 @@ final class Admin
                 LEFT JOIN tnewsletterempfaengerhistory
                     ON tnewsletterempfaengerhistory.cEmail = tnewsletterempfaenger.cEmail
                       AND tnewsletterempfaengerhistory.cAktion = 'Eingetragen'
-                LEFT JOIN toptin 
+                LEFT JOIN toptin
                     ON toptin.cMail = tnewsletterempfaenger.cEmail
                 WHERE tnewsletterempfaenger.kSprache = " . (int)$_SESSION['kSprache'] .
             $searchSQL->cWHERE . '
-                ORDER BY tnewsletterempfaenger.dEingetragen DESC' . $limitSQL,
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY tnewsletterempfaenger.dEingetragen DESC' . $limitSQL
         );
-        if (empty($result)) {
-            return [];
-        }
-
-        return $result;
     }
 
     /**
@@ -832,8 +818,7 @@ final class Admin
             [
                 'active'       => $active,
                 'newsletterID' => 'jtl_newsletter'
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     }
 }

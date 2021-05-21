@@ -3,7 +3,6 @@
 use JTL\Alert\Alert;
 use JTL\Cart\PersistentCart;
 use JTL\Customer\Customer;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -42,22 +41,21 @@ if (Request::getInt('l') > 0 && Form::validateToken()) {
 
     unset($persCart);
 }
-$customerCount = (int)Shop::Container()->getDB()->query(
+$customerCount = (int)Shop::Container()->getDB()->getSingleObject(
     'SELECT COUNT(DISTINCT tkunde.kKunde) AS cnt
          FROM tkunde
          JOIN twarenkorbpers
              ON tkunde.kKunde = twarenkorbpers.kKunde
          JOIN twarenkorbperspos
              ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
-         ' . $searchSQL->cWHERE,
-    ReturnType::SINGLE_OBJECT
+         ' . $searchSQL->cWHERE
 )->cnt;
 
 $oPagiKunden = (new Pagination('kunden'))
     ->setItemCount($customerCount)
     ->assemble();
 
-$customers = Shop::Container()->getDB()->query(
+$customers = Shop::Container()->getDB()->getObjects(
     "SELECT tkunde.kKunde, tkunde.cFirma, tkunde.cVorname, tkunde.cNachname, 
         DATE_FORMAT(twarenkorbpers.dErstellt, '%d.%m.%Y  %H:%i') AS Datum, 
         COUNT(twarenkorbperspos.kWarenkorbPersPos) AS nAnzahl
@@ -69,8 +67,7 @@ $customers = Shop::Container()->getDB()->query(
         " . $searchSQL->cWHERE . '
         GROUP BY tkunde.kKunde
         ORDER BY twarenkorbpers.dErstellt DESC
-        LIMIT ' . $oPagiKunden->getLimitSQL(),
-    ReturnType::ARRAY_OF_OBJECTS
+        LIMIT ' . $oPagiKunden->getLimitSQL()
 );
 
 foreach ($customers as $item) {
@@ -86,19 +83,18 @@ $smarty->assign('oKunde_arr', $customers)
 if (Request::getInt('a') > 0) {
     $step           = 'anzeigen';
     $customerID     = Request::getInt('a');
-    $persCartCount  = (int)Shop::Container()->getDB()->query(
+    $persCartCount  = (int)Shop::Container()->getDB()->getSingleObject(
         'SELECT COUNT(*) AS cnt
             FROM twarenkorbperspos
             JOIN twarenkorbpers 
                 ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
-            WHERE twarenkorbpers.kKunde = ' . $customerID,
-        ReturnType::SINGLE_OBJECT
+            WHERE twarenkorbpers.kKunde = ' . $customerID
     )->cnt;
     $cartPagination = (new Pagination('warenkorb'))
         ->setItemCount($persCartCount)
         ->assemble();
 
-    $carts = Shop::Container()->getDB()->query(
+    $carts = Shop::Container()->getDB()->getObjects(
         "SELECT tkunde.kKunde AS kKundeTMP, tkunde.cVorname, tkunde.cNachname, twarenkorbperspos.kArtikel, 
             twarenkorbperspos.cArtikelName, twarenkorbpers.kKunde, twarenkorbperspos.fAnzahl, 
             DATE_FORMAT(twarenkorbperspos.dHinzugefuegt, '%d.%m.%Y  %H:%i') AS Datum
@@ -108,8 +104,7 @@ if (Request::getInt('a') > 0) {
             JOIN twarenkorbperspos 
                 ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
             WHERE twarenkorbpers.kKunde = " . $customerID . '
-            LIMIT ' . $cartPagination->getLimitSQL(),
-        ReturnType::ARRAY_OF_OBJECTS
+            LIMIT ' . $cartPagination->getLimitSQL()
     );
     foreach ($carts as $cart) {
         $customer = new Customer((int)$cart->kKundeTMP);

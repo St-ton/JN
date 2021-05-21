@@ -24133,6 +24133,12 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   left: 1rem;
 }
 
+.list .productbox-details dt {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .gallery .image-wrapper .yousave {
   margin-top: -2rem;
 }
@@ -24961,6 +24967,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   margin-right: 0.5rem;
   margin-bottom: 0.5rem;
   display: inline-block;
+}
+
+.swatches-image .square-image .inner img {
+  width: 100%;
 }
 
 /* comparelist */

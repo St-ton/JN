@@ -58,7 +58,7 @@ abstract class OptinBase extends OptinFactory
 
     /**
      * @param string $mailaddress
-     * @return Optin
+     * @return $this
      */
     public function setEmail(string $mailaddress): self
     {
@@ -68,8 +68,8 @@ abstract class OptinBase extends OptinFactory
     }
 
     /**
-     * @param $optinCodeWithPrefix
-     * @return Optin
+     * @param string $optinCodeWithPrefix
+     * @return $this
      */
     public function setCode(string $optinCodeWithPrefix): self
     {
@@ -91,7 +91,7 @@ abstract class OptinBase extends OptinFactory
             $this->foundOptinTupel = $this->dbHandler->select('toptin', 'cMail', $this->emailAddress);
         }
         if (!empty($this->foundOptinTupel)) {
-            $this->refData = \unserialize($this->foundOptinTupel->cRefData, ['OptinRefData']);
+            $this->refData = \unserialize($this->foundOptinTupel->cRefData, [OptinRefData::class]);
         }
     }
 
@@ -138,9 +138,6 @@ abstract class OptinBase extends OptinFactory
         $this->dbHandler->insert('toptin', $newRow);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function activateOptin(): void
     {
         $rowData = new stdClass();

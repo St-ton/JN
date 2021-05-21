@@ -83,9 +83,7 @@ class PasswordService implements PasswordServiceInterface
     {
         $length = \mb_strlen($hash);
 
-        return $length === 32 || $length === 40
-            ? true
-            : \password_needs_rehash($hash, \PASSWORD_DEFAULT);
+        return $length === 32 || $length === 40 || \password_needs_rehash($hash, \PASSWORD_DEFAULT);
     }
 
     /**

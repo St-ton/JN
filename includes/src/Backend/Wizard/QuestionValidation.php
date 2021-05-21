@@ -14,7 +14,7 @@ use JTL\VerificationVAT\VATCheckInterface;
 class QuestionValidation
 {
     /**
-     * @var Question
+     * @var QuestionInterface
      */
     private $question;
 

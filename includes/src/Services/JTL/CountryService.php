@@ -6,7 +6,6 @@ use Illuminate\Support\Collection;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Country\Country;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 
 /**
  * Class CountryService
@@ -46,22 +45,23 @@ class CountryService implements CountryServiceInterface
     {
         $cacheID = 'serviceCountryList';
         if (($countries = $this->cache->get($cacheID)) !== false) {
-            $this->countryList = $countries;
+            $this->countryList = $countries->sortBy(static function (Country $country) {
+                return $country->getName();
+            });
 
             return;
         }
-        $countries = $this->db->query('SELECT * FROM tland', ReturnType::ARRAY_OF_OBJECTS);
-        foreach ($countries as $country) {
+        foreach ($this->db->getObjects('SELECT * FROM tland') as $country) {
             $countryTMP = new Country($country->cISO);
             $countryTMP->setEU((int)$country->nEU)
-                       ->setContinent($country->cKontinent)
-                       ->setNameDE($country->cDeutsch)
-                       ->setNameEN($country->cEnglisch);
+                ->setContinent($country->cKontinent)
+                ->setNameDE($country->cDeutsch)
+                ->setNameEN($country->cEnglisch);
 
-            $this->getCountryList()->push($countryTMP);
+            $this->countryList->push($countryTMP);
         }
 
-        $this->countryList = $this->getCountryList()->sortBy(static function (Country $country) {
+        $this->countryList = $this->countryList->sortBy(static function (Country $country) {
             return $country->getName();
         });
 
@@ -125,8 +125,8 @@ class CountryService implements CountryServiceInterface
     }
 
     /**
-     * @param bool $getEU - get all countries in EU and all countries in Europe not in EU
-     * @param array|null $selectedCountries
+     * @param bool  $getEU - get all countries in EU and all countries in Europe not in EU
+     * @param array $selectedCountries
      * @return array
      */
     public function getCountriesGroupedByContinent(bool $getEU = false, array $selectedCountries = []): array

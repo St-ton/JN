@@ -9,11 +9,13 @@
             {if $firstChild
                 && $Einstellungen.template.megamenu.show_category_images !== 'N'
                 && (!$isMobile || $isTablet)}
+                {$imgAlt = $mainCategory->getAttribute('img_alt')}
                 {include file='snippets/image.tpl'
                     class='submenu-headline-image'
                     item=$mainCategory
                     square=false
-                    srcSize='sm'}
+                    srcSize='sm'
+                    alt="{if empty($imgAlt->cWert)}{$mainCategory->getName()}{else}{$imgAlt->cWert}{/if}"}
             {/if}
             <span class="text-truncate d-block">
                 {$mainCategory->getName()}{if $mainCategory->hasChildren() && $subCategory >= $max_subsub_items}<span class="more-subcategories">&nbsp;({$mainCategory->getChildren()|count})</span>{/if}

@@ -132,7 +132,6 @@
                                     </tbody>
                                 </table>
                             </div>
-                            {include file='tpl_inc/pagination.tpl' pagination=$oPagiBewertungen cAnchor='bewertungen' isBottom=true}
                             <div class="save-wrapper">
                                 <div class="row">
                                     <div class="col-sm-6 col-xl-auto text-left">
@@ -155,6 +154,7 @@
                             </div>
                         </div>
                     </form>
+                    {include file='tpl_inc/pagination.tpl' pagination=$oPagiBewertungen cAnchor='bewertungen' isBottom=true}
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
@@ -205,7 +205,6 @@
                                     </tbody>
                                 </table>
                             </div>
-                            {include file='tpl_inc/pagination.tpl' pagination=$oPagiSuchanfragen cAnchor='livesearch' isBottom=true}
                             <div class="save-wrapper">
                                 <div class="row">
                                     <div class="col-sm-6 col-xl-auto text-left">
@@ -238,6 +237,7 @@
                                 </div>
                             </div>
                         </form>
+                        {include file='tpl_inc/pagination.tpl' pagination=$oPagiSuchanfragen cAnchor='livesearch' isBottom=true}
                     </div>
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
@@ -301,7 +301,6 @@
                                     </tbody>
                                 </table>
                             </div>
-                            {include file='tpl_inc/pagination.tpl' pagination=$oPagiNewskommentare cAnchor='newscomments' isBottom=true}
                             <div class="save-wrapper">
                                 <div class="row">
                                     <div class="col-sm-6 col-xl-auto text-left">
@@ -323,6 +322,7 @@
                                 </div>
                             </div>
                         </form>
+                        {include file='tpl_inc/pagination.tpl' pagination=$oPagiNewskommentare cAnchor='newscomments' isBottom=true}
                     </div>
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
@@ -369,7 +369,6 @@
                                     </tbody>
                                 </table>
                             </div>
-                            {include file='tpl_inc/pagination.tpl' pagination=$oPagiNewsletterEmpfaenger cAnchor='newsletter' isBottom=true}
                             <div class="save-wrapper">
                                 <div class="row">
                                     <div class="col-sm-6 col-xl-auto text-left">
@@ -391,6 +390,7 @@
                                 </div>
                             </div>
                         </form>
+                        {include file='tpl_inc/pagination.tpl' pagination=$oPagiNewsletterEmpfaenger cAnchor='newsletter' isBottom=true}
                     </div>
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>

@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Alert\Alert;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
@@ -125,10 +124,7 @@ if ((Request::getInt('kKontaktBetreff') > 0 || Request::getInt('neu') === 1) && 
 }
 
 if ($step === 'uebersicht') {
-    $subjects = $db->query(
-        'SELECT * FROM tkontaktbetreff ORDER BY nSort',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
+    $subjects = $db->getObjects('SELECT * FROM tkontaktbetreff ORDER BY nSort');
     foreach ($subjects as $subject) {
         $groups = '';
         if (!$subject->cKundengruppen) {
@@ -170,12 +166,8 @@ if ($step === 'betreff') {
         );
     }
 
-    $customerGroups = $db->query(
-        'SELECT * FROM tkundengruppe ORDER BY cName',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
     $smarty->assign('Betreff', $newSubject)
-        ->assign('kundengruppen', $customerGroups)
+        ->assign('kundengruppen', $db->getObjects('SELECT * FROM tkundengruppe ORDER BY cName'))
         ->assign('gesetzteKundengruppen', getGesetzteKundengruppen($newSubject))
         ->assign('Betreffname', ($newSubject !== null) ? getNames($newSubject->kKontaktBetreff) : null);
 }
@@ -189,7 +181,7 @@ $smarty->assign('step', $step)
  * @param object $link
  * @return array
  */
-function getGesetzteKundengruppen($link)
+function getGesetzteKundengruppen($link): array
 {
     $ret = [];
     if (!isset($link->cKundengruppen) || !$link->cKundengruppen) {
@@ -208,7 +200,7 @@ function getGesetzteKundengruppen($link)
  * @param int $id
  * @return array
  */
-function getNames(int $id)
+function getNames(int $id): array
 {
     $data = Shop::Container()->getDB()->selectAll('tkontaktbetreffsprache', 'kKontaktBetreff', $id);
 

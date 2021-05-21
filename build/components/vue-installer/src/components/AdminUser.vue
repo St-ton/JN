@@ -102,14 +102,14 @@ export default {
                 && this.checkPassword(this.wawi.pass);
         },
         generatePassword() {
-            let crypto = window.crypto || window.msCrypto,
-                buf    = new Uint8Array(9);
+            const crypto = window.crypto || window.msCrypto,
+                buf = new Uint8Array(9);
             return typeof crypto !== 'undefined'
                 ? btoa(String.fromCharCode.apply(null, crypto.getRandomValues(buf)))
                 : '';
         },
         checkPassword(pass) {
-            let matches = pass.match(/[^A-Za-z0-9\!"\#\$%&\'\(\)\*\+,-\.\/:;\=\>\?@\[\\\\\]\^_`\|\}~]/);
+            const matches = pass.match(/[^A-Za-z0-9\!"\#\$%&\'\(\)\*\+,-\.\/:;\=\>\?@\[\\\\\]\^_`\|\}~]/);
             return !(matches !== null && matches.length > 0);
         }
     }

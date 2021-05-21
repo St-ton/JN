@@ -2,7 +2,6 @@
 
 use JTL\Alert\Alert;
 use JTL\Backend\Settings\Manager;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
@@ -14,11 +13,14 @@ require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
 /** @global \JTL\Smarty\JTLSmarty     $smarty */
 /** @global \JTL\Backend\AdminAccount $oAccount */
-$sectionID = isset($_REQUEST['kSektion']) ? (int)$_REQUEST['kSektion'] : 0;
-$bSuche    = isset($_REQUEST['einstellungen_suchen']) && (int)$_REQUEST['einstellungen_suchen'] === 1;
-$db        = Shop::Container()->getDB();
-$getText   = Shop::Container()->getGetText();
-$search    = Request::verifyGPDataString('cSuche');
+$sectionID      = isset($_REQUEST['kSektion']) ? (int)$_REQUEST['kSektion'] : 0;
+$bSuche         = isset($_REQUEST['einstellungen_suchen']) && (int)$_REQUEST['einstellungen_suchen'] === 1;
+$db             = Shop::Container()->getDB();
+$getText        = Shop::Container()->getGetText();
+$adminAccount   = Shop::Container()->getAdminAccount();
+$alertService   = Shop::Container()->getAlertService();
+$search         = Request::verifyGPDataString('cSuche');
+$settingManager = new Manager($db, $smarty, $adminAccount, $getText, $alertService);
 
 $getText->loadConfigLocales(true, true);
 
@@ -27,31 +29,31 @@ if ($bSuche) {
 }
 
 switch ($sectionID) {
-    case 1:
+    case CONF_GLOBAL:
         $oAccount->permission('SETTINGS_GLOBAL_VIEW', true, true);
         break;
-    case 2:
+    case CONF_STARTSEITE:
         $oAccount->permission('SETTINGS_STARTPAGE_VIEW', true, true);
         break;
-    case 3:
+    case CONF_EMAILS:
         $oAccount->permission('SETTINGS_EMAILS_VIEW', true, true);
         break;
-    case 4:
+    case CONF_ARTIKELUEBERSICHT:
         $oAccount->permission('SETTINGS_ARTICLEOVERVIEW_VIEW', true, true);
         // Sucheinstellungen haben eigene Logik
         header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . 'sucheinstellungen.php');
         exit;
         break;
-    case 5:
+    case CONF_ARTIKELDETAILS:
         $oAccount->permission('SETTINGS_ARTICLEDETAILS_VIEW', true, true);
         break;
-    case 6:
+    case CONF_KUNDEN:
         $oAccount->permission('SETTINGS_CUSTOMERFORM_VIEW', true, true);
         break;
-    case 7:
+    case CONF_KAUFABWICKLUNG:
         $oAccount->permission('SETTINGS_BASKET_VIEW', true, true);
         break;
-    case 9:
+    case CONF_BILDER:
         $oAccount->permission('SETTINGS_IMAGES_VIEW', true, true);
         break;
     default:
@@ -78,7 +80,9 @@ $getText->localizeConfigSection($section);
 if ($bSuche) {
     $step = 'einstellungen bearbeiten';
 }
-if (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form::validateToken()) {
+if (Request::postVar('resetSetting') !== null) {
+    $settingManager->resetSetting(Request::postVar('resetSetting'));
+} elseif (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form::validateToken()) {
     // Einstellungssuche
     $sql = new stdClass();
     if ($bSuche) {
@@ -94,21 +98,21 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form
         $smarty->assign('cSearch', $sql->cSearch);
     } else {
         $section  = $db->select('teinstellungensektion', 'kEinstellungenSektion', $sectionID);
-        $confData = $db->query(
-            'SELECT *
-                FROM teinstellungenconf
-                WHERE kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . "
-                    AND cConf = 'Y'
-                    AND nModul = 0
-                    AND nStandardanzeigen = 1 " . $sql->cWHERE . '
-                ORDER BY nSort',
-            ReturnType::ARRAY_OF_OBJECTS
+        $confData = $db->getObjects(
+            'SELECT ec.*, e.cWert AS currentValue
+                FROM teinstellungenconf AS ec
+                LEFT JOIN teinstellungen AS e
+                  ON e.cName = ec.cWertName
+                WHERE ec.kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . "
+                    AND ec.cConf = 'Y'
+                    AND ec.nModul = 0
+                    AND ec.nStandardanzeigen = 1 " . $sql->cWHERE . '
+                ORDER BY ec.nSort'
         );
     }
-    $settingSection = new Manager($db, $smarty);
     foreach ($confData as $i => $sectionData) {
         $value       = new stdClass();
-        $sectionItem = $settingSection->getInstance((int)$sectionData->kEinstellungenSektion);
+        $sectionItem = $settingManager->getInstance((int)$sectionData->kEinstellungenSektion);
         if (isset($_POST[$confData[$i]->cWertName])) {
             $value->cWert                 = $_POST[$confData[$i]->cWertName];
             $value->cName                 = $confData[$i]->cWertName;
@@ -128,6 +132,9 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form
                     break;
             }
             if ($sectionItem->validate($confData[$i], $_POST[$confData[$i]->cWertName])) {
+                if (is_array($_POST[$confData[$i]->cWertName])) {
+                    $settingManager->addLogListbox($confData[$i]->cWertName, $_POST[$confData[$i]->cWertName]);
+                }
                 $db->delete(
                     'teinstellungen',
                     ['kEinstellungenSektion', 'cName'],
@@ -140,12 +147,19 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form
                     }
                 } else {
                     $db->insert('teinstellungen', $value);
+                    if ($confData[$i]->currentValue !== $_POST[$confData[$i]->cWertName]) {
+                        $settingManager->addLog(
+                            $confData[$i]->cWertName,
+                            $confData[$i]->currentValue,
+                            $_POST[$confData[$i]->cWertName]
+                        );
+                    }
                 }
             }
         }
     }
 
-    $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
+    $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
     $tagsToFlush = [CACHING_GROUP_OPTION];
     if ($sectionID === 1 || $sectionID === 4 || $sectionID === 5) {
@@ -160,23 +174,21 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form
 }
 
 if ($step === 'uebersicht') {
-    $sections     = $db->query(
+    $sections     = $db->getObjects(
         'SELECT *
             FROM teinstellungensektion
-            ORDER BY kEinstellungenSektion',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY kEinstellungenSektion'
     );
     $sectionCount = count($sections);
     for ($i = 0; $i < $sectionCount; $i++) {
-        $confCount = $db->queryPrepared(
+        $confCount = $db->getSingleObject(
             "SELECT COUNT(*) AS anz
                 FROM teinstellungenconf
                 WHERE kEinstellungenSektion = :sid
                     AND cConf = 'Y'
                     AND nStandardAnzeigen = 1
                     AND nModul = 0",
-            ['sid' => (int)$sections[$i]->kEinstellungenSektion],
-            ReturnType::SINGLE_OBJECT
+            ['sid' => (int)$sections[$i]->kEinstellungenSektion]
         );
 
         $sections[$i]->anz = $confCount->anz;
@@ -198,34 +210,33 @@ if ($step === 'einstellungen bearbeiten') {
         $smarty->assign('cSearch', $sql->cSearch)
                ->assign('cSuche', $sql->cSuche);
     } else {
-        $confData = $db->query(
-            'SELECT *
-                FROM teinstellungenconf
-                WHERE nModul = 0
-                    AND nStandardAnzeigen = 1
-                    AND kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . ' ' .
+        $confData = $db->getObjects(
+            'SELECT te.*, ted.cWert AS defaultValue
+                FROM teinstellungenconf AS te
+                LEFT JOIN teinstellungen_default AS ted
+                  ON ted.cName= te.cWertName
+                WHERE te.nModul = 0
+                    AND te.nStandardAnzeigen = 1
+                    AND te.kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . ' ' .
                 $sql->cWHERE . '
-                ORDER BY nSort',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY te.nSort'
         );
     }
-    $settingSection = new Manager($db, $smarty);
     foreach ($confData as $config) {
         $config->kEinstellungenConf    = (int)$config->kEinstellungenConf;
         $config->kEinstellungenSektion = (int)$config->kEinstellungenSektion;
         $config->nStandardAnzeigen     = (int)$config->nStandardAnzeigen;
         $config->nSort                 = (int)$config->nSort;
         $config->nModul                = (int)$config->nModul;
-        $sectionItem                   = $settingSection->getInstance((int)$config->kEinstellungenSektion);
+        $sectionItem                   = $settingManager->getInstance((int)$config->kEinstellungenSektion);
         $getText->localizeConfig($config);
         //@ToDo: Setting 492 is the only one listbox at the moment.
         //But In special case of setting 492 values come from kKundengruppe instead of teinstellungenconfwerte
         if ($config->cInputTyp === 'listbox' && $config->kEinstellungenConf === 492) {
-            $config->ConfWerte = $db->query(
+            $config->ConfWerte = $db->getObjects(
                 'SELECT kKundengruppe AS cWert, cName
                     FROM tkundengruppe
-                    ORDER BY cStandard DESC',
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY cStandard DESC'
             );
         } elseif (in_array($config->cInputTyp, ['selectbox', 'listbox'], true)) {
             $config->ConfWerte = $db->selectAll(

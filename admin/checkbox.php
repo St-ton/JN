@@ -3,7 +3,6 @@
 use JTL\Alert\Alert;
 use JTL\CheckBox;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -76,11 +75,10 @@ $smarty->assign('oCheckBox_arr', $checkbox->getAllCheckBox('LIMIT ' . $paginatio
        ->assign('CHECKBOX_ORT_KUNDENDATENEDITIEREN', CHECKBOX_ORT_KUNDENDATENEDITIEREN)
        ->assign('CHECKBOX_ORT_KONTAKT', CHECKBOX_ORT_KONTAKT)
        ->assign('customerGroups', CustomerGroup::getGroups())
-       ->assign('oLink_arr', Shop::Container()->getDB()->query(
+       ->assign('oLink_arr', Shop::Container()->getDB()->getObjects(
            'SELECT * 
               FROM tlink 
-              ORDER BY cName',
-           ReturnType::ARRAY_OF_OBJECTS
+              ORDER BY cName'
        ))
        ->assign('oCheckBoxFunktion_arr', $checkbox->getCheckBoxFunctions())
        ->assign('step', $step)

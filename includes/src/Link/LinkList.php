@@ -4,7 +4,6 @@ namespace JTL\Link;
 
 use Illuminate\Support\Collection;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use function Functional\group;
 use function Functional\map;
 
@@ -43,11 +42,10 @@ final class LinkList implements LinkListInterface
         if (\count($linkIDs) === 0) {
             return $this->links;
         }
-        $realIDs  = $this->db->query(
+        $realIDs  = $this->db->getObjects(
             'SELECT `kLink`, `reference`, `kVaterLink`
                 FROM tlink 
-                WHERE kLink IN (' . \implode(',', $linkIDs) . ')',
-            ReturnType::ARRAY_OF_OBJECTS
+                WHERE kLink IN (' . \implode(',', $linkIDs) . ')'
         );
         $loadData = [];
         $realData = [];
@@ -58,7 +56,7 @@ final class LinkList implements LinkListInterface
             $realData[$link] = $real;
             $loadData[$real] = (object)['linkID' => $link, 'parentID' => (int)$realID->kVaterLink];
         }
-        $linkLanguages = $this->db->query(
+        $linkLanguages = $this->db->getObjects(
             "SELECT tlink.*, loc.cISOSprache,
                 tlink.cName AS displayName, loc.cName AS localizedName, loc.cTitle AS localizedTitle, 
                 loc.cContent AS content,
@@ -88,8 +86,7 @@ final class LinkList implements LinkListInterface
                     AND tlink.kLink = pld.kLink
                 WHERE tlink.kLink IN (" . \implode(',', $realData) . ')
                 GROUP BY tlink.kLink, tseo.kSprache
-                ORDER BY tlink.nSort, tlink.cName',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY tlink.nSort, tlink.cName'
         );
         $links         = map(group($linkLanguages, static function ($e) {
             return (int)$e->kLink;

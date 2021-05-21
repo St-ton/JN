@@ -1,6 +1,5 @@
 <?php
 
-use JTL\DB\ReturnType;
 use JTL\News\Controller;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -79,7 +78,7 @@ function holeNewsKategorien($dateSQL, $activeOnly = false)
                     ' . $dateSQL;
     }
 
-    return Shop::Container()->getDB()->query(
+    return Shop::Container()->getDB()->getObjects(
         "SELECT tnewskategorie.kNewsKategorie, t.languageID AS kSprache, t.name AS cName,
             t.description AS cBeschreibung, t.metaTitle AS cMetaTitle, t.metaDescription AS cMetaDescription,
             tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung, 
@@ -97,8 +96,7 @@ function holeNewsKategorien($dateSQL, $activeOnly = false)
             WHERE t.languageID = ' . $languageID
             . $activeFilter . '
             GROUP BY tnewskategorie.kNewsKategorie
-            ORDER BY tnewskategorie.nSort',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY tnewskategorie.nSort'
     );
 }
 
@@ -114,7 +112,7 @@ function baueDatum($dates)
     foreach ($dates as $oDatum) {
         $oTMP        = new stdClass();
         $oTMP->cWert = $oDatum->nMonat . '-' . $oDatum->nJahr;
-        $oTMP->cName = mappeDatumName((string)$oDatum->nMonat, (int)$oDatum->nJahr, Shop::getLanguageCode());
+        $oTMP->cName = mappeDatumName((int)$oDatum->nMonat, (int)$oDatum->nJahr, Shop::getLanguageCode());
         $res[]       = $oTMP;
     }
 
@@ -122,8 +120,8 @@ function baueDatum($dates)
 }
 
 /**
- * @param string $cMonat
- * @param string $nJahr
+ * @param string|int $cMonat
+ * @param string|int $nJahr
  * @param string $cISOSprache
  * @return string
  * @deprecated since 5.0.0
@@ -210,7 +208,7 @@ function getNewsArchive(int $newsID, bool $activeOnly = false)
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $activeFilter = $activeOnly ? ' AND tnews.nAktiv = 1 ' : '';
 
-    return Shop::Container()->getDB()->query(
+    return Shop::Container()->getDB()->getSingleObject(
         "SELECT tnews.kNews, t.languageID AS kSprache, tnews.cKundengruppe, t.title AS cBetreff, 
         t.content AS cText, t.preview AS cVorschauText, tnews.cPreviewImage, t.metaTitle AS cMetaTitle, 
         t.metaDescription AS cMetaDescription, t.metaKeywords AS cMetaKeywords, tnews.nAktiv, 
@@ -229,8 +227,7 @@ function getNewsArchive(int $newsID, bool $activeOnly = false)
                     OR FIND_IN_SET('" . Frontend::getCustomerGroup()->getID()
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                 AND t.languageID = " . Shop::getLanguageID()
-                . $activeFilter,
-        ReturnType::SINGLE_OBJECT
+                . $activeFilter
     );
 }
 
@@ -245,7 +242,7 @@ function getCurrentNewsCategory(int $newsCategoryID, bool $activeOnly = false)
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $activeFilter = $activeOnly ? ' AND tnewskategorie.nAktiv = 1 ' : '';
 
-    return Shop::Container()->getDB()->queryPrepared(
+    return Shop::Container()->getDB()->getSingleObject(
         "SELECT tnewskategorie.cName, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription, tseo.cSeo
             FROM tnewskategorie
             LEFT JOIN tseo 
@@ -256,8 +253,7 @@ function getCurrentNewsCategory(int $newsCategoryID, bool $activeOnly = false)
         [
             'cat' => $newsCategoryID,
             'lid' => Shop::getLanguageID()
-        ],
-        ReturnType::SINGLE_OBJECT
+        ]
     );
 }
 
@@ -281,7 +277,7 @@ function getNewsCategory(int $newsID)
         }
     );
 
-    return Shop::Container()->getDB()->query(
+    return Shop::Container()->getDB()->getObjects(
         "SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
             tnewskategorie.cBeschreibung, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription,
             tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung,
@@ -298,8 +294,7 @@ function getNewsCategory(int $newsID)
                 AND tnewskategorienews.kNewsKategorie IN (' . implode(',', $newsCategories) . ')
                 AND tnewskategorie.nAktiv = 1
             GROUP BY tnewskategorie.kNewsKategorie
-            ORDER BY tnewskategorie.nSort DESC',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY tnewskategorie.nSort DESC'
     );
 }
 
@@ -312,14 +307,13 @@ function getNewsCategory(int $newsID)
 function getNewsComments(int $newsID, $cLimitSQL)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Shop::Container()->getDB()->query(
+    return Shop::Container()->getDB()->getObjects(
         "SELECT *, DATE_FORMAT(tnewskommentar.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_de
             FROM tnewskommentar
             WHERE tnewskommentar.kNews = " . $newsID . '
                 AND tnewskommentar.nAktiv = 1
             ORDER BY tnewskommentar.dErstellt DESC
-            LIMIT ' . $cLimitSQL,
-        ReturnType::ARRAY_OF_OBJECTS
+            LIMIT ' . $cLimitSQL
     );
 }
 
@@ -331,13 +325,12 @@ function getNewsComments(int $newsID, $cLimitSQL)
 function getCommentCount(int $newsID)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Shop::Container()->getDB()->queryPrepared(
+    return Shop::Container()->getDB()->getSingleObject(
         'SELECT COUNT(*) AS nAnzahl
             FROM tnewskommentar
             WHERE kNews = :nid
             AND nAktiv = 1',
-        ['nid' => $newsID],
-        ReturnType::SINGLE_OBJECT
+        ['nid' => $newsID]
     );
 }
 
@@ -349,7 +342,7 @@ function getCommentCount(int $newsID)
 function getMonthOverview(int $overviewID)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Shop::Container()->getDB()->queryPrepared(
+    return Shop::Container()->getDB()->getSingleObject(
         "SELECT tnewsmonatsuebersicht.*, tseo.cSeo
             FROM tnewsmonatsuebersicht
             LEFT JOIN tseo 
@@ -360,8 +353,7 @@ function getMonthOverview(int $overviewID)
         [
             'nmi' => $overviewID,
             'lid' => Shop::getLanguageID()
-        ],
-        ReturnType::SINGLE_OBJECT
+        ]
     );
 }
 
@@ -374,7 +366,7 @@ function getMonthOverview(int $overviewID)
 function getNewsOverview($sql, $limitSQL)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Shop::Container()->getDB()->query(
+    return Shop::Container()->getDB()->getObjects(
         "SELECT tseo.cSeo, tnews.*, DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y %H:%i') AS dErstellt_de, 
             COUNT(*) AS nAnzahl, COUNT(DISTINCT(tnewskommentar.kNewsKommentar)) AS nNewsKommentarAnzahl
             FROM tnews
@@ -397,8 +389,7 @@ function getNewsOverview($sql, $limitSQL)
                 ' . $sql->cDatumSQL . '
             GROUP BY tnews.kNews
             ' . $sql->cSortSQL . '
-            LIMIT ' . $limitSQL,
-        ReturnType::ARRAY_OF_OBJECTS
+            LIMIT ' . $limitSQL
     );
 }
 
@@ -410,7 +401,7 @@ function getNewsOverview($sql, $limitSQL)
 function getFullNewsOverview($sql)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Shop::Container()->getDB()->query(
+    return Shop::Container()->getDB()->getSingleObject(
         'SELECT COUNT(DISTINCT(tnews.kNews)) AS nAnzahl
             FROM tnews
             JOIN tnewssprache t
@@ -422,8 +413,7 @@ function getFullNewsOverview($sql)
                     OR FIND_IN_SET('" . Frontend::getCustomerGroup()->getID()
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                 " . $sql->cDatumSQL . '
-                AND t.languageID = ' . Shop::getLanguageID(),
-        ReturnType::SINGLE_OBJECT
+                AND t.languageID = ' . Shop::getLanguageID()
     );
 }
 
@@ -435,7 +425,7 @@ function getFullNewsOverview($sql)
 function getNewsDateArray($sql)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Shop::Container()->getDB()->query(
+    return Shop::Container()->getDB()->getObjects(
         'SELECT MONTH(tnews.dGueltigVon) AS nMonat, YEAR(tnews.dGueltigVon) AS nJahr
             FROM tnews
             JOIN tnewssprache t
@@ -448,8 +438,7 @@ function getNewsDateArray($sql)
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                 AND t.languageID = " . Shop::getLanguageID() . '
             GROUP BY nJahr, nMonat
-            ORDER BY dGueltigVon DESC',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY dGueltigVon DESC'
     );
 }
 

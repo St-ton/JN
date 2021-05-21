@@ -34,7 +34,7 @@ class AbstractItem implements ValidationItemInterface
     /**
      * @var string
      */
-    protected $version;
+    protected $version = '100';
 
     /**
      * @var string

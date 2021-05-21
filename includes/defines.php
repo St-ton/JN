@@ -278,11 +278,13 @@ ifndef('SEO_SLUG_LOWERCASE', false);
 
 ifndef('SAFE_MODE', $GLOBALS['plgSafeMode'] ?? file_exists(PFAD_ROOT. PFAD_ADMIN . PFAD_COMPILEDIR . 'safemode.lck'));
 
+ifndef('TRACK_VISITORS', true);
+
 /**
- * @param string     $constant
- * @param string|int $value
+ * @param string $constant
+ * @param mixed  $value
  */
-function ifndef($constant, $value)
+function ifndef(string $constant, $value)
 {
     defined($constant) || define($constant, $value);
 }

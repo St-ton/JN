@@ -44,7 +44,7 @@ if (!empty($_POST) && Form::validateToken()) {
             ]);
             $factory->setAdapter($_POST['fs_adapter']);
             $fs         = new Filesystem($factory->getAdapter());
-            $isShopRoot = $fs->has('includes/config.JTL-Shop.ini.php');
+            $isShopRoot = $fs->fileExists('includes/config.JTL-Shop.ini.php');
             if ($isShopRoot) {
                 $alertHelper->addAlert(Alert::TYPE_INFO, __('fsValidConnection'), 'fsValidConnection');
             } else {

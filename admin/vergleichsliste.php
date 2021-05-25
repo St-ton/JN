@@ -72,13 +72,8 @@ if (Request::postVar('resetSetting') !== null) {
             [(int)$configData[$i]->kEinstellungenSektion, $configData[$i]->cWertName]
         );
         $db->insert('teinstellungen', $currentValue);
-        if ($configData[$i]->currentValue !== $currentValue->cWert) {
-            $settingManager->addLog(
-                $currentValue->cName,
-                $configData[$i]->currentValue,
-                $currentValue->cWert
-            );
-        }
+
+        $settingManager->addLog($currentValue->cName, $configData[$i]->currentValue, $currentValue->cWert);
     }
 
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');

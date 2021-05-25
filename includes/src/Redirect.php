@@ -334,39 +334,11 @@ class Redirect
     }
 
     /**
-     * @param string $cUrl
-     * @return bool|string
-     */
-    public function checkFallbackRedirect(string $cUrl)
-    {
-        $exploded = \explode('/', \trim($cUrl, '/'));
-        if (\count($exploded) > 0) {
-            $lastPath = $exploded[\count($exploded) - 1];
-            $filename = \strtok($lastPath, '?');
-            $seoPath  = Shop::Container()->getDB()->select('tseo', 'cSeo', $lastPath);
-            if ($filename === 'jtl.php'
-                || $filename === 'warenkorb.php'
-                || $filename === 'kontakt.php'
-                || $filename === 'news.php'
-                || (isset($seoPath->cSeo) && \mb_strlen($seoPath->cSeo) > 0)
-            ) {
-                return $lastPath;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * @param string $url
      * @return bool|string
      */
     public function test(string $url)
     {
-        // Fallback e.g. if last URL-Path exists in tseo --> do not track 404 hit, instant redirect!
-        if (($fallbackPath = $this->checkFallbackRedirect($url)) !== false) {
-            return $fallbackPath;
-        }
         $redirectUrl = false;
         $url         = $this->normalize($url);
         if (\is_string($url) && \mb_strlen($url) > 0 && $this->isValid($url)) {

@@ -1,6 +1,7 @@
 <?php
 
 use JTL\Alert\Alert;
+use JTL\Backend\Settings\Manager;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Pagination\Pagination;
@@ -13,9 +14,16 @@ require_once __DIR__ . '/includes/admininclude.php';
 Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
 $oAccount->permission('MODULE_COMPARELIST_VIEW', true, true);
-$db          = Shop::Container()->getDB();
-$settingIDs  = '(469, 470)';
-$alertHelper = Shop::Container()->getAlertService();
+$db             = Shop::Container()->getDB();
+$settingIDs     = '(469, 470)';
+$alertHelper    = Shop::Container()->getAlertService();
+$settingManager = new Manager(
+    $db,
+    Shop::Smarty(),
+    Shop::Container()->getAdminAccount(),
+    Shop::Container()->getGetText(),
+    $alertHelper
+);
 if (!isset($_SESSION['Vergleichsliste'])) {
     $_SESSION['Vergleichsliste'] = new stdClass();
 }
@@ -26,16 +34,19 @@ if (Request::postInt('zeitfilter') === 1) {
     $_SESSION['Vergleichsliste']->nAnzahl     = Request::postInt('nAnzahl');
 }
 
-if (Request::postInt('einstellungen') === 1 && Form::validateToken()) {
+if (Request::postVar('resetSetting') !== null) {
+    $settingManager->resetSetting(Request::postVar('resetSetting'));
+} elseif (Request::postInt('einstellungen') === 1 && Form::validateToken()) {
     $configData  = $db->getObjects(
-        'SELECT *
-            FROM teinstellungenconf
+        'SELECT ec.*, e.cWert AS currentValue
+            FROM teinstellungenconf AS ec
+            LEFT JOIN teinstellungen AS e ON e.cName = ec.cWertName
             WHERE (
-                kEinstellungenConf IN ' . $settingIDs . ' 
-                OR kEinstellungenSektion = ' . CONF_VERGLEICHSLISTE . "
+                ec.kEinstellungenConf IN ' . $settingIDs . ' 
+                OR ec.kEinstellungenSektion = ' . CONF_VERGLEICHSLISTE . "
                 )
-                AND cConf = 'Y'
-            ORDER BY nSort"
+                AND ec.cConf = 'Y'
+            ORDER BY ec.nSort"
     );
     $configCount = count($configData);
     for ($i = 0; $i < $configCount; $i++) {
@@ -61,6 +72,13 @@ if (Request::postInt('einstellungen') === 1 && Form::validateToken()) {
             [(int)$configData[$i]->kEinstellungenSektion, $configData[$i]->cWertName]
         );
         $db->insert('teinstellungen', $currentValue);
+        if ($configData[$i]->currentValue !== $currentValue->cWert) {
+            $settingManager->addLog(
+                $currentValue->cName,
+                $configData[$i]->currentValue,
+                $currentValue->cWert
+            );
+        }
     }
 
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
@@ -68,13 +86,14 @@ if (Request::postInt('einstellungen') === 1 && Form::validateToken()) {
 }
 
 $configData  = $db->getObjects(
-    'SELECT *
-        FROM teinstellungenconf
+    'SELECT ec.*, e.cWert as defaultValue
+        FROM teinstellungenconf as ec
+        LEFT JOIN teinstellungen_default as e ON e.cName=ec.cWertName
         WHERE (
-                kEinstellungenConf IN ' . $settingIDs . ' 
-                OR kEinstellungenSektion = ' . CONF_VERGLEICHSLISTE . '
+                ec.kEinstellungenConf IN ' . $settingIDs . ' 
+                OR ec.kEinstellungenSektion = ' . CONF_VERGLEICHSLISTE . '
                )
-        ORDER BY nSort'
+        ORDER BY ec.nSort'
 );
 $configCount = count($configData);
 for ($i = 0; $i < $configCount; $i++) {

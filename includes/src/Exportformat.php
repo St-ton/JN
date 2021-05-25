@@ -1281,7 +1281,7 @@ class Exportformat
         }
         $tmpFile = \fopen(\PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName, 'a');
         if ($max === null) {
-            $max    = (int)$this->db->getSingleObject($this->getExportSQL(true))->nAnzahl;
+            $max = (int)$this->db->getSingleObject($this->getExportSQL(true))->nAnzahl;
         }
 
         $this->log('Starting exportformat "' . Text::convertUTF8($this->getName()) .

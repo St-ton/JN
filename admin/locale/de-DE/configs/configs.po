@@ -2168,12 +2168,6 @@ msgstr "Spaltenbreite des Artikels"
 msgid "vergleichsliste_spaltengroesse_desc"
 msgstr "Hier legen Sie fest, wie viele Pixel eine Spalte für einen Artikel in der Vergleichsliste breit sein soll."
 
-msgid "vergleichsliste_spaltengroesseattribut_name"
-msgstr "Spaltenbreite der Attribute"
-
-msgid "vergleichsliste_spaltengroesseattribut_desc"
-msgstr "Hier legen Sie fest, wie viele Pixel eine Spalte für ein Artikelattribut in der Vergleichsliste breit sein soll."
-
 msgid "vergleichsliste_target_name"
 msgstr "Position der Vergleichsliste"
 

@@ -7,7 +7,6 @@ use Exception;
 use InvalidArgumentException;
 use JTL\Cron\QueueEntry;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Category;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;

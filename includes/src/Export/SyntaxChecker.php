@@ -6,7 +6,6 @@ use Exception;
 use JTL\Backend\AdminIO;
 use JTL\Catalog\Category\Kategorie;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\ExportSmarty;

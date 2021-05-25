@@ -235,13 +235,12 @@ switch ($action) {
                     [CONF_CACHING, $settings[$i]->cWertName]
                 );
                 $db->insert('teinstellungen', $value);
-                if ($settings[$i]->currentValue !== $_POST[$settings[$i]->cWertName]) {
-                    $settingManager->addLog(
-                        $settings[$i]->cWertName,
-                        $settings[$i]->currentValue,
-                        $_POST[$settings[$i]->cWertName]
-                    );
-                }
+
+                $settingManager->addLog(
+                    $settings[$i]->cWertName,
+                    $settings[$i]->currentValue,
+                    $_POST[$settings[$i]->cWertName]
+                );
             }
             ++$i;
         }

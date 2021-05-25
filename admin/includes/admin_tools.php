@@ -200,13 +200,8 @@ function saveAdminSettings(
                 [(int)$config->kEinstellungenSektion, $config->cWertName]
             );
             $db->insert('teinstellungen', $val);
-            if ($config->currentValue !== $post[$config->cWertName]) {
-                $settingManager->addLog(
-                    $config->cWertName,
-                    $config->currentValue,
-                    $post[$config->cWertName]
-                );
-            }
+
+            $settingManager->addLog($config->cWertName, $config->currentValue, $post[$config->cWertName]);
         }
     }
     Shop::Container()->getCache()->flushTags($tags);
@@ -328,13 +323,8 @@ function saveAdminSectionSettings(int $configSectionID, array $post, array $tags
                 [$configSectionID, $config->cWertName]
             );
             $db->insert('teinstellungen', $val);
-            if ($config->currentValue !== $post[$config->cWertName]) {
-                $settingManager->addLog(
-                    $config->cWertName,
-                    $config->currentValue,
-                    $post[$config->cWertName]
-                );
-            }
+
+            $settingManager->addLog($config->cWertName, $config->currentValue, $post[$config->cWertName]);
         }
         if (!$valid) {
             $invalid++;

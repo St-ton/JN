@@ -79,7 +79,7 @@ foreach ($sentWishLists as $wishList) {
 $wishLists = Shop::Container()->getDB()->getObjects(
     "SELECT tkunde.kKunde, tkunde.cNachname, tkunde.cVorname, twunschliste.kWunschliste, twunschliste.cName,
         twunschliste.cURLID, DATE_FORMAT(twunschliste.dErstellt, '%d.%m.%Y %H:%i') AS Datum, 
-        twunschliste.nOeffentlich, COUNT(twunschlistepos.kWunschliste) AS Anzahl, tbesucher.kBesucher as isOnline
+        twunschliste.nOeffentlich, COUNT(twunschlistepos.kWunschliste) AS Anzahl, tbesucher.kBesucher AS isOnline
         FROM twunschliste
         JOIN twunschlistepos 
             ON twunschliste.kWunschliste = twunschlistepos.kWunschliste

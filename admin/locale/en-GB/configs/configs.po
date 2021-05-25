@@ -2162,12 +2162,6 @@ msgstr "Column width for item"
 msgid "vergleichsliste_spaltengroesse_desc"
 msgstr "Specify the width in pixels of the item column in the comparison list."
 
-msgid "vergleichsliste_spaltengroesseattribut_name"
-msgstr "Column width for attributes"
-
-msgid "vergleichsliste_spaltengroesseattribut_desc"
-msgstr "Specify the width in pixels of the item attributes column in the comparison list."
-
 msgid "vergleichsliste_target_name"
 msgstr "Position of comparison list"
 

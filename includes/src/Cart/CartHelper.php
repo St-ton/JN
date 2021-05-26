@@ -435,6 +435,10 @@ class CartHelper
             }
         }
 
+        // Beim Bearbeiten die alten Positionen löschen
+        if (isset($_POST['kEditKonfig'])) {
+            self::deleteCartItem(Request::postInt('kEditKonfig'));
+        }
         if (!$isConfigProduct) {
             return self::addProductIDToCart($productID, $count, $attributes);
         }
@@ -452,10 +456,6 @@ class CartHelper
             ? $_POST['item_quantity']
             : false;
         $ignoreLimits      = isset($_POST['konfig_ignore_limits']);
-        // Beim Bearbeiten die alten Positionen löschen
-        if (isset($_POST['kEditKonfig'])) {
-            self::deleteCartItem(Request::postInt('kEditKonfig'));
-        }
 
         foreach ($configGroups as $itemList) {
             foreach ($itemList as $configItemID) {
@@ -851,7 +851,7 @@ class CartHelper
         }
         /** @noinspection MissingIssetImplementationInspection */
         if (($product->bHasKonfig === false && empty($product->isKonfigItem))
-            && (!isset($product->Preise->fVKNetto) || (float)$product->Preise->fVKNetto === 0)
+            && (!isset($product->Preise->fVKNetto) || (float)$product->Preise->fVKNetto === 0.0)
             && $conf['global']['global_preis0'] === 'N'
         ) {
             $redirectParam[] = \R_AUFANFRAGE;
@@ -1409,6 +1409,14 @@ class CartHelper
         $product = new Artikel();
         $options = $options ?? Artikel::getDefaultOptions();
         $product->fuelleArtikel($productID, $options);
+        if ($product->FunktionsAttribute[\FKT_ATTRIBUT_VOUCHER_FLEX]) {
+            $price = (float)Request::postVar(\FKT_ATTRIBUT_VOUCHER_FLEX . 'Value');
+            if ($price > 0) {
+                $product->Preise->fVKNetto = Tax::getNet($price, $product->Preise->fUst, 4);
+                $product->Preise->berechneVKs();
+                $unique = \uniqid($price, true);
+            }
+        }
         if ((int)$qty !== $qty && $product->cTeilbar !== 'Y') {
             $qty = \max((int)$qty, 1);
         }
@@ -1705,7 +1713,9 @@ class CartHelper
                         $item->nAnzahl = $quantity;
                         $item->fPreis  = $product->gibPreis(
                             $item->nAnzahl,
-                            $item->WarenkorbPosEigenschaftArr
+                            $item->WarenkorbPosEigenschaftArr,
+                            0,
+                            $item->cUnique
                         );
                         $item->setzeGesamtpreisLocalized();
                         $item->fGesamtgewicht = $item->gibGesamtgewicht();

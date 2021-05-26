@@ -6,6 +6,13 @@
                 {block name='productdetails-price-out-of-stock'}
                     <span class="price_label price_out_of_stock">{lang key='productOutOfStock' section='productDetails'}</span>
                 {/block}
+            {elseif $Artikel->Preise->fVKNetto == 0 && $Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_VOUCHER_FLEX] && $tplscope === 'detail'}
+                {block name='productdetails-price-is-editable'}
+                    <input type="number" name="{$smarty.const.FKT_ATTRIBUT_VOUCHER_FLEX}Value">{$smarty.session.Waehrung->getName()}
+                    {if isset($kEditKonfig)}
+                        <input type="hidden" name="kEditKonfig" value="{$kEditKonfig}"/>
+                    {/if}
+                {/block}
             {elseif $Artikel->Preise->fVKNetto == 0 && $Artikel->bHasKonfig}
                 {block name='productdetails-price-as-configured'}
                     <span class="price_label price_as_configured">{lang key='priceAsConfigured' section='productDetails'}</span> <span class="price"></span>

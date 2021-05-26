@@ -381,7 +381,7 @@ $(document).ready(function () {
                 $(this).closest('form').find('.form-clear').removeClass('d-none');
             }
         });
-        $('.form-clear').on('click', function() {
+        $('.search-wrapper .form-clear').on('click', function() {
             $searchInput.typeahead('val', '');
             $(this).addClass('d-none');
         });

@@ -3,6 +3,7 @@
 use JTL\Alert\Alert;
 use JTL\Backend\AdminFavorite;
 use JTL\Backend\Notification;
+use JTL\Backend\Settings\Manager;
 use JTL\Campaign;
 use JTL\Catalog\Currency;
 use JTL\Filter\SearchResults;
@@ -29,21 +30,23 @@ function getAdminSectionSettings($configSectionID, bool $byName = false): array
     $db = Shop::Container()->getDB();
     if (is_array($configSectionID)) {
         $where    = $byName
-            ? "WHERE cWertName IN ('" . implode("','", $configSectionID) . "')"
-            : 'WHERE kEinstellungenConf IN (' . implode(',', array_map('\intval', $configSectionID)) . ')';
+            ? " WHERE ec.cWertName IN ('" . implode("','", $configSectionID) . "') "
+            : ' WHERE ec.kEinstellungenConf IN (' . implode(',', array_map('\intval', $configSectionID)) . ') ';
         $confData = $db->getObjects(
-            'SELECT *
-                FROM teinstellungenconf
+            'SELECT ec.*, e.cWert as defaultValue
+                FROM teinstellungenconf as ec
+                LEFT JOIN teinstellungen_default as e ON e.cName=ec.cWertName
                 ' . $where . '
-                ORDER BY nSort'
+                ORDER BY ec.nSort'
         );
     } else {
-        $confData = $db->selectAll(
-            'teinstellungenconf',
-            $byName ? 'cWertName' : 'kEinstellungenSektion',
-            $configSectionID,
-            '*',
-            'nSort'
+        $confData = $db->getObjects(
+            'SELECT ec.*, e.cWert as defaultValue
+                FROM teinstellungenconf as ec
+                LEFT JOIN teinstellungen_default as e ON e.cName=ec.cWertName
+                WHERE '. ($byName ? 'ec.cWertName' : 'ec.kEinstellungenSektion') . '=:configSection ' .
+                'ORDER BY ec.nSort',
+            ['configSection' => $configSectionID]
         );
     }
     foreach ($confData as $conf) {
@@ -122,15 +125,28 @@ function saveAdminSettings(
     array $tags = [CACHING_GROUP_OPTION],
     bool $byName = false
 ): string {
-    $db       = Shop::Container()->getDB();
+    $db             = Shop::Container()->getDB();
+    $settingManager = new Manager(
+        $db,
+        Shop::Smarty(),
+        Shop::Container()->getAdminAccount(),
+        Shop::Container()->getGetText(),
+        Shop::Container()->getAlertService()
+    );
+    if (Request::postVar('resetSetting') !== null) {
+        $settingManager->resetSetting(Request::postVar('resetSetting'));
+        return __('successConfigReset');
+    }
     $where    = $byName
-        ? "WHERE cWertName IN ('" . implode("','", $settingsIDs) . "')"
-        : 'WHERE kEinstellungenConf IN (' . implode(',', array_map('\intval', $settingsIDs)) . ')';
+        ? "WHERE ec.cWertName IN ('" . implode("','", $settingsIDs) . "')"
+        : 'WHERE ec.kEinstellungenConf IN (' . implode(',', array_map('\intval', $settingsIDs)) . ')';
     $confData = $db->getObjects(
-        'SELECT *
-            FROM teinstellungenconf
-            ' . $where . '
-            ORDER BY nSort'
+        'SELECT ec.*, e.cWert as currentValue
+            FROM teinstellungenconf as ec
+            LEFT JOIN teinstellungen as e ON e.cName=ec.cWertName
+            ' . $where . "
+            AND ec.cConf = 'Y'
+            ORDER BY ec.nSort"
     );
     if (count($confData) === 0) {
         return __('errorConfigSave');
@@ -162,6 +178,8 @@ function saveAdminSettings(
                 [(int)$config->kEinstellungenSektion, $config->cWertName]
             );
             $db->insert('teinstellungen', $val);
+
+            $settingManager->addLog($config->cWertName, $config->currentValue, $post[$config->cWertName]);
         }
     }
     Shop::Container()->getCache()->flushTags($tags);
@@ -178,6 +196,14 @@ function bearbeiteListBox($listBoxes, string $valueName, int $configSectionID): 
 {
     $db = Shop::Container()->getDB();
     if (is_array($listBoxes) && count($listBoxes) > 0) {
+        $settingManager = new Manager(
+            $db,
+            Shop::Smarty(),
+            Shop::Container()->getAdminAccount(),
+            Shop::Container()->getGetText(),
+            Shop::Container()->getAlertService()
+        );
+        $settingManager->addLogListbox($valueName, $listBoxes);
         $db->delete(
             'teinstellungen',
             ['kEinstellungenSektion', 'cName'],
@@ -222,14 +248,27 @@ function saveAdminSectionSettings(int $configSectionID, array $post, array $tags
     if (!Form::validateToken()) {
         return __('errorCSRF');
     }
-    $db       = Shop::Container()->getDB();
+    $db             = Shop::Container()->getDB();
+    $settingManager = new Manager(
+        $db,
+        Shop::Smarty(),
+        Shop::Container()->getAdminAccount(),
+        Shop::Container()->getGetText(),
+        Shop::Container()->getAlertService()
+    );
+    if (Request::postVar('resetSetting') !== null) {
+        $settingManager->resetSetting(Request::postVar('resetSetting'));
+        return __('successConfigReset');
+    }
     $invalid  = 0;
-    $confData = $db->selectAll(
-        'teinstellungenconf',
-        ['kEinstellungenSektion', 'cConf'],
-        [$configSectionID, 'Y'],
-        '*',
-        'nSort'
+    $confData = $db->getObjects(
+        "SELECT ec.*, e.cWert as currentValue
+            FROM teinstellungenconf as ec
+            LEFT JOIN teinstellungen as e ON e.cName=ec.cWertName
+            WHERE ec.kEinstellungenSektion = :configSectionID
+              AND ec.cConf = 'Y'
+            ORDER BY ec.nSort",
+        ['configSectionID' => $configSectionID]
     );
     foreach ($confData as $config) {
         $val                        = new stdClass();
@@ -262,6 +301,8 @@ function saveAdminSectionSettings(int $configSectionID, array $post, array $tags
                 [$configSectionID, $config->cWertName]
             );
             $db->insert('teinstellungen', $val);
+
+            $settingManager->addLog($config->cWertName, $config->currentValue, $post[$config->cWertName]);
         }
         if (!$valid) {
             $invalid++;

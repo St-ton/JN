@@ -25023,9 +25023,6 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   left: 0;
   z-index: 996;
 }
-.comparelist .table {
-  width: 98%;
-}
 .comparelist .table thead th {
   background: #ffffff;
   vertical-align: top;
@@ -25083,6 +25080,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 .comparelist-item .comparelist-item-more {
   padding-left: 0;
+}
+
+.comparelist-delete-all {
+  float: right;
 }
 
 /* header */

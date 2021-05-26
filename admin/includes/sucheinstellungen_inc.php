@@ -1,6 +1,5 @@
 <?php
 
-use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use JTL\IO\IOError;
 use JTL\Shop;

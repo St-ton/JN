@@ -3,7 +3,6 @@
 namespace JTL\Media\Image;
 
 use Generator;
-use JTL\DB\ReturnType;
 use JTL\Media\Image;
 use JTL\Media\MediaImageRequest;
 use PDO;

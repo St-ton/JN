@@ -569,10 +569,9 @@ class Status
     {
         $cacheKey = self::CACHE_ID_EXPORT_SYNTAX_CHECK . $type;
         if (($syntaxErrCnt = $this->cache->get($cacheKey)) === false) {
-            $syntaxErrCnt = (int)$this->db->queryPrepared(
+            $syntaxErrCnt = (int)$this->db->getSingleObject(
                 'SELECT COUNT(*) AS cnt FROM texportformat WHERE nFehlerhaft = :type',
-                ['type' => $type],
-                ReturnType::SINGLE_OBJECT
+                ['type' => $type]
             )->cnt;
 
             $this->cache->set($cacheKey, $syntaxErrCnt, [\CACHING_GROUP_STATUS, self::CACHE_ID_EXPORT_SYNTAX_CHECK]);

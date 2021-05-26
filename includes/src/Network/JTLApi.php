@@ -2,6 +2,7 @@
 
 namespace JTL\Network;
 
+use InvalidArgumentException;
 use JTL\Helpers\Request;
 use JTL\Nice;
 use JTLShop\SemVer\Version;
@@ -73,23 +74,29 @@ final class JTLApi
 
     /**
      * @return Version
+     * @throws InvalidArgumentException
      */
     public function getLatestVersion(): Version
     {
-        $shopVersion       = \APPLICATION_VERSION;
-        $parsedShopVersion = Version::parse($shopVersion);
-        $oVersions         = $this->getAvailableVersions();
+        try {
+            $shopVersion       = \APPLICATION_VERSION;
+            $parsedShopVersion = Version::parse($shopVersion);
+            $oVersions         = $this->getAvailableVersions();
 
-        $oNewerVersions = \array_filter((array)$oVersions, static function ($v) use ($parsedShopVersion) {
-            return Version::parse($v->reference)->greaterThan($parsedShopVersion);
-        });
+            $oNewerVersions = \array_filter((array)$oVersions, static function ($v) use ($parsedShopVersion) {
+                return Version::parse($v->reference)->greaterThan($parsedShopVersion);
+            });
 
-        if (\count($oNewerVersions) > 0) {
-            $reverseVersionsArr = \array_reverse($oNewerVersions);
-            $version            = \end($reverseVersionsArr);
-        } else {
-            $oVersion = \end($oVersions);
-            $version  = Version::parse($oVersion->reference);
+            if (\count($oNewerVersions) > 0) {
+                $reverseVersionsArr = \array_reverse($oNewerVersions);
+                $oVersion           = \end($reverseVersionsArr);
+                $version            = Version::parse($oVersion->reference);
+            } else {
+                $oVersion = \end($oVersions);
+                $version  = Version::parse($oVersion->reference);
+            }
+        } catch (InvalidArgumentException $e) {
+            throw new InvalidArgumentException($e->getMessage());
         }
 
         return $version;
@@ -100,9 +107,13 @@ final class JTLApi
      */
     public function hasNewerVersion(): bool
     {
-        return \APPLICATION_BUILD_SHA === '#DEV#'
-            ? false
-            : $this->getLatestVersion()->greaterThan(Version::parse(\APPLICATION_VERSION));
+        try {
+            return \APPLICATION_BUILD_SHA === '#DEV#'
+                ? false
+                : $this->getLatestVersion()->greaterThan(Version::parse(\APPLICATION_VERSION));
+        } catch (InvalidArgumentException $e) {
+            return false;
+        }
     }
 
     /**

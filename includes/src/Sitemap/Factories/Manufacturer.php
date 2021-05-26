@@ -3,7 +3,6 @@
 namespace JTL\Sitemap\Factories;
 
 use Generator;
-use JTL\DB\ReturnType;
 use JTL\Sitemap\Items\Manufacturer as Item;
 use PDO;
 use function Functional\map;

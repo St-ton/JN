@@ -90,11 +90,10 @@ final class JTLApi
             if (\count($oNewerVersions) > 0) {
                 $reverseVersionsArr = \array_reverse($oNewerVersions);
                 $oVersion           = \end($reverseVersionsArr);
-                $version            = Version::parse($oVersion->reference);
             } else {
                 $oVersion = \end($oVersions);
-                $version  = Version::parse($oVersion->reference);
             }
+            $version = Version::parse($oVersion->reference);
         } catch (InvalidArgumentException $e) {
             throw new InvalidArgumentException($e->getMessage());
         }

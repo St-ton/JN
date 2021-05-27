@@ -1,8 +1,8 @@
 {if $account->oGroup->kAdminlogingruppe === 1}
-    <button type="submit"
+    <button type="button"
             name="resetSetting"
             value="{$cnf->cWertName}"
-            class="btn btn-link p-0 {if $cnf->gesetzterWert === $cnf->defaultValue}hidden{/if} delete-confirm"
+            class="btn btn-link p-0 {if $cnf->gesetzterWert === $cnf->defaultValue}hidden{/if} delete-confirm btn-submit"
             title="{__('settingReset')}"
             data-toggle="tooltip"
             data-placement="top"

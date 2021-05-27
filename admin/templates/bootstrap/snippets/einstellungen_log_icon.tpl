@@ -6,6 +6,7 @@
         data-setting-name="{$cnf->cWertName}"
         data-name="{$cnf->cName}"
         data-id="{$cnf->kEinstellungenConf}"
+        type="button"
     >
         <span class="icon-hover">
             <span class="fal fa-history"></span>

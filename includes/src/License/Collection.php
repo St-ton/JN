@@ -12,14 +12,15 @@ use JTL\License\Struct\License;
 class Collection extends \Illuminate\Support\Collection
 {
     /**
-     * @return $this
+     * @return Collection
      */
     public function getActive(): self
     {
         return $this->getBound();
     }
+
     /**
-     * @return $this
+     * @return Collection
      */
     public function getBound(): self
     {
@@ -29,7 +30,7 @@ class Collection extends \Illuminate\Support\Collection
     }
 
     /**
-     * @return $this
+     * @return Collection
      */
     public function getUnbound(): self
     {
@@ -97,7 +98,7 @@ class Collection extends \Illuminate\Support\Collection
     }
 
     /**
-     * @return $this
+     * @return Collection
      */
     public function getActiveExpired(): self
     {
@@ -109,7 +110,7 @@ class Collection extends \Illuminate\Support\Collection
     }
 
     /**
-     * @return $this
+     * @return Collection
      */
     public function getDedupedActiveExpired(): self
     {
@@ -119,7 +120,7 @@ class Collection extends \Illuminate\Support\Collection
     }
 
     /**
-     * @return $this
+     * @return Collection
      */
     public function getBoundExpired(): self
     {
@@ -132,7 +133,7 @@ class Collection extends \Illuminate\Support\Collection
     }
 
     /**
-     * @return $this
+     * @return Collection
      */
     public function getLicenseViolations(): self
     {
@@ -142,7 +143,7 @@ class Collection extends \Illuminate\Support\Collection
     }
 
     /**
-     * @return $this
+     * @return Collection
      */
     public function getExpiredActiveTests(): self
     {
@@ -150,7 +151,7 @@ class Collection extends \Illuminate\Support\Collection
     }
 
     /**
-     * @return $this
+     * @return Collection
      */
     public function getExpiredBoundTests(): self
     {
@@ -160,7 +161,7 @@ class Collection extends \Illuminate\Support\Collection
     }
 
     /**
-     * @return $this
+     * @return Collection
      */
     public function getDedupedExpiredBoundTests(): self
     {
@@ -170,7 +171,7 @@ class Collection extends \Illuminate\Support\Collection
     }
 
     /**
-     * @return $this
+     * @return Collection
      */
     public function getPlugins(): self
     {
@@ -180,7 +181,7 @@ class Collection extends \Illuminate\Support\Collection
     }
 
     /**
-     * @return $this
+     * @return Collection
      */
     public function getTemplates(): self
     {
@@ -190,7 +191,7 @@ class Collection extends \Illuminate\Support\Collection
     }
 
     /**
-     * @return $this
+     * @return Collection
      */
     public function getPortlets(): self
     {
@@ -200,7 +201,7 @@ class Collection extends \Illuminate\Support\Collection
     }
 
     /**
-     * @return $this
+     * @return Collection
      */
     public function getInstalled(): self
     {
@@ -210,7 +211,7 @@ class Collection extends \Illuminate\Support\Collection
     }
 
     /**
-     * @return $this
+     * @return Collection
      */
     public function getUpdateableItems(): self
     {
@@ -220,7 +221,7 @@ class Collection extends \Illuminate\Support\Collection
     }
 
     /**
-     * @return $this
+     * @return Collection
      */
     public function getExpired(): self
     {
@@ -231,7 +232,7 @@ class Collection extends \Illuminate\Support\Collection
 
     /**
      * @param int $days
-     * @return $this
+     * @return Collection
      */
     public function getAboutToBeExpired(int $days = 28): self
     {

@@ -2,6 +2,10 @@
 
 namespace JTL\DB;
 
+use Illuminate\Support\Collection;
+use PDOStatement;
+use stdClass;
+
 /**
  * Interface DbInterface
  * @package JTL\DB
@@ -68,17 +72,17 @@ interface DbInterface extends \Serializable
     /**
      * insert row into db
      *
-     * @param string   $tableName - table name
-     * @param object   $object - object to insert
-     * @param int|bool $echo - true -> print statement
+     * @param string $tableName - table name
+     * @param object $object - object to insert
+     * @param bool   $echo - true -> print statement
      * @return int - 0 if fails, PrimaryKeyValue if successful
      */
     public function insertRow(string $tableName, $object, bool $echo = false): int;
 
     /**
-     * @param string   $tableName
-     * @param object   $object
-     * @param int|bool $echo
+     * @param string $tableName
+     * @param object $object
+     * @param bool   $echo
      * @return int
      */
     public function insert(string $tableName, $object, bool $echo = false): int;
@@ -90,7 +94,7 @@ interface DbInterface extends \Serializable
      * @param string|array     $keyname - Name of Key which should be compared
      * @param int|string|array $keyvalue - Value of Key which should be compared
      * @param object           $object - object to update with
-     * @param int|bool         $echo - true -> print statement
+     * @param bool             $echo - true -> print statement
      * @return int - -1 if fails, number of affected rows if successful
      */
     public function updateRow(string $tableName, $keyname, $keyvalue, $object, bool $echo = false): int;
@@ -100,7 +104,7 @@ interface DbInterface extends \Serializable
      * @param string|array     $keyname
      * @param string|int|array $keyvalue
      * @param object           $object
-     * @param bool|int         $echo
+     * @param bool             $echo
      * @return int
      */
     public function update(string $tableName, $keyname, $keyvalue, $object, bool $echo = false): int;
@@ -165,12 +169,12 @@ interface DbInterface extends \Serializable
     );
 
     /**
-     * @param string       $tableName
-     * @param string|array $keys
-     * @param string|array $values
-     * @param string       $select
-     * @param string       $orderBy
-     * @param string|int   $limit
+     * @param string           $tableName
+     * @param string|array     $keys
+     * @param string|array|int $values
+     * @param string           $select
+     * @param string           $orderBy
+     * @param string|int       $limit
      * @return array
      * @throws \InvalidArgumentException
      */
@@ -214,20 +218,20 @@ interface DbInterface extends \Serializable
      * 9  - array of fetched assoc arrays
      * 10 - result of querysingle
      * 11 - fetch both arrays
-     * @param int|bool      $echo print current stmt
+     * @param bool          $echo print current stmt
      * @param callable|null $fnInfo statistic callback
      * @return array|object|int - 0 if fails, 1 if successful or LastInsertID if specified
      * @throws \InvalidArgumentException
      */
-    public function executeQuery(string $stmt, int $return, bool $echo = false, $fnInfo = null);
+    public function executeQuery(string $stmt, int $return = ReturnType::DEFAULT, bool $echo = false, $fnInfo = null);
 
     /**
      * @param string   $stmt
      * @param int      $return
-     * @param int|bool $echo
+     * @param bool     $echo
      * @return int|object|array
      */
-    public function query($stmt, $return, bool $echo = false);
+    public function query($stmt, int $return = ReturnType::DEFAULT, bool $echo = false);
 
     /**
      * executes query and returns misc data
@@ -244,7 +248,7 @@ interface DbInterface extends \Serializable
      * 9  - array of fetched assoc arrays
      * 10 - result of querysingle
      * 11 - fetch both arrays
-     * @param int|bool      $echo print current stmt
+     * @param bool          $echo print current stmt
      * @param callable|null $fnInfo statistic callback
      * @return array|object|int|bool - 0 if fails, 1 if successful or LastInsertID if specified
      * @throws \InvalidArgumentException
@@ -252,26 +256,82 @@ interface DbInterface extends \Serializable
     public function executeQueryPrepared(
         string $stmt,
         array $params,
-        int $return,
+        int $return = ReturnType::DEFAULT,
         bool $echo = false,
         $fnInfo = null
     );
 
     /**
-     * @param string   $stmt
-     * @param array    $params
-     * @param int      $return
-     * @param int|bool $echo
-     * @param mixed    $fnINfo
+     * @param string $stmt
+     * @param array  $params
+     * @param int    $return
+     * @param bool   $echo
+     * @param mixed  $fnInfo
      * @return int|object|array
      */
     public function queryPrepared(
         string $stmt,
         array $params,
-        int $return,
+        int $return = ReturnType::DEFAULT,
         bool $echo = false,
-        $fnINfo = null
+        $fnInfo = null
     );
+
+    /**
+     * @param string $stmt
+     * @param array  $params
+     * @return array[]
+     * @since 5.1.0
+     */
+    public function getArrays(string $stmt, array $params = []): array;
+
+    /**
+     * @param string $stmt
+     * @param array  $params
+     * @return stdClass[]
+     * @since 5.1.0
+     */
+    public function getObjects(string $stmt, array $params = []): array;
+
+    /**
+     * @param string $stmt
+     * @param array  $params
+     * @return Collection
+     * @since 5.1.0
+     */
+    public function getCollection(string $stmt, array $params = []): Collection;
+
+    /**
+     * @param string $stmt
+     * @param array  $params
+     * @return stdClass|null
+     * @since 5.1.0
+     */
+    public function getSingleObject(string $stmt, array $params = []): ?stdClass;
+
+    /**
+     * @param string $stmt
+     * @param array  $params
+     * @return array|null
+     * @since 5.1.0
+     */
+    public function getSingleArray(string $stmt, array $params = []): ?array;
+
+    /**
+     * @param string   $stmt
+     * @param array    $params
+     * @return int
+     * @since 5.1.0
+     */
+    public function getAffectedRows(string $stmt, array $params = []): int;
+
+    /**
+     * @param string   $stmt
+     * @param array    $params
+     * @return PDOStatement
+     * @since 5.1.0
+     */
+    public function getPDOStatement(string $stmt, array $params = []): PDOStatement;
 
     /**
      * delete row from table
@@ -279,7 +339,7 @@ interface DbInterface extends \Serializable
      * @param string           $tableName - table name
      * @param string|array     $keyname - Name of Key which should be compared
      * @param string|int|array $keyvalue - Value of Key which should be compared
-     * @param bool|int         $echo - true -> print statement
+     * @param bool             $echo - true -> print statement
      * @return int - -1 if fails, #affectedRows if successful
      */
     public function deleteRow(string $tableName, $keyname, $keyvalue, bool $echo = false): int;
@@ -288,7 +348,7 @@ interface DbInterface extends \Serializable
      * @param string           $tableName
      * @param string|array     $keyname
      * @param string|int|array $keyvalue
-     * @param bool|int         $echo
+     * @param bool             $echo
      * @return int
      */
     public function delete(string $tableName, $keyname, $keyvalue, bool $echo = false): int;

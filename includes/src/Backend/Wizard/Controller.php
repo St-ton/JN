@@ -3,8 +3,8 @@
 namespace JTL\Backend\Wizard;
 
 use Illuminate\Support\Collection;
-use JTL\Backend\Wizard\Steps\ErrorCode;
 use JTL\Backend\Wizard\Steps\Error;
+use JTL\Backend\Wizard\Steps\ErrorCode;
 use JTL\Backend\Wizard\Steps\Step;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;

@@ -5,10 +5,10 @@ namespace JTL\Template\Admin;
 use InvalidArgumentException;
 use JTL\Plugin\Admin\Installation\InstallationResponse;
 use JTL\Shop;
-use League\Flysystem\Adapter\Local;
-use League\Flysystem\FileExistsException;
 use League\Flysystem\Filesystem;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 use League\Flysystem\MountManager;
+use Throwable;
 use ZipArchive;
 
 /**
@@ -27,11 +27,6 @@ class Extractor
     private $response;
 
     /**
-     * @var Filesystem
-     */
-    private $rootSystem;
-
-    /**
      * @var MountManager
      */
     private $manager;
@@ -41,9 +36,11 @@ class Extractor
      */
     public function __construct()
     {
-        $this->response   = new InstallationResponse();
-        $this->rootSystem = new Filesystem(new Local(\PFAD_ROOT));
-        $this->manager    = new MountManager(['root' => $this->rootSystem]);
+        $this->response = new InstallationResponse();
+        $this->manager  = new MountManager([
+            'root' => new Filesystem(new LocalFilesystemAdapter(\PFAD_ROOT)),
+            'tpl'  => Shop::Container()->get(\JTL\Filesystem\Filesystem::class)
+        ]);
     }
 
     /**
@@ -58,7 +55,7 @@ class Extractor
     }
 
     /**
-     * @param int $errno
+     * @param int    $errno
      * @param string $errstr
      * @return bool
      */
@@ -81,31 +78,35 @@ class Extractor
         if (!\file_exists($info)) {
             throw new InvalidArgumentException(\TEMPLATE_XML . ' does not exist: ' . $info);
         }
+        $ok   = true;
         $base = \PFAD_TEMPLATES;
-        $this->manager->mountFilesystem('tpl', Shop::Container()->get(\JTL\Filesystem\Filesystem::class));
-        $ok = @$this->manager->createDir('tpl://' . $base . $dirName);
-        if ($ok === false) {
+        try {
+            $this->manager->createDirectory('tpl://' . $base . $dirName);
+        } catch (Throwable $e) {
             $this->handlExtractionErrors(0, 'Cannot create ' . $base . $dirName);
 
             return false;
         }
         foreach ($this->manager->listContents('root://' . \PFAD_DBES_TMP . $dirName, true) as $item) {
-            $source = $item['path'];
-            $target = $base . \str_replace(\PFAD_DBES_TMP, '', $source);
-            if ($item['type'] === 'dir') {
-                $ok = $ok && ($this->manager->has('tpl://' . $target)
-                        || @$this->manager->createDir('tpl://' . $target));
+            $source = $item->path();
+            $target = $base . \str_replace(\PFAD_DBES_TMP, '', \str_replace('root://', '', $source));
+            if ($item->isDir()) {
+                try {
+                    $this->manager->createDirectory('tpl://' . $target);
+                } catch (Throwable $e) {
+                    $ok = false;
+                }
             } else {
                 try {
-                    $ok = $ok && @$this->manager->move('root://' . $source, 'tpl://' . $target);
-                } catch (FileExistsException $e) {
-                    $ok = $ok
-                        && @$this->manager->delete('tpl://' . $target)
-                        && @$this->manager->move('root://' . $source, 'tpl://' . $target);
+                    $this->manager->move($source, 'tpl://' . $target);
+                } catch (Throwable $e) {
+                    $ok = false;
+                    $this->manager->delete('tpl://' . $target);
+                    $this->manager->move($source, 'tpl://' . $target);
                 }
             }
         }
-        $this->rootSystem->deleteDir(\PFAD_DBES_TMP . $dirName);
+        $this->manager->deleteDirectory('root://' . \PFAD_DBES_TMP . $dirName);
         if ($ok === true) {
             $this->response->setPath($base . $dirName);
 

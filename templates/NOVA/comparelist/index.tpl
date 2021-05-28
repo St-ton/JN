@@ -89,6 +89,15 @@
                             <span class="comparelist-label">{lang key='hideLabels' section='comparelist'}</span>
                         {/button}
                     {/block}
+                    {block name='comparelist-index-products-header-label'}
+                        {button class="comparelist-delete-all"
+                            href="{get_static_route id='vergleichsliste.php'}?delete=all"
+                            size="sm"
+                            variant="outline-secondary"
+                            id="delete-all"}
+                            {lang key='comparelistDeleteAll' section='comparelist'}
+                        {/button}
+                    {/block}
                     <div class="comparelist table-responsive">
                         <table class="table table-bordered table-hover">
                             <thead>

@@ -23,10 +23,7 @@ class Migration_20180823154832 extends Migration implements IMigration
      */
     public function up()
     {
-        $this->getDB()->query(
-            'ALTER TABLE `tversion` CHANGE `nVersion` `nVersion` varchar(20) NOT NULL',
-            ReturnType::DEFAULT
-        );
+        $this->getDB()->query('ALTER TABLE `tversion` CHANGE `nVersion` `nVersion` varchar(20) NOT NULL');
     }
 
     /**
@@ -34,9 +31,6 @@ class Migration_20180823154832 extends Migration implements IMigration
      */
     public function down()
     {
-        $this->getDB()->query(
-            'ALTER TABLE `tversion` CHANGE `nVersion` `nVersion` int(10) DEFAULT NULL',
-            ReturnType::DEFAULT
-        );
+        $this->getDB()->query('ALTER TABLE `tversion` CHANGE `nVersion` `nVersion` int(10) DEFAULT NULL');
     }
 }

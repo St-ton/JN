@@ -40,7 +40,7 @@ $get_cache_time = static function (bool $auto_create = true) {
 };
 
 $app = (require __DIR__ . '/bootstrap.php');
-/* @var \Minify\App $app */
+/* @var Minify\App $app */
 
 if (!$app->config->enableStatic) {
     die('Minify static serving is not enabled. Set $min_enableStatic = true; in config.php');

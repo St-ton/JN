@@ -3,7 +3,6 @@
 namespace JTL\Filter\Items;
 
 use JTL\Catalog\Category\Kategorie;
-use JTL\DB\ReturnType;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\Join;
 use JTL\Filter\Option;
@@ -165,15 +164,14 @@ class Characteristic extends BaseCharacteristic
     {
         $value         = $this->getValue();
         $seoData       = $this->batchCharacteristicData[$value]
-            ?? $this->productFilter->getDB()->queryPrepared(
+            ?? $this->productFilter->getDB()->getObjects(
                 'SELECT tmerkmalwertsprache.cWert, tmerkmalwert.kMerkmal, 
                     tmerkmalwertsprache.cSeo, tmerkmalwertsprache.kSprache
                     FROM tmerkmalwertsprache
                     JOIN tmerkmalwert 
                         ON tmerkmalwert.kMerkmalWert = tmerkmalwertsprache.kMerkmalWert
                     WHERE tmerkmalwertsprache.kMerkmalWert = :val',
-                ['val' => $value],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['val' => $value]
             );
         $currentLangID = $this->productFilter->getFilterConfig()->getLanguageID();
         foreach ($languages as $language) {
@@ -445,14 +443,13 @@ class Characteristic extends BaseCharacteristic
 
             return $this->options;
         }
-        $qryRes           = $this->productFilter->getDB()->executeQuery(
+        $qryRes           = $this->productFilter->getDB()->getObjects(
             'SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
             ssMerkmal.nMehrfachauswahl, ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, 
             ssMerkmal.cMMBildPfad, COUNT(DISTINCT ssMerkmal.kArtikel) AS nAnzahl
                 FROM (' . $baseQuery . ') AS ssMerkmal
                 GROUP BY ssMerkmal.kMerkmalWert
-                ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert'
         );
         $currentValue     = $this->productFilter->getCharacteristicValue()->getValue();
         $additionalFilter = new self($this->productFilter);
@@ -637,14 +634,13 @@ class Characteristic extends BaseCharacteristic
         $characteristicValueIDs = \implode(',', \array_map(static function ($row) {
             return (int)$row->kMerkmalWert;
         }, $characteristicValues));
-        $queryResult            = $this->productFilter->getDB()->query(
+        $queryResult            = $this->productFilter->getDB()->getObjects(
             'SELECT tmerkmalwertsprache.cWert, tmerkmalwertsprache.kMerkmalWert, 
             tmerkmalwertsprache.cSeo, tmerkmalwert.kMerkmal, tmerkmalwertsprache.kSprache
                 FROM tmerkmalwertsprache
                 JOIN tmerkmalwert 
                     ON tmerkmalwert.kMerkmalWert = tmerkmalwertsprache.kMerkmalWert
-                WHERE tmerkmalwertsprache.kMerkmalWert IN (' . $characteristicValueIDs . ')',
-            ReturnType::ARRAY_OF_OBJECTS
+                WHERE tmerkmalwertsprache.kMerkmalWert IN (' . $characteristicValueIDs . ')'
         );
         $result                 = [];
         foreach ($queryResult as $row) {

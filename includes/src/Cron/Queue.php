@@ -4,7 +4,6 @@ namespace JTL\Cron;
 
 use DateTime;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use Psr\Log\LoggerInterface;
 use stdClass;
 
@@ -52,16 +51,12 @@ class Queue
      */
     public function loadQueueFromDB(): array
     {
-        $queueData = $this->db->query(
+        $this->queueEntries = $this->db->getCollection(
             'SELECT *
                 FROM tjobqueue
                 WHERE isRunning = 0
-                    AND startTime <= NOW()',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        foreach ($queueData as $entry) {
-            $this->queueEntries[] = new QueueEntry($entry);
-        }
+                    AND startTime <= NOW()'
+        )->mapInto(QueueEntry::class)->toArray();
         $this->logger->debug(\sprintf('Loaded %d existing job(s).', \count($this->queueEntries)));
 
         return $this->queueEntries;
@@ -72,14 +67,13 @@ class Queue
      */
     public function unStuckQueues(): int
     {
-        return $this->db->query(
+        return $this->db->getAffectedRows(
             'UPDATE tjobqueue
                 SET isRunning = 0
                 WHERE isRunning = 1
                     AND startTime <= NOW()
                     AND lastStart IS NOT NULL
-                    AND DATE_SUB(CURTIME(), INTERVAL ' . \QUEUE_MAX_STUCK_HOURS . ' Hour) > lastStart',
-            ReturnType::AFFECTED_ROWS
+                    AND DATE_SUB(CURTIME(), INTERVAL ' . \QUEUE_MAX_STUCK_HOURS . ' Hour) > lastStart'
         );
     }
 

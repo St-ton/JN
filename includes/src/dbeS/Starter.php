@@ -230,11 +230,11 @@ class Starter
     }
 
     /**
-     * @param $post
+     * @param array $post
      * @return bool
      * @throws \Exception
      */
-    public function checkAuth($post): bool
+    public function checkAuth(array $post): bool
     {
         if (!isset($post['userID'], $post['userPWD'])) {
             return false;

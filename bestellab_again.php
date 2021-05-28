@@ -38,7 +38,8 @@ $obj              = new stdClass();
 $obj->tkunde      = $_SESSION['Kunde'];
 $obj->tbestellung = $order;
 $moduleID         = $order->Zahlungsart->cModulId;
-Shop::Smarty()->assign('Bestellung', $order)
+$smarty           = Shop::Smarty();
+$smarty->assign('Bestellung', $order)
     ->assign('oPlugin', null)
     ->assign('plugin', null);
 if (Request::verifyGPCDataInt('zusatzschritt') === 1) {
@@ -104,7 +105,7 @@ if (Request::verifyGPCDataInt('zusatzschritt') === 1) {
             exit();
         }
     } else {
-        Shop::Smarty()->assign('ZahlungsInfo', gibPostZahlungsInfo());
+        $smarty->assign('ZahlungsInfo', gibPostZahlungsInfo());
     }
 }
 // Zahlungsart als Plugin
@@ -122,18 +123,19 @@ if ($pluginID > 0) {
             }
         }
 
-        Shop::Smarty()->assign('oPlugin', $plugin)
+        $smarty->assign('oPlugin', $plugin)
             ->assign('plugin', $plugin);
     }
 } elseif ($moduleID === 'za_lastschrift_jtl') {
     $customerAccountData = gibKundenKontodaten(Frontend::getCustomer()->getID());
-    if ($customerAccountData->kKunde > 0) {
-        Shop::Smarty()->assign('oKundenKontodaten', $customerAccountData);
+    if (isset($customerAccountData->kKunde) && $customerAccountData->kKunde > 0) {
+        $smarty->assign('oKundenKontodaten', $customerAccountData);
     }
 }
 
-Shop::Smarty()->assign('WarensummeLocalized', Frontend::getCart()->gibGesamtsummeWarenLocalized())
-    ->assign('Bestellung', $order);
+$smarty->assign('WarensummeLocalized', Frontend::getCart()->gibGesamtsummeWarenLocalized())
+    ->assign('Bestellung', $order)
+    ->assign('Link', $linkHelper->getPageLink($linkHelper->getSpecialPageID(PAGE_BESTELLABSCHLUSS)));
 
 unset(
     $_SESSION['Zahlungsart'],
@@ -145,6 +147,6 @@ unset(
 );
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
-Shop::Smarty()->display('checkout/order_completed.tpl');
+$smarty->display('checkout/order_completed.tpl');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

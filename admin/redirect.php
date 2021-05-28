@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Alert\Alert;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Pagination\DataType;
@@ -123,13 +122,12 @@ handleCsvExportAction(
         $order = $pagination->getOrderSQL();
 
         for ($i = 0; $i < $redirectCount; $i += 1000) {
-            $oRedirectIter = $db->query(
+            $oRedirectIter = $db->getPDOStatement(
                 'SELECT cFromUrl, cToUrl
                     FROM tredirect' .
                     ($where !== '' ? ' WHERE ' . $where : '') .
                     ($order !== '' ? ' ORDER BY ' . $order : '') .
-                    ' LIMIT ' . $i . ', 1000',
-                ReturnType::QUERYSINGLE
+                    ' LIMIT ' . $i . ', 1000'
             );
 
             foreach ($oRedirectIter as $oRedirect) {

@@ -3,6 +3,7 @@
 namespace JTL\Plugin;
 
 use DebugBar\DataCollector\TimeDataCollector;
+use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Events\Dispatcher;
@@ -147,8 +148,9 @@ class HookManager
         $plugin = Shop::get('oplugin_' . $id);
         if ($plugin === null) {
             $loader = Helper::getLoaderByPluginID($id, $this->db, $this->cache);
-            $plugin = $loader->init($id);
-            if ($plugin === null) {
+            try {
+                $plugin = $loader->init($id);
+            } catch (InvalidArgumentException $e) {
                 return null;
             }
             if (!Helper::licenseCheck($plugin)) {

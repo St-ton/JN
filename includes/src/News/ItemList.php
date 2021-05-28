@@ -4,7 +4,6 @@ namespace JTL\News;
 
 use Illuminate\Support\Collection;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use function Functional\group;
 use function Functional\map;
 
@@ -44,7 +43,7 @@ final class ItemList implements ItemListInterface
             return $this->items;
         }
         $itemList      = \implode(',', $itemIDs);
-        $itemLanguages = $this->db->query(
+        $itemLanguages = $this->db->getObjects(
             'SELECT tnewssprache.languageID,
             tnewssprache.languageCode,
             tnews.cKundengruppe, 
@@ -69,8 +68,7 @@ final class ItemList implements ItemListInterface
                     AND tseo.kSprache = tnewssprache.languageID
                 WHERE tnews.kNews IN (' . $itemList  . ')
                 GROUP BY tnews.kNews, tnewssprache.languageID
-                ORDER BY FIELD(tnews.kNews, ' . $itemList . ')',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY FIELD(tnews.kNews, ' . $itemList . ')'
         );
         $items         = map(group($itemLanguages, static function ($e) {
             return (int)$e->kNews;

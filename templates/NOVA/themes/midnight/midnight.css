@@ -24371,6 +24371,13 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   border-width: 10px 0px 10px 14px;
   border-color: transparent transparent transparent #ffffff;
 }
+#image_wrapper .variation-image-preview .variation-image-preview-title {
+  margin: 0.5rem 0;
+  text-align: center;
+}
+#image_wrapper .variation-image-preview .variation-image-preview-title .variation-image-preview-title-value {
+  color: #1C871E;
+}
 #image_wrapper #gallery {
   margin-bottom: 2rem;
 }

@@ -26,7 +26,7 @@ class TemplateService implements TemplateServiceInterface
     private $cache;
 
     /**
-     * @var Model
+     * @var Model|null
      */
     private $activeTemplate;
 
@@ -200,6 +200,9 @@ class TemplateService implements TemplateServiceInterface
         return $items;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function reset(): void
     {
         $this->activeTemplate = null;

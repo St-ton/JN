@@ -2078,5 +2078,35 @@ msgstr "Abgesicherter Modus"
 msgid "Safe mode enabled."
 msgstr "Abgesicherter Modus aktiv. Gewisse Funktionalitäten stehen nicht zur Verfügung."
 
+msgid "settingNoLog"
+msgstr "Keine Änderungen dieser Einstellung vorhanden."
+
+msgid "settingChangedBy"
+msgstr "Geändert von"
+
+msgid "settingValueNew"
+msgstr "Wert neu"
+
+msgid "settingValueOld"
+msgstr "Wert alt"
+
+msgid "successConfigReset"
+msgstr "Einstellung wurde zurückgesetzt."
+
+msgid "settingLogTitle"
+msgstr "Änderungslog anzeigen."
+
+msgid "settingReset"
+msgstr "Einstellung auf Werkseinstellung zurücksetzen."
+
+msgid "confirmResetLog"
+msgstr "Einstellung  - %s - auf Werkseinstellung zurücksetzen?"
+
+msgid "confirmResetLogTitle"
+msgstr "Zurücksetzen bestätigen"
+
+msgid "resetSettingDefaultValueNotFound"
+msgstr "Einstellung konnte nicht zurückgesetzt werden, da kein passender Eintrag in teinstellungen_default zu \"%s\" gefunden wurde."
+
 msgid "defaultDeleteConfirmTitle"
 msgstr "Löschen bestätigen"

@@ -2,7 +2,6 @@
 
 namespace JTL\Boxes\Items;
 
-use JTL\DB\ReturnType;
 use JTL\Helpers\URL;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -30,7 +29,7 @@ final class NewsCategories extends AbstractBox
         $cacheTags = [\CACHING_GROUP_BOX, \CACHING_GROUP_NEWS];
         if (($newsCategories = Shop::Container()->getCache()->get($cacheID)) === false) {
             $cached         = false;
-            $newsCategories = Shop::Container()->getDB()->queryPrepared(
+            $newsCategories = Shop::Container()->getDB()->getObjects(
                 "SELECT tnewskategorie.kNewsKategorie, t.languageID AS kSprache, t.name AS cName,
                     t.description AS cBeschreibung, t.metaTitle AS cMetaTitle, t.metaDescription AS cMetaDescription,
                     tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung,
@@ -56,8 +55,7 @@ final class NewsCategories extends AbstractBox
                         AND t.languageID = :lid
                     GROUP BY tnewskategorienews.kNewsKategorie
                     ORDER BY tnewskategorie.nSort DESC" . $sql,
-                ['lid' => $langID, 'cid' => Frontend::getCustomerGroup()->getID()],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['lid' => $langID, 'cid' => Frontend::getCustomerGroup()->getID()]
             );
             Shop::Container()->getCache()->set($cacheID, $newsCategories, $cacheTags);
         }

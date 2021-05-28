@@ -1,6 +1,6 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('paymentmethods') cBeschreibung=__('installedPaymentmethods') cDokuURL=__('paymentmethodsURL')}
-<div id="content" class="row">
-    <div class="{if $recommendations->getRecommendations()->isNotEmpty()}col-md-7{else}col-lg-9 col-xl-7{/if}">
+<div id="content" class="row mr-0">
+    <div class="{if $recommendations->getRecommendations()->isNotEmpty()}col-md-7{else}col-lg-9 col-xl-7{/if} pr-0 pr-md-4">
         <div class="card">
             <div class="card-body table-responsive">
                 <table class="table table-content-center">
@@ -104,7 +104,7 @@
         </div>
     </div>
     {if $recommendations->getRecommendations()->isNotEmpty()}
-    <div class="col-md-5">
+    <div class="col-md-5 pr-0 pr-md-4">
         <div class="card">
             <div class="card-body">
                 <div class="table-responsive">

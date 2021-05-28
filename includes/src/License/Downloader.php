@@ -8,7 +8,6 @@ use JTL\License\Exception\ChecksumValidationException;
 use JTL\License\Exception\DownloadValidationException;
 use JTL\License\Exception\FilePermissionException;
 use JTL\License\Struct\Release;
-use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class Downloader
@@ -18,7 +17,7 @@ class Downloader
 {
     /**
      * @param Release $available
-     * @return ResponseInterface|string
+     * @return string
      * @throws DownloadValidationException
      * @throws FilePermissionException
      * @throws ApiResultCodeException
@@ -44,7 +43,7 @@ class Downloader
     /**
      * @param string $url
      * @param string $targetName
-     * @return ResponseInterface
+     * @return string
      * @throws FilePermissionException
      * @throws ApiResultCodeException
      */

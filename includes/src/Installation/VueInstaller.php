@@ -4,7 +4,6 @@ namespace JTL\Installation;
 
 use Exception;
 use JTL\DB\NiceDB;
-use JTL\DB\ReturnType;
 use JTL\Exceptions\InvalidEntityNameException;
 use jtl\Wizard\Question;
 use jtl\Wizard\ShopWizard;
@@ -204,7 +203,7 @@ class VueInstaller
     private function doInstall(): self
     {
         if ($this->initNiceDB($this->post['db'])) {
-            $this->db->query('SET FOREIGN_KEY_CHECKS=0', ReturnType::DEFAULT);
+            $this->db->query('SET FOREIGN_KEY_CHECKS=0');
             $schema = \PFAD_ROOT . 'install/initial_schema.sql';
             if (!\file_exists($schema)) {
                 $this->responseMessage[] = 'File does not exists: ' . $schema;
@@ -214,7 +213,7 @@ class VueInstaller
             $blowfishKey = $this->getUID(30);
             $this->writeConfigFile($this->post['db'], $blowfishKey);
             $this->payload['secretKey'] = $blowfishKey;
-            $this->db->query('SET FOREIGN_KEY_CHECKS=1', ReturnType::DEFAULT);
+            $this->db->query('SET FOREIGN_KEY_CHECKS=1');
         }
 
         if ($this->cli) {
@@ -317,7 +316,7 @@ ini_set('display_errors', 0);" . "\n";
             ) {
                 $query .= $line;
                 if (\preg_match('/;\s*$/', $line)) {
-                    $result = $this->db->executeQuery($query, ReturnType::QUERYSINGLE);
+                    $result = $this->db->getPDOStatement($query);
                     if (!$result) {
                         $this->responseStatus    = false;
                         $this->responseMessage[] = $this->db->getErrorMessage() .
@@ -457,7 +456,7 @@ ini_set('display_errors', 0);" . "\n";
     /**
      * @param int    $length
      * @param string $seed
-     * @return bool|string
+     * @return string
      */
     private function getUID(int $length = 40, string $seed = ''): string
     {

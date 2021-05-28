@@ -2,7 +2,6 @@
 
 namespace JTL;
 
-use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use stdClass;
@@ -70,14 +69,13 @@ class Campaign
      */
     public function loadFromDB(int $id): self
     {
-        $campaign = Shop::Container()->getDB()->query(
+        $campaign = Shop::Container()->getDB()->getSingleObject(
             "SELECT tkampagne.*, DATE_FORMAT(tkampagne.dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE
                 FROM tkampagne
-                WHERE tkampagne.kKampagne = " . $id,
-            ReturnType::SINGLE_OBJECT
+                WHERE tkampagne.kKampagne = " . $id
         );
 
-        if (isset($campaign->kKampagne) && $campaign->kKampagne > 0) {
+        if ($campaign !== null && $campaign->kKampagne > 0) {
             foreach (\array_keys(\get_object_vars($campaign)) as $member) {
                 $this->$member = $campaign->$member;
             }
@@ -143,15 +141,14 @@ class Campaign
                 FROM tkampagne
                 LEFT JOIN tkampagnevorgang 
                     ON tkampagnevorgang.kKampagne = tkampagne.kKampagne
-                WHERE tkampagne.kKampagne = ' . (int)$this->kKampagne,
-            ReturnType::AFFECTED_ROWS
+                WHERE tkampagne.kKampagne = ' . (int)$this->kKampagne
         );
 
         return true;
     }
 
     /**
-     * @return array|mixed
+     * @return array
      */
     public static function getAvailable(): array
     {

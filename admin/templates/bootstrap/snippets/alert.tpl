@@ -8,7 +8,7 @@
     {else}
         {assign var='icon' value=$alert->getIcon()}
     {/if}
-    <div class="row">
+    <div class="row mr-0">
         <div class="col">
             {if $alert->getIcon()}<i class="fal fa-{$icon} mr-2"></i>{/if}
             {if !empty($alert->getLinkHref()) && empty($alert->getLinkText())}

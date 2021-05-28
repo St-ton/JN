@@ -189,7 +189,7 @@ class NavigationURLs implements NavigationURLsInterface
     /**
      * @inheritdoc
      */
-    public function setCharacteristics(string $characteristics): NavigationURLsInterface
+    public function setCharacteristics(array $characteristics): NavigationURLsInterface
     {
         $this->characteristics = $characteristics;
 
@@ -217,7 +217,7 @@ class NavigationURLs implements NavigationURLsInterface
     /**
      * @inheritdoc
      */
-    public function setCharacteristicValues(string $value): NavigationURLsInterface
+    public function setCharacteristicValues(array $value): NavigationURLsInterface
     {
         $this->characteristicValues = $value;
 
@@ -245,7 +245,7 @@ class NavigationURLs implements NavigationURLsInterface
     /**
      * @inheritdoc
      */
-    public function setSearchFilters(string $searchFilters): NavigationURLsInterface
+    public function setSearchFilters(array $searchFilters): NavigationURLsInterface
     {
         $this->searchFilters = $searchFilters;
 

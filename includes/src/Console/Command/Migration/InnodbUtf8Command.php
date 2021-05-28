@@ -3,7 +3,6 @@
 namespace JTL\Console\Command\Migration;
 
 use JTL\Console\Command\Command;
-use JTL\DB\ReturnType;
 use JTL\Shop;
 use JTL\Update\DBMigrationHelper;
 use Symfony\Component\Console\Input\InputInterface;
@@ -41,7 +40,7 @@ class InnodbUtf8Command extends Command
             if ($this->errCounter > 20) {
                 $this->getIO()->error('aborted due to too many errors');
 
-                return;
+                return 1;
             }
 
             $output->write('migrate ' . $table->TABLE_NAME . '... ');
@@ -56,14 +55,13 @@ class InnodbUtf8Command extends Command
             if (($migrationState & DBMigrationHelper::MIGRATE_TABLE) !== DBMigrationHelper::MIGRATE_NONE) {
                 $fkSQLs = DBMigrationHelper::sqlRecreateFKs($table->TABLE_NAME);
                 foreach ($fkSQLs->dropFK as $fkSQL) {
-                    $db->executeQuery($fkSQL, ReturnType::DEFAULT);
+                    $db->executeQuery($fkSQL);
                 }
                 $migrate = $db->executeQuery(
-                    DBMigrationHelper::sqlMoveToInnoDB($table),
-                    ReturnType::DEFAULT
+                    DBMigrationHelper::sqlMoveToInnoDB($table)
                 );
                 foreach ($fkSQLs->createFK as $fkSQL) {
-                    $db->executeQuery($fkSQL, ReturnType::DEFAULT);
+                    $db->executeQuery($fkSQL);
                 }
 
                 if (!$migrate) {
@@ -73,7 +71,7 @@ class InnodbUtf8Command extends Command
             }
             if (($migrationState & DBMigrationHelper::MIGRATE_COLUMN) !== DBMigrationHelper::MIGRATE_NONE) {
                 $sql = DBMigrationHelper::sqlConvertUTF8($table);
-                if (!empty($sql) && !$db->executeQuery($sql, ReturnType::DEFAULT)) {
+                if (!empty($sql) && !$db->executeQuery($sql)) {
                     $table = $this->nextWithFailure($output, $table);
                     continue;
                 }
@@ -89,6 +87,8 @@ class InnodbUtf8Command extends Command
         } else {
             $this->getIO()->success('all done');
         }
+
+        return 0;
     }
 
     /**
@@ -100,18 +100,14 @@ class InnodbUtf8Command extends Command
             // If MySQL version is lower than 5.6 use alternative lock method
             // and delete all fulltext indexes because these are not supported
             $db = Shop::Container()->getDB();
-            $db->executeQuery(
-                DBMigrationHelper::sqlAddLockInfo($table->TABLE_NAME),
-                ReturnType::QUERYSINGLE
-            );
+            $db->query(DBMigrationHelper::sqlAddLockInfo($table->TABLE_NAME));
             $fulltextIndizes = DBMigrationHelper::getFulltextIndizes($table->TABLE_NAME);
             if ($fulltextIndizes) {
                 foreach ($fulltextIndizes as $fulltextIndex) {
                     /** @noinspection SqlResolve */
-                    $db->executeQuery(
+                    $db->query(
                         'ALTER TABLE `' . $table->TABLE_NAME . '`
-                            DROP KEY `' . $fulltextIndex->INDEX_NAME . '`',
-                        ReturnType::QUERYSINGLE
+                            DROP KEY `' . $fulltextIndex->INDEX_NAME . '`'
                     );
                 }
             }
@@ -125,10 +121,7 @@ class InnodbUtf8Command extends Command
     {
         if (\version_compare(DBMigrationHelper::getMySQLVersion()->innodb->version, '5.6', '<')) {
             $db = Shop::Container()->getDB();
-            $db->executeQuery(
-                DBMigrationHelper::sqlClearLockInfo($table),
-                ReturnType::QUERYSINGLE
-            );
+            $db->query(DBMigrationHelper::sqlClearLockInfo($table));
         }
     }
 

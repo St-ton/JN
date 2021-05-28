@@ -3,7 +3,6 @@
 namespace JTL\Sitemap\Factories;
 
 use Generator;
-use JTL\DB\ReturnType;
 use JTL\Link\Link;
 use JTL\Link\LinkList;
 use JTL\Sitemap\Items\Page as Item;
@@ -26,7 +25,7 @@ final class Page extends AbstractFactory
         $languageCodes = map($languages, static function ($e) {
             return "'" . $e->cISO . "'";
         });
-        $res           = $this->db->queryPrepared(
+        $linkIDs       = $this->db->getCollection(
             "SELECT DISTINCT tlink.kLink AS id
                 FROM tlink
                 JOIN tlinkgroupassociations
@@ -49,12 +48,10 @@ final class Page extends AbstractFactory
                         OR tlink.cKundengruppen = 'NULL'
                         OR FIND_IN_SET(:cGrpID, REPLACE(tlink.cKundengruppen, ';', ',')) > 0)
                 ORDER BY tlinksprache.kLink",
-            ['cGrpID' => $customerGroup],
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        $linkIDs       = map($res, static function ($e) {
-            return $e->id;
-        });
+            ['cGrpID' => $customerGroup]
+        )->map(static function ($e) {
+            return (int)$e->id;
+        })->toArray();
         $linkList      = new LinkList($this->db);
         $linkList->createLinks($linkIDs);
         foreach ($linkList->getLinks()->all() as $link) {

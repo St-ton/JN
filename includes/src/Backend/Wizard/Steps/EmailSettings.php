@@ -7,7 +7,6 @@ use JTL\Backend\Wizard\Question;
 use JTL\Backend\Wizard\QuestionInterface;
 use JTL\Backend\Wizard\QuestionType;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Mail\Template\TemplateFactory;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
@@ -84,8 +83,7 @@ final class EmailSettings extends AbstractStep
                     [
                         'emailTemplateID' => $emailTemplateID,
                         'emailBCC'        => $question->getValue()
-                    ],
-                    ReturnType::DEFAULT
+                    ]
                 );
             } else {
                 $db->queryPrepared(
@@ -96,8 +94,7 @@ final class EmailSettings extends AbstractStep
                     [
                         'emailTemplateID' => $emailTemplateID,
                         'emailBCC'        => $question->getValue()
-                    ],
-                    ReturnType::DEFAULT
+                    ]
                 );
             }
         });

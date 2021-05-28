@@ -4,7 +4,6 @@ namespace JTL\News;
 
 use Illuminate\Support\Collection;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use function Functional\first;
 use function Functional\group;
 use function Functional\map;
@@ -49,7 +48,7 @@ final class CommentList implements ItemListInterface
         if (\count($itemIDs) === 0) {
             return $this->items;
         }
-        $data  = $this->db->queryPrepared(
+        $data  = $this->db->getObjects(
             'SELECT tnewskommentar.*, t.title
                 FROM tnewskommentar
                 JOIN tnewssprache t 
@@ -58,8 +57,7 @@ final class CommentList implements ItemListInterface
                 . ($activeOnly ? ' AND nAktiv = 1 ' : '') . '
                 GROUP BY tnewskommentar.kNewsKommentar
                 ORDER BY tnewskommentar.dErstellt DESC',
-            ['nid' => $this->newsID],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['nid' => $this->newsID]
         );
         $items = map(group($data, static function ($e) {
             return (int)$e->kNewsKommentar;
@@ -85,14 +83,13 @@ final class CommentList implements ItemListInterface
     public function createItemsByNewsItem(int $newsID): Collection
     {
         $this->newsID = $newsID;
-        $data         = $this->db->queryPrepared(
+        $data         = $this->db->getObjects(
             'SELECT *
                 FROM tnewskommentar
                 WHERE kNews = :nid
                     AND nAktiv = 1
                     ORDER BY tnewskommentar.dErstellt DESC',
-            ['nid' => $this->newsID],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['nid' => $this->newsID]
         );
         $items        = map(group($data, static function ($e) {
             return (int)$e->kNewsKommentar;

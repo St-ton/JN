@@ -367,9 +367,7 @@
                                                 <input class="form-control" type="text" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}"  value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}" tabindex="1"{if $oConfig->cWertName|strpos:"_guthaben"} onKeyUp="setzePreisAjax(false, 'EinstellungAjax_{$oConfig->cWertName}', this);"{/if} />
                                             {/if}
                                         </div>
-                                        {if $oConfig->cBeschreibung}
-                                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=$oConfig->cBeschreibung cID=$oConfig->kEinstellungenConf}</div>
-                                        {/if}
+                                        {include file='snippets/einstellungen_icons.tpl' cnf=$oConfig}
                                     </div>
                                 {else}
                                     {if $oConfig->cBeschreibung}

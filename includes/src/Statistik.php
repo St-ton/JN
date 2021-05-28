@@ -2,7 +2,6 @@
 
 namespace JTL;
 
-use JTL\DB\ReturnType;
 use JTL\Helpers\Date;
 use stdClass;
 
@@ -43,12 +42,12 @@ class Statistik
     private $cDatumBis_arr;
 
     /**
-     * @param int    $nStampVon
-     * @param int    $nStampBis
-     * @param string $cDatumVon
-     * @param string $cDatumBis
+     * @param int    $stampFrom
+     * @param int    $stampUntil
+     * @param string $dateFrom
+     * @param string $dateUntil
      */
-    public function __construct($nStampVon = 0, $nStampBis = 0, $cDatumVon = '', $cDatumBis = '')
+    public function __construct($stampFrom = 0, $stampUntil = 0, $dateFrom = '', $dateUntil = '')
     {
         $this->nAnzeigeIntervall = 0;
         $this->nTage             = 0;
@@ -57,12 +56,12 @@ class Statistik
         $this->nStampVon         = 0;
         $this->nStampBis         = 0;
 
-        if (\mb_strlen($cDatumVon) > 0 && \mb_strlen($cDatumBis) > 0) {
-            $this->cDatumVon_arr = Date::getDateParts($cDatumVon);
-            $this->cDatumBis_arr = Date::getDateParts($cDatumBis);
-        } elseif ((int)$nStampVon > 0 && (int)$nStampBis > 0) {
-            $this->nStampVon = (int)$nStampVon;
-            $this->nStampBis = (int)$nStampBis;
+        if (\mb_strlen($dateFrom) > 0 && \mb_strlen($dateUntil) > 0) {
+            $this->cDatumVon_arr = Date::getDateParts($dateFrom);
+            $this->cDatumBis_arr = Date::getDateParts($dateUntil);
+        } elseif ((int)$stampFrom > 0 && (int)$stampUntil > 0) {
+            $this->nStampVon = (int)$stampFrom;
+            $this->nStampBis = (int)$stampUntil;
         }
     }
 
@@ -81,7 +80,7 @@ class Statistik
                 $this->nAnzeigeIntervall = $interval;
             }
             $dateSQL = $this->baueDatumSQL('dZeit');
-            $stats   = Shop::Container()->getDB()->query(
+            $stats   = Shop::Container()->getDB()->getObjects(
                 "SELECT * , sum( t.nCount ) AS nCount
                     FROM (
                     SELECT dZeit, DATE_FORMAT( dZeit, '%d.%m.%Y' ) AS dTime, 
@@ -106,8 +105,7 @@ class Statistik
                         ' . $dateSQL->cGroupBy . '
                         ) AS t
                         ' . $dateSQL->cGroupBy . '
-                        ORDER BY dTime ASC',
-                ReturnType::ARRAY_OF_OBJECTS
+                        ORDER BY dTime ASC'
             );
 
             return $this->mergeDaten($stats);
@@ -117,9 +115,9 @@ class Statistik
     }
 
     /**
-     * @return mixed
+     * @return array
      */
-    public function holeKundenherkunftStats()
+    public function holeKundenherkunftStats(): array
     {
         if (($this->nStampVon > 0 && $this->nStampBis > 0)
             || (\count($this->cDatumVon_arr) > 0 && \count($this->cDatumBis_arr) > 0)
@@ -129,7 +127,7 @@ class Statistik
 
             $dateSQL = $this->baueDatumSQL('dZeit');
 
-            return Shop::Container()->getDB()->queryPrepared(
+            return Shop::Container()->getDB()->getObjects(
                 "SELECT * , SUM(t.nCount) AS nCount
                     FROM (
                         SELECT IF(cReferer = '', :directEntry, cReferer) AS cReferer, 
@@ -147,8 +145,7 @@ class Statistik
                     ) AS t
                     GROUP BY t.cReferer
                     ORDER BY nCount DESC',
-                ['directEntry' => __('directEntry')],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['directEntry' => __('directEntry')]
             );
         }
 
@@ -169,7 +166,7 @@ class Statistik
 
             $dateSQL = $this->baueDatumSQL('dZeit');
 
-            return Shop::Container()->getDB()->query(
+            return Shop::Container()->getDB()->getObjects(
                 'SELECT tbesucherbot.cUserAgent, SUM(t.nCount) AS nCount
                     FROM
                     (
@@ -184,8 +181,7 @@ class Statistik
                     ) AS t
                     JOIN tbesucherbot ON tbesucherbot.kBesucherBot = t.kBesucherBot
                     GROUP BY t.kBesucherBot
-                    ORDER BY nCount DESC ' . ($limit > -1 ? 'LIMIT ' . $limit : ''),
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY nCount DESC ' . ($limit > -1 ? 'LIMIT ' . $limit : '')
             );
         }
 
@@ -205,7 +201,7 @@ class Statistik
 
             $dateSQL = $this->baueDatumSQL('tbestellung.dErstellt');
 
-            return $this->mergeDaten(Shop::Container()->getDB()->query(
+            return $this->mergeDaten(Shop::Container()->getDB()->getObjects(
                 "SELECT tbestellung.dErstellt AS dZeit, SUM(tbestellung.fGesamtsumme) AS nCount,
                     DATE_FORMAT(tbestellung.dErstellt, '%m') AS nMonth, 
                     DATE_FORMAT(tbestellung.dErstellt, '%H') AS nHour,
@@ -215,8 +211,7 @@ class Statistik
                     " . $dateSQL->cWhere . "
                     AND cStatus != '-1'
                     " . $dateSQL->cGroupBy . '
-                    ORDER BY tbestellung.dErstellt ASC',
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY tbestellung.dErstellt ASC'
             ));
         }
 
@@ -236,7 +231,7 @@ class Statistik
 
             $dateSQL = $this->baueDatumSQL('dZeit');
 
-            return Shop::Container()->getDB()->query(
+            return Shop::Container()->getDB()->getObjects(
                 'SELECT *, SUM(t.nCount) AS nCount
                     FROM
                     (
@@ -250,8 +245,7 @@ class Statistik
                         GROUP BY cEinstiegsseite
                     ) AS t
                     GROUP BY t.cEinstiegsseite
-                    ORDER BY nCount DESC',
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY nCount DESC'
             );
         }
 
@@ -279,7 +273,7 @@ class Statistik
             if ($this->nTage <= 1) {
                 $this->nTage = 1;
             } else {
-                $this->nTage = \floor($this->nTage);
+                $this->nTage = (int)\floor($this->nTage);
             }
         }
 
@@ -291,13 +285,13 @@ class Statistik
      */
     private function gibAnzeigeIntervall(): self
     {
-        if ($this->nTage == 1) {
+        if ($this->nTage === 1) {
             $this->nAnzeigeIntervall = 1;
         } elseif ($this->nTage <= 31) { // Tage
             $this->nAnzeigeIntervall = 2;
         } elseif ($this->nTage <= 365) { // Monate
             $this->nAnzeigeIntervall = 3;
-        } elseif ($this->nTage > 365) { // Jahre
+        } else { // Jahre
             $this->nAnzeigeIntervall = 4;
         }
 
@@ -376,9 +370,9 @@ class Statistik
                         $i,
                         0,
                         0,
-                        \date('m', $this->nStampVon),
-                        \date('d', $this->nStampVon),
-                        \date('Y', $this->nStampVon)
+                        (int)\date('m', $this->nStampVon),
+                        (int)\date('d', $this->nStampVon),
+                        (int)\date('Y', $this->nStampVon)
                     );
                     $oStat->nCount = 0;
                     $stats[]       = $oStat;
@@ -454,9 +448,9 @@ class Statistik
                         0,
                         0,
                         0,
-                        \date('m', $this->nStampVon),
-                        \date('d', $this->nStampVon),
-                        \date('Y', $this->nStampVon)
+                        (int)\date('m', $this->nStampVon),
+                        (int)\date('d', $this->nStampVon),
+                        (int)\date('Y', $this->nStampVon)
                     );
                     $end   = \mktime(
                         23,

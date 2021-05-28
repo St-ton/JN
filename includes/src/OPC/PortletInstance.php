@@ -243,7 +243,7 @@ class PortletInstance implements \JsonSerializable
 
     /**
      * @param string $name
-     * @param        $value
+     * @param mixed  $value
      * @return PortletInstance
      */
     public function setAttribute(string $name, $value): self
@@ -308,7 +308,7 @@ class PortletInstance implements \JsonSerializable
 
     /**
      * @param string $name
-     * @param        $value
+     * @param mixed  $value
      * @return PortletInstance
      */
     public function setStyle(string $name, $value): self
@@ -320,7 +320,7 @@ class PortletInstance implements \JsonSerializable
 
     /**
      * @param string $name
-     * @param        $value
+     * @param mixed  $value
      * @return PortletInstance
      */
     public function setAnimation(string $name, $value): self
@@ -555,7 +555,7 @@ class PortletInstance implements \JsonSerializable
                 }
             }
         }
-        
+
         $srcset = \mb_substr($srcset, 0, -1); // remove trailing comma
 
         foreach ($this->widthHeuristics as $breakpoint => $col) {

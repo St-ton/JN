@@ -2,8 +2,6 @@
 
 namespace JTL\Link;
 
-use Illuminate\Support\Collection;
-
 /**
  * Interface LinkGroupListInterface
  * @package JTL\Link
@@ -21,9 +19,9 @@ interface LinkGroupListInterface
     public function getLinkGroups(): LinkGroupCollection;
 
     /**
-     * @param Collection $linkGroups
+     * @param LinkGroupCollection $linkGroups
      */
-    public function setLinkGroups(Collection $linkGroups): void;
+    public function setLinkGroups(LinkGroupCollection $linkGroups): void;
 
     /**
      * @return LinkGroupCollection

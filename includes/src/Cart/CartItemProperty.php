@@ -41,12 +41,12 @@ class CartItemProperty
     public $fGewichtsdifferenz;
 
     /**
-     * @var string
+     * @var array
      */
     public $cEigenschaftName;
 
     /**
-     * @var string
+     * @var array
      */
     public $cEigenschaftWertName;
 

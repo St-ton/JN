@@ -1,6 +1,5 @@
 <?php
 
-use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Shop;
@@ -295,7 +294,7 @@ function holeMaxExportArtikelAnzahl(&$export)
     if (($count = Shop::Container()->getCache()->get($cid)) !== false) {
         return $count;
     }
-    $count = Shop::Container()->getDB()->query(
+    $count = Shop::Container()->getDB()->getSingleObject(
         "SELECT COUNT(*) AS nAnzahl
             FROM tartikel
             LEFT JOIN tartikelattribut 
@@ -306,8 +305,7 @@ function holeMaxExportArtikelAnzahl(&$export)
                 AND tartikelsichtbarkeit.kKundengruppe = " . (int)$export->kKundengruppe . '
             ' . $data['Join'] . '
             WHERE tartikelattribut.kArtikelAttribut IS NULL' . $data['Where'] . '
-                AND tartikelsichtbarkeit.kArtikel IS NULL ' . $sql,
-        ReturnType::SINGLE_OBJECT
+                AND tartikelsichtbarkeit.kArtikel IS NULL ' . $sql
     );
     Shop::Container()->getCache()->set($cid, $count, [CACHING_GROUP_CORE], 120);
 

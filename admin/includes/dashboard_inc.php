@@ -1,6 +1,5 @@
 <?php
 
-use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\IO\IOResponse;
 use JTL\Network\JTLApi;
@@ -31,7 +30,7 @@ function getWidgets(bool $bActive = true, bool $getAll = false): array
     $loaderExt    = Helper::getLoader(true, $db, $cache);
     $plugins      = [];
 
-    $widgets = $db->queryPrepared(
+    $widgets = $db->getObjects(
         'SELECT tadminwidgets.*, tplugin.cPluginID, tplugin.bExtension
             FROM tadminwidgets
             LEFT JOIN tplugin 
@@ -39,8 +38,7 @@ function getWidgets(bool $bActive = true, bool $getAll = false): array
             WHERE bActive = :active
                 AND (tplugin.nStatus IS NULL OR tplugin.nStatus = :activated)
             ORDER BY eContainer ASC, nPos ASC',
-        ['active' => (int)$bActive, 'activated' => State::ACTIVATED],
-        ReturnType::ARRAY_OF_OBJECTS
+        ['active' => (int)$bActive, 'activated' => State::ACTIVATED]
     );
 
     foreach ($widgets as $widget) {
@@ -152,8 +150,7 @@ function setWidgetPosition(int $widgetId, string $container, int $pos): void
                     'currentPos'       => $current->nPos,
                     'newPos'           => $pos,
                     'currentContainer' => $current->eContainer
-                ],
-                ReturnType::DEFAULT
+                ]
             );
         } else {
             $db->queryPrepared(
@@ -166,8 +163,7 @@ function setWidgetPosition(int $widgetId, string $container, int $pos): void
                     'currentPos'       => $current->nPos,
                     'newPos'           => $pos,
                     'currentContainer' => $current->eContainer
-                ],
-                ReturnType::DEFAULT
+                ]
             );
         }
     } else {
@@ -179,8 +175,7 @@ function setWidgetPosition(int $widgetId, string $container, int $pos): void
             [
                 'currentPos'       => $current->nPos,
                 'currentContainer' => $current->eContainer
-            ],
-            ReturnType::DEFAULT
+            ]
         );
         $db->queryPrepared(
             'UPDATE tadminwidgets
@@ -190,8 +185,7 @@ function setWidgetPosition(int $widgetId, string $container, int $pos): void
             [
                 'newPos'       => $pos,
                 'newContainer' => $container
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     }
 
@@ -245,7 +239,7 @@ function getRemoteData(string $url, int $timeout = 15)
         $data = curl_exec($curl);
         curl_close($curl);
     } elseif (ini_get('allow_url_fopen')) {
-        @ini_set('default_socket_timeout', $timeout);
+        @ini_set('default_socket_timeout', (string)$timeout);
         $fileHandle = @fopen($url, 'r');
         if ($fileHandle) {
             @stream_set_timeout($fileHandle, $timeout);

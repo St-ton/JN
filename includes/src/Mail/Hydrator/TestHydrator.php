@@ -9,7 +9,6 @@ use JTL\Checkout\Kupon;
 use JTL\Checkout\Lieferschein;
 use JTL\Checkout\Versand;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Date;
 use JTL\Helpers\ShippingMethod;
 use JTL\Language\LanguageHelper;
@@ -118,7 +117,7 @@ class TestHydrator extends DefaultsHydrator
      */
     private function getCheckbox(): CheckBox
     {
-        $id = $this->db->query('SELECT kCheckbox FROM tcheckbox LIMIT 1', ReturnType::SINGLE_OBJECT);
+        $id = $this->db->getSingleObject('SELECT kCheckbox FROM tcheckbox LIMIT 1');
 
         return new CheckBox((int)($id->kCheckbox ?? 0));
     }

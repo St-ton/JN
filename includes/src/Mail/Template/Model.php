@@ -3,7 +3,6 @@
 namespace JTL\Mail\Template;
 
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use JTL\Shop;
 use stdClass;
@@ -54,7 +53,7 @@ final class Model
     /**
      * @var string
      */
-    private $active = true;
+    private $active = 'Y';
 
     /**
      * @var bool
@@ -751,15 +750,14 @@ final class Model
         if (\strpos($templateID, 'kPlugin') === 0) {
             [, $pluginID, $moduleID] = \explode('_', $templateID);
         }
-        $data = $this->db->queryPrepared(
+        $data = $this->db->getObjects(
             'SELECT *, temailvorlage.kEmailvorlage AS id
                 FROM temailvorlage
                 LEFT JOIN temailvorlagesprache
                     ON temailvorlage.kEmailvorlage = temailvorlagesprache.kEmailvorlage
                 WHERE temailvorlage.kPlugin = :pid
                     AND cModulId = :mid',
-            ['pid' => $pluginID, 'mid' => $moduleID],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['pid' => $pluginID, 'mid' => $moduleID]
         );
 
         return \count($data) === 0

@@ -3,7 +3,6 @@
 use JTL\Alert\Alert;
 use JTL\ContentAuthor;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
@@ -61,7 +60,7 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
     if (Request::postInt('einstellungen') > 0) {
         $controller->setMsg(saveAdminSectionSettings(CONF_NEWS, $_POST, [CACHING_GROUP_OPTION, CACHING_GROUP_NEWS]));
         if (count($languages) > 0) {
-            $db->query('TRUNCATE tnewsmonatspraefix', ReturnType::AFFECTED_ROWS);
+            $db->query('TRUNCATE tnewsmonatspraefix');
             foreach ($languages as $lang) {
                 $monthPrefix           = new stdClass();
                 $monthPrefix->kSprache = $lang->getId();
@@ -141,11 +140,11 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
         $controller->setStep('news_kommentar_antwort_editieren');
         $comment         = new Comment($db);
         $parentCommentID = Request::verifyGPCDataInt('parentCommentID');
-        if (empty($comment->loadByParentCommentID($parentCommentID))) {
+        if ($comment->loadByParentCommentID($parentCommentID) === null) {
             $comment->setID(0);
             $comment->setNewsID(Request::verifyGPCDataInt('kNews'));
             $comment->setCustomerID(0);
-            $comment->setIsActive(1);
+            $comment->setIsActive(true);
             $comment->setName($adminName);
             $comment->setMail('');
             $comment->setText('');

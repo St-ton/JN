@@ -13,7 +13,7 @@ use JTL\Helpers\Request;
  * @return stdClass
  * @deprecated since 4.05
  */
-function baueBlaetterNavi(int $currentPage, int $count, int $perPage)
+function baueBlaetterNavi(int $currentPage, int $count, int $perPage): stdClass
 {
     trigger_error(__FUNCTION__ . ' is deprecated - use the pagination class instead.', E_USER_DEPRECATED);
     $nav         = new stdClass();

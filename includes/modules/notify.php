@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Checkout\Bestellung;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Plugin\Helper;
@@ -165,17 +164,16 @@ if (strlen($cPh) > 0) {
     if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
         $logger->debug('Notify request:' . print_r($_REQUEST, true));
     }
-    $paymentId = Shop::Container()->getDB()->queryPrepared(
+    $paymentId = Shop::Container()->getDB()->getSingleObject(
         'SELECT ZID.kBestellung, ZA.cModulId
             FROM tzahlungsid ZID
             LEFT JOIN tzahlungsart ZA
                 ON ZA.kZahlungsart = ZID.kZahlungsart
             WHERE ZID.cId = :hash',
-        ['hash' => Text::htmlentities(Text::filterXSS($cPh))],
-        ReturnType::SINGLE_OBJECT
+        ['hash' => Text::htmlentities(Text::filterXSS($cPh))]
     );
 
-    if ($paymentId === false) {
+    if ($paymentId === null) {
         $logger->error('Payment Hash ' . $cPh . ' ergab keine Bestellung aus tzahlungsid.');
         die(); // Payment Hash does not exist
     }

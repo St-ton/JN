@@ -76,7 +76,6 @@ final class Listing
      */
     private function parseTemplateDir(XMLParser $parser, string $templateDir): Collection
     {
-        $validator = $this->validator;
         if (!\is_dir($templateDir)) {
             return $this->items;
         }
@@ -97,7 +96,7 @@ final class Listing
                 continue;
             }
             $xml                 = $parser->parse($info);
-            $code                = $validator->validate($templateDir . $dir, $xml);
+            $code                = $this->validator->validate($templateDir . $dir, $xml);
             $xml['cVerzeichnis'] = $dir;
             $xml['cFehlercode']  = $code;
             $item                = new ListingItem();

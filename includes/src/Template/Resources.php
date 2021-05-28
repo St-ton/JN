@@ -4,7 +4,6 @@
 namespace JTL\Template;
 
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Plugin\State;
 use JTL\Shop;
 use SimpleXMLElement;
@@ -90,7 +89,6 @@ class Resources
                 if (!isset($groups[$name])) {
                     $groups[$name] = [];
                 }
-                /** @var SimpleXMLElement $cssFile */
                 foreach ($css->File as $cssFile) {
                     $file     = (string)$cssFile->attributes()->Path;
                     $filePath = \PFAD_ROOT . \PFAD_TEMPLATES . $currentBaseDir . '/' . $file;
@@ -227,15 +225,14 @@ class Resources
      */
     public function getPluginResources(): array
     {
-        $resourcesc = $this->db->queryPrepared(
+        $resourcesc = $this->db->getObjects(
             'SELECT * 
                 FROM tplugin_resources AS res
                 JOIN tplugin
                     ON tplugin.kPlugin = res.kPlugin
                 WHERE tplugin.nStatus = :state
                 ORDER BY res.priority DESC',
-            ['state' => State::ACTIVATED],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['state' => State::ACTIVATED]
         );
         $grouped    = group($resourcesc, static function ($e) {
             return $e->type;

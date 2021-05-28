@@ -82,9 +82,7 @@
                                 <span id="EinstellungAjax_{$configItem->cWertName}"></span>
                             {/if}
                         </div>
-                        {if $configItem->cBeschreibung}
-                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=$configItem->cBeschreibung cID=$configItem->kEinstellungenConf}</div>
-                        {/if}
+                        {include file='snippets/einstellungen_icons.tpl' cnf=$configItem}
                     </div>
                 {elseif $showNonConf|default:false}
                     <div class="subheading1 mt-6">

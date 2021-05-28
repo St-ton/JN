@@ -4,7 +4,6 @@ namespace JTL\Catalog\Product;
 
 use Countable;
 use Illuminate\Support\Collection;
-use JTL\DB\ReturnType;
 use JTL\Shop;
 
 /**
@@ -151,7 +150,7 @@ class Bestseller
                 \implode(',', $this->getProducts()->toArray()) . ') '
             : '';
         $storagesql = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-        $data       = Shop::Container()->getDB()->query(
+        $data       = Shop::Container()->getDB()->getObjects(
             'SELECT tartikel.kArtikel
                 FROM tartikel
                 JOIN tbestseller
@@ -163,8 +162,7 @@ class Bestseller
                     AND ROUND(tbestseller.fAnzahl) >= ' . $this->minsales . ' ' . $storagesql .  $productsql . '
                 GROUP BY tartikel.kArtikel
                 ORDER BY tbestseller.fAnzahl DESC
-                LIMIT ' . $this->limit,
-            ReturnType::ARRAY_OF_OBJECTS
+                LIMIT ' . $this->limit
         );
         foreach ($data as $item) {
             $products[] = (int)$item->kArtikel;
@@ -180,7 +178,7 @@ class Bestseller
      * @param bool      $onlykeys
      * @param int       $limit
      * @param int       $minsells
-     * @return Artikel[]
+     * @return Artikel[]|int[]
      */
     public static function buildBestsellers(
         $products,

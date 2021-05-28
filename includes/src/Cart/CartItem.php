@@ -75,7 +75,7 @@ class CartItem
     public $fGesamtgewicht;
 
     /**
-     * @var string
+     * @var array|string
      */
     public $cName;
 
@@ -115,7 +115,7 @@ class CartItem
     public $cKonfigpreisLocalized;
 
     /**
-     * @var Artikel
+     * @var Artikel|null
      */
     public $Artikel;
 
@@ -145,7 +145,7 @@ class CartItem
     public $kBestellpos = 0;
 
     /**
-     * @var string
+     * @var array|string
      */
     public $cLieferstatus = '';
 
@@ -373,7 +373,6 @@ class CartItem
      */
     public function setzeGesamtpreisLocalized(): self
     {
-        /** @var array('Warenkorb' => Warenkorb) $_SESSION */
         if (!\is_array($_SESSION['Waehrungen'])) {
             return $this;
         }

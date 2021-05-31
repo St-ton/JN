@@ -3,8 +3,13 @@
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Helpers\Text;
 use JTL\Shop;
 use JTL\Update\DBManager;
+use PhpMyAdmin\SqlParser\Components\Limit;
+use PhpMyAdmin\SqlParser\Utils\Formatter;
+use PhpMyAdmin\SqlParser\Utils\Query;
+use PhpMyAdmin\SqlParser\Parser;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php';
@@ -16,6 +21,7 @@ $tables = DBManager::getStatus(DB_NAME);
 $smarty->assign('tables', $tables);
 
 $restrictedTables = ['tadminlogin', 'tbrocken', 'tsession', 'tsynclogin'];
+$valid            = Form::validateToken();
 
 /**
  * @param string $query
@@ -49,24 +55,21 @@ foreach ($tables as $table => $info) {
 $smarty->assign('jsTypo', $jsTypo);
 
 switch (true) {
-    case isset($_GET['table']):
-        $table   = $_GET['table'];
-        $status  = DBManager::getStatus(DB_NAME, $table);
-        $columns = DBManager::getColumns($table);
-        $indexes = DBManager::getIndexes($table);
+    case isset($_GET['table']) && $valid:
+        $table = $_GET['table'];
 
         $smarty->assign('selectedTable', $table)
-            ->assign('status', $status)
-            ->assign('columns', $columns)
-            ->assign('indexes', $indexes)
+            ->assign('status', DBManager::getStatus(DB_NAME, $table))
+            ->assign('columns', DBManager::getColumns($table))
+            ->assign('indexes', DBManager::getIndexes($table))
             ->assign('sub', 'table')
             ->display('dbmanager.tpl');
         break;
 
-    case isset($_GET['select']):
+    case isset($_GET['select']) && $valid:
         $table = $_GET['select'];
 
-        if (!preg_match('/^\w+$/i', $table, $m) || !Form::validateToken()) {
+        if (!preg_match('/^\w+$/i', $table, $m) || !$valid) {
             die('Not allowed.');
         }
 
@@ -153,7 +156,7 @@ switch (true) {
             ->display('dbmanager.tpl');
         break;
 
-    case isset($_GET['command']):
+    case isset($_GET['command']) && $valid:
         $command = $_GET['command'];
         $query   = null;
         if (isset($_POST['query'])) {
@@ -161,20 +164,20 @@ switch (true) {
         } elseif (isset($_POST['sql_query_edit'])) {
             $query = $_POST['sql_query_edit'];
         }
-        if ($query !== null && Form::validateToken()) {
+        if ($query !== null) {
             try {
-                $parser = new SqlParser\Parser($query);
+                $parser = new Parser($query);
                 if (is_array($parser->errors) && count($parser->errors) > 0) {
                     throw $parser->errors[0];
                 }
-                $q = SqlParser\Utils\Query::getAll($query);
+                $q = Query::getAll($query);
                 if ($q['is_select'] !== true) {
                     throw new Exception(sprintf('Query is restricted to SELECT statements'));
                 }
                 foreach ($q['select_tables'] ?? [] as $t) {
                     [$table, $dbname] = $t;
                     if ($dbname !== null && strcasecmp($dbname, DB_NAME) !== 0) {
-                        throw new Exception(sprintf('Well, at least u tried :)'));
+                        throw new Exception(sprintf('Well, at least you tried :)'));
                     }
                     if (in_array(mb_convert_case($table, MB_CASE_LOWER), $restrictedTables, true)) {
                         throw new Exception(sprintf('Permission denied for table `%s`', $table));
@@ -182,10 +185,10 @@ switch (true) {
                 }
                 $stmt = $q['statement'];
                 if ($q['limit'] === false) {
-                    $stmt->limit = new SqlParser\Components\Limit(50, 0);
+                    $stmt->limit = new Limit(50, 0);
                 }
                 $newQuery = $stmt->build();
-                $query    = SqlParser\Utils\Formatter::format($newQuery, ['type' => 'text']);
+                $query    = Formatter::format($newQuery, ['type' => 'text']);
                 $result   = exec_query($newQuery);
                 $smarty->assign('result', $result);
             } catch (Exception $e) {
@@ -194,7 +197,7 @@ switch (true) {
 
             $smarty->assign('query', $query);
         } elseif (isset($_GET['query'])) {
-            $smarty->assign('query', $_GET['query']);
+            $smarty->assign('query', Text::filterXSS($_GET['query']));
         }
 
         $smarty->assign('sub', 'command')

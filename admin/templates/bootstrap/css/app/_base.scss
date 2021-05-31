@@ -102,3 +102,9 @@ body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; 
 		max-width: 300px;
 	}
 }
+
+#available-widgets {
+	@include media-breakpoint-down(md) {
+		right: 0;
+	}
+}

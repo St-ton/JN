@@ -20855,6 +20855,10 @@ label {
   margin-right: 0.5rem;
 }
 
+.input-group-sm .input-group-prepend {
+  height: calc(1.5em + 0.75rem + 2px);
+}
+
 .fa-sup {
   position: absolute;
   top: 0;
@@ -23926,6 +23930,26 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   word-break: keep-all;
 }
 
+.filter-search-wrapper .form-clear {
+  bottom: 13px;
+  right: 7px;
+}
+.filter-search-wrapper .input-group-text {
+  background-color: #ffffff;
+}
+.filter-search-wrapper .filter-search {
+  margin-bottom: 0.5rem;
+  border-left: 0;
+}
+.filter-search-wrapper .filter-search:focus {
+  box-shadow: none;
+  border-color: inherit;
+}
+.filter-search-wrapper.input-group-selected .input-group-text, .filter-search-wrapper.input-group-selected .filter-search {
+  transition: none;
+  border-color: #1973D3;
+}
+
 .productlist-filter-categories > .nav-item > .nav-link {
   padding-left: 0;
   padding-right: 0;
@@ -24346,6 +24370,13 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   margin-top: 0.09375rem;
   border-width: 10px 0px 10px 14px;
   border-color: transparent transparent transparent #ffffff;
+}
+#image_wrapper .variation-image-preview .variation-image-preview-title {
+  margin: 0.5rem 0;
+  text-align: center;
+}
+#image_wrapper .variation-image-preview .variation-image-preview-title .variation-image-preview-title-value {
+  color: #1C871E;
 }
 #image_wrapper #gallery {
   margin-bottom: 2rem;
@@ -24999,9 +25030,6 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   left: 0;
   z-index: 996;
 }
-.comparelist .table {
-  width: 98%;
-}
 .comparelist .table thead th {
   background: #ffffff;
   vertical-align: top;
@@ -25059,6 +25087,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 .comparelist-item .comparelist-item-more {
   padding-left: 0;
+}
+
+.comparelist-delete-all {
+  float: right;
 }
 
 /* header */

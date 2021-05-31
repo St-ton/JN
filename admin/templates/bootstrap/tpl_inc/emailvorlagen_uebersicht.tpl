@@ -11,7 +11,7 @@
         </strong>
     </div>
     {include file='tpl_inc/mailtemplate_list.tpl' heading=__('emailTemplates') mailTemplates=$mailTemplates}
-    {include file='tpl_inc/mailtemplate_list.tpl' heading=__('pluginTemplates') mailTemplates=$pluginMailTemplates}
+    {include file='tpl_inc/mailtemplate_list.tpl' heading=__('pluginTemplates') mailTemplates=$pluginMailTemplates isPlugin=true}
     <div class="save-wrapper">
         <div class="row">
             <div class="ml-auto col-sm-6 col-xl-auto">

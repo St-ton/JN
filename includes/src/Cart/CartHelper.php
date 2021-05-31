@@ -177,7 +177,6 @@ class CartHelper
                         $info->surcharge[self::NET]   += $amount * $item->nAnzahl;
                         $info->surcharge[self::GROSS] += $amountGross * $item->nAnzahl;
                     } else {
-                        $amount                      *= -1;
                         $info->discount[self::NET]   += $amount * $item->nAnzahl;
                         $info->discount[self::GROSS] += $amountGross * $item->nAnzahl;
                     }

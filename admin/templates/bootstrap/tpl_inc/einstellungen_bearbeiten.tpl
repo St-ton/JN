@@ -84,11 +84,8 @@
                                 <input class="form-control" type="text" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{if isset($cnf->gesetzterWert)}{$cnf->gesetzterWert}{/if}" tabindex="1" />
                             {/if}
                         </div>
-                        {if !empty($cnf->cBeschreibung)}
-                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                                {getHelpDesc cDesc=$cnf->cBeschreibung cID=$cnf->kEinstellungenConf}
-                            </div>
-                        {/if}
+                        {include file='snippets/einstellungen_icons.tpl' cnf=$cnf}
+
                         {if isset($oSections[$kEinstellungenSektion]) && $oSections[$kEinstellungenSektion]->hasValueMarkup}
                             {*{$oSections[$kEinstellungenSektion]->getValueMarkup($cnf)}*}
                         {/if}

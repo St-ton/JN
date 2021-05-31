@@ -26,9 +26,9 @@ trait PortletStyles
 
     /**
      * @param bool $preview
-     * @return array|string[]
+     * @return array
      */
-    final public function getCssFiles($preview = false)
+    final public function getCssFiles($preview = false): array
     {
         $list = [];
         $file = $this->getCssFile($preview);

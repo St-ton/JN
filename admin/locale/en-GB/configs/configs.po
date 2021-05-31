@@ -848,12 +848,6 @@ msgstr "Show hazard sign for item"
 msgid "adr_hazard_display_desc"
 msgstr "Specify whether the European ADR hazard sign is shown in the item. For this purpose, the UN number and the hazard identification number must be saved in JTL-Wawi."
 
-msgid "artikeldetails_variationskombikind_bildvorschau_name"
-msgstr "Show image previews with child items"
-
-msgid "artikeldetails_variationskombikind_bildvorschau_desc"
-msgstr "Specify whether to display thumbnails for child items in the item overview. If there are many child items, this may lead to long loading times."
-
 msgid "artikeldetails_fragezumprodukt_anzeigen_name"
 msgstr "Show form with questions about item"
 
@@ -2167,12 +2161,6 @@ msgstr "Column width for item"
 
 msgid "vergleichsliste_spaltengroesse_desc"
 msgstr "Specify the width in pixels of the item column in the comparison list."
-
-msgid "vergleichsliste_spaltengroesseattribut_name"
-msgstr "Column width for attributes"
-
-msgid "vergleichsliste_spaltengroesseattribut_desc"
-msgstr "Specify the width in pixels of the item attributes column in the comparison list."
 
 msgid "vergleichsliste_target_name"
 msgstr "Position of comparison list"

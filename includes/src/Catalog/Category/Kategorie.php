@@ -4,7 +4,6 @@ namespace JTL\Catalog\Category;
 
 use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Category;
 use JTL\Helpers\Request;
 use JTL\Helpers\URL;
@@ -217,7 +216,7 @@ class Kategorie
             $catSQL->cJOIN   = ' JOIN tkategoriesprache ON tkategoriesprache.kKategorie = tkategorie.kKategorie';
             $catSQL->cWHERE  = ' AND tkategoriesprache.kSprache = ' . $languageID;
         }
-        $item = $db->query(
+        $item = $db->getSingleObject(
             'SELECT tkategorie.kKategorie, ' . $catSQL->cSELECT . ' tkategorie.kOberKategorie, 
                 tkategorie.nSort, tkategorie.dLetzteAktualisierung,
                 tkategorie.cName, tkategorie.cBeschreibung, tseo.cSeo, tkategoriepict.cPfad, tkategoriepict.cType,
@@ -236,10 +235,9 @@ class Kategorie
                     AND atr.cName = \'bildname\' 
                 WHERE tkategorie.kKategorie = ' . $id . '
                     ' . $catSQL->cWHERE . '
-                    AND tkategoriesichtbarkeit.kKategorie IS NULL',
-            ReturnType::SINGLE_OBJECT
+                    AND tkategoriesichtbarkeit.kKategorie IS NULL'
         );
-        if ($item === null || $item === false) {
+        if ($item === null) {
             if (!$recall && !$defaultLangActive) {
                 if (\EXPERIMENTAL_MULTILANG_SHOP === true) {
                     $defaultLangID = LanguageHelper::getDefaultLanguage()->kSprache;
@@ -294,7 +292,7 @@ class Kategorie
         if (!empty($item->cSeo) || \EXPERIMENTAL_MULTILANG_SHOP !== true) {
             return;
         }
-        $defaultLangID = (int)($tmpLang->kSprache ?? LanguageHelper::getDefaultLanguage()->kSprache);
+        $defaultLangID = LanguageHelper::getDefaultLanguage()->kSprache;
         if ($languageID !== $defaultLangID) {
             $seo = $db->select(
                 'tseo',
@@ -339,7 +337,7 @@ class Kategorie
     {
         $this->categoryFunctionAttributes = [];
         $this->categoryAttributes         = [];
-        $attributes                       = $db->query(
+        $attributes                       = $db->getObjects(
             'SELECT COALESCE(tkategorieattributsprache.cName, tkategorieattribut.cName) cName,
                     COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert,
                     tkategorieattribut.bIstFunktionsAttribut, tkategorieattribut.nSort
@@ -348,10 +346,11 @@ class Kategorie
                     ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
                     AND tkategorieattributsprache.kSprache = ' . $languageID . '
                 WHERE kKategorie = ' . (int)$this->kKategorie . '
-                ORDER BY tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort'
         );
         foreach ($attributes as $attribute) {
+            $attribute->nSort                 = (int)$attribute->nSort;
+            $attribute->bIstFunktionsAttribut = (int)$attribute->bIstFunktionsAttribut;
             // Aus Kompatibilitätsgründen findet hier KEINE Trennung
             // zwischen Funktions- und lokalisierten Attributen statt
             if ($attribute->cName === 'meta_title') {
@@ -494,15 +493,14 @@ class Kategorie
         if ($this->kOberKategorie !== null) {
             return $this->kOberKategorie > 0 ? (int)$this->kOberKategorie : false;
         }
-        $data = Shop::Container()->getDB()->query(
+        $data = Shop::Container()->getDB()->getSingleObject(
             'SELECT kOberKategorie
                 FROM tkategorie
                 WHERE kOberKategorie > 0
-                    AND kKategorie = ' . (int)$this->kKategorie,
-            ReturnType::SINGLE_OBJECT
+                    AND kKategorie = ' . (int)$this->kKategorie
         );
 
-        return isset($data->kOberKategorie) ? (int)$data->kOberKategorie : false;
+        return $data !== null ? (int)$data->kOberKategorie : false;
     }
 
     /**
@@ -529,10 +527,7 @@ class Kategorie
         if (!Shop::has('checkCategoryVisibility')) {
             Shop::set(
                 'checkCategoryVisibility',
-                Shop::Container()->getDB()->query(
-                    'SELECT kKategorie FROM tkategoriesichtbarkeit',
-                    ReturnType::AFFECTED_ROWS
-                ) > 0
+                Shop::Container()->getDB()->getAffectedRows('SELECT kKategorie FROM tkategoriesichtbarkeit') > 0
             );
         }
         if (!Shop::get('checkCategoryVisibility')) {

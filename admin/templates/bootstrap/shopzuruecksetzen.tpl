@@ -156,6 +156,21 @@
                     </div>
                 </div>
             </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="subheading1">{__('settings')}</div>
+                    <hr class="mb-n3">
+                </div>
+                <div class="card-body">
+                    <div class="item">
+                        <div class="custom-control custom-checkbox">
+                            <input class="custom-control-input" type="checkbox" name="cOption_arr[]" value="shopeinstellungen" tabindex="14" id="shopeinstellungen" />
+                            <label class="custom-control-label" for="shopeinstellungen">{__('deleteShopSettings')}</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="save-wrapper">
             <div class="row align-items-center">

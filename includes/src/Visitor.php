@@ -4,7 +4,6 @@ namespace JTL;
 
 use DateTime;
 use JTL\Crawler;
-use JTL\DB\ReturnType;
 use JTL\GeneralDataProtection\IpAnonymizer;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -23,13 +22,15 @@ class Visitor
      */
     public static function generateData(): void
     {
+        if (\TRACK_VISITORS === false) {
+            return;
+        }
         $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
         $botID     = self::isSpider($userAgent);
         if ($botID > 0) {
             Shop::Container()->getDB()->queryPrepared(
                 'UPDATE tbesucherbot SET dZeit = NOW() WHERE kBesucherBot = :_kBesucherBot',
-                ['_kBesucherBot' => $botID],
-                ReturnType::AFFECTED_ROWS
+                ['_kBesucherBot' => $botID]
             );
         }
         self::archive();
@@ -48,10 +49,7 @@ class Visitor
                 self::analyzeReferer($visitor->kBesucher, $visitor->cReferer);
             }
             // allways increment the visitor-counter (if no bot)
-            Shop::Container()->getDB()->query(
-                'UPDATE tbesucherzaehler SET nZaehler = nZaehler + 1',
-                ReturnType::AFFECTED_ROWS
-            );
+            Shop::Container()->getDB()->query('UPDATE tbesucherzaehler SET nZaehler = nZaehler + 1');
         } else {
             $visitor->kBesucher    = (int)$visitor->kBesucher;
             $visitor->kKunde       = (int)$visitor->kKunde;
@@ -87,14 +85,12 @@ class Visitor
             (UNIX_TIMESTAMP(dLetzteAktivitaet) - UNIX_TIMESTAMP(dZeit)) AS nBesuchsdauer, kBesucherBot, dZeit
               FROM tbesucher
               WHERE dLetzteAktivitaet <= DATE_SUB(NOW(), INTERVAL :interval HOUR)',
-            ['interval' => $interval],
-            ReturnType::AFFECTED_ROWS
+            ['interval' => $interval]
         );
         Shop::Container()->getDB()->queryPrepared(
             'DELETE FROM tbesucher
                 WHERE dLetzteAktivitaet <= DATE_SUB(NOW(), INTERVAL :interval HOUR)',
-            ['interval' => $interval],
-            ReturnType::AFFECTED_ROWS
+            ['interval' => $interval]
         );
     }
 
@@ -192,13 +188,12 @@ class Visitor
      */
     public static function refreshCustomerOrderId(int $customerID): int
     {
-        $data = Shop::Container()->getDB()->queryPrepared(
+        $data = Shop::Container()->getDB()->getSingleObject(
             'SELECT `kBestellung`
                 FROM `tbestellung`
                 WHERE `kKunde` = :cid
                 ORDER BY `dErstellt` DESC LIMIT 1',
-            ['cid' => $customerID],
-            ReturnType::SINGLE_OBJECT
+            ['cid' => $customerID]
         );
 
         return (int)($data->kBestellung ?? 0);
@@ -309,7 +304,7 @@ class Visitor
      * @former werteRefererAus()
      * @since  5.0.0
      */
-    public static function analyzeReferer(int $visitorID, $referer): void
+    public static function analyzeReferer(int $visitorID, string $referer): void
     {
         $ref             = $_SERVER['HTTP_REFERER'] ?? '';
         $term            = new stdClass();
@@ -400,9 +395,9 @@ class Visitor
 
     /**
      * @param string $userAgent
-     * @return bool|int
+     * @return bool
      */
-    private static function isMobile(string $userAgent)
+    private static function isMobile(string $userAgent): bool
     {
         return \preg_match(
             '/android|avantgo|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile' .
@@ -446,34 +441,34 @@ class Visitor
         if ($userAgent === '') {
             return $browser;
         }
-        if (\preg_match('/MSIE/i', $userAgent) && !\preg_match('/Opera/i', $userAgent)) {
+        if (\stripos($userAgent, 'MSIE') && \stripos($userAgent, 'Opera') === false) {
             $browser->nType    = \BROWSER_MSIE;
             $browser->cName    = 'Internet Explorer';
             $browser->cBrowser = 'msie';
-        } elseif (\preg_match('/Firefox/i', $userAgent)) {
+        } elseif (\stripos($userAgent, 'Firefox') !== false) {
             $browser->nType    = \BROWSER_FIREFOX;
             $browser->cName    = 'Mozilla Firefox';
             $browser->cBrowser = 'firefox';
-        } elseif (\preg_match('/Chrome/i', $userAgent)) {
+        } elseif (\stripos($userAgent, 'Chrome') !== false) {
             $browser->nType    = \BROWSER_CHROME;
             $browser->cName    = 'Google Chrome';
             $browser->cBrowser = 'chrome';
-        } elseif (\preg_match('/Safari/i', $userAgent)) {
+        } elseif (\stripos($userAgent, 'Safari') !== false) {
             $browser->nType = \BROWSER_SAFARI;
-            if (\preg_match('/iPhone/i', $userAgent)) {
+            if (\stripos($userAgent, 'iPhone') !== false) {
                 $browser->cName    = 'Apple iPhone';
                 $browser->cBrowser = 'iphone';
-            } elseif (\preg_match('/iPad/i', $userAgent)) {
+            } elseif (\stripos($userAgent, 'iPad') !== false) {
                 $browser->cName    = 'Apple iPad';
                 $browser->cBrowser = 'ipad';
-            } elseif (\preg_match('/iPod/i', $userAgent)) {
+            } elseif (\stripos($userAgent, 'iPod') !== false) {
                 $browser->cName    = 'Apple iPod';
                 $browser->cBrowser = 'ipod';
             } else {
                 $browser->cName    = 'Apple Safari';
                 $browser->cBrowser = 'safari';
             }
-        } elseif (\preg_match('/Opera/i', $userAgent)) {
+        } elseif (\stripos($userAgent, 'Opera') !== false) {
             $browser->nType = \BROWSER_OPERA;
             if (\preg_match('/Opera Mini/i', $userAgent)) {
                 $browser->cName    = 'Opera Mini';
@@ -503,7 +498,7 @@ class Visitor
         $browser->cVersion  = '0';
         $browser->cAgent    = $userAgent;
         $browser->bMobile   = self::isMobile($browser->cAgent);
-        if (\preg_match('/linux/i', $userAgent)) {
+        if (\stripos($userAgent, 'linux') !== false) {
             $browser->cPlatform = 'linux';
         } elseif (\preg_match('/macintosh|mac os x/i', $userAgent)) {
             $browser->cPlatform = 'mac';

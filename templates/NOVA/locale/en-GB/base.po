@@ -177,3 +177,6 @@ msgstr "No"
 
 msgid "Header über gesamte Bildschirmbreite darstellen"
 msgstr "Display header over full width"
+
+msgid "Suchfeld in Filtern anzeigen ab x Einträgen"
+msgstr "Show search in filters if filter has more than x items"

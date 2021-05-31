@@ -2,7 +2,6 @@
 
 namespace JTL\dbeS\Sync;
 
-use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\Helpers\Seo;
 use JTL\Language\LanguageHelper;
@@ -248,7 +247,7 @@ final class Characteristics extends AbstractSync
                     $item->kSprache_arr[] = $loc->kSprache;
                 }
 
-                if (isset($loc->kSprache, $defaultLangID) && $loc->kSprache === $defaultLangID) {
+                if ($loc->kSprache === $defaultLangID) {
                     $item->cNameSTD            = $loc->cWert;
                     $item->cSeoSTD             = $loc->cSeo;
                     $item->cMetaTitleSTD       = $loc->cMetaTitle;
@@ -276,10 +275,7 @@ final class Characteristics extends AbstractSync
      */
     private function addMissingCharacteristicValueSeo(array $characteristics): void
     {
-        $languages = $this->db->query(
-            'SELECT kSprache FROM tsprache ORDER BY kSprache',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
+        $languages = $this->db->getObjects('SELECT kSprache FROM tsprache ORDER BY kSprache');
         foreach ($characteristics as $characteristic) {
             foreach ($characteristic->oMMW_arr as $characteristicValue) {
                 $characteristicValue->kMerkmalWert = (int)$characteristicValue->kMerkmalWert;
@@ -301,8 +297,7 @@ final class Characteristics extends AbstractSync
                                 AND tseo.kKey = " . $characteristicValue->kMerkmalWert . '
                                 AND tseo.kSprache = ' . (int)$language->kSprache . '
                         WHERE tmerkmalwertsprache.kMerkmalWert = ' . $characteristicValue->kMerkmalWert . '
-                            AND tmerkmalwertsprache.kSprache = ' . $language->kSprache,
-                        ReturnType::DEFAULT
+                            AND tmerkmalwertsprache.kSprache = ' . $language->kSprache
                     );
                     //@todo: 1062: Duplicate entry '' for key 'PRIMARY'
                     if ($slug !== '' && $slug !== null) {
@@ -345,8 +340,7 @@ final class Characteristics extends AbstractSync
             INNER JOIN tmerkmal
                 ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
             WHERE tseo.cKey = 'kMerkmalWert'
-                AND tmerkmal.kMerkmal = " . $id,
-            ReturnType::DEFAULT
+                AND tmerkmal.kMerkmal = " . $id
         );
 
         if ($update) {
@@ -377,8 +371,7 @@ final class Characteristics extends AbstractSync
             INNER JOIN tmerkmal
                 ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
             WHERE tseo.cKey = 'kMerkmalWert'
-                AND tmerkmal.kMerkmal = " . $id,
-            ReturnType::DEFAULT
+                AND tmerkmal.kMerkmal = " . $id
         );
 
         $this->db->delete('tmerkmal', 'kMerkmal', $id);
@@ -397,14 +390,13 @@ final class Characteristics extends AbstractSync
         $this->db->delete('tseo', ['cKey', 'kKey'], ['kMerkmalWert', $id]);
         // Hat das Merkmal vor dem Loeschen noch mehr als einen Wert?
         // Wenn nein => nach dem Loeschen auch das Merkmal loeschen
-        $count = $this->db->query(
+        $count = $this->db->getSingleObject(
             'SELECT COUNT(*) AS nAnzahl, kMerkmal
-            FROM tmerkmalwert
-            WHERE kMerkmal = (
-                SELECT kMerkmal
-                    FROM tmerkmalwert
-                    WHERE kMerkmalWert = ' . $id . ')',
-            ReturnType::SINGLE_OBJECT
+                FROM tmerkmalwert
+                WHERE kMerkmal = (
+                    SELECT kMerkmal
+                        FROM tmerkmalwert
+                        WHERE kMerkmalWert = ' . $id . ')'
         );
 
         $this->db->query(
@@ -412,11 +404,10 @@ final class Characteristics extends AbstractSync
             FROM tmerkmalwert
             JOIN tmerkmalwertsprache
                 ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-            WHERE tmerkmalwert.kMerkmalWert = ' . $id,
-            ReturnType::DEFAULT
+            WHERE tmerkmalwert.kMerkmalWert = ' . $id
         );
         // Das Merkmal hat keine MerkmalWerte mehr => auch loeschen
-        if (!$isInsert && (int)$count->nAnzahl === 1) {
+        if (!$isInsert && $count !== null && (int)$count->nAnzahl === 1) {
             $this->delete($count->kMerkmal);
         }
     }

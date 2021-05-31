@@ -44,8 +44,7 @@ class Migration_20200415125300 extends Migration implements IMigration
             'UPDATE `tboxen`
               SET kBoxvorlage = :oldBoxID
               WHERE kBoxvorlage = 103',
-            ['oldBoxID' => $oldBoxID],
-            ReturnType::DEFAULT
+            ['oldBoxID' => $oldBoxID]
         );
         $this->getDB()->delete('tboxvorlage', 'kBoxvorlage', 103);
 

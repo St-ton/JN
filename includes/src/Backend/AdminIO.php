@@ -36,10 +36,10 @@ class AdminIO extends IO
     }
 
     /**
-     * @param string $name
-     * @param null $function
-     * @param null $include
-     * @param null $permission
+     * @param string        $name
+     * @param callable|null $function
+     * @param string|null   $include
+     * @param string|null   $permission
      * @return $this
      * @throws \Exception
      */

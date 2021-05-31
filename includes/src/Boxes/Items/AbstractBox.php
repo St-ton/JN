@@ -173,7 +173,7 @@ abstract class AbstractBox implements BoxInterface
     protected $isActive = true;
 
     /**
-     * @var Artikel[]
+     * @var ArtikelListe|Artikel[]
      */
     protected $products;
 

@@ -3,7 +3,6 @@
 use JTL\Alert\Alert;
 use JTL\Checkout\Zahlungsart;
 use JTL\Checkout\ZahlungsLog;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\PaymentMethod;
 use JTL\Helpers\Request;
@@ -104,12 +103,11 @@ if (Request::postInt('einstellungen_bearbeiten') === 1
     // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
     if (mb_strpos($paymentMethod->cModulId, 'kPlugin_') !== false) {
         $kPlugin     = PluginHelper::getIDByModuleID($paymentMethod->cModulId);
-        $Conf        = $db->query(
+        $Conf        = $db->getObjects(
             "SELECT *
                 FROM tplugineinstellungenconf
                 WHERE cWertName LIKE '" . $paymentMethod->cModulId . "\_%'
-                AND cConf = 'Y' ORDER BY nSort",
-            ReturnType::ARRAY_OF_OBJECTS
+                AND cConf = 'Y' ORDER BY nSort"
         );
         $configCount = count($Conf);
         for ($i = 0; $i < $configCount; $i++) {
@@ -212,12 +210,11 @@ if ($step === 'einstellen') {
         PaymentMethod::activatePaymentMethod($paymentMethod);
         // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
         if (mb_strpos($paymentMethod->cModulId, 'kPlugin_') !== false) {
-            $Conf        = $db->query(
+            $Conf        = $db->getObjects(
                 "SELECT *
                     FROM tplugineinstellungenconf
                     WHERE cWertName LIKE '" . $paymentMethod->cModulId . "\_%'
-                    ORDER BY nSort",
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY nSort"
             );
             $configCount = count($Conf);
             for ($i = 0; $i < $configCount; ++$i) {
@@ -276,11 +273,10 @@ if ($step === 'einstellen') {
             }
         }
 
-        $customerGroups = $db->query(
+        $customerGroups = $db->getObjects(
             'SELECT *
                 FROM tkundengruppe
-                ORDER BY cName',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY cName'
         );
         $smarty->assign('Conf', $Conf)
                ->assign('zahlungsart', $paymentMethod)
@@ -328,8 +324,7 @@ if ($step === 'einstellen') {
         $db->query(
             "UPDATE tzahlungseingang
                 SET cAbgeholt = 'N'
-                WHERE kZahlungseingang IN (" . implode(',', $incomingIDs) . ')',
-            ReturnType::QUERYSINGLE
+                WHERE kZahlungseingang IN (" . implode(',', $incomingIDs) . ')'
         );
     }
 
@@ -344,7 +339,7 @@ if ($step === 'einstellen') {
     $filter->assemble();
 
     $method        = $db->select('tzahlungsart', 'kZahlungsart', $paymentMethodID);
-    $incoming      = $db->query(
+    $incoming      = $db->getObjects(
         'SELECT ze.*, b.kZahlungsart, b.cBestellNr, k.kKunde, k.cVorname, k.cNachname, k.cMail
             FROM tzahlungseingang AS ze
                 JOIN tbestellung AS b
@@ -353,8 +348,7 @@ if ($step === 'einstellen') {
                     ON b.kKunde = k.kKunde
             WHERE b.kZahlungsart = ' . $paymentMethodID . ' ' .
         ($filter->getWhereSQL() !== '' ? 'AND ' . $filter->getWhereSQL() : '') . '
-            ORDER BY dZeit DESC',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY dZeit DESC'
     );
     $pagination    = (new Pagination('payments' . $paymentMethodID))
         ->setItemArray($incoming)
@@ -428,13 +422,12 @@ if ($step === 'uebersicht') {
                 );
             }
         }
-        $method->nEingangAnzahl = (int)$db->executeQueryPrepared(
+        $method->nEingangAnzahl = (int)$db->getSingleObject(
             'SELECT COUNT(*) AS `cnt`
                 FROM `tzahlungseingang` AS ze
                     JOIN `tbestellung` AS b ON ze.`kBestellung` = b.`kBestellung`
                 WHERE b.`kZahlungsart` = :kzahlungsart',
-            ['kzahlungsart' => $method->kZahlungsart],
-            ReturnType::SINGLE_OBJECT
+            ['kzahlungsart' => $method->kZahlungsart]
         )->cnt;
         $method->nLogCount      = ZahlungsLog::count($method->cModulId);
         $method->nErrorLogCount = ZahlungsLog::count($method->cModulId, JTLLOG_LEVEL_ERROR);

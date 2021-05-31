@@ -635,17 +635,11 @@ msgstr "No"
 msgid "isbn_display_value(N)"
 msgstr "No"
 
-msgid "artikeldetails_variationskombikind_bildvorschau_value(Y)"
-msgstr "Yes"
-
 msgid "adr_hazard_display_value(N)"
 msgstr "No"
 
 msgid "isbn_display_value(D)"
 msgstr "Yes, on item detail page"
-
-msgid "artikeldetails_variationskombikind_bildvorschau_value(N)"
-msgstr "No"
 
 msgid "adr_hazard_display_value(D)"
 msgstr "Yes, on item detail page"

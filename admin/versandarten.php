@@ -98,7 +98,8 @@ if (Form::validateToken()) {
 
         $pagination = (new Pagination('surchargeList'))
             ->setRange(4)
-            ->setItemArray((new Versandart($_GET['kVersandart']))->getShippingSurchargesForCountry($_GET['cISO']))
+            ->setItemArray((new Versandart(Request::getInt('kVersandart')))
+                ->getShippingSurchargesForCountry($_GET['cISO']))
             ->assemble();
 
         $smarty->assign('surcharges', $pagination->getPageItems())
@@ -225,9 +226,9 @@ if (Form::validateToken()) {
             && $staffelDa
             && $shippingFreeValid
         ) {
-            $kVersandart = 0;
+            $methodID = 0;
             if (Request::postInt('kVersandart') === 0) {
-                $kVersandart = $db->insert('tversandart', $shippingMethod);
+                $methodID = $db->insert('tversandart', $shippingMethod);
                 $alertHelper->addAlert(
                     Alert::TYPE_SUCCESS,
                     sprintf(__('successShippingMethodCreate'), $shippingMethod->cName),
@@ -235,29 +236,29 @@ if (Form::validateToken()) {
                 );
             } else {
                 //updaten
-                $kVersandart = Request::postInt('kVersandart');
-                $db->update('tversandart', 'kVersandart', $kVersandart, $shippingMethod);
-                $db->delete('tversandartzahlungsart', 'kVersandart', $kVersandart);
-                $db->delete('tversandartstaffel', 'kVersandart', $kVersandart);
+                $methodID = Request::postInt('kVersandart');
+                $db->update('tversandart', 'kVersandart', $methodID, $shippingMethod);
+                $db->delete('tversandartzahlungsart', 'kVersandart', $methodID);
+                $db->delete('tversandartstaffel', 'kVersandart', $methodID);
                 $alertHelper->addAlert(
                     Alert::TYPE_SUCCESS,
                     sprintf(__('successShippingMethodChange'), $shippingMethod->cName),
                     'successShippingMethodChange'
                 );
             }
-            if ($kVersandart > 0) {
+            if ($methodID > 0) {
                 foreach ($VersandartZahlungsarten as $versandartzahlungsart) {
-                    $versandartzahlungsart->kVersandart = $kVersandart;
+                    $versandartzahlungsart->kVersandart = $methodID;
                     $db->insert('tversandartzahlungsart', $versandartzahlungsart);
                 }
 
                 foreach ($VersandartStaffeln as $versandartstaffel) {
-                    $versandartstaffel->kVersandart = $kVersandart;
+                    $versandartstaffel->kVersandart = $methodID;
                     $db->insert('tversandartstaffel', $versandartstaffel);
                 }
                 $versandSprache = new stdClass();
 
-                $versandSprache->kVersandart = $kVersandart;
+                $versandSprache->kVersandart = $methodID;
                 foreach ($languages as $language) {
                     $code = $language->getCode();
 
@@ -286,7 +287,7 @@ if (Form::validateToken()) {
                     if ($postData['cHinweistextShop_' . $code]) {
                         $versandSprache->cHinweistextShop = $postData['cHinweistextShop_' . $code];
                     }
-                    $db->delete('tversandartsprache', ['kVersandart', 'cISOSprache'], [$kVersandart, $code]);
+                    $db->delete('tversandartsprache', ['kVersandart', 'cISOSprache'], [$methodID, $code]);
                     $db->insert('tversandartsprache', $versandSprache);
                 }
                 $step = 'uebersicht';
@@ -535,16 +536,16 @@ if ($step === 'uebersicht') {
         ->assign('waehrung', $defaultCurrency->cName);
 }
 if ($step === 'Zuschlagsliste') {
-    $cISO        = $_GET['cISO'] ?? $postData['cISO'] ?? null;
-    $kVersandart = Request::getInt('kVersandart');
+    $iso      = $_GET['cISO'] ?? $postData['cISO'] ?? null;
+    $methodID = Request::getInt('kVersandart');
     if (isset($postData['kVersandart'])) {
-        $kVersandart = Request::postInt('kVersandart');
+        $methodID = Request::postInt('kVersandart');
     }
-    $shippingMethod = $db->select('tversandart', 'kVersandart', $kVersandart);
+    $shippingMethod = $db->select('tversandart', 'kVersandart', $methodID);
     $fees           = $db->selectAll(
         'tversandzuschlag',
         ['kVersandart', 'cISO'],
-        [(int)$shippingMethod->kVersandart, $cISO],
+        [(int)$shippingMethod->kVersandart, $iso],
         '*',
         'fZuschlag'
     );
@@ -559,7 +560,7 @@ if ($step === 'Zuschlagsliste') {
     $smarty->assign('Versandart', $shippingMethod)
         ->assign('Zuschlaege', $fees)
         ->assign('waehrung', $defaultCurrency->cName)
-        ->assign('Land', $countryHelper->getCountry($cISO));
+        ->assign('Land', $countryHelper->getCountry($iso));
 }
 
 $smarty->assign('fSteuersatz', $_SESSION['Steuersatz'][$taxRateKeys[0]])

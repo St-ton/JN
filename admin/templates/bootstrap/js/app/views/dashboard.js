@@ -108,7 +108,7 @@ $(function () {
 })
 
 // no drag'n drop on touch devices
-$('.dashboard-wrapper')[0].addEventListener("touchstart", function() {
+$('.dashboard-wrapper').one('touchstart', function() {
     sortable.destroy();
-}, false);
+});
 

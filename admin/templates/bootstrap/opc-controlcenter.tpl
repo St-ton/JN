@@ -64,10 +64,10 @@
                                         </td>
                                         <td class="text-center">
                                             <div class="btn-group">
-                                                <a class="btn btn-link px-2" title="{__('deleteDraftAll')}"
+                                                <a class="btn btn-link px-2 delete-confirm" title="{__('deleteDraftAll')}"
                                                    href="?token={$smarty.session.jtl_token}&action=restore&pageId={$page->cPageId|htmlentities}"
-                                                   onclick="return confirm('{__('sureDeleteAll')}');"
-                                                   data-toggle="tooltip">
+                                                   data-toggle="tooltip"
+                                                   data-modal-body="{$page->cPageUrl}">
                                                     <span class="icon-hover">
                                                         <span class="fal fa-trash-alt"></span>
                                                         <span class="fas fa-trash-alt"></span>
@@ -127,12 +127,12 @@
                                                         </td>
                                                         <td>
                                                             <div class="btn-group float-right">
-                                                                <a class="btn btn-link px-2" title="{__('deleteDraft')}"
+                                                                <a class="btn btn-link px-2 delete-confirm" title="{__('deleteDraft')}"
                                                                    href="{strip}?token={$smarty.session.jtl_token}&
                                                                          action=discard&
                                                                          pageKey={$draft->getKey()}{/strip}"
-                                                                   onclick="return confirm('{__('sureDelete')}');"
-                                                                   data-toggle="tooltip">
+                                                                   data-toggle="tooltip"
+                                                                   data-modal-body="{$draft->getName()}">
                                                                     <span class="icon-hover">
                                                                         <span class="fal fa-trash-alt"></span>
                                                                         <span class="fas fa-trash-alt"></span>

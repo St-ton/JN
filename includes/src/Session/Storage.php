@@ -15,7 +15,7 @@ use JTL\Shop;
 class Storage
 {
     /**
-     * @var \SessionHandlerInterface
+     * @var JTLHandlerInterface
      */
     protected $handler;
 
@@ -27,8 +27,7 @@ class Storage
         \session_register_shutdown();
         $this->handler = $this->initHandler();
         $res           = \get_class($this->handler) === JTLDefault::class
-            ? true
-            : \session_set_save_handler($this->handler, true);
+            || \session_set_save_handler($this->handler, true);
         if ($res !== true) {
             throw new \RuntimeException('Failed to set session handler');
         }

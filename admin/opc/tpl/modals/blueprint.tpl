@@ -4,7 +4,7 @@
             <div class="modal-header">
                 <h5 class="modal-title">{__('Save this Portlet as a blueprint')}</h5>
             </div>
-            <form onsubmit="opc.gui.createBlueprint()">
+            <form action="javascript:void(0);" onsubmit="opc.gui.createBlueprint()">
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="blueprintName">{__('Blueprint name')}</label>

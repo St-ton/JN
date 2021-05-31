@@ -196,6 +196,13 @@
 			border-width: 10px 0px 10px 14px;
 			border-color: transparent transparent transparent $white;
 		}
+		.variation-image-preview-title {
+			margin: map-get($spacers, 2) 0;
+			text-align: center;
+			.variation-image-preview-title-value {
+				color: $success;
+			}
+		}
 	}
 
 	#gallery {
@@ -842,4 +849,13 @@
 	  margin-bottom: map_get($spacers, 2);
 	  display: inline-block;
     }
+}
+.swatches-image {
+	.square-image {
+		.inner {
+			img {
+				width: 100%;
+			}
+		}
+	}
 }

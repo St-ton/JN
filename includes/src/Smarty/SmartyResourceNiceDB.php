@@ -3,7 +3,6 @@
 namespace JTL\Smarty;
 
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Shop;
 use Smarty_Resource_Custom;
 
@@ -102,15 +101,14 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
         $pcs = \explode('_', $name);
         if (isset($pcs[0], $pcs[1], $pcs[2], $pcs[3]) && $pcs[3] === 'anbieterkennzeichnung') {
             // Anbieterkennzeichnungsvorlage holen
-            $vl = $this->db->queryPrepared(
+            $vl = $this->db->getSingleObject(
                 "SELECT tevs.cContentHtml, tevs.cContentText
                     FROM temailvorlage tev
                     JOIN temailvorlagesprache tevs
                         ON tevs.kEmailVorlage = tev.kEmailvorlage
                         AND tevs.kSprache = :langID
                     WHERE tev.cModulId = 'core_jtl_anbieterkennzeichnung'",
-                ['langID' => (int)$pcs[4]],
-                ReturnType::SINGLE_OBJECT
+                ['langID' => (int)$pcs[4]]
             );
         } else {
             // Plugin Emailvorlage?

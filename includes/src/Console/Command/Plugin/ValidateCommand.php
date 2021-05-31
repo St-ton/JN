@@ -96,7 +96,7 @@ class ValidateCommand extends Command
         }
         $this->cleanup($delete, $pluginDir, $zip);
 
-        return null;
+        return 0;
     }
 
     /**

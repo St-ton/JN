@@ -5,7 +5,6 @@ namespace JTL\Mail\Admin;
 use InvalidArgumentException;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Language\LanguageModel;
@@ -13,8 +12,8 @@ use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Mail\Template\Model;
 use JTL\Mail\Template\TemplateFactory;
-use JTL\Mail\Template\TemplateInterface;
 use PHPMailer\PHPMailer\Exception;
+use Shop;
 use stdClass;
 
 /**
@@ -317,16 +316,14 @@ final class Controller
         $this->db->queryPrepared(
             'DELETE FROM temailvorlagesprache
                 WHERE kEmailvorlage = :tid',
-            ['tid' => $templateID],
-            ReturnType::DEFAULT
+            ['tid' => $templateID]
         );
         $this->db->queryPrepared(
             'INSERT INTO temailvorlagesprache
                 SELECT *
                 FROM temailvorlagespracheoriginal
                 WHERE temailvorlagespracheoriginal.kEmailvorlage = :tid',
-            ['tid' => $templateID],
-            ReturnType::DEFAULT
+            ['tid' => $templateID]
         );
         $data = $this->db->select(
             'temailvorlage',
@@ -392,7 +389,7 @@ final class Controller
     }
 
     /**
-     * @return TemplateInterface[]
+     * @return Model[]
      */
     public function getAllTemplates(): array
     {

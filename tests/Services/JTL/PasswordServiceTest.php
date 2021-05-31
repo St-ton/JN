@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tests\Services\JTL;
 
@@ -8,7 +8,7 @@ use Tests\BaseTestCase;
 
 /**
  * Class PasswordServiceTest
- * @package Services\JTL
+ * @package Tests\Services\JTL
  */
 class PasswordServiceTest extends BaseTestCase
 {

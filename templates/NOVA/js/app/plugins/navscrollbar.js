@@ -47,7 +47,7 @@ let $window		= $(window)
 
 export default class NavScrollbar {
     constructor(element, config = {}) {
-        self         = this;
+        let self     = this;
         this.element = $(element)
         this.config  = $.extend(true, {}, Default, config)
 

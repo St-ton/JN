@@ -1,7 +1,4 @@
 <script type="text/javascript">
-    function confirmDelete() {
-        return confirm('{__('sureDeleteLink')|replace:"\n":' '}');
-    }
     $(document).ready(function () {
         $('.duplicate-special-link').closest('.link-group-wrapper').find('.duplicate-special-page-warning')
             .removeClass('d-none');
@@ -23,7 +20,7 @@
     {/if}
     <form action="links.php" method="post">
         {$jtl_token}
-        <div class="row">
+        <div class="row no-gutters">
             <div class="col-sm-6 col-xl-auto">
                 <button class="btn btn-primary add btn-block mb-4" name="action" value="create-linkgroup">
                     <i class="fa fa-share"></i> {__('newLinkGroup')}
@@ -110,7 +107,7 @@
     </div>{* /accordion *}
     <form action="links.php" method="post">
         {$jtl_token}
-        <div class="row">
+        <div class="row no-gutters">
             <div class="col-sm-6 col-xl-auto mb-4">
                 <button class="btn btn-primary add btn-block" name="action" value="create-linkgroup">
                     <i class="fa fa-share"></i> {__('newLinkGroup')}

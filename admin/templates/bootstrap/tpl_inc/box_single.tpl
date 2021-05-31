@@ -69,9 +69,9 @@
     <td class="text-center">
         <div class="btn-group">
             <a href="boxen.php?action=del&page={$nPage}&position={$position}&item={$oBox->getID()}&token={$smarty.session.jtl_token}"
-               onclick="return confirmDelete('{if $oBox->getBaseType() === $smarty.const.BOX_CONTAINER}Container #{$oBox->getID()}{else}{$oBox->getTitle()}{/if}');"
                title="{__('remove')}"
-               class="btn btn-link px-2"
+               class="btn btn-link px-2 delete-confirm"
+               data-modal-body="{__('confirmDeleteBox')|sprintf:"{if $oBox->getBaseType() === $smarty.const.BOX_CONTAINER}Container #{$oBox->getID()}{else}{$oBox->getTitle()}{/if}"}"
                data-toggle="tooltip">
                 <span class="icon-hover">
                     <span class="fal fa-trash-alt"></span>

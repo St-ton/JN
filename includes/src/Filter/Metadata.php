@@ -8,7 +8,6 @@ use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Category\MenuItem;
 use JTL\Catalog\Hersteller;
 use JTL\Catalog\Product\MerkmalWert;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Category;
 use JTL\Helpers\Text;
 use JTL\MagicCompatibilityTrait;
@@ -282,10 +281,9 @@ class Metadata implements MetadataInterface
     public static function getGlobalMetaData(): array
     {
         return Shop::Container()->getCache()->get('jtl_glob_meta', static function ($cache, $id, &$content, &$tags) {
-            $globalTmp = Shop::Container()->getDB()->query(
+            $globalTmp = Shop::Container()->getDB()->getObjects(
                 'SELECT cName, kSprache, cWertName 
-                    FROM tglobalemetaangaben ORDER BY kSprache',
-                ReturnType::ARRAY_OF_OBJECTS
+                    FROM tglobalemetaangaben ORDER BY kSprache'
             );
             $content   = map(group($globalTmp, static function ($g) {
                 return (int)$g->kSprache;

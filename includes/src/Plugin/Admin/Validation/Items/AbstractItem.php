@@ -32,9 +32,9 @@ class AbstractItem implements ValidationItemInterface
     protected $dir = '';
 
     /**
-     * @var int
+     * @var string
      */
-    protected $version = 100;
+    protected $version = '100';
 
     /**
      * @var string

@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Alert\Alert;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Seo;
@@ -215,8 +214,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
             "DELETE FROM tseo
                 WHERE cKey = 'suchspecial'
                     AND kSprache = " . $languageID . '
-                    AND kKey IN (' . implode(',', $ids) . ')',
-            ReturnType::AFFECTED_ROWS
+                    AND kKey IN (' . implode(',', $ids) . ')'
         );
         foreach ($ssTmp as $item) {
             $seo           = new stdClass();
@@ -233,8 +231,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
             "DELETE FROM tseo
                 WHERE cKey = 'suchspecial'
                     AND kSprache = " . $languageID . '
-                    AND kKey IN (' . implode(',', $ssToDelete) . ')',
-            ReturnType::AFFECTED_ROWS
+                    AND kKey IN (' . implode(',', $ssToDelete) . ')'
         );
     }
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSeoSave'), 'successSeoSave');
@@ -265,11 +262,11 @@ $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_SUCHSPECIAL))
  * @param int    $key
  * @return bool
  */
-function pruefeSuchspecialSeo($searchSpecials, $seo, $key)
+function pruefeSuchspecialSeo(array $searchSpecials, string $seo, int $key): bool
 {
-    if ($key > 0 && is_array($searchSpecials) && count($searchSpecials) > 0 && mb_strlen($seo)) {
-        foreach ($searchSpecials as $oSuchSpecials) {
-            if ($oSuchSpecials->kKey == $key && $oSuchSpecials->cSeo === $seo) {
+    if ($key > 0 && count($searchSpecials) > 0 && mb_strlen($seo)) {
+        foreach ($searchSpecials as $special) {
+            if ((int)$special->kKey === $key && $special->cSeo === $seo) {
                 return true;
             }
         }

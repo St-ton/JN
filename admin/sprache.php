@@ -4,7 +4,6 @@
  */
 
 use JTL\Alert\Alert;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
@@ -44,6 +43,7 @@ if (isset($_FILES['csvfile']['tmp_name'])
     } else {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorImport'), 'errorImport');
     }
+    $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE]);
     $lang = new LanguageHelper($db, $cache);
 }
 
@@ -65,9 +65,7 @@ foreach ($installedLanguages as $language) {
     }
 }
 if (isset($_REQUEST['action']) && Form::validateToken()) {
-    $action = $_REQUEST['action'];
-
-    switch ($action) {
+    switch ($_REQUEST['action']) {
         case 'newvar':
             // neue Variable erstellen
             $step                     = 'newvar';
@@ -80,8 +78,7 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
             // Variable loeschen
             $name = Request::getVar('cName');
             $lang->loesche(Request::getInt('kSprachsektion'), $name);
-            $cache->flushTags([CACHING_GROUP_LANGUAGE]);
-            $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
+            $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
             $alertHelper->addAlert(
                 Alert::TYPE_SUCCESS,
                 sprintf(__('successVarRemove'), $name),
@@ -105,7 +102,7 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
                 )
                 ->cName;
 
-            $data = $db->queryPrepared(
+            $data = $db->getObjects(
                 'SELECT s.cNameDeutsch AS cSpracheName, sw.cWert, si.cISO
                     FROM tsprachwerte AS sw
                         JOIN tsprachiso AS si
@@ -114,8 +111,7 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
                             ON s.cISO = si.cISO 
                     WHERE sw.cName = :cName
                         AND sw.kSprachsektion = :kSprachsektion',
-                ['cName' => $variable->cName, 'kSprachsektion' => $variable->kSprachsektion],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['cName' => $variable->cName, 'kSprachsektion' => $variable->kSprachsektion]
             );
 
             foreach ($data as $item) {
@@ -162,31 +158,24 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
                     ['cSektion', 'cName'],
                     [$variable->cSprachsektion, $variable->cName]
                 );
-                $cache->flushTags([CACHING_GROUP_LANGUAGE]);
-                $db->query(
-                    'UPDATE tglobals SET dLetzteAenderung = NOW()',
-                    ReturnType::DEFAULT
-                );
+                $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
             }
 
             break;
         case 'saveall':
-            // geaenderte Variablen speichern
             $modified = [];
             foreach ($_REQUEST['cWert_arr'] as $kSektion => $sectionValues) {
                 foreach ($sectionValues as $name => $cWert) {
                     if ((int)$_REQUEST['bChanged_arr'][$kSektion][$name] === 1) {
-                        // wurde geaendert => speichern
-                        $lang
-                            ->setzeSprache($langCode)
+                        $lang->setzeSprache($langCode)
                             ->set((int)$kSektion, $name, $cWert);
                         $modified[] = $name;
                     }
                 }
             }
 
-            $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE]);
-            $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
+            $cache->flushTags([CACHING_GROUP_CORE]);
+            $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
 
             $alertHelper->addAlert(
                 Alert::TYPE_SUCCESS,
@@ -198,22 +187,19 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
 
             break;
         case 'clearlog':
-            // Liste nicht gefundener Variablen leeren
-            $lang
-                ->setzeSprache($langCode)
+            $lang->setzeSprache($langCode)
                 ->clearLog();
-            $cache->flushTags([CACHING_GROUP_LANGUAGE]);
-            $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
+            $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
             $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successListReset'), 'successListReset');
             break;
         default:
             break;
     }
+    $cache->flushTags([CACHING_GROUP_LANGUAGE]);
 }
 
 if ($step === 'newvar') {
-    $smarty
-        ->assign('oSektion_arr', $sections)
+    $smarty->assign('oSektion_arr', $sections)
         ->assign('oVariable', $variable)
         ->assign('oSprache_arr', $availableLanguages);
 } elseif ($step === 'overview') {
@@ -238,14 +224,13 @@ if ($step === 'newvar') {
     $filter->assemble();
     $filterSQL = $filter->getWhereSQL();
 
-    $values = $db->query(
+    $values = $db->getObjects(
         'SELECT sw.cName, sw.cWert, sw.cStandard, sw.bSystem, ss.kSprachsektion, ss.cName AS cSektionName
             FROM tsprachwerte AS sw
-                JOIN tsprachsektion AS ss
-                    ON ss.kSprachsektion = sw.kSprachsektion
+            JOIN tsprachsektion AS ss
+                ON ss.kSprachsektion = sw.kSprachsektion
             WHERE sw.kSprachISO = ' . $langIsoID . '
-                ' . ($filterSQL !== '' ? 'AND ' . $filterSQL : ''),
-        ReturnType::ARRAY_OF_OBJECTS
+                ' . ($filterSQL !== '' ? 'AND ' . $filterSQL : '')
     );
 
     handleCsvExportAction(
@@ -263,17 +248,15 @@ if ($step === 'newvar') {
         ->setItemArray($values)
         ->assemble();
 
-    $notFound = $db->query(
+    $notFound = $db->getObjects(
         'SELECT sl.*, ss.kSprachsektion
             FROM tsprachlog AS sl
-                LEFT JOIN tsprachsektion AS ss
-                    ON ss.cName = sl.cSektion
-            WHERE kSprachISO = ' . (int)$lang->currentLanguageID,
-        ReturnType::ARRAY_OF_OBJECTS
+            LEFT JOIN tsprachsektion AS ss
+                ON ss.cName = sl.cSektion
+            WHERE kSprachISO = ' . $langIsoID
     );
 
-    $smarty
-        ->assign('oFilter', $filter)
+    $smarty->assign('oFilter', $filter)
         ->assign('pagination', $pagination)
         ->assign('oWert_arr', $pagination->getPageItems())
         ->assign('bSpracheAktiv', $langActive)
@@ -281,7 +264,6 @@ if ($step === 'newvar') {
         ->assign('oNotFound_arr', $notFound);
 }
 
-$smarty
-    ->assign('tab', $tab)
+$smarty->assign('tab', $tab)
     ->assign('step', $step)
     ->display('sprache.tpl');

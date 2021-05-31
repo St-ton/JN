@@ -73,7 +73,7 @@ msgid "Terms / Withdrawal"
 msgstr "Terms/Withdrawal"
 
 msgid "Blog posts"
-msgstr "Blog postings"
+msgstr "Blog posts"
 
 msgid "Footer / Boxes"
 msgstr "Footers/Boxes"

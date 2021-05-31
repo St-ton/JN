@@ -848,12 +848,6 @@ msgstr "Gefahrentafel im Artikel anzeigen"
 msgid "adr_hazard_display_desc"
 msgstr "Hier legen Sie fest, ob die europäische Gefahrentafel im Artikel angezeigt werden soll. Hierfür müssen in JTL-Wawi die UN-Nummer und die Gefahrnummer gepflegt sein."
 
-msgid "artikeldetails_variationskombikind_bildvorschau_name"
-msgstr "Bildvorschau für Kindartikel anzeigen"
-
-msgid "artikeldetails_variationskombikind_bildvorschau_desc"
-msgstr "Hier legen Sie fest, ob in der Artikelübersicht Vorschaubilder für Kindartikel angezeigt werden sollen. Bei vielen Kindartikeln kann dies zu großen Ladezeiten führen."
-
 msgid "artikeldetails_fragezumprodukt_anzeigen_name"
 msgstr "Formular für Fragen zum Artikel anzeigen"
 
@@ -1214,6 +1208,18 @@ msgstr "Vorausgewähltes Land"
 msgid "lieferadresse_abfragen_standardland_desc"
 msgstr "Hier geben Sie den ISO-Code für das Land an, das vorausgewählt sein soll, z. B. DE für Deutschland oder AT für Österreich."
 
+msgid "lieferadresse_abfragen_firma_name"
+msgstr "Firma abfragen"
+
+msgid "lieferadresse_abfragen_firma_desc"
+msgstr "Hier legen Sie fest, ob der Firmenname abgefragt wird."
+
+msgid "lieferadresse_abfragen_firmazusatz_name"
+msgstr "Firmenzusatz abfragen"
+
+msgid "lieferadresse_abfragen_firmazusatz_desc"
+msgstr "Hier legen Sie fest, ob der Firmenzusatz abgefragt wird."
+
 msgid "shop_ustid_name"
 msgstr "USt-IdNr. des Onlineshops"
 
@@ -1489,6 +1495,12 @@ msgstr "Top bewertet ab welcher Durchschnittsbewertung"
 
 msgid "boxen_topbewertet_minsterne_desc"
 msgstr "Hier legen Sie fest, mit wie vielen Sternen ein Artikel mindestens im Durchschnitt bewertet sein muss, um als „Top bewertet“ zu gelten."
+
+msgid "box_hersteller_anzahl_anzeige_name"
+msgstr "Anzahl angezeigter Hersteller"
+
+msgid "box_hersteller_anzahl_anzeige_desc"
+msgstr "Hier legen Sie fest, wie viele Hersteller in der Box „Hersteller“ angezeigt werden. Geben Sie 0 an, um alle Hersteller anzuzeigen."
 
 msgid "bilder_kategorien_breite_name"
 msgstr "Kategoriebilder Breite"
@@ -1934,6 +1946,12 @@ msgstr "Zeichenmaskierung ;"
 msgid "exportformate_semikolon_desc"
 msgstr "Sie können bei Bedarf diese Zeichen maskieren lassen."
 
+msgid "exportformate_line_ending_name"
+msgstr "Zeilenende"
+
+msgid "exportformate_line_ending_desc"
+msgstr ""
+
 msgid "kontakt_abfragen_anrede_name"
 msgstr "Anrede abfragen"
 
@@ -2144,12 +2162,6 @@ msgstr "Spaltenbreite des Artikels"
 msgid "vergleichsliste_spaltengroesse_desc"
 msgstr "Hier legen Sie fest, wie viele Pixel eine Spalte für einen Artikel in der Vergleichsliste breit sein soll."
 
-msgid "vergleichsliste_spaltengroesseattribut_name"
-msgstr "Spaltenbreite der Attribute"
-
-msgid "vergleichsliste_spaltengroesseattribut_desc"
-msgstr "Hier legen Sie fest, wie viele Pixel eine Spalte für ein Artikelattribut in der Vergleichsliste breit sein soll."
-
 msgid "vergleichsliste_target_name"
 msgstr "Position der Vergleichsliste"
 
@@ -2161,6 +2173,12 @@ msgstr "Bewertungssystem nutzen"
 
 msgid "bewertung_anzeigen_desc"
 msgstr "Hier legen Sie fest, ob die Möglichkeit, eine Bewertung abzugeben, in den Artikeldetails angezeigt wird."
+
+msgid "bewertung_alle_sprachen_name"
+msgstr "Alle Sprachen anzeigen"
+
+msgid "bewertung_alle_sprachen_desc"
+msgstr "Hier legen Sie fest, ob Bewertungstexte immer angezeigt werden, unabhängig davon, in welcher Sprache sie verfasst wurden (Ja), oder ob nur Bewertungen in der Sprache zu sehen sind, die aktuell im Frontend gesetzt ist (Nein)."
 
 msgid "bewertung_freischalten_name"
 msgstr "Bewertungen freischalten"
@@ -2577,10 +2595,10 @@ msgid "news_anzahl_content_desc"
 msgstr "Hier legen Sie fest, wie viele Blogbeiträge auf der Startseite Ihres JTL-Shops angezeigt werden sollen."
 
 msgid "news_anzahl_box_name"
-msgstr "Anzahl Monate in der Box"
+msgstr "Anzahl Monate/Kategorien in der Box"
 
 msgid "news_anzahl_box_desc"
-msgstr "Hier legen Sie fest, wie viele Monate in der Box „Blog (Monatsübersicht)“ angezeigt werden sollen."
+msgstr "Hier legen Sie fest, wie viele Monate in der Box „Blog (Monatsübersicht)“ angezeigt werden sollen, bzw. wie viele Kategorien in der Box „Blog (Kategorieübersicht)“ angezeigt werden sollen."
 
 msgid "news_kommentare_freischalten_name"
 msgstr "Kommentare freischalten"

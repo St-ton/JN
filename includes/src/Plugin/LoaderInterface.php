@@ -2,8 +2,10 @@
 
 namespace JTL\Plugin;
 
+use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
+use stdClass;
 
 /**
  * Interface LoaderInterface
@@ -44,16 +46,16 @@ interface LoaderInterface
      * @param bool     $invalidateCache
      * @param int|null $languageID
      * @return PluginInterface
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function init(int $id, bool $invalidateCache = false, int $languageID = null): PluginInterface;
 
     /**
-     * @param object $obj
-     * @param string $currentLanguageCode
+     * @param stdClass $obj
+     * @param string   $currentLanguageCode
      * @return PluginInterface
      */
-    public function loadFromObject($obj, string $currentLanguageCode): PluginInterface;
+    public function loadFromObject(stdClass $obj, string $currentLanguageCode): PluginInterface;
 
     /**
      * @return PluginInterface|null

@@ -648,7 +648,7 @@ msgid "requiredEntry"
 msgstr "Mandatory"
 
 msgid "noMoreInfo"
-msgstr "No further information available."
+msgstr "No further information available. (Maybe you are missing the dashobard permission)"
 
 msgid "structure"
 msgstr "Structure"
@@ -2077,3 +2077,36 @@ msgstr "Safe mode"
 
 msgid "Safe mode enabled."
 msgstr "Safe mode active. Functionality might be impaired."
+
+msgid "settingNoLog"
+msgstr "No changes logged yet."
+
+msgid "settingChangedBy"
+msgstr "Changed by"
+
+msgid "settingValueNew"
+msgstr "Value new"
+
+msgid "settingValueOld"
+msgstr "Value old"
+
+msgid "successConfigReset"
+msgstr "Successful reset of setting."
+
+msgid "settingLogTitle"
+msgstr "Show Changelog"
+
+msgid "settingReset"
+msgstr "Reset setting."
+
+msgid "confirmResetLog"
+msgstr "Reset setting - %s?"
+
+msgid "confirmResetLogTitle"
+msgstr "Confirm reset"
+
+msgid "resetSettingDefaultValueNotFound"
+msgstr "Einstellung konnte nicht zurückgesetzt werden, da kein passender Eintrag in teinstellungen_default zu \"%s\" gefunden wurde."
+
+msgid "defaultDeleteConfirmTitle"
+msgstr "Confirm delete"

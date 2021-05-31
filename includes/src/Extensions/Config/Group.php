@@ -3,7 +3,6 @@
 namespace JTL\Extensions\Config;
 
 use JsonSerializable;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
@@ -284,11 +283,10 @@ class Group implements JsonSerializable
      */
     public function getItemCount(): int
     {
-        return (int)Shop::Container()->getDB()->query(
+        return (int)Shop::Container()->getDB()->getSingleObject(
             'SELECT COUNT(*) AS nCount 
                 FROM tkonfigitem 
-                WHERE kKonfiggruppe = ' . (int)$this->kKonfiggruppe,
-            ReturnType::SINGLE_OBJECT
+                WHERE kKonfiggruppe = ' . (int)$this->kKonfiggruppe
         )->nCount;
     }
 

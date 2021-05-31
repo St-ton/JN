@@ -90,7 +90,6 @@
                                     </tbody>
                                 </table>
                             </div>
-                            {include file='tpl_inc/pagination.tpl' pagination=$oPagiInaktiv cAnchor='freischalten' isBottom=true}
                             <div class="card-footer save-wrapper">
                                 <div class="row">
                                     <div class="col-sm-6 col-xl-auto text-left">
@@ -113,6 +112,7 @@
                             </div>
                         </div>
                     </form>
+                    {include file='tpl_inc/pagination.tpl' pagination=$oPagiInaktiv cAnchor='freischalten' isBottom=true}
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
@@ -153,7 +153,7 @@
                                             <td>
                                                 <label for="l50-{$review->kBewertung}">{$review->ArtikelName}</label>
                                             </td>
-                                            <td>{$review->cName}.</td>
+                                            <td>{$review->cName}</td>
                                             <td>
                                                 <strong>{$review->cTitel}</strong><br>
                                                 {$review->cText}
@@ -169,9 +169,10 @@
                                             <td class="text-center">
                                                 {if !empty($review->cAntwort)}
                                                     <a href="bewertung.php?a=delreply&kBewertung={$review->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
-                                                       class="btn btn-link px-2"
+                                                       class="btn btn-link px-2 delete-confirm"
                                                        title="{__('removeReply')}"
-                                                       data-toggle="tooltip">
+                                                       data-toggle="tooltip"
+                                                       data-modal-body="{__('removeReply')} | {$review->ArtikelName}">
                                                         <span class="icon-hover">
                                                             <span class="fal fa-trash-alt"></span>
                                                             <span class="fas fa-trash-alt"></span>
@@ -203,7 +204,6 @@
                                     </tbody>
                                 </table>
                             </div>
-                            {include file='tpl_inc/pagination.tpl' pagination=$oPagiAktiv cAnchor='letzten50' isBottom=true}
                             <div class="card-footer save-wrapper">
                                 <div class="row">
                                     <div class="col-sm-6 col-xl-auto text-left">
@@ -219,6 +219,7 @@
                             </div>
                         </div>
                     </form>
+                    {include file='tpl_inc/pagination.tpl' pagination=$oPagiAktiv cAnchor='letzten50' isBottom=true}
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
@@ -366,9 +367,7 @@
                                                 <input class="form-control" type="text" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}"  value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}" tabindex="1"{if $oConfig->cWertName|strpos:"_guthaben"} onKeyUp="setzePreisAjax(false, 'EinstellungAjax_{$oConfig->cWertName}', this);"{/if} />
                                             {/if}
                                         </div>
-                                        {if $oConfig->cBeschreibung}
-                                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=$oConfig->cBeschreibung cID=$oConfig->kEinstellungenConf}</div>
-                                        {/if}
+                                        {include file='snippets/einstellungen_icons.tpl' cnf=$oConfig}
                                     </div>
                                 {else}
                                     {if $oConfig->cBeschreibung}

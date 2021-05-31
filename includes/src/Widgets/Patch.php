@@ -9,6 +9,14 @@ namespace JTL\Widgets;
 class Patch extends AbstractWidget
 {
     /**
+     *
+     */
+    public function init()
+    {
+        $this->setPermission('DIAGNOSTIC_VIEW');
+    }
+
+    /**
      * @return string
      */
     public function getContent()

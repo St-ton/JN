@@ -2,8 +2,6 @@
 
 namespace JTL\dbeS\Push;
 
-use JTL\DB\ReturnType;
-
 /**
  * Class Payments
  * @package JTL\dbeS\Push
@@ -16,12 +14,11 @@ final class Payments extends AbstractPush
     public function getData()
     {
         $xml      = [];
-        $payments = $this->db->query(
+        $payments = $this->db->getArrays(
             "SELECT *, date_format(dZeit, '%d.%m.%Y') AS dZeit_formatted
-            FROM tzahlungseingang
-            WHERE cAbgeholt = 'N'
-            ORDER BY kZahlungseingang",
-            ReturnType::ARRAY_OF_ASSOC_ARRAYS
+                FROM tzahlungseingang
+                WHERE cAbgeholt = 'N'
+                ORDER BY kZahlungseingang"
         );
         $count    = \count($payments);
         if ($count === 0) {

@@ -195,8 +195,8 @@
             {/if}
             {* Languages *}
             {if !empty($smarty.session.Sprachen) && count($smarty.session.Sprachen) > 1}
-                {foreach item=oSprache from=$smarty.session.Sprachen}
-                    <link rel="alternate" hreflang="{$oSprache->cISO639}" href="{$oSprache->cURLFull}">
+                {foreach $smarty.session.Sprachen as $language}
+                    <link rel="alternate" hreflang="{$language->getIso639()}" href="{$language->getUrl()}">
                 {/foreach}
             {/if}
         {/block}
@@ -242,19 +242,19 @@
             <script defer src="{$ShopURL}/{$currentTemplateDir}js/custom.js?v={$nTemplateVersion}"></script>
         {/if}
 
-        {getUploaderLang iso=$smarty.session.currentLanguage->cISO639|default:'' assign='uploaderLang'}
+        {getUploaderLang iso=$smarty.session.currentLanguage->getIso639()|default:'' assign='uploaderLang'}
 
         <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fontawesome/webfonts/fa-solid-900.woff2" as="font" crossorigin/>
         <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fontawesome/webfonts/fa-regular-400.woff2" as="font" crossorigin/>
         <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/opensans/open-sans-600.woff2" as="font" crossorigin/>
         <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/opensans/open-sans-regular.woff2" as="font" crossorigin/>
         <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/montserrat/Montserrat-SemiBold.woff2" as="font" crossorigin/>
-        <link rel="preload" href="{$ShopURL}/{$templateDir}js/app/globals.js" as="script" crossorigin>
-        <link rel="preload" href="{$ShopURL}/{$templateDir}js/app/snippets/form-counter.js" as="script" crossorigin>
-        <link rel="preload" href="{$ShopURL}/{$templateDir}js/app/plugins/navscrollbar.js" as="script" crossorigin>
-        <link rel="preload" href="{$ShopURL}/{$templateDir}js/app/plugins/tabdrop.js" as="script" crossorigin>
-        <link rel="preload" href="{$ShopURL}/{$templateDir}js/app/views/header.js" as="script" crossorigin>
-        <link rel="preload" href="{$ShopURL}/{$templateDir}js/app/views/productdetails.js" as="script" crossorigin>
+        <link rel="modulepreload" href="{$ShopURL}/{$templateDir}js/app/globals.js" as="script" crossorigin>
+        <link rel="modulepreload" href="{$ShopURL}/{$templateDir}js/app/snippets/form-counter.js" as="script" crossorigin>
+        <link rel="modulepreload" href="{$ShopURL}/{$templateDir}js/app/plugins/navscrollbar.js" as="script" crossorigin>
+        <link rel="modulepreload" href="{$ShopURL}/{$templateDir}js/app/plugins/tabdrop.js" as="script" crossorigin>
+        <link rel="modulepreload" href="{$ShopURL}/{$templateDir}js/app/views/header.js" as="script" crossorigin>
+        <link rel="modulepreload" href="{$ShopURL}/{$templateDir}js/app/views/productdetails.js" as="script" crossorigin>
         {if !empty($oUploadSchema_arr)}
             <script defer src="{$ShopURL}/{$templateDir}js/fileinput/fileinput.min.js"></script>
             <script defer src="{$ShopURL}/{$templateDir}js/fileinput/themes/fas/theme.min.js"></script>
@@ -319,9 +319,9 @@
                             {block name='layout-header-logo'}
                                 <div id="logo" class="logo-wrapper" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
                                     <span itemprop="name" class="d-none">{$meta_publisher}</span>
-                                    <meta itemprop="url" content="{$ShopURL}">
+                                    <meta itemprop="url" content="{$ShopHomeURL}">
                                     <meta itemprop="logo" content="{$ShopLogoURL}">
-                                    {link class="navbar-brand" href=$ShopURL title=$Einstellungen.global.global_shopname}
+                                    {link class="navbar-brand" href=$ShopHomeURL title=$Einstellungen.global.global_shopname}
                                     {if isset($ShopLogoURL)}
                                         {image src=$ShopLogoURL
                                         alt=$Einstellungen.global.global_shopname

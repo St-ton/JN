@@ -3,7 +3,6 @@
 namespace JTL\Plugin\Admin\Installation;
 
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Helpers\Text;
@@ -101,7 +100,7 @@ final class Installer
     }
 
     /**
-     * @param PluginInterface|null $plugin
+     * @param PluginInterface $plugin
      */
     public function setPlugin(PluginInterface $plugin): void
     {
@@ -417,8 +416,8 @@ final class Installer
 
     /**
      * @param stdClass $plugin
-     * @param string    $pluginPath
-     * @param Version   $targetVersion
+     * @param string   $pluginPath
+     * @param Version  $targetVersion
      * @return array|Version
      * @throws \Exception
      */
@@ -435,8 +434,8 @@ final class Installer
     }
 
     /**
-     * @param string    $sqlFile
-     * @param int       $version
+     * @param string   $sqlFile
+     * @param int      $version
      * @param stdClass $plugin
      * @return int
      * @throws CircularReferenceException
@@ -471,7 +470,7 @@ final class Installer
                     $this->db->insert('tplugincustomtabelle', $customTable);
                 }
             }
-            $this->db->query($sql, ReturnType::DEFAULT);
+            $this->db->query($sql);
             $errNo = $this->db->getErrorCode();
             if ($errNo) {
                 Shop::Container()->getLogService()->withName('kPlugin')->error(
@@ -516,6 +515,15 @@ final class Installer
     public function syncPluginUpdate(int $pluginID): int
     {
         $newPluginID = $this->plugin->getID();
+        $cronJobs    = $this->db->getObjects(
+            'SELECT * 
+                FROM tcron
+                LEFT JOIN texportformat
+                    ON texportformat.kExportformat = tcron.foreignKeyID
+                WHERE tcron.foreignKey = \'kExportformat\'
+                    AND texportformat.kPlugin = :pid',
+            ['pid' => $newPluginID]
+        );
         $res         = $this->uninstaller->uninstall($newPluginID, true, $pluginID);
         if ($res !== InstallCode::OK) {
             $this->uninstaller->uninstall($pluginID);
@@ -535,6 +543,7 @@ final class Installer
         $this->db->update('texportformat', 'kPlugin', $pluginID, $upd);
         $this->db->update('topcportlet', 'kPlugin', $pluginID, $upd);
         $this->db->update('topcblueprint', 'kPlugin', $pluginID, $upd);
+        $this->db->update('tconsent', 'pluginID', $pluginID, (object)['pluginID' => $newPluginID]);
         $this->updateLangVars($newPluginID, $pluginID);
         $this->updateConfig($newPluginID, $pluginID);
 
@@ -548,8 +557,34 @@ final class Installer
         $this->db->update('tcheckboxfunktion', 'kPlugin', $pluginID, $upd);
         $this->db->update('tspezialseite', 'kPlugin', $pluginID, $upd);
         $this->updatePaymentMethods($newPluginID, $pluginID);
+        $this->updateCronJobs($cronJobs, $newPluginID);
 
         return InstallCode::OK;
+    }
+
+    /**
+     * @param array $cronJobs
+     * @param int   $pluginID
+     */
+    private function updateCronJobs(array $cronJobs, int $pluginID): void
+    {
+        foreach ($cronJobs as $cronJob) {
+            $match = $this->db->select('texportformat', ['kPlugin', 'cName'], [$pluginID, $cronJob->cName]);
+            if (isset($match->kExportformat)) {
+                $update               = new stdClass();
+                $update->foreignKeyID = $match->kExportformat;
+                $this->db->update('tcron', 'cronID', $cronJob->cronID, $update);
+            }
+        }
+        $this->db->query(
+            'DELETE tcron 
+                FROM tcron
+                    LEFT JOIN texportformat
+                    ON texportformat.kExportformat = tcron.foreignKeyID
+                WHERE tcron.jobType = \'exportformat\'
+                    AND tcron.foreignKey = \'kExportformat\'
+                    AND texportformat.kExportformat IS NULL'
+        );
     }
 
     /**
@@ -558,21 +593,19 @@ final class Installer
      */
     private function updateBoxes(int $oldPluginID, int $pluginID): void
     {
-        $newBoxTemplates = $this->db->queryPrepared(
+        $newBoxTemplates = $this->db->getObjects(
             "SELECT *
                 FROM tboxvorlage
                 WHERE kCustomID = :pid
                 AND (eTyp = 'plugin' OR eTyp = 'extension')",
-            ['pid' => $oldPluginID],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['pid' => $oldPluginID]
         );
-        $oldBoxTemplates = $this->db->queryPrepared(
+        $oldBoxTemplates = $this->db->getObjects(
             "SELECT *
                 FROM tboxvorlage
                 WHERE kCustomID = :pid
                 AND (eTyp = 'plugin' OR eTyp = 'extension')",
-            ['pid' => $pluginID],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['pid' => $pluginID]
         );
         foreach ($newBoxTemplates as $template) {
             foreach ($oldBoxTemplates as $newBoxTemplate) {
@@ -585,8 +618,7 @@ final class Installer
                             'bid' => $newBoxTemplate->kBoxvorlage,
                             'pid' => $oldPluginID,
                             'oid' => $template->kBoxvorlage
-                        ],
-                        ReturnType::DEFAULT
+                        ]
                     );
                     break;
                 }
@@ -610,8 +642,7 @@ final class Installer
             'DELETE FROM tboxen
                 WHERE kCustomID = :pid 
                 AND kBoxvorlage NOT IN (SELECT kBoxvorlage FROM tboxvorlage WHERE kCustomID = :pid)',
-            ['pid' => $oldPluginID],
-            ReturnType::DEFAULT
+            ['pid' => $oldPluginID]
         );
     }
 
@@ -627,15 +658,14 @@ final class Installer
             $pluginID,
             (object)['kPlugin' => $oldPluginID]
         );
-        $customLangVars = $this->db->queryPrepared(
+        $customLangVars = $this->db->getObjects(
             'SELECT DISTINCT tpluginsprachvariable.kPluginSprachvariable AS newID,
                 tpluginsprachvariablecustomsprache.kPluginSprachvariable AS oldID, tpluginsprachvariable.cName
                 FROM tpluginsprachvariablecustomsprache
                 JOIN tpluginsprachvariable
                     ON tpluginsprachvariable.cName =  tpluginsprachvariablecustomsprache.cSprachvariable
                 WHERE tpluginsprachvariablecustomsprache.kPlugin = :pid',
-            ['pid' => $oldPluginID],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['pid' => $oldPluginID]
         );
         foreach ($customLangVars as $langVar) {
             $this->db->update(
@@ -653,12 +683,11 @@ final class Installer
      */
     private function updateConfig(int $oldPluginID, int $pluginID): void
     {
-        $pluginConf = $this->db->query(
+        $pluginConf = $this->db->getObjects(
             'SELECT *
                 FROM tplugineinstellungen
                 WHERE kPlugin IN (' . $oldPluginID . ', ' . $pluginID . ')
-                ORDER BY kPlugin',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY kPlugin'
         );
         if (\count($pluginConf) > 0) {
             $confData = [];
@@ -681,8 +710,7 @@ final class Installer
             }
             $this->db->query(
                 'DELETE FROM tplugineinstellungen
-                    WHERE kPlugin IN (' . $oldPluginID . ', ' . $pluginID . ')',
-                ReturnType::AFFECTED_ROWS
+                    WHERE kPlugin IN (' . $oldPluginID . ', ' . $pluginID . ')'
             );
 
             foreach ($confData as $value) {
@@ -693,15 +721,13 @@ final class Installer
             'UPDATE tplugineinstellungen
                 SET kPlugin = ' . $oldPluginID . ",
                     cName = REPLACE(cName, 'kPlugin_" . $pluginID . "_', 'kPlugin_" . $oldPluginID . "_')
-                WHERE kPlugin = " . $pluginID,
-            ReturnType::AFFECTED_ROWS
+                WHERE kPlugin = " . $pluginID
         );
         $this->db->query(
             'UPDATE tplugineinstellungenconf
                 SET kPlugin = ' . $oldPluginID . ",
                     cWertName = REPLACE(cWertName, 'kPlugin_" . $pluginID . "_', 'kPlugin_" . $oldPluginID . "_')
-                WHERE kPlugin = " . $pluginID,
-            ReturnType::AFFECTED_ROWS
+                WHERE kPlugin = " . $pluginID
         );
     }
 
@@ -761,8 +787,7 @@ final class Installer
                 WHERE NOT EXISTS (
                     SELECT 1 FROM temailvorlage
                     WHERE temailvorlage.kEmailvorlage = tpluginemailvorlageeinstellungen.kEmailvorlage
-                )',
-            ReturnType::DEFAULT
+                )'
         );
     }
 
@@ -776,22 +801,19 @@ final class Installer
             'UPDATE tpluginzahlungsartklasse
                 SET kPlugin = ' . $oldPluginID . ",
                     cModulId = REPLACE(cModulId, 'kPlugin_" . $pluginID . "_', 'kPlugin_" . $oldPluginID . "_')
-                WHERE kPlugin = " . $pluginID,
-            ReturnType::AFFECTED_ROWS
+                WHERE kPlugin = " . $pluginID
         );
-        $oldPaymentMethods = $this->db->queryPrepared(
+        $oldPaymentMethods = $this->db->getObjects(
             'SELECT kZahlungsart, cModulId
                 FROM tzahlungsart
                 WHERE cModulId LIKE :newID',
-            ['newID' => 'kPlugin\_' . $oldPluginID . '\_%'],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['newID' => 'kPlugin\_' . $oldPluginID . '\_%']
         );
-        $newPaymentMethods = $this->db->queryPrepared(
+        $newPaymentMethods = $this->db->getObjects(
             'SELECT kZahlungsart, cModulId, cName
                 FROM tzahlungsart
                 WHERE cModulId LIKE :newID',
-            ['newID' => 'kPlugin\_' . $pluginID . '\_%'],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['newID' => 'kPlugin\_' . $pluginID . '\_%']
         );
         $updatedMethods    = [];
         foreach ($oldPaymentMethods as $method) {
@@ -800,22 +822,20 @@ final class Installer
                 'kPlugin\_' . $pluginID . '\_',
                 $method->cModulId
             );
-            $newPaymentMethod = $this->db->queryPrepared(
+            $newPaymentMethod = $this->db->getSingleObject(
                 'SELECT kZahlungsart
                     FROM tzahlungsart
                     WHERE cModulId LIKE :oldID',
-                ['oldID' => $oldModuleID],
-                ReturnType::SINGLE_OBJECT
+                ['oldID' => $oldModuleID]
             );
             $setSQL           = '';
-            if (isset($method->kZahlungsart, $newPaymentMethod->kZahlungsart)) {
+            if ($newPaymentMethod !== null && isset($method->kZahlungsart, $newPaymentMethod->kZahlungsart)) {
                 $this->db->query(
                     'DELETE tzahlungsart, tzahlungsartsprache
                         FROM tzahlungsart
                         JOIN tzahlungsartsprache
                             ON tzahlungsartsprache.kZahlungsart = tzahlungsart.kZahlungsart
-                        WHERE tzahlungsart.kZahlungsart = ' . $method->kZahlungsart,
-                    ReturnType::AFFECTED_ROWS
+                        WHERE tzahlungsart.kZahlungsart = ' . $method->kZahlungsart
                 );
                 $setSQL = ' , kZahlungsart = ' . $method->kZahlungsart;
                 $upd    = (object)['kZahlungsart' => $method->kZahlungsart];
@@ -825,8 +845,7 @@ final class Installer
                 'UPDATE tzahlungsart
                     SET cModulId = :newID ' . $setSQL . '
                     WHERE cModulId LIKE :oldID',
-                ['oldID' => $oldModuleID, 'newID' => $method->cModulId],
-                ReturnType::AFFECTED_ROWS
+                ['oldID' => $oldModuleID, 'newID' => $method->cModulId]
             );
         }
         foreach ($newPaymentMethods as $method) {
@@ -836,8 +855,7 @@ final class Installer
                 'UPDATE tzahlungsart
                     SET cModulId = :newID
                     WHERE kZahlungsart = :pmid',
-                ['pmid' => $method->kZahlungsart, 'newID' => $newModuleID],
-                ReturnType::AFFECTED_ROWS
+                ['pmid' => $method->kZahlungsart, 'newID' => $newModuleID]
             );
         }
         foreach ($oldPaymentMethods as $method) {
@@ -846,8 +864,7 @@ final class Installer
                 $this->db->queryPrepared(
                     'DELETE FROM tplugineinstellungen
                         WHERE kPlugin = :pid AND cName LIKE :nm',
-                    ['pid' => $oldPluginID, 'nm' => \str_replace('_', '\_', $method->cModulId) . '\_%'],
-                    ReturnType::DEFAULT
+                    ['pid' => $oldPluginID, 'nm' => \str_replace('_', '\_', $method->cModulId) . '\_%']
                 );
             }
         }
@@ -855,15 +872,13 @@ final class Installer
             'DELETE FROM tzahlungsartsprache
                 WHERE kZahlungsart NOT IN (
                     SELECT kZahlungsart FROM tzahlungsart
-                )',
-            ReturnType::DEFAULT
+                )'
         );
         $this->db->query(
             'DELETE FROM tversandartzahlungsart
                 WHERE kZahlungsart NOT IN (
                     SELECT kZahlungsart FROM tzahlungsart
-                )',
-            ReturnType::DEFAULT
+                )'
         );
     }
 }

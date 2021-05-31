@@ -5,7 +5,6 @@ use JTL\Cart\CartHelper;
 use JTL\Cart\PersistentCart;
 use JTL\Catalog\Product\Preise;
 use JTL\Checkout\Kupon;
-use JTL\DB\ReturnType;
 use JTL\Extensions\Upload\Upload;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -92,7 +91,7 @@ if (isset($_SESSION['checkCouponResult'])) {
 }
 if ($valid && isset($_POST['gratis_geschenk'], $_POST['gratisgeschenk']) && (int)$_POST['gratis_geschenk'] === 1) {
     $giftID = (int)$_POST['gratisgeschenk'];
-    $gift   = Shop::Container()->getDB()->query(
+    $gift   = Shop::Container()->getDB()->getSingleObject(
         'SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, 
             tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
             FROM tartikelattribut
@@ -101,10 +100,9 @@ if ($valid && isset($_POST['gratis_geschenk'], $_POST['gratisgeschenk']) && (int
                 WHERE tartikelattribut.kArtikel = ' . $giftID . "
                 AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
                 AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .
-        $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true),
-        ReturnType::SINGLE_OBJECT
+        $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)
     );
-    if (isset($gift->kArtikel) && $gift->kArtikel > 0) {
+    if ($gift !== null && $gift->kArtikel > 0) {
         if ($gift->fLagerbestand <= 0 && $gift->cLagerKleinerNull === 'N' && $gift->cLagerBeachten === 'Y') {
             $warning = Shop::Lang()->get('freegiftsNostock', 'errorMessages');
         } else {
@@ -117,7 +115,7 @@ if ($valid && isset($_POST['gratis_geschenk'], $_POST['gratisgeschenk']) && (int
 }
 if (($res = Request::getInt('fillOut', -1)) > -1) {
     $mbw = Frontend::getCustomerGroup()->getAttribute(KNDGRP_ATTRIBUT_MINDESTBESTELLWERT);
-    if ($res === 9 && $mbw > 0 && $cart->gibGesamtsummeWaren(true, false) < $mbw) {
+    if ($res === 9 && $mbw > 0 && $cart->gibGesamtsummeWarenOhne([C_WARENKORBPOS_TYP_GUTSCHEIN], true) < $mbw) {
         $warning = Shop::Lang()->get('minordernotreached', 'checkout') . ' ' . Preise::getLocalizedPriceString($mbw);
     } elseif ($res === 8) {
         $warning = Shop::Lang()->get('orderNotPossibleNow', 'checkout');

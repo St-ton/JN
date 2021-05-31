@@ -1,6 +1,5 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('exportformats') cBeschreibung=__('exportformatsDesc') cDokuURL=__('exportformatsURL')}
 <div id="content">
-    <script type="text/javascript" src="{$templateBaseURL}js/jquery.progressbar.js"></script>
     <script type="text/javascript">
         var url     = "{$adminURL}/exportformate.php",
             token   = "{$smarty.session.jtl_token}",
@@ -48,39 +47,40 @@
         }
 
         function show_export_info(cb) {
-            var elem = '#progress' + cb.kExportformat;
-            $(elem).find('p').hide();
-            $(elem).find('div').fadeIn();
-            $(elem).find('div').progressBar(cb.nCurrent, {
-                max:          cb.nMax,
-                textFormat:   'fraction',
-                steps:        cb.bFirst ? 0 : 20,
-                stepDuration: cb.bFirst ? 0 : 20,
-                boxImage:     imgPath + '/progressbar.gif',
-                barImage:     {
-                    0: imgPath + '/progressbg_red.gif',
-                    30: imgPath + '/progressbg_orange.gif',
-                    50: imgPath + '/progressbg_yellow.gif',
-                    70: imgPath + '/progressbg_green.gif'
-                }
-            });
+            let elem = $('#progress' + cb.kExportformat);
+            elem.find('p').hide();
+            elem.find('.export-progress').fadeIn();
+            let bar = elem.find('progress');
+            if (bar.length === 1) {
+                bar.attr('value', cb.nCurrent);
+                bar.attr('max', cb.nMax);
+                bar.fadeIn();
+                elem.find('.from').html(cb.nCurrent);
+                elem.find('.to').html(cb.nMax);
+            }
         }
 
         function finish_export(cb) {
-            var elem = '#progress' + cb.kExportformat,
+            let elem = '#progress' + cb.kExportformat,
                 idx  = running.indexOf(cb.kExportformat);
             if (idx > -1) {
                 running.splice(idx, 1);
             }
-            $(elem).find('div').fadeOut(250, function () {
+            $(elem).find('.export-progress').fadeOut(250, function () {
                 $('#error-msg-' + cb.kExportformat).remove();
-                var text  = $(elem).find('p').html(),
+                let text  = $(elem).find('p').html(),
                     error = '';
                 if (cb.errorMessage.length > 0) {
-                    error = '<span class="red" id="error-msg-' + cb.kExportformat + '"><br>' + cb.errorMessage + '</span>';
+                    error = '<div class="alert alert-danger" id="error-msg-' + cb.kExportformat + '">' + cb.errorMessage + '</div>';
                 }
                 $(elem).find('p').html(text).append(error).fadeIn(1000);
             });
+            if (typeof cb.lastCreated !== 'undefined') {
+                let dt = $('#data-last-created' + cb.kExportformat);
+                if (dt.length === 1) {
+                    dt.html(cb.lastCreated);
+                }
+            }
         }
         {/literal}
     </script>
@@ -106,58 +106,82 @@
                 </thead>
                 <tbody>
                 {foreach $exportformate as $exportformat}
-                    {if $exportformat->nSpecial === 0}
+                    {if $exportformat->getIsSpecial() === 0}
                         <tr>
-                            <td class="text-left"> {$exportformat->cName}</td>
-                            <td class="text-left" id="progress{$exportformat->kExportformat}">
-                                <p>{$exportformat->cDateiname}</p>
-                                <div></div>
+                            <td class="text-left">{$exportformat->getName()}</td>
+                            <td class="text-left" id="progress{$exportformat->getId()}">
+                                <p>{$exportformat->getFilename()}</p>
+                                <div class="export-progress" style="display: none">
+                                    <progress id="px-{$exportformat->getId()}" max="100" value="0" style="height: 25px"></progress>
+                                    <span class="progress-details" style="vertical-align: top"><span class="from">0</span>/<span class="to">0</span> </span>
+                                </div>
                             </td>
-                            <td class="text-center">{$exportformat->Sprache->getLocalizedName()}</td>
-                            <td class="text-center">{$exportformat->Waehrung->cName}</td>
-                            <td class="text-center">{$exportformat->Kundengruppe->cName}</td>
-                            <td class="text-center">{if !empty($exportformat->dZuletztErstellt)}{$exportformat->dZuletztErstellt}{else}-{/if}</td>
-                            <td class="text-center" id="exFormat_{$exportformat->kExportformat}">
+                            <td class="text-center">{$exportformat->getLanguage()->getLocalizedName()}</td>
+                            <td class="text-center">{$exportformat->getCurrency()->getName()}</td>
+                            <td class="text-center">{$exportformat->getCustomerGroup()->getName()}</td>
+                            <td class="text-center">
+                                <span class="date-last-created" id="data-last-created{$exportformat->getId()}">
+                                    {if $exportformat->getDateLastCreated() !== null}{$exportformat->getDateLastCreated()->format('Y-m-d H:i:s')}{else}-{/if}
+                                </span>
+                            </td>
+                            <td class="text-center" id="exFormat_{$exportformat->getId()}">
                                 {include file='snippets/exportformat_state.tpl' exportformat=$exportformat}
                             </td>
                             <td class="text-center">
                                 <form method="post" action="exportformate.php">
                                     {$jtl_token}
-                                    <input type="hidden" name="kExportformat" value="{$exportformat->kExportformat}" />
+                                    <input type="hidden" name="kExportformat" value="{$exportformat->getId()}" />
                                     <div class="btn-group">
-                                        <button type="button" data-id="{$exportformat->kExportformat}" class="btn btn-link px-1 btn-syntaxcheck" title="{__('Check syntax')}" data-toggle="tooltip" data-placement="top">
+                                        <button type="button" data-id="{$exportformat->getId()}"
+                                                class="btn btn-link px-1 btn-syntaxcheck"
+                                                title="{__('Check syntax')}"
+                                                data-toggle="tooltip"
+                                                data-placement="top">
                                             <span class="icon-hover">
                                                 <span class="fal fa-check"></span>
                                                 <span class="fas fa-check"></span>
                                             </span>
                                         </button>
-                                        <button name="action" value="delete" class="btn btn-link px-1 remove notext" title="{__('delete')}" onclick="return confirm('{__('sureDeleteFormat')}');" data-toggle="tooltip" data-placement="top">
+                                        <button type="submit"
+                                                name="action"
+                                                value="delete"
+                                                class="btn btn-link px-1 remove notext delete-confirm"
+                                                title="{__('delete')}"
+                                                data-toggle="tooltip"
+                                                data-placement="top"
+                                                data-modal-body="{__('sureDeleteFormat')} ({$exportformat->getName()})">
                                             <span class="icon-hover">
                                                 <span class="fal fa-trash-alt"></span>
                                                 <span class="fas fa-trash-alt"></span>
                                             </span>
                                         </button>
-                                        <button name="action" value="export" class="btn btn-link px-1 extract notext{if !$exportformat->enabled} disabled{/if}" title="{__('createExportFile')}" data-toggle="tooltip" data-placement="top">
+                                        <button name="action" value="export" class="btn btn-link px-1 extract notext{if !$exportformat->getEnabled()} disabled{/if}"
+                                                title="{__('createExportFile')}" data-toggle="tooltip" data-placement="top">
                                             <span class="icon-hover">
                                                 <span class="fal fa-plus"></span>
                                                 <span class="fas fa-plus"></span>
                                             </span>
                                         </button>
-                                        <button name="action" value="download" class="btn btn-link px-1 download notext" title="{__('download')}" data-toggle="tooltip" data-placement="top">
+                                        <button name="action" value="download" class="btn btn-link px-1 download notext"
+                                                title="{__('download')}" data-toggle="tooltip" data-placement="top">
                                             <span class="icon-hover">
                                                 <span class="fal fa-download"></span>
                                                 <span class="fas fa-download"></span>
                                             </span>
                                         </button>
-                                        {if !$exportformat->bPluginContentExtern}
-                                            <a href="#" class="btn btn-link px-1 extract_async notext" title="{__('createExportFileAsync')}" data-toggle="tooltip" data-placement="top" data-exportid="{$exportformat->kExportformat}" id="start-export-{$exportformat->kExportformat}">
+                                        {if $exportformat->getAsync() === 1}
+                                            <a href="#" class="btn btn-link px-1 extract_async notext{if !$exportformat->getEnabled()} disabled{/if}"
+                                               title="{__('createExportFileAsync')}" data-toggle="tooltip"
+                                               data-placement="top" data-exportid="{$exportformat->getId()}"
+                                               id="start-export-{$exportformat->getId()}">
                                                 <span class="icon-hover">
                                                     <span class="fal fa-plus-square"></span>
                                                     <span class="fas fa-plus-square"></span>
                                                 </span>
                                             </a>
                                         {/if}
-                                        <button name="action" value="edit" class="btn btn-link px-1 edit notext" title="{__('edit')}" data-toggle="tooltip" data-placement="top">
+                                        <button name="action" value="view" class="btn btn-link px-1 edit notext"
+                                                title="{__('edit')}" data-toggle="tooltip" data-placement="top">
                                             <span class="icon-hover">
                                                 <span class="fal fa-edit"></span>
                                                 <span class="fas fa-edit"></span>
@@ -185,7 +209,7 @@
                     </a>
                 </div>
                 <div class="col-sm-6 col-xl-auto">
-                    <a class="btn btn-primary btn-block" href="exportformate.php?neuerExport=1&token={$smarty.session.jtl_token}">
+                    <a class="btn btn-primary btn-block" href="{$adminURL}/exportformate.php?action=view&new=true&token={$smarty.session.jtl_token}">
                         <i class="fa fa-share"></i> {__('newExportformat')}
                     </a>
                 </div>
@@ -255,8 +279,8 @@
             }
         }, undefined, true);
     }
-    var doCheckTpl = {/literal}{$checkTemplate}{literal};
-    var doNotify = null;
+    var doCheckTpl = {/literal}{$checkTemplate|default:0}{literal},
+        doNotify = null;
     if (doCheckTpl && doCheckTpl > 0) {
         validateExportFormatSyntax(doCheckTpl);
     }

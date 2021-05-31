@@ -1,14 +1,13 @@
 <?php
 
 use JTL\Checkout\Zahlungsart;
-use JTL\DB\ReturnType;
 use JTL\Shop;
 
 /**
  * @param int $paymentMethodID
  * @return array
  */
-function getNames(int $paymentMethodID)
+function getNames(int $paymentMethodID): array
 {
     $res = [];
     if (!$paymentMethodID) {
@@ -26,7 +25,7 @@ function getNames(int $paymentMethodID)
  * @param int $paymentMethodID
  * @return array
  */
-function getshippingTimeNames(int $paymentMethodID)
+function getshippingTimeNames(int $paymentMethodID): array
 {
     $res = [];
     if (!$paymentMethodID) {
@@ -44,7 +43,7 @@ function getshippingTimeNames(int $paymentMethodID)
  * @param int $paymentMethodID
  * @return array
  */
-function getHinweisTexte(int $paymentMethodID)
+function getHinweisTexte(int $paymentMethodID): array
 {
     $messages = [];
     if (!$paymentMethodID) {
@@ -66,7 +65,7 @@ function getHinweisTexte(int $paymentMethodID)
  * @param int $paymentMethodID
  * @return array
  */
-function getHinweisTexteShop(int $paymentMethodID)
+function getHinweisTexteShop(int $paymentMethodID): array
 {
     $messages = [];
     if (!$paymentMethodID) {
@@ -85,10 +84,10 @@ function getHinweisTexteShop(int $paymentMethodID)
 }
 
 /**
- * @param Zahlungsart $paymentMethod
+ * @param stdClass|Zahlungsart $paymentMethod
  * @return array
  */
-function getGesetzteKundengruppen($paymentMethod)
+function getGesetzteKundengruppen($paymentMethod): array
 {
     $ret = [];
     if (!isset($paymentMethod->cKundengruppen) || !$paymentMethod->cKundengruppen) {
@@ -105,17 +104,17 @@ function getGesetzteKundengruppen($paymentMethod)
 
 /**
  * @param string $query
- * @return array $allShippingsByName
+ * @return array
  */
-function getPaymentMethodsByName($query)
+function getPaymentMethodsByName(string $query): array
 {
     $paymentMethodsByName = [];
     foreach (explode(',', $query) as $string) {
         // Leerzeichen löschen
-        trim($string);
+        $string = trim($string);
         // Nur Eingaben mit mehr als 2 Zeichen
         if (mb_strlen($string) > 2) {
-            $data = Shop::Container()->getDB()->queryPrepared(
+            $data = Shop::Container()->getDB()->getObjects(
                 'SELECT za.kZahlungsart, za.cName
                     FROM tzahlungsart AS za
                     LEFT JOIN tzahlungsartsprache AS zs 
@@ -123,8 +122,7 @@ function getPaymentMethodsByName($query)
                         AND zs.cName LIKE :search
                     WHERE za.cName LIKE :search 
                     OR zs.cName LIKE :search',
-                ['search' => '%' . $string . '%'],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['search' => '%' . $string . '%']
             );
             // Berücksichtige keine fehlerhaften Eingaben
             if (!empty($data)) {

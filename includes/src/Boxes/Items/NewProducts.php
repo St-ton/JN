@@ -3,7 +3,6 @@
 namespace JTL\Boxes\Items;
 
 use JTL\Catalog\Product\ArtikelListe;
-use JTL\DB\ReturnType;
 use JTL\Helpers\SearchSpecial;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -38,7 +37,7 @@ final class NewProducts extends AbstractBox
                 $limit . \md5($stockFilterSQL . $parentSQL);
             if (($productIDs = Shop::Container()->getCache()->get($cacheID)) === false) {
                 $cached     = false;
-                $productIDs = Shop::Container()->getDB()->query(
+                $productIDs = Shop::Container()->getDB()->getObjects(
                     'SELECT tartikel.kArtikel
                         FROM tartikel
                         LEFT JOIN tartikelsichtbarkeit 
@@ -47,8 +46,7 @@ final class NewProducts extends AbstractBox
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
                             AND tartikel.cNeu = 'Y' " . $stockFilterSQL . $parentSQL . '
                             AND DATE_SUB(NOW(), INTERVAL ' . $days . ' DAY) < dErstellt
-                        LIMIT ' . $limit,
-                    ReturnType::ARRAY_OF_OBJECTS
+                        LIMIT ' . $limit
                 );
                 Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
             }

@@ -79,7 +79,6 @@ final class JTLApi
      */
     public function getLatestVersion(): Version
     {
-
         $shopVersion       = \APPLICATION_VERSION;
         $parsedShopVersion = Version::parse($shopVersion);
         $oVersions         = $this->getAvailableVersions();

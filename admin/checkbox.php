@@ -29,13 +29,13 @@ if (isset($_POST['erstellenShowButton'])) {
 } elseif (Request::verifyGPCDataInt('uebersicht') === 1 && Form::validateToken()) {
     $checkboxIDs = Request::verifyGPDataIntegerArray('kCheckBox');
     if (isset($_POST['checkboxAktivierenSubmit'])) {
-        $checkbox->aktivateCheckBox($checkboxIDs);
+        $checkbox->activate($checkboxIDs);
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCheckboxActivate'), 'successCheckboxActivate');
     } elseif (isset($_POST['checkboxDeaktivierenSubmit'])) {
-        $checkbox->deaktivateCheckBox($checkboxIDs);
+        $checkbox->deactivate($checkboxIDs);
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCheckboxDeactivate'), 'successCheckboxDeactivate');
     } elseif (isset($_POST['checkboxLoeschenSubmit'])) {
-        $checkbox->deleteCheckBox($checkboxIDs);
+        $checkbox->delete($checkboxIDs);
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCheckboxDelete'), 'successCheckboxDelete');
     }
 } elseif (Request::verifyGPCDataInt('edit') > 0) {
@@ -65,9 +65,9 @@ if (isset($_POST['erstellenShowButton'])) {
 }
 
 $pagination = (new Pagination())
-    ->setItemCount($checkbox->getAllCheckBoxCount())
+    ->setItemCount($checkbox->getTotalCount())
     ->assemble();
-$smarty->assign('oCheckBox_arr', $checkbox->getAllCheckBox('LIMIT ' . $pagination->getLimitSQL()))
+$smarty->assign('oCheckBox_arr', $checkbox->getAll('LIMIT ' . $pagination->getLimitSQL()))
     ->assign('pagination', $pagination)
     ->assign('cAnzeigeOrt_arr', CheckBox::gibCheckBoxAnzeigeOrte())
     ->assign('CHECKBOX_ORT_REGISTRIERUNG', CHECKBOX_ORT_REGISTRIERUNG)

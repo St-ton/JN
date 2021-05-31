@@ -13,5 +13,5 @@ Shop::Container()->getCache()->flush(Status::CACHE_ID_FOLDER_PERMISSIONS);
 $fsCheck = new Filesystem(PFAD_ROOT); // to get all folders which need to be writable
 
 $smarty->assign('cDirAssoc_arr', $fsCheck->getFoldersChecked())
-       ->assign('oStat', $fsCheck->getFolderStats())
-       ->display('permissioncheck.tpl');
+    ->assign('oStat', $fsCheck->getFolderStats())
+    ->display('permissioncheck.tpl');

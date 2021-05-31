@@ -70,7 +70,7 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
             // neue Variable erstellen
             $step                     = 'newvar';
             $variable                 = new stdClass();
-            $variable->kSprachsektion = isset($_REQUEST['kSprachsektion']) ? (int)$_REQUEST['kSprachsektion'] : 1;
+            $variable->kSprachsektion = (int)($_REQUEST['kSprachsektion'] ?? 1);
             $variable->cName          = $_REQUEST['cName'] ?? '';
             $variable->cWert_arr      = [];
             break;

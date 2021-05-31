@@ -198,7 +198,7 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
                     }
                 }
             } else {
-                $errorMapMessage .= sprintf(__('errorSearchMapSelf'), $_POST[$index]);
+                $errorMapMessage .= sprintf(__('errorSearchMapSelf'), Text::filterXSS($_POST[$index]));
             }
         }
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, $succesMapMessage ?? '', 'successSearchMap');

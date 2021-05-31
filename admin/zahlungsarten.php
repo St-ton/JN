@@ -30,6 +30,7 @@ $defaultCurrency = $db->select('twaehrung', 'cStandard', 'Y');
 $step            = 'uebersicht';
 $alertHelper     = Shop::Container()->getAlertService();
 $recommendations = new Manager($alertHelper, Manager::SCOPE_BACKEND_PAYMENT_PROVIDER);
+$filteredPost    = Text::filterXSS($_POST);
 if (Request::verifyGPCDataInt('checkNutzbar') === 1) {
     PaymentMethod::checkPaymentMethodAvailability();
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successPaymentMethodCheck'), 'successPaymentMethodCheck');
@@ -61,7 +62,6 @@ if ($action !== 'logreset' && Request::verifyGPCDataInt('kZahlungsart') > 0 && F
         $step = 'delete';
     }
 }
-
 if (Request::postInt('einstellungen_bearbeiten') === 1
     && Request::postInt('kZahlungsart') > 0
     && Form::validateToken()
@@ -72,7 +72,6 @@ if (Request::postInt('einstellungen_bearbeiten') === 1
         'kZahlungsart',
         Request::postInt('kZahlungsart')
     );
-    $filteredPost      = Text::filterXSS($_POST);
     $nMailSenden       = Request::postInt('nMailSenden');
     $nMailSendenStorno = Request::postInt('nMailSendenStorno');
     $nMailBits         = 0;
@@ -312,14 +311,14 @@ if ($step === 'einstellen') {
                ->assign('paginationPaymentLog', $paginationPaymentLog);
     }
 } elseif ($step === 'payments') {
-    if (isset($_POST['action'], $_POST['kEingang_arr'])
-        && $_POST['action'] === 'paymentwawireset'
+    if (isset($filteredPost['action'], $filteredPost['kEingang_arr'])
+        && $filteredPost['action'] === 'paymentwawireset'
         && Form::validateToken()
     ) {
         $db->query(
             "UPDATE tzahlungseingang
                 SET cAbgeholt = 'N'
-                WHERE kZahlungseingang IN (" . implode(',', \array_map('\intval', $_POST['kEingang_arr'])) . ')'
+                WHERE kZahlungseingang IN (" . implode(',', \array_map('\intval', $filteredPost['kEingang_arr'])) . ')'
         );
     }
 

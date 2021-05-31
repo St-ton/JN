@@ -22,14 +22,14 @@ $searchSQL->cWHERE = '';
 $alertHelper       = Shop::Container()->getAlertService();
 
 if (mb_strlen(Request::verifyGPDataString('cSuche')) > 0) {
-    $cSuche = Shop::Container()->getDB()->escape(Text::filterXSS(Request::verifyGPDataString('cSuche')));
-    if (mb_strlen($cSuche) > 0) {
-        $searchSQL->cWHERE = " WHERE (tkunde.cKundenNr LIKE '%" . $cSuche . "%'
-            OR tkunde.cVorname LIKE '%" . $cSuche . "%' 
-            OR tkunde.cMail LIKE '%" . $cSuche . "%')";
+    $query = Shop::Container()->getDB()->escape(Text::filterXSS(Request::verifyGPDataString('cSuche')));
+    if (mb_strlen($query) > 0) {
+        $searchSQL->cWHERE = " WHERE (tkunde.cKundenNr LIKE '%" . $query . "%'
+            OR tkunde.cVorname LIKE '%" . $query . "%' 
+            OR tkunde.cMail LIKE '%" . $query . "%')";
     }
 
-    $smarty->assign('cSuche', $cSuche);
+    $smarty->assign('cSuche', $query);
 }
 
 if (Request::getInt('l') > 0 && Form::validateToken()) {
@@ -51,7 +51,7 @@ $customerCount = (int)Shop::Container()->getDB()->getSingleObject(
          ' . $searchSQL->cWHERE
 )->cnt;
 
-$oPagiKunden = (new Pagination('kunden'))
+$customerPagination = (new Pagination('kunden'))
     ->setItemCount($customerCount)
     ->assemble();
 
@@ -67,7 +67,7 @@ $customers = Shop::Container()->getDB()->getObjects(
         " . $searchSQL->cWHERE . '
         GROUP BY tkunde.kKunde
         ORDER BY twarenkorbpers.dErstellt DESC
-        LIMIT ' . $oPagiKunden->getLimitSQL()
+        LIMIT ' . $customerPagination->getLimitSQL()
 );
 
 foreach ($customers as $item) {
@@ -78,7 +78,7 @@ foreach ($customers as $item) {
 }
 
 $smarty->assign('oKunde_arr', $customers)
-    ->assign('oPagiKunden', $oPagiKunden);
+    ->assign('oPagiKunden', $customerPagination);
 
 if (Request::getInt('a') > 0) {
     $step           = 'anzeigen';

@@ -13,8 +13,8 @@ require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
 /** @global \JTL\Smarty\JTLSmarty     $smarty */
 /** @global \JTL\Backend\AdminAccount $oAccount */
-$sectionID      = isset($_REQUEST['kSektion']) ? (int)$_REQUEST['kSektion'] : 0;
-$bSuche         = isset($_REQUEST['einstellungen_suchen']) && (int)$_REQUEST['einstellungen_suchen'] === 1;
+$sectionID      = (int)($_REQUEST['kSektion'] ?? 0);
+$bSuche         = (int)($_REQUEST['einstellungen_suchen'] ?? 0) === 1;
 $db             = Shop::Container()->getDB();
 $getText        = Shop::Container()->getGetText();
 $adminAccount   = Shop::Container()->getAdminAccount();

@@ -177,7 +177,7 @@ if ($action === 'bearbeiten') {
         foreach ($languages as $language) {
             $postVarName                = 'cName_' . $language->getIso();
             $names[$language->getIso()] = Request::postVar($postVarName, '') !== ''
-                ? $_POST[$postVarName]
+                ? Text::filterXSS($_POST[$postVarName])
                 : $coupon->cName;
         }
     }

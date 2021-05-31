@@ -38,10 +38,10 @@ if (Request::verifyGPCDataInt('branding') === 1) {
 }
 
 $smarty->assign('cRnd', time())
-       ->assign('oBranding_arr', gibBrandings())
-       ->assign('PFAD_BRANDINGBILDER', PFAD_BRANDINGBILDER)
-       ->assign('step', $step)
-       ->display('branding.tpl');
+    ->assign('oBranding_arr', gibBrandings())
+    ->assign('PFAD_BRANDINGBILDER', PFAD_BRANDINGBILDER)
+    ->assign('step', $step)
+    ->display('branding.tpl');
 
 /**
  * @return mixed

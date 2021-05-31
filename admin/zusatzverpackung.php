@@ -6,6 +6,7 @@ use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
+use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
@@ -31,24 +32,25 @@ if (Form::validateToken()) {
 }
 
 if ($action === 'save') {
+    $postData                       = Text::filterXSS($_POST);
     $nameIDX                        = 'cName_' . $languages[0]->getCode();
     $packagingID                    = Request::postInt('kVerpackung');
-    $customerGroupIDs               = $_POST['kKundengruppe'] ?? null;
+    $customerGroupIDs               = $postData['kKundengruppe'] ?? null;
     $packaging                      = new stdClass();
-    $packaging->fBrutto             = (float)str_replace(',', '.', $_POST['fBrutto'] ?? 0);
-    $packaging->fMindestbestellwert = (float)str_replace(',', '.', $_POST['fMindestbestellwert'] ?? 0);
-    $packaging->fKostenfrei         = (float)str_replace(',', '.', $_POST['fKostenfrei'] ?? 0);
+    $packaging->fBrutto             = (float)str_replace(',', '.', $postData['fBrutto'] ?? 0);
+    $packaging->fMindestbestellwert = (float)str_replace(',', '.', $postData['fMindestbestellwert'] ?? 0);
+    $packaging->fKostenfrei         = (float)str_replace(',', '.', $postData['fKostenfrei'] ?? 0);
     $packaging->kSteuerklasse       = Request::postInt('kSteuerklasse');
     $packaging->nAktiv              = Request::postInt('nAktiv');
     $packaging->cName               = htmlspecialchars(
-        strip_tags(trim($_POST[$nameIDX])),
+        strip_tags(trim($postData[$nameIDX])),
         ENT_COMPAT | ENT_HTML401,
         JTL_CHARSET
     );
     if ($packaging->kSteuerklasse < 0) {
         $packaging->kSteuerklasse = 0;
     }
-    if (!(isset($_POST[$nameIDX]) && mb_strlen($_POST[$nameIDX]) > 0)) {
+    if (!(isset($postData[$nameIDX]) && mb_strlen($postData[$nameIDX]) > 0)) {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorNameMissing'), 'errorNameMissing');
     }
     if (!(is_array($customerGroupIDs) && count($customerGroupIDs) > 0)) {
@@ -83,13 +85,13 @@ if ($action === 'save') {
             $localized                = new stdClass();
             $localized->kVerpackung   = $packagingID;
             $localized->cISOSprache   = $langCode;
-            $localized->cName         = !empty($_POST['cName_' . $langCode])
-                ? htmlspecialchars($_POST['cName_' . $langCode], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
-                : htmlspecialchars($_POST[$nameIDX], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-            $localized->cBeschreibung = !empty($_POST['cBeschreibung_' . $langCode])
-                ? htmlspecialchars($_POST['cBeschreibung_' . $langCode], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
+            $localized->cName         = !empty($postData['cName_' . $langCode])
+                ? htmlspecialchars($postData['cName_' . $langCode], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
+                : htmlspecialchars($postData[$nameIDX], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+            $localized->cBeschreibung = !empty($postData['cBeschreibung_' . $langCode])
+                ? htmlspecialchars($postData['cBeschreibung_' . $langCode], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
                 : htmlspecialchars(
-                    $_POST['cBeschreibung_' . $languages[0]->getCode()],
+                    $postData['cBeschreibung_' . $languages[0]->getCode()],
                     ENT_COMPAT | ENT_HTML401,
                     JTL_CHARSET
                 );
@@ -97,7 +99,7 @@ if ($action === 'save') {
         }
         $alertHelper->addAlert(
             Alert::TYPE_SUCCESS,
-            sprintf(__('successPackagingSave'), $_POST[$nameIDX]),
+            sprintf(__('successPackagingSave'), $postData[$nameIDX]),
             'successPackagingSave'
         );
     }
@@ -222,16 +224,17 @@ function gibKundengruppeObj(string $groupString): stdClass
 function holdInputOnError(stdClass $packaging, ?array $customerGroupIDs, int $packagingID, JTLSmarty $smarty)
 {
     $packaging->oSprach_arr = [];
-    foreach ($_POST as $key => $value) {
+    $postData               = Text::filterXSS($_POST);
+    foreach ($postData as $key => $value) {
         if (mb_strpos($key, 'cName') === false) {
             continue;
         }
-        $cISO                                 = explode('cName_', $key)[1];
-        $idx                                  = 'cBeschreibung_' . $cISO;
-        $packaging->oSprach_arr[$cISO]        = new stdClass();
-        $packaging->oSprach_arr[$cISO]->cName = $value;
-        if (isset($_POST[$idx])) {
-            $packaging->oSprach_arr[$cISO]->cBeschreibung = $_POST[$idx];
+        $iso                                 = explode('cName_', $key)[1];
+        $idx                                 = 'cBeschreibung_' . $iso;
+        $packaging->oSprach_arr[$iso]        = new stdClass();
+        $packaging->oSprach_arr[$iso]->cName = $value;
+        if (isset($postData[$idx])) {
+            $packaging->oSprach_arr[$iso]->cBeschreibung = $postData[$idx];
         }
     }
 

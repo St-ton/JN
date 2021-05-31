@@ -1421,6 +1421,12 @@ msgstr "Escape with comma"
 msgid "exportformate_semikolon_value( )"
 msgstr "Escape with space"
 
+msgid "exportformate_line_ending_value(LF)"
+msgstr "LF"
+
+msgid "exportformate_line_ending_value(CRLF)"
+msgstr "CRLF"
+
 msgid "kontakt_abfragen_anrede_value(Y)"
 msgstr "Yes, mandatory"
 

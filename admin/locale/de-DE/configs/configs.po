@@ -1946,6 +1946,12 @@ msgstr "Zeichenmaskierung ;"
 msgid "exportformate_semikolon_desc"
 msgstr "Sie können bei Bedarf diese Zeichen maskieren lassen."
 
+msgid "exportformate_line_ending_name"
+msgstr "Zeilenende"
+
+msgid "exportformate_line_ending_desc"
+msgstr ""
+
 msgid "kontakt_abfragen_anrede_name"
 msgstr "Anrede abfragen"
 

@@ -2,7 +2,7 @@
 
 namespace JTL\Network;
 
-use InvalidArgumentException;
+use Exception;
 use JTL\Helpers\Request;
 use JTL\Nice;
 use JTLShop\SemVer\Version;
@@ -74,31 +74,23 @@ final class JTLApi
 
     /**
      * @return Version
-     * @throws InvalidArgumentException
+     * @throws Exception
      */
     public function getLatestVersion(): Version
     {
-        try {
-            $shopVersion       = \APPLICATION_VERSION;
-            $parsedShopVersion = Version::parse($shopVersion);
-            $oVersions         = $this->getAvailableVersions();
 
-            $oNewerVersions = \array_filter((array)$oVersions, static function ($v) use ($parsedShopVersion) {
+        $shopVersion       = \APPLICATION_VERSION;
+        $parsedShopVersion = Version::parse($shopVersion);
+        $oVersions         = $this->getAvailableVersions();
+
+        $oNewerVersions = \array_values(
+            \array_filter((array)$oVersions, static function ($v) use ($parsedShopVersion) {
                 return Version::parse($v->reference)->greaterThan($parsedShopVersion);
-            });
+            })
+        );
+        $oVersion       = \count($oNewerVersions) > 0 ? $oNewerVersions[0] : \end($oVersions);
 
-            if (\count($oNewerVersions) > 0) {
-                $reverseVersionsArr = \array_reverse($oNewerVersions);
-                $oVersion           = \end($reverseVersionsArr);
-            } else {
-                $oVersion = \end($oVersions);
-            }
-            $version = Version::parse($oVersion->reference);
-        } catch (InvalidArgumentException $e) {
-            throw new InvalidArgumentException($e->getMessage());
-        }
-
-        return $version;
+        return Version::parse($oVersion->reference);
     }
 
     /**
@@ -110,7 +102,7 @@ final class JTLApi
             return \APPLICATION_BUILD_SHA === '#DEV#'
                 ? false
                 : $this->getLatestVersion()->greaterThan(Version::parse(\APPLICATION_VERSION));
-        } catch (InvalidArgumentException $e) {
+        } catch (Exception $e) {
             return false;
         }
     }

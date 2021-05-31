@@ -87,7 +87,6 @@ final class JTLApi
         $oNewerVersions = \array_filter((array)$oVersions, static function ($v) use ($parsedShopVersion) {
                 return Version::parse($v->reference)->greaterThan($parsedShopVersion);
         });
-
         $oVersion       = \count($oNewerVersions) > 0 ? first($oNewerVersions) : \end($oVersions);
 
         return Version::parse($oVersion->reference);

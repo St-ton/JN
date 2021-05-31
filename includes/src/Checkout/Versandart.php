@@ -372,24 +372,24 @@ class Versandart
     }
 
     /**
-     * @param string $ISO
+     * @param string $iso
      * @return Collection
      */
-    public function getShippingSurchargesForCountry(string $ISO): Collection
+    public function getShippingSurchargesForCountry(string $iso): Collection
     {
-        return $this->getShippingSurcharges()->filter(static function (ShippingSurcharge $surcharge) use ($ISO) {
-            return $surcharge->getISO() === $ISO;
+        return $this->getShippingSurcharges()->filter(static function (ShippingSurcharge $surcharge) use ($iso) {
+            return $surcharge->getISO() === $iso;
         });
     }
 
     /**
      * @param string $zip
-     * @param string $ISO
+     * @param string $iso
      * @return ShippingSurcharge|null
      */
-    public function getShippingSurchargeForZip(string $zip, string $ISO): ?ShippingSurcharge
+    public function getShippingSurchargeForZip(string $zip, string $iso): ?ShippingSurcharge
     {
-        return $this->getShippingSurchargesForCountry($ISO)
+        return $this->getShippingSurchargesForCountry($iso)
             ->first(static function (ShippingSurcharge $surcharge) use ($zip) {
                 return $surcharge->hasZIPCode($zip);
             });

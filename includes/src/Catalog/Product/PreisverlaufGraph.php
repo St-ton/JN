@@ -2,12 +2,12 @@
 
 namespace JTL\Catalog\Product;
 
-use JTL\DB\ReturnType;
 use JTL\Shop;
 
 /**
  * Class PreisverlaufGraph
  * @package JTL\Catalog\Product
+ * @deprecated since 5.0.0
  */
 class PreisverlaufGraph
 {
@@ -252,7 +252,7 @@ class PreisverlaufGraph
     /**
      * Array von Preissteps für die Berechnung der Y-Achsen Legende
      *
-     * @var float
+     * @var float[]
      */
     public $fStepWert_arr;
 
@@ -287,49 +287,49 @@ class PreisverlaufGraph
     /**
      * Währung und Steuersatz der Preise
      *
-     * @var array
+     * @var object
      */
     public $oPreisConfig;
 
     /**
      * Bild vom Graphen
      *
-     * @var string image
+     * @var resource
      */
     public $image;
 
     /**
      * Hintergrundfarbe des Bildes
      *
-     * @var string
+     * @var int[]
      */
     public $ColorBackground;
 
     /**
      * Gridfarbe
      *
-     * @var string
+     * @var int[]
      */
     public $ColorGrid;
 
     /**
      * Graphenfarbe
      *
-     * @var string
+     * @var int[]
      */
     public $ColorGraph;
 
     /**
      * Boxfarbe
      *
-     * @var string
+     * @var int[]
      */
     public $ColorBox;
 
     /**
      * Textfarbe
      *
-     * @var string
+     * @var int[]
      */
     public $ColorText;
 
@@ -430,7 +430,7 @@ class PreisverlaufGraph
      */
     public function holePreisverlauf(int $productID, int $customerGroupID, int $month): array
     {
-        $items = Shop::Container()->getDB()->queryPrepared(
+        $items = Shop::Container()->getDB()->getObjects(
             'SELECT fVKNetto, UNIX_TIMESTAMP(dDate) AS timestamp
                 FROM tpreisverlauf
                 WHERE kArtikel = :aid
@@ -441,8 +441,7 @@ class PreisverlaufGraph
                 'aid'  => $productID,
                 'cid'  => $customerGroupID,
                 'mnth' => $month
-            ],
-            ReturnType::ARRAY_OF_OBJECTS
+            ]
         );
         if (\count($items) === 0) {
             return [];
@@ -809,7 +808,7 @@ class PreisverlaufGraph
      * Berechnet zu jedem Preis aus der Datenbank, den Y Punkt
      *
      * @param float $fVKNetto
-     * @return int
+     * @return int|float
      */
     public function holeYPreis($fVKNetto)
     {

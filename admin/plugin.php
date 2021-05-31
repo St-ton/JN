@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Alert\Alert;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -43,15 +42,14 @@ if ($step === 'plugin_uebersicht' && $pluginID > 0) {
             $hasError = true;
         } else {
             $plgnConf = isset($_POST['kPluginAdminMenu'])
-                ? $db->queryPrepared(
+                ? $db->getObjects(
                     "SELECT *
                         FROM tplugineinstellungenconf
                         WHERE kPluginAdminMenu != 0
                             AND kPlugin = :plgn
                             AND cConf != 'N'
                             AND kPluginAdminMenu = :kpm",
-                    ['plgn' => $pluginID, 'kpm' => Request::postInt('kPluginAdminMenu')],
-                    ReturnType::ARRAY_OF_OBJECTS
+                    ['plgn' => $pluginID, 'kpm' => Request::postInt('kPluginAdminMenu')]
                 )
                 : [];
             foreach ($plgnConf as $current) {

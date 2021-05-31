@@ -67,7 +67,7 @@ class AdminTemplate
     }
 
     /**
-     * @return $this
+     * @return AdminTemplate
      */
     public static function getInstance(): self
     {

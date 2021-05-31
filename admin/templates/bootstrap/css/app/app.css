@@ -14315,6 +14315,16 @@ body {
   }
 }
 
+.backend-search-section .icon-wrapper {
+  margin-right: 0.5rem;
+}
+.backend-search-section .icon-wrapper svg {
+  background-color: #3098d6;
+  border-radius: 10rem;
+  padding: 1px 3px;
+  vertical-align: sub;
+}
+
 h1, .h1 {
   font-weight: 700;
 }

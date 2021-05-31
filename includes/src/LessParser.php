@@ -102,7 +102,7 @@ class LessParser
     /**
      * @param string $value
      * @param string $type
-     * @return bool|string
+     * @return bool|string|float
      */
     protected function getAs($value, $type)
     {

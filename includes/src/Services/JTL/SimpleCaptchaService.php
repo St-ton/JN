@@ -5,8 +5,6 @@ namespace JTL\Services\JTL;
 use Exception;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
-use JTL\Smarty\JTLSmartyTemplateClass;
 
 /**
  * Class SimpleCaptchaService

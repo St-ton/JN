@@ -2,8 +2,6 @@
 
 namespace JTL\GeneralDataProtection;
 
-use JTL\DB\ReturnType;
-
 /**
  * Class AnonymizeDeletedCustomer
  * @package JTL\GeneralDataProtection
@@ -40,8 +38,7 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
             [
                 'pDateLimit' => $this->dateLimit,
                 'pLimit'     => $this->workLimit
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     }
 
@@ -69,8 +66,7 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
             [
                 'pDateLimit' => $this->dateLimit,
                 'pLimit'     => $this->workLimit
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     }
 
@@ -94,8 +90,7 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
                 AND n.kKunde > 0
                 AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = n.kKunde)
             LIMIT :pLimit",
-            ['pLimit' => $this->workLimit],
-            ReturnType::DEFAULT
+            ['pLimit' => $this->workLimit]
         );
     }
 }

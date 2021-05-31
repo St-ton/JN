@@ -2,7 +2,6 @@
 
 namespace JTL\dbeS\Sync;
 
-use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\Helpers\Text;
 use stdClass;
@@ -21,14 +20,13 @@ final class Brocken extends AbstractSync
     public function handle(Starter $starter)
     {
         $input = Text::filterXSS($starter->getPostData('b'));
-        $data  = $this->db->query(
+        $data  = $this->db->getSingleObject(
             'SELECT cBrocken
                 FROM tbrocken
                 ORDER BY dErstellt DESC
-                LIMIT 1',
-            ReturnType::SINGLE_OBJECT
+                LIMIT 1'
         );
-        if (empty($data->cBrocken)) {
+        if ($data === null || empty($data->cBrocken)) {
             $data            = new stdClass();
             $data->cBrocken  = $input;
             $data->dErstellt = 'NOW()';

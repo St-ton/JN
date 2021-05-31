@@ -147,18 +147,18 @@ class Lieferscheinposinfo
      */
     public function setSeriennummer($cSeriennummer): self
     {
-        $this->cSeriennummer = Shop::Container()->getDB()->escape($cSeriennummer);
+        $this->cSeriennummer = $cSeriennummer;
 
         return $this;
     }
 
     /**
-     * @param string
+     * @param string $cChargeNr
      * @return $this
      */
     public function setChargeNr($cChargeNr): self
     {
-        $this->cChargeNr = Shop::Container()->getDB()->escape($cChargeNr);
+        $this->cChargeNr = $cChargeNr;
 
         return $this;
     }
@@ -169,7 +169,7 @@ class Lieferscheinposinfo
      */
     public function setMHD($dMHD): self
     {
-        $this->dMHD = Shop::Container()->getDB()->escape($dMHD);
+        $this->dMHD = $dMHD;
 
         return $this;
     }

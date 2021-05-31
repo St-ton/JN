@@ -22,10 +22,7 @@ class Migration_20200514090200 extends Migration implements IMigration
         $pageTypes = $boxAdmin->getValidPageTypes();
         $pageTypes = implode(',', $pageTypes);
 
-        $rows = $this->__execute(
-            "DELETE FROM tboxensichtbar WHERE kSeite NOT IN ($pageTypes)",
-            ReturnType::AFFECTED_ROWS
-        );
+        $this->__execute("DELETE FROM tboxensichtbar WHERE kSeite NOT IN ($pageTypes)");
     }
 
     /**

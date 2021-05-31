@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Catalog\Product\Artikel;
-use JTL\DB\ReturnType;
 use JTL\Language\LanguageHelper;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
@@ -20,12 +19,9 @@ function bereiteNewsletterVor($conf)
     $mailSmarty = new MailSmarty($db, ContextType::NEWSLETTER);
 
     return $mailSmarty
-        ->assign('Firma', $db->query(
-            'SELECT *  FROM tfirma',
-            ReturnType::SINGLE_OBJECT
-        ))
-       ->assign('URL_SHOP', Shop::getURL())
-       ->assign('Einstellungen', $conf);
+        ->assign('Firma', $db->getSingleObject('SELECT *  FROM tfirma'))
+        ->assign('URL_SHOP', Shop::getURL())
+        ->assign('Einstellungen', $conf);
 }
 
 /**
@@ -37,7 +33,7 @@ function bereiteNewsletterVor($conf)
  * @param array     $manufacturers
  * @param array     $categories
  * @param string    $campaign
- * @param string    $oKunde
+ * @param string    $customer
  * @return string|bool
  * @deprecated since 5.0.0
  */
@@ -50,13 +46,13 @@ function versendeNewsletter(
     $manufacturers = [],
     $categories = [],
     $campaign = '',
-    $oKunde = ''
+    $customer = ''
 ) {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
     $mailSmarty->assign('oNewsletter', $newsletter)
                ->assign('Emailempfaenger', $recipients)
-               ->assign('Kunde', $oKunde)
+               ->assign('Kunde', $customer)
                ->assign('Artikelliste', $products)
                ->assign('Herstellerliste', $manufacturers)
                ->assign('Kategorieliste', $categories)
@@ -69,25 +65,24 @@ function versendeNewsletter(
                );
     $net      = 0;
     $bodyHtml = '';
-    if (isset($oKunde->kKunde) && $oKunde->kKunde > 0) {
-        $oKundengruppe = Shop::Container()->getDB()->query(
+    if (isset($customer->kKunde) && $customer->kKunde > 0) {
+        $customerGroup = Shop::Container()->getDB()->getSingleObject(
             'SELECT tkundengruppe.nNettoPreise
                 FROM tkunde
                 JOIN tkundengruppe
                     ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
-                WHERE tkunde.kKunde = ' . (int)$oKunde->kKunde,
-            ReturnType::SINGLE_OBJECT
+                WHERE tkunde.kKunde = ' . (int)$customer->kKunde
         );
-        if (isset($oKundengruppe->nNettoPreise)) {
-            $net = $oKundengruppe->nNettoPreise;
+        if ($customerGroup !== null && isset($customerGroup->nNettoPreise)) {
+            $net = $customerGroup->nNettoPreise;
         }
     }
 
     $mailSmarty->assign('NettoPreise', $net);
 
-    $cPixel = '';
+    $pixel = '';
     if (isset($campaign->kKampagne) && $campaign->kKampagne > 0) {
-        $cPixel = '<br /><img src="' . Shop::getURL() . '/' . PFAD_INCLUDES .
+        $pixel = '<br /><img src="' . Shop::getURL() . '/' . PFAD_INCLUDES .
             'newslettertracker.php?kK=' . $campaign->kKampagne .
             '&kN=' . ($newsletter->kNewsletter ?? 0) . '&kNE=' .
             ($recipients->kNewsletterEmpfaenger ?? 0) . '" alt="Newsletter" />';
@@ -101,7 +96,7 @@ function versendeNewsletter(
     }
     if ($newsletter->cArt === 'text/html' || $newsletter->cArt === 'html') {
         try {
-            $bodyHtml = $mailSmarty->fetch('db:' . $type . '_' . $nKey . '_html') . $cPixel;
+            $bodyHtml = $mailSmarty->fetch('db:' . $type . '_' . $nKey . '_html') . $pixel;
         } catch (Exception $e) {
             Shop::Smarty()->assign('oSmartyError', $e->getMessage());
 
@@ -118,8 +113,8 @@ function versendeNewsletter(
     $mail          = new stdClass();
     $mail->toEmail = $recipients->cEmail;
     $mail->toName  = ($recipients->cVorname ?? '') . ' ' . ($recipients->cNachname ?? '');
-    if (isset($oKunde->kKunde) && $oKunde->kKunde > 0) {
-        $mail->toName = ($oKunde->cVorname ?? '') . ' ' . ($oKunde->cNachname ?? '');
+    if (isset($customer->kKunde) && $customer->kKunde > 0) {
+        $mail->toName = ($customer->cVorname ?? '') . ' ' . ($customer->cNachname ?? '');
     }
 
     $mail->fromEmail     = $conf['newsletter']['newsletter_emailadresse'];
@@ -154,7 +149,7 @@ function gibStaticHtml()
 }
 
 /**
- * @return array|null|stdClass
+ * @return null
  * @deprecated since 5.0.0
  */
 function speicherVorlage()
@@ -384,7 +379,7 @@ function gibAHKKeys($keyName, $productNo = false)
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $res  = [];
     $keys = explode(';', $keyName);
-    if (!is_array($keys) || count($keys) === 0) {
+    if (count($keys) === 0) {
         return $res;
     }
     $res = array_filter($keys, static function ($e) {
@@ -395,12 +390,11 @@ function gibAHKKeys($keyName, $productNo = false)
             return "'" . $e . "'";
         }, $res);
         if (count($res) > 0) {
-            $artNoData = Shop::Container()->getDB()->query(
+            $artNoData = Shop::Container()->getDB()->getObjects(
                 'SELECT kArtikel
                 FROM tartikel
                 WHERE cArtNr IN (' . implode(',', $res) . ')
-                    AND kEigenschaftKombi = 0',
-                ReturnType::ARRAY_OF_OBJECTS
+                    AND kEigenschaftKombi = 0'
             );
             $res       = array_map(static function ($e) {
                 return (int)$e->kArtikel;

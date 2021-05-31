@@ -8,6 +8,7 @@ use JTL\Console\Command\Cache\ClearObjectCacheCommand;
 use JTL\Console\Command\Cache\DbesTmpCommand;
 use JTL\Console\Command\Cache\DeleteFileCacheCommand;
 use JTL\Console\Command\Cache\DeleteTemplateCacheCommand;
+use JTL\Console\Command\Cache\WarmCacheCommand;
 use JTL\Console\Command\Command;
 use JTL\Console\Command\InstallCommand;
 use JTL\Console\Command\Mailtemplates\ResetCommand;
@@ -19,7 +20,6 @@ use JTL\Console\Command\Model\CreateCommand as CreateModelCommand;
 use JTL\Console\Command\Plugin\CreateCommandCommand;
 use JTL\Console\Command\Plugin\CreateMigrationCommand;
 use JTL\Console\Command\Plugin\ValidateCommand;
-use JTL\DB\ReturnType;
 use JTL\Plugin\Admin\Listing;
 use JTL\Plugin\Admin\ListingItem;
 use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
@@ -37,9 +37,9 @@ use Symfony\Component\Finder\SplFileInfo;
 
 /**
  * Class Application
- * @property ConsoleIO io
- * @property bool      devMode
- * @property bool      isInstalled
+ * @property ConsoleIO $io
+ * @property bool      $devMode
+ * @property bool      $isInstalled
  * @package JTL\Console
  */
 class Application extends BaseApplication
@@ -86,7 +86,7 @@ class Application extends BaseApplication
         }
         $db      = Shop::Container()->getDB();
         $version = $db->select('tversion', [], []);
-        if (Version::parse($version->nVersion ?? 400)->smallerThan(Version::parse(500))) {
+        if (Version::parse($version->nVersion ?? '400')->smallerThan(Version::parse('500'))) {
             return;
         }
         $cache           = Shop::Container()->getCache();
@@ -163,6 +163,7 @@ class Application extends BaseApplication
             $cmds[] = new DeleteFileCacheCommand();
             $cmds[] = new DbesTmpCommand();
             $cmds[] = new ClearObjectCacheCommand();
+            $cmds[] = new WarmCacheCommand();
             $cmds[] = new CreateModelCommand();
             $cmds[] = new ResetCommand();
 

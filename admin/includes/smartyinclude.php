@@ -3,7 +3,6 @@
 use Illuminate\Support\Collection;
 use JTL\Backend\AdminTemplate;
 use JTL\Backend\Notification;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -46,11 +45,10 @@ $mainGroups         = [];
 $rootKey            = 0;
 $expired            = collect([]);
 if (!$hasPendingUpdates) {
-    $jtlSearch                    = $db->query(
+    $jtlSearch                    = $db->getSingleObject(
         "SELECT kPlugin, cName
             FROM tplugin
-            WHERE cPluginID = 'jtl_search'",
-        ReturnType::SINGLE_OBJECT
+            WHERE cPluginID = 'jtl_search'"
     );
     $curScriptFileNameWithRequest = basename($_SERVER['REQUEST_URI'] ?? 'index.php');
     foreach ($adminMenu as $rootName => $rootEntry) {
@@ -76,14 +74,13 @@ if (!$hasPendingUpdates) {
                 if (!$oAccount->permission('PLUGIN_ADMIN_VIEW') || SAFE_MODE === true) {
                     continue;
                 }
-                $pluginLinks = $db->queryPrepared(
+                $pluginLinks = $db->getObjects(
                     'SELECT DISTINCT p.kPlugin, p.cName, p.nPrio
                         FROM tplugin AS p INNER JOIN tpluginadminmenu AS pam
                             ON p.kPlugin = pam.kPlugin
                         WHERE p.nStatus = :state
                         ORDER BY p.nPrio, p.cName',
-                    ['state' => State::ACTIVATED],
-                    ReturnType::ARRAY_OF_OBJECTS
+                    ['state' => State::ACTIVATED]
                 );
 
                 foreach ($pluginLinks as $pluginLink) {

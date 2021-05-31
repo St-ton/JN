@@ -9,7 +9,6 @@ use JTL\Cron\Job;
 use JTL\Cron\JobInterface;
 use JTL\Cron\QueueEntry;
 use JTL\Customer\Customer;
-use JTL\DB\ReturnType;
 use JTL\Shop;
 use stdClass;
 
@@ -131,7 +130,7 @@ final class Newsletter extends Job
         }
         $cgSQL .= ')';
 
-        return $this->db->query(
+        return $this->db->getObjects(
             'SELECT tkunde.kKundengruppe, tkunde.kKunde, tsprache.cISO, tnewsletterempfaenger.kNewsletterEmpfaenger,
             tnewsletterempfaenger.cAnrede, tnewsletterempfaenger.cVorname, tnewsletterempfaenger.cNachname,
             tnewsletterempfaenger.cEmail, tnewsletterempfaenger.cLoeschCode
@@ -143,8 +142,7 @@ final class Newsletter extends Job
                 WHERE tnewsletterempfaenger.kSprache = ' . (int)$jobData->kSprache . '
                     AND tnewsletterempfaenger.nAktiv = 1 ' . $cgSQL . '
                 ORDER BY tnewsletterempfaenger.kKunde
-                LIMIT ' . $queueEntry->tasksExecuted . ', ' . $queueEntry->taskLimit,
-            ReturnType::ARRAY_OF_OBJECTS
+                LIMIT ' . $queueEntry->tasksExecuted . ', ' . $queueEntry->taskLimit
         );
     }
 }

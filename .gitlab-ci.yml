@@ -159,7 +159,7 @@ workflow:
   echo "] remove default composer files.."
   rm includes/composer.json includes/composer.lock
   echo "] running phpcs install.."
-  ./composer -q require squizlabs/php_codesniffer -d includes/
+  ./composer -q require squizlabs/php_codesniffer:3.5.8 -d includes/
 
 .CodeSnifferRunScript: &CodeSnifferRunScript |
   # CODESNIFFER RUN
@@ -171,7 +171,7 @@ workflow:
   build/scripts/codesniffer.sh .
 
 
-.code_quality:
+code_quality:
   stage: codeQuality
   image: php:7.3-alpine
   before_script:
@@ -336,4 +336,3 @@ tagsDeployment:
         || $CI_COMMIT_REF_NAME =~ /^release\/.*$/
   tags:
     - dev-checkout
-

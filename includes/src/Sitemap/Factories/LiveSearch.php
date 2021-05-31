@@ -3,7 +3,6 @@
 namespace JTL\Sitemap\Factories;
 
 use Generator;
-use JTL\DB\ReturnType;
 use JTL\Sitemap\Items\LiveSearch as Item;
 use PDO;
 use function Functional\map;
@@ -22,7 +21,7 @@ final class LiveSearch extends AbstractFactory
         $languageIDs = map($languages, static function ($e) {
             return (int)$e->kSprache;
         });
-        $res         = $this->db->query(
+        $res         = $this->db->getPDOStatement(
             "SELECT tsuchanfrage.kSuchanfrage, tseo.cSeo, tsuchanfrage.dZuletztGesucht AS dlm,
             tseo.kSprache AS langID
                 FROM tsuchanfrage
@@ -31,8 +30,7 @@ final class LiveSearch extends AbstractFactory
                     AND tseo.kKey = tsuchanfrage.kSuchanfrage
                 WHERE tsuchanfrage.nAktiv = 1
                     AND tsuchanfrage.kSprache IN (" . \implode(',', $languageIDs) . ')
-                ORDER BY tsuchanfrage.kSuchanfrage',
-            ReturnType::QUERYSINGLE
+                ORDER BY tsuchanfrage.kSuchanfrage'
         );
         while (($ls = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $item = new Item($this->config, $this->baseURL, $this->baseImageURL);

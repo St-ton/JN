@@ -15,7 +15,7 @@ msgid "createShippingMethod"
 msgstr "Create shipping method"
 
 msgid "createShippingMethodTitle"
-msgstr "Creating shipping method"
+msgstr "Creating a shipping method"
 
 msgid "createShippingMethodDesc"
 msgstr "Create a new shipping method for JTL-Shop. You can later map it to one of the shipping methods in JTL-Wawi."
@@ -283,9 +283,6 @@ msgstr "Please select at least one acceptable payment method."
 
 msgid "errorShippingMethodPriceMissing"
 msgstr "Please enter at least one price."
-
-msgid "errorShippingFreeMax"
-msgstr "The free shipping threshold may only amount to %s max."
 
 msgid "sendShippingNotification"
 msgstr "Send shipping confirmation"

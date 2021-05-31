@@ -4,7 +4,6 @@ namespace JTL\Boxes\Admin;
 
 use JTL\Boxes\Type;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Mapper\PageTypeToPageNiceName;
 use JTL\Shop;
 use stdClass;
@@ -94,24 +93,22 @@ final class BoxAdmin
         if ($id < 1) {
             return false;
         }
-        $affectedBoxes = map($this->db->queryPrepared(
+        $affectedBoxes = map($this->db->getObjects(
             'SELECT kBox 
                 FROM tboxen 
                 WHERE kBox = :bid OR kContainer = :bid',
-            ['bid' => $id],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['bid' => $id]
         ), static function ($e) {
             return (int)$e->kBox;
         });
 
         return \count($affectedBoxes) > 0
-            && $this->db->query(
+            && $this->db->getAffectedRows(
                 'DELETE tboxen, tboxensichtbar, tboxsprache
                     FROM tboxen
                     LEFT JOIN tboxensichtbar USING (kBox)
                     LEFT JOIN tboxsprache USING (kBox)
-                    WHERE tboxen.kBox IN (' . \implode(',', $affectedBoxes) . ')',
-                ReturnType::AFFECTED_ROWS
+                    WHERE tboxen.kBox IN (' . \implode(',', $affectedBoxes) . ')'
             ) > 0;
     }
 
@@ -134,7 +131,7 @@ final class BoxAdmin
      */
     private function getLastSortID(int $pageID, string $position = 'left', int $containerID = 0): int
     {
-        $oBox = $this->db->queryPrepared(
+        $oBox = $this->db->getSingleObject(
             'SELECT tboxensichtbar.nSort, tboxen.ePosition
                 FROM tboxensichtbar
                 LEFT JOIN tboxen
@@ -148,8 +145,7 @@ final class BoxAdmin
                 'pageid'      => $pageID,
                 'position'    => $position,
                 'containerid' => $containerID
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
 
         return $oBox ? ++$oBox->nSort : 0;
@@ -174,15 +170,14 @@ final class BoxAdmin
      */
     public function getByID(int $boxID): stdClass
     {
-        $oBox = $this->db->queryPrepared(
+        $oBox = $this->db->getSingleObject(
             'SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.cTitel, tboxen.ePosition,
                 tboxvorlage.eTyp, tboxvorlage.cName, tboxvorlage.cVerfuegbar, tboxvorlage.cTemplate
                 FROM tboxen
                 LEFT JOIN tboxvorlage 
                     ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
                 WHERE kBox = :bxid',
-            ['bxid' => $boxID],
-            ReturnType::SINGLE_OBJECT
+            ['bxid' => $boxID]
         );
 
         $oBox->oSprache_arr      = ($oBox && ($oBox->eTyp === Type::TEXT || $oBox->eTyp === Type::CATBOX
@@ -305,8 +300,7 @@ final class BoxAdmin
                         'show'     => $show,
                         'page'     => $validPageType,
                         'position' => $position
-                    ],
-                    ReturnType::DEFAULT
+                    ]
                 );
             }
 
@@ -322,8 +316,7 @@ final class BoxAdmin
                 'show'     => $show,
                 'page'     => $pageID,
                 'position' => $position
-            ],
-            ReturnType::DEFAULT
+            ]
         ) !== 0;
     }
 
@@ -357,8 +350,7 @@ final class BoxAdmin
                             'validPageType' => $validPageType,
                             'sort'          => $sort,
                             'active'        => $active
-                        ],
-                        ReturnType::DEFAULT
+                        ]
                     );
                 } else {
                     $ok = $this->db->queryPrepared(
@@ -371,8 +363,7 @@ final class BoxAdmin
                             'validPageType' => $validPageType,
                             'sort'          => $sort,
                             'active'        => $active
-                        ],
-                        ReturnType::DEFAULT
+                        ]
                     );
                 }
             }
@@ -386,12 +377,11 @@ final class BoxAdmin
                     ON DUPLICATE KEY UPDATE
                       nSort = :sort, bAktiv = :active',
             [
-                    'boxID'         => $boxID,
-                    'validPageType' => $pageID,
-                    'sort'          => $sort,
-                    'active'        => $active
-                ],
-            ReturnType::DEFAULT
+                'boxID'         => $boxID,
+                'validPageType' => $pageID,
+                'sort'          => $sort,
+                'active'        => $active
+            ]
         ) !== 0;
     }
 
@@ -456,11 +446,10 @@ final class BoxAdmin
         $sql       = $pageID >= 0
             ? 'WHERE (cVerfuegbar = "' . $pageID . '" OR cVerfuegbar = "0")'
             : '';
-        $data      = $this->db->query(
+        $data      = $this->db->getObjects(
             'SELECT * 
                 FROM tboxvorlage ' . $sql . ' 
-                ORDER BY cVerfuegbar ASC',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY cVerfuegbar ASC'
         );
         foreach ($data as $template) {
             $id   = 0;
@@ -542,22 +531,24 @@ final class BoxAdmin
      */
     public function getInvisibleBoxes(): array
     {
-        $model      = Shop::Container()->getTemplateService()->getActiveTemplate();
-        $unavailabe = filter($model->getBoxLayout(), static function ($e) {
+        $model         = Shop::Container()->getTemplateService()->getActiveTemplate();
+        $unavailabe    = filter($model->getBoxLayout(), static function ($e) {
             return $e === false;
         });
-        $mapped     = map($unavailabe, static function ($e, $key) {
-            return "'" . $key . "'";
-        });
+        $wherePosition = '';
+        if (\count($unavailabe) > 0) {
+            $mapped        = map($unavailabe, static function ($e, $key) {
+                return "'" . $key . "'";
+            });
+            $wherePosition = ' ePosition IN (' . \implode(',', $mapped) . ') OR ';
+        }
 
-        return $this->db->query(
+        return $this->db->getObjects(
             'SELECT tboxen.*, tboxvorlage.eTyp, tboxvorlage.cName, tboxvorlage.cTemplate 
                 FROM tboxen 
                     LEFT JOIN tboxvorlage
                     ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
-                WHERE ePosition IN (' . \implode(',', $mapped) . ') 
-                    OR (kContainer > 0  AND kContainer NOT IN (SELECT kBox FROM tboxen))',
-            ReturnType::ARRAY_OF_OBJECTS
+                WHERE ' . $wherePosition . ' (kContainer > 0  AND kContainer NOT IN (SELECT kBox FROM tboxen))'
         );
     }
 

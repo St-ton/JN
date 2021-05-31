@@ -2,7 +2,6 @@
 
 namespace JTL\Catalog;
 
-use JTL\DB\ReturnType;
 use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
@@ -145,7 +144,7 @@ class Hersteller
         $cacheTags = [\CACHING_GROUP_MANUFACTURER];
         $cached    = true;
         if ($noCache === true || ($manufacturer = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $manufacturer = Shop::Container()->getDB()->queryPrepared(
+            $manufacturer = Shop::Container()->getDB()->getSingleObject(
                 "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                     thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
                     therstellersprache.cMetaDescription, therstellersprache.cBeschreibung,
@@ -162,8 +161,7 @@ class Hersteller
                 [
                     'langID' => $languageID,
                     'manfID' => $id
-                ],
-                ReturnType::SINGLE_OBJECT
+                ]
             );
             $cached       = false;
             \executeHook(\HOOK_HERSTELLER_CLASS_LOADFROMDB, [
@@ -180,7 +178,7 @@ class Hersteller
                 'cacheTags'   => &$cacheTags
             ]);
         }
-        if ($manufacturer !== false) {
+        if ($manufacturer !== null) {
             $this->loadFromObject($manufacturer);
         }
 
@@ -236,7 +234,7 @@ class Hersteller
                 ')
                         )';
         }
-        $items   = Shop::Container()->getDB()->query(
+        $items   = Shop::Container()->getDB()->getObjects(
             'SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                 thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
                 therstellersprache.cMetaDescription, therstellersprache.cBeschreibung,
@@ -249,8 +247,7 @@ class Hersteller
                     ON tseo.kKey = thersteller.kHersteller
                     AND tseo.cKey = 'kHersteller'
                     AND tseo.kSprache = " . $languageID . $sqlWhere . '
-                ORDER BY thersteller.nSortNr, thersteller.cName',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY thersteller.nSortNr, thersteller.cName'
         );
         $results = [];
         foreach ($items as $item) {

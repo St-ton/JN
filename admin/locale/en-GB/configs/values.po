@@ -635,17 +635,11 @@ msgstr "No"
 msgid "isbn_display_value(N)"
 msgstr "No"
 
-msgid "artikeldetails_variationskombikind_bildvorschau_value(Y)"
-msgstr "Yes"
-
 msgid "adr_hazard_display_value(N)"
 msgstr "No"
 
 msgid "isbn_display_value(D)"
 msgstr "Yes, on item detail page"
-
-msgid "artikeldetails_variationskombikind_bildvorschau_value(N)"
-msgstr "No"
 
 msgid "adr_hazard_display_value(D)"
 msgstr "Yes, on item detail page"
@@ -1074,6 +1068,24 @@ msgid "lieferadresse_abfragen_standardland_value(Y)"
 msgstr "Yes, mandatory"
 
 msgid "lieferadresse_abfragen_standardland_value(N)"
+msgstr "No"
+
+msgid "lieferadresse_abfragen_firma_value(O)"
+msgstr "Yes, optional"
+
+msgid "lieferadresse_abfragen_firma_value(Y)"
+msgstr "Yes, mandatory"
+
+msgid "lieferadresse_abfragen_firma_value(N)"
+msgstr "No"
+
+msgid "lieferadresse_abfragen_firmazusatz_value(O)"
+msgstr "Yes, optional"
+
+msgid "lieferadresse_abfragen_firmazusatz_value(Y)"
+msgstr "Yes, mandatory"
+
+msgid "lieferadresse_abfragen_firmazusatz_value(N)"
 msgstr "No"
 
 msgid "shop_ustid_bzstpruefung_value(Y)"
@@ -1539,6 +1551,12 @@ msgid "bewertung_anzeigen_value(Y)"
 msgstr "Yes"
 
 msgid "bewertung_anzeigen_value(N)"
+msgstr "No"
+
+msgid "bewertung_alle_sprachen_value(Y)"
+msgstr "Yes"
+
+msgid "bewertung_alle_sprachen_value(N)"
 msgstr "No"
 
 msgid "bewertung_freischalten_value(Y)"

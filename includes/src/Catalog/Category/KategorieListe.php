@@ -3,7 +3,6 @@
 namespace JTL\Catalog\Category;
 
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\URL;
 use JTL\Language\LanguageHelper;
 use JTL\Session\Frontend;
@@ -264,7 +263,7 @@ class KategorieListe
         $db                    = Shop::Container()->getDB();
         $defaultLanguageActive = LanguageHelper::isDefaultLanguageActive();
         $orderByName           = $defaultLanguageActive ? '' : 'tkategoriesprache.cName, ';
-        $categories            = $db->query(
+        $categories            = $db->getObjects(
             'SELECT tkategorie.kKategorie, tkategorie.cName, tkategorie.cBeschreibung, 
                 tkategorie.kOberKategorie, tkategorie.nSort, tkategorie.dLetzteAktualisierung, 
                 tkategoriesprache.cName AS cName_spr, tkategoriesprache.cBeschreibung AS cBeschreibung_spr, 
@@ -285,8 +284,7 @@ class KategorieListe
                 WHERE tkategoriesichtbarkeit.kKategorie IS NULL
                     AND tkategorie.kOberKategorie = ' . $categoryID . '
                 GROUP BY tkategorie.kKategorie
-                ORDER BY tkategorie.nSort, ' . $orderByName . 'tkategorie.cName',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY tkategorie.nSort, ' . $orderByName . 'tkategorie.cName'
         );
 
         $categoryList['kKategorieVonUnterkategorien_arr'][$categoryID] = [];
@@ -344,7 +342,7 @@ class KategorieListe
             // Attribute holen
             $category->categoryFunctionAttributes = [];
             $category->categoryAttributes         = [];
-            $categoryAttributes                   = $db->query(
+            $categoryAttributes                   = $db->getObjects(
                 'SELECT COALESCE(tkategorieattributsprache.cName, tkategorieattribut.cName) cName,
                         COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert,
                         tkategorieattribut.bIstFunktionsAttribut, tkategorieattribut.nSort
@@ -353,8 +351,7 @@ class KategorieListe
                         ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
                         AND tkategorieattributsprache.kSprache = ' . $languageID . '
                     WHERE kKategorie = ' . (int)$category->kKategorie . '
-                    ORDER BY tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort',
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort'
             );
             foreach ($categoryAttributes as $categoryAttribute) {
                 $id = \mb_convert_case($categoryAttribute->cName, \MB_CASE_LOWER);
@@ -419,7 +416,7 @@ class KategorieListe
 
                     return true;
                 }
-                $catData = $db->queryPrepared(
+                $catData = $db->getObjects(
                     'SELECT tkategorie.kKategorie
                         FROM tkategorie
                         LEFT JOIN tkategoriesichtbarkeit 
@@ -428,8 +425,7 @@ class KategorieListe
                         WHERE tkategoriesichtbarkeit.kKategorie IS NULL
                             AND tkategorie.kOberKategorie = :pcid
                             AND tkategorie.kKategorie != :cid',
-                    ['cid' => $categoryID, 'pcid' => $category, 'cgid' => $customerGroupID],
-                    ReturnType::ARRAY_OF_OBJECTS
+                    ['cid' => $categoryID, 'pcid' => $category, 'cgid' => $customerGroupID]
                 );
                 foreach ($catData as $obj) {
                     $categoryIDs[] = (int)$obj->kKategorie;
@@ -455,7 +451,8 @@ class KategorieListe
     private function hasProducts(int $categoryID, int $customerGroupID, DbInterface $db): bool
     {
         $availability = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-        $data         = $db->query(
+
+        return (int)($db->getSingleObject(
             'SELECT tartikel.kArtikel
                 FROM tkategorieartikel, tartikel
                 LEFT JOIN tartikelsichtbarkeit 
@@ -464,10 +461,7 @@ class KategorieListe
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.kArtikel = tkategorieartikel.kArtikel
                     AND tkategorieartikel.kKategorie = ' . $categoryID . $availability . '
-                LIMIT 1',
-            ReturnType::SINGLE_OBJECT
-        );
-
-        return isset($data->kArtikel) && $data->kArtikel > 0;
+                LIMIT 1'
+        )->kArtikel ?? 0) > 0;
     }
 }

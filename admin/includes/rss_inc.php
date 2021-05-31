@@ -1,6 +1,5 @@
 <?php
 
-use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
 use JTL\Shop;
@@ -52,7 +51,7 @@ function generiereRSSXML()
     }
     // Artikel beachten?
     if ($conf['rss']['rss_artikel_beachten'] === 'Y') {
-        $products = $db->query(
+        $products = $db->getObjects(
             "SELECT tartikel.kArtikel, tartikel.cName, tartikel.cKurzBeschreibung, tseo.cSeo, 
                 tartikel.dLetzteAktualisierung, tartikel.dErstellt, 
                 DATE_FORMAT(tartikel.dErstellt, '%a, %d %b %Y %H:%i:%s UTC') AS erstellt
@@ -68,8 +67,7 @@ function generiereRSSXML()
                     AND tartikel.cNeu = 'Y' " .  $lagerfilter . "
                     AND cNeu = 'Y' 
                     AND DATE_SUB(now(), INTERVAL " . $days . ' DAY) < dErstellt
-                ORDER BY dLetzteAktualisierung DESC',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY dLetzteAktualisierung DESC'
         );
         foreach ($products as $product) {
             $url  = URL::buildURL($product, URLART_ARTIKEL, true);
@@ -85,7 +83,7 @@ function generiereRSSXML()
     }
     // News beachten?
     if ($conf['rss']['rss_news_beachten'] === 'Y') {
-        $news = $db->query(
+        $news = $db->getObjects(
             "SELECT tnews.*, t.title, t.preview, DATE_FORMAT(dGueltigVon, '%a, %d %b %Y %H:%i:%s UTC') AS dErstellt_RSS
                 FROM tnews
                 JOIN tnewssprache t 
@@ -93,8 +91,7 @@ function generiereRSSXML()
                 WHERE DATE_SUB(now(), INTERVAL " . $days . ' DAY) < dGueltigVon
                     AND nAktiv = 1
                     AND dGueltigVon <= now()
-                ORDER BY dGueltigVon DESC',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY dGueltigVon DESC'
         );
         foreach ($news as $item) {
             $url  = URL::buildURL($item, URLART_NEWS);
@@ -110,12 +107,11 @@ function generiereRSSXML()
     }
     // bewertungen beachten?
     if ($conf['rss']['rss_bewertungen_beachten'] === 'Y') {
-        $reviews = $db->query(
+        $reviews = $db->getObjects(
             "SELECT *, dDatum, DATE_FORMAT(dDatum, '%a, %d %b %y %h:%i:%s +0100') AS dErstellt_RSS
                 FROM tbewertung
                 WHERE DATE_SUB(NOW(), INTERVAL " . $days . ' DAY) < dDatum
-                    AND nAktiv = 1',
-            ReturnType::ARRAY_OF_OBJECTS
+                    AND nAktiv = 1'
         );
         foreach ($reviews as $review) {
             $url  = URL::buildURL($review, URLART_ARTIKEL, true);

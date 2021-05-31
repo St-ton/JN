@@ -23,7 +23,7 @@
     {$title = $title|escape:'html'}
 {/if}
 
-<div class="opc-Button"
+<div class="opc-Button {$instance->getStyleClasses()}"
         {if $instance->getProperty('align') !== 'block'}
             style="text-align: {$instance->getProperty('align')}"
         {/if}>
@@ -33,7 +33,7 @@
             block=$block|default:false
             variant=$instance->getProperty('style')
             title=$title|default:null
-            class=$instance->getAnimationClass()|cat:' '|cat:$instance->getStyleClasses()
+            class=$instance->getAnimationClass()
             data=$instance->getAnimationData()
             style=$instance->getStyleString()
     }

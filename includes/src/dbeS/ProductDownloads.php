@@ -3,7 +3,7 @@
 namespace JTL\dbeS;
 
 /**
- * Class ArticleDownloads
+ * Class ProductDownloads
  * @package JTL\dbeS
  */
 class ProductDownloads extends NetSyncHandler

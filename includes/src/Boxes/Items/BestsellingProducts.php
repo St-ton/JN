@@ -3,7 +3,6 @@
 namespace JTL\Boxes\Items;
 
 use JTL\Catalog\Product\ArtikelListe;
-use JTL\DB\ReturnType;
 use JTL\Helpers\SearchSpecial;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -39,7 +38,7 @@ final class BestsellingProducts extends AbstractBox
                     ? (int)$this->config['boxen']['box_bestseller_anzahl_basis']
                     : 10;
 
-                $productIDs = Shop::Container()->getDB()->query(
+                $productIDs = Shop::Container()->getDB()->getObjects(
                     'SELECT tartikel.kArtikel
                         FROM tbestseller, tartikel
                         LEFT JOIN tartikelsichtbarkeit 
@@ -49,8 +48,7 @@ final class BestsellingProducts extends AbstractBox
                             AND tbestseller.kArtikel = tartikel.kArtikel
                             AND ROUND(tbestseller.fAnzahl) >= ' . $minCount . ' ' .
                             $parentSQL . $stockFilterSQL . '
-                        ORDER BY fAnzahl DESC LIMIT ' . $limit,
-                    ReturnType::ARRAY_OF_OBJECTS
+                        ORDER BY fAnzahl DESC LIMIT ' . $limit
                 );
                 Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
             }

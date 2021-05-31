@@ -181,10 +181,10 @@ class PaymentMethod
     }
 
     /**
-     * @param stdClass        $data
-     * @param PluginInterface $plugin
+     * @param stdClass             $data
+     * @param PluginInterface|null $plugin
      */
-    public function mapData(stdClass $data, PluginInterface $plugin): void
+    public function mapData(stdClass $data, PluginInterface $plugin = null): void
     {
         foreach (\get_object_vars($data) as $item => $value) {
             $method = self::$mapping[$item] ?? null;
@@ -193,6 +193,9 @@ class PaymentMethod
             }
             $method = 'set' . $method;
             $this->$method($value);
+        }
+        if ($plugin === null) {
+            return;
         }
         $this->classFilePath = $plugin->getPaths()->getVersionedPath() . \PFAD_PLUGIN_PAYMENTMETHOD . $this->classFile;
         if (\file_exists($this->classFilePath)) {

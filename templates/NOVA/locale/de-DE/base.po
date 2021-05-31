@@ -41,7 +41,7 @@ msgid "Favicon"
 msgstr "Favicon"
 
 msgid "Megamenu"
-msgstr "Megamenu"
+msgstr "Megamenü"
 
 msgid "Kategorien (anstelle einer Kategoriebox / Boxenverwaltung)"
 msgstr "Kategorien (anstelle einer Kategoriebox / Boxenverwaltung)"
@@ -177,3 +177,6 @@ msgstr "Nein"
 
 msgid "Header über gesamte Bildschirmbreite darstellen"
 msgstr "Header über gesamte Bildschirmbreite darstellen"
+
+msgid "Suchfeld in Filtern anzeigen ab x Einträgen"
+msgstr "Suchfeld in Filtern anzeigen ab x Einträgen"

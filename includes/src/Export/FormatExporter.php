@@ -284,6 +284,7 @@ class FormatExporter
      * @param bool       $isCron
      * @param int|null   $max
      * @return bool
+     * @throws InvalidArgumentException
      */
     public function startExport(
         int $exportID,

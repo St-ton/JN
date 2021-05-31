@@ -2,7 +2,6 @@
 
 use JTL\Cron\QueueEntry;
 use JTL\Export\FormatExporter;
-use JTL\Exportformat;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Shop;
@@ -21,9 +20,7 @@ if (!isset($queue->kExportformat) || !$queue->kExportformat || !$queue->nLimit_m
     die('1');
 }
 $ef = new FormatExporter($db, Shop::Container()->getLogService());
-//if (!$ef->isOK()) {
-//    die('2');
-//}
+
 $queue->jobQueueID    = (int)$queue->kExportqueue;
 $queue->cronID        = 0;
 $queue->foreignKeyID  = 0;
@@ -35,11 +32,15 @@ $queue->tableName     = null;
 $queue->foreignKey    = 'kExportformat';
 $queue->foreignKeyID  = (int)$queue->kExportformat;
 
-$ef->startExport(
-    (int)$queue->kExportformat,
-    new QueueEntry($queue),
-    isset($_GET['ajax']),
-    Request::getVar('back') === 'admin',
-    false,
-    Request::getInt('max', null)
-);
+try {
+    $ef->startExport(
+        (int)$queue->kExportformat,
+        new QueueEntry($queue),
+        isset($_GET['ajax']),
+        Request::getVar('back') === 'admin',
+        false,
+        Request::getInt('max', null)
+    );
+} catch (InvalidArgumentException $e) {
+    die('2');
+}

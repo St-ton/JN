@@ -106,7 +106,6 @@ class WarenkorbHelper
                         $info->surcharge[self::NET] += $amount * $oPosition->nAnzahl;
                         $info->surcharge[self::GROSS] += $amountGross * $oPosition->nAnzahl;
                     } else {
-                        $amount *= -1;
                         $info->discount[self::NET] += $amount * $oPosition->nAnzahl;
                         $info->discount[self::GROSS] += $amountGross * $oPosition->nAnzahl;
                     }

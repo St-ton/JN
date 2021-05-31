@@ -182,19 +182,15 @@ class Emailhistory
      */
     public function deletePack(array $ids)
     {
-        if (\count($ids) > 0) {
-            $ids = \array_map(static function ($i) {
-                return (int)$i;
-            }, $ids);
-
-            return Shop::Container()->getDB()->getAffectedRows(
-                'DELETE 
-                    FROM temailhistory 
-                    WHERE kEmailhistory IN (' . \implode(',', $ids) . ')'
-            );
+        if (\count($ids) === 0) {
+            return false;
         }
 
-        return false;
+        return Shop::Container()->getDB()->getAffectedRows(
+            'DELETE 
+                FROM temailhistory 
+                WHERE kEmailhistory IN (' . \implode(',', \array_map('\intval', $ids)) . ')'
+        );
     }
 
     /**

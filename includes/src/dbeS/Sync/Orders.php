@@ -323,10 +323,11 @@ final class Orders extends AbstractSync
             } else {
                 $deliveryAddress->kKunde         = $oldOrder->kKunde;
                 $deliveryAddress->kLieferadresse = $deliveryAddress->insertInDB();
-                $this->db->query(
-                    'UPDATE tbestellung
-                        SET kLieferadresse = ' . (int)$deliveryAddress->kLieferadresse . '
-                        WHERE kBestellung = ' . (int)$oldOrder->kBestellung
+                $this->db->update(
+                    'tbestellung',
+                    'kBestellung',
+                    (int)$oldOrder->kBestellung,
+                    (object)['kLieferadresse' => (int)$deliveryAddress->kLieferadresse]
                 );
             }
         } elseif ($oldOrder->kLieferadresse > 0) {

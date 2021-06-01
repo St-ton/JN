@@ -136,12 +136,13 @@ class Campaign
         if ($this->kKampagne <= 0) {
             return false;
         }
-        Shop::Container()->getDB()->query(
+        Shop::Container()->getDB()->queryPrepared(
             'DELETE tkampagne, tkampagnevorgang
                 FROM tkampagne
                 LEFT JOIN tkampagnevorgang 
                     ON tkampagnevorgang.kKampagne = tkampagne.kKampagne
-                WHERE tkampagne.kKampagne = ' . (int)$this->kKampagne
+                WHERE tkampagne.kKampagne = :cid',
+            ['cid' => (int)$this->kKampagne]
         );
 
         return true;

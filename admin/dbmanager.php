@@ -31,7 +31,7 @@ function exec_query(string $query)
 {
     try {
         Shop::Container()->getDB()->beginTransaction();
-        $result = Shop::Container()->getDB()->query($query, ReturnType::ARRAY_OF_ASSOC_ARRAYS);
+        $result = Shop::Container()->getDB()->getArrays($query);
         Shop::Container()->getDB()->commit();
 
         return $result;

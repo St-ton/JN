@@ -68,12 +68,13 @@ if ($action === 'save') {
         }
         // Update?
         if ($packagingID > 0) {
-            $db->query(
+            $db->queryPrepared(
                 'DELETE tverpackung, tverpackungsprache
                     FROM tverpackung
                     LEFT JOIN tverpackungsprache 
                         ON tverpackungsprache.kVerpackung = tverpackung.kVerpackung
-                    WHERE tverpackung.kVerpackung = ' . $packagingID
+                    WHERE tverpackung.kVerpackung = :pid',
+                ['pid' => $packagingID]
             );
             $packaging->kVerpackung = $packagingID;
             $db->insert('tverpackung', $packaging);

@@ -811,27 +811,29 @@ final class Products extends AbstractSync
     {
         if ((int)$product->nIstVater === 1) {
             $productID = (int)$product->kArtikel;
-            $this->db->query(
+            $this->db->queryPrepared(
                 'UPDATE tartikel SET fLagerbestand = (SELECT * FROM
                     (SELECT SUM(fLagerbestand)
                         FROM tartikel
-                        WHERE kVaterartikel = ' . $productID . '
+                        WHERE kVaterartikel = :pid
                      ) AS x
                  )
-                WHERE kArtikel = ' . $productID
+                WHERE kArtikel = :pid',
+                ['pid' => $productID]
             );
             Artikel::beachteVarikombiMerkmalLagerbestand($productID, $this->productVisibilityFilter);
         } elseif (isset($product->kVaterArtikel) && $product->kVaterArtikel > 0) {
             $productID = (int)$product->kVaterArtikel;
-            $this->db->query(
+            $this->db->queryPrepared(
                 'UPDATE tartikel SET fLagerbestand =
                 (SELECT * FROM
                     (SELECT SUM(fLagerbestand)
                         FROM tartikel
-                        WHERE kVaterartikel = ' . $productID . '
+                        WHERE kVaterartikel = :pid
                     ) AS x
                 )
-                WHERE kArtikel = ' . $productID
+                WHERE kArtikel = :pid',
+                ['pid' => $productID]
             );
             // Aktualisiere Merkmale in tartikelmerkmal vom Vaterartikel
             Artikel::beachteVarikombiMerkmalLagerbestand($productID, $this->productVisibilityFilter);

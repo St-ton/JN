@@ -635,17 +635,11 @@ msgstr "Nein"
 msgid "isbn_display_value(N)"
 msgstr "Nein"
 
-msgid "artikeldetails_variationskombikind_bildvorschau_value(Y)"
-msgstr "Ja"
-
 msgid "adr_hazard_display_value(N)"
 msgstr "Nein"
 
 msgid "isbn_display_value(D)"
 msgstr "Ja, auf der Artikeldetailseite"
-
-msgid "artikeldetails_variationskombikind_bildvorschau_value(N)"
-msgstr "Nein"
 
 msgid "adr_hazard_display_value(D)"
 msgstr "Ja, auf der Artikeldetailseite"
@@ -1426,6 +1420,12 @@ msgstr "Mit Komma maskieren"
 
 msgid "exportformate_semikolon_value( )"
 msgstr "Mit Leerzeichen maskieren"
+
+msgid "exportformate_line_ending_value(LF)"
+msgstr "LF"
+
+msgid "exportformate_line_ending_value(CRLF)"
+msgstr "CRLF"
 
 msgid "kontakt_abfragen_anrede_value(Y)"
 msgstr "Ja, erforderliche Angabe"

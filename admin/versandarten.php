@@ -156,12 +156,10 @@ if (Form::validateToken()) {
             $VersandartZahlungsarten[] = $versandartzahlungsart;
         }
 
-        $lastScaleTo              = 0.0;
-        $VersandartStaffeln       = [];
-        $upperLimits              = []; // Haelt alle fBis der Staffel
-        $staffelDa                = true;
-        $shippingFreeValid        = true;
-        $fMaxVersandartStaffelBis = 0;
+        $lastScaleTo        = 0.0;
+        $VersandartStaffeln = [];
+        $upperLimits        = []; // Haelt alle fBis der Staffel
+        $staffelDa          = true;
         if ($shippingType->cModulId === 'vm_versandberechnung_gewicht_jtl'
             || $shippingType->cModulId === 'vm_versandberechnung_warenwert_jtl'
             || $shippingType->cModulId === 'vm_versandberechnung_artikelanzahl_jtl'
@@ -224,7 +222,6 @@ if (Form::validateToken()) {
             && count($postData['kZahlungsart']) >= 1
             && $shippingMethod->cName
             && $staffelDa
-            && $shippingFreeValid
         ) {
             $methodID = 0;
             if (Request::postInt('kVersandart') === 0) {
@@ -322,9 +319,6 @@ if (Form::validateToken()) {
                     __('errorShippingMethodPriceMissing'),
                     'errorShippingMethodPriceMissing'
                 );
-            }
-            if (!$shippingFreeValid) {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorShippingFreeMax'), 'errorShippingFreeMax');
             }
             if (Request::postInt('kVersandart') > 0) {
                 $shippingMethod = $db->select('tversandart', 'kVersandart', Request::postInt('kVersandart'));

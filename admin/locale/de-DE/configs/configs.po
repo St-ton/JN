@@ -848,12 +848,6 @@ msgstr "Gefahrentafel im Artikel anzeigen"
 msgid "adr_hazard_display_desc"
 msgstr "Hier legen Sie fest, ob die europäische Gefahrentafel im Artikel angezeigt werden soll. Hierfür müssen in JTL-Wawi die UN-Nummer und die Gefahrnummer gepflegt sein."
 
-msgid "artikeldetails_variationskombikind_bildvorschau_name"
-msgstr "Bildvorschau für Kindartikel anzeigen"
-
-msgid "artikeldetails_variationskombikind_bildvorschau_desc"
-msgstr "Hier legen Sie fest, ob in der Artikelübersicht Vorschaubilder für Kindartikel angezeigt werden sollen. Bei vielen Kindartikeln kann dies zu großen Ladezeiten führen."
-
 msgid "artikeldetails_fragezumprodukt_anzeigen_name"
 msgstr "Formular für Fragen zum Artikel anzeigen"
 
@@ -1951,6 +1945,12 @@ msgstr "Zeichenmaskierung ;"
 
 msgid "exportformate_semikolon_desc"
 msgstr "Sie können bei Bedarf diese Zeichen maskieren lassen."
+
+msgid "exportformate_line_ending_name"
+msgstr "Zeilenende"
+
+msgid "exportformate_line_ending_desc"
+msgstr ""
 
 msgid "kontakt_abfragen_anrede_name"
 msgstr "Anrede abfragen"

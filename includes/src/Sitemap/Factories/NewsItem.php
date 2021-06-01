@@ -3,7 +3,6 @@
 namespace JTL\Sitemap\Factories;
 
 use Generator;
-use JTL\DB\ReturnType;
 use JTL\Sitemap\Items\NewsItem as Item;
 use PDO;
 use function Functional\first;

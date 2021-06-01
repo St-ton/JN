@@ -71,12 +71,12 @@
                 <div class="card-footer save-wrapper">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <button name="test" type="submit" value="1" class="btn btn-default">
+                            <button name="test" type="submit" value="1" class="btn btn-default btn-block">
                                 <i class="fal fa-play-circle"></i> {__('methodTest')}
                             </button>
                         </div>
                         <div class="col-sm-6 col-xl-auto">
-                            <button name="save" type="submit" value="1" class="btn btn-primary add">
+                            <button name="save" type="submit" value="1" class="btn btn-primary btn-block add">
                             {__('saveWithIcon')}
                             </button>
                         </div>

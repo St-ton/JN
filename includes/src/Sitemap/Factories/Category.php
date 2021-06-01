@@ -4,7 +4,6 @@ namespace JTL\Sitemap\Factories;
 
 use Generator;
 use JTL\Catalog\Category\KategorieListe;
-use JTL\DB\ReturnType;
 use JTL\Sitemap\Items\Category as Item;
 use PDO;
 use function Functional\first;

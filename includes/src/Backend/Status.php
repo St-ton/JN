@@ -7,6 +7,7 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\Checkout\ZahlungsLog;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Export\SyntaxChecker;
 use JTL\Exportformat;
 use JTL\License\Manager;
 use JTL\License\Mapper;
@@ -565,7 +566,7 @@ class Status
      * @param string|null $hash
      * @return int
      */
-    public function getExportFormatErrorCount(int $type = Exportformat::SYNTAX_FAIL, ?string &$hash = null): int
+    public function getExportFormatErrorCount(int $type = SyntaxChecker::SYNTAX_FAIL, ?string &$hash = null): int
     {
         $cacheKey = self::CACHE_ID_EXPORT_SYNTAX_CHECK . $type;
         if (($syntaxErrCnt = $this->cache->get($cacheKey)) === false) {

@@ -9,6 +9,7 @@ use JTL\Catalog\Currency;
 use JTL\Filter\SearchResults;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Helpers\Text;
 use JTL\IO\IOError;
 use JTL\IO\IOResponse;
 use JTL\Session\Frontend;
@@ -187,7 +188,7 @@ function saveAdminSettings(
                 $val->cWert = (int)$val->cWert;
                 break;
             case 'text':
-                $val->cWert = mb_substr($val->cWert, 0, 255);
+                $val->cWert = Text::filterXSS(mb_substr($val->cWert, 0, 255));
                 break;
             case 'listbox':
                 bearbeiteListBox($val->cWert, $val->cName, $val->kEinstellungenSektion);
@@ -308,7 +309,7 @@ function saveAdminSectionSettings(int $configSectionID, array $post, array $tags
                 $valid      = validateSetting($val);
                 break;
             case 'text':
-                $val->cWert = mb_substr($val->cWert, 0, 255);
+                $val->cWert = Text::filterXSS(mb_substr($val->cWert, 0, 255));
                 break;
             case 'listbox':
             case 'selectkdngrp':

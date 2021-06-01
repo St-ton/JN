@@ -14,17 +14,16 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
 /** @global \JTL\Smarty\JTLSmarty     $smarty */
 /** @global \JTL\Backend\AdminAccount $oAccount */
 $sectionID      = (int)($_REQUEST['kSektion'] ?? 0);
-$bSuche         = (int)($_REQUEST['einstellungen_suchen'] ?? 0) === 1;
+$isSearch       = (int)($_REQUEST['einstellungen_suchen'] ?? 0) === 1;
 $db             = Shop::Container()->getDB();
 $getText        = Shop::Container()->getGetText();
 $adminAccount   = Shop::Container()->getAdminAccount();
 $alertService   = Shop::Container()->getAlertService();
 $search         = Request::verifyGPDataString('cSuche');
 $settingManager = new Manager($db, $smarty, $adminAccount, $getText, $alertService);
-
 $getText->loadConfigLocales(true, true);
 
-if ($bSuche) {
+if ($isSearch) {
     $oAccount->permission('SETTINGS_SEARCH_VIEW', true, true);
 }
 
@@ -60,7 +59,7 @@ switch ($sectionID) {
         $oAccount->redirectOnFailure();
         break;
 }
-
+$postData        = Text::filterXSS($_POST);
 $defaultCurrency = $db->select('twaehrung', 'cStandard', 'Y');
 $section         = null;
 $step            = 'uebersicht';
@@ -77,7 +76,7 @@ if ($sectionID > 0) {
 
 $getText->localizeConfigSection($section);
 
-if ($bSuche) {
+if ($isSearch) {
     $step = 'einstellungen bearbeiten';
 }
 if (Request::postVar('resetSetting') !== null) {
@@ -85,7 +84,7 @@ if (Request::postVar('resetSetting') !== null) {
 } elseif (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form::validateToken()) {
     // Einstellungssuche
     $sql = new stdClass();
-    if ($bSuche) {
+    if ($isSearch) {
         $sql = bearbeiteEinstellungsSuche($search, true);
     }
     if (!isset($sql->cWHERE)) {
@@ -113,8 +112,8 @@ if (Request::postVar('resetSetting') !== null) {
     foreach ($confData as $i => $sectionData) {
         $value       = new stdClass();
         $sectionItem = $settingManager->getInstance((int)$sectionData->kEinstellungenSektion);
-        if (isset($_POST[$confData[$i]->cWertName])) {
-            $value->cWert                 = $_POST[$confData[$i]->cWertName];
+        if (isset($postData[$confData[$i]->cWertName])) {
+            $value->cWert                 = $postData[$confData[$i]->cWertName];
             $value->cName                 = $confData[$i]->cWertName;
             $value->kEinstellungenSektion = $confData[$i]->kEinstellungenSektion;
             switch ($confData[$i]->cInputTyp) {
@@ -131,17 +130,17 @@ if (Request::postVar('resetSetting') !== null) {
                 case 'pass':
                     break;
             }
-            if ($sectionItem->validate($confData[$i], $_POST[$confData[$i]->cWertName])) {
-                if (is_array($_POST[$confData[$i]->cWertName])) {
-                    $settingManager->addLogListbox($confData[$i]->cWertName, $_POST[$confData[$i]->cWertName]);
+            if ($sectionItem->validate($confData[$i], $postData[$confData[$i]->cWertName])) {
+                if (is_array($postData[$confData[$i]->cWertName])) {
+                    $settingManager->addLogListbox($confData[$i]->cWertName, $postData[$confData[$i]->cWertName]);
                 }
                 $db->delete(
                     'teinstellungen',
                     ['kEinstellungenSektion', 'cName'],
                     [$confData[$i]->kEinstellungenSektion, $confData[$i]->cWertName]
                 );
-                if (is_array($_POST[$confData[$i]->cWertName])) {
-                    foreach ($_POST[$confData[$i]->cWertName] as $cWert) {
+                if (is_array($postData[$confData[$i]->cWertName])) {
+                    foreach ($postData[$confData[$i]->cWertName] as $cWert) {
                         $value->cWert = $cWert;
                         $db->insert('teinstellungen', $value);
                     }
@@ -151,7 +150,7 @@ if (Request::postVar('resetSetting') !== null) {
                     $settingManager->addLog(
                         $confData[$i]->cWertName,
                         $confData[$i]->currentValue,
-                        $_POST[$confData[$i]->cWertName]
+                        $postData[$confData[$i]->cWertName]
                     );
                 }
             }
@@ -198,7 +197,7 @@ if ($step === 'uebersicht') {
 if ($step === 'einstellungen bearbeiten') {
     $confData = [];
     $sql      = new stdClass();
-    if ($bSuche) {
+    if ($isSearch) {
         $sql = bearbeiteEinstellungsSuche($search);
     }
     if (!isset($sql->cWHERE)) {

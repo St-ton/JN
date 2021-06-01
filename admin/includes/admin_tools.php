@@ -114,28 +114,6 @@ function getAdminSectionSettings($configSectionID, bool $byName = false): array
 }
 
 /**
- * @param array      $file
- * @param array|null $allowed
- * @return bool
- */
-function isImageUpload(array $file, ?array $allowed = null): bool
-{
-    $allowed = $allowed ?? [
-            'image/jpeg',
-            'image/pjpeg',
-            'image/gif',
-            'image/x-png',
-            'image/png',
-            'image/bmp',
-            'image/webp'
-        ];
-
-    return isset($file['type'], $file['error'])
-        && $file['error'] === UPLOAD_ERR_OK
-        && in_array($file['type'], $allowed, true);
-}
-
-/**
  * @param array $settingsIDs
  * @param array $post
  * @param array $tags

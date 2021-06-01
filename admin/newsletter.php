@@ -163,7 +163,7 @@ if (Form::validateToken()) {
         if (Request::verifyGPCDataInt('vorlage_std_speichern') === 1) {
             $step = $admin->save(Request::verifyGPCDataInt('kNewslettervorlageStd'), $smarty);
         } elseif (Request::verifyGPCDataInt('editieren') > 0) { // Editieren
-            $admin->edit(Request::verifyGPCDataInt('editieren'), $smarty);
+            $step = $admin->edit(Request::verifyGPCDataInt('editieren'), $smarty);
         }
         // Vorlage Std erstellen
         if (Request::verifyGPCDataInt('vorlage_std_erstellen') === 1

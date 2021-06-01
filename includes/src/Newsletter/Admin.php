@@ -10,6 +10,7 @@ use JTL\DB\DbInterface;
 use JTL\Exceptions\EmptyResultSetException;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
+use JTL\Media\Image;
 use JTL\Optin\Optin;
 use JTL\Optin\OptinNewsletter;
 use JTL\Services\JTL\AlertServiceInterface;
@@ -401,7 +402,10 @@ final class Admin
                         throw new \RuntimeException(\sprintf('Directory "%s" was not created', $currentDir));
                     }
                     $idx = 'kNewslettervorlageStdVar_' . $tplVar->kNewslettervorlageStdVar;
-                    if (isset($_FILES[$idx]['name']) && \mb_strlen($_FILES[$idx]['name']) > 0) {
+                    if (isset($_FILES[$idx]['name'])
+                        && \mb_strlen($_FILES[$idx]['name']) > 0
+                        && Image::isImageUpload($_FILES[$idx])
+                    ) {
                         $file = $uploadDir . $templateID
                             . '/kNewslettervorlageStdVar_' . $tplVar->kNewslettervorlageStdVar
                             . $this->mapFileType($_FILES['kNewslettervorlageStdVar_'

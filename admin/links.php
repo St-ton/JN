@@ -10,6 +10,7 @@ use JTL\Link\Link;
 use JTL\Link\LinkGroup;
 use JTL\Link\LinkGroupList;
 use JTL\Link\LinkInterface;
+use JTL\Media\Image;
 use JTL\PlausiCMS;
 use JTL\Shop;
 
@@ -253,7 +254,7 @@ if ($action !== '' && Form::validateToken()) {
                             'name'     => $_FILES['Bilder']['name'][$i - $counter],
                             'tmp_name' => $_FILES['Bilder']['tmp_name'][$i - $counter],
                         ];
-                        if (isImageUpload($upload)) {
+                        if (Image::isImageUpload($upload)) {
                             $type         = $upload['type'];
                             $uploadedFile = $uploadDir . $kLink . '/Bild' . ($i + 1) . '.' .
                                 mb_substr(

@@ -7,6 +7,7 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\ImageMap;
+use JTL\Media\Image;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
 
@@ -29,7 +30,7 @@ if ((isset($postData['cName']) || isset($postData['kImageMap'])) && Form::valida
     }
     $bannerPath = Request::postVar('cPath', '') !== '' ? $postData['cPath'] : null;
     if (isset($_FILES['oFile'])
-        && isImageUpload($_FILES['oFile'])
+        && Image::isImageUpload($_FILES['oFile'])
         && move_uploaded_file($_FILES['oFile']['tmp_name'], PFAD_ROOT . PFAD_BILDER_BANNER . $_FILES['oFile']['name'])
     ) {
         $bannerPath = $_FILES['oFile']['name'];

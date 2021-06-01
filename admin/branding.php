@@ -3,6 +3,7 @@
 use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Media\Image;
 use JTL\Media\Media;
 use JTL\Shop;
 
@@ -125,7 +126,7 @@ function speicherEinstellung(int $brandingID, array $post, array $files): bool
 function speicherBrandingBild(array $files, int $brandingID): bool
 {
     $upload = $files['cBrandingBild'];
-    if (!isImageUpload($upload)) {
+    if (!Image::isImageUpload($upload)) {
         return false;
     }
     $newFile = PFAD_ROOT . PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . mappeFileTyp($upload['type']);

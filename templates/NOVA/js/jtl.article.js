@@ -782,6 +782,7 @@
                 let $action = $('button[data-product-id-cl="' + data.productID + '"]')
                 $action.removeClass("on-list");
                 $action.next().removeClass("press");
+                $('.comparelist [data-product-id-cl="' + data.productID + '"]').remove();
             }
 
             for (var ind in data.cBoxContainer) {

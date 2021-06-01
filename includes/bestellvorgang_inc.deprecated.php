@@ -177,9 +177,9 @@ function setzeSmartyRechnungsadresse($nUnreg, $nCheckout = 0): void
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     global $step;
-    $smarty    = Shop::Smarty();
-    $conf      = Shop::getSettings([CONF_KUNDEN]);
-    $herkunfte = Shop::Container()->getDB()->getObjects(
+    $smarty  = Shop::Smarty();
+    $conf    = Shop::getSettings([CONF_KUNDEN]);
+    $origins = Shop::Container()->getDB()->getObjects(
         'SELECT *
             FROM tkundenherkunft
             ORDER BY nSort'
@@ -196,7 +196,7 @@ function setzeSmartyRechnungsadresse($nUnreg, $nCheckout = 0): void
         Frontend::getCustomer()->getCustomerAttributes()->assign(getKundenattribute($_POST));
     }
     $smarty->assign('untertitel', Shop::Lang()->get('fillUnregForm', 'checkout'))
-        ->assign('herkunfte', $herkunfte)
+        ->assign('herkunfte', $origins)
         ->assign('Kunde', Frontend::getCustomer())
         ->assign(
             'laender',

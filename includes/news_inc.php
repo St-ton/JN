@@ -91,12 +91,12 @@ function holeNewsKategorien($dateSQL, $activeOnly = false)
             LEFT JOIN tseo 
                 ON tseo.cKey = 'kNewsKategorie'
                 AND tseo.kKey = tnewskategorie.kNewsKategorie
-                AND tseo.kSprache = " . $languageID . '
-                AND tnewskategorie.kSprache = ' . $languageID . '
-            WHERE t.languageID = ' . $languageID
-            . $activeFilter . '
+                AND tseo.kSprache = :lid
+                AND tnewskategorie.kSprache = :lid
+            WHERE t.languageID = :lid" . $activeFilter . '
             GROUP BY tnewskategorie.kNewsKategorie
-            ORDER BY tnewskategorie.nSort'
+            ORDER BY tnewskategorie.nSort',
+        ['lid' => $languageID]
     );
 }
 
@@ -289,12 +289,13 @@ function getNewsCategory(int $newsID)
             LEFT JOIN tseo 
                 ON tseo.cKey = 'kNewsKategorie'
                 AND tseo.kKey = tnewskategorie.kNewsKategorie
-                AND tseo.kSprache = " . Shop::getLanguageID() . '
-            WHERE tnewskategorie.kSprache = ' . Shop::getLanguageID() . '
-                AND tnewskategorienews.kNewsKategorie IN (' . implode(',', $newsCategories) . ')
+                AND tseo.kSprache = :lid
+            WHERE tnewskategorie.kSprache = :lid
+                AND tnewskategorienews.kNewsKategorie IN (" . implode(',', $newsCategories) . ')
                 AND tnewskategorie.nAktiv = 1
             GROUP BY tnewskategorie.kNewsKategorie
-            ORDER BY tnewskategorie.nSort DESC'
+            ORDER BY tnewskategorie.nSort DESC',
+        ['lid' => Shop::getLanguageID()]
     );
 }
 

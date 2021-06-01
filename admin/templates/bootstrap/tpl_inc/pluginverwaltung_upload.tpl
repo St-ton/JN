@@ -14,23 +14,21 @@
             fileShowRemove=true
             fileDefaultBatchSelectedEvent=false
             fileSuccessMsg="{__('successPluginUpload')}"
+            fileErrorMsg="{__('errorPluginUpload')}"
             }
         </div>
         <hr>
     </form>
 
     <script>
-        let defaultError = '{__('errorPluginUpload')}',
-            $fi          = $('#plugin-install-upload');
+        let $fi = $('#plugin-install-upload');
         {literal}
         $fi.on('fileuploaded', function(event, data, previewId, index) {
-            var response = data.response,
-                alert = $('#plugin-install-upload-upload-error');
+            var response = data.response;
             if (response.status === 'OK') {
                 if (typeof vLicenses !== 'undefined' && typeof response.license !== 'undefined' && response.license !== null) {
                     vLicenses[response.dir_name.replace('/', '')] = response.license;
                 }
-                alert.hide();
                 var wasActiveVerfuegbar = $('#verfuegbar').hasClass('active'),
                     wasActiveFehlerhaft = $('#fehlerhaft').hasClass('active');
                 $('#verfuegbar').replaceWith(response.html.available);
@@ -43,13 +41,6 @@
                 } else if (wasActiveVerfuegbar) {
                     $('#verfuegbar').addClass('active show');
                 }
-            } else {
-                if (response.errorMessage !== null && response.errorMessage.length > 0) {
-                    alert.html(defaultError + ': ' + response.errorMessage);
-                } else {
-                    alert.html(defaultError);
-                }
-                alert.show().removeClass('hidden');
             }
             $fi.fileinput('reset');
             $fi.fileinput('clear');

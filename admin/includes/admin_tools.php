@@ -35,17 +35,19 @@ function getAdminSectionSettings($configSectionID, bool $byName = false): array
             : ' WHERE ec.kEinstellungenConf IN (' . implode(',', array_map('\intval', $configSectionID)) . ') ';
         $confData = $db->getObjects(
             'SELECT ec.*, e.cWert as defaultValue
-                FROM teinstellungenconf as ec
-                LEFT JOIN teinstellungen_default as e ON e.cName=ec.cWertName
+                FROM teinstellungenconf AS ec
+                LEFT JOIN teinstellungen_default AS e
+                    ON e.cName = ec.cWertName
                 ' . $where . '
                 ORDER BY ec.nSort'
         );
     } else {
         $confData = $db->getObjects(
-            'SELECT ec.*, e.cWert as defaultValue
-                FROM teinstellungenconf as ec
-                LEFT JOIN teinstellungen_default as e ON e.cName=ec.cWertName
-                WHERE '. ($byName ? 'ec.cWertName' : 'ec.kEinstellungenSektion') . '=:configSection ' .
+            'SELECT ec.*, e.cWert AS defaultValue
+                FROM teinstellungenconf AS ec
+                LEFT JOIN teinstellungen_default AS e
+                    ON e.cName = ec.cWertName
+                WHERE '. ($byName ? 'ec.cWertName' : 'ec.kEinstellungenSektion') . ' = :configSection ' .
                 'ORDER BY ec.nSort',
             ['configSection' => $configSectionID]
         );
@@ -144,7 +146,8 @@ function saveAdminSettings(
     $confData = $db->getObjects(
         'SELECT ec.*, e.cWert AS currentValue
             FROM teinstellungenconf AS ec
-            LEFT JOIN teinstellungen AS e ON e.cName=ec.cWertName
+            LEFT JOIN teinstellungen AS e 
+                ON e.cName=ec.cWertName
             ' . $where . "
             AND ec.cConf = 'Y'
             ORDER BY ec.nSort"
@@ -263,9 +266,10 @@ function saveAdminSectionSettings(int $configSectionID, array $post, array $tags
     }
     $invalid  = 0;
     $confData = $db->getObjects(
-        "SELECT ec.*, e.cWert as currentValue
-            FROM teinstellungenconf as ec
-            LEFT JOIN teinstellungen as e ON e.cName=ec.cWertName
+        "SELECT ec.*, e.cWert AS currentValue
+            FROM teinstellungenconf AS ec
+            LEFT JOIN teinstellungen AS e
+                ON e.cName = ec.cWertName
             WHERE ec.kEinstellungenSektion = :configSectionID
               AND ec.cConf = 'Y'
             ORDER BY ec.nSort",
@@ -385,7 +389,7 @@ function holeAlleKampagnen(bool $internalOnly = false, bool $activeOnly = true):
     );
     foreach ($items as $item) {
         $campaign = new Campaign((int)$item->kKampagne);
-        if (isset($campaign->kKampagne) && $campaign->kKampagne > 0) {
+        if ($campaign->kKampagne > 0) {
             $campaigns[$campaign->kKampagne] = $campaign;
         }
     }
@@ -538,14 +542,10 @@ function getJTLVersionDB(bool $date = false)
 {
     $ret = 0;
     if ($date) {
-        $latestUpdate = Shop::Container()->getDB()->getSingleObject(
-            'SELECT MAX(dExecuted) AS date FROM tmigration'
-        );
+        $latestUpdate = Shop::Container()->getDB()->getSingleObject('SELECT MAX(dExecuted) AS date FROM tmigration');
         $ret          = $latestUpdate->date ?? 0;
     } else {
-        $versionData = Shop::Container()->getDB()->getSingleObject(
-            'SELECT nVersion FROM tversion'
-        );
+        $versionData = Shop::Container()->getDB()->getSingleObject('SELECT nVersion FROM tversion');
         if ($versionData !== null) {
             $ret = $versionData->nVersion;
         }

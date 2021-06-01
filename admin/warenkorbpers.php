@@ -88,7 +88,8 @@ if (Request::getInt('a') > 0) {
             FROM twarenkorbperspos
             JOIN twarenkorbpers 
                 ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
-            WHERE twarenkorbpers.kKunde = ' . $customerID
+            WHERE twarenkorbpers.kKunde = :cid',
+        ['cid' => $customerID]
     )->cnt;
     $cartPagination = (new Pagination('warenkorb'))
         ->setItemCount($persCartCount)
@@ -103,8 +104,9 @@ if (Request::getInt('a') > 0) {
                 ON tkunde.kKunde = twarenkorbpers.kKunde
             JOIN twarenkorbperspos 
                 ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
-            WHERE twarenkorbpers.kKunde = " . $customerID . '
-            LIMIT ' . $cartPagination->getLimitSQL()
+            WHERE twarenkorbpers.kKunde = :cid
+            LIMIT " . $cartPagination->getLimitSQL(),
+        ['cid' => $customerID]
     );
     foreach ($carts as $cart) {
         $customer = new Customer((int)$cart->kKundeTMP);

@@ -242,16 +242,17 @@ final class Admin
             foreach ($defaultTpl->oNewslettervorlageStdVar_arr as $j => $nlTplStdVar) {
                 $nlTplContent = new stdClass();
                 if (isset($nlTplStdVar->kNewslettervorlageStdVar) && $nlTplStdVar->kNewslettervorlageStdVar > 0) {
-                    $cSQL = ' AND kNewslettervorlage IS NULL';
+                    $and = ' AND kNewslettervorlage IS NULL';
                     if ($templateID > 0) {
-                        $cSQL = ' AND kNewslettervorlage = ' . $templateID;
+                        $and = ' AND kNewslettervorlage = ' . $templateID;
                     }
 
                     $nlTplContent = $this->db->getSingleObject(
                         'SELECT *
                             FROM tnewslettervorlagestdvarinhalt
-                            WHERE kNewslettervorlageStdVar = ' . (int)$nlTplStdVar->kNewslettervorlageStdVar
-                        . $cSQL
+                            WHERE kNewslettervorlageStdVar = :tid'
+                        . $and,
+                        ['tid' => (int)$nlTplStdVar->kNewslettervorlageStdVar]
                     );
                 }
                 if (isset($nlTplContent->cInhalt) && \mb_strlen($nlTplContent->cInhalt) > 0) {
@@ -783,7 +784,8 @@ final class Admin
         return (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt
                 FROM tnewsletterempfaenger
-                WHERE kSprache = ' . (int)($_SESSION['editLanguageID'] ?? $_SESSION['kSprache']) . $searchSQL->cWHERE
+                WHERE kSprache = :lid' . $searchSQL->cWHERE,
+            ['lid' => (int)($_SESSION['editLanguageID'] ?? $_SESSION['kSprache'])]
         )->cnt;
     }
 
@@ -894,12 +896,12 @@ final class Admin
         foreach (\array_map('\intval', $ids) as $queueID) {
             $entry = $this->db->getSingleObject(
                 'SELECT c.foreignKeyID AS newsletterID, c.cronID AS cronID, l.cBetreff
-                            FROM tcron c
-                            LEFT JOIN tjobqueue j 
-                                ON j.cronID = c.cronID
-                            LEFT JOIN tnewsletter l 
-                                ON c.foreignKeyID = l.kNewsletter
-                            WHERE c.cronID = :cronID',
+                    FROM tcron c
+                    LEFT JOIN tjobqueue j 
+                        ON j.cronID = c.cronID
+                    LEFT JOIN tnewsletter l 
+                        ON c.foreignKeyID = l.kNewsletter
+                    WHERE c.cronID = :cronID',
                 ['cronID' => $queueID]
             );
             if ($entry === null) {

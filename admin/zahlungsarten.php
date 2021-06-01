@@ -103,20 +103,21 @@ if (Request::postInt('einstellungen_bearbeiten') === 1
     // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
     if (mb_strpos($paymentMethod->cModulId, 'kPlugin_') !== false) {
         $kPlugin     = PluginHelper::getIDByModuleID($paymentMethod->cModulId);
-        $Conf        = $db->getObjects(
+        $conf        = $db->getObjects(
             "SELECT *
                 FROM tplugineinstellungenconf
-                WHERE cWertName LIKE '" . $paymentMethod->cModulId . "\_%'
-                AND cConf = 'Y' ORDER BY nSort"
+                WHERE cWertName LIKE :mid 
+                AND cConf = 'Y' ORDER BY nSort",
+            ['mid' => $paymentMethod->cModulId . '\_%']
         );
-        $configCount = count($Conf);
+        $configCount = count($conf);
         for ($i = 0; $i < $configCount; $i++) {
             $aktWert          = new stdClass();
             $aktWert->kPlugin = $kPlugin;
-            $aktWert->cName   = $Conf[$i]->cWertName;
-            $aktWert->cWert   = $filteredPost[$Conf[$i]->cWertName];
+            $aktWert->cName   = $conf[$i]->cWertName;
+            $aktWert->cWert   = $filteredPost[$conf[$i]->cWertName];
 
-            switch ($Conf[$i]->cInputTyp) {
+            switch ($conf[$i]->cInputTyp) {
                 case 'kommazahl':
                     $aktWert->cWert = (float)str_replace(',', '.', $aktWert->cWert);
                     break;
@@ -131,27 +132,27 @@ if (Request::postInt('einstellungen_bearbeiten') === 1
             $db->delete(
                 'tplugineinstellungen',
                 ['kPlugin', 'cName'],
-                [$kPlugin, $Conf[$i]->cWertName]
+                [$kPlugin, $conf[$i]->cWertName]
             );
             $db->insert('tplugineinstellungen', $aktWert);
         }
     } else {
-        $Conf        = $db->selectAll(
+        $conf        = $db->selectAll(
             'teinstellungenconf',
             ['cModulId', 'cConf'],
             [$paymentMethod->cModulId, 'Y'],
             '*',
             'nSort'
         );
-        $configCount = count($Conf);
+        $configCount = count($conf);
         for ($i = 0; $i < $configCount; ++$i) {
             $aktWert                        = new stdClass();
-            $aktWert->cWert                 = $filteredPost[$Conf[$i]->cWertName];
-            $aktWert->cName                 = $Conf[$i]->cWertName;
+            $aktWert->cWert                 = $filteredPost[$conf[$i]->cWertName];
+            $aktWert->cName                 = $conf[$i]->cWertName;
             $aktWert->kEinstellungenSektion = CONF_ZAHLUNGSARTEN;
             $aktWert->cModulId              = $paymentMethod->cModulId;
 
-            switch ($Conf[$i]->cInputTyp) {
+            switch ($conf[$i]->cInputTyp) {
                 case 'kommazahl':
                     $aktWert->cWert = (float)str_replace(',', '.', $aktWert->cWert);
                     break;
@@ -166,10 +167,10 @@ if (Request::postInt('einstellungen_bearbeiten') === 1
             $db->delete(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
-                [CONF_ZAHLUNGSARTEN, $Conf[$i]->cWertName]
+                [CONF_ZAHLUNGSARTEN, $conf[$i]->cWertName]
             );
             $db->insert('teinstellungen', $aktWert);
-            Shop::Container()->getGetText()->localizeConfig($Conf[$i]);
+            Shop::Container()->getGetText()->localizeConfig($conf[$i]);
         }
     }
     $localized               = new stdClass();
@@ -208,66 +209,67 @@ if ($step === 'einstellen') {
         PaymentMethod::activatePaymentMethod($paymentMethod);
         // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
         if (mb_strpos($paymentMethod->cModulId, 'kPlugin_') !== false) {
-            $Conf        = $db->getObjects(
-                "SELECT *
+            $conf        = $db->getObjects(
+                'SELECT *
                     FROM tplugineinstellungenconf
-                    WHERE cWertName LIKE '" . $paymentMethod->cModulId . "\_%'
-                    ORDER BY nSort"
+                    WHERE cWertName LIKE :vl
+                    ORDER BY nSort',
+                ['vl' => $paymentMethod->cModulId . '\_%']
             );
-            $configCount = count($Conf);
+            $configCount = count($conf);
             for ($i = 0; $i < $configCount; ++$i) {
-                if ($Conf[$i]->cInputTyp === 'selectbox') {
-                    $Conf[$i]->ConfWerte = $db->selectAll(
+                if ($conf[$i]->cInputTyp === 'selectbox') {
+                    $conf[$i]->ConfWerte = $db->selectAll(
                         'tplugineinstellungenconfwerte',
                         'kPluginEinstellungenConf',
-                        (int)$Conf[$i]->kPluginEinstellungenConf,
+                        (int)$conf[$i]->kPluginEinstellungenConf,
                         '*',
                         'nSort'
                     );
-                    foreach (array_keys($Conf[$i]->ConfWerte) as $confKey) {
-                        $Conf[$i]->ConfWerte[$confKey]->cName = __($Conf[$i]->ConfWerte[$confKey]->cName);
+                    foreach (array_keys($conf[$i]->ConfWerte) as $confKey) {
+                        $conf[$i]->ConfWerte[$confKey]->cName = __($conf[$i]->ConfWerte[$confKey]->cName);
                     }
                 }
                 $setValue                = $db->select(
                     'tplugineinstellungen',
                     'kPlugin',
-                    (int)$Conf[$i]->kPlugin,
+                    (int)$conf[$i]->kPlugin,
                     'cName',
-                    $Conf[$i]->cWertName
+                    $conf[$i]->cWertName
                 );
-                $Conf[$i]->gesetzterWert = $setValue->cWert;
-                $Conf[$i]->cName         = __($Conf[$i]->cName);
-                $Conf[$i]->cBeschreibung = __($Conf[$i]->cBeschreibung);
+                $conf[$i]->gesetzterWert = $setValue->cWert;
+                $conf[$i]->cName         = __($conf[$i]->cName);
+                $conf[$i]->cBeschreibung = __($conf[$i]->cBeschreibung);
             }
         } else {
-            $Conf        = $db->selectAll(
+            $conf        = $db->selectAll(
                 'teinstellungenconf',
                 'cModulId',
                 $paymentMethod->cModulId,
                 '*',
                 'nSort'
             );
-            $configCount = count($Conf);
+            $configCount = count($conf);
             for ($i = 0; $i < $configCount; ++$i) {
-                if ($Conf[$i]->cInputTyp === 'selectbox') {
-                    $Conf[$i]->ConfWerte = $db->selectAll(
+                if ($conf[$i]->cInputTyp === 'selectbox') {
+                    $conf[$i]->ConfWerte = $db->selectAll(
                         'teinstellungenconfwerte',
                         'kEinstellungenConf',
-                        (int)$Conf[$i]->kEinstellungenConf,
+                        (int)$conf[$i]->kEinstellungenConf,
                         '*',
                         'nSort'
                     );
-                    Shop::Container()->getGetText()->localizeConfigValues($Conf[$i], $Conf[$i]->ConfWerte);
+                    Shop::Container()->getGetText()->localizeConfigValues($conf[$i], $conf[$i]->ConfWerte);
                 }
                 $setValue                = $db->select(
                     'teinstellungen',
                     'kEinstellungenSektion',
                     CONF_ZAHLUNGSARTEN,
                     'cName',
-                    $Conf[$i]->cWertName
+                    $conf[$i]->cWertName
                 );
-                $Conf[$i]->gesetzterWert = $setValue->cWert ?? null;
-                Shop::Container()->getGetText()->localizeConfig($Conf[$i]);
+                $conf[$i]->gesetzterWert = $setValue->cWert ?? null;
+                Shop::Container()->getGetText()->localizeConfig($conf[$i]);
             }
         }
 
@@ -276,7 +278,7 @@ if ($step === 'einstellen') {
                 FROM tkundengruppe
                 ORDER BY cName'
         );
-        $smarty->assign('Conf', $Conf)
+        $smarty->assign('Conf', $conf)
                ->assign('zahlungsart', $paymentMethod)
                ->assign('kundengruppen', $customerGroups)
                ->assign('gesetzteKundengruppen', getGesetzteKundengruppen($paymentMethod))
@@ -318,7 +320,7 @@ if ($step === 'einstellen') {
         $db->query(
             "UPDATE tzahlungseingang
                 SET cAbgeholt = 'N'
-                WHERE kZahlungseingang IN (" . implode(',', \array_map('\intval', $filteredPost['kEingang_arr'])) . ')'
+                WHERE kZahlungseingang IN (" . implode(',', array_map('\intval', $filteredPost['kEingang_arr'])) . ')'
         );
     }
 

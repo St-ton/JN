@@ -279,12 +279,13 @@ final class Products extends AbstractSync
                     JOIN twarenkorbpos pos
                         ON pos.kWarenkorb = b.kWarenkorb
                     WHERE b.cAbgeholt = 'N'
-                        AND pos.kArtikel = " . (int)$products[0]->kArtikel
+                        AND pos.kArtikel = :pid",
+                ['pid' => (int)$products[0]->kArtikel]
             );
             if ($delta !== null && $delta->totalquantity > 0) {
                 $products[0]->fLagerbestand -= $delta->totalquantity;
                 $this->logger->debug(
-                    'Artikel-Sync: Lagerbestand von kArtikel ' . $products[0]->kArtikel . ' wurde ' .
+                    'Artikel-Sync: Lagerbestand von kArtikel ' . (int)$products[0]->kArtikel . ' wurde ' .
                     'wegen nicht-abgeholter Bestellungen ' .
                     'um ' . $delta->totalquantity . ' auf ' . $products[0]->fLagerbestand . ' reduziert.'
                 );
@@ -977,7 +978,8 @@ final class Products extends AbstractSync
                         FROM tkategorieartikel
                         LEFT JOIN tartikel
                             ON tartikel.kArtikel = tkategorieartikel.kArtikel
-                        WHERE tkategorieartikel.kKategorie = ' . (int)$category->kKategorie . ' ' . $stockFilter
+                        WHERE tkategorieartikel.kKategorie = :cid ' . $stockFilter,
+                    ['cid' => (int)$category->kKategorie]
                 )->cnt;
                 if ($categoryCount <= 1) {
                     // the category only had this product in it - flush cache
@@ -1216,17 +1218,17 @@ final class Products extends AbstractSync
      */
     private function removeProductIdfromCoupons(int $productID): void
     {
-        $data = $this->db->getSingleObject('SELECT cArtNr FROM tartikel WHERE kArtikel = ' . $productID);
-
+        $data = $this->db->getSingleObject(
+            'SELECT cArtNr FROM tartikel WHERE kArtikel = :pid',
+            ['pid' => $productID]
+        );
         if ($data !== null && !empty($data->cArtNr)) {
             $artNo = $data->cArtNr;
             $this->db->queryPrepared(
                 "UPDATE tkupon SET cArtikel = REPLACE(cArtikel, ';" . $artNo . ";', ';') WHERE cArtikel LIKE :artno",
                 ['artno' => '%;' . $artNo . ';%']
             );
-            $this->db->query(
-                "UPDATE tkupon SET cArtikel = '' WHERE cArtikel = ';'"
-            );
+            $this->db->query("UPDATE tkupon SET cArtikel = '' WHERE cArtikel = ';'");
         }
     }
 

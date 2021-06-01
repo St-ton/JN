@@ -406,8 +406,9 @@ if ($step === 'uebersicht') {
                 FROM tversandartzahlungsart
                 JOIN tzahlungsart
                     ON tzahlungsart.kZahlungsart = tversandartzahlungsart.kZahlungsart
-                WHERE tversandartzahlungsart.kVersandart = ' . (int)$method->kVersandart . '
-                ORDER BY tzahlungsart.cAnbieter, tzahlungsart.nSort, tzahlungsart.cName'
+                WHERE tversandartzahlungsart.kVersandart = :sid
+                ORDER BY tzahlungsart.cAnbieter, tzahlungsart.nSort, tzahlungsart.cName',
+            ['sid' => (int)$method->kVersandart]
         );
 
         foreach ($method->versandartzahlungsarten as $smp) {

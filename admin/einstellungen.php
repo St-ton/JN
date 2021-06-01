@@ -98,15 +98,16 @@ if (Request::postVar('resetSetting') !== null) {
     } else {
         $section  = $db->select('teinstellungensektion', 'kEinstellungenSektion', $sectionID);
         $confData = $db->getObjects(
-            'SELECT ec.*, e.cWert AS currentValue
+            "SELECT ec.*, e.cWert AS currentValue
                 FROM teinstellungenconf AS ec
                 LEFT JOIN teinstellungen AS e
                   ON e.cName = ec.cWertName
-                WHERE ec.kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . "
+                WHERE ec.kEinstellungenSektion = :sid
                     AND ec.cConf = 'Y'
                     AND ec.nModul = 0
                     AND ec.nStandardanzeigen = 1 " . $sql->cWHERE . '
-                ORDER BY ec.nSort'
+                ORDER BY ec.nSort',
+            ['sid' => (int)$section->kEinstellungenSektion]
         );
     }
     foreach ($confData as $i => $sectionData) {
@@ -215,9 +216,10 @@ if ($step === 'einstellungen bearbeiten') {
                   ON ted.cName= te.cWertName
                 WHERE te.nModul = 0
                     AND te.nStandardAnzeigen = 1
-                    AND te.kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . ' ' .
-                $sql->cWHERE . '
-                ORDER BY te.nSort'
+                    AND te.kEinstellungenSektion = :sid '
+                . $sql->cWHERE . '
+                ORDER BY te.nSort',
+            ['sid' => (int)$section->kEinstellungenSektion]
         );
     }
     foreach ($confData as $config) {

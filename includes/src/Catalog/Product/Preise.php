@@ -350,7 +350,8 @@ class Preise
             $data = Shop::Container()->getDB()->getSingleObject(
                 'SELECT COUNT(kPreis) AS nAnzahl 
                     FROM tpreis
-                    WHERE kKunde = ' . $customerID
+                    WHERE kKunde = :cid',
+                ['cid' => $customerID]
             );
             if (\is_object($data)) {
                 $cacheTags = [\CACHING_GROUP_ARTICLE];

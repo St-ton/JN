@@ -1596,15 +1596,15 @@ final class Shop
                 self::setPageType(\PAGE_STARTSEITE);
                 self::$fileName = 'seite.php';
                 if (Frontend::getCustomerGroup()->getID() > 0) {
-                    $cKundengruppenSQL = " AND (FIND_IN_SET('" . Frontend::getCustomerGroup()->getID()
+                    $customerGroupSQL = " AND (FIND_IN_SET('" . Frontend::getCustomerGroup()->getID()
                         . "', REPLACE(cKundengruppen, ';', ',')) > 0
                         OR cKundengruppen IS NULL
                         OR cKundengruppen = 'NULL'
                         OR tlink.cKundengruppen = '')";
-                    $link              = self::Container()->getDB()->getSingleObject(
+                    $link             = self::Container()->getDB()->getSingleObject(
                         'SELECT kLink
                             FROM tlink
-                            WHERE nLinkart = ' . \LINKTYP_STARTSEITE . $cKundengruppenSQL
+                            WHERE nLinkart = ' . \LINKTYP_STARTSEITE . $customerGroupSQL
                     );
                 }
                 self::$kLink = isset($link->kLink)

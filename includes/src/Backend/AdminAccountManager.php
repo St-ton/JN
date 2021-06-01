@@ -286,10 +286,11 @@ class AdminAccountManager
             $handledKeys[] = $key;
         }
         // nicht (mehr) vorhandene Attribute löschen
-        $this->db->query(
-            'DELETE FROM tadminloginattribut
-            WHERE kAdminlogin = ' . (int)$account->kAdminlogin . "
-                AND cName NOT IN ('" . \implode("', '", $handledKeys) . "')"
+        $this->db->queryPrepared(
+            "DELETE FROM tadminloginattribut
+                WHERE kAdminlogin = :aid
+                    AND cName NOT IN ('" . \implode("', '", $handledKeys) . "')",
+            ['aid' => (int)$account->kAdminlogin]
         );
 
         $adminAccount = Shop::Container()->getAdminAccount();

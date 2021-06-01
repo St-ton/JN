@@ -68,11 +68,11 @@ $usedCouponsOrder = KuponBestellung::getOrdersWithUsedCoupons(
 );
 
 $orderCount            = (int)Shop::Container()->getDB()->getSingleObject(
-    "SELECT COUNT(*) AS nCount
+    'SELECT COUNT(*) AS nCount
         FROM tbestellung
-        WHERE dErstellt BETWEEN '" . $dStart . "'
-            AND '" . $dEnd . "'
-            AND tbestellung.cStatus != " . BESTELLUNG_STATUS_STORNO
+        WHERE dErstellt BETWEEN :strt AND :nd
+            AND cStatus != :stt',
+    ['strt' => $dStart, 'nd' => $dEnd, 'stt' => BESTELLUNG_STATUS_STORNO]
 )->nCount;
 $countUsedCouponsOrder = 0;
 $countCustomers        = 0;

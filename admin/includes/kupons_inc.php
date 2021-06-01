@@ -401,10 +401,11 @@ function createCouponFromInput()
 function getCouponCount(string $type = Kupon::TYPE_STANDARD, string $whereSQL = ''): int
 {
     return (int)Shop::Container()->getDB()->getSingleObject(
-        "SELECT COUNT(kKupon) AS cnt
+        'SELECT COUNT(kKupon) AS cnt
             FROM tkupon
-            WHERE cKuponTyp = '" . $type . "'" .
-            ($whereSQL !== '' ? ' AND ' . $whereSQL : '')
+            WHERE cKuponTyp = :tp' .
+            ($whereSQL !== '' ? ' AND ' . $whereSQL : ''),
+        ['tp' => $type]
     )->cnt;
 }
 
@@ -459,7 +460,7 @@ function validateCoupon($coupon)
                 FROM tkupon
                 WHERE cCode = :cCode
                     AND kKupon != :kKupon',
-            [ 'cCode' => $coupon->cCode, 'kKupon' => (int)$coupon->kKupon ]
+            ['cCode' => $coupon->cCode, 'kKupon' => (int)$coupon->kKupon]
         );
         if ($queryRes !== null) {
             $errors[] = __('errorCouponCodeDuplicate');

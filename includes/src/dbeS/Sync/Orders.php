@@ -81,11 +81,11 @@ final class Orders extends AbstractSync
     {
         $order = $this->db->getSingleObject(
             'SELECT tbestellung.kBestellung, tzahlungsart.cModulId
-            FROM tbestellung
-            LEFT JOIN tzahlungsart 
-                ON tbestellung.kZahlungsart = tzahlungsart.kZahlungsart
-            WHERE tbestellung.kBestellung = :oid
-            LIMIT 1',
+                FROM tbestellung
+                LEFT JOIN tzahlungsart 
+                    ON tbestellung.kZahlungsart = tzahlungsart.kZahlungsart
+                WHERE tbestellung.kBestellung = :oid
+                LIMIT 1',
             ['oid' => $orderID]
         );
 
@@ -115,9 +115,12 @@ final class Orders extends AbstractSync
             $this->db->delete('tuploadschema', ['kCustomID', 'nTyp'], [$orderID, 2]);
             $this->db->delete('tuploaddatei', ['kCustomID', 'nTyp'], [$orderID, 2]);
             // uploads (artikel der bestellung)
-            // todo...
+            // @todo...
             // wenn unreg kunde, dann kunden auch löschen
-            $this->db->getSingleObject('SELECT kKunde FROM tbestellung WHERE kBestellung = ' . $orderID);
+            $this->db->getSingleObject(
+                'SELECT kKunde FROM tbestellung WHERE kBestellung = :oid',
+                ['oid' => $orderID]
+            );
         }
     }
 
@@ -759,7 +762,8 @@ final class Orders extends AbstractSync
                 || (!$shopOrder->dBezahltDatum && $order->dBezahltDatum)
             ) {
                 $tmp = $this->db->getSingleObject(
-                    'SELECT kKunde FROM tbestellung WHERE kBestellung = ' . $order->kBestellung
+                    'SELECT kKunde FROM tbestellung WHERE kBestellung = :oid',
+                    ['oid' => $order->kBestellung]
                 );
                 if ($tmp !== null) {
                     $customer = new Customer((int)$tmp->kKunde);
@@ -853,10 +857,11 @@ final class Orders extends AbstractSync
         }
 
         if (\count($updated) > 0) {
-            $this->db->query(
+            $this->db->queryPrepared(
                 'DELETE FROM tbestellattribut
-                WHERE kBestellung = ' . $orderID . '
-                    AND kBestellattribut NOT IN (' . \implode(', ', $updated) . ')'
+                    WHERE kBestellung = :oid
+                        AND kBestellattribut NOT IN (' . \implode(', ', $updated) . ')',
+                ['oid' => $orderID]
             );
         } else {
             $this->db->delete('tbestellattribut', 'kBestellung', $orderID);

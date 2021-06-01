@@ -75,7 +75,8 @@ class ContentAuthor
                 'SELECT tadminloginattribut.kAttribut, tadminloginattribut.cName, 
                     tadminloginattribut.cAttribValue, tadminloginattribut.cAttribText
                     FROM tadminloginattribut
-                    WHERE tadminloginattribut.kAdminlogin = ' . (int)$author->kAdminlogin
+                    WHERE tadminloginattribut.kAdminlogin = :aid',
+                ['aid' => (int)$author->kAdminlogin]
             );
             $author->extAttribs     = [];
             $author->kContentId     = (int)$author->kContentId;

@@ -72,7 +72,8 @@ class Campaign
         $campaign = Shop::Container()->getDB()->getSingleObject(
             "SELECT tkampagne.*, DATE_FORMAT(tkampagne.dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE
                 FROM tkampagne
-                WHERE tkampagne.kKampagne = " . $id
+                WHERE tkampagne.kKampagne = :cid",
+            ['cid' => $id]
         );
 
         if ($campaign !== null && $campaign->kKampagne > 0) {

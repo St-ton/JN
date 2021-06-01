@@ -504,9 +504,10 @@ abstract class AbstractLoader implements LoaderInterface
             $method->oZahlungsmethodeEinstellung_arr = $this->db->getObjects(
                 "SELECT *
                     FROM tplugineinstellungenconf
-                    WHERE cWertName LIKE '" . $moduleID . "\_%'
+                    WHERE cWertName LIKE :val
                         AND cConf = 'Y'
-                    ORDER BY nSort"
+                    ORDER BY nSort",
+                ['val' => $moduleID . '\_%']
             );
             $method->oZahlungsmethodeSprache_arr     = $this->db->selectAll(
                 'tzahlungsartsprache',

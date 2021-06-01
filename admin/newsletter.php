@@ -37,21 +37,22 @@ $_SESSION['Kundengruppe']  = new CustomerGroup((int)$customerGroup->kKundengrupp
 setzeSprache();
 $languageID = (int)$_SESSION['editLanguageID'];
 $instance   = new Newsletter($db, $conf);
+$postData   = Text::filterXSS($_POST);
 if (Form::validateToken()) {
     if (Request::postInt('einstellungen') === 1) {
-        if (isset($_POST['speichern']) || Request::postVar('resetSetting') !== null) {
+        if (isset($postData['speichern']) || Request::postVar('resetSetting') !== null) {
             $step = 'uebersicht';
             $alertHelper->addAlert(
                 Alert::TYPE_SUCCESS,
-                saveAdminSectionSettings(CONF_NEWSLETTER, $_POST),
+                saveAdminSectionSettings(CONF_NEWSLETTER, $postData),
                 'saveSettings'
             );
             $admin->setNewsletterCheckboxStatus();
         }
     } elseif (Request::postInt('newsletterabonnent_loeschen') === 1
-        || (Request::verifyGPCDataInt('inaktiveabonnenten') === 1 && isset($_POST['abonnentloeschenSubmit']))
+        || (Request::verifyGPCDataInt('inaktiveabonnenten') === 1 && isset($postData['abonnentloeschenSubmit']))
     ) {
-        if ($admin->deleteSubscribers($_POST['kNewsletterEmpfaenger'] ?? [])) {
+        if ($admin->deleteSubscribers($postData['kNewsletterEmpfaenger'] ?? [])) {
             $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successNewsletterAboDelete'), 'successNewsletterAboDelete');
         } else {
             $alertHelper->addAlert(
@@ -60,8 +61,8 @@ if (Form::validateToken()) {
                 'errorAtLeastOneNewsletterAbo'
             );
         }
-    } elseif (isset($_POST['abonnentfreischaltenSubmit']) && Request::verifyGPCDataInt('inaktiveabonnenten') === 1) {
-        if ($admin->activateSubscribers($_POST['kNewsletterEmpfaenger'])) {
+    } elseif (isset($postData['abonnentfreischaltenSubmit']) && Request::verifyGPCDataInt('inaktiveabonnenten') === 1) {
+        if ($admin->activateSubscribers($postData['kNewsletterEmpfaenger'])) {
             $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successNewsletterAbounlock'), 'successNewsletterAbounlock');
         } else {
             $alertHelper->addAlert(
@@ -71,20 +72,20 @@ if (Form::validateToken()) {
             );
         }
     } elseif (Request::postInt('newsletterabonnent_neu') === 1) {
-        $newsletter = $admin->addRecipient($instance, Text::filterXSS($_POST));
+        $newsletter = $admin->addRecipient($instance, $postData);
         $smarty->assign('oNewsletter', $newsletter);
     } elseif (Request::postInt('newsletterqueue') === 1) { // Queue
-        if (isset($_POST['loeschen'])) {
-            if (!empty($_POST['kNewsletterQueue']) && is_array($_POST['kNewsletterQueue'])) {
-                $admin->deleteQueue($_POST['kNewsletterQueue']);
+        if (isset($postData['loeschen'])) {
+            if (!empty($postData['kNewsletterQueue']) && is_array($postData['kNewsletterQueue'])) {
+                $admin->deleteQueue($postData['kNewsletterQueue']);
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneNewsletter'), 'errorAtLeastOneNewsletter');
             }
         }
     } elseif (Request::postInt('newsletterhistory') === 1 || Request::getInt('newsletterhistory') === 1) {
-        if (isset($_POST['loeschen'])) {
-            if (is_array($_POST['kNewsletterHistory'])) {
-                $admin->deleteHistory($_POST['kNewsletterHistory']);
+        if (isset($postData['loeschen'])) {
+            if (is_array($postData['kNewsletterHistory'])) {
+                $admin->deleteHistory($postData['kNewsletterHistory']);
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneHistory'), 'errorAtLeastOneHistory');
             }
@@ -127,7 +128,8 @@ if (Form::validateToken()) {
         $newsletterTPL = $db->getSingleObject(
             "SELECT *, DATE_FORMAT(dStartZeit, '%d.%m.%Y %H:%i') AS Datum
                 FROM tnewslettervorlage
-                WHERE kNewsletterVorlage = " . $nlTemplateID
+                WHERE kNewsletterVorlage = :tid",
+            ['tid' => $nlTemplateID]
         );
         $preview       = null;
         if (Request::verifyGPCDataInt('iframe') === 1) {
@@ -148,8 +150,8 @@ if (Form::validateToken()) {
         $smarty->assign('oNewsletterVorlage', $newsletterTPL)
             ->assign('NettoPreise', Frontend::getCustomerGroup()->getIsMerchant());
     } elseif (Request::verifyGPCDataInt('newslettervorlagenstd') === 1) { // Vorlagen Std
-        $productNos       = $_POST['cArtNr'] ?? null;
-        $customerGroupIDs = $_POST['kKundengruppe'] ?? null;
+        $productNos       = $postData['cArtNr'] ?? null;
+        $customerGroupIDs = $postData['kKundengruppe'] ?? null;
         $groupString      = '';
         // Kundengruppen in einen String bauen
         if (is_array($customerGroupIDs) && count($customerGroupIDs) > 0) {
@@ -178,8 +180,8 @@ if (Form::validateToken()) {
     } elseif (Request::verifyGPCDataInt('newslettervorlagen') === 1) {
         // Vorlagen
         $smarty->assign('oKampagne_arr', holeAlleKampagnen(false, true));
-        $productNos       = $_POST['cArtNr'] ?? null;
-        $customerGroupIDs = $_POST['kKundengruppe'] ?? [];
+        $productNos       = $postData['cArtNr'] ?? null;
+        $customerGroupIDs = $postData['kKundengruppe'] ?? [];
         $groupString      = '';
         // Kundengruppen in einen String bauen
         if (is_array($customerGroupIDs) && count($customerGroupIDs) > 0) {
@@ -188,7 +190,7 @@ if (Form::validateToken()) {
             }
         }
         // Vorlage hinzufuegen
-        if (isset($_POST['vorlage_erstellen'])) {
+        if (isset($postData['vorlage_erstellen'])) {
             $step   = 'vorlage_erstellen';
             $option = 'erstellen';
         } elseif (Request::getInt('editieren') > 0 || Request::getInt('vorbereiten') > 0) {
@@ -202,7 +204,8 @@ if (Form::validateToken()) {
             $newsletterTPL = $db->getSingleObject(
                 "SELECT *, DATE_FORMAT(dStartZeit, '%d.%m.%Y %H:%i') AS Datum
                     FROM tnewslettervorlage
-                    WHERE kNewsletterVorlage = " . $nlTemplateID
+                    WHERE kNewsletterVorlage = :tid",
+                ['tid' => $nlTemplateID]
             );
             if ($newsletterTPL !== null && $newsletterTPL->kNewsletterVorlage > 0) {
                 $newsletterTPL->oZeit       = $admin->getDateData($newsletterTPL->dStartZeit);
@@ -231,28 +234,28 @@ if (Form::validateToken()) {
             if (isset($_GET['editieren'])) {
                 $option = 'editieren';
             }
-        } elseif (isset($_POST['speichern'])) { // Vorlage speichern
-            $checks = $admin->saveTemplate(Text::filterXSS($_POST));
+        } elseif (isset($postData['speichern'])) { // Vorlage speichern
+            $checks = $admin->saveTemplate($postData);
             if (is_array($checks) && count($checks) > 0) {
                 $step = 'vorlage_erstellen';
                 $smarty->assign('cPlausiValue_arr', $checks)
-                    ->assign('cPostVar_arr', Text::filterXSS($_POST))
+                    ->assign('cPostVar_arr', $postData)
                     ->assign('oNewsletterVorlage', $newsletterTPL);
             }
-        } elseif (isset($_POST['speichern_und_senden'])) { // Vorlage speichern und senden
+        } elseif (isset($postData['speichern_und_senden'])) { // Vorlage speichern und senden
             unset($newsletter, $oKunde, $mailRecipient);
             $res = $admin->saveAndContinue($newsletterTPL, $smarty);
             if ($res === false) {
                 $step = 'vorlage_erstellen';
             }
-        } elseif (isset($_POST['speichern_und_testen'])) { // Vorlage speichern und testen
+        } elseif (isset($postData['speichern_und_testen'])) { // Vorlage speichern und testen
             $res = $admin->saveAndTest($newsletterTPL, $smarty);
             if ($res === false) {
                 $step = 'vorlage_erstellen';
             }
-        } elseif (isset($_POST['loeschen'])) { // Vorlage loeschen
+        } elseif (isset($postData['loeschen'])) { // Vorlage loeschen
             $step = 'uebersicht';
-            $admin->deleteTemplates($_POST['kNewsletterVorlage'] ?? []);
+            $admin->deleteTemplates($postData['kNewsletterVorlage'] ?? []);
         }
         $smarty->assign('cOption', $option);
     }
@@ -320,8 +323,9 @@ if ($step === 'uebersicht') {
     $templates = $db->getObjects(
         'SELECT kNewsletterVorlage, kNewslettervorlageStd, cBetreff, cName
             FROM tnewslettervorlage
-            WHERE kSprache = ' . $languageID . '
-            ORDER BY kNewsletterVorlage DESC LIMIT ' . $pagiTemplates->getLimitSQL()
+            WHERE kSprache = :lid
+            ORDER BY kNewsletterVorlage DESC LIMIT ' . $pagiTemplates->getLimitSQL(),
+        ['lid' => $languageID]
     );
     foreach ($templates as $template) {
         $template->cBetreff = Text::filterXSS($template->cBetreff);
@@ -330,14 +334,16 @@ if ($step === 'uebersicht') {
     $defaultData = $db->getObjects(
         'SELECT *
             FROM tnewslettervorlagestd
-            WHERE kSprache = ' . $languageID . '
-            ORDER BY cName'
+            WHERE kSprache = :lid
+            ORDER BY cName',
+        ['lid' => $languageID]
     );
     foreach ($defaultData as $tpl) {
         $tpl->oNewsletttervorlageStdVar_arr = $db->getObjects(
             'SELECT *
                 FROM tnewslettervorlagestdvar
-                WHERE kNewslettervorlageStd = ' . (int)$tpl->kNewslettervorlageStd
+                WHERE kNewslettervorlageStd = :tid',
+            ['tid' => (int)$tpl->kNewslettervorlageStd]
         );
     }
     $inactiveRecipients = $db->getObjects(
@@ -367,8 +373,7 @@ if ($step === 'uebersicht') {
     }
 
     $history              = $db->getObjects(
-        "SELECT kNewsletterHistory, nAnzahl, cBetreff, cKundengruppe,
-            DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum
+        "SELECT kNewsletterHistory, nAnzahl, cBetreff, cKundengruppe, DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum
             FROM tnewsletterhistory
             WHERE kSprache = :lid
             ORDER BY dStart DESC

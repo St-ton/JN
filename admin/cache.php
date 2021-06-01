@@ -154,12 +154,14 @@ switch ($action) {
             break;
         }
         $settings      = $db->getObjects(
-            'SELECT ec.*, e.cWert AS currentValue
+            "SELECT ec.*, e.cWert AS currentValue
                 FROM teinstellungenconf AS ec
-                LEFT JOIN teinstellungen AS e ON e.cName = ec.cWertName
-                WHERE ec.kEinstellungenSektion = ' . CONF_CACHING . "
+                LEFT JOIN teinstellungen AS e 
+                    ON e.cName = ec.cWertName
+                WHERE ec.kEinstellungenSektion = :sid
                     AND ec.cConf = 'Y'
-                ORDER BY ec.nSort"
+                ORDER BY ec.nSort",
+            ['sid' => CONF_CACHING]
         );
         $i             = 0;
         $settingsCount = count($settings);
@@ -340,8 +342,9 @@ $settings = $db->getObjects(
         LEFT JOIN teinstellungen_default AS ted
           ON ted.cName= te.cWertName
         WHERE te.nStandardAnzeigen = 1
-            AND te.kEinstellungenSektion = ' . CONF_CACHING .
-        ' ORDER BY te.nSort'
+            AND te.kEinstellungenSektion = :sid
+        ORDER BY te.nSort',
+    ['sid' => CONF_CACHING]
 );
 
 $getText->localizeConfigs($settings);
@@ -373,8 +376,9 @@ $advancedSettings = $db->getObjects(
         LEFT JOIN teinstellungen_default AS ted
           ON ted.cName = te.cWertName
         WHERE (te.nStandardAnzeigen = 0 OR te.nStandardAnzeigen = 2)
-            AND te.kEinstellungenSektion = ' . CONF_CACHING . '
-        ORDER BY te.nSort'
+            AND te.kEinstellungenSektion = :sid
+        ORDER BY te.nSort',
+    ['sid' => CONF_CACHING]
 );
 $getText->localizeConfigs($advancedSettings);
 $settingsCount = count($advancedSettings);

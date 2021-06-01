@@ -54,7 +54,8 @@ abstract class BaseController
         $countData = $this->db->getSingleObject(
             'SELECT COUNT(*) AS nAnzahl
                 FROM tbewertung
-                WHERE kArtikel = ' . $productID . $sql
+                WHERE kArtikel = :pid' . $sql,
+            ['pid' => $productID]
         );
 
         if ((int)$countData->nAnzahl === 1) {
@@ -67,7 +68,8 @@ abstract class BaseController
         $avg = $this->db->getSingleObject(
             'SELECT (SUM(nSterne) / COUNT(*)) AS fDurchschnitt
                 FROM tbewertung
-                WHERE kArtikel = ' . $productID . $sql
+                WHERE kArtikel = :pid' . $sql,
+            ['pid' => $productID]
         );
         if ($avg !== null && $avg->fDurchschnitt > 0) {
             $this->db->delete('tartikelext', 'kArtikel', $productID);
@@ -96,11 +98,11 @@ abstract class BaseController
         $level1balance = (float)$this->config['bewertung']['bewertung_stufe1_guthaben'];
         $reviewBonus   = $this->db->getSingleObject(
             'SELECT SUM(fGuthabenBonus) AS fGuthabenProMonat
-            FROM tbewertungguthabenbonus
-            WHERE kKunde = :cid
-                AND kBewertung != :rid
-                AND YEAR(dDatum) = :dyear
-                AND MONTH(dDatum) = :dmonth',
+                FROM tbewertungguthabenbonus
+                WHERE kKunde = :cid
+                    AND kBewertung != :rid
+                    AND YEAR(dDatum) = :dyear
+                    AND MONTH(dDatum) = :dmonth',
             [
                 'cid'    => $review->getCustomerID(),
                 'rid'    => $review->getId(),

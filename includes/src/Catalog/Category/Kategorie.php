@@ -224,18 +224,18 @@ class Kategorie
                 FROM tkategorie
                 ' . $catSQL->cJOIN . '
                 LEFT JOIN tkategoriesichtbarkeit ON tkategoriesichtbarkeit.kKategorie = tkategorie.kKategorie
-                    AND tkategoriesichtbarkeit.kKundengruppe = ' . $customerGroupID . "
-                LEFT JOIN tseo ON tseo.cKey = 'kKategorie'
-                    AND tseo.kKey = " . $id . '
-                    AND tseo.kSprache = ' . $languageID . '
+                    AND tkategoriesichtbarkeit.kKundengruppe = :cgid
+                LEFT JOIN tseo ON tseo.cKey = \'kKategorie\'
+                    AND tseo.kKey = :kid
+                    AND tseo.kSprache = :lid
                 LEFT JOIN tkategoriepict 
                     ON tkategoriepict.kKategorie = tkategorie.kKategorie
                 LEFT JOIN tkategorieattribut atr
                     ON atr.kKategorie = tkategorie.kKategorie
                     AND atr.cName = \'bildname\' 
-                WHERE tkategorie.kKategorie = ' . $id . '
-                    ' . $catSQL->cWHERE . '
-                    AND tkategoriesichtbarkeit.kKategorie IS NULL'
+                WHERE tkategorie.kKategorie = :kid ' . $catSQL->cWHERE . '
+                    AND tkategoriesichtbarkeit.kKategorie IS NULL',
+            ['lid' => $languageID, 'kid' => $id, 'cgid' => $customerGroupID]
         );
         if ($item === null) {
             if (!$recall && !$defaultLangActive) {
@@ -344,9 +344,10 @@ class Kategorie
                 FROM tkategorieattribut
                 LEFT JOIN tkategorieattributsprache 
                     ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
-                    AND tkategorieattributsprache.kSprache = ' . $languageID . '
-                WHERE kKategorie = ' . (int)$this->kKategorie . '
-                ORDER BY tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort'
+                    AND tkategorieattributsprache.kSprache = :li
+                WHERE kKategorie = :cid
+                ORDER BY tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort',
+            ['lid' => $languageID, 'cid' => (int)$this->kKategorie]
         );
         foreach ($attributes as $attribute) {
             $attribute->nSort                 = (int)$attribute->nSort;
@@ -497,7 +498,8 @@ class Kategorie
             'SELECT kOberKategorie
                 FROM tkategorie
                 WHERE kOberKategorie > 0
-                    AND kKategorie = ' . (int)$this->kKategorie
+                    AND kKategorie = :cid',
+            ['cid' => (int)$this->kKategorie]
         );
 
         return $data !== null ? (int)$data->kOberKategorie : false;

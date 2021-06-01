@@ -107,7 +107,7 @@ class HookManager
             if ($plugin === null) {
                 continue;
             }
-            $args_arr = $args;
+            $args_arr            = $args;
             $plugin->nCalledHook = $hookID;
             $oPlugin             = $plugin;
             $file                = $item->cDateiname;

@@ -185,11 +185,12 @@ class Filesystem extends \League\Flysystem\Filesystem
             'zip'  => new Filesystem(new ZipArchiveAdapter(new FilesystemZipArchiveProvider($archive)))
         ]);
         foreach ($manager->listContents('root:///', true) as $item) {
-            $path = $item->path();
+            $path   = $item->path();
+            $target = \str_replace('root://', '', $path);
             if ($item->isDir()) {
-                $manager->createDirectory('zip://' . $path);
+                $manager->createDirectory('zip://' . $target);
             } else {
-                $manager->copy('root://' . $path, 'zip://' . $path);
+                $manager->copy($path, 'zip://' . $target);
             }
         }
 

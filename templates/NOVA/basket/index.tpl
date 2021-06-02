@@ -119,26 +119,36 @@
                             {block name='basket-index-side-heading'}
                                 <div class="h2 basket-heading">{lang key="orderOverview" section="account data"}</div>
                             {/block}
-                            {if $Einstellungen.kaufabwicklung.warenkorb_kupon_anzeigen === 'Y' && $KuponMoeglich == 1}
+                            {if $Einstellungen.kaufabwicklung.warenkorb_kupon_anzeigen === 'Y'}
                                 {block name='basket-index-coupon'}
                                     {card class='card-gray' no-body=true}
-                                        {cardheader}
-                                        {block name='basket-index-coupon-heading'}
-                                            <strong class="font-size-lg" data-toggle="collapse" data-target="#coupon-form">{lang key='useCoupon' section='checkout'}</strong>
-                                        {/block}
-                                        {/cardheader}
-                                        {collapse id="coupon-form"}
-                                            {cardbody}
-                                            {block name='basket-index-coupon-form'}
-                                                {form class="jtl-validate" id="basket-coupon-form" method="post" action="{get_static_route id='warenkorb.php'}" slide=true}
-                                                    {formgroup label-for="couponCode" label={lang key='couponCode' section='account data'} class="mw-100{if !empty($invalidCouponCode)} has-error{/if}"}
-                                                        {input aria=["label"=>"{lang key='couponCode' section='account data'}"] type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder=" " required=true}
-                                                    {/formgroup}
-                                                    {button type="submit" value=1 variant="outline-primary" block=true}{lang key='useCoupon' section='checkout'}{/button}
-                                                {/form}
+                                        {if $KuponMoeglich == 1}
+                                            {block name='basket-index-coupon-available'}
+                                                {cardheader}
+                                                {block name='basket-index-coupon-heading'}
+                                                    <strong class="font-size-lg" data-toggle="collapse" data-target="#coupon-form">{lang key='useCoupon' section='checkout'}</strong>
+                                                {/block}
+                                                {/cardheader}
+                                                {collapse id="coupon-form"}
+                                                    {cardbody}
+                                                    {block name='basket-index-coupon-form'}
+                                                        {form class="jtl-validate" id="basket-coupon-form" method="post" action="{get_static_route id='warenkorb.php'}" slide=true}
+                                                            {formgroup label-for="couponCode" label={lang key='couponCode' section='account data'} class="mw-100{if !empty($invalidCouponCode)} has-error{/if}"}
+                                                                {input aria=["label"=>"{lang key='couponCode' section='account data'}"] type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder=" " required=true}
+                                                            {/formgroup}
+                                                            {button type="submit" value=1 variant="outline-primary" block=true}{lang key='useCoupon' section='checkout'}{/button}
+                                                        {/form}
+                                                    {/block}
+                                                    {/cardbody}
+                                                {/collapse}
                                             {/block}
-                                            {/cardbody}
-                                        {/collapse}
+                                        {else}
+                                            {block name='basket-index-coupon-unavailable'}
+                                                {cardheader}
+                                                    {lang key='couponUnavailable' section='checkout'}
+                                                {/cardheader}
+                                            {/block}
+                                        {/if}
                                     {/card}
                                 {/block}
                             {/if}

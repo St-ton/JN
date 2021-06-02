@@ -9,7 +9,6 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Console\Command\Command;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Tax;
 use JTL\Language\LanguageHelper;
 use JTL\Language\LanguageModel;
@@ -101,19 +100,14 @@ class WarmCacheCommand extends Command
         $generated = 0;
         $listOpt   = Artikel::getDefaultOptions();
         $detailOpt = Artikel::getDetailOptions();
-        $total     = (int)$this->db->query(
-            'SELECT COUNT(kArtikel) AS cnt FROM tartikel WHERE kVaterArtikel = 0',
-            ReturnType::SINGLE_OBJECT
+        $total     = (int)$this->db->getSingleObject(
+            'SELECT COUNT(kArtikel) AS cnt FROM tartikel WHERE kVaterArtikel = 0'
         )->cnt;
         $bar       = new ProgressBar($this->getIO(), $total);
         $bar->setFormat('cache');
         $bar->setMessage('Warming products');
         $bar->start();
-        foreach ($this->db->query(
-            'SELECT kArtikel AS id FROM tartikel WHERE kVaterArtikel = 0',
-            ReturnType::ARRAY_OF_OBJECTS
-        ) as $item
-        ) {
+        foreach ($this->db->getObjects('SELECT kArtikel AS id FROM tartikel WHERE kVaterArtikel = 0') as $item) {
             $pid = (int)$item->id;
             foreach ($customerGroups as $customerGroup) {
                 $_SESSION['Kundengruppe'] = $customerGroup;
@@ -177,15 +171,12 @@ class WarmCacheCommand extends Command
             return 0;
         }
         $generated = 0;
-        $total     = (int)$this->db->query(
-            'SELECT COUNT(kKategorie) AS cnt FROM tkategorie',
-            ReturnType::SINGLE_OBJECT
-        )->cnt;
+        $total     = (int)$this->db->getSingleObject('SELECT COUNT(kKategorie) AS cnt FROM tkategorie')->cnt;
         $bar       = new ProgressBar($this->getIO(), $total);
         $bar->setFormat('cache');
         $bar->setMessage('Warming categories');
         $bar->start();
-        foreach ($this->db->query('SELECT kKategorie FROM tkategorie', ReturnType::ARRAY_OF_OBJECTS) as $item) {
+        foreach ($this->db->getObjects('SELECT kKategorie FROM tkategorie') as $item) {
             $cid = (int)$item->kKategorie;
             foreach ($customerGroups as $customerGroup) {
                 foreach ($languages as $language) {
@@ -218,15 +209,12 @@ class WarmCacheCommand extends Command
             return 0;
         }
         $generated = 0;
-        $total     = (int)$this->db->query(
-            'SELECT COUNT(kHersteller) AS cnt FROM thersteller',
-            ReturnType::SINGLE_OBJECT
-        )->cnt;
+        $total     = (int)$this->db->getSingleObject('SELECT COUNT(kHersteller) AS cnt FROM thersteller')->cnt;
         $bar       = new ProgressBar($this->getIO(), $total);
         $bar->setFormat('cache');
         $bar->setMessage('Warming manufacturers');
         $bar->start();
-        foreach ($this->db->query('SELECT kHersteller FROM thersteller', ReturnType::ARRAY_OF_OBJECTS) as $item) {
+        foreach ($this->db->getObjects('SELECT kHersteller FROM thersteller') as $item) {
             $mid = (int)$item->kHersteller;
             foreach ($languages as $language) {
                 $manufacturer = new Hersteller($mid, $language->getId());
@@ -255,10 +243,7 @@ class WarmCacheCommand extends Command
         if ($this->links === false) {
             return 0;
         }
-        $total = (int)$this->db->query(
-            'SELECT COUNT(*) AS cnt FROM tlinkgruppe',
-            ReturnType::SINGLE_OBJECT
-        )->cnt + 3;
+        $total = (int)$this->db->getSingleObject('SELECT COUNT(*) AS cnt FROM tlinkgruppe')->cnt + 3;
         $bar   = new ProgressBar($this->getIO(), $total);
         $bar->setFormat('cache');
         $bar->setMessage('Warming link groups');
@@ -299,7 +284,7 @@ class WarmCacheCommand extends Command
         $_SESSION['Sprachen'] = LanguageHelper::getInstance($this->db, $cache)->gibInstallierteSprachen();
 
         $generated      = 0;
-        $customerGroups = $this->db->query('SELECT kKundengruppe AS id FROM tkundengruppe', ReturnType::COLLECTION)
+        $customerGroups = $this->db->getCollection('SELECT kKundengruppe AS id FROM tkundengruppe')
             ->map(static function ($e) {
                 return (int)$e->id;
             })

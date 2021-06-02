@@ -27,7 +27,6 @@
     }
   }
   .table {
-    width: 98%;
     thead th {
       &:first-child {
         z-index: $zindex-dropdown - 3;
@@ -88,4 +87,8 @@
   .comparelist-item-more {
     padding-left: 0;
   }
+}
+
+.comparelist-delete-all {
+  float: right;
 }

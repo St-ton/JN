@@ -6,7 +6,7 @@ use JTL\Backend\JSONAPI;
 use JTL\Backend\Notification;
 use JTL\Backend\TwoFA;
 use JTL\Backend\Wizard\WizardIO;
-use JTL\Exportformat;
+use JTL\Export\SyntaxChecker as ExportSyntaxChecker;
 use JTL\Helpers\Form;
 use JTL\IO\IOError;
 use JTL\Jtllog;
@@ -114,7 +114,7 @@ try {
        ->register('deleteShippingSurchargeZIP', 'deleteShippingSurchargeZIP', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
        ->register('createShippingSurchargeZIP', 'createShippingSurchargeZIP', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
        ->register('getShippingSurcharge', 'getShippingSurcharge', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
-       ->register('exportformatSyntaxCheck', [Exportformat::class, 'ioCheckSyntax'], null, 'EXPORT_FORMATS_VIEW')
+       ->register('exportformatSyntaxCheck', [ExportSyntaxChecker::class, 'ioCheckSyntax'], null, 'EXPORT_FORMATS_VIEW')
        ->register('mailvorlageSyntaxCheck', [SyntaxChecker::class, 'ioCheckSyntax'], null, 'CONTENT_EMAIL_TEMPLATE_VIEW')
        ->register('notificationAction', [Notification::class, 'ioNotification'])
        ->register('pluginTestLoading', [Helper::class, 'ioTestLoading']);

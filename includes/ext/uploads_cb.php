@@ -25,15 +25,11 @@ function retCode(bool $bOk, int $responseCode = 200, string $responseErrMsg = 'e
 }
 
 $session = Frontend::getInstance();
-$conf    = Shop::getSettings([CONF_ARTIKELDETAILS]);
-$limit   = (int)$conf['artikeldetails']['upload_modul_limit'];
-
-
 if (!Form::validateToken()
     || !Nice::getInstance()->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
     retCode(false, 403);
 }
-if (Form::reachedUploadLimitPerHour($limit)) {
+if (Form::reachedUploadLimitPerHour(Shop::getSettingValue(CONF_ARTIKELDETAILS, 'upload_modul_limit'))) {
     retCode(false, 403, 'reached_limit_per_hour');
 }
 
@@ -68,7 +64,7 @@ if (!empty($_FILES)) {
     $mime              = mime_content_type($fileData['tmp_name']);
     $allowedExtensions = [];
 
-    foreach (Upload::gibArtikelUploads($_REQUEST['prodID']) as $scheme) {
+    foreach (Upload::gibArtikelUploads((int)$_REQUEST['prodID']) as $scheme) {
         if ((int)$scheme->kUploadSchema === (int)$_REQUEST['kUploadSchema']) {
             $allowedExtensions = $scheme->cDateiTyp_arr;
         }
@@ -157,6 +153,10 @@ if (!empty($_REQUEST['action'])) {
         case 'exists':
             $filePath = PFAD_UPLOADS . $_REQUEST['uniquename'];
             $info     = pathinfo($filePath);
+            $realPath = realpath($info['dirname']) . DS;
+            if ($realPath !== false && mb_strpos($realPath, PFAD_UPLOADS) !== 0) {
+                retCode(false, 403, 'forbidden');
+            }
             retCode(!isset($info['extension']) && file_exists(realpath($filePath)));
             break;
 

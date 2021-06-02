@@ -187,3 +187,12 @@ msgstr "Artikel zuletzt aktualisiert"
 
 msgid "detailHeadNewsletterDateOpened"
 msgstr "Newsletter geöffnet am"
+
+msgid "Verfügbarkeits-Benachrichtigungen"
+msgstr "Verfügbarkeits-Benachrichtigungen"
+
+msgid "öffentl. Wunschzettel"
+msgstr "öffentl. Wunschzettel"
+
+msgid "Google Suche"
+msgstr "Google Suche"

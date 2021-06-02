@@ -184,3 +184,12 @@ msgstr "Product last updated"
 
 msgid "detailHeadNewsletterDateOpened"
 msgstr "Newsletter viewed at"
+
+msgid "Verfügbarkeits-Benachrichtigungen"
+msgstr "Availability Requests"
+
+msgid "öffentl. Wunschzettel"
+msgstr "Public wish lists"
+
+msgid "Google Suche"
+msgstr "Google Search"

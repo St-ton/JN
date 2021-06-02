@@ -28,7 +28,7 @@
     {rdelim}
 </script>
 
-{include file='tpl_inc/seite_header.tpl' cTitel=__('kampagneDetailStats')|cat:' '|cat:$oKampagne->cName}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('kampagneDetailStats')|cat:' - '|cat:$oKampagne->getName()}
 
 <div id="content">
     <div class="card">
@@ -58,7 +58,7 @@
                                 <select id="kKampagne" name="kKampagne" class="custom-select combo" onChange="selectSubmit(this);">
                                     {if isset($oKampagne_arr) && $oKampagne_arr|@count > 0}
                                         {foreach $oKampagne_arr as $oKampagneTMP}
-                                            <option value="{$oKampagneTMP->kKampagne}"{if $oKampagneTMP->kKampagne == $oKampagne->kKampagne} selected{/if}>{$oKampagneTMP->cName}</option>
+                                            <option value="{$oKampagneTMP->kKampagne}"{if $oKampagneTMP->kKampagne == $oKampagne->kKampagne} selected{/if}>{$oKampagneTMP->getName()}</option>
                                         {/foreach}
                                     {/if}
                                 </select>

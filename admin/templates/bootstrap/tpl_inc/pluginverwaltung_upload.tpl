@@ -24,18 +24,17 @@
         let $fi = $('#plugin-install-upload');
         {literal}
         $fi.on('fileuploaded', function(event, data, previewId, index) {
-            var response = data.response;
+            let response = data.response;
             if (response.status === 'OK') {
                 if (typeof vLicenses !== 'undefined' && typeof response.license !== 'undefined' && response.license !== null) {
                     vLicenses[response.dir_name.replace('/', '')] = response.license;
                 }
-                var wasActiveVerfuegbar = $('#verfuegbar').hasClass('active'),
+                let wasActiveVerfuegbar = $('#verfuegbar').hasClass('active'),
                     wasActiveFehlerhaft = $('#fehlerhaft').hasClass('active');
                 $('#verfuegbar').replaceWith(response.html.available);
                 $('#fehlerhaft').replaceWith(response.html.erroneous);
                 $('a[href="#fehlerhaft"]').find('.badge').html(response.html.erroneous_count);
                 $('a[href="#verfuegbar"]').find('.badge').html(response.html.available_count);
-                $('#plugin-install-upload-upload-success').show().removeClass('hidden');
                 if (wasActiveFehlerhaft) {
                     $('#fehlerhaft').addClass('active show');
                 } else if (wasActiveVerfuegbar) {

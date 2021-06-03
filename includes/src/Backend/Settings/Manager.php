@@ -85,10 +85,11 @@ class Manager
     }
 
     /**
+     * get instance of Manager or Sections\..
      * @param int $sectionID
      * @return static
      */
-    public function getInstance(int $sectionID): self
+    public function getInstance(int $sectionID)
     {
         if (isset($this->instances[$sectionID])) {
             return $this->instances[$sectionID];

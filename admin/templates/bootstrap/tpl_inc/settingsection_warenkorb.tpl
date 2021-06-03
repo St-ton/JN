@@ -36,17 +36,19 @@
                 maxVal        = parseInt(maxValStr);
 
             if (anfangsnummer > maxVal) {
-                e.preventDefault();
-                $all.closest('.input-group').addClass('has-error has-feedback');
-                showNotify('warning', 'Bestellnumer nicht zulässig', 'Die max. mögliche Bestellnummer ist kleiner als die Anfangsnummer!');
+                $all.parent().addClass('form-error');
+                showNotify('warning', {/literal}'{__('modalTitleOrderNumberInvalid')}: '{literal}, {/literal}'{__('modalTextOrderNumberInvalid')}: '{literal});
 
                 return false;
             }
             if (!force && (maxVal - anfangsnummer) < 10000) {
-                $anfangsnummer.closest('.input-group').addClass('has-warning has-feedback');
+                $anfangsnummer.parent().addClass('form-error');
                 let $notify = createNotify({
-                    title: 'Bestellnummerbereich zu gering',
-                    message: 'Es sind nur max. ' + (maxVal - anfangsnummer) + ' Bestellnummern im Format ' + praefix + maxValStr + suffix + ' möglich! <button id="forceSave" class="btn btn-block btn-warning mt-3"><i class="fa fa-save"></i>Trotzdem speichern!</button>'
+                    title: {/literal}'{__('modalTitleOrderNumberTooLong')}: '{literal},
+                    message: {/literal}'{__('modalTextOrderNumberTooLongOne')}: '{literal} + (maxVal - anfangsnummer)
+                    + {/literal}'{__('modalTextOrderNumberTooLongTwo')}: '{literal}  + praefix + maxValStr + suffix
+                    + {/literal}'{__('modalTextOrderNumberTooLongThree')}: '{literal} + ' <button id="forceSave" class="btn btn-block btn-warning mt-3"><i class="fa fa-save"></i>'
+                    + {/literal}'{__('buttonSaveAnyway')}: '{literal} + '</button>'
                 }, {
                     type: 'info',
                     delay: 12000,
@@ -78,9 +80,9 @@
                 .tooltip({trigger:'manual'})
                 .tooltip('show');
             if ((maxVal - anfangsnummer) < 10000) {
-                $(elem).closest('.input-group').addClass('has-warning has-feedback');
+                $(elem).parent().addClass('form-error');
             } else {
-                $all.closest('.input-group').removeClass('has-warning has-feedback');
+                $all.parent().removeClass('form-error');
             }
         }
         $praefix.addClass('jsLoaded');

@@ -6,7 +6,7 @@
             $suffix        = $('#bestellabschluss_bestellnummer_suffix'),
             $all           = $('#bestellabschluss_bestellnummer_praefix, #bestellabschluss_bestellnummer_anfangsnummer, #bestellabschluss_bestellnummer_suffix'),
             force          = false;
-
+        if (!$praefix.hasClass('jsLoaded')) {
         $praefix.on('focus', function(e) {
             this.maxLength = 20 - $anfangsnummer.val().length - $suffix.val().length;
         });
@@ -86,6 +86,8 @@
             } else {
                 $all.closest('.input-group').removeClass('has-warning has-feedback');
             }
+        }
+        $praefix.addClass('jsLoaded');
         }
     });
     {/literal}

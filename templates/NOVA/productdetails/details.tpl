@@ -112,13 +112,15 @@
                                                 {block name='productdetails-details-product-info-manufacturer'}
                                                     <li  class="product-manufacturer" itemprop="brand" itemscope="true" itemtype="http://schema.org/Organization">
                                                         <strong>{lang key='manufacturers'}:</strong>
-                                                        <a href="{if !empty($Artikel->cHerstellerHomepage)}{$Artikel->cHerstellerHomepage}{else}{$Artikel->cHerstellerSeo}{/if}"
-                                                            {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B'}
-                                                                data-toggle="tooltip"
-                                                                data-placement="left"
-                                                                title="{$Artikel->cHersteller}"
-                                                            {/if}
-                                                           itemprop="url">
+                                                        {if $Einstellungen.artikeldetails.artikel_weitere_artikel_hersteller_anzeigen === 'Y'}
+                                                            <a href="{if !empty($Artikel->cHerstellerHomepage)}{$Artikel->cHerstellerHomepage}{else}{$Artikel->cHerstellerSeo}{/if}"
+                                                                {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B'}
+                                                                    data-toggle="tooltip"
+                                                                    data-placement="left"
+                                                                    title="{$Artikel->cHersteller}"
+                                                                {/if}
+                                                               itemprop="url">
+                                                        {/if}
                                                             {if ($Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B'
                                                                 || $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'BT')
                                                                 && !empty($Artikel->cHerstellerBildURLKlein)}
@@ -132,7 +134,9 @@
                                                             {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'B'}
                                                                 <span itemprop="name">{$Artikel->cHersteller}</span>
                                                             {/if}
-                                                        </a>
+                                                        {if $Einstellungen.artikeldetails.artikel_weitere_artikel_hersteller_anzeigen === 'Y'}
+                                                            </a>
+                                                        {/if}
                                                     </li>
                                                 {/block}
                                             {/if}

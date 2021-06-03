@@ -106,3 +106,9 @@ $(function () {
             .appendTo($('.options', widget));
     });
 })
+
+// no drag'n drop on touch devices
+$('.dashboard-wrapper').one('touchstart', function() {
+    sortable.destroy();
+});
+

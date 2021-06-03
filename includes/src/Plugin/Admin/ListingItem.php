@@ -84,6 +84,11 @@ class ListingItem implements JsonSerializable
     private $pluginID = '';
 
     /**
+     * @var string|null
+     */
+    private $exsID;
+
+    /**
      * @var int
      */
     private $errorCode = 0;
@@ -201,6 +206,7 @@ class ListingItem implements JsonSerializable
             $this->author      = $node['Author'] ?? '';
             $this->pluginID    = $node['PluginID'] ?? '';
             $this->icon        = $node['Icon'] ?? null;
+            $this->exsID       = $node['ExsID'] ?? null;
             if (isset($node['Install'][0]['Version']) && \is_array($node['Install'][0]['Version'])) {
                 $lastVersion = \count($node['Install'][0]['Version']) / 2 - 1;
                 $version     = (int)($node['Install'][0]['Version'][$lastVersion . ' attr']['nr'] ?? 0);
@@ -267,6 +273,10 @@ class ListingItem implements JsonSerializable
         $this->setUpdateAvailable($plugin->getMeta()->getUpdateAvailable());
         $this->setMinShopVersion(Version::parse('0.0.0'));
         $this->setMaxShopVersion(Version::parse('0.0.0'));
+        $license = $plugin->getLicense()->getExsLicense();
+        if ($license !== null) {
+            $this->setExsID($license->getExsID());
+        }
 
         return $this;
     }
@@ -775,6 +785,22 @@ class ListingItem implements JsonSerializable
     public function setLicenseMD(?string $licenseMD): void
     {
         $this->licenseMD = $licenseMD;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getExsID(): ?string
+    {
+        return $this->exsID;
+    }
+
+    /**
+     * @param string|null $exsID
+     */
+    public function setExsID(?string $exsID): void
+    {
+        $this->exsID = $exsID;
     }
 
     /**

@@ -111,7 +111,7 @@
 
 {if $bItemsAvailable}
     <div class="pagination-toolbar">
-        <form action="{if isset($cAnchor)}#{$cAnchor}{/if}" method="get" name="{$pagination->getId()}" id="{$pagination->getId()}{if $isBottom}-bottom{/if}">
+        <form action="{if isset($cAnchor)}#{$cAnchor}{/if}" method="post" name="{$pagination->getId()}" id="{$pagination->getId()}{if $isBottom}-bottom{/if}">
             {$jtl_token}
             <div class="row mb-5">
                 <div class="col-12 col-md-4">

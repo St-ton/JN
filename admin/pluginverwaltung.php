@@ -5,6 +5,8 @@ use JTL\Filesystem\Filesystem;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
+use JTL\License\Manager;
+use JTL\License\Mapper;
 use JTL\Mapper\PluginState as StateMapper;
 use JTL\Mapper\PluginValidation as ValidationMapper;
 use JTL\Minify\MinifyService;
@@ -63,7 +65,10 @@ $updater         = new Updater($db, $installer);
 $extractor       = new Extractor($parser);
 $stateChanger    = new StateChanger($db, $cache, $legacyValidator, $pluginValidator);
 $minify          = new MinifyService();
+$manager         = new Manager($db, $cache);
+$mapper          = new Mapper($manager);
 $response        = null;
+$licenses        = $mapper->getCollection();
 if (isset($_SESSION['plugin_msg'])) {
     $notice = $_SESSION['plugin_msg'];
     unset($_SESSION['plugin_msg']);
@@ -78,12 +83,29 @@ $pluginsInstalled   = $listing->getInstalled();
 $pluginsAll         = $listing->getAll($pluginsInstalled);
 $pluginsDisabled    = $pluginsInstalled->filter(static function (ListingItem $e) {
     return $e->getState() === State::DISABLED;
+})->each(function (ListingItem $item) use ($licenses, $stateChanger) {
+    $exsID = $item->getExsID();
+    if ($exsID === null) {
+        return;
+    }
+    $license = $licenses->getForExsID($exsID);
+    if ($license === null || $license->getLicense()->isExpired()) {
+        $stateChanger->deactivate($item->getID(), State::EXS_LICENSE_EXPIRED);
+        $item->setAvailable(false);
+        $item->setState(State::EXS_LICENSE_EXPIRED);
+    } elseif ($license->getLicense()->getSubscription()->isExpired()) {
+        $stateChanger->deactivate($item->getID(), State::EXS_SUBSCRIPTION_EXPIRED);
+        $item->setAvailable(false);
+        $item->setState(State::EXS_LICENSE_EXPIRED);
+    }
+})->filter(static function (ListingItem $e) {
+    return $e->getState() === State::DISABLED;
 });
 $pluginsProblematic = $pluginsInstalled->filter(static function (ListingItem $e) {
     return in_array(
         $e->getState(),
         [State::ERRONEOUS, State::UPDATE_FAILED, State::LICENSE_KEY_MISSING,
-            State::LICENSE_KEY_INVALID, State::ESX_LICENSE_EXPIRED, State::ESX_SUBSCRIPTION_EXPIRED],
+            State::LICENSE_KEY_INVALID, State::EXS_LICENSE_EXPIRED, State::EXS_SUBSCRIPTION_EXPIRED],
         true
     );
 });
@@ -92,6 +114,23 @@ $pluginsInstalled   = $pluginsInstalled->filter(static function (ListingItem $e)
 });
 $listing->checkLegacyToModernUpdates($pluginsInstalled, $pluginsAll);
 $pluginsAvailable = $pluginsAll->filter(static function (ListingItem $item) {
+    return $item->isAvailable() === true && $item->isInstalled() === false;
+})->each(function (ListingItem $item) use ($licenses) {
+    $exsID = $item->getExsID();
+    if ($exsID === null) {
+        return;
+    }
+    $license = $licenses->getForExsID($exsID);
+    if ($license === null || $license->getLicense()->isExpired()) {
+        $item->setHasError(true);
+        $item->setErrorMessage(__('Lizenz abgelaufen'));
+        $item->setAvailable(false);
+    } elseif ($license->getLicense()->getSubscription()->isExpired()) {
+        $item->setHasError(true);
+        $item->setErrorMessage(__('Subscription abgelaufen'));
+        $item->setAvailable(false);
+    }
+})->filter(static function (ListingItem $item) {
     return $item->isAvailable() === true && $item->isInstalled() === false;
 });
 $pluginsErroneous = $pluginsAll->filter(static function (ListingItem $item) {

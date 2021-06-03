@@ -893,7 +893,7 @@ function deleteConfirmation()
             $confirmButton.off().on('click', function () {
                 window.location = href;
             });
-        } else if ($(this).attr('type') === 'submit') {
+        } else if ($(this).attr('type') === 'submit' || $(this).hasClass('btn-submit')) {
             $confirmButton.off().on('click', function () {
                 let $form = $self.closest('form');
                 $form.append(

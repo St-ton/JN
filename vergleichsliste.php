@@ -32,13 +32,10 @@ if (Request::verifyGPCDataInt('addToCart') !== 0) {
     );
 }
 
-$nBreiteAttribut = ($conf['vergleichsliste']['vergleichsliste_spaltengroesseattribut'] > 0)
-    ? (int)$conf['vergleichsliste']['vergleichsliste_spaltengroesseattribut']
-    : 100;
-$nBreiteArtikel  = ($conf['vergleichsliste']['vergleichsliste_spaltengroesse'] > 0)
+$nBreiteArtikel = ($conf['vergleichsliste']['vergleichsliste_spaltengroesse'] > 0)
     ? (int)$conf['vergleichsliste']['vergleichsliste_spaltengroesse']
     : 200;
-Shop::Smarty()->assign('nBreiteTabelle', $nBreiteArtikel * count($compareList->oArtikel_arr) + $nBreiteAttribut)
+Shop::Smarty()->assign('nBreiteTabelle', $nBreiteArtikel * (count($compareList->oArtikel_arr) + 1))
     ->assign('cPrioSpalten_arr', $compareList->getPrioRows(true, false))
     ->assign('prioRows', $compareList->getPrioRows())
     ->assign('Link', $link)

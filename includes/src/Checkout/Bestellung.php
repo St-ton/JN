@@ -463,7 +463,7 @@ class Bestellung
             'kBestellung',
             (int)$this->kBestellung
         );
-        $this->BestellstatusURL = Shop::getURL() . '/status.php?uid=' . $orderState->cUID;
+        $this->BestellstatusURL = Shop::getURL() . '/status.php?uid=' . ($orderState->cUID ?? '');
         $sum                    = $db->getSingleObject(
             'SELECT SUM(((fPreis * fMwSt)/100 + fPreis) * nAnzahl) AS wert
                 FROM twarenkorbpos
@@ -510,10 +510,10 @@ class Bestellung
         if ($this->kWaehrung > 0) {
             $this->Waehrung = new Currency((int)$this->kWaehrung);
             if ($this->fWaehrungsFaktor !== null && $this->fWaehrungsFaktor != 1 && isset($this->Waehrung->fFaktor)) {
-                $this->Waehrung->fFaktor = $this->fWaehrungsFaktor;
+                $this->Waehrung->setConversionFactor($this->fWaehrungsFaktor);
             }
             if ($disableFactor === true) {
-                $this->Waehrung->fFaktor = 1;
+                $this->Waehrung->setConversionFactor(1);
             }
             $this->Steuerpositionen = Tax::getOldTaxItems(
                 $this->Positionen,

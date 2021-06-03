@@ -85,10 +85,6 @@
                             {/if}
                         </div>
                         {include file='snippets/einstellungen_icons.tpl' cnf=$cnf}
-
-                        {if isset($oSections[$kEinstellungenSektion]) && $oSections[$kEinstellungenSektion]->hasValueMarkup}
-                            {*{$oSections[$kEinstellungenSektion]->getValueMarkup($cnf)}*}
-                        {/if}
                     </div>
                 {else}
                     {if $cnf@index !== 0}

@@ -1,7 +1,7 @@
 <script type="text/javascript">
     {literal}
     $(document).ready(function() {
-        var $praefix       = $('#bestellabschluss_bestellnummer_praefix'),
+        let $praefix       = $('#bestellabschluss_bestellnummer_praefix'),
             $anfangsnummer = $('#bestellabschluss_bestellnummer_anfangsnummer'),
             $suffix        = $('#bestellabschluss_bestellnummer_suffix'),
             $all           = $('#bestellabschluss_bestellnummer_praefix, #bestellabschluss_bestellnummer_anfangsnummer, #bestellabschluss_bestellnummer_suffix'),
@@ -16,24 +16,19 @@
         $suffix.on('focus', function(e) {
             this.maxLength = 20 - $anfangsnummer.val().length - $praefix.val().length;
         });
-
-        $all.tooltip({trigger:'manual'})
-            .blur(function(e) {
-                $(this).tooltip('hide');
-                var value = $(this).val();
-                if (value.length > this.maxLength) {
-                    $(this).val(value.substr(0, this.maxLength));
-                }
-            })
-            .focus(function(e) {
-                updateBestellnummer(this);
-            })
-            .keyup(function(e) {
-                updateBestellnummer(this);
-            });
+        $all.on('blur', function(e) {
+            $(this).parent().tooltip('hide');
+            let value = $(this).val();
+            if (value.length > this.maxLength) {
+                $(this).val(value.substr(0, this.maxLength));
+            }
+        })
+        .on('focus keyup', function(e) {
+            updateBestellnummer(this);
+        });
 
         $all.closest('form').on('submit', function(e) {
-            var praefix       = $praefix.val(),
+            let praefix       = $praefix.val(),
                 anfangsnummer = isNaN(parseInt($anfangsnummer.val())) ? 0 : parseInt($anfangsnummer.val()),
                 suffix        = $suffix.val(),
                 maxValLength  = 20 - praefix.length - suffix.length,
@@ -48,7 +43,7 @@
             }
             if (!force && (maxVal - anfangsnummer) < 10000) {
                 $anfangsnummer.closest('.input-group').addClass('has-warning has-feedback');
-                var $notify = createNotify({
+                let $notify = createNotify({
                     title: 'Bestellnummerbereich zu gering',
                     message: 'Es sind nur max. ' + (maxVal - anfangsnummer) + ' Bestellnummern im Format ' + praefix + maxValStr + suffix + ' möglich! <button id="forceSave" class="pull-right btn btn-warning"><i class="fa fa-save"></i>Trotzdem speichern!</button>'
                 }, {
@@ -69,17 +64,17 @@
         });
 
         function updateBestellnummer(elem) {
-            var praefix       = $praefix.val(),
+            let praefix       = $praefix.val(),
                 anfangsnummer = isNaN(parseInt($anfangsnummer.val())) ? 0 : parseInt($anfangsnummer.val()),
                 suffix        = $suffix.val(),
                 maxValLength  = 20 - praefix.length - suffix.length,
                 maxValStr     = '9'.repeat(maxValLength),
-                maxVal        = parseInt(maxValStr);
+                maxVal        = parseInt(maxValStr),
+                result        = {/literal}'{__('preview')}: '{literal} + praefix + maxValStr + suffix;
 
-            var result = {/literal}'{__('preview')}: '{literal} + praefix + maxValStr + suffix;
-
-            $(elem).attr('title', result)
-                .tooltip('fixTitle')
+            $(elem).parent().attr('title', result)
+                .tooltip('dispose')
+                .tooltip({trigger:'manual'})
                 .tooltip('show');
             if ((maxVal - anfangsnummer) < 10000) {
                 $(elem).closest('.input-group').addClass('has-warning has-feedback');

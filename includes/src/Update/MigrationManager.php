@@ -330,7 +330,7 @@ class MigrationManager
             $this->db->escape($message),
             (new DateTime('now'))->format('Y-m-d H:i:s')
         );
-        $this->db->executeQuery($sql);
+        $this->db->query($sql);
     }
 
     /**
@@ -349,10 +349,10 @@ class MigrationManager
                 \sprintf('%d%02d', $version->getMajor(), $version->getMinor()),
                 $executed->format('Y-m-d H:i:s')
             );
-            $this->db->executeQuery($sql);
+            $this->db->query($sql);
         } else {
             $sql = \sprintf("DELETE FROM tmigration WHERE kMigration = '%s'", $migration->getId());
-            $this->db->executeQuery($sql);
+            $this->db->query($sql);
         }
 
         return $this;

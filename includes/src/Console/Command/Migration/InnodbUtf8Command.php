@@ -55,13 +55,13 @@ class InnodbUtf8Command extends Command
             if (($migrationState & DBMigrationHelper::MIGRATE_TABLE) !== DBMigrationHelper::MIGRATE_NONE) {
                 $fkSQLs = DBMigrationHelper::sqlRecreateFKs($table->TABLE_NAME);
                 foreach ($fkSQLs->dropFK as $fkSQL) {
-                    $db->executeQuery($fkSQL);
+                    $db->query($fkSQL);
                 }
-                $migrate = $db->executeQuery(
+                $migrate = $db->query(
                     DBMigrationHelper::sqlMoveToInnoDB($table)
                 );
                 foreach ($fkSQLs->createFK as $fkSQL) {
-                    $db->executeQuery($fkSQL);
+                    $db->query($fkSQL);
                 }
 
                 if (!$migrate) {
@@ -71,7 +71,7 @@ class InnodbUtf8Command extends Command
             }
             if (($migrationState & DBMigrationHelper::MIGRATE_COLUMN) !== DBMigrationHelper::MIGRATE_NONE) {
                 $sql = DBMigrationHelper::sqlConvertUTF8($table);
-                if (!empty($sql) && !$db->executeQuery($sql)) {
+                if (!empty($sql) && !$db->query($sql)) {
                     $table = $this->nextWithFailure($output, $table);
                     continue;
                 }

@@ -297,7 +297,7 @@ class Form
         if ($max <= 0) {
             return false;
         }
-        Shop::Container()->getDB()->executeQueryPrepared(
+        Shop::Container()->getDB()->queryPrepared(
             "DELETE
                 FROM tfloodprotect
                 WHERE dErstellt < DATE_SUB(NOW(), INTERVAL 1 HOUR)

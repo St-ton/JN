@@ -472,11 +472,11 @@ class DBMigrationHelper
             if (!empty($sql)) {
                 $fkSQLs = self::sqlRecreateFKs($tableName);
                 foreach ($fkSQLs->dropFK as $fkSQL) {
-                    $db->executeQuery($fkSQL);
+                    $db->query($fkSQL);
                 }
-                $res = $db->executeQuery($sql);
+                $res = $db->query($sql);
                 foreach ($fkSQLs->createFK as $fkSQL) {
-                    $db->executeQuery($fkSQL);
+                    $db->query($fkSQL);
                 }
 
                 if (!$res) {
@@ -486,7 +486,7 @@ class DBMigrationHelper
         }
         if (($migration & self::MIGRATE_COLUMN) !== self::MIGRATE_NONE) {
             $sql = self::sqlConvertUTF8($table);
-            if (!empty($sql) && !Shop::Container()->getDB()->executeQuery($sql)) {
+            if (!empty($sql) && !Shop::Container()->getDB()->query($sql)) {
                 return self::FAILURE;
             }
         }

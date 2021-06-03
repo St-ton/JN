@@ -392,7 +392,7 @@ ini_set('display_errors', 0);" . "\n";
                     $res->error = true;
                     $res->msg   = 'cannotConnect';
                 }
-                $obj = $db->executeQuery("SHOW TABLES LIKE 'tsynclogin'", 1);
+                $obj = $db->query("SHOW TABLES LIKE 'tsynclogin'", 1);
                 if ($obj !== false) {
                     $res->error = true;
                     $res->msg   = 'shopExists';

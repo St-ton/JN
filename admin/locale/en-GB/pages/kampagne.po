@@ -151,3 +151,45 @@ msgstr "Specify whether the campaign value is to be a fixed or a dynamic value."
 
 msgid "kampagneValueStaticDesc"
 msgstr "Enter the campaign value here if you have selected \"Fixed value \" for the campaign type. Ex.: 5, http://demoshop.jtl-software.de/?rv=5"
+
+msgid "detailHeadIP"
+msgstr "IP address"
+
+msgid "detailHeadReferer"
+msgstr "Referer"
+
+msgid "detailHeadBrowser"
+msgstr "Browser"
+
+msgid "detailHeadAgent"
+msgstr "User agent"
+
+msgid "detailHeadDate"
+msgstr "Date"
+
+msgid "detailHeadDateHit"
+msgstr "Date of campaign call"
+
+msgid "detailHeadRegisterDate"
+msgstr "Register date"
+
+msgid "detailHeadCreatedAt"
+msgstr "Created at"
+
+msgid "detailHeadSentWawi"
+msgstr "Synced with JTL-Wawi"
+
+msgid "detailHeadProductLastUpdated"
+msgstr "Product last updated"
+
+msgid "detailHeadNewsletterDateOpened"
+msgstr "Newsletter viewed at"
+
+msgid "Verfügbarkeits-Benachrichtigungen"
+msgstr "Availability Requests"
+
+msgid "Öffentl. Wunschzettel"
+msgstr "Public wish lists"
+
+msgid "Google Suche"
+msgstr "Google Search"

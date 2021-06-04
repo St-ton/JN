@@ -191,8 +191,8 @@ msgstr "Newsletter geöffnet am"
 msgid "Verfügbarkeits-Benachrichtigungen"
 msgstr "Verfügbarkeits-Benachrichtigungen"
 
-msgid "öffentl. Wunschzettel"
-msgstr "öffentl. Wunschzettel"
+msgid "Öffentl. Wunschzettel"
+msgstr "Öffentl. Wunschzettel"
 
 msgid "Google Suche"
 msgstr "Google Suche"

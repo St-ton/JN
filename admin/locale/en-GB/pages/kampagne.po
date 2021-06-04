@@ -188,7 +188,7 @@ msgstr "Newsletter viewed at"
 msgid "Verfügbarkeits-Benachrichtigungen"
 msgstr "Availability Requests"
 
-msgid "öffentl. Wunschzettel"
+msgid "Öffentl. Wunschzettel"
 msgstr "Public wish lists"
 
 msgid "Google Suche"

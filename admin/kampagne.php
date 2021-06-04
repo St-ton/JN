@@ -140,7 +140,7 @@ if ($step === 'kampagne_uebersicht') {
         ->assign('oKampagneStat_arr', holeKampagneGesamtStats($campaigns, $definitions));
 } elseif ($step === 'kampagne_erstellen') { // Erstellen / Editieren
     if ($campaignID > 0) {
-        $smarty->assign('oKampagne', holeKampagne($campaignID));
+        $smarty->assign('oKampagne', new Campaign($campaignID));
     }
 } elseif ($step === 'kampagne_detail') { // Detailseite
     if ($campaignID > 0) {
@@ -161,7 +161,7 @@ if ($step === 'kampagne_uebersicht') {
 
         $smarty->assign('TypeNames', GetTypes())
             ->assign('Charts', $charts)
-            ->assign('oKampagne', holeKampagne($campaignID))
+            ->assign('oKampagne', new Campaign($campaignID))
             ->assign('oKampagneStat_arr', $stats)
             ->assign('oKampagne_arr', $campaigns)
             ->assign('oKampagneDef_arr', $definitions)
@@ -201,7 +201,7 @@ if ($step === 'kampagne_uebersicht') {
         );
 
         $smarty->assign('oPagiDefDetail', $paginationDefinitionDetail)
-            ->assign('oKampagne', holeKampagne($campaignID))
+            ->assign('oKampagne', new Campaign($campaignID))
             ->assign('oKampagneStat_arr', $campaignStats)
             ->assign('oKampagneDef', $definition)
             ->assign('cMember_arr', $members)

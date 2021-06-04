@@ -1,7 +1,9 @@
 <?php
 
 use JTL\Alert\Alert;
+use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Customer\Customer;
+use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
@@ -28,7 +30,10 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
         'saveSettings'
     );
 }
-$itemCount         = (int)Shop::Container()->getDB()->getSingleObject(
+if (Request::getInt('delete') > 0 && Form::validateToken()) {
+    Wishlist::delete(Request::getInt('delete'), true);
+}
+$itemCount     = (int)Shop::Container()->getDB()->getSingleObject(
     'SELECT COUNT(DISTINCT twunschliste.kWunschliste) AS cnt
          FROM twunschliste
          JOIN twunschlistepos
@@ -74,12 +79,14 @@ foreach ($sentWishLists as $wishList) {
 $wishLists = Shop::Container()->getDB()->getObjects(
     "SELECT tkunde.kKunde, tkunde.cNachname, tkunde.cVorname, twunschliste.kWunschliste, twunschliste.cName,
         twunschliste.cURLID, DATE_FORMAT(twunschliste.dErstellt, '%d.%m.%Y %H:%i') AS Datum, 
-        twunschliste.nOeffentlich, COUNT(twunschlistepos.kWunschliste) AS Anzahl
+        twunschliste.nOeffentlich, COUNT(twunschlistepos.kWunschliste) AS Anzahl, tbesucher.kBesucher AS isOnline
         FROM twunschliste
         JOIN twunschlistepos 
             ON twunschliste.kWunschliste = twunschlistepos.kWunschliste
         LEFT JOIN tkunde 
             ON twunschliste.kKunde = tkunde.kKunde
+        LEFT JOIN tbesucher
+            ON tbesucher.kKunde=tkunde.kKunde
         GROUP BY twunschliste.kWunschliste
         ORDER BY twunschliste.dErstellt DESC
         LIMIT " . $posPagination->getLimitSQL()

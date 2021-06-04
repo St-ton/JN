@@ -30,9 +30,11 @@ function holeAlleKampagnenDefinitionen(): array
 /**
  * @param int $id
  * @return stdClass|null
+ * @deprecated since 5.1.0
  */
 function holeKampagne(int $id): ?stdClass
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Shop::Container()->getDB()->getSingleObject(
         "SELECT *, DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE
             FROM tkampagne
@@ -401,13 +403,13 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                 }
 
                 $members = [
-                    'cIP'                 => 'IP-Adresse',
-                    'cReferer'            => 'Referer',
-                    'cEinstiegsseite'     => 'Einstiegsseite',
-                    'cBrowser'            => 'Browser',
-                    'cUserAgent'          => 'Suchmaschine',
-                    'dErstellt_DE'        => 'Datum',
-                    'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                    'cIP'                 => __('detailHeadIP'),
+                    'cReferer'            => __('detailHeadReferer'),
+                    'cEinstiegsseite'     => __('entryPage'),
+                    'cBrowser'            => __('detailHeadBrowser'),
+                    'cUserAgent'          => __('userAgent'),
+                    'dErstellt_DE'        => __('detailHeadDate'),
+                    'dErstelltVorgang_DE' => __('detailHeadDateHit')
                 ];
             }
             break;
@@ -465,16 +467,16 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                 }
 
                 $members = [
-                    'cZahlungsartName'    => 'Zahlungsart',
-                    'cVersandartName'     => 'Versandart',
-                    'nRegistriert'        => 'Registrierter Kunde',
-                    'cVorname'            => 'Vorname',
-                    'cNachname'           => 'Nachname',
-                    'cStatus'             => 'Status',
-                    'cBestellNr'          => 'BestellNr',
-                    'fGesamtsumme'        => 'Bestellwert',
-                    'dErstellt_DE'        => 'Bestelldatum',
-                    'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                    'cZahlungsartName'    => __('paymentType'),
+                    'cVersandartName'     => __('shippingType'),
+                    'nRegistriert'        => __('registered'),
+                    'cVorname'            => __('firstName'),
+                    'cNachname'           => __('lastName'),
+                    'cStatus'             => __('status'),
+                    'cBestellNr'          => __('orderNumber'),
+                    'fGesamtsumme'        => __('orderValue'),
+                    'dErstellt_DE'        => __('orderDate'),
+                    'dErstelltVorgang_DE' => __('detailHeadDateHit')
                 ];
             }
             break;
@@ -514,13 +516,13 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                 }
 
                 $members = [
-                    'cVorname'            => 'Vorname',
-                    'cNachname'           => 'Nachname',
-                    'cFirma'              => 'Firma',
-                    'cMail'               => 'eMail',
-                    'nRegistriert'        => 'Registriert',
-                    'dErstellt_DE'        => 'Anmeldedatum',
-                    'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                    'cVorname'            => __('firstName'),
+                    'cNachname'           => __('lastName'),
+                    'cFirma'              => __('company'),
+                    'cMail'               => __('email'),
+                    'nRegistriert'        => __('registered'),
+                    'dErstellt_DE'        => __('detailHeadRegisterDate'),
+                    'dErstelltVorgang_DE' => __('detailHeadDateHit')
                 ];
             }
             break;
@@ -574,16 +576,16 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                 }
 
                 $members = [
-                    'cZahlungsartName'    => 'Zahlungsart',
-                    'cVersandartName'     => 'Versandart',
-                    'nRegistriert'        => 'Registrierter Kunde',
-                    'cVorname'            => 'Vorname',
-                    'cNachname'           => 'Nachname',
-                    'cStatus'             => 'Status',
-                    'cBestellNr'          => 'BestellNr',
-                    'fGesamtsumme'        => 'Bestellwert',
-                    'dErstellt_DE'        => 'Bestelldatum',
-                    'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                    'cZahlungsartName'    => __('paymentType'),
+                    'cVersandartName'     => __('shippingType'),
+                    'nRegistriert'        => __('registered'),
+                    'cVorname'            => __('firstName'),
+                    'cNachname'           => __('lastName'),
+                    'cStatus'             => __('status'),
+                    'cBestellNr'          => __('orderNumber'),
+                    'fGesamtsumme'        => __('orderValue'),
+                    'dErstellt_DE'        => __('orderDate'),
+                    'dErstelltVorgang_DE' => __('detailHeadDateHit')
                 ];
             }
             break;
@@ -622,16 +624,16 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
 
             if (is_array($data) && count($data) > 0) {
                 $members = [
-                    'cArtikelname'        => 'Artikel',
-                    'cArtNr'              => 'Artikelnummer',
-                    'cVorname'            => 'Vorname',
-                    'cNachname'           => 'Nachname',
-                    'cFirma'              => 'Firma',
-                    'cTel'                => 'Telefon',
-                    'cMail'               => 'eMail',
-                    'cNachricht'          => 'Nachricht',
-                    'dErstellt_DE'        => 'Erstellt am',
-                    'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                    'cArtikelname'        => __('product'),
+                    'cArtNr'              => __('productId'),
+                    'cVorname'            => __('firstName'),
+                    'cNachname'           => __('lastName'),
+                    'cFirma'              => __('company'),
+                    'cTel'                => __('phone'),
+                    'cMail'               => __('email'),
+                    'cNachricht'          => __('message'),
+                    'dErstellt_DE'        => __('detailHeadCreatedAt'),
+                    'dErstelltVorgang_DE' => __('detailHeadDateHit')
                 ];
             }
 
@@ -674,14 +676,14 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
 
             if (is_array($data) && count($data) > 0) {
                 $members = [
-                    'cArtikelname'        => 'Artikel',
-                    'cArtNr'              => 'Artikelnummer',
-                    'cVorname'            => 'Vorname',
-                    'cNachname'           => 'Nachname',
-                    'cMail'               => 'eMail',
-                    'cAbgeholt'           => 'Abgeholt durch Wawi',
-                    'dErstellt_DE'        => 'Erstellt am',
-                    'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                    'cArtikelname'        => __('product'),
+                    'cArtNr'              => __('productId'),
+                    'cVorname'            => __('firstName'),
+                    'cNachname'           => __('lastName'),
+                    'cMail'               => __('email'),
+                    'cAbgeholt'           => __('detailHeadSentWawi'),
+                    'dErstellt_DE'        => __('detailHeadCreatedAt'),
+                    'dErstelltVorgang_DE' => __('detailHeadDateHit')
                 ];
             }
 
@@ -723,13 +725,13 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                 }
 
                 $members = [
-                    'cVorname'            => 'Vorname',
-                    'cNachname'           => 'Nachname',
-                    'cFirma'              => 'Firma',
-                    'cMail'               => 'eMail',
-                    'nRegistriert'        => 'Registriert',
-                    'dErstellt_DE'        => 'Anmeldedatum',
-                    'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                    'cVorname'            => __('firstName'),
+                    'cNachname'           => __('lastName'),
+                    'cFirma'              => __('company'),
+                    'cMail'               => __('email'),
+                    'nRegistriert'        => __('registered'),
+                    'dErstellt_DE'        => __('detailHeadRegisterDate'),
+                    'dErstelltVorgang_DE' => __('detailHeadDateHit')
                 ];
             }
             break;
@@ -774,15 +776,15 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                 }
 
                 $members = [
-                    'cArtikelname'        => 'Artikel',
-                    'cArtNr'              => 'Artikelnummer',
-                    'cVorname'            => 'Vorname',
-                    'cNachname'           => 'Nachname',
-                    'cFirma'              => 'Firma',
-                    'cMail'               => 'eMail',
-                    'nRegistriert'        => 'Registriert',
-                    'dErstellt_DE'        => 'Anmeldedatum',
-                    'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                    'cArtikelname'        => __('product'),
+                    'cArtNr'              => __('productId'),
+                    'cVorname'            => __('firstName'),
+                    'cNachname'           => __('lastName'),
+                    'cFirma'              => __('company'),
+                    'cMail'               => __('email'),
+                    'nRegistriert'        => __('registered'),
+                    'dErstellt_DE'        => __('detailHeadRegisterDate'),
+                    'dErstelltVorgang_DE' => __('detailHeadDateHit')
                 ];
             }
             break;
@@ -824,13 +826,13 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                 }
 
                 $members = [
-                    'cName'                    => 'Artikel',
-                    'cArtNr'                   => 'Artikelnummer',
-                    'fVKNetto'                 => 'Netto Preis',
-                    'fMwSt'                    => 'MwSt',
-                    'fLagerbestand'            => 'Lagerbestand',
-                    'dLetzteAktualisierung_DE' => 'Letzte Aktualisierung',
-                    'dErstelltVorgang_DE'      => 'Vorgangsdatum'
+                    'cName'                    => __('product'),
+                    'cArtNr'                   => __('productId'),
+                    'fVKNetto'                 => __('net'),
+                    'fMwSt'                    => __('vat'),
+                    'fLagerbestand'            => __('stock'),
+                    'dLetzteAktualisierung_DE' => __('detailHeadProductLastUpdated'),
+                    'dErstelltVorgang_DE'      => __('detailHeadDateHit')
                 ];
             }
             break;
@@ -861,13 +863,13 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
 
             if (is_array($data) && count($data) > 0) {
                 $members = [
-                    'cName'               => 'Newsletter',
-                    'cBetreff'            => 'Betreff',
-                    'cVorname'            => 'Vorname',
-                    'cNachname'           => 'Nachname',
-                    'cEmail'              => 'eMail',
-                    'dErstelltTrack_DE'   => 'Datum der Öffnung',
-                    'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                    'cName'               => __('newsletter'),
+                    'cBetreff'            => __('subject'),
+                    'cVorname'            => __('firstName'),
+                    'cNachname'           => __('lastName'),
+                    'cEmail'              => __('email'),
+                    'dErstelltTrack_DE'   => __('detailHeadNewsletterDateOpened'),
+                    'dErstelltVorgang_DE' => __('detailHeadDateHit')
                 ];
             }
             break;

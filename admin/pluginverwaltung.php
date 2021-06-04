@@ -74,8 +74,9 @@ if (!empty($_FILES['plugin-install-upload']) && Form::validateToken()) {
     $response       = $extractor->extractPlugin($_FILES['plugin-install-upload']['tmp_name']);
     $pluginUploaded = true;
 }
+$pluginsAll         = $listing->getAll();
 $pluginsInstalled   = $listing->getInstalled();
-$pluginsAll         = $listing->getAll($pluginsInstalled);
+$pluginsAll         = $listing->checkLegacyToModernUpdates();
 $pluginsDisabled    = $pluginsInstalled->filter(static function (ListingItem $e) {
     return $e->getState() === State::DISABLED;
 });
@@ -90,11 +91,10 @@ $pluginsProblematic = $pluginsInstalled->filter(static function (ListingItem $e)
 $pluginsInstalled   = $pluginsInstalled->filter(static function (ListingItem $e) {
     return $e->getState() === State::ACTIVATED;
 });
-$listing->checkLegacyToModernUpdates($pluginsInstalled, $pluginsAll);
-$pluginsAvailable = $pluginsAll->filter(static function (ListingItem $item) {
+$pluginsAvailable   = $pluginsAll->filter(static function (ListingItem $item) {
     return $item->isAvailable() === true && $item->isInstalled() === false;
 });
-$pluginsErroneous = $pluginsAll->filter(static function (ListingItem $item) {
+$pluginsErroneous   = $pluginsAll->filter(static function (ListingItem $item) {
     return $item->isHasError() === true && $item->isInstalled() === false;
 });
 if ($pluginUploaded === true) {

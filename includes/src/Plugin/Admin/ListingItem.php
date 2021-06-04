@@ -248,7 +248,7 @@ class ListingItem implements JsonSerializable
         $this->setAuthor($meta->getAuthor());
         $this->setID($plugin->getID());
         $this->setPluginID($plugin->getPluginID());
-        $this->setPath($plugin->getPaths()->getVersionedPath());
+        $this->setPath($plugin->getPaths()->getBasePath());
         $this->setDir($plugin->getPaths()->getBaseDir());
         $this->setIsLegacy($plugin->isLegacy());
         $this->setIcon($meta->getIcon() ?? '');

@@ -69,6 +69,7 @@ final class Listing
         $this->legacyValidator = $validator;
         $this->validator       = $modernValidator;
         $this->items           = new Collection();
+        $this->getAll();
     }
 
     /**
@@ -77,7 +78,6 @@ final class Listing
      */
     public function getInstalled(): Collection
     {
-        $items = new Collection();
         try {
             $all = $this->db->selectAll('tplugin', [], [], '*', 'cName, cAutor, nPrio');
         } catch (InvalidArgumentException $e) {
@@ -99,37 +99,50 @@ final class Listing
         $legacyLoader = new LegacyPluginLoader($this->db, $this->cache);
         $pluginLoader = new PluginLoader($this->db, $this->cache);
         $langCode     = Shop::getLanguageCode();
+        if ($this->items->count() === 0) {
+            $this->getAll();
+        }
         foreach ($data as $dataItem) {
             $item           = new ListingItem();
             $plugin         = (int)$dataItem->bExtension === 1
                 ? $pluginLoader->loadFromObject($dataItem, $langCode)
                 : $legacyLoader->loadFromObject($dataItem, $langCode);
             $currentVersion = $plugin->getCurrentVersion();
-            if ($currentVersion->greaterThan($plugin->getMeta()->getSemVer())) {
-                $plugin->getMeta()->setUpdateAvailable($currentVersion);
-            }
             $item->loadFromPlugin($plugin);
-            $item->setInstalled(true);
-            $item->setAvailable(true);
-            $items->add($item);
+            /** @var ListingItem $available */
+            foreach ($this->items as $available) {
+                if ($available->getPath() === $item->getPath()) {
+                    $available->setAvailable(true);
+                    $available->setInstalled(true);
+                    $available->setDateInstalled($item->getDateInstalled());
+                    $available->setState($item->getState());
+                    $available->setID($item->getID());
+                    $available->setIsShop5Compatible($item->isShop5Compatible());
+                    if ($currentVersion->greaterThan($plugin->getMeta()->getSemVer())) {
+                        $available->setUpdateAvailable($currentVersion);
+                        $available->setVersion($item->getVersion());
+                    }
+                }
+            }
         }
 
-        return $items;
+        return $this->items->filter(static function (ListingItem $item) {
+            return $item->isInstalled();
+        });
     }
 
     /**
-     * @param Collection $installed
      * @return Collection
      * @former gibAllePlugins()
      */
-    public function getAll(Collection $installed): Collection
+    public function getAll(): Collection
     {
         if ($this->items->count() > 0) {
             return $this->items;
         }
         $parser = new XMLParser();
-        $this->parsePluginsDir($parser, self::PLUGINS_DIR, $installed);
-        $this->parsePluginsDir($parser, self::LEGACY_PLUGINS_DIR, $installed);
+        $this->parsePluginsDir($parser, self::LEGACY_PLUGINS_DIR);
+        $this->parsePluginsDir($parser, self::PLUGINS_DIR);
         $this->sort();
 
         return $this->items;
@@ -143,41 +156,45 @@ final class Listing
     /**
      * check if legacy plugins can be updated to modern ones
      *
-     * @param Collection $installed
-     * @param Collection $all
+     * @return Collection
      */
-    public function checkLegacyToModernUpdates(Collection $installed, Collection $all): void
+    public function checkLegacyToModernUpdates(): Collection
     {
-        $legacyItems = $installed->filter(static function (ListingItem $e) {
-            return $e->isLegacy() === true;
-        });
-        $items       = $all->filter(static function (ListingItem $e) {
+        $modernPlugins = $this->items->filter(static function (ListingItem $e) {
             return $e->isLegacy() === false;
         });
-        foreach ($legacyItems as $legacyItem) {
-            /** @var ListingItem $legacyItem */
+        /** @var ListingItem $item */
+        foreach ($this->items as $item) {
+            if ($item->isLegacy() !== true || $item->isInstalled() !== true) {
+                continue;
+            }
             /** @var ListingItem $hit */
-            $pid = $legacyItem->getPluginID();
-            $hit = $items->filter(static function (ListingItem $e) use ($pid) {
+            $pid = $item->getPluginID();
+            $hit = $modernPlugins->filter(static function (ListingItem $e) use ($pid) {
                 return $e->getPluginID() === $pid;
             })->first();
             if ($hit === null) {
                 continue;
             }
-            if ($hit->getVersion()->greaterThan($legacyItem->getVersion())) {
-                $legacyItem->setUpdateAvailable($hit->getVersion());
-                $legacyItem->setUpdateFromDir($hit->getPath());
+            if ($hit->getVersion()->greaterThan($item->getVersion())) {
+                $item->setUpdateAvailable($hit->getVersion());
+                $item->setUpdateFromDir($hit->getPath());
+                $item->setIsShop5Compatible($hit->isShop5Compatible());
+                $this->items = $this->items->reject(static function (ListingItem $e) use ($pid) {
+                    return $e->isLegacy() === false && $e->getPluginID() === $pid;
+                });
             }
         }
+
+        return $this->items;
     }
 
     /**
-     * @param XMLParser  $parser
-     * @param string     $pluginDir
-     * @param Collection $installedPlugins
+     * @param XMLParser $parser
+     * @param string    $pluginDir
      * @return Collection
      */
-    private function parsePluginsDir(XMLParser $parser, string $pluginDir, Collection $installedPlugins): Collection
+    private function parsePluginsDir(XMLParser $parser, string $pluginDir): Collection
     {
         $modern    = $pluginDir === self::PLUGINS_DIR;
         $validator = $modern
@@ -203,8 +220,7 @@ final class Listing
             $xml['cFehlercode']  = $code;
             $item                = new ListingItem();
             $item->parseXML($xml);
-            $item->setPath($pluginDir . $dir);
-
+            $item->setPath($pluginDir . $dir . '/');
             if ($modern) {
                 $item->setIsLegacy(false);
                 $gettext->loadPluginItemLocale('base', $item);
@@ -217,32 +233,16 @@ final class Listing
                 }
                 $item->setAuthor(__($item->getAuthor()));
                 $item->setName(__($item->getName()));
+                // filter out old legacy version of the same plugin
+                $this->items = $this->items->reject(static function (ListingItem $e) use ($item) {
+                    return $e->getPluginID() === $item->getPluginID() && $e->isLegacy() === true;
+                });
             }
-            if (!$modern && $this->items->contains(static function (ListingItem $e) use ($dir) {
-                    return $e->isLegacy() === false && $e->getDir() === $dir;
-            })) {
-                // do not add legacy plugins to list when there is a modern variant for it
-                continue;
-            }
-            /** @var ListingItem|null $plugin */
-            $plugin = $installedPlugins->first(static function (ListingItem $value) use ($dir) {
-                return $value->getDir() === $dir;
-            });
-            if ($plugin !== null) {
-                $plugin->setMinShopVersion($item->getMinShopVersion());
-                $plugin->setMaxShopVersion($item->getMaxShopVersion());
-                $item = $plugin;
-            }
-            if ($code === InstallCode::DUPLICATE_PLUGIN_ID && $plugin !== null) {
-                $item->setInstalled(true);
-                $item->setHasError(false);
-                $item->setIsShop4Compatible(true);
-            } elseif ($code === InstallCode::OK_LEGACY || $code === InstallCode::OK) {
+            if ($code === InstallCode::OK_LEGACY || $code === InstallCode::OK) {
                 $item->setAvailable(true);
                 $item->setHasError(false);
                 $item->setIsShop4Compatible($code === InstallCode::OK);
             }
-
             $this->items->add($item);
         }
 

@@ -30,9 +30,11 @@ function holeAlleKampagnenDefinitionen(): array
 /**
  * @param int $id
  * @return stdClass|null
+ * @deprecated since 5.1.0
  */
 function holeKampagne(int $id): ?stdClass
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Shop::Container()->getDB()->getSingleObject(
         "SELECT *, DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE
             FROM tkampagne

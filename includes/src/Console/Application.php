@@ -94,13 +94,11 @@ class Application extends BaseApplication
         $validator       = new LegacyPluginValidator($db, $parser);
         $modernValidator = new PluginValidator($db, $parser);
         $listing         = new Listing($db, $cache, $validator, $modernValidator);
-        $sorted          = $listing->getAll();
-        $listing->getInstalled();
-        $compatible = $sorted->filter(static function (ListingItem $i) {
+        $compatible      = $listing->getAll()->filter(static function (ListingItem $i) {
             return $i->isShop5Compatible();
         });
+        /** @var ListingItem $plugin */
         foreach ($compatible as $plugin) {
-            /** @var ListingItem $plugin */
             if (!\is_dir($plugin->getPath() . '/Commands')) {
                 continue;
             }

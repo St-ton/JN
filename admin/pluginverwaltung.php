@@ -76,27 +76,11 @@ if (!empty($_FILES['plugin-install-upload']) && Form::validateToken()) {
 }
 $pluginsAll         = $listing->getAll();
 $pluginsInstalled   = $listing->getInstalled();
-$pluginsAll         = $listing->checkLegacyToModernUpdates();
-$pluginsDisabled    = $pluginsInstalled->filter(static function (ListingItem $e) {
-    return $e->getState() === State::DISABLED;
-});
-$pluginsProblematic = $pluginsInstalled->filter(static function (ListingItem $e) {
-    return in_array(
-        $e->getState(),
-        [State::ERRONEOUS, State::UPDATE_FAILED, State::LICENSE_KEY_MISSING,
-            State::LICENSE_KEY_INVALID, State::ESX_LICENSE_EXPIRED, State::ESX_SUBSCRIPTION_EXPIRED],
-        true
-    );
-});
-$pluginsInstalled   = $pluginsInstalled->filter(static function (ListingItem $e) {
-    return $e->getState() === State::ACTIVATED;
-});
-$pluginsAvailable   = $pluginsAll->filter(static function (ListingItem $item) {
-    return $item->isAvailable() === true && $item->isInstalled() === false;
-});
-$pluginsErroneous   = $pluginsAll->filter(static function (ListingItem $item) {
-    return $item->isHasError() === true && $item->isInstalled() === false;
-});
+$pluginsDisabled    = $listing->getDisabled();
+$pluginsProblematic = $listing->getProblematic();
+$pluginsInstalled   = $listing->getEnabled();
+$pluginsAvailable   = $listing->getAvailable();
+$pluginsErroneous   = $listing->getErroneous();
 if ($pluginUploaded === true) {
     $smarty->assign('pluginsDisabled', $pluginsDisabled)
         ->assign('pluginsInstalled', $pluginsInstalled)

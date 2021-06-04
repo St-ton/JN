@@ -11,6 +11,7 @@ use JTL\Plugin\Admin\Validation\ValidatorInterface;
 use JTL\Plugin\InstallCode;
 use JTL\Plugin\LegacyPluginLoader;
 use JTL\Plugin\PluginLoader;
+use JTL\Plugin\State;
 use JTL\Shop;
 use JTL\XMLParser;
 use stdClass;
@@ -69,14 +70,19 @@ final class Listing
         $this->legacyValidator = $validator;
         $this->validator       = $modernValidator;
         $this->items           = new Collection();
-        $this->getAll();
+        $this->init();
     }
 
-    /**
-     * @return Collection - Collection of ListingItems
-     * @former gibInstalliertePlugins()
-     */
-    public function getInstalled(): Collection
+    private function init(): void
+    {
+        if ($this->items->count() === 0) {
+            $this->loadFromFileSystem();
+            $this->loadInstalled();
+            $this->checkLegacyToModernUpdates();
+        }
+    }
+
+    private function loadInstalled(): void
     {
         try {
             $all = $this->db->selectAll('tplugin', [], [], '*', 'cName, cAutor, nPrio');
@@ -99,9 +105,6 @@ final class Listing
         $legacyLoader = new LegacyPluginLoader($this->db, $this->cache);
         $pluginLoader = new PluginLoader($this->db, $this->cache);
         $langCode     = Shop::getLanguageCode();
-        if ($this->items->count() === 0) {
-            $this->getAll();
-        }
         foreach ($data as $dataItem) {
             $item           = new ListingItem();
             $plugin         = (int)$dataItem->bExtension === 1
@@ -125,7 +128,22 @@ final class Listing
                 }
             }
         }
+    }
 
+    private function loadFromFileSystem(): void
+    {
+        $parser = new XMLParser();
+        $this->parsePluginsDir($parser, self::LEGACY_PLUGINS_DIR);
+        $this->parsePluginsDir($parser, self::PLUGINS_DIR);
+        $this->sort();
+    }
+
+    /**
+     * @return Collection - Collection of ListingItems
+     * @former gibInstalliertePlugins()
+     */
+    public function getInstalled(): Collection
+    {
         return $this->items->filter(static function (ListingItem $item) {
             return $item->isInstalled();
         });
@@ -137,28 +155,19 @@ final class Listing
      */
     public function getAll(): Collection
     {
-        if ($this->items->count() > 0) {
-            return $this->items;
-        }
-        $parser = new XMLParser();
-        $this->parsePluginsDir($parser, self::LEGACY_PLUGINS_DIR);
-        $this->parsePluginsDir($parser, self::PLUGINS_DIR);
-        $this->sort();
-
         return $this->items;
     }
 
     public function reset(): void
     {
         $this->items = new Collection();
+        $this->init();
     }
 
     /**
      * check if legacy plugins can be updated to modern ones
-     *
-     * @return Collection
      */
-    public function checkLegacyToModernUpdates(): Collection
+    private function checkLegacyToModernUpdates(): void
     {
         $modernPlugins = $this->items->filter(static function (ListingItem $e) {
             return $e->isLegacy() === false;
@@ -180,13 +189,12 @@ final class Listing
                 $item->setUpdateAvailable($hit->getVersion());
                 $item->setUpdateFromDir($hit->getPath());
                 $item->setIsShop5Compatible($hit->isShop5Compatible());
+                $item->setMinShopVersion($hit->getMinShopVersion());
                 $this->items = $this->items->reject(static function (ListingItem $e) use ($pid) {
                     return $e->isLegacy() === false && $e->getPluginID() === $pid;
                 });
             }
         }
-
-        return $this->items;
     }
 
     /**
@@ -233,10 +241,6 @@ final class Listing
                 }
                 $item->setAuthor(__($item->getAuthor()));
                 $item->setName(__($item->getName()));
-                // filter out old legacy version of the same plugin
-                $this->items = $this->items->reject(static function (ListingItem $e) use ($item) {
-                    return $e->getPluginID() === $item->getPluginID() && $e->isLegacy() === true;
-                });
             }
             if ($code === InstallCode::OK_LEGACY || $code === InstallCode::OK) {
                 $item->setAvailable(true);
@@ -256,6 +260,71 @@ final class Listing
     {
         $this->items = $this->items->sortBy(static function (ListingItem $item) {
             return \mb_convert_case($item->getName(), \MB_CASE_LOWER);
+        });
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getEnabled(): Collection
+    {
+        return $this->items->filter(static function (ListingItem $e) {
+            return $e->getState() === State::ACTIVATED;
+        });
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getDisabled(): Collection
+    {
+        return $this->items->filter(static function (ListingItem $e) {
+            return $e->getState() === State::DISABLED;
+        });
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getAvailable(): Collection
+    {
+        // filter out old legacy version of the same plugin
+        $modern = $this->items->filter(static function (ListingItem $e) {
+            return $e->isLegacy() === false;
+        });
+        foreach ($modern as $item) {
+            $this->items = $this->items->reject(static function (ListingItem $e) use ($item) {
+                return $e->getPluginID() === $item->getPluginID() && $e->isLegacy() === true;
+            });
+        }
+
+        return $this->items->filter(static function (ListingItem $item) {
+            return $item->isAvailable() === true && $item->isInstalled() === false;
+        });
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getProblematic(): Collection
+    {
+        return $this->items->filter(static function (ListingItem $e) {
+            return \in_array(
+                $e->getState(),
+                [State::ERRONEOUS, State::UPDATE_FAILED, State::LICENSE_KEY_MISSING,
+                    State::LICENSE_KEY_INVALID, State::ESX_LICENSE_EXPIRED, State::ESX_SUBSCRIPTION_EXPIRED],
+                true
+            );
+        });
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getErroneous(): Collection
+    {
+        return  $this->items->filter(static function (ListingItem $item) {
+            return $item->isHasError() === true && $item->isInstalled() === false;
         });
     }
 }

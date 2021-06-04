@@ -71,11 +71,7 @@ class Video extends Portlet
             // general
             'video-title'       => [
                 'label'      => __('title'),
-                'width'      => 50,
-            ],
-            'video-class'       => [
-                'label'      => __('cssClass'),
-                'width'      => 50,
+                'width'      => 100,
             ],
             'video-width'       => [
                 'type'       => InputType::NUMBER,

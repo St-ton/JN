@@ -33,7 +33,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
 if (Request::getInt('delete') > 0 && Form::validateToken()) {
     Wishlist::delete(Request::getInt('delete'), true);
 }
-$itemCount     = (int)Shop::Container()->getDB()->getSingleObject(
+$itemCount         = (int)Shop::Container()->getDB()->getSingleObject(
     'SELECT COUNT(DISTINCT twunschliste.kWunschliste) AS cnt
          FROM twunschliste
          JOIN twunschlistepos

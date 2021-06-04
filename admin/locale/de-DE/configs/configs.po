@@ -1280,6 +1280,12 @@ msgstr "Aktuellen Warenkorb mit gespeichertem Warenkorb zusammenfassen"
 msgid "warenkorb_warenkorb2pers_merge_desc"
 msgstr "Hier legen Sie fest, ob der aktuelle Warenkorb eines Kunden mit bereits gespeicherten Warenkörben für diesen Kunden zusammengefasst werden soll."
 
+msgid "warenkorb_gesamtgewicht_anzeigen_name"
+msgstr "Gesamtgewicht anzeigen"
+
+msgid "warenkorb_gesamtgewicht_anzeigen_desc"
+msgstr "Hier legen Sie fest, ob das Gesamtgewicht aller Artikel im Warenkorb, auf der Warenkorb Seite angezeigt werden soll."
+
 msgid "bestellvorgang_kaufabwicklungsmethode_name"
 msgstr "Kaufabwicklungsmethode"
 

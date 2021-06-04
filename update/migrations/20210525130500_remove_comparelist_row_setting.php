@@ -24,8 +24,7 @@ class Migration_20210525130500 extends Migration implements IMigration
     }
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritdoc
      */
     public function down()
     {
@@ -42,7 +41,7 @@ class Migration_20210525130500 extends Migration implements IMigration
         $this->getDB()->queryPrepared(
             "DELETE FROM `teinstellungen_default`
                 WHERE `cName` = 'vergleichsliste_anzeigen'
-                  AND kEinstellungenSektion=:section",
+                  AND kEinstellungenSektion = :section",
             ['section' => CONF_VERGLEICHSLISTE]
         );
     }

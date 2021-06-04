@@ -301,4 +301,14 @@ class Campaign
 
         return 0;
     }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->cParameter === 'jtl'
+            ? __($this->cName)
+            : $this->cName;
+    }
 }

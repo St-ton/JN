@@ -45,7 +45,7 @@
                                     {if isset($oKampagne->kKampagne) && $oKampagne->kKampagne < 1000}
                                         <tr>
                                             <td>
-                                                <strong><a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&detail=1&token={$smarty.session.jtl_token}">{$oKampagne->cName}</a></strong>
+                                                <strong><a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&detail=1&token={$smarty.session.jtl_token}">{$oKampagne->getName()}</a></strong>
                                             </td>
                                             <td>{$oKampagne->cParameter}</td>
                                             <td>
@@ -216,7 +216,7 @@
                                 {if $kKampagne !== 'Gesamt'}
                                     <tr>
                                         <td>
-                                            <a href="kampagne.php?detail=1&kKampagne={$oKampagne_arr[$kKampagne]->kKampagne}&cZeitParam={$cZeitraumParam}&token={$smarty.session.jtl_token}">{$oKampagne_arr[$kKampagne]->cName}</a>
+                                            <a href="kampagne.php?detail=1&kKampagne={$oKampagne_arr[$kKampagne]->kKampagne}&cZeitParam={$cZeitraumParam}&token={$smarty.session.jtl_token}">{$oKampagne_arr[$kKampagne]->getName()}</a>
                                         </td>
                                         {foreach name='kampagnendefs' from=$oKampagneStatDef_arr key=kKampagneDef item=oKampagneStatDef}
                                             <td>

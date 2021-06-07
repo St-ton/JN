@@ -7,17 +7,17 @@
             {$style = $style|cat:$instance->getProperty('video-width')}
             {$style = $style|cat:'px;height:'}
             {$style = $style|cat:$instance->getProperty('video-height')}
-            {$style = $style|cat:'px'}
+            {$style = $style|cat:'px;'}
         {/if}
 
         {$src = $portlet->getPreviewImageUrl($instance)}
 
         {if $src !== null && $instance->getProperty('video-vendor') === 'youtube'}
             {image src=$src alt='YouTube Video' fluid=true style=$style}
-            <div class="give-consent-preview" style="background-image: url({$portlet->getPreviewOverlayUrl()})"></div>
+            <div class="give-consent-preview" style="{$style}background-image: url({$portlet->getPreviewOverlayUrl()})"></div>
         {elseif $src !== null && $instance->getProperty('video-vendor') === 'vimeo'}
             {image src=$src alt='Vimeo Video' fluid=true style=$style}
-            <div class="give-consent-preview" style="background-image: url({$portlet->getPreviewOverlayUrl()})"></div>
+            <div class="give-consent-preview" style="{$style}background-image: url({$portlet->getPreviewOverlayUrl()})"></div>
         {else}
             <div>
                 <i class="fas fa-film"></i>

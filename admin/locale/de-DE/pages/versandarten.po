@@ -198,7 +198,7 @@ msgid "always"
 msgstr "Immer"
 
 msgid "lowest"
-msgstr "Nur, wenn diese Versandart die günstigste ist"
+msgstr "Nur, wenn diese Versandart die Günstigste ist"
 
 msgid "discount"
 msgstr "Aufpreis / Rabatt"

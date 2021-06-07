@@ -5,6 +5,7 @@ namespace JTL\Console\Command\Migration;
 use JTL\Console\Command\Command;
 use JTL\Shop;
 use JTL\Update\DBMigrationHelper;
+use stdClass;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -57,13 +58,10 @@ class InnodbUtf8Command extends Command
                 foreach ($fkSQLs->dropFK as $fkSQL) {
                     $db->query($fkSQL);
                 }
-                $migrate = $db->query(
-                    DBMigrationHelper::sqlMoveToInnoDB($table)
-                );
+                $migrate = $db->query(DBMigrationHelper::sqlMoveToInnoDB($table));
                 foreach ($fkSQLs->createFK as $fkSQL) {
                     $db->query($fkSQL);
                 }
-
                 if (!$migrate) {
                     $table = $this->nextWithFailure($output, $table);
                     continue;
@@ -92,7 +90,7 @@ class InnodbUtf8Command extends Command
     }
 
     /**
-     * @param \stdClass $table
+     * @param stdClass $table
      */
     private function prepareTable($table): void
     {
@@ -115,7 +113,7 @@ class InnodbUtf8Command extends Command
     }
 
     /**
-     * @param \stdClass $table
+     * @param stdClass $table
      */
     private function releaseTable($table): void
     {
@@ -127,17 +125,17 @@ class InnodbUtf8Command extends Command
 
     /**
      * @param OutputInterface $output
-     * @param \stdClass $table
+     * @param stdClass $table
      * @param bool $releaseTable
      * @param string $msg
-     * @return \stdClass|null
+     * @return stdClass|null
      */
     private function nextWithFailure(
         OutputInterface $output,
-        $table,
+        stdClass $table,
         bool $releaseTable = true,
         string $msg = 'failure!'
-    ):? \stdClass {
+    ): ?stdClass {
         $this->errCounter++;
         $output->writeln('<error>' . $msg . '</error>');
         $this->excludeTables[] = $table->TABLE_NAME;

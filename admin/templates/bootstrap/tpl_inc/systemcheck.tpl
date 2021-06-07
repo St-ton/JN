@@ -1,6 +1,6 @@
 {function test_result}
     {if $test->getResult() === Systemcheck\Tests\AbstractTest::RESULT_OK}
-        <h4 class="label-wrap"><span class="label label-success">
+        <h4 class="badge-wrap"><span class="label badge-success">
             {$state = $test->getCurrentState()}
             {if $state !== null && $state|strlen > 0}
                 {$state}
@@ -12,8 +12,8 @@
         {if $test->getIsOptional()}
             {if $test->getIsRecommended()}
                 {$state = $test->getCurrentState()}
-                <h4 class="label-wrap">
-                    <span class="label label-warning">
+                <h4 class="badge-wrap">
+                    <span class="label badge-warning">
                         {if $state !== null && $state|strlen > 0}
                             {$state}
                         {else}
@@ -23,8 +23,8 @@
                 </h4>
             {else}
                 {$state = $test->getCurrentState()}
-                <h4 class="label-wrap">
-                    <span class="label label-primary">
+                <h4 class="badge-wrap">
+                    <span class="label badge-primary">
                         {if $state !== null && $state|strlen > 0}
                             {$state}
                         {else}
@@ -35,8 +35,8 @@
             {/if}
         {else}
             {$state = $test->getCurrentState()}
-            <h4 class="label-wrap">
-                <span class="label label-danger">
+            <h4 class="badge-wrap">
+                <span class="label badge-danger">
                     {if $state !== null && $state|strlen > 0}
                         {$state}
                     {else}

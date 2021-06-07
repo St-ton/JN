@@ -1136,6 +1136,12 @@ msgstr "Yes"
 msgid "warenkorb_warenkorb2pers_merge_value(N)"
 msgstr "No"
 
+msgid "warenkorb_gesamtgewicht_anzeigen_value(Y)"
+msgstr "Yes"
+
+msgid "warenkorb_gesamtgewicht_anzeigen_value(N)"
+msgstr "No"
+
 msgid "warenkorb_warenkorb2pers_merge_value(P)"
 msgstr "Customer decides in dialogue box"
 

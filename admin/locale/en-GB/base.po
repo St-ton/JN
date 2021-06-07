@@ -2078,6 +2078,30 @@ msgstr "Safe mode"
 msgid "Safe mode enabled."
 msgstr "Safe mode active. Functionality might be impaired."
 
+msgid "shippingType"
+msgstr "Shipping method"
+
+msgid "orderDate"
+msgstr "Order date"
+
+msgid "company"
+msgstr "Company"
+
+msgid "productId"
+msgstr "SKU"
+
+msgid "phone"
+msgstr "Phone"
+
+msgid "message"
+msgstr "Message"
+
+msgid "vat"
+msgstr "Vat"
+
+msgid "stock"
+msgstr "Stock"
+
 msgid "settingNoLog"
 msgstr "No changes logged yet."
 

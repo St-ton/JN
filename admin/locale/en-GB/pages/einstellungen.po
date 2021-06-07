@@ -85,3 +85,24 @@ msgstr "Search for Name: %s"
 
 msgid "prefDesc0"
 msgstr " "
+
+msgid "modalTitleOrderNumberTooLong"
+msgstr "Order number range too low"
+
+msgid "modalTitleOrderNumberInvalid"
+msgstr "Order number range invalid"
+
+msgid "modalTextOrderNumberInvalid"
+msgstr "The max oder number is greater than the first order number."
+
+msgid "modalTextOrderNumberTooLongOne"
+msgstr "Only "
+
+msgid "modalTextOrderNumberTooLongTwo"
+msgstr " order numbers in the format "
+
+msgid "modalTextOrderNumberTooLongThree"
+msgstr "possible!"
+
+msgid "buttonSaveAnyway"
+msgstr "Save anyway!"

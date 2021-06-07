@@ -32,61 +32,57 @@ class DBMigrationHelper
     {
         static $versionInfo = null;
 
-        if ($versionInfo === null) {
-            $db          = Shop::Container()->getDB();
-            $versionInfo = new stdClass();
-
-            $innodbSupport = $db->getSingleObject(
-                "SELECT `SUPPORT`
-                    FROM information_schema.ENGINES
-                    WHERE `ENGINE` = 'InnoDB'"
-            );
-            $utf8Support   = $db->getSingleObject(
-                "SELECT `IS_COMPILED` FROM information_schema.COLLATIONS
-                    WHERE `COLLATION_NAME` = 'utf8_unicode_ci'"
-            );
-            $innodbPath    = $db->getSingleObject('SELECT @@innodb_data_file_path AS path');
-            $innodbSize    = 'auto';
-
-            if ($innodbPath && \mb_stripos($innodbPath->path, 'autoextend') === false) {
-                $innodbSize = 0;
-                $paths      = \explode(';', $innodbPath->path);
-                foreach ($paths as $path) {
-                    if (\preg_match('/:([0-9]+)([MGTKmgtk]+)/', $path, $hits)) {
-                        switch (\mb_convert_case($hits[2], \MB_CASE_UPPER)) {
-                            case 'T':
-                                $innodbSize += $hits[1] * 1024 * 1024 * 1024 * 1024;
-                                break;
-                            case 'G':
-                                $innodbSize += $hits[1] * 1024 * 1024 * 1024;
-                                break;
-                            case 'M':
-                                $innodbSize += $hits[1] * 1024 * 1024;
-                                break;
-                            case 'K':
-                                $innodbSize += $hits[1] * 1024;
-                                break;
-                            default:
-                                $innodbSize += $hits[1];
-                        }
+        if ($versionInfo !== null) {
+            return $versionInfo;
+        }
+        $db            = Shop::Container()->getDB();
+        $versionInfo   = new stdClass();
+        $innodbSupport = $db->getSingleObject(
+            "SELECT `SUPPORT`
+                FROM information_schema.ENGINES
+                WHERE `ENGINE` = 'InnoDB'"
+        );
+        $utf8Support   = $db->getSingleObject(
+            "SELECT `IS_COMPILED` FROM information_schema.COLLATIONS
+                WHERE `COLLATION_NAME` = 'utf8_unicode_ci'"
+        );
+        $innodbPath    = $db->getSingleObject('SELECT @@innodb_data_file_path AS path');
+        $innodbSize    = 'auto';
+        if ($innodbPath && \mb_stripos($innodbPath->path, 'autoextend') === false) {
+            $innodbSize = 0;
+            $paths      = \explode(';', $innodbPath->path);
+            foreach ($paths as $path) {
+                if (\preg_match('/:([0-9]+)([MGTKmgtk]+)/', $path, $hits)) {
+                    switch (\mb_convert_case($hits[2], \MB_CASE_UPPER)) {
+                        case 'T':
+                            $innodbSize += $hits[1] * 1024 * 1024 * 1024 * 1024;
+                            break;
+                        case 'G':
+                            $innodbSize += $hits[1] * 1024 * 1024 * 1024;
+                            break;
+                        case 'M':
+                            $innodbSize += $hits[1] * 1024 * 1024;
+                            break;
+                        case 'K':
+                            $innodbSize += $hits[1] * 1024;
+                            break;
+                        default:
+                            $innodbSize += $hits[1];
                     }
                 }
             }
-
-            $versionInfo->server = $db->info();
-            $versionInfo->innodb = new stdClass();
-
-            $versionInfo->innodb->support = $innodbSupport
-                && \in_array($innodbSupport->SUPPORT, ['YES', 'DEFAULT'], true);
-            $versionInfo->innodb->version = $db->getSingleObject(
-                "SHOW VARIABLES LIKE 'innodb_version'"
-            )->Value;
-            $versionInfo->innodb->size    = $innodbSize;
-            $versionInfo->collation_utf8  = $utf8Support && \mb_convert_case(
-                $utf8Support->IS_COMPILED,
-                \MB_CASE_LOWER
-            ) === 'yes';
         }
+
+        $versionInfo->server = $db->getServerInfo();
+        $versionInfo->innodb = new stdClass();
+
+        $versionInfo->innodb->support = $innodbSupport && \in_array($innodbSupport->SUPPORT, ['YES', 'DEFAULT'], true);
+        $versionInfo->innodb->version = $db->getSingleObject("SHOW VARIABLES LIKE 'innodb_version'")->Value;
+        $versionInfo->innodb->size    = $innodbSize;
+        $versionInfo->collation_utf8  = $utf8Support && \mb_convert_case(
+            $utf8Support->IS_COMPILED,
+            \MB_CASE_LOWER
+        ) === 'yes';
 
         return $versionInfo;
     }
@@ -126,7 +122,7 @@ class DBMigrationHelper
      * @param string[] $excludeTables
      * @return stdClass|null
      */
-    public static function getNextTableNeedMigration($excludeTables = []): ?stdClass
+    public static function getNextTableNeedMigration(array $excludeTables = []): ?stdClass
     {
         $database   = Shop::Container()->getDB()->getConfig()['database'];
         $excludeStr = \implode("','", Text::filterXSS($excludeTables));
@@ -160,7 +156,7 @@ class DBMigrationHelper
      * @param string $table
      * @return stdClass|null
      */
-    public static function getTable($table): ?stdClass
+    public static function getTable(string $table): ?stdClass
     {
         $database = Shop::Container()->getDB()->getConfig()['database'];
 
@@ -189,7 +185,7 @@ class DBMigrationHelper
      * @param string|null $table
      * @return stdClass[]
      */
-    public static function getFulltextIndizes($table = null): array
+    public static function getFulltextIndizes(?string $table = null): array
     {
         $params = ['schema' => Shop::Container()->getDB()->getConfig()['database']];
         $filter = "AND `INDEX_NAME` NOT IN ('idx_tartikel_fulltext', 'idx_tartikelsprache_fulltext')";

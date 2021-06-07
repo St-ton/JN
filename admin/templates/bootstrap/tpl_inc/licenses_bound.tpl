@@ -20,7 +20,7 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th>{__('ID')}</th>
+                        <th>{__('ID')}/{__('Key')}</th>
                         <th>{__('Name')}</th>
                         <th>{__('State')}</th>
                         <th>{__('Type')}</th>
@@ -29,7 +29,13 @@
                     </thead>
                     {foreach $licenses->getActive() as $license}
                         <tr>
-                            <td>{$license->getID()}</td>
+                            <td>
+                                <p>{$license->getID()}</p>
+                                <p>
+                                    <span class="font-weight-bold">{__('Key')}: </span>
+                                    <span class="value">{$license->getLicense()->getKey()}</span>
+                                </p>
+                            </td>
                             <td>{$license->getName()}</td>
                             <td>
                                 {include file='tpl_inc/licenses_referenced_item.tpl' license=$license}

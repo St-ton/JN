@@ -177,7 +177,7 @@ class NiceDB implements DbInterface
                 $this->debug = true;
             }
         }
-        if (\ES_DB_LOGGING !== false && \ES_DB_LOGGING !== 0) {
+        if (\ES_DB_LOGGING === true) {
             $this->logErrors = true;
         }
         if (\NICEDB_EXCEPTION_BACKTRACE === true) {

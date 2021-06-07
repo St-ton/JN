@@ -77,6 +77,29 @@
 		word-break: keep-all;
 	}
 }
+.filter-search-wrapper {
+	.form-clear {
+		bottom: 13px;
+		right: 7px;
+	}
+	.input-group-text {
+      	background-color: $input-bg;
+	}
+	.filter-search {
+		margin-bottom: map-get($spacers, 2);
+		&:focus {
+			box-shadow: none;
+			border-color: inherit;
+		}
+		border-left: 0;
+	}
+	&.input-group-selected {
+		.input-group-text, .filter-search {
+			transition: none;
+			border-color: $input-focus-border-color;
+		}
+	}
+}
 
 .productlist-filter-categories {
 	> .nav-item > .nav-link { padding-left: 0; padding-right: 0; position: relative;

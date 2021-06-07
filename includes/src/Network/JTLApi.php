@@ -2,10 +2,12 @@
 
 namespace JTL\Network;
 
+use Exception;
 use JTL\Helpers\Request;
 use JTL\Nice;
 use JTLShop\SemVer\Version;
 use stdClass;
+use function Functional\first;
 
 /**
  * Class JTLApi
@@ -73,6 +75,7 @@ final class JTLApi
 
     /**
      * @return Version
+     * @throws Exception
      */
     public function getLatestVersion(): Version
     {
@@ -81,18 +84,11 @@ final class JTLApi
         $oVersions         = $this->getAvailableVersions();
 
         $oNewerVersions = \array_filter((array)$oVersions, static function ($v) use ($parsedShopVersion) {
-            return Version::parse($v->reference)->greaterThan($parsedShopVersion);
+                return Version::parse($v->reference)->greaterThan($parsedShopVersion);
         });
+        $oVersion       = \count($oNewerVersions) > 0 ? first($oNewerVersions) : \end($oVersions);
 
-        if (\count($oNewerVersions) > 0) {
-            $reverseVersionsArr = \array_reverse($oNewerVersions);
-            $version            = \end($reverseVersionsArr);
-        } else {
-            $oVersion = \end($oVersions);
-            $version  = Version::parse($oVersion->reference);
-        }
-
-        return $version;
+        return Version::parse($oVersion->reference);
     }
 
     /**
@@ -100,9 +96,13 @@ final class JTLApi
      */
     public function hasNewerVersion(): bool
     {
-        return \APPLICATION_BUILD_SHA === '#DEV#'
-            ? false
-            : $this->getLatestVersion()->greaterThan(Version::parse(\APPLICATION_VERSION));
+        try {
+            return \APPLICATION_BUILD_SHA === '#DEV#'
+                ? false
+                : $this->getLatestVersion()->greaterThan(Version::parse(\APPLICATION_VERSION));
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     /**

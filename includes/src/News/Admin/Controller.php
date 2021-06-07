@@ -225,7 +225,7 @@ final class Controller
             }
             $dir = self::UPLOAD_DIR . $newsItemID;
             if (!\is_dir($dir) && !\mkdir(self::UPLOAD_DIR . $newsItemID) && !\is_dir($dir)) {
-                throw new Exception('Cannot create upload dir: ' . $dir);
+                throw new Exception(__('errorDirCreate') . $dir);
             }
 
             $oldImages = $this->getNewsImages($newsItemID, self::UPLOAD_DIR, false);

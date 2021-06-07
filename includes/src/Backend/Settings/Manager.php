@@ -85,10 +85,11 @@ class Manager
     }
 
     /**
+     * get instance of Manager or Sections\..
      * @param int $sectionID
      * @return static
      */
-    public function getInstance(int $sectionID): self
+    public function getInstance(int $sectionID)
     {
         if (isset($this->instances[$sectionID])) {
             return $this->instances[$sectionID];
@@ -162,7 +163,10 @@ class Manager
      */
     public function addLog(string $setting, ?string $oldValue, ?string $newValue): void
     {
-        if ($oldValue === null || $newValue === null) {
+        if ($oldValue === null
+            || $newValue === null
+            || $oldValue === $newValue
+        ) {
             return;
         }
         $log                        = new \stdClass();
@@ -194,9 +198,7 @@ class Manager
         \sort($oldValues);
         \sort($newValue);
 
-        if ($oldValues !== $newValue) {
-            $this->addLog($setting, \implode(',', $oldValues), \implode(',', $newValue));
-        }
+        $this->addLog($setting, \implode(',', $oldValues), \implode(',', $newValue));
     }
 
     /**

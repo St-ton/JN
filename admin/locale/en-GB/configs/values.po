@@ -635,17 +635,11 @@ msgstr "No"
 msgid "isbn_display_value(N)"
 msgstr "No"
 
-msgid "artikeldetails_variationskombikind_bildvorschau_value(Y)"
-msgstr "Yes"
-
 msgid "adr_hazard_display_value(N)"
 msgstr "No"
 
 msgid "isbn_display_value(D)"
 msgstr "Yes, on item detail page"
-
-msgid "artikeldetails_variationskombikind_bildvorschau_value(N)"
-msgstr "No"
 
 msgid "adr_hazard_display_value(D)"
 msgstr "Yes, on item detail page"
@@ -1142,6 +1136,12 @@ msgstr "Yes"
 msgid "warenkorb_warenkorb2pers_merge_value(N)"
 msgstr "No"
 
+msgid "warenkorb_gesamtgewicht_anzeigen_value(Y)"
+msgstr "Yes"
+
+msgid "warenkorb_gesamtgewicht_anzeigen_value(N)"
+msgstr "No"
+
 msgid "warenkorb_warenkorb2pers_merge_value(P)"
 msgstr "Customer decides in dialogue box"
 
@@ -1426,6 +1426,12 @@ msgstr "Escape with comma"
 
 msgid "exportformate_semikolon_value( )"
 msgstr "Escape with space"
+
+msgid "exportformate_line_ending_value(LF)"
+msgstr "LF"
+
+msgid "exportformate_line_ending_value(CRLF)"
+msgstr "CRLF"
 
 msgid "kontakt_abfragen_anrede_value(Y)"
 msgstr "Yes, mandatory"

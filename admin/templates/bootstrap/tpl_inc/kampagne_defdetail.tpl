@@ -33,7 +33,11 @@
                         </tbody>
                     </table>
                 </div>
-                {include file='tpl_inc/pagination.tpl' pagination=$oPagiDefDetail isBottom=true}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiDefDetail
+                         cParam_arr=['kKampagne'=>$oKampagne->kKampagne, 'defdetail'=>1,
+                            'kKampagneDef'=>$oKampagneDef->kKampagneDef, 'cZeitParam'=>$cZeitraumParam,
+                            'token'=>$smarty.session.jtl_token]
+                         isBottom=true}
             {else}
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}

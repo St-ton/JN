@@ -848,12 +848,6 @@ msgstr "Show hazard sign for item"
 msgid "adr_hazard_display_desc"
 msgstr "Specify whether the European ADR hazard sign is shown in the item. For this purpose, the UN number and the hazard identification number must be saved in JTL-Wawi."
 
-msgid "artikeldetails_variationskombikind_bildvorschau_name"
-msgstr "Show image previews with child items"
-
-msgid "artikeldetails_variationskombikind_bildvorschau_desc"
-msgstr "Specify whether to display thumbnails for child items in the item overview. If there are many child items, this may lead to long loading times."
-
 msgid "artikeldetails_fragezumprodukt_anzeigen_name"
 msgstr "Show form with questions about item"
 
@@ -1285,6 +1279,12 @@ msgstr "Combine current basket with saved basket"
 
 msgid "warenkorb_warenkorb2pers_merge_desc"
 msgstr "Specify whether to combine the current basket of a customer with their already saved baskets."
+
+msgid "warenkorb_gesamtgewicht_anzeigen_name"
+msgstr "Show total weight"
+
+msgid "warenkorb_gesamtgewicht_anzeigen_desc"
+msgstr "Specify whether to display the total weight of all items in the basket."
 
 msgid "bestellvorgang_kaufabwicklungsmethode_name"
 msgstr "Checkout method"
@@ -1952,6 +1952,12 @@ msgstr "Escaping of ;"
 msgid "exportformate_semikolon_desc"
 msgstr "You can escape these characters if required."
 
+msgid "exportformate_line_ending_name"
+msgstr "Line ending"
+
+msgid "exportformate_line_ending_desc"
+msgstr ""
+
 msgid "kontakt_abfragen_anrede_name"
 msgstr "Prompt title"
 
@@ -2161,12 +2167,6 @@ msgstr "Column width for item"
 
 msgid "vergleichsliste_spaltengroesse_desc"
 msgstr "Specify the width in pixels of the item column in the comparison list."
-
-msgid "vergleichsliste_spaltengroesseattribut_name"
-msgstr "Column width for attributes"
-
-msgid "vergleichsliste_spaltengroesseattribut_desc"
-msgstr "Specify the width in pixels of the item attributes column in the comparison list."
 
 msgid "vergleichsliste_target_name"
 msgstr "Position of comparison list"

@@ -163,6 +163,18 @@ if (Request::postInt('zuruecksetzen') === 1 && Form::validateToken()) {
                     $db->query('TRUNCATE tbewertunghilfreich');
                     break;
 
+                case 'wishlist':
+                    $db->query('TRUNCATE twunschliste');
+                    $db->query('TRUNCATE twunschlistepos');
+                    $db->query('TRUNCATE twunschlisteposeigenschaft');
+                    $db->query('TRUNCATE twunschlisteversand');
+                    break;
+
+                case 'comparelist':
+                    $db->query('TRUNCATE tvergleichsliste');
+                    $db->query('TRUNCATE tvergleichslistepos');
+                    break;
+
                 // Shopkunden & Kunden werben Kunden & Bestellungen & Kupons
                 case 'shopkunden':
                 case 'bestellungen':

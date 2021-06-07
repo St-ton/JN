@@ -344,13 +344,18 @@ class VariationValue
                 $currency
             );
             $this->cAufpreisLocalized[1] = Preise::getLocalizedPriceString($surcharge, $currency);
-            // Wenn der Artikel ein VarikombiKind ist, rechne nicht nochmal die Variationsaufpreise drauf
+            // Wenn der Artikel ein VarikombiKind ist, nutze den Varkombi-Elternartikel und rechne den Aufpreis hinzu
             if ($product->kVaterArtikel > 0) {
+                $parentProduct    = (new Artikel())
+                    ->fuelleArtikel($product->kVaterArtikel, Artikel::getDetailOptions());
+                $VariationVKNetto = isset($parentProduct) ? $surcharge + $parentProduct->Preise->fVKNetto :
+                    $product->Preise->fVKNetto;
+
                 $this->cPreisInklAufpreis[0] = Preise::getLocalizedPriceString(
-                    Tax::getGross($product->Preise->fVKNetto, $taxRate),
+                    Tax::getGross($VariationVKNetto, $taxRate),
                     $currency
                 );
-                $this->cPreisInklAufpreis[1] = Preise::getLocalizedPriceString($product->Preise->fVKNetto, $currency);
+                $this->cPreisInklAufpreis[1] = Preise::getLocalizedPriceString($VariationVKNetto, $currency);
             } else {
                 $this->cPreisInklAufpreis[0] = Preise::getLocalizedPriceString(
                     Tax::getGross($surcharge + $product->Preise->fVKNetto, $taxRate),

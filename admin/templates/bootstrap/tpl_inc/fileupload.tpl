@@ -150,9 +150,17 @@ $fileExtraData                 |         | you also need to add the jtl_token: j
         });
         {/if}
         $file.on('fileuploaded', function(event, data) {
-            {if $fileSuccessMsg}
-                $fileSuccess.removeClass('d-none');
-            {/if}
+            let response = data.response;
+            if (response.status === 'OK') {
+                {if $fileSuccessMsg}
+                    $fileSuccess.removeClass('d-none');
+                {/if}
+            } else {
+                if (response.errorMessage !== null && response.errorMessage.length > 0) {
+                    $fileError.html('<p style="margin-top:20px">' + response.errorMessage + '</p>')
+                }
+                $fileError.removeClass('d-none');
+            }
         });
     }());
 </script>

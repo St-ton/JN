@@ -284,9 +284,6 @@ msgstr "Please select at least one acceptable payment method."
 msgid "errorShippingMethodPriceMissing"
 msgstr "Please enter at least one price."
 
-msgid "errorShippingFreeMax"
-msgstr "The free shipping threshold may only amount to %s max."
-
 msgid "sendShippingNotification"
 msgstr "Send shipping confirmation"
 

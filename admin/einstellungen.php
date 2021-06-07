@@ -13,11 +13,14 @@ require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
 /** @global \JTL\Smarty\JTLSmarty     $smarty */
 /** @global \JTL\Backend\AdminAccount $oAccount */
-$sectionID = isset($_REQUEST['kSektion']) ? (int)$_REQUEST['kSektion'] : 0;
-$bSuche    = isset($_REQUEST['einstellungen_suchen']) && (int)$_REQUEST['einstellungen_suchen'] === 1;
-$db        = Shop::Container()->getDB();
-$getText   = Shop::Container()->getGetText();
-$search    = Request::verifyGPDataString('cSuche');
+$sectionID      = isset($_REQUEST['kSektion']) ? (int)$_REQUEST['kSektion'] : 0;
+$bSuche         = isset($_REQUEST['einstellungen_suchen']) && (int)$_REQUEST['einstellungen_suchen'] === 1;
+$db             = Shop::Container()->getDB();
+$getText        = Shop::Container()->getGetText();
+$adminAccount   = Shop::Container()->getAdminAccount();
+$alertService   = Shop::Container()->getAlertService();
+$search         = Request::verifyGPDataString('cSuche');
+$settingManager = new Manager($db, $smarty, $adminAccount, $getText, $alertService);
 
 $getText->loadConfigLocales(true, true);
 
@@ -77,7 +80,9 @@ $getText->localizeConfigSection($section);
 if ($bSuche) {
     $step = 'einstellungen bearbeiten';
 }
-if (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form::validateToken()) {
+if (Request::postVar('resetSetting') !== null) {
+    $settingManager->resetSetting(Request::postVar('resetSetting'));
+} elseif (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form::validateToken()) {
     // Einstellungssuche
     $sql = new stdClass();
     if ($bSuche) {
@@ -94,19 +99,20 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form
     } else {
         $section  = $db->select('teinstellungensektion', 'kEinstellungenSektion', $sectionID);
         $confData = $db->getObjects(
-            'SELECT *
-                FROM teinstellungenconf
-                WHERE kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . "
-                    AND cConf = 'Y'
-                    AND nModul = 0
-                    AND nStandardanzeigen = 1 " . $sql->cWHERE . '
-                ORDER BY nSort'
+            'SELECT ec.*, e.cWert AS currentValue
+                FROM teinstellungenconf AS ec
+                LEFT JOIN teinstellungen AS e
+                  ON e.cName = ec.cWertName
+                WHERE ec.kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . "
+                    AND ec.cConf = 'Y'
+                    AND ec.nModul = 0
+                    AND ec.nStandardanzeigen = 1 " . $sql->cWHERE . '
+                ORDER BY ec.nSort'
         );
     }
-    $settingSection = new Manager($db, $smarty);
     foreach ($confData as $i => $sectionData) {
         $value       = new stdClass();
-        $sectionItem = $settingSection->getInstance((int)$sectionData->kEinstellungenSektion);
+        $sectionItem = $settingManager->getInstance((int)$sectionData->kEinstellungenSektion);
         if (isset($_POST[$confData[$i]->cWertName])) {
             $value->cWert                 = $_POST[$confData[$i]->cWertName];
             $value->cName                 = $confData[$i]->cWertName;
@@ -126,6 +132,9 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form
                     break;
             }
             if ($sectionItem->validate($confData[$i], $_POST[$confData[$i]->cWertName])) {
+                if (is_array($_POST[$confData[$i]->cWertName])) {
+                    $settingManager->addLogListbox($confData[$i]->cWertName, $_POST[$confData[$i]->cWertName]);
+                }
                 $db->delete(
                     'teinstellungen',
                     ['kEinstellungenSektion', 'cName'],
@@ -138,6 +147,12 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form
                     }
                 } else {
                     $db->insert('teinstellungen', $value);
+
+                    $settingManager->addLog(
+                        $confData[$i]->cWertName,
+                        $confData[$i]->currentValue,
+                        $_POST[$confData[$i]->cWertName]
+                    );
                 }
             }
         }
@@ -195,23 +210,24 @@ if ($step === 'einstellungen bearbeiten') {
                ->assign('cSuche', $sql->cSuche);
     } else {
         $confData = $db->getObjects(
-            'SELECT *
-                FROM teinstellungenconf
-                WHERE nModul = 0
-                    AND nStandardAnzeigen = 1
-                    AND kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . ' ' .
+            'SELECT te.*, ted.cWert AS defaultValue
+                FROM teinstellungenconf AS te
+                LEFT JOIN teinstellungen_default AS ted
+                  ON ted.cName= te.cWertName
+                WHERE te.nModul = 0
+                    AND te.nStandardAnzeigen = 1
+                    AND te.kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . ' ' .
                 $sql->cWHERE . '
-                ORDER BY nSort'
+                ORDER BY te.nSort'
         );
     }
-    $settingSection = new Manager($db, $smarty);
     foreach ($confData as $config) {
         $config->kEinstellungenConf    = (int)$config->kEinstellungenConf;
         $config->kEinstellungenSektion = (int)$config->kEinstellungenSektion;
         $config->nStandardAnzeigen     = (int)$config->nStandardAnzeigen;
         $config->nSort                 = (int)$config->nSort;
         $config->nModul                = (int)$config->nModul;
-        $sectionItem                   = $settingSection->getInstance((int)$config->kEinstellungenSektion);
+        $sectionItem                   = $settingManager->getInstance((int)$config->kEinstellungenSektion);
         $getText->localizeConfig($config);
         //@ToDo: Setting 492 is the only one listbox at the moment.
         //But In special case of setting 492 values come from kKundengruppe instead of teinstellungenconfwerte

@@ -3,7 +3,6 @@
 namespace JTL\Sitemap\Factories;
 
 use Generator;
-use JTL\DB\ReturnType;
 use JTL\Language\LanguageHelper;
 use JTL\Sitemap\Items\Product as Item;
 use PDO;

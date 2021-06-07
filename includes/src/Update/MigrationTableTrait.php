@@ -261,6 +261,9 @@ trait MigrationTableTrait
         $einstellungen->cWert                 = $configValue;
         $einstellungen->cModulId              = $cModulId;
         $this->getDB()->insert('teinstellungen', $einstellungen);
+        if ($this->getDB()->getSingleObject("SHOW TABLES LIKE 'teinstellungen_default'") !== null) {
+            $this->getDB()->insert('teinstellungen_default', $einstellungen);
+        }
         unset($einstellungen);
 
         $einstellungenConf                        = new stdClass();
@@ -302,6 +305,9 @@ trait MigrationTableTrait
     public function removeConfig($key): void
     {
         $this->execute("DELETE FROM teinstellungen WHERE cName = '{$key}'");
+        if ($this->getDB()->getSingleObject("SHOW TABLES LIKE 'teinstellungen_default'") !== null) {
+            $this->execute("DELETE FROM teinstellungen_default WHERE cName = '{$key}'");
+        }
         $this->execute(
             "DELETE FROM teinstellungenconfwerte 
                 WHERE kEinstellungenConf = (

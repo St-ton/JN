@@ -83,13 +83,13 @@ class Extractor
         try {
             $this->manager->createDirectory('tpl://' . $base . $dirName);
         } catch (Throwable $e) {
-            $this->handlExtractionErrors(0, 'Cannot create ' . $base . $dirName);
+            $this->handlExtractionErrors(0, __('errorDirCreate') . $base . $dirName);
 
             return false;
         }
         foreach ($this->manager->listContents('root://' . \PFAD_DBES_TMP . $dirName, true) as $item) {
             $source = $item->path();
-            $target = $base . \str_replace(\PFAD_DBES_TMP, '', $source);
+            $target = $base . \str_replace(\PFAD_DBES_TMP, '', \str_replace('root://', '', $source));
             if ($item->isDir()) {
                 try {
                     $this->manager->createDirectory('tpl://' . $target);
@@ -98,11 +98,11 @@ class Extractor
                 }
             } else {
                 try {
-                    $this->manager->move('root://' . $source, 'tpl://' . $target);
+                    $this->manager->move($source, 'tpl://' . $target);
                 } catch (Throwable $e) {
                     $ok = false;
                     $this->manager->delete('tpl://' . $target);
-                    $this->manager->move('root://' . $source, 'tpl://' . $target);
+                    $this->manager->move($source, 'tpl://' . $target);
                 }
             }
         }

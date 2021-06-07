@@ -131,7 +131,6 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
                 $res = 0;
                 if (GeneralObject::hasCount('kSuchanfrage', $_POST)) {
                     $res = mappeLiveSuche($_POST['kSuchanfrage'], $mapping);
-
                     if ($res === 1) { // Alles O.K.
                         if (schalteSuchanfragenFrei(Request::postVar('kSuchanfrage', []))) {
                             $alertHelper->addAlert(

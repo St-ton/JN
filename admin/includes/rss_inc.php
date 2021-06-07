@@ -58,16 +58,17 @@ function generiereRSSXML()
                 FROM tartikel
                 LEFT JOIN tartikelsichtbarkeit 
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . $stdKundengruppe->kKundengruppe . "
+                    AND tartikelsichtbarkeit.kKundengruppe = :cgid
                 LEFT JOIN tseo 
                     ON tseo.cKey = 'kArtikel'
                     AND tseo.kKey = tartikel.kArtikel
-                    AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                    AND tseo.kSprache = :lid
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.cNeu = 'Y' " .  $lagerfilter . "
                     AND cNeu = 'Y' 
                     AND DATE_SUB(now(), INTERVAL " . $days . ' DAY) < dErstellt
-                ORDER BY dLetzteAktualisierung DESC'
+                ORDER BY dLetzteAktualisierung DESC',
+            ['lid' => (int)$_SESSION['kSprache'], 'cgid' => $stdKundengruppe->kKundengruppe]
         );
         foreach ($products as $product) {
             $url  = URL::buildURL($product, URLART_ARTIKEL, true);

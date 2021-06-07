@@ -11,6 +11,7 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Shop;
 use JTL\Update\DBMigrationHelper;
+use function Functional\every;
 
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Backend\AdminAccount $oAccount */
@@ -47,12 +48,13 @@ $conf     = Shop::getSettings([
     CONF_ARTIKELUEBERSICHT
 ]);
 
-if ($valid && !empty($_POST['action']) && !empty($_POST['check'])) {
-    $maintenanceResult = doDBMaintenance($_POST['action'], $_POST['check']);
-}
-
 if (empty($dbFileStruct)) {
     $errorMsg = __('errorReadStructureFile');
+} elseif ($valid && !empty($_POST['action']) && !empty($_POST['check'])) {
+    $ok                = every($_POST['check'], function ($elem) use ($dbFileStruct) {
+        return array_key_exists($elem, $dbFileStruct);
+    });
+    $maintenanceResult = $ok ? doDBMaintenance($_POST['action'], $_POST['check']) : false;
 }
 
 if ($errorMsg === '') {
@@ -68,7 +70,6 @@ if (count($dbErrors) > 0) {
         $fulltextIndizes = DBMigrationHelper::getFulltextIndizes();
     }
 }
-
 Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $errorMsg, 'errorDBCheck');
 
 $smarty->assign('cDBFileStruct_arr', $dbFileStruct)

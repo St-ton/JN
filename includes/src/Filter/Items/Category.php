@@ -232,9 +232,10 @@ class Category extends BaseCategory
                 FROM (' . $baseQuery . " ) AS ssMerkmal
                     LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kKategorie
                         AND tseo.cKey = 'kKategorie'
-                        AND tseo.kSprache = " . $this->getLanguageID() . '
+                        AND tseo.kSprache = :lid
                     GROUP BY ssMerkmal.kKategorie
-                    ORDER BY ssMerkmal.nSort, ssMerkmal.cName'
+                    ORDER BY ssMerkmal.nSort, ssMerkmal.cName",
+            ['lid' => $this->getLanguageID()]
         );
         $langID             = $this->getLanguageID();
         $customerGroupID    = $this->getCustomerGroupID();

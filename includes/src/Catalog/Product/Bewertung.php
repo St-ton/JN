@@ -92,12 +92,12 @@ class Bewertung
                     LEFT JOIN tbewertunghilfreich
                       ON tbewertung.kBewertung = tbewertunghilfreich.kBewertung
                       AND tbewertunghilfreich.kKunde = :customerID
-                    WHERE kArtikel = " . $productID .
+                    WHERE kArtikel = :pid" .
                         $langSQL . '
                         AND nAktiv = 1
                     ORDER BY nHilfreich DESC
                     LIMIT 1',
-                ['customerID' => Frontend::getCustomer()->getID()]
+                ['customerID' => Frontend::getCustomer()->getID(), 'pid' => $productID]
             );
             if ($data !== null) {
                 $this->sanitizeRatingData($data);
@@ -224,14 +224,16 @@ class Bewertung
                 FROM tartikelext
                 JOIN tbewertung 
                     ON tbewertung.kArtikel = tartikelext.kArtikel
-                WHERE tartikelext.kArtikel = ' . $productID . $activateSQL . '
-                GROUP BY tartikelext.kArtikel'
+                WHERE tartikelext.kArtikel = :pid' . $activateSQL . '
+                GROUP BY tartikelext.kArtikel',
+            ['pid' => $productID]
         );
         // Anzahl Bewertungen für aktuelle Sprache
         $totalLocalized = $db->getSingleObject(
             'SELECT COUNT(*) AS nAnzahlSprache
                 FROM tbewertung
-                WHERE kArtikel = ' . $productID . $langSQL . $activateSQL
+                WHERE kArtikel = :pid' . $langSQL . $activateSQL,
+            ['pid' => $productID]
         );
         if ($total !== null && (int)$total->fDurchschnitt > 0) {
             $total->fDurchschnitt   = \round($total->fDurchschnitt * 2) / 2;

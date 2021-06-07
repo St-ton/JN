@@ -463,11 +463,12 @@ class Bestellung
             'kBestellung',
             (int)$this->kBestellung
         );
-        $this->BestellstatusURL = Shop::getURL() . '/status.php?uid=' . $orderState->cUID;
+        $this->BestellstatusURL = Shop::getURL() . '/status.php?uid=' . ($orderState->cUID ?? '');
         $sum                    = $db->getSingleObject(
             'SELECT SUM(((fPreis * fMwSt)/100 + fPreis) * nAnzahl) AS wert
                 FROM twarenkorbpos
-                WHERE kWarenkorb = ' . (int)$this->kWarenkorb
+                WHERE kWarenkorb = :cid',
+            ['cid' => (int)$this->kWarenkorb]
         );
         $date                   = $db->getSingleObject(
             "SELECT date_format(dVersandDatum,'%d.%m.%Y') AS dVersanddatum_de,
@@ -476,7 +477,8 @@ class Bestellung
                 date_format(dVersandDatum,'%D %M %Y') AS dVersanddatum_en,
                 date_format(dBezahltDatum,'%D %M %Y') AS dBezahldatum_en,
                 date_format(dErstellt,'%D %M %Y') AS dErstelldatum_en
-                FROM tbestellung WHERE kBestellung = " . (int)$this->kBestellung
+                FROM tbestellung WHERE kBestellung = :oid",
+            ['oid' => (int)$this->kBestellung]
         );
         if ($date !== null && \is_object($date)) {
             $this->dVersanddatum_de = $date->dVersanddatum_de;
@@ -493,10 +495,11 @@ class Bestellung
                 'SELECT tkundengruppe.nNettoPreise
                     FROM tkundengruppe
                     JOIN tbestellung 
-                        ON tbestellung.kBestellung = ' . (int)$this->kBestellung . '
+                        ON tbestellung.kBestellung = :oid
                     JOIN tkunde 
                         ON tkunde.kKunde = tbestellung.kKunde
-                    WHERE tkunde.kKundengruppe = tkundengruppe.kKundengruppe'
+                    WHERE tkunde.kKundengruppe = tkundengruppe.kKundengruppe',
+                ['oid' => (int)$this->kBestellung]
             );
             if ($netOrderData !== null && $netOrderData->nNettoPreise > 0) {
                 $nNettoPreis = 1;
@@ -507,10 +510,10 @@ class Bestellung
         if ($this->kWaehrung > 0) {
             $this->Waehrung = new Currency((int)$this->kWaehrung);
             if ($this->fWaehrungsFaktor !== null && $this->fWaehrungsFaktor != 1 && isset($this->Waehrung->fFaktor)) {
-                $this->Waehrung->fFaktor = $this->fWaehrungsFaktor;
+                $this->Waehrung->setConversionFactor($this->fWaehrungsFaktor);
             }
             if ($disableFactor === true) {
-                $this->Waehrung->fFaktor = 1;
+                $this->Waehrung->setConversionFactor(1);
             }
             $this->Steuerpositionen = Tax::getOldTaxItems(
                 $this->Positionen,
@@ -973,8 +976,9 @@ class Bestellung
                       FROM tbestellung
                       JOIN twarenkorbpos
                         ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
-                          AND nPosTyp = ' . $posType . '
-                      WHERE tbestellung.kBestellung = ' . $orderID
+                          AND nPosTyp = :ty
+                      WHERE tbestellung.kBestellung = :oid',
+                ['ty' => $posType, 'oid' => $orderID]
             );
             foreach ($data as $item) {
                 if (isset($item->kWarenkorbPos) && $item->kWarenkorbPos > 0) {

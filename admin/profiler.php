@@ -112,12 +112,8 @@ function deleteProfileRun(bool $all = false, int $runID = 0): int
 {
     if ($all === true) {
         $count = Shop::Container()->getDB()->getAffectedRows('DELETE FROM tprofiler');
-        Shop::Container()->getDB()->query(
-            'ALTER TABLE tprofiler AUTO_INCREMENT = 1'
-        );
-        Shop::Container()->getDB()->query(
-            'ALTER TABLE tprofiler_runs AUTO_INCREMENT = 1'
-        );
+        Shop::Container()->getDB()->query('ALTER TABLE tprofiler AUTO_INCREMENT = 1');
+        Shop::Container()->getDB()->query('ALTER TABLE tprofiler_runs AUTO_INCREMENT = 1');
 
         return $count;
     }

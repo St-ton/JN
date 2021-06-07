@@ -14,10 +14,11 @@ function holeAktiveGeschenke(string $sql): array
         return $res;
     }
     $data = Shop::Container()->getDB()->getObjects(
-        "SELECT kArtikel
+        'SELECT kArtikel
             FROM tartikelattribut
-            WHERE cName = '" . ART_ATTRIBUT_GRATISGESCHENKAB . "'
-            ORDER BY CAST(cWert AS SIGNED) DESC " . $sql
+            WHERE cName = :atr
+            ORDER BY CAST(cWert AS SIGNED) DESC ' . $sql,
+        ['atr' => ART_ATTRIBUT_GRATISGESCHENKAB]
     );
 
     $options                            = Artikel::getDefaultOptions();
@@ -112,9 +113,10 @@ function holeLetzten100Geschenke(string $sql): array
 function gibAnzahlAktiverGeschenke(): int
 {
     return (int)Shop::Container()->getDB()->getSingleObject(
-        "SELECT COUNT(*) AS cnt
+        'SELECT COUNT(*) AS cnt
             FROM tartikelattribut
-            WHERE cName = '" . ART_ATTRIBUT_GRATISGESCHENKAB . "'"
+            WHERE cName = :nm',
+        ['nm' => ART_ATTRIBUT_GRATISGESCHENKAB]
     )->cnt;
 }
 
@@ -126,7 +128,8 @@ function gibAnzahlHaeufigGekaufteGeschenke(): int
     return (int)Shop::Container()->getDB()->getSingleObject(
         'SELECT COUNT(DISTINCT(kArtikel)) AS cnt
             FROM twarenkorbpos
-            WHERE nPosTyp = ' . C_WARENKORBPOS_TYP_GRATISGESCHENK
+            WHERE nPosTyp = :tp',
+        ['tp' => C_WARENKORBPOS_TYP_GRATISGESCHENK]
     )->cnt;
 }
 
@@ -138,7 +141,8 @@ function gibAnzahlLetzten100Geschenke(): int
     return (int)Shop::Container()->getDB()->getSingleObject(
         'SELECT COUNT(*) AS cnt
             FROM twarenkorbpos
-            WHERE nPosTyp = ' . C_WARENKORBPOS_TYP_GRATISGESCHENK . '
-            LIMIT 100'
+            WHERE nPosTyp = :tp
+            LIMIT 100',
+        ['tp' => C_WARENKORBPOS_TYP_GRATISGESCHENK]
     )->cnt;
 }

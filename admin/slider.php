@@ -22,9 +22,7 @@ $redirectUrl = Shop::getAdminURL() . '/slider.php';
 $action      = isset($_REQUEST['action']) && Form::validateToken()
     ? $_REQUEST['action']
     : 'view';
-$kSlider     = isset($_REQUEST['id'])
-    ? (int)$_REQUEST['id']
-    : 0;
+$kSlider     = (int)($_REQUEST['id'] ?? 0);
 switch ($action) {
     case 'slide_set':
         $aSlideKey = array_keys((array)$_REQUEST['aSlide']);

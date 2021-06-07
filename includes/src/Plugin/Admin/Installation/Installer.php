@@ -686,8 +686,9 @@ final class Installer
         $pluginConf = $this->db->getObjects(
             'SELECT *
                 FROM tplugineinstellungen
-                WHERE kPlugin IN (' . $oldPluginID . ', ' . $pluginID . ')
-                ORDER BY kPlugin'
+                WHERE kPlugin IN (:opid, :pid)
+                ORDER BY kPlugin',
+            ['opid' => $oldPluginID, 'pid' => $pluginID]
         );
         if (\count($pluginConf) > 0) {
             $confData = [];
@@ -708,26 +709,39 @@ final class Installer
                     $confData[$name]->cWert   = $conf->cWert;
                 }
             }
-            $this->db->query(
+            $this->db->queryPrepared(
                 'DELETE FROM tplugineinstellungen
-                    WHERE kPlugin IN (' . $oldPluginID . ', ' . $pluginID . ')'
+                    WHERE kPlugin IN (:oid, :pid)',
+                ['pid' => $pluginID, 'oid' => $oldPluginID]
             );
 
             foreach ($confData as $value) {
                 $this->db->insert('tplugineinstellungen', $value);
             }
         }
-        $this->db->query(
+        $this->db->queryPrepared(
             'UPDATE tplugineinstellungen
-                SET kPlugin = ' . $oldPluginID . ",
-                    cName = REPLACE(cName, 'kPlugin_" . $pluginID . "_', 'kPlugin_" . $oldPluginID . "_')
-                WHERE kPlugin = " . $pluginID
+                SET kPlugin = :oid,
+                    cName = REPLACE(cName, :ser, :rep)
+                WHERE kPlugin = :pid',
+            [
+                'pid' => $pluginID,
+                'oid' => $oldPluginID,
+                'ser' => 'kPlugin_' . $pluginID . '_',
+                'rep' => 'kPlugin_' . $oldPluginID . '_'
+            ]
         );
-        $this->db->query(
+        $this->db->queryPrepared(
             'UPDATE tplugineinstellungenconf
-                SET kPlugin = ' . $oldPluginID . ",
-                    cWertName = REPLACE(cWertName, 'kPlugin_" . $pluginID . "_', 'kPlugin_" . $oldPluginID . "_')
-                WHERE kPlugin = " . $pluginID
+                SET kPlugin = :oid,
+                    cWertName = REPLACE(cWertName, :ser, :rep)
+                WHERE kPlugin = :pid',
+            [
+                'pid' => $pluginID,
+                'oid' => $oldPluginID,
+                'ser' => 'kPlugin_' . $pluginID . '_',
+                'rep' => 'kPlugin_' . $oldPluginID . '_'
+            ]
         );
     }
 
@@ -797,11 +811,17 @@ final class Installer
      */
     private function updatePaymentMethods(int $oldPluginID, int $pluginID): void
     {
-        $this->db->query(
+        $this->db->queryPrepared(
             'UPDATE tpluginzahlungsartklasse
-                SET kPlugin = ' . $oldPluginID . ",
-                    cModulId = REPLACE(cModulId, 'kPlugin_" . $pluginID . "_', 'kPlugin_" . $oldPluginID . "_')
-                WHERE kPlugin = " . $pluginID
+                SET kPlugin = :oid,
+                    cModulId = REPLACE(cModulId, :sea, :rep)
+                WHERE kPlugin = :pid',
+            [
+                'oid' => $oldPluginID,
+                'pid' => $pluginID,
+                'sea' => 'kPlugin_' . $pluginID . '_',
+                'rep' => 'kPlugin_' . $oldPluginID . '_'
+            ]
         );
         $oldPaymentMethods = $this->db->getObjects(
             'SELECT kZahlungsart, cModulId
@@ -830,12 +850,13 @@ final class Installer
             );
             $setSQL           = '';
             if ($newPaymentMethod !== null && isset($method->kZahlungsart, $newPaymentMethod->kZahlungsart)) {
-                $this->db->query(
+                $this->db->queryPrepared(
                     'DELETE tzahlungsart, tzahlungsartsprache
                         FROM tzahlungsart
                         JOIN tzahlungsartsprache
                             ON tzahlungsartsprache.kZahlungsart = tzahlungsart.kZahlungsart
-                        WHERE tzahlungsart.kZahlungsart = ' . $method->kZahlungsart
+                        WHERE tzahlungsart.kZahlungsart = :pmid',
+                    ['pmid' => $method->kZahlungsart]
                 );
                 $setSQL = ' , kZahlungsart = ' . $method->kZahlungsart;
                 $upd    = (object)['kZahlungsart' => $method->kZahlungsart];

@@ -262,9 +262,10 @@ class Exportformat
                LEFT JOIN tkampagne 
                   ON tkampagne.kKampagne = texportformat.kKampagne
                   AND tkampagne.nAktiv = 1
-               WHERE texportformat.kExportformat = ' . $id
+               WHERE texportformat.kExportformat = :eid',
+            ['eid' => $id]
         );
-        if (isset($data->kExportformat) && $data->kExportformat > 0) {
+        if ($data !== null && $data->kExportformat > 0) {
             foreach (\get_object_vars($data) as $k => $v) {
                 $this->$k = $v;
             }
@@ -1432,10 +1433,11 @@ class Exportformat
                 }
             } else {
                 // There are no more articles to export
-                $this->db->query(
+                $this->db->queryPrepared(
                     'UPDATE texportformat 
                         SET dZuletztErstellt = NOW() 
-                        WHERE kExportformat = ' . $this->getExportformat()
+                        WHERE kExportformat = :eid',
+                    ['eid' => $this->getExportformat()]
                 );
                 $this->db->delete('texportqueue', 'kExportqueue', (int)$this->queue->foreignKeyID);
 
@@ -1665,7 +1667,7 @@ class Exportformat
                 WHERE kVaterArtikel = 0 
                 AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1"
         );
-        if (!empty($productData->kArtikel)) {
+        if ($productData !== null && $productData->kArtikel > 0) {
             $product = new Artikel();
             $product->fuelleArtikel($productData->kArtikel, Artikel::getExportOptions());
             $product->cDeeplink             = '';

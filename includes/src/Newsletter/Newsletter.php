@@ -140,8 +140,9 @@ class Newsletter
                     ON tsprache.kSprache = tnewsletterempfaenger.kSprache
                 LEFT JOIN tkunde
                     ON tkunde.kKunde = tnewsletterempfaenger.kKunde
-                WHERE tnewsletterempfaenger.kSprache = ' . (int)$data->kSprache . '
-                    AND tnewsletterempfaenger.nAktiv = 1 ' . $cSQL
+                WHERE tnewsletterempfaenger.kSprache = :lid
+                    AND tnewsletterempfaenger.nAktiv = 1 ' . $cSQL,
+            ['lid' => (int)$data->kSprache]
         );
         if ($this->db->getErrorCode() !== 0) {
             $recipients = new stdClass();
@@ -261,7 +262,8 @@ class Newsletter
                     FROM tkunde
                     JOIN tkundengruppe
                         ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
-                    WHERE tkunde.kKunde = ' . (int)$customer->kKunde
+                    WHERE tkunde.kKunde = :cid',
+                ['cid' => (int)$customer->kKunde]
             );
             if ($customergGroup !== null && isset($customergGroup->nNettoPreise)) {
                 $net = $customergGroup->nNettoPreise;

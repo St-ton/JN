@@ -39,7 +39,7 @@ if (Form::validateToken()) {
     switch (Request::verifyGPDataString('action')) {
         case 'save':
             foreach ($redirects as $id => $item) {
-                $redirect = new Redirect($id);
+                $redirect = new Redirect((int)$id);
                 if ($redirect->kRedirect > 0 && $redirect->cToUrl !== $item['cToUrl']) {
                     if (Redirect::checkAvailability($item['cToUrl'])) {
                         $redirect->cToUrl     = $item['cToUrl'];
@@ -58,7 +58,7 @@ if (Form::validateToken()) {
         case 'delete':
             foreach ($redirects as $id => $item) {
                 if (isset($item['enabled']) && (int)$item['enabled'] === 1) {
-                    Redirect::deleteRedirect($id);
+                    Redirect::deleteRedirect((int)$id);
                 }
             }
             break;

@@ -97,8 +97,8 @@ class Question
                     LEFT JOIN tmerkmalsprache AS ms
                         ON ms.kMerkmal = m.kMerkmal 
                             AND ms.kSprache = ag.kSprache
-                WHERE af.kAuswahlAssistentFrage = ' . $id .
-                    ($activeOnly ? ' AND af.nAktiv = 1' : '')
+                WHERE af.kAuswahlAssistentFrage = :qid' . ($activeOnly ? ' AND af.nAktiv = 1' : ''),
+            ['qid' => $id]
         );
         if ($data !== null) {
             foreach (\get_object_vars($data) as $name => $value) {

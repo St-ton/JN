@@ -99,13 +99,13 @@ class Application extends BaseApplication
         });
         /** @var ListingItem $plugin */
         foreach ($compatible as $plugin) {
-            if (!\is_dir($plugin->getPath() . '/Commands')) {
+            if (!\is_dir($plugin->getPath() . 'Commands')) {
                 continue;
             }
             $finder = Finder::create()
                 ->ignoreVCS(false)
                 ->ignoreDotFiles(false)
-                ->in($plugin->getPath() . '/Commands');
+                ->in($plugin->getPath() . 'Commands');
 
             foreach ($finder->files() as $file) {
                 /** @var SplFileInfo $file */
@@ -115,12 +115,12 @@ class Application extends BaseApplication
                     \str_replace('.' . $file->getExtension(), '', $file->getBasename())
                 );
                 if (!\class_exists($class)) {
-                    throw new RuntimeException("Class '" . $class . "' does not exist");
+                    throw new RuntimeException('Class "' . $class . '" does not exist');
                 }
 
                 $command = new $class();
                 /** @var Command $command */
-                $command->setName($plugin->getID() . ':' . $command->getName());
+                $command->setName($plugin->getPluginID() . ':' . $command->getName());
                 $this->add($command);
             }
         }

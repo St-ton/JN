@@ -18,6 +18,7 @@
      data-backdrop="static">
     <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
         <form method="post">
+            {$jtl_token}
             <input id="has-auth" type="hidden" value="{if $hasAuth}true{else}false{/if}" disabled/>
             <input id="auth-redirect" type="hidden" value="{$authRedirect|default:false}" disabled/>
             <div class="modal-content">

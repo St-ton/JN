@@ -135,7 +135,7 @@ final class Uninstaller
      */
     private function fullDelete(int $pluginID): void
     {
-        $this->db->query(
+        $this->db->queryPrepared(
             'DELETE tpluginsprachvariablesprache, tpluginsprachvariablecustomsprache, tpluginsprachvariable
                 FROM tpluginsprachvariable
                 LEFT JOIN tpluginsprachvariablesprache
@@ -143,7 +143,8 @@ final class Uninstaller
                 LEFT JOIN tpluginsprachvariablecustomsprache
                     ON tpluginsprachvariablecustomsprache.cSprachvariable = tpluginsprachvariable.cName
                     AND tpluginsprachvariablecustomsprache.kPlugin = tpluginsprachvariable.kPlugin
-                WHERE tpluginsprachvariable.kPlugin = ' . $pluginID
+                WHERE tpluginsprachvariable.kPlugin = :pid',
+            ['pid' => $pluginID]
         );
         $this->db->delete('tplugineinstellungen', 'kPlugin', $pluginID);
         $this->db->delete('tconsent', 'pluginID', $pluginID);
@@ -168,7 +169,7 @@ final class Uninstaller
                     AND (tboxvorlage.eTyp = 'plugin' OR tboxvorlage.eTyp = 'extension')",
             ['pid' => $pluginID]
         );
-        $this->db->query(
+        $this->db->queryPrepared(
             'DELETE tpluginemailvorlageeinstellungen, temailvorlagespracheoriginal,
                 temailvorlage, temailvorlagesprache
                 FROM temailvorlage
@@ -178,7 +179,8 @@ final class Uninstaller
                     ON tpluginemailvorlageeinstellungen.kEmailvorlage = temailvorlage.kEmailvorlage
                 LEFT JOIN temailvorlagesprache
                     ON temailvorlagesprache.kEmailvorlage = temailvorlage.kEmailvorlage
-                WHERE temailvorlage.kPlugin = ' . $pluginID
+                WHERE temailvorlage.kPlugin = :pid',
+            ['pid' => $pluginID]
         );
     }
 

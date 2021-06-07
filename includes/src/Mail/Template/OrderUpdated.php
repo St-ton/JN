@@ -23,7 +23,7 @@ class OrderUpdated extends OrderShipped
         }
         $moduleID = $data->tbestellung->Zahlungsart->cModulId ?? null;
         if (!empty($moduleID)) {
-            $oZahlungsartConf = $this->db->getSingleObject(
+            $conf = $this->db->getSingleObject(
                 'SELECT tzahlungsartsprache.*
                     FROM tzahlungsartsprache
                     JOIN tzahlungsart
@@ -35,8 +35,8 @@ class OrderUpdated extends OrderShipped
                 ['module' => $moduleID, 'lid' => $this->languageID]
             );
 
-            if ($oZahlungsartConf !== null && $oZahlungsartConf->kZahlungsart > 0) {
-                $smarty->assign('Zahlungsart', $oZahlungsartConf);
+            if ($conf !== null && $conf->kZahlungsart > 0) {
+                $smarty->assign('Zahlungsart', $conf);
             }
         }
     }

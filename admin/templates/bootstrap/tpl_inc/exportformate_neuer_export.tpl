@@ -130,6 +130,7 @@
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <input class="form-control" type="text"  name="cDateiname" id="cDateiname"
                                value="{if isset($cPostVar_arr.cDateiname)}{$cPostVar_arr.cDateiname}{elseif $Exportformat->getFilename()}{$Exportformat->getFilename()}{/if}"
+                                {if $Exportformat->getPluginID() > 0} readonly{/if}
                                tabindex="2" />
                     </div>
                 </div>

@@ -321,28 +321,29 @@ function createNewCoupon($cKuponTyp)
  */
 function createCouponFromInput()
 {
+    $input                         = Text::filterXSS($_POST);
     $coupon                        = new Kupon(Request::postInt('kKuponBearbeiten'));
-    $coupon->cKuponTyp             = $_POST['cKuponTyp'];
-    $coupon->cName                 = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-    $coupon->fWert                 = !empty($_POST['fWert']) ? (float)str_replace(',', '.', $_POST['fWert']) : null;
-    $coupon->cWertTyp              = !empty($_POST['cWertTyp']) ? $_POST['cWertTyp'] : null;
-    $coupon->cZusatzgebuehren      = !empty($_POST['cZusatzgebuehren']) ? $_POST['cZusatzgebuehren'] : 'N';
+    $coupon->cKuponTyp             = $input['cKuponTyp'];
+    $coupon->cName                 = htmlspecialchars($input['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+    $coupon->fWert                 = !empty($input['fWert']) ? (float)str_replace(',', '.', $input['fWert']) : null;
+    $coupon->cWertTyp              = !empty($input['cWertTyp']) ? $input['cWertTyp'] : null;
+    $coupon->cZusatzgebuehren      = !empty($input['cZusatzgebuehren']) ? $input['cZusatzgebuehren'] : 'N';
     $coupon->nGanzenWKRabattieren  = Request::postInt('nGanzenWKRabattieren');
-    $coupon->kSteuerklasse         = !empty($_POST['kSteuerklasse']) ? (int)$_POST['kSteuerklasse'] : null;
-    $coupon->fMindestbestellwert   = (float)str_replace(',', '.', $_POST['fMindestbestellwert']);
-    $coupon->cCode                 = !empty($_POST['cCode']) ? $_POST['cCode'] : '';
-    $coupon->cLieferlaender        = !empty($_POST['cLieferlaender'])
-        ? mb_convert_case($_POST['cLieferlaender'], MB_CASE_UPPER)
+    $coupon->kSteuerklasse         = !empty($input['kSteuerklasse']) ? (int)$input['kSteuerklasse'] : null;
+    $coupon->fMindestbestellwert   = (float)str_replace(',', '.', $input['fMindestbestellwert']);
+    $coupon->cCode                 = !empty($input['cCode']) ? $input['cCode'] : '';
+    $coupon->cLieferlaender        = !empty($input['cLieferlaender'])
+        ? mb_convert_case($input['cLieferlaender'], MB_CASE_UPPER)
         : '';
     $coupon->nVerwendungen         = Request::postInt('nVerwendungen');
     $coupon->nVerwendungenProKunde = Request::postInt('nVerwendungenProKunde');
-    $coupon->cArtikel              = !empty($_POST['cArtikel']) ? ';' . trim($_POST['cArtikel'], ";\t\n\r") . ';' : '';
+    $coupon->cArtikel              = !empty($input['cArtikel']) ? ';' . trim($input['cArtikel'], ";\t\n\r") . ';' : '';
     $coupon->cHersteller           = '-1';
     $coupon->kKundengruppe         = Request::postInt('kKundengruppe');
-    $coupon->dGueltigAb            = normalizeDate(!empty($_POST['dGueltigAb'])
-        ? $_POST['dGueltigAb']
+    $coupon->dGueltigAb            = normalizeDate(!empty($input['dGueltigAb'])
+        ? $input['dGueltigAb']
         : date_create()->format('Y-m-d H:i') . ':00');
-    $coupon->dGueltigBis           = normalizeDate(!empty($_POST['dGueltigBis']) ? $_POST['dGueltigBis'] : '');
+    $coupon->dGueltigBis           = normalizeDate(!empty($input['dGueltigBis']) ? $input['dGueltigBis'] : '');
     $coupon->cAktiv                = Request::postVar('cAktiv') === 'Y' ? 'Y' : 'N';
     $coupon->cKategorien           = '-1';
     if ($coupon->cKuponTyp !== Kupon::TYPE_NEWCUSTOMER) {
@@ -350,39 +351,39 @@ function createCouponFromInput()
     }
     if (Request::postVar('bOpenEnd') === 'Y') {
         $coupon->dGueltigBis = null;
-    } elseif (!empty($_POST['dDauerTage'])) {
+    } elseif (!empty($input['dDauerTage'])) {
         $coupon->dGueltigBis     = '';
         $actualTimestamp         = date_create();
         $actualTimestampEndofDay = date_time_set($actualTimestamp, 23, 59, 59);
-        $setDays                 = new DateInterval('P' . $_POST['dDauerTage'] . 'D');
+        $setDays                 = new DateInterval('P' . $input['dDauerTage'] . 'D');
         $coupon->dGueltigBis     = date_add($actualTimestampEndofDay, $setDays)->format('Y-m-d H:i:s');
     }
-    if (GeneralObject::hasCount('kHersteller', $_POST) && !in_array('-1', $_POST['kHersteller'])) {
-        $coupon->cHersteller = Text::createSSK($_POST['kHersteller']);
+    if (GeneralObject::hasCount('kHersteller', $input) && !in_array('-1', $input['kHersteller'])) {
+        $coupon->cHersteller = Text::createSSK($input['kHersteller']);
     }
-    if (GeneralObject::hasCount('kKategorien', $_POST) && !in_array('-1', $_POST['kKategorien'])) {
-        $coupon->cKategorien = Text::createSSK($_POST['kKategorien']);
+    if (GeneralObject::hasCount('kKategorien', $input) && !in_array('-1', $input['kKategorien'])) {
+        $coupon->cKategorien = Text::createSSK($input['kKategorien']);
     }
-    if (!empty($_POST['cKunden']) && $_POST['cKunden'] != '-1') {
-        $coupon->cKunden = trim($_POST['cKunden'], ";\t\n\r") . ';';
+    if (!empty($input['cKunden']) && $input['cKunden'] != '-1') {
+        $coupon->cKunden = trim($input['cKunden'], ";\t\n\r") . ';';
     }
-    if (isset($_POST['couponCreation'])) {
+    if (isset($input['couponCreation'])) {
         $massCreationCoupon                  = new stdClass();
         $massCreationCoupon->cActiv          = Request::postInt('couponCreation');
-        $massCreationCoupon->numberOfCoupons = ($massCreationCoupon->cActiv === 1 && !empty($_POST['numberOfCoupons']))
-            ? (int)$_POST['numberOfCoupons']
+        $massCreationCoupon->numberOfCoupons = ($massCreationCoupon->cActiv === 1 && !empty($input['numberOfCoupons']))
+            ? (int)$input['numberOfCoupons']
             : 2;
-        $massCreationCoupon->lowerCase       = ($massCreationCoupon->cActiv === 1 && !empty($_POST['lowerCase']));
-        $massCreationCoupon->upperCase       = ($massCreationCoupon->cActiv === 1 && !empty($_POST['upperCase']));
-        $massCreationCoupon->numbersHash     = ($massCreationCoupon->cActiv === 1 && !empty($_POST['numbersHash']));
-        $massCreationCoupon->hashLength      = ($massCreationCoupon->cActiv === 1 && !empty($_POST['hashLength']))
-            ? $_POST['hashLength']
+        $massCreationCoupon->lowerCase       = ($massCreationCoupon->cActiv === 1 && !empty($input['lowerCase']));
+        $massCreationCoupon->upperCase       = ($massCreationCoupon->cActiv === 1 && !empty($input['upperCase']));
+        $massCreationCoupon->numbersHash     = ($massCreationCoupon->cActiv === 1 && !empty($input['numbersHash']));
+        $massCreationCoupon->hashLength      = ($massCreationCoupon->cActiv === 1 && !empty($input['hashLength']))
+            ? $input['hashLength']
             : 4;
-        $massCreationCoupon->prefixHash      = ($massCreationCoupon->cActiv === 1 && !empty($_POST['prefixHash']))
-            ? $_POST['prefixHash']
+        $massCreationCoupon->prefixHash      = ($massCreationCoupon->cActiv === 1 && !empty($input['prefixHash']))
+            ? $input['prefixHash']
             : '';
-        $massCreationCoupon->suffixHash      = ($massCreationCoupon->cActiv === 1 && !empty($_POST['suffixHash']))
-            ? $_POST['suffixHash']
+        $massCreationCoupon->suffixHash      = ($massCreationCoupon->cActiv === 1 && !empty($input['suffixHash']))
+            ? $input['suffixHash']
             : '';
         $coupon->massCreationCoupon          = $massCreationCoupon;
     }
@@ -400,10 +401,11 @@ function createCouponFromInput()
 function getCouponCount(string $type = Kupon::TYPE_STANDARD, string $whereSQL = ''): int
 {
     return (int)Shop::Container()->getDB()->getSingleObject(
-        "SELECT COUNT(kKupon) AS cnt
+        'SELECT COUNT(kKupon) AS cnt
             FROM tkupon
-            WHERE cKuponTyp = '" . $type . "'" .
-            ($whereSQL !== '' ? ' AND ' . $whereSQL : '')
+            WHERE cKuponTyp = :tp' .
+            ($whereSQL !== '' ? ' AND ' . $whereSQL : ''),
+        ['tp' => $type]
     )->cnt;
 }
 
@@ -458,7 +460,7 @@ function validateCoupon($coupon)
                 FROM tkupon
                 WHERE cCode = :cCode
                     AND kKupon != :kKupon',
-            [ 'cCode' => $coupon->cCode, 'kKupon' => (int)$coupon->kKupon ]
+            ['cCode' => $coupon->cCode, 'kKupon' => (int)$coupon->kKupon]
         );
         if ($queryRes !== null) {
             $errors[] = __('errorCouponCodeDuplicate');
@@ -564,7 +566,7 @@ function saveCoupon($coupon, $languages)
                     $localized              = new stdClass();
                     $localized->kKupon      = $couponID;
                     $localized->cISOSprache = $code;
-                    $localized->cName       = $localizedName;
+                    $localized->cName       = Text::filterXSS($localizedName);
                     $db->insert('tkuponsprache', $localized);
                 }
             }
@@ -580,7 +582,7 @@ function saveCoupon($coupon, $languages)
                 $localized              = new stdClass();
                 $localized->kKupon      = $coupon->kKupon;
                 $localized->cISOSprache = $code;
-                $localized->cName       = $localizedName;
+                $localized->cName       = Text::filterXSS($localizedName);
                 $db->insert('tkuponsprache', $localized);
             }
         }

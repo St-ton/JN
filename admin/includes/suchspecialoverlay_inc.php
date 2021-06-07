@@ -1,6 +1,7 @@
 <?php
 
 use JTL\Alert\Alert;
+use JTL\Media\Image;
 use JTL\Media\Image\Overlay;
 use JTL\Shop;
 
@@ -56,10 +57,10 @@ function speicherEinstellung(
         return false;
     }
     $overlay->setActive((int)$post['nAktiv'])
-            ->setTransparence((int)$post['nTransparenz'])
-            ->setSize((int)$post['nGroesse'])
-            ->setPosition((int)($post['nPosition'] ?? 0))
-            ->setPriority((int)$post['nPrio']);
+        ->setTransparence((int)$post['nTransparenz'])
+        ->setSize((int)$post['nGroesse'])
+        ->setPosition((int)($post['nPosition'] ?? 0))
+        ->setPriority((int)$post['nPrio']);
 
     if (mb_strlen($files['name']) > 0) {
         $template    = $template
@@ -302,52 +303,41 @@ function erstelleFixedOverlay(string $image, int $size, int $transparency, strin
 
 
 /**
- * @param array   $files
+ * @param array   $file
  * @param Overlay $overlay
  * @return bool
  */
-function speicherBild(array $files, Overlay $overlay): bool
+function speicherBild(array $file, Overlay $overlay): bool
 {
-    if ($files['type'] === 'image/jpeg'
-        || $files['type'] === 'image/pjpeg'
-        || $files['type'] === 'image/jpg'
-        || $files['type'] === 'image/gif'
-        || $files['type'] === 'image/png'
-        || $files['type'] === 'image/bmp'
-        || $files['type'] === 'image/x-png'
-    ) {
-        if (empty($files['error'])) {
-            $ext      = mappeFileTyp($files['type']);
-            $original = $files['tmp_name'];
+    if (!Image::isImageUpload($file)) {
+        return false;
+    }
+    $ext           = mappeFileTyp($file['type']);
+    $original      = $file['tmp_name'];
+    $sizesToCreate = [
+        ['size' => IMAGE_SIZE_XS, 'factor' => 1],
+        ['size' => IMAGE_SIZE_SM, 'factor' => 2],
+        ['size' => IMAGE_SIZE_MD, 'factor' => 3],
+        ['size' => IMAGE_SIZE_LG, 'factor' => 4]
+    ];
 
-            $sizesToCreate = [
-                ['size' => IMAGE_SIZE_XS,  'factor' => 1],
-                ['size' => IMAGE_SIZE_SM, 'factor' => 2],
-                ['size' => IMAGE_SIZE_MD,  'factor' => 3],
-                ['size' => IMAGE_SIZE_LG, 'factor' => 4]
-            ];
-
-            foreach ($sizesToCreate as $sizeToCreate) {
-                if (!is_dir(PFAD_ROOT . $overlay->getPathSize($sizeToCreate['size']))) {
-                    mkdir(PFAD_ROOT . $overlay->getPathSize($sizeToCreate['size']), 0755, true);
-                }
-                $imageCreated = erstelleFixedOverlay(
-                    $original,
-                    $overlay->getSize() * $sizeToCreate['factor'],
-                    $overlay->getTransparance(),
-                    $ext,
-                    PFAD_ROOT . $overlay->getPathSize($sizeToCreate['size']) . $overlay->getImageName()
-                );
-                if (!$imageCreated) {
-                    return false;
-                }
-            }
-
-            return true;
+    foreach ($sizesToCreate as $sizeToCreate) {
+        if (!is_dir(PFAD_ROOT . $overlay->getPathSize($sizeToCreate['size']))) {
+            mkdir(PFAD_ROOT . $overlay->getPathSize($sizeToCreate['size']), 0755, true);
+        }
+        $imageCreated = erstelleFixedOverlay(
+            $original,
+            $overlay->getSize() * $sizeToCreate['factor'],
+            $overlay->getTransparance(),
+            $ext,
+            PFAD_ROOT . $overlay->getPathSize($sizeToCreate['size']) . $overlay->getImageName()
+        );
+        if (!$imageCreated) {
+            return false;
         }
     }
 
-    return false;
+    return true;
 }
 
 /**

@@ -68,9 +68,10 @@ final class QuickSync extends AbstractSync
                     "SELECT SUM(pos.nAnzahl) AS totalquantity
                         FROM tbestellung b
                         JOIN twarenkorbpos pos
-                        ON pos.kWarenkorb = b.kWarenkorb
+                            ON pos.kWarenkorb = b.kWarenkorb
                         WHERE b.cAbgeholt = 'N'
-                            AND pos.kArtikel = " . $id
+                            AND pos.kArtikel = :pid",
+                    ['pid' => $id]
                 );
                 if ($delta !== null && $delta->totalquantity > 0) {
                     $product->fLagerbestand -= $delta->totalquantity;

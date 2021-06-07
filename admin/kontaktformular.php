@@ -4,6 +4,7 @@ use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
+use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Shop;
 use function Functional\map;
@@ -59,14 +60,15 @@ if (Request::postInt('content') === 1 && Form::validateToken()) {
 }
 
 if (Request::postInt('betreff') === 1 && Form::validateToken()) {
-    if ($_POST['cName'] && $_POST['cMail']) {
+    $postData = Text::filterXSS($_POST);
+    if ($postData['cName'] && $postData['cMail']) {
         $newSubject        = new stdClass();
-        $newSubject->cName = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-        $newSubject->cMail = $_POST['cMail'];
-        if (is_array($_POST['cKundengruppen'])) {
-            $newSubject->cKundengruppen = implode(';', $_POST['cKundengruppen']) . ';';
+        $newSubject->cName = htmlspecialchars($postData['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+        $newSubject->cMail = $postData['cMail'];
+        if (is_array($postData['cKundengruppen'])) {
+            $newSubject->cKundengruppen = implode(';', $postData['cKundengruppen']) . ';';
         }
-        if (GeneralObject::hasCount('cKundengruppen', $_POST) && in_array(0, $_POST['cKundengruppen'])) {
+        if (GeneralObject::hasCount('cKundengruppen', $postData) && in_array(0, $postData['cKundengruppen'])) {
             $newSubject->cKundengruppen = 0;
         }
         $newSubject->nSort = Request::postInt('nSort');
@@ -89,9 +91,9 @@ if (Request::postInt('betreff') === 1 && Form::validateToken()) {
             $code                   = $language->getIso();
             $localized->cISOSprache = $code;
             $localized->cName       = $newSubject->cName;
-            if ($_POST['cName_' . $code]) {
+            if ($postData['cName_' . $code]) {
                 $localized->cName = htmlspecialchars(
-                    $_POST['cName_' . $code],
+                    $postData['cName_' . $code],
                     ENT_COMPAT | ENT_HTML401,
                     JTL_CHARSET
                 );

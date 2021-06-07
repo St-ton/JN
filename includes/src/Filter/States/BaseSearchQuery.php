@@ -474,10 +474,10 @@ class BaseSearchQuery extends AbstractFilter
         $searchCache->kSprache  = $langID;
         $searchCache->cSuche    = $query;
         $searchCache->dErstellt = 'NOW()';
-        $kSuchCache             = $this->productFilter->getDB()->insert('tsuchcache', $searchCache);
+        $cacheID                = $this->productFilter->getDB()->insert('tsuchcache', $searchCache);
 
         if ($this->getConfig('artikeluebersicht')['suche_fulltext'] !== 'N' && $this->isFulltextIndexActive()) {
-            $searchCache->kSuchCache = $kSuchCache;
+            $searchCache->kSuchCache = $cacheID;
 
             return $this->editFullTextSearchCache(
                 $searchCache,
@@ -488,15 +488,15 @@ class BaseSearchQuery extends AbstractFilter
             );
         }
 
-        if ($kSuchCache <= 0) {
+        if ($cacheID <= 0) {
             return 0;
         }
 
         if ($this->getLanguageID() > 0 && !LanguageHelper::isDefaultLanguageActive()) {
-            $sql = 'SELECT ' . $kSuchCache . ', IF(tartikel.kVaterArtikel > 0, 
+            $sql = 'SELECT ' . $cacheID . ', IF(tartikel.kVaterArtikel > 0, 
                         tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP, ';
         } else {
-            $sql = 'SELECT ' . $kSuchCache . ', IF(kVaterArtikel > 0, 
+            $sql = 'SELECT ' . $cacheID . ', IF(kVaterArtikel > 0, 
                         kVaterArtikel, kArtikel) AS kArtikelTMP, ';
         }
         // Shop2 Suche - mehr als 3 Suchwörter *
@@ -832,7 +832,7 @@ class BaseSearchQuery extends AbstractFilter
                 LIMIT ' . (int)$this->getConfig('artikeluebersicht')['suche_max_treffer']
         );
 
-        return $kSuchCache;
+        return $cacheID;
     }
 
     /**
@@ -879,67 +879,69 @@ class BaseSearchQuery extends AbstractFilter
      * @former bearbeiteSuchCacheFulltext
      */
     private function editFullTextSearchCache(
-        $searchCache,
-        $searchCols,
-        $searchQueries,
+        stdClass $searchCache,
+        array $searchCols,
+        array $searchQueries,
         int $limit = 0,
-        $fullText = 'Y'
+        string $fullText = 'Y'
     ): int {
-        if ($searchCache->kSuchCache > 0) {
-            $productCols = \array_map(static function ($item) {
-                $items = \explode('.', $item, 2);
+        $searchCache->kSuchCache = (int)$searchCache->kSuchCache;
+        if ($searchCache->kSuchCache <= 0) {
+            return $searchCache->kSuchCache;
+        }
+        $productCols = \array_map(static function ($item) {
+            $items = \explode('.', $item, 2);
 
-                return 'tartikel.' . $items[1];
-            }, $searchCols);
+            return 'tartikel.' . $items[1];
+        }, $searchCols);
 
-            $langCols = \array_filter($searchCols, static function ($item) {
-                return \preg_match('/tartikelsprache\.(.*)/', $item) ? true : false;
-            });
+        $langCols = \array_filter($searchCols, static function ($item) {
+            return \preg_match('/tartikelsprache\.(.*)/', $item) ? true : false;
+        });
 
-            $score = 'MATCH (' . \implode(', ', $productCols) . ")
-                        AGAINST ('" . \implode(' ', $searchQueries) . "' IN NATURAL LANGUAGE MODE) ";
+        $score = 'MATCH (' . \implode(', ', $productCols) . ")
+                    AGAINST ('" . \implode(' ', $searchQueries) . "' IN NATURAL LANGUAGE MODE) ";
+        if ($fullText === 'B') {
+            $match = 'MATCH (' . \implode(', ', $productCols) . ")
+                    AGAINST ('" . \implode('* ', $searchQueries) . "*' IN BOOLEAN MODE) ";
+        } else {
+            $match = $score;
+        }
+
+        $sql = 'SELECT ' . $searchCache->kSuchCache . ' AS kSuchCache,
+                IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP, '
+                . $score . ' AS score
+                FROM tartikel
+                WHERE ' . $match . $this->productFilter->getFilterSQL()->getStockFilterSQL() . ' ';
+
+        if (Shop::getLanguageID() > 0 && !LanguageHelper::isDefaultLanguageActive()) {
+            $score = 'MATCH (' . \implode(', ', $langCols) . ")
+                        AGAINST ('" . \implode(' ', $searchQueries) . "' IN NATURAL LANGUAGE MODE)";
             if ($fullText === 'B') {
-                $match = 'MATCH (' . \implode(', ', $productCols) . ")
-                        AGAINST ('" . \implode('* ', $searchQueries) . "*' IN BOOLEAN MODE) ";
+                $score = 'MATCH (' . \implode(', ', $langCols) . ")
+                        AGAINST ('" . \implode('* ', $searchQueries) . "*' IN BOOLEAN MODE)";
             } else {
                 $match = $score;
             }
-
-            $sql = 'SELECT ' . $searchCache->kSuchCache . ' AS kSuchCache,
-                    IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP, '
-                    . $score . ' AS score
-                    FROM tartikel
-                    WHERE ' . $match . $this->productFilter->getFilterSQL()->getStockFilterSQL() . ' ';
-
-            if (Shop::getLanguageID() > 0 && !LanguageHelper::isDefaultLanguageActive()) {
-                $score = 'MATCH (' . \implode(', ', $langCols) . ")
-                            AGAINST ('" . \implode(' ', $searchQueries) . "' IN NATURAL LANGUAGE MODE)";
-                if ($fullText === 'B') {
-                    $score = 'MATCH (' . \implode(', ', $langCols) . ")
-                            AGAINST ('" . \implode('* ', $searchQueries) . "*' IN BOOLEAN MODE)";
-                } else {
-                    $match = $score;
-                }
-                $sql .= 'UNION DISTINCT
-                SELECT ' . $searchCache->kSuchCache . ' AS kSuchCache,
-                    IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP, '
-                    . $score . ' AS score
-                    FROM tartikel
-                    INNER JOIN tartikelsprache ON tartikelsprache.kArtikel = tartikel.kArtikel
-                    WHERE ' . $match . $this->productFilter->getFilterSQL()->getStockFilterSQL() . ' ';
-            }
-
-            $this->productFilter->getDB()->query(
-                'INSERT INTO tsuchcachetreffer
-                        SELECT kSuchCache, kArtikelTMP, ROUND(MAX(score) * -10)
-                        FROM ( ' . $sql . ' ) AS i
-                        LEFT JOIN tartikelsichtbarkeit 
-                            ON tartikelsichtbarkeit.kArtikel = i.kArtikelTMP
-                            AND tartikelsichtbarkeit.kKundengruppe = ' . Frontend::getCustomerGroup()->getID() . '
-                        WHERE tartikelsichtbarkeit.kKundengruppe IS NULL
-                        GROUP BY kSuchCache, kArtikelTMP' . ($limit > 0 ? ' LIMIT ' . $limit : '')
-            );
+            $sql .= 'UNION DISTINCT
+            SELECT ' . $searchCache->kSuchCache . ' AS kSuchCache,
+                IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP, '
+                . $score . ' AS score
+                FROM tartikel
+                INNER JOIN tartikelsprache ON tartikelsprache.kArtikel = tartikel.kArtikel
+                WHERE ' . $match . $this->productFilter->getFilterSQL()->getStockFilterSQL() . ' ';
         }
+
+        $this->productFilter->getDB()->query(
+            'INSERT INTO tsuchcachetreffer
+                    SELECT kSuchCache, kArtikelTMP, ROUND(MAX(score) * -10)
+                    FROM ( ' . $sql . ' ) AS i
+                    LEFT JOIN tartikelsichtbarkeit 
+                        ON tartikelsichtbarkeit.kArtikel = i.kArtikelTMP
+                        AND tartikelsichtbarkeit.kKundengruppe = ' . Frontend::getCustomerGroup()->getID() . '
+                    WHERE tartikelsichtbarkeit.kKundengruppe IS NULL
+                    GROUP BY kSuchCache, kArtikelTMP' . ($limit > 0 ? ' LIMIT ' . $limit : '')
+        );
 
         return $searchCache->kSuchCache;
     }

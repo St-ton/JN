@@ -107,7 +107,7 @@
                                                         <td>
                                                             {if empty($draft->getPublishFrom())}
                                                                 <span class="text-danger">{__('unpublished')}</span>
-                                                            {elseif $publicPageRow->kPage == $draft->getKey()}
+                                                            {elseif $publicPageRow !== null && $publicPageRow->kPage == $draft->getKey()}
                                                                 <span class="text-success">
                                                                     {$draft->getPublishFrom()|date_format:'%c'}
                                                                 </span>

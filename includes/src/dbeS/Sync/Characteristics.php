@@ -105,7 +105,7 @@ final class Characteristics extends AbstractSync
                 'mMerkmalWert'
             );
             if (\count($values) > 0) {
-                $this->delete((int)$charAttribute['kMerkmal'], 0);
+                $this->delete((int)$charAttribute['kMerkmal'], false);
             } else {
                 $this->deleteCharacteristicOnly((int)$charAttribute['kMerkmal']);
             }
@@ -290,14 +290,15 @@ final class Characteristics extends AbstractSync
                     }
                     // Sprache vom Shop wurde nicht von der Wawi mitgeschickt und muss somit in tseo nachgefüllt werden
                     $slug = Seo::checkSeo(Seo::getSeo($characteristicValue->cNameSTD ?? ''));
-                    $this->db->query(
+                    $this->db->queryPrepared(
                         "DELETE tmerkmalwertsprache, tseo FROM tmerkmalwertsprache
-                        LEFT JOIN tseo
+                            LEFT JOIN tseo
                             ON tseo.cKey = 'kMerkmalWert'
-                                AND tseo.kKey = " . $characteristicValue->kMerkmalWert . '
-                                AND tseo.kSprache = ' . (int)$language->kSprache . '
-                        WHERE tmerkmalwertsprache.kMerkmalWert = ' . $characteristicValue->kMerkmalWert . '
-                            AND tmerkmalwertsprache.kSprache = ' . $language->kSprache
+                                AND tseo.kKey = :av
+                                AND tseo.kSprache = :lid
+                            WHERE tmerkmalwertsprache.kMerkmalWert = :av
+                                AND tmerkmalwertsprache.kSprache = :lid",
+                        ['lid' => (int)$language->kSprache, 'av' => $characteristicValue->kMerkmalWert]
                     );
                     //@todo: 1062: Duplicate entry '' for key 'PRIMARY'
                     if ($slug !== '' && $slug !== null) {
@@ -324,26 +325,27 @@ final class Characteristics extends AbstractSync
     }
 
     /**
-     * @param int $id
-     * @param int $update
+     * @param int  $id
+     * @param bool $update
      */
-    private function delete(int $id, $update = 1): void
+    private function delete(int $id, bool $update = true): void
     {
         if ($id < 1) {
             return;
         }
-        $this->db->query(
+        $this->db->queryPrepared(
             "DELETE tseo
-            FROM tseo
-            INNER JOIN tmerkmalwert
-                ON tmerkmalwert.kMerkmalWert = tseo.kKey
-            INNER JOIN tmerkmal
-                ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
-            WHERE tseo.cKey = 'kMerkmalWert'
-                AND tmerkmal.kMerkmal = " . $id
+                FROM tseo
+                INNER JOIN tmerkmalwert
+                    ON tmerkmalwert.kMerkmalWert = tseo.kKey
+                INNER JOIN tmerkmal
+                    ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
+                WHERE tseo.cKey = 'kMerkmalWert'
+                    AND tmerkmal.kMerkmal = :aid",
+            ['aid' => $id]
         );
 
-        if ($update) {
+        if ($update === true) {
             $this->db->delete('tartikelmerkmal', 'kMerkmal', $id);
         }
         $this->db->delete('tmerkmal', 'kMerkmal', $id);
@@ -363,17 +365,17 @@ final class Characteristics extends AbstractSync
         if ($id < 1) {
             return;
         }
-        $this->db->query(
+        $this->db->queryPrepared(
             "DELETE tseo
-            FROM tseo
-            INNER JOIN tmerkmalwert
-                ON tmerkmalwert.kMerkmalWert = tseo.kKey
-            INNER JOIN tmerkmal
-                ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
-            WHERE tseo.cKey = 'kMerkmalWert'
-                AND tmerkmal.kMerkmal = " . $id
+                FROM tseo
+                INNER JOIN tmerkmalwert
+                    ON tmerkmalwert.kMerkmalWert = tseo.kKey
+                INNER JOIN tmerkmal
+                    ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
+                WHERE tseo.cKey = 'kMerkmalWert'
+                    AND tmerkmal.kMerkmal = :av",
+            ['av' => $id]
         );
-
         $this->db->delete('tmerkmal', 'kMerkmal', $id);
         $this->db->delete('tmerkmalsprache', 'kMerkmal', $id);
     }
@@ -382,7 +384,7 @@ final class Characteristics extends AbstractSync
      * @param int  $id
      * @param bool $isInsert
      */
-    private function deleteCharacteristicValue(int $id, $isInsert = false): void
+    private function deleteCharacteristicValue(int $id, bool $isInsert = false): void
     {
         if ($id < 1) {
             return;
@@ -396,19 +398,21 @@ final class Characteristics extends AbstractSync
                 WHERE kMerkmal = (
                     SELECT kMerkmal
                         FROM tmerkmalwert
-                        WHERE kMerkmalWert = ' . $id . ')'
+                        WHERE kMerkmalWert = :av)',
+            ['av' => $id]
         );
 
-        $this->db->query(
+        $this->db->queryPrepared(
             'DELETE tmerkmalwert, tmerkmalwertsprache
-            FROM tmerkmalwert
-            JOIN tmerkmalwertsprache
-                ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-            WHERE tmerkmalwert.kMerkmalWert = ' . $id
+                FROM tmerkmalwert
+                JOIN tmerkmalwertsprache
+                    ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
+                WHERE tmerkmalwert.kMerkmalWert = :av',
+            ['av' => $id]
         );
         // Das Merkmal hat keine MerkmalWerte mehr => auch loeschen
         if (!$isInsert && $count !== null && (int)$count->nAnzahl === 1) {
-            $this->delete($count->kMerkmal);
+            $this->delete((int)$count->kMerkmal);
         }
     }
 

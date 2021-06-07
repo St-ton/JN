@@ -29,11 +29,11 @@ final class Data extends AbstractPush
             $xml['tverfuegbarkeitsbenachrichtigung attr']['anzahl'] = $count;
             for ($i = 0; $i < $xml['tverfuegbarkeitsbenachrichtigung attr']['anzahl']; $i++) {
                 $current[$i . ' attr'] = $this->buildAttributes($current[$i]);
-                $this->db->query(
+                $this->db->queryPrepared(
                     "UPDATE tverfuegbarkeitsbenachrichtigung
-                    SET cAbgeholt = 'Y'
-                    WHERE kVerfuegbarkeitsbenachrichtigung = " .
-                    (int)$current[$i . ' attr']['kVerfuegbarkeitsbenachrichtigung']
+                        SET cAbgeholt = 'Y'
+                        WHERE kVerfuegbarkeitsbenachrichtigung = :mid",
+                    ['mid' => (int)$current[$i . ' attr']['kVerfuegbarkeitsbenachrichtigung']]
                 );
             }
             $xml['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung'] = $current;

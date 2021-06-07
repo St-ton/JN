@@ -4,6 +4,7 @@ use JTL\Alert\Alert;
 use JTL\Backend\Settings\Manager;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
 
@@ -51,7 +52,7 @@ if (Request::postVar('resetSetting') !== null) {
     $configCount = count($configData);
     for ($i = 0; $i < $configCount; $i++) {
         $currentValue                        = new stdClass();
-        $currentValue->cWert                 = $_POST[$configData[$i]->cWertName];
+        $currentValue->cWert                 = Text::filterXSS($_POST[$configData[$i]->cWertName]);
         $currentValue->cName                 = $configData[$i]->cWertName;
         $currentValue->kEinstellungenSektion = $configData[$i]->kEinstellungenSektion;
         switch ($configData[$i]->cInputTyp) {

@@ -95,12 +95,16 @@ if ($valid && isset($_POST['gratis_geschenk'], $_POST['gratisgeschenk']) && (int
         'SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, 
             tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
             FROM tartikelattribut
-                JOIN tartikel 
-                    ON tartikel.kArtikel = tartikelattribut.kArtikel
-                WHERE tartikelattribut.kArtikel = ' . $giftID . "
-                AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
-                AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .
-        $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)
+            JOIN tartikel 
+                ON tartikel.kArtikel = tartikelattribut.kArtikel
+            WHERE tartikelattribut.kArtikel = :gid
+                AND tartikelattribut.cName = :atr
+                AND CAST(tartikelattribut.cWert AS DECIMAL) <= :sum',
+        [
+            'gid' => $giftID,
+            'atr' => FKT_ATTRIBUT_GRATISGESCHENK,
+            'sum' => $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)
+        ]
     );
     if ($gift !== null && $gift->kArtikel > 0) {
         if ($gift->fLagerbestand <= 0 && $gift->cLagerKleinerNull === 'N' && $gift->cLagerBeachten === 'Y') {
@@ -153,25 +157,25 @@ if (($orderAmountStock = CartHelper::checkOrderAmountAndStock($conf)) !== '') {
 
 CartHelper::addVariationPictures($cart);
 $smarty->assign('MsgWarning', $warning)
-       ->assign('nMaxUploadSize', $maxSize)
-       ->assign('cMaxUploadSize', Upload::formatGroesse($maxSize))
-       ->assign('oUploadSchema_arr', $uploads)
-       ->assign('Link', $link)
-       ->assign('laender', ShippingMethod::getPossibleShippingCountries($customerGroupID))
-       ->assign('KuponMoeglich', Kupon::couponsAvailable())
-       ->assign('currentCoupon', Shop::Lang()->get('currentCoupon', 'checkout'))
-       ->assign('currentCouponName', (!empty($_SESSION['Kupon']->translationList)
-           ? $_SESSION['Kupon']->translationList
-           : null))
-       ->assign('currentShippingCouponName', (!empty($_SESSION['oVersandfreiKupon']->translationList)
-           ? $_SESSION['oVersandfreiKupon']->translationList
-           : null))
-       ->assign('xselling', CartHelper::getXSelling())
-       ->assign('oArtikelGeschenk_arr', CartHelper::getFreeGifts($conf))
-       ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
-       ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK)
-       ->assign('KuponcodeUngueltig', !$couponCodeValid)
-       ->assign('Warenkorb', $cart);
+    ->assign('nMaxUploadSize', $maxSize)
+    ->assign('cMaxUploadSize', Upload::formatGroesse($maxSize))
+    ->assign('oUploadSchema_arr', $uploads)
+    ->assign('Link', $link)
+    ->assign('laender', ShippingMethod::getPossibleShippingCountries($customerGroupID))
+    ->assign('KuponMoeglich', Kupon::couponsAvailable())
+    ->assign('currentCoupon', Shop::Lang()->get('currentCoupon', 'checkout'))
+    ->assign('currentCouponName', (!empty($_SESSION['Kupon']->translationList)
+        ? $_SESSION['Kupon']->translationList
+        : null))
+    ->assign('currentShippingCouponName', (!empty($_SESSION['oVersandfreiKupon']->translationList)
+        ? $_SESSION['oVersandfreiKupon']->translationList
+        : null))
+    ->assign('xselling', CartHelper::getXSelling())
+    ->assign('oArtikelGeschenk_arr', CartHelper::getFreeGifts($conf))
+    ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
+    ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK)
+    ->assign('KuponcodeUngueltig', !$couponCodeValid)
+    ->assign('Warenkorb', $cart);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 

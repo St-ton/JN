@@ -24,7 +24,7 @@
                                 {/link}
                                 <div class="dropdown-menu">
                                     <div class="dropdown-body">
-                                        {container}
+                                        {container class='subcategory-wrapper'}
                                             {row class="lg-row-lg nav"}
                                                 {col lg=4 xl=3 class="nav-item-lg-m nav-item dropdown d-lg-none"}
                                                     {block name='snippets-linkgroup-list-links-header'}
@@ -34,13 +34,17 @@
                                                     {/block}
                                                 {/col}
                                                 {foreach $li->getChildLinks() as $subli}
-                                                    {col lg=4 xl=3 class='nav-item-lg-m nav-item'}
-                                                        {block name='snippets-linkgroup-list-links-sublinks'}
-                                                            {if !empty($subli->getName())}
-                                                                {link href=$subli->getURL() rel="{if $subli->getNoFollow()}nofollow{/if}" class="submenu-headline submenu-headline-toplevel nav-link"}
-                                                                    {$subli->getName()}
-                                                                {/link}
-                                                            {/if}
+                                                    {col lg=4 xl=3 class="nav-item-lg-m nav-item {if $subli->getChildLinks()->count() > 0}dropdown{/if}"}
+                                                        {block name='snippets-linkgroup-list-links-sublinks-include-linkgroups-recursive'}
+                                                            {include file='snippets/linkgroup_recursive.tpl'
+                                                                linkgroupIdentifier='mega'
+                                                                limit=100
+                                                                tplscope='megamenu'
+                                                                links=$subli->getChildLinks()
+                                                                layout='megamenu'
+                                                                firstChild=true
+                                                                mainLink=$subli
+                                                                subCategory=1}
                                                         {/block}
                                                     {/col}
                                                 {/foreach}

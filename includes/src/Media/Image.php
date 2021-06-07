@@ -320,6 +320,31 @@ class Image
     }
 
     /**
+     * @param array      $file
+     * @param array|null $allowed
+     * @return bool
+     */
+    public static function isImageUpload(array $file, ?array $allowed = null): bool
+    {
+        $allowed = $allowed ?? [
+                'image/jpeg',
+                'image/jpg',
+                'image/pjpeg',
+                'image/gif',
+                'image/x-png',
+                'image/png',
+                'image/bmp',
+                'image/webp'
+            ];
+        $finfo   = \finfo_open(\FILEINFO_MIME_TYPE);
+
+        return isset($file['type'], $file['error'], $file['tmp_name'])
+            && $file['error'] === \UPLOAD_ERR_OK
+            && \in_array($file['type'], $allowed, true)
+            && \in_array(\finfo_file($finfo, $file['tmp_name']), $allowed, true);
+    }
+
+    /**
      * @param MediaImageRequest $req
      * @param bool              $streamOutput
      * @throws Exception

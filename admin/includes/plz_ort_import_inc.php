@@ -411,7 +411,7 @@ function plzimportActionCheckStatus(): stdClass
         plzimportCloseSession('Import');
 
         $impData = Shop::Container()->getDB()->getSingleObject(
-            "SELECT COUNT(*) AS nAnzahl
+            "SELECT COUNT(*) AS cnt
                 FROM tplz
                 WHERE cLandISO = 'IMP'"
         );
@@ -419,7 +419,7 @@ function plzimportActionCheckStatus(): stdClass
         $result = (object)[
             'running' => false,
             'start'   => time(),
-            'tmp'     => $impData->nAnzahl ?? 0,
+            'tmp'     => $impData->cnt ?? 0,
         ];
     } else {
         $sessData = plzimportReadSession('Import');

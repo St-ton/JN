@@ -174,9 +174,10 @@ function holeEinstellungAbteil(stdClass $sql, int $sort, int $sectionID): stdCla
               ON e.cName = ec.cWertName
             LEFT JOIN teinstellungen_default AS ed
               ON ed.cName = ec.cWertName
-            WHERE ec.nSort > ' . $sort . '
-                AND ec.kEinstellungenSektion = ' . $sectionID . '
-            ORDER BY ec.nSort'
+            WHERE ec.nSort > :srt
+                AND ec.kEinstellungenSektion = :sid
+            ORDER BY ec.nSort',
+        ['srt' => $sort, 'sid' => $sectionID]
     );
     foreach ($items as $item) {
         if ($item->cConf !== 'N') {
@@ -201,12 +202,13 @@ function holeEinstellungHeadline(int $sort, int $sectionID): stdClass
         return $configHead;
     }
     $item = Shop::Container()->getDB()->getSingleObject(
-        'SELECT *
+        "SELECT *
             FROM teinstellungenconf
-            WHERE nSort < ' . $sort . '
-                AND kEinstellungenSektion = ' . $sectionID . "
+            WHERE nSort < :srt
+                AND kEinstellungenSektion = :sid
                 AND cConf = 'N'
-            ORDER BY nSort DESC"
+            ORDER BY nSort DESC",
+        ['srt' => $sort, 'sid' => $sectionID]
     );
     if ($item !== null) {
         $item->kEinstellungenConf    = (int)$item->kEinstellungenConf;

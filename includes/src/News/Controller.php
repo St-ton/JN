@@ -567,12 +567,13 @@ class Controller
                     LEFT JOIN tseo 
                         ON tseo.cKey = \'kNewsKategorie\'
                         AND tseo.kKey = tnewskategorie.kNewsKategorie
-                        AND tseo.kSprache = ' . $langID . '
-                    WHERE t.languageID = ' . $langID . '
+                        AND tseo.kSprache = :lid
+                    WHERE t.languageID = :lid
                         AND tnewskategorienews.kNewsKategorie IN (' . \implode(',', $newsCategories) . ')
                         AND tnewskategorie.nAktiv = 1
                     GROUP BY tnewskategorie.kNewsKategorie
-                    ORDER BY tnewskategorie.nSort DESC'
+                    ORDER BY tnewskategorie.nSort DESC',
+                ['lid' => $langID]
             )
             : [];
     }

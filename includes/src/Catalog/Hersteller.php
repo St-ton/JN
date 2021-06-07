@@ -5,7 +5,7 @@ namespace JTL\Catalog;
 use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
-use JTL\Session;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
 
@@ -230,24 +230,25 @@ class Hersteller
                                 SELECT 1 FROM tartikelsichtbarkeit
                                 WHERE tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
                                     AND tartikelsichtbarkeit.kKundengruppe = ' .
-                Session\Frontend::getCustomerGroup()->getID() .
+                Frontend::getCustomerGroup()->getID() .
                 ')
                         )';
         }
         $items   = Shop::Container()->getDB()->getObjects(
-            'SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
+            "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                 thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
                 therstellersprache.cMetaDescription, therstellersprache.cBeschreibung,
                 tseo.cSeo, thersteller.cSeo AS originalSeo
                 FROM thersteller
                 LEFT JOIN therstellersprache 
                     ON therstellersprache.kHersteller = thersteller.kHersteller
-                    AND therstellersprache.kSprache = ' . $languageID . "
+                    AND therstellersprache.kSprache = :lid
                 LEFT JOIN tseo 
                     ON tseo.kKey = thersteller.kHersteller
                     AND tseo.cKey = 'kHersteller'
-                    AND tseo.kSprache = " . $languageID . $sqlWhere . '
-                ORDER BY thersteller.nSortNr, thersteller.cName'
+                    AND tseo.kSprache = :lid " . $sqlWhere . '
+                ORDER BY thersteller.nSortNr, thersteller.cName',
+            ['lid' => $languageID]
         );
         $results = [];
         foreach ($items as $item) {

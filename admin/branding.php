@@ -3,6 +3,7 @@
 use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Media\Image;
 use JTL\Media\Media;
 use JTL\Shop;
 
@@ -38,10 +39,10 @@ if (Request::verifyGPCDataInt('branding') === 1) {
 }
 
 $smarty->assign('cRnd', time())
-       ->assign('oBranding_arr', gibBrandings())
-       ->assign('PFAD_BRANDINGBILDER', PFAD_BRANDINGBILDER)
-       ->assign('step', $step)
-       ->display('branding.tpl');
+    ->assign('oBranding_arr', gibBrandings())
+    ->assign('PFAD_BRANDINGBILDER', PFAD_BRANDINGBILDER)
+    ->assign('step', $step)
+    ->display('branding.tpl');
 
 /**
  * @return mixed
@@ -76,6 +77,9 @@ function gibBranding(int $brandingID): ?stdClass
  */
 function speicherEinstellung(int $brandingID, array $post, array $files): bool
 {
+    if (!Image::isImageUpload($files['cBrandingBild'])) {
+        return false;
+    }
     $db                 = Shop::Container()->getDB();
     $conf               = new stdClass();
     $conf->dRandabstand = 0;
@@ -124,19 +128,13 @@ function speicherEinstellung(int $brandingID, array $post, array $files): bool
  */
 function speicherBrandingBild(array $files, int $brandingID): bool
 {
-    if ($files['cBrandingBild']['type'] === 'image/jpeg'
-        || $files['cBrandingBild']['type'] === 'image/pjpeg'
-        || $files['cBrandingBild']['type'] === 'image/gif'
-        || $files['cBrandingBild']['type'] === 'image/png'
-        || $files['cBrandingBild']['type'] === 'image/bmp'
-    ) {
-        $upload = PFAD_ROOT . PFAD_BRANDINGBILDER . 'kBranding_' .
-            $brandingID . mappeFileTyp($files['cBrandingBild']['type']);
-
-        return move_uploaded_file($files['cBrandingBild']['tmp_name'], $upload);
+    $upload = $files['cBrandingBild'];
+    if (!Image::isImageUpload($upload)) {
+        return false;
     }
+    $newFile = PFAD_ROOT . PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . mappeFileTyp($upload['type']);
 
-    return false;
+    return move_uploaded_file($upload['tmp_name'], $newFile);
 }
 
 /**

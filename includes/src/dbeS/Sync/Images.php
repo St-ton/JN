@@ -455,7 +455,8 @@ final class Images extends AbstractSync
         $propValue = $this->db->getSingleObject(
             'SELECT kEigenschaftWert, cArtNr, cName, kEigenschaft
                 FROM teigenschaftwert
-                WHERE kEigenschaftWert = ' . (int)$image->kEigenschaftWert
+                WHERE kEigenschaftWert = :aid',
+            ['aid' => (int)$image->kEigenschaftWert]
         );
         if ($propValue === null) {
             $this->logger->warning(
@@ -511,7 +512,8 @@ final class Images extends AbstractSync
                     );
 
                     $attribute = $this->db->getSingleObject(
-                        'SELECT cName FROM teigenschaft WHERE kEigenschaft = ' . $propValue->kEigenschaft
+                        'SELECT cName FROM teigenschaft WHERE kEigenschaft = :aid',
+                        ['aid' => $propValue->kEigenschaft]
                     );
                     if ($attribute !== null
                         && (!empty($product->cSeo) || !empty($product->cName))

@@ -116,7 +116,7 @@ class Revision
      * @param int    $key
      * @return stdClass|null
      */
-    public function getLatestRevision($type, int $key): ?stdClass
+    public function getLatestRevision(string $type, int $key): ?stdClass
     {
         $mapping = $this->getMapping($type);
         if ($key === 0 || $mapping === null) {
@@ -141,12 +141,11 @@ class Revision
      * @return bool
      * @throws InvalidArgumentException
      */
-    public function addRevision($type, $key, bool $secondary = false, $author = null): bool
+    public function addRevision(string $type, int $key, bool $secondary = false, ?string $author = null): bool
     {
         if (\MAX_REVISIONS <= 0) {
             return false;
         }
-        $key = (int)$key;
         if (empty($key) || ($mapping = $this->getMapping($type)) === null) {
             throw new InvalidArgumentException('Invalid type/key given. Got type ' . $type . ' and key ' . $key);
         }
@@ -183,7 +182,7 @@ class Revision
 
             $latestRevision = $this->getLatestRevision($type, $key);
 
-            if (empty($latestRevision) || $latestRevision->content !== $revision->content) {
+            if ($latestRevision === null || $latestRevision->content !== $revision->content) {
                 $this->storeRevision($revision);
                 $this->housekeeping($type, $key);
             }
@@ -202,7 +201,7 @@ class Revision
      * @param int    $primary
      * @return array
      */
-    public function getRevisions($type, $primary): array
+    public function getRevisions(string $type, int $primary): array
     {
         return \array_map(static function ($e) {
             $e->content = \json_decode($e->content);
@@ -228,10 +227,10 @@ class Revision
     }
 
     /**
-     * @param object $revision
+     * @param stdClass $revision
      * @return int
      */
-    private function storeRevision($revision): int
+    private function storeRevision(stdClass $revision): int
     {
         return $this->db->insert('trevisions', $revision);
     }
@@ -242,7 +241,7 @@ class Revision
      * @param bool   $secondary
      * @return bool
      */
-    public function restoreRevision($type, $id, bool $secondary = false): bool
+    public function restoreRevision(string $type, int $id, bool $secondary = false): bool
     {
         $revision = $this->getRevision($id);
         $mapping  = $this->getMapping($type); // get static mapping from build in content types
@@ -305,7 +304,7 @@ class Revision
      * @param int    $key
      * @return int
      */
-    private function housekeeping($type, $key): int
+    private function housekeeping(string $type, int $key): int
     {
         return $this->db->getAffectedRows(
             'DELETE a 

@@ -6,6 +6,7 @@ use JTL\Backend\Settings\Manager;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
+use JTL\Helpers\Text;
 use JTL\Minify\MinifyService;
 use JTL\Shop;
 
@@ -27,8 +28,8 @@ $getText        = Shop::Container()->getGetText();
 $alertHelper    = Shop::Container()->getAlertService();
 $adminAccount   = Shop::Container()->getAdminAccount();
 $settingManager = new Manager($db, $smarty, $adminAccount, $getText, $alertHelper);
+$postData       = Text::filterXSS($_POST);
 $getText->loadConfigLocales();
-
 if (0 < mb_strlen(Request::verifyGPDataString('tab'))) {
     $smarty->assign('tab', Request::verifyGPDataString('tab'));
 }
@@ -56,9 +57,9 @@ switch ($action) {
         $tab = 'massaction';
         switch ($cacheAction) {
             case 'flush':
-                if (GeneralObject::isCountable('cache-types', $_POST)) {
+                if (GeneralObject::isCountable('cache-types', $postData)) {
                     $okCount = 0;
-                    foreach ($_POST['cache-types'] as $cacheType) {
+                    foreach ($postData['cache-types'] as $cacheType) {
                         $hookInfo = ['type' => $cacheType, 'key' => null, 'isTag' => true];
                         $flush    = $cache->flushTags([$cacheType], $hookInfo);
                         if ($flush === false) {
@@ -84,7 +85,7 @@ switch ($action) {
                 break;
             case 'activate':
                 if (is_array(Request::postVar('cache-types'))) {
-                    foreach ($_POST['cache-types'] as $cacheType) {
+                    foreach ($postData['cache-types'] as $cacheType) {
                         $index = array_search($cacheType, $currentlyDisabled, true);
                         if (is_int($index)) {
                             unset($currentlyDisabled[$index]);
@@ -110,8 +111,8 @@ switch ($action) {
                 }
                 break;
             case 'deactivate':
-                if (GeneralObject::isCountable('cache-types', $_POST)) {
-                    foreach ($_POST['cache-types'] as $cacheType) {
+                if (GeneralObject::isCountable('cache-types', $postData)) {
+                    foreach ($postData['cache-types'] as $cacheType) {
                         $cache->flushTags([$cacheType]);
                         $currentlyDisabled[] = $cacheType;
                     }
@@ -153,20 +154,22 @@ switch ($action) {
             break;
         }
         $settings      = $db->getObjects(
-            'SELECT ec.*, e.cWert AS currentValue
+            "SELECT ec.*, e.cWert AS currentValue
                 FROM teinstellungenconf AS ec
-                LEFT JOIN teinstellungen AS e ON e.cName = ec.cWertName
-                WHERE ec.kEinstellungenSektion = ' . CONF_CACHING . "
+                LEFT JOIN teinstellungen AS e 
+                    ON e.cName = ec.cWertName
+                WHERE ec.kEinstellungenSektion = :sid
                     AND ec.cConf = 'Y'
-                ORDER BY ec.nSort"
+                ORDER BY ec.nSort",
+            ['sid' => CONF_CACHING]
         );
         $i             = 0;
         $settingsCount = count($settings);
 
         while ($i < $settingsCount) {
-            if (isset($_POST[$settings[$i]->cWertName])) {
+            if (isset($postData[$settings[$i]->cWertName])) {
                 $value                        = new stdClass();
-                $value->cWert                 = $_POST[$settings[$i]->cWertName];
+                $value->cWert                 = $postData[$settings[$i]->cWertName];
                 $value->cName                 = $settings[$i]->cWertName;
                 $value->kEinstellungenSektion = CONF_CACHING;
                 switch ($settings[$i]->cInputTyp) {
@@ -239,7 +242,7 @@ switch ($action) {
                 $settingManager->addLog(
                     $settings[$i]->cWertName,
                     $settings[$i]->currentValue,
-                    $_POST[$settings[$i]->cWertName]
+                    $postData[$settings[$i]->cWertName]
                 );
             }
             ++$i;
@@ -256,9 +259,9 @@ switch ($action) {
         $testData = 'simple short string';
         $methods  = 'all';
         $repeat   = Request::postInt('repeat', 1);
-        $runCount = Request::postInt($_POST['runcount'], 1000);
-        if (isset($_POST['testdata'])) {
-            switch ($_POST['testdata']) {
+        $runCount = Request::postInt($postData['runcount'], 1000);
+        if (isset($postData['testdata'])) {
+            switch ($postData['testdata']) {
                 case 'array':
                     $testData = ['test1' => 'string number one', 'test2' => 'string number two', 'test3' => 333];
                     break;
@@ -275,7 +278,7 @@ switch ($action) {
             }
         }
         if (is_array(Request::postVar('methods'))) {
-            $methods = $_POST['methods'];
+            $methods = $postData['methods'];
         }
         if ($cache !== null) {
             $benchResults = $cache->benchmark($methods, $testData, $runCount, $repeat, false, true);
@@ -342,8 +345,9 @@ $settings = $db->getObjects(
         LEFT JOIN teinstellungen_default AS ted
           ON ted.cName= te.cWertName
         WHERE te.nStandardAnzeigen = 1
-            AND te.kEinstellungenSektion = ' . CONF_CACHING .
-        ' ORDER BY te.nSort'
+            AND te.kEinstellungenSektion = :sid
+        ORDER BY te.nSort',
+    ['sid' => CONF_CACHING]
 );
 
 $getText->localizeConfigs($settings);
@@ -375,8 +379,9 @@ $advancedSettings = $db->getObjects(
         LEFT JOIN teinstellungen_default AS ted
           ON ted.cName = te.cWertName
         WHERE (te.nStandardAnzeigen = 0 OR te.nStandardAnzeigen = 2)
-            AND te.kEinstellungenSektion = ' . CONF_CACHING . '
-        ORDER BY te.nSort'
+            AND te.kEinstellungenSektion = :sid
+        ORDER BY te.nSort',
+    ['sid' => CONF_CACHING]
 );
 $getText->localizeConfigs($advancedSettings);
 $settingsCount = count($advancedSettings);

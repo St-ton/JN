@@ -33,32 +33,32 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
 if (Request::getInt('delete') > 0 && Form::validateToken()) {
     Wishlist::delete(Request::getInt('delete'), true);
 }
-$itemCount     = (int)Shop::Container()->getDB()->getSingleObject(
+$itemCount         = (int)Shop::Container()->getDB()->getSingleObject(
     'SELECT COUNT(DISTINCT twunschliste.kWunschliste) AS cnt
          FROM twunschliste
          JOIN twunschlistepos
              ON twunschliste.kWunschliste = twunschlistepos.kWunschliste'
 )->cnt;
-$productCount  = (int)Shop::Container()->getDB()->getSingleObject(
+$productCount      = (int)Shop::Container()->getDB()->getSingleObject(
     'SELECT COUNT(*) AS cnt
         FROM twunschlistepos'
 )->cnt;
-$friends       = (int)Shop::Container()->getDB()->getSingleObject(
+$friends           = (int)Shop::Container()->getDB()->getSingleObject(
     'SELECT COUNT(*) AS cnt
         FROM twunschliste
         JOIN twunschlisteversand 
             ON twunschliste.kWunschliste = twunschlisteversand.kWunschliste'
 )->cnt;
-$oPagiPos      = (new Pagination('pos'))
+$posPagination     = (new Pagination('pos'))
     ->setItemCount($itemCount)
     ->assemble();
-$oPagiArtikel  = (new Pagination('artikel'))
+$productPagination = (new Pagination('artikel'))
     ->setItemCount($productCount)
     ->assemble();
-$oPagiFreunde  = (new Pagination('freunde'))
+$friendsPagination = (new Pagination('freunde'))
     ->setItemCount($friends)
     ->assemble();
-$sentWishLists = Shop::Container()->getDB()->getObjects(
+$sentWishLists     = Shop::Container()->getDB()->getObjects(
     "SELECT tkunde.kKunde, tkunde.cNachname, tkunde.cVorname, twunschlisteversand.nAnzahlArtikel, 
         twunschliste.kWunschliste, twunschliste.cName, twunschliste.cURLID, 
         twunschlisteversand.nAnzahlEmpfaenger, DATE_FORMAT(twunschlisteversand.dZeit, '%d.%m.%Y  %H:%i') AS Datum
@@ -68,7 +68,7 @@ $sentWishLists = Shop::Container()->getDB()->getObjects(
         LEFT JOIN tkunde 
             ON twunschliste.kKunde = tkunde.kKunde
         ORDER BY twunschlisteversand.dZeit DESC
-        LIMIT " . $oPagiFreunde->getLimitSQL()
+        LIMIT " . $friendsPagination->getLimitSQL()
 );
 foreach ($sentWishLists as $wishList) {
     if ($wishList->kKunde !== null) {
@@ -89,7 +89,7 @@ $wishLists = Shop::Container()->getDB()->getObjects(
             ON tbesucher.kKunde=tkunde.kKunde
         GROUP BY twunschliste.kWunschliste
         ORDER BY twunschliste.dErstellt DESC
-        LIMIT " . $oPagiPos->getLimitSQL()
+        LIMIT " . $posPagination->getLimitSQL()
 );
 foreach ($wishLists as $wishList) {
     if ($wishList->kKunde !== null) {
@@ -103,13 +103,13 @@ $wishListPositions = Shop::Container()->getDB()->getObjects(
         FROM twunschlistepos
         GROUP BY kArtikel
         ORDER BY Anzahl DESC
-        LIMIT " . $oPagiArtikel->getLimitSQL()
+        LIMIT " . $productPagination->getLimitSQL()
 );
 
 $smarty->assign('oConfig_arr', getAdminSectionSettings($settingsIDs, true))
-    ->assign('oPagiPos', $oPagiPos)
-    ->assign('oPagiArtikel', $oPagiArtikel)
-    ->assign('oPagiFreunde', $oPagiFreunde)
+    ->assign('oPagiPos', $posPagination)
+    ->assign('oPagiArtikel', $productPagination)
+    ->assign('oPagiFreunde', $friendsPagination)
     ->assign('CWunschlisteVersand_arr', $sentWishLists)
     ->assign('CWunschliste_arr', $wishLists)
     ->assign('CWunschlistePos_arr', $wishListPositions)

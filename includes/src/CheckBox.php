@@ -392,8 +392,19 @@ class CheckBox
      * @param string $limitSQL
      * @param bool   $active
      * @return CheckBox[]
+     * @deprecated since 5.1.0
      */
     public function getAllCheckBox(string $limitSQL = '', bool $active = false): array
+    {
+        return $this->getAll($limitSQL, $active);
+    }
+
+    /**
+     * @param string $limitSQL
+     * @param bool   $active
+     * @return CheckBox[]
+     */
+    public function getAll(string $limitSQL = '', bool $active = false): array
     {
         return $this->db->getCollection(
             'SELECT kCheckBox AS id
@@ -410,20 +421,40 @@ class CheckBox
     /**
      * @param bool $active
      * @return int
+     * @deprecated since 5.1.0
      */
     public function getAllCheckBoxCount(bool $active = false): int
     {
+        return $this->getTotalCount($active);
+    }
+
+    /**
+     * @param bool $active
+     * @return int
+     */
+    public function getTotalCount(bool $active = false): int
+    {
         return (int)$this->db->getSingleObject(
-            'SELECT COUNT(*) AS nAnzahl
+            'SELECT COUNT(*) AS cnt
                 FROM tcheckbox' . ($active ? ' WHERE nAktiv = 1' : '')
-        )->nAnzahl;
+        )->cnt;
+    }
+
+    /**
+     * @param int[] $checkboxIDs
+     * @return bool
+     * @deprecated since 5.1.0
+     */
+    public function aktivateCheckBox(array $checkboxIDs): bool
+    {
+        return $this->activate($checkboxIDs);
     }
 
     /**
      * @param int[] $checkboxIDs
      * @return bool
      */
-    public function aktivateCheckBox(array $checkboxIDs): bool
+    public function activate(array $checkboxIDs): bool
     {
         if (\count($checkboxIDs) === 0) {
             return false;
@@ -441,8 +472,18 @@ class CheckBox
     /**
      * @param int[] $checkboxIDs
      * @return bool
+     * @deprecated since 5.1.0
      */
     public function deaktivateCheckBox(array $checkboxIDs): bool
+    {
+        return $this->deactivate($checkboxIDs);
+    }
+
+    /**
+     * @param int[] $checkboxIDs
+     * @return bool
+     */
+    public function deactivate(array $checkboxIDs): bool
     {
         if (\count($checkboxIDs) === 0) {
             return false;
@@ -460,8 +501,18 @@ class CheckBox
     /**
      * @param int[] $checkboxIDs
      * @return bool
+     * @deprecated since 5.1.0
      */
     public function deleteCheckBox(array $checkboxIDs): bool
+    {
+        return $this->delete($checkboxIDs);
+    }
+
+    /**
+     * @param int[] $checkboxIDs
+     * @return bool
+     */
+    public function delete(array $checkboxIDs): bool
     {
         if (\count($checkboxIDs) === 0) {
             return false;

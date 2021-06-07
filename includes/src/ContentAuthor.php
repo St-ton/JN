@@ -27,11 +27,11 @@ class ContentAuthor
             }
         }
         if ($authorID > 0) {
-            return Shop::Container()->getDB()->query(
-                "INSERT INTO tcontentauthor (cRealm, kAdminlogin, kContentId)
-                    VALUES('" . $realm . "', " . $authorID . ', ' . $contentID . ')
-                    ON DUPLICATE KEY UPDATE
-                        kAdminlogin = ' . $authorID
+            return Shop::Container()->getDB()->queryPrepared(
+                'INSERT INTO tcontentauthor (cRealm, kAdminlogin, kContentId)
+                    VALUES (:realm, :aid, :cid)
+                    ON DUPLICATE KEY UPDATE kAdminlogin = :aid',
+                ['realm' => $realm, 'aid' => $authorID, 'cid' => $contentID]
             );
         }
 
@@ -75,7 +75,8 @@ class ContentAuthor
                 'SELECT tadminloginattribut.kAttribut, tadminloginattribut.cName, 
                     tadminloginattribut.cAttribValue, tadminloginattribut.cAttribText
                     FROM tadminloginattribut
-                    WHERE tadminloginattribut.kAdminlogin = ' . (int)$author->kAdminlogin
+                    WHERE tadminloginattribut.kAdminlogin = :aid',
+                ['aid' => (int)$author->kAdminlogin]
             );
             $author->extAttribs     = [];
             $author->kContentId     = (int)$author->kContentId;

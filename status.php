@@ -47,9 +47,7 @@ if (!empty($uid)) {
         if (isset($_POST['plz']) && $order->oRechnungsadresse->cPLZ === Text::filterXSS($_POST['plz'])) {
             $plzValid = true;
         } elseif (!empty($_POST['plz'])) {
-            $db->update('tbestellstatus', 'cUID', $uid, (object)[
-                'failedAttempts' => (int)$status->failedAttempts + 1,
-            ]);
+            $db->update('tbestellstatus', 'cUID', $uid, (object)['failedAttempts' => (int)$status->failedAttempts + 1]);
             Shop::Container()->getAlertService()->addAlert(
                 Alert::TYPE_DANGER,
                 Shop::Lang()->get('incorrectLogin'),

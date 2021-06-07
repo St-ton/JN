@@ -848,12 +848,6 @@ msgstr "Gefahrentafel im Artikel anzeigen"
 msgid "adr_hazard_display_desc"
 msgstr "Hier legen Sie fest, ob die europäische Gefahrentafel im Artikel angezeigt werden soll. Hierfür müssen in JTL-Wawi die UN-Nummer und die Gefahrnummer gepflegt sein."
 
-msgid "artikeldetails_variationskombikind_bildvorschau_name"
-msgstr "Bildvorschau für Kindartikel anzeigen"
-
-msgid "artikeldetails_variationskombikind_bildvorschau_desc"
-msgstr "Hier legen Sie fest, ob in der Artikelübersicht Vorschaubilder für Kindartikel angezeigt werden sollen. Bei vielen Kindartikeln kann dies zu großen Ladezeiten führen."
-
 msgid "artikeldetails_fragezumprodukt_anzeigen_name"
 msgstr "Formular für Fragen zum Artikel anzeigen"
 
@@ -1285,6 +1279,12 @@ msgstr "Aktuellen Warenkorb mit gespeichertem Warenkorb zusammenfassen"
 
 msgid "warenkorb_warenkorb2pers_merge_desc"
 msgstr "Hier legen Sie fest, ob der aktuelle Warenkorb eines Kunden mit bereits gespeicherten Warenkörben für diesen Kunden zusammengefasst werden soll."
+
+msgid "warenkorb_gesamtgewicht_anzeigen_name"
+msgstr "Gesamtgewicht anzeigen"
+
+msgid "warenkorb_gesamtgewicht_anzeigen_desc"
+msgstr "Hier legen Sie fest, ob das Gesamtgewicht aller Artikel im Warenkorb, auf der Warenkorb Seite angezeigt werden soll."
 
 msgid "bestellvorgang_kaufabwicklungsmethode_name"
 msgstr "Kaufabwicklungsmethode"
@@ -1952,6 +1952,12 @@ msgstr "Zeichenmaskierung ;"
 msgid "exportformate_semikolon_desc"
 msgstr "Sie können bei Bedarf diese Zeichen maskieren lassen."
 
+msgid "exportformate_line_ending_name"
+msgstr "Zeilenende"
+
+msgid "exportformate_line_ending_desc"
+msgstr ""
+
 msgid "kontakt_abfragen_anrede_name"
 msgstr "Anrede abfragen"
 
@@ -2161,12 +2167,6 @@ msgstr "Spaltenbreite des Artikels"
 
 msgid "vergleichsliste_spaltengroesse_desc"
 msgstr "Hier legen Sie fest, wie viele Pixel eine Spalte für einen Artikel in der Vergleichsliste breit sein soll."
-
-msgid "vergleichsliste_spaltengroesseattribut_name"
-msgstr "Spaltenbreite der Attribute"
-
-msgid "vergleichsliste_spaltengroesseattribut_desc"
-msgstr "Hier legen Sie fest, wie viele Pixel eine Spalte für ein Artikelattribut in der Vergleichsliste breit sein soll."
 
 msgid "vergleichsliste_target_name"
 msgstr "Position der Vergleichsliste"

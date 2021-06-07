@@ -284,9 +284,6 @@ msgstr "Bitte wählen Sie mindestens eine akzeptierte Zahlungsart aus."
 msgid "errorShippingMethodPriceMissing"
 msgstr "Bitte geben Sie mindestens einen Staffelpreis an."
 
-msgid "errorShippingFreeMax"
-msgstr "Der Versandkostenfrei-Wert darf maximal %s betragen."
-
 msgid "sendShippingNotification"
 msgstr "Versandbestätigung senden"
 

@@ -235,13 +235,12 @@ switch ($action) {
                     [CONF_CACHING, $settings[$i]->cWertName]
                 );
                 $db->insert('teinstellungen', $value);
-                if ($settings[$i]->currentValue !== $_POST[$settings[$i]->cWertName]) {
-                    $settingManager->addLog(
-                        $settings[$i]->cWertName,
-                        $settings[$i]->currentValue,
-                        $_POST[$settings[$i]->cWertName]
-                    );
-                }
+
+                $settingManager->addLog(
+                    $settings[$i]->cWertName,
+                    $settings[$i]->currentValue,
+                    $_POST[$settings[$i]->cWertName]
+                );
             }
             ++$i;
         }
@@ -286,6 +285,9 @@ switch ($action) {
     case 'flush_template_cache':
         // delete all template cachefiles
         $callback     = static function (array $pParameters) {
+            if (strpos($pParameters['filename'], '.') === 0) {
+                return;
+            }
             if (!$pParameters['isdir']) {
                 if (@unlink($pParameters['path'] . $pParameters['filename'])) {
                     $pParameters['count']++;

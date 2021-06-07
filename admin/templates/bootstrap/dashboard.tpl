@@ -16,7 +16,7 @@
     });
     </script>
 
-    <div id="content">
+    <div id="content" class="dashboard-wrapper">
         <div class="row p-2">
             <div class="col">
                 <h1 class="content-header-headline">{__('dashboard')}</h1>

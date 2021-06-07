@@ -55,9 +55,11 @@ class Exports extends AbstractItem
             $export->cFusszeile       = $data['Footer'] ?? null;
             $export->cKodierung       = $data['Encoding'] ?? 'ASCII';
             $export->nSpecial         = 0;
+            $export->nUseCache        = (int)(($data['UseCache'] ?? 'X') === 'Y');
             $export->nVarKombiOption  = $data['VarCombiOption'] ?? 1;
             $export->nSplitgroesse    = $data['SplitSize'] ?? 0;
             $export->dZuletztErstellt = '_DBNULL_';
+            $export->async            = (int)(($data['Async'] ?? 'N') === 'Y');
             if (\is_array($export->cKopfzeile)) {
                 //@todo: when cKopfzeile is empty, this becomes an array with indices [0] => '' and [0 attr] => ''
                 $export->cKopfzeile = $export->cKopfzeile[0];

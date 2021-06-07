@@ -40,3 +40,9 @@ msgstr "Next"
 
 msgid "wishlistLastAdded"
 msgstr "Recently added"
+
+msgid "wishlistDelete"
+msgstr "Delete wish list '%s' by '%s'?"
+
+msgid "wishlistCustomerOnline"
+msgstr "Customer is online"

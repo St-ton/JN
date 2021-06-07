@@ -101,3 +101,15 @@
 		.path { margin-left: auto; padding-left: $spacer; }
 	}
 }
+
+.backend-search-section {
+	.icon-wrapper {
+		margin-right: map-get($spacers, 2);
+		svg {
+			background-color: map-get($primary-palette, 'medium');
+			border-radius: $btn-border-radius;
+			padding: 1px 3px;
+			vertical-align: sub;
+		}
+	}
+}

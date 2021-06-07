@@ -70,6 +70,7 @@
   Header set X-UA-Compatible "IE=edge"
   Header set X-Content-Type-Options "nosniff"
   Header unset X-Powered-By
+  Header set X-Frame-Options "SAMEORIGIN"
 
   <FilesMatch "\.(eot|otf|tt[cf]|woff2?)$">
     Header set Access-Control-Allow-Origin "*"
@@ -79,27 +80,6 @@
     Header unset X-UA-Compatible
   </FilesMatch>
 </IfModule>
-
-<Files dbeS/*>
-    <IfModule mod_authz_core.c>
-        Require all denied
-    </IfModule>
-    <IfModule !mod_authz_core.c>
-        Order Deny,Allow
-        Deny from all
-    </IfModule>
-</Files>
-
-<Files dbeS/*.php>
-    <IfModule mod_authz_core.c>
-        Require all granted
-    </IfModule>
-    <IfModule !mod_authz_core.c>
-        Order Allow,Deny
-        Allow from all
-    </IfModule>
-</Files>
-
 
 <IfModule mod_rewrite.c>
   RewriteEngine on
@@ -132,7 +112,9 @@
   RewriteRule ^export/((sitemap_).*\.(xml|txt)(\.gz)?)$ $1 [L]
   RewriteRule ^asset/(.*)$ includes/libs/minify/?g=$1 [QSA,L]
   RewriteRule ^static/(.*)$ templates_c/min/$1 [QSA,L]
+  RewriteRule ^dbeS/tmp/(.*)$ - [F,L]
   RewriteRule ^dbeS/(.*)\.php$ dbeS/index.php?id=$1 [QSA,L]
+  RewriteRule ^dbeS/(.*)$ - [F,L]
   RewriteRule ^robots.txt$ robots.php [L]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d

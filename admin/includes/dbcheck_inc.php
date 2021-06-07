@@ -440,7 +440,7 @@ function doMigrateToInnoDB_utf8(
             break;
         case 'start':
             $shopTables = array_keys(getDBFileStruct());
-            $table      = DBMigrationHelper::getNextTableNeedMigration($exclude);
+            $table      = DBMigrationHelper::getNextTableNeedMigration($db, $exclude);
             if ($table !== null && is_object($table)) {
                 if (!in_array($table->TABLE_NAME, $shopTables, true)) {
                     $exclude[] = $table->TABLE_NAME;
@@ -467,7 +467,7 @@ function doMigrateToInnoDB_utf8(
                     && $migration !== DBMigrationHelper::MIGRATE_NONE
                     && !in_array($table->TABLE_NAME, $exclude, true)
                 ) {
-                    if (!DBMigrationHelper::isTableInUse($tableName)) {
+                    if (!DBMigrationHelper::isTableInUse($db, $tableName)) {
                         if (version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
                             // If MySQL version is lower than 5.6 use alternative lock method
                             // and delete all fulltext indexes because these are not supported
@@ -517,7 +517,7 @@ function doMigrateToInnoDB_utf8(
                 }
             } elseif (!empty($tableName) && $step === 2) {
                 // Migration Step 2...
-                if (!DBMigrationHelper::isTableInUse($tableName)) {
+                if (!DBMigrationHelper::isTableInUse($db, $tableName)) {
                     $table = DBMigrationHelper::getTable($tableName);
                     $sql   = DBMigrationHelper::sqlConvertUTF8($table);
 

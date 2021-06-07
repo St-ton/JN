@@ -2,6 +2,7 @@
 
 namespace JTL\Update;
 
+use DbInterface;
 use JTL\Helpers\Text;
 use JTL\Shop;
 use stdClass;
@@ -92,8 +93,6 @@ class DBMigrationHelper
      */
     public static function getTablesNeedMigration(): array
     {
-        $database = Shop::Container()->getDB()->getConfig()['database'];
-
         return Shop::Container()->getDB()->getObjects(
             "SELECT t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
                 , COUNT(IF(c.DATA_TYPE = 'text', c.COLUMN_NAME, NULL)) TEXT_FIELDS
@@ -114,20 +113,20 @@ class DBMigrationHelper
                     )
                 GROUP BY t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
                 ORDER BY t.`TABLE_NAME`",
-            ['schema' => $database]
+            ['schema' => Shop::Container()->getDB()->getConfig()['database']]
         );
     }
 
     /**
-     * @param string[] $excludeTables
+     * @param DbInterface $db
+     * @param string[]    $excludeTables
      * @return stdClass|null
      */
-    public static function getNextTableNeedMigration(array $excludeTables = []): ?stdClass
+    public static function getNextTableNeedMigration(DbInterface $db, array $excludeTables = []): ?stdClass
     {
-        $database   = Shop::Container()->getDB()->getConfig()['database'];
         $excludeStr = \implode("','", Text::filterXSS($excludeTables));
 
-        return Shop::Container()->getDB()->getSingleObject(
+        return $db->getSingleObject(
             "SELECT t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
                 , COUNT(IF(c.DATA_TYPE = 'text', c.COLUMN_NAME, NULL)) TEXT_FIELDS
                 , COUNT(IF(c.DATA_TYPE = 'tinyint', c.COLUMN_NAME, NULL)) TINY_FIELDS
@@ -148,7 +147,7 @@ class DBMigrationHelper
                     )
                 GROUP BY t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`
                 ORDER BY t.`TABLE_NAME` LIMIT 1",
-            ['schema' => $database]
+            ['schema' => $db->getConfig()['database']]
         );
     }
 
@@ -158,8 +157,6 @@ class DBMigrationHelper
      */
     public static function getTable(string $table): ?stdClass
     {
-        $database = Shop::Container()->getDB()->getConfig()['database'];
-
         return Shop::Container()->getDB()->getSingleObject(
             "SELECT t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
                 , COUNT(IF(c.DATA_TYPE = 'text', c.COLUMN_NAME, NULL)) TEXT_FIELDS
@@ -177,7 +174,7 @@ class DBMigrationHelper
                     AND t.`TABLE_NAME` = :table
                 GROUP BY t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
                 ORDER BY t.`TABLE_NAME` LIMIT 1",
-            ['schema' => $database, 'table' => $table,]
+            ['schema' => Shop::Container()->getDB()->getConfig()['database'], 'table' => $table,]
         );
     }
 
@@ -239,25 +236,24 @@ class DBMigrationHelper
     }
 
     /**
-     * @param string $table
+     * @param DbInterface $db
+     * @param string      $table
      * @return bool
      */
-    public static function isTableInUse($table): bool
+    public static function isTableInUse(DbInterface $db, $table): bool
     {
         $mysqlVersion = self::getMySQLVersion();
-        $database     = Shop::Container()->getDB()->getConfig()['database'];
-
         if (\version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
             $tableInfo = self::getTable($table);
 
             return $tableInfo !== null && \mb_strpos($tableInfo->TABLE_COMMENT, ':Migrating') !== false;
         }
 
-        $tableStatus = Shop::Container()->getDB()->getSingleObject(
+        $tableStatus = $db->getSingleObject(
             'SHOW OPEN TABLES
                 WHERE `Database` LIKE :schema
                     AND `Table` LIKE :table',
-            ['schema' => $database, 'table' => $table,]
+            ['schema' => $db->getConfig()['database'], 'table' => $table,]
         );
 
         return $tableStatus !== null && (int)$tableStatus->In_use > 0;
@@ -269,8 +265,6 @@ class DBMigrationHelper
      */
     public static function getColumnsNeedMigration(string $table): array
     {
-        $database = Shop::Container()->getDB()->getConfig()['database'];
-
         return Shop::Container()->getDB()->getObjects(
             "SELECT `COLUMN_NAME`, `DATA_TYPE`, `COLUMN_TYPE`, `COLUMN_DEFAULT`, `IS_NULLABLE`, `EXTRA`
                 FROM information_schema.COLUMNS
@@ -282,7 +276,7 @@ class DBMigrationHelper
                         OR (DATA_TYPE = 'tinyint' AND SUBSTRING(COLUMN_NAME, 1, 1) = 'k')
                     )
                 ORDER BY `ORDINAL_POSITION`",
-            ['schema' => $database, 'table' => $table]
+            ['schema' => Shop::Container()->getDB()->getConfig()['database'], 'table' => $table]
         );
     }
 
@@ -292,8 +286,6 @@ class DBMigrationHelper
      */
     public static function getFKDefinitions(string $table): array
     {
-        $database = Shop::Container()->getDB()->getConfig()['database'];
-
         return Shop::Container()->getDB()->getObjects(
             'SELECT rc.`CONSTRAINT_NAME`, rc.`TABLE_NAME`, rc.`UPDATE_RULE`, rc.`DELETE_RULE`,
                     rk.`COLUMN_NAME`, rk.`REFERENCED_TABLE_NAME`, rk.`REFERENCED_COLUMN_NAME`
@@ -303,10 +295,7 @@ class DBMigrationHelper
                         AND rk.`CONSTRAINT_NAME` = rc.`CONSTRAINT_NAME`
                 WHERE rc.`CONSTRAINT_SCHEMA` = :schema
                     AND rc.`REFERENCED_TABLE_NAME` = :table',
-            [
-                'schema' => $database,
-                'table'  => $table
-            ]
+            ['schema' => Shop::Container()->getDB()->getConfig()['database'], 'table'  => $table]
         );
     }
 
@@ -453,17 +442,16 @@ class DBMigrationHelper
     public static function migrateToInnoDButf8(string $tableName): string
     {
         $table = self::getTable($tableName);
-
+        $db    = Shop::Container()->getDB();
         if ($table === null) {
             return self::FAILURE;
         }
-        if (self::isTableInUse($table->TABLE_NAME)) {
+        if (self::isTableInUse($db, $table->TABLE_NAME)) {
             return self::IN_USE;
         }
 
         $migration = self::isTableNeedMigration($table);
         if (($migration & self::MIGRATE_TABLE) !== self::MIGRATE_NONE) {
-            $db  = Shop::Container()->getDB();
             $sql = self::sqlMoveToInnoDB($table);
             if (!empty($sql)) {
                 $fkSQLs = self::sqlRecreateFKs($tableName);
@@ -482,7 +470,7 @@ class DBMigrationHelper
         }
         if (($migration & self::MIGRATE_COLUMN) !== self::MIGRATE_NONE) {
             $sql = self::sqlConvertUTF8($table);
-            if (!empty($sql) && !Shop::Container()->getDB()->query($sql)) {
+            if (!empty($sql) && !$db->query($sql)) {
                 return self::FAILURE;
             }
         }

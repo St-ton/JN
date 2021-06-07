@@ -37,7 +37,7 @@ class InnodbUtf8Command extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $db    = Shop::Container()->getDB();
-        $table = DBMigrationHelper::getNextTableNeedMigration($this->excludeTables);
+        $table = DBMigrationHelper::getNextTableNeedMigration($db, $this->excludeTables);
         while ($table !== null) {
             if ($this->errCounter > 20) {
                 $this->getIO()->error('aborted due to too many errors');
@@ -47,7 +47,7 @@ class InnodbUtf8Command extends Command
 
             $output->write('migrate ' . $table->TABLE_NAME . '... ');
 
-            if (DBMigrationHelper::isTableInUse($table->TABLE_NAME)) {
+            if (DBMigrationHelper::isTableInUse($db, $table->TABLE_NAME)) {
                 $table = $this->nextWithFailure($output, $db, $table, false, 'already in use!');
                 continue;
             }
@@ -78,7 +78,7 @@ class InnodbUtf8Command extends Command
             $this->releaseTable($db, $table);
             $output->writeln('<info> ✔ </info>');
 
-            $table = DBMigrationHelper::getNextTableNeedMigration($this->excludeTables);
+            $table = DBMigrationHelper::getNextTableNeedMigration($db, $this->excludeTables);
         }
 
         if ($this->errCounter > 0) {
@@ -146,6 +146,6 @@ class InnodbUtf8Command extends Command
             $this->releaseTable($db, $table);
         }
 
-        return DBMigrationHelper::getNextTableNeedMigration($this->excludeTables);
+        return DBMigrationHelper::getNextTableNeedMigration($db, $this->excludeTables);
     }
 }

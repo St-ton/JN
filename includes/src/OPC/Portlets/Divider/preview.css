@@ -31,4 +31,11 @@ body:not(.is-nova) .opc-Divider.opc-Divider-empty:after {
   margin-left: 0;
 }
 
+.is-nova .hr-sect.opc-Divider-empty::before {
+  margin: 0;
+}
+.is-nova .hr-sect.opc-Divider-empty::after {
+  margin: 0;
+}
+
 /*# sourceMappingURL=preview.css.map */

@@ -48,3 +48,16 @@ body:not(.is-nova) .opc-Divider {
     }
   }
 }
+
+.is-nova {
+  .hr-sect {
+    &.opc-Divider-empty {
+      &::before {
+        margin: 0;
+      }
+      &::after {
+        margin: 0;
+      }
+    }
+  }
+}

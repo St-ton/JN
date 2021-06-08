@@ -163,7 +163,7 @@ class CustomerFields
         }
 
         // Delete all customer values that are not in value list
-        $db->executeQueryPrepared(
+        $db->queryPrepared(
             "DELETE tkundenattribut
                     FROM tkundenattribut
                     INNER JOIN tkundenfeld ON tkundenfeld.kKundenfeld = tkundenattribut.kKundenfeld

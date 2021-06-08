@@ -220,20 +220,20 @@ class Image
             ],
             self::TYPE_OPC                  => [
                 self::SIZE_XS => [
-                    'width'  => 480,
-                    'height' => 480
+                    'width'  => (int)$settings['bilder_opc_mini_breite'],
+                    'height' => (int)$settings['bilder_opc_mini_hoehe']
                 ],
                 self::SIZE_SM => [
-                    'width'  => 720,
-                    'height' => 720
+                    'width'  => (int)$settings['bilder_opc_klein_breite'],
+                    'height' => (int)$settings['bilder_opc_klein_hoehe']
                 ],
                 self::SIZE_MD => [
-                    'width'  => 1080,
-                    'height' => 1080
+                    'width'  => (int)$settings['bilder_opc_normal_breite'],
+                    'height' => (int)$settings['bilder_opc_normal_hoehe']
                 ],
                 self::SIZE_LG => [
-                    'width'  => 1440,
-                    'height' => 1440
+                    'width'  => (int)$settings['bilder_opc_gross_breite'],
+                    'height' => (int)$settings['bilder_opc_gross_hoehe']
                 ]
             ],
             self::TYPE_NEWS                 => [

@@ -325,12 +325,12 @@ class MigrationManager
             "INSERT INTO tmigrationlog (kMigration, cDir, cState, cLog, dCreated) 
                 VALUES ('%s', '%s', '%s', '%s', '%s');",
             $migration->getId(),
-            $this->db->pdoEscape($direction),
-            $this->db->pdoEscape($state),
-            $this->db->pdoEscape($message),
+            $this->db->escape($direction),
+            $this->db->escape($state),
+            $this->db->escape($message),
             (new DateTime('now'))->format('Y-m-d H:i:s')
         );
-        $this->db->executeQuery($sql);
+        $this->db->query($sql);
     }
 
     /**
@@ -349,10 +349,10 @@ class MigrationManager
                 \sprintf('%d%02d', $version->getMajor(), $version->getMinor()),
                 $executed->format('Y-m-d H:i:s')
             );
-            $this->db->executeQuery($sql);
+            $this->db->query($sql);
         } else {
             $sql = \sprintf("DELETE FROM tmigration WHERE kMigration = '%s'", $migration->getId());
-            $this->db->executeQuery($sql);
+            $this->db->query($sql);
         }
 
         return $this;

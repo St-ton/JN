@@ -266,7 +266,7 @@ class ShippingMethod
                     $shippingMethod->cLieferdauer[$language->cISO]           = $localized->cLieferdauer;
                 }
             }
-            if ($shippingMethod->fEndpreis < $minSum) {
+            if ($shippingMethod->fEndpreis < $minSum && $shippingMethod->cIgnoreShippingProposal !== 'Y') {
                 $minSum = $shippingMethod->fEndpreis;
             }
             if ($shippingMethod->fEndpreis == 0) {

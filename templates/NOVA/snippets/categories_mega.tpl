@@ -1,25 +1,26 @@
 {block name='snippets-categories-mega'}
     {strip}
-    {if !isset($i)}
-        {assign var=i value=0}
-    {/if}
-
+    {block name='snippets-categories-mega-assigns'}
+        {if !isset($i)}
+            {assign var=i value=0}
+        {/if}
+        {if !isset($activeId)}
+            {if $NaviFilter->hasCategory()}
+                {$activeId = $NaviFilter->getCategory()->getValue()}
+            {elseif $nSeitenTyp === $smarty.const.PAGE_ARTIKEL && isset($Artikel)}
+                {$activeId = $Artikel->gibKategorie()}
+            {elseif $nSeitenTyp === $smarty.const.PAGE_ARTIKEL && isset($smarty.session.LetzteKategorie)}
+                {$activeId = $smarty.session.LetzteKategorie}
+            {else}
+                {$activeId = 0}
+            {/if}
+        {/if}
+    {/block}
     {block name='snippets-categories-mega-categories'}
     {if $Einstellungen.template.megamenu.show_categories !== 'N'
         && ($Einstellungen.global.global_sichtbarkeit != 3 || \JTL\Session\Frontend::getCustomer()->getID() > 0)}
         {get_category_array categoryId=0 assign='categories'}
         {if !empty($categories)}
-            {if !isset($activeId)}
-                {if $NaviFilter->hasCategory()}
-                    {$activeId = $NaviFilter->getCategory()->getValue()}
-                {elseif $nSeitenTyp === $smarty.const.PAGE_ARTIKEL && isset($Artikel)}
-                    {assign var=activeId value=$Artikel->gibKategorie()}
-                {elseif $nSeitenTyp === $smarty.const.PAGE_ARTIKEL && isset($smarty.session.LetzteKategorie)}
-                    {$activeId = $smarty.session.LetzteKategorie}
-                {else}
-                    {$activeId = 0}
-                {/if}
-            {/if}
             {if !isset($activeParents)
             && ($nSeitenTyp === $smarty.const.PAGE_ARTIKEL || $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE)}
                 {get_category_parents categoryId=$activeId assign='activeParents'}
@@ -32,7 +33,10 @@
                 {if $category->isOrphaned() === false}
                     {if $category->hasChildren()}
                         {block name='snippets-categories-mega-category-child'}
-                            <li class="nav-item nav-scrollbar-item dropdown dropdown-full{if $category->getID() === $activeId
+                            <li class="nav-item nav-scrollbar-item dropdown dropdown-full
+                                {if $Einstellungen.template.megamenu.show_categories === 'mobile'} d-lg-none
+                                {elseif $Einstellungen.template.megamenu.show_categories === 'desktop'} d-none d-lg-inline-block {/if}
+                                {if $category->getID() === $activeId
                             || ((isset($activeParent)
                                 && isset($activeParent->kKategorie))
                                 && $activeParent->kKategorie == $category->getID())} active{/if}">
@@ -73,7 +77,9 @@
                     {else}
                         {block name='snippets-categories-mega-category-no-child'}
                             {navitem href=$category->getURL() title=$category->getName()
-                                class="nav-scrollbar-item {if $category->getID() === $activeId}active{/if}"}
+                                class="nav-scrollbar-item {if $Einstellungen.template.megamenu.show_categories === 'mobile'} d-lg-none
+                                    {elseif $Einstellungen.template.megamenu.show_categories === 'desktop'} d-none d-lg-inline-block {/if}
+                                    {if $category->getID() === $activeId}active{/if}"}
                                 <span class="text-truncate d-block">{$category->getShortName()}</span>
                             {/navitem}
                         {/block}

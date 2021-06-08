@@ -203,7 +203,7 @@ class MigrationHelper
                 . ' INDEX `' . $idxName . '` ON `' . $idxTable . '` '
                 . '(`' . \implode('`, `', $idxColumns) . '`)';
 
-            return !Shop::Container()->getDB()->executeQuery($ddl) ? false : true;
+            return !Shop::Container()->getDB()->query($ddl) ? false : true;
         }
 
         return false;
@@ -217,7 +217,7 @@ class MigrationHelper
     public static function dropIndex(string $idxTable, string $idxName): bool
     {
         if (\count(self::indexColumns($idxTable, $idxName)) > 0) {
-            return !Shop::Container()->getDB()->executeQuery(
+            return !Shop::Container()->getDB()->query(
                 'DROP INDEX `' . $idxName . '` ON `' . $idxTable . '` '
             ) ? false : true;
         }

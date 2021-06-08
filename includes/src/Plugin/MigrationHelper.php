@@ -170,7 +170,7 @@ final class MigrationHelper
                 . ' INDEX `' . $idxName . '` ON `' . $idxTable . '` '
                 . '(`' . \implode('`, `', $idxColumns) . '`)';
 
-            return !$this->db->executeQuery($ddl) ? false : true;
+            return !$this->db->query($ddl) ? false : true;
         }
 
         return false;
@@ -184,7 +184,7 @@ final class MigrationHelper
     public function dropIndex(string $idxTable, string $idxName): bool
     {
         if (\count($this->indexColumns($idxTable, $idxName)) > 0) {
-            return !$this->db->executeQuery(
+            return !$this->db->query(
                 'DROP INDEX `' . $idxName . '` ON `' . $idxTable . '` '
             ) ? false : true;
         }

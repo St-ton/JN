@@ -32,7 +32,7 @@ trait MigrationTrait
             $query = Text::utf8_convert_recursive($query, false);
         }
 
-        return $this->getDB()->executeQuery($query, $return);
+        return $this->getDB()->query($query, $return);
     }
 
     /**

@@ -26,8 +26,14 @@ class State extends Enum
 
     public const EXS_LICENSE_EXPIRED = 7;
 
+    /**
+     * @deprecated
+     */
     public const ESX_LICENSE_EXPIRED = 7;
 
+    /**
+     * @deprecated
+     */
     public const ESX_SUBSCRIPTION_EXPIRED = 8;
 
     public const EXS_SUBSCRIPTION_EXPIRED = 8;

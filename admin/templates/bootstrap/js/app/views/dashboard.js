@@ -40,7 +40,7 @@ sortable.on('drag:start', (evt) => {
 
 	clearTimeout(to)
 
-	if($target.parents(`[${Data.ignore}], a`).length > 0 || $target.is(`[${Data.ignore}], a`)) {
+	if($target.parents(`[${Data.ignore}], a, select`).length > 0 || $target.is(`[${Data.ignore}], a, select`)) {
 		sortable.dragging = false
 		evt.cancel()
 	} else {
@@ -106,3 +106,9 @@ $(function () {
             .appendTo($('.options', widget));
     });
 })
+
+// no drag'n drop on touch devices
+$('.dashboard-wrapper').one('touchstart', function() {
+    sortable.destroy();
+});
+

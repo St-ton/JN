@@ -105,9 +105,7 @@ build_create_deleted_files_csv()
 {
     local VERSION="${APPLICATION_VERSION_STR//[\/\.]/-}";
     local VERSION="${VERSION//^[v]/}";
-    local CUR_PWD=$(pwd);
     local DELETE_FILES_CSV_FILENAME="${REPOSITORY_DIR}/admin/includes/shopmd5files/deleted_files_${VERSION}.csv";
-    local DELETE_FILES_CSV_FILENAME_TMP="${REPOSITORY_DIR}/admin/includes/shopmd5files/deleted_files_${VERSION}_tmp.csv";
     local BRANCH_REGEX="(master|release\\/([0-9]{1,})\\.([0-9]{1,}))";
     local REMOTE_STR="";
 
@@ -119,15 +117,9 @@ build_create_deleted_files_csv()
 
     cd ${REPOSITORY_DIR};
     git pull >/dev/null 2>&1;
-    git diff --name-status --diff-filter D tags/v4.03.0 ${REMOTE_STR}${APPLICATION_VERSION} -- ${REPOSITORY_DIR} ':!admin/classes' ':!classes' ':!includes/ext' ':!includes/plugins' ':!templates/Evo' > ${DELETE_FILES_CSV_FILENAME_TMP};
-    cd ${CUR_PWD};
-
-    while read line; do
-        local LINEINPUT="${line//[D ]/}";
-        echo ${LINEINPUT} >> ${DELETE_FILES_CSV_FILENAME};
-    done < ${DELETE_FILES_CSV_FILENAME_TMP};
-
-    rm ${DELETE_FILES_CSV_FILENAME_TMP};
+    git diff --name-only --diff-filter D tags/v4.03.0 ${REMOTE_STR}${APPLICATION_VERSION} -- ${REPOSITORY_DIR} ':!admin/classes' ':!classes' ':!includes/ext' ':!includes/plugins' ':!templates/Evo' > ${DELETE_FILES_CSV_FILENAME};
+	#get all modified files with content: // removed in x.x.x and concat it to the csv file
+	git diff --name-only --diff-filter M -S'<?php // removed in ' tags/v4.03.0 ${REMOTE_STR}${APPLICATION_VERSION} >> ${DELETE_FILES_CSV_FILENAME};
 
     echo "  Deleted files schema admin/includes/shopmd5files/deleted_files_${VERSION}.csv";
 }

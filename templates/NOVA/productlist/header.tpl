@@ -39,7 +39,11 @@
             {elseif $oNavigationsinfo->getCharacteristicValue() !== null}
                 {$navData = $oNavigationsinfo->getCharacteristicValue()}
             {/if}
-            {include file='snippets/image.tpl' class='productlist-header-description-image' item=$navData square=false alt=$navData->cBeschreibung|strip_tags|truncate:50}
+            {include file='snippets/image.tpl'
+                class='productlist-header-description-image'
+                item=$navData
+                square=false
+                alt="{if $oNavigationsinfo->getCategory() !== null && !empty($navData->getImageAlt())}{$navData->getImageAlt()}{else}{$navData->cBeschreibung|strip_tags|truncate:50}{/if}"}
         {/if}
         {if $oNavigationsinfo->getName()}
             <div class="title">
@@ -89,10 +93,11 @@
                             {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}
                                 {block name='productlist-header-subcategories-image'}
                                     {link href=$subCategory->getURL()}
+                                        {$imgAlt = $subCategory->getAttribute('img_alt')}
                                         <div class="subcategories-image d-none d-md-flex">
                                             {image fluid=true lazy=true webp=true
                                                 src=$subCategory->getImage(\JTL\Media\Image::SIZE_SM)
-                                                alt=$subCategory->getName()}
+                                                alt="{if empty($imgAlt->cWert)}{$subCategory->getName()}{else}{$imgAlt->cWert}{/if}"}
                                         </div>
                                     {/link}
                                 {/block}

@@ -7,6 +7,7 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\Checkout\ZahlungsLog;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Export\SyntaxChecker;
 use JTL\Exportformat;
 use JTL\License\Manager;
 use JTL\License\Mapper;
@@ -109,6 +110,7 @@ class Status
      */
     public function getSystemLogInfo(): stdClass
     {
+        /** @var int $conf */
         $conf = Shop::getConfigValue(\CONF_GLOBAL, 'systemlog_flag');
 
         return (object)[
@@ -231,17 +233,16 @@ class Status
     public function getPluginSharedHooks(): array
     {
         $sharedPlugins = [];
-        $sharedHookIds = $this->db->query(
+        $sharedHookIds = $this->db->getObjects(
             'SELECT nHook
                 FROM tpluginhook
                 GROUP BY nHook
-                HAVING COUNT(DISTINCT kPlugin) > 1',
-            ReturnType::ARRAY_OF_OBJECTS
+                HAVING COUNT(DISTINCT kPlugin) > 1'
         );
         foreach ($sharedHookIds as $hookData) {
             $hookID                 = (int)$hookData->nHook;
             $sharedPlugins[$hookID] = [];
-            $plugins                = $this->db->queryPrepared(
+            $plugins                = $this->db->getObjects(
                 'SELECT DISTINCT tpluginhook.kPlugin, tplugin.cName, tplugin.cPluginID
                     FROM tpluginhook
                     INNER JOIN tplugin
@@ -251,8 +252,7 @@ class Status
                 [
                     'hook'  => $hookID,
                     'state' => State::ACTIVATED
-                ],
-                ReturnType::ARRAY_OF_OBJECTS
+                ]
             );
             foreach ($plugins as $plugin) {
                 $sharedPlugins[$hookID][$plugin->cPluginID] = $plugin;
@@ -410,12 +410,11 @@ class Status
      */
     public function getOrphanedCategories(bool $has = true)
     {
-        $categories = $this->db->query(
+        $categories = $this->db->getObjects(
             'SELECT kKategorie, cName
                 FROM tkategorie
                 WHERE kOberkategorie > 0
-                    AND kOberkategorie NOT IN (SELECT DISTINCT kKategorie FROM tkategorie)',
-            ReturnType::ARRAY_OF_OBJECTS
+                    AND kOberkategorie NOT IN (SELECT DISTINCT kKategorie FROM tkategorie)'
         );
 
         return $has === true
@@ -471,10 +470,9 @@ class Status
             return false;
         }
 
-        $data = $this->db->query(
+        $data = $this->db->getObjects(
             'SELECT `kPlugin`, `nVersion`, `bExtension`
-                FROM `tplugin`',
-            ReturnType::ARRAY_OF_OBJECTS
+                FROM `tplugin`'
         );
         if (!\is_array($data) || 1 > \count($data)) {
             return false; // there are no plugins installed
@@ -501,13 +499,12 @@ class Status
      */
     public function hasInvalidPasswordResetMailTemplate(): bool
     {
-        $translations = $this->db->query(
+        $translations = $this->db->getObjects(
             "SELECT lang.cContentText, lang.cContentHtml
                 FROM temailvorlagesprache lang
                 JOIN temailvorlage
                 ON lang.kEmailvorlage = temailvorlage.kEmailvorlage
-                WHERE temailvorlage.cName = 'Passwort vergessen'",
-            ReturnType::ARRAY_OF_OBJECTS
+                WHERE temailvorlage.cName = 'Passwort vergessen'"
         );
         foreach ($translations as $t) {
             $old = '{$neues_passwort}';
@@ -541,11 +538,10 @@ class Status
     public function needPasswordRehash2FA(): bool
     {
         $passwordService = Shop::Container()->getPasswordService();
-        $hashes          = $this->db->query(
+        $hashes          = $this->db->getObjects(
             'SELECT *
                 FROM tadmin2facodes
-                GROUP BY kAdminlogin',
-            ReturnType::ARRAY_OF_OBJECTS
+                GROUP BY kAdminlogin'
         );
 
         return some($hashes, static function ($hash) use ($passwordService) {
@@ -554,15 +550,14 @@ class Status
     }
 
     /**
-     * @return array
+     * @return stdClass[]
      */
     public function getDuplicateLinkGroupTemplateNames(): array
     {
-        return $this->db->query(
+        return $this->db->getObjects(
             'SELECT * FROM tlinkgruppe
                 GROUP BY cTemplatename
-                HAVING COUNT(*) > 1',
-            ReturnType::ARRAY_OF_OBJECTS
+                HAVING COUNT(*) > 1'
         );
     }
 
@@ -571,14 +566,13 @@ class Status
      * @param string|null $hash
      * @return int
      */
-    public function getExportFormatErrorCount(int $type = Exportformat::SYNTAX_FAIL, ?string &$hash = null): int
+    public function getExportFormatErrorCount(int $type = SyntaxChecker::SYNTAX_FAIL, ?string &$hash = null): int
     {
         $cacheKey = self::CACHE_ID_EXPORT_SYNTAX_CHECK . $type;
         if (($syntaxErrCnt = $this->cache->get($cacheKey)) === false) {
-            $syntaxErrCnt = (int)$this->db->queryPrepared(
+            $syntaxErrCnt = (int)$this->db->getSingleObject(
                 'SELECT COUNT(*) AS cnt FROM texportformat WHERE nFehlerhaft = :type',
-                ['type' => $type],
-                ReturnType::SINGLE_OBJECT
+                ['type' => $type]
             )->cnt;
 
             $this->cache->set($cacheKey, $syntaxErrCnt, [\CACHING_GROUP_STATUS, self::CACHE_ID_EXPORT_SYNTAX_CHECK]);
@@ -599,13 +593,11 @@ class Status
         $cacheKey = self::CACHE_ID_EMAIL_SYNTAX_CHECK . $type;
         if (($syntaxErrCnt = $this->cache->get($cacheKey)) === false) {
             $syntaxErrCnt = 0;
-            /** @var array $templates */
-            $templates = $this->db->queryPrepared(
+            $templates    = $this->db->getObjects(
                 'SELECT cModulId, kPlugin FROM temailvorlage WHERE nFehlerhaft = :type',
-                ['type' => $type],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['type' => $type]
             );
-            $factory   = new TemplateFactory($this->db);
+            $factory      = new TemplateFactory($this->db);
             foreach ($templates as $template) {
                 $module = $template->cModulId;
                 if ($template->kPlugin > 0) {

@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
+use JTL\Consent\Admin;
 use JTL\Consent\ConsentModel;
-use JTL\Model\GenericAdmin;
 
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Backend\AdminAccount $oAccount */
@@ -9,7 +9,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 
-$admin = new GenericAdmin(
+$admin = new Admin(
     new ConsentModel(),
     basename(__FILE__),
     Shop::Container()->getDB(),

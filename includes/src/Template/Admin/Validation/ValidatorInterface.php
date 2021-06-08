@@ -24,4 +24,11 @@ interface ValidatorInterface
      * @return int
      */
     public function validateByPath(string $path, bool $forUpdate = false): int;
+
+    /**
+     * @param string $path
+     * @param array  $xml
+     * @return int
+     */
+    public function validate(string $path, array $xml): int;
 }

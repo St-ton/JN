@@ -26,7 +26,7 @@ class Plugins
         $data      = $params['data'] ?? null;
         $revision  = new Revision(Shop::Container()->getDB());
 
-        return $smarty->assign('revisions', $revision->getRevisions($params['type'], $params['key']))
+        return $smarty->assign('revisions', $revision->getRevisions($params['type'], (int)$params['key']))
             ->assign('secondary', $secondary)
             ->assign('data', $data)
             ->assign('show', $params['show'])
@@ -202,7 +202,7 @@ class Plugins
             return null;
         }
 
-        return \substr_replace((int)$params['value'], '.', 1, 0);
+        return \substr_replace((string)(int)$params['value'], '.', 1, 0);
     }
 
     /**

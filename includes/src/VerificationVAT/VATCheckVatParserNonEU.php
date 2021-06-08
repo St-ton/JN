@@ -9,7 +9,7 @@ namespace JTL\VerificationVAT;
 class VATCheckVatParserNonEU
 {
     /**
-     * @var $countryPattern
+     * @var array $countryPattern
      */
     private $countryPattern = [
         // CH-Schweiz                    CHE-999.999.999 oder

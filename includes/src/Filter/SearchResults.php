@@ -51,7 +51,7 @@ class SearchResults implements SearchResultsInterface
     private $offsetEnd = 0;
 
     /**
-     * @var stdClass
+     * @var Info
      * @former Seitenzahlen
      */
     private $pages;

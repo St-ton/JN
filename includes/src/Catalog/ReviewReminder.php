@@ -6,7 +6,6 @@ use Exception;
 use JTL\Catalog\Product\Artikel;
 use JTL\Checkout\Bestellung;
 use JTL\Customer\Customer;
-use JTL\DB\ReturnType;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\EmptyResultSetException;
 use JTL\Exceptions\InvalidSettingException;
@@ -98,6 +97,7 @@ class ReviewReminder
         }
         $reciepients    = [];
         $defaultOptions = Artikel::getDefaultOptions();
+        $db             = Shop::Container()->getDB();
         foreach ($this->orders as $orderData) {
             $openReviews = [];
             $order       = new Bestellung((int)$orderData->kBestellung);
@@ -116,14 +116,14 @@ class ReviewReminder
                     (int)$customer->kKundengruppe
                 );
                 if ($productVisible !== null && $productVisible->kArtikel > 0) {
-                    $res = Shop::Container()->getDB()->query(
+                    $res = $db->getSingleObject(
                         'SELECT kBewertung
                             FROM tbewertung
-                            WHERE kArtikel = ' . (int)$item->kArtikel . '
-                                AND kKunde = ' . (int)$order->kKunde,
-                        ReturnType::SINGLE_OBJECT
+                            WHERE kArtikel = :pid
+                                AND kKunde = :cid',
+                        ['pid' => (int)$item->kArtikel, 'cid' => (int)$order->kKunde]
                     );
-                    if ($res === false) {
+                    if ($res === null) {
                         $openReviews[] = $item;
                     }
                 }
@@ -134,11 +134,11 @@ class ReviewReminder
             }
             $order->Positionen = $openReviews;
             // set the date of "review send" for the corresponding order
-            Shop::Container()->getDB()->query(
+            $db->queryPrepared(
                 'UPDATE tbestellung
                     SET dBewertungErinnerung = NOW()
-                    WHERE kBestellung = ' . (int)$orderData->kBestellung,
-                ReturnType::AFFECTED_ROWS
+                    WHERE kBestellung = :oid',
+                ['oid' => (int)$orderData->kBestellung]
             );
             $logger = Shop::Container()->getLogService();
             if ($logger->isHandling(\JTLLOG_LEVEL_DEBUG)) {
@@ -172,7 +172,7 @@ class ReviewReminder
                 AND (' . $this->sqlPartCustomerGroups . ')
                 AND dBewertungErinnerung IS NULL
                 ' . $this->sqlPartBundle2;
-        $this->orders = Shop::Container()->getDB()->query($sqlString, ReturnType::ARRAY_OF_OBJECTS);
+        $this->orders = Shop::Container()->getDB()->getObjects($sqlString);
         if (\count($this->orders) === 0) {
             throw new EmptyResultSetException('Keine Bestellungen für Bewertungserinnerungen gefunden.');
         }

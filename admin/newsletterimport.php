@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Alert\Alert;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -45,9 +44,8 @@ if (isset($_FILES['csv']['tmp_name'])
     }
 }
 
-$smarty->assign('kundengruppen', Shop::Container()->getDB()->query(
-    'SELECT * FROM tkundengruppe ORDER BY cName',
-    ReturnType::ARRAY_OF_OBJECTS
+$smarty->assign('kundengruppen', Shop::Container()->getDB()->getObjects(
+    'SELECT * FROM tkundengruppe ORDER BY cName'
 ))
     ->display('newsletterimport.tpl');
 
@@ -136,7 +134,7 @@ function processImport(array $fmt, array $data): string
     $recipient->cOptCode     = $instance->createCode('cOptCode', $recipient->cEmail);
     $recipient->cLoeschCode  = $instance->createCode('cLoeschCode', $recipient->cEmail);
     $recipient->dEingetragen = 'NOW()';
-    $recipient->kSprache     = $_POST['kSprache'];
+    $recipient->kSprache     = (int)$_POST['kSprache'];
     $recipient->kKunde       = 0;
 
     $customerData = $db->select('tkunde', 'cMail', $recipient->cEmail);

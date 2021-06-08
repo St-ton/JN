@@ -2,7 +2,6 @@
 
 namespace JTL\dbeS\Sync;
 
-use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\Shop;
 use stdClass;
@@ -20,14 +19,14 @@ final class QuickSync extends AbstractSync
      */
     public function handle(Starter $starter)
     {
-        $this->db->query('START TRANSACTION', ReturnType::DEFAULT);
+        $this->db->query('START TRANSACTION');
         foreach ($starter->getXML() as $i => $item) {
             [$file, $xml] = [\key($item), \reset($item)];
             if (\strpos($file, 'quicksync.xml') !== false) {
                 $this->handleInserts($xml);
             }
         }
-        $this->db->query('COMMIT', ReturnType::DEFAULT);
+        $this->db->query('COMMIT');
 
         return null;
     }
@@ -65,16 +64,16 @@ final class QuickSync extends AbstractSync
         foreach ($products as $product) {
             $id = (int)$product->kArtikel;
             if (isset($product->fLagerbestand) && $product->fLagerbestand > 0) {
-                $delta = $this->db->query(
+                $delta = $this->db->getSingleObject(
                     "SELECT SUM(pos.nAnzahl) AS totalquantity
-                    FROM tbestellung b
-                    JOIN twarenkorbpos pos
-                    ON pos.kWarenkorb = b.kWarenkorb
-                    WHERE b.cAbgeholt = 'N'
-                        AND pos.kArtikel = " . $id,
-                    ReturnType::SINGLE_OBJECT
+                        FROM tbestellung b
+                        JOIN twarenkorbpos pos
+                            ON pos.kWarenkorb = b.kWarenkorb
+                        WHERE b.cAbgeholt = 'N'
+                            AND pos.kArtikel = :pid",
+                    ['pid' => $id]
                 );
-                if ($delta->totalquantity > 0) {
+                if ($delta !== null && $delta->totalquantity > 0) {
                     $product->fLagerbestand -= $delta->totalquantity;
                 }
             }

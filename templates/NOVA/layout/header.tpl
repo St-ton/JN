@@ -195,8 +195,8 @@
             {/if}
             {* Languages *}
             {if !empty($smarty.session.Sprachen) && count($smarty.session.Sprachen) > 1}
-                {foreach item=oSprache from=$smarty.session.Sprachen}
-                    <link rel="alternate" hreflang="{$oSprache->cISO639}" href="{$oSprache->cURLFull}">
+                {foreach $smarty.session.Sprachen as $language}
+                    <link rel="alternate" hreflang="{$language->getIso639()}" href="{$language->getUrl()}">
                 {/foreach}
             {/if}
         {/block}
@@ -242,7 +242,7 @@
             <script defer src="{$ShopURL}/{$currentTemplateDir}js/custom.js?v={$nTemplateVersion}"></script>
         {/if}
 
-        {getUploaderLang iso=$smarty.session.currentLanguage->cISO639|default:'' assign='uploaderLang'}
+        {getUploaderLang iso=$smarty.session.currentLanguage->getIso639()|default:'' assign='uploaderLang'}
 
         <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fontawesome/webfonts/fa-solid-900.woff2" as="font" crossorigin/>
         <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fontawesome/webfonts/fa-regular-400.woff2" as="font" crossorigin/>
@@ -275,7 +275,7 @@
                      {if $Einstellungen.template.theme.wish_compare_animation === 'desktop'
                         || $Einstellungen.template.theme.wish_compare_animation === 'both'}wish-compare-animation-desktop{/if}
                      {if $isMobile}is-mobile{/if}
-                     {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG} is-checkout{/if}"
+                     {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG} is-checkout{/if} is-nova"
               data-page="{$nSeitenTyp}"
               {if isset($Link) && !empty($Link->getIdentifier())} id="{$Link->getIdentifier()}"{/if}>
     {/block}
@@ -319,9 +319,9 @@
                             {block name='layout-header-logo'}
                                 <div id="logo" class="logo-wrapper" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
                                     <span itemprop="name" class="d-none">{$meta_publisher}</span>
-                                    <meta itemprop="url" content="{$ShopURL}">
+                                    <meta itemprop="url" content="{$ShopHomeURL}">
                                     <meta itemprop="logo" content="{$ShopLogoURL}">
-                                    {link class="navbar-brand" href=$ShopURL title=$Einstellungen.global.global_shopname}
+                                    {link class="navbar-brand" href=$ShopHomeURL title=$Einstellungen.global.global_shopname}
                                     {if isset($ShopLogoURL)}
                                         {image src=$ShopLogoURL
                                         alt=$Einstellungen.global.global_shopname

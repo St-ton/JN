@@ -11,7 +11,6 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Cron\QueueEntry;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Category;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
@@ -31,6 +30,7 @@ use function Functional\first;
 /**
  * Class Exportformat
  * @package JTL
+ * @deprecated since 5.1.0
  */
 class Exportformat
 {
@@ -179,6 +179,11 @@ class Exportformat
     private $db;
 
     /**
+     * @var int
+     */
+    protected $nFehlerhaft = 0;
+
+    /**
      * Exportformat constructor.
      *
      * @param int              $id
@@ -251,16 +256,16 @@ class Exportformat
      */
     private function loadFromDB(int $id = 0): self
     {
-        $data = $this->db->query(
+        $data = $this->db->getSingleObject(
             'SELECT texportformat.*, tkampagne.cParameter AS campaignParameter, tkampagne.cWert AS campaignValue
                FROM texportformat
                LEFT JOIN tkampagne 
                   ON tkampagne.kKampagne = texportformat.kKampagne
                   AND tkampagne.nAktiv = 1
-               WHERE texportformat.kExportformat = ' . $id,
-            ReturnType::SINGLE_OBJECT
+               WHERE texportformat.kExportformat = :eid',
+            ['eid' => $id]
         );
-        if (isset($data->kExportformat) && $data->kExportformat > 0) {
+        if ($data !== null && $data->kExportformat > 0) {
             foreach (\get_object_vars($data) as $k => $v) {
                 $this->$k = $v;
             }
@@ -728,7 +733,7 @@ class Exportformat
         if (($count = Shop::Container()->getCache()->get($cid)) !== false) {
             return $count ?? 0;
         }
-        $count = (int)$this->db->query($this->getExportSQL(true), ReturnType::SINGLE_OBJECT)->nAnzahl;
+        $count = (int)$this->db->getSingleObject($this->getExportSQL(true))->nAnzahl;
         Shop::Container()->getCache()->set($cid, $count, [\CACHING_GROUP_CORE], 120);
 
         return $count;
@@ -1277,11 +1282,7 @@ class Exportformat
         }
         $tmpFile = \fopen(\PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName, 'a');
         if ($max === null) {
-            $maxObj = $this->db->executeQuery(
-                $this->getExportSQL(true),
-                ReturnType::SINGLE_OBJECT
-            );
-            $max    = (int)$maxObj->nAnzahl;
+            $max = (int)$this->db->getSingleObject($this->getExportSQL(true))->nAnzahl;
         }
 
         $this->log('Starting exportformat "' . Text::convertUTF8($this->getName()) .
@@ -1325,13 +1326,10 @@ class Exportformat
             $findTwo[]    = ';';
             $replaceTwo[] = $this->config['exportformate_semikolon'];
         }
-        foreach ($this->db->query(
-            $this->getExportSQL(),
-            ReturnType::QUERYSINGLE
-        ) as $productData) {
+        foreach ($this->db->getSingleObject($this->getExportSQL()) as $productData) {
             $product = new Artikel();
             $product->fuelleArtikel(
-                (int)$productData['kArtikel'],
+                (int)$productData->kArtikel,
                 $options,
                 $this->kKundengruppe,
                 $this->kSprache,
@@ -1408,8 +1406,7 @@ class Exportformat
                         'nLimitM'        => $this->queue->taskLimit,
                         'nLastArticleID' => $this->queue->lastProductID,
                         'kExportqueue'   => (int)$this->queue->jobQueueID,
-                    ],
-                    ReturnType::DEFAULT
+                    ]
                 );
                 $protocol = ((isset($_SERVER['HTTPS']) && \mb_convert_case($_SERVER['HTTPS'], \MB_CASE_LOWER) === 'on')
                     || Request::checkSSL() === 2)
@@ -1436,11 +1433,11 @@ class Exportformat
                 }
             } else {
                 // There are no more articles to export
-                $this->db->query(
+                $this->db->queryPrepared(
                     'UPDATE texportformat 
                         SET dZuletztErstellt = NOW() 
-                        WHERE kExportformat = ' . $this->getExportformat(),
-                    ReturnType::DEFAULT
+                        WHERE kExportformat = :eid',
+                    ['eid' => $this->getExportformat()]
                 );
                 $this->db->delete('texportqueue', 'kExportqueue', (int)$this->queue->foreignKeyID);
 
@@ -1664,14 +1661,13 @@ class Exportformat
 
         $this->initSession()->initSmarty();
         $product     = null;
-        $productData = $this->db->query(
+        $productData = $this->db->getSingleObject(
             "SELECT kArtikel 
                 FROM tartikel 
                 WHERE kVaterArtikel = 0 
-                AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1",
-            ReturnType::SINGLE_OBJECT
+                AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1"
         );
-        if (!empty($productData->kArtikel)) {
+        if ($productData !== null && $productData->kArtikel > 0) {
             $product = new Artikel();
             $product->fuelleArtikel($productData->kArtikel, Artikel::getExportOptions());
             $product->cDeeplink             = '';

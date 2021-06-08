@@ -43,6 +43,7 @@
             thumbnail=$portlet->getThumbnailProp($instance)
             fluid-grow=true
             webp=true
+            attribs=['draggable'=>'false']
         }
         {if $isLink && !$isPreview && !empty($href)}
             </a>

@@ -584,7 +584,7 @@ class GUI
     {
         this.checkPublishNow.prop('checked', true);
         this.publishFrom.prop('disabled', true);
-        this.publishFrom.val('Jetzt');
+        this.publishFrom.val(opc.messages.now);
         this.publishTo.prop('disabled', true);
         this.publishTo.val(opc.messages.indefinitePeriodOfTime);
         this.checkPublishInfinite.prop('checked', true);

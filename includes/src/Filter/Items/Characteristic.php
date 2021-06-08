@@ -384,6 +384,9 @@ class Characteristic extends BaseCharacteristic
                                 ) . '))), tartikel.kArtikel, NULL) AS kArtikel'
                     );
                 } else {
+                    /* Der Kommentar mit den integrierten $activeOrFilterIDs ist hier notwendig,
+                       um bei aktiviertem Cache die Query unterscheidbar zu machen.
+                       Die Cache-ID wird als md5 über den Query-String ermittelt. */
                     $state->addSelect('#' . \implode(',', $activeOrFilterIDs) . "\ntartikel.kArtikel AS kArtikel");
                 }
             } else {

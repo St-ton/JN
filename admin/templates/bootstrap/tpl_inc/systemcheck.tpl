@@ -5,7 +5,7 @@
             {if $state !== null && $state|strlen > 0}
                 {$state}
             {else}
-                <i class="fal fa-check text-success" aria-hidden="true"></i>
+                <i class="fal fa-check" aria-hidden="true"></i>
             {/if}
         </span></h4>
     {elseif $test->getResult() === Systemcheck\Tests\AbstractTest::RESULT_FAILED}

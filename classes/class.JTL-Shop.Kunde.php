@@ -829,7 +829,7 @@ class Kunde
             [
                 'kKunde'   => $this->kKunde,
                 'cKey'     => $key,
-                'dExpires' => $expires->format(DateTime::ISO8601),
+                'dExpires' => $expires->format('Y-m-d H:i:s'),
             ],
             3
         );

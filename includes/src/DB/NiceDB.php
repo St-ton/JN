@@ -11,7 +11,6 @@ use JTL\Shop;
 use PDO;
 use PDOException;
 use PDOStatement;
-use Psr\Log\LoggerInterface;
 use stdClass;
 
 /**
@@ -378,7 +377,7 @@ class NiceDB implements DbInterface
      */
     public function info(): string
     {
-        \trigger_error(__METHOD__ . ' is deprecated. User getServerInfo() instead.', \E_USER_DEPRECATED);
+        \trigger_error(__METHOD__ . ' is deprecated. Use getServerInfo() instead.', \E_USER_DEPRECATED);
         return $this->getServerInfo();
     }
 
@@ -396,7 +395,7 @@ class NiceDB implements DbInterface
      */
     public function stats(): string
     {
-        \trigger_error(__METHOD__ . ' is deprecated. User getServerStats() instead.', \E_USER_DEPRECATED);
+        \trigger_error(__METHOD__ . ' is deprecated. Use getServerStats() instead.', \E_USER_DEPRECATED);
         return $this->getServerStats();
     }
 
@@ -408,7 +407,7 @@ class NiceDB implements DbInterface
      */
     public function DB(): PDO
     {
-        \trigger_error(__METHOD__ . ' is deprecated. User getPDO() instead.', \E_USER_DEPRECATED);
+        \trigger_error(__METHOD__ . ' is deprecated. Use getPDO() instead.', \E_USER_DEPRECATED);
         return $this->pdo;
     }
 
@@ -1111,7 +1110,7 @@ class NiceDB implements DbInterface
      */
     public function exQuery($stmt)
     {
-        \trigger_error(__METHOD__ . ' is deprecated. User executeExQuery() instead.', \E_USER_DEPRECATED);
+        \trigger_error(__METHOD__ . ' is deprecated. Use executeExQuery() instead.', \E_USER_DEPRECATED);
         return $this->executeExQuery($stmt);
     }
 

@@ -133,7 +133,7 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
                 <tr>
                     <td>
                         <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                            {$Kunde->cTel}
+                            {$Kunde->cTel|substr:1}****{$Kunde->cTel|substr:-4}
                         </font>
                     </td>
                 </tr>
@@ -159,7 +159,7 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
                 <tr>
                     <td>
                         <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                            {$Kunde->cMobil}
+                            {$Kunde->cMobil|substr:1}****{$Kunde->cMobil|substr:-4}
                         </font>
                     </td>
                 </tr>
@@ -304,7 +304,7 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
                     <tr>
                         <td>
                             <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                                {$Bestellung->Lieferadresse->cTel}
+                                {$Bestellung->Lieferadresse->cTel|substr:1}****{$Bestellung->Lieferadresse->cTel|substr:-4}
                             </font>
                         </td>
                     </tr>
@@ -330,7 +330,7 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
                     <tr>
                         <td>
                             <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                                {$Bestellung->Lieferadresse->cMobil}
+                                {$Bestellung->Lieferadresse->cMobil|substr:1}****{$Bestellung->Lieferadresse->cMobil|substr:-4}
                             </font>
                         </td>
                     </tr>
@@ -452,7 +452,7 @@ Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}<br>
                     <tr>
                         <td>
                             <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                                {$Bestellung->Zahlungsinfo->cIBAN}
+                                ****{$Bestellung->Zahlungsinfo->cIBAN|substr:-4}
                             </font>
                         </td>
                     </tr>

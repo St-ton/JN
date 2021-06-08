@@ -143,7 +143,7 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
                 <tr>
                     <td>
                         <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                            {$Kunde->cTel}
+                            {$Kunde->cTel|substr:1}****{$Kunde->cTel|substr:-4}
                         </font>
                     </td>
                 </tr>
@@ -169,7 +169,7 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
                 <tr>
                     <td>
                         <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                            {$Kunde->cMobil}
+                            {$Kunde->cMobil|substr:1}****{$Kunde->cMobil|substr:-4}
                         </font>
                     </td>
                 </tr>
@@ -315,7 +315,7 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
                     <tr>
                         <td>
                             <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                                {$Bestellung->Lieferadresse->cTel}
+                                {$Bestellung->Lieferadresse->cTel|substr:1}****{$Bestellung->Lieferadresse->cTel|substr:-4}
                             </font>
                         </td>
                     </tr>
@@ -341,7 +341,7 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
                     <tr>
                         <td>
                             <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                                {$Bestellung->Lieferadresse->cMobil}
+                                {$Bestellung->Lieferadresse->cMobil|substr:1}****{$Bestellung->Lieferadresse->cMobil|substr:-4}
                             </font>
                         </td>
                     </tr>

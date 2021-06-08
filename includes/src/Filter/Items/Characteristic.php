@@ -259,6 +259,7 @@ class Characteristic extends BaseCharacteristic
     {
         $base  = $this->productFilter->getCurrentStateData(self::class);
         $state = (new StateSQL())->from($base);
+        $conf  = $this->getConfig('navigationsfilter');
         $state->setOrderBy('');
         $state->setLimit('');
         $state->setGroupBy([]);
@@ -336,11 +337,13 @@ class Characteristic extends BaseCharacteristic
                     if (\is_array($values)) {
                         $activeOrFilterIDs = $values;
                     } else {
+                        /** @noinspection UnsupportedStringOffsetOperationsInspection */
                         $activeOrFilterIDs[] = $values;
                     }
                 } elseif (\is_array($values)) {
                     $activeAndFilterIDs = $values;
                 } else {
+                    /** @noinspection UnsupportedStringOffsetOperationsInspection */
                     $activeAndFilterIDs[] = $values;
                 }
             }
@@ -362,23 +365,27 @@ class Characteristic extends BaseCharacteristic
                     ->setOrigin(__CLASS__));
             }
             if (\count($activeOrFilterIDs) > 0) {
-                $state->addSelect(
-                    'IF(EXISTS (SELECT 1
-                     FROM tartikelmerkmal AS im1
-                     INNER JOIN tartikel AS innerProduct ON innerProduct.kArtikel = im1.kArtikel
-                        WHERE ' . $productFilter . ' AND im1.kMerkmalWert IN (' .
-                    \implode(', ', \array_merge($activeOrFilterIDs, ['tartikelmerkmal.kMerkmalWert'])) . ')
-                            AND im1.kArtikel = tartikel.kArtikel
-                        GROUP BY innerProduct.kArtikel
-                        HAVING COUNT(im1.kArtikel) = (SELECT COUNT(DISTINCT im2.kMerkmal)
-                           FROM tartikelmerkmal im2
-                           INNER JOIN tartikel AS innerProduct ON innerProduct.kArtikel = im2.kArtikel
-                           WHERE ' . $productFilter . ' AND im2.kMerkmalWert IN (' .
-                    \implode(
-                        ', ',
-                        \array_merge($activeOrFilterIDs, ['tartikelmerkmal.kMerkmalWert'])
-                    ) . '))), tartikel.kArtikel, NULL) AS kArtikel'
-                );
+                if ($conf['merkmalfilter_trefferanzahl_anzeigen'] === 'Y') {
+                    $state->addSelect(
+                        'IF(EXISTS (SELECT 1
+                             FROM tartikelmerkmal AS im1
+                             INNER JOIN tartikel AS innerProduct ON innerProduct.kArtikel = im1.kArtikel
+                                WHERE ' . $productFilter . ' AND im1.kMerkmalWert IN (' .
+                                \implode(', ', \array_merge($activeOrFilterIDs, ['tartikelmerkmal.kMerkmalWert'])) . ')
+                                    AND im1.kArtikel = tartikel.kArtikel
+                                GROUP BY innerProduct.kArtikel
+                                HAVING COUNT(im1.kArtikel) = (SELECT COUNT(DISTINCT im2.kMerkmal)
+                                   FROM tartikelmerkmal im2
+                                   INNER JOIN tartikel AS innerProduct ON innerProduct.kArtikel = im2.kArtikel
+                                   WHERE ' . $productFilter . ' AND im2.kMerkmalWert IN (' .
+                                \implode(
+                                    ', ',
+                                    \array_merge($activeOrFilterIDs, ['tartikelmerkmal.kMerkmalWert'])
+                                ) . '))), tartikel.kArtikel, NULL) AS kArtikel'
+                    );
+                } else {
+                    $state->addSelect('#' . \implode(',', $activeOrFilterIDs) . "\ntartikel.kArtikel AS kArtikel");
+                }
             } else {
                 $state->addSelect('tartikel.kArtikel AS kArtikel');
             }
@@ -446,7 +453,10 @@ class Characteristic extends BaseCharacteristic
         $qryRes           = $this->productFilter->getDB()->getObjects(
             'SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
             ssMerkmal.nMehrfachauswahl, ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, 
-            ssMerkmal.cMMBildPfad, COUNT(DISTINCT ssMerkmal.kArtikel) AS nAnzahl
+            ssMerkmal.cMMBildPfad, '
+            . ($conf['merkmalfilter_trefferanzahl_anzeigen'] !== 'N'
+                ? 'COUNT(DISTINCT ssMerkmal.kArtikel)'
+                : '1') . ' AS nAnzahl
                 FROM (' . $baseQuery . ') AS ssMerkmal
                 GROUP BY ssMerkmal.kMerkmalWert
                 ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert'
@@ -494,7 +504,8 @@ class Characteristic extends BaseCharacteristic
                 ->setData('cBildpfadKlein', $baseSrcSmall)
                 ->setData('cBildpfadNormal', $baseSrcNormal)
                 ->setData('cBildURLKlein', $imageBaseURL . $baseSrcSmall)
-                ->setData('cBildURLNormal', $imageBaseURL . $baseSrcNormal);
+                ->setData('cBildURLNormal', $imageBaseURL . $baseSrcNormal)
+                ->setData('isMultiSelect', $filter->nMehrfachauswahl > 0);
             $option->setImageType(Image::TYPE_CHARACTERISTIC);
             $option->setID($filter->kMerkmal);
             $option->setParam($this->getUrlParam());

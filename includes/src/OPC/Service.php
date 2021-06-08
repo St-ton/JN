@@ -90,6 +90,7 @@ class Service
             'opcPageLocked',
             'dbUpdateNeeded',
             'indefinitePeriodOfTime',
+            'notScheduled',
         ];
 
         foreach ([13, 14, 7] as $i => $stepcount) {

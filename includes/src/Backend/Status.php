@@ -369,8 +369,8 @@ class Status
      */
     public function getMySQLStats(): array
     {
-        $stats = $this->db->stats();
-        $info  = $this->db->info();
+        $stats = $this->db->getServerStats();
+        $info  = $this->db->getServerInfo();
         $lines = \explode('  ', $stats);
         $lines = \array_map(static function ($v) {
             [$key, $value] = \explode(':', $v, 2);

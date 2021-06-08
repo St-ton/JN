@@ -829,7 +829,7 @@ class LanguageHelper
                         break;
 
                     case 1: // Vorhandene Variablen überschreiben
-                        $this->db->executeQueryPrepared(
+                        $this->db->queryPrepared(
                             'REPLACE INTO tsprachwerte
                                 SET kSprachISO = :iso, 
                                     kSprachsektion = :section,
@@ -859,7 +859,7 @@ class LanguageHelper
                             $name
                         );
                         if (!$oWert) {
-                            $this->db->executeQueryPrepared(
+                            $this->db->queryPrepared(
                                 'REPLACE INTO tsprachwerte
                                     SET kSprachISO = :iso, 
                                         kSprachsektion = :section,

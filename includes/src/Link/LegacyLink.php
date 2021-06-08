@@ -702,7 +702,7 @@ class LegacyLink extends MainModel
                     $val    = $this->$cMethod();
                     $mValue = $val === null
                         ? 'NULL'
-                        : ("'" . Shop::Container()->getDB()->realEscape($val) . "'");
+                        : ("'" . Shop::Container()->getDB()->escape($val) . "'");
                     $set[]  = $cMember . ' = ' . $mValue;
                 }
             }

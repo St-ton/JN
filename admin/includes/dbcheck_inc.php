@@ -440,7 +440,7 @@ function doMigrateToInnoDB_utf8(
             break;
         case 'start':
             $shopTables = array_keys(getDBFileStruct());
-            $table      = DBMigrationHelper::getNextTableNeedMigration($exclude);
+            $table      = DBMigrationHelper::getNextTableNeedMigration($db, $exclude);
             if ($table !== null && is_object($table)) {
                 if (!in_array($table->TABLE_NAME, $shopTables, true)) {
                     $exclude[] = $table->TABLE_NAME;
@@ -467,16 +467,16 @@ function doMigrateToInnoDB_utf8(
                     && $migration !== DBMigrationHelper::MIGRATE_NONE
                     && !in_array($table->TABLE_NAME, $exclude, true)
                 ) {
-                    if (!DBMigrationHelper::isTableInUse($tableName)) {
+                    if (!DBMigrationHelper::isTableInUse($db, $tableName)) {
                         if (version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
                             // If MySQL version is lower than 5.6 use alternative lock method
                             // and delete all fulltext indexes because these are not supported
-                            $db->executeQuery(DBMigrationHelper::sqlAddLockInfo($table));
+                            $db->query(DBMigrationHelper::sqlAddLockInfo($table));
                             $fulltextIndizes = DBMigrationHelper::getFulltextIndizes($table->TABLE_NAME);
 
                             if ($fulltextIndizes) {
                                 foreach ($fulltextIndizes as $fulltextIndex) {
-                                    $db->executeQuery(
+                                    $db->query(
                                         'ALTER TABLE `' . $table->TABLE_NAME . '`
                                             DROP KEY `' . $fulltextIndex->INDEX_NAME . '`'
                                     );
@@ -486,11 +486,11 @@ function doMigrateToInnoDB_utf8(
                         if (($migration & DBMigrationHelper::MIGRATE_TABLE) !== 0) {
                             $fkSQLs = DBMigrationHelper::sqlRecreateFKs($table->TABLE_NAME);
                             foreach ($fkSQLs->dropFK as $fkSQL) {
-                                $db->executeQuery($fkSQL);
+                                $db->query($fkSQL);
                             }
-                            $migrate = $db->executeQuery(DBMigrationHelper::sqlMoveToInnoDB($table));
+                            $migrate = $db->query(DBMigrationHelper::sqlMoveToInnoDB($table));
                             foreach ($fkSQLs->createFK as $fkSQL) {
-                                $db->executeQuery($fkSQL);
+                                $db->query($fkSQL);
                             }
                         } else {
                             $migrate = true;
@@ -503,7 +503,7 @@ function doMigrateToInnoDB_utf8(
                             $result->status = 'failure';
                         }
                         if (version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
-                            $db->executeQuery(DBMigrationHelper::sqlClearLockInfo($table));
+                            $db->query(DBMigrationHelper::sqlClearLockInfo($table));
                         }
                     } else {
                         $result->status = 'in_use';
@@ -517,7 +517,7 @@ function doMigrateToInnoDB_utf8(
                 }
             } elseif (!empty($tableName) && $step === 2) {
                 // Migration Step 2...
-                if (!DBMigrationHelper::isTableInUse($tableName)) {
+                if (!DBMigrationHelper::isTableInUse($db, $tableName)) {
                     $table = DBMigrationHelper::getTable($tableName);
                     $sql   = DBMigrationHelper::sqlConvertUTF8($table);
 
@@ -570,7 +570,7 @@ function doMigrateToInnoDB_utf8(
             unset($_SESSION['oKategorie_arr_new']);
             // Reset Fulltext search if version is lower than 5.6
             if (version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
-                $db->executeQuery(
+                $db->query(
                     "UPDATE `teinstellungen` 
                         SET `cWert` = 'N' 
                         WHERE `cName` = 'suche_fulltext'"

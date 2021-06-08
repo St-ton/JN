@@ -2,9 +2,7 @@
 
 namespace JTL\dbeS\Sync;
 
-use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
-use JTL\Extensions\Download\Download;
 
 /**
  * Class Downloads
@@ -20,31 +18,12 @@ final class Downloads extends AbstractSync
     {
         foreach ($starter->getXML() as $i => $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            if (\strpos($file, 'del_download.xml') !== false) {
-                $this->handleDeletes($xml);
-            } else {
+            if (\strpos($file, 'del_download.xml') === false) {
                 $this->handleInserts($xml);
             }
         }
 
         return null;
-    }
-
-    /**
-     * @param array $xml
-     */
-    private function handleDeletes(array $xml): void
-    {
-        if (!Download::checkLicense()) {
-            return;
-        }
-        $source = $xml['del_downloads']['kDownload'] ?? [];
-        if (\is_numeric($source)) {
-            $source = [$source];
-        }
-        foreach (\array_filter(\array_map('\intval', $source)) as $downloadID) {
-            $this->delete($downloadID);
-        }
     }
 
     /**
@@ -80,25 +59,5 @@ final class Downloads extends AbstractSync
                 $this->upsert('tdownloadsprache', [$item], 'kDownload', 'kSprache');
             }
         }
-    }
-
-    /**
-     * @param int $id
-     */
-    private function delete(int $id): void
-    {
-        $this->db->queryPrepared(
-            'DELETE tdownload, tdownloadhistory, tdownloadsprache, tartikeldownload
-            FROM tdownload
-            JOIN tdownloadsprache 
-                ON tdownloadsprache.kDownload = tdownload.kDownload
-            LEFT JOIN tartikeldownload 
-                ON tartikeldownload.kDownload = tdownload.kDownload
-            LEFT JOIN tdownloadhistory 
-                ON tdownloadhistory.kDownload = tdownload.kDownload
-            WHERE tdownload.kDownload = :dlid',
-            ['dlid' => $id],
-            ReturnType::DEFAULT
-        );
     }
 }

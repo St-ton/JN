@@ -288,6 +288,9 @@ switch ($action) {
     case 'flush_template_cache':
         // delete all template cachefiles
         $callback     = static function (array $pParameters) {
+            if (strpos($pParameters['filename'], '.') === 0) {
+                return;
+            }
             if (!$pParameters['isdir']) {
                 if (@unlink($pParameters['path'] . $pParameters['filename'])) {
                     $pParameters['count']++;

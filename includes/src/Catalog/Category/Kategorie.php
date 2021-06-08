@@ -344,7 +344,7 @@ class Kategorie
                 FROM tkategorieattribut
                 LEFT JOIN tkategorieattributsprache 
                     ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
-                    AND tkategorieattributsprache.kSprache = :li
+                    AND tkategorieattributsprache.kSprache = :lid
                 WHERE kKategorie = :cid
                 ORDER BY tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort',
             ['lid' => $languageID, 'cid' => (int)$this->kKategorie]

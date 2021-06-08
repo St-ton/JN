@@ -77,6 +77,9 @@ function gibBranding(int $brandingID): ?stdClass
  */
 function speicherEinstellung(int $brandingID, array $post, array $files): bool
 {
+    if (!Image::isImageUpload($files['cBrandingBild'])) {
+        return false;
+    }
     $db                 = Shop::Container()->getDB();
     $conf               = new stdClass();
     $conf->dRandabstand = 0;

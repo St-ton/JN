@@ -95,7 +95,6 @@ class HookManager
         }
         global $smarty, $args_arr, $oPlugin;
 
-        $args_arr = $args;
         $this->timer->startMeasure('shop.hook.' . $hookID);
         $this->dispatcher->fire('shop.hook.' . $hookID, \array_merge((array)$hookID, $args));
         if (empty($this->hookList[$hookID])) {
@@ -108,6 +107,7 @@ class HookManager
             if ($plugin === null) {
                 continue;
             }
+            $args_arr            = $args;
             $plugin->nCalledHook = $hookID;
             $oPlugin             = $plugin;
             $file                = $item->cDateiname;

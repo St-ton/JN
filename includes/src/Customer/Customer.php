@@ -911,13 +911,17 @@ class Customer
                     $languageID = (int)$customer->kSprache;
                 }
             }
+            $lang     = null;
             $langCode = '';
-            if ($languageID > 0) { // Kundensprache, falls gesetzt
-                $lang = Shop::Lang()->getLanguageByID($languageID);
-                if ($lang !== null && $lang->kSprache > 0) {
+            if ($languageID > 0) { // Kundensprache, falls gesetzt und gültig
+                try {
+                    $lang     = Shop::Lang()->getLanguageByID($languageID);
                     $langCode = $lang->cISO;
+                } catch (\Exception $e) {
+                    $lang = null;
                 }
-            } else { // Ansonsten Standardsprache
+            }
+            if ($lang === null) { // Ansonsten Standardsprache
                 $lang     = Shop::Lang()->getDefaultLanguage();
                 $langCode = $lang->cISO ?? '';
             }

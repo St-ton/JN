@@ -1,8 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
-use JTL\Media\Image;
 
 /**
  * Class Migration_20210608113500

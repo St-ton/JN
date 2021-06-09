@@ -30,11 +30,9 @@
                     {foreach $licenses->getActive() as $license}
                         <tr>
                             <td>
-                                <p>{$license->getID()}</p>
-                                <p>
-                                    <span class="font-weight-bold">{__('Key')}: </span>
-                                    <span class="value">{$license->getLicense()->getKey()}</span>
-                                </p>
+                                {$license->getID()}<br>
+                                <span class="font-weight-bold">{__('Key')}: </span>
+                                <span class="value">{$license->getLicense()->getKey()}</span>
                             </td>
                             <td>{$license->getName()}</td>
                             <td>

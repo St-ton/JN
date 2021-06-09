@@ -9,7 +9,7 @@
         "imanee/imanee": "dev-master",
         "ifsnop/mysqldump-php": "^2.1",
         "symfony/var-dumper": "^3.0",
-        "jtlshop/shop4-systemcheck": "^1.0",
+        "jtlshop/shop4-systemcheck": "^2.0.0",
         "smarty/smarty": "3.1.31",
         "jdorn/sql-formatter": "^1.2",
         "andyftw/ssllabs-php": "^1.2",

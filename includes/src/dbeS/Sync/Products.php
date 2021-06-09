@@ -877,12 +877,12 @@ final class Products extends AbstractSync
                 FROM tartikel 
                 WHERE kArtikel = :pid',
             ['pid' => $productID]
-        );
+        )->cSeo ?? null;
         $this->checkCategoryCache($xml, $productID);
         $downloadKeys = $this->getDownloadIDs($productID);
         $this->deleteProduct($productID, true);
         $products = $this->addProduct($products);
-        $this->addSeo($oldSeo->cSeo ?? null, $products[0]->cSeo, $productID);
+        $this->addSeo($oldSeo, $products[0]->cSeo, $productID);
         $this->addProductLocalizations($xml, $products, $productID);
         $this->addAttributes($xml);
         $this->addMediaFiles($xml);
@@ -940,6 +940,7 @@ final class Products extends AbstractSync
             $this->db->delete('tartikelkategorierabatt', 'kArtikel', $productID);
             if ($parent > 0) {
                 Artikel::beachteVarikombiMerkmalLagerbestand($parent);
+                $res[] = $parent;
             }
             \executeHook(\HOOK_ARTIKEL_XML_BEARBEITEDELETES, ['kArtikel' => $productID]);
         }

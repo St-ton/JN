@@ -2432,6 +2432,12 @@ msgstr "Allow filtering by characteristics"
 msgid "merkmalfilter_verwenden_desc"
 msgstr "Specify whether to display characteristics filters. These options are only partially supported by the NOVA template. Please select \"Yes, in content area and in navigation box\" or \"No\" if you are using NOVA."
 
+msgid "merkmalfilter_trefferanzahl_anzeigen_name"
+msgstr "Show number of results for characteristics filters"
+
+msgid "merkmalfilter_trefferanzahl_anzeigen_desc"
+msgstr "Specify how to display the number of results for characteristics filters."
+
 msgid "merkmal_anzeigen_als_name"
 msgstr "Show characteristics as"
 

@@ -105,7 +105,7 @@ final class Categories extends AbstractSync
             $categories[0]->rght                  = $oldData->rght ?? 0;
             $categories[0]->nLevel                = $oldData->nLevel ?? 0;
             $this->insertOnExistUpdate('tkategorie', $categories, ['kKategorie']);
-            if (isset($oldData->cSeo)) {
+            if ($oldData !== null) {
                 $this->checkDbeSXmlRedirect($oldData->cSeo, $categories[0]->cSeo);
             }
             $this->db->queryPrepared(

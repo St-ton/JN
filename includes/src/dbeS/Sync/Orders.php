@@ -301,7 +301,7 @@ final class Orders extends AbstractSync
      * @param Rechnungsadresse $billingAddress
      * @param array            $xml
      */
-    private function updateAddresses($oldOrder, $billingAddress, array $xml)
+    private function updateAddresses($oldOrder, $billingAddress, array $xml): void
     {
         $deliveryAddress = new Lieferadresse($oldOrder->kLieferadresse);
         $this->mapper->mapObject($deliveryAddress, $xml['tbestellung']['tlieferadresse'], 'mLieferadresse');
@@ -348,7 +348,7 @@ final class Orders extends AbstractSync
      * @param stdClass $order
      * @return float
      */
-    private function applyCorrectionFactor($order): float
+    private function applyCorrectionFactor(stdClass $order): float
     {
         $correctionFactor = 1.0;
         if (isset($order->kWaehrung)) {
@@ -369,7 +369,7 @@ final class Orders extends AbstractSync
      * @param array    $xml
      * @return stdClass|null
      */
-    private function getPaymentMethodFromXML($order, array $xml): ?stdClass
+    private function getPaymentMethodFromXML(stdClass $order, array $xml): ?stdClass
     {
         if (empty($xml['tbestellung']['cZahlungsartName'])) {
             return null;

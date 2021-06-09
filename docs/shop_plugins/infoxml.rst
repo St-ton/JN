@@ -1302,7 +1302,7 @@ und für *Englisch* entsprechend so (``en-US/base.po``):
 In unserem Beispiel haben wir absichtlich den String "*Vielleicht*" weder aufgeführt, noch übersetzt. |br|
 Dies soll verdeutlichen, dass "*Veilleicht*" in allen Sprachen *unverändert* ausgegeben wird.
 
-Anschließend müssen Sie die .po-Dateien nur noch z. B. mit `Poedit <https://poedit.net/PoEdit>`_ zur ``base.mo``
+Anschließend müssen Sie die .po-Dateien nur noch z. B. mit `Poedit <https://poedit.net/>`_ zur ``base.mo``
 kompilieren.
 
 .. note:

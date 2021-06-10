@@ -15,10 +15,10 @@
                     item=$mainCategory
                     square=false
                     srcSize='sm'
-                    alt="{if empty($imgAlt->cWert)}{$mainCategory->getName()}{else}{$imgAlt->cWert}{/if}"}
+                    alt="{if empty($imgAlt->cWert)}{$mainCategory->getName()|@seofy}{else}{$imgAlt->cWert}{/if}"}
             {/if}
             <span class="text-truncate d-block">
-                {$mainCategory->getName()}{if $mainCategory->hasChildren() && $subCategory >= $max_subsub_items}<span class="more-subcategories">&nbsp;({$mainCategory->getChildren()|count})</span>{/if}
+                {$mainCategory->getShortName()}{if $mainCategory->hasChildren() && $subCategory >= $max_subsub_items}<span class="more-subcategories">&nbsp;({$mainCategory->getChildren()|count})</span>{/if}
             </span>
         {/link}
     {/block}
@@ -30,7 +30,7 @@
                         <li class="nav-item d-lg-none">
                             {link href=$mainCategory->getURL() nofollow=true}
                                 <strong class="nav-mobile-heading">
-                                    {lang key='menuShow' printf=$mainCategory->getName()}
+                                    {lang key='menuShow' printf=$mainCategory->getShortName()}
                                 </strong>
                             {/link}
                         </li>
@@ -47,7 +47,7 @@
                                 {block name='snippets-categories-mega-recursivechild-category-no-child'}
                                     {navitem href=$category->getURL()}
                                         <span class="text-truncate d-block">
-                                            {$category->getName()}{if $category->hasChildren()}<span class="more-subcategories">&nbsp;({$category->getChildren()|count})</span>{/if}
+                                            {$category->getShortName()}{if $category->hasChildren()}<span class="more-subcategories">&nbsp;({$category->getChildren()|count})</span>{/if}
                                         </span>
                                     {/navitem}
                                 {/block}

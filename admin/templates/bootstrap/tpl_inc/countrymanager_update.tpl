@@ -55,23 +55,19 @@
                 <div class="form-group form-row align-items-center">
                     <label class="col col-sm-4 col-form-label text-sm-right" for="bPermitRegistration">{__('isPermitRegistration')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                        <div class="custom-control custom-checkbox">
-                            <input class="custom-control-input" type="checkbox" name="bPermitRegistration"
-                                   id="bPermitRegistration"
-                                   {if !empty($country) && $country->isPermitRegistration()}checked{/if}>
-                            <label class="custom-control-label" for="bPermitRegistration"></label>
-                        </div>
+                        <select name="bPermitRegistration" id="bPermitRegistration" class="custom-select">
+                            <option value="0" {if !empty($country) && !$country->isPermitRegistration()}selected{/if}>{__('no')}</option>
+                            <option value="1" {if !empty($country) && $country->isPermitRegistration()}selected{/if}>{__('yes')}</option>
+                        </select>
                     </div>
                 </div>
                 <div class="form-group form-row align-items-center">
                     <label class="col col-sm-4 col-form-label text-sm-right" for="bRequireStateDefinition">{__('isRequireStateDefinition')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                        <div class="custom-control custom-checkbox">
-                            <input class="custom-control-input" type="checkbox" name="bRequireStateDefinition"
-                                   id="bRequireStateDefinition"
-                                   {if !empty($country) && $country->isRequireStateDefinition()}checked{/if}>
-                            <label class="custom-control-label" for="bRequireStateDefinition"></label>
-                        </div>
+                        <select name="bRequireStateDefinition" id="bRequireStateDefinition" class="custom-select">
+                            <option value="0" {if !empty($country) && !$country->isRequireStateDefinition()}selected{/if}>{__('no')}</option>
+                            <option value="1" {if !empty($country) && $country->isRequireStateDefinition()}selected{/if}>{__('yes')}</option>
+                        </select>
                     </div>
                 </div>
             </div>

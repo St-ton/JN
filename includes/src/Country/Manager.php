@@ -186,8 +186,8 @@ class Manager
             $country->cEnglisch               = Request::verifyGPDataString('cEnglisch');
             $country->nEU                     = Request::verifyGPDataString('nEU');
             $country->cKontinent              = Request::verifyGPDataString('cKontinent');
-            $country->bPermitRegistration     = Request::verifyGPDataString('bPermitRegistration') === '' ? 0 : 1;
-            $country->bRequireStateDefinition = Request::verifyGPDataString('bRequireStateDefinition') === '' ? 0 : 1;
+            $country->bPermitRegistration     = Request::verifyGPDataString('bPermitRegistration');
+            $country->bRequireStateDefinition = Request::verifyGPDataString('bRequireStateDefinition');
 
             $this->db->update(
                 'tland',

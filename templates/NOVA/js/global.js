@@ -103,8 +103,8 @@ function regionsToState(){
                     return;
                 }
                 var title = state_data.defaultoption;
-                var stateIsRequired = state.attr('required') === 'required';
-                var data = result.response;
+                var stateIsRequired = result.response.required;
+                var data = result.response.states;
                 var def = $('#'+state_id).val();
                 if(typeof(data)!=='undefined'){
                     if (data !== null && data.length > 0) {
@@ -136,6 +136,11 @@ function regionsToState(){
                             state.data(key,state_data[key]);
                         });
                         $('#'+state_id).replaceWith(state);
+                    }
+                    if (stateIsRequired){
+                        state.parent().find('.state-optional').addClass('d-none');
+                    } else {
+                        state.parent().find('.state-optional').removeClass('d-none');
                     }
                 }
             }

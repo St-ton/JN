@@ -1263,15 +1263,20 @@ class IOMethods
     }
 
     /**
-     * @param string $country
+     * @param string $iso
      * @return IOResponse
      */
-    public function getRegionsByCountry(string $country): IOResponse
+    public function getRegionsByCountry(string $iso): IOResponse
     {
         $response = new IOResponse();
-        if (\mb_strlen($country) === 2) {
-            $regions = Shop::Container()->getCountryService()->getCountry($country)->getStates();
-            $response->assignVar('response', $regions);
+        if (\mb_strlen($iso) === 2) {
+            $conf           = Shopsetting::getInstance();
+            $country        = Shop::Container()->getCountryService()->getCountry($iso);
+            $data           = new stdClass();
+            $data->states   = $country->getStates();
+            $data->required = $country->isRequireStateDefinition()
+                || $conf->getValue(\CONF_KUNDEN, 'kundenregistrierung_abfragen_bundesland') === 'Y';
+            $response->assignVar('response', $data);
         }
 
         return $response;

@@ -272,7 +272,7 @@
                                 {block name='checkout-inc-billing-address-form-state'}
                                     {formgroup class="{if isset($fehlendeAngaben.bundesland)} has-error{/if}"
                                         label-for="state"
-                                        label="{lang key='state' section='account data'}{if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland !== 'Y'}<span class='optional'> - {lang key='optional'}</span>{/if}"
+                                        label="{lang key='state' section='account data'}<span class='state-optional optional {if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y' || $selectedCountry->isRequireStateDefinition()}d-none{/if}'> - {lang key='optional'}</span>"
                                     }
                                         {if isset($fehlendeAngaben.bundesland)}
                                             <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i>
@@ -286,7 +286,7 @@
                                                 id="billing_address-state"
                                                 class="state-input custom-select js-state-select"
                                                 autocomplete="billing address-level1"
-                                                required=($Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y')
+                                                required=($Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y' || $selectedCountry->isRequireStateDefinition())
                                             }
                                                 <option value="" selected disabled>{lang key='pleaseChoose'}</option>
                                                 {foreach $selectedCountry->getStates() as $state}
@@ -302,7 +302,7 @@
                                                 data=["defaultoption"=>{lang key=pleaseChoose}]
                                                 placeholder="{lang key='state' section='account data'}"
                                                 autocomplete="billing address-level1"
-                                                required=($Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y')
+                                                required=($Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y' || $selectedCountry->isRequireStateDefinition())
                                             }
                                         {/if}
                                     {/formgroup}

@@ -11,7 +11,6 @@ use JTL\DB\DbInterface;
 use JTL\dbeS\Mapper;
 use JTL\dbeS\Starter;
 use JTL\Exceptions\CircularReferenceException;
-use JTL\Exceptions\EmptyResultSetException;
 use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Text;
@@ -108,7 +107,7 @@ abstract class AbstractSync
      * @param string     $pk1
      * @param string|int $pk2
      */
-    protected function upsert($tablename, array $objects, $pk1, $pk2 = 0): void
+    protected function upsert(string $tablename, array $objects, $pk1, $pk2 = 0): void
     {
         foreach ($objects as $object) {
             if (isset($object->$pk1) && !$pk2 && $pk1 && $object->$pk1) {

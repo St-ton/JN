@@ -176,11 +176,9 @@ final class Globals extends AbstractSync
             return;
         }
         $units = $this->mapper->mapArray($source, 'tmasseinheit', 'mMasseinheit');
-        foreach ($units as &$_me) {
-            //hack?
-            unset($_me->kBezugsMassEinheit);
+        foreach ($units as $unit) {
+            unset($unit->kBezugsMassEinheit);
         }
-        unset($_me);
         $this->dbDelInsert('tmasseinheit', $units, true);
         $this->db->query('TRUNCATE TABLE tmasseinheitsprache');
         $meCount = \count($units);

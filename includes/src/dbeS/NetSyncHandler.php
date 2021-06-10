@@ -68,7 +68,7 @@ class NetSyncHandler
             && (new Synclogin($this->db, $this->logger))->checkLogin($name, $pass);
         if ($authenticated) {
             \session_start();
-            $_SESSION['bAuthed'] = $authenticated;
+            $_SESSION['bAuthed'] = true;
         }
 
         return $authenticated;

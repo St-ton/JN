@@ -10,6 +10,7 @@ use JTL\Console\Command\Cache\DeleteFileCacheCommand;
 use JTL\Console\Command\Cache\DeleteTemplateCacheCommand;
 use JTL\Console\Command\Cache\WarmCacheCommand;
 use JTL\Console\Command\Command;
+use JTL\Console\Command\GarbageCollection\ImageCleanupCommand;
 use JTL\Console\Command\InstallCommand;
 use JTL\Console\Command\Mailtemplates\ResetCommand;
 use JTL\Console\Command\Migration\CreateCommand;
@@ -166,6 +167,7 @@ class Application extends BaseApplication
             $cmds[] = new WarmCacheCommand();
             $cmds[] = new CreateModelCommand();
             $cmds[] = new ResetCommand();
+            $cmds[] = new ImageCleanupCommand();
 
             if ($this->devMode) {
                 $cmds[] = new CreateCommand();

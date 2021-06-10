@@ -301,11 +301,19 @@ class VariationValue
      * @param int|float $taxRate
      * @param Currency  $currency
      * @param bool|int  $mayViewPrices
-     * @param int       $precision
-     * @param string    $per
+     * @param int $precision
+     * @param string $per
+     * @param array $variations
      */
-    public function addPrices(Artikel $product, $taxRate, Currency $currency, $mayViewPrices, $precision, $per): void
-    {
+    public function addPrices(
+        Artikel $product,
+        $taxRate,
+        Currency $currency,
+        $mayViewPrices,
+        int $precision,
+        string $per,
+        array $variations
+    ): void {
         if ($mayViewPrices && isset($this->fVPEWert) && $this->fVPEWert > 0) {
             $base                           = $this->fAufpreisNetto / $this->fVPEWert;
             $this->cPreisVPEWertAufpreis[0] = Preise::getLocalizedPriceString(
@@ -348,8 +356,18 @@ class VariationValue
             if ($product->kVaterArtikel > 0) {
                 $parentProduct    = (new Artikel())
                     ->fuelleArtikel($product->kVaterArtikel, Artikel::getDetailOptions());
-                $VariationVKNetto = isset($parentProduct) ? $surcharge + $parentProduct->Preise->fVKNetto :
-                    $product->Preise->fVKNetto;
+                $VariationVKNetto = $surcharge + $parentProduct->Preise->fVKNetto;
+
+                foreach ($variations as $variation) {
+                    if ((int)$variation->kEigenschaft === $this->kEigenschaft &&
+                        (int)$this->oVariationsKombi->kArtikel === $product->kArtikel) {
+                        $VariationVKNetto = $product->Preise->fVKNetto;
+                    }
+                    if ((int)$variation->tartikel_kArtikel === $product->kArtikel &&
+                        (int)$variation->kEigenschaft !== $this->kEigenschaft) {
+                        $VariationVKNetto = $surcharge + $parentProduct->Preise->fVKNetto + $variation->fAufpreisNetto;
+                    }
+                }
 
                 $this->cPreisInklAufpreis[0] = Preise::getLocalizedPriceString(
                     Tax::getGross($VariationVKNetto, $taxRate),

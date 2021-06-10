@@ -2525,6 +2525,9 @@ div.markdown thead tr td {
   padding: 0;
   border: 2px solid transparent;
 }
+.shoplogouploader .fileinput-remove {
+  display: none;
+}
 #articlePicker-result-list .list-group-item {
   padding: 0.5rem;
 }

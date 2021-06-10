@@ -3,8 +3,8 @@
     <Name>NOVA</Name>
     <Author>JTL-Software-GmbH</Author>
     <URL>https://www.jtl-software.de</URL>
-    <MinShopVersion>5.0.0</MinShopVersion>
-    <Version>1.0.1</Version>
+    <MinShopVersion>5.0.2</MinShopVersion>
+    <Version>1.0.3</Version>
     <Preview>preview.png</Preview>
     <Description>JTL-Shop Responsive-Template</Description>
     <Framework>Bootstrap4</Framework>
@@ -52,7 +52,9 @@
         </Section>
         <Section Name="Megamenu" Key="megamenu">
             <Setting Description="Kategorien (anstelle einer Kategoriebox / Boxenverwaltung)" Key="show_categories" Type="select" Value="Y">
-                <Option Value="Y">Aktiv</Option>
+                <Option Value="Y">Auf Desktop und mobilen Geräten</Option>
+                <Option Value="mobile">Nur mobil</Option>
+                <Option Value="desktop">Nur Desktop</Option>
                 <Option Value="N">Inaktiv</Option>
             </Setting>
             <Setting Description="Kategoriebilder für erste Unterkategorie" Key="show_category_images" Type="select" Value="N">
@@ -85,6 +87,7 @@
                 <Option Value="sidebar">Seitenleiste (Einstellung einzelner Filter unter „Standardelemente > Footer /Boxen“ und „Standardansichten > Artikelübersicht“)</Option>
                 <Option Value="modal">Eigenes Fenster (Einstellung einzelner Filter unter „Standardansichten > Artikelübersicht“)</Option>
             </Setting>
+            <Setting Description="Suchfeld in Filtern anzeigen ab x Einträgen" Key="filter_search_count" Type="number" Value="20"/>
             <Setting Description="Schaltfläche „Warenkorb“ in Artikelübersicht (Listenansicht) anzeigen" Key="buy_productlist" Type="select" Value="Y">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>

@@ -131,6 +131,9 @@ msgstr "Invalid licence key. Please check the licence key for potential typing e
 msgid "errorPluginNotFound"
 msgstr "Could not find the plug-in in the database. Please install it again."
 
+msgid "errorPluginNotFoundFilesystem"
+msgstr "Could not find the plug-in in the filesystem. Please install it again."
+
 msgid "successPluginActivate"
 msgstr "Selected plug-ins activated successfully."
 

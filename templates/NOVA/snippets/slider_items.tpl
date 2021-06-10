@@ -8,7 +8,14 @@
             {/block}
         {elseif $type === 'news'}
             {block name='snippets-slider-items-news'}
-                <div class="product-wrapper product-wrapper-news {if $item@first && $item@last} m-auto{elseif $item@first} ml-auto-util {elseif $item@last} mr-auto {/if}">
+                <div class="product-wrapper product-wrapper-news
+                            {if $item@first && $item@last}
+                                mx-auto
+                            {elseif $item@first}
+                                ml-auto-util
+                            {elseif $item@last}
+                                mr-auto
+                            {/if}">
                     {include file='blog/preview.tpl' newsItem=$item}
                 </div>
             {/block}

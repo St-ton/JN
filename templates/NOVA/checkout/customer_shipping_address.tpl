@@ -73,27 +73,27 @@
 
         {* firm / firmtext *}
         {block name='checkout-customer-shipping-address-company-wrap'}
-            {if $Einstellungen.kunden.kundenregistrierung_abfragen_firma !== 'N'}
+            {if $Einstellungen.kunden.lieferadresse_abfragen_firma !== 'N'}
                 {col cols=12 md=6}
                     {block name='checkout-customer-shipping-address-company'}
                         {include file='snippets/form_group_simple.tpl'
                             options=[
                                 "text", "{$prefix}-{$name}-firm", "{$prefix}[{$name}][firma]",
                                 {$Lieferadresse->cFirma|default:null}, {lang key='firm' section='account data'},
-                                $Einstellungen.kunden.kundenregistrierung_abfragen_firma, null, "shipping organization"
+                                $Einstellungen.kunden.lieferadresse_abfragen_firma, null, "shipping organization"
                             ]
                         }
                     {/block}
                 {/col}
             {/if}
-            {if $Einstellungen.kunden.kundenregistrierung_abfragen_firmazusatz !== 'N'}
+            {if $Einstellungen.kunden.lieferadresse_abfragen_firmazusatz !== 'N'}
                 {col cols=12 md=6}
                     {block name='checkout-customer-shipping-address-company-additional'}
                         {include file='snippets/form_group_simple.tpl'
                             options=[
                                 "text", "{$prefix}-{$name}-firmext", "{$prefix}[{$name}][firmazusatz]",
                                 {$Lieferadresse->cZusatz|default:null}, {lang key='firmext' section='account data'},
-                                $Einstellungen.kunden.kundenregistrierung_abfragen_firmazusatz
+                                $Einstellungen.kunden.lieferadresse_abfragen_firmazusatz
                             ]
                         }
                     {/block}

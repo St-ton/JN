@@ -29,7 +29,7 @@ if (Request::verifyGPCDataInt('zuruecksetzen') === 1 && Form::validateToken()) {
     } else {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneOrder'), 'errorAtLeastOneOrder');
     }
-} elseif (Request::verifyGPCDataInt('Suche') === 1) { // Bestellnummer gesucht
+} elseif (Request::verifyGPCDataInt('Suche') === 1 && Form::validateToken()) {
     $query = Text::filterXSS(Request::verifyGPDataString('cSuche'));
     if (mb_strlen($query) > 0) {
         $searchFilter = $query;

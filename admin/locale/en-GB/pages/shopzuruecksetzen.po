@@ -65,6 +65,12 @@ msgstr "Delete orders"
 msgid "deleteCustomers"
 msgstr "Delete online shop customers"
 
+msgid "deleteWishlists"
+msgstr "Delete wish lists"
+
+msgid "deleteComparelists"
+msgstr "Delete comparison lists"
+
 msgid "deleteCustomersAndOrders"
 msgstr "Delete online shop customers and orders"
 
@@ -82,3 +88,6 @@ msgstr "The following areas of JTL-Shop will be reset<span id=\"messageDataGetsL
 
 msgid "sureContinue"
 msgstr "Would you like to continue?"
+
+msgid "deleteShopSettings"
+msgstr "Shopeigene Einstellungen auf Werkseinstellungen zurücksetzen."

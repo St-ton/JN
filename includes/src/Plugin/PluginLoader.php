@@ -2,9 +2,11 @@
 
 namespace JTL\Plugin;
 
+use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Shop;
+use stdClass;
 
 /**
  * Class PluginLoader
@@ -37,7 +39,7 @@ class PluginLoader extends AbstractLoader
         $this->cacheID = \CACHING_GROUP_PLUGIN . '_' . $id . '_' . $languageID . '_' . $languageTag;
         if ($invalidateCache === true) {
             $this->cache->flush('hook_list');
-            $this->cache->flushTags([\CACHING_GROUP_PLUGIN, \CACHING_GROUP_PLUGIN . '_' . $id]);
+            $this->cache->flushTags([\CACHING_GROUP_CORE, \CACHING_GROUP_PLUGIN, \CACHING_GROUP_PLUGIN . '_' . $id]);
         } elseif (($plugin = $this->loadFromCache()) !== null) {
             $getText->setLanguage($languageTag);
             $getText->loadPluginLocale('base', $plugin);
@@ -46,7 +48,7 @@ class PluginLoader extends AbstractLoader
         }
         $obj = $this->db->select('tplugin', 'kPlugin', $id);
         if ($obj === null) {
-            throw new \InvalidArgumentException('Cannot find plugin with ID ' . $id);
+            throw new InvalidArgumentException('Cannot find plugin with ID ' . $id);
         }
 
         return $this->loadFromObject($obj, $languageCode);
@@ -66,7 +68,7 @@ class PluginLoader extends AbstractLoader
     public function saveToCache(PluginInterface $plugin): bool
     {
         return $this->cacheID !== null
-            ? $this->cache->set(
+            && $this->cache->set(
                 $this->cacheID,
                 $plugin,
                 [
@@ -74,14 +76,13 @@ class PluginLoader extends AbstractLoader
                     \CACHING_GROUP_PLUGIN,
                     $plugin->getCache()->getGroup()
                 ]
-            )
-            : false;
+            );
     }
 
     /**
      * @inheritdoc
      */
-    public function loadFromObject($obj, string $currentLanguageCode): PluginInterface
+    public function loadFromObject(stdClass $obj, string $currentLanguageCode): PluginInterface
     {
         $id      = (int)$obj->kPlugin;
         $paths   = $this->loadPaths($obj->cVerzeichnis);

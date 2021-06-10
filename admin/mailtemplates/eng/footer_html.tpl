@@ -1,3 +1,4 @@
+													[AKZ][LEGAL_DATA]
 												</font>
 											</td>
 										</tr>

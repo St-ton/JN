@@ -16,12 +16,12 @@
             {block name='layout-index-heading'}
                 {if !empty($Link->getTitle())}
                     {opcMountPoint id='opc_before_heading' inContainer=false}
-                    {container class="index-heading-wrapper"}
+                    {container fluid=$Link->getIsFluid() class="index-heading-wrapper"}
                         <h1>{$Link->getTitle()}</h1>
                     {/container}
                 {elseif isset($bAjaxRequest) && $bAjaxRequest}
                     {opcMountPoint id='opc_before_heading' inContainer=false}
-                    {container class="index-heading-wrapper"}
+                    {container fluid=$Link->getIsFluid() class="index-heading-wrapper"}
                         <h1>{if !empty($Link->getMetaTitle())}{$Link->getMetaTitle()}{else}{$Link->getName()}{/if}</h1>
                     {/container}
                 {/if}
@@ -33,7 +33,7 @@
             {block name='layout-index-link-content'}
                 {if !empty($Link->getContent())}
                     {opcMountPoint id='opc_before_content' inContainer=false}
-                    {container class="link-content"}
+                    {container fluid=$Link->getIsFluid() class="link-content"}
                         {$Link->getContent()}
                     {/container}
                 {/if}
@@ -45,7 +45,7 @@
                         <div id="tos" class="well well-sm">
                             {opcMountPoint id='opc_before_tos' inContainer=false}
                             {if $AGB !== false}
-                                {container}
+                                {container fluid=$Link->getIsFluid()}
                                     {if $AGB->cAGBContentHtml}
                                         {$AGB->cAGBContentHtml}
                                     {elseif $AGB->cAGBContentText}
@@ -61,7 +61,7 @@
                         <div id="revocation-instruction" class="well well-sm">
                             {opcMountPoint id='opc_before_revocation' inContainer=false}
                             {if $WRB !== false}
-                                {container}
+                                {container fluid=$Link->getIsFluid()}
                                     {if $WRB->cWRBContentHtml}
                                         {$WRB->cWRBContentHtml}
                                     {elseif $WRB->cWRBContentText}
@@ -77,7 +77,7 @@
                         <div id="revocation-form" class="well well-sm">
                             {opcMountPoint id='opc_before_revocation_form' inContainer=false}
                             {if $WRB !== false}
-                                {container}
+                                {container fluid=$Link->getIsFluid()}
                                     {if $WRB->cWRBFormContentHtml}
                                         {$WRB->cWRBFormContentHtml}
                                     {elseif $WRB->cWRBFormContentText}
@@ -93,7 +93,7 @@
                         <div id="data-privacy" class="well well-sm">
                             {opcMountPoint id='opc_before_data_privacy' inContainer=false}
                             {if $WRB !== false}
-                                {container}
+                                {container fluid=$Link->getIsFluid()}
                                     {if $WRB->cDSEContentHtml}
                                         {$WRB->cDSEContentHtml}
                                     {elseif $WRB->cDSEContentText}

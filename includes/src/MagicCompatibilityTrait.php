@@ -61,6 +61,9 @@ trait MagicCompatibilityTrait
     public function __set($name, $value)
     {
         \trigger_error(__CLASS__ . ': setter should be used to set ' . $name, \E_USER_DEPRECATED);
+        if (\COMPATIBILITY_TRACE_DEPTH > 0 && \error_reporting() >= \E_USER_DEPRECATED) {
+            Shop::dbg($name, false, 'Backtrace for', \COMPATIBILITY_TRACE_DEPTH + 1);
+        }
         if (\property_exists($this, $name)) {
             $this->$name = $value;
 

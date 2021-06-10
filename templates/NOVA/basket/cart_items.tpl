@@ -265,11 +265,11 @@
                                                     <span class="fas fa-minus"></span>
                                                 {/button}
                                             {/inputgroupprepend}
-                                            {input type="{if $oPosition->Artikel->cTeilbar === 'Y' && $oPosition->Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
+                                            {input type="number"
                                                 min="{if $oPosition->Artikel->fMindestbestellmenge}{$oPosition->Artikel->fMindestbestellmenge}{else}0{/if}"
                                                 max=$oPosition->Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|default:''
                                                 required=($oPosition->Artikel->fAbnahmeintervall > 0)
-                                                step="{if $oPosition->Artikel->fAbnahmeintervall > 0}{$oPosition->Artikel->fAbnahmeintervall}{/if}"
+                                                step="{if $oPosition->Artikel->cTeilbar === 'Y' && $oPosition->Artikel->fAbnahmeintervall == 0}any{elseif $oPosition->Artikel->fAbnahmeintervall > 0}{$oPosition->Artikel->fAbnahmeintervall}{else}1{/if}"
                                                 id="quantity[{$oPosition@index}]" class="quantity" name="anzahl[{$oPosition@index}]"
                                                 aria=["label"=>"{lang key='quantity'}"]
                                                 value=$oPosition->nAnzahl
@@ -308,7 +308,7 @@
                         || $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_GRATISGESCHENK
                         }
                             {col cols=$cols xl=10 class='cart-items-delete' data=['toggle'=>'product-actions']}
-                                {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
+                                {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y' && $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
                                     {block name='basket-cart-items-cart-submit-include-wishlist-button'}
                                         {include file='snippets/wishlist_button.tpl' Artikel=$oPosition->Artikel buttonAndText=true}
                                     {/block}

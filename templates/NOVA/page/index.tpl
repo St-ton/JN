@@ -27,7 +27,7 @@
                     {/if}
                     {assign var=moreLink value=$Box->cURL}
                     {block name='page-index-include-product-slider'}
-                        {container class="product-slider-wrapper" fluid=true}
+                        {container class="product-slider-wrapper product-slider-{$Box->name}" fluid=true}
                             {include file='snippets/product_slider.tpl'
                                 productlist=$Box->Artikel->elemente
                                 title=$title

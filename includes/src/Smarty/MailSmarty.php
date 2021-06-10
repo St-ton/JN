@@ -3,7 +3,6 @@
 namespace JTL\Smarty;
 
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 
 /**
  * Class MailSmarty
@@ -30,8 +29,8 @@ class MailSmarty extends JTLSmarty
              ->registerPlugin(\Smarty::PLUGIN_FUNCTION, 'includeMailTemplate', [$this, 'includeMailTemplate'])
              ->setCompileDir(\PFAD_ROOT . \PFAD_COMPILEDIR)
              ->setTemplateDir(\PFAD_ROOT . \PFAD_EMAILTEMPLATES)
-             ->setDebugging(0)
-             ->setCaching(0);
+             ->setDebugging(false)
+             ->setCaching(false);
         if ($context === ContextType::MAIL && \MAILTEMPLATE_USE_SECURITY) {
             $this->activateBackendSecurityMode();
         } elseif ($context === ContextType::NEWSLETTER && \NEWSLETTER_USE_SECURITY) {
@@ -49,9 +48,7 @@ class MailSmarty extends JTLSmarty
         if (!isset($params['template'], $params['type']) || $smarty->getTemplateVars('int_lang') === null) {
             return '';
         }
-        $res  = null;
-        $lang = null;
-        $tpl  = $this->db->select(
+        $tpl = $this->db->select(
             'temailvorlage',
             'cDateiname',
             $params['template']
@@ -59,12 +56,11 @@ class MailSmarty extends JTLSmarty
         if (isset($tpl->kEmailvorlage) && $tpl->kEmailvorlage > 0) {
             $lang = $smarty->getTemplateVars('int_lang');
             $row  = $params['type'] === 'html' ? 'cContentHtml' : 'cContentText';
-            $res  = $this->db->query(
+            $res  = $this->db->getSingleObject(
                 'SELECT ' . $row . ' AS content
                     FROM temailvorlagesprache
                     WHERE kSprache = ' . (int)$lang->kSprache .
-                ' AND kEmailvorlage = ' . (int)$tpl->kEmailvorlage,
-                ReturnType::SINGLE_OBJECT
+                ' AND kEmailvorlage = ' . (int)$tpl->kEmailvorlage
             );
             if (isset($res->content)) {
                 return $smarty->fetch('db:' . $params['type'] . '_' . $tpl->kEmailvorlage . '_' . $lang->kSprache);

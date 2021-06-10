@@ -85,3 +85,24 @@ msgstr "Suche nach Name: %s"
 
 msgid "prefDesc0"
 msgstr " "
+
+msgid "modalTitleOrderNumberTooLong"
+msgstr "Bestellnummerbereich zu gering"
+
+msgid "modalTitleOrderNumberInvalid"
+msgstr "Bestellnumer nicht zulässig"
+
+msgid "modalTextOrderNumberInvalid"
+msgstr "Die max. mögliche Bestellnummer ist kleiner als die Anfangsnummer!"
+
+msgid "modalTextOrderNumberTooLongOne"
+msgstr "Es sind nur max. "
+
+msgid "modalTextOrderNumberTooLongTwo"
+msgstr " Bestellnummern im Format "
+
+msgid "modalTextOrderNumberTooLongThree"
+msgstr "möglich!"
+
+msgid "buttonSaveAnyway"
+msgstr "Trotzdem speichern!"

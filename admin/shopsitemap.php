@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Alert\Alert;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Shop;
@@ -18,14 +17,15 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
         'saveSettings'
     );
     if (GeneralObject::hasCount('nVon', $_POST) && GeneralObject::hasCount('nBis', $_POST)) {
-        Shop::Container()->getDB()->query('TRUNCATE TABLE tpreisspannenfilter', ReturnType::AFFECTED_ROWS);
+        $db = Shop::Container()->getDB();
+        $db->query('TRUNCATE TABLE tpreisspannenfilter');
         for ($i = 0; $i < 10; $i++) {
             if ((int)$_POST['nVon'][$i] >= 0 && (int)$_POST['nBis'][$i] > 0) {
                 $filter       = new stdClass();
                 $filter->nVon = (int)$_POST['nVon'][$i];
                 $filter->nBis = (int)$_POST['nBis'][$i];
 
-                Shop::Container()->getDB()->insert('tpreisspannenfilter', $filter);
+                $db->insert('tpreisspannenfilter', $filter);
             }
         }
     }

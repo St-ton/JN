@@ -4,7 +4,6 @@ namespace JTL\Extensions\SelectionWizard;
 
 use JTL\Catalog\Product\Merkmal;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Shop;
 use stdClass;
 
@@ -88,7 +87,7 @@ class Question
      */
     private function loadFromDB(int $id, bool $activeOnly = true): void
     {
-        $data = $this->db->query(
+        $data = $this->db->getSingleObject(
             'SELECT af.*, m.cBildpfad, COALESCE(ms.cName, m.cName) AS cName, m.cBildpfad
                 FROM tauswahlassistentfrage AS af
                     JOIN tauswahlassistentgruppe as ag
@@ -98,11 +97,10 @@ class Question
                     LEFT JOIN tmerkmalsprache AS ms
                         ON ms.kMerkmal = m.kMerkmal 
                             AND ms.kSprache = ag.kSprache
-                WHERE af.kAuswahlAssistentFrage = ' . $id .
-                    ($activeOnly ? ' AND af.nAktiv = 1' : ''),
-            ReturnType::SINGLE_OBJECT
+                WHERE af.kAuswahlAssistentFrage = :qid' . ($activeOnly ? ' AND af.nAktiv = 1' : ''),
+            ['qid' => $id]
         );
-        if ($data !== null && $data !== false) {
+        if ($data !== null) {
             foreach (\get_object_vars($data) as $name => $value) {
                 $this->$name = $value;
             }
@@ -123,13 +121,12 @@ class Question
     {
         $activeSQL = $activeOnly ? ' AND nAktiv = 1' : '';
 
-        return $this->db->queryPrepared(
+        return $this->db->getCollection(
             'SELECT kAuswahlAssistentFrage AS id
                 FROM tauswahlassistentfrage
                 WHERE kAuswahlAssistentGruppe = :gid' . $activeSQL . '
                 ORDER BY nSort',
-            ['gid' => $groupID],
-            ReturnType::COLLECTION
+            ['gid' => $groupID]
         )->map(static function ($e) use ($activeOnly) {
             return new self((int)$e->id, $activeOnly);
         })->all();

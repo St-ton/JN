@@ -2,9 +2,6 @@
 
 namespace JTL\Services\JTL;
 
-use JTL\Smarty\JTLSmarty;
-use JTL\Smarty\JTLSmartyTemplateClass;
-
 /**
  * Class CaptchaService
  * @package JTL\Services\JTL

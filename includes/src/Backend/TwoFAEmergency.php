@@ -1,11 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Backend;
 
 use Exception;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Shop;
+use stdClass;
 
 /**
  * Class TwoFAEmergency
@@ -45,18 +45,18 @@ class TwoFAEmergency
      * create a pool of emergency-codes
      * for the current admin-account and store them in the DB.
      *
-     * @param object $userTuple - user-data, as delivered from TwoFA-object
+     * @param stdClass $userTuple - user-data, as delivered from TwoFA-object
      * @return array - new created emergency-codes (as written into the DB)
      * @throws Exception
      */
-    public function createNewCodes($userTuple): array
+    public function createNewCodes(stdClass $userTuple): array
     {
         $passwordService = Shop::Container()->getPasswordService();
         $bindings        = [];
         $rowValues       = '';
         $valCount        = 'a';
         for ($i = 0; $i < $this->codeCount; $i++) {
-            $code          = \mb_substr(\md5(\rand(1000, 9000)), 0, 16);
+            $code          = \mb_substr(\md5((string)\random_int(1000, 9000)), 0, 16);
             $this->codes[] = $code;
 
             if ($rowValues !== '') {
@@ -77,8 +77,7 @@ class TwoFAEmergency
         // now write into the DB what we got till now
         $this->db->queryPrepared(
             'INSERT INTO `tadmin2facodes`(`kAdminlogin`, `cEmergencyCode`) VALUES' . $rowValues,
-            $bindings,
-            ReturnType::AFFECTED_ROWS
+            $bindings
         );
 
         return $this->codes;
@@ -87,9 +86,9 @@ class TwoFAEmergency
     /**
      * delete all the existing codes for the given user
      *
-     * @param object $userTuple - user-data, as delivered from TwoFA-object
+     * @param stdClass $userTuple - user data, as delivered from TwoFA-object
      */
-    public function removeExistingCodes($userTuple): void
+    public function removeExistingCodes(stdClass $userTuple): void
     {
         $effected = $this->db->deleteRow(
             'tadmin2facodes',
@@ -111,7 +110,7 @@ class TwoFAEmergency
      * @param string $code - code, as typed in the login-fields
      * @return bool - true="valid emergency-code", false="not a valid emergency-code"
      */
-    public function isValidEmergencyCode($adminID, $code): bool
+    public function isValidEmergencyCode(int $adminID, string $code): bool
     {
         $hashes = $this->db->selectArray('tadmin2facodes', 'kAdminlogin', $adminID);
         if (1 > \count($hashes)) {

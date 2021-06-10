@@ -11,7 +11,7 @@ $h2-font-size:                      $font-size-base * 1.5;
 $highlight-border-size:             .375rem;
 $font-weight-bold:                  600;
 
-.opc-Divider {
+body:not(.is-nova) .opc-Divider {
   display: flex;
   flex-basis: 100%;
   align-items: center;
@@ -45,6 +45,19 @@ $font-weight-bold:                  600;
     }
     &:after {
       margin-left: 0;
+    }
+  }
+}
+
+.is-nova {
+  .hr-sect {
+    &.opc-Divider-empty {
+      &::before {
+        margin: 0;
+      }
+      &::after {
+        margin: 0;
+      }
     }
   }
 }

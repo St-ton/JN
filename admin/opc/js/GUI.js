@@ -425,12 +425,11 @@ class GUI
 
     saveConfig()
     {
-        event.preventDefault();
 
         opc.emit('save-config');
 
         let portletData  = this.page.portletToJSON(this.curPortlet);
-        let configObject = $(event.target).serializeControls();
+        let configObject = this.configForm.serializeControls();
 
         for(let propname in configObject) {
             if(configObject.hasOwnProperty(propname)) {
@@ -472,8 +471,6 @@ class GUI
 
     createBlueprint()
     {
-        event.preventDefault();
-
         if(this.selectedElm !== null) {
             let blueprintName = this.blueprintName.val();
             let blueprintData = this.page.portletToJSON(this.iframe.selectedElm);
@@ -530,8 +527,6 @@ class GUI
 
         this.io.deleteBlueprint(blueprintId).then(() => this.updateBlueprintList());
         this.blueprintDeleteModal.modal('hide');
-
-        event.preventDefault();
     }
 
     publishDraft()
@@ -578,9 +573,9 @@ class GUI
     {
         this.checkPublishNot.prop('checked', true);
         this.publishFrom.prop('disabled', true);
-        this.publishFrom.val('Unveröffentlicht');
+        this.publishFrom.val(opc.messages.notScheduled);
         this.publishTo.prop('disabled', true);
-        this.publishTo.val('Auf unbestimmte Zeit');
+        this.publishTo.val(opc.messages.indefinitePeriodOfTime);
         this.checkPublishInfinite.prop('checked', true);
         this.checkPublishInfinite.prop('disabled', true);
     }
@@ -589,9 +584,9 @@ class GUI
     {
         this.checkPublishNow.prop('checked', true);
         this.publishFrom.prop('disabled', true);
-        this.publishFrom.val('Jetzt');
+        this.publishFrom.val(opc.messages.now);
         this.publishTo.prop('disabled', true);
-        this.publishTo.val('Auf unbestimmte Zeit');
+        this.publishTo.val(opc.messages.indefinitePeriodOfTime);
         this.checkPublishInfinite.prop('checked', true);
         this.checkPublishInfinite.prop('disabled', true);
     }
@@ -608,7 +603,7 @@ class GUI
     {
         this.checkPublishInfinite.prop('checked', true);
         this.publishTo.prop('disabled', true);
-        this.publishTo.val('Auf unbestimmte Zeit');
+        this.publishTo.val(opc.messages.indefinitePeriodOfTime);
         this.publishFrom.datetimepicker('maxDate', false);
     }
 
@@ -621,8 +616,6 @@ class GUI
 
     publish()
     {
-        event.preventDefault();
-
         this.page.name = this.draftName.val();
         $('#footerDraftName span').text(this.page.name);
 
@@ -689,8 +682,6 @@ class GUI
 
     restoreUnsaved()
     {
-        event.preventDefault();
-
         this.unsavedRevision.click();
         this.restoreUnsavedModal.modal('hide');
     }

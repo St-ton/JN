@@ -795,7 +795,7 @@ msgid "artikeldetails_kategorie_anzeigen_desc"
 msgstr "Hier legen Sie fest, ob die Kategorie des Artikels auf der Artikeldetailseite angezeigt wird."
 
 msgid "artikeldetails_tabs_nutzen_name"
-msgstr "Registerkarten nutzen"
+msgstr "Registerkarten / Tab nutzen"
 
 msgid "artikeldetails_tabs_nutzen_desc"
 msgstr "Hier legen Sie fest, ob auf der Artikeldetailseite Registerkarten verwendet werden sollen. Diese beinhalten beispielsweise die Bewertungen oder Fragen zum Artikel. Wenn Sie die Option deaktivieren, werden alle Informationen untereinander angezeigt."
@@ -847,12 +847,6 @@ msgstr "Gefahrentafel im Artikel anzeigen"
 
 msgid "adr_hazard_display_desc"
 msgstr "Hier legen Sie fest, ob die europäische Gefahrentafel im Artikel angezeigt werden soll. Hierfür müssen in JTL-Wawi die UN-Nummer und die Gefahrnummer gepflegt sein."
-
-msgid "artikeldetails_variationskombikind_bildvorschau_name"
-msgstr "Bildvorschau für Kindartikel anzeigen"
-
-msgid "artikeldetails_variationskombikind_bildvorschau_desc"
-msgstr "Hier legen Sie fest, ob in der Artikelübersicht Vorschaubilder für Kindartikel angezeigt werden sollen. Bei vielen Kindartikeln kann dies zu großen Ladezeiten führen."
 
 msgid "artikeldetails_fragezumprodukt_anzeigen_name"
 msgstr "Formular für Fragen zum Artikel anzeigen"
@@ -1214,6 +1208,18 @@ msgstr "Vorausgewähltes Land"
 msgid "lieferadresse_abfragen_standardland_desc"
 msgstr "Hier geben Sie den ISO-Code für das Land an, das vorausgewählt sein soll, z. B. DE für Deutschland oder AT für Österreich."
 
+msgid "lieferadresse_abfragen_firma_name"
+msgstr "Firma abfragen"
+
+msgid "lieferadresse_abfragen_firma_desc"
+msgstr "Hier legen Sie fest, ob der Firmenname abgefragt wird."
+
+msgid "lieferadresse_abfragen_firmazusatz_name"
+msgstr "Firmenzusatz abfragen"
+
+msgid "lieferadresse_abfragen_firmazusatz_desc"
+msgstr "Hier legen Sie fest, ob der Firmenzusatz abgefragt wird."
+
 msgid "shop_ustid_name"
 msgstr "USt-IdNr. des Onlineshops"
 
@@ -1273,6 +1279,12 @@ msgstr "Aktuellen Warenkorb mit gespeichertem Warenkorb zusammenfassen"
 
 msgid "warenkorb_warenkorb2pers_merge_desc"
 msgstr "Hier legen Sie fest, ob der aktuelle Warenkorb eines Kunden mit bereits gespeicherten Warenkörben für diesen Kunden zusammengefasst werden soll."
+
+msgid "warenkorb_gesamtgewicht_anzeigen_name"
+msgstr "Gesamtgewicht anzeigen"
+
+msgid "warenkorb_gesamtgewicht_anzeigen_desc"
+msgstr "Hier legen Sie fest, ob das Gesamtgewicht aller Artikel im Warenkorb, auf der Warenkorb Seite angezeigt werden soll."
 
 msgid "bestellvorgang_kaufabwicklungsmethode_name"
 msgstr "Kaufabwicklungsmethode"
@@ -1467,7 +1479,7 @@ msgid "boxen_wunschzettel_bilder_desc"
 msgstr "Hier legen Sie fest, ob in der Box „Wunschzettel“ Artikelbilder angezeigt werden sollen."
 
 msgid "boxen_vergleichsliste_anzeigen_name"
-msgstr "Vergleichsliste anzeigen"
+msgstr "Box - Vergleichsliste anzeigen"
 
 msgid "boxen_vergleichsliste_anzeigen_desc"
 msgstr "Hier legen Sie fest, ob die Vergleichsliste in einer Box angezeigt werden soll."
@@ -1489,6 +1501,12 @@ msgstr "Top bewertet ab welcher Durchschnittsbewertung"
 
 msgid "boxen_topbewertet_minsterne_desc"
 msgstr "Hier legen Sie fest, mit wie vielen Sternen ein Artikel mindestens im Durchschnitt bewertet sein muss, um als „Top bewertet“ zu gelten."
+
+msgid "box_hersteller_anzahl_anzeige_name"
+msgstr "Anzahl angezeigter Hersteller"
+
+msgid "box_hersteller_anzahl_anzeige_desc"
+msgstr "Hier legen Sie fest, wie viele Hersteller in der Box „Hersteller“ angezeigt werden. Geben Sie 0 an, um alle Hersteller anzuzeigen."
 
 msgid "bilder_kategorien_breite_name"
 msgstr "Kategoriebilder Breite"
@@ -1934,6 +1952,12 @@ msgstr "Zeichenmaskierung ;"
 msgid "exportformate_semikolon_desc"
 msgstr "Sie können bei Bedarf diese Zeichen maskieren lassen."
 
+msgid "exportformate_line_ending_name"
+msgstr "Zeilenende"
+
+msgid "exportformate_line_ending_desc"
+msgstr ""
+
 msgid "kontakt_abfragen_anrede_name"
 msgstr "Anrede abfragen"
 
@@ -2066,6 +2090,12 @@ msgstr "Letzte X Monate beachten"
 msgid "preisverlauf_anzahl_monate_desc"
 msgstr "Hier legen Sie fest, wie viele Monate rückwirkend für den Preisverlauf berücksichtigt werden sollen. "
 
+msgid "vergleichsliste_anzeigen_name"
+msgstr "Vergleichsliste anzeigen"
+
+msgid "vergleichsliste_anzeigen_desc"
+msgstr "Hier legen Sie fest, ob Ihre Kunden die Vergleichsliste nutzen können."
+
 msgid "vergleichsliste_anzahl_name"
 msgstr "Maximale Anzahl an Artikeln"
 
@@ -2138,12 +2168,6 @@ msgstr "Spaltenbreite des Artikels"
 msgid "vergleichsliste_spaltengroesse_desc"
 msgstr "Hier legen Sie fest, wie viele Pixel eine Spalte für einen Artikel in der Vergleichsliste breit sein soll."
 
-msgid "vergleichsliste_spaltengroesseattribut_name"
-msgstr "Spaltenbreite der Attribute"
-
-msgid "vergleichsliste_spaltengroesseattribut_desc"
-msgstr "Hier legen Sie fest, wie viele Pixel eine Spalte für ein Artikelattribut in der Vergleichsliste breit sein soll."
-
 msgid "vergleichsliste_target_name"
 msgstr "Position der Vergleichsliste"
 
@@ -2155,6 +2179,12 @@ msgstr "Bewertungssystem nutzen"
 
 msgid "bewertung_anzeigen_desc"
 msgstr "Hier legen Sie fest, ob die Möglichkeit, eine Bewertung abzugeben, in den Artikeldetails angezeigt wird."
+
+msgid "bewertung_alle_sprachen_name"
+msgstr "Alle Sprachen anzeigen"
+
+msgid "bewertung_alle_sprachen_desc"
+msgstr "Hier legen Sie fest, ob Bewertungstexte immer angezeigt werden, unabhängig davon, in welcher Sprache sie verfasst wurden (Ja), oder ob nur Bewertungen in der Sprache zu sehen sind, die aktuell im Frontend gesetzt ist (Nein)."
 
 msgid "bewertung_freischalten_name"
 msgstr "Bewertungen freischalten"
@@ -2402,6 +2432,12 @@ msgstr "Merkmalfilter benutzen"
 msgid "merkmalfilter_verwenden_desc"
 msgstr "Hier legen Sie fest, ob Merkmalfilter angezeigt werden sollen. Diese Optionen werden im NOVA-Template nur teilweise unterstützt. Bitte wählen Sie „Ja, im Content-Bereich und der Navigationsbox“ oder „Nein“, falls Sie NOVA verwenden."
 
+msgid "merkmalfilter_trefferanzahl_anzeigen_name"
+msgstr "Trefferanzahl bei Merkmalfiltern anzeigen"
+
+msgid "merkmalfilter_trefferanzahl_anzeigen_desc"
+msgstr "Hier legen Sie fest, wie die Trefferanzahl bei Merkmalfiltern angezeigt werden soll."
+
 msgid "merkmal_anzeigen_als_name"
 msgstr "Merkmale anzeigen als"
 
@@ -2571,10 +2607,10 @@ msgid "news_anzahl_content_desc"
 msgstr "Hier legen Sie fest, wie viele Blogbeiträge auf der Startseite Ihres JTL-Shops angezeigt werden sollen."
 
 msgid "news_anzahl_box_name"
-msgstr "Anzahl Monate in der Box"
+msgstr "Anzahl Monate/Kategorien in der Box"
 
 msgid "news_anzahl_box_desc"
-msgstr "Hier legen Sie fest, wie viele Monate in der Box „Blog (Monatsübersicht)“ angezeigt werden sollen."
+msgstr "Hier legen Sie fest, wie viele Monate in der Box „Blog (Monatsübersicht)“ angezeigt werden sollen, bzw. wie viele Kategorien in der Box „Blog (Kategorieübersicht)“ angezeigt werden sollen."
 
 msgid "news_kommentare_freischalten_name"
 msgstr "Kommentare freischalten"

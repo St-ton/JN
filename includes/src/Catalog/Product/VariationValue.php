@@ -98,7 +98,7 @@ class VariationValue
     public $cPreisInklAufpreis;
 
     /**
-     * @var float
+     * @var array
      */
     public $fAufpreis;
 
@@ -191,9 +191,9 @@ class VariationValue
     }
 
     /**
-     * @param stdClass $data
-     * @param int      $cntVariationen
-     * @param          $tmpDiscount
+     * @param stdClass  $data
+     * @param int       $cntVariationen
+     * @param int|float $tmpDiscount
      */
     public function init(stdClass $data, int $cntVariationen, $tmpDiscount): void
     {

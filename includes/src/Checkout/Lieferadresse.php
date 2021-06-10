@@ -55,6 +55,12 @@ class Lieferadresse extends Adresse
             return 0;
         }
         $this->fromObject($obj);
+        if ($this->kKunde > 0) {
+            $this->kKunde = (int)$this->kKunde;
+        }
+        if ($this->kLieferadresse > 0) {
+            $this->kLieferadresse = (int)$this->kLieferadresse;
+        }
         $this->cAnredeLocalized = Customer::mapSalutation($this->cAnrede, 0, $this->kKunde);
         // Workaround for WAWI-39370
         $this->cLand           = self::checkISOCountryCode($this->cLand);

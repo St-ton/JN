@@ -2,7 +2,6 @@
 
 namespace JTL\dbeS\Sync;
 
-use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\Helpers\Seo;
 use JTL\Language\LanguageHelper;
@@ -89,11 +88,11 @@ final class Manufacturers extends AbstractSync
                 $manufacturers[$i]->cSeo = Seo::getFlatSeoPath($manufacturers[$i]->cName);
             }
             // alten Bildpfad merken
-            $manufacturerImage            = $this->db->query(
+            $manufacturerImage            = $this->db->getSingleObject(
                 'SELECT cBildPfad 
-                FROM thersteller 
-                WHERE kHersteller = ' . $id,
-                ReturnType::SINGLE_OBJECT
+                    FROM thersteller 
+                    WHERE kHersteller = :mid',
+                ['mid' => $id]
             );
             $manufacturers[$i]->cBildPfad = $manufacturerImage->cBildPfad ?? '';
             $manufacturers[$i]->cSeo      = Seo::getSeo($manufacturers[$i]->cSeo);

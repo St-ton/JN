@@ -7,7 +7,6 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\Country\Country;
 use JTL\Country\State;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Shop;
 
 /**
@@ -49,13 +48,15 @@ class CountryService implements CountryServiceInterface
     public function init(): void
     {
         if (($countries = $this->cache->get(self::CACHE_ID)) !== false) {
-            $this->countryList = $countries;
+            $this->countryList = $countries->sortBy(static function (Country $country) {
+                return $country->getName();
+            });
 
             return;
         }
-        $countries            = $this->db->query('SELECT * FROM tland', ReturnType::ARRAY_OF_OBJECTS);
-        $shippingMethods      = $this->db->query('SELECT cLaender FROM tversandart', ReturnType::ARRAY_OF_OBJECTS);
-        $possibleStates       = $this->db->query('SELECT DISTINCT cLandIso FROM tstaat', ReturnType::COLLECTION)
+        $countries            = $this->db->getObjects('SELECT * FROM tland');
+        $shippingMethods      = $this->db->getObjects('SELECT cLaender FROM tversandart');
+        $possibleStates       = $this->db->getCollection('SELECT DISTINCT cLandIso FROM tstaat')
             ->pluck('cLandIso')->toArray();
         $deliverableCountries = [];
         foreach ($shippingMethods as $shippingMethod) {
@@ -78,10 +79,10 @@ class CountryService implements CountryServiceInterface
             if (\in_array($countryTMP->getISO(), $deliverableCountries, true)) {
                 $countryTMP->setShippingAvailable(true);
             }
-            $this->getCountryList()->push($countryTMP);
+            $this->countryList->push($countryTMP);
         }
 
-        $this->countryList = $this->getCountryList()->sortBy(static function (Country $country) {
+        $this->countryList = $this->countryList->sortBy(static function (Country $country) {
             return $country->getName();
         });
 
@@ -145,8 +146,8 @@ class CountryService implements CountryServiceInterface
     }
 
     /**
-     * @param bool $getEU - get all countries in EU and all countries in Europe not in EU
-     * @param array|null $selectedCountries
+     * @param bool  $getEU - get all countries in EU and all countries in Europe not in EU
+     * @param array $selectedCountries
      * @return array
      */
     public function getCountriesGroupedByContinent(bool $getEU = false, array $selectedCountries = []): array

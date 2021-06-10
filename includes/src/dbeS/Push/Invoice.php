@@ -2,7 +2,6 @@
 
 namespace JTL\dbeS\Push;
 
-use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Plugin\Payment\LegacyMethod;
 use stdClass;
@@ -55,15 +54,14 @@ final class Invoice extends AbstractPush
      */
     private function getOrder(int $id): ?stdClass
     {
-        return $this->db->queryPrepared(
+        return $this->db->getSingleObject(
             'SELECT tbestellung.kBestellung, tbestellung.fGesamtsumme, tzahlungsart.cModulId
-            FROM tbestellung
-            LEFT JOIN tzahlungsart
-              ON tbestellung.kZahlungsart = tzahlungsart.kZahlungsart
-            WHERE tbestellung.kBestellung = :oid 
-            LIMIT 1',
-            ['oid' => $id],
-            ReturnType::SINGLE_OBJECT
+                FROM tbestellung
+                LEFT JOIN tzahlungsart
+                  ON tbestellung.kZahlungsart = tzahlungsart.kZahlungsart
+                WHERE tbestellung.kBestellung = :oid 
+                LIMIT 1',
+            ['oid' => $id]
         );
     }
 

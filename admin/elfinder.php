@@ -7,6 +7,7 @@ use JTL\Shop;
 /**
  * @global \JTL\Smarty\JTLSmarty     $smarty
  * @global \JTL\Backend\AdminAccount $oAccount
+ * @global string                    $currentTemplateDir
  */
 
 require_once __DIR__ . '/includes/admininclude.php';

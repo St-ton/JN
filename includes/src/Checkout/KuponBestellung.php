@@ -2,7 +2,6 @@
 
 namespace JTL\Checkout;
 
-use JTL\DB\ReturnType;
 use JTL\Shop;
 use stdClass;
 
@@ -305,7 +304,7 @@ class KuponBestellung
      */
     public static function getOrdersWithUsedCoupons($start, $end, int $couponID = 0): array
     {
-        return Shop::Container()->getDB()->query(
+        return Shop::Container()->getDB()->getArrays(
             "SELECT kbs.*, wkp.cName, kp.kKupon
                 FROM tkuponbestellung AS kbs
                 LEFT JOIN tbestellung AS bs 
@@ -319,8 +318,7 @@ class KuponBestellung
                     AND bs.cStatus != " . \BESTELLUNG_STATUS_STORNO . '
                     AND (wkp.nPosTyp = 3 OR wkp.nPosTyp = 7) ' .
             ($couponID > 0 ? ' AND kp.kKupon = ' . $couponID : '') . '
-                ORDER BY kbs.dErstellt DESC',
-            ReturnType::ARRAY_OF_ASSOC_ARRAYS
+                ORDER BY kbs.dErstellt DESC'
         );
     }
 }

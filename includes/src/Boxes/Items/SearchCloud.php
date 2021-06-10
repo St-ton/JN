@@ -2,7 +2,6 @@
 
 namespace JTL\Boxes\Items;
 
-use JTL\DB\ReturnType;
 use JTL\Helpers\URL;
 use JTL\Shop;
 
@@ -29,7 +28,7 @@ final class SearchCloud extends AbstractBox
         $cached    = true;
         if (($items = Shop::Container()->getCache()->get($cacheID)) === false) {
             $cached = false;
-            $items  = Shop::Container()->getDB()->queryPrepared(
+            $items  = Shop::Container()->getDB()->getObjects(
                 "SELECT tsuchanfrage.kSuchanfrage, tsuchanfrage.kSprache, tsuchanfrage.cSuche, 
                     tsuchanfrage.nAktiv, tsuchanfrage.nAnzahlTreffer, tsuchanfrage.nAnzahlGesuche, 
                     tsuchanfrage.dZuletztGesucht, tseo.cSeo
@@ -44,8 +43,7 @@ final class SearchCloud extends AbstractBox
                     GROUP BY tsuchanfrage.kSuchanfrage
                     ORDER BY tsuchanfrage.nAnzahlGesuche DESC
                     LIMIT :lmt",
-                ['lid' => $langID, 'lmt' => $limit],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['lid' => $langID, 'lmt' => $limit]
             );
             Shop::Container()->getCache()->set($cacheID, $items, $cacheTags);
         }

@@ -1,5 +1,5 @@
 {block name='boxes-box-linkgroups'}
-    {card class="box box-linkgroup box-normal text-left-util" id="box{$oBox->getID()}" no-body=true}
+    <div class="box box-linkgroup box-normal text-left-util" id="box{$oBox->getID()}">
         {block name='boxes-box-linkgroups-toggle-title'}
             {link
                 id="crd-hdr-{$oBox->getID()}"
@@ -33,7 +33,7 @@
                     </div>
             {/collapse}
         {/block}
-    {/card}
+    </div>
     {block name='boxes-box-linkgroups-hr-end'}
         <hr class="box-normal-hr">
     {/block}

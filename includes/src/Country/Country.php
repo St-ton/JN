@@ -100,12 +100,10 @@ class Country
      */
     private function initFromDB(): void
     {
-        $countryData = Shop::Container()->getDB()->select('tland', 'cISO', $this->getISO());
+        $db          = Shop::Container()->getDB();
+        $countryData = $db->select('tland', 'cISO', $this->getISO());
         if ($countryData !== null) {
-            $shippingMethods      = Shop::Container()->getDB()->query(
-                'SELECT cLaender FROM tversandart',
-                ReturnType::ARRAY_OF_OBJECTS
-            );
+            $shippingMethods      = $db->getObjects('SELECT cLaender FROM tversandart');
             $deliverableCountries = [];
             foreach ($shippingMethods as $shippingMethod) {
                 $deliverableCountries = \array_unique(\array_merge(

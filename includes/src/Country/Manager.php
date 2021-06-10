@@ -132,7 +132,7 @@ class Manager
         }
         if (Request::postInt('save') === 1) {
             $country                          = new \stdClass();
-            $country->cISO                    = $iso;
+            $country->cISO                    = \mb_strtoupper($iso);
             $country->cDeutsch                = Request::verifyGPDataString('cDeutsch');
             $country->cEnglisch               = Request::verifyGPDataString('cEnglisch');
             $country->nEU                     = Request::verifyGPDataString('nEU');
@@ -160,7 +160,7 @@ class Manager
      */
     private function deleteCountry(): string
     {
-        if ($this->db->delete('tland', 'cISO', Request::verifyGPDataString('cISO')) === 1) {
+        if ($this->db->delete('tland', 'cISO', Request::verifyGPDataString('cISO')) > 0) {
             $this->cache->flush(CountryService::CACHE_ID);
             $this->alertService->addAlert(
                 Alert::TYPE_SUCCESS,

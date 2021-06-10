@@ -4,6 +4,7 @@ namespace JTL\Services\JTL;
 
 use Illuminate\Support\Collection;
 use JTL\Cache\JTLCacheInterface;
+use JTL\Country\Continent;
 use JTL\Country\Country;
 use JTL\Country\State;
 use JTL\DB\DbInterface;
@@ -230,7 +231,7 @@ class CountryService implements CountryServiceInterface
     {
         $continents = [];
         try {
-            $reflection = new \ReflectionClass(\JTL\Country\Continent::class);
+            $reflection = new \ReflectionClass(Continent::class);
             $continents = $reflection->getConstants();
         } catch (\ReflectionException $e) {
             Shop::Container()->getLogService()->notice($e->getMessage());
@@ -240,22 +241,20 @@ class CountryService implements CountryServiceInterface
     }
 
     /**
-     * @param $iso
+     * @param string $iso
      * @return array
      */
-    private function getStates($iso): array
+    private function getStates(string $iso): array
     {
         $states    = [];
-        $countries = Shop::Container()->getDB()->selectAll('tstaat', 'cLandIso', $iso, '*', 'cName');
-        if (\is_array($countries) && \count($countries) > 0) {
-            foreach ($countries as $country) {
-                $state = new State();
-                $state->setID((int)$country->kStaat)
-                    ->setISO($country->cCode)
-                    ->setName($country->cName)
-                    ->setCountryISO($country->cLandIso);
-                $states[] = $state;
-            }
+        $countries = $this->db->selectAll('tstaat', 'cLandIso', $iso, '*', 'cName');
+        foreach ($countries as $country) {
+            $state = new State();
+            $state->setID((int)$country->kStaat)
+                ->setISO($country->cCode)
+                ->setName($country->cName)
+                ->setCountryISO($country->cLandIso);
+            $states[] = $state;
         }
 
         return $states;

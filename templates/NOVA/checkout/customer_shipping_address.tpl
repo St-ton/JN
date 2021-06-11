@@ -163,7 +163,7 @@
                         {select name="{$prefix}[{$name}][land]" id="{$prefix}-{$name}-country" class="country-input custom-select js-country-select" autocomplete="shipping country"}
                             <option value="" selected disabled>{lang key='country' section='account data'}</option>
                             {foreach $LieferLaender as $land}
-                                {if $land->isPermitRegistration() && $land->isShippingAvailable()}
+                                {if $land->isShippingAvailable()}
                                     <option value="{$land->getISO()}" {if $countryISO === $land->getISO()}selected="selected"{/if}>{$land->getName()}</option>
                                 {/if}
                             {/foreach}

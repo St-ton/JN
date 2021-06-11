@@ -3,18 +3,18 @@
         <div class="card-body">
             <table class="table table-responsive table-align-top">
                 <thead>
-                <tr>
-                    <th>{__('ISO')}</th>
-                    <th>{__('Name')}</th>
-                    <th>{__('DBcDeutsch')}</th>
-                    <th>{__('DBcEnglisch')}</th>
-                    <th>{__('isEU')}</th>
-                    <th>{__('Continent')}</th>
-                    <th>{__('isShippingAvailable')}</th>
-                    <th>{__('isPermitRegistration')}</th>
-                    <th>{__('isRequireStateDefinition')}</th>
-                    <th></th>
-                </tr>
+                    <tr>
+                        <th>{__('ISO')}</th>
+                        <th>{__('Name')}</th>
+                        <th>{__('DBcDeutsch')}</th>
+                        <th>{__('DBcEnglisch')}</th>
+                        <th>{__('isEU')}</th>
+                        <th>{__('Continent')}</th>
+                        <th class="text-center">{__('isShippingAvailable')}</th>
+                        <th class="text-center">{__('isPermitRegistration')}</th>
+                        <th class="text-center">{__('isRequireStateDefinition')}</th>
+                        <th></th>
+                    </tr>
                 </thead>
                 <tbody>
                 {foreach $countries as $country}

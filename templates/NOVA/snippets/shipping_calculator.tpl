@@ -12,7 +12,7 @@
                                 {formgroup}
                                     {select name="land" id="country" class='custom-select' placeholder="" aria=["label"=>"{lang key='country' section='account data'}"]}
                                         {foreach $countries as $country}
-                                            {if $country->isPermitRegistration() && $country->isShippingAvailable()}
+                                            {if $country->isShippingAvailable()}
                                                 <option value="{$country->getISO()}" {if $shippingCountry === $country->getISO()}selected{/if}>
                                                     {$country->getName()}
                                                 </option>

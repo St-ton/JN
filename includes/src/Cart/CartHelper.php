@@ -177,7 +177,6 @@ class CartHelper
                         $info->surcharge[self::NET]   += $amount * $item->nAnzahl;
                         $info->surcharge[self::GROSS] += $amountGross * $item->nAnzahl;
                     } else {
-                        $amount                      *= -1;
                         $info->discount[self::NET]   += $amount * $item->nAnzahl;
                         $info->discount[self::GROSS] += $amountGross * $item->nAnzahl;
                     }
@@ -1785,10 +1784,14 @@ class CartHelper
             $gift = Shop::Container()->getDB()->getSingleObject(
                 'SELECT kArtikel
                     FROM tartikelattribut
-                    WHERE kArtikel = ' . $freeGiftID . "
-                        AND cName = '" . \FKT_ATTRIBUT_GRATISGESCHENK . "'
-                        AND CAST(cWert AS DECIMAL) <= " .
-                $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true)
+                    WHERE kArtikel = :pid
+                        AND cName = :atr
+                        AND CAST(cWert AS DECIMAL) <= :sum',
+                [
+                    'pid' => $freeGiftID,
+                    'atr' => \FKT_ATTRIBUT_GRATISGESCHENK,
+                    'sum' => $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true)
+                ]
             );
             if ($gift === null || empty($gift->kArtikel)) {
                 $cart->loescheSpezialPos(\C_WARENKORBPOS_TYP_GRATISGESCHENK);

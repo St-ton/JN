@@ -48,7 +48,7 @@ ifndef('DEFAULT_CURL_OPT_VERIFYHOST', 2);
 ini_set('session.use_trans_sid', '0');
 // Logging (in logs/) 0 => aus, 1 => nur errors, 2 => errors, notifications, 3 => errors, notifications, debug
 ifndef('ES_LOGGING', 1);
-ifndef('ES_DB_LOGGING', 0);
+ifndef('ES_DB_LOGGING', true);
 ifndef('DEBUG_LEVEL', 0);
 ifndef('NICEDB_DEBUG_STMT_LEN', 500);
 ifndef('NICEDB_EXCEPTION_ECHO', false);

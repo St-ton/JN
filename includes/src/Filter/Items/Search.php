@@ -277,12 +277,13 @@ class Search extends AbstractFilter
                     'kSuchanfrage'
                 );
                 if ($real && $previuousQuery !== null && $previuousQuery->kSuchanfrage > 0) {
-                    $this->productFilter->getDB()->query(
+                    $this->productFilter->getDB()->queryPrepared(
                         'UPDATE tsuchanfrage
-                            SET nAnzahlTreffer = ' . (int)$searchQuery->nAnzahlTreffer . ',
+                            SET nAnzahlTreffer = :hc,
                                 nAnzahlGesuche = nAnzahlGesuche + 1,
                                 dZuletztGesucht = NOW()
-                            WHERE kSuchanfrage = ' . (int)$previuousQuery->kSuchanfrage
+                            WHERE kSuchanfrage = :qid',
+                        ['hc' => (int)$searchQuery->nAnzahlTreffer, 'qid' => (int)$previuousQuery->kSuchanfrage]
                     );
                 } elseif (!isset($previuousQuery->kSuchanfrage) || !$previuousQuery->kSuchanfrage) {
                     $this->productFilter->getDB()->delete(
@@ -311,12 +312,12 @@ class Search extends AbstractFilter
                     'kSuchanfrageErfolglos'
                 );
                 if ($real && $oldMiss !== null && $oldMiss->kSuchanfrageErfolglos > 0) {
-                    $this->productFilter->getDB()->query(
+                    $this->productFilter->getDB()->queryPrepared(
                         'UPDATE tsuchanfrageerfolglos
                             SET nAnzahlGesuche = nAnzahlGesuche + 1,
                                 dZuletztGesucht = NOW()
-                            WHERE kSuchanfrageErfolglos = ' .
-                        (int)$oldMiss->kSuchanfrageErfolglos
+                            WHERE kSuchanfrageErfolglos = :qid',
+                        ['qid' => (int)$oldMiss->kSuchanfrageErfolglos]
                     );
                 } else {
                     $this->productFilter->getDB()->delete(

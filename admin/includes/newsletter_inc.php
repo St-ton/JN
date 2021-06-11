@@ -71,7 +71,8 @@ function versendeNewsletter(
                 FROM tkunde
                 JOIN tkundengruppe
                     ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
-                WHERE tkunde.kKunde = ' . (int)$customer->kKunde
+                WHERE tkunde.kKunde = :cid',
+            ['cid' => (int)$customer->kKunde]
         );
         if ($customerGroup !== null && isset($customerGroup->nNettoPreise)) {
             $net = $customerGroup->nNettoPreise;

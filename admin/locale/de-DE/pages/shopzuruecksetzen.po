@@ -65,6 +65,12 @@ msgstr "Bestellungen löschen"
 msgid "deleteCustomers"
 msgstr "Kunden des Onlineshops löschen"
 
+msgid "deleteWishlists"
+msgstr "Wunschlisten löschen"
+
+msgid "deleteComparelists"
+msgstr "Vergleichslisten löschen"
+
 msgid "deleteCustomersAndOrders"
 msgstr "Kunden und Bestellungen löschen"
 

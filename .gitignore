@@ -58,7 +58,11 @@
 # other
 /templates/NOVA/images/overlay/*
 /admin/templates_c/*
+!/admin/templates_c/.htaccess
+!/admin/templates_c/.gitkeep
 /templates_c/*
+!/templates_c/.htaccess
+!/templates_c/.gitkeep
 /export/*
 !/export/.htaccess
 /jtllogs/*
@@ -70,8 +74,6 @@
 .DS_Store
 .project
 .settings
-!/admin/templates_c/.gitkeep
-!/templates_c/.gitkeep
 !/dbeS/tmp/.gitkeep
 !/dbeS/logs/.gitkeep
 !/jtllogs/.gitkeep

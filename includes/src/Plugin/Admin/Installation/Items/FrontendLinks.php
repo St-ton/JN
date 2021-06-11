@@ -94,11 +94,12 @@ class FrontendLinks extends AbstractItem
                     }
                     if (($allLanguages[$linkLang->cISOSprache]->kSprache ?? 0) > 0) {
                         $or = isset($oldLink->kLink) ? (' OR kKey = ' . (int)$oldLink->kLink) : '';
-                        $this->db->query(
+                        $this->db->queryPrepared(
                             "DELETE FROM tseo
                                 WHERE cKey = 'kLink'
                                     AND (kKey = " . $linkID . $or . ')
-                                    AND kSprache = ' . (int)$allLanguages[$linkLang->cISOSprache]->kSprache
+                                    AND kSprache = :lid',
+                            ['lid' => (int)$allLanguages[$linkLang->cISOSprache]->kSprache]
                         );
                         $seo           = new stdClass();
                         $seo->cSeo     = Seo::checkSeo(Seo::getSeo($localized['Seo']));

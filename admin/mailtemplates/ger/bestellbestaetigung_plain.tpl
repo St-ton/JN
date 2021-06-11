@@ -47,8 +47,8 @@ Ihre Rechnungsadresse:
 {/if}{$Kunde->cPLZ} {$Kunde->cOrt}
 {if $Kunde->cBundesland}{$Kunde->cBundesland}
 {/if}{$Kunde->angezeigtesLand}
-{if $Kunde->cTel}Tel.: {$Kunde->cTel}
-{/if}{if $Kunde->cMobil}Mobil: {$Kunde->cMobil}
+{if $Kunde->cTel}Tel.: {$Kunde->cTel|substr:0:2}****{$Kunde->cTel|substr:-4}
+{/if}{if $Kunde->cMobil}Mobil: {$Kunde->cMobil|substr:0:2}****{$Kunde->cMobil|substr:-4}
 {/if}{if $Kunde->cFax}Fax: {$Kunde->cFax}
 {/if}
 E-Mail: {$Kunde->cMail}
@@ -65,8 +65,8 @@ E-Mail: {$Kunde->cMail}
     {/if}{$Bestellung->Lieferadresse->cPLZ} {$Bestellung->Lieferadresse->cOrt}
     {if $Bestellung->Lieferadresse->cBundesland}{$Bestellung->Lieferadresse->cBundesland}
     {/if}{$Bestellung->Lieferadresse->angezeigtesLand}
-    {if $Bestellung->Lieferadresse->cTel}Tel.: {$Bestellung->Lieferadresse->cTel}
-    {/if}{if $Bestellung->Lieferadresse->cMobil}Mobil: {$Bestellung->Lieferadresse->cMobil}
+    {if $Bestellung->Lieferadresse->cTel}Tel.: {$Bestellung->Lieferadresse->cTel|substr:0:2}****{$Bestellung->Lieferadresse->cTel|substr:-4}
+    {/if}{if $Bestellung->Lieferadresse->cMobil}Mobil: {$Bestellung->Lieferadresse->cMobil|substr:0:2}****{$Bestellung->Lieferadresse->cMobil|substr:-4}
 {/if}{if $Bestellung->Lieferadresse->cFax}Fax: {$Bestellung->Lieferadresse->cFax}
 {/if}{if $Bestellung->Lieferadresse->cMail}E-Mail: {$Bestellung->Lieferadresse->cMail}
 {/if}
@@ -105,7 +105,7 @@ Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}
     Wir belasten in Kürze folgendes Bankkonto mit der fälligen Summe:
 
     Kontoinhaber: {$Bestellung->Zahlungsinfo->cInhaber}
-    IBAN: {$Bestellung->Zahlungsinfo->cIBAN}
+    IBAN: ****{$Bestellung->Zahlungsinfo->cIBAN|substr:-4}
     BIC: {$Bestellung->Zahlungsinfo->cBIC}
     Bank: {$Bestellung->Zahlungsinfo->cBankName}
 

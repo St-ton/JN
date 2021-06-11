@@ -220,20 +220,20 @@ class Image
             ],
             self::TYPE_OPC                  => [
                 self::SIZE_XS => [
-                    'width'  => 480,
-                    'height' => 480
+                    'width'  => (int)$settings['bilder_opc_mini_breite'],
+                    'height' => (int)$settings['bilder_opc_mini_hoehe']
                 ],
                 self::SIZE_SM => [
-                    'width'  => 720,
-                    'height' => 720
+                    'width'  => (int)$settings['bilder_opc_klein_breite'],
+                    'height' => (int)$settings['bilder_opc_klein_hoehe']
                 ],
                 self::SIZE_MD => [
-                    'width'  => 1080,
-                    'height' => 1080
+                    'width'  => (int)$settings['bilder_opc_normal_breite'],
+                    'height' => (int)$settings['bilder_opc_normal_hoehe']
                 ],
                 self::SIZE_LG => [
-                    'width'  => 1440,
-                    'height' => 1440
+                    'width'  => (int)$settings['bilder_opc_gross_breite'],
+                    'height' => (int)$settings['bilder_opc_gross_hoehe']
                 ]
             ],
             self::TYPE_NEWS                 => [
@@ -317,6 +317,31 @@ class Image
         $filename = \str_replace($source, $replace, \mb_convert_case($filename, \MB_CASE_LOWER));
 
         return \preg_replace('/[^' . AbstractImage::REGEX_ALLOWED_CHARS . ']/', '', $filename);
+    }
+
+    /**
+     * @param array      $file
+     * @param array|null $allowed
+     * @return bool
+     */
+    public static function isImageUpload(array $file, ?array $allowed = null): bool
+    {
+        $allowed = $allowed ?? [
+                'image/jpeg',
+                'image/jpg',
+                'image/pjpeg',
+                'image/gif',
+                'image/x-png',
+                'image/png',
+                'image/bmp',
+                'image/webp'
+            ];
+        $finfo   = \finfo_open(\FILEINFO_MIME_TYPE);
+
+        return isset($file['type'], $file['error'], $file['tmp_name'])
+            && $file['error'] === \UPLOAD_ERR_OK
+            && \in_array($file['type'], $allowed, true)
+            && \in_array(\finfo_file($finfo, $file['tmp_name']), $allowed, true);
     }
 
     /**

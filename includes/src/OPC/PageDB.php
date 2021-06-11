@@ -112,7 +112,7 @@ class PageDB
      */
     public function getPublicPageRow(string $id): ?stdClass
     {
-        return $this->shopDB->getSingleObject(
+        $res = $this->shopDB->getSingleObject(
             'SELECT * FROM topcpage
                 WHERE cPageId = :pageID
                     AND dPublishFrom IS NOT NULL
@@ -121,6 +121,11 @@ class PageDB
                 ORDER BY dPublishFrom DESC',
             ['pageID' => $id]
         );
+        if ($res !== null) {
+            $res->kPage = (int)$res->kPage;
+        }
+
+        return $res;
     }
 
     /**

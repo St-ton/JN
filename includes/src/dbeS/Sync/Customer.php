@@ -174,11 +174,12 @@ final class Customer extends AbstractSync
                     SET fGuthaben = fGuthaben + ' . (float)$voucher->fWert . ' 
                     WHERE kKunde = ' . (int)$voucher->kKunde
             );
-            $this->db->query(
+            $this->db->queryPrepared(
                 'UPDATE tkunde 
                     SET fGuthaben = 0 
-                    WHERE kKunde = ' . (int)$voucher->kKunde . ' 
-                        AND fGuthaben < 0'
+                    WHERE kKunde = :cid 
+                        AND fGuthaben < 0',
+                ['cid' => (int)$voucher->kKunde]
             );
             $voucher->cLocalizedWert = Preise::getLocalizedPriceString($voucher->fWert, $defaultCurrency, false);
             $customer                = new CustomerClass((int)$voucher->kKunde);

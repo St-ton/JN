@@ -121,7 +121,8 @@ class Method implements MethodInterface
     {
         $orderId = isset($order->kBestellung)
             ? Shop::Container()->getDB()->getSingleObject(
-                'SELECT cId FROM tbestellid WHERE kBestellung = ' . (int)$order->kBestellung
+                'SELECT cId FROM tbestellid WHERE kBestellung = :oid',
+                ['oid' => (int)$order->kBestellung]
             )
             : null;
 
@@ -143,7 +144,8 @@ class Method implements MethodInterface
             $paymentID = Shop::Container()->getDB()->getSingleObject(
                 'SELECT cId
                     FROM tbestellid
-                    WHERE kBestellung = ' . (int)$order->kBestellung
+                    WHERE kBestellung = :oid',
+                ['oid' => (int)$order->kBestellung]
             );
             if ($paymentID !== null) {
                 return Shop::getURL() . '/bestellabschluss.php?i=' . $paymentID->cId;
@@ -366,7 +368,8 @@ class Method implements MethodInterface
                 "SELECT COUNT(*) AS cnt
                     FROM tbestellung
                     WHERE (cStatus = '2' || cStatus = '3' || cStatus = '4')
-                        AND kKunde = " . $customerID
+                        AND kKunde = :cid",
+                ['cid' => $customerID]
             )->cnt;
         }
 

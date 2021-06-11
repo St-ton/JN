@@ -44,7 +44,9 @@ $currentThirdLevel  = 0;
 $mainGroups         = [];
 $rootKey            = 0;
 $expired            = collect([]);
+$gettext            = Shop::Container()->getGetText();
 if (!$hasPendingUpdates) {
+    $cache                        = Shop::Container()->getCache();
     $jtlSearch                    = $db->getSingleObject(
         "SELECT kPlugin, cName
             FROM tplugin
@@ -85,7 +87,7 @@ if (!$hasPendingUpdates) {
 
                 foreach ($pluginLinks as $pluginLink) {
                     $pluginID = (int)$pluginLink->kPlugin;
-                    Shop::Container()->getGetText()->loadPluginLocale(
+                    $gettext->loadPluginLocale(
                         'base',
                         PluginHelper::getLoaderByPluginID($pluginID)->init($pluginID)
                     );
@@ -182,12 +184,11 @@ if (!$hasPendingUpdates) {
         $_SESSION['licensenoticeaccepted'] = 0;
     }
     if (Request::postVar('action') === 'disable-expired-plugins' && Form::validateToken()) {
-        $sc = new StateChanger($db, Shop::Container()->getCache());
+        $sc = new StateChanger($db, $cache);
         foreach ($_POST['pluginID'] as $pluginID) {
             $sc->deactivate((int)$pluginID);
         }
     }
-    $cache                 = Shop::Container()->getCache();
     $mapper                = new Mapper(new Manager($db, $cache));
     $checker               = new Checker(Shop::Container()->getBackendLogService(), $db, $cache);
     $updates               = $checker->getUpdates($mapper);
@@ -202,18 +203,14 @@ if (!$hasPendingUpdates) {
     }
     $_SESSION['licensenoticeaccepted'] = $licenseNoticeAccepted;
 }
-if (empty($template->version)) {
-    $adminTplVersion = '1.0.0';
-} else {
-    $adminTplVersion = $template->version;
-}
-$langTag = $_SESSION['AdminAccount']->language ?? Shop::Container()->getGetText()->getLanguage();
+
+$langTag = $_SESSION['AdminAccount']->language ?? $gettext->getLanguage();
 $smarty->assign('URL_SHOP', $shopURL)
     ->assign('expiredLicenses', $expired)
     ->assign('jtl_token', Form::getTokenInput())
     ->assign('shopURL', $shopURL)
     ->assign('adminURL', $adminURL)
-    ->assign('adminTplVersion', $adminTplVersion)
+    ->assign('adminTplVersion', empty($template->version) ? '1.0.0' : $template->version)
     ->assign('PFAD_ADMIN', PFAD_ADMIN)
     ->assign('JTL_CHARSET', JTL_CHARSET)
     ->assign('session_name', session_name())
@@ -238,7 +235,7 @@ $smarty->assign('URL_SHOP', $shopURL)
     ->assign('sprachen', LanguageHelper::getInstance()->gibInstallierteSprachen())
     ->assign('availableLanguages', LanguageHelper::getInstance()->gibInstallierteSprachen())
     ->assign('languageName', Locale::getDisplayLanguage($langTag, $langTag))
-    ->assign('languages', Shop::Container()->getGetText()->getAdminLanguages())
+    ->assign('languages', $gettext->getAdminLanguages())
     ->assign('faviconAdminURL', Shop::getFaviconURL(true))
     ->assign('cTab', Text::filterXSS(Request::verifyGPDataString('tab')))
     ->assign(

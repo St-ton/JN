@@ -125,7 +125,7 @@ class ShippingSurcharge
             'SELECT vzs.cName, s.kSprache 
                 FROM tversandzuschlag AS vz
                 JOIN tversandzuschlagsprache AS vzs USING(kVersandzuschlag) 
-                JOIN tsprache as s ON s.cISO = vzs.cISOSprache
+                JOIN tsprache AS s ON s.cISO = vzs.cISOSprache
                 WHERE vz.kVersandzuschlag = :id',
             ['id' => $id]
         );

@@ -789,8 +789,8 @@ class ProductFilter
                             || Request::verifyGPDataString($filterParam) !== ''))
                 ) {
                     $filterValue = \is_array($_GET[$filterParam])
-                        ? \array_map([$this->db, 'realEscape'], $_GET[$filterParam])
-                        : $this->db->realEscape($_GET[$filterParam]);
+                        ? \array_map([$this->db, 'escape'], $_GET[$filterParam])
+                        : $this->db->escape($_GET[$filterParam]);
                     $this->addActiveFilter($filter, $filterValue);
                     $params[$filterParam] = $filterValue;
                 }

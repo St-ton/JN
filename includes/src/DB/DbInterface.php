@@ -48,21 +48,11 @@ interface DbInterface extends \Serializable
     public function getServerInfo(): string;
 
     /**
-     * @return string
-     */
-    public function info(): string;
-
-    /**
      * get server stats
      *
      * @return string
      */
     public function getServerStats(): string;
-
-    /**
-     * @return string
-     */
-    public function stats(): string;
 
     /**
      * @return \PDO
@@ -231,7 +221,7 @@ interface DbInterface extends \Serializable
      * @param bool     $echo
      * @return int|object|array
      */
-    public function query($stmt, int $return = ReturnType::DEFAULT, bool $echo = false);
+    public function query(string $stmt, int $return = ReturnType::DEFAULT, bool $echo = false);
 
     /**
      * executes query and returns misc data
@@ -357,15 +347,9 @@ interface DbInterface extends \Serializable
      * executes a query and gives back the result
      *
      * @param string $stmt - Statement to be executed
-     * @return \PDOStatement|int
+     * @return PDOStatement|int
      */
     public function executeExQuery($stmt);
-
-    /**
-     * @param string $stmt
-     * @return \PDOStatement|int
-     */
-    public function exQuery($stmt);
 
     /**
      * Quotes a string with outer quotes for use in a query.
@@ -384,55 +368,19 @@ interface DbInterface extends \Serializable
     public function escape($string): string;
 
     /**
-     * @param string $string
-     * @return string mixed
-     */
-    public function pdoEscape($string): string;
-
-    /**
-     * @param string $string
-     * @return string
-     */
-    public function realEscape($string): string;
-
-    /**
-     * logger
-     *
-     * @param string $entry - entry to log
-     * @return $this
-     * @deprecated since 5.0.0
-     */
-    public function writeLog(string $entry): DbInterface;
-
-    /**
-     * @return mixed
-     */
-    public function _getErrorCode();
-
-    /**
      * @return mixed
      */
     public function getErrorCode();
 
     /**
-     * @return mixed
+     * @return array
      */
-    public function _getError();
-
-    /**
-     * @return mixed
-     */
-    public function getError();
+    public function getError(): array;
 
     /**
      * @return string
      */
-    public function _getErrorMessage();
-
-    /**
-     * @return string
-     */
-    public function getErrorMessage();
+    public function getErrorMessage(): string;
 
     /**
      * @return bool

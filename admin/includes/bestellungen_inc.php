@@ -58,36 +58,31 @@ function setzeAbgeholtZurueck(array $orderIDs): int
         return 1;
     }
     $orderList = implode(',', array_map('\intval', $orderIDs));
-    $customers = Shop::Container()->getDB()->getObjects(
+    $customers = Shop::Container()->getDB()->getCollection(
         'SELECT kKunde
             FROM tbestellung
-            WHERE kBestellung IN(' . $orderList . ")
+            WHERE kBestellung IN (' . $orderList . ")
                 AND cAbgeholt = 'Y'"
-    );
+    )->pluck('kKunde')->map(static function ($item) {
+        return (int)$item;
+    })->unique()->toArray();
     if (count($customers) > 0) {
-        $customerIDs = [];
-        foreach ($customers as $customer) {
-            $customer->kKunde = (int)$customer->kKunde;
-            if (!in_array($customer->kKunde, $customerIDs, true)) {
-                $customerIDs[] = $customer->kKunde;
-            }
-        }
         Shop::Container()->getDB()->query(
             "UPDATE tkunde
                 SET cAbgeholt = 'N'
-                WHERE kKunde IN(" . implode(',', $customerIDs) . ')'
+                WHERE kKunde IN (" . implode(',', $customers) . ')'
         );
     }
     Shop::Container()->getDB()->query(
         "UPDATE tbestellung
             SET cAbgeholt = 'N'
-            WHERE kBestellung IN(" . $orderList . ")
+            WHERE kBestellung IN (" . $orderList . ")
                 AND cAbgeholt = 'Y'"
     );
     Shop::Container()->getDB()->query(
         "UPDATE tzahlungsinfo
             SET cAbgeholt = 'N'
-            WHERE kBestellung IN(" . $orderList . ")
+            WHERE kBestellung IN (" . $orderList . ")
                 AND cAbgeholt = 'Y'"
     );
 

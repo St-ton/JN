@@ -3,6 +3,7 @@
 use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Helpers\Text;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -20,7 +21,7 @@ if (Request::postInt('einstellungen') > 0) {
     );
 }
 if (Request::postInt('emailblacklist') === 1 && Form::validateToken()) {
-    $addresses = explode(';', $_POST['cEmail']);
+    $addresses = explode(';', Text::filterXSS($_POST['cEmail']));
     if (count($addresses) > 0) {
         $db->query('TRUNCATE temailblacklist');
         foreach ($addresses as $mail) {
@@ -40,7 +41,7 @@ $blocked   = $db->getObjects(
 );
 
 $smarty->assign('blacklist', $blacklist)
-       ->assign('blocked', $blocked)
-       ->assign('config', getAdminSectionSettings(CONF_EMAILBLACKLIST))
-       ->assign('step', $step)
-       ->display('emailblacklist.tpl');
+    ->assign('blocked', $blocked)
+    ->assign('config', getAdminSectionSettings(CONF_EMAILBLACKLIST))
+    ->assign('step', $step)
+    ->display('emailblacklist.tpl');

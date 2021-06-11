@@ -186,3 +186,6 @@ msgstr "Nur auf Artikellisten"
 
 msgid "Auf allen Seiten"
 msgstr "Auf allen Seiten"
+
+msgid "Suchfeld in Filtern anzeigen ab x Einträgen"
+msgstr "Suchfeld in Filtern anzeigen ab x Einträgen"

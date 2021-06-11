@@ -5,11 +5,9 @@ namespace JTL\Backend;
 use ArrayIterator;
 use Countable;
 use Exception;
-use Illuminate\Support\Collection;
 use IteratorAggregate;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
-use JTL\Exportformat;
+use JTL\Export\SyntaxChecker;
 use JTL\IO\IOResponse;
 use JTL\Link\Admin\LinkAdmin;
 use JTL\Mail\Template\Model;
@@ -49,7 +47,7 @@ class Notification implements IteratorAggregate, Countable
 
     /**
      * @param DbInterface|null $db
-     * @return $this
+     * @return Notification
      */
     public static function getInstance(DbInterface $db = null): self
     {
@@ -359,7 +357,7 @@ class Notification implements IteratorAggregate, Countable
         }
 
         $hash = 'hasUncheckedExportTemplates';
-        if (($expSyntaxErrorCount = $status->getExportFormatErrorCount(Exportformat::SYNTAX_NOT_CHECKED, $hash)) > 0) {
+        if (($expSyntaxErrorCount = $status->getExportFormatErrorCount(SyntaxChecker::SYNTAX_NOT_CHECKED, $hash)) > 0) {
             $this->add(
                 NotificationEntry::TYPE_WARNING,
                 __('getExportFormatUncheckedCountTitle'),
@@ -444,23 +442,12 @@ class Notification implements IteratorAggregate, Countable
     protected function updateNotifications(IOResponse $response, bool $flushCache = false): void
     {
         Shop::fire('backend.notification', $this->buildDefault($flushCache));
-        /** @var Collection $res */
-        $res = $this->db->queryPrepared(
+        $res    = $this->db->getCollection(
             'SELECT notification_hash
                 FROM tnotificationsignore
                 WHERE user_id = :userID', // AND NOW() < DATE_ADD(created, INTERVAL 7 DAY)',
-            [
-                'userID' => Shop::Container()->getAdminAccount()->getID(),
-            ],
-            ReturnType::COLLECTION
+            ['userID' => Shop::Container()->getAdminAccount()->getID()]
         );
-
-        if ($res === 0) {
-            $response->assignDom('notify-drop', 'innerHTML', \getNotifyDropIO()['tpl']);
-
-            return;
-        }
-
         $hashes = $res->keyBy('notification_hash');
         foreach ($this->array as $notificationEntry) {
             if (($hash = $notificationEntry->getHash()) !== null && $hashes->has($hash)) {
@@ -471,8 +458,7 @@ class Notification implements IteratorAggregate, Countable
         if ($hashes->count() > 0) {
             $this->db->query(
                 "DELETE FROM tnotificationsignore
-                    WHERE notification_hash IN ('" . $hashes->implode('notification_hash', "', '") . "')",
-                ReturnType::DEFAULT
+                    WHERE notification_hash IN ('" . $hashes->implode('notification_hash', "', '") . "')"
             );
         }
 

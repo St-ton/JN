@@ -112,3 +112,6 @@ msgstr "Exportformat-Sytnax prüfen"
 
 msgid "Syntax check fail"
 msgstr "Exportformat Syntaxprüfung fehlgeschlagen"
+
+msgid "File %s not found."
+msgstr "Datei %s wurde nicht gefunden."

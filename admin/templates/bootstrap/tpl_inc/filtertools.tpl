@@ -4,6 +4,7 @@
 
 <div class="toolbar">
     <form method="get">
+        {$jtl_token}
         {foreach $cParam_arr as $cParamName => $cParamValue}
             <input type="hidden" name="{$cParamName}" value="{$cParamValue}">
         {/foreach}

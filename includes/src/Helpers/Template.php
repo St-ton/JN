@@ -278,7 +278,6 @@ class Template
         if (!$xml || !isset($xml->Lessfiles)) {
             return $lessFiles;
         }
-        /** @var SimpleXMLElement $oXMLTheme */
         foreach ($xml->Lessfiles->THEME as $oXMLTheme) {
             $theme             = new stdClass();
             $theme->cName      = (string)$oXMLTheme->attributes()->Name;

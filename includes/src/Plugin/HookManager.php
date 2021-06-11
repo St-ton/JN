@@ -3,6 +3,7 @@
 namespace JTL\Plugin;
 
 use DebugBar\DataCollector\TimeDataCollector;
+use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Events\Dispatcher;
@@ -94,7 +95,6 @@ class HookManager
         }
         global $smarty, $args_arr, $oPlugin;
 
-        $args_arr = $args;
         $this->timer->startMeasure('shop.hook.' . $hookID);
         $this->dispatcher->fire('shop.hook.' . $hookID, \array_merge((array)$hookID, $args));
         if (empty($this->hookList[$hookID])) {
@@ -107,6 +107,7 @@ class HookManager
             if ($plugin === null) {
                 continue;
             }
+            $args_arr            = $args;
             $plugin->nCalledHook = $hookID;
             $oPlugin             = $plugin;
             $file                = $item->cDateiname;
@@ -147,8 +148,9 @@ class HookManager
         $plugin = Shop::get('oplugin_' . $id);
         if ($plugin === null) {
             $loader = Helper::getLoaderByPluginID($id, $this->db, $this->cache);
-            $plugin = $loader->init($id);
-            if ($plugin === null) {
+            try {
+                $plugin = $loader->init($id);
+            } catch (InvalidArgumentException $e) {
                 return null;
             }
             if (!Helper::licenseCheck($plugin)) {

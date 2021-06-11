@@ -51,8 +51,7 @@ class Migration_20210312142136 extends Migration implements IMigration
                     'kOptinClass' => $optin->kOptinClass,
                     'cRefData'    => $optin->cRefData,
                     'kOptin'      => $optin->kOptin
-                ],
-                ReturnType::AFFECTED_ROWS
+                ]
             );
         }
     }

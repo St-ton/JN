@@ -11,9 +11,14 @@
     padding: 10%;
     text-decoration: none;
     background-size: cover;
+    background-position: center;
 
     &:not(:hover) {
       color: #fff;
     }
+  }
+  .opc-Video-iframe-wrapper {
+    position: relative;
+    display: inline-block;
   }
 }

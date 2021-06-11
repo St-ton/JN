@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Alert\Alert;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Pagination\Pagination;
@@ -13,6 +12,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('EXPORT_SITEMAP_VIEW', true, true);
 $alertHelper = Shop::Container()->getAlertService();
+$db          = Shop::Container()->getDB();
 if (!file_exists(PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml') && is_writable(PFAD_ROOT . PFAD_EXPORT)) {
     @touch(PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml');
 }
@@ -40,22 +40,20 @@ if (Request::postInt('einstellungen') > 0) {
 } elseif (Request::verifyGPCDataInt('download_edit') === 1) {
     $trackers = array_map('\intval', Request::postVar('kSitemapTracker', []));
     if (count($trackers) > 0) {
-        Shop::Container()->getDB()->query(
+        $db->query(
             'DELETE
                 FROM tsitemaptracker
-                WHERE kSitemapTracker IN (' . implode(',', $trackers) . ')',
-            ReturnType::AFFECTED_ROWS
+                WHERE kSitemapTracker IN (' . implode(',', $trackers) . ')'
         );
     }
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSitemapDLDelete'), 'successSitemapDLDelete');
 } elseif (Request::verifyGPCDataInt('report_edit') === 1) {
     $reports = array_map('\intval', Request::postVar('kSitemapReport', []));
     if (count($reports) > 0) {
-        Shop::Container()->getDB()->query(
+        $db->query(
             'DELETE
                 FROM tsitemapreport
-                WHERE kSitemapReport IN (' . implode(',', $reports) . ')',
-            ReturnType::AFFECTED_ROWS
+                WHERE kSitemapReport IN (' . implode(',', $reports) . ')'
         );
     }
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSitemapReportDelete'), 'successSitemapReportDelete');
@@ -65,10 +63,10 @@ $yearDownloads = Request::verifyGPCDataInt('nYear_downloads');
 $yearReports   = Request::verifyGPCDataInt('nYear_reports');
 
 if (Request::postVar('action') === 'year_downloads_delete' && Form::validateToken()) {
-    Shop::Container()->getDB()->query(
+    $db->queryPrepared(
         'DELETE FROM tsitemaptracker
-            WHERE YEAR(tsitemaptracker.dErstellt) = ' . $yearDownloads,
-        ReturnType::AFFECTED_ROWS
+            WHERE YEAR(tsitemaptracker.dErstellt) = :yr',
+        ['yr' => $yearDownloads]
     );
     $alertHelper->addAlert(
         Alert::TYPE_SUCCESS,
@@ -79,10 +77,10 @@ if (Request::postVar('action') === 'year_downloads_delete' && Form::validateToke
 }
 
 if (Request::postVar('action') === 'year_reports_delete' && Form::validateToken()) {
-    Shop::Container()->getDB()->query(
+    $db->queryPrepared(
         'DELETE FROM tsitemapreport
-            WHERE YEAR(tsitemapreport.dErstellt) = ' . $yearReports,
-        ReturnType::AFFECTED_ROWS
+            WHERE YEAR(tsitemapreport.dErstellt) = :yr',
+        ['yr' => $yearReports]
     );
     $alertHelper->addAlert(
         Alert::TYPE_SUCCESS,
@@ -92,14 +90,13 @@ if (Request::postVar('action') === 'year_reports_delete' && Form::validateToken(
     $yearReports = 0;
 }
 
-$sitemapDownloadsPerYear = Shop::Container()->getDB()->query(
+$sitemapDownloadsPerYear = $db->getObjects(
     'SELECT YEAR(dErstellt) AS year, COUNT(*) AS count
         FROM tsitemaptracker
         GROUP BY 1
-        ORDER BY 1 DESC',
-    ReturnType::ARRAY_OF_OBJECTS
+        ORDER BY 1 DESC'
 );
-if (!isset($sitemapDownloadsPerYear) || count($sitemapDownloadsPerYear) === 0) {
+if (count($sitemapDownloadsPerYear) === 0) {
     $sitemapDownloadsPerYear[] = (object)[
         'year'  => date('Y'),
         'count' => 0,
@@ -113,28 +110,27 @@ $downloadPagination = (new Pagination('SitemapDownload'))
         return (int)$item->year === $yearDownloads ? (int)$item->count : $carry;
     }, 0))
     ->assemble();
-$sitemapDownloads   = Shop::Container()->getDB()->query(
+$sitemapDownloads   = $db->getObjects(
     "SELECT tsitemaptracker.*, IF(tsitemaptracker.kBesucherBot = 0, '', 
         IF(CHAR_LENGTH(tbesucherbot.cUserAgent) = 0, tbesucherbot.cName, tbesucherbot.cUserAgent)) AS cBot, 
         DATE_FORMAT(tsitemaptracker.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_DE
         FROM tsitemaptracker
         LEFT JOIN tbesucherbot 
             ON tbesucherbot.kBesucherBot = tsitemaptracker.kBesucherBot
-        WHERE YEAR(tsitemaptracker.dErstellt) = " . $yearDownloads . '
+        WHERE YEAR(tsitemaptracker.dErstellt) = :yr
         ORDER BY tsitemaptracker.dErstellt DESC
-        LIMIT ' . $downloadPagination->getLimitSQL(),
-    ReturnType::ARRAY_OF_OBJECTS
+        LIMIT " . $downloadPagination->getLimitSQL(),
+    ['yr' => $yearDownloads]
 );
 
 // Sitemap Reports
-$reportYears = Shop::Container()->getDB()->query(
+$reportYears = $db->getObjects(
     'SELECT YEAR(dErstellt) AS year, COUNT(*) AS count
         FROM tsitemapreport
         GROUP BY 1
-        ORDER BY 1 DESC',
-    ReturnType::ARRAY_OF_OBJECTS
+        ORDER BY 1 DESC'
 );
-if (!isset($reportYears) || count($reportYears) === 0) {
+if (count($reportYears) === 0) {
     $reportYears[] = (object)[
         'year'  => date('Y'),
         'count' => 0,
@@ -148,17 +144,17 @@ $pagination     = (new Pagination('SitemapReport'))
         return (int)$item->year === $yearReports ? (int)$item->count : $carry;
     }, 0))
     ->assemble();
-$sitemapReports = Shop::Container()->getDB()->query(
+$sitemapReports = $db->getObjects(
     "SELECT tsitemapreport.*, DATE_FORMAT(tsitemapreport.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_DE
         FROM tsitemapreport
-        WHERE YEAR(tsitemapreport.dErstellt) = " . $yearReports . '
+        WHERE YEAR(tsitemapreport.dErstellt) = :yr
         ORDER BY tsitemapreport.dErstellt DESC
-        LIMIT ' . $pagination->getLimitSQL(),
-    ReturnType::ARRAY_OF_OBJECTS
+        LIMIT " . $pagination->getLimitSQL(),
+    ['yr' => $yearReports]
 );
 foreach ($sitemapReports as $report) {
     if (isset($report->kSitemapReport) && $report->kSitemapReport > 0) {
-        $report->oSitemapReportFile_arr = Shop::Container()->getDB()->selectAll(
+        $report->oSitemapReportFile_arr = $db->selectAll(
             'tsitemapreportfile',
             'kSitemapReport',
             (int)$report->kSitemapReport

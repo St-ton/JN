@@ -3,7 +3,6 @@
 namespace JTL\dbeS\Push;
 
 use JTL\Customer\Customer;
-use JTL\DB\ReturnType;
 use JTL\Shop;
 
 /**
@@ -20,16 +19,15 @@ final class Customers extends AbstractPush
     public function getData()
     {
         $xml           = [];
-        $customers     = $this->db->query(
+        $customers     = $this->db->getArrays(
             "SELECT kKunde, kKundengruppe, kSprache, cKundenNr, cPasswort, cAnrede, cTitel, cVorname,
             cNachname, cFirma, cStrasse, cHausnummer, cAdressZusatz, cPLZ, cOrt, cBundesland, cLand, cTel,
             cMobil, cFax, cMail, cUSTID, cWWW, fGuthaben, cNewsletter, dGeburtstag, fRabatt,
             cHerkunft, dErstellt, dVeraendert, cAktiv, cAbgeholt,
             date_format(dGeburtstag, '%d.%m.%Y') AS dGeburtstag_formatted, nRegistriert, cZusatz
-            FROM tkunde
-                WHERE cAbgeholt = 'N'
-                ORDER BY kKunde LIMIT " . self::LIMIT_CUSTOMERS,
-            ReturnType::ARRAY_OF_ASSOC_ARRAYS
+                FROM tkunde
+                    WHERE cAbgeholt = 'N'
+                    ORDER BY kKunde LIMIT " . self::LIMIT_CUSTOMERS
         );
         $customerCount = \count($customers);
         if ($customerCount === 0) {
@@ -49,11 +47,10 @@ final class Customers extends AbstractPush
             $additional = $customer['cZusatz'];
             unset($customer['cZusatz']);
             $customer['cZusatz']         = \trim($crypto->decryptXTEA($additional));
-            $customer['tkundenattribut'] = $this->db->query(
+            $customer['tkundenattribut'] = $this->db->getArrays(
                 'SELECT * 
-                FROM tkundenattribut 
-                WHERE kKunde = ' . (int)$attribute['kKunde'],
-                ReturnType::ARRAY_OF_ASSOC_ARRAYS
+                    FROM tkundenattribut 
+                    WHERE kKunde = ' . (int)$attribute['kKunde']
             );
             foreach ($customer['tkundenattribut'] as $o => $attr) {
                 $customer['tkundenattribut'][$o . ' attr'] = $this->buildAttributes($attr);

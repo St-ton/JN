@@ -166,3 +166,9 @@ label {
 	margin-left: map-get($spacers, 2);
 	margin-right: map-get($spacers, 2);
 }
+
+.input-group-sm {
+	.input-group-prepend {
+		height: $input-height-sm;
+	}
+}

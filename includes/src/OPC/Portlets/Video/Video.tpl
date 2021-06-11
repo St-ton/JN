@@ -7,17 +7,17 @@
             {$style = $style|cat:$instance->getProperty('video-width')}
             {$style = $style|cat:'px;height:'}
             {$style = $style|cat:$instance->getProperty('video-height')}
-            {$style = $style|cat:'px'}
+            {$style = $style|cat:'px;'}
         {/if}
 
         {$src = $portlet->getPreviewImageUrl($instance)}
 
         {if $src !== null && $instance->getProperty('video-vendor') === 'youtube'}
             {image src=$src alt='YouTube Video' fluid=true style=$style}
-            <div class="give-consent-preview" style="background-image: url({$portlet->getPreviewOverlayUrl()})"></div>
+            <div class="give-consent-preview" style="{$style}background-image: url({$portlet->getPreviewOverlayUrl()})"></div>
         {elseif $src !== null && $instance->getProperty('video-vendor') === 'vimeo'}
             {image src=$src alt='Vimeo Video' fluid=true style=$style}
-            <div class="give-consent-preview" style="background-image: url({$portlet->getPreviewOverlayUrl()})"></div>
+            <div class="give-consent-preview" style="{$style}background-image: url({$portlet->getPreviewOverlayUrl()})"></div>
         {else}
             <div>
                 <i class="fas fa-film"></i>
@@ -33,8 +33,7 @@
             <label>{$instance->getProperty('video-title')|escape:'html'}</label>
         {/if}
         {if $instance->getProperty('video-vendor') === 'youtube'}
-            <div{if $instance->getProperty('video-responsive')}
-                    class="embed-responsive embed-responsive-16by9"{/if}>
+            <div class="opc-Video-iframe-wrapper {if $instance->getProperty('video-responsive')}embed-responsive embed-responsive-16by9{/if}">
                 <iframe {strip}
                     data-src="https://www.youtube-nocookie.com/embed/{$instance->getProperty('video-yt-id')|escape:'html'}
                     ?controls={$instance->getProperty('video-yt-controls')}
@@ -65,8 +64,7 @@
                 </a>
             </div>
         {elseif $instance->getProperty('video-vendor') === 'vimeo'}
-            <div{if $instance->getProperty('video-responsive')}
-                    class="embed-responsive embed-responsive-16by9"{/if}>
+            <div class="opc-Video-iframe-wrapper {if $instance->getProperty('video-responsive')}embed-responsive embed-responsive-16by9{/if}">
                 <iframe {strip}
                     data-src="https://player.vimeo.com/video/{$instance->getProperty('video-vim-id')|escape:'html'}
                     ?color={$instance->getProperty('video-vim-color')|replace:'#':''}
@@ -94,7 +92,7 @@
                 </a>
             </div>
         {else}
-            <div{if $instance->getProperty('video-responsive')} class="embed-responsive embed-responsive-16by9"{/if}>
+            <div class="opc-Video-iframe-wrapper {if $instance->getProperty('video-responsive')}embed-responsive embed-responsive-16by9{/if}">
                 <video {if $instance->getProperty('video-width')}width="{$instance->getProperty('video-width')}"{/if}
                        {if $instance->getProperty('video-height')}height="{$instance->getProperty('video-height')}"{/if}
                        {if $instance->getProperty('video-local-autoplay')} autoplay{/if}

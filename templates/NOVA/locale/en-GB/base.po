@@ -186,3 +186,6 @@ msgstr "Only on item lists"
 
 msgid "Auf allen Seiten"
 msgstr "On all pages"
+
+msgid "Suchfeld in Filtern anzeigen ab x Einträgen"
+msgstr "Show search in filters if filter has more than x items"

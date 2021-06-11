@@ -26,6 +26,8 @@ class Shopinfo extends AbstractWidget
             ->assign('strTplVersion', $strTplVersion)
             ->assign('strUpdated', $strUpdated)
             ->assign('strMinorVersion', $strMinorVersion);
+
+        $this->setPermission('DIAGNOSTIC_VIEW');
     }
 
     /**

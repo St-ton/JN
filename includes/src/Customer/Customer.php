@@ -6,7 +6,6 @@ use DateInterval;
 use DateTime;
 use Exception;
 use JTL\Catalog\Product\Preise;
-use JTL\DB\ReturnType;
 use JTL\GeneralDataProtection\Journal;
 use JTL\Helpers\Date;
 use JTL\Helpers\Form;
@@ -708,10 +707,7 @@ class Customer
      */
     public function verschluesselAlleKunden(): self
     {
-        foreach (Shop::Container()->getDB()->query(
-            'SELECT * FROM tkunde',
-            ReturnType::ARRAY_OF_OBJECTS
-        ) as $customer) {
+        foreach (Shop::Container()->getDB()->getObjects('SELECT * FROM tkunde') as $customer) {
             if ($customer->kKunde > 0) {
                 unset($tmp);
                 $tmp = new self((int)$customer->kKunde);
@@ -838,15 +834,12 @@ class Customer
                 'kKunde'   => $this->kKunde,
                 'cKey'     => $key,
                 'dExpires' => $expires->format('Y-m-d H:i:s'),
-            ],
-            ReturnType::AFFECTED_ROWS
+            ]
         );
 
-        $linkParams             = ['fpwh' => $key];
         $obj                    = new stdClass();
         $obj->tkunde            = $this;
-        $obj->passwordResetLink = $linkHelper->getStaticRoute('pass.php') .
-            '?' . \http_build_query($linkParams, null, '&');
+        $obj->passwordResetLink = $linkHelper->getStaticRoute('pass.php') . '?' . \http_build_query(['fpwh' => $key]);
         $obj->cHash             = $key;
         $obj->neues_passwort    = 'Es ist leider ein Fehler aufgetreten. Bitte kontaktieren Sie uns.';
 
@@ -908,38 +901,40 @@ class Customer
     {
         if (($languageID > 0 || $customerID > 0) && $salutation !== '') {
             if ($languageID === 0 && $customerID > 0) {
-                $customer = Shop::Container()->getDB()->queryPrepared(
+                $customer = Shop::Container()->getDB()->getSingleObject(
                     'SELECT kSprache
                         FROM tkunde
                         WHERE kKunde = :cid',
-                    ['cid' => $customerID],
-                    ReturnType::SINGLE_OBJECT
+                    ['cid' => $customerID]
                 );
-                if (isset($customer->kSprache) && $customer->kSprache > 0) {
+                if ($customer !== null && $customer->kSprache > 0) {
                     $languageID = (int)$customer->kSprache;
                 }
             }
+            $lang     = null;
             $langCode = '';
-            if ($languageID > 0) { // Kundensprache, falls gesetzt
-                $lang = Shop::Lang()->getLanguageByID($languageID);
-                if ($lang !== null && $lang->kSprache > 0) {
+            if ($languageID > 0) { // Kundensprache, falls gesetzt und gültig
+                try {
+                    $lang     = Shop::Lang()->getLanguageByID($languageID);
                     $langCode = $lang->cISO;
+                } catch (\Exception $e) {
+                    $lang = null;
                 }
-            } else { // Ansonsten Standardsprache
+            }
+            if ($lang === null) { // Ansonsten Standardsprache
                 $lang     = Shop::Lang()->getDefaultLanguage();
                 $langCode = $lang->cISO ?? '';
             }
-            $value = Shop::Container()->getDB()->queryPrepared(
+            $value = Shop::Container()->getDB()->getSingleObject(
                 'SELECT tsprachwerte.cWert
                     FROM tsprachwerte
                     JOIN tsprachiso
                         ON tsprachiso.cISO = :ciso
                     WHERE tsprachwerte.kSprachISO = tsprachiso.kSprachISO
                         AND tsprachwerte.cName = :cname',
-                ['ciso' => $langCode, 'cname' => $salutation === 'm' ? 'salutationM' : 'salutationW'],
-                ReturnType::SINGLE_OBJECT
+                ['ciso' => $langCode, 'cname' => $salutation === 'm' ? 'salutationM' : 'salutationW']
             );
-            if (isset($value->cWert) && $value->cWert !== '') {
+            if ($value !== null && $value->cWert !== '') {
                 $salutation = $value->cWert;
             }
         }
@@ -1019,19 +1014,18 @@ class Customer
         $db               = Shop::Container()->getDB();
         $customerID       = $this->getID();
 
-        $openOrders               = $db->queryPrepared(
+        $openOrders               = $db->getSingleObject(
             'SELECT COUNT(kBestellung) AS orderCount
-                    FROM tbestellung
-                    WHERE cStatus NOT IN (:orderSent, :orderCanceled)
-                        AND kKunde = :customerId',
+                FROM tbestellung
+                WHERE cStatus NOT IN (:orderSent, :orderCanceled)
+                    AND kKunde = :customerId',
             [
                 'customerId'    => $customerID,
                 'orderSent'     => \BESTELLUNG_STATUS_VERSANDT,
                 'orderCanceled' => \BESTELLUNG_STATUS_STORNO,
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
-        $ordersInCancellationTime = $db->queryPrepared(
+        $ordersInCancellationTime = $db->getSingleObject(
             'SELECT COUNT(kBestellung) AS orderCount
                     FROM tbestellung
                     WHERE kKunde = :customerId
@@ -1041,8 +1035,7 @@ class Customer
                 'customerId'       => $customerID,
                 'orderSent'        => \BESTELLUNG_STATUS_VERSANDT,
                 'cancellationTime' => $cancellationTime,
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
 
         if (!empty($openOrders->orderCount) || !empty($ordersInCancellationTime->orderCount)) {
@@ -1086,7 +1079,38 @@ class Customer
         $db->delete('tlieferadresse', 'kKunde', $customerID);
         $db->delete('trechnungsadresse', 'kKunde', $customerID);
         $db->delete('tkundenattribut', 'kKunde', $customerID);
-        $db->delete('tkunde', 'kKunde', $customerID);
+        $db->update('tkunde', 'kKunde', $customerID, (object)[
+             'cKundenNr'     => $anonymous,
+             'cPasswort'     => '',
+             'cAnrede'       => '',
+             'cTitel'        => '',
+             'cVorname'      => $anonymous,
+             'cNachname'     => $anonymous,
+             'cFirma'        => '',
+             'cZusatz'       => '',
+             'cStrasse'      => '',
+             'cHausnummer'   => '',
+             'cAdressZusatz' => '',
+             'cPLZ'          => '',
+             'cOrt'          => '',
+             'cBundesland'   => '',
+             'cLand'         => '',
+             'cTel'          => '',
+             'cMobil'        => '',
+             'cFax'          => '',
+             'cMail'         => $anonymous,
+             'cUSTID'        => '',
+             'cWWW'          => '',
+             'cSperre'       => 'Y',
+             'fGuthaben'     => 0,
+             'cNewsletter'   => 'N',
+             'dGeburtstag'   => '_DBNULL_',
+             'fRabatt'       => 0,
+             'cHerkunft'     => '',
+             'dVeraendert'   => 'now()',
+             'cAktiv'        => 'N',
+             'nRegistriert'  => 0,
+        ]);
         $db->delete('tkundendatenhistory', 'kKunde', $customerID);
         $db->delete('tkundenkontodaten', 'kKunde', $customerID);
         $db->delete('tzahlungsinfo', 'kKunde', $customerID);
@@ -1103,8 +1127,7 @@ class Customer
             'DELETE FROM tnewsletterempfaenger
                 WHERE cEmail = :email
                     OR kKunde = :customerID',
-            ['email' => $this->cMail, 'customerID' => $customerID],
-            ReturnType::AFFECTED_ROWS
+            ['email' => $this->cMail, 'customerID' => $customerID]
         );
 
         $obj            = new stdClass();
@@ -1139,8 +1162,7 @@ class Customer
                 LEFT JOIN twunschlisteversand
                     ON twunschlisteversand.kWunschliste = twunschliste.kWunschliste
                 WHERE twunschliste.kKunde = :customerID',
-            ['customerID' => $customerID],
-            ReturnType::DEFAULT
+            ['customerID' => $customerID]
         );
         $db->queryPrepared(
             'DELETE twarenkorbpers, twarenkorbperspos, twarenkorbpersposeigenschaft
@@ -1150,8 +1172,7 @@ class Customer
                 LEFT JOIN twarenkorbpersposeigenschaft
                     ON twarenkorbpersposeigenschaft.kWarenkorbPersPos = twarenkorbperspos.kWarenkorbPersPos
                 WHERE twarenkorbpers.kKunde = :customerID',
-            ['customerID' => $customerID],
-            ReturnType::DEFAULT
+            ['customerID' => $customerID]
         );
 
         $logMessage = \sprintf('Account with ID kKunde = %s deleted', $customerID);

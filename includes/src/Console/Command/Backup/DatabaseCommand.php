@@ -38,8 +38,12 @@ class DatabaseCommand extends Command
             $file = $updater->createSqlDumpFile($compress);
             $updater->createSqlDump($file, $compress);
             $io->success('SQL-Dump "' . $file . '" created.');
+
+            return 0;
         } catch (\Exception $e) {
             $io->error($e->getMessage());
+
+            return 1;
         }
     }
 }

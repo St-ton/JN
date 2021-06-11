@@ -4,7 +4,6 @@ namespace JTL\Optin;
 
 use JTL\Alert\Alert;
 use JTL\CheckBox;
-use JTL\DB\ReturnType;
 use JTL\Exceptions\InvalidInputException;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -320,8 +319,7 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                 'UPDATE tnewsletterempfaenger, tkunde
                 SET tnewsletterempfaenger.kKunde = tkunde.kKunde
                 WHERE tkunde.cMail = tnewsletterempfaenger.cEmail
-                    AND tnewsletterempfaenger.kKunde = 0',
-                ReturnType::DEFAULT
+                    AND tnewsletterempfaenger.kKunde = 0'
             );
             $upd           = new stdClass();
             $upd->dOptCode = 'NOW()';

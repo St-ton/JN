@@ -3,6 +3,7 @@
 use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Helpers\Text;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -14,10 +15,11 @@ $db = Shop::Container()->getDB();
 setzeSprache();
 $languageID = (int)$_SESSION['editLanguageID'];
 if (Request::postInt('einstellungen') === 1 && Form::validateToken()) {
-    saveAdminSectionSettings(CONF_METAANGABEN, $_POST);
-    $title     = $_POST['Title'];
-    $desc      = $_POST['Meta_Description'];
-    $metaDescr = $_POST['Meta_Description_Praefix'];
+    $postData = Text::filterXSS($_POST);
+    saveAdminSectionSettings(CONF_METAANGABEN, $postData);
+    $title     = $postData['Title'];
+    $desc      = $postData['Meta_Description'];
+    $metaDescr = $postData['Meta_Description_Praefix'];
     $db->delete(
         'tglobalemetaangaben',
         ['kSprache', 'kEinstellungenSektion'],

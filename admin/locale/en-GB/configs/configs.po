@@ -848,12 +848,6 @@ msgstr "Show hazard sign for item"
 msgid "adr_hazard_display_desc"
 msgstr "Specify whether the European ADR hazard sign is shown in the item. For this purpose, the UN number and the hazard identification number must be saved in JTL-Wawi."
 
-msgid "artikeldetails_variationskombikind_bildvorschau_name"
-msgstr "Show image previews with child items"
-
-msgid "artikeldetails_variationskombikind_bildvorschau_desc"
-msgstr "Specify whether to display thumbnails for child items in the item overview. If there are many child items, this may lead to long loading times."
-
 msgid "artikeldetails_fragezumprodukt_anzeigen_name"
 msgstr "Show form with questions about item"
 
@@ -1214,6 +1208,18 @@ msgstr "Preselected country"
 msgid "lieferadresse_abfragen_standardland_desc"
 msgstr "Specify the ISO code for the country that is to be preselected, e.g. DE for Germany or AT for Austria."
 
+msgid "lieferadresse_abfragen_firma_name"
+msgstr "Prompt company name"
+
+msgid "lieferadresse_abfragen_firma_desc"
+msgstr "Specify whether to prompt the company name."
+
+msgid "lieferadresse_abfragen_firmazusatz_name"
+msgstr "Prompt company 2"
+
+msgid "lieferadresse_abfragen_firmazusatz_desc"
+msgstr "Specify whether to prompt the information entered into Company 2."
+
 msgid "shop_ustid_name"
 msgstr "VAT ID of online shop"
 
@@ -1273,6 +1279,12 @@ msgstr "Combine current basket with saved basket"
 
 msgid "warenkorb_warenkorb2pers_merge_desc"
 msgstr "Specify whether to combine the current basket of a customer with their already saved baskets."
+
+msgid "warenkorb_gesamtgewicht_anzeigen_name"
+msgstr "Show total weight"
+
+msgid "warenkorb_gesamtgewicht_anzeigen_desc"
+msgstr "Specify whether to display the total weight of all items in the basket."
 
 msgid "bestellvorgang_kaufabwicklungsmethode_name"
 msgstr "Checkout method"
@@ -1489,6 +1501,12 @@ msgstr "\"Top rated\" requires average rating of"
 
 msgid "boxen_topbewertet_minsterne_desc"
 msgstr "Specify the minimum number of stars with which an item must be rated on average to be considered as \"Top rated\"."
+
+msgid "box_hersteller_anzahl_anzeige_name"
+msgstr "Number of displayed items"
+
+msgid "box_hersteller_anzahl_anzeige_desc"
+msgstr "Specify how many items are to be displayed in the box. Specify 0 to show all manufcaturers."
 
 msgid "bilder_kategorien_breite_name"
 msgstr "Category images: width"
@@ -1934,6 +1952,12 @@ msgstr "Escaping of ;"
 msgid "exportformate_semikolon_desc"
 msgstr "You can escape these characters if required."
 
+msgid "exportformate_line_ending_name"
+msgstr "Line ending"
+
+msgid "exportformate_line_ending_desc"
+msgstr ""
+
 msgid "kontakt_abfragen_anrede_name"
 msgstr "Prompt title"
 
@@ -2144,12 +2168,6 @@ msgstr "Column width for item"
 msgid "vergleichsliste_spaltengroesse_desc"
 msgstr "Specify the width in pixels of the item column in the comparison list."
 
-msgid "vergleichsliste_spaltengroesseattribut_name"
-msgstr "Column width for attributes"
-
-msgid "vergleichsliste_spaltengroesseattribut_desc"
-msgstr "Specify the width in pixels of the item attributes column in the comparison list."
-
 msgid "vergleichsliste_target_name"
 msgstr "Position of comparison list"
 
@@ -2161,6 +2179,12 @@ msgstr "Use review system"
 
 msgid "bewertung_anzeigen_desc"
 msgstr "Specify whether the option of giving a review is displayed in the item details."
+
+msgid "bewertung_alle_sprachen_name"
+msgstr "Show all languages"
+
+msgid "bewertung_alle_sprachen_desc"
+msgstr "Specifies whether review texts are always displayed regardless of the language in which they were written (Yes) or whether only reviews written in the language that match the current front-end language are displayed."
 
 msgid "bewertung_freischalten_name"
 msgstr "Activate customer reviews"
@@ -2408,6 +2432,12 @@ msgstr "Allow filtering by characteristics"
 msgid "merkmalfilter_verwenden_desc"
 msgstr "Specify whether to display characteristics filters. These options are only partially supported by the NOVA template. Please select \"Yes, in content area and in navigation box\" or \"No\" if you are using NOVA."
 
+msgid "merkmalfilter_trefferanzahl_anzeigen_name"
+msgstr "Show number of results for characteristics filters"
+
+msgid "merkmalfilter_trefferanzahl_anzeigen_desc"
+msgstr "Specify how to display the number of results for characteristics filters."
+
 msgid "merkmal_anzeigen_als_name"
 msgstr "Show characteristics as"
 
@@ -2571,10 +2601,10 @@ msgid "news_anzahl_content_desc"
 msgstr "Specify the number of blog posts to be displayed on the start page of your JTL-Shop."
 
 msgid "news_anzahl_box_name"
-msgstr "Number of months in the box"
+msgstr "Number of months/cateogries in the box"
 
 msgid "news_anzahl_box_desc"
-msgstr "Specify the number of months to be displayed in the \"Blog (monthly overview)\" box."
+msgstr "Specify the number of months/categories to be displayed in the \"Blog (monthly overview) / Blog (category overview)\" box."
 
 msgid "news_kommentare_freischalten_name"
 msgstr "Activate comments"

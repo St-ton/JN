@@ -573,9 +573,9 @@ class GUI
     {
         this.checkPublishNot.prop('checked', true);
         this.publishFrom.prop('disabled', true);
-        this.publishFrom.val('Unveröffentlicht');
+        this.publishFrom.val(opc.messages.notScheduled);
         this.publishTo.prop('disabled', true);
-        this.publishTo.val('Auf unbestimmte Zeit');
+        this.publishTo.val(opc.messages.indefinitePeriodOfTime);
         this.checkPublishInfinite.prop('checked', true);
         this.checkPublishInfinite.prop('disabled', true);
     }
@@ -584,9 +584,9 @@ class GUI
     {
         this.checkPublishNow.prop('checked', true);
         this.publishFrom.prop('disabled', true);
-        this.publishFrom.val('Jetzt');
+        this.publishFrom.val(opc.messages.now);
         this.publishTo.prop('disabled', true);
-        this.publishTo.val('Auf unbestimmte Zeit');
+        this.publishTo.val(opc.messages.indefinitePeriodOfTime);
         this.checkPublishInfinite.prop('checked', true);
         this.checkPublishInfinite.prop('disabled', true);
     }
@@ -603,7 +603,7 @@ class GUI
     {
         this.checkPublishInfinite.prop('checked', true);
         this.publishTo.prop('disabled', true);
-        this.publishTo.val('Auf unbestimmte Zeit');
+        this.publishTo.val(opc.messages.indefinitePeriodOfTime);
         this.publishFrom.datetimepicker('maxDate', false);
     }
 

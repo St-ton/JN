@@ -4,6 +4,7 @@ namespace JTL;
 
 use JTL\Catalog\Product\Artikel;
 use JTL\DB\DbInterface;
+use JTL\Helpers\Text;
 use JTL\Session\Frontend;
 use stdClass;
 
@@ -174,7 +175,7 @@ class ImageMap implements IExtensionPoint
      * @param string|null $dateUntil
      * @return int
      */
-    public function save($title, $imagePath, $dateFrom, $dateUntil): int
+    public function save(string $title, string $imagePath, ?string $dateFrom, ?string $dateUntil): int
     {
         $ins            = new stdClass();
         $ins->cTitel    = $title;
@@ -186,14 +187,14 @@ class ImageMap implements IExtensionPoint
     }
 
     /**
-     * @param int    $id
-     * @param string $title
-     * @param string $imagePath
-     * @param string $dateFrom
-     * @param string $dateUntil
+     * @param int         $id
+     * @param string      $title
+     * @param string      $imagePath
+     * @param string|null $dateFrom
+     * @param string|null $dateUntil
      * @return bool
      */
-    public function update(int $id, $title, $imagePath, $dateFrom, $dateUntil): bool
+    public function update(int $id, string $title, string $imagePath, ?string $dateFrom, ?string $dateUntil): bool
     {
         if (empty($dateFrom)) {
             $dateFrom = 'NOW()';
@@ -222,21 +223,21 @@ class ImageMap implements IExtensionPoint
     /**
      * @param stdClass $data
      */
-    public function saveAreas($data): void
+    public function saveAreas(stdClass $data): void
     {
         $this->db->delete('timagemaparea', 'kImageMap', (int)$data->kImageMap);
         foreach ($data->oArea_arr as $area) {
             $ins                = new stdClass();
             $ins->kImageMap     = $area->kImageMap;
             $ins->kArtikel      = $area->kArtikel;
-            $ins->cStyle        = $area->cStyle;
-            $ins->cTitel        = $area->cTitel;
-            $ins->cUrl          = $area->cUrl;
-            $ins->cBeschreibung = $area->cBeschreibung;
-            $ins->cCoords       = $area->oCoords->x . ',' .
-                $area->oCoords->y . ',' .
-                $area->oCoords->w . ',' .
-                $area->oCoords->h;
+            $ins->cStyle        = Text::filterXSS($area->cStyle);
+            $ins->cTitel        = Text::filterXSS($area->cTitel);
+            $ins->cUrl          = Text::filterXSS($area->cUrl);
+            $ins->cBeschreibung = Text::filterXSS($area->cBeschreibung);
+            $ins->cCoords       = (int)$area->oCoords->x . ',' .
+                (int)$area->oCoords->y . ',' .
+                (int)$area->oCoords->w . ',' .
+                (int)$area->oCoords->h;
 
             $this->db->insert('timagemaparea', $ins);
         }

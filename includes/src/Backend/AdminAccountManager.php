@@ -10,6 +10,7 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
+use JTL\Media\Image;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
@@ -286,10 +287,11 @@ class AdminAccountManager
             $handledKeys[] = $key;
         }
         // nicht (mehr) vorhandene Attribute löschen
-        $this->db->query(
-            'DELETE FROM tadminloginattribut
-            WHERE kAdminlogin = ' . (int)$account->kAdminlogin . "
-                AND cName NOT IN ('" . \implode("', '", $handledKeys) . "')"
+        $this->db->queryPrepared(
+            "DELETE FROM tadminloginattribut
+                WHERE kAdminlogin = :aid
+                    AND cName NOT IN ('" . \implode("', '", $handledKeys) . "')",
+            ['aid' => (int)$account->kAdminlogin]
         );
 
         $adminAccount = Shop::Container()->getAdminAccount();
@@ -357,23 +359,28 @@ class AdminAccountManager
      */
     public function uploadAvatarImage(array $tmpFile, string $attribName)
     {
-        $imgType = \array_search($tmpFile['type'][$attribName], [
+        $file    = [
+            'type'     => $tmpFile['type'][$attribName],
+            'tmp_name' => $tmpFile['tmp_name'][$attribName],
+            'error'    => $tmpFile['error'][$attribName],
+            'name'     => $tmpFile['name'][$attribName]
+        ];
+        $imgType = \array_search($file['type'], [
             \IMAGETYPE_JPEG => \image_type_to_mime_type(\IMAGETYPE_JPEG),
             \IMAGETYPE_PNG  => \image_type_to_mime_type(\IMAGETYPE_PNG),
             \IMAGETYPE_BMP  => \image_type_to_mime_type(\IMAGETYPE_BMP),
             \IMAGETYPE_GIF  => \image_type_to_mime_type(\IMAGETYPE_GIF),
         ], true);
-
-        if ($imgType !== false) {
-            $imagePath = \PFAD_MEDIA_IMAGE . 'avatare/';
-            $imageName = \time() . '_' .\pathinfo($tmpFile['name'][$attribName], \PATHINFO_FILENAME)
-                . \image_type_to_extension($imgType);
-            if (\is_dir(\PFAD_ROOT . $imagePath)
-                || (\mkdir(\PFAD_ROOT . $imagePath, 0755) && \is_dir(\PFAD_ROOT . $imagePath))
-            ) {
-                if (\move_uploaded_file($tmpFile['tmp_name'][$attribName], \PFAD_ROOT . $imagePath . $imageName)) {
-                    return '/' . $imagePath . $imageName;
-                }
+        if ($imgType === false || !Image::isImageUpload($file)) {
+            return false;
+        }
+        $imagePath = \PFAD_MEDIA_IMAGE . 'avatare/';
+        $uploadDir = \PFAD_ROOT . $imagePath;
+        $imageName = \time() . '_' . \pathinfo($file['name'], \PATHINFO_FILENAME)
+            . \image_type_to_extension($imgType);
+        if (\is_dir($uploadDir) || (\mkdir($uploadDir, 0755) && \is_dir($uploadDir))) {
+            if (\move_uploaded_file($file['tmp_name'], \PFAD_ROOT . $imagePath . $imageName)) {
+                return '/' . $imagePath . $imageName;
             }
         }
 

@@ -31,7 +31,7 @@ $errors      = [];
 $res         = handleCsvImportAction('kupon', static function ($obj, &$importDeleteDone, $importType = 2) {
     $db          = Shop::Container()->getDB();
     $couponNames = [];
-    $cols        = Shop::Container()->getDB()->getCollection(
+    $cols        = $db->getCollection(
         'SELECT `column_name` AS name
             FROM information_schema.columns 
             WHERE `table_schema` = :sma
@@ -43,7 +43,7 @@ $res         = handleCsvImportAction('kupon', static function ($obj, &$importDel
 
     foreach (get_object_vars($obj) as $key => $val) {
         if (mb_strpos($key, 'cName_') === 0) {
-            $couponNames[mb_substr($key, 6)] = $val;
+            $couponNames[mb_substr($key, 6)] = Text::filterXSS($val);
             unset($obj->$key);
         }
         if (!in_array($key, $cols, true)) {
@@ -71,7 +71,9 @@ $res         = handleCsvImportAction('kupon', static function ($obj, &$importDel
     }
 
     unset($obj->dLastUse);
-    $couponID = $db->insert('tkupon', $obj);
+    $obj->cCode = Text::filterXSS($obj->cCode);
+    $obj->cName = Text::filterXSS($obj->cName);
+    $couponID   = $db->insert('tkupon', $obj);
     if ($couponID === 0) {
         return false;
     }
@@ -175,7 +177,7 @@ if ($action === 'bearbeiten') {
         foreach ($languages as $language) {
             $postVarName                = 'cName_' . $language->getIso();
             $names[$language->getIso()] = Request::postVar($postVarName, '') !== ''
-                ? $_POST[$postVarName]
+                ? Text::filterXSS($_POST[$postVarName])
                 : $coupon->cName;
         }
     }

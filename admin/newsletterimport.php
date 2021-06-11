@@ -134,7 +134,7 @@ function processImport(array $fmt, array $data): string
     $recipient->cOptCode     = $instance->createCode('cOptCode', $recipient->cEmail);
     $recipient->cLoeschCode  = $instance->createCode('cLoeschCode', $recipient->cEmail);
     $recipient->dEingetragen = 'NOW()';
-    $recipient->kSprache     = $_POST['kSprache'];
+    $recipient->kSprache     = (int)$_POST['kSprache'];
     $recipient->kKunde       = 0;
 
     $customerData = $db->select('tkunde', 'cMail', $recipient->cEmail);

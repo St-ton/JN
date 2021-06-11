@@ -189,9 +189,16 @@ final class Controller
                         if (!\mb_strrpos($files['cPDFS_' . $langID]['name'][$i], ';')
                             && !\mb_strrpos($post['cPDFNames_' . $langID][$i], ';')
                         ) {
-                            $cPlugin = $model->getPluginID() > 0 ? '_' . $model->getPluginID() : '';
-                            $target  = self::UPLOAD_DIR . $model->getID() .
-                                '_' . $langID . '_' . ($i + 1) . $cPlugin . '.pdf';
+                            $finfo  = \finfo_open(\FILEINFO_MIME_TYPE);
+                            $mime   = \finfo_file($finfo, $files['cPDFS_' . $langID]['tmp_name'][$i]);
+                            $plugin = $model->getPluginID() > 0 ? '_' . $model->getPluginID() : '';
+                            $target = self::UPLOAD_DIR . $model->getID() .
+                                '_' . $langID . '_' . ($i + 1) . $plugin . '.pdf';
+                            if (!\in_array($mime, ['application/pdf', 'application/x-pdf'], true)) {
+                                $this->addErrorMessage(__('errorFileSave'));
+
+                                return self::ERROR_UPLOAD_FILE_SAVE;
+                            }
                             if (!\move_uploaded_file($files['cPDFS_' . $langID]['tmp_name'][$i], $target)) {
                                 $this->addErrorMessage(__('errorFileSave'));
 
@@ -200,7 +207,7 @@ final class Controller
                             $filenames[$langID][] = $post['cPDFNames_' . $langID][$i];
                             $pdfFiles[$langID][]  = $model->getID()
                                 . '_' . $langID
-                                . '_' . ($i + 1) . $cPlugin . '.pdf';
+                                . '_' . ($i + 1) . $plugin . '.pdf';
                         } else {
                             $this->addErrorMessage(__('errorFileNameMissing'));
 

@@ -341,7 +341,8 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                 'SELECT * FROM tpluginsprachvariable
                     JOIN tpluginsprachvariablesprache
                     ON tpluginsprachvariable.kPluginSprachvariable = tpluginsprachvariablesprache.kPluginSprachvariable
-                    WHERE tpluginsprachvariable.kPlugin = ' . $pluginID
+                    WHERE tpluginsprachvariable.kPlugin = :pid',
+                ['pid' => $pluginID]
             );
             $original = group($original, static function ($e) {
                 return (int)$e->kPluginSprachvariable;

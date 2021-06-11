@@ -277,7 +277,8 @@ class LegacyBoxes
                 FROM tboxen
                 LEFT JOIN tboxvorlage 
                     ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
-                WHERE kBox = ' . $id
+                WHERE kBox = :bid',
+            ['bid' => $id]
         );
 
         $box->oSprache_arr      = [];

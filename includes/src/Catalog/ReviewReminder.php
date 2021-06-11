@@ -97,6 +97,7 @@ class ReviewReminder
         }
         $reciepients    = [];
         $defaultOptions = Artikel::getDefaultOptions();
+        $db             = Shop::Container()->getDB();
         foreach ($this->orders as $orderData) {
             $openReviews = [];
             $order       = new Bestellung((int)$orderData->kBestellung);
@@ -115,11 +116,12 @@ class ReviewReminder
                     (int)$customer->kKundengruppe
                 );
                 if ($productVisible !== null && $productVisible->kArtikel > 0) {
-                    $res = Shop::Container()->getDB()->getSingleObject(
+                    $res = $db->getSingleObject(
                         'SELECT kBewertung
                             FROM tbewertung
-                            WHERE kArtikel = ' . (int)$item->kArtikel . '
-                                AND kKunde = ' . (int)$order->kKunde
+                            WHERE kArtikel = :pid
+                                AND kKunde = :cid',
+                        ['pid' => (int)$item->kArtikel, 'cid' => (int)$order->kKunde]
                     );
                     if ($res === null) {
                         $openReviews[] = $item;
@@ -132,10 +134,11 @@ class ReviewReminder
             }
             $order->Positionen = $openReviews;
             // set the date of "review send" for the corresponding order
-            Shop::Container()->getDB()->query(
+            $db->queryPrepared(
                 'UPDATE tbestellung
                     SET dBewertungErinnerung = NOW()
-                    WHERE kBestellung = ' . (int)$orderData->kBestellung
+                    WHERE kBestellung = :oid',
+                ['oid' => (int)$orderData->kBestellung]
             );
             $logger = Shop::Container()->getLogService();
             if ($logger->isHandling(\JTLLOG_LEVEL_DEBUG)) {

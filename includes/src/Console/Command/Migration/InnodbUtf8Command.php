@@ -3,8 +3,10 @@
 namespace JTL\Console\Command\Migration;
 
 use JTL\Console\Command\Command;
+use JTL\DB\DbInterface;
 use JTL\Shop;
 use JTL\Update\DBMigrationHelper;
+use stdClass;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -35,7 +37,7 @@ class InnodbUtf8Command extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $db    = Shop::Container()->getDB();
-        $table = DBMigrationHelper::getNextTableNeedMigration($this->excludeTables);
+        $table = DBMigrationHelper::getNextTableNeedMigration($db, $this->excludeTables);
         while ($table !== null) {
             if ($this->errCounter > 20) {
                 $this->getIO()->error('aborted due to too many errors');
@@ -45,41 +47,38 @@ class InnodbUtf8Command extends Command
 
             $output->write('migrate ' . $table->TABLE_NAME . '... ');
 
-            if (DBMigrationHelper::isTableInUse($table->TABLE_NAME)) {
-                $table = $this->nextWithFailure($output, $table, false, 'already in use!');
+            if (DBMigrationHelper::isTableInUse($db, $table->TABLE_NAME)) {
+                $table = $this->nextWithFailure($output, $db, $table, false, 'already in use!');
                 continue;
             }
 
-            $this->prepareTable($table);
+            $this->prepareTable($db, $table);
             $migrationState = DBMigrationHelper::isTableNeedMigration($table);
             if (($migrationState & DBMigrationHelper::MIGRATE_TABLE) !== DBMigrationHelper::MIGRATE_NONE) {
                 $fkSQLs = DBMigrationHelper::sqlRecreateFKs($table->TABLE_NAME);
                 foreach ($fkSQLs->dropFK as $fkSQL) {
-                    $db->executeQuery($fkSQL);
+                    $db->query($fkSQL);
                 }
-                $migrate = $db->executeQuery(
-                    DBMigrationHelper::sqlMoveToInnoDB($table)
-                );
+                $migrate = $db->query(DBMigrationHelper::sqlMoveToInnoDB($table));
                 foreach ($fkSQLs->createFK as $fkSQL) {
-                    $db->executeQuery($fkSQL);
+                    $db->query($fkSQL);
                 }
-
                 if (!$migrate) {
-                    $table = $this->nextWithFailure($output, $table);
+                    $table = $this->nextWithFailure($output, $db, $table);
                     continue;
                 }
             }
             if (($migrationState & DBMigrationHelper::MIGRATE_COLUMN) !== DBMigrationHelper::MIGRATE_NONE) {
                 $sql = DBMigrationHelper::sqlConvertUTF8($table);
-                if (!empty($sql) && !$db->executeQuery($sql)) {
-                    $table = $this->nextWithFailure($output, $table);
+                if (!empty($sql) && !$db->query($sql)) {
+                    $table = $this->nextWithFailure($output, $db, $table);
                     continue;
                 }
             }
-            $this->releaseTable($table);
+            $this->releaseTable($db, $table);
             $output->writeln('<info> ✔ </info>');
 
-            $table = DBMigrationHelper::getNextTableNeedMigration($this->excludeTables);
+            $table = DBMigrationHelper::getNextTableNeedMigration($db, $this->excludeTables);
         }
 
         if ($this->errCounter > 0) {
@@ -92,14 +91,14 @@ class InnodbUtf8Command extends Command
     }
 
     /**
-     * @param \stdClass $table
+     * @param DbInterface $db
+     * @param stdClass    $table
      */
-    private function prepareTable($table): void
+    private function prepareTable(DbInterface $db, $table): void
     {
         if (\version_compare(DBMigrationHelper::getMySQLVersion()->innodb->version, '5.6', '<')) {
             // If MySQL version is lower than 5.6 use alternative lock method
             // and delete all fulltext indexes because these are not supported
-            $db = Shop::Container()->getDB();
             $db->query(DBMigrationHelper::sqlAddLockInfo($table->TABLE_NAME));
             $fulltextIndizes = DBMigrationHelper::getFulltextIndizes($table->TABLE_NAME);
             if ($fulltextIndizes) {
@@ -115,36 +114,38 @@ class InnodbUtf8Command extends Command
     }
 
     /**
-     * @param \stdClass $table
+     * @param DbInterface $db
+     * @param stdClass    $table
      */
-    private function releaseTable($table): void
+    private function releaseTable(DbInterface $db, $table): void
     {
         if (\version_compare(DBMigrationHelper::getMySQLVersion()->innodb->version, '5.6', '<')) {
-            $db = Shop::Container()->getDB();
             $db->query(DBMigrationHelper::sqlClearLockInfo($table));
         }
     }
 
     /**
      * @param OutputInterface $output
-     * @param \stdClass $table
-     * @param bool $releaseTable
-     * @param string $msg
-     * @return \stdClass|null
+     * @param DbInterface     $db
+     * @param stdClass        $table
+     * @param bool            $releaseTable
+     * @param string          $msg
+     * @return stdClass|null
      */
     private function nextWithFailure(
         OutputInterface $output,
-        $table,
+        DbInterface $db,
+        stdClass $table,
         bool $releaseTable = true,
         string $msg = 'failure!'
-    ):? \stdClass {
+    ): ?stdClass {
         $this->errCounter++;
         $output->writeln('<error>' . $msg . '</error>');
         $this->excludeTables[] = $table->TABLE_NAME;
         if ($releaseTable) {
-            $this->releaseTable($table);
+            $this->releaseTable($db, $table);
         }
 
-        return DBMigrationHelper::getNextTableNeedMigration($this->excludeTables);
+        return DBMigrationHelper::getNextTableNeedMigration($db, $this->excludeTables);
     }
 }

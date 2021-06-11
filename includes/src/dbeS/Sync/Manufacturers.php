@@ -91,7 +91,8 @@ final class Manufacturers extends AbstractSync
             $manufacturerImage            = $this->db->getSingleObject(
                 'SELECT cBildPfad 
                     FROM thersteller 
-                    WHERE kHersteller = ' . $id
+                    WHERE kHersteller = :mid',
+                ['mid' => $id]
             );
             $manufacturers[$i]->cBildPfad = $manufacturerImage->cBildPfad ?? '';
             $manufacturers[$i]->cSeo      = Seo::getSeo($manufacturers[$i]->cSeo);

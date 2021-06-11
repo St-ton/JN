@@ -136,11 +136,11 @@ if ($loggedIn) {
         if ($_POST['revision-action'] === 'restore') {
             $revision->restoreRevision(
                 $_POST['revision-type'],
-                $_POST['revision-id'],
+                (int)$_POST['revision-id'],
                 Request::postInt('revision-secondary') === 1
             );
         } elseif ($_POST['revision-action'] === 'delete') {
-            $revision->deleteRevision($_POST['revision-id']);
+            $revision->deleteRevision((int)$_POST['revision-id']);
         }
     }
 }

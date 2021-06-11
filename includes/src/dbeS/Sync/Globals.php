@@ -80,14 +80,14 @@ final class Globals extends AbstractSync
             return;
         }
         $customerGroups = $this->mapper->mapArray($source, 'tkundengruppe', 'mKundengruppe');
-        $this->dbDelInsert('tkundengruppe', $customerGroups, 1);
+        $this->dbDelInsert('tkundengruppe', $customerGroups, true);
         $this->db->query('TRUNCATE TABLE tkundengruppensprache');
         $this->db->query('TRUNCATE TABLE tkundengruppenattribut');
         $cgCount = \count($customerGroups);
         for ($i = 0; $i < $cgCount; $i++) {
             $item = $cgCount < 2 ? $source['tkundengruppe'] : $source['tkundengruppe'][$i];
-            $this->xml2db($item, 'tkundengruppensprache', 'mKundengruppensprache', 0);
-            $this->xml2db($item, 'tkundengruppenattribut', 'mKundengruppenattribut', 0);
+            $this->xml2db($item, 'tkundengruppensprache', 'mKundengruppensprache', false);
+            $this->xml2db($item, 'tkundengruppenattribut', 'mKundengruppenattribut', false);
         }
         $this->cache->flushTags([\CACHING_GROUP_ARTICLE, \CACHING_GROUP_CATEGORY]);
     }
@@ -102,7 +102,7 @@ final class Globals extends AbstractSync
             && $source['tfirma attr']['kFirma'] > 0
         ) {
             $this->mapper->mapObject($company, $source['tfirma'], 'mFirma');
-            $this->dbDelInsert('tfirma', [$company], 1);
+            $this->dbDelInsert('tfirma', [$company], true);
             $this->cache->flushTags([\CACHING_GROUP_CORE]);
         }
     }
@@ -118,7 +118,7 @@ final class Globals extends AbstractSync
             unset($language->cWawiStandard);
         }
         if (\count($languages) > 0) {
-            $this->dbDelInsert('tsprache', $languages, 1);
+            $this->dbDelInsert('tsprache', $languages, true);
             $this->cache->flushTags([\CACHING_GROUP_LANGUAGE]);
         }
     }
@@ -132,7 +132,7 @@ final class Globals extends AbstractSync
             return;
         }
         $taxZones = $this->mapper->mapArray($source, 'tsteuerzone', 'mSteuerzone');
-        $this->dbDelInsert('tsteuerzone', $taxZones, 1);
+        $this->dbDelInsert('tsteuerzone', $taxZones, true);
         $this->db->query('DELETE FROM tsteuerzoneland');
         $taxCount = \count($taxZones);
         for ($i = 0; $i < $taxCount; $i++) {
@@ -176,17 +176,15 @@ final class Globals extends AbstractSync
             return;
         }
         $units = $this->mapper->mapArray($source, 'tmasseinheit', 'mMasseinheit');
-        foreach ($units as &$_me) {
-            //hack?
-            unset($_me->kBezugsMassEinheit);
+        foreach ($units as $unit) {
+            unset($unit->kBezugsMassEinheit);
         }
-        unset($_me);
-        $this->dbDelInsert('tmasseinheit', $units, 1);
+        $this->dbDelInsert('tmasseinheit', $units, true);
         $this->db->query('TRUNCATE TABLE tmasseinheitsprache');
         $meCount = \count($units);
         for ($i = 0; $i < $meCount; $i++) {
             $item = $meCount < 2 ? $source['tmasseinheit'] : $source['tmasseinheit'][$i];
-            $this->xml2db($item, 'tmasseinheitsprache', 'mMasseinheitsprache', 0);
+            $this->xml2db($item, 'tmasseinheitsprache', 'mMasseinheitsprache', false);
         }
     }
 
@@ -203,9 +201,9 @@ final class Globals extends AbstractSync
      * @param array  $xml
      * @param string $table
      * @param string $toMap
-     * @param int    $del
+     * @param bool   $del
      */
-    private function xml2db($xml, $table, $toMap, $del = 1): void
+    private function xml2db($xml, string $table, string $toMap, bool $del = true): void
     {
         if (GeneralObject::isCountable($table, $xml)) {
             $objects = $this->mapper->mapArray($xml, $table, $toMap);
@@ -218,7 +216,7 @@ final class Globals extends AbstractSync
      * @param array    $objects
      * @param int|bool $del
      */
-    private function dbDelInsert($tablename, $objects, $del): void
+    private function dbDelInsert(string $tablename, $objects, $del): void
     {
         if (!\is_array($objects)) {
             return;

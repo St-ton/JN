@@ -284,10 +284,11 @@ class Group implements JsonSerializable
     public function getItemCount(): int
     {
         return (int)Shop::Container()->getDB()->getSingleObject(
-            'SELECT COUNT(*) AS nCount 
+            'SELECT COUNT(*) AS cnt 
                 FROM tkonfigitem 
-                WHERE kKonfiggruppe = ' . (int)$this->kKonfiggruppe
-        )->nCount;
+                WHERE kKonfiggruppe = :gid',
+            ['gid' => (int)$this->kKonfiggruppe]
+        )->cnt;
     }
 
     /**

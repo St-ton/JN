@@ -10,9 +10,14 @@
   padding: 10%;
   text-decoration: none;
   background-size: cover;
+  background-position: center;
 }
 .opc-Video .give-consent-preview:not(:hover) {
   color: #fff;
+}
+.opc-Video .opc-Video-iframe-wrapper {
+  position: relative;
+  display: inline-block;
 }
 
 .opc-Video {

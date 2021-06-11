@@ -6,6 +6,7 @@ use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
+use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\News\Admin\Controller;
 use JTL\News\Category;
@@ -121,10 +122,10 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
                 $controller->setStep('news_kommentar_editieren');
                 $controller->setErrorMsg(__('errorCheckInput'));
                 $comment                 = new stdClass();
-                $comment->kNewsKommentar = $_POST['kNewsKommentar'];
-                $comment->kNews          = $_POST['kNews'];
-                $comment->cName          = $_POST['cName'];
-                $comment->cKommentar     = $_POST['cKommentar'];
+                $comment->kNewsKommentar = (int)$_POST['kNewsKommentar'];
+                $comment->kNews          = (int)$_POST['kNews'];
+                $comment->cName          = Text::filterXSS($_POST['cName']);
+                $comment->cKommentar     = Text::filterXSS($_POST['cKommentar']);
                 $smarty->assign('oNewsKommentar', $comment);
             }
         } else {

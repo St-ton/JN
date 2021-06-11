@@ -444,6 +444,9 @@ msgstr "Geplant ab"
 msgid "notScheduled"
 msgstr "Unveröffentlicht"
 
+msgid "now"
+msgstr "Jetzt"
+
 msgid "expiredOn"
 msgstr "Abgelaufen am"
 

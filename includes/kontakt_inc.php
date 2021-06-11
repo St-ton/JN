@@ -50,7 +50,7 @@ function bearbeiteNachricht()
 function floodSchutz($min)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Form::checkFloodProtection($min);
+    return Form::checkFloodProtection((int)$min);
 }
 
 if (!function_exists('baueFormularVorgaben')) {

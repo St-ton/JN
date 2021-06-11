@@ -73,12 +73,10 @@ class CountryService implements CountryServiceInterface
                        ->setNameDE($country->cDeutsch)
                        ->setNameEN($country->cEnglisch)
                        ->setPermitRegistration($country->bPermitRegistration === '1')
-                       ->setRequireStateDefinition($country->bRequireStateDefinition === '1');
+                       ->setRequireStateDefinition($country->bRequireStateDefinition === '1')
+                       ->setShippingAvailable(\in_array($countryTMP->getISO(), $deliverableCountries, true));
             if (\in_array($countryTMP->getISO(), $possibleStates, true)) {
                 $countryTMP->setStates($this->getStates($countryTMP->getISO()));
-            }
-            if (\in_array($countryTMP->getISO(), $deliverableCountries, true)) {
-                $countryTMP->setShippingAvailable(true);
             }
             $this->countryList->push($countryTMP);
         }

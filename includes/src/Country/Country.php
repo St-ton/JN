@@ -103,24 +103,18 @@ class Country
         $db          = Shop::Container()->getDB();
         $countryData = $db->select('tland', 'cISO', $this->getISO());
         if ($countryData !== null) {
-            $shippingMethods      = $db->getObjects('SELECT cLaender FROM tversandart');
-            $deliverableCountries = [];
-            foreach ($shippingMethods as $shippingMethod) {
-                $deliverableCountries = \array_unique(\array_merge(
-                    $deliverableCountries,
-                    \explode(' ', $shippingMethod->cLaender)
-                ));
-            }
             $this->setContinent($countryData->cKontinent)
                  ->setEU($countryData->nEU)
                  ->setNameDE($countryData->cDeutsch)
                  ->setNameEN($countryData->cEnglisch)
                  ->setPermitRegistration($countryData->bPermitRegistration === '1')
-                 ->setRequireStateDefinition($countryData->bRequireStateDefinition === '1');
-
-            if (\in_array($this->getISO(), $deliverableCountries, true)) {
-                $this->setShippingAvailable(true);
-            }
+                 ->setRequireStateDefinition($countryData->bRequireStateDefinition === '1')
+                 ->setShippingAvailable($db->getSingleObject(
+                     'SELECT COUNT(*) AS cnt 
+                        FROM tversandart
+                        WHERE cLaender LIKE :iso',
+                     ['iso' => '%' . $this->getISO() . '%']
+                 )->cnt > 0);
         }
     }
 

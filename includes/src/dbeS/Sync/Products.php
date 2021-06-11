@@ -128,35 +128,32 @@ final class Products extends AbstractSync
         if ($filter === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_ALLE || \count($newCategoryIDs) === 0) {
             return false;
         }
-        $currentStatus = $this->db->getSingleObject(
+        $status = $this->db->getSingleObject(
             'SELECT cLagerBeachten, cLagerKleinerNull, fLagerbestand
                 FROM tartikel
                 WHERE kArtikel = :pid',
             ['pid' => $productID]
         );
-        if ($this->checkStock($currentStatus, $xml) === true) {
-            // get count of visible products in the product's future categories
-            $productCountPerCategory = $this->db->getCollection(
-                'SELECT tkategorie.kKategorie AS id, COUNT(tartikel.kArtikel) AS cnt
-                    FROM tkategorie
-                    LEFT JOIN tkategorieartikel
-                        ON tkategorie.kKategorie = tkategorieartikel.kKategorie
-                    LEFT JOIN tartikel
-                        ON tartikel.kArtikel = tkategorieartikel.kArtikel ' . $stockFilter . '
-                    WHERE tkategorie.kKategorie IN (' . \implode(',', $newCategoryIDs) . ')
-                    GROUP BY tkategorie.kKategorie'
-            )->each(static function ($e) {
-                $e->id  = (int)$e->id;
-                $e->cnt = (int)$e->cnt;
-            });
-            foreach ($productCountPerCategory as $item) {
-                if (($currentStatus->cLagerBeachten !== 'Y' && $item->cnt === 1)
-                    || ($currentStatus->cLagerBeachten === 'Y' && $item->cnt === 0)
-                ) {
-                    // there was just one product that is now sold out
-                    // or there were just sold out products and now it's not sold out anymore
-                    return true;
-                }
+        if ($status === null || $this->checkStock($status, $xml) !== true) {
+            return false;
+        }
+        // get count of visible products in the product's future categories
+        $productCountPerCategory = $this->db->getCollection(
+            'SELECT tkategorie.kKategorie AS id, COUNT(tartikel.kArtikel) AS cnt
+                FROM tkategorie
+                LEFT JOIN tkategorieartikel
+                    ON tkategorie.kKategorie = tkategorieartikel.kKategorie
+                LEFT JOIN tartikel
+                    ON tartikel.kArtikel = tkategorieartikel.kArtikel ' . $stockFilter . '
+                WHERE tkategorie.kKategorie IN (' . \implode(',', $newCategoryIDs) . ')
+                GROUP BY tkategorie.kKategorie'
+        );
+        foreach ($productCountPerCategory as $item) {
+            $cnt = (int)$item->cnt;
+            if (($status->cLagerBeachten !== 'Y' && $cnt === 1) || ($status->cLagerBeachten === 'Y' && $cnt === 0)) {
+                // there was just one product that is now sold out
+                // or there were just sold out products and now it's not sold out anymore
+                return true;
             }
         }
 
@@ -164,13 +161,13 @@ final class Products extends AbstractSync
     }
 
     /**
-     * @param stdClass|bool $currentStatus
+     * @param stdClass|null $currentStatus
      * @param array         $xml
      * @return bool
      */
-    private function checkStock($currentStatus, array $xml): bool
+    private function checkStock(?stdClass $currentStatus, array $xml): bool
     {
-        return $currentStatus !== false
+        return $currentStatus !== null
             && (($currentStatus->fLagerbestand <= 0 && $xml['tartikel']['fLagerbestand'] > 0)
                 // product was not in stock before but is now - check if flush is necessary
                 || ($currentStatus->fLagerbestand > 0 && $xml['tartikel']['fLagerbestand'] <= 0)
@@ -285,9 +282,9 @@ final class Products extends AbstractSync
             if ($delta !== null && $delta->totalquantity > 0) {
                 $products[0]->fLagerbestand -= $delta->totalquantity;
                 $this->logger->debug(
-                    'Artikel-Sync: Lagerbestand von kArtikel ' . (int)$products[0]->kArtikel . ' wurde ' .
-                    'wegen nicht-abgeholter Bestellungen ' .
-                    'um ' . $delta->totalquantity . ' auf ' . $products[0]->fLagerbestand . ' reduziert.'
+                    'Artikel-Sync: Lagerbestand von kArtikel ' . (int)$products[0]->kArtikel . ' wurde '
+                    . 'wegen nicht-abgeholter Bestellungen um '
+                    . $delta->totalquantity . ' auf ' . $products[0]->fLagerbestand . ' reduziert.'
                 );
             }
         }
@@ -301,22 +298,22 @@ final class Products extends AbstractSync
     }
 
     /**
-     * @param object|null $oldSeo
+     * @param string|null $oldSeo
      * @param string      $newSeo
      * @param int         $productID
      */
-    private function addSeo($oldSeo, $newSeo, int $productID): void
+    private function addSeo(?string $oldSeo, string $newSeo, int $productID): void
     {
-        if (isset($oldSeo->cSeo)) {
-            $this->checkDbeSXmlRedirect($oldSeo->cSeo, $newSeo);
+        if ($oldSeo !== null) {
+            $this->checkDbeSXmlRedirect($oldSeo, $newSeo);
         }
         $this->db->queryPrepared(
             "INSERT INTO tseo
-            SELECT tartikel.cSeo, 'kArtikel', tartikel.kArtikel, tsprache.kSprache
-            FROM tartikel, tsprache
-            WHERE tartikel.kArtikel = :pid
-                AND tsprache.cStandard = 'Y'
-                AND tartikel.cSeo != ''",
+                SELECT tartikel.cSeo, 'kArtikel', tartikel.kArtikel, tsprache.kSprache
+                FROM tartikel, tsprache
+                WHERE tartikel.kArtikel = :pid
+                    AND tsprache.cStandard = 'Y'
+                    AND tartikel.cSeo != ''",
             ['pid' => $productID]
         );
     }
@@ -856,7 +853,7 @@ final class Products extends AbstractSync
 
     /**
      * @param array $xml
-     * @return array - list of product IDs to flush
+     * @return int[] - list of product IDs to flush
      */
     private function handleInserts($xml): array
     {
@@ -875,17 +872,12 @@ final class Products extends AbstractSync
             return $res;
         }
         $products = $this->mapper->mapArray($xml, 'tartikel', 'mArtikel');
-        $oldSeo   = $this->db->select(
-            'tartikel',
-            'kArtikel',
-            $productID,
-            null,
-            null,
-            null,
-            null,
-            false,
-            'cSeo'
-        );
+        $oldSeo   = $this->db->getSingleObject(
+            'SELECT cSeo 
+                FROM tartikel 
+                WHERE kArtikel = :pid',
+            ['pid' => $productID]
+        )->cSeo ?? null;
         $this->checkCategoryCache($xml, $productID);
         $downloadKeys = $this->getDownloadIDs($productID);
         $this->deleteProduct($productID, true);
@@ -921,7 +913,7 @@ final class Products extends AbstractSync
 
     /**
      * @param array $xml
-     * @return array - list of product IDs
+     * @return int[] - list of product IDs
      */
     private function handleDeletes($xml): array
     {
@@ -948,6 +940,7 @@ final class Products extends AbstractSync
             $this->db->delete('tartikelkategorierabatt', 'kArtikel', $productID);
             if ($parent > 0) {
                 Artikel::beachteVarikombiMerkmalLagerbestand($parent);
+                $res[] = $parent;
             }
             \executeHook(\HOOK_ARTIKEL_XML_BEARBEITEDELETES, ['kArtikel' => $productID]);
         }
@@ -1234,14 +1227,14 @@ final class Products extends AbstractSync
 
     /**
      * @param int $productID
-     * @return array
+     * @return int[]
      */
     private function addCategoryDiscounts(int $productID): array
     {
         $customerGroups     = $this->db->getObjects('SELECT kKundengruppe FROM tkundengruppe');
         $affectedProductIDs = [];
         $this->db->delete('tartikelkategorierabatt', 'kArtikel', $productID);
-        if (!\is_array($customerGroups) || \count($customerGroups) === 0) {
+        if (\count($customerGroups) === 0) {
             return $affectedProductIDs;
         }
         foreach ($customerGroups as $item) {
@@ -1260,7 +1253,7 @@ final class Products extends AbstractSync
                 LIMIT 1',
                 [
                     'kArtikel'      => $productID,
-                    'kKundengruppe' => $item->kKundengruppe,
+                    'kKundengruppe' => (int)$item->kKundengruppe,
                 ]
             );
 
@@ -1272,7 +1265,7 @@ final class Products extends AbstractSync
                             fRabatt    = IF(fRabatt < :discount, :discount, fRabatt)',
                     [
                         'productID'     => $productID,
-                        'customerGroup' => $item->kKundengruppe,
+                        'customerGroup' => (int)$item->kKundengruppe,
                         'categoryID'    => $maxDiscount->kKategorie,
                         'discount'      => $maxDiscount->fRabatt,
                     ]
@@ -1289,7 +1282,7 @@ final class Products extends AbstractSync
      * and returns the product IDs of parent products if yes
      *
      * @param int $productID
-     * @return array
+     * @return int[]
      */
     private function getConfigParents(int $productID): array
     {
@@ -1397,9 +1390,9 @@ final class Products extends AbstractSync
         $totalCount = $this->cache->flushTags($cacheTags->toArray());
         $end        = \microtime(true);
         $this->logger->debug(
-            'Flushed a total of ' . $totalCount .
-            ' keys for ' . $cacheTags->count() .
-            ' tags in ' . ($end - $start) . 's'
+            'Flushed a total of ' . $totalCount
+            . ' keys for ' . $cacheTags->count()
+            . ' tags in ' . ($end - $start) . 's'
         );
     }
 }

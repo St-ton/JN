@@ -21,6 +21,7 @@ use JTL\dbeS\Sync\ConfigGroups;
 use JTL\dbeS\Sync\Customer;
 use JTL\dbeS\Sync\Data;
 use JTL\dbeS\Sync\DeliveryNotes;
+use JTL\dbeS\Sync\Downloads;
 use JTL\dbeS\Sync\Globals;
 use JTL\dbeS\Sync\ImageCheck;
 use JTL\dbeS\Sync\ImageLink;
@@ -60,6 +61,7 @@ class Starter
         'Bilder_xml'       => Images::class,
         'Brocken_xml'      => Brocken::class,
         'Data_xml'         => Data::class,
+        'Download_xml'     => Downloads::class,
         'Globals_xml'      => Globals::class,
         'Hersteller_xml'   => Manufacturers::class,
         'img_check'        => ImageCheck::class,

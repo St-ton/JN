@@ -56,12 +56,13 @@
                                 {$jtl_token}
                                 <input type="hidden" name="cISO" value="{$country->getISO()}">
                                 <div class="btn-group">
-                                    <button name="action"
+                                    <button type="submit"
+                                            name="action"
                                             value="delete"
-                                            class="btn btn-link px-2"
-                                            onclick="return confirmDeleteModal('{__('confirmDeleteCountry')|printf:$country->getName():$country->getISO()}');"
+                                            class="btn btn-link px-2 delete-confirm"
                                             title="{__('delete')}"
-                                            data-toggle="tooltip">
+                                            data-toggle="tooltip"
+                                            data-modal-body="{__('confirmDeleteCountry')|printf:$country->getName():$country->getISO()}">
                                         <span class="icon-hover">
                                             <span class="fal fa-trash-alt"></span>
                                             <span class="fas fa-trash-alt"></span>

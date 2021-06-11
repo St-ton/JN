@@ -51,7 +51,12 @@ class TemplateInstaller implements InstallerInterface
 
             return 0;
         }
-        Shop::Container()->getTemplateService()->reset();
+        $service = Shop::Container()->getTemplateService();
+        $active  = $service->getActiveTemplate(true);
+        $service->reset();
+        if ($active->getExsID() === $exsID) {
+            $service->setActiveTemplate($installResponse->getDirName());
+        }
 
         return 1;
     }

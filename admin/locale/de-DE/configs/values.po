@@ -1766,6 +1766,15 @@ msgstr "Ja, im Content-Bereich und der Navigationsbox"
 msgid "merkmalfilter_verwenden_value(N)"
 msgstr "Nein"
 
+msgid "merkmalfilter_trefferanzahl_anzeigen_value(N)"
+msgstr "Trefferanzahl nie anzeigen"
+
+msgid "merkmalfilter_trefferanzahl_anzeigen_value(E)"
+msgstr "Trefferanzahl nur bei Einfachauswahl anzeigen"
+
+msgid "merkmalfilter_trefferanzahl_anzeigen_value(Y)"
+msgstr "Trefferanzahl auch bei möglicher Mehrfachauswahl anzeigen (performancelastig)"
+
 msgid "merkmal_anzeigen_als_value(T)"
 msgstr "Text"
 

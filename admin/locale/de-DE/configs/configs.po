@@ -2432,6 +2432,12 @@ msgstr "Merkmalfilter benutzen"
 msgid "merkmalfilter_verwenden_desc"
 msgstr "Hier legen Sie fest, ob Merkmalfilter angezeigt werden sollen. Diese Optionen werden im NOVA-Template nur teilweise unterstützt. Bitte wählen Sie „Ja, im Content-Bereich und der Navigationsbox“ oder „Nein“, falls Sie NOVA verwenden."
 
+msgid "merkmalfilter_trefferanzahl_anzeigen_name"
+msgstr "Trefferanzahl bei Merkmalfiltern anzeigen"
+
+msgid "merkmalfilter_trefferanzahl_anzeigen_desc"
+msgstr "Hier legen Sie fest, wie die Trefferanzahl bei Merkmalfiltern angezeigt werden soll."
+
 msgid "merkmal_anzeigen_als_name"
 msgstr "Merkmale anzeigen als"
 

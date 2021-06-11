@@ -2,6 +2,8 @@
     {$is_dropdown = ($Merkmal->cTyp === 'SELECTBOX')}
     {$limit = $Einstellungen.template.productlist.filter_max_options}
     {$collapseInit = false}
+    {$showFilterCount = $Einstellungen.navigationsfilter.merkmalfilter_trefferanzahl_anzeigen !== 'N'
+        && !($Einstellungen.navigationsfilter.merkmalfilter_trefferanzahl_anzeigen === 'E' && $Merkmal->getData('isMultiSelect'))}
     <div class="filter-search-wrapper">
     {block name='snippets-filter-characteristic-include-search-in-items'}
         {include file='snippets/filter/search_in_items.tpl' itemCount=count($Merkmal->getOptions()) name=$Merkmal->getName()}
@@ -35,7 +37,9 @@
                             }
                         {/if}
                         <span class="word-break filter-item-value">{$attributeValue->getValue()|escape:'html'}</span>
-                        {badge variant="outline-secondary"}{$attributeValue->getCount()}{/badge}
+                        {if $showFilterCount}
+                            {badge variant="outline-secondary"}{$attributeValue->getCount()}{/badge}
+                        {/if}
                     </div>
                 {/dropdownitem}
             {/block}
@@ -65,14 +69,16 @@
                                     }
                                 {/if}
                                 <span class="word-break filter-item-value">{$attributeValue->getValue()|escape:'html'}</span>
-                                {badge variant="outline-secondary"}{$attributeValue->getCount()}{/badge}
+                                {if $showFilterCount}
+                                    {badge variant="outline-secondary"}{$attributeValue->getCount()}{/badge}
+                                {/if}
                             </div>
                         {/link}
                     {/block}
                 {elseif $Merkmal->getData('cTyp') === 'BILD' && $attributeImageURL !== null}
                     {block name='snippets-filter-characteristics-nav-image'}
                         {link href="{if !empty($attributeValue->getURL())}{$attributeValue->getURL()}{else}#{/if}"
-                            title="{$attributeValue->getValue()|escape:'html'}: {$attributeValue->getCount()}"
+                            title="{if $showFilterCount}{$attributeValue->getValue()|escape:'html'}: {$attributeValue->getCount()}{else}{$attributeValue->getValue()|escape:'html'}{/if}"
                             data=["toggle"=>"tooltip", "placement"=>"top", "boundary"=>"window"]
                             class="{if $attributeValue->isActive()}active{/if} filter-item"
                             rel="nofollow"
@@ -80,7 +86,7 @@
                             {image lazy=true  webp=true
                                 src=$attributeImageURL
                                 alt=$attributeValue->getValue()|escape:'html'
-                                title="{$attributeValue->getValue()|escape:'html'}: {$attributeValue->getCount()}"
+                                title="{if $showFilterCount}{$attributeValue->getValue()|escape:'html'}: {$attributeValue->getCount()}{else}{$attributeValue->getValue()|escape:'html'}{/if}"
                                 class="vmiddle filter-img"
                             }
                             <span class="d-none filter-item-value">
@@ -91,7 +97,7 @@
                 {else}
                     {block name='snippets-filter-characteristics-nav-else'}
                         {link href="{if !empty($attributeValue->getURL())}{$attributeValue->getURL()}{else}#{/if}"
-                            title="{$attributeValue->getValue()|escape:'html'}: {$attributeValue->getCount()}"
+                            title="{if $showFilterCount}{$attributeValue->getValue()|escape:'html'}: {$attributeValue->getCount()}{else}{$attributeValue->getValue()|escape:'html'}{/if}"
                             class="{if $attributeValue->isActive()}active{/if} filter-item"
                             rel="nofollow"
                         }
@@ -100,14 +106,16 @@
                                     {image lazy=true webp=true
                                         src=$attributeImageURL
                                         alt=$attributeValue->getValue()|escape:'html'
-                                        title="{$attributeValue->getValue()|escape:'html'}: {$attributeValue->getCount()}"
+                                        title="{if $showFilterCount}{$attributeValue->getValue()|escape:'html'}: {$attributeValue->getCount()}{else}{$attributeValue->getValue()|escape:'html'}{/if}"
                                         class="vmiddle filter-img"
                                     }
                                 {/if}
                                 <span class="word-break filter-item-value">
                                     {$attributeValue->getValue()|escape:'html'}
                                 </span>
-                                {badge variant="outline-secondary"}{$attributeValue->getCount()}{/badge}
+                                {if $showFilterCount}
+                                    {badge variant="outline-secondary"}{$attributeValue->getCount()}{/badge}
+                                {/if}
                             </div>
                         {/link}
                     {/block}

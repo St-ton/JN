@@ -40,8 +40,8 @@
                             || ((isset($activeParent)
                                 && isset($activeParent->kKategorie))
                                 && $activeParent->kKategorie == $category->getID())} active{/if}">
-                                {link href=$category->getURL() title=$category->getName() class="nav-link dropdown-toggle" target="_self"}
-                                    <span class="nav-mobile-heading">{$category->getName()}</span>
+                                {link href=$category->getURL() title=$category->getName()|@seofy class="nav-link dropdown-toggle" target="_self"}
+                                    <span class="nav-mobile-heading">{$category->getShortName()}</span>
                                 {/link}
                                 <div class="dropdown-menu">
                                     <div class="dropdown-body">
@@ -49,7 +49,7 @@
                                             {row class="lg-row-lg nav"}
                                                 {col lg=4 xl=3 class="nav-item-lg-m nav-item dropdown d-lg-none"}
                                                     {link href=$category->getURL() rel="nofollow"}
-                                                        <strong class="nav-mobile-heading">{lang key='menuShow' printf=$category->getName()}</strong>
+                                                        <strong class="nav-mobile-heading">{lang key='menuShow' printf=$category->getShortName()}</strong>
                                                     {/link}
                                                 {/col}
                                                 {block name='snippets-categories-mega-sub-categories'}
@@ -76,7 +76,7 @@
                         {/block}
                     {else}
                         {block name='snippets-categories-mega-category-no-child'}
-                            {navitem href=$category->getURL() title=$category->getName()
+                            {navitem href=$category->getURL() title=$category->getName()|@seofy
                                 class="nav-scrollbar-item {if $Einstellungen.template.megamenu.show_categories === 'mobile'} d-lg-none
                                     {elseif $Einstellungen.template.megamenu.show_categories === 'desktop'} d-none d-lg-inline-block {/if}
                                     {if $category->getID() === $activeId}active{/if}"}

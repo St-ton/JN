@@ -1766,6 +1766,15 @@ msgstr "Yes, in content area and in navigation box"
 msgid "merkmalfilter_verwenden_value(N)"
 msgstr "No"
 
+msgid "merkmalfilter_trefferanzahl_anzeigen_value(N)"
+msgstr "Never show number of results"
+
+msgid "merkmalfilter_trefferanzahl_anzeigen_value(E)"
+msgstr "Only show number of results for single selection"
+
+msgid "merkmalfilter_trefferanzahl_anzeigen_value(Y)"
+msgstr "Also show number of results for possible multiple selection (may impact performance)"
+
 msgid "merkmal_anzeigen_als_value(T)"
 msgstr "Text"
 

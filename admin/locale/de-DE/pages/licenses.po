@@ -187,3 +187,6 @@ msgstr "Zum JTL-Extension Store"
 
 msgid "Your shop version is not compatible with this plugin version"
 msgstr "Ihre Shop-Version ist für die neue Version zu niedrig"
+
+msgid "Key"
+msgstr "Key"

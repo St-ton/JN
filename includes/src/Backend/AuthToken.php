@@ -227,15 +227,15 @@ class AuthToken
      */
     public function responseToken(): void
     {
-        $authCode = (string)Request::postVar('code');
-        $token    = (string)Request::postVar('token');
+        $authCode = (string)Request::postVar('code', '');
+        $token    = (string)Request::postVar('token', '');
         try {
             $logger = Shop::Container()->getLogService();
         } catch (ServiceNotFoundException | CircularReferenceException $e) {
             $logger = null;
         }
 
-        if ($authCode === null || $authCode !== $this->authCode) {
+        if ($authCode === '' || $authCode !== $this->authCode) {
             if ($logger !== null) {
                 $logger->error('Call responseToken with invalid authcode!');
             }
@@ -243,7 +243,7 @@ class AuthToken
             exit;
         }
 
-        if ($token === null || $token === '') {
+        if ($token === '') {
             \http_response_code(200);
             exit;
         }

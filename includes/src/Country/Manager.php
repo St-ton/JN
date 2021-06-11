@@ -7,6 +7,7 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Helpers\Text;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Services\JTL\CountryService;
 use JTL\Services\JTL\CountryServiceInterface;
@@ -101,13 +102,13 @@ class Manager
         }
         switch ($action) {
             case 'add':
-                $action = $this->addCountry();
+                $action = $this->addCountry(Text::filterXSS($_POST));
                 break;
             case 'delete':
                 $action = $this->deleteCountry();
                 break;
             case 'update':
-                $action = $this->updateCountry();
+                $action = $this->updateCountry(Text::filterXSS($_POST));
                 break;
             default:
                 break;
@@ -117,11 +118,12 @@ class Manager
     }
 
     /**
+     * @param array $postData
      * @return string
      */
-    private function addCountry(): string
+    private function addCountry(array $postData): string
     {
-        $iso = Request::verifyGPDataString('cISO');
+        $iso = \mb_strtoupper($postData['cISO'] ?? '');
         if ($this->countryService->getCountry($iso) !== null) {
             $this->alertService->addAlert(
                 Alert::TYPE_DANGER,
@@ -130,15 +132,15 @@ class Manager
             );
             return 'overview';
         }
-        if (Request::postInt('save') === 1) {
+        if ($iso !== '' && Request::postInt('save') === 1) {
             $country                          = new \stdClass();
-            $country->cISO                    = \mb_strtoupper($iso);
-            $country->cDeutsch                = Request::verifyGPDataString('cDeutsch');
-            $country->cEnglisch               = Request::verifyGPDataString('cEnglisch');
-            $country->nEU                     = Request::verifyGPDataString('nEU');
-            $country->cKontinent              = Request::verifyGPDataString('cKontinent');
-            $country->bPermitRegistration     = Request::verifyGPDataString('bPermitRegistration');
-            $country->bRequireStateDefinition = Request::verifyGPDataString('bRequireStateDefinition');
+            $country->cISO                    = $iso;
+            $country->cDeutsch                = $postData['cDeutsch'];
+            $country->cEnglisch               = $postData['cEnglisch'];
+            $country->nEU                     = $postData['nEU'];
+            $country->cKontinent              = $postData['cKontinent'];
+            $country->bPermitRegistration     = $postData['bPermitRegistration'];
+            $country->bRequireStateDefinition = $postData['bRequireStateDefinition'];
 
             $this->db->insert('tland', $country);
             $this->cache->flush(CountryService::CACHE_ID);
@@ -160,11 +162,12 @@ class Manager
      */
     private function deleteCountry(): string
     {
-        if ($this->db->delete('tland', 'cISO', Request::verifyGPDataString('cISO')) > 0) {
+        $iso = Text::filterXSS(Request::verifyGPDataString('cISO'));
+        if ($this->db->delete('tland', 'cISO', $iso) > 0) {
             $this->cache->flush(CountryService::CACHE_ID);
             $this->alertService->addAlert(
                 Alert::TYPE_SUCCESS,
-                \sprintf(__('successCountryDelete'), Request::verifyGPDataString('cISO')),
+                \sprintf(__('successCountryDelete'), $iso),
                 'successCountryDelete',
                 ['saveInSession' => true]
             );
@@ -176,29 +179,30 @@ class Manager
     }
 
     /**
+     * @param array $postData
      * @return string
      */
-    private function updateCountry(): string
+    private function updateCountry(array $postData): string
     {
         if (Request::postInt('save') === 1) {
             $country                          = new \stdClass();
-            $country->cDeutsch                = Request::verifyGPDataString('cDeutsch');
-            $country->cEnglisch               = Request::verifyGPDataString('cEnglisch');
-            $country->nEU                     = Request::verifyGPDataString('nEU');
-            $country->cKontinent              = Request::verifyGPDataString('cKontinent');
-            $country->bPermitRegistration     = Request::verifyGPDataString('bPermitRegistration');
-            $country->bRequireStateDefinition = Request::verifyGPDataString('bRequireStateDefinition');
+            $country->cDeutsch                = $postData['cDeutsch'];
+            $country->cEnglisch               = $postData['cEnglisch'];
+            $country->nEU                     = $postData['nEU'];
+            $country->cKontinent              = $postData['cKontinent'];
+            $country->bPermitRegistration     = $postData['bPermitRegistration'];
+            $country->bRequireStateDefinition = $postData['bRequireStateDefinition'];
 
             $this->db->update(
                 'tland',
                 'cISO',
-                Request::verifyGPDataString('cISO'),
+                $postData['cISO'],
                 $country
             );
             $this->cache->flush(CountryService::CACHE_ID);
             $this->alertService->addAlert(
                 Alert::TYPE_SUCCESS,
-                \sprintf(__('successCountryUpdate'), Request::verifyGPDataString('cISO')),
+                \sprintf(__('successCountryUpdate'), $postData['cISO']),
                 'successCountryUpdate',
                 ['saveInSession' => true]
             );

@@ -155,6 +155,7 @@
         {else}
             {$countryISO=$shippingCountry}
         {/if}
+        {getCountry iso=$countryISO assign='selectedCountry'}
         {block name='checkout-customer-shipping-address-country-wrap'}
             {col cols=12}
                 {block name='checkout-customer-shipping-address-country'}
@@ -183,7 +184,7 @@
                     {block name='checkout-customer-shipping-address-state'}
                         {formgroup
                             class="{if isset($fehlendeAngaben.bundesland)} has-error{/if}"
-                            label="{lang key='state' section='account data'}{if $Einstellungen.kunden.lieferadresse_abfragen_bundesland !== 'Y'}<span class='optional'> - {lang key='optional'}</span>{/if}"
+                            label="{lang key='state' section='account data'}<span class='state-optional optional {if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y' || $selectedCountry->isRequireStateDefinition()}d-none{/if}'> - {lang key='optional'}</span>"
                             label-for="{$prefix}-{$name}-state"
                         }
                             {if !empty($oShippingStates)}
@@ -193,7 +194,7 @@
                                         class="state-input custom-select js-state-select"
                                         data=["defaultoption"=>{lang key=pleaseChoose}]
                                         autocomplete="shipping address-level1"
-                                        required=($Einstellungen.kunden.lieferadresse_abfragen_bundesland === 'Y')
+                                        required=($Einstellungen.kunden.lieferadresse_abfragen_bundesland === 'Y' || $selectedCountry->isRequireStateDefinition())
                                 }
                                     <option value="" selected disabled>{lang key='pleaseChoose'}</option>
                                     {foreach $oShippingStates as $oState}

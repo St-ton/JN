@@ -252,7 +252,7 @@
                                     {select name="land" id="billing_address-country" class="country-input custom-select js-country-select" required=true autocomplete="billing country"}
                                         <option value="" disabled>{lang key='country' section='account data'}</option>
                                         {foreach $countries as $country}
-                                            {if $country->isPermitRegistration() && $country->isShippingAvailable()}
+                                            {if $country->isPermitRegistration()}
                                                 <option value="{$country->getISO()}" {if $selectedCountry->getISO() === $country->getISO()}selected="selected"{/if}>{$country->getName()}</option>
                                             {/if}
                                         {/foreach}
